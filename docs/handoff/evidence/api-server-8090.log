@@ -1,0 +1,3300 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-06T15:19:50.376+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] com.uav_pass.local.LocalApplication      : Starting LocalApplication using Java 21.0.12.1 with PID 83926 (/Users/macbook/HK7/uav-pas-platform/backend/target/classes started by macbook in /Users/macbook/HK7/uav-pas-platform/backend)
+2026-10-06T15:19:50.378+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] com.uav_pass.local.LocalApplication      : No active profile set, falling back to 1 default profile: "default"
+2026-10-06T15:19:50.403+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-10-06T15:19:50.404+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-10-06T15:19:50.785+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-06T15:19:50.825+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 36 ms. Found 19 JPA repository interfaces.
+2026-10-06T15:19:51.109+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8090 (http)
+2026-10-06T15:19:51.116+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-06T15:19:51.116+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-06T15:19:51.130+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 726 ms
+2026-10-06T15:19:51.232+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-06T15:19:51.320+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1b3bde86
+2026-10-06T15:19:51.320+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-06T15:19:51.331+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:55435/uav_test (PostgreSQL 16.15)
+2026-10-06T15:19:51.360+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "public"."flyway_schema_history" does not exist yet
+2026-10-06T15:19:51.361+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 2 migrations (execution time 00:00.007s)
+2026-10-06T15:19:51.375+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+2026-10-06T15:19:51.413+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+2026-10-06T15:19:51.424+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - baseline uav pas"
+2026-10-06T15:19:51.516+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - media confirmation inventory requests"
+2026-10-06T15:19:51.525+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.f.core.internal.command.DbMigrate      : Successfully applied 2 migrations to schema "public", now at version v2 (execution time 00:00.088s)
+2026-10-06T15:19:51.575+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-06T15:19:51.606+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-06T15:19:51.779+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-06T15:19:51.819+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:55435/uav_test]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.15
+	Default catalog/schema: uav_test/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-06T15:19:52.370+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-06T15:19:52.403+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-06T15:19:52.450+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-06T15:19:53.594+07:00  WARN 83926 --- [uav-pas-backend] [  restartedMain] .s.a.UserDetailsServiceAutoConfiguration : 
+
+[REDACTED GENERATED SECURITY PASSWORD]
+
+[REDACTED GENERATED SECURITY PASSWORD]
+
+2026-10-06T15:19:53.598+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-06T15:19:53.940+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8090 (http) with context path '/'
+2026-10-06T15:19:53.945+07:00  INFO 83926 --- [uav-pas-backend] [  restartedMain] com.uav_pass.local.LocalApplication      : Started LocalApplication in 3.732 seconds (process running for 3.929)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        permissions
+        (code, created_at, description, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rt1_0.id,
+        rt1_0.created_at,
+        rt1_0.defaults_initialized,
+        rt1_0.name,
+        rt1_0.role,
+        rt1_0.updated_at 
+    [34mfrom[0m
+        role_templates rt1_0 
+    [34mwhere[0m
+        rt1_0.role=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_templates
+        (created_at, defaults_initialized, name, role, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mupdate[0m
+        role_templates 
+    [34mset[0m
+        defaults_initialized=?,
+        name=?,
+        role=?,
+        updated_at=? 
+    [34mwhere[0m
+        id=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rt1_0.id,
+        rt1_0.created_at,
+        rt1_0.defaults_initialized,
+        rt1_0.name,
+        rt1_0.role,
+        rt1_0.updated_at 
+    [34mfrom[0m
+        role_templates rt1_0 
+    [34mwhere[0m
+        rt1_0.role=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_templates
+        (created_at, defaults_initialized, name, role, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mupdate[0m
+        role_templates 
+    [34mset[0m
+        defaults_initialized=?,
+        name=?,
+        role=?,
+        updated_at=? 
+    [34mwhere[0m
+        id=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rt1_0.id,
+        rt1_0.created_at,
+        rt1_0.defaults_initialized,
+        rt1_0.name,
+        rt1_0.role,
+        rt1_0.updated_at 
+    [34mfrom[0m
+        role_templates rt1_0 
+    [34mwhere[0m
+        rt1_0.role=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_templates
+        (created_at, defaults_initialized, name, role, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mupdate[0m
+        role_templates 
+    [34mset[0m
+        defaults_initialized=?,
+        name=?,
+        role=?,
+        updated_at=? 
+    [34mwhere[0m
+        id=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rt1_0.id,
+        rt1_0.created_at,
+        rt1_0.defaults_initialized,
+        rt1_0.name,
+        rt1_0.role,
+        rt1_0.updated_at 
+    [34mfrom[0m
+        role_templates rt1_0 
+    [34mwhere[0m
+        rt1_0.role=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_templates
+        (created_at, defaults_initialized, name, role, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        rtp1_0.id,
+        rtp1_0.created_at,
+        rtp1_0.permission_id,
+        rtp1_0.role_template_id,
+        rtp1_0.updated_at 
+    [34mfrom[0m
+        role_template_permissions rtp1_0 
+    [34mjoin[0m
+        permissions p1_0 
+            [34mon[0m p1_0.id=rtp1_0.permission_id 
+    [34mwhere[0m
+        rtp1_0.role_template_id=? 
+        [34mand[0m p1_0.code=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        p1_0.id,
+        p1_0.code,
+        p1_0.created_at,
+        p1_0.description,
+        p1_0.updated_at 
+    [34mfrom[0m
+        permissions p1_0 
+    [34mwhere[0m
+        p1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        role_template_permissions
+        (created_at, permission_id, role_template_id, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mupdate[0m
+        role_templates 
+    [34mset[0m
+        defaults_initialized=?,
+        name=?,
+        role=?,
+        updated_at=? 
+    [34mwhere[0m
+        id=?
+[35m[Hibernate][0m 
+    [34mselect[0m
+        us1_0.id,
+        us1_0.active,
+        us1_0.code,
+        us1_0.created_at,
+        us1_0.default_duration_minutes,
+        us1_0.description,
+        us1_0.name,
+        us1_0.updated_at 
+    [34mfrom[0m
+        uav_services us1_0 
+    [34mwhere[0m
+        us1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        uav_services
+        (active, code, created_at, default_duration_minutes, description, name, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        us1_0.id,
+        us1_0.active,
+        us1_0.code,
+        us1_0.created_at,
+        us1_0.default_duration_minutes,
+        us1_0.description,
+        us1_0.name,
+        us1_0.updated_at 
+    [34mfrom[0m
+        uav_services us1_0 
+    [34mwhere[0m
+        us1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        uav_services
+        (active, code, created_at, default_duration_minutes, description, name, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        us1_0.id,
+        us1_0.active,
+        us1_0.code,
+        us1_0.created_at,
+        us1_0.default_duration_minutes,
+        us1_0.description,
+        us1_0.name,
+        us1_0.updated_at 
+    [34mfrom[0m
+        uav_services us1_0 
+    [34mwhere[0m
+        us1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        uav_services
+        (active, code, created_at, default_duration_minutes, description, name, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?, ?, ?, ?)
+[35m[Hibernate][0m 
+    [34mselect[0m
+        us1_0.id,
+        us1_0.active,
+        us1_0.code,
+        us1_0.created_at,
+        us1_0.default_duration_minutes,
+        us1_0.description,
+        us1_0.name,
+        us1_0.updated_at 
+    [34mfrom[0m
+        uav_services us1_0 
+    [34mwhere[0m
+        us1_0.code=?
+[35m[Hibernate][0m 
+    [34minsert[0m 
+    [34minto[0m
+        uav_services
+        (active, code, created_at, default_duration_minutes, description, name, updated_at) 
+    [34mvalues[0m
+        (?, ?, ?, ?, ?, ?, ?)
+2026-10-06T15:19:54.418+07:00  INFO 83926 --- [uav-pas-backend] [nio-8090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-06T15:19:54.418+07:00  INFO 83926 --- [uav-pas-backend] [nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-06T15:19:54.419+07:00  INFO 83926 --- [uav-pas-backend] [nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-10-06T15:19:54.906+07:00  INFO 83926 --- [uav-pas-backend] [nio-8090-exec-1] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 467 ms
+2026-10-06T15:19:54.937+07:00  INFO 83926 --- [uav-pas-backend] [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-06T15:19:54.944+07:00  INFO 83926 --- [uav-pas-backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-10-06T15:19:54.949+07:00  INFO 83926 --- [uav-pas-backend] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-10-06T15:19:54.950+07:00  INFO 83926 --- [uav-pas-backend] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-06T15:19:54.951+07:00  INFO 83926 --- [uav-pas-backend] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

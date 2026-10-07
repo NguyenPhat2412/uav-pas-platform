@@ -1,0 +1,16 @@
+frontend/src/providers/QueryProvider.tsx:3:import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+frontend/src/providers/QueryProvider.tsx:7:  const [queryClient] = useState(() => new QueryClient({
+frontend/src/providers/QueryProvider.tsx:10:  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+frontend/src/features/missions/hooks/useMissions.ts:3:import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+frontend/src/features/missions/hooks/useMissions.ts:8:  const query = useQuery({
+frontend/src/features/missions/hooks/useMissions.ts:9:    queryKey: ['missions', 'list', filters ?? {}],
+frontend/src/features/missions/hooks/useMissions.ts:16:  const queryClient = useQueryClient();
+frontend/src/features/missions/hooks/useMissions.ts:17:  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['missions'] });
+frontend/src/features/missions/hooks/useMissions.ts:18:  const submit = useMutation({ mutationFn: (id: number) => missionService.submit(id), onSuccess: invalidate });
+frontend/src/features/missions/hooks/useMissions.ts:19:  const cancel = useMutation({ mutationFn: (id: number) => missionService.cancel(id), onSuccess: invalidate });
+frontend/src/features/missions/hooks/useMissions.ts:20:  const confirm = useMutation({ mutationFn: (id: number) => missionService.confirm(id), onSuccess: invalidate });
+frontend/src/features/missions/hooks/useMissions.ts:21:  const reject = useMutation({ mutationFn: ({ id, reason }: { id: number; reason: string }) => missionService.reject(id, reason), onSuccess: invalidate });
+frontend/src/features/missions/hooks/useMissions.ts:22:  const ready = useMutation({ mutationFn: (id: number) => missionService.ready(id), onSuccess: invalidate });
+frontend/src/features/missions/hooks/useMissions.ts:23:  const start = useMutation({ mutationFn: (id: number) => missionService.start(id), onSuccess: invalidate });
+frontend/src/features/missions/hooks/useMissions.ts:24:  const complete = useMutation({ mutationFn: ({ id, note, condition }: { id: number; note: string; condition?: string }) => missionService.complete(id, note, condition), onSuccess: invalidate });
+frontend/src/features/missions/hooks/useMissions.ts:25:  const fail = useMutation({ mutationFn: ({ id, reason, notes }: { id: number; reason: string; notes?: string }) => missionService.fail(id, reason, notes), onSuccess: invalidate });

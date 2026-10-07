@@ -1,0 +1,29 @@
+backend/src/test/java/com/uav_pass/local/mission/MissionConcurrencyContractTest.java:14:    @Test
+backend/src/test/java/com/uav_pass/local/mission/MissionConcurrencyContractTest.java:15:    void resourceRepositoriesLockRowsDuringAssignment() throws Exception {
+backend/src/test/java/com/uav_pass/local/uav/service/UavServiceTest.java:28:    @Test
+backend/src/test/java/com/uav_pass/local/uav/service/UavServiceTest.java:29:    void createStartsAvailableAndWritesHistory() {
+backend/src/test/java/com/uav_pass/local/station/service/StationServiceTest.java:26:    @Test
+backend/src/test/java/com/uav_pass/local/station/service/StationServiceTest.java:27:    void createPersistsStationAndRecordsAudit() {
+backend/src/test/java/com/uav_pass/local/station/service/StationServiceTest.java:37:    @Test
+backend/src/test/java/com/uav_pass/local/station/service/StationServiceTest.java:38:    void duplicateCodeIsRejected() {
+backend/src/test/java/com/uav_pass/local/media/service/S3CompatibleStorageServiceTest.java:17:    @Test
+backend/src/test/java/com/uav_pass/local/media/service/S3CompatibleStorageServiceTest.java:18:    void signatureAuthenticatesThePublicHostWhenInternalEndpointDiffers() throws Exception {
+backend/src/test/java/com/uav_pass/local/media/service/S3CompatibleStorageServiceTest.java:39:    @Test
+backend/src/test/java/com/uav_pass/local/media/service/S3CompatibleStorageServiceTest.java:40:    void createsExpiringSignedUrlsWithoutExposingCredentials() {
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:33:    void seedUsers() throws Exception {
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:42:    @Test
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:43:    void permissionDenialIsForbiddenAndGrantAppliesWithoutRelogin() throws Exception {
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:52:    @Test
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:53:    void manualLockRejectsExistingJwtAndUnlockRestoresLogin() throws Exception {
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:61:    @Test
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:62:    void demotedAdminCannotUseStaleJwtToManagePermissions() throws Exception {
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:67:    @Test
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:68:    void roleTemplateGrantReachesUsersWithoutDirectOverride() throws Exception {
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:75:    @Test
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:76:    void revokingTemplateDefaultActuallyRemovesAccess() throws Exception {
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:82:    @Test
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:83:    void dashboardMetricsRespectPermissionVisibility() throws Exception {
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:88:    @Test
+backend/src/test/java/com/uav_pass/local/auth/service/Phase1AccessIntegrationTest.java:89:    void repeatedBadPasswordsPersistLockAcrossRequests() throws Exception {
+backend/src/test/java/com/uav_pass/local/inventory/service/InventoryServiceTest.java:28:    @Test
+backend/src/test/java/com/uav_pass/local/inventory/service/InventoryServiceTest.java:29:    void stockReserveAndReleaseKeepQuantitiesConsistent() {
