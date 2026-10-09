@@ -22,6 +22,7 @@ Mục đích: ghi những việc thực sự hoàn thiện, không biến kế h
 | DOC-04 | Evidence/handoff chưa commit → bộ báo cáo đã review, log secrets được loại trước commit | docs/handoff/m6/ | JSON parse, diff check, secret pattern scan; screenshots reviewed | pending commit |
 | DOC-05 | Boundary chưa có source map → inventory 4 app, legacy, 7 package, 8 backend domain, 12 production controller, 16 logical service và migration/test boundary | docs/ba/M1_M6_SOURCE_INVENTORY.md | Graph index ready; source directory/controller/migration inventory; status còn mở theo từng acceptance | `ba969ac` |
 | DOC-06 | Authenticated browser trước đây NOT_VERIFIED → portal smoke có direct API origin cho customer/operator/admin với login/refresh/logout/guard | docs/handoff/m6/evidence/tests/authenticated-browser-direct-origin.json, `evidence/tests/scripts/authenticated-browser-smoke.mjs`, M6 handoffs | Ba portal smoke PASS; business UI/SSO/CSRF/staging vẫn chưa VERIFIED | `7968ad0` |
+| DOC-07 | Migration-only source boundary → schema inventory 19 tables/23 FK/index/time/constraint gaps được ghi rõ | docs/architecture/UAV_PAS_SCHEMA_INVENTORY.md | Đối chiếu V1/V2 và entity boundary; fresh/upgrade/concurrency/restore vẫn mở | pending commit |
 
 ## Mẫu mỗi lần triển khai
 
