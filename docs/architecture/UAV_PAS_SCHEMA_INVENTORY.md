@@ -1,6 +1,6 @@
 # UAV PAS PostgreSQL schema inventory
 
-Ngày kiểm kê: 2026-10-09. Product source under review: `ca8a36bbbd12742f75c3c61d2ae5045d38bde753`; documentation checkpoint: `58b69df`.
+Ngày kiểm kê: 2026-10-09. Product source under review: `ca8a36bbbd12742f75c3c61d2ae5045d38bde753`; documentation checkpoint: `9f9027f`.
 
 Đây là inventory được đọc từ Flyway migrations và JPA model hiện tại, không phải xác nhận rằng mọi acceptance BA đã đạt. Nguồn chuẩn để replay là `backend/src/main/resources/db/migration/V1__baseline_uav_pas.sql` và `V2__media_confirmation_inventory_requests.sql`.
 
