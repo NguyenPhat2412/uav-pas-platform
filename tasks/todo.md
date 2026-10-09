@@ -33,4 +33,4 @@ Baseline code: ca8a36bbbd12742f75c3c61d2ae5045d38bde753. Goal: `docs/goals/M1_M6
 
 ## Checkpoint hiện tại
 
-M6 vẫn PARTIAL / NOT_READY. API E2E PASS là bằng chứng đầu vào, không đóng toàn bộ các task trên. Auth contract, pricing/legal content, scope chưa có BA và staging access phải được làm rõ tại task tương ứng. Chưa thực hiện code/product changes trong lượt viết Goal. Phiên tiếp theo bắt đầu T01/T02 và chuẩn bị T05; không chạy lại mọi kiểm thử chỉ để tạo số lượng evidence trước khi xác định coverage cần bổ sung.
+M6 vẫn PARTIAL / NOT_READY. API E2E PASS và portal auth smoke là bằng chứng đầu vào, không đóng toàn bộ các task trên. T01 source map, T02 isolated browser auth smoke và T03 schema inventory đã có checkpoint; T04 migration fresh/upgrade, T05 auth approval, business UI E2E, SSO/CSRF, security closure, hosted CI và staging vẫn mở. Auth contract, pricing/legal content, scope chưa có BA và staging access phải được làm rõ tại task tương ứng.
