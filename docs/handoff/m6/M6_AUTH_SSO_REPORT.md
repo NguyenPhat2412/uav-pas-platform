@@ -12,6 +12,7 @@ Verified in source, tests and isolated runtime:
 - Account/session changes clear or reset private Query data.
 - Legacy frontend session race tests pass (5/5).
 - Browser route guards correctly redirect unauthenticated protected pages.
+- Authenticated portal smoke passes on customer, Operations and Admin for login, protected route, refresh recovery, logout and post-logout redirect; evidence is `evidence/tests/authenticated-browser-direct-origin.json`.
 - Synthetic login returns 200; anonymous/invalid bearer return 401; refresh returns 200; logout revokes the new access/refresh pair (401 afterwards).
 - CORS allows the configured portal origin with credentials and rejects an unlisted origin (403).
 

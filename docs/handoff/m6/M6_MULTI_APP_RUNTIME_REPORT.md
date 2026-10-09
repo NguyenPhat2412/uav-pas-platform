@@ -11,9 +11,9 @@
 
 M6 fixed start to use 3101/3102/3103 for customer/operations/admin and corrected their local NEXT_PUBLIC_APP_URL examples. Dockerfiles already use those ports. This removes a real local start collision without changing an API contract.
 
-The public website sign-in link points to customer http://localhost:3101/login; unsafe returnTo and token query strings are stripped by the public redirect path. The browser evidence covers anonymous and unauthenticated behavior only. It does not prove a real API login, cross-portal session, booking, or permissioned workflow.
+The public website sign-in link points to customer http://localhost:3101/login; unsafe returnTo and token query strings are stripped by the public redirect path. A follow-up authenticated browser smoke now runs each portal against Spring on isolated port 18080 with `NEXT_PUBLIC_API_URL=http://127.0.0.1:18080` and synthetic users. Customer, Operations and Admin each passed real UI login, protected-route navigation, invalid-access refresh recovery, logout and post-logout redirect. Evidence: `evidence/tests/authenticated-browser-direct-origin.json`; replay script: `evidence/tests/scripts/authenticated-browser-smoke.mjs`.
 
-An authenticated browser attempt was not claimed: the existing Next dev servers are already locked to the 3100-series ports and their local examples point at backend port 8080, while this verification deliberately isolated Spring on 18080. Starting a second dev instance for the browser would require replacing those running processes or changing the frontend runtime contract, so the authenticated browser result is **NOT_VERIFIED** rather than a pass.
+This is portal authentication smoke only. An earlier combined multi-portal run exposed dev-server timing instability, so the replay is intentionally one portal per process. It does not prove mission business actions through the UI, cross-portal session sharing, SSO, CSRF, staging or production readiness.
 
 ## Backend runtime evidence
 

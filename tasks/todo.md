@@ -11,7 +11,7 @@ Baseline code: ca8a36bbbd12742f75c3c61d2ae5045d38bde753. Goal: `docs/goals/M1_M6
 ## Thực thi
 
 - [~] T01 — Baseline/source inventory đã có; tiếp tục row-level BA traceability và chốt các unknown/approval.
-- [ ] T02 — Isolated full-stack runtime đúng API origin cho browser.
+- [~] T02 — Isolated full-stack runtime đúng API origin cho browser; portal auth smoke PASS ở `evidence/tests/authenticated-browser-direct-origin.json`, nhưng business UI/staging/SSO còn mở.
 - [ ] T03 — Schema inventory, ERD, dictionary, constraints/indexes.
 - [ ] T04 — Fresh migration + upgrade data-preservation test.
 - [ ] T05 — SSO/CSRF/revocation ADR và approval cụ thể.

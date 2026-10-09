@@ -7,8 +7,8 @@
 ## Repository
 
 - Branch: codex/m1-monorepo-foundation
-- HEAD: ca8a36bbbd12742f75c3c61d2ae5045d38bde753
-- Worktree: /Volumes/D/Codex/projects/uav-pas-platform (clean before handoff evidence edits)
+- HEAD: a85ba2343d8b65fd54f8b547132a357e077f9a2b (documentation checkpoint); product source under test: ca8a36bbbd12742f75c3c61d2ae5045d38bde753
+- Worktree: /Volumes/D/Codex/projects/uav-pas-platform
 - M1/M2/M3/M4/M5: present at the requested baseline; no separate milestone commits/branches to merge.
 - Backend business code modified by M6: NO. Pre-existing backend/Lombok changes remain untouched.
 - M6 source changes: app start-port scripts and local app URL examples only; this run added handoff evidence/docs, not product code.
@@ -25,7 +25,7 @@
 | Auth/CORS/permissions | PASS | isolated port 18080: health, anonymous/invalid 401, login/refresh/logout, allowed/rejected CORS, role matrix | `evidence/tests/m6-current-isolated-runtime.json` | port 8080 was left untouched |
 | Business/data/media/audit | PASS | synthetic customer A → admin → operator → complete; ownership and signed media checks | `evidence/tests/m6-current-isolated-runtime.json` | customer B is denied; signed upload/download pass |
 | Browser smoke | PASS | four apps, guarded routes, 16 viewport checks | `evidence/tests/browser.json`, `evidence/screenshots/` | anonymous/guard scope only |
-| Authenticated browser E2E | NOT_VERIFIED | separate authenticated browser run | `evidence/tests/authenticated-browser-not-verified.json`, `M6_MULTI_APP_RUNTIME_REPORT.md` | current dev servers are locked to 3100-series API configuration; no SSO claim |
+| Authenticated browser E2E | PASS — portal smoke only | per-portal Playwright UI login/refresh/logout on direct isolated API origin | `evidence/tests/authenticated-browser-direct-origin.json`, `evidence/tests/scripts/authenticated-browser-smoke.mjs` | customer/operator/admin smoke passes; business UI, SSO, CSRF and staging remain open |
 | Dependency audit | FAIL / policy gap | `npm audit` root + legacy; production-only split | `evidence/tests/npm-audit-summary.json` | 5 high dev-toolchain findings; production-only high count 0 |
 | Security scan | PARTIAL | Codex Security scan `3b9f81ce-188c-4aa8-ad16-4d0be497515c` | `evidence/tests/security-scan-summary.json` | 0 reportable findings in 5 reviewed surfaces; not full-repo coverage |
 | Hosted CI / staging | BLOCKED | not available in this local run | `M6_CICD_REPORT.md`, `M6_DEPLOYMENT_READINESS.md` | no hosted gate, staging browser evidence or deployment |
@@ -48,6 +48,7 @@ Shared packages: PASS for workspace compile/build compatibility.
 
 - Login: live synthetic users PASS; anonymous/invalid bearer return 401.
 - Refresh/logout: live PASS (refresh 200; revoked access/refresh return 401 after logout).
+- Authenticated portal smoke: PASS for login/protected route/refresh/logout on three portals; evidence `evidence/tests/authenticated-browser-direct-origin.json`.
 - Cross-portal session/SSO: BACKEND_BLOCKED.
 - Permissions: live matrix PASS for synthetic customer/operator/admin roles (401/403/200).
 - Resource ownership/cross-user data: live direct API PASS for mission, timeline, media and signed download URL.
@@ -57,7 +58,7 @@ Shared packages: PASS for workspace compile/build compatibility.
 
 ## Business E2E
 
-Customer booking, operations assignment, mission execution, customer tracking, private media and admin audit PASS in the isolated synthetic API flow. Browser cross-portal SSO is still NOT_VERIFIED.
+Customer booking, operations assignment, mission execution, customer tracking, private media and admin audit PASS in the isolated synthetic API flow. Browser mission business flow and cross-portal SSO are still NOT_VERIFIED; only the portal auth smoke is PASS.
 
 AI/SAR/Payment were not implemented in M6 and remain deferred.
 

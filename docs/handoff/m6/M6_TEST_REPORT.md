@@ -10,13 +10,13 @@
 - Backend default suite rerun: 204 tests, 0 failures, 0 errors, 6 skipped; exit 0.
 - Disposable infrastructure rerun: PostgreSQL stabilization 5/5 and MinIO stabilization 1/1; evidence is `backend-stabilization-current.log` and its summary JSON.
 - Browser smoke rerun: four apps, guarded routes, 16 viewport checks, fixed-origin navigation and no overflow; PASS (`browser.json`).
-- Browser evidence remains anonymous/guarded-route scope only; the authenticated business evidence is direct HTTP API scope.
+- Authenticated browser portal smoke now passes for customer/operator/admin login, protected routes, refresh recovery, logout and post-logout guard on isolated direct API origin; evidence is `evidence/tests/authenticated-browser-direct-origin.json`. Mission business UI, SSO, CSRF and staging remain unverified.
 
 ## Not passed or not claimable
 
 - npm audit exits 1 for 5 high-severity development-toolchain findings in both root and legacy lockfiles; production-only audits are clean. No automatic major upgrade was applied. Evidence: `evidence/tests/npm-audit-summary.json`.
 - Hosted CI was not run.
-- Authenticated browser E2E and cross-domain SSO were not verified; direct isolated API authorization and business E2E are verified.
+- Authenticated browser portal smoke is PASS, but authenticated business UI E2E and cross-domain SSO are not verified; direct isolated API authorization and business E2E are verified.
 - Current Codex Security scan `3b9f81ce-188c-4aa8-ad16-4d0be497515c` is complete with 0 reportable findings in 5 reviewed surfaces, but coverage is partial (827 files) and is not a clean full-repository attestation.
 
 Evidence files are in evidence/tests/, evidence/runtime/ and evidence/screenshots/.

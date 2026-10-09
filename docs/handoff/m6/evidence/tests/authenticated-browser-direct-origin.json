@@ -1,0 +1,92 @@
+{
+  "generatedAt": "2026-10-09T14:24:07+07:00",
+  "testedHead": "a85ba2343d8b65fd54f8b547132a357e077f9a2b",
+  "environment": {
+    "apiOrigin": "http://127.0.0.1:18080",
+    "frontendPorts": [
+      3100,
+      3101,
+      3102,
+      3103
+    ],
+    "frontendConfig": "NEXT_PUBLIC_API_URL=http://127.0.0.1:18080",
+    "database": "disposable PostgreSQL 55444",
+    "storage": "disposable MinIO 9014",
+    "browser": "Playwright Chromium headless",
+    "browserPlugin": "not available; standalone Playwright fallback"
+  },
+  "routeInterception": true,
+  "secretsRecorded": false,
+  "scope": "real UI login, protected route, refresh recovery after invalid access token, logout and post-logout unauthorized redirect for synthetic customer/operator/admin users",
+  "publicRedirect": {
+    "endpoint": "http://localhost:3100/login",
+    "status": 307,
+    "location": "http://localhost:3101/login"
+  },
+  "apps": {
+    "customer": {
+      "app": "customer",
+      "loginPage": "http://localhost:3101/login",
+      "protected": "http://localhost:3101/dashboard",
+      "unauthorizedRedirect": "/login",
+      "login": "PASS",
+      "refresh": {
+        "url": "/dashboard",
+        "accessTokenReplaced": true,
+        "refreshTokenPresent": true
+      },
+      "logout": "PASS",
+      "postLogoutRedirect": "/login",
+      "localStorageKeys": {
+        "hasAccessToken": true,
+        "hasRefreshToken": true
+      },
+      "errors": []
+    },
+    "operator": {
+      "app": "operator",
+      "loginPage": "http://localhost:3102/login",
+      "protected": "http://localhost:3102/overview",
+      "unauthorizedRedirect": "/login",
+      "login": "PASS",
+      "refresh": {
+        "url": "/overview",
+        "accessTokenReplaced": true,
+        "refreshTokenPresent": true
+      },
+      "logout": "PASS",
+      "postLogoutRedirect": "/login",
+      "localStorageKeys": {
+        "hasAccessToken": true,
+        "hasRefreshToken": true
+      },
+      "errors": []
+    },
+    "admin": {
+      "app": "admin",
+      "loginPage": "http://localhost:3103/login",
+      "protected": "http://localhost:3103/dashboard",
+      "unauthorizedRedirect": "/login",
+      "login": "PASS",
+      "refresh": {
+        "url": "/dashboard",
+        "accessTokenReplaced": true,
+        "refreshTokenPresent": true
+      },
+      "logout": "PASS",
+      "postLogoutRedirect": "/login",
+      "localStorageKeys": {
+        "hasAccessToken": true,
+        "hasRefreshToken": true
+      },
+      "errors": []
+    }
+  },
+  "status": "PASS_AUTHENTICATED_SMOKE",
+  "limitations": [
+    "Portals were replayed as separate browser processes to avoid dev-server timing interference; an earlier combined run showed timing instability.",
+    "localStorage bearer sessions remain origin-local and do not prove cross-domain SSO.",
+    "Business mission UI, ownership UI, CSRF, staging, account-lock/revoked-permission and accessibility screenshot gates are not claimed."
+  ],
+  "productSourceRevision": "ca8a36bbbd12742f75c3c61d2ae5045d38bde753"
+}
