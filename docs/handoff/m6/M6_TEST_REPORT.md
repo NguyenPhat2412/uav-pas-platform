@@ -10,6 +10,7 @@
 - Backend default suite rerun: 204 tests, 0 failures, 0 errors, 6 skipped; exit 0.
 - Disposable infrastructure rerun: PostgreSQL stabilization 5/5 and MinIO stabilization 1/1; evidence is `backend-stabilization-current.log` and its summary JSON.
 - Flyway migration regression: fresh V1+V2 and V1→V2 upgrade with synthetic-row preservation pass on PostgreSQL; 1 test, 0 skipped; evidence `backend-migration-upgrade-current-summary.json`.
+- Persistence/restore drill: PostgreSQL named-volume restart + `pg_dump/pg_restore` and MinIO named-volume restart + delete/restore preserve the synthetic media row/object SHA; evidence `backend-durability-restore-current-summary.json`.
 - Browser smoke rerun: four apps, guarded routes, 16 viewport checks, fixed-origin navigation and no overflow; PASS (`browser.json`).
 - Authenticated browser portal smoke now passes for customer/operator/admin login, protected routes, refresh recovery, logout and post-logout guard on isolated direct API origin; evidence is `evidence/tests/authenticated-browser-direct-origin.json`. Mission business UI, SSO, CSRF and staging remain unverified.
 
@@ -17,6 +18,7 @@
 
 - npm audit exits 1 for 5 high-severity development-toolchain findings in both root and legacy lockfiles; production-only audits are clean. No automatic major upgrade was applied. Evidence: `evidence/tests/npm-audit-summary.json`.
 - Hosted CI was not run.
+- Durability/restore evidence is disposable synthetic storage only; it does not close production backup policy, cross-region recovery or object-lock acceptance.
 - Authenticated browser portal smoke is PASS, but authenticated business UI E2E and cross-domain SSO are not verified; direct isolated API authorization and business E2E are verified.
 - Current Codex Security scan `3b9f81ce-188c-4aa8-ad16-4d0be497515c` is complete with 0 reportable findings in 5 reviewed surfaces, but coverage is partial (827 files) and is not a clean full-repository attestation.
 

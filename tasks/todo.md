@@ -26,7 +26,7 @@ Baseline code: ca8a36bbbd12742f75c3c61d2ae5045d38bde753. Goal: `docs/goals/M1_M6
 - [ ] T14 — Dashboard counts + audit completeness/permission.
 - [ ] T15 — Public content/SEO/CTA + responsive/accessibility.
 - [ ] T16 — Approved SSO/CSRF implementation + legacy regression.
-- [ ] T17 — Persistence/restart/backup/restore dữ liệu test.
+- [x] T17 — PostgreSQL/MinIO named-volume restart và synthetic DB/object backup-restore PASS; evidence `docs/handoff/m6/evidence/tests/backend-durability-restore-current-summary.json`.
 - [ ] T18 — Dependency remediation + full security coverage.
 - [ ] T19 — Hosted CI + staging evidence.
 - [ ] T20 — Final clean-code review/regression/docs/commits/handoff.

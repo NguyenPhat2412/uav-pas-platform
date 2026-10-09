@@ -23,6 +23,7 @@
 | Backend | PASS | `./mvnw -q test` | `evidence/tests/backend-maven-full-current.log`, summary JSON | 204 tests, 0 failures/errors, 6 skipped |
 | Disposable infrastructure | PASS | PostgreSQL/MinIO stabilization tests | `evidence/tests/backend-stabilization-current.log`, summary JSON | PostgreSQL 5/5, MinIO 1/1 |
 | Flyway migration regression | PASS | fresh V1+V2 and V1→V2 upgrade with synthetic-row preservation | `evidence/tests/backend-migration-upgrade-current-summary.json`, `backend-migration-upgrade-current.log` | PostgreSQL disposable; durability/backup/restore remain separate |
+| Persistence/backup restore | PASS — disposable synthetic drill | PostgreSQL/MinIO named-volume restart, DB dump/restore and object delete/restore | `evidence/tests/backend-durability-restore-current-summary.json`, replay script | Row/object SHA preserved; production recovery policy remains open |
 | Auth/CORS/permissions | PASS | isolated port 18080: health, anonymous/invalid 401, login/refresh/logout, allowed/rejected CORS, role matrix | `evidence/tests/m6-current-isolated-runtime.json` | port 8080 was left untouched |
 | Business/data/media/audit | PASS | synthetic customer A → admin → operator → complete; ownership and signed media checks | `evidence/tests/m6-current-isolated-runtime.json` | customer B is denied; signed upload/download pass |
 | Browser smoke | PASS | four apps, guarded routes, 16 viewport checks | `evidence/tests/browser.json`, `evidence/screenshots/` | anonymous/guard scope only |

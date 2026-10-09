@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-10-09T14:57:38+07:00",
+  "testedHead": "7d6c71183275dfef8595b31999e83bbf2b1c0437",
+  "productSourceRevision": "ca8a36bbbd12742f75c3c61d2ae5045d38bde753",
+  "command": "T17_PG_PASSWORD=<disposable> T17_MINIO_PASSWORD=<disposable> docs/handoff/m6/evidence/tests/scripts/postgres-minio-durability-restore.sh",
+  "environment": {
+    "postgres": "16 disposable named volume",
+    "postgresHostPort": 55445,
+    "minio": "minio/minio:latest disposable named volume",
+    "minioHostPort": 9016,
+    "secretsRecorded": false
+  },
+  "exitCode": 0,
+  "postgres": {
+    "dumpFormat": "custom pg_dump",
+    "syntheticMediaRowsRestored": 1,
+    "rowsAfterContainerRestart": 1,
+    "backupRestore": true,
+    "restartPersistence": true
+  },
+  "minio": {
+    "objectKey": "missions/t17/synthetic.bin",
+    "sha256Before": "e40f84e67bbb54f0623eaeadeee6202854e1e8a0cf11446bdada2a8325c296ec",
+    "sha256AfterRestart": "e40f84e67bbb54f0623eaeadeee6202854e1e8a0cf11446bdada2a8325c296ec",
+    "sha256AfterDeleteAndRestore": "e40f84e67bbb54f0623eaeadeee6202854e1e8a0cf11446bdada2a8325c296ec",
+    "restartPersistence": true,
+    "backupRestore": true
+  },
+  "evidenceLog": "backend-durability-restore-current.log",
+  "limitations": [
+    "Synthetic database/media metadata was migrated from V1/V2 and restored; this is a disposable storage drill, not production backup policy validation.",
+    "Application-level mission/media authorization and cross-region/object-lock policy remain covered by separate acceptance items."
+  ]
+}
