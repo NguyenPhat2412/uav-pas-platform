@@ -1,7 +1,7 @@
 # UAV PAS — M1–M6 source inventory and traceability seed
 
 Ngày kiểm kê: 2026-10-09  
-Source revision: `d2e697b2283f52b27c20662a1fabd5252d11b97a`  
+Source revision: `ba969ac` (docs checkpoint; product source remains based on `ca8a36b`)  
 Branch: `codex/m1-monorepo-foundation`
 
 Đây là inventory của source hiện tại để thực hiện T01. Nó chứng minh boundary và điểm nối có thật trong repo; nó không tự biến code thành acceptance VERIFIED. BA gốc đầy đủ chưa có trong repo, vì vậy các status nghiệp vụ vẫn phải đối chiếu với `M1_M6_ACCEPTANCE_BASELINE.md` và evidence tương ứng.
