@@ -1,0 +1,151 @@
+{
+  "status": "PASS",
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "title": "UAV PAS | Mission operations platform",
+      "seo": "PASS"
+    },
+    {
+      "path": "/services",
+      "status": 200,
+      "title": "UAV services | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/services/aerial-inspection",
+      "status": 200,
+      "title": "Service: Aerial inspection | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/solutions",
+      "status": 200,
+      "title": "UAV solutions | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/solutions/uav-rental",
+      "status": 200,
+      "title": "Solution: UAV rental | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/solutions/ai-detection",
+      "status": 200,
+      "title": "Solution: AI-assisted detection | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/solutions/search-and-rescue",
+      "status": 200,
+      "title": "Solution: Search and rescue support | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/how-it-works",
+      "status": 200,
+      "title": "How it works | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/pricing",
+      "status": 200,
+      "title": "Pricing information | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/about",
+      "status": 200,
+      "title": "About UAV PAS | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/contact",
+      "status": 200,
+      "title": "Contact and service requests | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/faq",
+      "status": 200,
+      "title": "Frequently asked questions | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/privacy",
+      "status": 200,
+      "title": "Privacy publication status | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/terms",
+      "status": 200,
+      "title": "Terms publication status | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/services/uav-rental",
+      "status": 200,
+      "title": "Service: UAV rental | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/services/aerial-recording",
+      "status": 200,
+      "title": "Service: Aerial recording | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/services/data-collection",
+      "status": 200,
+      "title": "Service: Data collection | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "path": "/solutions/aerial-inspection",
+      "status": 200,
+      "title": "Solution: Aerial inspection | UAV PAS",
+      "seo": "PASS"
+    },
+    {
+      "cta": "Get started / register",
+      "destination": "http://localhost:3101/register",
+      "status": "PASS (href)"
+    },
+    {
+      "cta": "Sign in",
+      "destination": "http://localhost:3101/login",
+      "status": "PASS (href)"
+    },
+    {
+      "cta": "Service catalogue",
+      "destination": "http://localhost:3101/services",
+      "status": "PASS (href; authenticated redirect not E2E)"
+    }
+  ],
+  "responsive": [
+    [
+      1440,
+      900
+    ],
+    [
+      1366,
+      768
+    ],
+    [
+      1024,
+      768
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "keyboard": "skip link and menu Escape PASS",
+  "zoom": "CSS 200% reflow PASS; not browser native zoom",
+  "pageErrors": [],
+  "privateWebRequests": 0,
+  "bookingE2E": "NOT_VERIFIED"
+}

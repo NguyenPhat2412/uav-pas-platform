@@ -1,0 +1,1 @@
+import { AdminPage } from '@/components/layout/AdminPage'; import { AuditLogs } from '@/features/admin/components/AuditLogs'; export default function Page(){return <AdminPage title="Nhật ký quản trị" meta="Read-only · dữ liệu thực từ backend" permission="AUDIT_READ" activeResource="audit-logs"><AuditLogs/></AdminPage>;}

@@ -1,0 +1,155 @@
+{
+  "status": "PASS",
+  "scope": "Anonymous public/login/route guards only; no authenticated business E2E",
+  "results": [
+    {
+      "app": "web",
+      "width": 1440,
+      "height": 900,
+      "status": 200,
+      "finalPath": "/",
+      "elapsedMs": 774,
+      "overflow": false
+    },
+    {
+      "app": "web",
+      "width": 1366,
+      "height": 768,
+      "status": 200,
+      "finalPath": "/",
+      "elapsedMs": 713,
+      "overflow": false
+    },
+    {
+      "app": "web",
+      "width": 1024,
+      "height": 768,
+      "status": 200,
+      "finalPath": "/",
+      "elapsedMs": 700,
+      "overflow": false
+    },
+    {
+      "app": "web",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "finalPath": "/",
+      "elapsedMs": 674,
+      "overflow": false
+    },
+    {
+      "navigation": "web sign-in to customer login",
+      "status": "PASS"
+    },
+    {
+      "app": "customer",
+      "width": 1440,
+      "height": 900,
+      "status": 200,
+      "finalPath": "/login",
+      "elapsedMs": 707,
+      "overflow": false
+    },
+    {
+      "app": "customer",
+      "width": 1366,
+      "height": 768,
+      "status": 200,
+      "finalPath": "/login",
+      "elapsedMs": 629,
+      "overflow": false
+    },
+    {
+      "app": "customer",
+      "width": 1024,
+      "height": 768,
+      "status": 200,
+      "finalPath": "/login",
+      "elapsedMs": 613,
+      "overflow": false
+    },
+    {
+      "app": "customer",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "finalPath": "/login",
+      "elapsedMs": 610,
+      "overflow": false
+    },
+    {
+      "app": "operations",
+      "width": 1440,
+      "height": 900,
+      "status": 200,
+      "finalPath": "/login",
+      "elapsedMs": 1132,
+      "overflow": false
+    },
+    {
+      "app": "operations",
+      "width": 1366,
+      "height": 768,
+      "status": 200,
+      "finalPath": "/login",
+      "elapsedMs": 649,
+      "overflow": false
+    },
+    {
+      "app": "operations",
+      "width": 1024,
+      "height": 768,
+      "status": 200,
+      "finalPath": "/login",
+      "elapsedMs": 637,
+      "overflow": false
+    },
+    {
+      "app": "operations",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "finalPath": "/login",
+      "elapsedMs": 627,
+      "overflow": false
+    },
+    {
+      "app": "admin",
+      "width": 1440,
+      "height": 900,
+      "status": 200,
+      "finalPath": "/login",
+      "elapsedMs": 1320,
+      "overflow": false
+    },
+    {
+      "app": "admin",
+      "width": 1366,
+      "height": 768,
+      "status": 200,
+      "finalPath": "/login",
+      "elapsedMs": 646,
+      "overflow": false
+    },
+    {
+      "app": "admin",
+      "width": 1024,
+      "height": 768,
+      "status": 200,
+      "finalPath": "/login",
+      "elapsedMs": 627,
+      "overflow": false
+    },
+    {
+      "app": "admin",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "finalPath": "/login",
+      "elapsedMs": 636,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}

@@ -8,9 +8,14 @@ import com.uav.platform.modules.inventory.entity.Equipment;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "mission_equipment_reservations")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MissionEquipmentReservation extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "mission_id", nullable = false)
@@ -27,16 +32,9 @@ public class MissionEquipmentReservation extends BaseEntity {
     @Column(name = "released_at")
     private LocalDateTime releasedAt;
 
-    protected MissionEquipmentReservation() {}
     public MissionEquipmentReservation(Mission mission, Equipment equipment, int quantity, String reservedBy) {
         if (quantity <= 0) throw new IllegalArgumentException("Quantity must be positive");
         this.mission = mission; this.equipment = equipment; this.quantity = quantity; this.reservedBy = reservedBy;
     }
-    public Mission getMission() { return mission; }
-    public Equipment getEquipment() { return equipment; }
-    public int getQuantity() { return quantity; }
-    public boolean isReleased() { return released; }
-    public String getReservedBy() { return reservedBy; }
-    public LocalDateTime getReleasedAt() { return releasedAt; }
     public void release() { released = true; releasedAt = LocalDateTime.now(); }
 }

@@ -1,0 +1,1 @@
+import { AdminPage } from '@/components/layout/AdminPage'; import { AccessControl } from '@/features/admin/components/PermissionEditor'; export default function Page(){return <AdminPage title="Kiểm soát truy cập" meta="Template → override → quyền hiệu lực" permission="PERMISSION_MANAGE" activeResource="access-control"><AccessControl/></AdminPage>;}

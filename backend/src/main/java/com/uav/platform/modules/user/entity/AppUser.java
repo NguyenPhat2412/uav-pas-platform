@@ -11,9 +11,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
 public class AppUser extends BaseEntity implements UserDetails {
 
     @Column(nullable = false, unique = true, length = 50)
@@ -56,8 +62,6 @@ public class AppUser extends BaseEntity implements UserDetails {
 
     public static final int MAX_FAILED_ATTEMPTS = 5;
     public static final long LOCK_TIME_DURATION_MINUTES = 15;
-
-    public AppUser() {}
 
     public AppUser(String username, String email, String passwordHash, String phoneNumber, UserStatus status) {
         this(username, email, passwordHash, phoneNumber, null, null, null, UserRole.ROLE_PILOT, status);
@@ -129,68 +133,8 @@ public class AppUser extends BaseEntity implements UserDetails {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getZaloId() {
-        return zaloId;
-    }
-
-    public void setZaloId(String zaloId) {
-        this.zaloId = zaloId;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
     public void setRole(UserRole role) {
         this.role = role != null ? role : UserRole.ROLE_PILOT;
-    }
-
-    public UserStatus getStatus() {
-        return status;
     }
 
     public void setStatus(UserStatus status) {
@@ -224,22 +168,6 @@ public class AppUser extends BaseEntity implements UserDetails {
         return true;
     }
 
-    public int getFailedAttempts() {
-        return failedAttempts;
-    }
-
-    public void setFailedAttempts(int failedAttempts) {
-        this.failedAttempts = failedAttempts;
-    }
-
-    public java.time.LocalDateTime getLockTime() {
-        return lockTime;
-    }
-
-    public void setLockTime(java.time.LocalDateTime lockTime) {
-        this.lockTime = lockTime;
-    }
-
     public void lockAccount() {
         this.manualLocked = true;
         this.lockTime = java.time.LocalDateTime.now();
@@ -250,11 +178,4 @@ public class AppUser extends BaseEntity implements UserDetails {
         resetFailedAttempts();
     }
 
-    public boolean isManualLocked() {
-        return manualLocked;
-    }
-
-    public void setManualLocked(boolean manualLocked) {
-        this.manualLocked = manualLocked;
-    }
 }

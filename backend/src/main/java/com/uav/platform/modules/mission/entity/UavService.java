@@ -7,9 +7,14 @@ import com.uav.platform.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "uav_services")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UavService extends BaseEntity {
     @Column(nullable = false, unique = true, length = 60)
     private String code;
@@ -22,8 +27,6 @@ public class UavService extends BaseEntity {
     @Column(name = "default_duration_minutes", nullable = false)
     private int defaultDurationMinutes;
 
-    protected UavService() {}
-
     public UavService(String code, String name, String description, int defaultDurationMinutes) {
         if (defaultDurationMinutes <= 0) throw new IllegalArgumentException("Default duration must be positive");
         this.code = code;
@@ -32,10 +35,5 @@ public class UavService extends BaseEntity {
         this.defaultDurationMinutes = defaultDurationMinutes;
     }
 
-    public String getCode() { return code; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public boolean isActive() { return active; }
-    public int getDefaultDurationMinutes() { return defaultDurationMinutes; }
     public void setActive(boolean active) { this.active = active; }
 }

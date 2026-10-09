@@ -1,0 +1,3 @@
+Browser smoke (local, unauthenticated): http://localhost:3101/login
+Observed: UAV PAS Customer Portal; labelled identity/password fields; Đăng nhập button; Đăng ký link.
+Authenticated routes and screenshots: NOT_VERIFIED; no fabricated image evidence.

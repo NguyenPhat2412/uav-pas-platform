@@ -7,6 +7,9 @@ import com.uav.platform.common.entity.BaseEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Hibernate entity lưu trữ và quản lý Refresh Token cho phiên làm việc của người dùng.
@@ -17,6 +20,9 @@ import java.time.Instant;
         @Index(name = "idx_refresh_token_token", columnList = "token", unique = true),
         @Index(name = "idx_refresh_token_user_id", columnList = "user_id")
 })
+@Getter
+@Setter
+@NoArgsConstructor
 public class RefreshToken extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -31,8 +37,6 @@ public class RefreshToken extends BaseEntity {
 
     @Column(nullable = false)
     private boolean revoked = false;
-
-    public RefreshToken() {}
 
     public RefreshToken(AppUser user, String token, Instant expiryDate) {
         this.user = user;
@@ -53,35 +57,4 @@ public class RefreshToken extends BaseEntity {
         this.revoked = true;
     }
 
-    public AppUser getUser() {
-        return user;
-    }
-
-    public void setUser(AppUser user) {
-        this.user = user;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public Instant getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(Instant expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public boolean isRevoked() {
-        return revoked;
-    }
-
-    public void setRevoked(boolean revoked) {
-        this.revoked = revoked;
-    }
 }

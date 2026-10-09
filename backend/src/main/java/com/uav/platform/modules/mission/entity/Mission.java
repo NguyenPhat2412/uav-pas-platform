@@ -13,9 +13,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "missions", uniqueConstraints = @UniqueConstraint(name = "uk_mission_code", columnNames = "code"))
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Mission extends BaseEntity {
     @Version
     @Column(nullable = false, columnDefinition = "bigint default 0")
@@ -81,8 +86,6 @@ public class Mission extends BaseEntity {
     @Column(name = "operator_conflict_note", length = 1000)
     private String operatorConflictNote;
 
-    protected Mission() {}
-
     public static Mission draft(AppUser customer, MissionType type, String title, String description,
                                  LocalDate requestedDate, LocalDateTime startTime, LocalDateTime expectedEndTime,
                                  String locationName, BigDecimal latitude, BigDecimal longitude,
@@ -109,33 +112,7 @@ public class Mission extends BaseEntity {
     }
 
     public void setCode(String code) { this.code = code; }
-    public String getCode() { return code; }
-    public AppUser getCustomer() { return customer; }
-    public UavService getService() { return service; }
     public void setService(UavService service) { this.service = service; }
-    public MissionType getMissionType() { return missionType; }
-    public String getTitle() { return title; }
-    public String getDescription() { return description; }
-    public LocalDate getRequestedDate() { return requestedDate; }
-    public LocalDateTime getStartTime() { return startTime; }
-    public LocalDateTime getExpectedEndTime() { return expectedEndTime; }
-    public String getLocationName() { return locationName; }
-    public BigDecimal getLatitude() { return latitude; }
-    public BigDecimal getLongitude() { return longitude; }
-    public Station getStation() { return station; }
-    public Uav getUav() { return uav; }
-    public AppUser getOperator() { return operator; }
-    public MissionPriority getPriority() { return priority; }
-    public MissionStatus getStatus() { return status; }
-    public String getNotes() { return notes; }
-    public LocalDateTime getCancelledAt() { return cancelledAt; }
-    public LocalDateTime getCompletedAt() { return completedAt; }
-    public String getCompletionNote() { return completionNote; }
-    public String getEquipmentCondition() { return equipmentCondition; }
-    public String getFailureReason() { return failureReason; }
-    public String getFailureNotes() { return failureNotes; }
-    public boolean isOperatorAccepted() { return operatorAccepted; }
-    public String getOperatorConflictNote() { return operatorConflictNote; }
 
     public void complete(String completionNote, String equipmentCondition) {
         this.completionNote = completionNote; this.equipmentCondition = equipmentCondition;

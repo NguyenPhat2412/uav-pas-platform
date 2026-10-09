@@ -6,9 +6,14 @@ import com.uav.platform.modules.inventory.common.*;
 import com.uav.platform.common.entity.BaseEntity;
 import com.uav.platform.modules.station.entity.Station;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "equipment")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Equipment extends BaseEntity {
     @Version
     @Column(nullable = false, columnDefinition = "bigint default 0")
@@ -33,18 +38,9 @@ public class Equipment extends BaseEntity {
     @JoinColumn(name = "station_id")
     private Station station;
 
-    protected Equipment() {}
     public Equipment(String name, EquipmentType type, String serialNumber, Station station) {
         this.name = name; this.type = type; this.serialNumber = serialNumber; this.station = station;
     }
-    public String getName() { return name; }
-    public EquipmentType getType() { return type; }
-    public String getSerialNumber() { return serialNumber; }
-    public int getQuantity() { return quantity; }
-    public int getAvailableQuantity() { return availableQuantity; }
-    public int getReservedQuantity() { return reservedQuantity; }
-    public EquipmentStatus getStatus() { return status; }
-    public Station getStation() { return station; }
     public void update(String name, EquipmentType type, Station station) { this.name = name; this.type = type; this.station = station; }
     public void stockIn(int amount) { requirePositive(amount); quantity += amount; availableQuantity += amount; }
     public void stockOut(int amount) { requirePositive(amount); if (availableQuantity < amount) throw new IllegalStateException("Insufficient available equipment"); quantity -= amount; availableQuantity -= amount; }

@@ -1,0 +1,5 @@
+URL: http://localhost:3102/login
+Observed title: UAV PAS Operations
+Observed controls: password login, Zalo login, email field, password field, password visibility toggle, login button, registration link, locale buttons.
+Observed alias check: /operations?tab=uavs returns 307 Location: /uavs before the unauthenticated client redirects to /login.
+Authenticated resource screenshots remain pending until a live backend and test account are available.

@@ -9,9 +9,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "audit_logs")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AuditLog extends BaseEntity {
     @Column(name = "actor_user_id")
     private Long actorUserId;
@@ -32,8 +37,6 @@ public class AuditLog extends BaseEntity {
     @Column(length = 2000)
     private String details;
 
-    protected AuditLog() {}
-
     public AuditLog(Long actorUserId, String actorUsername, AuditAction action,
                     String entityType, String entityId, String details) {
         this.actorUserId = actorUserId;
@@ -44,10 +47,4 @@ public class AuditLog extends BaseEntity {
         this.details = details;
     }
 
-    public Long getActorUserId() { return actorUserId; }
-    public String getActorUsername() { return actorUsername; }
-    public AuditAction getAction() { return action; }
-    public String getEntityType() { return entityType; }
-    public String getEntityId() { return entityId; }
-    public String getDetails() { return details; }
 }

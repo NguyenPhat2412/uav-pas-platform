@@ -1,0 +1,9 @@
+operations?tab=uavs
+1:HTTP/1.1 307 Temporary Redirect
+4:location: /uavs
+admin/missions
+1:HTTP/1.1 307 Temporary Redirect
+3:location: /dispatch/missions
+operator/missions
+1:HTTP/1.1 307 Temporary Redirect
+3:location: /assigned-missions

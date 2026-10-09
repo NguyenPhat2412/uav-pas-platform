@@ -1,6 +1,8 @@
 package com.uav.platform.common.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -10,6 +12,8 @@ import java.util.Objects;
  * Subclasses inherit identity, audit timestamps, and lifecycle callbacks adhering to OOP inheritance.
  */
 @MappedSuperclass
+@Getter
+@Setter
 public abstract class BaseEntity implements Identifiable<Long>, Serializable {
 
     @Id
@@ -32,31 +36,6 @@ public abstract class BaseEntity implements Identifiable<Long>, Serializable {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public boolean isNew() {

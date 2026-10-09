@@ -1,0 +1,5 @@
+"use client";
+import { useState } from 'react';
+import { useAdminReferenceData } from '../hooks';
+import { QueryState, EmptyState } from '@/components/data/WorkspaceState';
+export function Registry(){const {permissions}=useAdminReferenceData();const [filter,setFilter]=useState('');const rows=permissions.data?.filter(p=>(p.code+' '+p.description).toLowerCase().includes(filter.toLowerCase()));return <div className="data-table"><label className="table-toolbar">Tìm quyền <input className="rounded border p-2" value={filter} onChange={e=>setFilter(e.target.value)}/></label><QueryState query={permissions}>{rows?.length?<div className="table-scroll" tabIndex={0}><table className="console-table"><thead><tr><th>Mã quyền</th><th>Module</th><th>Mô tả</th><th>Hỗ trợ</th></tr></thead><tbody>{rows.map(p=><tr key={p.code}><td className="table-primary">{p.code}</td><td>{p.code.split('_')[0]}</td><td>{p.description}</td><td>Backend hiện tại</td></tr>)}</tbody></table></div>:<EmptyState/>}</QueryState></div>;}

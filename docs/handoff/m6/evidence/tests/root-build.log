@@ -1,0 +1,199 @@
+Fri Oct  9 05:31:54 +07 2026
+
+> build
+> npm run build --workspaces
+
+
+> build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 14ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1161ms
+  Running TypeScript ...
+  Finished TypeScript in 1181ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/11) ...
+  Generating static pages using 11 workers (2/11) 
+  Generating static pages using 11 workers (5/11) 
+  Generating static pages using 11 workers (8/11) 
+✓ Generating static pages using 11 workers (11/11) in 135ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /access-control
+├ ○ /audit-logs
+├ ○ /dashboard
+├ ƒ /health
+├ ○ /login
+├ ○ /permissions
+├ ○ /role-templates
+├ ○ /users
+└ ƒ /users/[id]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 13ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 520ms
+  Running TypeScript ...
+  Finished TypeScript in 966ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/11) ...
+  Generating static pages using 11 workers (2/11) 
+  Generating static pages using 11 workers (5/11) 
+  Generating static pages using 11 workers (8/11) 
+✓ Generating static pages using 11 workers (11/11) in 143ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /dashboard
+├ ƒ /health
+├ ○ /login
+├ ○ /missions
+├ ƒ /missions/[id]
+├ ○ /missions/create
+├ ○ /profile
+├ ○ /register
+└ ○ /services
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 14ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 771ms
+  Running TypeScript ...
+  Finished TypeScript in 1708ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/16) ...
+  Generating static pages using 11 workers (4/16) 
+  Generating static pages using 11 workers (8/16) 
+  Generating static pages using 11 workers (12/16) 
+✓ Generating static pages using 11 workers (16/16) in 205ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /admin/missions
+├ ○ /assigned-missions
+├ ○ /audit
+├ ○ /dispatch/missions
+├ ƒ /health
+├ ○ /inventory
+├ ○ /login
+├ ○ /media
+├ ƒ /missions/[id]
+├ ƒ /operations
+├ ○ /operator/missions
+├ ○ /overview
+├ ○ /stations
+└ ○ /uavs
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 14ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 901ms
+  Running TypeScript ...
+  Finished TypeScript in 848ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/25) ...
+  Generating static pages using 11 workers (6/25) 
+  Generating static pages using 11 workers (12/25) 
+  Generating static pages using 11 workers (18/25) 
+✓ Generating static pages using 11 workers (25/25) in 254ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ○ /contact
+├ ○ /faq
+├ ƒ /health
+├ ○ /how-it-works
+├ ○ /login
+├ ○ /pricing
+├ ○ /privacy
+├ ○ /register
+├ ○ /robots.txt
+├ ○ /services
+├   /services/[slug]
+│ ├ ● /services/uav-rental
+│ ├ ● /services/aerial-inspection
+│ ├ ● /services/aerial-recording
+│ └ ● /services/data-collection
+├ ○ /sitemap.xml
+├ ○ /solutions
+├   /solutions/[slug]
+│ ├ ● /solutions/uav-rental
+│ ├ ● /solutions/aerial-inspection
+│ ├ ● /solutions/ai-detection
+│ └ ● /solutions/search-and-rescue
+└ ○ /terms
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> @uav/api-client@0.1.0 build
+> tsc --noEmit
+
+
+> @uav/auth-contracts@0.1.0 build
+> tsc --noEmit
+
+
+> @uav/config@0.1.0 build
+> tsc --noEmit
+
+
+> @uav/design-tokens@0.1.0 build
+> tsc --noEmit
+
+
+> @uav/query@0.1.0 build
+> tsc --noEmit
+
+
+> @uav/types@0.1.0 build
+> tsc --noEmit
+
+
+> @uav/ui@0.1.0 build
+> tsc --noEmit
+
+Fri Oct  9 05:32:13 +07 2026
