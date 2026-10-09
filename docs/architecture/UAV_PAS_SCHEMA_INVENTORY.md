@@ -85,4 +85,4 @@ erDiagram
 - Entity/repository boundary: `backend/src/main/java/com/uav/platform/modules/*/{entity,repository}`.
 - Migration validation: `backend/src/test/java/com/uav/platform/config/MigrationBaselineTest.java` và M6 stabilization evidence trong `docs/handoff/m6/evidence/tests/backend-stabilization-current-summary.json`.
 - Runtime schema used by the isolated API flow: PostgreSQL disposable on port 55444, Flyway schema version 2; redacted business evidence: `docs/handoff/m6/evidence/tests/m6-current-isolated-runtime.json`.
-- Fresh/upgrade data preservation, durability restart, backup/restore và full concurrency chưa có evidence cùng revision; T03/T04 còn mở trong `tasks/todo.md`.
+- Fresh install và V1→V2 upgrade data preservation hiện đã có evidence PostgreSQL cùng revision ở `docs/handoff/m6/evidence/tests/backend-migration-upgrade-current-summary.json` và test `backend/src/test/java/com/uav/platform/stabilization/MigrationUpgradePostgresTest.java`. Durability restart, backup/restore và full concurrency vẫn là acceptance riêng.

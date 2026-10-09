@@ -9,6 +9,7 @@
 - Legacy frontend rerun: lint, typecheck, 5 session/API tests and build all pass; logs are `legacy-*-current.log`.
 - Backend default suite rerun: 204 tests, 0 failures, 0 errors, 6 skipped; exit 0.
 - Disposable infrastructure rerun: PostgreSQL stabilization 5/5 and MinIO stabilization 1/1; evidence is `backend-stabilization-current.log` and its summary JSON.
+- Flyway migration regression: fresh V1+V2 and V1→V2 upgrade with synthetic-row preservation pass on PostgreSQL; 1 test, 0 skipped; evidence `backend-migration-upgrade-current-summary.json`.
 - Browser smoke rerun: four apps, guarded routes, 16 viewport checks, fixed-origin navigation and no overflow; PASS (`browser.json`).
 - Authenticated browser portal smoke now passes for customer/operator/admin login, protected routes, refresh recovery, logout and post-logout guard on isolated direct API origin; evidence is `evidence/tests/authenticated-browser-direct-origin.json`. Mission business UI, SSO, CSRF and staging remain unverified.
 
