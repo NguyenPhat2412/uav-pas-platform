@@ -6,11 +6,11 @@ Baseline code: ca8a36bbbd12742f75c3c61d2ae5045d38bde753. Goal: `docs/goals/M1_M6
 
 - [x] Đọc handoff M1–M6 gaps, M6 evidence và kiến trúc auth/deployment.
 - [x] Ghi Goal, draft BA acceptance, plan/dependencies và completion ledger.
-- [ ] Chốt đủ BA/source mapping và phê duyệt các quyết định còn thiếu; chưa đóng T01.
+- [~] Source boundary inventory đã lập trong `docs/ba/M1_M6_SOURCE_INVENTORY.md`; BA gốc/denominator và row-level FE→API→permission→DB→test mapping vẫn chưa chốt, nên T01 còn mở.
 
 ## Thực thi
 
-- [ ] T01 — Baseline/BA inventory và traceability đầy đủ.
+- [~] T01 — Baseline/source inventory đã có; tiếp tục row-level BA traceability và chốt các unknown/approval.
 - [ ] T02 — Isolated full-stack runtime đúng API origin cho browser.
 - [ ] T03 — Schema inventory, ERD, dictionary, constraints/indexes.
 - [ ] T04 — Fresh migration + upgrade data-preservation test.

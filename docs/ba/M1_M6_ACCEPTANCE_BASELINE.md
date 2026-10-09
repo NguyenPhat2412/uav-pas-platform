@@ -14,6 +14,8 @@ Nguồn evidence hiện hành `docs/handoff/m6/evidence/tests/m6-current-isolate
 
 ## Quy tắc traceability
 
+Source boundary inventory hiện tại nằm ở `docs/ba/M1_M6_SOURCE_INVENTORY.md`. Inventory này đã xác nhận các app/package/domain/controller/service/entity/repository/migration có thật; các hàng acceptance bên dưới vẫn cần được tách thành test case nhỏ và gắn API/permission/evidence cụ thể.
+
 Mỗi hàng dưới đây phải được tách tiếp thành requirement/test case đủ nhỏ khi kiểm kê; giữ ID cha để truy vết. Ghi thêm link source BA, route/component, API/method/permission, entity/Flyway version, test ID và evidence cụ thể. Bảng này là danh mục khởi đầu, không phải toàn bộ requirement đã xác nhận.
 
 Status: NOT_VERIFIED = chưa nghiệm thu; PARTIAL = có một phần evidence; BLOCKED = phụ thuộc decision/contract; VERIFIED = mọi acceptance trong hàng đạt trên revision tương ứng. OUT_OF_SCOPE phải có nguồn/approval và không được tính là hoàn thành.

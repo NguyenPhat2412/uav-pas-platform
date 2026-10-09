@@ -20,6 +20,7 @@ Mục đích: ghi những việc thực sự hoàn thiện, không biến kế h
 | DOC-02 | Chưa có BA completion mapping → 32 nhóm acceptance sơ bộ với nguồn/unknowns | docs/ba/M1_M6_ACCEPTANCE_BASELINE.md | IDs liên tục, status và acceptance; vẫn DRAFT | pending commit |
 | DOC-03 | Chưa có execution checklist chung → 20 work packages/dependencies/checkpoints | tasks/plan.md, tasks/todo.md | Coverage BA/FE/BE/DB/auth/security/CI | pending commit |
 | DOC-04 | Evidence/handoff chưa commit → bộ báo cáo đã review, log secrets được loại trước commit | docs/handoff/m6/ | JSON parse, diff check, secret pattern scan; screenshots reviewed | pending commit |
+| DOC-05 | Boundary chưa có source map → inventory 4 app, legacy, 7 package, 8 backend domain, 12 production controller, 16 logical service và migration/test boundary | docs/ba/M1_M6_SOURCE_INVENTORY.md | Graph index ready; source directory/controller/migration inventory; status còn mở theo từng acceptance | pending commit |
 
 ## Mẫu mỗi lần triển khai
 
