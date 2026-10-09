@@ -1,0 +1,20 @@
+{
+  "command": "./mvnw -q -Dtest=StabilizationPostgresTest,StabilizationMinioTest test",
+  "exitCode": 0,
+  "suites": [
+    {
+      "suite": "StabilizationPostgresTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "StabilizationMinioTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

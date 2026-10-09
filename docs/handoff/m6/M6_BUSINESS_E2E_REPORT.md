@@ -1,11 +1,9 @@
 # M6 business E2E report
 
-**Status: BLOCKED / NOT_VERIFIED.**
+**Status: PASS for isolated synthetic API runtime; browser SSO remains NOT_VERIFIED.**
 
-The required complete flow (customer booking -> operations assignment -> mission execution -> customer tracking/media -> admin audit) could not be run honestly because:
+The current complete flow was executed against Spring on port 18080 with disposable PostgreSQL/MinIO: customer A created and submitted a mission; admin confirmed and assigned station/UAV/operator/equipment; operator accepted, marked ready, started and completed it; customer/operator/admin read the timeline; customer uploaded and attached private media; customer B received 403; admin read audit logs. Evidence: `evidence/tests/m6-current-isolated-runtime.json`.
 
-1. backend port 8080 is occupied by an unrelated Expo process;
-2. no approved synthetic credentials/session fixtures were supplied;
-3. cross-portal cookie/session support is not implemented.
+The first probe returned errors caused by the synthetic fixture, not a source change: `ResourceAssignmentRequest.quantity` is required, assigning a UAV to a station first changes it out of `AVAILABLE`, media size must match the uploaded bytes, and the accepted media role is `OUTPUT` rather than `DELIVERABLE`. The corrected rerun passed all of those steps; these corrections were confined to the disposable test harness.
 
-Independent backend unit/integration coverage exists for auth, mission state/assignment, permission registry, inventory and media service behavior. Disposable PostgreSQL/MinIO stabilization tests passed (5 + 1). Those results do not prove the cross-portal business flow. AI, SAR and Payment remain deferred/not implemented and were not expanded in M6.
+The flow proves direct API business behavior for synthetic data. It does not prove cross-portal browser SSO because the approved cookie/session contract is not implemented. AI, SAR and Payment remain deferred/not implemented and were not expanded in M6.

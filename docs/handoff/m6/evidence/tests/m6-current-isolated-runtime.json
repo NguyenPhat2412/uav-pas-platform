@@ -1,0 +1,220 @@
+{
+  "health": {
+    "actuator": 200,
+    "api": 401
+  },
+  "cors": {
+    "allowed": {
+      "status": 200,
+      "allowOrigin": "http://localhost:3101",
+      "credentials": "true"
+    },
+    "rejected": {
+      "status": 403,
+      "allowOrigin": null,
+      "credentials": null
+    }
+  },
+  "auth": {
+    "anonymous": {
+      "/api/v1/auth/me": 401,
+      "/api/v1/permissions/me": 401,
+      "/api/v1/missions": 401,
+      "/api/v1/users": 401
+    },
+    "invalidBearer": 401,
+    "badLogin": 401,
+    "refresh": 200,
+    "logout": 200,
+    "postLogoutNewAccessMe": 401,
+    "refreshAfterLogout": 401
+  },
+  "authorization": {
+    "customer_a": {
+      "registerStatus": 201,
+      "loginStatus": 200,
+      "meStatus": 200,
+      "role": "ROLE_PILOT",
+      "permissionsStatus": 200,
+      "permissionCount": 11
+    },
+    "customer_b": {
+      "registerStatus": 201,
+      "loginStatus": 200,
+      "meStatus": 200,
+      "role": "ROLE_PILOT",
+      "permissionsStatus": 200,
+      "permissionCount": 11
+    },
+    "operator": {
+      "registerStatus": 201,
+      "loginStatus": 200,
+      "meStatus": 200,
+      "role": "ROLE_OPERATOR",
+      "permissionsStatus": 200,
+      "permissionCount": 14
+    },
+    "admin": {
+      "registerStatus": 201,
+      "loginStatus": 200,
+      "meStatus": 200,
+      "role": "ROLE_ADMIN",
+      "permissionsStatus": 200,
+      "permissionCount": 31
+    },
+    "usersEndpoint": {
+      "customer_a": 403,
+      "customer_b": 403,
+      "operator": 403,
+      "admin": 200
+    }
+  },
+  "business": {
+    "create": {
+      "status": 201,
+      "missionStatus": "DRAFT"
+    },
+    "submit": {
+      "status": 200,
+      "missionStatus": "PENDING_CONFIRMATION"
+    },
+    "confirm": {
+      "status": 200,
+      "missionStatus": "CONFIRMED"
+    },
+    "assignStation": {
+      "status": 200,
+      "missionStatus": "CONFIRMED",
+      "errorCode": null,
+      "errorMessage": null
+    },
+    "assignUav": {
+      "status": 200,
+      "missionStatus": "CONFIRMED",
+      "errorCode": null,
+      "errorMessage": null
+    },
+    "assignOperator": {
+      "status": 200,
+      "missionStatus": "CONFIRMED",
+      "errorCode": null,
+      "errorMessage": null
+    },
+    "reserveEquipment": {
+      "status": 200,
+      "missionStatus": "RESOURCE_RESERVED",
+      "errorCode": null,
+      "errorMessage": null
+    },
+    "accept": {
+      "status": 200,
+      "missionStatus": "RESOURCE_RESERVED"
+    },
+    "ready": {
+      "status": 200,
+      "missionStatus": "READY"
+    },
+    "start": {
+      "status": 200,
+      "missionStatus": "IN_PROGRESS"
+    },
+    "complete": {
+      "status": 200,
+      "missionStatus": "COMPLETED"
+    }
+  },
+  "ownership": {
+    "customer_a": {
+      "mission": 200,
+      "timeline": 200,
+      "media": 200
+    },
+    "customer_b": {
+      "mission": 403,
+      "timeline": 403,
+      "media": 403
+    },
+    "operator": {
+      "mission": 200,
+      "timeline": 200,
+      "media": 200
+    },
+    "admin": {
+      "mission": 200,
+      "timeline": 200,
+      "media": 200
+    }
+  },
+  "media": {
+    "uploadUrlStatus": 200,
+    "mediaIdPresent": true,
+    "signedPutStatus": 200,
+    "confirmStatus": 200,
+    "downloadUrlStatus": 200,
+    "signedDownloadStatus": 200,
+    "attachStatus": 201,
+    "customer_aListStatus": 200,
+    "customer_bListStatus": 403,
+    "operatorListStatus": 200,
+    "adminListStatus": 200
+  },
+  "audit": {
+    "adminStatus": 200
+  },
+  "redactions": [
+    "access tokens",
+    "refresh tokens",
+    "passwords",
+    "signed URLs",
+    "email addresses",
+    "raw backend logs"
+  ],
+  "stack": {
+    "backendPort": 18080,
+    "postgresPort": 55444,
+    "minioApiPort": 9014,
+    "expoPort8080Untouched": true
+  },
+  "syntheticUsers": {
+    "customer_a": {
+      "id": 33,
+      "role": "ROLE_PILOT"
+    },
+    "customer_b": {
+      "id": 34,
+      "role": "ROLE_PILOT"
+    },
+    "operator": {
+      "id": 35,
+      "role": "ROLE_OPERATOR"
+    },
+    "admin": {
+      "id": 36,
+      "role": "ROLE_ADMIN"
+    }
+  },
+  "resources": {
+    "station": {
+      "status": 201,
+      "id": 8
+    },
+    "uav": {
+      "status": 201,
+      "id": 8
+    },
+    "service": {
+      "status": 201,
+      "id": 12
+    },
+    "equipment": {
+      "status": 201,
+      "id": 8
+    },
+    "equipmentStockInStatus": 200,
+    "uavStationStatus": "NOT_USED"
+  },
+  "generatedAt": "2026-10-09T11:19:00+07:00",
+  "targetRevision": "ca8a36bbbd12742f75c3c61d2ae5045d38bde753",
+  "classification": "PASS_FOR_ISOLATED_API_RUNTIME",
+  "authenticatedBrowser": "NOT_VERIFIED"
+}

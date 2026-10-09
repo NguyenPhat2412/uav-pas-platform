@@ -39,7 +39,7 @@
 2026-10-09T05:52:58.352+07:00  INFO 75305 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
 2026-10-09T05:52:58.406+07:00  INFO 75305 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
 2026-10-09T05:52:58.463+07:00  INFO 75305 --- [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-10-09T05:52:59.265+07:00  WARN 75305 --- [           main] .s.a.UserDetailsServiceAutoConfiguration : 
+2026-10-09T05:52:59.265+07:00  WARN 75305 --- [           main] .s.a.UserDetailsServiceAutoConfiguration :
 
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
@@ -105,7 +105,7 @@ WARNING: Dynamic loading of agents will be disallowed by default in a future rel
 	Maximum pool size: undefined/unknown
 2026-10-09T05:53:00.761+07:00  INFO 75305 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
 2026-10-09T05:53:00.775+07:00  INFO 75305 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-10-09T05:53:00.928+07:00  WARN 75305 --- [           main] .s.a.UserDetailsServiceAutoConfiguration : 
+2026-10-09T05:53:00.928+07:00  WARN 75305 --- [           main] .s.a.UserDetailsServiceAutoConfiguration :
 
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
@@ -237,7 +237,7 @@ This generated password is for development use only. Your security configuration
 	Maximum pool size: undefined/unknown
 2026-10-09T05:53:06.131+07:00  INFO 75305 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
 2026-10-09T05:53:06.143+07:00  INFO 75305 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-10-09T05:53:06.282+07:00  WARN 75305 --- [           main] .s.a.UserDetailsServiceAutoConfiguration : 
+2026-10-09T05:53:06.282+07:00  WARN 75305 --- [           main] .s.a.UserDetailsServiceAutoConfiguration :
 
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
@@ -245,7 +245,7 @@ This generated password is for development use only. Your security configuration
 2026-10-09T05:53:06.282+07:00  INFO 75305 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
 2026-10-09T05:53:06.349+07:00  INFO 75305 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 2026-10-09T05:53:06.398+07:00  INFO 75305 --- [           main] c.u.p.m.m.MissionPhase2IntegrationTest   : Started MissionPhase2IntegrationTest in 0.553 seconds (process running for 10.423)
-2026-10-09T05:53:06.924+07:00 ERROR 75305 --- [           main] c.u.p.error.GlobalExceptionHandler       : Unhandled exception: 
+2026-10-09T05:53:06.924+07:00 ERROR 75305 --- [           main] c.u.p.error.GlobalExceptionHandler       : Unhandled exception:
 
 java.lang.RuntimeException: Unexpected error
 	at com.uav.platform.error.GlobalExceptionHandlerTest.handleGenericException_ReturnsInternalServerError(GlobalExceptionHandlerTest.java:50) ~[test-classes/:na]

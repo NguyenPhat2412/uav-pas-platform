@@ -48,7 +48,7 @@
 2026-10-09T05:53:47.803+07:00  INFO 76474 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
 2026-10-09T05:53:47.832+07:00  INFO 76474 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
 2026-10-09T05:53:47.873+07:00  INFO 76474 --- [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-10-09T05:53:48.755+07:00  WARN 76474 --- [           main] .s.a.UserDetailsServiceAutoConfiguration : 
+2026-10-09T05:53:48.755+07:00  WARN 76474 --- [           main] .s.a.UserDetailsServiceAutoConfiguration :
 
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
@@ -108,7 +108,7 @@ WARNING: Dynamic loading of agents will be disallowed by default in a future rel
 	Maximum pool size: undefined/unknown
 2026-10-09T05:53:50.046+07:00  INFO 76474 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
 2026-10-09T05:53:50.064+07:00  INFO 76474 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-10-09T05:53:50.186+07:00  WARN 76474 --- [           main] .s.a.UserDetailsServiceAutoConfiguration : 
+2026-10-09T05:53:50.186+07:00  WARN 76474 --- [           main] .s.a.UserDetailsServiceAutoConfiguration :
 
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.

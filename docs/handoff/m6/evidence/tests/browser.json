@@ -8,7 +8,7 @@
       "height": 900,
       "status": 200,
       "finalPath": "/",
-      "elapsedMs": 774,
+      "elapsedMs": 1163,
       "overflow": false
     },
     {
@@ -17,7 +17,7 @@
       "height": 768,
       "status": 200,
       "finalPath": "/",
-      "elapsedMs": 713,
+      "elapsedMs": 725,
       "overflow": false
     },
     {
@@ -26,7 +26,7 @@
       "height": 768,
       "status": 200,
       "finalPath": "/",
-      "elapsedMs": 700,
+      "elapsedMs": 698,
       "overflow": false
     },
     {
@@ -35,7 +35,7 @@
       "height": 844,
       "status": 200,
       "finalPath": "/",
-      "elapsedMs": 674,
+      "elapsedMs": 688,
       "overflow": false
     },
     {
@@ -48,7 +48,7 @@
       "height": 900,
       "status": 200,
       "finalPath": "/login",
-      "elapsedMs": 707,
+      "elapsedMs": 733,
       "overflow": false
     },
     {
@@ -57,7 +57,7 @@
       "height": 768,
       "status": 200,
       "finalPath": "/login",
-      "elapsedMs": 629,
+      "elapsedMs": 624,
       "overflow": false
     },
     {
@@ -66,7 +66,7 @@
       "height": 768,
       "status": 200,
       "finalPath": "/login",
-      "elapsedMs": 613,
+      "elapsedMs": 632,
       "overflow": false
     },
     {
@@ -75,7 +75,7 @@
       "height": 844,
       "status": 200,
       "finalPath": "/login",
-      "elapsedMs": 610,
+      "elapsedMs": 659,
       "overflow": false
     },
     {
@@ -84,7 +84,7 @@
       "height": 900,
       "status": 200,
       "finalPath": "/login",
-      "elapsedMs": 1132,
+      "elapsedMs": 1384,
       "overflow": false
     },
     {
@@ -93,7 +93,7 @@
       "height": 768,
       "status": 200,
       "finalPath": "/login",
-      "elapsedMs": 649,
+      "elapsedMs": 658,
       "overflow": false
     },
     {
@@ -102,7 +102,7 @@
       "height": 768,
       "status": 200,
       "finalPath": "/login",
-      "elapsedMs": 637,
+      "elapsedMs": 644,
       "overflow": false
     },
     {
@@ -111,7 +111,7 @@
       "height": 844,
       "status": 200,
       "finalPath": "/login",
-      "elapsedMs": 627,
+      "elapsedMs": 621,
       "overflow": false
     },
     {
@@ -120,7 +120,7 @@
       "height": 900,
       "status": 200,
       "finalPath": "/login",
-      "elapsedMs": 1320,
+      "elapsedMs": 943,
       "overflow": false
     },
     {
@@ -129,7 +129,7 @@
       "height": 768,
       "status": 200,
       "finalPath": "/login",
-      "elapsedMs": 646,
+      "elapsedMs": 647,
       "overflow": false
     },
     {
@@ -138,7 +138,7 @@
       "height": 768,
       "status": 200,
       "finalPath": "/login",
-      "elapsedMs": 627,
+      "elapsedMs": 622,
       "overflow": false
     },
     {
@@ -147,7 +147,7 @@
       "height": 844,
       "status": 200,
       "finalPath": "/login",
-      "elapsedMs": 636,
+      "elapsedMs": 620,
       "overflow": false
     }
   ],

@@ -4,7 +4,8 @@ frontend_health port=3101 http=204 body_bytes=       0
 frontend_health port=3102 http=204 body_bytes=       0
 frontend_health port=3103 http=204 body_bytes=       0
 backend_health port=8080 http=200 body={"id":"10fbfe8f-cc0a-43c0-97a9-ab7cf823f7e3","createdAt":"2026-10-08T22:55:22.597Z","runtimeVersion":"exposdk:57.0.0","launchAsset":{"key":"bundle","contentType":"application/javas
-backend_api_me port=8080 http=200 content_type=content-type: text/plain  body_prefix={"id":"de2bea4b-5513-4b83-a5ec-aa682fa9a2c5","createdAt":"2026-10-08T22:55:22.611Z","runtimeVersion":"exposdk:57.0.0","l
+backend_api_me port=8080 http=200 content_type=content-type: text/plain
+  body_prefix={"id":"de2bea4b-5513-4b83-a5ec-aa682fa9a2c5","createdAt":"2026-10-08T22:55:22.611Z","runtimeVersion":"exposdk:57.0.0","l
 87291 node /Volumes/D/Codex/projects/tuvihomnay/split-stack/node_modules/.bin/expo start --clear --port 8080
 node       1186 admin   20u  IPv6 0x67c5dd3a68ad41a9      0t0  TCP *:3102 (LISTEN)
 node      38175 admin   20u  IPv6 0x79a092afc3d0c7d6      0t0  TCP *:3103 (LISTEN)

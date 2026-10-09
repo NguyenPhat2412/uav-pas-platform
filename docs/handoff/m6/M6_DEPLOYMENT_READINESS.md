@@ -1,6 +1,6 @@
 # M6 deployment readiness
 
-**Classification: NOT_READY for deployment review.** Local frontend artifacts are buildable, but backend/API origin, SSO contract, exact CORS and authenticated integration evidence are unresolved.
+**Classification: NOT_READY for deployment review.** Local frontend artifacts and isolated authenticated API evidence are available, but SSO/CSRF, exact staging CORS, hosted CI and production deployment evidence remain unresolved.
 
 Reviewed deployment details:
 
@@ -13,4 +13,4 @@ Reviewed deployment details:
 - No production DNS, deployment or data was changed.
 - Rollback design is documented: route traffic to the legacy artifact, disable new cookie flag, preserve database/refresh records and aliases.
 
-A deployment review can resume after a clean backend port, approved credentials, backend SSO/CSRF implementation and staging-like browser evidence are available.
+A deployment review can resume after approved staging credentials, backend SSO/CSRF implementation, hosted CI gates and staging-like browser evidence are available. The isolated port verification does not replace those gates.
