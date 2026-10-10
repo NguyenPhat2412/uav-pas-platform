@@ -1,0 +1,7 @@
+{
+  "status": "NOT_VERIFIED",
+  "scope": "Authenticated browser login, protected navigation, refresh, logout and cross-portal flow",
+  "reason": "Existing Next dev servers are locked to the 3100-series ports and their runtime examples target backend port 8080. This verification kept Expo on 8080 untouched and ran Spring on isolated port 18080; no second frontend runtime was started by replacing the existing processes.",
+  "apiEquivalent": "PASS in m6-current-isolated-runtime.json",
+  "ssoClaim": "Not inferred from localStorage bearer tokens"
+}

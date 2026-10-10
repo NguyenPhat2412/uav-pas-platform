@@ -1,0 +1,52 @@
+Fri Oct  9 10:31:46 +07 2026
+
+> typecheck
+> npm run typecheck --workspaces
+
+
+> typecheck
+> tsc --noEmit
+
+
+> typecheck
+> tsc --noEmit
+
+
+> typecheck
+> tsc --noEmit
+
+
+> typecheck
+> tsc --noEmit
+
+
+> @uav/api-client@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @uav/auth-contracts@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @uav/config@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @uav/design-tokens@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @uav/query@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @uav/types@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @uav/ui@0.1.0 typecheck
+> tsc --noEmit
+
+Fri Oct  9 10:31:55 +07 2026
+root-typecheck exit=
+RESULT: PASS

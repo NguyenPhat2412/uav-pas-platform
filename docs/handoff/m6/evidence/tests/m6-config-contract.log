@@ -1,0 +1,1 @@
+PASS: distinct dev/start ports, env origins, Docker exposed ports for all four apps

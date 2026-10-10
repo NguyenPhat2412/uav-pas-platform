@@ -1,0 +1,42 @@
+Fri Oct  9 10:32:49 +07 2026
+
+> frontend@0.1.0 test
+> node --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: concurrent expired requests share one refresh and retry with the new token
+ok 1 - concurrent expired requests share one refresh and retry with the new token
+  ---
+  duration_ms: 10.132584
+  ...
+# Subtest: logout during refresh cannot restore the previous session
+ok 2 - logout during refresh cannot restore the previous session
+  ---
+  duration_ms: 0.369167
+  ...
+# Subtest: late response from previous account is rejected after an account change
+ok 3 - late response from previous account is rejected after an account change
+  ---
+  duration_ms: 0.288208
+  ...
+# Subtest: failed refresh clears credentials and tells the UI that the session ended
+ok 4 - failed refresh clears credentials and tells the UI that the session ended
+  ---
+  duration_ms: 0.433417
+  ...
+# Subtest: a forbidden retry reports 403 rather than the original expired-token error
+ok 5 - a forbidden retry reports 403 rather than the original expired-token error
+  ---
+  duration_ms: 0.54325
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 318.25325
+Fri Oct  9 10:32:49 +07 2026
+RESULT: PASS

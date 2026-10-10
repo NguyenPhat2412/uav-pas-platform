@@ -5,9 +5,14 @@ import com.uav.platform.modules.user.common.*;
 
 import com.uav.platform.common.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user_permissions", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "permission_id"}))
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserPermission extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
@@ -20,16 +25,11 @@ public class UserPermission extends BaseEntity {
     @Column(nullable = false)
     private boolean granted;
 
-    protected UserPermission() {}
-
     public UserPermission(AppUser user, Permission permission, boolean granted) {
         this.user = user;
         this.permission = permission;
         this.granted = granted;
     }
 
-    public AppUser getUser() { return user; }
-    public Permission getPermission() { return permission; }
-    public boolean isGranted() { return granted; }
     public void setGranted(boolean granted) { this.granted = granted; }
 }

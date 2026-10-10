@@ -1,0 +1,339 @@
+05:52:56.669 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.uav.platform.stabilization.AccessRecoveryTest]: AccessRecoveryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+05:52:56.712 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.stabilization.AccessRecoveryTest
+05:52:56.742 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.uav.platform.stabilization.AccessRecoveryTest]: AccessRecoveryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+05:52:56.743 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.stabilization.AccessRecoveryTest
+05:52:56.767 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-09T05:52:56.860+07:00  INFO 75305 --- [           main] c.u.p.stabilization.AccessRecoveryTest   : Starting AccessRecoveryTest using Java 21.0.11 with PID 75305 (started by admin in /Volumes/D/Codex/projects/uav-pas-platform/backend)
+2026-10-09T05:52:56.860+07:00  INFO 75305 --- [           main] c.u.p.stabilization.AccessRecoveryTest   : No active profile set, falling back to 1 default profile: "default"
+2026-10-09T05:52:57.300+07:00  INFO 75305 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-09T05:52:57.338+07:00  INFO 75305 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 34 ms. Found 19 JPA repository interfaces.
+2026-10-09T05:52:57.574+07:00  INFO 75305 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-09T05:52:57.602+07:00  INFO 75305 --- [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-09T05:52:57.755+07:00  INFO 75305 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-09T05:52:57.767+07:00  INFO 75305 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-09T05:52:57.837+07:00  INFO 75305 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:access_recovery user=SA
+2026-10-09T05:52:57.837+07:00  INFO 75305 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-09T05:52:57.848+07:00  WARN 75305 --- [           main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-10-09T05:52:57.857+07:00  INFO 75305 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:access_recovery]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: ACCESS_RECOVERY/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-09T05:52:58.352+07:00  INFO 75305 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-09T05:52:58.406+07:00  INFO 75305 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-09T05:52:58.463+07:00  INFO 75305 --- [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-09T05:52:59.265+07:00  WARN 75305 --- [           main] .s.a.UserDetailsServiceAutoConfiguration :
+
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-09T05:52:59.269+07:00  INFO 75305 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-09T05:52:59.453+07:00  INFO 75305 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-09T05:52:59.626+07:00  INFO 75305 --- [           main] c.u.p.stabilization.AccessRecoveryTest   : Started AccessRecoveryTest in 2.862 seconds (process running for 3.65)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/Users/admin/.m2/repository/net/bytebuddy/byte-buddy-agent/1.18.11/byte-buddy-agent-1.18.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-10-09T05:53:00.197+07:00  INFO 75305 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.uav.platform.config.BackendHealthTest]: BackendHealthTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T05:53:00.203+07:00  INFO 75305 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.config.BackendHealthTest
+2026-10-09T05:53:00.204+07:00  INFO 75305 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.uav.platform.config.BackendHealthTest]: BackendHealthTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T05:53:00.204+07:00  INFO 75305 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.config.BackendHealthTest
+2026-10-09T05:53:00.206+07:00  INFO 75305 --- [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-09T05:53:00.216+07:00  INFO 75305 --- [           main] c.uav.platform.config.BackendHealthTest  : Starting BackendHealthTest using Java 21.0.11 with PID 75305 (started by admin in /Volumes/D/Codex/projects/uav-pas-platform/backend)
+2026-10-09T05:53:00.216+07:00  INFO 75305 --- [           main] c.uav.platform.config.BackendHealthTest  : No active profile set, falling back to 1 default profile: "default"
+2026-10-09T05:53:00.302+07:00  INFO 75305 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-09T05:53:00.317+07:00  INFO 75305 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 14 ms. Found 19 JPA repository interfaces.
+2026-10-09T05:53:00.459+07:00  INFO 75305 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 0 (http)
+2026-10-09T05:53:00.466+07:00  INFO 75305 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-09T05:53:00.466+07:00  INFO 75305 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-09T05:53:00.487+07:00  INFO 75305 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 271 ms
+2026-10-09T05:53:00.569+07:00  INFO 75305 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-10-09T05:53:00.571+07:00  INFO 75305 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection conn10: url=jdbc:h2:mem:uav_test user=SA
+2026-10-09T05:53:00.571+07:00  INFO 75305 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-10-09T05:53:00.573+07:00  INFO 75305 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:h2:mem:uav_test (H2 2.4)
+2026-10-09T05:53:00.583+07:00  WARN 75305 --- [           main] o.f.c.internal.database.base.Database    : Using H2 2.4.240 which is newer than the version Flyway has been verified with. The latest verified version of H2 is 2.3.232.
+2026-10-09T05:53:00.591+07:00  INFO 75305 --- [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "PUBLIC"."flyway_schema_history" does not exist yet
+2026-10-09T05:53:00.592+07:00  INFO 75305 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 2 migrations (execution time 00:00.005s)
+2026-10-09T05:53:00.595+07:00  INFO 75305 --- [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "PUBLIC"."flyway_schema_history" ...
+2026-10-09T05:53:00.605+07:00  INFO 75305 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "PUBLIC": << Empty Schema >>
+2026-10-09T05:53:00.613+07:00  INFO 75305 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "PUBLIC" to version "1 - baseline uav pas"
+2026-10-09T05:53:00.629+07:00  INFO 75305 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "PUBLIC" to version "2 - media confirmation inventory requests"
+2026-10-09T05:53:00.634+07:00  INFO 75305 --- [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 2 migrations to schema "PUBLIC", now at version v2 (execution time 00:00.017s)
+2026-10-09T05:53:00.646+07:00  INFO 75305 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-09T05:53:00.656+07:00  INFO 75305 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-09T05:53:00.657+07:00  WARN 75305 --- [           main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-10-09T05:53:00.657+07:00  INFO 75305 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:uav_test]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: UAV_TEST/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-09T05:53:00.761+07:00  INFO 75305 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-09T05:53:00.775+07:00  INFO 75305 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-09T05:53:00.928+07:00  WARN 75305 --- [           main] .s.a.UserDetailsServiceAutoConfiguration :
+
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-09T05:53:00.928+07:00  INFO 75305 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-09T05:53:00.970+07:00  INFO 75305 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-09T05:53:01.041+07:00  INFO 75305 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 56669 (http) with context path '/'
+2026-10-09T05:53:01.042+07:00  INFO 75305 --- [           main] c.uav.platform.config.BackendHealthTest  : Started BackendHealthTest in 0.836 seconds (process running for 5.067)
+2026-10-09T05:53:01.154+07:00  INFO 75305 --- [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-09T05:53:01.154+07:00  INFO 75305 --- [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-09T05:53:01.155+07:00  INFO 75305 --- [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-10-09T05:53:01.402+07:00  WARN 75305 --- [           main] c.u.p.security.jwt.JwtTokenProvider      : Invalid JWT token: JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted.
+2026-10-09T05:53:01.405+07:00  WARN 75305 --- [           main] c.u.p.security.jwt.JwtTokenProvider      : Invalid JWT token: Malformed protected header JSON: Unable to deserialize: Unexpected character ('�' (code 65533 / 0xfffd)): expected a valid value (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1]
+2026-10-09T05:53:01.406+07:00  WARN 75305 --- [           main] c.u.p.security.jwt.JwtTokenProvider      : Invalid JWT token: Invalid compact JWT string: Compact JWSs must contain exactly 2 period characters, and compact JWEs must contain exactly 4.  Found: 0
+2026-10-09T05:53:01.409+07:00  WARN 75305 --- [           main] c.u.p.security.jwt.JwtTokenProvider      : Invalid JWT token: JWT expired 1409 milliseconds ago at 2026-10-08T22:53:00.000Z. Current time: 2026-10-08T22:53:01.409Z. Allowed clock skew: 0 milliseconds.
+2026-10-09T05:53:01.724+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.724+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.725+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-10-09T05:53:01.734+07:00  WARN 75305 --- [           main] c.u.p.error.GlobalExceptionHandler       : System exception occurred [404 NOT_FOUND]: User not found
+2026-10-09T05:53:01.759+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.759+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.759+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.771+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.771+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.771+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.807+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.807+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.808+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.822+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.822+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.822+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.826+07:00  WARN 75305 --- [           main] c.u.p.error.GlobalExceptionHandler       : System exception occurred [409 CONFLICT]: Email already exists in the system
+2026-10-09T05:53:01.831+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.831+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.831+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.835+07:00  WARN 75305 --- [           main] c.u.p.error.GlobalExceptionHandler       : Validation failed: password: Password is required
+2026-10-09T05:53:01.839+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.840+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.840+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.848+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.849+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.849+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.855+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.855+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.855+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.859+07:00  WARN 75305 --- [           main] c.u.p.error.GlobalExceptionHandler       : Validation failed: email: Email should be valid
+2026-10-09T05:53:01.864+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.864+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.864+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.866+07:00  WARN 75305 --- [           main] c.u.p.error.GlobalExceptionHandler       : Validation failed: code: Zalo auth code is required
+2026-10-09T05:53:01.870+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.870+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.870+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.878+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.879+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.879+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.884+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.884+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.884+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.891+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.891+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.891+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.893+07:00  WARN 75305 --- [           main] c.u.p.error.GlobalExceptionHandler       : System exception occurred [401 UNAUTHORIZED]: Invalid username/email or password
+2026-10-09T05:53:01.898+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.898+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.898+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.903+07:00  INFO 75305 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-09T05:53:01.903+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-09T05:53:01.903+07:00  INFO 75305 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-09T05:53:01.903+07:00  WARN 75305 --- [           main] c.u.p.error.GlobalExceptionHandler       : System exception occurred [401 UNAUTHORIZED]: Authentication required
+2026-10-09T05:53:01.906+07:00  INFO 75305 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.uav.platform.modules.user.service.Phase1AccessIntegrationTest]: Phase1AccessIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T05:53:01.919+07:00  INFO 75305 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.modules.user.service.Phase1AccessIntegrationTest
+2026-10-09T05:53:01.920+07:00  INFO 75305 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.uav.platform.modules.user.service.Phase1AccessIntegrationTest]: Phase1AccessIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T05:53:01.920+07:00  INFO 75305 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.modules.user.service.Phase1AccessIntegrationTest
+2026-10-09T05:53:02.972+07:00  WARN 75305 --- [o-auto-1-exec-2] c.u.p.error.GlobalExceptionHandler       : System exception occurred [401 UNAUTHORIZED]: Invalid username/email or password
+2026-10-09T05:53:03.032+07:00  WARN 75305 --- [o-auto-1-exec-3] c.u.p.error.GlobalExceptionHandler       : System exception occurred [401 UNAUTHORIZED]: Invalid username/email or password
+2026-10-09T05:53:03.092+07:00  WARN 75305 --- [o-auto-1-exec-4] c.u.p.error.GlobalExceptionHandler       : System exception occurred [401 UNAUTHORIZED]: Invalid username/email or password
+2026-10-09T05:53:03.150+07:00  WARN 75305 --- [o-auto-1-exec-5] c.u.p.error.GlobalExceptionHandler       : System exception occurred [401 UNAUTHORIZED]: Invalid username/email or password
+2026-10-09T05:53:03.208+07:00  WARN 75305 --- [o-auto-1-exec-6] c.u.p.error.GlobalExceptionHandler       : System exception occurred [401 UNAUTHORIZED]: Tài khoản đã bị tạm khóa do nhập sai mật khẩu quá 5 lần. Vui lòng thử lại sau 15 phút.
+2026-10-09T05:53:03.212+07:00  WARN 75305 --- [o-auto-1-exec-7] c.u.p.error.GlobalExceptionHandler       : System exception occurred [401 UNAUTHORIZED]: Tài khoản đã bị tạm khóa do nhập sai mật khẩu quá 5 lần. Vui lòng thử lại sau 15 phút.
+2026-10-09T05:53:04.342+07:00  WARN 75305 --- [o-auto-1-exec-5] c.u.p.error.GlobalExceptionHandler       : System exception occurred [401 UNAUTHORIZED]: Tài khoản đã bị tạm khóa do nhập sai mật khẩu quá 5 lần. Vui lòng thử lại sau 15 phút.
+2026-10-09T05:53:05.271+07:00  INFO 75305 --- [           main] c.u.p.m.u.s.impl.IZaloOAuthService       : Zalo credentials not configured or mock code used. Returning mock Zalo profile for code: mock_test_code
+2026-10-09T05:53:05.272+07:00  INFO 75305 --- [           main] c.u.p.m.u.s.impl.IZaloOAuthService       : Zalo credentials not configured or mock code used. Returning mock Zalo profile for code: any_code_123
+2026-10-09T05:53:05.275+07:00  WARN 75305 --- [           main] c.u.p.m.u.s.impl.IZaloOAuthService       : Zalo access token error response: {"error":-14002,"message":"Invalid authorization code"}
+2026-10-09T05:53:05.316+07:00  INFO 75305 --- [           main] c.u.p.m.u.s.i.IInvalidatedTokenService   : Purged 5 expired invalidated tokens
+2026-10-09T05:53:05.316+07:00  INFO 75305 --- [           main] c.u.p.m.u.s.i.IInvalidatedTokenService   : Token successfully invalidated: jti-12345
+2026-10-09T05:53:05.833+07:00  INFO 75305 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.uav.platform.modules.mission.MissionPhase2IntegrationTest]: MissionPhase2IntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T05:53:05.843+07:00  INFO 75305 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.modules.mission.MissionPhase2IntegrationTest
+2026-10-09T05:53:05.843+07:00  INFO 75305 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.uav.platform.modules.mission.MissionPhase2IntegrationTest]: MissionPhase2IntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T05:53:05.844+07:00  INFO 75305 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.modules.mission.MissionPhase2IntegrationTest
+2026-10-09T05:53:05.845+07:00  INFO 75305 --- [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-09T05:53:05.854+07:00  INFO 75305 --- [           main] c.u.p.m.m.MissionPhase2IntegrationTest   : Starting MissionPhase2IntegrationTest using Java 21.0.11 with PID 75305 (started by admin in /Volumes/D/Codex/projects/uav-pas-platform/backend)
+2026-10-09T05:53:05.854+07:00  INFO 75305 --- [           main] c.u.p.m.m.MissionPhase2IntegrationTest   : No active profile set, falling back to 1 default profile: "default"
+2026-10-09T05:53:05.956+07:00  INFO 75305 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-09T05:53:05.970+07:00  INFO 75305 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 19 JPA repository interfaces.
+2026-10-09T05:53:06.031+07:00  INFO 75305 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2026-10-09T05:53:06.031+07:00  INFO 75305 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection conn20: url=jdbc:h2:mem:uav_test user=SA
+2026-10-09T05:53:06.031+07:00  INFO 75305 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2026-10-09T05:53:06.032+07:00  INFO 75305 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:h2:mem:uav_test (H2 2.4)
+2026-10-09T05:53:06.033+07:00  WARN 75305 --- [           main] o.f.c.internal.database.base.Database    : Using H2 2.4.240 which is newer than the version Flyway has been verified with. The latest verified version of H2 is 2.3.232.
+2026-10-09T05:53:06.035+07:00  INFO 75305 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 2 migrations (execution time 00:00.001s)
+2026-10-09T05:53:06.036+07:00  INFO 75305 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "PUBLIC": 2
+2026-10-09T05:53:06.036+07:00  INFO 75305 --- [           main] o.f.core.internal.command.DbMigrate      : Schema "PUBLIC" is up to date. No migration necessary.
+2026-10-09T05:53:06.050+07:00  INFO 75305 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-09T05:53:06.060+07:00  INFO 75305 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-09T05:53:06.060+07:00  WARN 75305 --- [           main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-10-09T05:53:06.060+07:00  INFO 75305 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:uav_test]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: UAV_TEST/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-09T05:53:06.131+07:00  INFO 75305 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-09T05:53:06.143+07:00  INFO 75305 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-09T05:53:06.282+07:00  WARN 75305 --- [           main] .s.a.UserDetailsServiceAutoConfiguration :
+
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-09T05:53:06.282+07:00  INFO 75305 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-09T05:53:06.349+07:00  INFO 75305 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-09T05:53:06.398+07:00  INFO 75305 --- [           main] c.u.p.m.m.MissionPhase2IntegrationTest   : Started MissionPhase2IntegrationTest in 0.553 seconds (process running for 10.423)
+2026-10-09T05:53:06.924+07:00 ERROR 75305 --- [           main] c.u.p.error.GlobalExceptionHandler       : Unhandled exception:
+
+java.lang.RuntimeException: Unexpected error
+	at com.uav.platform.error.GlobalExceptionHandlerTest.handleGenericException_ReturnsInternalServerError(GlobalExceptionHandlerTest.java:50) ~[test-classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701) ~[junit-platform-commons-6.0.3.jar:6.0.3]
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:502) ~[junit-platform-commons-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.support.MethodReflectionUtils.invoke(MethodReflectionUtils.java:45) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:61) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:124) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:163) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:148) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:123) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:105) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:99) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:66) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:47) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:39) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:104) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:98) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invokeVoid(InterceptingExecutableInvoker.java:71) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$0(TestMethodTestDescriptor.java:219) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:215) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:157) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:70) ~[junit-jupiter-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:176) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596) ~[na:na]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596) ~[na:na]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:36) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:52) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:58) ~[junit-platform-engine-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.executeEngine(EngineExecutionOrchestrator.java:246) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.failOrExecuteEngine(EngineExecutionOrchestrator.java:218) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:179) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:108) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:66) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:157) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:65) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:125) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:58) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$2(InterceptingLauncher.java:57) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:56) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:58) ~[junit-platform-launcher-6.0.3.jar:6.0.3]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.apache.maven.surefire.api.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:125) ~[surefire-api-3.5.6.jar:3.5.6]
+	at org.apache.maven.surefire.junitplatform.LauncherAdapter.executeWithCancellationToken(LauncherAdapter.java:68) ~[surefire-junit-platform-3.5.6.jar:3.5.6]
+	at org.apache.maven.surefire.junitplatform.LauncherAdapter.execute(LauncherAdapter.java:54) ~[surefire-junit-platform-3.5.6.jar:3.5.6]
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:203) ~[surefire-junit-platform-3.5.6.jar:3.5.6]
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:168) ~[surefire-junit-platform-3.5.6.jar:3.5.6]
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:136) ~[surefire-junit-platform-3.5.6.jar:3.5.6]
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385) ~[surefire-booter-3.5.6.jar:3.5.6]
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162) ~[surefire-booter-3.5.6.jar:3.5.6]
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507) ~[surefire-booter-3.5.6.jar:3.5.6]
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495) ~[surefire-booter-3.5.6.jar:3.5.6]
+
+2026-10-09T05:53:06.926+07:00  WARN 75305 --- [           main] c.u.p.error.GlobalExceptionHandler       : System exception occurred [409 CONFLICT]: Data already exists
+2026-10-09T05:53:06.926+07:00  WARN 75305 --- [           main] c.u.p.error.GlobalExceptionHandler       : Validation failed: email: must not be blank
+2026-10-09T05:53:06.927+07:00  INFO 75305 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.uav.platform.UavPlatformApplicationTests]: UavPlatformApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T05:53:06.932+07:00  INFO 75305 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.UavPlatformApplicationTests
+2026-10-09T05:53:06.933+07:00  INFO 75305 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.uav.platform.UavPlatformApplicationTests]: UavPlatformApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T05:53:06.933+07:00  INFO 75305 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.UavPlatformApplicationTests

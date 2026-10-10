@@ -1,0 +1,27 @@
+{
+  "scanId": "3b9f81ce-188c-4aa8-ad16-4d0be497515c",
+  "targetRevision": "ca8a36bbbd12742f75c3c61d2ae5045d38bde753",
+  "status": "COMPLETE_WITH_PARTIAL_COVERAGE",
+  "mode": "standard",
+  "filesTotal": 827,
+  "coverageClosedRows": 5,
+  "reportableFindings": 0,
+  "reviewedSurfaces": [
+    "auth-token-boundary",
+    "permission-ownership-runtime",
+    "signed-media-storage",
+    "cors-deployment-config",
+    "dependency-ci-supply-chain"
+  ],
+  "deferred": [
+    "full-repository-review",
+    "cross-domain-session-csrf"
+  ],
+  "limitations": [
+    "coverage is partial; this is not a clean full-repository attestation",
+    "cookie SSO and CSRF are not implemented",
+    "production deployment and hosted CI were not exercised"
+  ],
+  "reportAvailable": true,
+  "securityDashboard": "https://chatgpt.com/cyber"
+}

@@ -6,9 +6,14 @@ import com.uav.platform.modules.media.common.*;
 import com.uav.platform.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "media_assets")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MediaAsset extends BaseEntity {
     @Column(name = "original_name", nullable = false, length = 255)
     private String originalName;
@@ -38,22 +43,10 @@ public class MediaAsset extends BaseEntity {
     @Column(name = "confirmed_at")
     private LocalDateTime confirmedAt;
 
-    protected MediaAsset() {}
     public MediaAsset(String originalName, String objectKey, String contentType, long size, MediaType type,
                       String linkedEntityType, String linkedEntityId, String uploadedBy, String storageProvider) {
         this.originalName = originalName; this.objectKey = objectKey; this.contentType = contentType; this.size = size; this.type = type;
         this.linkedEntityType = linkedEntityType; this.linkedEntityId = linkedEntityId; this.uploadedBy = uploadedBy; this.storageProvider = storageProvider;
     }
-    public String getOriginalName() { return originalName; }
-    public String getObjectKey() { return objectKey; }
-    public String getContentType() { return contentType; }
-    public long getSize() { return size; }
-    public MediaType getType() { return type; }
-    public String getLinkedEntityType() { return linkedEntityType; }
-    public String getLinkedEntityId() { return linkedEntityId; }
-    public String getUploadedBy() { return uploadedBy; }
-    public String getStorageProvider() { return storageProvider; }
-    public boolean isConfirmed() { return confirmed; }
-    public LocalDateTime getConfirmedAt() { return confirmedAt; }
     public void confirm() { this.confirmed = true; this.confirmedAt = LocalDateTime.now(); }
 }

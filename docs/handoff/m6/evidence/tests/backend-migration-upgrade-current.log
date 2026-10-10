@@ -1,0 +1,20 @@
+14:41:31.156 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://<isolated-port>/uav_stabilization (PostgreSQL 16.15)
+14:41:31.184 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "<schema>"."flyway_schema_history" does not exist yet
+14:41:31.186 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 2 migrations (execution time 00:00.008s)
+14:41:31.195 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "<schema>"."flyway_schema_history" ...
+14:41:31.224 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "<schema>": << Empty Schema >>
+14:41:31.238 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "<schema>" to version "1 - baseline uav pas"
+14:41:31.301 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "<schema>" to version "2 - media confirmation inventory requests"
+14:41:31.314 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 2 migrations to schema "<schema>", now at version v2 (execution time 00:00.061s)
+14:41:31.342 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://<isolated-port>/uav_stabilization (PostgreSQL 16.15)
+14:41:31.351 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "<schema>"."flyway_schema_history" does not exist yet
+14:41:31.352 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 2 migrations (execution time 00:00.003s)
+14:41:31.358 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "<schema>"."flyway_schema_history" ...
+14:41:31.372 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "<schema>": << Empty Schema >>
+14:41:31.378 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "<schema>" to version "1 - baseline uav pas"
+14:41:31.430 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 1 migration to schema "<schema>", now at version v1 (execution time 00:00.047s)
+14:41:31.445 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://<isolated-port>/uav_stabilization (PostgreSQL 16.15)
+14:41:31.457 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 2 migrations (execution time 00:00.005s)
+14:41:31.468 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "<schema>": 1
+14:41:31.470 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "<schema>" to version "2 - media confirmation inventory requests"
+14:41:31.481 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 1 migration to schema "<schema>", now at version v2 (execution time 00:00.006s)

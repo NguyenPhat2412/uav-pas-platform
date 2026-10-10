@@ -6,9 +6,14 @@ import com.uav.platform.modules.inventory.common.*;
 import com.uav.platform.common.entity.BaseEntity;
 import com.uav.platform.modules.station.entity.Station;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "inventory_movements")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InventoryMovement extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "equipment_id", nullable = false)
@@ -31,19 +36,10 @@ public class InventoryMovement extends BaseEntity {
     @Column(name = "request_id", unique = true, length = 120)
     private String requestId;
 
-    protected InventoryMovement() {}
     public InventoryMovement(Equipment equipment, MovementType type, int quantity, Station fromStation, Station toStation, String actor, String note) {
         this.equipment = equipment; this.type = type; this.quantity = quantity; this.fromStation = fromStation; this.toStation = toStation; this.actor = actor; this.note = note;
     }
     public InventoryMovement(Equipment equipment, MovementType type, int quantity, Station fromStation, Station toStation, String actor, String note, String requestId) {
         this(equipment, type, quantity, fromStation, toStation, actor, note); this.requestId = requestId;
     }
-    public Equipment getEquipment() { return equipment; }
-    public MovementType getType() { return type; }
-    public int getQuantity() { return quantity; }
-    public Station getFromStation() { return fromStation; }
-    public Station getToStation() { return toStation; }
-    public String getActor() { return actor; }
-    public String getNote() { return note; }
-    public String getRequestId() { return requestId; }
 }

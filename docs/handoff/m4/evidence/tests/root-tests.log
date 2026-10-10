@@ -1,0 +1,313 @@
+
+> test
+> npm run test --workspaces
+
+
+> test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/m3-admin.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 3.75925
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.094541
+  ...
+# Subtest: admin exposes only supported M3 routes and independent runtime
+ok 3 - admin exposes only supported M3 routes and independent runtime
+  ---
+  duration_ms: 1.372958
+  ...
+# Subtest: admin writes only through shared API client and uses actual permission endpoints
+ok 4 - admin writes only through shared API client and uses actual permission endpoints
+  ---
+  duration_ms: 19.940916
+  ...
+# Subtest: admin keeps mission administration in Operations ownership
+ok 5 - admin keeps mission administration in Operations ownership
+  ---
+  duration_ms: 0.9085
+  ...
+# Subtest: permission editor retains partial write outcomes and supports inherit
+ok 6 - permission editor retains partial write outcomes and supports inherit
+  ---
+  duration_ms: 0.111166
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 66.74675
+
+> test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/m4-customer.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.904458
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.081625
+  ...
+# Subtest: customer portal exposes supported customer routes and no operations controls
+ok 3 - customer portal exposes supported customer routes and no operations controls
+  ---
+  duration_ms: 1.725708
+  ...
+# Subtest: customer API boundary uses owner-safe mission endpoints and no feature fetch
+ok 4 - customer API boundary uses owner-safe mission endpoints and no feature fetch
+  ---
+  duration_ms: 2.03275
+  ...
+# Subtest: customer app documents unsupported profile/payment/AI behavior in UI
+ok 5 - customer app documents unsupported profile/payment/AI behavior in UI
+  ---
+  duration_ms: 0.634375
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 41.348125
+
+> test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/m2-operations.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 1.185542
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.095917
+  ...
+# Subtest: operations owns the M2 canonical routes and compatibility aliases
+ok 3 - operations owns the M2 canonical routes and compatibility aliases
+  ---
+  duration_ms: 1.119375
+  ...
+# Subtest: operations uses real service endpoints and the shared API boundary
+ok 4 - operations uses real service endpoints and the shared API boundary
+  ---
+  duration_ms: 21.707
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 59.629833
+
+> test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.906209
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.08025
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 40.814667
+
+> @uav/api-client@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 1.071084
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.081208
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 40.396042
+
+> @uav/auth-contracts@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 1.014084
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.081917
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 39.884666
+
+> @uav/config@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.921417
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.081917
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 39.415583
+
+> @uav/design-tokens@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 1.135416
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.086083
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 40.6315
+
+> @uav/query@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.967416
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.087792
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 39.097417
+
+> @uav/types@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 1.512875
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.100375
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 41.690333
+
+> @uav/ui@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.978833
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.082042
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 47.661833

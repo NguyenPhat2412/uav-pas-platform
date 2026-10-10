@@ -1,0 +1,39 @@
+
+> test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/m5-web.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 9.631833
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.599208
+  ...
+# Subtest: M5 public route map exists and excludes private portal pages from sitemap
+ok 3 - M5 public route map exists and excludes private portal pages from sitemap
+  ---
+  duration_ms: 5.179875
+  ...
+# Subtest: public app uses environment customer URL without token forwarding
+ok 4 - public app uses environment customer URL without token forwarding
+  ---
+  duration_ms: 2.346917
+  ...
+# Subtest: public content labels planned capabilities and avoids private API calls
+ok 5 - public content labels planned capabilities and avoids private API calls
+  ---
+  duration_ms: 1.021916
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 219.801459

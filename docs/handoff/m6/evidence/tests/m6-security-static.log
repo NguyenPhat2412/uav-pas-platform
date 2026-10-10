@@ -1,0 +1,8 @@
+PASS: CORS credentials enabled
+PASS: CORS no wildcard source
+PASS: stateless backend
+PASS: CSRF disabled bearer mode
+PASS: Bearer auth filter
+PASS: client localStorage token
+PASS: client no token URL
+REVIEW: exact deployed CORS origins and cookie/CSRF SSO remain runtime/backend blockers

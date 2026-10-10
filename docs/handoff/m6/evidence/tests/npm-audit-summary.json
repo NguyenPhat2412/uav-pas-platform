@@ -1,0 +1,102 @@
+{
+  "generatedAt": "2026-10-09T02:54:36Z",
+  "tool": "pnpm dlx npm@10 audit --audit-level=high --json",
+  "results": {
+    "rootFull": {
+      "exitCode": 1,
+      "high": 5,
+      "critical": 0,
+      "total": 5,
+      "dependencies": {
+        "prod": 53,
+        "dev": 379,
+        "optional": 88,
+        "peer": 0,
+        "peerOptional": 0,
+        "total": 469
+      },
+      "packages": [
+        "@next/eslint-plugin-next",
+        "braces",
+        "eslint-config-next",
+        "fast-glob",
+        "micromatch"
+      ],
+      "advisories": [
+        "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm"
+      ]
+    },
+    "rootProductionOnly": {
+      "exitCode": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0,
+      "dependencies": {
+        "prod": 53,
+        "dev": 379,
+        "optional": 88,
+        "peer": 0,
+        "peerOptional": 0,
+        "total": 469
+      },
+      "packages": [],
+      "advisories": []
+    },
+    "legacyFull": {
+      "exitCode": 1,
+      "high": 5,
+      "critical": 0,
+      "total": 5,
+      "dependencies": {
+        "prod": 34,
+        "dev": 390,
+        "optional": 88,
+        "peer": 0,
+        "peerOptional": 0,
+        "total": 461
+      },
+      "packages": [
+        "@next/eslint-plugin-next",
+        "braces",
+        "eslint-config-next",
+        "fast-glob",
+        "micromatch"
+      ],
+      "advisories": [
+        "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm"
+      ]
+    },
+    "legacyProductionOnly": {
+      "exitCode": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0,
+      "dependencies": {
+        "prod": 34,
+        "dev": 390,
+        "optional": 88,
+        "peer": 0,
+        "peerOptional": 0,
+        "total": 461
+      },
+      "packages": [],
+      "advisories": []
+    }
+  },
+  "findingSummary": {
+    "highPackages": [
+      "@next/eslint-plugin-next",
+      "braces",
+      "eslint-config-next",
+      "fast-glob",
+      "micromatch"
+    ],
+    "critical": 0,
+    "productionDependencyHigh": 0,
+    "fixAvailable": "eslint-config-next 14.2.35 isSemVerMajor=true; no automatic major update applied"
+  },
+  "redactions": [
+    "raw audit JSON",
+    "local filesystem paths"
+  ]
+}

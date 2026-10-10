@@ -1,0 +1,44 @@
+ M .gitignore
+ M backend/pom.xml
+ M backend/src/main/java/com/uav/platform/common/entity/BaseEntity.java
+ M backend/src/main/java/com/uav/platform/modules/audit/entity/AuditLog.java
+ M backend/src/main/java/com/uav/platform/modules/inventory/entity/Equipment.java
+ M backend/src/main/java/com/uav/platform/modules/inventory/entity/InventoryMovement.java
+ M backend/src/main/java/com/uav/platform/modules/media/entity/MediaAsset.java
+ M backend/src/main/java/com/uav/platform/modules/mission/entity/Mission.java
+ M backend/src/main/java/com/uav/platform/modules/mission/entity/MissionEquipmentReservation.java
+ M backend/src/main/java/com/uav/platform/modules/mission/entity/MissionEvent.java
+ M backend/src/main/java/com/uav/platform/modules/mission/entity/MissionMedia.java
+ M backend/src/main/java/com/uav/platform/modules/mission/entity/UavService.java
+ M backend/src/main/java/com/uav/platform/modules/station/entity/Station.java
+ M backend/src/main/java/com/uav/platform/modules/uav/entity/Uav.java
+ M backend/src/main/java/com/uav/platform/modules/uav/entity/UavStatusHistory.java
+ M backend/src/main/java/com/uav/platform/modules/user/entity/AppUser.java
+ M backend/src/main/java/com/uav/platform/modules/user/entity/InvalidatedToken.java
+ M backend/src/main/java/com/uav/platform/modules/user/entity/Permission.java
+ M backend/src/main/java/com/uav/platform/modules/user/entity/RefreshToken.java
+ M backend/src/main/java/com/uav/platform/modules/user/entity/RoleTemplate.java
+ M backend/src/main/java/com/uav/platform/modules/user/entity/RoleTemplatePermission.java
+ M backend/src/main/java/com/uav/platform/modules/user/entity/UserPermission.java
+ M frontend/package-lock.json
+ M frontend/package.json
+?? .codebase-memory/
+?? .dockerignore
+?? .github/
+?? .npmrc
+?? apps/
+?? docs/architecture/
+?? docs/handoff/M1_FILE_CHANGE_MATRIX.md
+?? docs/handoff/M1_MONOREPO_FOUNDATION_HANDOFF.md
+?? docs/handoff/M1_NEXT_STEPS.md
+?? docs/handoff/M1_TEST_REPORT.md
+?? docs/handoff/m2/
+?? docs/handoff/m3/
+?? eslint.config.mjs
+?? package-lock.json
+?? package.json
+?? packages/
+?? tests/
+?? tsconfig.base.json
+?? tsconfig.json
+?? work/

@@ -1,0 +1,44 @@
+
+> test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/m3-admin.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.881792
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.082916
+  ...
+# Subtest: admin exposes only supported M3 routes and independent runtime
+ok 3 - admin exposes only supported M3 routes and independent runtime
+  ---
+  duration_ms: 0.721416
+  ...
+# Subtest: admin writes only through shared API client and uses actual permission endpoints
+ok 4 - admin writes only through shared API client and uses actual permission endpoints
+  ---
+  duration_ms: 2.154292
+  ...
+# Subtest: admin keeps mission administration in Operations ownership
+ok 5 - admin keeps mission administration in Operations ownership
+  ---
+  duration_ms: 0.111792
+  ...
+# Subtest: permission editor retains partial write outcomes and supports inherit
+ok 6 - permission editor retains partial write outcomes and supports inherit
+  ---
+  duration_ms: 0.0775
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 40.477083

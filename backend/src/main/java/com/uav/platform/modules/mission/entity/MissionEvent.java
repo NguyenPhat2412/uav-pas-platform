@@ -6,9 +6,14 @@ import com.uav.platform.modules.mission.common.*;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.common.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "mission_events")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MissionEvent extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "mission_id", nullable = false)
@@ -30,18 +35,9 @@ public class MissionEvent extends BaseEntity {
     @Column(columnDefinition = "text")
     private String metadata;
 
-    protected MissionEvent() {}
-
     public MissionEvent(Mission mission, MissionEventType eventType, AppUser actor,
                         MissionStatus oldStatus, MissionStatus newStatus, String description, String metadata) {
         this.mission = mission; this.eventType = eventType; this.actor = actor;
         this.oldStatus = oldStatus; this.newStatus = newStatus; this.description = description; this.metadata = metadata;
     }
-    public Mission getMission() { return mission; }
-    public MissionEventType getEventType() { return eventType; }
-    public AppUser getActor() { return actor; }
-    public MissionStatus getOldStatus() { return oldStatus; }
-    public MissionStatus getNewStatus() { return newStatus; }
-    public String getDescription() { return description; }
-    public String getMetadata() { return metadata; }
 }

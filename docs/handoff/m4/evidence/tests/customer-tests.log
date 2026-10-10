@@ -1,0 +1,39 @@
+
+> test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/m4-customer.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.953542
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.081375
+  ...
+# Subtest: customer portal exposes supported customer routes and no operations controls
+ok 3 - customer portal exposes supported customer routes and no operations controls
+  ---
+  duration_ms: 0.803541
+  ...
+# Subtest: customer API boundary uses owner-safe mission endpoints and no feature fetch
+ok 4 - customer API boundary uses owner-safe mission endpoints and no feature fetch
+  ---
+  duration_ms: 2.467042
+  ...
+# Subtest: customer app documents unsupported profile/payment/AI behavior in UI
+ok 5 - customer app documents unsupported profile/payment/AI behavior in UI
+  ---
+  duration_ms: 0.176875
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 39.508125

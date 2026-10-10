@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-10-09T14:42:23+07:00",
+  "testedHead": "6c5077ec51df272f12697d1c10d2b5b6e0a5c082",
+  "productSourceRevision": "ca8a36bbbd12742f75c3c61d2ae5045d38bde753",
+  "command": "UAV_STABILIZATION_DB_URL=jdbc:postgresql://127.0.0.1:55444/uav_stabilization ./mvnw -q -Dtest=MigrationUpgradePostgresTest test",
+  "environment": {
+    "postgres": "16 disposable container",
+    "hostPort": 55444,
+    "schemaIsolation": "two random schemas; dropped in finally",
+    "secretsRecorded": false
+  },
+  "exitCode": 0,
+  "testsRun": 1,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "fresh": {
+    "migrationHistoryVersion": 2,
+    "applicationTables": 19,
+    "mediaConfirmedColumn": true
+  },
+  "upgrade": {
+    "startingVersion": 1,
+    "syntheticUserInsertedBeforeV2": true,
+    "endingVersion": 2,
+    "mediaDeletedColumn": true,
+    "inventoryRequestUniqueIndex": true,
+    "syntheticUserPreserved": true
+  },
+  "evidenceLog": "backend-migration-upgrade-current.log",
+  "limitations": [
+    "This proves Flyway fresh/V1-to-V2 preservation only; restart durability, backup/restore, and full production-like concurrency remain separate acceptance items."
+  ]
+}

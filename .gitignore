@@ -9,3 +9,14 @@
 .DS_Store
 .idea/
 .vscode/
+
+# Workspace build output
+node_modules/
+**/.next/
+**/out/
+**/dist/
+**/build/
+
+# Local analysis and test artifacts
+work/
+.codebase-memory/

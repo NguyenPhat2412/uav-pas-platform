@@ -1,0 +1,118 @@
+05:53:45.912 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.uav.platform.stabilization.StabilizationMinioTest]: StabilizationMinioTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+05:53:45.961 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.stabilization.StabilizationMinioTest
+05:53:45.990 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.uav.platform.stabilization.StabilizationMinioTest]: StabilizationMinioTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+05:53:45.991 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.stabilization.StabilizationMinioTest
+05:53:46.025 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-09T05:53:46.111+07:00  INFO 76474 --- [           main] c.u.p.s.StabilizationMinioTest           : Starting StabilizationMinioTest using Java 21.0.11 with PID 76474 (started by admin in /Volumes/D/Codex/projects/uav-pas-platform/backend)
+2026-10-09T05:53:46.112+07:00  INFO 76474 --- [           main] c.u.p.s.StabilizationMinioTest           : No active profile set, falling back to 1 default profile: "default"
+2026-10-09T05:53:46.582+07:00  INFO 76474 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-09T05:53:46.622+07:00  INFO 76474 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 36 ms. Found 19 JPA repository interfaces.
+2026-10-09T05:53:46.896+07:00  INFO 76474 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-09T05:53:46.970+07:00  INFO 76474 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:uav_test user=SA
+2026-10-09T05:53:46.971+07:00  INFO 76474 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-09T05:53:46.976+07:00  INFO 76474 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:h2:mem:uav_test (H2 2.4)
+2026-10-09T05:53:46.997+07:00  WARN 76474 --- [           main] o.f.c.internal.database.base.Database    : Using H2 2.4.240 which is newer than the version Flyway has been verified with. The latest verified version of H2 is 2.3.232.
+2026-10-09T05:53:47.006+07:00  INFO 76474 --- [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "PUBLIC"."flyway_schema_history" does not exist yet
+2026-10-09T05:53:47.007+07:00  INFO 76474 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 2 migrations (execution time 00:00.004s)
+2026-10-09T05:53:47.009+07:00  INFO 76474 --- [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "PUBLIC"."flyway_schema_history" ...
+2026-10-09T05:53:47.023+07:00  INFO 76474 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "PUBLIC": << Empty Schema >>
+2026-10-09T05:53:47.031+07:00  INFO 76474 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "PUBLIC" to version "1 - baseline uav pas"
+2026-10-09T05:53:47.060+07:00  INFO 76474 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "PUBLIC" to version "2 - media confirmation inventory requests"
+2026-10-09T05:53:47.070+07:00  INFO 76474 --- [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 2 migrations to schema "PUBLIC", now at version v2 (execution time 00:00.032s)
+2026-10-09T05:53:47.116+07:00  INFO 76474 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-09T05:53:47.145+07:00  INFO 76474 --- [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-09T05:53:47.304+07:00  INFO 76474 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-09T05:53:47.326+07:00  WARN 76474 --- [           main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-10-09T05:53:47.331+07:00  INFO 76474 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:uav_test]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: UAV_TEST/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-09T05:53:47.803+07:00  INFO 76474 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-09T05:53:47.832+07:00  INFO 76474 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-09T05:53:47.873+07:00  INFO 76474 --- [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-09T05:53:48.755+07:00  WARN 76474 --- [           main] .s.a.UserDetailsServiceAutoConfiguration :
+
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-09T05:53:48.758+07:00  INFO 76474 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-09T05:53:48.916+07:00  INFO 76474 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-09T05:53:49.077+07:00  INFO 76474 --- [           main] c.u.p.s.StabilizationMinioTest           : Started StabilizationMinioTest in 3.056 seconds (process running for 3.563)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/Users/admin/.m2/repository/net/bytebuddy/byte-buddy-agent/1.18.11/byte-buddy-agent-1.18.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-10-09T05:53:49.606+07:00  INFO 76474 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.uav.platform.stabilization.StabilizationPostgresTest]: StabilizationPostgresTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T05:53:49.607+07:00  INFO 76474 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.stabilization.StabilizationPostgresTest
+2026-10-09T05:53:49.608+07:00  INFO 76474 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.uav.platform.stabilization.StabilizationPostgresTest]: StabilizationPostgresTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-09T05:53:49.608+07:00  INFO 76474 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.uav.platform.UavPlatformApplication for test class com.uav.platform.stabilization.StabilizationPostgresTest
+2026-10-09T05:53:49.610+07:00  INFO 76474 --- [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-09T05:53:49.619+07:00  INFO 76474 --- [           main] c.u.p.s.StabilizationPostgresTest        : Starting StabilizationPostgresTest using Java 21.0.11 with PID 76474 (started by admin in /Volumes/D/Codex/projects/uav-pas-platform/backend)
+2026-10-09T05:53:49.619+07:00  INFO 76474 --- [           main] c.u.p.s.StabilizationPostgresTest        : No active profile set, falling back to 1 default profile: "default"
+2026-10-09T05:53:49.699+07:00  INFO 76474 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-09T05:53:49.714+07:00  INFO 76474 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 19 JPA repository interfaces.
+2026-10-09T05:53:49.750+07:00  INFO 76474 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-10-09T05:53:49.812+07:00  INFO 76474 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@3bcf94ef
+2026-10-09T05:53:49.812+07:00  INFO 76474 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-10-09T05:53:49.816+07:00  INFO 76474 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://127.0.0.1:55444/uav_stabilization (PostgreSQL 16.15)
+2026-10-09T05:53:49.831+07:00  INFO 76474 --- [           main] o.f.core.internal.database.base.Schema   : Creating schema "stabilization_776b45173b6f41adab9090b53cc3b53b" ...
+2026-10-09T05:53:49.835+07:00  INFO 76474 --- [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "stabilization_776b45173b6f41adab9090b53cc3b53b"."flyway_schema_history" ...
+2026-10-09T05:53:49.874+07:00  INFO 76474 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "stabilization_776b45173b6f41adab9090b53cc3b53b": null
+2026-10-09T05:53:49.878+07:00  INFO 76474 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "stabilization_776b45173b6f41adab9090b53cc3b53b" to version "1 - baseline uav pas"
+2026-10-09T05:53:49.931+07:00  INFO 76474 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "stabilization_776b45173b6f41adab9090b53cc3b53b" to version "2 - media confirmation inventory requests"
+2026-10-09T05:53:49.939+07:00  INFO 76474 --- [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 2 migrations to schema "stabilization_776b45173b6f41adab9090b53cc3b53b", now at version v2 (execution time 00:00.045s)
+2026-10-09T05:53:49.953+07:00  INFO 76474 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-09T05:53:49.961+07:00  INFO 76474 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-09T05:53:49.967+07:00  WARN 76474 --- [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-10-09T05:53:49.970+07:00  INFO 76474 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://127.0.0.1:55444/uav_stabilization]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.15
+	Default catalog/schema: uav_stabilization/stabilization_776b45173b6f41adab9090b53cc3b53b
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-09T05:53:50.046+07:00  INFO 76474 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-09T05:53:50.064+07:00  INFO 76474 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-09T05:53:50.186+07:00  WARN 76474 --- [           main] .s.a.UserDetailsServiceAutoConfiguration :
+
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-09T05:53:50.187+07:00  INFO 76474 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-09T05:53:50.227+07:00  INFO 76474 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-09T05:53:50.268+07:00  INFO 76474 --- [           main] c.u.p.s.StabilizationPostgresTest        : Started StabilizationPostgresTest in 0.658 seconds (process running for 4.754)

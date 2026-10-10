@@ -1,0 +1,10 @@
+{
+  "command": "./mvnw -q test",
+  "exitCode": 0,
+  "suites": 54,
+  "tests": 204,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 6,
+  "note": "Default suite rerun on 2026-10-09; optional external infrastructure tests are skipped by this command."
+}

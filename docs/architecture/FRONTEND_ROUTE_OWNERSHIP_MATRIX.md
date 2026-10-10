@@ -1,0 +1,29 @@
+# Frontend Route Ownership Matrix
+
+The old URL is preserved during migration by redirect, reverse-proxy alias or a compatibility page. A redirect must happen only after the target app is healthy. Backend paths and permission codes below are the current contracts.
+
+| Old route | Target app | New route | Backend API surface | Required permission | Migration risk | Compatibility strategy |
+|---|---|---|---|---|---|---|
+| `/` | operations | `/overview` | `GET /api/v1/dashboard/summary`, `GET /api/v1/dashboard/missions`, stations and UAV collections | `DASHBOARD_READ`, `DASHBOARD_MISSION`, plus `STATION_READ`/`UAV_READ` where shown | High: current root is authenticated but new `web` also needs a public root | Keep old `/` on the legacy host; authenticated users redirect to operations overview, anonymous users redirect to web `/`. |
+| `/login` | web | `/login` | `POST /api/v1/auth/login`, `POST /api/v1/auth/refresh`, `GET /api/v1/auth/me` | Public login; `/me` authenticated | High: session storage and callback origin change | Legacy login stays until all four target hosts pass smoke tests; preserve old JSON auth response during transition. |
+| `/register` | web | `/register` | `POST /api/v1/auth/register` | Public | Medium: registration redirect and verification handoff | Keep a legacy page that redirects to web; do not duplicate registration logic. |
+| `/access-control` | admin | `/access-control` | users, permissions, role templates and user override endpoints | `USER_READ`, `PERMISSION_MANAGE` | High: incorrect gate can expose account controls | Keep legacy route as proxy/redirect; target route shows server-denied state and never relies only on hidden navigation. |
+| `/operations` | operations | `/stations` (default resource view) | `GET /api/v1/stations` | `STATION_READ` | Medium: current route defaults to a tab when no query is present | Redirect to `/stations`; retain `/operations` as a compatibility alias. |
+| `/operations?tab=stations` | operations | `/stations` | `GET/POST/PUT/DELETE /api/v1/stations` | `STATION_READ`, `STATION_MANAGE` | Medium: query-tab links and bookmarks | Accept `?tab=stations` indefinitely as an alias and redirect canonical links. |
+| `/operations?tab=uavs` | operations | `/uavs` | UAV list/detail/history, create/update/station/status/maintenance | `UAV_READ`, `UAV_MANAGE` | High: mutation scope and detail drawers | Alias old query route; preserve drawer deep links through an `id` query or target detail route. |
+| `/operations?tab=equipment` | operations | `/inventory` | equipment list/detail/history and stock/reserve/release/transfer | `INVENTORY_READ`, `INVENTORY_MANAGE` | High: replay/request-id semantics and stock mutations | Alias old query route; keep request IDs and invalidate list/detail keys after mutations. |
+| `/operations?tab=media` | operations | `/media` | media metadata, signed upload/download, confirm and delete | `MEDIA_READ`, `MEDIA_MANAGE` plus linked-resource scope | High: signed URL, ownership and confirmation flow | Alias old query route; never copy binary through a shared query cache. |
+| `/operations?tab=audit` | operations | `/audit` | `GET /api/v1/audit-logs` | `AUDIT_READ` | Medium: filters and pagination must remain equivalent | Alias old query route and preserve page/filter parameters. |
+| `/missions` | customer | `/missions` | `GET /api/v1/missions` | `MISSION_VIEW` (owner scope unless `MISSION_VIEW_ALL`) | High: current page is shared by several roles | Customer host owns this canonical route; operations gets a separate dispatch route using the same API and shared types. |
+| `/missions/create` | customer | `/missions/create` | `GET /api/v1/uav-services`, availability, `POST /api/v1/missions` | `MISSION_VIEW`, `MISSION_CREATE` | High: creation must remain real API-backed and owner-scoped | Keep legacy create page until customer route passes create/availability regression. |
+| `/missions/[id]` | customer | `/missions/[id]` | mission detail, timeline, media and customer lifecycle endpoints | `MISSION_VIEW`, action-specific mission/media permissions | High: current component contains operations controls selected by role | Extract customer-safe detail actions; operations uses its own detail screen. Backend scope remains the final authority. |
+| `/operator/missions` | operations | `/assigned-missions` | mission list/detail, accept, conflict, start, complete/fail, media/timeline | `MISSION_VIEW`, `MISSION_STATUS_UPDATE`, `MISSION_START`, `MISSION_COMPLETE` and assigned-operator scope | High: assignment scope must not be inferred only from UI role | Keep old path as alias to assigned missions; test assigned and unassigned IDs. |
+| `/admin/missions` | operations | `/dispatch/missions` | mission list/detail, confirm/reject, assign station/UAV/operator, reserve equipment, ready | `MISSION_VIEW`/`MISSION_VIEW_ALL`, `MISSION_CONFIRM`, `MISSION_REJECT`, assignment and reservation codes | High: this is operational dispatch, not user administration | Preserve old path as redirect; do not move it into `admin` merely because of its old name. |
+
+## Shared backend mapping
+
+Authentication is shared by all apps. The permission catalog remains the 31-code server registry, including `USER_*`, `STATION_*`, `UAV_*`, `INVENTORY_*`, `MEDIA_*`, dashboard/audit codes and mission lifecycle/media/timeline codes. A new app may narrow its navigation, but it must not invent a weaker substitute permission.
+
+## Route acceptance checks
+
+For every row, verify: anonymous redirect, authenticated render, 403 state, deep-link refresh, query/filter preservation, real backend response, mutation invalidation and no cross-account cache reuse. Route aliases are removed only after one release has passed with access logs showing no legacy traffic or after an explicit product decision.
