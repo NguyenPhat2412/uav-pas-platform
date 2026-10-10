@@ -32,8 +32,9 @@ class MigrationUpgradePostgresTest {
             createSchema(connection, upgradeSchema);
 
             migrate(freshSchema, null);
-            assertEquals(2, version(connection, freshSchema));
+            assertEquals(3, version(connection, freshSchema));
             assertTrue(hasColumn(connection, freshSchema, "media_assets", "confirmed"));
+            assertTrue(hasUniqueIndex(connection, freshSchema, "idx_missions_uav_schedule"));
             assertEquals(19, tableCount(connection, freshSchema));
 
             migrate(upgradeSchema, MigrationVersion.fromVersion("1"));
@@ -42,9 +43,10 @@ class MigrationUpgradePostgresTest {
             assertEquals(1, countSyntheticUser(connection, upgradeSchema));
 
             migrate(upgradeSchema, null);
-            assertEquals(2, version(connection, upgradeSchema));
+            assertEquals(3, version(connection, upgradeSchema));
             assertTrue(hasColumn(connection, upgradeSchema, "media_assets", "deleted"));
             assertTrue(hasUniqueIndex(connection, upgradeSchema, "uk_inventory_request_id"));
+            assertTrue(hasUniqueIndex(connection, upgradeSchema, "idx_missions_uav_schedule"));
             assertEquals(1, countSyntheticUser(connection, upgradeSchema));
         } finally {
             try (Connection connection = connection(); Statement statement = connection.createStatement()) {

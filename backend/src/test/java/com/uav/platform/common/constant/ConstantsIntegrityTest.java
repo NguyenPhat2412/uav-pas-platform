@@ -24,8 +24,6 @@ class ConstantsIntegrityTest {
         assertEquals("/api/v1/auth", RestEndpoint.AUTH);
         assertEquals("/register", RestEndpoint.REGISTER);
         assertEquals("/login", RestEndpoint.LOGIN);
-        assertEquals("/zalo/url", RestEndpoint.ZALO_URL);
-        assertEquals("/zalo/callback", RestEndpoint.ZALO_CALLBACK);
         assertEquals("/me", RestEndpoint.ME);
         assertEquals("/refresh", RestEndpoint.REFRESH);
         assertEquals("/logout", RestEndpoint.LOGOUT);

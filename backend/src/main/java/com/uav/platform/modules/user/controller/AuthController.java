@@ -45,20 +45,6 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = CoreConstants.AUTH_OP_ZALO_URL_SUMMARY)
-    @GetMapping(RestEndpoint.ZALO_URL)
-    public ResponseEntity<Map<String, String>> getZaloAuthUrl() {
-        String url = authService.getZaloAuthUrl();
-        return ResponseEntity.ok(Map.of("url", url));
-    }
-
-    @Operation(summary = CoreConstants.AUTH_OP_ZALO_CALLBACK_SUMMARY)
-    @PostMapping(RestEndpoint.ZALO_CALLBACK)
-    public ResponseEntity<AuthResponse> loginWithZalo(@Valid @RequestBody ZaloLoginRequest request) {
-        AuthResponse response = authService.loginWithZalo(request);
-        return ResponseEntity.ok(response);
-    }
-
     @Operation(summary = "Refresh access token using refresh token")
     @PostMapping(RestEndpoint.REFRESH)
     public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {

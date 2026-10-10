@@ -14,7 +14,6 @@ import com.uav.platform.modules.user.repository.UserRepository;
 import com.uav.platform.modules.user.service.AuthService;
 import com.uav.platform.modules.user.service.InvalidatedTokenService;
 import com.uav.platform.modules.user.service.RefreshTokenService;
-import com.uav.platform.modules.user.service.ZaloOAuthService;
 import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.security.jwt.JwtTokenProvider;
@@ -30,17 +29,15 @@ public class IAuthService implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final ZaloOAuthService zaloOAuthService;
     private final RefreshTokenService refreshTokenService;
     private final InvalidatedTokenService invalidatedTokenService;
 
     public IAuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            JwtTokenProvider jwtTokenProvider,
-            ZaloOAuthService zaloOAuthService
+            JwtTokenProvider jwtTokenProvider
     ) {
-        this(userRepository, passwordEncoder, jwtTokenProvider, zaloOAuthService, null, null);
+        this(userRepository, passwordEncoder, jwtTokenProvider, null, null);
     }
 
     @Autowired
@@ -48,14 +45,12 @@ public class IAuthService implements AuthService {
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             JwtTokenProvider jwtTokenProvider,
-            ZaloOAuthService zaloOAuthService,
             @Autowired(required = false) RefreshTokenService refreshTokenService,
             @Autowired(required = false) InvalidatedTokenService invalidatedTokenService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
-        this.zaloOAuthService = zaloOAuthService;
         this.refreshTokenService = refreshTokenService;
         this.invalidatedTokenService = invalidatedTokenService;
     }
@@ -132,40 +127,7 @@ public class IAuthService implements AuthService {
             userRepository.save(user);
         }
 
-        String token = jwtTokenProvider.generateToken(user.getId(), user.getUsername(), user.getEmail());
-        String refreshTokenString = null;
-        if (refreshTokenService != null) {
-            RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
-            refreshTokenString = refreshToken.getToken();
-        }
-
-        return AuthMapper.toResponse(token, refreshTokenString, UserMapper.toResponse(user));
-    }
-
-    @Override
-    public AuthResponse loginWithZalo(ZaloLoginRequest request) {
-        if (request == null || request.code() == null || request.code().isBlank()) {
-            throw SystemException.badRequest("Zalo auth code is required");
-        }
-
-        ZaloUserProfile profile = zaloOAuthService.authenticateWithZalo(request.code());
-        if (profile == null || profile.id() == null || profile.id().isBlank()) {
-            throw SystemException.badRequest(CoreConstants.ZALO_AUTH_FAILED);
-        }
-
-        AppUser user = userRepository.findByZaloId(profile.id())
-                .orElseGet(() -> createZaloUser(profile));
-
-        if (user.getStatus() != UserStatus.ACTIVE) {
-            throw SystemException.badRequest(CoreConstants.ACCOUNT_INACTIVE);
-        }
-
-        if (user.getFailedAttempts() > 0) {
-            user.resetFailedAttempts();
-            userRepository.save(user);
-        }
-
-        String token = jwtTokenProvider.generateToken(user.getId(), user.getUsername(), user.getEmail());
+        String token = jwtTokenProvider.generateToken(user.getId(), user.getUsername(), user.getEmail(), user.getRole().name());
         String refreshTokenString = null;
         if (refreshTokenService != null) {
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
@@ -193,7 +155,7 @@ public class IAuthService implements AuthService {
             throw SystemException.badRequest(CoreConstants.ACCOUNT_INACTIVE);
         }
 
-        String newAccessToken = jwtTokenProvider.generateToken(user.getId(), user.getUsername(), user.getEmail());
+        String newAccessToken = jwtTokenProvider.generateToken(user.getId(), user.getUsername(), user.getEmail(), user.getRole().name());
         RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
 
         return AuthMapper.toResponse(newAccessToken, newRefreshToken.getToken(), UserMapper.toResponse(user));
@@ -210,11 +172,6 @@ public class IAuthService implements AuthService {
     }
 
     @Override
-    public String getZaloAuthUrl() {
-        return zaloOAuthService.getAuthorizationUrl();
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public UserResponse getCurrentUser(String username) {
         if (username == null || username.isBlank()) {
@@ -226,38 +183,5 @@ public class IAuthService implements AuthService {
                 .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
 
         return UserMapper.toResponse(user);
-    }
-
-    private AppUser createZaloUser(ZaloUserProfile profile) {
-        String baseId = profile.id().startsWith("zalo_") ? profile.id() : "zalo_" + profile.id();
-        String baseUsername = baseId;
-        String username = baseUsername;
-        int suffix = 1;
-        while (userRepository.existsByUsername(username)) {
-            username = baseUsername + "_" + suffix++;
-        }
-
-        String baseEmail = baseId + "@zalo.local";
-        String email = baseEmail;
-        suffix = 1;
-        while (userRepository.existsByEmail(email)) {
-            email = baseId + "_" + suffix++ + "@zalo.local";
-        }
-
-        String fullName = profile.name() != null && !profile.name().isBlank() ? profile.name() : "Zalo User";
-        String avatarUrl = profile.avatar();
-
-        AppUser newUser = new AppUser(
-                username,
-                email,
-                null,
-                null,
-                profile.id(),
-                fullName,
-                avatarUrl,
-                UserStatus.ACTIVE
-        );
-
-        return userRepository.save(newUser);
     }
 }

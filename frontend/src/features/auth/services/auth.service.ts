@@ -4,8 +4,6 @@ import {
   LoginRequest,
   RegisterRequest,
   UserResponse,
-  ZaloLoginRequest,
-  ZaloUrlResponse,
 } from '../types/auth.types';
 
 export const authService = {
@@ -15,18 +13,6 @@ export const authService = {
 
   async register(data: RegisterRequest): Promise<UserResponse> {
     return apiClient.post<UserResponse>('/api/v1/auth/register', data);
-  },
-
-  async getZaloAuthUrl(): Promise<string> {
-    const res = await apiClient.get<ZaloUrlResponse | string>('/api/v1/auth/zalo/url');
-    if (typeof res === 'object' && res !== null && 'url' in res) {
-      return (res as ZaloUrlResponse).url;
-    }
-    return String(res);
-  },
-
-  async loginWithZalo(data: ZaloLoginRequest): Promise<AuthResponse> {
-    return apiClient.post<AuthResponse>('/api/v1/auth/zalo/callback', data);
   },
 
   async refreshToken(refreshToken: string): Promise<AuthResponse> {

@@ -21,8 +21,6 @@ public final class ApiRoutes {
         public static final String BASE = API_V1_PREFIX + "/auth";
         public static final String REGISTER = "/register";
         public static final String LOGIN = "/login";
-        public static final String ZALO_URL = "/zalo/url";
-        public static final String ZALO_CALLBACK = "/zalo/callback";
         public static final String ME = "/me";
         public static final String REFRESH = "/refresh";
         public static final String LOGOUT = "/logout";
@@ -30,8 +28,6 @@ public final class ApiRoutes {
         // Full URL paths
         public static final String FULL_REGISTER = BASE + REGISTER;
         public static final String FULL_LOGIN = BASE + LOGIN;
-        public static final String FULL_ZALO_URL = BASE + ZALO_URL;
-        public static final String FULL_ZALO_CALLBACK = BASE + ZALO_CALLBACK;
         public static final String FULL_ME = BASE + ME;
         public static final String FULL_REFRESH = BASE + REFRESH;
         public static final String FULL_LOGOUT = BASE + LOGOUT;
@@ -141,6 +137,8 @@ public final class ApiRoutes {
      * Danh sách route Auth công khai (cho phép truy cập trước khi đăng nhập)
      */
     public static final String[] PUBLIC_AUTH_WHITELIST = {
-            Auth.FULL_AUTH_WILDCARD
+            Auth.FULL_LOGIN,
+            Auth.FULL_REGISTER,
+            Auth.FULL_REFRESH
     };
 }

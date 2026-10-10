@@ -9,7 +9,6 @@ import com.uav.platform.modules.user.config.request.LogoutRequest;
 import com.uav.platform.modules.user.config.request.RefreshTokenRequest;
 import com.uav.platform.modules.user.config.request.RegisterRequest;
 import com.uav.platform.modules.user.config.response.UserResponse;
-import com.uav.platform.modules.user.config.request.ZaloLoginRequest;
 import com.uav.platform.modules.user.common.UserStatus;
 import com.uav.platform.modules.user.service.AuthService;
 import com.uav.platform.common.constant.CoreConstants;
@@ -142,45 +141,6 @@ class AuthControllerTest {
         LoginRequest request = new LoginRequest("johndoe", "");
 
         mockMvc.perform(post(RestEndpoint.AUTH + RestEndpoint.LOGIN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400));
-    }
-
-    // ==================== Zalo OAuth Tests ====================
-
-    @Test
-    void getZaloAuthUrl_ReturnsOkWithUrl() throws Exception {
-        when(authService.getZaloAuthUrl()).thenReturn("https://oauth.zaloapp.com/v4/permission?app_id=123");
-
-        mockMvc.perform(get(RestEndpoint.AUTH + RestEndpoint.ZALO_URL))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.url").value("https://oauth.zaloapp.com/v4/permission?app_id=123"));
-    }
-
-    @Test
-    void loginWithZalo_ValidCode_ReturnsOkWithToken() throws Exception {
-        ZaloLoginRequest request = new ZaloLoginRequest("zalo-code-123", "http://localhost:3000/callback");
-        UserResponse user = new UserResponse(2L, "zalo_123", "zalo_123@zalo.local", null, UserStatus.ACTIVE, LocalDateTime.now());
-        AuthResponse response = new AuthResponse("mock-zalo-jwt", "Bearer", user);
-
-        when(authService.loginWithZalo(any(ZaloLoginRequest.class))).thenReturn(response);
-
-        mockMvc.perform(post(RestEndpoint.AUTH + RestEndpoint.ZALO_CALLBACK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value("mock-zalo-jwt"))
-                .andExpect(jsonPath("$.tokenType").value("Bearer"))
-                .andExpect(jsonPath("$.user.username").value("zalo_123"));
-    }
-
-    @Test
-    void loginWithZalo_BlankCode_ReturnsBadRequest() throws Exception {
-        ZaloLoginRequest request = new ZaloLoginRequest("", "http://localhost:3000/callback");
-
-        mockMvc.perform(post(RestEndpoint.AUTH + RestEndpoint.ZALO_CALLBACK)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())

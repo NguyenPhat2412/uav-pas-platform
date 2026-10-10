@@ -61,23 +61,6 @@ class ValidationDtoTest {
     }
 
     @Test
-    @DisplayName("Valid ZaloLoginRequest should pass validation")
-    void zaloLoginRequest_Valid() {
-        ZaloLoginRequest request = new ZaloLoginRequest("zalo_oauth_code_12345", "http://localhost:3000/callback");
-        Set<ConstraintViolation<ZaloLoginRequest>> violations = validator.validate(request);
-        assertTrue(violations.isEmpty());
-    }
-
-    @Test
-    @DisplayName("Blank ZaloLoginRequest code should fail validation")
-    void zaloLoginRequest_BlankCode() {
-        ZaloLoginRequest request = new ZaloLoginRequest("", null);
-        Set<ConstraintViolation<ZaloLoginRequest>> violations = validator.validate(request);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("code")));
-    }
-
-    @Test
     @DisplayName("Valid RefreshTokenRequest should pass validation")
     void refreshTokenRequest_Valid() {
         RefreshTokenRequest request = new RefreshTokenRequest("d9b23e80-7601-44bb-8b77-3e11762ffb76");

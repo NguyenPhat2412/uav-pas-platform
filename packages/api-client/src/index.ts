@@ -77,7 +77,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
     throw new ApiError(0, 'NetworkError', error instanceof Error ? error.message : 'Network error');
   }
   requireCurrent(generation);
-  const authCommand = /\/auth\/(login|register|refresh|logout|zalo\/callback)/.test(endpoint);
+  const authCommand = /\/auth\/(login|register|refresh|logout)/.test(endpoint);
   if (response.status === 401 && typeof window !== 'undefined' && !authCommand) {
     const latest = currentToken();
     const accessToken = latest && latest !== token ? latest : await refreshAccess(generation);

@@ -12,7 +12,6 @@ public final class CoreConstants {
     public static final String INTERNAL_SERVER_ERROR = "An internal server error occurred. Please try again later";
     public static final String INVALID_CREDENTIALS = "Invalid username/email or password";
     public static final String ACCOUNT_INACTIVE = "Account is not active";
-    public static final String ZALO_AUTH_FAILED = "Zalo OA authentication failed";
 
     // OpenAPI Metadata & Descriptions
     public static final String OPENAPI_TITLE = "UAV PAS Platform API";
@@ -23,7 +22,5 @@ public final class CoreConstants {
     public static final String AUTH_TAG_DESCRIPTION = "User registration and authentication APIs";
     public static final String AUTH_OP_REGISTER_SUMMARY = "Register a new user account";
     public static final String AUTH_OP_LOGIN_SUMMARY = "User login with username/email and password";
-    public static final String AUTH_OP_ZALO_URL_SUMMARY = "Get Zalo OA authorization URL";
-    public static final String AUTH_OP_ZALO_CALLBACK_SUMMARY = "Authenticate with Zalo OA authorization code";
     public static final String AUTH_OP_ME_SUMMARY = "Get current authenticated user profile";
 }

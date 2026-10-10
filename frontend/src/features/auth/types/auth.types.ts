@@ -16,7 +16,6 @@ export interface UserResponse {
   username: string;
   email: string;
   phoneNumber?: string;
-  zaloId?: string;
   fullName?: string;
   avatarUrl?: string;
   role?: string;
@@ -37,13 +36,4 @@ export interface RefreshTokenRequest {
 
 export interface LogoutRequest {
   refreshToken?: string;
-}
-
-export interface ZaloLoginRequest {
-  code: string;
-  redirectUri?: string;
-}
-
-export interface ZaloUrlResponse {
-  url: string;
 }

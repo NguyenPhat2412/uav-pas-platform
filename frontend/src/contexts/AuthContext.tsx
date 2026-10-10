@@ -18,7 +18,6 @@ interface AuthContextType {
   refreshPermissions: () => Promise<unknown>;
   login: (usernameOrEmail: string, password: string) => Promise<AuthResponse>;
   register: (data: RegisterRequest) => Promise<UserResponse>;
-  loginWithZalo: (code: string, redirectUri?: string) => Promise<AuthResponse>;
   logout: () => Promise<void>;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -111,7 +110,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally { setIsLoading(false); }
   }, []);
   const login = useCallback((usernameOrEmail: string, password: string) => authenticate(() => authService.login({ usernameOrEmail, password })), [authenticate]);
-  const loginWithZalo = useCallback((code: string, redirectUri?: string) => authenticate(() => authService.loginWithZalo({ code, redirectUri })), [authenticate]);
   const register = useCallback((data: RegisterRequest) => authService.register(data), []);
   const logout = useCallback(async () => {
     const accessToken = localStorage.getItem('token');
@@ -125,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={{ user, token, isLoading, isAuthenticated: !!user && !!token,
     permissions, permissionsReady: permissionQuery.isSuccess, permissionError: permissionQuery.error,
     can: code => permissions.includes(code), refreshPermissions: permissionQuery.refetch,
-    login, register, loginWithZalo, logout }}>{children}</AuthContext.Provider>;
+    login, register, logout }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthContextType {
