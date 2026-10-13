@@ -1,14 +1,20 @@
 package com.uav.platform.modules.sar.controller;
 
 import com.uav.platform.modules.sar.common.SarStatus;
+import com.uav.platform.modules.sar.config.request.FlightPlanRequest;
 import com.uav.platform.modules.sar.config.request.SarMissionRequest;
+import com.uav.platform.modules.sar.config.request.TelemetryEvaluateRequest;
+import com.uav.platform.modules.sar.config.response.FlightPlanResponse;
 import com.uav.platform.modules.sar.config.response.SarMissionResponse;
+import com.uav.platform.modules.sar.config.response.TelemetryEvaluateResponse;
 import com.uav.platform.modules.sar.service.SarService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/sar")
@@ -36,5 +42,25 @@ public class SarController {
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW')")
     public ResponseEntity<SarMissionResponse> updateStatus(@PathVariable Long missionId, @RequestParam SarStatus status, Authentication auth) {
         return ResponseEntity.ok(sarService.updateSarStatus(missionId, status, auth));
+    }
+
+    @PostMapping("/flight-plan")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_CREATE')")
+    public ResponseEntity<FlightPlanResponse> generateFlightPlan(@RequestBody FlightPlanRequest request, Authentication auth) {
+        return ResponseEntity.ok(sarService.generateFlightPlan(request, auth));
+    }
+
+    @PostMapping("/telemetry-evaluate")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_STATUS_UPDATE')")
+    public ResponseEntity<TelemetryEvaluateResponse> evaluateTelemetry(@RequestBody TelemetryEvaluateRequest request, Authentication auth) {
+        return ResponseEntity.ok(sarService.evaluateTelemetry(request, auth));
+    }
+
+    @PostMapping("/missions/{missionId}/dispatch-rescue")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_STATUS_UPDATE')")
+    public ResponseEntity<Map<String, Object>> dispatchRescue(@PathVariable Long missionId,
+                                                              @RequestBody(required = false) Map<String, Object> payload,
+                                                              Authentication auth) {
+        return ResponseEntity.ok(sarService.dispatchRescueCoordinates(missionId, payload, auth));
     }
 }

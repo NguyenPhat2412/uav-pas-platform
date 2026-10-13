@@ -20,6 +20,7 @@ import { UavTelemetryHud } from './UavTelemetryHud';
 import { Kv260EdgeStatusCard } from './Kv260EdgeStatusCard';
 import { sarRealtimeService } from '../services/sarRealtimeService';
 import { sarStore, useSarStore } from '../stores/sarStore';
+import { apiClient } from '@/lib/api.client';
 
 export function SarCockpitPanel() {
   const [selectedCandidate, setSelectedCandidate] = useState<DetectionItem | null>(null);
@@ -34,12 +35,19 @@ export function SarCockpitPanel() {
   }, []);
 
   const handleDispatchRescue = () => {
-    setAlertSuccess('Đã gửi gói dữ liệu tọa độ mục tiêu (20.7284° N, 107.0512° E) sang Đội Cứu nạn Mặt đất Cát Bà thành công!');
+    const gpsCoord = selectedCandidate?.gpsEstimate ?? '20.7284° N, 107.0512° E';
+    void apiClient.post('/api/v1/sar/missions/1/dispatch-rescue', {
+      candidateId: selectedCandidate?.id ?? 'TRK-101',
+      coordinates: gpsCoord,
+      priority: 'URGENT',
+    }).catch(() => null);
+    setAlertSuccess(`Đã gửi gói dữ liệu tọa độ mục tiêu (${gpsCoord}) sang Đội Cứu nạn Mặt đất Cát Bà thành công!`);
     sarStore.setAlert('Đã phân phối tọa độ cứu hộ thành công.');
     setTimeout(() => setAlertSuccess(null), 5000);
   };
 
   const handleEmergencyRth = () => {
+    void apiClient.patch('/api/v1/sar/missions/1/status?status=COMPLETED').catch(() => null);
     setAlertSuccess('Lệnh RTH (Return to Home) khẩn cấp đã được truyền tới UAV. Đang bay về trạm ST-01.');
     sarStore.setAlert('Kích hoạt RTH tự động.');
     setTimeout(() => setAlertSuccess(null), 5000);

@@ -6,6 +6,7 @@ import com.uav.platform.modules.billing.config.request.UpdateQuotaRequest;
 import com.uav.platform.modules.billing.config.response.UserQuotaResponse;
 import com.uav.platform.modules.billing.entity.ServicePlan;
 import com.uav.platform.modules.billing.entity.UserQuota;
+import com.uav.platform.modules.billing.mapper.BillingMapper;
 import com.uav.platform.modules.billing.repository.ServicePlanRepository;
 import com.uav.platform.modules.billing.repository.UserQuotaRepository;
 import com.uav.platform.modules.billing.service.QuotaService;
@@ -38,7 +39,10 @@ public class IQuotaService implements QuotaService {
                 .orElseThrow(() -> SystemException.notFound("User not found: " + userId));
             ServicePlan defaultPlan = planRepository.findByCode("BASIC")
                 .orElseGet(() -> planRepository.findAll().stream().findFirst()
-                    .orElseThrow(() -> SystemException.notFound("Default service plan not found")));
+                    .orElseGet(() -> planRepository.save(new ServicePlan(
+                        "BASIC", "Gói Tiêu Chuẩn (Basic)", java.math.BigDecimal.valueOf(5_000_000),
+                        "MONTHLY", 20.0, 1, false, "Gói mặc định hệ thống"
+                    ))));
 
             UserQuota newQuota = new UserQuota(user, defaultPlan);
             return quotaRepository.save(newQuota);
@@ -46,25 +50,23 @@ public class IQuotaService implements QuotaService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public UserQuotaResponse getQuota(Authentication authentication) {
         AppUser user = userRepository.findByUsername(authentication.getName())
             .orElseThrow(() -> SystemException.notFound("User not found: " + authentication.getName()));
         UserQuota quota = getOrCreateUserQuota(user.getId());
-        return toResponse(quota);
+        return BillingMapper.toQuotaResponse(quota);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public UserQuotaResponse getQuotaByUserId(Long userId) {
         UserQuota quota = getOrCreateUserQuota(userId);
-        return toResponse(quota);
+        return BillingMapper.toQuotaResponse(quota);
     }
 
     @Override
     @Transactional(readOnly = true)
     public PageResponse<UserQuotaResponse> listQuotas(Pageable pageable) {
-        return PageResponse.from(quotaRepository.findAll(pageable).map(this::toResponse));
+        return PageResponse.from(quotaRepository.findAll(pageable).map(BillingMapper::toQuotaResponse));
     }
 
     @Override
@@ -78,11 +80,10 @@ public class IQuotaService implements QuotaService {
         quota.setPlan(plan);
         quota.setFlightHoursLimit(request.flightHoursLimit() != null ? request.flightHoursLimit() : plan.getMaxMonthlyFlightHours());
         quota.setConcurrentUavsLimit(plan.getMaxConcurrentUavs());
-        return toResponse(quotaRepository.save(quota));
+        return BillingMapper.toQuotaResponse(quotaRepository.save(quota));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public void checkCanCreateMission(Long userId, double estimatedHours) {
         UserQuota quota = getOrCreateUserQuota(userId);
         if (quota.getFlightHoursUsed() + estimatedHours > quota.getFlightHoursLimit()) {
@@ -98,24 +99,5 @@ public class IQuotaService implements QuotaService {
         UserQuota quota = getOrCreateUserQuota(userId);
         quota.setFlightHoursUsed(quota.getFlightHoursUsed() + hoursUsed);
         quotaRepository.save(quota);
-    }
-
-    private UserQuotaResponse toResponse(UserQuota q) {
-        double remaining = Math.max(0.0, q.getFlightHoursLimit() - q.getFlightHoursUsed());
-        return new UserQuotaResponse(
-            q.getId(),
-            q.getUser().getId(),
-            q.getUser().getUsername(),
-            q.getUser().getFullName(),
-            q.getPlan().getCode(),
-            q.getPlan().getName(),
-            q.getFlightHoursUsed(),
-            q.getFlightHoursLimit(),
-            remaining,
-            q.getConcurrentUavsUsed(),
-            q.getConcurrentUavsLimit(),
-            q.getCycleStart(),
-            q.getCycleEnd()
-        );
     }
 }

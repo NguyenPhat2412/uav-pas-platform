@@ -66,6 +66,12 @@ public class IMissionService implements MissionService {
     private final MediaAssetRepository mediaAssets;
     @org.springframework.beans.factory.annotation.Autowired
     private com.uav.platform.modules.media.service.MediaAccessService mediaAccess;
+    @Autowired(required = false)
+    private com.uav.platform.modules.billing.service.QuotaService quotaService;
+    @Autowired(required = false)
+    private com.uav.platform.modules.settings.service.SystemConfigService systemConfigService;
+    @Autowired(required = false)
+    private com.uav.platform.modules.billing.repository.InvoiceRepository invoiceRepository;
     private final MissionMediaRepository missionMedia;
     private final com.uav.platform.modules.uav.service.UavService uavService;
     private final NotificationService notifications;
@@ -118,6 +124,16 @@ public class IMissionService implements MissionService {
     @Override
     public MissionResponse create(MissionCreateRequest request, String actorUsername) {
         AppUser customer = user(actorUsername);
+        double estimatedHours = calculateDurationHours(request.startTime(), request.expectedEndTime());
+        if (quotaService != null && customer.getId() != null) {
+            try {
+                quotaService.checkCanCreateMission(customer.getId(), estimatedHours);
+            } catch (SystemException ex) {
+                if (ex.getStatus() == org.springframework.http.HttpStatus.CONFLICT) {
+                    throw ex;
+                }
+            }
+        }
         Mission mission = Mission.draft(customer, request.missionType(), request.title(), request.description(),
                 request.requestedDate(), request.startTime(), request.expectedEndTime(), request.locationName(),
                 request.latitude(), request.longitude(), request.priority(), request.notes());
@@ -326,6 +342,7 @@ public class IMissionService implements MissionService {
         MissionStatus old = mission.getStatus();
         releaseResources(mission, authentication.getName());
         mission.complete(request.completionNote(), request.equipmentCondition());
+        handleMissionCompletionBillingAndQuota(mission);
         event(mission, MissionEventType.COMPLETED, authentication, old, mission.getStatus(), request.completionNote());
         audit.record(null, authentication.getName(), AuditAction.STATUS_CHANGE, "MISSION", id.toString(), "COMPLETED");
         return MissionMapper.toResponse(mission);
@@ -514,6 +531,62 @@ public class IMissionService implements MissionService {
     private boolean isCustomerOrOperator(Mission mission, String username) {
         return (mission.getCustomer() != null && mission.getCustomer().getUsername().equals(username))
                 || (mission.getOperator() != null && mission.getOperator().getUsername().equals(username));
+    }
+
+    private double calculateDurationHours(java.time.LocalDateTime start, java.time.LocalDateTime end) {
+        if (start == null || end == null || !end.isAfter(start)) {
+            return 1.0;
+        }
+        long minutes = java.time.Duration.between(start, end).toMinutes();
+        return Math.max(0.5, Math.min(24.0, Math.round((minutes / 60.0) * 10.0) / 10.0));
+    }
+
+    private void handleMissionCompletionBillingAndQuota(Mission mission) {
+        if (mission.getCustomer() == null || mission.getCustomer().getId() == null) {
+            return;
+        }
+        double hoursUsed = calculateDurationHours(mission.getStartTime(), mission.getExpectedEndTime());
+        if (quotaService != null) {
+            try {
+                quotaService.recordMissionUsage(mission.getCustomer().getId(), hoursUsed);
+            } catch (RuntimeException ignored) {
+            }
+        }
+        boolean autoInvoice = true;
+        if (systemConfigService != null) {
+            try {
+                autoInvoice = Boolean.parseBoolean(systemConfigService.getByKey("billing.auto_generate_invoice").configValue());
+            } catch (RuntimeException ignored) {
+            }
+        }
+        if (autoInvoice && invoiceRepository != null) {
+            try {
+                String code = "INV-" + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))
+                        + "-" + java.util.UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+                java.math.BigDecimal amount = java.math.BigDecimal.valueOf(Math.round(hoursUsed * 1_500_000.0));
+                com.uav.platform.modules.billing.entity.Invoice invoice = new com.uav.platform.modules.billing.entity.Invoice(
+                        code,
+                        mission.getCustomer(),
+                        mission,
+                        null,
+                        amount,
+                        java.time.LocalDateTime.now().plusDays(7),
+                        "Auto-generated invoice for completed mission " + mission.getCode()
+                );
+                invoiceRepository.save(invoice);
+                if (notifications != null) {
+                    notifications.sendNotification(new CreateNotificationRequest(
+                            mission.getCustomer().getId(),
+                            "Invoice Issued - " + code,
+                            "Auto-generated invoice for completed mission " + mission.getCode() + " (" + hoursUsed + " flight hours)",
+                            NotificationType.PAYMENT,
+                            "MISSION",
+                            mission.getId()
+                    ));
+                }
+            } catch (RuntimeException ignored) {
+            }
+        }
     }
 
     private Mission find(Long id) { return missions.findById(id).orElseThrow(() -> SystemException.notFound("MISSION_NOT_FOUND")); }

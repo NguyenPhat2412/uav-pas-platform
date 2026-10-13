@@ -9,6 +9,7 @@ import com.uav.platform.modules.billing.config.response.PaymentResponse;
 import com.uav.platform.modules.billing.config.response.ServicePlanResponse;
 import com.uav.platform.modules.billing.entity.Invoice;
 import com.uav.platform.modules.billing.entity.ServicePlan;
+import com.uav.platform.modules.billing.mapper.BillingMapper;
 import com.uav.platform.modules.billing.repository.InvoiceRepository;
 import com.uav.platform.modules.billing.repository.PaymentTransactionRepository;
 import com.uav.platform.modules.billing.repository.ServicePlanRepository;
@@ -78,7 +79,7 @@ public class IBillingService implements BillingService {
     @Override
     @Transactional(readOnly = true)
     public List<ServicePlanResponse> listActivePlans() {
-        return planRepository.findByActiveTrue().stream().map(this::toPlanResponse).toList();
+        return planRepository.findByActiveTrue().stream().map(BillingMapper::toPlanResponse).toList();
     }
 
     @Override
@@ -91,13 +92,13 @@ public class IBillingService implements BillingService {
             ? invoiceRepository.findAll(pageable)
             : invoiceRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
 
-        return PageResponse.from(page.map(this::toInvoiceResponse));
+        return PageResponse.from(page.map(BillingMapper::toInvoiceResponse));
     }
 
     @Override
     @Transactional(readOnly = true)
     public InvoiceResponse getInvoice(Long id, Authentication auth) {
-        return toInvoiceResponse(accessibleInvoice(id, auth));
+        return BillingMapper.toInvoiceResponse(accessibleInvoice(id, auth));
     }
 
     @Override
@@ -132,46 +133,12 @@ public class IBillingService implements BillingService {
 
         Invoice invoice = new Invoice(code, user, mission, plan, request.amount(), dueDate, request.notes());
         Invoice saved = invoiceRepository.save(invoice);
-        return toInvoiceResponse(saved);
+        return BillingMapper.toInvoiceResponse(saved);
     }
 
     @Override
     public PaymentResponse payInvoice(Long id, PayInvoiceRequest request, Authentication auth) {
         accessibleInvoice(id, auth);
         throw new SystemException("Payment gateway is not configured", HttpStatus.SERVICE_UNAVAILABLE, "PAYMENT_UNAVAILABLE");
-    }
-
-    private ServicePlanResponse toPlanResponse(ServicePlan p) {
-        return new ServicePlanResponse(
-            p.getId(),
-            p.getCode(),
-            p.getName(),
-            p.getPrice(),
-            p.getBillingCycle(),
-            p.getMaxMonthlyFlightHours(),
-            p.getMaxConcurrentUavs(),
-            p.getAllowSarAi(),
-            p.getDescription(),
-            p.getActive()
-        );
-    }
-
-    private InvoiceResponse toInvoiceResponse(Invoice inv) {
-        return new InvoiceResponse(
-            inv.getId(),
-            inv.getCode(),
-            inv.getUser().getId(),
-            inv.getUser().getUsername(),
-            inv.getMission() != null ? inv.getMission().getId() : null,
-            inv.getMission() != null ? inv.getMission().getTitle() : null,
-            inv.getPlan() != null ? inv.getPlan().getId() : null,
-            inv.getPlan() != null ? inv.getPlan().getName() : null,
-            inv.getAmount(),
-            inv.getStatus(),
-            inv.getDueDate(),
-            inv.getPaidAt(),
-            inv.getNotes(),
-            inv.getCreatedAt()
-        );
     }
 }

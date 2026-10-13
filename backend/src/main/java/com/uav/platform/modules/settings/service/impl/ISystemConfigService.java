@@ -4,6 +4,7 @@ import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.settings.config.request.UpdateConfigurationRequest;
 import com.uav.platform.modules.settings.config.response.SystemConfigurationResponse;
 import com.uav.platform.modules.settings.entity.SystemConfiguration;
+import com.uav.platform.modules.settings.mapper.SystemConfigMapper;
 import com.uav.platform.modules.settings.repository.SystemConfigurationRepository;
 import com.uav.platform.modules.settings.service.SystemConfigService;
 import org.springframework.security.core.Authentication;
@@ -25,7 +26,7 @@ public class ISystemConfigService implements SystemConfigService {
     @Override
     @Transactional(readOnly = true)
     public List<SystemConfigurationResponse> listAll() {
-        return configRepository.findAll().stream().map(this::toResponse).toList();
+        return configRepository.findAll().stream().map(SystemConfigMapper::toResponse).toList();
     }
 
     @Override
@@ -33,7 +34,7 @@ public class ISystemConfigService implements SystemConfigService {
     public SystemConfigurationResponse getByKey(String key) {
         SystemConfiguration cfg = configRepository.findByConfigKey(key)
             .orElseThrow(() -> SystemException.notFound("Config key not found: " + key));
-        return toResponse(cfg);
+        return SystemConfigMapper.toResponse(cfg);
     }
 
     @Override
@@ -48,18 +49,6 @@ public class ISystemConfigService implements SystemConfigService {
         cfg.setUpdatedBy(auth != null ? auth.getName() : "ADMIN");
 
         SystemConfiguration saved = configRepository.save(cfg);
-        return toResponse(saved);
-    }
-
-    private SystemConfigurationResponse toResponse(SystemConfiguration c) {
-        return new SystemConfigurationResponse(
-            c.getId(),
-            c.getConfigKey(),
-            c.getConfigValue(),
-            c.getCategory(),
-            c.getDescription(),
-            c.getUpdatedAt(),
-            c.getUpdatedBy()
-        );
+        return SystemConfigMapper.toResponse(saved);
     }
 }

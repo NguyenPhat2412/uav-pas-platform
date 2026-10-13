@@ -5,6 +5,7 @@ import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.notification.config.request.CreateNotificationRequest;
 import com.uav.platform.modules.notification.config.response.NotificationResponse;
 import com.uav.platform.modules.notification.entity.Notification;
+import com.uav.platform.modules.notification.mapper.NotificationMapper;
 import com.uav.platform.modules.notification.repository.NotificationRepository;
 import com.uav.platform.modules.notification.service.NotificationService;
 import com.uav.platform.modules.user.entity.AppUser;
@@ -37,7 +38,7 @@ public class INotificationService implements NotificationService {
     public PageResponse<NotificationResponse> listForUser(Authentication auth, Pageable pageable) {
         AppUser user = getCurrentUser(auth);
         Page<Notification> page = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
-        return PageResponse.from(page.map(this::toResponse));
+        return PageResponse.from(page.map(NotificationMapper::toResponse));
     }
 
     @Override
@@ -58,7 +59,7 @@ public class INotificationService implements NotificationService {
         }
 
         notification.setIsRead(true);
-        return toResponse(notificationRepository.save(notification));
+        return NotificationMapper.toResponse(notificationRepository.save(notification));
     }
 
     @Override
@@ -81,20 +82,6 @@ public class INotificationService implements NotificationService {
             request.referenceId()
         );
 
-        return toResponse(notificationRepository.save(notif));
-    }
-
-    private NotificationResponse toResponse(Notification n) {
-        return new NotificationResponse(
-            n.getId(),
-            n.getUser().getId(),
-            n.getTitle(),
-            n.getContent(),
-            n.getType(),
-            n.getReferenceType(),
-            n.getReferenceId(),
-            n.getIsRead(),
-            n.getCreatedAt()
-        );
+        return NotificationMapper.toResponse(notificationRepository.save(notif));
     }
 }

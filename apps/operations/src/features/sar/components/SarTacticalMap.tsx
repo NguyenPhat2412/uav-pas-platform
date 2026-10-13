@@ -18,6 +18,7 @@ import {
   Plane
 } from 'lucide-react';
 import type { DetectionItem } from './AiViewfinder';
+import { apiClient } from '@/lib/api.client';
 import { 
   generateExpandingSquarePattern, 
   isPointInsideGeofence, 
@@ -140,7 +141,20 @@ export function SarTacticalMap({ selectedCandidate, onSelectCandidate }: SarTact
         <div className="flex items-center gap-2 text-xs">
           <button
             type="button"
-            onClick={() => setIsGenerated(prev => !prev)}
+            onClick={() => {
+              const nextState = !isGenerated;
+              setIsGenerated(nextState);
+              if (nextState) {
+                void apiClient.post('/api/v1/sar/flight-plan', {
+                  lkpLatitude: lkpGps.lat,
+                  lkpLongitude: lkpGps.lng,
+                  trackSpacingMeters: 65,
+                  maxLegs: 10,
+                  altitudeMeters: 80,
+                  speedMps: 14,
+                }).catch(() => null);
+              }
+            }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shadow-xs cursor-pointer ${
               isGenerated 
                 ? 'bg-[#ab2523] hover:bg-[#8f1c1a] text-white' 

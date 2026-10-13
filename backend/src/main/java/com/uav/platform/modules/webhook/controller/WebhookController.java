@@ -23,13 +23,13 @@ public class WebhookController {
     }
 
     @GetMapping("/subscriptions")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SETTINGS_READ', 'DASHBOARD_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ') or @permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
     public ResponseEntity<List<WebhookSubscription>> listSubscriptions() {
         return ResponseEntity.ok(webhookService.listSubscriptions());
     }
 
     @PostMapping("/subscriptions")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SETTINGS_UPDATE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
     public ResponseEntity<WebhookSubscription> createSubscription(@RequestBody Map<String, String> body) {
         WebhookSubscription created = webhookService.createSubscription(
                 body.get("name"),
@@ -41,21 +41,21 @@ public class WebhookController {
     }
 
     @PutMapping("/subscriptions/{id}/toggle")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SETTINGS_UPDATE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
     public ResponseEntity<Void> toggleSubscription(@PathVariable Long id, @RequestParam boolean active) {
         webhookService.toggleSubscription(id, active);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/subscriptions/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SETTINGS_UPDATE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
     public ResponseEntity<Void> deleteSubscription(@PathVariable Long id) {
         webhookService.deleteSubscription(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/test-dispatch")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SETTINGS_UPDATE', 'SAR_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE') or @permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
     public ResponseEntity<Map<String, String>> testDispatch(@RequestBody Map<String, Object> body) {
         String eventType = (String) body.getOrDefault("eventType", "SAR_EMERGENCY_TRIGGERED");
         webhookService.broadcastEvent(eventType, body);
@@ -66,7 +66,7 @@ public class WebhookController {
     }
 
     @GetMapping("/logs")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SETTINGS_READ', 'DASHBOARD_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ') or @permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
     public ResponseEntity<Page<WebhookDeliveryLog>> listLogs(Pageable pageable) {
         return ResponseEntity.ok(webhookService.listDeliveryLogs(pageable));
     }

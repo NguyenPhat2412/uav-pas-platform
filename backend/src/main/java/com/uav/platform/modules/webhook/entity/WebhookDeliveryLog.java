@@ -1,17 +1,19 @@
 package com.uav.platform.modules.webhook.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "webhook_delivery_logs")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class WebhookDeliveryLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subscription_id")
     private WebhookSubscription subscription;
 

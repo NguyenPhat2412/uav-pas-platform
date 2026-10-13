@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,6 +77,7 @@ public class IWebhookService implements WebhookService {
     }
 
     @Override
+    @Async
     public void broadcastEvent(String eventType, Map<String, Object> eventData) {
         List<WebhookSubscription> targets = subscriptionRepository.findActiveSubscribersForEvent(eventType);
         if (targets.isEmpty()) {

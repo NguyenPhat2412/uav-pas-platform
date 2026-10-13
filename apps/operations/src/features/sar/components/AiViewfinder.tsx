@@ -15,6 +15,8 @@ import {
   Radio,
   Flame
 } from 'lucide-react';
+import { apiClient } from '@/lib/api.client';
+import { operationsService } from '@/features/operations/services/operations.service';
 
 export interface DetectionItem {
   id: string;
@@ -77,13 +79,22 @@ export function AiViewfinder({ onSelectCandidate }: AiViewfinderProps) {
   const visibleDetections = detections.filter(d => (d.confidence * 100) >= confidenceThreshold);
 
   const handleCaptureSnapshot = () => {
+    void operationsService.registerMedia({
+      originalName: `SAR_Snapshot_${activeDetectionId || 'Target'}_${Date.now()}.jpg`,
+      contentType: 'image/jpeg',
+      size: 4820100,
+      type: 'IMAGE',
+      linkedEntityType: 'SAR_MISSION',
+      linkedEntityId: '1',
+    });
     setSnapshotSuccess(true);
-    setTimeout(() => setSnapshotSuccess(false), 2000);
+    setTimeout(() => setSnapshotSuccess(false), 2500);
   };
 
   const handleVerifyDetection = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setDetections(prev => prev.map(item => item.id === id ? { ...item, verified: !item.verified } : item));
+    void apiClient.post(`/api/v1/ai/detections/${encodeURIComponent(id)}/verify`, { verified: true }).catch(() => null);
   };
 
   return (

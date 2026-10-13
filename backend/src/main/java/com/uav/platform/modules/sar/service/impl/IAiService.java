@@ -5,23 +5,32 @@ import com.uav.platform.modules.media.entity.MediaAsset;
 import com.uav.platform.modules.media.repository.MediaAssetRepository;
 import com.uav.platform.modules.mission.entity.Mission;
 import com.uav.platform.modules.mission.repository.MissionRepository;
+import com.uav.platform.modules.notification.common.NotificationType;
+import com.uav.platform.modules.notification.config.request.CreateNotificationRequest;
+import com.uav.platform.modules.notification.service.NotificationService;
 import com.uav.platform.modules.sar.common.AiTaskStatus;
 import com.uav.platform.modules.sar.common.ProcessingNode;
+import com.uav.platform.modules.sar.common.SarStatus;
 import com.uav.platform.modules.sar.config.request.AiTaskDispatchRequest;
 import com.uav.platform.modules.sar.config.request.VerifyDetectionRequest;
 import com.uav.platform.modules.sar.config.response.AiDetectionResponse;
 import com.uav.platform.modules.sar.config.response.AiTaskResponse;
 import com.uav.platform.modules.sar.entity.AiDetection;
 import com.uav.platform.modules.sar.entity.AiTask;
+import com.uav.platform.modules.sar.mapper.SarMapper;
 import com.uav.platform.modules.sar.repository.AiDetectionRepository;
 import com.uav.platform.modules.sar.repository.AiTaskRepository;
+import com.uav.platform.modules.sar.repository.SarMissionRepository;
 import com.uav.platform.modules.sar.service.AiService;
+import com.uav.platform.modules.webhook.service.WebhookService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -31,15 +40,32 @@ public class IAiService implements AiService {
     private final AiDetectionRepository aiDetectionRepository;
     private final MissionRepository missionRepository;
     private final MediaAssetRepository mediaAssetRepository;
+    private final SarMissionRepository sarMissionRepository;
+    private final NotificationService notificationService;
+    private final WebhookService webhookService;
 
     public IAiService(AiTaskRepository aiTaskRepository,
                       AiDetectionRepository aiDetectionRepository,
                       MissionRepository missionRepository,
                       MediaAssetRepository mediaAssetRepository) {
+        this(aiTaskRepository, aiDetectionRepository, missionRepository, mediaAssetRepository, null, null, null);
+    }
+
+    @Autowired
+    public IAiService(AiTaskRepository aiTaskRepository,
+                      AiDetectionRepository aiDetectionRepository,
+                      MissionRepository missionRepository,
+                      MediaAssetRepository mediaAssetRepository,
+                      @Autowired(required = false) SarMissionRepository sarMissionRepository,
+                      @Autowired(required = false) NotificationService notificationService,
+                      @Autowired(required = false) WebhookService webhookService) {
         this.aiTaskRepository = aiTaskRepository;
         this.aiDetectionRepository = aiDetectionRepository;
         this.missionRepository = missionRepository;
         this.mediaAssetRepository = mediaAssetRepository;
+        this.sarMissionRepository = sarMissionRepository;
+        this.notificationService = notificationService;
+        this.webhookService = webhookService;
     }
 
     @Override
@@ -88,7 +114,21 @@ public class IAiService implements AiService {
 
         aiDetectionRepository.saveAll(List.of(det1, det2));
 
-        return toTaskResponse(savedTask);
+        if (notificationService != null && mission.getCustomer() != null && mission.getCustomer().getId() != null) {
+            try {
+                notificationService.sendNotification(new CreateNotificationRequest(
+                    mission.getCustomer().getId(),
+                    "KV260 Edge AI Completed - Mission " + mission.getCode(),
+                    "Detected 2 high-confidence SAR candidates on " + savedTask.getProcessingNode(),
+                    NotificationType.SAR_TARGET_FOUND,
+                    "MISSION",
+                    mission.getId()
+                ));
+            } catch (RuntimeException ignored) {
+            }
+        }
+
+        return SarMapper.toAiTaskResponse(savedTask);
     }
 
     @Override
@@ -96,7 +136,7 @@ public class IAiService implements AiService {
     public List<AiDetectionResponse> listDetections(Long missionId, Authentication authentication) {
         return aiDetectionRepository.findByMissionIdOrderByCreatedAtDesc(missionId)
             .stream()
-            .map(this::toDetectionResponse)
+            .map(SarMapper::toAiDetectionResponse)
             .toList();
     }
 
@@ -105,7 +145,7 @@ public class IAiService implements AiService {
     public List<AiTaskResponse> listTasks(Long missionId, Authentication authentication) {
         return aiTaskRepository.findByMissionIdOrderByCreatedAtDesc(missionId)
             .stream()
-            .map(this::toTaskResponse)
+            .map(SarMapper::toAiTaskResponse)
             .toList();
     }
 
@@ -115,47 +155,44 @@ public class IAiService implements AiService {
             .orElseThrow(() -> SystemException.notFound("AI Detection not found with id: " + detectionId));
 
         det.setVerified(request.verified());
-        det.setVerifiedBy(authentication != null ? authentication.getName() : "OPERATOR");
+        String verifier = authentication != null ? authentication.getName() : "OPERATOR";
+        det.setVerifiedBy(verifier);
         AiDetection saved = aiDetectionRepository.save(det);
-        return toDetectionResponse(saved);
-    }
 
-    private AiTaskResponse toTaskResponse(AiTask task) {
-        return new AiTaskResponse(
-            task.getId(),
-            task.getMission().getId(),
-            task.getMedia() != null ? task.getMedia().getId() : null,
-            task.getTaskType(),
-            task.getStatus(),
-            task.getProcessingNode(),
-            task.getConfidenceThreshold(),
-            task.getInferenceTimeMs(),
-            task.getFps(),
-            task.getDpuUtilization(),
-            task.getSocTemperature(),
-            task.getErrorMessage(),
-            task.getCreatedAt(),
-            task.getCompletedAt()
-        );
-    }
+        if (Boolean.TRUE.equals(request.verified()) && saved.getMission() != null) {
+            Mission mission = saved.getMission();
+            if (sarMissionRepository != null && mission.getId() != null) {
+                sarMissionRepository.findByMissionId(mission.getId()).ifPresent(sar -> {
+                    sar.setSarStatus(SarStatus.TARGET_LOCATED);
+                    sarMissionRepository.save(sar);
+                });
+            }
+            if (notificationService != null && mission.getCustomer() != null && mission.getCustomer().getId() != null) {
+                try {
+                    notificationService.sendNotification(new CreateNotificationRequest(
+                        mission.getCustomer().getId(),
+                        "SAR Target Verified - " + saved.getLabel(),
+                        "Verified by " + verifier + " at (" + saved.getLatitude() + ", " + saved.getLongitude() + ")",
+                        NotificationType.SAR_TARGET_FOUND,
+                        "MISSION",
+                        mission.getId()
+                    ));
+                } catch (RuntimeException ignored) {
+                }
+            }
+            if (webhookService != null) {
+                webhookService.broadcastEvent("SAR_EMERGENCY_TRIGGERED", Map.of(
+                    "detectionId", saved.getId() != null ? saved.getId() : detectionId,
+                    "missionId", mission.getId() != null ? mission.getId() : 0L,
+                    "label", saved.getLabel() != null ? saved.getLabel() : "Person",
+                    "confidence", saved.getConfidence() != null ? saved.getConfidence() : 0.94,
+                    "latitude", saved.getLatitude() != null ? saved.getLatitude() : 20.7284,
+                    "longitude", saved.getLongitude() != null ? saved.getLongitude() : 107.0512,
+                    "verifiedBy", verifier
+                ));
+            }
+        }
 
-    private AiDetectionResponse toDetectionResponse(AiDetection d) {
-        return new AiDetectionResponse(
-            d.getId(),
-            d.getAiTask().getId(),
-            d.getMission().getId(),
-            d.getLabel(),
-            d.getConfidence(),
-            d.getBoxTop(),
-            d.getBoxLeft(),
-            d.getBoxWidth(),
-            d.getBoxHeight(),
-            d.getLatitude(),
-            d.getLongitude(),
-            d.getTrackingId(),
-            d.getVerified(),
-            d.getVerifiedBy(),
-            d.getCreatedAt()
-        );
+        return SarMapper.toAiDetectionResponse(saved);
     }
 }

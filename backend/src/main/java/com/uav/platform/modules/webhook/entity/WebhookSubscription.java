@@ -1,10 +1,12 @@
 package com.uav.platform.modules.webhook.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "webhook_subscriptions")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class WebhookSubscription {
 
     @Id
