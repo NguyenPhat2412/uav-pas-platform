@@ -85,15 +85,15 @@ export function AuthSidebar({ className }: AuthSidebarProps) {
       {/* Header with Brand Logo & Language Switcher */}
       <div className="relative z-10 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-[#ab2523] flex items-center justify-center shadow-lg shadow-[#ab2523]/30 animate-uav-hover">
-            <PlaneTakeoff size={24} className="text-white" />
+          <div className="w-11 h-11 rounded-xl bg-white p-1 flex items-center justify-center shadow-lg border border-white/20 animate-uav-hover shrink-0">
+            <img src="/vju-logo.svg" alt="VJU Logo" width={36} height={36} className="w-9 h-9 object-contain" />
           </div>
           <div>
             <span className="text-base font-bold tracking-tight text-white block whitespace-nowrap">
               {t('sidebar.title')}
             </span>
             <span className="text-[11px] font-semibold text-[#a3a3a3] uppercase tracking-wider block whitespace-nowrap">
-              {t('sidebar.subtitle')}
+              {t('sidebar.subtitle')} · VJU
             </span>
           </div>
         </div>

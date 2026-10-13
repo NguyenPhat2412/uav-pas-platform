@@ -44,7 +44,10 @@ export function PublicHeader() {
   return (
     <header className="site-header" onKeyDown={(event) => { if (event.key === 'Escape') { setOpen(false); event.currentTarget.querySelector<HTMLButtonElement>('.menu-button')?.focus(); } }}>
       <div className="shell nav-wrap">
-        <Link className="brand" href="/" aria-label="UAV PAS home"><span className="brand-mark">✦</span><span>UAV PAS</span></Link>
+        <Link className="brand" href="/" aria-label="UAV PAS - Đại học Việt Nhật" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <img src="/vju-logo.svg" alt="VJU Logo" width={32} height={32} style={{ width: 32, height: 32, objectFit: 'contain' }} />
+          <span>UAV PAS</span>
+        </Link>
         <Button className="menu-button" type="button" aria-expanded={open} aria-controls="public-nav" onClick={() => setOpen(!open)}><span className="sr-only">Toggle menu</span>☰</Button>
         <nav id="public-nav" className={open ? 'public-nav is-open' : 'public-nav'} aria-label="Primary navigation">
           {links.map(([href, label]) => <Link key={href} href={href} onClick={() => setOpen(false)}>{label}</Link>)}

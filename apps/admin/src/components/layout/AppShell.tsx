@@ -31,13 +31,18 @@ export function AppShell({ children, activeResource }: { children: React.ReactNo
   const name = user?.fullName || user?.username || 'Tài khoản';
   const visibleNav = nav.filter(item => !item.permission || !permissionsReady || can(item.permission));
   return <div className="app-shell"><a className="skip-link" href="#workspace">Bỏ qua tới nội dung</a><aside className={cn('app-rail', open && 'app-rail-open')}>
-    <Link href="/dashboard" className="app-brand" onClick={() => setOpen(false)}><span className="app-brand-mark"><PlaneTakeoff size={22} /></span><span><strong>UAV PAS</strong><small>Administration</small></span></Link>
+    <Link href="/dashboard" className="app-brand" onClick={() => setOpen(false)}>
+      <span className="app-brand-mark flex items-center justify-center bg-white p-0.5 rounded-xl border border-rose-100 shadow-sm overflow-hidden">
+        <img src="/vju-logo.svg" alt="VJU Logo" width={34} height={34} className="w-[34px] h-[34px] object-contain" />
+      </span>
+      <span><strong>UAV PAS</strong><small>Administration · VJU</small></span>
+    </Link>
     <button type="button" className="rail-close icon-button" aria-label="Đóng điều hướng" onClick={() => setOpen(false)}><X size={18} /></button>
     <div className="app-rail-label">QUẢN TRỊ</div><nav aria-label="Điều hướng quản trị">{visibleNav.map(({ href, label, icon: Icon }) => {
       const active = activeResource ? (href.slice(1) === activeResource) : pathname === href || pathname.startsWith(`${href}/`);
       return <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined} className={cn('app-nav-link', active && 'app-nav-link-active')}><Icon size={18} />{label}</Link>;
     })}</nav>
-    <div className="rail-footer"><p>UAV PAS <span>Admin</span></p><Button variant="ghost" size="sm" onClick={() => void logout()} leftIcon={<LogOut size={16} />} className="w-full justify-start text-slate-500 hover:bg-slate-100 hover:text-slate-900">{t('common.logout')}</Button></div>
+    <div className="rail-footer"><p>UAV PAS <span>Đại học Việt Nhật</span></p><Button variant="ghost" size="sm" onClick={() => void logout()} leftIcon={<LogOut size={16} />} className="w-full justify-start text-slate-500 hover:bg-slate-100 hover:text-slate-900">{t('common.logout')}</Button></div>
   </aside>{open && <button className="nav-scrim" aria-label="Đóng điều hướng" onClick={() => setOpen(false)} />}
   <div className="workspace-content"><header className="app-topbar"><button className="mobile-menu icon-button" aria-label="Mở điều hướng" aria-expanded={open} onClick={() => setOpen(true)}><Menu size={20} /></button><div className="topbar-location"><span>UAV PAS</span><span>/</span>Administration</div><div className="account-summary"><LanguageSwitcher variant="compact" /><span className="avatar-chip">{name.slice(0, 1).toUpperCase()}</span><div><strong>{name}</strong><small>{user?.role?.replace('ROLE_', '')}</small></div></div></header><main id="workspace" className="app-main" tabIndex={-1}>{children}</main></div></div>;
 }

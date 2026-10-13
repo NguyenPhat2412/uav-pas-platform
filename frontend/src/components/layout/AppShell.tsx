@@ -25,7 +25,12 @@ export function AppShell({ children, activeResource }: { children: React.ReactNo
   ];
   const name = user?.fullName || user?.username || t('console.account');
   return <div className="app-shell"><a className="skip-link" href="#workspace">{t('console.skipToContent')}</a><aside className={cn('app-rail', open && 'app-rail-open')}>
-    <Link href="/" className="app-brand" onClick={() => setOpen(false)}><span className="app-brand-mark"><PlaneTakeoff size={22} className="animate-pulse" /></span><span className="flex items-center gap-1.5"><strong className="whitespace-nowrap">UAV PAS</strong><span className="text-[10px] font-bold text-[#ab2523] bg-[#fdf2f2] px-1.5 py-0.5 rounded border border-[#fecaca] whitespace-nowrap">VJU OPS</span></span></Link>
+    <Link href="/" className="app-brand" onClick={() => setOpen(false)}>
+      <span className="app-brand-mark flex items-center justify-center bg-white p-0.5 rounded-xl border border-rose-100 shadow-sm overflow-hidden">
+        <img src="/vju-logo.svg" alt="VJU Logo" width={34} height={34} className="w-[34px] h-[34px] object-contain" />
+      </span>
+      <span className="flex items-center gap-1.5"><strong className="whitespace-nowrap">UAV PAS</strong><span className="text-[10px] font-bold text-[#ab2523] bg-[#fdf2f2] px-1.5 py-0.5 rounded border border-[#fecaca] whitespace-nowrap">VJU OPS</span></span>
+    </Link>
     <button type="button" className="rail-close icon-button" aria-label={t('console.closeNavigation')} onClick={() => setOpen(false)}><X size={18} /></button>
     <div className="app-rail-label">{t('console.operations').toUpperCase()}</div><nav aria-label={t('console.operations')}>{nav.map(({ href, label, icon: Icon, tab }) => {
       const active = tab ? pathname === '/operations' && activeResource === tab : href === '/' ? pathname === '/' : pathname.startsWith(href);

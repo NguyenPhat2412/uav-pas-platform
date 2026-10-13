@@ -25,9 +25,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="customer-shell">
       <a href="#content" className="skip-link">{t('common.skipToContent')}</a>
       <aside className="sidebar">
-        <Link href="/dashboard" className="brand">
-          <b>UAV PAS</b>
-          <small>{t('nav.portalTitle')}</small>
+        <Link href="/dashboard" className="brand" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
+          <img src="/vju-logo.svg" alt="VJU Logo" width={38} height={38} style={{ width: 38, height: 38, objectFit: 'contain', flexShrink: 0 }} />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <b style={{ lineHeight: 1.2 }}>UAV PAS</b>
+            <small style={{ fontSize: 11, color: '#64748b' }}>{t('nav.portalTitle')} · VJU</small>
+          </div>
         </Link>
         <nav aria-label="Điều hướng khách hàng">
           {navItems
