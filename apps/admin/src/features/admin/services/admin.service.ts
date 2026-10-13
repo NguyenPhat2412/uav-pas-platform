@@ -37,6 +37,24 @@ const DEMO_DASHBOARD: DashboardSummary = {
   totalAuditEvents: 520,
 };
 
+const DEMO_AUDIT_LOGS: PageResponse<AuditLog> = {
+  content: [
+    { id: 101, actorUserId: 1, actorUsername: 'admin_vju', action: 'DISPATCH_MISSION_APPROVED', entityType: 'MISSION', entityId: 'MS-2026-SAR01', details: 'Duyệt bay khẩn cấp cứu nạn vịnh Lan Hạ', createdAt: '2026-10-13T15:42:10' },
+    { id: 102, actorUserId: 3, actorUsername: 'sar_dispatcher', action: 'WEBHOOK_ENDPOINT_SYNC', entityType: 'INTEGRATION', entityId: 'RESCUE_114_HP', details: 'Đồng bộ endpoint Cứu nạn 114 Hải Phòng', createdAt: '2026-10-13T15:30:05' },
+    { id: 103, actorUserId: 2, actorUsername: 'pilot_lanha', action: 'UAV_TELEMETRY_LINK_ESTABLISHED', entityType: 'UAV', entityId: 'UAV-M300-RTK', details: 'Thiết lập luồng D-RTK trạm ST-01 Cát Bà', createdAt: '2026-10-13T15:15:30' },
+    { id: 104, actorUserId: 1, actorUsername: 'admin_vju', action: 'ROLE_PERMISSION_UPDATED', entityType: 'ROLE_TEMPLATE', entityId: 'ROLE_PILOT', details: 'Cập nhật phân quyền lái UAV ngoài tầm nhìn', createdAt: '2026-10-13T14:50:18' },
+    { id: 105, actorUserId: 5, actorUsername: 'ai_engineer_kv260', action: 'FPGA_SAR_MODEL_DEPLOYED', entityType: 'EDGE_AI', entityId: 'AMD-KV260-NODE1', details: 'Nạp mô hình YOLOv8-SAR lên FPGA KV260', createdAt: '2026-10-13T14:10:00' },
+  ],
+  page: 0,
+  size: 5,
+  totalElements: 5,
+  totalPages: 1,
+  first: true,
+  last: true,
+  hasNext: false,
+  hasPrevious: false,
+};
+
 export const adminService = {
   users: async (page = 0, keyword = '', role?: UserRole, signal?: AbortSignal) => {
     try {
@@ -62,7 +80,13 @@ export const adminService = {
       return DEMO_DASHBOARD;
     }
   },
-  audit: (page = 0, size = 8, signal?: AbortSignal) => apiClient.get<PageResponse<AuditLog>>(`/api/v1/audit-logs?${query({ page, size })}`, { signal }),
+  audit: async (page = 0, size = 8, signal?: AbortSignal) => {
+    try {
+      return await apiClient.get<PageResponse<AuditLog>>(`/api/v1/audit-logs?${query({ page, size })}`, { signal });
+    } catch {
+      return DEMO_AUDIT_LOGS;
+    }
+  },
   billingPlans: (signal?: AbortSignal) => apiClient.get<ServicePlan[]>('/api/v1/billing/plans', { signal }),
   billingQuotas: (page = 0, signal?: AbortSignal) => apiClient.get<PageResponse<UserQuota>>(`/api/v1/billing/admin/quotas?${query({ page, size: 20 })}`, { signal }),
   updateQuota: (userId: number, data: { planCode: string; flightHoursLimit: number }) => apiClient.put<UserQuota>(`/api/v1/billing/admin/quotas/${userId}`, data),
