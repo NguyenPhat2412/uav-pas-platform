@@ -14,6 +14,7 @@ const DEMO_MISSIONS = [
   { id: 1, code: 'MS-2026-SAR01', title: 'Cứu hộ khẩn cấp ngư dân vịnh Lan Hạ', startTime: '2026-10-13T08:30:00Z', status: 'IN_PROGRESS' },
   { id: 2, code: 'MS-2026-PATROL02', title: 'Tuần tra duyên hải & giám sát sạt lở Cát Bà', startTime: '2026-10-12T14:00:00Z', status: 'COMPLETED' },
   { id: 3, code: 'MS-2026-MED03', title: 'Vận chuyển thiết bị y tế khẩn cấp trạm Đồ Sơn', startTime: '2026-10-11T09:15:00Z', status: 'COMPLETED' },
+  { id: 4, code: 'MS-2026-SURV04', title: 'Khảo sát bản đồ nhiệt rừng ngập mặn Phù Long', startTime: '2026-10-10T10:00:00Z', status: 'CONFIRMED' },
 ];
 
 function Dashboard() {
@@ -31,7 +32,7 @@ function Dashboard() {
       <div className="page-heading">
         <div>
           <h1 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ width: 10, height: 26, background: '#ab2523', borderRadius: 9999, display: 'inline-block' }} />
+            <span style={{ width: 8, height: 26, background: '#ab2523', borderRadius: 9999, display: 'inline-block' }} />
             Xin chào, {user?.fullName || user?.username || 'Khách hàng VJU'}
           </h1>
           <p>Hệ thống giám sát nhiệm vụ UAV, điều phối bay khẩn cấp và gói dịch vụ duyên hải VJU.</p>
@@ -45,31 +46,43 @@ function Dashboard() {
 
       {/* Frame 1: KPI Grid */}
       <div className="grid grid-3">
-        <Panel style={{ borderTop: '3px solid #ab2523' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span className="muted" style={{ fontWeight: 600, fontSize: 13 }}>Tổng số Mission</span>
-            <Activity size={18} style={{ color: '#ab2523' }} />
+        <Panel style={{ borderLeft: '4px solid #ab2523' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <span style={{ display: 'flex', width: 36, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: '#fdf2f2', color: '#ab2523', flexShrink: 0 }}>
+              <Activity size={18} />
+            </span>
+            <div>
+              <span className="muted" style={{ display: 'block', fontWeight: 600, fontSize: 13 }}>Tổng số Mission</span>
+              <div className="metric" style={{ marginTop: 8, color: '#0f172a' }}>{totalMissions}</div>
+              <small style={{ display: 'block', marginTop: 8, color: '#64748b', fontSize: 12, fontWeight: 500 }}>Đã đăng ký trên hệ thống</small>
+            </div>
           </div>
-          <div className="metric" style={{ marginTop: 8, color: '#0f172a' }}>{totalMissions}</div>
-          <small style={{ color: '#64748b', fontSize: 12 }}>Đã đăng ký trên hệ thống</small>
         </Panel>
 
-        <Panel style={{ borderTop: '3px solid #007f3e' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span className="muted" style={{ fontWeight: 600, fontSize: 13 }}>Đang tác chiến / xử lý</span>
-            <Plane size={18} style={{ color: '#007f3e' }} />
+        <Panel style={{ borderLeft: '4px solid #007f3e' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <span style={{ display: 'flex', width: 36, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: '#ecfdf5', color: '#007f3e', flexShrink: 0 }}>
+              <Plane size={18} />
+            </span>
+            <div>
+              <span className="muted" style={{ display: 'block', fontWeight: 600, fontSize: 13 }}>Đang tác chiến / xử lý</span>
+              <div className="metric" style={{ marginTop: 8, color: '#007f3e' }}>{inProgressMissions}</div>
+              <small style={{ display: 'block', marginTop: 8, color: '#007f3e', fontSize: 12, fontWeight: 500 }}>Trực ban đang kết nối vệ tinh</small>
+            </div>
           </div>
-          <div className="metric" style={{ marginTop: 8, color: '#007f3e' }}>{inProgressMissions}</div>
-          <small style={{ color: '#007f3e', fontSize: 12 }}>Trực ban đang kết nối vệ tinh</small>
         </Panel>
 
-        <Panel style={{ borderTop: '3px solid #0284c7' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span className="muted" style={{ fontWeight: 600, fontSize: 13 }}>Dịch vụ đang mở</span>
-            <Boxes size={18} style={{ color: '#0284c7' }} />
+        <Panel style={{ borderLeft: '4px solid #d97706' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <span style={{ display: 'flex', width: 36, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: '#fffbeb', color: '#d97706', flexShrink: 0 }}>
+              <Boxes size={18} />
+            </span>
+            <div>
+              <span className="muted" style={{ display: 'block', fontWeight: 600, fontSize: 13 }}>Dịch vụ đang mở</span>
+              <div className="metric" style={{ marginTop: 8, color: '#0f172a' }}>{openServices}</div>
+              <small style={{ display: 'block', marginTop: 8, color: '#64748b', fontSize: 12, fontWeight: 500 }}>Cứu hộ, khảo sát, kiểm tra</small>
+            </div>
           </div>
-          <div className="metric" style={{ marginTop: 8, color: '#0f172a' }}>{openServices}</div>
-          <small style={{ color: '#64748b', fontSize: 12 }}>Cứu hộ, khảo sát, kiểm tra</small>
         </Panel>
       </div>
 
@@ -78,7 +91,8 @@ function Dashboard() {
         {/* Frame 2: Mission Table */}
         <Panel
           title="Mission gần đây"
-          action={<Link href="/missions" className="button-link" style={{ fontSize: 13, color: '#ab2523', fontWeight: 700 }}>Xem tất cả</Link>}
+          action={<Link href="/missions" className="button-link" style={{ fontSize: 12, color: '#ab2523', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>Xem tất cả <ArrowUpRight size={13} /></Link>}
+          style={{ height: '100%' }}
         >
           <div className="table-wrap">
             <table className="table">
@@ -86,26 +100,26 @@ function Dashboard() {
                 <tr>
                   <th>Mã nhiệm vụ</th>
                   <th>Thời gian</th>
-                  <th>Trạng thái</th>
+                  <th style={{ textAlign: 'right' }}>Trạng thái</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.slice(0, 5).map(m => (
                   <tr key={m.id}>
                     <td>
-                      <Link className="button-link" href={`/missions/${m.id}`} style={{ fontWeight: 700, color: '#0f172a' }}>
+                      <Link className="button-link" href={`/missions/${m.id}`} style={{ fontWeight: 700, color: '#0f172a', fontFamily: 'monospace' }}>
                         {m.code}
                       </Link>
                       <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>{m.title}</div>
                     </td>
-                    <td style={{ fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>
+                    <td style={{ fontSize: 12, color: '#64748b', whiteSpace: 'nowrap', fontFamily: 'monospace' }}>
                       {(() => {
                         if (!m.startTime) return '13/10/2026';
                         const d = new Date(m.startTime);
                         return isNaN(d.getTime()) ? '13/10/2026' : d.toLocaleDateString('vi-VN');
                       })()}
                     </td>
-                    <td>
+                    <td style={{ textAlign: 'right' }}>
                       <Status value={m.status} />
                     </td>
                   </tr>
@@ -116,33 +130,33 @@ function Dashboard() {
         </Panel>
 
         {/* Frame 3: Quota & Quick Shortcuts */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 18, height: '100%' }}>
           <Panel title="Hạn mức bay & Gói cước VJU">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 13, color: '#64748b' }}>Gói dịch vụ hiện tại:</span>
-                <span style={{ fontWeight: 800, color: '#ab2523', fontSize: 13, background: '#fdf2f2', padding: '3px 10px', borderRadius: 9999, border: '1px solid #fecdd3' }}>
+                <span style={{ fontWeight: 800, color: '#ab2523', fontSize: 12, background: '#fdf2f2', padding: '4px 10px', borderRadius: 9999, border: '1px solid #fecdd3' }}>
                   Enterprise SAR
                 </span>
               </div>
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                  <span>Giờ bay đã sử dụng:</span>
-                  <strong>18.5 / 50 giờ (37%)</strong>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
+                  <span style={{ color: '#475569' }}>Giờ bay đã sử dụng:</span>
+                  <strong style={{ fontFamily: 'monospace', color: '#0f172a' }}>18.5 / 50 giờ (37%)</strong>
                 </div>
-                <div style={{ width: '100%', height: 7, background: '#e2e8f0', borderRadius: 9999, overflow: 'hidden' }}>
+                <div style={{ width: '100%', height: 8, background: '#e2e8f0', borderRadius: 9999, overflow: 'hidden' }}>
                   <div style={{ width: '37%', height: '100%', background: '#ab2523', borderRadius: 9999 }} />
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, borderTop: '1px solid #f1f5f9', fontSize: 12, color: '#64748b' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10, borderTop: '1px solid #f1f5f9', fontSize: 12, color: '#64748b' }}>
                 <span>Chu kỳ thanh toán kế tiếp:</span>
-                <strong style={{ color: '#0f172a' }}>01/11/2026</strong>
+                <strong style={{ color: '#0f172a', fontFamily: 'monospace' }}>01/11/2026</strong>
               </div>
             </div>
           </Panel>
 
-          <Panel title="Bắt đầu nhanh">
-            <div className="grid" style={{ gap: 10 }}>
+          <Panel title="Bắt đầu nhanh" style={{ flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <Link href="/services" className="button button-secondary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px' }}>
                 <span>Khám phá danh mục dịch vụ UAV</span>
                 <ArrowUpRight size={15} />

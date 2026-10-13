@@ -72,47 +72,47 @@ export function Dashboard() {
 
       {/* KHUNG 1: KPI Grid (Chỉ số cốt lõi) */}
       <section aria-label="Chỉ số hoạt động cốt lõi">
-        <div className="kpi-grid">
-          <div className="kpi-card border-l-4 border-l-[#ab2523] shadow-sm hover:shadow transition-shadow">
+        <div className="kpi-grid items-stretch">
+          <div className="kpi-card border-l-4 border-l-[#ab2523] shadow-sm hover:shadow transition-shadow h-full">
             <div className="kpi-icon kpi-icon-blue">
               <Users size={18} />
             </div>
             <div>
               <span>Người dùng hệ thống</span>
-              <strong>{totalUsers}</strong>
+              <strong className="font-mono tabular-nums">{totalUsers}</strong>
               <small className="text-emerald-600 font-medium">12 Trực ban · 8 Phi công</small>
             </div>
           </div>
 
-          <div className="kpi-card border-l-4 border-l-[#007f3e] shadow-sm hover:shadow transition-shadow">
+          <div className="kpi-card border-l-4 border-l-[#007f3e] shadow-sm hover:shadow transition-shadow h-full">
             <div className="kpi-icon kpi-icon-green">
               <MapPin size={18} />
             </div>
             <div>
               <span>Trạm D-RTK & Cứu hộ</span>
-              <strong>{totalStations}</strong>
+              <strong className="font-mono tabular-nums">{totalStations}</strong>
               <small className="text-emerald-600 font-medium">100% Trực tuyến kết nối</small>
             </div>
           </div>
 
-          <div className="kpi-card border-l-4 border-l-amber-500 shadow-sm hover:shadow transition-shadow">
+          <div className="kpi-card border-l-4 border-l-amber-500 shadow-sm hover:shadow transition-shadow h-full">
             <div className="kpi-icon kpi-icon-amber">
               <Plane size={18} />
             </div>
             <div>
               <span>Đội bay sẵn sàng</span>
-              <strong>{availableUavs} / {totalUavs}</strong>
+              <strong className="font-mono tabular-nums">{availableUavs} / {totalUavs}</strong>
               <small className="text-amber-700 font-medium">2 Đang bay · 1 Bảo dưỡng</small>
             </div>
           </div>
 
-          <div className="kpi-card border-l-4 border-l-slate-600 shadow-sm hover:shadow transition-shadow">
+          <div className="kpi-card border-l-4 border-l-slate-600 shadow-sm hover:shadow transition-shadow h-full">
             <div className="kpi-icon kpi-icon-slate">
               <History size={18} />
             </div>
             <div>
               <span>Sự kiện Webhook & Audit</span>
-              <strong>{totalAuditEvents.toLocaleString()}</strong>
+              <strong className="font-mono tabular-nums">{totalAuditEvents.toLocaleString()}</strong>
               <small className="text-emerald-600 font-medium">99.8% Giao vận thành công</small>
             </div>
           </div>
@@ -120,9 +120,9 @@ export function Dashboard() {
       </section>
 
       {/* BENTO GRID: KHUNG 2 & KHUNG 3 */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         {/* KHUNG 2: Webhook Engine Health Monitor (7 Cols) */}
-        <section className="lg:col-span-7 console-panel border border-slate-200 rounded-xl overflow-hidden shadow-sm flex flex-col justify-between">
+        <section className="lg:col-span-7 console-panel border border-slate-200 rounded-xl overflow-hidden shadow-sm flex flex-col justify-between h-full">
           <div>
             <div className="console-panel-header bg-slate-50/80 px-5 py-4 border-b border-slate-200 flex items-center justify-between">
               <div>
@@ -134,7 +134,7 @@ export function Dashboard() {
                   Đồng bộ tức thời với cơ quan cứu hộ khẩn cấp và cảnh báo thiên tai duyên hải
                 </span>
               </div>
-              <Link href="/webhooks" className="text-xs font-semibold text-[#ab2523] hover:underline inline-flex items-center gap-1">
+              <Link href="/webhooks" className="text-xs font-semibold text-[#ab2523] hover:underline inline-flex items-center gap-1 shrink-0">
                 Quản lý <ArrowUpRight size={13} />
               </Link>
             </div>
@@ -144,7 +144,10 @@ export function Dashboard() {
               <div className="p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+                    <span className="relative flex h-2.5 w-2.5 shrink-0">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                    </span>
                     <div>
                       <strong className="text-sm font-bold text-slate-800">
                         Cơ quan Cứu nạn 114 Hải Phòng
@@ -154,7 +157,7 @@ export function Dashboard() {
                       </span>
                     </div>
                   </div>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 self-start sm:self-auto">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 self-start sm:self-auto shrink-0 font-mono">
                     <CheckCircle2 size={12} /> 200 OK (38ms)
                   </span>
                 </div>
@@ -165,7 +168,7 @@ export function Dashboard() {
                   </span>
                   <span className="inline-flex items-center gap-1 text-slate-500">
                     <Zap size={14} className="text-amber-500" />
-                    Sự kiện hôm nay: <strong className="text-slate-800">48 dispatches</strong>
+                    Sự kiện hôm nay: <strong className="text-slate-800 font-mono">48 dispatches</strong>
                   </span>
                   <span className="inline-flex items-center gap-1 text-slate-500">
                     <Clock size={14} className="text-slate-400" />
@@ -178,7 +181,9 @@ export function Dashboard() {
               <div className="p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                    <span className="relative flex h-2.5 w-2.5 shrink-0">
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                    </span>
                     <div>
                       <strong className="text-sm font-bold text-slate-800">
                         Hệ thống Cảnh báo Thiên tai Duyên hải VJU

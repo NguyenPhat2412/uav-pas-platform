@@ -18,11 +18,11 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = 
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '4px',
-        background: 'rgba(255, 255, 255, 0.08)',
-        padding: '3px 4px',
+        gap: '3px',
+        background: '#f8fafc',
+        padding: '3px',
         borderRadius: '8px',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
+        border: '1px solid #e2e8f0',
         fontSize: '12px',
       }}
       className={className}
@@ -36,11 +36,11 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = 
             type="button"
             onClick={() => setLocale(loc)}
             style={{
-              padding: '2px 8px',
+              padding: '3px 8px',
               borderRadius: '6px',
-              fontWeight: isActive ? '700' : '500',
-              background: isActive ? '#0284c7' : 'transparent',
-              color: isActive ? '#ffffff' : '#94a3b8',
+              fontWeight: isActive ? '700' : '600',
+              background: isActive ? '#ab2523' : 'transparent',
+              color: isActive ? '#ffffff' : '#64748b',
               border: 'none',
               cursor: 'pointer',
               fontSize: '11px',

@@ -398,23 +398,32 @@ export function SarTacticalMap({ selectedCandidate, onSelectCandidate }: SarTact
             </g>
           </svg>
         </div>
+      </div>
 
-        {/* Algorithm Info Banner (Bottom Left) */}
-        <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm text-[11px] space-y-1.5 text-slate-700">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#ab2523]"></span>
-            <span className="font-medium">Đường bay IAMSAR Expanding Square ({isGenerated ? `${svgWaypoints.length} chặng` : 'Chưa kích hoạt'})</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#007f3e]"></span>
-            <span className="font-medium">Ranh giới Geofence (Thuật toán Ray-Casting)</span>
+      {/* Structured Tactical Map Footer Bar (Aligned with AiViewfinder bottom panel) */}
+      <div className="px-4 py-3 bg-slate-50/70 border-t border-slate-200 flex flex-col justify-between gap-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5 font-medium text-slate-700">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#ab2523] shrink-0"></span>
+              <span>Đường bay IAMSAR Expanding Square ({isGenerated ? `${svgWaypoints.length} chặng` : 'Chưa kích hoạt'})</span>
+            </span>
+            <span className="flex items-center gap-1.5 font-medium text-slate-700">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#007f3e] shrink-0"></span>
+              <span>Ranh giới Geofence (Thuật toán Ray-Casting)</span>
+            </span>
           </div>
         </div>
 
-        {/* Live Coordinates HUD (Bottom Right) */}
-        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm text-[11px] font-mono text-slate-600 flex items-center gap-3">
-          <span>LKP: <strong className="text-[#ab2523]">{lkpGps.lat}°N {lkpGps.lng}°E</strong></span>
-          <span>HAVERSINE HOME: <strong className="text-[#007f3e]">{rthFeasibility.distanceHomeMeters}m</strong></span>
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/80 text-[11px] font-mono text-slate-600">
+          <div className="flex items-center gap-3">
+            <span>LKP: <strong className="text-[#ab2523]">{lkpGps.lat}°N, {lkpGps.lng}°E</strong></span>
+            <span className="text-slate-300">|</span>
+            <span>HAVERSINE HOME: <strong className="text-[#007f3e]">{rthFeasibility.distanceHomeMeters}m</strong></span>
+          </div>
+          <span className="text-[10px] bg-white px-2.5 py-0.5 rounded-md border border-slate-200 font-bold text-slate-700">
+            SECTOR B2 · ĐANG QUÉT MỤC TIÊU
+          </span>
         </div>
       </div>
     </div>

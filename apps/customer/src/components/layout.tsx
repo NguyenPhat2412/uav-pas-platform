@@ -43,17 +43,59 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const name = user?.fullName || user?.username || 'Khách hàng VJU';
+  const roleLabel = user?.role?.replace('ROLE_', '') || 'CUSTOMER';
+  const visibleNav = navItems.filter((item) => !item.permission || !permissionsReady || !user || can(item.permission));
+  const activeNav = navItems.find(({ href }) => pathname === href || pathname.startsWith(`${href}/`));
+
   return (
     <div className="customer-shell">
       <a href="#content" className="skip-link">{t('common.skipToContent')}</a>
       <aside className={`sidebar ${collapsed ? 'sidebar-collapsed' : ''}`}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', marginBottom: 16 }}>
-          <Link href="/dashboard" className="brand" title="UAV PAS · Customer Portal · VJU" style={{ padding: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <img src="/vju-logo.svg" alt="VJU Logo" width={34} height={34} style={{ width: 34, height: 34, objectFit: 'contain', flexShrink: 0 }} />
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: collapsed ? 'column' : 'row',
+            alignItems: 'center',
+            justifyContent: collapsed ? 'center' : 'space-between',
+            gap: collapsed ? 8 : 0,
+            marginBottom: 16,
+          }}
+        >
+          <Link
+            href="/dashboard"
+            className="brand"
+            title="UAV PAS · Customer Portal · VJU"
+            style={{
+              padding: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: collapsed ? 'center' : 'flex-start',
+              gap: '10px',
+            }}
+          >
+            <span
+              style={{
+                display: 'inline-flex',
+                width: 34,
+                height: 34,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 12,
+                background: '#fff',
+                border: '1px solid #ffe4e6',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                padding: 2,
+                flexShrink: 0,
+                overflow: 'hidden',
+              }}
+            >
+              <img src="/vju-logo.svg" alt="VJU Logo" width={30} height={30} style={{ width: 30, height: 30, objectFit: 'contain' }} />
+            </span>
             {!collapsed && (
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <b style={{ lineHeight: 1.2, fontSize: 16, color: '#0f172a' }}>UAV PAS</b>
-                <small style={{ fontSize: 11, color: '#64748b' }}>{t('nav.portalTitle')} · VJU</small>
+              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
+                <b style={{ fontSize: 15, fontWeight: 700, color: '#1e293b' }}>UAV PAS</b>
+                <small style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>Customer · VJU</small>
               </div>
             )}
           </Link>
@@ -69,7 +111,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               justifyContent: 'center',
               width: 28,
               height: 28,
-              border: '1px solid #dce5ef',
+              border: '1px solid #e5e7eb',
               borderRadius: 6,
               background: '#fff',
               color: '#64748b',
@@ -80,57 +122,118 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {collapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
           </button>
         </div>
+
+        {!collapsed && (
+          <div style={{ padding: '0 8px 10px', color: '#7c7c7c', fontSize: 11, letterSpacing: '0.08em', fontWeight: 700 }}>
+            KHÁCH HÀNG
+          </div>
+        )}
+
         <nav aria-label="Điều hướng khách hàng">
-          {navItems
-            .filter((item) => !item.permission || (permissionsReady && can(item.permission)))
-            .map(({ href, key, defaultLabel, icon: Icon }) => {
-              const active = pathname === href || pathname.startsWith(`${href}/`);
-              const labelText = t(`nav.${key}`) || defaultLabel;
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  aria-current={active ? 'page' : undefined}
-                  title={collapsed ? labelText : undefined}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    justifyContent: collapsed ? 'center' : 'flex-start',
-                    padding: collapsed ? '10px 0' : '9px 12px',
-                  }}
-                >
-                  <Icon size={18} style={{ flexShrink: 0 }} />
-                  {!collapsed && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{labelText}</span>}
-                </Link>
-              );
-            })}
+          {visibleNav.map(({ href, key, defaultLabel, icon: Icon }) => {
+            const active = pathname === href || pathname.startsWith(`${href}/`);
+            const labelText = t(`nav.${key}`) || defaultLabel;
+            return (
+              <Link
+                key={href}
+                href={href}
+                aria-current={active ? 'page' : undefined}
+                title={collapsed ? labelText : undefined}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  justifyContent: collapsed ? 'center' : 'flex-start',
+                  padding: collapsed ? '10px 0' : '8px 10px',
+                }}
+              >
+                <Icon size={18} style={{ flexShrink: 0 }} />
+                {!collapsed && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{labelText}</span>}
+              </Link>
+            );
+          })}
         </nav>
-        <button
-          className="logout"
-          onClick={() => void logout()}
-          title={collapsed ? t('common.logout') : undefined}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            justifyContent: collapsed ? 'center' : 'flex-start',
-            padding: collapsed ? '10px 0' : '10px 12px',
-          }}
-        >
-          <LogOut size={16} style={{ flexShrink: 0 }} />
-          {!collapsed && <span>{t('common.logout')}</span>}
-        </button>
+
+        <div style={{ marginTop: 'auto', borderTop: '1px solid #e5e7eb', paddingTop: 14 }}>
+          {!collapsed && (
+            <p style={{ display: 'flex', justifyContent: 'space-between', padding: '0 8px 10px', fontSize: 11, color: '#7c7c7c', margin: 0 }}>
+              UAV PAS <span>Đại học Việt Nhật</span>
+            </p>
+          )}
+          <button
+            className="logout"
+            onClick={() => void logout()}
+            title={collapsed ? t('common.logout') : undefined}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              justifyContent: collapsed ? 'center' : 'flex-start',
+              padding: collapsed ? '10px 0' : '8px 10px',
+            }}
+          >
+            <LogOut size={16} style={{ flexShrink: 0 }} />
+            {!collapsed && <span>{t('common.logout')}</span>}
+          </button>
+        </div>
       </aside>
       <div className="customer-workspace">
         <header className="topbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span>{t('nav.portalTitle')}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: 13, color: '#6d7d91' }}>
+            <span style={{ color: '#202020', fontWeight: 600 }}>UAV PAS</span>
+            <span style={{ color: '#a4b1c0' }}>/</span>
+            <span>Customer Portal</span>
+            {activeNav && (
+              <>
+                <span style={{ color: '#a4b1c0' }}>/</span>
+                <strong style={{ color: '#ab2523', fontWeight: 600 }}>
+                  {t(`nav.${activeNav.key}`) || activeNav.defaultLabel}
+                </strong>
+              </>
+            )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <LanguageSwitcher />
-            <Link href="/profile" className="account">
-              {user?.fullName || user?.username}
+            <Link
+              href="/notifications"
+              title="Thông báo"
+              style={{
+                display: 'inline-flex',
+                width: 34,
+                height: 34,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                border: '1px solid #e5e7eb',
+                background: '#fff',
+                color: '#475569',
+              }}
+            >
+              <Bell size={16} />
+            </Link>
+            <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  width: 34,
+                  height: 34,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '50%',
+                  background: '#fdf2f2',
+                  color: '#ab2523',
+                  fontWeight: 700,
+                  fontSize: 13,
+                }}
+              >
+                {name.slice(0, 1).toUpperCase()}
+              </span>
+              <div style={{ lineHeight: 1.25 }}>
+                <strong style={{ display: 'block', fontSize: 13, color: '#0f172a' }}>{name}</strong>
+                <small style={{ display: 'block', fontSize: 11, fontFamily: 'monospace', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  {roleLabel}
+                </small>
+              </div>
             </Link>
           </div>
         </header>

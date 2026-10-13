@@ -96,16 +96,16 @@ export function SarCockpitPanel() {
       )}
 
       {/* TOP ROW: Live Viewfinder + Tactical Map (Bento Grid with ErrorBoundaries) */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-stretch">
         {/* Left: AI Viewfinder */}
-        <div className="h-[480px]">
+        <div className="flex flex-col h-full">
           <ErrorBoundary fallbackTitle="Không thể tải luồng Camera AI">
             <AiViewfinder onSelectCandidate={setSelectedCandidate} />
           </ErrorBoundary>
         </div>
 
         {/* Right: Tactical Map */}
-        <div className="h-[480px]">
+        <div className="flex flex-col h-full">
           <ErrorBoundary fallbackTitle="Không thể tải Bản đồ Tác chiến SAR">
             <SarTacticalMap 
               selectedCandidate={selectedCandidate} 

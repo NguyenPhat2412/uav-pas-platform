@@ -89,35 +89,35 @@ export function AiViewfinder({ onSelectCandidate }: AiViewfinderProps) {
   return (
     <div className="flex flex-col h-full bg-white text-slate-900 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
       {/* Top Header Bar of Viewfinder */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-slate-50 border-b border-slate-200">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#ab2523] bg-[#fef2f2] px-2.5 py-0.5 rounded-full border border-[#fecdd3]">
-            <span className="w-2 h-2 rounded-full bg-[#ab2523] animate-pulse"></span>
+      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 bg-slate-50 border-b border-slate-200">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#ab2523] bg-[#fef2f2] px-2.5 py-0.5 rounded-full border border-[#fecdd3] whitespace-nowrap shrink-0">
+            <span className="w-2 h-2 rounded-full bg-[#ab2523] animate-pulse shrink-0"></span>
             LIVE FEED 4K
           </span>
-          <span className="text-xs text-slate-500 font-mono font-medium">CAM: SONY ILX-LR1 / GIMBAL 3-AXIS</span>
+          <span className="text-xs text-slate-500 font-mono font-medium truncate">CAM: SONY ILX-LR1 / GIMBAL 3-AXIS</span>
         </div>
 
         {/* View Mode Selector */}
-        <div className="flex items-center gap-1 bg-white p-0.5 rounded-xl border border-slate-200 text-xs shadow-xs">
+        <div className="flex items-center gap-1 bg-white p-0.5 rounded-xl border border-slate-200 text-xs shadow-xs shrink-0">
           <button
             type="button"
             onClick={() => setViewMode('rgb')}
-            className={`px-3 py-1 rounded-lg font-bold transition ${viewMode === 'rgb' ? 'bg-[#ab2523] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+            className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap transition ${viewMode === 'rgb' ? 'bg-[#ab2523] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
           >
             RGB Màu
           </button>
           <button
             type="button"
             onClick={() => setViewMode('thermal')}
-            className={`px-3 py-1 rounded-lg font-bold transition ${viewMode === 'thermal' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+            className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap transition ${viewMode === 'thermal' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
           >
             Tầm Nhiệt
           </button>
           <button
             type="button"
             onClick={() => setViewMode('overlay')}
-            className={`px-3 py-1 rounded-lg font-bold transition ${viewMode === 'overlay' ? 'bg-[#007f3e] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+            className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap transition ${viewMode === 'overlay' ? 'bg-[#007f3e] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
           >
             AI YOLOv8s
           </button>
@@ -125,7 +125,7 @@ export function AiViewfinder({ onSelectCandidate }: AiViewfinderProps) {
       </div>
 
       {/* Main Video Viewfinder Area - Clean Aeronautical Aerial Feed */}
-      <div className="relative flex-1 bg-sky-50 min-h-[380px] overflow-hidden select-none flex items-center justify-center border-y border-slate-200">
+      <div className="relative flex-1 bg-sky-50 min-h-[340px] overflow-hidden select-none flex items-center justify-center border-y border-slate-200">
         {/* Background Visualizer (High-Definition Simulated Daylight Aerial Coastal Feed) */}
         <div 
           className={`absolute inset-0 transition-all duration-500 ${

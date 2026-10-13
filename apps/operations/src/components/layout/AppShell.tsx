@@ -51,11 +51,13 @@ export function AppShell({ children, activeResource }: { children: React.ReactNo
     });
   };
 
-  const name = user?.fullName || user?.username || 'Tài khoản';
+  const name = user?.fullName || user?.username || 'Trực ban VJU';
+  const roleLabel = user?.role?.replace('ROLE_', '') || 'OPERATOR';
   const visibleNav = nav.filter(item => !item.permission || !permissionsReady || can(item.permission));
+  const activeNav = nav.find(({ href }) => activeResource ? (href.slice(1) === activeResource) : pathname === href || pathname.startsWith(`${href}/`));
   return <div className="app-shell"><a className="skip-link" href="#workspace">Bỏ qua tới nội dung</a><aside className={cn('app-rail', open && 'app-rail-open', collapsed && 'app-rail-collapsed')}>
-    <div className={cn("app-rail-top flex items-center justify-between mb-4", collapsed && "justify-center")}>
-      <Link href="/overview" className={cn('app-brand !p-0 !gap-2', collapsed && 'app-brand-collapsed')} onClick={() => setOpen(false)} title="UAV PAS · Operations · VJU">
+    <div className={cn("app-rail-top flex items-center mb-4", collapsed ? "flex-col justify-center gap-2" : "justify-between")}>
+      <Link href="/overview" className={cn('app-brand !p-0 !gap-2.5', collapsed && 'app-brand-collapsed !justify-center')} onClick={() => setOpen(false)} title="UAV PAS · Operations · VJU">
         <span className="app-brand-mark flex items-center justify-center bg-white p-0.5 rounded-xl border border-rose-100 shadow-sm overflow-hidden flex-shrink-0">
           <img src="/vju-logo.svg" alt="VJU Logo" width={32} height={32} className="w-[32px] h-[32px] object-contain" />
         </span>
@@ -84,5 +86,5 @@ export function AppShell({ children, activeResource }: { children: React.ReactNo
       </Button>
     </div>
   </aside>{open && <button className="nav-scrim" aria-label="Đóng điều hướng" onClick={() => setOpen(false)} />}
-  <div className="workspace-content"><header className="app-topbar"><button className="mobile-menu icon-button" aria-label="Mở điều hướng" aria-expanded={open} onClick={() => setOpen(true)}><Menu size={20} /></button><div className="topbar-location"><span>UAV PAS</span><span>/</span>Operations</div><div className="account-summary"><LanguageSwitcher variant="compact" /><NotificationBell /><span className="avatar-chip">{name.slice(0, 1).toUpperCase()}</span><div><strong>{name}</strong><small>{user?.role?.replace('ROLE_', '')}</small></div></div></header><main id="workspace" className="app-main" tabIndex={-1}>{children}</main></div></div>;
+  <div className="workspace-content"><header className="app-topbar"><button className="mobile-menu icon-button" aria-label="Mở điều hướng" aria-expanded={open} onClick={() => setOpen(true)}><Menu size={20} /></button><div className="topbar-location"><span>UAV PAS</span><span>/</span><span>Operations</span>{activeNav && <><span>/</span><strong className="text-[#ab2523] font-semibold">{activeNav.label}</strong></>}</div><div className="account-summary"><LanguageSwitcher variant="compact" /><NotificationBell /><span className="avatar-chip">{name.slice(0, 1).toUpperCase()}</span><div className="leading-tight"><strong>{name}</strong><small className="text-[11px] font-mono uppercase tracking-wider text-slate-500">{roleLabel}</small></div></div></header><main id="workspace" className="app-main" tabIndex={-1}>{children}</main></div></div>;
 }
