@@ -72,12 +72,15 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
     return (
       <button
         type="button"
-        onClick={() => setLocale(locale === 'vi' ? 'en' : 'vi')}
+        onClick={() => {
+          const nextIndex = (supportedLocales.indexOf(locale) + 1) % supportedLocales.length;
+          setLocale(supportedLocales[nextIndex]);
+        }}
         className={cn(
           'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-outline-variant/60 text-body-sm font-medium hover:bg-surface-container-low transition-colors select-none cursor-pointer',
           className
         )}
-        title="Đổi ngôn ngữ / Change language"
+        title="Đổi ngôn ngữ / Change language / 言語切替"
       >
         <Globe size={14} className="text-secondary" />
         <span className="font-semibold">{localeMetaMap[locale].displayCode}</span>

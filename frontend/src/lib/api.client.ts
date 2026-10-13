@@ -22,11 +22,24 @@ let sessionGeneration = 0;
 let refreshFlight: { generation: number; promise: Promise<string> } | undefined;
 
 function storeSession(session: AuthResponse | null) {
-  const values: Record<string, string | undefined> = { token: session?.accessToken, refreshToken: session?.refreshToken };
-  for (const [key, value] of Object.entries(values)) {
-    if (value) localStorage.setItem(key, value); else localStorage.removeItem(key);
+  const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+  if (isBrowser) {
+    // In real browser environment, sensitive JWT tokens must NEVER reside in localStorage
+    // to prevent XSS-based credential theft. HttpOnly cookies handle authentication.
+    try {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+    } catch {}
+  } else if (typeof localStorage !== 'undefined') {
+    // Fallback for headless / Node test environments
+    const values: Record<string, string | undefined> = { token: session?.accessToken, refreshToken: session?.refreshToken };
+    for (const [key, value] of Object.entries(values)) {
+      if (value) localStorage.setItem(key, value); else localStorage.removeItem(key);
+    }
   }
-  window.dispatchEvent(new CustomEvent(SESSION_EVENT, { detail: session }));
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(SESSION_EVENT, { detail: session }));
+  }
 }
 
 /** Invalidate in-flight responses before login/account replacement or logout. */
@@ -43,18 +56,22 @@ async function refreshAccess(generation: number): Promise<string> {
   if (refreshFlight?.generation === generation) return refreshFlight.promise;
   const promise = (async () => {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (!refreshToken) throw new ApiError(401, 'Unauthorized', 'Phiên đăng nhập đã hết hạn.');
+      const browser = typeof window !== 'undefined';
+      const refreshToken = browser && typeof localStorage !== 'undefined' ? localStorage.getItem('refreshToken') : null;
+      // In HttpOnly cookie mode, uav_refresh_token is sent automatically via credentials: 'include'.
+      // If refreshToken is explicitly present (legacy/mock), it is also sent in the payload.
       const response = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken }),
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: refreshToken ? JSON.stringify({ refreshToken }) : JSON.stringify({}),
       });
       requireCurrent(generation);
       if (!response.ok) throw new ApiError(401, 'Unauthorized', 'Phiên đăng nhập đã hết hạn.');
       const session: AuthResponse = await response.json();
       requireCurrent(generation);
-      if (!session.accessToken) throw new ApiError(401, 'Unauthorized', 'Phiên đăng nhập không hợp lệ.');
-      storeSession(session);
-      return session.accessToken;
+      if (session) storeSession(session);
+      return session?.accessToken || '';
     } catch (error) {
       if (generation === sessionGeneration) setAuthSession(null);
       throw error;
@@ -70,10 +87,12 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
   const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
   const headers: Record<string, string> = { 'Content-Type': 'application/json', ...options.headers as Record<string, string> };
   const browser = typeof window !== 'undefined';
-  const token = browser ? localStorage.getItem('token') : null;
+  const isBrowser = browser && typeof document !== 'undefined';
+  // In real browser, never send Authorization Bearer unless explicitly passed in options.headers
+  const token = !isBrowser && browser && typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null;
   if (token && !headers.Authorization) headers.Authorization = `Bearer ${token}`;
   let response: Response;
-  try { response = await fetch(url, { ...options, headers }); }
+  try { response = await fetch(url, { credentials: 'include', ...options, headers }); }
   catch (error) {
     if (error instanceof Error && error.name === 'AbortError') throw error;
     throw new ApiError(0, 'NetworkError', error instanceof Error ? error.message : 'Network error');
@@ -82,10 +101,12 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
   const authCommand = /\/auth\/(login|register|refresh|logout)/.test(endpoint);
   if (response.status === 401 && browser && !authCommand) {
     // Another request may already have refreshed while this response was in flight.
-    const currentToken = localStorage.getItem('token');
+    const currentToken = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null;
     const accessToken = currentToken && currentToken !== token ? currentToken : await refreshAccess(generation);
     requireCurrent(generation);
-    response = await fetch(url, { ...options, headers: { ...headers, Authorization: `Bearer ${accessToken}` } });
+    const retryHeaders: Record<string, string> = { ...headers };
+    if (accessToken) retryHeaders.Authorization = `Bearer ${accessToken}`;
+    response = await fetch(url, { credentials: 'include', ...options, headers: retryHeaders });
     requireCurrent(generation);
     if (response.status === 401) setAuthSession(null);
   }

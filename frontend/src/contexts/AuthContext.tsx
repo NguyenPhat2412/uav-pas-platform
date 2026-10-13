@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const permissionQuery = useQuery({
     queryKey: ['session', user?.id ?? 'anonymous', 'permissions'],
     queryFn: ({ signal }) => apiClient.get<string[]>('/api/v1/permissions/me', { signal }),
-    enabled: !!user && !!token,
+    enabled: !!user,
     staleTime: 0,
     refetchInterval: 15_000,
     refetchOnWindowFocus: true,
@@ -42,19 +42,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const receiveSession = (event: Event) => {
       const session = (event as CustomEvent<AuthResponse | null>).detail;
-      if (!session || identity.current !== session.user.id) {
+      if (!session || identity.current !== session.user?.id) {
         void client.cancelQueries();
         client.clear();
         permissionSignature.current = null;
       }
-      identity.current = session?.user.id ?? null;
-      setToken(session?.accessToken ?? null);
+      identity.current = session?.user?.id ?? null;
+      setToken(session ? 'cookie' : null);
       setUser(session?.user ?? null);
       setIsLoading(false);
     };
     const permissionsChanged = () => void client.invalidateQueries({ queryKey: ['session', identity.current ?? 'anonymous', 'permissions'] });
     const storageChanged = (event: StorageEvent) => {
-      if (event.key === 'token' || event.key === null) {
+      if (event.key === 'token' || event.key === 'uav_session' || event.key === null) {
         // Other-tab account changes must never reuse the current tab's cache or identity.
         window.location.reload();
       }
@@ -73,17 +73,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let active = true;
     const initialize = async () => {
       try {
-        const stored = localStorage.getItem('token');
-        if (stored) {
-          const current = await authService.getMe();
-          if (active) {
-            identity.current = current.id;
-            setUser(current);
-            setToken(localStorage.getItem('token'));
-          }
+        // With HttpOnly cookies, browser sends uav_access_token automatically
+        const current = await authService.getMe();
+        if (active && current) {
+          identity.current = current.id;
+          setUser(current);
+          setToken('cookie');
         }
       } catch (error) {
-        if (active && !(error instanceof Error && error.name === 'AbortError')) setAuthSession(null);
+        if (active && !(error instanceof Error && error.name === 'AbortError')) {
+          identity.current = null;
+          setUser(null);
+          setToken(null);
+          setAuthSession(null);
+        }
       } finally { if (active) setIsLoading(false); }
     };
     void initialize();
@@ -101,10 +104,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [permissionQuery.data, client]);
 
   const authenticate = useCallback(async (action: () => Promise<AuthResponse>) => {
-    setAuthSession(null);
     setIsLoading(true);
     try {
       const response = await action();
+      identity.current = response.user.id;
+      setUser(response.user);
+      setToken('cookie');
       setAuthSession(response);
       return response;
     } finally { setIsLoading(false); }
@@ -112,15 +117,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback((usernameOrEmail: string, password: string) => authenticate(() => authService.login({ usernameOrEmail, password })), [authenticate]);
   const register = useCallback((data: RegisterRequest) => authService.register(data), []);
   const logout = useCallback(async () => {
-    const accessToken = localStorage.getItem('token');
-    const refreshToken = localStorage.getItem('refreshToken');
+    identity.current = null;
+    setUser(null);
+    setToken(null);
     setAuthSession(null);
+    void client.cancelQueries();
+    client.clear();
     try {
-      await apiClient.post('/api/v1/auth/logout', { refreshToken }, { headers: { Authorization: `Bearer ${accessToken || ''}` } });
+      // Backend invalidates session and clears uav_access_token and uav_refresh_token cookies via Set-Cookie
+      await authService.logout();
     } catch { /* The local session is already cleared; failure cannot restore private data. */ }
-  }, []);
+  }, [client]);
   const permissions = permissionQuery.isError ? [] : permissionQuery.data ?? [];
-  return <AuthContext.Provider value={{ user, token, isLoading, isAuthenticated: !!user && !!token,
+  return <AuthContext.Provider value={{ user, token, isLoading, isAuthenticated: !!user,
     permissions, permissionsReady: permissionQuery.isSuccess, permissionError: permissionQuery.error,
     can: code => permissions.includes(code), refreshPermissions: permissionQuery.refetch,
     login, register, logout }}>{children}</AuthContext.Provider>;

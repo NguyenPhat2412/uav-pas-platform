@@ -20,14 +20,23 @@ let sessionGeneration = 0;
 let refreshFlight: { generation: number; promise: Promise<string> } | undefined;
 
 function currentToken() {
-  return typeof window === 'undefined' ? null : window.localStorage.getItem('token');
+  if (typeof window === 'undefined' || typeof document !== 'undefined') return null;
+  return window.localStorage.getItem('token');
 }
 
 function storeSession(session: { accessToken?: string; refreshToken?: string } | null) {
   if (typeof window === 'undefined') return;
-  const values: Record<string, string | undefined> = { token: session?.accessToken, refreshToken: session?.refreshToken };
-  for (const [key, value] of Object.entries(values)) {
-    if (value) window.localStorage.setItem(key, value); else window.localStorage.removeItem(key);
+  const isBrowser = typeof document !== 'undefined';
+  if (isBrowser) {
+    try {
+      window.localStorage.removeItem('token');
+      window.localStorage.removeItem('refreshToken');
+    } catch {}
+  } else {
+    const values: Record<string, string | undefined> = { token: session?.accessToken, refreshToken: session?.refreshToken };
+    for (const [key, value] of Object.entries(values)) {
+      if (value) window.localStorage.setItem(key, value); else window.localStorage.removeItem(key);
+    }
   }
   window.dispatchEvent(new CustomEvent(SESSION_EVENT, { detail: session }));
 }
@@ -41,13 +50,21 @@ function requireCurrent(generation: number) {
   if (generation !== sessionGeneration) throw new DOMException('Session changed', 'AbortError');
 }
 
+function readCookie(name: string) {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 async function refreshAccess(generation: number) {
   if (refreshFlight?.generation === generation) return refreshFlight.promise;
   const promise = (async () => {
     const refreshToken = typeof window === 'undefined' ? null : window.localStorage.getItem('refreshToken');
-    if (!refreshToken) throw new ApiError(401, 'Unauthorized', 'Phiên đăng nhập đã hết hạn.');
     const response = await fetch(`${baseUrl}/api/v1/auth/refresh`, {
-      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ refreshToken }),
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'content-type': 'application/json' },
+      body: refreshToken ? JSON.stringify({ refreshToken }) : JSON.stringify({}),
     });
     requireCurrent(generation);
     if (!response.ok) {
@@ -55,9 +72,8 @@ async function refreshAccess(generation: number) {
       throw new ApiError(401, 'Unauthorized', 'Phiên đăng nhập đã hết hạn.');
     }
     const session = await response.json() as { accessToken?: string; refreshToken?: string };
-    if (!session.accessToken) throw new ApiError(401, 'Unauthorized', 'Phiên đăng nhập không hợp lệ.');
     storeSession(session);
-    return session.accessToken;
+    return session.accessToken || '';
   })();
   refreshFlight = { generation, promise };
   try { return await promise; } finally { if (refreshFlight?.promise === promise) refreshFlight = undefined; }
@@ -70,8 +86,13 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
   if (!headers.has('content-type') && options.body !== undefined) headers.set('content-type', 'application/json');
   const token = currentToken();
   if (token && !headers.has('authorization')) headers.set('authorization', `Bearer ${token}`);
+  const method = (options.method ?? 'GET').toUpperCase();
+  if (typeof document !== 'undefined' && !['GET', 'HEAD', 'OPTIONS'].includes(method) && !headers.has('x-xsrf-token')) {
+    const csrf = readCookie('XSRF-TOKEN');
+    if (csrf) headers.set('x-xsrf-token', csrf);
+  }
   let response: Response;
-  try { response = await fetch(url, { ...options, headers }); }
+  try { response = await fetch(url, { credentials: 'include', ...options, headers }); }
   catch (error) {
     if (error instanceof Error && error.name === 'AbortError') throw error;
     throw new ApiError(0, 'NetworkError', error instanceof Error ? error.message : 'Network error');
@@ -83,8 +104,8 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
     const accessToken = latest && latest !== token ? latest : await refreshAccess(generation);
     requireCurrent(generation);
     const retryHeaders = new Headers(headers);
-    retryHeaders.set('authorization', `Bearer ${accessToken}`);
-    response = await fetch(url, { ...options, headers: retryHeaders });
+    if (accessToken) retryHeaders.set('authorization', `Bearer ${accessToken}`);
+    response = await fetch(url, { credentials: 'include', ...options, headers: retryHeaders });
     requireCurrent(generation);
     if (response.status === 401) setAuthSession(null);
   }

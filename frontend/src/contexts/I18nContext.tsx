@@ -13,17 +13,20 @@ import {
   LocaleInput,
   LocaleMeta,
   defaultLocale,
+  supportedLocales,
   localeMetaMap,
   normalizeLocale,
 } from '@/i18n/config';
 import viMessages from '@/messages/vi.json';
 import enMessages from '@/messages/en.json';
+import jaMessages from '@/messages/ja.json';
 
 type MessageRecord = Record<string, unknown>;
 
 const messagesMap: Record<SupportedLocale, MessageRecord> = {
   vi: viMessages as MessageRecord,
   en: enMessages as MessageRecord,
+  ja: jaMessages as MessageRecord,
 };
 
 interface I18nContextType {
@@ -33,6 +36,7 @@ interface I18nContextType {
   toggleLocale: () => void;
   isVietnamese: boolean;
   isEnglish: boolean;
+  isJapanese: boolean;
   t: (key: string, params?: Record<string, string | number>) => string;
 }
 
@@ -44,6 +48,13 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<SupportedLocale>(() => {
     if (typeof window !== 'undefined') {
       try {
+        const params = new URLSearchParams(window.location.search);
+        const queryLang = params.get('lang') || params.get('locale');
+        if (queryLang) {
+          const normalized = normalizeLocale(queryLang);
+          try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
+          return normalized;
+        }
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
           return normalizeLocale(saved);
@@ -54,6 +65,26 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     }
     return defaultLocale;
   });
+
+  // Sync client query param and local storage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const queryLang = params.get('lang') || params.get('locale');
+        if (queryLang) {
+          const normalized = normalizeLocale(queryLang);
+          setLocaleState(normalized);
+          try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
+          return;
+        }
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          setLocaleState(normalizeLocale(saved));
+        }
+      } catch {}
+    }
+  }, []);
 
   // Sync html lang attribute
   useEffect(() => {
@@ -73,7 +104,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const toggleLocale = useCallback(() => {
-    setLocale(locale === 'vi' ? 'en' : 'vi');
+    const nextIndex = (supportedLocales.indexOf(locale) + 1) % supportedLocales.length;
+    setLocale(supportedLocales[nextIndex]);
   }, [locale, setLocale]);
 
   const t = useCallback(
@@ -123,6 +155,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     toggleLocale,
     isVietnamese: locale === 'vi',
     isEnglish: locale === 'en',
+    isJapanese: locale === 'ja',
     t,
   };
 

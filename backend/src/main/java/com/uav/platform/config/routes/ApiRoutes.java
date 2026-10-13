@@ -133,6 +133,12 @@ public final class ApiRoutes {
             Docs.SWAGGER_HTML
     };
 
+    public static final class Webhook {
+        private Webhook() {}
+        public static final String BASE = API_V1_PREFIX + "/billing/webhook";
+        public static final String WILDCARD = BASE + "/**";
+    }
+
     /**
      * Danh sách route Auth công khai (cho phép truy cập trước khi đăng nhập)
      */

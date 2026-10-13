@@ -37,6 +37,9 @@ import com.uav.platform.modules.uav.entity.Uav;
 import com.uav.platform.modules.uav.common.UavStatus;
 import com.uav.platform.modules.uav.repository.UavRepository;
 import com.uav.platform.modules.mission.service.MissionService;
+import com.uav.platform.modules.notification.common.NotificationType;
+import com.uav.platform.modules.notification.config.request.CreateNotificationRequest;
+import com.uav.platform.modules.notification.service.NotificationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -65,6 +68,7 @@ public class IMissionService implements MissionService {
     private com.uav.platform.modules.media.service.MediaAccessService mediaAccess;
     private final MissionMediaRepository missionMedia;
     private final com.uav.platform.modules.uav.service.UavService uavService;
+    private final NotificationService notifications;
 
     public IMissionService(MissionRepository missions, UavServiceRepository services, UserRepository users,
                               PermissionService permissions, AuditLogService audit, MissionEventRepository events) {
@@ -73,6 +77,7 @@ public class IMissionService implements MissionService {
         this.stations = null; this.uavs = null; this.equipment = null; this.inventory = null; this.reservations = null;
         this.mediaAssets = null; this.missionMedia = null;
         this.uavService = null;
+        this.notifications = null;
     }
 
     public IMissionService(MissionRepository missions, UavServiceRepository services, UserRepository users,
@@ -84,6 +89,16 @@ public class IMissionService implements MissionService {
         this.stations = stations; this.uavs = uavs; this.equipment = equipment; this.inventory = inventory; this.reservations = reservations;
         this.mediaAssets = null; this.missionMedia = null;
         this.uavService = null;
+        this.notifications = null;
+    }
+
+    public IMissionService(MissionRepository missions, UavServiceRepository services, UserRepository users,
+                              PermissionService permissions, AuditLogService audit, MissionEventRepository events,
+                              StationRepository stations, UavRepository uavs, EquipmentRepository equipment,
+                              InventoryService inventory, MissionEquipmentReservationRepository reservations,
+                              MediaAssetRepository mediaAssets, MissionMediaRepository missionMedia, com.uav.platform.modules.uav.service.UavService uavService) {
+        this(missions, services, users, permissions, audit, events, stations, uavs, equipment, inventory,
+                reservations, mediaAssets, missionMedia, uavService, null);
     }
 
     @Autowired
@@ -91,11 +106,13 @@ public class IMissionService implements MissionService {
                               PermissionService permissions, AuditLogService audit, MissionEventRepository events,
                               StationRepository stations, UavRepository uavs, EquipmentRepository equipment,
                               InventoryService inventory, MissionEquipmentReservationRepository reservations,
-                              MediaAssetRepository mediaAssets, MissionMediaRepository missionMedia, com.uav.platform.modules.uav.service.UavService uavService) {
+                              MediaAssetRepository mediaAssets, MissionMediaRepository missionMedia, com.uav.platform.modules.uav.service.UavService uavService,
+                              NotificationService notifications) {
         this.missions = missions; this.services = services; this.users = users; this.permissions = permissions; this.audit = audit; this.events = events;
         this.stations = stations; this.uavs = uavs; this.equipment = equipment; this.inventory = inventory; this.reservations = reservations;
         this.mediaAssets = mediaAssets; this.missionMedia = missionMedia;
         this.uavService = uavService;
+        this.notifications = notifications;
     }
 
     @Override
@@ -262,6 +279,7 @@ public class IMissionService implements MissionService {
     public MissionResponse reject(Long id, String reason, Authentication authentication) {
         Mission mission = accessible(id, authentication);
         MissionStatus old = mission.getStatus();
+        releaseResources(mission, authentication.getName());
         mission.transitionTo(MissionStatus.REJECTED);
         event(mission, MissionEventType.REJECTED, authentication, old, mission.getStatus(), reason);
         audit.record(null, authentication.getName(), AuditAction.STATUS_CHANGE, "MISSION", id.toString(), "REJECTED:" + reason);
@@ -425,6 +443,31 @@ public class IMissionService implements MissionService {
                        MissionStatus oldStatus, MissionStatus newStatus, String description) {
         events.save(new MissionEvent(mission, type, authentication == null ? null : user(authentication.getName()),
                 oldStatus, newStatus, description, null));
+        notifyParties(mission, authentication, type, description);
+    }
+
+    private void notifyParties(Mission mission, Authentication actor, MissionEventType type, String description) {
+        if (notifications == null) return;
+        String actorName = actor == null ? null : actor.getName();
+        AppUser customer = mission.getCustomer();
+        AppUser operator = mission.getOperator();
+        notifyUser(customer, actorName, mission, type, description);
+        if (operator != null && (customer == null || !operator.getId().equals(customer.getId()))) {
+            notifyUser(operator, actorName, mission, type, description);
+        }
+    }
+
+    private void notifyUser(AppUser recipient, String actorName, Mission mission, MissionEventType type, String description) {
+        if (recipient == null || recipient.getId() == null || recipient.getUsername().equals(actorName)) return;
+        NotificationType notificationType = type == MissionEventType.OPERATOR_ASSIGNED
+                ? NotificationType.MISSION_ASSIGNED : NotificationType.MISSION_STATUS_CHANGED;
+        String title = "Mission " + (mission.getCode() == null ? mission.getId() : mission.getCode());
+        String content = description == null || description.isBlank() ? type.name() : description;
+        try {
+            notifications.sendNotification(new CreateNotificationRequest(
+                    recipient.getId(), title, content, notificationType, "MISSION", mission.getId()));
+        } catch (RuntimeException ignored) {
+        }
     }
 
     private void releaseResources(Mission mission, String actor) {

@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   ShieldCheck,
   Satellite,
+  PlaneTakeoff,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
@@ -73,14 +74,14 @@ export function RegisterForm({ onSuccess, redirectTo = '/login' }: RegisterFormP
 
   return (
     <div className="w-full">
-      {/* Header */}
-      <div className="mb-8">
-        <h2 className="font-headline-lg text-headline-lg font-semibold text-on-surface leading-tight tracking-tight mb-2">
+      {/* Header - Single line, no tiny description */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-[#202020] whitespace-nowrap flex items-center gap-2.5">
+          <span className="p-1.5 rounded-lg bg-[#ebf4fb] text-[#00558f] inline-flex items-center justify-center">
+            <PlaneTakeoff size={22} className="animate-bounce" />
+          </span>
           {t('auth.registerTitle')}
         </h2>
-        <p className="font-body-lg text-body-lg text-secondary leading-relaxed">
-          {t('auth.registerSubtitle')}
-        </p>
       </div>
 
       {/* Error alert */}
@@ -133,7 +134,6 @@ export function RegisterForm({ onSuccess, redirectTo = '/login' }: RegisterFormP
           autoComplete="new-password"
           required
           minLength={8}
-          helperText={t('auth.passwordMin')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />

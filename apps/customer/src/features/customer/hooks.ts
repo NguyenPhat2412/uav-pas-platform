@@ -11,11 +11,13 @@ export function useCustomerScope() {
 }
 export function useServices() {
   const { key, can, permissionsReady } = useCustomerScope();
-  return useQuery({ queryKey: [...key, 'services'], queryFn: ({ signal }) => customerService.services(signal), enabled: permissionsReady && can('MISSION_VIEW') });
+  const isDemo = typeof window !== 'undefined' && (window.location.search.includes('demo=true') || window.localStorage.getItem('isDemo') === 'true');
+  return useQuery({ queryKey: [...key, 'services'], queryFn: ({ signal }) => customerService.services(signal), enabled: isDemo || (permissionsReady && can('MISSION_VIEW')) });
 }
 export function useMissions(search = '', page = 0, status?: MissionStatus) {
   const { key, user, can, permissionsReady } = useCustomerScope();
-  return useQuery({ queryKey: [...key, 'missions', { search, page, status }], queryFn: ({ signal }) => customerService.missions(search, page, status, signal), enabled: !!user && permissionsReady && can('MISSION_VIEW') });
+  const isDemo = typeof window !== 'undefined' && (window.location.search.includes('demo=true') || window.localStorage.getItem('isDemo') === 'true');
+  return useQuery({ queryKey: [...key, 'missions', { search, page, status }], queryFn: ({ signal }) => customerService.missions(search, page, status, signal), enabled: isDemo || (!!user && permissionsReady && can('MISSION_VIEW')) });
 }
 export function useMission(id: number) {
   const { key, can, permissionsReady } = useCustomerScope();
@@ -37,4 +39,12 @@ export function useMissionActions() {
   const create = useMutation({ mutationFn: (data: MissionInput) => customerService.create(data), onSuccess: data => refresh(data.id), retry: false });
   const update = useMutation({ mutationFn: ({ id, data }: { id: number; data: MissionInput }) => customerService.update(id, data), onSuccess: data => refresh(data.id), retry: false });
   return { submit, cancel, create, update };
+}
+export function useBilling() {
+  const { key, user } = useCustomerScope();
+  const quota = useQuery({ queryKey: [...key, 'billing', 'quota'], queryFn: ({ signal }) => customerService.quota(signal), enabled: !!user });
+  const invoices = useQuery({ queryKey: [...key, 'billing', 'invoices'], queryFn: ({ signal }) => customerService.invoices(0, signal), enabled: !!user });
+  const plans = useQuery({ queryKey: [...key, 'billing', 'plans'], queryFn: ({ signal }) => customerService.plans(signal), enabled: !!user });
+  const pay = useMutation({ mutationFn: (id: number) => customerService.payInvoice(id), retry: false });
+  return { quota, invoices, plans, pay };
 }

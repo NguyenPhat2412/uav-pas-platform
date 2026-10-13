@@ -20,3 +20,4 @@ node_modules/
 # Local analysis and test artifacts
 work/
 .codebase-memory/
+/*.png

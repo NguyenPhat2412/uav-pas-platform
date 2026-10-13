@@ -33,3 +33,6 @@ export interface DashboardSummary { totalUsers: number; totalStations: number; t
 export interface AuditLog { id: number; actorUserId: number; actorUsername: string; action: string; entityType: string; entityId: string; details: string; createdAt: string; }
 
 export const roles: UserRole[] = ['ROLE_PILOT', 'ROLE_COMMANDER', 'ROLE_OPERATOR', 'ROLE_ADMIN'];
+
+export interface ServicePlan { id: number; code: string; name: string; price: number; billingCycle: string; maxMonthlyFlightHours: number; maxConcurrentUavs: number; allowSarAi: boolean; description?: string; active: boolean; }
+export interface UserQuota { id: number; userId: number; username: string; fullName?: string; planCode: string; planName: string; flightHoursUsed: number; flightHoursLimit: number; flightHoursRemaining: number; concurrentUavsUsed: number; concurrentUavsLimit: number; cycleStart: string; cycleEnd: string; }

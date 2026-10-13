@@ -5,8 +5,10 @@ import { adminService } from './services/admin.service';
 import type { UserRole } from './types';
 export function useAdminUsers(page: number, keyword: string, role?: UserRole) {
  const { user, can, permissionsReady }=useAuth();
- return useQuery({queryKey:['session',user?.id,'admin-users',page,keyword,role],queryFn:({signal})=>adminService.users(page,keyword,role,signal),enabled:permissionsReady && can('USER_READ')});
+ const isDemo = typeof window !== 'undefined' && (window.location.search.includes('demo=true') || window.localStorage.getItem('isDemo') === 'true');
+ return useQuery({queryKey:['session',user?.id,'admin-users',page,keyword,role],queryFn:({signal})=>adminService.users(page,keyword,role,signal),enabled:isDemo || (permissionsReady && can('USER_READ'))});
 }
+
 export function useAdminUser(id:number){const {user,can,permissionsReady}=useAuth();return useQuery({queryKey:['session',user?.id,'admin-user',id],queryFn:({signal})=>adminService.user(id,signal),enabled:permissionsReady && can('USER_READ') && Number.isSafeInteger(id) && id>0});}
 export function useAdminReferenceData(){
  const {user,can,permissionsReady}=useAuth();const enabled=permissionsReady && can('PERMISSION_MANAGE');

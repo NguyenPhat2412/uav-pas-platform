@@ -1,0 +1,48 @@
+{
+  "common": {
+    "appTitle": "UAV PAS Customer Portal",
+    "language": "言語",
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "japanese": "日本語",
+    "loading": "読み込み中...",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "retry": "再試行",
+    "back": "戻る",
+    "close": "閉じる",
+    "logout": "ログアウト",
+    "status": "ステータス",
+    "skipToContent": "本文へスキップ",
+    "authenticating": "認証中...",
+    "checkingPermissions": "権限を確認中...",
+    "permissionError": "アクセス権限を確認できません。",
+    "permissionDenied": "このアカウントには本機能の権限が付与されていません。"
+  },
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "services": "UAVサービス",
+    "missions": "マイミッション",
+    "billing": "プラン・請求",
+    "notifications": "通知",
+    "profile": "アカウント情報",
+    "portalTitle": "カスタマーポータル"
+  },
+  "billing": {
+    "title": "サービスプラン & 利用枠",
+    "subtitle": "月間飛行時間、同時運用UAV上限、サービス請求書の支払い管理",
+    "currentPlan": "現在の契約プラン",
+    "flightHours": "月間飛行時間",
+    "concurrentUavs": "同時運用機数",
+    "unpaidInvoices": "未払い請求書",
+    "payNow": "今すぐ支払う",
+    "vietQrTitle": "VietQR 決済"
+  },
+  "notifications": {
+    "title": "通知センター",
+    "subtitle": "飛行進捗、請求書更新、システムアラート",
+    "markAllRead": "すべて既読にする",
+    "noNotifications": "通知はありません"
+  }
+}

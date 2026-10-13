@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { FileKey2, KeyRound, LayoutDashboard, LogOut, Menu, PlaneTakeoff, ShieldCheck, Users, X } from 'lucide-react';
+import { BarChart3, CreditCard, FileKey2, KeyRound, LayoutDashboard, LogOut, Menu, PlaneTakeoff, Radio, Settings, ShieldCheck, Users, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
@@ -16,6 +16,10 @@ const nav = [
   { href: '/access-control', label: 'Kiểm soát truy cập', icon: ShieldCheck, permission: 'PERMISSION_MANAGE' },
   { href: '/role-templates', label: 'Mẫu vai trò', icon: KeyRound, permission: 'PERMISSION_MANAGE' },
   { href: '/permissions', label: 'Danh mục quyền', icon: FileKey2, permission: 'PERMISSION_MANAGE' },
+  { href: '/billing', label: 'Gói cước & Hạn mức', icon: CreditCard, permission: 'PERMISSION_MANAGE' },
+  { href: '/reports', label: 'Báo cáo & Thống kê', icon: BarChart3, permission: 'DASHBOARD_READ' },
+  { href: '/webhooks', label: 'Webhooks & Tích hợp', icon: Radio, permission: 'PERMISSION_MANAGE' },
+  { href: '/settings', label: 'Cấu hình hệ thống', icon: Settings, permission: 'PERMISSION_MANAGE' },
   { href: '/audit-logs', label: 'Nhật ký quản trị', icon: FileKey2, permission: 'AUDIT_READ' },
 ];
 
@@ -25,7 +29,7 @@ export function AppShell({ children, activeResource }: { children: React.ReactNo
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const name = user?.fullName || user?.username || 'Tài khoản';
-  const visibleNav = nav.filter(item => !permissionsReady || can(item.permission));
+  const visibleNav = nav.filter(item => !item.permission || !permissionsReady || can(item.permission));
   return <div className="app-shell"><a className="skip-link" href="#workspace">Bỏ qua tới nội dung</a><aside className={cn('app-rail', open && 'app-rail-open')}>
     <Link href="/dashboard" className="app-brand" onClick={() => setOpen(false)}><span className="app-brand-mark"><PlaneTakeoff size={22} /></span><span><strong>UAV PAS</strong><small>Administration</small></span></Link>
     <button type="button" className="rail-close icon-button" aria-label="Đóng điều hướng" onClick={() => setOpen(false)}><X size={18} /></button>

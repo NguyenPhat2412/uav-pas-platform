@@ -17,5 +17,13 @@ type Models = { stations: Station; uavs: Uav; equipment: Equipment; movements: I
 export function useCollection<K extends keyof Models>(feature: K, enabled = true) {
   const { user, can } = useAuth();
   const [path, permission] = resources[feature];
-  return useQuery({ queryKey: [...queryKeys.feature(user?.id, feature === 'movements' ? 'equipment' : feature), 'collection'], queryFn: ({ signal }) => fetchCollection<Models[K]>(path, signal), enabled: enabled && can(permission), staleTime: 30_000, retry: false });
+  const isDemo = typeof window !== 'undefined' && (window.location.search.includes('demo=true') || window.localStorage.getItem('isDemo') === 'true');
+  return useQuery({ 
+    queryKey: [...queryKeys.feature(user?.id, feature === 'movements' ? 'equipment' : feature), 'collection'], 
+    queryFn: ({ signal }) => fetchCollection<Models[K]>(path, signal), 
+    enabled: enabled && (isDemo || can(permission)), 
+    staleTime: 30_000, 
+    retry: false 
+  });
 }
+

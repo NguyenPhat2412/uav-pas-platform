@@ -18,6 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import com.uav.platform.security.AuthCookieHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import java.util.Map;
 
 @RestController
@@ -26,9 +29,19 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final AuthCookieHelper authCookieHelper;
 
     public AuthController(AuthService authService) {
+        this(authService, null);
+    }
+
+    @Autowired
+    public AuthController(
+            AuthService authService,
+            @Autowired(required = false) AuthCookieHelper authCookieHelper
+    ) {
         this.authService = authService;
+        this.authCookieHelper = authCookieHelper;
     }
 
     @Operation(summary = CoreConstants.AUTH_OP_REGISTER_SUMMARY)
@@ -42,14 +55,42 @@ public class AuthController {
     @PostMapping(RestEndpoint.LOGIN)
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
-        return ResponseEntity.ok(response);
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (authCookieHelper != null) {
+            if (response.accessToken() != null) {
+                builder.header(HttpHeaders.SET_COOKIE, authCookieHelper.createAccessTokenCookie(response.accessToken(), 86400).toString());
+            }
+            if (response.refreshToken() != null) {
+                builder.header(HttpHeaders.SET_COOKIE, authCookieHelper.createRefreshTokenCookie(response.refreshToken(), 604800).toString());
+            }
+        }
+        return builder.body(response);
     }
 
     @Operation(summary = "Refresh access token using refresh token")
     @PostMapping(RestEndpoint.REFRESH)
-    public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
-        AuthResponse response = authService.refreshToken(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<AuthResponse> refreshToken(
+            HttpServletRequest httpRequest,
+            @RequestBody(required = false) RefreshTokenRequest request
+    ) {
+        String tokenString = request != null ? request.refreshToken() : null;
+        if ((tokenString == null || tokenString.isBlank()) && authCookieHelper != null) {
+            tokenString = authCookieHelper.resolveRefreshToken(httpRequest);
+        }
+        if (tokenString == null || tokenString.isBlank()) {
+            throw SystemException.badRequest("Refresh token is required");
+        }
+        AuthResponse response = authService.refreshToken(new RefreshTokenRequest(tokenString));
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (authCookieHelper != null) {
+            if (response.accessToken() != null) {
+                builder.header(HttpHeaders.SET_COOKIE, authCookieHelper.createAccessTokenCookie(response.accessToken(), 86400).toString());
+            }
+            if (response.refreshToken() != null) {
+                builder.header(HttpHeaders.SET_COOKIE, authCookieHelper.createRefreshTokenCookie(response.refreshToken(), 604800).toString());
+            }
+        }
+        return builder.body(response);
     }
 
     @Operation(summary = "Logout user and invalidate tokens")
@@ -62,12 +103,24 @@ public class AuthController {
         String accessToken = null;
         if (authHeader != null && authHeader.trim().regionMatches(true, 0, "Bearer ", 0, 7)) {
             accessToken = authHeader.trim().substring(7).trim();
+        } else if (authCookieHelper != null) {
+            accessToken = authCookieHelper.resolveAccessToken(request);
         }
 
         String refreshToken = logoutRequest != null ? logoutRequest.refreshToken() : null;
+        if ((refreshToken == null || refreshToken.isBlank()) && authCookieHelper != null) {
+            refreshToken = authCookieHelper.resolveRefreshToken(request);
+        }
+
         authService.logout(accessToken, refreshToken);
 
-        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (authCookieHelper != null) {
+            builder.header(HttpHeaders.SET_COOKIE, authCookieHelper.clearAccessTokenCookie().toString());
+            builder.header(HttpHeaders.SET_COOKIE, authCookieHelper.clearRefreshTokenCookie().toString());
+        }
+
+        return builder.body(Map.of("message", "Logged out successfully"));
     }
 
     @Operation(summary = CoreConstants.AUTH_OP_ME_SUMMARY)

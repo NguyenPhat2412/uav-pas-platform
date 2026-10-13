@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import com.uav.platform.security.AuthCookieHelper;
 import java.util.List;
 
 @Component
@@ -25,20 +26,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final InvalidatedTokenService invalidatedTokenService;
     private final UserRepository userRepository;
+    private final AuthCookieHelper authCookieHelper;
 
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
-        this(jwtTokenProvider, null, null);
+        this(jwtTokenProvider, null, null, null);
     }
 
     @Autowired
     public JwtAuthenticationFilter(
             JwtTokenProvider jwtTokenProvider,
             @Autowired(required = false) InvalidatedTokenService invalidatedTokenService,
-            @Autowired(required = false) UserRepository userRepository
+            @Autowired(required = false) UserRepository userRepository,
+            @Autowired(required = false) AuthCookieHelper authCookieHelper
     ) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.invalidatedTokenService = invalidatedTokenService;
         this.userRepository = userRepository;
+        this.authCookieHelper = authCookieHelper;
     }
 
     @Override
@@ -83,6 +87,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.trim().regionMatches(true, 0, "Bearer ", 0, 7)) {
             return bearerToken.trim().substring(7).trim();
+        }
+        if (authCookieHelper != null) {
+            String cookieToken = authCookieHelper.resolveAccessToken(request);
+            if (StringUtils.hasText(cookieToken)) {
+                return cookieToken.trim();
+            }
         }
         return null;
     }

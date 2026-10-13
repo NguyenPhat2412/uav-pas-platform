@@ -8,3 +8,5 @@ export * from './Spinner';
 export * from './LanguageSwitcher';
 export * from './StatusBadge';
 export * from './KpiCard';
+export * from './ErrorBoundary';
+
