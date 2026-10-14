@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AdminPage } from '@/components/layout/AdminPage';
+import { adminService } from '@/features/admin/services/admin.service';
+import type { WebhookEndpointItem as WebhookItem, WebhookDeliveryLogItem as DeliveryLogItem } from '@/features/admin/types';
 import { 
   Radio, 
   Send, 
@@ -14,15 +16,6 @@ import {
   KeyRound,
   RotateCw
 } from 'lucide-react';
-
-interface WebhookItem {
-  id: number;
-  name: string;
-  targetUrl: string;
-  secretKey: string;
-  eventsSubscribed: string;
-  isActive: boolean;
-}
 
 const DEFAULT_WEBHOOKS: WebhookItem[] = [
   {
@@ -51,16 +44,6 @@ const DEFAULT_WEBHOOKS: WebhookItem[] = [
   },
 ];
 
-interface DeliveryLogItem {
-  id: string;
-  targetName: string;
-  eventType: string;
-  statusCode: number;
-  durationMs: number;
-  timestamp: string;
-  signature: string;
-}
-
 const INITIAL_LOGS: DeliveryLogItem[] = [
   {
     id: 'LOG-8819',
@@ -88,8 +71,20 @@ function WebhooksContent() {
   const [isDispatching, setIsDispatching] = useState(false);
   const [dispatchSuccessMsg, setDispatchSuccessMsg] = useState<string | null>(null);
 
+  useEffect(() => {
+    adminService.webhooks()
+      .then(res => { if (Array.isArray(res) && res.length > 0) setWebhooks(res); })
+      .catch(() => {});
+    adminService.webhookLogs()
+      .then(res => { if (Array.isArray(res) && res.length > 0) setLogs(res); })
+      .catch(() => {});
+  }, []);
+
   const handleTestDispatch = () => {
     setIsDispatching(true);
+    if (webhooks[0]?.id) {
+      adminService.triggerWebhookTest(webhooks[0].id).catch(() => {});
+    }
     setTimeout(() => {
       const newLog: DeliveryLogItem = {
         id: 'LOG-' + Math.floor(1000 + Math.random() * 9000),

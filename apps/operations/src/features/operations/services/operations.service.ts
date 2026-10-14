@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api.client';
+import { API_ROUTES, apiClient } from '@/lib/api.client';
 import { DEMO_AUDIT, DEMO_EQUIPMENT, DEMO_MEDIA, DEMO_MOVEMENTS, DEMO_STATIONS, DEMO_UAVS } from '@/lib/collection';
 import type { AuditLog, Equipment, InventoryMovement, MediaAsset, Operator, PageResponse, Station, Uav, UavHistory } from '../types/operations.types';
 
@@ -73,4 +73,12 @@ export const operationsService = {
   deleteMedia: (id: number) => apiClient.delete<void>(`/api/v1/media/${id}`),
   listAudit: (page = 0, signal?: AbortSignal) =>
     apiClient.get<PageResponse<AuditLog>>(`/api/v1/audit-logs?page=${page}&size=20`, { signal }).catch(() => toPage(DEMO_AUDIT as AuditLog[], page, 20)),
+  notifications: (page = 0, size = 20, signal?: AbortSignal) =>
+    apiClient.get(`${API_ROUTES.notifications.list}?page=${page}&size=${size}`, { signal }),
+  unreadCount: (signal?: AbortSignal) =>
+    apiClient.get<{ count: number }>(API_ROUTES.notifications.unreadCount, { signal }),
+  markNotificationRead: (id: string | number) =>
+    apiClient.patch(API_ROUTES.notifications.markRead(String(id))),
+  markAllNotificationsRead: () =>
+    apiClient.patch(API_ROUTES.notifications.markAllRead),
 };

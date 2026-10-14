@@ -1,5 +1,20 @@
-import { apiClient } from '@/lib/api.client';
-import type { AuditLog, DashboardSummary, PageResponse, Permission, RoleTemplate, ServicePlan, User, UserPermission, UserQuota, UserRole } from '../types';
+import { API_ROUTES, apiClient } from '@/lib/api.client';
+import type {
+  AuditLog,
+  DashboardSummary,
+  OperationsReportData,
+  PageResponse,
+  Permission,
+  RoleTemplate,
+  ServicePlan,
+  SystemSettingItem,
+  User,
+  UserPermission,
+  UserQuota,
+  UserRole,
+  WebhookDeliveryLogItem,
+  WebhookEndpointItem,
+} from '../types';
 
 const query = (params: Record<string, string | number | undefined>) => {
   const search = new URLSearchParams();
@@ -87,8 +102,15 @@ export const adminService = {
       return DEMO_AUDIT_LOGS;
     }
   },
-  billingPlans: (signal?: AbortSignal) => apiClient.get<ServicePlan[]>('/api/v1/billing/plans', { signal }),
+  billingPlans: (signal?: AbortSignal) => apiClient.get<ServicePlan[]>(API_ROUTES.billing.plans, { signal }),
   billingQuotas: (page = 0, signal?: AbortSignal) => apiClient.get<PageResponse<UserQuota>>(`/api/v1/billing/admin/quotas?${query({ page, size: 20 })}`, { signal }),
   updateQuota: (userId: number, data: { planCode: string; flightHoursLimit: number }) => apiClient.put<UserQuota>(`/api/v1/billing/admin/quotas/${userId}`, data),
+  operationsReport: (signal?: AbortSignal) => apiClient.get<OperationsReportData>(API_ROUTES.reports.operations, { signal }),
+  settings: (signal?: AbortSignal) => apiClient.get<SystemSettingItem[]>(API_ROUTES.settings.list, { signal }),
+  updateSetting: (key: string, value: string) => apiClient.put<void>(API_ROUTES.settings.byKey(key), { value }),
+  webhooks: (signal?: AbortSignal) => apiClient.get<WebhookEndpointItem[]>(API_ROUTES.webhooks.list, { signal }),
+  webhookLogs: (signal?: AbortSignal) => apiClient.get<WebhookDeliveryLogItem[]>(API_ROUTES.webhooks.logs, { signal }),
+  triggerWebhookTest: (id: number | string) => apiClient.post(API_ROUTES.webhooks.test(String(id))),
 };
+
 

@@ -36,3 +36,42 @@ export const roles: UserRole[] = ['ROLE_PILOT', 'ROLE_COMMANDER', 'ROLE_OPERATOR
 
 export interface ServicePlan { id: number; code: string; name: string; price: number; billingCycle: string; maxMonthlyFlightHours: number; maxConcurrentUavs: number; allowSarAi: boolean; description?: string; active: boolean; }
 export interface UserQuota { id: number; userId: number; username: string; fullName?: string; planCode: string; planName: string; flightHoursUsed: number; flightHoursLimit: number; flightHoursRemaining: number; concurrentUavsUsed: number; concurrentUavsLimit: number; cycleStart: string; cycleEnd: string; }
+
+export interface OperationsReportData {
+  totalMissions: number;
+  completedMissions: number;
+  totalFlightHours: number;
+  activeUavs: number;
+  maintenanceUavs: number;
+  totalStations: number;
+  sarOperationsCount: number;
+  victimsRescued: number;
+  successRate: number;
+}
+
+export interface SystemSettingItem {
+  id?: string;
+  configKey: string;
+  configValue: string;
+  category: string;
+  description: string;
+}
+
+export interface WebhookEndpointItem {
+  id: number;
+  name: string;
+  targetUrl: string;
+  secretKey: string;
+  eventsSubscribed: string;
+  isActive: boolean;
+}
+
+export interface WebhookDeliveryLogItem {
+  id: string;
+  targetName: string;
+  eventType: string;
+  statusCode: number;
+  durationMs: number;
+  timestamp: string;
+  signature: string;
+}

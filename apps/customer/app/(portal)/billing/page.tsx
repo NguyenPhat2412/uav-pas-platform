@@ -15,6 +15,7 @@ import {
 import { PageGuard } from '@/components/layout';
 import { ApiError } from '@uav/api-client';
 import { useBilling } from '@/features/customer/hooks';
+import { customerService } from '@/features/customer/service';
 import type { Invoice } from '@/features/customer/types';
 import { generateVietQrPayload } from '@/features/customer/utils/vietqr';
 import { useQueryClient } from '@tanstack/react-query';
@@ -91,11 +92,12 @@ export default function CustomerBillingPage() {
     }
   }, [isDemo]);
 
-  const quota = quotaQuery.data ?? (isDemo ? defaultDemoQuota : undefined);
+  const quota = quotaQuery.data?.planCode ? quotaQuery.data : (isDemo ? defaultDemoQuota : quotaQuery.data);
   const invoices = (invoicesQuery.data?.content && invoicesQuery.data.content.length > 0) 
     ? invoicesQuery.data.content 
     : (isDemo ? defaultDemoInvoices : []);
-  const currentPlan = plansQuery.data?.find(p => p.code === quota?.planCode) ?? (isDemo ? { allowSarAi: true, maxConcurrentUavs: 4, billingCycle: 'Tháng' } : undefined);
+  const plansList = Array.isArray(plansQuery.data) ? plansQuery.data : [];
+  const currentPlan = plansList.find(p => p.code === quota?.planCode) ?? (isDemo ? { allowSarAi: true, maxConcurrentUavs: 4, billingCycle: 'Tháng' } : undefined);
   const queryError = isDemo ? null : (quotaQuery.error ?? invoicesQuery.error);
   const isLoading = isDemo ? false : (quotaQuery.isLoading || invoicesQuery.isLoading);
 
@@ -321,18 +323,13 @@ export default function CustomerBillingPage() {
           const handleTriggerIpn = async () => {
             setIpnProcessing(true);
             try {
-              // Simulate Webhook IPN from NAPAS / Bank
-              await fetch('/api/v1/billing/webhook/payment-ipn', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  invoiceCode: payingInvoice.code,
-                  invoiceId: payingInvoice.id,
-                  amount: payingInvoice.amount,
-                  transactionCode: 'VQR-' + Date.now().toString().slice(-8),
-                  status: 'SUCCESS'
-                })
+              // Simulate Webhook IPN from NAPAS / Bank via centralized customerService + apiClient
+              await customerService.simulatePaymentIpn({
+                invoiceCode: payingInvoice.code,
+                invoiceId: payingInvoice.id,
+                amount: payingInvoice.amount,
+                transactionCode: 'VQR-' + Date.now().toString().slice(-8),
+                status: 'SUCCESS'
               }).catch(() => {});
               
               setIpnSuccessMsg('Xác thực thanh toán VietQR thành công qua Webhook IPN! Đã tự động nạp +50 giờ bay.');

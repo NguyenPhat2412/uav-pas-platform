@@ -65,7 +65,7 @@ export default function NotificationsPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
-    apiClient.get<any>('/api/v1/notifications?size=50')
+    apiClient.get<{ content?: NotificationItem[] }>('/api/v1/notifications?size=50')
       .then(res => {
         if (res?.content && Array.isArray(res.content)) {
           setNotifications(res.content);

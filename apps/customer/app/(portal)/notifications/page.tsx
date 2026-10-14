@@ -65,7 +65,7 @@ export default function CustomerNotificationsPage() {
 
   useEffect(() => {
     apiClient
-      .get<any>('/api/v1/notifications?size=20')
+      .get<{ content?: NotificationItem[] }>('/api/v1/notifications?size=20')
       .then(res => {
         if (res?.content && Array.isArray(res.content) && res.content.length > 0) {
           setNotifications(res.content);

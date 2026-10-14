@@ -16,19 +16,8 @@ import {
   FileSpreadsheet,
   Activity
 } from 'lucide-react';
-import { apiClient } from '@uav/api-client';
-
-interface OperationsReportData {
-  totalMissions: number;
-  completedMissions: number;
-  totalFlightHours: number;
-  activeUavs: number;
-  maintenanceUavs: number;
-  totalStations: number;
-  sarOperationsCount: number;
-  victimsRescued: number;
-  successRate: number;
-}
+import { adminService } from '@/features/admin/services/admin.service';
+import type { OperationsReportData } from '@/features/admin/types';
 
 const DEFAULT_METRICS: OperationsReportData = {
   totalMissions: 48,
@@ -47,7 +36,7 @@ function AdminReportsContent() {
   const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
-    apiClient.get<OperationsReportData>('/api/v1/reports/operations')
+    adminService.operationsReport()
       .then(res => { if (res) setMetrics(res); })
       .catch(() => {});
   }, []);

@@ -113,3 +113,32 @@ test('Admin Portal has Billing Management, Reports & CSV Export, and Settings Co
   assert.match(shellContent, /\/reports/);
   assert.match(shellContent, /\/settings/);
 });
+
+test('Centralized API_ROUTES registry in @uav/api-client and Service-Layer delegation', () => {
+  const routesPath = atRoot('packages/api-client/src/routes.ts');
+  const indexClientPath = atRoot('packages/api-client/src/index.ts');
+  assert.equal(existsSync(routesPath), true, 'API_ROUTES registry must exist in packages/api-client/src/routes.ts');
+
+  const routesContent = readFileSync(routesPath, 'utf8');
+  assert.match(routesContent, /export const API_ROUTES = \{/);
+  assert.match(routesContent, /\/api\/v1\/billing\/webhook\/payment-ipn/);
+  assert.match(routesContent, /\/api\/v1\/reports\/operations/);
+  assert.match(routesContent, /\/api\/v1\/settings/);
+  assert.match(routesContent, /\/api\/v1\/webhooks/);
+  assert.match(routesContent, /\/api\/v1\/notifications\/unread-count/);
+
+  const indexContent = readFileSync(indexClientPath, 'utf8');
+  assert.match(indexContent, /export \{ API_ROUTES, type ApiRoutes \} from '\.\/routes'/);
+
+  const customerBillingContent = readFileSync(`${customer}/app/(portal)/billing/page.tsx`, 'utf8');
+  assert.doesNotMatch(customerBillingContent, /fetch\(['"`]\/api\/v1\//);
+  assert.match(customerBillingContent, /customerService\.simulatePaymentIpn/);
+
+  const adminReportsContent = readFileSync(`${admin}/app/(portal)/reports/page.tsx`, 'utf8');
+  assert.match(adminReportsContent, /adminService\.operationsReport/);
+
+  const adminSettingsContent = readFileSync(`${admin}/app/(portal)/settings/page.tsx`, 'utf8');
+  assert.match(adminSettingsContent, /adminService\.settings/);
+  assert.match(adminSettingsContent, /adminService\.updateSetting/);
+});
+

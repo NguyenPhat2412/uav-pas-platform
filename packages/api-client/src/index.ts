@@ -1,4 +1,5 @@
 import type { ApiError as ApiErrorShape } from '@uav/types';
+export { API_ROUTES, type ApiRoutes } from './routes';
 
 export type RequestOptions = Omit<RequestInit, 'body' | 'headers'> & {
   body?: unknown;

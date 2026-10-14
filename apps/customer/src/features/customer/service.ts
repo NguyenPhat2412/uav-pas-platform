@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api.client';
+import { API_ROUTES, apiClient } from '@/lib/api.client';
 import type { Invoice, Mission, MissionAvailability, MissionEvent, MissionInput, MissionMedia, MissionStatus, PageResponse, ServicePlan, UavService, UserQuota } from './types';
 
 export const DEMO_SERVICES: UavService[] = [
@@ -143,8 +143,15 @@ export const customerService = {
       return { url: `#signed-media-download-${id}?token=vju-demo-signed-url`, expiresInSeconds: 300 };
     }
   },
-  quota: (signal?: AbortSignal) => apiClient.get<UserQuota>('/api/v1/billing/quota', { signal }),
-  plans: (signal?: AbortSignal) => apiClient.get<ServicePlan[]>('/api/v1/billing/plans', { signal }),
-  invoices: (page = 0, signal?: AbortSignal) => apiClient.get<PageResponse<Invoice>>(`/api/v1/billing/invoices?page=${page}&size=20`, { signal }),
-  payInvoice: (id: number) => apiClient.post(`/api/v1/billing/invoices/${id}/pay`),
+  quota: (signal?: AbortSignal) => apiClient.get<UserQuota>(API_ROUTES.billing.subscription, { signal }),
+  plans: (signal?: AbortSignal) => apiClient.get<ServicePlan[]>(API_ROUTES.billing.plans, { signal }),
+  invoices: (page = 0, signal?: AbortSignal) => apiClient.get<PageResponse<Invoice>>(`${API_ROUTES.billing.invoices}?page=${page}&size=20`, { signal }),
+  payInvoice: (id: number) => apiClient.post(`${API_ROUTES.billing.invoices}/${id}/pay`),
+  simulatePaymentIpn: (payload: {
+    invoiceCode: string;
+    invoiceId: number;
+    amount: number;
+    transactionCode: string;
+    status: string;
+  }) => apiClient.post(API_ROUTES.billing.paymentIpn, payload),
 };

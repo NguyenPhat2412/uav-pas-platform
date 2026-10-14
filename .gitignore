@@ -21,3 +21,10 @@ node_modules/
 work/
 .codebase-memory/
 /*.png
+coverage/
+*.log
+
+# Backend Maven build output
+backend/target/
+.mvn/wrapper/maven-wrapper.jar
+

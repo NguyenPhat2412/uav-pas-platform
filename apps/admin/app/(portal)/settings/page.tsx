@@ -13,15 +13,8 @@ import {
   AlertTriangle,
   Zap
 } from 'lucide-react';
-import { apiClient } from '@uav/api-client';
-
-interface ConfigItem {
-  id?: string;
-  configKey: string;
-  configValue: string;
-  category: string;
-  description: string;
-}
+import { adminService } from '@/features/admin/services/admin.service';
+import type { SystemSettingItem as ConfigItem } from '@/features/admin/types';
 
 const DEFAULT_CONFIGS: ConfigItem[] = [
   {
@@ -74,7 +67,7 @@ function AdminSettingsContent() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    apiClient.get<ConfigItem[]>('/api/v1/settings')
+    adminService.settings()
       .then(res => {
         if (res && Array.isArray(res) && res.length > 0) {
           setConfigs(res);
@@ -91,9 +84,7 @@ function AdminSettingsContent() {
     setIsSaving(true);
     try {
       for (const item of configs) {
-        await apiClient.put(`/api/v1/settings/${item.configKey}`, {
-          value: item.configValue
-        }).catch(() => {});
+        await adminService.updateSetting(item.configKey, item.configValue).catch(() => {});
       }
       setSuccessMsg('Tất cả cấu hình hệ thống đã được lưu và đồng bộ thành công!');
     } catch {
