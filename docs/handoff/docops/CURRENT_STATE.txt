@@ -1,0 +1,108 @@
+UAV PAS PLATFORM — CURRENT CHECKOUT STATE AND TRACEABILITY AUDIT
+
+Inspection date/time
+--------------------
+2026-10-07 14:31:10 UTC (2026-10-07 21:31:10 +07:00)
+The inspection was read-only except for creating this handoff artifact. Other handoff artifacts were being written in the shared checkout during the inspection, so a later status snapshot may contain additional documentation files.
+
+Repository
+----------
+Repository root: /Users/macbook/HK7/uav-pas-platform
+Remote: origin https://github.com/NguyenPhat2412/uav-pas-platform.git
+
+Project-document availability
+-----------------------------
+The named `00_README_UAV_PAS.md`, project `.docx` files, permission `.xlsx`, `UAV_PAS_TABLE_FIRST_UI_CODEX_GOAL.md`, and `UAV_PAS_TanStack_Query_Architecture_Source.md` were not present in this checkout. Available provenance was inspected from `frontend/README.md`, `docs/handoff/PHASE_1_HANDOFF.md`, `docs/handoff/PHASE_1_STABILIZATION_REPORT.md`, `docs/handoff/UAV_PAS_UI_REDESIGN_REPORT.md`, and the current `docs/superpowers/{specs,plans}/` files. Missing named documents are therefore not treated as requirements evidence.
+
+Published integration ref
+-------------------------
+Current branch: feat/clean-architecture-auth
+HEAD: 6ecc85111a28e53679b2a6d8ac7ec93730d80be4
+HEAD subject: feat: publish stabilized UAV PAS platform
+Parent: e8606b01f7a1cf9900ac44c6db6ad51d7e9caae5 (first commit)
+Upstream: origin/feat/clean-architecture-auth at 6ecc85111a28e53679b2a6d8ac7ec93730d80be4
+Remote aliases at the same SHA: origin/main and origin/HEAD
+
+Relevant local refs and integration boundaries
+----------------------------------------------
+- feat/clean-architecture-auth: 6ecc85111a28e53679b2a6d8ac7ec93730d80be4 (published combined backend/frontend tree).
+- main: 9e3ff1b8c1ef5e1462af1dba2de418007ab90148 (local planning-doc baseline; not the published integration ref).
+- backup/pre-push-secret-history-20261007: 91fd56813e4be617256d0f9555fea2771222db0e (historical pre-push/refactor line; not the release baseline). Its merge base with HEAD is e8606b01f7a1cf9900ac44c6db6ad51d7e9caae5.
+- The historical refactor line immediately before the backup tip includes 097d573, 865e425, 16725f1, 46263d5, c224bfb, 3c340a3, a9cb5e0, 8aac828, 301ec07 and 2ad1f3c. These are provenance only; the published HEAD is a separate combined commit.
+- The parent commit stored frontend as gitlink 7f6fa9de5cdd142b2fb3a9de80f8ce15ca2fe2d4. HEAD stores frontend as a regular source tree (tree 48cf1efbbc8df4596568037cddeda53670070123); the old gitlink is not a second active frontend checkout.
+
+Worktrees
+---------
+One worktree is registered:
+  /Users/macbook/HK7/uav-pas-platform
+  HEAD 6ecc85111a28e53679b2a6d8ac7ec93730d80be4
+  branch refs/heads/feat/clean-architecture-auth
+No additional linked worktree, merge conflict, or active checkout was found.
+
+Working-tree status at refresh
+------------------------------
+Command basis: git status --short --untracked-files=all
+At this refresh there are 140 untracked paths and 0 tracked modifications:
+  - 55 under docs/handoff/evidence/
+  - 85 under docs/handoff/final/ (including this file, final reports, backlog, OpenAPI and evidence)
+No backend/ or frontend/src/ product source path is modified after HEAD in the live status snapshot. All observed deltas are handoff logs, screenshots, OpenAPI/test snapshots, and report files. This status is a checkout snapshot, not a claim that the artifacts are committed.
+
+Traceability package inventory
+------------------------------
+The final directory currently contains:
+  API_PERMISSION_MATRIX.md
+  BACKEND_BUSINESS_VERIFICATION.md
+  CURRENT_PERMISSION_MATRIX.md
+  DATABASE_MIGRATION_REPORT.md
+  DOCUMENT_REGISTER.md
+  FILE_DIFF_AUDIT.md
+  FINAL_INTEGRATION_HANDOFF.md
+  FRONTEND_UI_VERIFICATION.md
+  REMAINING_GAPS_BACKLOG.md
+  REQUIREMENT_IMPLEMENTATION_MATRIX.md
+  TEST_VERIFICATION_REPORT.md
+  openapi.json
+  evidence/
+This CURRENT_STATE.txt is the checkout-state companion to those reports.
+
+Traceability findings
+---------------------
+1. Register synchronization: DOCUMENT_REGISTER.md now indexes FINAL_INTEGRATION_HANDOFF.md, REMAINING_GAPS_BACKLOG.md and CURRENT_STATE.txt, and labels goal-audit-* evidence as historical. Keep the register synchronized if any further handoff files are added.
+2. Stale ref evidence: docs/handoff/evidence/goal-audit-head.txt records 91fd56813e4be617256d0f9555fea2771222db0e, the historical backup tip, while docs/handoff/final/evidence/head-sha.txt and the live checkout record 6ecc85111a28e53679b2a6d8ac7ec93730d80be4. The goal-audit branch/worktree files must be labeled historical or regenerated against the published HEAD; they must not be used as current integration proof.
+3. Status narrative: FILE_DIFF_AUDIT.md and FINAL_INTEGRATION_HANDOFF.md were reconciled to the live state: 0 tracked modifications and only untracked handoff artifacts.
+4. Station traceability boundary: REQUIREMENT_IMPLEMENTATION_MATRIX.md describes “station list/detail/create/update/delete/status and assignments,” but StationController exposes only list/detail/create/update/delete. Status is a request/entity field, and UAV assignment is a separate UAV route; there is no dedicated station-status or station-assignment endpoint. Keep this requirement marked partial and distinguish fields from routes.
+5. Commander permission contradiction: the seeded commander template grants MISSION_VIEW_ALL but not MISSION_VIEW, while mission controllers require MISSION_VIEW before service-level view-all logic. The intended commander mission flow is therefore not proven and may be denied at the controller.
+6. UAV/mission state contradiction: station assignment can transition an AVAILABLE UAV to ASSIGNED, while mission assignment requires AVAILABLE. The create → station assign → mission assign path lacks an integration proof and may reject a normal workflow.
+7. Mission rejection release gap: the current reject path can transition a CONFIRMED mission without evidence that assigned UAV/station/operator/equipment resources are released. This remains a business-rule gap even though cancellation/completion paths have release tests.
+8. Migration/runtime gap: default application configuration permits ddl-auto=update, Flyway disabled, and the compatibility schema initializer enabled. The safer stabilization profile is not the default, and no shared/production database was modified.
+9. Storage/E2E gaps: configured MinIO transfer is NOT_VERIFIED; the RustFS S3-compatible run is a substitute. Full authenticated HTTP role/resource matrices, concurrent mission assignment on PostgreSQL, protected MinIO upload/download/delete, physical equipment handover/return, and route-wide browser state coverage remain absent or partial.
+10. Contract gap: the 64-path OpenAPI export does not emit method-level @PreAuthorize requirements. API_PERMISSION_MATRIX.md correctly derives permissions from controller/service source, but consumers cannot recover those requirements from openapi.json alone.
+11. Scope gap: Search & Rescue, AI/KV260, Payment/Entitlement, and user Notifications have no implementation; E-Learning/Assessment/Certificates are deferred. These are correctly classified in the requirement matrix and should not be reported as complete.
+
+Current evidence summary
+------------------------
+- Backend: cd backend && ./mvnw -q test — exit 0; 204 tests, 0 failures, 0 errors, 6 environment-gated skips.
+- Frontend: npm test — 5 session/API-client tests pass; typecheck, lint, and production build exit 0; build generated 12 routes.
+- Runtime: health and OpenAPI smoke returned HTTP 200/UP; export contains 64 paths.
+- Database: fresh disposable PostgreSQL stabilization passed five gated cases; populated-copy migration rehearsal passed. No shared or production DB was changed.
+- Object storage: RustFS S3-compatible stabilization passed; configured MinIO remains unverified after image/download failure.
+- Browser: selected operations/station/access-denied and CSS UAV viewer traces pass for their exercised scenarios; this is not route-wide authenticated E2E.
+
+Package finalization notes
+--------------------------
+- `goal-audit-*` evidence remains historical provenance for the 91fd568 backup line and is not current integration proof.
+- The final package contains 0 tracked modifications and untracked handoff artifacts; no product source was changed.
+- Preserve the explicit PARTIAL, NOT_VERIFIED, NOT_IMPLEMENTED, and DEFERRED labels; do not promote substitute storage, build success, or source-only checks to complete behavior.
+
+Coordination refresh
+--------------------
+2026-10-07 21:46:34 +07:00
+- The final-audit session coordinated with the active DocOps session
+  `01a116be-c2ae-7f80-98be-bf1430f7ea45` and architecture-document session
+  `01a116bf-72f7-7032-acb0-43c06aa3da4f`.
+- Ownership and no-overwrite rules are recorded in
+  `docs/handoff/final/SESSION_COORDINATION.md`.
+- Both sessions were asked to keep their edits within their owned documentation
+  scope and to report changed paths and unresolved limits before finishing.
+- This refresh observed no tracked backend/frontend source changes and one
+  worktree. The additional coordination file is an untracked handoff artifact.
