@@ -2,8 +2,12 @@ package com.uav.platform.modules.webhook.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.webhook.config.request.WebhookSubscriptionRequest;
+import com.uav.platform.modules.webhook.config.response.WebhookDeliveryLogResponse;
+import com.uav.platform.modules.webhook.config.response.WebhookSubscriptionResponse;
 import com.uav.platform.modules.webhook.entity.WebhookDeliveryLog;
 import com.uav.platform.modules.webhook.entity.WebhookSubscription;
+import com.uav.platform.modules.webhook.mapper.WebhookMapper;
 import com.uav.platform.modules.webhook.repository.WebhookDeliveryLogRepository;
 import com.uav.platform.modules.webhook.repository.WebhookSubscriptionRepository;
 import com.uav.platform.modules.webhook.service.WebhookService;
@@ -47,19 +51,58 @@ public class IWebhookService implements WebhookService {
         this.objectMapper = objectMapper != null ? objectMapper : new ObjectMapper();
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(3))
+                .followRedirects(HttpClient.Redirect.NEVER)
                 .build();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<WebhookSubscription> listSubscriptions() {
-        return subscriptionRepository.findAll();
+    public List<WebhookSubscriptionResponse> listSubscriptions() {
+        return subscriptionRepository.findAll().stream()
+                .map(WebhookMapper::toSubscriptionResponse)
+                .toList();
     }
 
     @Override
-    public WebhookSubscription createSubscription(String name, String targetUrl, String secretKey, String eventsSubscribed) {
-        WebhookSubscription sub = new WebhookSubscription(name, targetUrl, secretKey, eventsSubscribed);
-        return subscriptionRepository.save(sub);
+    public WebhookSubscriptionResponse createSubscription(WebhookSubscriptionRequest request) {
+        return createSubscription(request.name(), request.targetUrl(), request.secretKey(), request.eventsSubscribed());
+    }
+
+    @Override
+    public WebhookSubscriptionResponse createSubscription(String name, String targetUrl, String secretKey, String eventsSubscribed) {
+        validateSafeWebhookUrl(targetUrl);
+        WebhookSubscription sub = new WebhookSubscription(name, targetUrl.trim(), secretKey, eventsSubscribed);
+        return WebhookMapper.toSubscriptionResponse(subscriptionRepository.save(sub));
+    }
+
+    public static void validateSafeWebhookUrl(String targetUrl) {
+        if (targetUrl == null || targetUrl.isBlank()) {
+            throw new SystemException("Webhook targetUrl is required", org.springframework.http.HttpStatus.BAD_REQUEST, "UNSAFE_WEBHOOK_URL");
+        }
+        URI uri;
+        try {
+            uri = URI.create(targetUrl.trim());
+        } catch (IllegalArgumentException ex) {
+            throw new SystemException("Invalid webhook targetUrl syntax", org.springframework.http.HttpStatus.BAD_REQUEST, "UNSAFE_WEBHOOK_URL");
+        }
+        String scheme = uri.getScheme() != null ? uri.getScheme().toLowerCase() : "";
+        if (!"https".equals(scheme) && !"http".equals(scheme)) {
+            throw new SystemException("Webhook targetUrl must use http or https scheme", org.springframework.http.HttpStatus.BAD_REQUEST, "UNSAFE_WEBHOOK_URL");
+        }
+        String host = uri.getHost() != null ? uri.getHost().toLowerCase() : "";
+        if (host.isBlank()) {
+            throw new SystemException("Webhook targetUrl must specify a valid host", org.springframework.http.HttpStatus.BAD_REQUEST, "UNSAFE_WEBHOOK_URL");
+        }
+        if (host.equals("localhost") || host.equals("127.0.0.1") || host.equals("::1") || host.equals("[::1]")
+                || host.equals("0.0.0.0") || host.equals("169.254.169.254") || host.equals("metadata.google.internal")
+                || host.equals("postgres") || host.equals("minio") || host.equals("backend") || host.equals("frontend")
+                || host.endsWith(".internal") || host.endsWith(".local")) {
+            throw new SystemException("Webhook targetUrl cannot target internal, loopback, or metadata hosts", org.springframework.http.HttpStatus.BAD_REQUEST, "UNSAFE_WEBHOOK_URL");
+        }
+        if (host.startsWith("10.") || host.startsWith("192.168.") || host.startsWith("169.254.") || host.startsWith("127.")
+                || host.matches("^172\\.(1[6-9]|2[0-9]|3[0-1])\\..*")) {
+            throw new SystemException("Webhook targetUrl cannot target private network IP ranges", org.springframework.http.HttpStatus.BAD_REQUEST, "UNSAFE_WEBHOOK_URL");
+        }
     }
 
     @Override
@@ -111,22 +154,28 @@ public class IWebhookService implements WebhookService {
         boolean success = true;
 
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(sub.getTargetUrl()))
-                    .header("Content-Type", "application/json")
-                    .header("X-Signature-SHA256", signature)
-                    .header("X-Event-Type", eventType)
-                    .header("User-Agent", "UAV-PAS-VJU-Webhook-Dispatcher/1.0")
-                    .timeout(Duration.ofSeconds(4))
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload, StandardCharsets.UTF_8))
-                    .build();
-
-            // Try dispatching or record mock success for local/staging target URLs
-            if (sub.getTargetUrl().startsWith("http://localhost") || sub.getTargetUrl().contains("gov.vn")) {
-                // In demo/staging, we simulate successful delivery
+            if (sub.getTargetUrl() != null && (sub.getTargetUrl().contains("gov.vn") || sub.getTargetUrl().contains("uavpas.vju.edu.vn"))) {
+                // In demo/staging, we simulate successful delivery for seeded government/platform endpoints
                 statusCode = 200;
                 responseBody = "{\"status\":\"ACKNOWLEDGED_BY_RESCUE_CENTER_114\"}";
             } else {
+                validateSafeWebhookUrl(sub.getTargetUrl());
+                URI uri = URI.create(sub.getTargetUrl().trim());
+                java.net.InetAddress resolved = java.net.InetAddress.getByName(uri.getHost());
+                if (resolved.isAnyLocalAddress() || resolved.isLoopbackAddress()
+                        || resolved.isLinkLocalAddress() || resolved.isSiteLocalAddress() || resolved.isMulticastAddress()) {
+                    throw SystemException.badRequest("SSRF blocked: resolved webhook host is a private or local address");
+                }
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(uri)
+                        .header("Content-Type", "application/json")
+                        .header("X-Signature-SHA256", signature)
+                        .header("X-Event-Type", eventType)
+                        .header("User-Agent", "UAV-PAS-VJU-Webhook-Dispatcher/1.0")
+                        .timeout(Duration.ofSeconds(4))
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonPayload, StandardCharsets.UTF_8))
+                        .build();
+
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 statusCode = response.statusCode();
                 responseBody = response.body();
@@ -135,7 +184,7 @@ public class IWebhookService implements WebhookService {
         } catch (Exception ex) {
             log.warn("Webhook dispatch error to {}: {}", sub.getTargetUrl(), ex.getMessage());
             statusCode = 504;
-            responseBody = "Dispatch Timeout / Connection Refused: " + ex.getMessage();
+            responseBody = "Dispatch Blocked or Failed: " + ex.getMessage();
             success = false;
         }
 
@@ -148,8 +197,9 @@ public class IWebhookService implements WebhookService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<WebhookDeliveryLog> listDeliveryLogs(Pageable pageable) {
-        return deliveryLogRepository.findAllByOrderByAttemptedAtDesc(pageable);
+    public Page<WebhookDeliveryLogResponse> listDeliveryLogs(Pageable pageable) {
+        return deliveryLogRepository.findAllByOrderByAttemptedAtDesc(pageable)
+                .map(WebhookMapper::toDeliveryLogResponse);
     }
 
     @Override

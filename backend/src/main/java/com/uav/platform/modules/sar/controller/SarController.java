@@ -27,37 +27,37 @@ public class SarController {
     }
 
     @PostMapping("/missions")
-    @PreAuthorize("@permissionService.has(authentication, 'MISSION_CREATE') or @permissionService.has(authentication, 'MISSION_VIEW')")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_CREATE') or @permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<SarMissionResponse> registerSar(@Valid @RequestBody SarMissionRequest request, Authentication auth) {
         return ResponseEntity.status(201).body(sarService.registerSar(request, auth));
     }
 
     @GetMapping("/missions/{missionId}")
-    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<SarMissionResponse> getByMissionId(@PathVariable Long missionId, Authentication auth) {
         return ResponseEntity.ok(sarService.getByMissionId(missionId, auth));
     }
 
     @PatchMapping("/missions/{missionId}/status")
-    @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW')")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<SarMissionResponse> updateStatus(@PathVariable Long missionId, @RequestParam SarStatus status, Authentication auth) {
         return ResponseEntity.ok(sarService.updateSarStatus(missionId, status, auth));
     }
 
     @PostMapping("/flight-plan")
-    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_CREATE')")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_CREATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<FlightPlanResponse> generateFlightPlan(@RequestBody FlightPlanRequest request, Authentication auth) {
         return ResponseEntity.ok(sarService.generateFlightPlan(request, auth));
     }
 
     @PostMapping("/telemetry-evaluate")
-    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_STATUS_UPDATE')")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<TelemetryEvaluateResponse> evaluateTelemetry(@RequestBody TelemetryEvaluateRequest request, Authentication auth) {
         return ResponseEntity.ok(sarService.evaluateTelemetry(request, auth));
     }
 
     @PostMapping("/missions/{missionId}/dispatch-rescue")
-    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_STATUS_UPDATE')")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<Map<String, Object>> dispatchRescue(@PathVariable Long missionId,
                                                               @RequestBody(required = false) Map<String, Object> payload,
                                                               Authentication auth) {

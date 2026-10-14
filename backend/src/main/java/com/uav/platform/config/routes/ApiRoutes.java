@@ -48,6 +48,23 @@ public final class ApiRoutes {
         public static final String FULL_USER_BY_ID = BASE + USER_ID;
     }
 
+    /**
+     * Nhóm route phân quyền & mẫu vai trò (Permissions & Role Templates)
+     */
+    public static final class Permissions {
+        private Permissions() {}
+        public static final String BASE = API_V1_PREFIX + "/permissions";
+        public static final String ME = "/me";
+        public static final String BY_USER = "/users/{userId}";
+        public static final String BY_USER_CODE = "/users/{userId}/{code}";
+    }
+
+    public static final class RoleTemplates {
+        private RoleTemplates() {}
+        public static final String BASE = API_V1_PREFIX + "/role-templates";
+        public static final String ROLE_PERMISSION = "/{role}/permissions/{code}";
+    }
+
     public static final class Phase1 {
         private Phase1() {}
         public static final String STATIONS = API_V1_PREFIX + "/stations/**";
@@ -60,7 +77,36 @@ public final class ApiRoutes {
     }
 
     /**
-     * Nhóm route quản lý đội bay UAV (Drone Fleet Management)
+     * Nhóm route quản lý đội bay UAV & Trạm & Kho & Media
+     */
+    public static final class Uavs {
+        private Uavs() {}
+        public static final String BASE = API_V1_PREFIX + "/uavs";
+        public static final String BY_ID = "/{id}";
+        public static final String ASSIGN_STATION = "/{id}/station/{stationId}";
+        public static final String STATUS = "/{id}/status";
+        public static final String MAINTENANCE = "/{id}/maintenance";
+        public static final String HISTORY = "/{id}/history";
+    }
+
+    public static final class Stations {
+        private Stations() {}
+        public static final String BASE = API_V1_PREFIX + "/stations";
+        public static final String BY_ID = "/{id}";
+    }
+
+    public static final class Inventory {
+        private Inventory() {}
+        public static final String BASE = API_V1_PREFIX + "/inventory";
+    }
+
+    public static final class Media {
+        private Media() {}
+        public static final String BASE = API_V1_PREFIX + "/media";
+    }
+
+    /**
+     * Nhóm route quản lý đội bay UAV (Legacy Drone Fleet aliases)
      */
     public static final class Drones {
         private Drones() {}
@@ -81,6 +127,7 @@ public final class ApiRoutes {
         private Missions() {}
 
         public static final String BASE = API_V1_PREFIX + "/missions";
+        public static final String AVAILABILITY = "/availability";
         public static final String MISSION_ID = "/{id}";
         public static final String SUBMIT = "/{id}/submit";
         public static final String CANCEL = "/{id}/cancel";
@@ -89,6 +136,7 @@ public final class ApiRoutes {
         public static final String ASSIGN_OPERATOR = "/{id}/assign-operator";
         public static final String RESERVE_EQUIPMENT = "/{id}/reserve-equipment";
         public static final String CONFIRM = "/{id}/confirm";
+        public static final String REJECT = "/{id}/reject";
         public static final String READY = "/{id}/ready";
         public static final String START = "/{id}/start";
         public static final String COMPLETE = "/{id}/complete";
@@ -105,6 +153,100 @@ public final class ApiRoutes {
         public static final String FULL_MISSION_BY_ID = BASE + MISSION_ID;
         public static final String FULL_ASSIGN_UAV = BASE + ASSIGN_UAV;
         public static final String FULL_TIMELINE = BASE + TIMELINE;
+    }
+
+    public static final class UavServices {
+        private UavServices() {}
+        public static final String BASE = API_V1_PREFIX + "/uav-services";
+    }
+
+    /**
+     * Nhóm route Tìm kiếm Cứu nạn (SAR) & AI Biên KV260
+     */
+    public static final class Sar {
+        private Sar() {}
+        public static final String BASE = API_V1_PREFIX + "/sar";
+        public static final String MISSIONS = "/missions";
+        public static final String MISSION_BY_ID = "/missions/{missionId}";
+        public static final String MISSION_STATUS = "/missions/{missionId}/status";
+        public static final String FLIGHT_PLAN = "/flight-plan";
+        public static final String TELEMETRY_EVALUATE = "/telemetry-evaluate";
+        public static final String DISPATCH_RESCUE = "/missions/{missionId}/dispatch-rescue";
+    }
+
+    public static final class Ai {
+        private Ai() {}
+        public static final String BASE = API_V1_PREFIX + "/ai";
+        public static final String DISPATCH = "/dispatch";
+        public static final String MISSION_DETECTIONS = "/missions/{missionId}/detections";
+        public static final String MISSION_TASKS = "/missions/{missionId}/tasks";
+        public static final String VERIFY_DETECTION = "/detections/{id}/verify";
+    }
+
+    /**
+     * Nhóm route Tài chính, Hạn mức & Thanh toán VietQR
+     */
+    public static final class Billing {
+        private Billing() {}
+        public static final String BASE = API_V1_PREFIX + "/billing";
+        public static final String PLANS = "/plans";
+        public static final String QUOTA = "/quota";
+        public static final String ADMIN_QUOTAS = "/admin/quotas";
+        public static final String ADMIN_QUOTA_BY_USER = "/admin/quotas/{userId}";
+        public static final String INVOICES = "/invoices";
+        public static final String INVOICE_BY_ID = "/invoices/{id}";
+        public static final String PAY_INVOICE = "/invoices/{id}/pay";
+    }
+
+    public static final class Webhook {
+        private Webhook() {}
+        public static final String BASE = API_V1_PREFIX + "/billing/webhook";
+        public static final String PAYMENT_IPN = "/payment-ipn";
+        public static final String WILDCARD = BASE + "/**";
+    }
+
+    public static final class Webhooks {
+        private Webhooks() {}
+        public static final String BASE = API_V1_PREFIX + "/webhooks";
+        public static final String SUBSCRIPTIONS = "/subscriptions";
+        public static final String TOGGLE_SUBSCRIPTION = "/subscriptions/{id}/toggle";
+        public static final String SUBSCRIPTION_BY_ID = "/subscriptions/{id}";
+        public static final String TEST_DISPATCH = "/test-dispatch";
+        public static final String LOGS = "/logs";
+    }
+
+    /**
+     * Nhóm route Thông báo, Cấu hình, Báo cáo, Dashboard & Kiểm toán
+     */
+    public static final class Notifications {
+        private Notifications() {}
+        public static final String BASE = API_V1_PREFIX + "/notifications";
+        public static final String UNREAD_COUNT = "/unread-count";
+        public static final String MARK_READ = "/{id}/read";
+        public static final String MARK_ALL_READ = "/read-all";
+    }
+
+    public static final class Settings {
+        private Settings() {}
+        public static final String BASE = API_V1_PREFIX + "/settings";
+        public static final String BY_KEY = "/{key}";
+    }
+
+    public static final class Reports {
+        private Reports() {}
+        public static final String BASE = API_V1_PREFIX + "/reports";
+        public static final String OPERATIONS_SUMMARY = "/operations-summary";
+        public static final String EXPORT_CSV = "/export-csv";
+    }
+
+    public static final class Dashboard {
+        private Dashboard() {}
+        public static final String BASE = API_V1_PREFIX + "/dashboard";
+    }
+
+    public static final class AuditLogs {
+        private AuditLogs() {}
+        public static final String BASE = API_V1_PREFIX + "/audit-logs";
     }
 
     /**
@@ -132,12 +274,6 @@ public final class ApiRoutes {
             Docs.SWAGGER_UI,
             Docs.SWAGGER_HTML
     };
-
-    public static final class Webhook {
-        private Webhook() {}
-        public static final String BASE = API_V1_PREFIX + "/billing/webhook";
-        public static final String WILDCARD = BASE + "/**";
-    }
 
     /**
      * Danh sách route Auth công khai (cho phép truy cập trước khi đăng nhập)

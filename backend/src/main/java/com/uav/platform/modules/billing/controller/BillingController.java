@@ -48,7 +48,7 @@ public class BillingController {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(quotaService.listQuotas(PageRequest.of(page, size)));
+        return ResponseEntity.ok(quotaService.listQuotas(PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100))));
     }
 
     @PutMapping("/admin/quotas/{userId}")
@@ -66,7 +66,7 @@ public class BillingController {
         @RequestParam(defaultValue = "20") int size,
         Authentication auth
     ) {
-        return ResponseEntity.ok(billingService.listInvoices(auth, PageRequest.of(page, size, Sort.by("createdAt").descending())));
+        return ResponseEntity.ok(billingService.listInvoices(auth, PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100), Sort.by("createdAt").descending())));
     }
 
     @GetMapping("/invoices/{id}")

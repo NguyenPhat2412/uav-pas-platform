@@ -30,7 +30,7 @@ public class NotificationController {
         @RequestParam(defaultValue = "20") int size,
         Authentication auth
     ) {
-        return ResponseEntity.ok(notificationService.listForUser(auth, PageRequest.of(page, size, Sort.by("createdAt").descending())));
+        return ResponseEntity.ok(notificationService.listForUser(auth, PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100), Sort.by("createdAt").descending())));
     }
 
     @GetMapping("/unread-count")

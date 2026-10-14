@@ -88,6 +88,10 @@ class ArchitecturePackageTest {
                 assertTrue(relative.matches(".*/modules/[^/]+/mapper/[^/]+Mapper\\.java"),
                         "Mappers must be in a module mapper package: " + relative);
             }
+            if (file.getFileName().toString().endsWith("Controller.java")) {
+                assertFalse(Files.readString(file).matches("(?s).*import\\s+com\\.uav\\.platform\\.modules\\.[^;]+\\.entity\\.[^;]+;.*"),
+                        "Controllers must only use Request/Response DTOs and must not directly import JPA Entities: " + relative);
+            }
         }
     }
 

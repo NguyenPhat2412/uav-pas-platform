@@ -23,7 +23,7 @@ public class StationController {
     @PreAuthorize("@permissionService.has(authentication, 'STATION_READ')")
     public ResponseEntity<PageResponse<StationResponse>> list(@RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(service.list(PageRequest.of(page, size, Sort.by("name").ascending())));
+        return ResponseEntity.ok(service.list(PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100), Sort.by("name").ascending())));
     }
 
     @GetMapping("/{id}")

@@ -24,25 +24,25 @@ public class AiController {
     }
 
     @PostMapping("/dispatch")
-    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_CREATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<AiTaskResponse> dispatchTask(@Valid @RequestBody AiTaskDispatchRequest request, Authentication auth) {
         return ResponseEntity.status(201).body(aiService.dispatchTask(request, auth));
     }
 
     @GetMapping("/missions/{missionId}/detections")
-    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<List<AiDetectionResponse>> listDetections(@PathVariable Long missionId, Authentication auth) {
         return ResponseEntity.ok(aiService.listDetections(missionId, auth));
     }
 
     @GetMapping("/missions/{missionId}/tasks")
-    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<List<AiTaskResponse>> listTasks(@PathVariable Long missionId, Authentication auth) {
         return ResponseEntity.ok(aiService.listTasks(missionId, auth));
     }
 
     @PatchMapping("/detections/{id}/verify")
-    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<AiDetectionResponse> verifyDetection(@PathVariable Long id, @Valid @RequestBody VerifyDetectionRequest request, Authentication auth) {
         return ResponseEntity.ok(aiService.verifyDetection(id, request, auth));
     }

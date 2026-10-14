@@ -43,12 +43,23 @@ public class IAiService implements AiService {
     private final SarMissionRepository sarMissionRepository;
     private final NotificationService notificationService;
     private final WebhookService webhookService;
+    private final com.uav.platform.modules.user.service.PermissionService permissionService;
 
     public IAiService(AiTaskRepository aiTaskRepository,
                       AiDetectionRepository aiDetectionRepository,
                       MissionRepository missionRepository,
                       MediaAssetRepository mediaAssetRepository) {
-        this(aiTaskRepository, aiDetectionRepository, missionRepository, mediaAssetRepository, null, null, null);
+        this(aiTaskRepository, aiDetectionRepository, missionRepository, mediaAssetRepository, null, null, null, null);
+    }
+
+    public IAiService(AiTaskRepository aiTaskRepository,
+                      AiDetectionRepository aiDetectionRepository,
+                      MissionRepository missionRepository,
+                      MediaAssetRepository mediaAssetRepository,
+                      SarMissionRepository sarMissionRepository,
+                      NotificationService notificationService,
+                      WebhookService webhookService) {
+        this(aiTaskRepository, aiDetectionRepository, missionRepository, mediaAssetRepository, sarMissionRepository, notificationService, webhookService, null);
     }
 
     @Autowired
@@ -58,7 +69,8 @@ public class IAiService implements AiService {
                       MediaAssetRepository mediaAssetRepository,
                       @Autowired(required = false) SarMissionRepository sarMissionRepository,
                       @Autowired(required = false) NotificationService notificationService,
-                      @Autowired(required = false) WebhookService webhookService) {
+                      @Autowired(required = false) WebhookService webhookService,
+                      @Autowired(required = false) com.uav.platform.modules.user.service.PermissionService permissionService) {
         this.aiTaskRepository = aiTaskRepository;
         this.aiDetectionRepository = aiDetectionRepository;
         this.missionRepository = missionRepository;
@@ -66,16 +78,46 @@ public class IAiService implements AiService {
         this.sarMissionRepository = sarMissionRepository;
         this.notificationService = notificationService;
         this.webhookService = webhookService;
+        this.permissionService = permissionService;
+    }
+
+    private void requireMissionAccess(Mission mission, Authentication auth, boolean requireOperationalAuthority) {
+        if (mission == null || auth == null || permissionService == null) {
+            return;
+        }
+        if (permissionService.has(auth, "MISSION_VIEW_ALL") || permissionService.has(auth, "USER_MANAGE")) {
+            return;
+        }
+        String actor = auth.getName();
+        boolean isOperator = mission.getOperator() != null && java.util.Objects.equals(mission.getOperator().getUsername(), actor);
+        boolean isCustomer = mission.getCustomer() != null && java.util.Objects.equals(mission.getCustomer().getUsername(), actor);
+        if (!isOperator && !isCustomer) {
+            throw new org.springframework.security.access.AccessDeniedException("You do not have permission to access this mission");
+        }
+        if (requireOperationalAuthority && !isOperator && !permissionService.has(auth, "MISSION_STATUS_UPDATE")) {
+            throw new org.springframework.security.access.AccessDeniedException("Only assigned operators or commanders can verify AI detections");
+        }
     }
 
     @Override
     public AiTaskResponse dispatchTask(AiTaskDispatchRequest request, Authentication authentication) {
         Mission mission = missionRepository.findById(request.missionId())
             .orElseThrow(() -> SystemException.notFound("Mission not found with id: " + request.missionId()));
+        requireMissionAccess(mission, authentication, false);
 
         MediaAsset media = null;
         if (request.mediaId() != null) {
             media = mediaAssetRepository.findById(request.mediaId()).orElse(null);
+            if (media != null && authentication != null && permissionService != null
+                    && !permissionService.has(authentication, "MEDIA_MANAGE")
+                    && !permissionService.has(authentication, "MISSION_VIEW_ALL")) {
+                boolean linkedToMission = "MISSION".equals(media.getLinkedEntityType())
+                        && java.util.Objects.equals(String.valueOf(mission.getId()), media.getLinkedEntityId());
+                boolean uploadedByActor = java.util.Objects.equals(media.getUploadedBy(), authentication.getName());
+                if (!linkedToMission && !uploadedByActor) {
+                    throw new org.springframework.security.access.AccessDeniedException("You do not have permission to attach this media asset");
+                }
+            }
         }
 
         AiTask task = new AiTask(
@@ -134,6 +176,11 @@ public class IAiService implements AiService {
     @Override
     @Transactional(readOnly = true)
     public List<AiDetectionResponse> listDetections(Long missionId, Authentication authentication) {
+        if (authentication != null && permissionService != null) {
+            Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(() -> SystemException.notFound("Mission not found with id: " + missionId));
+            requireMissionAccess(mission, authentication, false);
+        }
         return aiDetectionRepository.findByMissionIdOrderByCreatedAtDesc(missionId)
             .stream()
             .map(SarMapper::toAiDetectionResponse)
@@ -143,6 +190,11 @@ public class IAiService implements AiService {
     @Override
     @Transactional(readOnly = true)
     public List<AiTaskResponse> listTasks(Long missionId, Authentication authentication) {
+        if (authentication != null && permissionService != null) {
+            Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(() -> SystemException.notFound("Mission not found with id: " + missionId));
+            requireMissionAccess(mission, authentication, false);
+        }
         return aiTaskRepository.findByMissionIdOrderByCreatedAtDesc(missionId)
             .stream()
             .map(SarMapper::toAiTaskResponse)
@@ -153,6 +205,7 @@ public class IAiService implements AiService {
     public AiDetectionResponse verifyDetection(Long detectionId, VerifyDetectionRequest request, Authentication authentication) {
         AiDetection det = aiDetectionRepository.findById(detectionId)
             .orElseThrow(() -> SystemException.notFound("AI Detection not found with id: " + detectionId));
+        requireMissionAccess(det.getMission(), authentication, true);
 
         det.setVerified(request.verified());
         String verifier = authentication != null ? authentication.getName() : "OPERATOR";

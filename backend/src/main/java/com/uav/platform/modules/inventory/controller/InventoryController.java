@@ -19,12 +19,12 @@ public class InventoryController {
     private final InventoryService service;
     public InventoryController(InventoryService service) { this.service = service; }
     @GetMapping @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_READ')")
-    public ResponseEntity<PageResponse<EquipmentResponse>> list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) { return ResponseEntity.ok(service.list(PageRequest.of(page, size, Sort.by("name")))); }
+    public ResponseEntity<PageResponse<EquipmentResponse>> list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) { return ResponseEntity.ok(service.list(PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100), Sort.by("name")))); }
     @GetMapping("/{id}") @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_READ')")
     public ResponseEntity<EquipmentResponse> get(@PathVariable Long id) { return ResponseEntity.ok(service.get(id)); }
     @GetMapping("/history") @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_READ')")
     public ResponseEntity<PageResponse<InventoryMovementResponse>> history(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size) {
-        return ResponseEntity.ok(service.history(PageRequest.of(page, size, Sort.by("createdAt").descending())));
+        return ResponseEntity.ok(service.history(PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100), Sort.by("createdAt").descending())));
     }
     @PostMapping @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_MANAGE')")
     public ResponseEntity<EquipmentResponse> create(@Valid @RequestBody EquipmentRequest r, Authentication a) { return ResponseEntity.status(201).body(service.create(r, a.getName())); }

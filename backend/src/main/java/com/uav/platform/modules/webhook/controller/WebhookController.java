@@ -1,8 +1,10 @@
 package com.uav.platform.modules.webhook.controller;
 
-import com.uav.platform.modules.webhook.entity.WebhookDeliveryLog;
-import com.uav.platform.modules.webhook.entity.WebhookSubscription;
+import com.uav.platform.modules.webhook.config.request.WebhookSubscriptionRequest;
+import com.uav.platform.modules.webhook.config.response.WebhookDeliveryLogResponse;
+import com.uav.platform.modules.webhook.config.response.WebhookSubscriptionResponse;
 import com.uav.platform.modules.webhook.service.WebhookService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -23,21 +25,15 @@ public class WebhookController {
     }
 
     @GetMapping("/subscriptions")
-    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ') or @permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
-    public ResponseEntity<List<WebhookSubscription>> listSubscriptions() {
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
+    public ResponseEntity<List<WebhookSubscriptionResponse>> listSubscriptions() {
         return ResponseEntity.ok(webhookService.listSubscriptions());
     }
 
     @PostMapping("/subscriptions")
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
-    public ResponseEntity<WebhookSubscription> createSubscription(@RequestBody Map<String, String> body) {
-        WebhookSubscription created = webhookService.createSubscription(
-                body.get("name"),
-                body.get("targetUrl"),
-                body.get("secretKey"),
-                body.get("eventsSubscribed")
-        );
-        return ResponseEntity.ok(created);
+    public ResponseEntity<WebhookSubscriptionResponse> createSubscription(@Valid @RequestBody WebhookSubscriptionRequest request) {
+        return ResponseEntity.ok(webhookService.createSubscription(request));
     }
 
     @PutMapping("/subscriptions/{id}/toggle")
@@ -55,7 +51,7 @@ public class WebhookController {
     }
 
     @PostMapping("/test-dispatch")
-    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE') or @permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
     public ResponseEntity<Map<String, String>> testDispatch(@RequestBody Map<String, Object> body) {
         String eventType = (String) body.getOrDefault("eventType", "SAR_EMERGENCY_TRIGGERED");
         webhookService.broadcastEvent(eventType, body);
@@ -66,8 +62,10 @@ public class WebhookController {
     }
 
     @GetMapping("/logs")
-    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ') or @permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
-    public ResponseEntity<Page<WebhookDeliveryLog>> listLogs(Pageable pageable) {
-        return ResponseEntity.ok(webhookService.listDeliveryLogs(pageable));
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
+    public ResponseEntity<Page<WebhookDeliveryLogResponse>> listLogs(Pageable pageable) {
+        int page = pageable != null && pageable.isPaged() ? Math.max(pageable.getPageNumber(), 0) : 0;
+        int size = pageable != null && pageable.isPaged() ? Math.min(Math.max(pageable.getPageSize(), 1), 100) : 20;
+        return ResponseEntity.ok(webhookService.listDeliveryLogs(org.springframework.data.domain.PageRequest.of(page, size)));
     }
 }

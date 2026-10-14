@@ -27,22 +27,48 @@ public class IReportService implements ReportService {
     private final StationRepository stationRepository;
     private final SarMissionRepository sarMissionRepository;
     private final AiDetectionRepository aiDetectionRepository;
+    private final com.uav.platform.modules.user.service.PermissionService permissionService;
 
     public IReportService(MissionRepository missionRepository,
                           UavRepository uavRepository,
                           StationRepository stationRepository,
                           SarMissionRepository sarMissionRepository,
                           AiDetectionRepository aiDetectionRepository) {
+        this(missionRepository, uavRepository, stationRepository, sarMissionRepository, aiDetectionRepository, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public IReportService(MissionRepository missionRepository,
+                          UavRepository uavRepository,
+                          StationRepository stationRepository,
+                          SarMissionRepository sarMissionRepository,
+                          AiDetectionRepository aiDetectionRepository,
+                          @org.springframework.beans.factory.annotation.Autowired(required = false) com.uav.platform.modules.user.service.PermissionService permissionService) {
         this.missionRepository = missionRepository;
         this.uavRepository = uavRepository;
         this.stationRepository = stationRepository;
         this.sarMissionRepository = sarMissionRepository;
         this.aiDetectionRepository = aiDetectionRepository;
+        this.permissionService = permissionService;
     }
 
     @Override
     public OperationsReportResponse getOperationsSummary(Authentication auth) {
-        List<Mission> missions = missionRepository.findAll();
+        boolean viewAll = auth == null || permissionService == null
+                || permissionService.has(auth, "MISSION_VIEW_ALL")
+                || permissionService.has(auth, "USER_MANAGE");
+        String actor = auth != null ? auth.getName() : null;
+
+        List<Mission> missions = missionRepository.findAll().stream()
+                .filter(m -> viewAll
+                        || (m.getCustomer() != null && java.util.Objects.equals(m.getCustomer().getUsername(), actor))
+                        || (m.getOperator() != null && java.util.Objects.equals(m.getOperator().getUsername(), actor)))
+                .toList();
+        java.util.Set<Long> visibleMissionIds = missions.stream()
+                .map(Mission::getId)
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toSet());
+
         long totalMissions = missions.size();
         long completedMissions = missions.stream().filter(m -> m.getStatus() == MissionStatus.COMPLETED).count();
         long failedMissions = missions.stream().filter(m -> m.getStatus() == MissionStatus.FAILED).count();
@@ -57,8 +83,13 @@ public class IReportService implements ReportService {
         long maintenanceUavCount = uavs.stream().filter(u -> u.getStatus() == UavStatus.MAINTENANCE).count();
         long totalStationsCount = stationRepository.count();
 
-        long sarOperationsCount = sarMissionRepository.count();
+        long sarOperationsCount = viewAll
+                ? sarMissionRepository.count()
+                : sarMissionRepository.findAll().stream()
+                    .filter(s -> s.getMission() != null && visibleMissionIds.contains(s.getMission().getId()))
+                    .count();
         long victimsRescued = aiDetectionRepository.findAll().stream()
+            .filter(d -> viewAll || (d.getMission() != null && visibleMissionIds.contains(d.getMission().getId())))
             .filter(d -> Boolean.TRUE.equals(d.getVerified()) && d.getLabel().toLowerCase().contains("person"))
             .count();
 

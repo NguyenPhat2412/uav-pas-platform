@@ -45,7 +45,9 @@ public class MissionController {
             @RequestParam(defaultValue = "20") int size,
             Authentication authentication) {
         MissionFilter filter = new MissionFilter(status, missionType, stationId, operatorId, customerId, requestedDate, search);
-        return ResponseEntity.ok(service.list(filter, PageRequest.of(page, size, Sort.by("createdAt").descending()), authentication));
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), 100);
+        return ResponseEntity.ok(service.list(filter, PageRequest.of(safePage, safeSize, Sort.by("createdAt").descending()), authentication));
     }
 
     @GetMapping("/availability")

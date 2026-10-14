@@ -324,6 +324,7 @@ export default function CustomerBillingPage() {
               // Simulate Webhook IPN from NAPAS / Bank
               await fetch('/api/v1/billing/webhook/payment-ipn', {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   invoiceCode: payingInvoice.code,

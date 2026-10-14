@@ -6,7 +6,6 @@ import com.uav.platform.modules.mission.common.*;
 
 import com.uav.platform.modules.mission.config.request.UavServiceRequest;
 import com.uav.platform.modules.mission.config.response.UavServiceResponse;
-import com.uav.platform.modules.mission.entity.UavService;
 import com.uav.platform.modules.mission.repository.UavServiceRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +33,6 @@ public class UavServiceController {
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_CONFIRM')")
     public ResponseEntity<UavServiceResponse> create(@Valid @RequestBody UavServiceRequest request) {
         if (services.findByCode(request.code()).isPresent()) throw new IllegalStateException("Service code already exists");
-        return ResponseEntity.status(201).body(UavServiceMapper.toResponse(services.save(new UavService(request.code(), request.name(), request.description(), request.defaultDurationMinutes()))));
+        return ResponseEntity.status(201).body(UavServiceMapper.toResponse(services.save(UavServiceMapper.toEntity(request))));
     }
 }

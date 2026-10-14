@@ -7,7 +7,13 @@ export type RequestOptions = Omit<RequestInit, 'body' | 'headers'> & {
 };
 
 export class ApiError extends Error {
-  constructor(public status: number, public error: string, message: string, public path?: string) {
+  constructor(
+    public status: number,
+    public error: string,
+    message: string,
+    public path?: string,
+    public code?: string,
+  ) {
     super(message);
     this.name = 'ApiError';
   }
@@ -69,7 +75,7 @@ async function refreshAccess(generation: number) {
     requireCurrent(generation);
     if (!response.ok) {
       setAuthSession(null);
-      throw new ApiError(401, 'Unauthorized', 'Phiên đăng nhập đã hết hạn.');
+      throw new ApiError(401, 'Unauthorized', 'Phiên đăng nhập đã hết hạn.', '/api/v1/auth/refresh', 'SESSION_EXPIRED');
     }
     const session = await response.json() as { accessToken?: string; refreshToken?: string };
     storeSession(session);
@@ -95,7 +101,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
   try { response = await fetch(url, { credentials: 'include', ...options, headers }); }
   catch (error) {
     if (error instanceof Error && error.name === 'AbortError') throw error;
-    throw new ApiError(0, 'NetworkError', error instanceof Error ? error.message : 'Network error');
+    throw new ApiError(0, 'NetworkError', error instanceof Error ? error.message : 'Network error', endpoint, 'NETWORK_ERROR');
   }
   requireCurrent(generation);
   const authCommand = /\/auth\/(login|register|refresh|logout)/.test(endpoint);
@@ -113,7 +119,13 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
     if (typeof window !== 'undefined' && response.status === 403 && endpoint !== '/api/v1/permissions/me') window.dispatchEvent(new Event(PERMISSIONS_EVENT));
     let detail: Partial<ApiErrorShape> = {};
     try { detail = await response.json(); } catch { /* Preserve status for non-JSON errors. */ }
-    throw new ApiError(response.status, detail.error || response.statusText, detail.message || `Request failed with status ${response.status}`, detail.path);
+    throw new ApiError(
+      response.status,
+      detail.error || response.statusText,
+      detail.message || `Request failed with status ${response.status}`,
+      detail.path || endpoint,
+      detail.code,
+    );
   }
   if (response.status === 204) return undefined as T;
   const result = response.headers.get('content-type')?.includes('application/json') ? await response.json() : await response.text();

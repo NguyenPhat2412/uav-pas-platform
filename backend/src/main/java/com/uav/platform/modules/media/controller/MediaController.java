@@ -19,7 +19,7 @@ public class MediaController {
     private final MediaService service;
     public MediaController(MediaService service) { this.service = service; }
     @GetMapping @PreAuthorize("@permissionService.has(authentication, 'MEDIA_READ')")
-    public ResponseEntity<PageResponse<MediaAssetResponse>> list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) { return ResponseEntity.ok(service.list(PageRequest.of(page, size, Sort.by("createdAt").descending()))); }
+    public ResponseEntity<PageResponse<MediaAssetResponse>> list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) { return ResponseEntity.ok(service.list(PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100), Sort.by("createdAt").descending()))); }
     @PostMapping @PreAuthorize("@permissionService.has(authentication, 'MEDIA_MANAGE')")
     public ResponseEntity<MediaAssetResponse> register(@Valid @RequestBody MediaUploadRequest request, Authentication auth) { return ResponseEntity.status(201).body(service.register(request, auth.getName())); }
     @GetMapping("/{id}/upload-url") @PreAuthorize("@permissionService.has(authentication, 'MEDIA_MANAGE')")

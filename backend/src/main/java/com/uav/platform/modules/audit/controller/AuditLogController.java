@@ -27,7 +27,8 @@ public class AuditLogController {
     public ResponseEntity<PageResponse<AuditLogResponse>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "25") int size) {
-        return ResponseEntity.ok(auditLogService.findAll(PageRequest.of(page, size,
+        return ResponseEntity.ok(auditLogService.findAll(PageRequest.of(
+                Math.max(page, 0), Math.min(Math.max(size, 1), 100),
                 Sort.by(Sort.Direction.DESC, "createdAt"))));
     }
 }

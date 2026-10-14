@@ -40,26 +40,55 @@ public class ISarService implements SarService {
     private final MissionRepository missionRepository;
     private final NotificationService notificationService;
     private final WebhookService webhookService;
+    private final com.uav.platform.modules.user.service.PermissionService permissionService;
 
     public ISarService(SarMissionRepository sarRepository, MissionRepository missionRepository) {
-        this(sarRepository, missionRepository, null, null);
+        this(sarRepository, missionRepository, null, null, null);
+    }
+
+    public ISarService(SarMissionRepository sarRepository,
+                       MissionRepository missionRepository,
+                       NotificationService notificationService,
+                       WebhookService webhookService) {
+        this(sarRepository, missionRepository, notificationService, webhookService, null);
     }
 
     @Autowired
     public ISarService(SarMissionRepository sarRepository,
                        MissionRepository missionRepository,
                        @Autowired(required = false) NotificationService notificationService,
-                       @Autowired(required = false) WebhookService webhookService) {
+                       @Autowired(required = false) WebhookService webhookService,
+                       @Autowired(required = false) com.uav.platform.modules.user.service.PermissionService permissionService) {
         this.sarRepository = sarRepository;
         this.missionRepository = missionRepository;
         this.notificationService = notificationService;
         this.webhookService = webhookService;
+        this.permissionService = permissionService;
+    }
+
+    private void requireMissionAccess(Mission mission, Authentication auth, boolean requireOperationalAuthority) {
+        if (mission == null || auth == null || permissionService == null) {
+            return;
+        }
+        if (permissionService.has(auth, "MISSION_VIEW_ALL") || permissionService.has(auth, "USER_MANAGE")) {
+            return;
+        }
+        String actor = auth.getName();
+        boolean isOperator = mission.getOperator() != null && java.util.Objects.equals(mission.getOperator().getUsername(), actor);
+        boolean isCustomer = mission.getCustomer() != null && java.util.Objects.equals(mission.getCustomer().getUsername(), actor);
+        if (!isOperator && !isCustomer) {
+            throw new org.springframework.security.access.AccessDeniedException("You do not have permission to access this mission");
+        }
+        if (requireOperationalAuthority && !isOperator && !permissionService.has(auth, "MISSION_STATUS_UPDATE")) {
+            throw new org.springframework.security.access.AccessDeniedException("Only assigned operators or commanders can modify SAR operational status");
+        }
     }
 
     @Override
     public SarMissionResponse registerSar(SarMissionRequest request, Authentication authentication) {
         Mission mission = missionRepository.findById(request.missionId())
             .orElseThrow(() -> SystemException.notFound("Mission not found with id: " + request.missionId()));
+        requireMissionAccess(mission, authentication, false);
 
         SarMission sar = sarRepository.findByMissionId(request.missionId())
             .orElseGet(() -> new SarMission(
@@ -90,6 +119,7 @@ public class ISarService implements SarService {
     public SarMissionResponse getByMissionId(Long missionId, Authentication authentication) {
         SarMission sar = sarRepository.findByMissionId(missionId)
             .orElseThrow(() -> SystemException.notFound("SAR details not found for mission id: " + missionId));
+        requireMissionAccess(sar.getMission(), authentication, false);
         return SarMapper.toSarMissionResponse(sar);
     }
 
@@ -97,6 +127,7 @@ public class ISarService implements SarService {
     public SarMissionResponse updateSarStatus(Long missionId, SarStatus status, Authentication authentication) {
         SarMission sar = sarRepository.findByMissionId(missionId)
             .orElseThrow(() -> SystemException.notFound("SAR details not found for mission id: " + missionId));
+        requireMissionAccess(sar.getMission(), authentication, true);
         sar.setSarStatus(status);
         SarMission saved = sarRepository.save(sar);
         return SarMapper.toSarMissionResponse(saved);
@@ -215,8 +246,14 @@ public class ISarService implements SarService {
 
     @Override
     public Map<String, Object> dispatchRescueCoordinates(Long missionId, Map<String, Object> payload, Authentication authentication) {
+        Mission targetMission = null;
         if (missionId != null) {
+            targetMission = missionRepository.findById(missionId).orElse(null);
+            if (targetMission != null) {
+                requireMissionAccess(targetMission, authentication, true);
+            }
             sarRepository.findByMissionId(missionId).ifPresent(sar -> {
+                requireMissionAccess(sar.getMission(), authentication, true);
                 sar.setSarStatus(SarStatus.TARGET_LOCATED);
                 sarRepository.save(sar);
             });

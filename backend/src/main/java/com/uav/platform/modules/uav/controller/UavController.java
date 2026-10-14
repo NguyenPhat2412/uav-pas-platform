@@ -22,7 +22,7 @@ public class UavController {
     public UavController(UavService service) { this.service = service; }
     @GetMapping @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
     public ResponseEntity<PageResponse<UavResponse>> list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(service.list(PageRequest.of(page, size, Sort.by("createdAt").descending())));
+        return ResponseEntity.ok(service.list(PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100), Sort.by("createdAt").descending())));
     }
     @GetMapping("/{id}") @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
     public ResponseEntity<UavResponse> get(@PathVariable Long id) { return ResponseEntity.ok(service.get(id)); }
@@ -38,6 +38,6 @@ public class UavController {
     public ResponseEntity<UavResponse> maintenance(@PathVariable Long id, Authentication auth) { return ResponseEntity.ok(service.maintenance(id, auth.getName())); }
     @GetMapping("/{id}/history") @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
     public ResponseEntity<PageResponse<UavStatusHistoryResponse>> history(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size) {
-        return ResponseEntity.ok(service.history(id, PageRequest.of(page, size, Sort.by("createdAt").descending())));
+        return ResponseEntity.ok(service.history(id, PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100), Sort.by("createdAt").descending())));
     }
 }
