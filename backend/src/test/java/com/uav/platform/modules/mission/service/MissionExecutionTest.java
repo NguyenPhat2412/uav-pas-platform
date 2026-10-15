@@ -46,7 +46,7 @@ class MissionExecutionTest {
     void readyRejectsMissingResources() {
         Mission mission = missionAt(MissionStatus.RESOURCE_RESERVED);
         MissionRepository missions = repository(mission);
-        when(missions.findById(1L)).thenReturn(Optional.of(mission));
+        when(missions.findById(1L)).thenReturn(Optional.of(mission)); when(missions.findByIdForUpdate(1L)).thenReturn(Optional.of(mission));
         MissionEquipmentReservationRepository reservations = mock(MissionEquipmentReservationRepository.class);
         when(reservations.existsByMissionIdAndReleasedFalse(1L)).thenReturn(false);
         MissionService service = service(missions, reservations, mock(UavRepository.class), mock(InventoryService.class), mock(PermissionService.class));
@@ -108,7 +108,7 @@ class MissionExecutionTest {
                 mock(EquipmentRepository.class), inventory, reservations);
     }
 
-    private MissionRepository repository(Mission mission) { MissionRepository r = mock(MissionRepository.class); when(r.findById(1L)).thenReturn(Optional.of(mission)); return r; }
+    private MissionRepository repository(Mission mission) { MissionRepository r = mock(MissionRepository.class); when(r.findById(1L)).thenReturn(Optional.of(mission)); when(r.findByIdForUpdate(1L)).thenReturn(Optional.of(mission)); return r; }
     private PermissionService permissions(boolean all) { PermissionService p = mock(PermissionService.class); when(p.has(any(), eq("MISSION_VIEW_ALL"))).thenReturn(all); return p; }
     private UsernamePasswordAuthenticationToken auth(String username) { return UsernamePasswordAuthenticationToken.authenticated(username, "n/a", List.of()); }
     private Mission missionAt(MissionStatus target) {

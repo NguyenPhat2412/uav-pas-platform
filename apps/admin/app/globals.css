@@ -1,3 +1,4 @@
+@import "@uav/ui/mission.css";
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
 @import "tailwindcss";
 @config "../../../frontend/tailwind.config.mjs";
@@ -141,3 +142,16 @@ button, a, input, select, textarea { -webkit-tap-highlight-color:transparent; }
 .uav-motor { position:absolute; right:-15px; top:-13px; display:grid; width:28px; height:28px; grid-template-columns:repeat(2,1fr); gap:2px; padding:4px; border:1px solid #a9c9da; border-radius:50%; background:#1b3d58; }.uav-motor i { display:block; border-radius:50%; background:#8cb9cc; }
 .uav-viewer-footer { justify-content:space-between; flex-wrap:wrap; border-top:1px solid var(--ops-border); color:var(--ops-muted); font-size:12px; background:#fff; }.uav-viewer-footer strong { color:var(--ops-ink); }
 @media(max-width:600px) { .uav-viewer-toolbar { flex-wrap:wrap; }.uav-viewer-toolbar>div:first-child { flex-basis:calc(100% - 50px); }.uav-viewer-stage { min-height:260px; }.uav-model-dialog { max-height:calc(100dvh - 24px); }.uav-model-overlay { padding:12px; } }
+
+/* Portal polish: clear focus, touch targets, and predictable navigation. */
+.app-shell{--primary:#075b9f;--primary-hover:#064b83;--background:#f4f7fb;--foreground:#132943}
+.app-shell .app-rail .rail-close,.app-shell .mobile-menu{display:none}
+.app-shell .icon-button{width:44px;height:44px;min-width:44px}
+.app-shell button:not(.history-toggle){min-height:44px}
+.app-topbar .account-summary{min-width:0}.account-summary>div{min-width:0}.account-summary strong{max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rail-footer button{color:#52667d!important}.app-brand small,.app-rail-label{color:#52667d}
+.console-table td{overflow-wrap:anywhere}.mission-page>section{margin:0}
+@media(max-width:900px){.app-shell .mobile-menu,.app-shell .app-rail .rail-close{display:inline-flex}.app-rail-open{overflow-y:auto;height:100dvh;padding-bottom:max(16px,env(safe-area-inset-bottom))}}
+@media(max-width:600px){.account-summary strong{max-width:190px}.app-main{padding:20px 16px 32px}.app-topbar{min-height:64px}.page-header{gap:12px}.table-pagination button{min-width:44px}}
+.audit-toolbar{display:flex;align-items:end;justify-content:space-between;gap:20px;padding:20px;border-bottom:1px solid #dce5ef}.audit-toolbar label{display:grid;gap:8px;font-size:13px;font-weight:600;flex:1;max-width:480px}.audit-toolbar input{width:100%;min-height:44px;border:1px solid #b8c8d8;border-radius:8px;padding:10px 12px;font-size:14px;font-weight:400;background:#fff}.audit-toolbar>span{font-size:12px;color:#52667d}.audit-action{display:inline-block;padding:4px 8px;border-radius:6px;background:#edf4fa;color:#275d85;font-size:12px;white-space:nowrap}.audit-details{max-width:320px;font-size:13px}.audit-table .console-table td{vertical-align:top}.audit-table .table-scroll{max-height:none}
+@media(max-width:760px){.audit-toolbar{align-items:stretch;flex-direction:column;padding:16px;gap:12px}.audit-toolbar input{font-size:16px}.audit-table .console-table{min-width:0}.audit-table thead{display:none}.audit-table tbody,.audit-table tr,.audit-table td{display:block}.audit-table tr{padding:16px;border-bottom:1px solid #dce5ef}.audit-table .console-table td{padding:6px 0;border:0;display:grid;grid-template-columns:108px minmax(0,1fr);gap:10px;max-width:none;font-size:13px}.audit-table td:before{content:attr(data-label);font-size:12px;color:#52667d}.audit-action{width:fit-content}.audit-table .table-scroll{overflow:visible}}

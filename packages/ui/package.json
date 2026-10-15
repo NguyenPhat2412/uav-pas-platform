@@ -4,12 +4,15 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.tsx"
+    ".": "./src/index.tsx",
+    "./presentation": "./src/presentation.ts",
+    "./timeline": "./src/MissionTimeline.tsx",
+    "./mission.css": "./src/mission.css"
   },
   "scripts": {
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
-    "test": "node --test ../../tests/m1-foundation.test.mjs",
+    "test": "node --test ../../tests/m1-foundation.test.mjs ../../tests/mission-presentation.test.mjs",
     "build": "tsc --noEmit"
   },
   "dependencies": {

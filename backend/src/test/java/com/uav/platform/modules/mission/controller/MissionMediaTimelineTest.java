@@ -72,7 +72,7 @@ class MissionMediaTimelineTest {
                 mock(StationRepository.class), mock(UavRepository.class), mock(EquipmentRepository.class), mock(InventoryService.class),
                 mock(MissionEquipmentReservationRepository.class), media, missionMedia, mock(com.uav.platform.modules.uav.service.UavService.class));
     }
-    private MissionRepository repository(Mission mission) { MissionRepository r = mock(MissionRepository.class); when(r.findById(1L)).thenReturn(Optional.of(mission)); return r; }
+    private MissionRepository repository(Mission mission) { MissionRepository r = mock(MissionRepository.class); when(r.findById(1L)).thenReturn(Optional.of(mission)); when(r.findByIdForUpdate(1L)).thenReturn(Optional.of(mission)); return r; }
     private UsernamePasswordAuthenticationToken auth(String username) { return UsernamePasswordAuthenticationToken.authenticated(username, "n/a", List.of()); }
     private Mission mission() {
         AppUser customer = new AppUser("customer", "customer@media.vn", "hash", null, UserStatus.ACTIVE);

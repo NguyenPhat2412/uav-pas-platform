@@ -15,6 +15,10 @@ public interface UavService {
     UavResponse update(Long id, UavRequest request, String actor);
     UavResponse assign(Long id, Long stationId, String actor);
     UavResponse changeStatus(Long id, UavStatus status, String reason, String actor);
+    UavResponse changeStatus(Long id, UavStatus status, String reason, UavStatus expectedStatus, String actor);
+    /** Internal mission lifecycle command; never exposed as a manual status endpoint. */
+    UavResponse changeMissionStatus(Long id, UavStatus status, String reason, String actor);
     UavResponse maintenance(Long id, String actor);
+    UavResponse maintenance(Long id, String reason, UavStatus expectedStatus, String actor);
     PageResponse<UavStatusHistoryResponse> history(Long id, Pageable pageable);
 }

@@ -32,9 +32,9 @@ export function useMissionDetail(id: number) {
 export function useMissionActions() {
   const client = useQueryClient(); const { key } = useCustomerScope();
   const refresh = async (id: number) => { await Promise.all([client.invalidateQueries({ queryKey: [...key, 'missions'] }), client.invalidateQueries({ queryKey: [...key, 'mission', id] })]); };
-  const submit = useMutation({ mutationFn: (id: number) => customerService.submit(id), onSuccess: (_, id) => refresh(id), retry: false });
-  const cancel = useMutation({ mutationFn: (id: number) => customerService.cancel(id), onSuccess: (_, id) => refresh(id), retry: false });
+  const submit = useMutation({ mutationFn: (id: number) => customerService.submit(id), onSettled: (_data, _error, id) => refresh(id), retry: false });
+  const cancel = useMutation({ mutationFn: (id: number) => customerService.cancel(id), onSettled: (_data, _error, id) => refresh(id), retry: false });
   const create = useMutation({ mutationFn: (data: MissionInput) => customerService.create(data), onSuccess: data => refresh(data.id), retry: false });
-  const update = useMutation({ mutationFn: ({ id, data }: { id: number; data: MissionInput }) => customerService.update(id, data), onSuccess: data => refresh(data.id), retry: false });
+  const update = useMutation({ mutationFn: ({ id, data }: { id: number; data: MissionInput }) => customerService.update(id, data), onSettled: (_data, _error, { id }) => refresh(id), retry: false });
   return { submit, cancel, create, update };
 }

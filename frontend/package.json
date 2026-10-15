@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --test tests/*.test.mjs ../tests/api-origin.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

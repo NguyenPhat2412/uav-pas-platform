@@ -10,6 +10,7 @@ export interface Mission {
   title: string; description?: string; requestedDate: string; startTime: string; expectedEndTime: string; locationName: string;
   latitude?: number; longitude?: number; stationId?: number; uavId?: number; operatorId?: number; priority: MissionPriority;
   status: MissionStatus; notes?: string; operatorAccepted?: boolean; operatorConflictNote?: string; createdAt?: string; updatedAt?: string;
+  completionNote?: string; equipmentCondition?: string; failureReason?: string; failureNotes?: string;
 }
 export interface MissionEvent { id: number; eventType: string; actor?: string; oldStatus?: MissionStatus; newStatus?: MissionStatus; description?: string; metadata?: string; createdAt?: string; }
 export interface MissionMedia { id: number; missionId: number; mediaRole: MediaRole; uploadedBy?: string; createdAt?: string; media: { id: number; originalName: string; contentType: string; size: number; type: string; }; }

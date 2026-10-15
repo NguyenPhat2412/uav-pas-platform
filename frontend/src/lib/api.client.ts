@@ -68,9 +68,11 @@ async function refreshAccess(generation: number): Promise<string> {
 export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const generation = sessionGeneration;
   const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
+  // Storage URLs authenticate with their signature, not the API session.
+  const isApiOrigin = new URL(url).origin === new URL(BASE_URL).origin;
   const headers: Record<string, string> = { 'Content-Type': 'application/json', ...options.headers as Record<string, string> };
   const browser = typeof window !== 'undefined';
-  const token = browser ? localStorage.getItem('token') : null;
+  const token = isApiOrigin && browser ? localStorage.getItem('token') : null;
   if (token && !headers.Authorization) headers.Authorization = `Bearer ${token}`;
   let response: Response;
   try { response = await fetch(url, { ...options, headers }); }
@@ -80,7 +82,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
   }
   requireCurrent(generation);
   const authCommand = /\/auth\/(login|register|refresh|logout|zalo\/callback)/.test(endpoint);
-  if (response.status === 401 && browser && !authCommand) {
+  if (isApiOrigin && response.status === 401 && browser && !authCommand) {
     // Another request may already have refreshed while this response was in flight.
     const currentToken = localStorage.getItem('token');
     const accessToken = currentToken && currentToken !== token ? currentToken : await refreshAccess(generation);
@@ -90,7 +92,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
     if (response.status === 401) setAuthSession(null);
   }
   if (!response.ok) {
-    if (browser && response.status === 403 && endpoint !== '/api/v1/permissions/me') {
+    if (isApiOrigin && browser && response.status === 403 && endpoint !== '/api/v1/permissions/me') {
       window.dispatchEvent(new Event(PERMISSIONS_EVENT));
     }
     let error: Partial<ApiErrorResponse> = {};

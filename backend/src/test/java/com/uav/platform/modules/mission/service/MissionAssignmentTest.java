@@ -94,7 +94,7 @@ class MissionAssignmentTest {
 
     private MissionRepository repository(Mission mission) {
         MissionRepository repository = mock(MissionRepository.class);
-        when(repository.findById(1L)).thenReturn(Optional.of(mission));
+        when(repository.findById(1L)).thenReturn(Optional.of(mission)); when(repository.findByIdForUpdate(1L)).thenReturn(Optional.of(mission));
         return repository;
     }
 

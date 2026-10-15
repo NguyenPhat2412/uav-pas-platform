@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib/api.client';
+import { uavChangeReason } from '../uav-workflows';
 import type { AuditLog, Equipment, InventoryMovement, MediaAsset, Operator, PageResponse, Station, Uav, UavHistory } from '../types/operations.types';
 
 export interface QuantityInput { quantity: number; note?: string; requestId: string; }
@@ -11,7 +12,7 @@ export const operationsService = {
   uavHistory: (id: number, page = 0, signal?: AbortSignal) => apiClient.get<PageResponse<UavHistory>>(`/api/v1/uavs/${id}/history?page=${page}&size=20`, { signal }),
   listEquipment: (page = 0, size = 100, signal?: AbortSignal) => apiClient.get<PageResponse<Equipment>>(`/api/v1/inventory/equipment?page=${page}&size=${size}`, { signal }),
   inventoryHistory: (page = 0, signal?: AbortSignal) => apiClient.get<PageResponse<InventoryMovement>>(`/api/v1/inventory/equipment/history?page=${page}&size=20`, { signal }),
-  listOperators: () => apiClient.get<PageResponse<Operator>>('/api/v1/users?role=ROLE_OPERATOR&size=100'),
+  listOperators: (page = 0, size = 100, signal?: AbortSignal) => apiClient.get<PageResponse<Operator>>(`/api/v1/users?role=ROLE_OPERATOR&page=${page}&size=${size}`, { signal }),
   createStation: (data: { code: string; name: string; address?: string; latitude?: number; longitude?: number }) => apiClient.post<Station>('/api/v1/stations', data),
   createUav: (data: { model: string; serialNumber: string; manufacturer: string }) => apiClient.post<Uav>('/api/v1/uavs', data),
   createEquipment: (data: { name: string; type: string; serialNumber?: string; stationId?: number }) => apiClient.post<Equipment>('/api/v1/inventory/equipment', data),
@@ -19,7 +20,8 @@ export const operationsService = {
   reserve: (id: number, quantity: number) => apiClient.post<Equipment>(`/api/v1/inventory/equipment/${id}/reserve`, { quantity, requestId: crypto.randomUUID() }),
   release: (id: number, quantity: number) => apiClient.post<Equipment>(`/api/v1/inventory/equipment/${id}/release`, { quantity, requestId: crypto.randomUUID() }),
   moveEquipment: ({ id, action, stationId, ...quantity }: QuantityInput & { id: number; action: string; stationId?: number }) => apiClient.post<Equipment>(`/api/v1/inventory/equipment/${id}/${action}${action === 'transfer' ? `/${stationId}` : ''}`, quantity),
-  maintenanceUav: (id: number) => apiClient.post<Uav>(`/api/v1/uavs/${id}/maintenance`),
+  maintenanceUav: ({ id, reason, expectedStatus }: { id: number; reason: string; expectedStatus: string }) => apiClient.post<Uav>(`/api/v1/uavs/${id}/maintenance?${new URLSearchParams({ reason: uavChangeReason(reason), expectedStatus })}`),
+  completeUavMaintenance: ({ id, reason, expectedStatus }: { id: number; reason: string; expectedStatus: string }) => apiClient.put<Uav>(`/api/v1/uavs/${id}/status?${new URLSearchParams({ status: 'AVAILABLE', reason: uavChangeReason(reason), expectedStatus })}`),
   assignUav: (id: number, stationId: number) => apiClient.put<Uav>(`/api/v1/uavs/${id}/station/${stationId}`),
   listMedia: (page = 0, signal?: AbortSignal) => apiClient.get<PageResponse<MediaAsset>>(`/api/v1/media?page=${page}&size=20`, { signal }),
   registerMedia: (data: MediaInput) => apiClient.post<MediaAsset>('/api/v1/media', data),

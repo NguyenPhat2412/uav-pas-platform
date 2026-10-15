@@ -33,9 +33,14 @@ public class UavController {
     @PutMapping("/{id}/station/{stationId}") @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
     public ResponseEntity<UavResponse> assign(@PathVariable Long id, @PathVariable Long stationId, Authentication auth) { return ResponseEntity.ok(service.assign(id, stationId, auth.getName())); }
     @PutMapping("/{id}/status") @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
-    public ResponseEntity<UavResponse> status(@PathVariable Long id, @RequestParam UavStatus status, @RequestParam(required = false) String reason, Authentication auth) { return ResponseEntity.ok(service.changeStatus(id, status, reason, auth.getName())); }
+    public ResponseEntity<UavResponse> status(@PathVariable Long id, @RequestParam UavStatus status,
+            @RequestParam(required = false) String reason, @RequestParam(required = false) UavStatus expectedStatus,
+            Authentication auth) { return ResponseEntity.ok(service.changeStatus(id, status, reason, expectedStatus, auth.getName())); }
     @PostMapping("/{id}/maintenance") @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
-    public ResponseEntity<UavResponse> maintenance(@PathVariable Long id, Authentication auth) { return ResponseEntity.ok(service.maintenance(id, auth.getName())); }
+    public ResponseEntity<UavResponse> maintenance(@PathVariable Long id, @RequestParam(required = false) String reason,
+            @RequestParam(required = false) UavStatus expectedStatus, Authentication auth) {
+        return ResponseEntity.ok(service.maintenance(id, reason, expectedStatus, auth.getName()));
+    }
     @GetMapping("/{id}/history") @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
     public ResponseEntity<PageResponse<UavStatusHistoryResponse>> history(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size) {
         return ResponseEntity.ok(service.history(id, PageRequest.of(page, size, Sort.by("createdAt").descending())));

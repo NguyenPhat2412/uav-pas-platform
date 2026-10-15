@@ -2,9 +2,65 @@
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
+import { MissionTimeline } from '@uav/ui/timeline';
+import { displayLabel, formatDate, missionHint, serviceName } from '@uav/ui/presentation';
 import { PageGuard } from '@/components/layout';
-import { Button, Panel, Status } from '@/components/ui';
-import { useMissionActions, useMissionDetail } from '@/features/customer/hooks';
+import { Button, Status } from '@/components/ui';
+import { useAuth } from '@/contexts/AuthContext';
+import { useMissionActions, useMissionDetail, useServices } from '@/features/customer/hooks';
 import { customerService } from '@/features/customer/service';
-export default function MissionDetailPage(){return <PageGuard><MissionDetail/></PageGuard>}
-function MissionDetail(){const {id}=useParams<{id:string}>();const missionId=Number(id);const q=useMissionDetail(missionId);const actions=useMissionActions();const [mediaError,setMediaError]=useState('');const [downloading,setDownloading]=useState<number|null>(null);const mission=q.detail.data;if(q.detail.isLoading)return <div className="center-state">Đang tải mission…</div>;if(q.detail.isError||!mission)return <div className="error">Không thể tải mission hoặc mission không thuộc tài khoản này.</div>;const download=async(mediaId:number)=>{setDownloading(mediaId);setMediaError('');try{const signed=await customerService.download(mediaId);window.open(signed.url,'_blank','noopener,noreferrer')}catch(err){setMediaError(err instanceof Error?err.message:'Không thể tạo liên kết tải xuống.')}finally{setDownloading(null)}};return <><div className="page-heading"><div><Link href="/missions" className="button-link">← Mission của tôi</Link><h1 style={{marginTop:12}}>{mission.title}</h1><p>{mission.code} · {mission.locationName}</p></div><Status value={mission.status}/></div><div className="grid grid-2"><Panel title="Thông tin mission"><dl className="grid grid-2"><div><dt className="muted">Dịch vụ</dt><dd>{mission.serviceId?`#${mission.serviceId}`:mission.missionType}</dd></div><div><dt className="muted">Thời gian</dt><dd>{new Date(mission.startTime).toLocaleString('vi-VN')}</dd></div><div><dt className="muted">Kết thúc dự kiến</dt><dd>{new Date(mission.expectedEndTime).toLocaleString('vi-VN')}</dd></div><div><dt className="muted">Ưu tiên</dt><dd>{mission.priority}</dd></div></dl><p className="muted" style={{marginTop:18}}>{mission.description||'Không có mô tả.'}</p><div className="form-actions">{mission.status==='DRAFT'&&<Button onClick={()=>void actions.submit.mutateAsync(mission.id)}>Gửi xác nhận</Button>}{mission.status==='PENDING_CONFIRMATION'&&<Button variant="danger" onClick={()=>void actions.cancel.mutateAsync(mission.id)}>Hủy yêu cầu</Button>}</div></Panel><Panel title="Media được cấp quyền"><p className="muted">Download dùng signed URL do backend cấp; URL không được lưu vào client state.</p>{mediaError&&<div className="error">{mediaError}</div>}{q.media.isError?<div className="error">Không thể tải media theo permission hiện tại.</div>:q.media.data?.length?<ul>{q.media.data.map(item=><li key={item.id} style={{padding:'10px 0',borderBottom:'1px solid #edf1f6',display:'flex',justifyContent:'space-between',gap:12}}><span>{item.media.originalName}<span className="muted"> · {item.mediaRole}</span></span><Button type="button" variant="secondary" disabled={downloading===item.media.id} onClick={()=>void download(item.media.id)}>{downloading===item.media.id?'Đang tạo link…':'Tải xuống'}</Button></li>)}</ul>:<div className="empty">Chưa có media.</div>}</Panel></div><Panel title="Lịch sử trạng thái" action={<span className="muted">Backend timeline</span>}><div className="timeline">{q.timeline.data?.map(event=><div className="timeline-item" key={event.id}><span className="timeline-dot"/><div><b>{event.description||event.eventType}</b><div className="muted">{event.createdAt?new Date(event.createdAt).toLocaleString('vi-VN'):''}{event.newStatus?` · ${event.newStatus}`:''}</div></div></div>)}</div>{q.timeline.isError&&<div className="notice" style={{marginTop:12}}>Timeline chưa được cấp quyền cho tài khoản này.</div>}</Panel></>}
+import { canEditMission } from '@/features/customer/mission-form';
+export default function MissionDetailPage() { return <PageGuard><MissionDetail /></PageGuard>; }
+function MissionDetail() {
+  const { id } = useParams<{ id: string }>();
+  const q = useMissionDetail(Number(id));
+  const services = useServices();
+  const actions = useMissionActions();
+  const { can, user } = useAuth();
+  const [mediaError, setMediaError] = useState('');
+  const [downloading, setDownloading] = useState<number | null>(null);
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  const mission = q.detail.data;
+  const actionError = actions.submit.error || actions.cancel.error;
+  if (q.detail.isLoading) return <div className="center-state" role="status">Đang tải nhiệm vụ…</div>;
+  if (q.detail.isError || !mission || mission.customerId !== user?.id) return <div className="error" role="alert">Không thể tải nhiệm vụ hoặc nhiệm vụ không thuộc tài khoản này. <Button variant="secondary" onClick={() => void q.detail.refetch()}>Thử lại</Button> <Link href="/missions">Về danh sách</Link></div>;
+  const canSubmit = canEditMission(mission, user?.id, can('MISSION_UPDATE'));
+  const canCancel = ['DRAFT', 'PENDING_CONFIRMATION'].includes(mission.status) && can('MISSION_CANCEL');
+  const download = async (mediaId: number) => {
+    setDownloading(mediaId); setMediaError('');
+    try { const signed = await customerService.download(mediaId); window.open(signed.url, '_blank', 'noopener,noreferrer'); }
+    catch { setMediaError('Không thể tải tệp lúc này. Vui lòng thử lại.'); }
+    finally { setDownloading(null); }
+  };
+  return <div className="mission-page">
+    <Link href="/missions" className="mission-back">← Nhiệm vụ của tôi</Link>
+    <section className="mission-hero" aria-labelledby="mission-title">
+      <div className="mission-hero-body">
+        <div className="mission-title-row"><div><p className="mission-code">{mission.code}</p><h1 id="mission-title">{mission.title}</h1><p className="mission-muted">{mission.locationName}</p></div><Status value={mission.status} /></div>
+        <dl className="mission-facts">
+          <div><dt>Dịch vụ</dt><dd>{services.data?.find(s => s.id === mission.serviceId) ? serviceName(services.data.find(s => s.id === mission.serviceId)!) : displayLabel(mission.missionType)}</dd></div>
+          <div><dt>Bắt đầu dự kiến</dt><dd>{formatDate(mission.startTime)}</dd></div>
+          <div><dt>Kết thúc dự kiến</dt><dd>{formatDate(mission.expectedEndTime)}</dd></div>
+          <div><dt>Mức ưu tiên</dt><dd>{displayLabel(mission.priority)}</dd></div>
+        </dl>
+        {mission.description && <p className="mission-muted" style={{ marginTop: 20 }}>{mission.description}</p>}
+      </div>
+      <div className="mission-guidance"><p>{missionHint(mission.status)}</p>{(canSubmit || canCancel) && <div className="mission-actions">
+        {canSubmit && !actions.submit.isPending && !actions.cancel.isPending && <Link className="button button-secondary" href={`/missions/${mission.id}/edit`}>Chỉnh sửa bản nháp</Link>}
+        {canSubmit && <Button disabled={actions.submit.isPending || actions.cancel.isPending} onClick={() => { actions.cancel.reset(); actions.submit.mutate(mission.id); }}>{actions.submit.isPending ? 'Đang gửi…' : 'Gửi xác nhận'}</Button>}
+        {canCancel && <Button variant="danger" disabled={actions.cancel.isPending || actions.submit.isPending} onClick={() => setConfirmCancel(true)}>Hủy yêu cầu</Button>}
+      </div>}</div>
+    </section>
+    {confirmCancel && canCancel && <div className="mission-note" role="group" aria-label="Xác nhận hủy yêu cầu"><strong>Bạn muốn hủy yêu cầu này?</strong><p className="mission-muted">Yêu cầu đã hủy sẽ không thể tiếp tục. Bạn vẫn có thể xem lại thông tin.</p><div className="mission-actions"><Button variant="secondary" disabled={actions.cancel.isPending || actions.submit.isPending} onClick={() => setConfirmCancel(false)}>Giữ yêu cầu</Button><Button variant="danger" disabled={actions.cancel.isPending || actions.submit.isPending} onClick={() => { actions.submit.reset(); actions.cancel.mutate(mission.id, { onSuccess: () => setConfirmCancel(false) }); }}>{actions.cancel.isPending ? 'Đang hủy…' : 'Xác nhận hủy'}</Button></div></div>}
+    {actionError && <div className="error" role="alert">{actionError.message === 'MISSION_INVALID_STATUS' ? 'Trạng thái nhiệm vụ đã thay đổi. Vui lòng kiểm tra lại trước khi thao tác.' : 'Chưa thể thực hiện thao tác. Vui lòng kiểm tra trạng thái và thử lại.'}</div>}
+    <div className="mission-grid">
+      <section className="mission-panel" aria-labelledby="files-title"><header><h2 id="files-title">Tệp và kết quả</h2><span className="mission-count">{q.media.data?.length ?? 0} tệp</span></header><div className="mission-panel-body">
+        {mediaError && <div className="error" role="alert">{mediaError}</div>}
+        {!can('MISSION_MEDIA_VIEW') ? <p className="mission-muted">Bạn chưa được cấp quyền xem tệp.</p> : q.media.isLoading ? <p role="status">Đang tải danh sách tệp…</p> : q.media.isError ? <div className="error" role="alert">Không thể tải danh sách tệp. <button onClick={() => void q.media.refetch()}>Thử lại</button></div> : q.media.data?.length ? <ul className="mission-files">{q.media.data.map(item => <li className="mission-file" key={item.id}><div className="mission-file-info"><span className="mission-file-name">{item.media.originalName}</span><span className="mission-file-meta">{displayLabel(item.mediaRole)} · {Math.max(1, Math.ceil(item.media.size / 1024))} KB</span></div><Button variant="secondary" disabled={downloading !== null} onClick={() => void download(item.media.id)}>{downloading === item.media.id ? 'Đang tải…' : 'Tải xuống'}</Button></li>)}</ul> : <div className="mission-empty">Chưa có tệp. Kết quả sẽ xuất hiện khi đội vận hành cập nhật.</div>}
+      </div></section>
+      <section className="mission-panel" aria-labelledby="history-title"><header><h2 id="history-title">Lịch sử nhiệm vụ</h2></header><div className="mission-panel-body">
+        {!can('MISSION_TIMELINE_VIEW') ? <p className="mission-muted">Bạn chưa được cấp quyền xem lịch sử.</p> : q.timeline.isLoading ? <p role="status">Đang tải lịch sử…</p> : q.timeline.isError ? <div className="error" role="alert">Không thể tải lịch sử. <button onClick={() => void q.timeline.refetch()}>Thử lại</button></div> : <MissionTimeline events={q.timeline.data ?? []} />}
+      </div></section>
+    </div>
+  </div>;
+}

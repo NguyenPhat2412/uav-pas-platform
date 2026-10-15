@@ -49,6 +49,8 @@ import java.util.List;
 @Service
 @Transactional
 public class IMissionService implements MissionService {
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
     private final MissionRepository missions;
     private final UavServiceRepository services;
     private final UserRepository users;
@@ -159,7 +161,7 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse submit(Long id, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         MissionStatus old = mission.getStatus();
         mission.transitionTo(MissionStatus.PENDING_CONFIRMATION);
         event(mission, MissionEventType.SUBMITTED, authentication, old, mission.getStatus(), "Mission submitted");
@@ -169,7 +171,7 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse cancel(Long id, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         MissionStatus old = mission.getStatus();
         releaseResources(mission, authentication.getName());
         mission.transitionTo(MissionStatus.CANCELLED);
@@ -180,7 +182,7 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse assignStation(Long id, ResourceAssignmentRequest request, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         ensureResourceAssignmentAllowed(mission);
         Station station = stations.findById(request.resourceId()).orElseThrow(() -> SystemException.notFound("Station not found"));
         if (station.getStatus() != StationStatus.ACTIVE) throw SystemException.conflict("MISSION_RESOURCE_MISSING");
@@ -197,11 +199,14 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse assignUav(Long id, ResourceAssignmentRequest request, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         ensureResourceAssignmentAllowed(mission);
         if (mission.getUav() != null && !mission.getUav().getId().equals(request.resourceId())) throw SystemException.conflict("MISSION_RESOURCE_MISSING");
-        Uav uav = uavs.findByIdForUpdate(request.resourceId()).orElseThrow(() -> SystemException.notFound("UAV not found"));
-        if (uav.getStatus() != UavStatus.AVAILABLE) throw SystemException.conflict("UAV_NOT_AVAILABLE");
+        Uav uav = lockUav(request.resourceId());
+        if (uav.getStatus() != UavStatus.AVAILABLE
+                || missions.existsByUavIdAndIdNotAndStatusNotIn(uav.getId(), mission.getId(), excludedStatuses())) {
+            throw SystemException.conflict("UAV_NOT_AVAILABLE");
+        }
         if (mission.getStation() != null && uav.getStation() != null && !mission.getStation().getId().equals(uav.getStation().getId())) {
             throw SystemException.conflict("MISSION_RESOURCE_MISSING");
         }
@@ -217,8 +222,98 @@ public class IMissionService implements MissionService {
     }
 
     @Override
+    public MissionResponse replaceUav(Long id, MissionUavReplacementRequest request, Authentication authentication) {
+        requireUavDispatchPermission(authentication);
+        String reason = dispatchReason(request.reason());
+        Mission mission = accessibleForUpdate(id, authentication);
+        requireCurrentUav(mission, request.expectedCurrentUavId());
+        if (request.replacementUavId() == null || request.replacementUavId() <= 0
+                || request.replacementUavId().equals(request.expectedCurrentUavId())) {
+            throw SystemException.badRequest("UAV_REPLACEMENT_MUST_DIFFER");
+        }
+        // Lock both rows in ID order so concurrent swaps cannot deadlock each other.
+        Long firstId = Math.min(request.expectedCurrentUavId(), request.replacementUavId());
+        Long secondId = Math.max(request.expectedCurrentUavId(), request.replacementUavId());
+        Uav first = lockUav(firstId);
+        Uav second = lockUav(secondId);
+        Uav previous = firstId.equals(request.expectedCurrentUavId()) ? first : second;
+        Uav replacement = firstId.equals(request.replacementUavId()) ? first : second;
+        if (previous.getStatus() == UavStatus.IN_USE) throw SystemException.conflict("UAV_NOT_AVAILABLE");
+        if (replacement.getStatus() != UavStatus.AVAILABLE
+                || missions.existsByUavIdAndIdNotAndStatusNotIn(replacement.getId(), id, excludedStatuses())) {
+            throw SystemException.conflict("UAV_NOT_AVAILABLE");
+        }
+        if ((mission.getStation() != null && mission.getStation().getStatus() != StationStatus.ACTIVE)
+                || (replacement.getStation() != null && replacement.getStation().getStatus() != StationStatus.ACTIVE)
+                || (mission.getStation() != null && replacement.getStation() != null
+                && !mission.getStation().getId().equals(replacement.getStation().getId()))) {
+            throw SystemException.conflict("MISSION_RESOURCE_MISSING");
+        }
+        if (missions.exists(MissionSpecifications.overlappingUav(replacement.getId(), excludedStatuses(),
+                mission.getStartTime(), mission.getExpectedEndTime()))) {
+            throw SystemException.conflict("UAV_TIME_CONFLICT");
+        }
+        MissionStatus oldStatus = mission.getStatus();
+        mission.redispatchUav(replacement, reservations.existsByMissionIdAndReleasedFalse(id));
+        changeUavStatus(replacement, UavStatus.ASSIGNED, "Mission UAV replaced: " + id, authentication.getName());
+        releasePreviousUav(previous, id, authentication.getName());
+        recordRedispatch(mission, MissionEventType.UAV_REPLACED, oldStatus, previous.getId(), replacement.getId(), reason, authentication);
+        return MissionMapper.toResponse(mission);
+    }
+
+    @Override
+    public MissionResponse unassignUav(Long id, MissionUavUnassignmentRequest request, Authentication authentication) {
+        requireUavDispatchPermission(authentication);
+        String reason = dispatchReason(request.reason());
+        Mission mission = accessibleForUpdate(id, authentication);
+        requireCurrentUav(mission, request.expectedCurrentUavId());
+        Uav previous = lockUav(request.expectedCurrentUavId());
+        if (previous.getStatus() == UavStatus.IN_USE) throw SystemException.conflict("UAV_NOT_AVAILABLE");
+        MissionStatus oldStatus = mission.getStatus();
+        mission.redispatchUav(null, reservations.existsByMissionIdAndReleasedFalse(id));
+        releasePreviousUav(previous, id, authentication.getName());
+        recordRedispatch(mission, MissionEventType.UAV_UNASSIGNED, oldStatus, previous.getId(), null, reason, authentication);
+        return MissionMapper.toResponse(mission);
+    }
+
+    private void requireUavDispatchPermission(Authentication authentication) {
+        if (!permissions.has(authentication, "MISSION_ASSIGN_UAV")) {
+            throw new org.springframework.security.access.AccessDeniedException("UAV dispatch is not permitted");
+        }
+    }
+
+    private String dispatchReason(String reason) {
+        if (reason == null || reason.isBlank() || reason.length() > 500) throw SystemException.badRequest("UAV_DISPATCH_REASON_REQUIRED");
+        return reason.trim();
+    }
+
+    private void requireCurrentUav(Mission mission, Long expectedId) {
+        if (mission.getStatus() != MissionStatus.CONFIRMED && mission.getStatus() != MissionStatus.RESOURCE_RESERVED
+                && mission.getStatus() != MissionStatus.READY) throw SystemException.conflict("MISSION_INVALID_STATUS");
+        if (expectedId == null || expectedId <= 0) throw SystemException.badRequest("UAV_DISPATCH_EXPECTED_ID_REQUIRED");
+        if (mission.getUav() == null || !mission.getUav().getId().equals(expectedId)) {
+            throw SystemException.conflict("MISSION_UAV_ASSIGNMENT_STALE");
+        }
+    }
+
+    private void releasePreviousUav(Uav previous, Long missionId, String actor) {
+        if (previous.getStatus() == UavStatus.ASSIGNED
+                && !missions.existsByUavIdAndIdNotAndStatusNotIn(previous.getId(), missionId, excludedStatuses())) {
+            changeUavStatus(previous, UavStatus.AVAILABLE, "Mission UAV released: " + missionId, actor);
+        }
+    }
+
+    private void recordRedispatch(Mission mission, MissionEventType type, MissionStatus oldStatus,
+                                  Long previousId, Long replacementId, String reason, Authentication authentication) {
+        String metadata = "{\"previousUavId\":" + previousId + ",\"replacementUavId\":" + replacementId + "}";
+        events.save(new MissionEvent(mission, type, user(authentication.getName()), oldStatus, mission.getStatus(), reason, metadata));
+        audit.record(null, authentication.getName(), AuditAction.ASSIGN, "MISSION", mission.getId().toString(),
+                type + ":" + previousId + "->" + replacementId + ":" + reason);
+    }
+
+    @Override
     public MissionResponse assignOperator(Long id, ResourceAssignmentRequest request, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         ensureResourceAssignmentAllowed(mission);
         if (mission.getOperator() != null && !mission.getOperator().getId().equals(request.resourceId())) throw SystemException.conflict("MISSION_RESOURCE_MISSING");
         AppUser operator = users.findByIdForUpdate(request.resourceId()).orElseThrow(() -> SystemException.notFound("Operator not found"));
@@ -235,7 +330,7 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse reserveEquipment(Long id, ResourceAssignmentRequest request, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         ensureResourceAssignmentAllowed(mission);
         Equipment item = equipment.findById(request.resourceId()).orElseThrow(() -> SystemException.notFound("Equipment not found"));
         if (item.getStatus() != EquipmentStatus.ACTIVE || item.getAvailableQuantity() < request.quantity()) {
@@ -251,7 +346,7 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse confirm(Long id, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         MissionStatus old = mission.getStatus(); mission.transitionTo(MissionStatus.CONFIRMED);
         event(mission, MissionEventType.STATUS_CHANGED, authentication, old, mission.getStatus(), "Mission confirmed");
         audit.record(null, authentication.getName(), AuditAction.STATUS_CHANGE, "MISSION", id.toString(), "CONFIRMED");
@@ -260,9 +355,10 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse reject(Long id, String reason, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         MissionStatus old = mission.getStatus();
         mission.transitionTo(MissionStatus.REJECTED);
+        releaseResources(mission, authentication.getName());
         event(mission, MissionEventType.REJECTED, authentication, old, mission.getStatus(), reason);
         audit.record(null, authentication.getName(), AuditAction.STATUS_CHANGE, "MISSION", id.toString(), "REJECTED:" + reason);
         return MissionMapper.toResponse(mission);
@@ -270,7 +366,9 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse ready(Long id, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
+        if (mission.getUav() != null && mission.getUav().getId() != null) lockUav(mission.getUav().getId());
+        requireExclusiveUavOwnership(mission);
         boolean equipmentValid = reservations != null && reservations.findByMissionIdAndReleasedFalse(id).stream()
                 .allMatch(item -> item.getEquipment().getStatus() == EquipmentStatus.ACTIVE
                         && item.getEquipment().getReservedQuantity() >= item.getQuantity());
@@ -289,8 +387,10 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse start(Long id, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         requireAssignedOperator(mission, authentication);
+        if (mission.getUav() != null && mission.getUav().getId() != null) lockUav(mission.getUav().getId());
+        requireExclusiveUavOwnership(mission);
         if (mission.getUav() == null || (mission.getUav().getStatus() != UavStatus.ASSIGNED && mission.getUav().getStatus() != UavStatus.AVAILABLE)) {
             throw SystemException.conflict("UAV_NOT_AVAILABLE");
         }
@@ -303,7 +403,7 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse complete(Long id, MissionCompletionRequest request, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         requireAssignedOperator(mission, authentication);
         MissionStatus old = mission.getStatus();
         releaseResources(mission, authentication.getName());
@@ -315,7 +415,7 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse fail(Long id, MissionFailureRequest request, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         requireAssignedOperator(mission, authentication);
         MissionStatus old = mission.getStatus();
         releaseResources(mission, authentication.getName());
@@ -330,7 +430,7 @@ public class IMissionService implements MissionService {
         if (!permissions.has(authentication, "MISSION_MEDIA_UPLOAD")) {
             throw new org.springframework.security.access.AccessDeniedException("Mission media upload is not permitted");
         }
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         if (missionMedia.existsByMissionIdAndMediaId(id, request.mediaId())) throw SystemException.conflict("Media already attached");
         MediaAsset media = mediaAssets.findById(request.mediaId()).orElseThrow(() -> SystemException.notFound("Media not found"));
         if(media.isDeleted() || !media.isConfirmed()) throw SystemException.conflict("Media upload must be confirmed before attachment");
@@ -379,7 +479,7 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse acceptOperator(Long id, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         requireAssignedOperator(mission, authentication);
         mission.acceptOperator();
         event(mission, MissionEventType.OPERATOR_ACCEPTED, authentication, mission.getStatus(), mission.getStatus(), "Operator accepted assignment");
@@ -389,7 +489,7 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse reportOperatorConflict(Long id, String note, Authentication authentication) {
-        Mission mission = accessible(id, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
         requireAssignedOperator(mission, authentication);
         mission.reportOperatorConflict(note);
         event(mission, MissionEventType.OPERATOR_CONFLICT, authentication, mission.getStatus(), mission.getStatus(), note);
@@ -403,6 +503,19 @@ public class IMissionService implements MissionService {
         do { code = String.format("MSN-%d-%06d", year, next++); }
         while (missions.findByCode(code).isPresent());
         return code;
+    }
+
+    private Mission accessibleForUpdate(Long id, Authentication authentication) {
+        Mission mission = missions.findByIdForUpdate(id).orElseThrow(() -> SystemException.notFound("MISSION_NOT_FOUND"));
+        if (entityManager != null) entityManager.refresh(mission);
+        enforceVisibility(mission, authentication);
+        return mission;
+    }
+
+    private Uav lockUav(Long id) {
+        Uav uav = uavs.findByIdForUpdate(id).orElseThrow(() -> SystemException.notFound("UAV not found"));
+        if (entityManager != null) entityManager.refresh(uav);
+        return uav;
     }
 
     private Mission accessible(Long id, Authentication authentication) {
@@ -434,8 +547,12 @@ public class IMissionService implements MissionService {
                 reservation.release();
             }
         }
-        if (mission.getUav() != null && (mission.getUav().getStatus() == UavStatus.ASSIGNED || mission.getUav().getStatus() == UavStatus.IN_USE)) {
-            changeUavStatus(mission.getUav(), UavStatus.AVAILABLE, "Mission resources released", actor);
+        if (mission.getUav() != null) {
+            Uav uav = mission.getUav().getId() == null ? mission.getUav() : lockUav(mission.getUav().getId());
+            if ((uav.getStatus() == UavStatus.ASSIGNED || uav.getStatus() == UavStatus.IN_USE)
+                    && !missions.existsByUavIdAndIdNotAndStatusNotIn(uav.getId(), mission.getId(), excludedStatuses())) {
+                changeUavStatus(uav, UavStatus.AVAILABLE, "Mission resources released", actor);
+            }
         }
     }
 
@@ -449,6 +566,13 @@ public class IMissionService implements MissionService {
         }
     }
 
+    private void requireExclusiveUavOwnership(Mission mission) {
+        if (mission.getUav() != null && missions.existsByUavIdAndIdNotAndStatusNotIn(
+                mission.getUav().getId(), mission.getId(), excludedStatuses())) {
+            throw SystemException.conflict("UAV_NOT_AVAILABLE");
+        }
+    }
+
     private void requireAssignedOperator(Mission mission, Authentication authentication) {
         if (mission.getOperator() == null || authentication == null || !mission.getOperator().getUsername().equals(authentication.getName())) {
             throw new org.springframework.security.access.AccessDeniedException("Assigned operator required");
@@ -456,7 +580,7 @@ public class IMissionService implements MissionService {
     }
 
     private void changeUavStatus(Uav uav, UavStatus status, String reason, String actor) {
-        if (uavService != null && uav.getId() != null) uavService.changeStatus(uav.getId(), status, reason, actor);
+        if (uavService != null && uav.getId() != null) uavService.changeMissionStatus(uav.getId(), status, reason, actor);
         else uav.setStatus(status);
     }
 

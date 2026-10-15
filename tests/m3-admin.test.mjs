@@ -16,7 +16,7 @@ test('admin writes only through shared API client and uses actual permission end
  assert.doesNotMatch(source,/\bfetch\s*\(/);
  const service=readFileSync(`${admin}/src/features/admin/services/admin.service.ts`,'utf8');
  for(const endpoint of ['/api/v1/users','/api/v1/permissions','/api/v1/role-templates','/api/v1/audit-logs','/api/v1/dashboard/summary']) assert.match(service,new RegExp(endpoint.replaceAll('/','\\/')));
- assert.match(readFileSync(`${admin}/src/features/admin/components/PermissionEditor.tsx`,'utf8'),/Override ALLOW\/DENY/);
+ assert.match(readFileSync(`${admin}/src/features/admin/components/PermissionEditor.tsx`,'utf8'),/Quyền cho phép hoặc từ chối riêng/);
 });
 test('admin keeps mission administration in Operations ownership',()=>{
  assert.equal(existsSync(at('apps/operations/app/admin/missions/page.tsx')),true);

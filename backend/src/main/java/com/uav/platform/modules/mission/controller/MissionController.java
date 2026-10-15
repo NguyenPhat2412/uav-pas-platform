@@ -103,6 +103,20 @@ public class MissionController {
         return ResponseEntity.ok(service.assignUav(id, request, authentication));
     }
 
+    @PostMapping("/{id}/replace-uav")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_UAV')")
+    public ResponseEntity<MissionResponse> replaceUav(@PathVariable Long id, @Valid @RequestBody MissionUavReplacementRequest request,
+                                                      Authentication authentication) {
+        return ResponseEntity.ok(service.replaceUav(id, request, authentication));
+    }
+
+    @PostMapping("/{id}/unassign-uav")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_UAV')")
+    public ResponseEntity<MissionResponse> unassignUav(@PathVariable Long id, @Valid @RequestBody MissionUavUnassignmentRequest request,
+                                                       Authentication authentication) {
+        return ResponseEntity.ok(service.unassignUav(id, request, authentication));
+    }
+
     @PostMapping("/{id}/assign-operator")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_OPERATOR')")
     public ResponseEntity<MissionResponse> assignOperator(@PathVariable Long id, @Valid @RequestBody ResourceAssignmentRequest request,

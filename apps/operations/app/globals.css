@@ -1,3 +1,4 @@
+@import "@uav/ui/mission.css";
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
 @import "tailwindcss";
 @config "../../../frontend/tailwind.config.mjs";
@@ -141,3 +142,14 @@ button, a, input, select, textarea { -webkit-tap-highlight-color:transparent; }
 .uav-motor { position:absolute; right:-15px; top:-13px; display:grid; width:28px; height:28px; grid-template-columns:repeat(2,1fr); gap:2px; padding:4px; border:1px solid #a9c9da; border-radius:50%; background:#1b3d58; }.uav-motor i { display:block; border-radius:50%; background:#8cb9cc; }
 .uav-viewer-footer { justify-content:space-between; flex-wrap:wrap; border-top:1px solid var(--ops-border); color:var(--ops-muted); font-size:12px; background:#fff; }.uav-viewer-footer strong { color:var(--ops-ink); }
 @media(max-width:600px) { .uav-viewer-toolbar { flex-wrap:wrap; }.uav-viewer-toolbar>div:first-child { flex-basis:calc(100% - 50px); }.uav-viewer-stage { min-height:260px; }.uav-model-dialog { max-height:calc(100dvh - 24px); }.uav-model-overlay { padding:12px; } }
+
+/* Portal polish: clear focus, touch targets, and predictable navigation. */
+.app-shell{--primary:#075b9f;--primary-hover:#064b83;--background:#f4f7fb;--foreground:#132943}
+.app-shell .app-rail .rail-close,.app-shell .mobile-menu{display:none}
+.app-shell .icon-button{width:44px;height:44px;min-width:44px}
+.app-shell button:not(.history-toggle){min-height:44px}
+.app-topbar .account-summary{min-width:0}.account-summary>div{min-width:0}.account-summary strong{max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rail-footer button{color:#52667d!important}.app-brand small,.app-rail-label{color:#52667d}
+.console-table td{overflow-wrap:anywhere}.mission-page>section{margin:0}
+@media(max-width:900px){.app-shell .mobile-menu,.app-shell .app-rail .rail-close{display:inline-flex}.app-rail-open{overflow-y:auto;height:100dvh;padding-bottom:max(16px,env(safe-area-inset-bottom))}}
+@media(max-width:600px){.account-summary strong{max-width:190px}.app-main{padding:20px 16px 32px}.app-topbar{min-height:64px}.page-header{gap:12px}.table-pagination button{min-width:44px}}

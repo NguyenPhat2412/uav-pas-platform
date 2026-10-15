@@ -1,3 +1,4 @@
+import { displayLabel } from '@uav/ui/presentation';
 import { cn } from '@/lib/utils';
 
 const tones: Record<string, string> = {
@@ -8,5 +9,5 @@ const tones: Record<string, string> = {
 
 export function StatusBadge({ status, label }: { status?: string; label?: string }) {
   const normalized = (status || 'UNKNOWN').toUpperCase();
-  return <span className={cn('status-badge', tones[normalized] || 'status-badge-muted')}><span className="status-dot" />{label || normalized.replaceAll('_', ' ')}</span>;
+  return <span className={cn('status-badge', tones[normalized] || 'status-badge-muted')}><span className="status-dot" />{label || displayLabel(normalized)}</span>;
 }
