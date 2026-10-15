@@ -33,15 +33,7 @@ public class IAuthService implements AuthService {
     private final ZaloOAuthService zaloOAuthService;
     private final RefreshTokenService refreshTokenService;
     private final InvalidatedTokenService invalidatedTokenService;
-
-    public IAuthService(
-            UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
-            JwtTokenProvider jwtTokenProvider,
-            ZaloOAuthService zaloOAuthService
-    ) {
-        this(userRepository, passwordEncoder, jwtTokenProvider, zaloOAuthService, null, null);
-    }
+    private final com.uav.platform.modules.user.service.AuthSessionLock sessionLock;
 
     @Autowired
     public IAuthService(
@@ -50,7 +42,8 @@ public class IAuthService implements AuthService {
             JwtTokenProvider jwtTokenProvider,
             ZaloOAuthService zaloOAuthService,
             @Autowired(required = false) RefreshTokenService refreshTokenService,
-            @Autowired(required = false) InvalidatedTokenService invalidatedTokenService
+            @Autowired(required = false) InvalidatedTokenService invalidatedTokenService,
+            com.uav.platform.modules.user.service.AuthSessionLock sessionLock
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -58,6 +51,7 @@ public class IAuthService implements AuthService {
         this.zaloOAuthService = zaloOAuthService;
         this.refreshTokenService = refreshTokenService;
         this.invalidatedTokenService = invalidatedTokenService;
+        this.sessionLock = sessionLock;
     }
 
     @Override
@@ -109,6 +103,7 @@ public class IAuthService implements AuthService {
         AppUser user = userRepository.findByEmail(usernameOrEmail)
                 .or(() -> userRepository.findByUsername(usernameOrEmail))
                 .orElseThrow(() -> SystemException.unauthorized(CoreConstants.INVALID_CREDENTIALS));
+        user = sessionLock.lock(user);
 
         if (user.isAccountLocked()) {
             throw SystemException.unauthorized("Tài khoản đã bị tạm khóa do nhập sai mật khẩu quá 5 lần. Vui lòng thử lại sau 15 phút.");
@@ -155,6 +150,7 @@ public class IAuthService implements AuthService {
 
         AppUser user = userRepository.findByZaloId(profile.id())
                 .orElseGet(() -> createZaloUser(profile));
+        user = sessionLock.lock(user);
 
         if (user.getStatus() != UserStatus.ACTIVE) {
             throw SystemException.badRequest(CoreConstants.ACCOUNT_INACTIVE);
@@ -184,7 +180,7 @@ public class IAuthService implements AuthService {
             throw SystemException.internalError("RefreshTokenService is not configured");
         }
 
-        RefreshToken refreshToken = refreshTokenService.findByToken(request.refreshToken())
+        RefreshToken refreshToken = refreshTokenService.findByTokenForUpdate(request.refreshToken())
                 .map(refreshTokenService::verifyExpiration)
                 .orElseThrow(() -> SystemException.unauthorized("Invalid or expired refresh token"));
 
@@ -201,6 +197,24 @@ public class IAuthService implements AuthService {
 
     @Override
     public void logout(String accessToken, String refreshToken) {
+        // The established endpoint accepts access and refresh independently.
+        // Lock their distinct owners in ID order before either mutation, so even
+        // crossed token pairs cannot introduce an A->B / B->A lock cycle.
+        var owners = new java.util.TreeSet<Long>();
+        if (accessToken != null && !accessToken.isBlank()) {
+            try {
+                Long owner = jwtTokenProvider.getUserIdFromToken(accessToken);
+                if (owner == null) {
+                    owner = userRepository.findByUsername(jwtTokenProvider.getUsernameFromToken(accessToken))
+                            .map(AppUser::getId).orElse(null);
+                }
+                if (owner != null) owners.add(owner);
+            } catch (io.jsonwebtoken.JwtException | IllegalArgumentException ignored) {
+                // Invalid/expired access tokens retain the existing no-op behavior.
+            }
+        }
+        if (refreshTokenService != null) refreshTokenService.findUserIdByToken(refreshToken).ifPresent(owners::add);
+        owners.forEach(sessionLock::lockById);
         if (accessToken != null && !accessToken.isBlank() && invalidatedTokenService != null) {
             invalidatedTokenService.invalidate(accessToken);
         }

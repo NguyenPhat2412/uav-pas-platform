@@ -43,11 +43,14 @@ class AuthServiceTest {
     @Mock
     private ZaloOAuthService zaloOAuthService;
 
+    @Mock private AuthSessionLock sessionLock;
+
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new IAuthService(userRepository, passwordEncoder, jwtTokenProvider, zaloOAuthService);
+        lenient().when(sessionLock.lock(any(AppUser.class))).thenAnswer(i -> i.getArgument(0));
+        authService = new IAuthService(userRepository, passwordEncoder, jwtTokenProvider, zaloOAuthService, null, null, sessionLock);
     }
 
     // ==================== Register Tests ====================
