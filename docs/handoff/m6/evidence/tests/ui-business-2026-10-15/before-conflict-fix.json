@@ -1,0 +1,19 @@
+{
+  "result": [
+    {
+      "name": "customer B direct-ID ownership denied",
+      "status": "PASS"
+    },
+    {
+      "name": "customer B list excludes A missions",
+      "status": "PASS"
+    },
+    {
+      "name": "admin audit page loaded",
+      "status": "PASS"
+    }
+  ],
+  "errors": [
+    "MISSION_INVALID_STATUS"
+  ]
+}

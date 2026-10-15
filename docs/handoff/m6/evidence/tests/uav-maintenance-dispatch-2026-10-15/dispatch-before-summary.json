@@ -1,0 +1,11 @@
+{
+  "tests": "1",
+  "failures": "1",
+  "errors": "0",
+  "cases": [
+    {
+      "name": "executionAndTerminalMissionsRejectAcceptanceAndConflictWithoutChangingHistory",
+      "failure": "IN_PROGRESS ==> Expected java.lang.IllegalStateException to be thrown, but nothing was thrown."
+    }
+  ]
+}

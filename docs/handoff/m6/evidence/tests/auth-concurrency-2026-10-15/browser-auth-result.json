@@ -1,0 +1,540 @@
+{
+  "status": "PASS",
+  "configuredAccessTtlMs": 5000,
+  "coverage": "Existing bearer JSON contract and one refresh token per user; real local browser login/expiry/refresh/logout. No SSO, cookies or CSRF changes tested.",
+  "results": [
+    {
+      "name": "customer: UI login and protected route",
+      "status": "PASS",
+      "mode": "actual browser UI",
+      "detail": {
+        "port": 3101,
+        "protectedPath": "/missions"
+      }
+    },
+    {
+      "name": "customer: natural access expiry, refresh and protected data reload",
+      "status": "PASS",
+      "mode": "actual browser UI"
+    },
+    {
+      "name": "customer: UI logout clears session and protected route returns to login",
+      "status": "PASS",
+      "mode": "actual browser UI"
+    },
+    {
+      "name": "operator: UI login and protected route",
+      "status": "PASS",
+      "mode": "actual browser UI",
+      "detail": {
+        "port": 3102,
+        "protectedPath": "/assigned-missions"
+      }
+    },
+    {
+      "name": "operator: natural access expiry, refresh and protected data reload",
+      "status": "PASS",
+      "mode": "actual browser UI"
+    },
+    {
+      "name": "operator: UI logout clears session and protected route returns to login",
+      "status": "PASS",
+      "mode": "actual browser UI"
+    },
+    {
+      "name": "admin: UI login and protected route",
+      "status": "PASS",
+      "mode": "actual browser UI",
+      "detail": {
+        "port": 3103,
+        "protectedPath": "/audit-logs"
+      }
+    },
+    {
+      "name": "admin: natural access expiry, refresh and protected data reload",
+      "status": "PASS",
+      "mode": "actual browser UI"
+    },
+    {
+      "name": "admin: UI logout clears session and protected route returns to login",
+      "status": "PASS",
+      "mode": "actual browser UI"
+    },
+    {
+      "name": "same account: two independent browser UI logins both return 200",
+      "status": "PASS",
+      "mode": "actual browser UI",
+      "detail": {
+        "independentBrowserContexts": 2,
+        "successfulLoginResponses": 2,
+        "policy": "one refresh token per user; current access tokens retain existing lifetime"
+      }
+    },
+    {
+      "name": "same account: after natural expiry only current refresh succeeds; replaced refresh returns 401 and UI reauthenticates",
+      "status": "PASS",
+      "mode": "actual browser UI",
+      "detail": {
+        "refreshStatuses": [
+          200,
+          401
+        ],
+        "unauthorizedBrowserSessionCleared": true,
+        "protectedRouteDeniedAfterRefreshFailure": true
+      }
+    },
+    {
+      "name": "replaced session can log in again; previous refresh then requires reauthentication without creating multi-session policy",
+      "status": "PASS",
+      "mode": "actual browser UI",
+      "detail": {
+        "replacedBrowserLogin": "PASS",
+        "previousRefreshRejected": "PASS",
+        "currentSessionRefreshAndLogout": "PASS"
+      }
+    },
+    {
+      "name": "browser diagnostics contain no runtime errors, transport failures or server 5xx",
+      "status": "PASS",
+      "mode": "actual browser UI",
+      "detail": {
+        "expected401s": 11,
+        "recordedRequestBodies": false,
+        "recordedCredentialsOrTokens": false
+      }
+    }
+  ],
+  "network": [
+    {
+      "browser": "customer-portal",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "browser": "customer-portal",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "browser": "customer-portal",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "browser": "customer-portal",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "browser": "customer-portal",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "browser": "customer-portal",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "browser": "customer-portal",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "browser": "customer-portal",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "browser": "customer-portal",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "browser": "customer-portal",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "status": 200
+    },
+    {
+      "browser": "operator-portal",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 401
+    },
+    {
+      "browser": "operator-portal",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "browser": "operator-portal",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "status": 200
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 401
+    },
+    {
+      "browser": "admin-portal",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "browser": "admin-portal",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "browser": "admin-portal",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "browser": "admin-portal",
+      "method": "GET",
+      "path": "/api/v1/audit-logs",
+      "status": 200
+    },
+    {
+      "browser": "admin-portal",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "browser": "admin-portal",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "browser": "admin-portal",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "browser": "admin-portal",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "browser": "admin-portal",
+      "method": "GET",
+      "path": "/api/v1/audit-logs",
+      "status": 200
+    },
+    {
+      "browser": "admin-portal",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 401
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 401
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "requestFailures": [
+    {
+      "browser": "customer-portal",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "failure": "ABORTED"
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "failure": "ABORTED"
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "failure": "ABORTED"
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "failure": "ABORTED"
+    },
+    {
+      "browser": "operator-portal",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "failure": "ABORTED"
+    },
+    {
+      "browser": "admin-portal",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "failure": "ABORTED"
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "failure": "ABORTED"
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "failure": "ABORTED"
+    },
+    {
+      "browser": "parallel-customer-B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "failure": "ABORTED"
+    },
+    {
+      "browser": "parallel-customer-A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "failure": "ABORTED"
+    }
+  ],
+  "secretsRecorded": false,
+  "screenshots": "/Volumes/D/Codex/outputs/uav-auth-concurrency-20261015"
+}

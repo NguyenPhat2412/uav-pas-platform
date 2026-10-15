@@ -1,0 +1,147 @@
+{
+  "before": {
+    "tests": 25,
+    "failures": 8,
+    "errors": 0,
+    "failedCases": "Missing/null quantity on assign-station, assign-uav, assign-operator, reserve-equipment: expected400 observed500"
+  },
+  "after": [
+    {
+      "name": "com.uav.platform.modules.mission.ResourceAssignmentValidationIntegrationTest",
+      "tests": "25",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "cases": [
+        {
+          "name": "missingResourceIdReturns400WithoutMutation(String)[1]",
+          "result": "PASS"
+        },
+        {
+          "name": "missingResourceIdReturns400WithoutMutation(String)[2]",
+          "result": "PASS"
+        },
+        {
+          "name": "missingResourceIdReturns400WithoutMutation(String)[3]",
+          "result": "PASS"
+        },
+        {
+          "name": "missingResourceIdReturns400WithoutMutation(String)[4]",
+          "result": "PASS"
+        },
+        {
+          "name": "validRequestsStillAssignEveryResourceAndReserveRequestedQuantity",
+          "result": "PASS"
+        },
+        {
+          "name": "zeroQuantityReturns400WithoutMutation(String)[1]",
+          "result": "PASS"
+        },
+        {
+          "name": "zeroQuantityReturns400WithoutMutation(String)[2]",
+          "result": "PASS"
+        },
+        {
+          "name": "zeroQuantityReturns400WithoutMutation(String)[3]",
+          "result": "PASS"
+        },
+        {
+          "name": "zeroQuantityReturns400WithoutMutation(String)[4]",
+          "result": "PASS"
+        },
+        {
+          "name": "missingQuantityReturns400WithoutMutation(String)[1]",
+          "result": "PASS"
+        },
+        {
+          "name": "missingQuantityReturns400WithoutMutation(String)[2]",
+          "result": "PASS"
+        },
+        {
+          "name": "missingQuantityReturns400WithoutMutation(String)[3]",
+          "result": "PASS"
+        },
+        {
+          "name": "missingQuantityReturns400WithoutMutation(String)[4]",
+          "result": "PASS"
+        },
+        {
+          "name": "negativeQuantityReturns400WithoutMutation(String)[1]",
+          "result": "PASS"
+        },
+        {
+          "name": "negativeQuantityReturns400WithoutMutation(String)[2]",
+          "result": "PASS"
+        },
+        {
+          "name": "negativeQuantityReturns400WithoutMutation(String)[3]",
+          "result": "PASS"
+        },
+        {
+          "name": "negativeQuantityReturns400WithoutMutation(String)[4]",
+          "result": "PASS"
+        },
+        {
+          "name": "nullQuantityReturns400WithoutMutation(String)[1]",
+          "result": "PASS"
+        },
+        {
+          "name": "nullQuantityReturns400WithoutMutation(String)[2]",
+          "result": "PASS"
+        },
+        {
+          "name": "nullQuantityReturns400WithoutMutation(String)[3]",
+          "result": "PASS"
+        },
+        {
+          "name": "nullQuantityReturns400WithoutMutation(String)[4]",
+          "result": "PASS"
+        },
+        {
+          "name": "nullResourceIdReturns400WithoutMutation(String)[1]",
+          "result": "PASS"
+        },
+        {
+          "name": "nullResourceIdReturns400WithoutMutation(String)[2]",
+          "result": "PASS"
+        },
+        {
+          "name": "nullResourceIdReturns400WithoutMutation(String)[3]",
+          "result": "PASS"
+        },
+        {
+          "name": "nullResourceIdReturns400WithoutMutation(String)[4]",
+          "result": "PASS"
+        }
+      ]
+    },
+    {
+      "name": "com.uav.platform.modules.mission.service.MissionAssignmentTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "cases": [
+        {
+          "name": "maintenanceUavIsRejected",
+          "result": "PASS"
+        },
+        {
+          "name": "overlappingUavIsRejected",
+          "result": "PASS"
+        },
+        {
+          "name": "unavailableEquipmentIsRejected",
+          "result": "PASS"
+        }
+      ]
+    }
+  ],
+  "productionChange": "ResourceAssignmentRequest quantity: @Min(1) int -> @NotNull @Min(1) Integer; existing one-argument constructor retains quantity=1",
+  "runtime": "Actual Spring MVC JSON converter, Bean Validation, security chain with authenticated persisted synthetic admin, service and H2 database",
+  "negativeChecks": "missing/null/zero/negative quantity and missing/null resourceId return400; mission/UAV/stock/timeline/audit unchanged",
+  "positiveChecks": "Existing authenticated station/UAV/operator assignment and quantity2 equipmentreservation return200, final RESOURCE_RESERVED; existing3MissionAssignmentTest pass",
+  "command": "./mvnw -q -Duav.build.directory=../work/uav-dispatch-20261015/maintenance-target -Dtest=ResourceAssignmentValidationIntegrationTest,MissionAssignmentTest test",
+  "auth_contract_changes": false,
+  "global_exception_handler_changes": false
+}

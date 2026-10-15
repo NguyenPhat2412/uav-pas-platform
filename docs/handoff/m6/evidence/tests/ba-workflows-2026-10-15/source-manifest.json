@@ -1,0 +1,283 @@
+{
+  "scope": "Entire dirty product/test source at final verification, includes prior work; not a list of changes solely from this turn.",
+  "branch": "codex/m1-monorepo-foundation",
+  "head": "65d1b23da3d888d1ef8120462f2689da8cffd7cb",
+  "files": [
+    {
+      "path": "apps/admin/app/(portal)/access-control/page.tsx",
+      "sha256": "2017ed7b8d5aed535928eaeb7cdb91986ef0120f1a5ca5ba12d4900d0d7c51c1"
+    },
+    {
+      "path": "apps/admin/app/(portal)/audit-logs/page.tsx",
+      "sha256": "aff202ae63b2273747ad82d1d16a32e553c1eb9c562cda70ac372e485a16a920"
+    },
+    {
+      "path": "apps/admin/app/(portal)/permissions/page.tsx",
+      "sha256": "ccd9ba3583c4491688afd8a0ececc8f40a190fb556072f9a052d426b58471bf0"
+    },
+    {
+      "path": "apps/admin/app/(portal)/role-templates/page.tsx",
+      "sha256": "eb8f35e84e66f354c617884b9067a78b4a4ee9e15411c20aa6dac07c1e8ecfc4"
+    },
+    {
+      "path": "apps/admin/app/globals.css",
+      "sha256": "4dbad88120630c84a177ed8a50410222b5f41681a87d51f7b87f6ec66825e0b7"
+    },
+    {
+      "path": "apps/admin/app/layout.tsx",
+      "sha256": "dd16fd3a870c7860d07c4d22d76ef456ad0c24b757a119726632d80a0c72e646"
+    },
+    {
+      "path": "apps/admin/src/components/layout/AppShell.tsx",
+      "sha256": "68f6bd12889f152431bed98446e1e882ed9225cbc613dd6bb7a97cf960a94239"
+    },
+    {
+      "path": "apps/admin/src/components/ui/StatusBadge.tsx",
+      "sha256": "4b3ef0f08b5a259cd2eac5f21c266ec13206e91ef8d7b1d7a9be0b13a3c53412"
+    },
+    {
+      "path": "apps/admin/src/features/admin/components/AuditLogs.tsx",
+      "sha256": "ede1e9c25c02bd8c2727c7ca23dec7f7f5a216e6e8b3ed00c740beea48b9111f"
+    },
+    {
+      "path": "apps/admin/src/features/admin/components/PermissionEditor.tsx",
+      "sha256": "bc803ea2dd69a23af3bc81d3259c15caade202d915dfcc4efea5f2cf456a9936"
+    },
+    {
+      "path": "apps/admin/src/features/admin/components/Registry.tsx",
+      "sha256": "7168e99c6c545d6b139a40464f70b4da6f529a4a486282c285f0c3365a344a9e"
+    },
+    {
+      "path": "apps/admin/src/features/admin/components/Users.tsx",
+      "sha256": "928e8d77a9c9363baf991e9555081adbac99596addcc541120016c6b5f1301d5"
+    },
+    {
+      "path": "apps/admin/src/features/auth/components/LoginForm.tsx",
+      "sha256": "2b8ad54eebef76d39130b58ffc0ba270c0e64c80198abd004551dd1aad3a5af8"
+    },
+    {
+      "path": "apps/customer/app/(auth)/login/page.tsx",
+      "sha256": "3516467ab1f78a12103da3a3c4b8f3a80fb4404dc78a5efee6da54b49ebf4500"
+    },
+    {
+      "path": "apps/customer/app/(portal)/dashboard/page.tsx",
+      "sha256": "6de0aa6d1a4c1651554e8b7d0936a989857ad55637d6e0f8add06a7679b99e2b"
+    },
+    {
+      "path": "apps/customer/app/(portal)/missions/[id]/edit/page.tsx",
+      "sha256": "730ca1e28c7caff5622b2a616bf68d5251cdc01a2437c657148f44d3bd7a0436"
+    },
+    {
+      "path": "apps/customer/app/(portal)/missions/[id]/page.tsx",
+      "sha256": "3bc378a9656f599a33d799dc862f8b7a04b5ab5546499f2fc57486ccb5be646a"
+    },
+    {
+      "path": "apps/customer/app/(portal)/missions/create/page.tsx",
+      "sha256": "1956414139769b090de71156f1250482a6508cffd72fb4c86cbd1fad87f92f77"
+    },
+    {
+      "path": "apps/customer/app/(portal)/missions/page.tsx",
+      "sha256": "d2e728c86cb22c95e830c6b57722fe617b10b636f74ad9d0611483bf965d1b4e"
+    },
+    {
+      "path": "apps/customer/app/(portal)/profile/page.tsx",
+      "sha256": "40af3ecf3ec4e1bbc6621b887e37f932e117ba1696ae2a5f96dd3e81290abd03"
+    },
+    {
+      "path": "apps/customer/app/(portal)/services/page.tsx",
+      "sha256": "fe8a705f93c1fe142968cea613244a5f7f8a70a17072aeb3b0f45bd282cd7772"
+    },
+    {
+      "path": "apps/customer/app/globals.css",
+      "sha256": "065d7f827af9043e166dec91ffe3f46e54d5e942a986ec6764ab922cd6a1b2d8"
+    },
+    {
+      "path": "apps/customer/app/layout.tsx",
+      "sha256": "e2ffa7543e414d98de80e9ff800ec75626ff68d0e97727866df0ccadd164a776"
+    },
+    {
+      "path": "apps/customer/package.json",
+      "sha256": "917d16958fda60e6469c775f86bdb432bd010eb69e76e7429eb452f8d99c8c23"
+    },
+    {
+      "path": "apps/customer/src/components/layout.tsx",
+      "sha256": "36a72bb4a8a7415625ed9115aba26e670afbe6f75871bb7d120f3a79b515c04b"
+    },
+    {
+      "path": "apps/customer/src/components/ui.tsx",
+      "sha256": "68ee5406d0279b95fccb3d5af543466c63e86ad1b02f0e299c085514fdaf1394"
+    },
+    {
+      "path": "apps/customer/src/features/customer/MissionFields.tsx",
+      "sha256": "7e9f83fec48c2b307c2ef51a990438945052974b435186f9285d609f391ddfc3"
+    },
+    {
+      "path": "apps/customer/src/features/customer/hooks.ts",
+      "sha256": "7f88b26a93e40cc753379493aeb180816171babb6ddce27fe444ac6518807a62"
+    },
+    {
+      "path": "apps/customer/src/features/customer/mission-form.ts",
+      "sha256": "401a9b79e9226cc0726fd9f28d2d88b4aa0de43bad8145f56bc14c4e1d77927f"
+    },
+    {
+      "path": "apps/customer/src/features/customer/service.ts",
+      "sha256": "0a5848bcc83768fcb7e4167cc373ec7e29cb75d2f5ac29d35beb81cef34d692b"
+    },
+    {
+      "path": "apps/operations/app/(portal)/assigned-missions/page.tsx",
+      "sha256": "454a8b288a38834229b914898be4dc82842ac89d069abe802af92c8a832b4fc7"
+    },
+    {
+      "path": "apps/operations/app/(portal)/dispatch/missions/page.tsx",
+      "sha256": "3147e0f167b8b8c4def0ebf5733ee873eedba65dba629695ec748069f731ddfd"
+    },
+    {
+      "path": "apps/operations/app/(portal)/media/page.tsx",
+      "sha256": "731e4565f9c66c9d673e091fdfe6818c3d0add186233718eb76354650ba81a6d"
+    },
+    {
+      "path": "apps/operations/app/(portal)/missions/[id]/page.tsx",
+      "sha256": "e826e11de3e615b228512901b94fe2d5ecf65e77ef274152d1ef81591edb9fbb"
+    },
+    {
+      "path": "apps/operations/app/(portal)/overview/page.tsx",
+      "sha256": "6754f4412008f9b74b91c8ee3d661d5fe7359bb3d97ded6e55f27eec7c4249fc"
+    },
+    {
+      "path": "apps/operations/app/globals.css",
+      "sha256": "dceae4fee5422a027315ff77a6feb5579838800d81e606033d3e8c6497cedaa4"
+    },
+    {
+      "path": "apps/operations/app/layout.tsx",
+      "sha256": "c9ef5ab5d4a844190c4707124caa618da0bb2233b291043e1bcb87ba3a6365c8"
+    },
+    {
+      "path": "apps/operations/package.json",
+      "sha256": "bc34482d57e41f5f1ca80dcbdd61a6665d93b81127110d02f88cf64f66cfcc4b"
+    },
+    {
+      "path": "apps/operations/src/components/layout/AppShell.tsx",
+      "sha256": "cc8daf69924b2f7d97d19af21524db8eed28399966fee1fe117600735766748b"
+    },
+    {
+      "path": "apps/operations/src/components/ui/StatusBadge.tsx",
+      "sha256": "4b3ef0f08b5a259cd2eac5f21c266ec13206e91ef8d7b1d7a9be0b13a3c53412"
+    },
+    {
+      "path": "apps/operations/src/features/auth/components/LoginForm.tsx",
+      "sha256": "d719aaa539952396aaf2e205567dd305a1a67ee343699ce5921c82e1005dad62"
+    },
+    {
+      "path": "apps/operations/src/features/missions/components/MissionList.tsx",
+      "sha256": "fdd855edb841b1c23c907bc4479a12a8f61e779106bc611e21cdca6a6be2f691"
+    },
+    {
+      "path": "apps/operations/src/features/missions/components/MissionStatusBadge.tsx",
+      "sha256": "b2fe982314777198b4f99ae602a214f3b8bef740ba3b4ed896370347519843b5"
+    },
+    {
+      "path": "apps/operations/src/features/missions/presentation.ts",
+      "sha256": "58022ba8e9601e2d14a9b1e93ad4cf92054a26e999a54ebc620621ab25d44a3e"
+    },
+    {
+      "path": "apps/operations/src/features/missions/services/mission.service.ts",
+      "sha256": "2af1938c2bd57ac273bccd8549b8fbb80f004c41f000a10a932c6b15f876b7c7"
+    },
+    {
+      "path": "apps/operations/src/features/missions/types/mission.types.ts",
+      "sha256": "385910b0798b344bd4652b2575ce684adef16bb8184dff3ad37044ee6a3112c5"
+    },
+    {
+      "path": "apps/operations/src/features/missions/workflows.ts",
+      "sha256": "c749f81967d1ebe9a8e37973aefb72cd7d2236adb51baa8b88d9f887ec6eed42"
+    },
+    {
+      "path": "apps/operations/src/features/operations/components/EquipmentPanel.tsx",
+      "sha256": "16442c41ab979eb09d7426892fb967df72c050a92514d2e1cd35503d91b247ce"
+    },
+    {
+      "path": "apps/operations/src/features/operations/components/MediaPanel.tsx",
+      "sha256": "e0ecf7e4e01181a98051e06aa20e7168de53fe0e5befaa9afd0920511f1b9647"
+    },
+    {
+      "path": "apps/operations/src/features/operations/components/UavPanel.tsx",
+      "sha256": "b4bc1e00ff8818d1928eee68bb5ac1e2ed6edfd4b02479878d13f0bec2ff1909"
+    },
+    {
+      "path": "apps/operations/src/features/operations/services/operations.service.ts",
+      "sha256": "0c1a923de17d8b3ae525cd485d403ad134491cc351c11edb92e3c2671a91a934"
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/modules/mission/service/impl/IMissionService.java",
+      "sha256": "eabb9ccd0fcbbc1bae5f884e3d28149a46c2c8336a4d725316b2a7dfbcd0ba78"
+    },
+    {
+      "path": "backend/src/test/java/com/uav/platform/modules/mission/MissionRejectionIntegrationTest.java",
+      "sha256": "a4895cf56d6184ab8b0bd1c8b8151d3d86094fee155a3488cb3d03bc29775cd9"
+    },
+    {
+      "path": "backend/src/test/java/com/uav/platform/stabilization/MigrationUpgradePostgresTest.java",
+      "sha256": "d984880f1bfb711ffaac066c2008aa5b9d6fdc0a6dba050ebfade17e8d86fa18"
+    },
+    {
+      "path": "backend/src/test/java/com/uav/platform/stabilization/StabilizationPostgresTest.java",
+      "sha256": "defbad6fb5410488789f1ce6c1d89efdace91d331e3867e9936148a0d03f3487"
+    },
+    {
+      "path": "frontend/package.json",
+      "sha256": "492acef8174f44801531184ee2604c785515a77d09a6f58aae8a95da56593317"
+    },
+    {
+      "path": "frontend/src/lib/api.client.ts",
+      "sha256": "4fec6cb7703cdfc2e5a577a0237f98c242b9067dc1d3d9abd50c512ac2afe5a2"
+    },
+    {
+      "path": "packages/api-client/package.json",
+      "sha256": "60abe48f2574809f4be7de5122d33ad91037fc636d4e397328149761a7dc12b1"
+    },
+    {
+      "path": "packages/api-client/src/index.ts",
+      "sha256": "8f50aabb3ce072ae961f0a825ef34896d15b52031a38d413e954c9a51a041033"
+    },
+    {
+      "path": "packages/ui/package.json",
+      "sha256": "bd6ede855429555b2a40fdf677c5a9f917a77c7ce518c89bf6207c06148ff512"
+    },
+    {
+      "path": "packages/ui/src/MissionTimeline.tsx",
+      "sha256": "d95706307dcbc0c5faf13b613ce394fc4d36ddac533f4b89f1783ad9ae857ba1"
+    },
+    {
+      "path": "packages/ui/src/mission.css",
+      "sha256": "3bfa1464d2d7f0cbcb9f06eac600b5244307197b0e1d558943fb1a7e212e9d31"
+    },
+    {
+      "path": "packages/ui/src/presentation.ts",
+      "sha256": "a1ca46b3c65fceb5b568c1aea39e2c674b1ed6dc50edea85024655cb6bb44dc5"
+    },
+    {
+      "path": "tests/api-origin.test.mjs",
+      "sha256": "30e7caafecdf45a1398c0319d0a462757105eb2c82cb5541d2996d07c3aa1779"
+    },
+    {
+      "path": "tests/customer-workflows.test.mjs",
+      "sha256": "96c572bf00eca6391a292458b4b9c1732e7802948b20fd5e024b7a1899207304"
+    },
+    {
+      "path": "tests/m3-admin.test.mjs",
+      "sha256": "bf5a6e404b10141f751132b453f4717f981cace283b80c1c1d4ae92eacfb0e2b"
+    },
+    {
+      "path": "tests/m4-customer.test.mjs",
+      "sha256": "a585a14cf690c1067518658a03d577fa6417d0ffb39b75451b5630ccb96ea6f0"
+    },
+    {
+      "path": "tests/mission-presentation.test.mjs",
+      "sha256": "33320896c87a59d67c218e397b71431a262b89bc1a0293f16281e5de20e6744e"
+    },
+    {
+      "path": "tests/operations-workflows.test.mjs",
+      "sha256": "fd36316c9fda770e5fdcac9f3281504a2b44f3e2b176917b210c999a2eb27a45"
+    }
+  ]
+}

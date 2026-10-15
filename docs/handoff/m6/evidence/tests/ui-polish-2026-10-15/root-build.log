@@ -1,0 +1,206 @@
+
+> build
+> npm run build --workspaces
+
+
+> build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 14ms
+
+  Creating an optimized production build ...
+Found 1 warning while optimizing generated CSS:
+
+[2m│   }[22m
+[2m│ }[22m
+[2m│[22m @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+[2m┆[22m        [33m[2m^--[22m @import rules must precede all rules aside from @charset and @layer statements[39m
+[2m┆[22m
+[2m│ @layer theme, base, components, utilities;[22m
+[2m│ @layer theme {[22m
+
+✓ Compiled successfully in 331ms
+  Running TypeScript ...
+  Finished TypeScript in 1191ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/11) ...
+  Generating static pages using 11 workers (2/11)
+  Generating static pages using 11 workers (5/11)
+  Generating static pages using 11 workers (8/11)
+✓ Generating static pages using 11 workers (11/11) in 135ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /access-control
+├ ○ /audit-logs
+├ ○ /dashboard
+├ ƒ /health
+├ ○ /login
+├ ○ /permissions
+├ ○ /role-templates
+├ ○ /users
+└ ƒ /users/[id]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 14ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 209ms
+  Running TypeScript ...
+  Finished TypeScript in 1023ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/11) ...
+  Generating static pages using 11 workers (2/11)
+  Generating static pages using 11 workers (5/11)
+  Generating static pages using 11 workers (8/11)
+✓ Generating static pages using 11 workers (11/11) in 141ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /dashboard
+├ ƒ /health
+├ ○ /login
+├ ○ /missions
+├ ƒ /missions/[id]
+├ ○ /missions/create
+├ ○ /profile
+├ ○ /register
+└ ○ /services
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 14ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 159ms
+  Running TypeScript ...
+  Finished TypeScript in 1563ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/16) ...
+  Generating static pages using 11 workers (4/16)
+  Generating static pages using 11 workers (8/16)
+  Generating static pages using 11 workers (12/16)
+✓ Generating static pages using 11 workers (16/16) in 197ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /admin/missions
+├ ○ /assigned-missions
+├ ○ /audit
+├ ○ /dispatch/missions
+├ ƒ /health
+├ ○ /inventory
+├ ○ /login
+├ ○ /media
+├ ƒ /missions/[id]
+├ ƒ /operations
+├ ○ /operator/missions
+├ ○ /overview
+├ ○ /stations
+└ ○ /uavs
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 14ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 152ms
+  Running TypeScript ...
+  Finished TypeScript in 849ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/25) ...
+  Generating static pages using 11 workers (6/25)
+  Generating static pages using 11 workers (12/25)
+  Generating static pages using 11 workers (18/25)
+✓ Generating static pages using 11 workers (25/25) in 247ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ○ /contact
+├ ○ /faq
+├ ƒ /health
+├ ○ /how-it-works
+├ ○ /login
+├ ○ /pricing
+├ ○ /privacy
+├ ○ /register
+├ ○ /robots.txt
+├ ○ /services
+├   /services/[slug]
+│ ├ ● /services/uav-rental
+│ ├ ● /services/aerial-inspection
+│ ├ ● /services/aerial-recording
+│ └ ● /services/data-collection
+├ ○ /sitemap.xml
+├ ○ /solutions
+├   /solutions/[slug]
+│ ├ ● /solutions/uav-rental
+│ ├ ● /solutions/aerial-inspection
+│ ├ ● /solutions/ai-detection
+│ └ ● /solutions/search-and-rescue
+└ ○ /terms
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> @uav/api-client@0.1.0 build
+> tsc --noEmit
+
+
+> @uav/auth-contracts@0.1.0 build
+> tsc --noEmit
+
+
+> @uav/config@0.1.0 build
+> tsc --noEmit
+
+
+> @uav/design-tokens@0.1.0 build
+> tsc --noEmit
+
+
+> @uav/query@0.1.0 build
+> tsc --noEmit
+
+
+> @uav/types@0.1.0 build
+> tsc --noEmit
+
+
+> @uav/ui@0.1.0 build
+> tsc --noEmit

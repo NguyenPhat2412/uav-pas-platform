@@ -1,0 +1,632 @@
+{
+  "status": "PASS",
+  "scope": "Actual HTTP/PostgreSQL business/API/concurrency checks; no browser claim. Synthetic data only.",
+  "results": [
+    {
+      "name": "financial maintenance endpoints require UAV_MANAGE even for roles with fleet read access",
+      "status": "PASS"
+    },
+    {
+      "name": "schedule creation, overdue filter, editing and pause block linked orders without grounding UAV",
+      "status": "PASS"
+    },
+    {
+      "name": "linked repair grounds only at start, exact line rounding, completion advances only its schedule once",
+      "status": "PASS"
+    },
+    {
+      "name": "material edit changes parent version including empty list; stale save cannot erase current lines",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid cost quantities, prices, notes and versions reject with no financial mutation",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy status and transfer cannot bypass active repair; cancel keeps maintenance and recorded costs",
+      "status": "PASS"
+    },
+    {
+      "name": "concurrent planned orders have one winner; competing material edits preserve winner and exact version",
+      "status": "PASS",
+      "detail": {
+        "rounds": 3
+      }
+    },
+    {
+      "name": "busy mission permits planning but blocks repair start; releasing mission enables repair safely",
+      "status": "PASS"
+    },
+    {
+      "name": "mismatched schedule UAV and stale schedule update preserve both schedules",
+      "status": "PASS"
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders/25",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders/25",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/25/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/64",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/schedules/67",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/65",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/26/start",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/65",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/26/materials",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/1",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/26/complete",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/65",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/26/complete",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/1",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/27/materials",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/27/materials",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders/27",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/27/materials",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/27/materials",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/27/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/28/materials",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/28/materials",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/28/materials",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/28/materials",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/28/materials",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/28/materials",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/28/materials",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/28/materials",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/28/materials",
+      "status": 400
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders/28",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/28/complete",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/28/start",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/28/complete",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/28/complete",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/28/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/29/start",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/29/materials",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/68/status",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/68/status",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/68/station/1",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/schedules/70",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/29/cancel",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/68",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/29/materials",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/68/status",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/68",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/30/materials",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/30/materials",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders/30",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/30/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/31/materials",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/31/materials",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders/31",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/31/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/32/materials",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/orders/32/materials",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders/32",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/32/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/23/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/23/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/23/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/23/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/33/start",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders/33",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/72",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/23/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/33/start",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders/33/complete",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/maintenance/orders",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/schedules/71",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/schedules/71",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    }
+  ]
+}

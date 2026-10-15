@@ -1,0 +1,49 @@
+
+> frontend@0.1.0 test
+> node --test tests/*.test.mjs ../tests/api-origin.test.mjs
+
+TAP version 13
+# Subtest: concurrent expired requests share one refresh and retry with the new token
+ok 1 - concurrent expired requests share one refresh and retry with the new token
+  ---
+  duration_ms: 9.975666
+  ...
+# Subtest: logout during refresh cannot restore the previous session
+ok 2 - logout during refresh cannot restore the previous session
+  ---
+  duration_ms: 0.357083
+  ...
+# Subtest: late response from previous account is rejected after an account change
+ok 3 - late response from previous account is rejected after an account change
+  ---
+  duration_ms: 0.249916
+  ...
+# Subtest: failed refresh clears credentials and tells the UI that the session ended
+ok 4 - failed refresh clears credentials and tells the UI that the session ended
+  ---
+  duration_ms: 0.40425
+  ...
+# Subtest: a forbidden retry reports 403 rather than the original expired-token error
+ok 5 - a forbidden retry reports 403 rather than the original expired-token error
+  ---
+  duration_ms: 0.540208
+  ...
+# Subtest: shared: credentials and session recovery stay on the configured API origin
+ok 6 - shared: credentials and session recovery stay on the configured API origin
+  ---
+  duration_ms: 11.016542
+  ...
+# Subtest: legacy: credentials and session recovery stay on the configured API origin
+ok 7 - legacy: credentials and session recovery stay on the configured API origin
+  ---
+  duration_ms: 1.781292
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 320.993833

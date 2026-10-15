@@ -1,0 +1,9 @@
+[
+  {
+    "suite": "com.uav.platform.ArchitecturePackageTest",
+    "case": "moduleBoundariesUseTheDeclaredFeaturePackages",
+    "type": "failure",
+    "message": "Controllers must be in a controller package: com/uav/platform/modules/maintenance/MaintenanceController.java ==> expected: <true> but was: <false>",
+    "detail": "org.opentest4j.AssertionFailedError: Controllers must be in a controller package: com/uav/platform/modules/maintenance/MaintenanceController.java ==> expected: <true> but was: <false>\n\tat org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:158)\n\tat org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:139)\n\tat org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:69)\n\tat org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:41)\n\tat org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:228)\n\tat com.uav.platform.ArchitecturePackageTest.moduleBoundariesUseTheDeclaredFeaturePackages(ArchitecturePackageTest.java:49)\n"
+  }
+]

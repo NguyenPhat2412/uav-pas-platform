@@ -1,0 +1,163 @@
+{
+  "status": "PASS",
+  "scope": "Scoped maintenance planning/repair/material service, MVC, database, legacy guards and migration checks. No auth contract change. No inventory deduction.",
+  "totals": {
+    "tests": 77,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "name": "com.uav.platform.modules.uav.service.UavMaintenancePolicyTest",
+      "environment": "H2/Mockito",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "orphanRecoveryNeverReleasesAnActualMissionAssignment",
+        "repeatedMaintenanceDoesNotRewriteMaintenanceTimestamp",
+        "manualStatusCannotReleaseFlyingUav",
+        "inactiveStationCannotReceiveAvailableUav",
+        "maintenanceUavCannotMoveToAnotherStation",
+        "maintenanceEntryAndCompletionRecordActorAndTrimmedReasons",
+        "missionLifecycleUsesSeparateInternalCommand",
+        "manualStatusCannotManufactureMissionAssignment",
+        "assignedUavCannotEnterMaintenance",
+        "staleExpectedStatusDoesNotChangeHistoryOrStatus",
+        "genericMaintenanceEndpointUsesSameTimestampAndReasonPolicy",
+        "returningFromMaintenanceRequiresInspectionReason",
+        "assigningHomeStationKeepsIdleUavAvailableForMission",
+        "orphanAssignmentRecoveryRequiresExplicitExpectedStatusAndReason",
+        "statusReasonCannotExceedPersistedHistoryCapacity",
+        "flyingUavCannotEnterMaintenance",
+        "activeMissionBlocksMaintenanceEvenWhenStoredStatusIsIncorrectlyAvailable"
+      ]
+    },
+    {
+      "name": "com.uav.platform.modules.maintenance.MaintenancePlanningIntegrationTest",
+      "environment": "H2/Mockito",
+      "tests": 29,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "concurrentCreatesYieldOneActiveOrder",
+        "missingExpectedVersionAndMissingNotesReturn400",
+        "cancelledInProgressOrderRetainsMaintenanceAndCosts",
+        "concurrentSameVersionMaterialEditsCannotLoseAnUpdate",
+        "auditFailureRollsBackMaterialReplacementAndVersion",
+        "linkedRepairCycleComputesCostsAndAdvancesScheduleOnlyOnce",
+        "customerReadPermissionDoesNotExposeRepairPricesOrAllowWrites",
+        "activeMissionReferenceBlocksStartEvenIfUavStatusIsCorrupt",
+        "emptyAndIdenticalMaterialSavesAdvanceVersionAndRejectOldEdits",
+        "staleScheduleUpdateAndActiveLinkedOrderCannotOverwritePlan",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[1]",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[2]",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[3]",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[4]",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[5]",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[6]",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[7]",
+        "cancelledOpenOrderKeepsBusyMissionAndDoesNotAdvanceSchedule",
+        "linkedScheduleMustBelongToOrderUav",
+        "dueFilteringUsesBusinessDateAndPauseOverridesDue",
+        "concurrentStartAndMissionAssignmentCannotDoubleBookUav",
+        "concurrentCompleteAndCancelPreserveOneConsistentOutcome",
+        "mvcReturnsStringMoneyAndRejectsUnconfirmedInspection",
+        "completedOrderIsImmutableForAllMutations",
+        "existingMaintenanceCanBeAdoptedAndInactiveUavCanBeRepaired",
+        "activeRepairBlocksEveryLegacyStatusAndStationBypass",
+        "moneyAtMaximumBoundaryIsExactAndNeverDeductsInventory",
+        "openOrderDoesNotReserveUavOrPreventDispatch",
+        "auditFailureRollsBackCompletionUavHistoryAndSchedule"
+      ]
+    },
+    {
+      "name": "com.uav.platform.stabilization.MigrationUpgradePostgresTest",
+      "environment": "PostgreSQL",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "v2UpgradePreservesFleetAndInventoryAndEnforcesOneActiveRepairOrder",
+        "freshAndV1UpgradePreserveSyntheticData"
+      ]
+    },
+    {
+      "name": "com.uav.platform.modules.maintenance.MaintenancePlanningPostgresTest",
+      "environment": "PostgreSQL",
+      "tests": 29,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "concurrentCreatesYieldOneActiveOrder",
+        "missingExpectedVersionAndMissingNotesReturn400",
+        "cancelledInProgressOrderRetainsMaintenanceAndCosts",
+        "concurrentSameVersionMaterialEditsCannotLoseAnUpdate",
+        "auditFailureRollsBackMaterialReplacementAndVersion",
+        "linkedRepairCycleComputesCostsAndAdvancesScheduleOnlyOnce",
+        "customerReadPermissionDoesNotExposeRepairPricesOrAllowWrites",
+        "activeMissionReferenceBlocksStartEvenIfUavStatusIsCorrupt",
+        "emptyAndIdenticalMaterialSavesAdvanceVersionAndRejectOldEdits",
+        "staleScheduleUpdateAndActiveLinkedOrderCannotOverwritePlan",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[1]",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[2]",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[3]",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[4]",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[5]",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[6]",
+        "invalidMaterialNumbersReturn400WithoutMutation(String)[7]",
+        "cancelledOpenOrderKeepsBusyMissionAndDoesNotAdvanceSchedule",
+        "linkedScheduleMustBelongToOrderUav",
+        "dueFilteringUsesBusinessDateAndPauseOverridesDue",
+        "concurrentStartAndMissionAssignmentCannotDoubleBookUav",
+        "concurrentCompleteAndCancelPreserveOneConsistentOutcome",
+        "mvcReturnsStringMoneyAndRejectsUnconfirmedInspection",
+        "completedOrderIsImmutableForAllMutations",
+        "existingMaintenanceCanBeAdoptedAndInactiveUavCanBeRepaired",
+        "activeRepairBlocksEveryLegacyStatusAndStationBypass",
+        "moneyAtMaximumBoundaryIsExactAndNeverDeductsInventory",
+        "openOrderDoesNotReserveUavOrPreventDispatch",
+        "auditFailureRollsBackCompletionUavHistoryAndSchedule"
+      ]
+    }
+  ],
+  "sourceSha256": {
+    "backend/src/main/java/com/uav/platform/modules/maintenance/MaintenanceSchedule.java": "fd1bfbe5fcf4a8a98fa0a9bab71aafb577ef343ed9f133598960b874b4fa082f",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/RepairMaterial.java": "7a21bf9a44826f4003040258a80aa62c1073d7b574f1bbd0b47e8623608665fa",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/MaintenanceRequests.java": "a57ac93dae8f17c165cff9e0959e1a6814b2477d8eedcc58918a0a0a479a055c",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/MaintenanceController.java": "c35be114a419eb084c2dda2a1ebe6ca8d8ffc5f9b4b2570af521aee5984926e5",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/DueStatus.java": "fcb9dbc3b726487f238168f77bc6c5a5b920202a1b6f8929e8fb494e8e2597af",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/RepairStatus.java": "0caafa270acc3435fecde3d2435f2771353de7f372041bcab3a548ec231e99d9",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/RepairOrder.java": "d9daab2b0ca083dcb3f6276868d8c4a8e2bfee3df127c97026b4b0b3861bc332",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/MaintenanceService.java": "4bb927ece55b51250ef08282a80bc108a26a63e54ef1d1ae11a5cb161a4b85b8",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/MaintenanceScheduleRepository.java": "2f8b1e807057f874c1531c827b01a4d3c0a21a5969df2c92dd88c68adcb17540",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/MaintenanceResponses.java": "b1983855278d042e97e19b1c25dd67902450a879c4776a7b9db024b75211c10c",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/RepairOrderRepository.java": "2321b1a81566bcc9f0add8ea1ddd8b3f9c08aea7782decd565ca1a736ac80900",
+    "backend/src/main/resources/db/migration/V3__maintenance_schedules_repair_orders.sql": "1f55a15a0fc32d85f214404a59ad76f6d444e433156e3f413d017966b6f877ad",
+    "backend/src/main/java/com/uav/platform/modules/uav/service/impl/IUavService.java": "ef156730e4d26d00e5ac3e8f4d3eeed97e1e95fa43824ca404435fddc3482de5"
+  },
+  "iterations": [
+    {
+      "type": "test environment",
+      "finding": "H2 cannot execute PostgreSQL partial unique indexes. H2 create-drop tests now disable Flyway; PostgreSQL schema validation and explicit migration tests still enable Flyway and verify uniqueness."
+    },
+    {
+      "type": "response consistency",
+      "finding": "Mutation quantity string 1 versus reloaded 1.000. Canonicalized quantity response strings with stripTrailingZeros().toPlainString(); rollback assertions now stable."
+    },
+    {
+      "type": "test fixture correction",
+      "finding": "Synthetic equipment initially used AVAILABLE; actual equipment enum ACTIVE/INACTIVE/MAINTENANCE. Corrected synthetic fixture to ACTIVE."
+    }
+  ],
+  "limitations": [
+    "H2 is not migration coverage; actual PostgreSQL tests cover V1/V2/V3 and unique index.",
+    "Inspection is recorded human confirmation, not external certification.",
+    "No automatic scheduling job, email or inventory movement is performed."
+  ]
+}

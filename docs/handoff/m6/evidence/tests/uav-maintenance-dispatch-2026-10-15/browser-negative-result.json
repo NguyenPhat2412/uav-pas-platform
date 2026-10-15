@@ -1,0 +1,2388 @@
+{
+  "status": "PASS",
+  "browserFallback": "Browser plugin not available; existing Playwright and Chromium",
+  "scope": "UI failure/cancellation/redispatch/maintenance and protected route. API fixtures and concurrency injections do not count as UI transitions.",
+  "results": [
+    {
+      "name": "stale replace form receives 409 and displays the newest UAV without overwriting it",
+      "status": "PASS",
+      "mode": "browser UI + API fixture/concurrent update/read-back"
+    },
+    {
+      "name": "candidate claimed after form opens returns 409 and preserves the original UAV",
+      "status": "PASS",
+      "mode": "browser UI + API fixture/concurrent update/read-back"
+    },
+    {
+      "name": "stale maintenance confirmation returns 409 and refreshes current maintenance status",
+      "status": "PASS",
+      "mode": "browser UI + API fixture/concurrent update/read-back"
+    },
+    {
+      "name": "orphan ASSIGNED legacy UAV recovers through UI; an active owner blocks the same recovery",
+      "status": "PASS",
+      "mode": "browser UI + API fixtures/read-back; one orphan fixture SQL UPDATE after zero-owner assertion in owned disposable database"
+    },
+    {
+      "name": "operator fail from RESOURCE_RESERVED releases once and terminal controls disappear",
+      "status": "PASS",
+      "mode": "browser UI + API fixture/concurrent update/read-back",
+      "detail": {
+        "browser": "Fail button, confirmation, terminal rendering",
+        "apiOnly": "Repeated failure, terminal accept/report-conflict return 409"
+      }
+    },
+    {
+      "name": "operator fail from READY releases once and terminal controls disappear",
+      "status": "PASS",
+      "mode": "browser UI + API fixture/concurrent update/read-back",
+      "detail": {
+        "browser": "Fail button, confirmation, terminal rendering",
+        "apiOnly": "Repeated failure, terminal accept/report-conflict return 409"
+      }
+    },
+    {
+      "name": "operator fail from IN_PROGRESS releases once and terminal controls disappear",
+      "status": "PASS",
+      "mode": "browser UI + API fixture/concurrent update/read-back",
+      "detail": {
+        "browser": "Fail button, confirmation, terminal rendering",
+        "apiOnly": "Repeated failure, terminal accept/report-conflict return 409"
+      }
+    },
+    {
+      "name": "admin cancel from CONFIRMED releases partial/full resources exactly once and hides terminal actions",
+      "status": "PASS",
+      "mode": "browser UI + API fixture/concurrent update/read-back"
+    },
+    {
+      "name": "admin cancel from RESOURCE_RESERVED releases partial/full resources exactly once and hides terminal actions",
+      "status": "PASS",
+      "mode": "browser UI + API fixture/concurrent update/read-back"
+    },
+    {
+      "name": "admin cancel from READY releases partial/full resources exactly once and hides terminal actions",
+      "status": "PASS",
+      "mode": "browser UI + API fixture/concurrent update/read-back"
+    },
+    {
+      "name": "different operator receives 403 on protected mission page and execution request",
+      "status": "PASS",
+      "mode": "browser protected-route 403 + API-only wrong-operator start assertion"
+    },
+    {
+      "name": "negative checks produce no unhandled page errors or HTTP 5xx",
+      "status": "PASS",
+      "mode": "browser health",
+      "detail": {
+        "expectedNegativeBrowserResponses": 5,
+        "consoleIssueCount": 5,
+        "consoleExplanation": "Expected failed HTTP requests may be reported by Chromium; page errors and HTTP 5xx checked separately."
+      }
+    }
+  ],
+  "created": [
+    {
+      "kind": "uav",
+      "id": 106
+    },
+    {
+      "kind": "uav",
+      "id": 107
+    },
+    {
+      "kind": "uav",
+      "id": 108
+    },
+    {
+      "kind": "mission",
+      "id": 70
+    },
+    {
+      "kind": "uav",
+      "id": 109
+    },
+    {
+      "kind": "uav",
+      "id": 110
+    },
+    {
+      "kind": "mission",
+      "id": 71
+    },
+    {
+      "kind": "mission",
+      "id": 72
+    },
+    {
+      "kind": "uav",
+      "id": 111
+    },
+    {
+      "kind": "uav",
+      "id": 115
+    },
+    {
+      "kind": "uav",
+      "id": 116
+    },
+    {
+      "kind": "mission",
+      "id": 74
+    },
+    {
+      "kind": "uav",
+      "id": 117
+    },
+    {
+      "kind": "mission",
+      "id": 75
+    },
+    {
+      "kind": "uav",
+      "id": 118
+    },
+    {
+      "kind": "mission",
+      "id": 76
+    },
+    {
+      "kind": "uav",
+      "id": 120
+    },
+    {
+      "kind": "mission",
+      "id": 78
+    },
+    {
+      "kind": "uav",
+      "id": 131
+    },
+    {
+      "kind": "mission",
+      "id": 84
+    },
+    {
+      "kind": "uav",
+      "id": 139
+    },
+    {
+      "kind": "mission",
+      "id": 91
+    },
+    {
+      "kind": "uav",
+      "id": 147
+    },
+    {
+      "kind": "mission",
+      "id": 98
+    },
+    {
+      "kind": "uav",
+      "id": 151
+    },
+    {
+      "kind": "mission",
+      "id": 100
+    }
+  ],
+  "network": [
+    {
+      "role": "admin",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/dashboard/missions",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/dashboard/summary",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/dashboard/summary",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator_b",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "role": "operator_b",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "operator_b",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "operator_b",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator_b",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator_b",
+      "method": "GET",
+      "path": "/api/v1/dashboard/summary",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/70",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/70/media",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/70/timeline",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "POST",
+      "path": "/api/v1/missions/70/replace-uav",
+      "status": 409
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/70",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/70/media",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/70/timeline",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/71",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/71/timeline",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/71/media",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "POST",
+      "path": "/api/v1/missions/71/replace-uav",
+      "status": 409
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/71",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/71/timeline",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/71/media",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/111",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/111/history",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "POST",
+      "path": "/api/v1/uavs/111/maintenance",
+      "status": 409
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/111",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/111/history",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/115",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/115/history",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "PUT",
+      "path": "/api/v1/uavs/115/status",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/115",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/115/history",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/115",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/115/history",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/116",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/116/history",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "PUT",
+      "path": "/api/v1/uavs/116/status",
+      "status": 409
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/116",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs/116/history",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/75",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/75/media",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/75/timeline",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "POST",
+      "path": "/api/v1/missions/75/fail",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/75",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/75/media",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/75/timeline",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/76",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/76/media",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/76/timeline",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "POST",
+      "path": "/api/v1/missions/76/fail",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/76",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/76/media",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/76/timeline",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/78",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/78/media",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/78/timeline",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "POST",
+      "path": "/api/v1/missions/78/fail",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/78",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/78/media",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/78/timeline",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/84",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/84/media",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/84/timeline",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "POST",
+      "path": "/api/v1/missions/84/cancel",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/84",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/84/media",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/84/timeline",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/91",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/91/media",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/91/timeline",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "POST",
+      "path": "/api/v1/missions/91/cancel",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/91",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/91/media",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/91/timeline",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/98",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/98/media",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/98/timeline",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "POST",
+      "path": "/api/v1/missions/98/cancel",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/98",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/98/media",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/missions/98/timeline",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "role": "operator_b",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "role": "operator_b",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "role": "operator_b",
+      "method": "GET",
+      "path": "/api/v1/missions/100",
+      "status": 403
+    }
+  ],
+  "apiCalls": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/stations",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/70/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/70/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/70/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/70/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/70/replace-uav",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/70",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/107",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/70/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/71/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/71/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/71/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/71/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/72/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/72/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/72/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/72/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/71",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/72",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/71/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/72/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs/111/maintenance",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/111",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/115",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/74/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/74/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/74/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/74/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/116",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/74",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/74/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/75/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/75/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/75/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/75/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/26/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/75/reserve-equipment",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/75/assign-operator",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/75",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/117",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/26",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/75/fail",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/75",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/117",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/26",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/75/accept",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/75/report-conflict",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/75",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/117",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/26",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/76/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/76/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/76/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/76/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/27/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/76/reserve-equipment",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/76/assign-operator",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/76/ready",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/76",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/118",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/27",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/76/fail",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/76",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/118",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/27",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/76/accept",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/76/report-conflict",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/76",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/118",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/27",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/78/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/78/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/78/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/78/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/29/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/78/reserve-equipment",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/78/assign-operator",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/78/ready",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/78/start",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/78",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/120",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/29",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/78/fail",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/78",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/120",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/29",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/78/accept",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/78/report-conflict",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/78",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/120",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/29",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/84/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/84/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/84/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/84/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/30/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/84/reserve-equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/84",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/131",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/30",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/84/cancel",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/84",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/131",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/30",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/91/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/91/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/91/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/91/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/31/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/91/reserve-equipment",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/91/assign-operator",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/91",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/139",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/31",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/91/cancel",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/91",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/139",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/31",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/98/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/98/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/98/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/98/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/32/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/98/reserve-equipment",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/98/assign-operator",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/98/ready",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/98",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/147",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/32",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/98/cancel",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/98",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/147",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/32",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/100/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/100/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/100/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/100/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/33/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/100/reserve-equipment",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/100/assign-operator",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/100/ready",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/100/start",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/100",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/100/cancel",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleIssues": [
+    {
+      "type": "error"
+    },
+    {
+      "type": "error"
+    },
+    {
+      "type": "error"
+    },
+    {
+      "type": "error"
+    },
+    {
+      "type": "error"
+    }
+  ]
+}

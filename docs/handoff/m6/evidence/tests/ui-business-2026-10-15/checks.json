@@ -1,0 +1,50 @@
+[
+  {
+    "scope": "root",
+    "check": "lint",
+    "exitCode": 0,
+    "seconds": 11.9
+  },
+  {
+    "scope": "root",
+    "check": "typecheck",
+    "exitCode": 0,
+    "seconds": 7.8
+  },
+  {
+    "scope": "root",
+    "check": "test",
+    "exitCode": 0,
+    "seconds": 1.2
+  },
+  {
+    "scope": "root",
+    "check": "build",
+    "exitCode": 0,
+    "seconds": 16.1
+  },
+  {
+    "scope": "legacy",
+    "check": "lint",
+    "exitCode": 0,
+    "seconds": 3.3
+  },
+  {
+    "scope": "legacy",
+    "check": "typecheck",
+    "exitCode": 0,
+    "seconds": 1.4
+  },
+  {
+    "scope": "legacy",
+    "check": "test",
+    "exitCode": 0,
+    "seconds": 0.4
+  },
+  {
+    "scope": "legacy",
+    "check": "build",
+    "exitCode": 0,
+    "seconds": 3.9
+  }
+]

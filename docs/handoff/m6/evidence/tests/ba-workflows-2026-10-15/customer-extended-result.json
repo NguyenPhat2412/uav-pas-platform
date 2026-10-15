@@ -1,0 +1,278 @@
+{
+  "status": "PASS",
+  "results": [
+    {
+      "name": "customer logs in through real UI",
+      "status": "PASS"
+    },
+    {
+      "name": "draft detail opens complete edit form with original values",
+      "status": "PASS"
+    },
+    {
+      "name": "draft rejects whitespace title and end before start without an API mutation",
+      "status": "PASS"
+    },
+    {
+      "name": "draft edits all supported fields and preserves service and mission type",
+      "status": "PASS"
+    },
+    {
+      "name": "stale draft edit receives actual 409 and reloads changed status without overwriting",
+      "status": "PASS"
+    },
+    {
+      "name": "customer B cannot open customer A edit form",
+      "status": "PASS"
+    },
+    {
+      "name": "custom service catalogue code creates valid MissionType through UI",
+      "status": "PASS"
+    },
+    {
+      "name": "seed 23 owned synthetic drafts for pagination",
+      "status": "PASS"
+    },
+    {
+      "name": "customer reaches items beyond first twenty and search resets page",
+      "status": "PASS"
+    },
+    {
+      "name": "status filter resets page and empty state does not show stale rows",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile pagination and complete draft form have no horizontal overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "no page exceptions or unexpected server errors",
+      "status": "PASS"
+    }
+  ],
+  "createdMissionIds": [
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85
+  ],
+  "errors": [],
+  "network": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/61",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/61/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/61/timeline",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/missions/61",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/61",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/61/timeline",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/61/media",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/missions/61",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/61",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/61",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/availability",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/62",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/62/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/62/timeline",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/85",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    }
+  ]
+}

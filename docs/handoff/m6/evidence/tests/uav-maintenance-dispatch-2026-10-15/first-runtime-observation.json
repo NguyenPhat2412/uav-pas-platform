@@ -1,0 +1,8 @@
+{
+  "classification": "Pre-existing business-input validation defect, reproduced and fixed in this continuation",
+  "endpoint": "POST /api/v1/missions/{id}/assign-station",
+  "payloadIssue": "Missing required primitive quantity in ResourceAssignmentRequest",
+  "observedStatus": 500,
+  "rootCause": "HttpMessageNotReadableException maps to generic handler instead of a bad-request response",
+  "action": "ResourceAssignmentRequest uses @NotNull Integer quantity; missing/null now400. Global handler/auth contract unchanged. assignment-validation-test-summary.json and final api-negative-result.json verify the fix."
+}

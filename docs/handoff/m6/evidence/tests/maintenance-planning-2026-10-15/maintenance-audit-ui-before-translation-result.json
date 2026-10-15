@@ -1,0 +1,63 @@
+{
+  "status": "PASS",
+  "results": [
+    {
+      "name": "admin sees completed repair audit with actor/time",
+      "status": "PASS",
+      "mode": "browser UI; completed order from prior UI lifecycle"
+    },
+    {
+      "name": "admin sees linked schedule advancement audit",
+      "status": "PASS",
+      "mode": "browser UI"
+    }
+  ],
+  "network": [
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/permissions/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/permissions/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/audit-logs",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/audit-logs",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/audit-logs",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/audit-logs",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/audit-logs",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "pageErrors": []
+}

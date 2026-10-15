@@ -1,0 +1,429 @@
+{
+  "status": "PASS",
+  "scope": "Database transaction serialization for existing one-refresh-token-per-user auth policy; no schema, endpoint, request/response, cookie or SSO change.",
+  "totals": {
+    "tests": 77,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "beforeRegression": {
+    "tests": 3,
+    "failures": 3,
+    "cases": [
+      {
+        "name": "simultaneousRefreshConsumesTheOldTokenOnlyOnce",
+        "status": "FAIL"
+      },
+      {
+        "name": "simultaneousFirstLoginByUsernameAndEmailBothSucceedWithOneCurrentRefresh",
+        "status": "FAIL"
+      },
+      {
+        "name": "duplicateAccessOnlyLogoutIsIdempotent",
+        "status": "FAIL"
+      }
+    ]
+  },
+  "suites": [
+    {
+      "name": "com.uav.platform.modules.user.service.RefreshTokenServiceTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "name": "verifyExpiration_ExpiredToken_Throws",
+          "status": "PASS"
+        },
+        {
+          "name": "createRefreshToken_Success",
+          "status": "PASS"
+        },
+        {
+          "name": "revokeToken_Success",
+          "status": "PASS"
+        },
+        {
+          "name": "verifyExpiration_ValidToken",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "name": "com.uav.platform.modules.user.service.AuthConcurrencyIntegrationTest",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "name": "logoutRacingRefreshPreservesExactTokenScope",
+          "status": "PASS"
+        },
+        {
+          "name": "staleLogoutAfterReloginCannotRevokeTheNewRefresh",
+          "status": "PASS"
+        },
+        {
+          "name": "loginRacingOldRefreshAlwaysLeavesTheLoginRefreshCurrent",
+          "status": "PASS"
+        },
+        {
+          "name": "simultaneousRefreshConsumesTheOldTokenOnlyOnce",
+          "status": "PASS"
+        },
+        {
+          "name": "duplicateRefreshOnlyLogoutIsIdempotent",
+          "status": "PASS"
+        },
+        {
+          "name": "duplicateLogoutOfSamePairIsIdempotentAndRevokesExactlyOnce",
+          "status": "PASS"
+        },
+        {
+          "name": "simultaneousFirstLoginByUsernameAndEmailBothSucceedWithOneCurrentRefresh",
+          "status": "PASS"
+        },
+        {
+          "name": "invalidAndExpiredRefreshRemainUnauthorizedWithoutIssuingReplacement",
+          "status": "PASS"
+        },
+        {
+          "name": "emptyLogoutStillSucceeds",
+          "status": "PASS"
+        },
+        {
+          "name": "unrelatedAccountCanLoginWhileAnotherUsersTransactionIsLocked",
+          "status": "PASS"
+        },
+        {
+          "name": "crossedAccessAndRefreshOwnersDoNotDeadlockOrChangeLogoutScope",
+          "status": "PASS"
+        },
+        {
+          "name": "duplicateAccessOnlyLogoutIsIdempotent",
+          "status": "PASS"
+        },
+        {
+          "name": "successfulLoginPersistsResetAttemptsBeforeNestedRefreshCreation",
+          "status": "PASS"
+        },
+        {
+          "name": "simultaneousLoginReplacingAnExistingSessionBothSucceed",
+          "status": "PASS"
+        },
+        {
+          "name": "concurrentWrongPasswordsPreserveFailedAttemptCountAndLockout",
+          "status": "PASS"
+        },
+        {
+          "name": "incorrectPasswordAndInactiveStatusKeepExistingResponses",
+          "status": "PASS"
+        },
+        {
+          "name": "expiredTemporaryLockResetSurvivesNestedUserRefresh",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "name": "com.uav.platform.ArchitecturePackageTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "name": "platformRootAndLegacyPackageAreConsistent",
+          "status": "PASS"
+        },
+        {
+          "name": "moduleBoundariesUseTheDeclaredFeaturePackages",
+          "status": "PASS"
+        },
+        {
+          "name": "mappersRemainOutsideEntitiesAndDtos",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "name": "com.uav.platform.modules.user.service.AuthConcurrencyPostgresTest",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "name": "logoutRacingRefreshPreservesExactTokenScope",
+          "status": "PASS"
+        },
+        {
+          "name": "staleLogoutAfterReloginCannotRevokeTheNewRefresh",
+          "status": "PASS"
+        },
+        {
+          "name": "loginRacingOldRefreshAlwaysLeavesTheLoginRefreshCurrent",
+          "status": "PASS"
+        },
+        {
+          "name": "simultaneousRefreshConsumesTheOldTokenOnlyOnce",
+          "status": "PASS"
+        },
+        {
+          "name": "duplicateRefreshOnlyLogoutIsIdempotent",
+          "status": "PASS"
+        },
+        {
+          "name": "duplicateLogoutOfSamePairIsIdempotentAndRevokesExactlyOnce",
+          "status": "PASS"
+        },
+        {
+          "name": "simultaneousFirstLoginByUsernameAndEmailBothSucceedWithOneCurrentRefresh",
+          "status": "PASS"
+        },
+        {
+          "name": "invalidAndExpiredRefreshRemainUnauthorizedWithoutIssuingReplacement",
+          "status": "PASS"
+        },
+        {
+          "name": "emptyLogoutStillSucceeds",
+          "status": "PASS"
+        },
+        {
+          "name": "unrelatedAccountCanLoginWhileAnotherUsersTransactionIsLocked",
+          "status": "PASS"
+        },
+        {
+          "name": "crossedAccessAndRefreshOwnersDoNotDeadlockOrChangeLogoutScope",
+          "status": "PASS"
+        },
+        {
+          "name": "duplicateAccessOnlyLogoutIsIdempotent",
+          "status": "PASS"
+        },
+        {
+          "name": "successfulLoginPersistsResetAttemptsBeforeNestedRefreshCreation",
+          "status": "PASS"
+        },
+        {
+          "name": "simultaneousLoginReplacingAnExistingSessionBothSucceed",
+          "status": "PASS"
+        },
+        {
+          "name": "concurrentWrongPasswordsPreserveFailedAttemptCountAndLockout",
+          "status": "PASS"
+        },
+        {
+          "name": "incorrectPasswordAndInactiveStatusKeepExistingResponses",
+          "status": "PASS"
+        },
+        {
+          "name": "expiredTemporaryLockResetSurvivesNestedUserRefresh",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "name": "com.uav.platform.modules.user.service.InvalidatedTokenServiceTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "name": "purgeExpiredTokens_Success",
+          "status": "PASS"
+        },
+        {
+          "name": "invalidate_Success",
+          "status": "PASS"
+        },
+        {
+          "name": "isInvalidated_ChecksRepository",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "name": "com.uav.platform.modules.user.controller.AuthControllerTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "name": "refreshToken_Success_ReturnsOkWithAuthResponse",
+          "status": "PASS"
+        },
+        {
+          "name": "register_DuplicateEmail_ReturnsConflict",
+          "status": "PASS"
+        },
+        {
+          "name": "login_BlankPassword_ReturnsBadRequest",
+          "status": "PASS"
+        },
+        {
+          "name": "register_ValidRequest_ReturnsCreated",
+          "status": "PASS"
+        },
+        {
+          "name": "logout_Success_ReturnsOk",
+          "status": "PASS"
+        },
+        {
+          "name": "register_InvalidEmail_ReturnsBadRequest",
+          "status": "PASS"
+        },
+        {
+          "name": "loginWithZalo_BlankCode_ReturnsBadRequest",
+          "status": "PASS"
+        },
+        {
+          "name": "loginWithZalo_ValidCode_ReturnsOkWithToken",
+          "status": "PASS"
+        },
+        {
+          "name": "getZaloAuthUrl_ReturnsOkWithUrl",
+          "status": "PASS"
+        },
+        {
+          "name": "login_ValidCredentials_ReturnsOkWithToken",
+          "status": "PASS"
+        },
+        {
+          "name": "login_InvalidCredentials_ReturnsUnauthorized",
+          "status": "PASS"
+        },
+        {
+          "name": "getCurrentUser_Authenticated_ReturnsOkWithUser",
+          "status": "PASS"
+        },
+        {
+          "name": "getCurrentUser_Unauthenticated_ReturnsUnauthorized",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "name": "com.uav.platform.modules.user.service.AuthServiceTest",
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "name": "register_DuplicateEmail_ThrowsConflict",
+          "status": "PASS"
+        },
+        {
+          "name": "register_NullRequest_ThrowsBadRequest",
+          "status": "PASS"
+        },
+        {
+          "name": "login_Success_WithUsername",
+          "status": "PASS"
+        },
+        {
+          "name": "loginWithZalo_Success_NewUser",
+          "status": "PASS"
+        },
+        {
+          "name": "loginWithZalo_Success_ExistingUser",
+          "status": "PASS"
+        },
+        {
+          "name": "login_NullRequest_ThrowsBadRequest",
+          "status": "PASS"
+        },
+        {
+          "name": "getCurrentUser_BlankUsername_ThrowsBadRequest",
+          "status": "PASS"
+        },
+        {
+          "name": "getCurrentUser_NotFound_ThrowsNotFound",
+          "status": "PASS"
+        },
+        {
+          "name": "loginWithZalo_ServiceFailure_ThrowsBadRequest",
+          "status": "PASS"
+        },
+        {
+          "name": "login_InactiveAccount_ThrowsBadRequest",
+          "status": "PASS"
+        },
+        {
+          "name": "register_DuplicateUsername_ThrowsConflict",
+          "status": "PASS"
+        },
+        {
+          "name": "loginWithZalo_NullOrBlankCode_ThrowsBadRequest",
+          "status": "PASS"
+        },
+        {
+          "name": "getCurrentUser_Success",
+          "status": "PASS"
+        },
+        {
+          "name": "loginWithZalo_InactiveAccount_ThrowsBadRequest",
+          "status": "PASS"
+        },
+        {
+          "name": "register_DuplicatePhoneNumber_ThrowsConflict",
+          "status": "PASS"
+        },
+        {
+          "name": "login_Success_WithEmail",
+          "status": "PASS"
+        },
+        {
+          "name": "login_InvalidPassword_ThrowsUnauthorized",
+          "status": "PASS"
+        },
+        {
+          "name": "getZaloAuthUrl_Success",
+          "status": "PASS"
+        },
+        {
+          "name": "register_Success",
+          "status": "PASS"
+        },
+        {
+          "name": "login_UserNotFound_ThrowsUnauthorized",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "sourceSha256": {
+    "backend/src/main/java/com/uav/platform/modules/user/service/AuthSessionLock.java": "fc4e9eb6ff5a715a6e398ee7738487c3c95e84e9396cb5442a20bf8230557eda",
+    "backend/src/main/java/com/uav/platform/modules/user/repository/RefreshTokenRepository.java": "1e829db26b9466391b01d4391077a841ffe7f68121e959777673c1538e3835de",
+    "backend/src/main/java/com/uav/platform/modules/user/service/RefreshTokenService.java": "190735e3220effefb061696fc962995c450ee2469d928c892f2b3a4e2f3b8410",
+    "backend/src/main/java/com/uav/platform/modules/user/service/impl/IAuthService.java": "abe099cf653cbf533fe0a188deb946cea191e09d1a46771445a8b859091a4136",
+    "backend/src/main/java/com/uav/platform/modules/user/service/impl/IRefreshTokenService.java": "91bd2b36c015645dc965552e0db02a3a189a9443bfb3116369bce538c50a8fd3"
+  },
+  "mechanism": [
+    "Existing users row locked before account checks and token changes; managed user refreshed after waiting.",
+    "Refresh lookup resolves owner ID, locks user, then re-reads and locks exact supplied token before verification and rotation.",
+    "Logout locks sorted distinct access/refresh owners before either mutation; preserves independently supplied exact-token behavior."
+  ],
+  "preservedBehavior": [
+    "One current refresh token per user; concurrent logins succeed and latest serialized login supersedes prior refresh.",
+    "A consumed refresh token yields 401 instead of producing multiple replacement pairs.",
+    "Logout of an old refresh never revokes a newer replacement token by user ID.",
+    "Logout is token-specific; other access JWTs remain valid until expiry or explicit invalidation.",
+    "Wrong-password five-attempt temporary lock policy is unchanged; concurrent attempts now persist correctly."
+  ],
+  "iterations": [
+    "Before implementation, three focused real-PostgreSQL regressions failed: first simultaneous login, same-token refresh and duplicate access-only logout.",
+    "Expired-token test fixture uses JDBC Timestamp because PostgreSQL driver cannot infer java.time.Instant parameter type. No product change was needed for that fixture."
+  ],
+  "limits": [
+    "Scope is local disposable PostgreSQL/H2 and existing auth unit/controller checks; parent orchestrates HTTP/browser and full Maven validation.",
+    "Zalo live third-party OAuth was not exercised; existing mocked Zalo unit behavior passed.",
+    "No global logout, cookies, SSO or CSRF contract was introduced."
+  ]
+}

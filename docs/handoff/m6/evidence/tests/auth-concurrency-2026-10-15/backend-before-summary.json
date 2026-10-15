@@ -1,0 +1,26 @@
+{
+  "exitCode": 1,
+  "suites": [
+    {
+      "name": "com.uav.platform.modules.user.service.AuthConcurrencyPostgresTest",
+      "tests": 3,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "name": "simultaneousRefreshConsumesTheOldTokenOnlyOnce",
+          "status": "FAIL"
+        },
+        {
+          "name": "simultaneousFirstLoginByUsernameAndEmailBothSucceedWithOneCurrentRefresh",
+          "status": "FAIL"
+        },
+        {
+          "name": "duplicateAccessOnlyLogoutIsIdempotent",
+          "status": "FAIL"
+        }
+      ]
+    }
+  ]
+}

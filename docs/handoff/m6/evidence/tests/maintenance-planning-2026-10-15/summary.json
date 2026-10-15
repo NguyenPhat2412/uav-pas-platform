@@ -1,0 +1,137 @@
+{
+  "date": "2026-10-15",
+  "scopeStatus": "COMPLETE",
+  "projectStatus": "PARTIAL / NOT_READY",
+  "head": "65d1b23da3d888d1ef8120462f2689da8cffd7cb",
+  "branch": "codex/m1-monorepo-foundation",
+  "baselineDirtyTreePreserved": true,
+  "authContractChanged": false,
+  "authSourceChanged": false,
+  "noCommitPushDeploy": true,
+  "materialPolicy": "Manual quantities and integer VND unit prices in repair order; no inventory deduction.",
+  "runtime": {
+    "backend": "127.0.0.1:18080",
+    "frontends": [
+      3100,
+      3101,
+      3102,
+      3103
+    ],
+    "postgresPort": 55444,
+    "minioPorts": [
+      9014,
+      9015
+    ],
+    "composeProject": "uav-maint-planning-20261015",
+    "data": "disposable synthetic only"
+  },
+  "backend": {
+    "tests": 356,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "frontendTestExecutions": 73,
+  "legacyTestExecutions": 7,
+  "frontendGates": "PASS",
+  "legacyGates": "PASS",
+  "checks": {
+    "api-maintenance-result.json": {
+      "status": "PASS",
+      "groups": 9
+    },
+    "api-negative-result.json": {
+      "status": "PASS",
+      "groups": 8
+    },
+    "maintenance-happy-ui-result.json": {
+      "status": "PASS",
+      "groups": 14
+    },
+    "browser-maintenance-negative-result.json": {
+      "status": "PASS",
+      "groups": 10
+    },
+    "maintenance-audit-ui-result.json": {
+      "status": "PASS",
+      "groups": 2
+    },
+    "maintenance-pagination-result.json": {
+      "status": "PASS",
+      "groups": 1
+    },
+    "browser-result.json": {
+      "status": "PASS",
+      "groups": 27
+    },
+    "maintenance-dispatch-ui-result.json": {
+      "status": "PASS",
+      "groups": 16
+    }
+  },
+  "knownFailures": [
+    {
+      "status": "FAIL",
+      "area": "Pre-existing concurrent same-account login",
+      "evidence": "auth-concurrency-observation.json",
+      "reproducedRounds": 6,
+      "result": "One HTTP 200 and one HTTP 500 each round; refresh_tokens_user_id_key conflict; left open."
+    }
+  ],
+  "resolvedFindings": [
+    "Flat module packages failed existing architecture rule; moved into required layers without weakening test.",
+    "Persisted decimal quantity strings canonicalized for consistent read and mutation responses.",
+    "Stale schedule editor blocked until reopened with current version; backend error mappings aligned.",
+    "Repair/schedule audit codes and details translated into Vietnamese.",
+    "Removing the last matching schedule on page two left an unreachable empty page; page now clamps after refresh.",
+    "Clamping onto a cached page retained an old total count; all list keys now invalidate before refresh."
+  ],
+  "notes": [
+    "Test groups are not equivalent to individual assertions or exhaustive product coverage.",
+    "Happy maintenance browser has 14 groups including one API-only fixture; negative browser has 10 groups including one API-only fixture.",
+    "Previous redispatch browser has 16 groups including one API-only fixture. Modes distinguish UI and API read-back.",
+    "Expected 400/403/409 are deliberate negative tests; the concurrent auth 500 is an unresolved real failure.",
+    "Full Maven total includes targeted tests; do not add targeted run totals again.",
+    "Pre-translation audit result passed presence checks only; screenshot revealed untranslated labels, now covered by stricter final assertions.",
+    "Browser/API suites log in sequentially to isolate maintenance behavior from the independently reproduced auth race."
+  ],
+  "notRun": [
+    "staging browser",
+    "hosted CI",
+    "SSO/CSRF implementation",
+    "full security scan",
+    "new npm audit",
+    "Safari/Firefox",
+    "load test",
+    "complete permission matrix",
+    "full legacy browser E2E"
+  ],
+  "cleanup": {
+    "status": "PASS",
+    "ownedPortsClosed": [
+      18080,
+      3100,
+      3101,
+      3102,
+      3103,
+      55444,
+      9014,
+      9015
+    ],
+    "ownedContainersRemaining": [],
+    "ownedVolumesRemaining": [],
+    "privateCredentialsAndLogsRemaining": [],
+    "rawTestTargetsRemoved": [
+      "backend-agent-pg-target",
+      "backend-aligned-target",
+      "full-maven-target",
+      "backend-target",
+      "backend-agent-target"
+    ],
+    "port8080Used": false
+  },
+  "diffCheck": "PASS",
+  "evidenceHygiene": "PASS: generated secret values, JWT patterns and signed URLs absent in text; selected screenshots visually inspected.",
+  "sourceFreeze": "PASS",
+  "branchHeadUnchanged": true
+}

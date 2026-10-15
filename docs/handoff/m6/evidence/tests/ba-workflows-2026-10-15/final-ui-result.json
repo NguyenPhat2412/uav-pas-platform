@@ -1,0 +1,126 @@
+{
+  "status": "PASS",
+  "scope": "Real browser/API; one synthetic timeline503 and delayed genuine GET response to test recovery. API fixture creation is not UI coverage.",
+  "results": [
+    {
+      "name": "public web responds with visible content on desktop and mobile",
+      "status": "PASS"
+    },
+    {
+      "name": "late real GET cannot overwrite new mission state after UI confirm (controlled delay)",
+      "status": "PASS"
+    },
+    {
+      "name": "rejection form enforces 500-character timeline boundary and valid boundary persists",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "network": [
+    {
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/permissions/me",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/permissions/me",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/missions/87",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/missions/87/timeline",
+      "status": 503,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/users",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/uavs",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/stations",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/inventory/equipment",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/missions/87/media",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/missions/87/confirm",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/missions/87",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/missions/87",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/uavs",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/stations",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/users",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/inventory/equipment",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/missions/87/media",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/missions/87/timeline",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/missions/87/reject",
+      "status": 200,
+      "method": "POST"
+    }
+  ]
+}

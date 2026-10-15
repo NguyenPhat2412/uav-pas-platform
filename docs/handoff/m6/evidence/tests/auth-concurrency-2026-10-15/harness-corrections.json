@@ -1,0 +1,4 @@
+{
+  "scope": "Test fixture only; no product workaround",
+  "correction": "The first scoped patched run had a PostgreSQL expired-token fixture error because JDBC could not infer Instant type. Changed fixture value to Timestamp and reran all scoped checks. All auth behavior assertions in that interim run had passed; final evidence is backend-final-summary.json."
+}

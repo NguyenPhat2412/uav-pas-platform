@@ -1,0 +1,1224 @@
+{
+  "status": "PASS",
+  "scope": "Actual HTTP/PostgreSQL concurrency and business guards; this is API coverage, not browser coverage.",
+  "results": [
+    {
+      "name": "missing or null resource quantity returns 400 without assignment on the real PostgreSQL runtime",
+      "status": "PASS"
+    },
+    {
+      "name": "replacement validates reason, stale expected UAV and existing permission without mutation",
+      "status": "PASS"
+    },
+    {
+      "name": "maintenance and wrong-station candidates leave previous assignment intact",
+      "status": "PASS"
+    },
+    {
+      "name": "two missions concurrently competing for one replacement have exactly one winner",
+      "status": "PASS",
+      "detail": {
+        "rounds": 3
+      }
+    },
+    {
+      "name": "same mission simultaneous replace versus unassign commits once and rejects stale command",
+      "status": "PASS",
+      "detail": {
+        "rounds": 3
+      }
+    },
+    {
+      "name": "maintenance versus assignment serializes on PostgreSQL UAV row",
+      "status": "PASS",
+      "detail": {
+        "rounds": 5
+      }
+    },
+    {
+      "name": "maintenance optimistic status check and manual workflow bypass protection",
+      "status": "PASS"
+    },
+    {
+      "name": "IN_PROGRESS rejects UAV replacement, unassign, maintenance, station transfer and manual release",
+      "status": "PASS"
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/stations",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/28/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/stations",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/77/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/77/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/77/assign-station",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/77",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/77/assign-station",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/77/assign-station",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/77/assign-uav",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/77/assign-uav",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/77/assign-operator",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/77/assign-operator",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/77/reserve-equipment",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/77/reserve-equipment",
+      "status": 400
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/77",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/119",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/77/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/79/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/79/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/79/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/79/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/79/replace-uav",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/79/replace-uav",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/79/replace-uav",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/79/replace-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/79",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/122",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/79/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/80/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/80/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/80/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/80/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs/124/maintenance",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/80/replace-uav",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/124/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/124/station/16",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/80/replace-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/80",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/123",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/80/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/81/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/81/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/81/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/81/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/82/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/82/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/82/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/82/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/81/replace-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/82/replace-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/81",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/82",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/125",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/126",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/81/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/82/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/83/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/83/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/83/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/83/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/85/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/85/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/85/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/85/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/85/replace-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/83/replace-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/85",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/83",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/128",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/129",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/83/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/85/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/86/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/86/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/86/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/86/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/87/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/87/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/87/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/87/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/86/replace-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/87/replace-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/86",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/87",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/132",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/133",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/86/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/87/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/replace-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/unassign-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/135",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/unassign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/replace-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/137",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/92/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/92/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/92/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/92/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/92/replace-uav",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/92/unassign-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/92",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/140",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/92/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/93/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/93/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/93/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs/142/maintenance",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/93/assign-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/142",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/93",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/93/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/94/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/94/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/94/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs/143/maintenance",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/94/assign-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/143",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/94",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/94/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/95/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/95/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/95/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs/144/maintenance",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/95/assign-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/144",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/95",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/95/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/96/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/96/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/96/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs/145/maintenance",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/96/assign-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/145",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/96",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/96/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/97/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/97/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/97/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs/146/maintenance",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/97/assign-uav",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/146",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/97",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/97/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs/148/maintenance",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/148/status",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/148/status",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/148/status",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/148/status",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/148",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/submit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/assign-station",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/assign-operator",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/reserve-equipment",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/accept",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/ready",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/start",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/replace-uav",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/unassign-uav",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs/149/maintenance",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/149/station/16",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/149/status",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/99",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/149",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/fail",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/fail",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/replace-uav",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/99/unassign-uav",
+      "status": 409
+    }
+  ]
+}

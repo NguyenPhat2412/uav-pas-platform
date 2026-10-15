@@ -1,0 +1,143 @@
+{
+  "date": "2026-10-15",
+  "scopeStatus": "COMPLETE",
+  "projectStatus": "PARTIAL / NOT_READY",
+  "branch": "codex/m1-monorepo-foundation",
+  "head": "65d1b23da3d888d1ef8120462f2689da8cffd7cb",
+  "baselineDirtyTreePreserved": true,
+  "authContractChanged": false,
+  "authImplementationChanged": true,
+  "frontendChanged": false,
+  "schemaChanged": false,
+  "dependenciesChanged": false,
+  "noCommitPushDeploy": true,
+  "resolvedGap": "M6-B9 concurrent same-account login HTTP 500",
+  "additionalResolvedRaces": [
+    "same refresh submitted concurrently",
+    "duplicate logout blacklist insertion",
+    "lost failed-password attempt counts"
+  ],
+  "before": {
+    "loginPairsWith500": 6,
+    "postgresRedTests": 3,
+    "postgresRedFailures": 3,
+    "httpGroups": 14,
+    "httpFailedGroups": 4
+  },
+  "backend": {
+    "tests": 390,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "scopedAuthTests": {
+    "tests": 77,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "frontendTestExecutions": 73,
+  "legacyTestExecutions": 7,
+  "rootGates": "PASS",
+  "legacyGates": "PASS",
+  "http": {
+    "status": "PASS",
+    "groups": 14,
+    "responses": 813,
+    "statusCounts": {
+      "201": 11,
+      "200": 555,
+      "401": 244,
+      "403": 1,
+      "400": 2
+    },
+    "concurrentLoginRequests": 96,
+    "sameRefreshConcurrentRequests": 72
+  },
+  "browser": {
+    "status": "PASS",
+    "groups": 13,
+    "portals": [
+      "customer",
+      "operations",
+      "admin"
+    ],
+    "responses": 61,
+    "statusCounts": {
+      "200": 50,
+      "401": 11
+    },
+    "navigationCancellations": 10,
+    "nonAbortedTransportFailures": 0,
+    "accessTtlMs": 5000,
+    "expiryMode": "natural expiry, no token/storage rewriting",
+    "parallelLoginMode": "Two independent browser contexts; unchanged real login requests released together."
+  },
+  "runtime": {
+    "composeProject": "uav-auth-concurrency-20261015",
+    "backend": "127.0.0.1:18080",
+    "frontends": [
+      3100,
+      3101,
+      3102,
+      3103
+    ],
+    "postgresPort": 55444,
+    "minioPorts": [
+      9014,
+      9015
+    ],
+    "data": "disposable synthetic only"
+  },
+  "preservedPolicy": [
+    "One current refresh token per user; last serialized login supersedes earlier refresh.",
+    "Previously issued access tokens keep independent lifetime.",
+    "Logout invalidates exactly the supplied tokens, not all sessions.",
+    "Rotation winning before logout of old tokens preserves the new pair."
+  ],
+  "notes": [
+    "Targeted tests are already included in the full Maven total; do not add repeated runs.",
+    "Expected 400/401/403 are negative checks, not unexplained server failures.",
+    "Auth before-fix failures and the JDBC Instant test-fixture correction remain in evidence.",
+    "Three portal browser sessions are origin-local bearer sessions, not SSO.",
+    "Database locks support shared-database serialization; no multi-replica deployment was tested."
+  ],
+  "notRun": [
+    "live Zalo provider",
+    "staging/HTTPS SSO/CSRF",
+    "hosted CI",
+    "new full security scan/npm audit",
+    "production load test",
+    "Safari/Firefox",
+    "full legacy browser E2E",
+    "multi-replica staging"
+  ],
+  "cleanup": {
+    "status": "PASS",
+    "ownedPortsClosed": [
+      18080,
+      3100,
+      3101,
+      3102,
+      3103,
+      55444,
+      9014,
+      9015
+    ],
+    "ownedContainersRemaining": [],
+    "ownedVolumesRemaining": [],
+    "privateCredentialsAndLogsRemaining": [],
+    "rawTestTargetsRemoved": [
+      "backend-before-target",
+      "backend-after-target",
+      "full-maven-target",
+      "backend-target",
+      "backend-final-target"
+    ],
+    "port8080Used": false
+  },
+  "sourceFreeze": "PASS",
+  "diffCheck": "PASS",
+  "evidenceHygiene": "PASS: exact generated credentials and JWT/signed-URL patterns absent in published text; selected screenshots inspected.",
+  "branchHeadUnchanged": true
+}
