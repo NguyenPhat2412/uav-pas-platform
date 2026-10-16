@@ -1,0 +1,561 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Find user on UI and grant inventory management",
+      "status": "PASS"
+    },
+    {
+      "name": "Reload actual permissions allows another edit without page refresh",
+      "status": "PASS"
+    },
+    {
+      "name": "Revoke permission on UI blocks a mutation from the already open tab",
+      "status": "PASS"
+    },
+    {
+      "name": "Reset override returns to role defaults",
+      "status": "PASS"
+    },
+    {
+      "name": "Lock and unlock user on UI enforce access for an existing token",
+      "status": "PASS"
+    },
+    {
+      "name": "Last access administrator cannot be locked from UI",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "admin",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/users/4/unlock",
+      "status": 204
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/role-templates",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "DELETE",
+      "path": "/api/v1/permissions/users/4/INVENTORY_MANAGE",
+      "status": 204
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/role-templates",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "PUT",
+      "path": "/api/v1/permissions/users/4/INVENTORY_MANAGE",
+      "status": 204
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/4",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/role-templates",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/1",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "PUT",
+      "path": "/api/v1/permissions/users/4/INVENTORY_MANAGE",
+      "status": 204
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/4",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/1/stock-in",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/1",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "operator-with-grant",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/role-templates",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "DELETE",
+      "path": "/api/v1/permissions/users/4/INVENTORY_MANAGE",
+      "status": 204
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/4",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/4",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/role-templates",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "POST",
+      "path": "/api/v1/users/4/lock",
+      "status": 204
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/4",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 401
+    },
+    {
+      "label": "admin",
+      "method": "POST",
+      "path": "/api/v1/users/4/unlock",
+      "status": 204
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users/4",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/4",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users/5",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/5",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/role-templates",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "POST",
+      "path": "/api/v1/users/5/lock",
+      "status": 409
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/5",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/users/5",
+      "status": 200
+    },
+    {
+      "label": "admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/users/5",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "admin",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "operator-with-grant",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "operator-with-grant",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 403 ()"
+    },
+    {
+      "label": "admin",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    }
+  ],
+  "requestFailures": [
+    {
+      "label": "admin",
+      "path": "/api/v1/permissions/users/4/INVENTORY_MANAGE",
+      "error": "ABORTED"
+    },
+    {
+      "label": "admin",
+      "path": "/api/v1/permissions/users/4/INVENTORY_MANAGE",
+      "error": "ABORTED"
+    },
+    {
+      "label": "admin",
+      "path": "/api/v1/permissions/users/4/INVENTORY_MANAGE",
+      "error": "ABORTED"
+    },
+    {
+      "label": "admin",
+      "path": "/api/v1/users/4/lock",
+      "error": "ABORTED"
+    },
+    {
+      "label": "admin",
+      "path": "/api/v1/users/4/unlock",
+      "error": "ABORTED"
+    }
+  ]
+}

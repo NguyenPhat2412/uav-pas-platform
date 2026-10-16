@@ -1,0 +1,25 @@
+{
+  "network": [],
+  "consoleErrors": [
+    {
+      "port": 3100,
+      "path": "/favicon.ico",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "port": 3101,
+      "path": "/favicon.ico",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "port": 3102,
+      "path": "/favicon.ico",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "port": 3103,
+      "path": "/favicon.ico",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    }
+  ]
+}

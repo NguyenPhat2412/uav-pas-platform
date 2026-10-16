@@ -1,5 +1,9 @@
 # M6 authentication and SSO report
 
+## Cập nhật 2026-10-16
+
+Lượt ưu tiên 1 giữ nguyên endpoint/DTO/mapper auth, JWT, storage token và chính sách phiên. UI dùng API khóa/mở khóa sẵn có, không suy diễn khóa truy cập từ trạng thái hồ sơ. Hash 89 file auth/config/schema/dependency được bảo vệ không đổi. Chưa triển khai SSO/CSRF; xem [báo cáo ưu tiên 1](M6_PRIORITY1_2026_10_16.md).
+
 ## Login, refresh và logout đồng thời — 2026-10-15 (lượt hiện tại)
 
 Bản vá dùng khóa giao dịch theo tài khoản để tuần tự hóa login/refresh/logout, đọc lại đúng refresh token sau khi chờ khóa và giữ đúng số lần nhập sai. Giữ nguyên một refresh token hiện hành/tài khoản, logout theo token được cung cấp và **auth contract JSON bearer hiện có**; không đổi endpoint, DTO, schema, cookie, SSO hoặc CSRF.

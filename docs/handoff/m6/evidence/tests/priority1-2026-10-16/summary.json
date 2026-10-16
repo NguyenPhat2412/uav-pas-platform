@@ -1,0 +1,99 @@
+{
+  "scope": "Priority 1 — backend note validation, permissions, inventory, media UI",
+  "classification": "COMPLETE within documented local scope",
+  "overallProject": "PARTIAL / NOT_READY",
+  "head": "7981fde930095489c83d6e8955948e72e771f294",
+  "branch": "codex/m1-monorepo-foundation",
+  "backend": {
+    "tests": 444,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "rootGates": [
+    {
+      "gate": "lint",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 13.8
+    },
+    {
+      "gate": "typecheck",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 8.7
+    },
+    {
+      "gate": "test",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 2.1
+    },
+    {
+      "gate": "build",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 18.8
+    }
+  ],
+  "legacyGates": [
+    {
+      "gate": "lint",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 4.2
+    },
+    {
+      "gate": "typecheck",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 1.6
+    },
+    {
+      "gate": "test",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 0.5
+    },
+    {
+      "gate": "build",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 4.7
+    }
+  ],
+  "browserAndSupportingApiGroups": 30,
+  "naturalExpiryChecks": 3,
+  "pageErrors": 0,
+  "observedFinalApi5xx": 0,
+  "authContractUnchanged": true,
+  "schemaAndDependenciesUnchanged": true,
+  "protectedFileCount": 89,
+  "beforeFailuresRetained": true,
+  "knownMinorUnfixed": [
+    "GET /favicon.ico returns 404 on all four portals; no effect on the tested business operations"
+  ],
+  "untested": [
+    "Staging/HTTPS and complete permission combinations",
+    "Full security scan/npm audit in this turn",
+    "Cross-domain SSO/CSRF",
+    "Large-file/video upload, exhaustive accessibility and mobile devices",
+    "Hosted CI, production load and multi-replica operation"
+  ],
+  "cleanup": "PASS",
+  "gitDiffCheck": "PASS",
+  "noCommitPushDeploy": true,
+  "cleanupPortsFree": {
+    "18080": true,
+    "55444": true,
+    "9014": true,
+    "9015": true,
+    "3100": true,
+    "3101": true,
+    "3102": true,
+    "3103": true
+  },
+  "disposableContainersAndVolumesRemoved": true,
+  "privateCredentialsLogsAndTargetsRemoved": true,
+  "finalSourceMatchesTestedManifest": true
+}

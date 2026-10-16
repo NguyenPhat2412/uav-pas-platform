@@ -1,0 +1,317 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Template deny retains explicit user grant and UI remains usable",
+      "status": "PASS"
+    },
+    {
+      "name": "Clearing override makes template deny effective on the UI",
+      "status": "PASS"
+    },
+    {
+      "name": "Template can be edited again and restores inherited access",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "template-admin",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "template-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "template-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "template-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions",
+      "status": 200
+    },
+    {
+      "label": "template-admin",
+      "method": "GET",
+      "path": "/api/v1/role-templates",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/role-templates",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "PUT",
+      "path": "/api/v1/permissions/users/4/INVENTORY_MANAGE",
+      "status": 204
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "template-admin",
+      "method": "PUT",
+      "path": "/api/v1/role-templates/ROLE_OPERATOR/permissions/INVENTORY_MANAGE",
+      "status": 204
+    },
+    {
+      "label": "template-admin",
+      "method": "GET",
+      "path": "/api/v1/role-templates",
+      "status": 200
+    },
+    {
+      "label": "template-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "DELETE",
+      "path": "/api/v1/permissions/users/4/INVENTORY_MANAGE",
+      "status": 204
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "template-admin",
+      "method": "PUT",
+      "path": "/api/v1/role-templates/ROLE_OPERATOR/permissions/INVENTORY_MANAGE",
+      "status": 204
+    },
+    {
+      "label": "template-admin",
+      "method": "GET",
+      "path": "/api/v1/role-templates",
+      "status": 200
+    },
+    {
+      "label": "template-admin",
+      "method": "GET",
+      "path": "/api/v1/role-templates",
+      "status": 200
+    },
+    {
+      "label": "template-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "operator-override",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "PUT",
+      "path": "/api/v1/role-templates/ROLE_OPERATOR/permissions/INVENTORY_MANAGE",
+      "status": 204
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "DELETE",
+      "path": "/api/v1/permissions/users/4/INVENTORY_MANAGE",
+      "status": 204
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "template-admin",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "operator-override",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    }
+  ],
+  "requestFailures": [
+    {
+      "label": "template-admin",
+      "path": "/api/v1/role-templates/ROLE_OPERATOR/permissions/INVENTORY_MANAGE",
+      "error": "ABORTED"
+    },
+    {
+      "label": "template-admin",
+      "path": "/api/v1/permissions/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "template-admin",
+      "path": "/api/v1/role-templates",
+      "error": "ABORTED"
+    },
+    {
+      "label": "template-admin",
+      "path": "/api/v1/role-templates/ROLE_OPERATOR/permissions/INVENTORY_MANAGE",
+      "error": "ABORTED"
+    },
+    {
+      "label": "template-admin",
+      "path": "/api/v1/permissions/me",
+      "error": "ABORTED"
+    }
+  ]
+}

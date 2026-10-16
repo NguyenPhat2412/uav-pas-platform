@@ -1,0 +1,57 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Private URL downloads matching bytes before natural expiry",
+      "status": "PASS",
+      "detail": {
+        "expiresInSeconds": 900
+      }
+    },
+    {
+      "name": "The same private URL is rejected after natural expiry",
+      "status": "PASS",
+      "detail": {
+        "mode": "real clock and MinIO; no altered signature, clock or storage response"
+      }
+    },
+    {
+      "name": "Authorized user can obtain a fresh working URL",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/media",
+      "status": 201
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/1/upload-url",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/media/1/confirm",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/1/download-url",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/1/download-url",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "requestFailures": []
+}

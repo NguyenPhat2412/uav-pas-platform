@@ -1,0 +1,131 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Logout removes owned media from the authenticated UI",
+      "status": "PASS"
+    },
+    {
+      "name": "Account B in the same browser cannot recover account A media with direct navigation or Back",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "same-browser-account-switch",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 403
+    },
+    {
+      "label": "same-browser-account-switch",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "same-browser-account-switch",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "same-browser-account-switch",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 403 ()"
+    }
+  ],
+  "requestFailures": []
+}

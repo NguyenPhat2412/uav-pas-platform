@@ -1,5 +1,9 @@
 # M6 baseline report
 
+## Cập nhật 2026-10-16
+
+Baseline của lượt ưu tiên 1 là branch `codex/m1-monorepo-foundation`, HEAD `7981fde930095489c83d6e8955948e72e771f294`, working tree sạch lúc bắt đầu. Các bản sửa nguồn đã được đóng gói trong commit `2694f01`, `72e3ef0`, `4f1877c` theo yêu cầu tiếp theo; baseline/evidence vẫn giữ snapshot trước đóng gói, không viết lại lịch sử Git. Xem [source manifest](evidence/tests/priority1-2026-10-16/source-manifest.json) và [báo cáo](M6_PRIORITY1_2026_10_16.md).
+
 ## Login, refresh và logout đồng thời — 2026-10-15 (lượt hiện tại)
 
 Bản vá dùng khóa giao dịch theo tài khoản để tuần tự hóa login/refresh/logout, đọc lại đúng refresh token sau khi chờ khóa và giữ đúng số lần nhập sai. Giữ nguyên một refresh token hiện hành/tài khoản, logout theo token được cung cấp và **auth contract JSON bearer hiện có**; không đổi endpoint, DTO, schema, cookie, SSO hoặc CSRF.

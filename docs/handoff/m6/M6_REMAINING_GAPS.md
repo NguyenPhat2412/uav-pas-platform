@@ -1,5 +1,9 @@
 # M6 remaining gaps
 
+## Ưu tiên 1 — ghi chú, quyền, kho và media — 2026-10-16
+
+Đã sửa backend trả 400 cho ghi chú quá dài, biểu mẫu quyền bị khóa sau lưu, thao tác mở khóa tài khoản và thông báo/phục hồi media trên UI. **444/444 backend tests PASS, 0 skip**; root và legacy lint/typecheck/test/build PASS; **30/30 nhóm browser và API bổ trợ PASS** cho quyền, kho, media, upload/gắn kết quả tại nhiệm vụ và đổi tài khoản cùng browser. Giữ nguyên auth contract, schema và dependencies. Phạm vi, evidence trước/sau và giới hạn tại [báo cáo ưu tiên 1](M6_PRIORITY1_2026_10_16.md). Các kết quả cũ bên dưới là lịch sử; không cộng lượt chạy lặp. Toàn dự án vẫn **PARTIAL / NOT_READY**.
+
 ## Login, refresh và logout đồng thời — 2026-10-15 (lượt hiện tại)
 
 Bản vá dùng khóa giao dịch theo tài khoản để tuần tự hóa login/refresh/logout, đọc lại đúng refresh token sau khi chờ khóa và giữ đúng số lần nhập sai. Giữ nguyên một refresh token hiện hành/tài khoản, logout theo token được cung cấp và **auth contract JSON bearer hiện có**; không đổi endpoint, DTO, schema, cookie, SSO hoặc CSRF.
@@ -41,7 +45,7 @@ Vietnamese portal UI, lifecycle/permission-aware controls, compact history and m
 | M6-B4 | PARTIAL — isolated API + portal auth smoke passed | Main mission flow and the documented maintenance/repair/material branches pass locally; untested lifecycle combinations, staging and SSO remain open | Business E2E | Pass mission workflow against approved staging data and origins | Product/QA |
 | M6-B5 | HIGH | npm audit reports 5 high development-toolchain entries in root and legacy; production-only audits return 0 | Supply chain | Review advisories, pin/upgrade compatible dependencies, rerun audit with policy decision | DevEx/Security |
 | M6-B6 | MEDIUM | CI has only M1 frontend/legacy jobs; no backend/four-app/staging gate | CI/CD | Reviewed workflow runs all required checks and artifacts | DevOps |
-| M6-B7 | MEDIUM | 65d1b23 was pushed and verified on 2026-10-10; the 2026-10-15 product fixes/evidence remain uncommitted; no PR created | Release baseline | Review current working-tree patch and create an approved commit/push/PR | Maintainer |
+| M6-B7 | MEDIUM | Baseline 7981fde is the pre-verification snapshot; priority-1 source commits 2694f01, 72e3ef0 and 4f1877c plus the accompanying evidence commit package the 2026-10-16 fixes; no PR created | Release baseline | Review the published priority-1 commit series and create a PR when requested | Maintainer |
 | M6-B8 | LOW | Authenticated desktop/mobile screenshots now exist for mission, audit, denial and conflict recovery; complete viewport/accessibility coverage remains open | UX/E2E | Complete accessibility and remaining role/viewport checks; see M6_BUSINESS_UI_E2E_2026_10_15.md | QA |
 | M6-B9 | RESOLVED — local verification (2026-10-15) | Lỗi login/refresh/logout đồng thời và mất số lần nhập sai đã được sửa; 390/390 backend tests, 14/14 nhóm HTTP (813 phản hồi, 0 HTTP 500), 13/13 browser checks PASS. Evidence FAIL trước sửa được giữ nguyên; xem [báo cáo auth concurrency](M6_AUTH_CONCURRENCY_2026_10_15.md) | Backend auth/session concurrency | Đạt kiểm chứng cục bộ: một refresh hiện hành/tài khoản, refresh chỉ tiêu thụ một lần, logout đúng token và khóa tài khoản theo số lần sai; giữ nguyên auth contract. Staging/SSO/CSRF thuộc các mục còn mở riêng | Backend/Security |
 
