@@ -53,7 +53,7 @@ not ok 10 - profile payload trims approved fields, preserves revision and exclud
   error: |-
     Expected values to be strictly deep-equal:
     + actual - expected
-    
+
     + {}
     - {
     -   expectedRevision: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -86,9 +86,9 @@ not ok 11 - profile validation enforces existing field lengths and required phon
   failureType: 'testCodeFailure'
   error: |-
     The expression evaluated to a falsy value:
-    
+
       assert.ok(validateProfile({fullName:'x'.repeat(101),phoneNumber:'1'.repeat(21)}).fullName)
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected: true
@@ -111,7 +111,7 @@ not ok 12 - profile failures distinguish stale data, duplicate phone and uncerta
   error: |-
     Expected values to be strictly equal:
     + actual - expected
-    
+
     + undefined
     - 'phone'
   code: 'ERR_ASSERTION'

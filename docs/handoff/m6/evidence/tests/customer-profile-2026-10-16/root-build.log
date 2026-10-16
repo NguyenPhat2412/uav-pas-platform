@@ -15,9 +15,9 @@
   Finished TypeScript in 1277ms ...
   Collecting page data using 11 workers ...
   Generating static pages using 11 workers (0/11) ...
-  Generating static pages using 11 workers (2/11) 
-  Generating static pages using 11 workers (5/11) 
-  Generating static pages using 11 workers (8/11) 
+  Generating static pages using 11 workers (2/11)
+  Generating static pages using 11 workers (5/11)
+  Generating static pages using 11 workers (8/11)
 ✓ Generating static pages using 11 workers (11/11) in 154ms
   Finalizing page optimization ...
 
@@ -51,9 +51,9 @@ Route (app)
   Finished TypeScript in 1135ms ...
   Collecting page data using 11 workers ...
   Generating static pages using 11 workers (0/11) ...
-  Generating static pages using 11 workers (2/11) 
-  Generating static pages using 11 workers (5/11) 
-  Generating static pages using 11 workers (8/11) 
+  Generating static pages using 11 workers (2/11)
+  Generating static pages using 11 workers (5/11)
+  Generating static pages using 11 workers (8/11)
 ✓ Generating static pages using 11 workers (11/11) in 158ms
   Finalizing page optimization ...
 
@@ -88,9 +88,9 @@ Route (app)
   Finished TypeScript in 1908ms ...
   Collecting page data using 11 workers ...
   Generating static pages using 11 workers (0/17) ...
-  Generating static pages using 11 workers (4/17) 
-  Generating static pages using 11 workers (8/17) 
-  Generating static pages using 11 workers (12/17) 
+  Generating static pages using 11 workers (4/17)
+  Generating static pages using 11 workers (8/17)
+  Generating static pages using 11 workers (12/17)
 ✓ Generating static pages using 11 workers (17/17) in 230ms
   Finalizing page optimization ...
 
@@ -130,9 +130,9 @@ Route (app)
   Finished TypeScript in 976ms ...
   Collecting page data using 11 workers ...
   Generating static pages using 11 workers (0/25) ...
-  Generating static pages using 11 workers (6/25) 
-  Generating static pages using 11 workers (12/25) 
-  Generating static pages using 11 workers (18/25) 
+  Generating static pages using 11 workers (6/25)
+  Generating static pages using 11 workers (12/25)
+  Generating static pages using 11 workers (18/25)
 ✓ Generating static pages using 11 workers (25/25) in 282ms
   Finalizing page optimization ...
 
@@ -196,4 +196,3 @@ Route (app)
 
 > @uav/ui@0.1.0 build
 > tsc --noEmit
-

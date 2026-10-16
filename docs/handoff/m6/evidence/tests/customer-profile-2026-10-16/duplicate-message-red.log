@@ -63,7 +63,7 @@ not ok 12 - profile failures distinguish stale data, duplicate phone and uncerta
   error: |-
     Expected values to be strictly equal:
     + actual - expected
-    
+
     + 'conflict'
     - 'phone'
   code: 'ERR_ASSERTION'

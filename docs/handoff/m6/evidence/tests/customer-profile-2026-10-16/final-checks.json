@@ -16,5 +16,7 @@
   "privateFilesRemaining": [],
   "authContractCheck": "PASS (40 unchanged protected files)",
   "commitPushDeploy": "Not performed",
-  "scope": "Customer self-profile code/tests/docs; new V4 index; no auth contract or dependency changes"
+  "scope": "Customer self-profile code/tests/docs; new V4 index; no auth contract or dependency changes",
+  "snapshot": "Verification before the subsequent publish request; original unstaged diff check excluded then-untracked logs.",
+  "publicationPrecheck": "Staged check found whitespace in 10 evidence logs; normalized without changing test content. Full baseline-to-HEAD check required before publication."
 }

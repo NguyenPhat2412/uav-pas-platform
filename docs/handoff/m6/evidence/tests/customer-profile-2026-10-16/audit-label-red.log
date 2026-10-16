@@ -28,7 +28,7 @@ not ok 5 - profile audit renders approved field names in Vietnamese and preserve
   error: |-
     Expected values to be strictly equal:
     + actual - expected
-    
+
     + 'USER_PROFILE'
     - 'Hồ sơ cá nhân'
   code: 'ERR_ASSERTION'
