@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "ownedComposeContainersRemaining": 0,
+  "isolatedPortsReleased": {
+    "18080": true,
+    "55444": true,
+    "9014": true,
+    "9015": true,
+    "3100": true,
+    "3101": true,
+    "3102": true,
+    "3103": true
+  },
+  "privateCredentialsRemoved": true,
+  "rawLogsAndTestTargetsRemoved": true,
+  "port8080NotUsed": true
+}

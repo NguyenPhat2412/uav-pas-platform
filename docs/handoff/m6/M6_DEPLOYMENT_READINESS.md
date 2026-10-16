@@ -1,5 +1,9 @@
 # M6 deployment readiness
 
+## Điều phối operator, trạm và thiết bị — 2026-10-16 (mới nhất)
+
+Đã bổ sung thay/gỡ operator và trạm, đổi số lượng/thiết bị và hoàn trả từng khoản giữ; kiểm tra lịch, phiên bản màn hình, số dư kho, rollback và audit. Sửa eligibility operator và kiểm tra lại tài nguyên ở READY/START. **494/494 backend tests PASS, 0 skip**; root/legacy đủ bốn gates PASS (76/7 lượt test); **21 nhóm browser/API bổ trợ và 2 nhóm audit UI PASS**. Auth contract, schema và dependencies không đổi. Xem [báo cáo điều phối tài nguyên](M6_RESOURCE_REDISPATCH_2026_10_16.md) để biết phạm vi thực tế, evidence và giới hạn. Phạm vi này COMPLETE cục bộ; toàn hệ thống **PARTIAL / NOT_READY**. Các kết quả bên dưới là lịch sử, không cộng lượt chạy lặp.
+
 ## Cập nhật 2026-10-16
 
 Lượt ưu tiên 1 có 444 backend tests, root/legacy gates và 30 nhóm browser/API bổ trợ PASS trên môi trường disposable. Không deploy, chưa nghiệm thu staging/HTTPS/CI/security đầy đủ; **NOT_READY** giữ nguyên. Xem [báo cáo ưu tiên 1](M6_PRIORITY1_2026_10_16.md).

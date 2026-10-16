@@ -1,0 +1,26 @@
+[
+  {
+    "kind": "baseline product regressions",
+    "evidence": "regression-before-failures.json",
+    "resolution": "Fixed; all 50 new H2/PostgreSQL cases pass in final 494-test run."
+  },
+  {
+    "kind": "new code boundary defect",
+    "detail": "500-character redispatch reason exceeded 255-character inventory note on both databases.",
+    "resolution": "Short inventory reference; full reason preserved in mission timeline/audit; boundary case passes in both databases and browser."
+  },
+  {
+    "kind": "harness",
+    "detail": "Wrong UAV station fixture URL, premature audit-row assertion, ambiguous inventory label, build/runtime overlap.",
+    "resolution": "Correct URL, wait for rows, combobox selector, start frontends after final build."
+  },
+  {
+    "kind": "runtime harness",
+    "detail": "Old listener could satisfy readiness after failed restart.",
+    "resolution": "Refuse occupied port; stop only verified task-owned old process; final listener process group verified before final full browser run."
+  },
+  {
+    "kind": "remaining unrelated behavior",
+    "detail": "Unknown UAV URL is handled as 500 rather than 404 by the global handler; valid UI routes return no 5xx in the verified run."
+  }
+]

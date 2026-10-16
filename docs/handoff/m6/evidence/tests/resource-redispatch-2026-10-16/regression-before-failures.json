@@ -1,0 +1,55 @@
+{
+  "status": "FAIL reproduced before fix",
+  "failures": [
+    {
+      "suite": "com.uav.platform.modules.mission.MissionResourceRedispatchPostgresTest",
+      "test": "readyRequiresAtLeastOneActiveReservation",
+      "message": "Expected com.uav.platform.error.SystemException to be thrown, but nothing was thrown."
+    },
+    {
+      "suite": "com.uav.platform.modules.mission.MissionResourceRedispatchPostgresTest",
+      "test": "startRechecksStationAfterReady",
+      "message": "Expected com.uav.platform.error.SystemException to be thrown, but nothing was thrown."
+    },
+    {
+      "suite": "com.uav.platform.modules.mission.MissionResourceRedispatchPostgresTest",
+      "test": "customerCannotBeAssignedAsOperator",
+      "message": "Expected com.uav.platform.error.SystemException to be thrown, but nothing was thrown."
+    },
+    {
+      "suite": "com.uav.platform.modules.mission.MissionResourceRedispatchPostgresTest",
+      "test": "readyRejectsOperatorLockedAfterAssignment",
+      "message": "Expected com.uav.platform.error.SystemException to be thrown, but nothing was thrown."
+    },
+    {
+      "suite": "com.uav.platform.modules.mission.MissionResourceRedispatchPostgresTest",
+      "test": "lockedOperatorCannotBeAssigned",
+      "message": "Expected com.uav.platform.error.SystemException to be thrown, but nothing was thrown."
+    },
+    {
+      "suite": "com.uav.platform.modules.mission.MissionResourceRedispatchIntegrationTest",
+      "test": "readyRequiresAtLeastOneActiveReservation",
+      "message": "Expected com.uav.platform.error.SystemException to be thrown, but nothing was thrown."
+    },
+    {
+      "suite": "com.uav.platform.modules.mission.MissionResourceRedispatchIntegrationTest",
+      "test": "startRechecksStationAfterReady",
+      "message": "Expected com.uav.platform.error.SystemException to be thrown, but nothing was thrown."
+    },
+    {
+      "suite": "com.uav.platform.modules.mission.MissionResourceRedispatchIntegrationTest",
+      "test": "customerCannotBeAssignedAsOperator",
+      "message": "Expected com.uav.platform.error.SystemException to be thrown, but nothing was thrown."
+    },
+    {
+      "suite": "com.uav.platform.modules.mission.MissionResourceRedispatchIntegrationTest",
+      "test": "readyRejectsOperatorLockedAfterAssignment",
+      "message": "Expected com.uav.platform.error.SystemException to be thrown, but nothing was thrown."
+    },
+    {
+      "suite": "com.uav.platform.modules.mission.MissionResourceRedispatchIntegrationTest",
+      "test": "lockedOperatorCannotBeAssigned",
+      "message": "Expected com.uav.platform.error.SystemException to be thrown, but nothing was thrown."
+    }
+  ]
+}

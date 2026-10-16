@@ -1,0 +1,42 @@
+{
+  "scope": "operator/station/equipment redispatch",
+  "baselineHead": "86bdd1244d63d2dc78fa315a6e785aeee36f5e55",
+  "scopeStatus": "COMPLETE_LOCAL",
+  "projectStatus": "PARTIAL_NOT_READY",
+  "backend": {
+    "tests": 494,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "newRegressionCases": {
+    "H2": 25,
+    "PostgreSQL": 25,
+    "includedInBackendTotal": true
+  },
+  "frontend": {
+    "rootGates": "PASS",
+    "rootTestExecutions": 76,
+    "legacyGates": "PASS",
+    "legacyTests": 7
+  },
+  "browser": {
+    "businessAndSupportingApiChecks": 21,
+    "auditUiChecks": 2,
+    "status": "PASS",
+    "javascriptExceptions": 0,
+    "businessApi5xx": 0,
+    "coverage": "Chromium desktop and equipment-change mobile; supporting APIs explicitly identified"
+  },
+  "authContractUnchanged": true,
+  "protectedFilesUnchanged": 89,
+  "remaining": [
+    "SSO/CSRF requires auth-contract decision",
+    "staging and hosted CI not run",
+    "no new full security scan or npm audit",
+    "unknown-route 404 handling outside this feature",
+    "station capacity and future timed stock allocation not introduced"
+  ],
+  "cleanup": "PASS",
+  "gitDiffCheck": "PASS"
+}

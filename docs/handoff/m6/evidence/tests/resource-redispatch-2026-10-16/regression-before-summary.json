@@ -1,0 +1,30 @@
+{
+  "status": "FAIL",
+  "command": "./mvnw -Duav.build.directory=<isolated test target> test",
+  "exitCode": 1,
+  "seconds": 12.4,
+  "totals": {
+    "tests": 10,
+    "failures": 10,
+    "errors": 0,
+    "skipped": 0
+  },
+  "database": "uav_ba_test_suite",
+  "storageBucket": "uav-resource-redispatch-suite",
+  "suites": [
+    {
+      "name": "com.uav.platform.modules.mission.MissionResourceRedispatchPostgresTest",
+      "tests": 5,
+      "failures": 5,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.uav.platform.modules.mission.MissionResourceRedispatchIntegrationTest",
+      "tests": 5,
+      "failures": 5,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}
