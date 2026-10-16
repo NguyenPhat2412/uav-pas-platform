@@ -1,0 +1,22 @@
+[
+  {
+    "gate": "lint",
+    "status": "PASS",
+    "seconds": 2.1
+  },
+  {
+    "gate": "typecheck",
+    "status": "PASS",
+    "seconds": 1.6
+  },
+  {
+    "gate": "test",
+    "status": "PASS",
+    "seconds": 0.4
+  },
+  {
+    "gate": "build",
+    "status": "PASS",
+    "seconds": 4.4
+  }
+]

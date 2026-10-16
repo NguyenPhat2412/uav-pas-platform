@@ -1,0 +1,242 @@
+{
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "Protected create route redirects anonymous browser to login",
+      "status": "PASS"
+    },
+    {
+      "name": "Customer login and create form: invalid data stays editable and sends no create request",
+      "status": "PASS"
+    },
+    {
+      "name": "Review, go back, create once and show correct draft details",
+      "status": "PASS"
+    },
+    {
+      "name": "Two tabs: stale edit is rejected; background refresh cannot replace the form version",
+      "status": "PASS"
+    },
+    {
+      "name": "Explicit reload enables a deliberate edit of the newest draft on mobile",
+      "status": "FAIL",
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Nội dung đang nhập ở tab B'\n- 'Nội dung đã lưu từ tab A'\n             ^"
+    }
+  ],
+  "network": [
+    {
+      "label": "customer A",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/availability",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/availability",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/3",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/3/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/3/media",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/3",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/3/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/3",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/3",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/3",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "PATCH",
+      "path": "/api/v1/missions/3",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/3",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/3/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/3/media",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/3",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/3/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "PATCH",
+      "path": "/api/v1/missions/3",
+      "status": 409
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/3",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/3",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/3/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/3",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "customer A tab B",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    }
+  ],
+  "requestFailures": [],
+  "failure": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Nội dung đang nhập ở tab B'\n- 'Nội dung đã lưu từ tab A'\n             ^"
+}

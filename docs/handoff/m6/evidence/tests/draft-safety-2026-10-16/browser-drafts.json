@@ -1,0 +1,901 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Protected create route redirects anonymous browser to login",
+      "status": "PASS"
+    },
+    {
+      "name": "Customer login and create form: invalid data stays editable and sends no create request",
+      "status": "PASS"
+    },
+    {
+      "name": "Review, go back, create once and show correct draft details",
+      "status": "PASS"
+    },
+    {
+      "name": "Two tabs: stale edit is rejected; background refresh cannot replace the form version",
+      "status": "PASS"
+    },
+    {
+      "name": "Explicit reload enables a deliberate edit of the newest draft on mobile",
+      "status": "PASS"
+    },
+    {
+      "name": "Lost PATCH response: stored edit remains; old version retry cannot create duplicate history",
+      "status": "PASS"
+    },
+    {
+      "name": "Another customer cannot read/edit the draft through UI or direct API",
+      "status": "PASS"
+    },
+    {
+      "name": "Submit from detail changes status; an already-open editor cannot save afterwards",
+      "status": "PASS"
+    },
+    {
+      "name": "Cancel confirmation can be dismissed; confirmed cancel updates status and removes actions",
+      "status": "PASS"
+    },
+    {
+      "name": "Direct draft cancellation also blocks a stale editor and repeated cancel",
+      "status": "PASS"
+    },
+    {
+      "name": "Repeated submit from another tab refreshes the UI without a second state transition",
+      "status": "PASS"
+    },
+    {
+      "name": "Nonexistent backend paths return 404; protected anonymous paths retain 401; UI handles missing mission",
+      "status": "PASS"
+    },
+    {
+      "name": "Rendered pages are nonblank, have no framework overlay or JS exceptions, and no unexpected API 5xx",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "customer A",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/availability",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/availability",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "PATCH",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "PATCH",
+      "path": "/api/v1/missions/5",
+      "status": 409
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "PATCH",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "PATCH",
+      "path": "/api/v1/missions/5",
+      "status": 409
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer B",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "customer B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer B",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "PATCH",
+      "path": "/api/v1/missions/5",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "POST",
+      "path": "/api/v1/missions/5/submit",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "PATCH",
+      "path": "/api/v1/missions/5",
+      "status": 409
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "POST",
+      "path": "/api/v1/missions/5/cancel",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/availability",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/6",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/6/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/6/media",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/6",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "POST",
+      "path": "/api/v1/missions/6/cancel",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/6",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/6/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/6/media",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "PATCH",
+      "path": "/api/v1/missions/6",
+      "status": 409
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/6",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/6/cancel",
+      "status": 409
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/6",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/6/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/availability",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/7",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/7/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/7/media",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/7",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/7/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/7/media",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "POST",
+      "path": "/api/v1/missions/7/submit",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/7",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/7/media",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/7/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "POST",
+      "path": "/api/v1/missions/7/submit",
+      "status": 409
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/7",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/7/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer A tab B",
+      "method": "GET",
+      "path": "/api/v1/missions/7/media",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/7/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/route-that-does-not-exist",
+      "status": 404
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/uavs/1/station",
+      "status": 404
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/missing-static-asset.svg",
+      "status": 404
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/999999999",
+      "status": 404
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "customer A tab B",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "label": "customer A",
+      "type": "error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "label": "customer A",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "label": "customer B",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 403 ()"
+    },
+    {
+      "label": "customer A tab B",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "label": "customer A tab B",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "label": "customer A tab B",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "label": "customer A",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    }
+  ],
+  "requestFailures": [
+    {
+      "label": "customer A",
+      "path": "/api/v1/missions/5",
+      "error": "NETWORK_ERROR"
+    }
+  ]
+}

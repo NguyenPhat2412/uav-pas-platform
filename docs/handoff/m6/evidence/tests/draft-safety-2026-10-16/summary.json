@@ -1,0 +1,42 @@
+{
+  "scope": "draft concurrency, unknown-route 404 and customer create/edit/submit/cancel UI",
+  "baselineHead": "f7b9f1318a8c06de9cca474ed2842efe46603b5b",
+  "scopeStatus": "COMPLETE_LOCAL",
+  "projectStatus": "PARTIAL_NOT_READY",
+  "backend": {
+    "tests": 530,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "newBackendCases": {
+    "H2Draft": 15,
+    "PostgreSQLDraft": 15,
+    "routing": 6,
+    "includedInBackendTotal": true
+  },
+  "frontend": {
+    "rootGates": "PASS",
+    "rootTestExecutions": 78,
+    "legacyGates": "PASS",
+    "legacyTests": 7
+  },
+  "browser": {
+    "businessAndSupportingApiChecks": 13,
+    "status": "PASS",
+    "javascriptExceptions": 0,
+    "api5xx": 0,
+    "coverage": "Chromium Customer portal desktop 1440x1000 and draft conflict/reload mobile 375x812"
+  },
+  "authContractUnchanged": true,
+  "protectedFilesUnchanged": 89,
+  "businessApiChange": "MissionResponse.version added; PATCH /api/v1/missions/{id} requires expectedVersion >= 0. Missing/invalid 400; stale 409.",
+  "cleanup": "PASS",
+  "remaining": [
+    "SSO/CSRF requires separate auth-contract approval",
+    "No staging/hosted CI/full security scan in this task",
+    "No full browser regression of Operations/Admin/public portals or Safari/Firefox"
+  ],
+  "gitDiffCheck": "PASS",
+  "sourceManifestRecheck": "PASS"
+}

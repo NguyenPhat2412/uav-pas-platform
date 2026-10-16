@@ -35,7 +35,7 @@ class MissionControllerTest {
         MissionResponse expected = new MissionResponse(1L, "MSN-2026-000001", 2L, "Customer", null,
                 MissionType.AREA_INSPECTION, "Inspect", null, LocalDate.now(), LocalDateTime.now(),
                 LocalDateTime.now().plusHours(1), "Hanoi", null, null, null, null, null, null,
-                MissionStatus.DRAFT, null, null, null, null, null, null, null, false, null);
+                MissionStatus.DRAFT, null, null, null, null, null, null, null, false, null, 0L);
         when(service.create(any(), eq("customer"))).thenReturn(expected);
 
         ResponseEntity<MissionResponse> response = controller.create(request(),

@@ -42,17 +42,21 @@ public class AiTask extends BaseEntity {
     private ProcessingNode processingNode = ProcessingNode.KV260_EDGE;
 
     @Column(name = "confidence_threshold")
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double confidenceThreshold = 0.75;
 
     @Column(name = "inference_time_ms")
     private Integer inferenceTimeMs;
 
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double fps;
 
     @Column(name = "dpu_utilization")
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double dpuUtilization;
 
     @Column(name = "soc_temperature")
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double socTemperature;
 
     @Column(name = "error_message", length = 500)

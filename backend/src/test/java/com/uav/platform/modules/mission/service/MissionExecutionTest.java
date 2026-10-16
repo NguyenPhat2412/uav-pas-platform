@@ -46,7 +46,7 @@ class MissionExecutionTest {
     void readyRejectsMissingResources() {
         Mission mission = missionAt(MissionStatus.RESOURCE_RESERVED);
         MissionRepository missions = repository(mission);
-        when(missions.findById(1L)).thenReturn(Optional.of(mission));
+        when(missions.findById(1L)).thenReturn(Optional.of(mission)); when(missions.findByIdForUpdate(1L)).thenReturn(Optional.of(mission));
         MissionEquipmentReservationRepository reservations = mock(MissionEquipmentReservationRepository.class);
         when(reservations.existsByMissionIdAndReleasedFalse(1L)).thenReturn(false);
         MissionService service = service(missions, reservations, mock(UavRepository.class), mock(InventoryService.class), mock(PermissionService.class));
@@ -71,13 +71,14 @@ class MissionExecutionTest {
     @Test
     void completeReleasesAssignedUav() {
         Mission mission = missionAt(MissionStatus.IN_PROGRESS);
+        org.springframework.test.util.ReflectionTestUtils.setField(mission,"missionType",MissionType.UAV_RENTAL);
         Uav uav = new Uav("Model", "UAV-EXEC", "Maker"); uav.setStatus(UavStatus.IN_USE); mission.assignUav(uav);
         mission.assignOperator(new AppUser("operator", "operator@complete.vn", "hash", null, UserStatus.ACTIVE));
         MissionRepository missions = repository(mission);
         MissionService service = service(missions, mock(MissionEquipmentReservationRepository.class), mock(UavRepository.class),
                 mock(InventoryService.class), permissions(true));
 
-        service.complete(1L, new MissionCompletionRequest("Done", null), auth("operator"));
+        service.complete(1L, new MissionCompletionRequest("Done", "Intact"), auth("operator"));
 
         assertEquals(MissionStatus.COMPLETED, mission.getStatus());
         assertEquals(UavStatus.AVAILABLE, uav.getStatus());
@@ -108,7 +109,7 @@ class MissionExecutionTest {
                 mock(EquipmentRepository.class), inventory, reservations);
     }
 
-    private MissionRepository repository(Mission mission) { MissionRepository r = mock(MissionRepository.class); when(r.findById(1L)).thenReturn(Optional.of(mission)); return r; }
+    private MissionRepository repository(Mission mission) { MissionRepository r = mock(MissionRepository.class); when(r.findById(1L)).thenReturn(Optional.of(mission)); when(r.findByIdForUpdate(1L)).thenReturn(Optional.of(mission)); return r; }
     private PermissionService permissions(boolean all) { PermissionService p = mock(PermissionService.class); when(p.has(any(), eq("MISSION_VIEW_ALL"))).thenReturn(all); return p; }
     private UsernamePasswordAuthenticationToken auth(String username) { return UsernamePasswordAuthenticationToken.authenticated(username, "n/a", List.of()); }
     private Mission missionAt(MissionStatus target) {

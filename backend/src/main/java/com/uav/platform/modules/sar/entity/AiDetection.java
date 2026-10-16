@@ -27,21 +27,28 @@ public class AiDetection extends BaseEntity {
     private String label;
 
     @Column(nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double confidence;
 
     @Column(name = "box_top", nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double boxTop;
 
     @Column(name = "box_left", nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double boxLeft;
 
     @Column(name = "box_width", nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double boxWidth;
 
     @Column(name = "box_height", nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double boxHeight;
 
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double latitude;
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double longitude;
 
     @Column(name = "tracking_id", length = 40)

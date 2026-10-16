@@ -1,0 +1,442 @@
+{
+  "baseline": {
+    "testCommand": "./mvnw -Dtest=MissionRejectionIntegrationTest test",
+    "tests": 4,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "failure": "rejectAfterPartialAssignmentReleasesEveryReservationAndUavExactlyOnce: expected UAV AVAILABLE but was ASSIGNED after persisted REJECTED"
+  },
+  "targetedAfterFix": {
+    "testCommand": "./mvnw -Dtest=MissionRejectionIntegrationTest,MissionPhase2IntegrationTest,MissionExecutionTest,MissionStateTest test",
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "fullAfterFix": {
+    "testCommand": "./mvnw test",
+    "totals": {
+      "tests": 212,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "postgresDatabase": "uav_ba_test_suite",
+    "postgresPort": 55444,
+    "minioBucket": "uav-ba-infra-test",
+    "minioPort": 9014,
+    "suites": [
+      {
+        "suite": "com.uav.platform.ArchitecturePackageTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.UavPlatformApplicationTests",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.common.constant.ConstantsIntegrityTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.common.dto.response.PageResponseTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.common.entity.BaseEntityTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.config.BackendHealthTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.config.CorsConfigTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.config.MigrationBaselineTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.config.OpenApiConfigTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.config.routes.ApiRoutesTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.error.ErrorResponseTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.error.GlobalExceptionHandlerTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.audit.specification.AuditLogSpecificationsTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.dashboard.MissionDashboardTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.inventory.service.InventoryServiceTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.inventory.specification.EquipmentSpecificationsTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.media.service.MediaAccessServiceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.media.service.MediaServiceTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.media.service.S3CompatibleStorageServiceTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.media.specification.MediaAssetSpecificationsTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.mission.MissionConcurrencyContractTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.mission.MissionPhase2IntegrationTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.mission.MissionRejectionIntegrationTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.mission.controller.MissionControllerTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.mission.controller.MissionMediaTimelineTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.mission.controller.UavServiceControllerTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.mission.entity.MissionStateTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.mission.service.MissionAssignmentTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.mission.service.MissionExecutionTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.mission.service.MissionServiceTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.mission.specification.MissionSpecificationsTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.station.service.StationServiceTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.station.specification.StationSpecificationsTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.uav.service.UavServiceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.uav.specification.UavSpecificationsTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.config.request.ValidationDtoTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.controller.AuthControllerTest",
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.controller.UserControllerTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.entity.AppUserOopTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.entity.RefreshTokenTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.service.AuthServiceTest",
+        "tests": 20,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.service.IZaloOAuthServiceTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.service.InvalidatedTokenServiceTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.service.PermissionServiceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.service.Phase1AccessIntegrationTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.service.Phase2PermissionRegistryTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.service.RefreshTokenServiceTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.service.UserServiceTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.specification.UserSpecificationsLegacyContractTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.modules.user.specification.UserSpecificationsTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.security.jwt.JwtAuthenticationFilterTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.security.jwt.JwtTokenProviderTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.stabilization.AccessRecoveryTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.stabilization.MigrationUpgradePostgresTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.stabilization.StabilizationMinioTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "com.uav.platform.stabilization.StabilizationPostgresTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ]
+  },
+  "newRegressionCases": [
+    "Reject confirmed mission with UAV and multiple equipment reservations: release each once; rejected retry leaves persisted state, inventory ledger, event and audit unchanged.",
+    "Reject pending mission before assignment: stock untouched.",
+    "Reject RESOURCE_RESERVED mission: MISSION_INVALID_STATUS; all resources, quantities, versions and history unchanged.",
+    "Injected audit persistence failure: rejection, equipment release, reservation released flags, UAV release and timeline all roll back in the same Spring transaction."
+  ],
+  "coverageLimitations": [
+    "New regression tests use isolated H2 with real Spring transactions, repositories and services; only the last audit write is fault-injected for the rollback test.",
+    "Full suite includes actual PostgreSQL stabilization/migration and real MinIO lifecycle. Parent is separately testing UI and the resource-release behavior on PostgreSQL runtime.",
+    "No auth contract changes. No change to operator acceptance policy, UAV assignment station policy or reassignment policy."
+  ],
+  "timelineNoteBoundary": {
+    "reproduction": "Real Spring/JPA persistence rejects 501-character reject, conflict and completion notes with DataIntegrityViolationException from mission_events.description varchar(500). All related state rolls back.",
+    "acceptedBoundary": 500,
+    "cases": 3,
+    "result": "PASS",
+    "uiMitigation": "Operations primary note textarea and service guards now limit all timeline note payloads to 500 characters. failureNotes remains 2000; equipmentCondition remains 500. Backend API/schema/auth contract unchanged."
+  }
+}

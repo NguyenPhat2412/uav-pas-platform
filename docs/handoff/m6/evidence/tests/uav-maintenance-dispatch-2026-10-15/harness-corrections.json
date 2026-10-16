@@ -1,0 +1,27 @@
+{
+  "corrections": [
+    {
+      "script": "api-negative.mjs",
+      "issue": "Missing UAV_BROWSER_WORK environment variable prevented fixture loading before any request",
+      "classification": "harness invocation"
+    },
+    {
+      "script": "business.mjs",
+      "issue": "Audit filter assertion assumed only one completed mission in shared synthetic database; now asserts owned mission is present and every displayed row matches filter",
+      "classification": "harness isolation",
+      "businessExpectationUnchanged": true
+    },
+    {
+      "script": "browser-negative.mjs",
+      "issue": "History release count originally included initial CREATE\u2192AVAILABLE; now counts only ASSIGNED/IN_USE\u2192AVAILABLE",
+      "classification": "harness assertion",
+      "businessExpectationUnchanged": true
+    },
+    {
+      "script": "browser-negative.mjs",
+      "issue": "report-conflict uses existing note query parameter; corrected test invocation",
+      "classification": "harness contract",
+      "businessExpectationUnchanged": true
+    }
+  ]
+}

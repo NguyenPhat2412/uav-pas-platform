@@ -1,0 +1,94 @@
+{
+  "name": "com.uav.platform.modules.mission.MissionRedispatchPostgresTest",
+  "tests": "17",
+  "failures": "0",
+  "errors": "0",
+  "skipped": "0",
+  "cases": [
+    {
+      "name": "duplicateLegacyOwnershipCannotMarkReadyOrStartTheAircraft",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "futureNonOverlappingOwnerStillBlocksAvailableCorruptedCandidate",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "unassignmentAndCancellationNeverDoubleReleaseEquipmentOrUav",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "unavailableWrongStationInactiveStationAndMissingReplacementDoNotReleaseOriginal",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "sameUavBlankAndOversizedReasonsAndInvalidIdsAreRejected",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "oldAircraftOwnedElsewhereIsNeverReleasedByRedispatchOrTerminalRelease",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "inProgressAndEveryTerminalStatusRejectRedispatchWithoutWrites",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "auditFailureRollsBackAssignmentStatusHistoryAcceptanceAndTimeline",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "executionAndTerminalMissionsRejectAcceptanceAndConflictWithoutChangingHistory",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "replacingReadyUavPreservesOtherResourcesAndRequiresReadyAgain",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "competingMissionsCannotBothClaimOneReplacement",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "competingReplacementsOnSameMissionHaveExactlyOneWinner",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "assignmentAndMaintenanceRaceNeverProduceAssignedMaintenanceAircraft",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "customerAndOperatorCannotRedispatchEvenTheirOwnMission",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "acceptanceAndConflictRemainAvailableDuringEveryPreflightState",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "staleReplacementCannotOverwriteCurrentAssignment",
+      "failure": null,
+      "error": null
+    },
+    {
+      "name": "unassignIsAtomicRetainsEquipmentAndDuplicateIsStale",
+      "failure": null,
+      "error": null
+    }
+  ]
+}

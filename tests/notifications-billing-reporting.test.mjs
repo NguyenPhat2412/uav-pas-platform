@@ -52,8 +52,10 @@ test('Operations App has NotificationBell and Notifications page', () => {
   assert.equal(existsSync(pagePath), true, 'Notifications page must exist in operations');
 
   const bellContent = readFileSync(bellPath, 'utf8');
-  assert.match(bellContent, /\/api\/v1\/notifications\/unread-count/);
-  assert.match(bellContent, /NotificationItem/);
+  assert.match(bellContent, /useNotifications/);
+  const hook = readFileSync(atRoot('packages/query/src/notifications.ts'), 'utf8');
+  assert.match(hook, /API_ROUTES.notifications.unreadCount/);
+  assert.match(hook, /NotificationItem/);
 
   const shellContent = readFileSync(shellPath, 'utf8');
   assert.match(shellContent, /NotificationBell/);
@@ -142,3 +144,48 @@ test('Centralized API_ROUTES registry in @uav/api-client and Service-Layer deleg
   assert.match(adminSettingsContent, /adminService\.updateSetting/);
 });
 
+
+test('Notifications adapt actual backend DTOs and preserve HTTP and user-cache contracts', async () => {
+  const ts = await import('typescript');
+  const routesSource = readFileSync(atRoot('packages/api-client/src/routes.ts'), 'utf8');
+  const compile = source => ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
+  const { API_ROUTES } = await import('data:text/javascript;base64,' + Buffer.from(compile(routesSource)).toString('base64'));
+  const queries = [], calls = [], invalidations = [];
+  let mutation;
+  const response = { id: 17, title: 'Phân công', content: 'Nhiệm vụ kiểm thử đã được giao.', type: 'MISSION_ASSIGNED', isRead: false, createdAt: '2026-10-16T09:00:00' };
+  globalThis.__notificationTest = {
+    useAuth: () => ({ user: { id: 42 } }),
+    useQuery: config => { queries.push(config); return { data: undefined, isPending: true }; },
+    useQueryClient: () => ({ invalidateQueries: args => invalidations.push(args) }),
+    useMutation: config => { mutation = config; return { isPending: false, error: null, reset() {}, mutate() {} }; },
+    API_ROUTES,
+    apiClient: Object.fromEntries(['get','post','patch'].map(method => [method, async (url, options) => {
+      calls.push({ method, url, options });
+      return url.includes('unread-count') ? { unreadCount: 1 } : { content: [response] };
+    }])),
+  };
+  try {
+    const source = readFileSync(atRoot('packages/query/src/notifications.ts'), 'utf8')
+      .replace(/^import .*;$/gm, '') + '\n';
+    const module = await import('data:text/javascript;base64,' + Buffer.from(compile('const {useAuth,useQuery,useQueryClient,useMutation,apiClient,API_ROUTES}=globalThis.__notificationTest;\n' + source)).toString('base64'));
+    const state = module.useNotifications();
+    assert.deepEqual(state.notifications, [], 'no synthetic notifications while loading');
+    const items = await queries[0].queryFn({ signal: undefined });
+    assert.equal(items[0].message, response.content);
+    assert.equal(items[0].id, '17');
+    assert.equal(items[0].isRead, false);
+    assert.equal(items[0].type, 'INFO');
+    assert.equal(module.toNotificationItem({ ...response, type: 'SAR_TARGET_FOUND' }).type, 'ALERT');
+    assert.equal(module.toNotificationItem({ ...response, type: 'QUOTA_WARNING' }).type, 'WARNING');
+    assert.equal((await queries[1].queryFn({ signal: undefined })).unreadCount, 1);
+    await mutation.mutationFn('17');
+    await mutation.mutationFn(null);
+    assert.deepEqual(calls.slice(-2).map(({ method, url }) => ({ method, url })), [
+      { method: 'patch', url: '/api/v1/notifications/17/read' },
+      { method: 'post', url: '/api/v1/notifications/read-all' },
+    ]);
+    await mutation.onSuccess();
+    assert.deepEqual(invalidations[0].queryKey, ['session', 42, 'notifications']);
+    assert.ok(queries.every(q => q.enabled && q.queryKey[1] === 42));
+  } finally { delete globalThis.__notificationTest; }
+});

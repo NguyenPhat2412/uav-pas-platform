@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "remainingOwnedContainers": 0,
+  "remainingOwnedVolumes": 0,
+  "isolatedPortsReleased": {
+    "18080": true,
+    "3101": true,
+    "55444": true,
+    "9014": true,
+    "9015": true
+  },
+  "privateCredentialsAndRawLogsRemoved": true,
+  "privateBuildTargetsRemoved": [
+    "regression-before-target",
+    "backend-full-target",
+    "regression-after-target",
+    "backend-target",
+    "backend-final-target"
+  ],
+  "productionTouched": false,
+  "port8080Used": false
+}

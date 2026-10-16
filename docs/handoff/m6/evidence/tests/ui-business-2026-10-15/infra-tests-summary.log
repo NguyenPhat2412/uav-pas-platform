@@ -1,0 +1,5 @@
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.436 s -- in com.uav.platform.stabilization.StabilizationMinioTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.370 s -- in com.uav.platform.stabilization.MigrationUpgradePostgresTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.997 s -- in com.uav.platform.stabilization.StabilizationPostgresTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS

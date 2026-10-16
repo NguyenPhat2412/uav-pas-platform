@@ -1,0 +1,35 @@
+
+> frontend@0.1.0 build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 125ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1507ms
+  Running TypeScript ...
+  Finished TypeScript in 972ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/12) ...
+  Generating static pages using 11 workers (3/12)
+  Generating static pages using 11 workers (6/12)
+  Generating static pages using 11 workers (9/12)
+✓ Generating static pages using 11 workers (12/12) in 184ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /access-control
+├ ○ /admin/missions
+├ ○ /login
+├ ○ /missions
+├ ƒ /missions/[id]
+├ ○ /missions/create
+├ ○ /operations
+├ ○ /operator/missions
+└ ○ /register
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "command": "./mvnw -Duav.build.directory=<isolated test target> test",
+  "exitCode": 0,
+  "seconds": 11.8,
+  "totals": {
+    "tests": 54,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "database": "uav_ba_test_suite",
+  "storageBucket": "uav-priority1-suite",
+  "suites": [
+    {
+      "name": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+      "tests": 27,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+      "tests": 27,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

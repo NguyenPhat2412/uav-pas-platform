@@ -1,0 +1,501 @@
+{
+  "status": "PASS",
+  "created": {
+    "equipmentId": 9,
+    "uavId": 7,
+    "serialNumber": "HIST-UAV-mv9f221d",
+    "model": "UAV phân trang mv9f221d"
+  },
+  "results": [
+    {
+      "name": "API setup: seed dedicated unused equipment and UAV histories over 20 entries",
+      "status": "PASS",
+      "mode": "API setup only; not UI mutation coverage",
+      "details": {
+        "equipmentId": 9,
+        "uavId": 7,
+        "inventoryMovementsSeeded": 25,
+        "uavHistoryEntriesSeeded": 24,
+        "finalUavStatus": "AVAILABLE"
+      }
+    },
+    {
+      "name": "admin logs in to Operations UI",
+      "status": "PASS",
+      "mode": "browser UI"
+    },
+    {
+      "name": "inventory history next/previous pages, server page one, content and disabled boundaries",
+      "status": "PASS",
+      "mode": "browser UI",
+      "details": {
+        "totalElements": 94,
+        "totalPages": 5,
+        "visitedPages": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "rowCounts": [
+          20,
+          20,
+          20,
+          20,
+          14
+        ]
+      }
+    },
+    {
+      "name": "inventory history on mobile keeps horizontal scrolling within the table",
+      "status": "PASS",
+      "mode": "browser UI"
+    },
+    {
+      "name": "UAV history next/previous pages, server page one, content and disabled boundaries",
+      "status": "PASS",
+      "mode": "browser UI",
+      "details": {
+        "totalElements": 25,
+        "totalPages": 2,
+        "visitedPages": [
+          0,
+          1
+        ],
+        "rowCounts": [
+          20,
+          5
+        ]
+      }
+    },
+    {
+      "name": "UAV history mobile drawer pagination remains usable",
+      "status": "PASS",
+      "mode": "browser UI"
+    },
+    {
+      "name": "history browser checks have no API failures, page errors or console warnings",
+      "status": "PASS",
+      "mode": "browser UI"
+    }
+  ],
+  "pageErrors": [],
+  "consoleIssues": [],
+  "network": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "page": null,
+      "size": null,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "page": null,
+      "size": null,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "page": "0",
+      "size": "100",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "page": "0",
+      "size": "100",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/dashboard/missions",
+      "page": null,
+      "size": null,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "page": null,
+      "size": null,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "page": null,
+      "size": null,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "page": "0",
+      "size": "100",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "page": "0",
+      "size": "20",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "page": "0",
+      "size": "100",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "page": "1",
+      "size": "20",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "page": "2",
+      "size": "20",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "page": "3",
+      "size": "20",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "page": "4",
+      "size": "20",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "page": null,
+      "size": null,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "page": null,
+      "size": null,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "page": "0",
+      "size": "100",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "page": "0",
+      "size": "100",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/7",
+      "page": null,
+      "size": null,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/7/history",
+      "page": "0",
+      "size": "20",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/7/history",
+      "page": "1",
+      "size": "20",
+      "status": 200
+    }
+  ],
+  "apiCalls": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/9/stock-in",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uavs/7/status",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/7",
+      "status": 200
+    }
+  ]
+}

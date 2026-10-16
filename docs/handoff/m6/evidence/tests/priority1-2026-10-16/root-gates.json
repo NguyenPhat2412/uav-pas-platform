@@ -1,0 +1,26 @@
+[
+  {
+    "gate": "lint",
+    "status": "PASS",
+    "exitCode": 0,
+    "seconds": 13.8
+  },
+  {
+    "gate": "typecheck",
+    "status": "PASS",
+    "exitCode": 0,
+    "seconds": 8.7
+  },
+  {
+    "gate": "test",
+    "status": "PASS",
+    "exitCode": 0,
+    "seconds": 2.1
+  },
+  {
+    "gate": "build",
+    "status": "PASS",
+    "exitCode": 0,
+    "seconds": 18.8
+  }
+]

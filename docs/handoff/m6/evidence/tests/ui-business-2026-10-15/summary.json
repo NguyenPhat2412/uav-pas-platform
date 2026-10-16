@@ -1,0 +1,116 @@
+{
+  "generatedAt": "2026-10-15T08:39:10.233118+00:00",
+  "baselineHead": "65d1b23da3d888d1ef8120462f2689da8cffd7cb",
+  "sourceState": "baseline HEAD plus uncommitted product patch; SHA-256 fingerprints below identify tested files",
+  "productFilesSha256": {
+    "apps/customer/app/(portal)/missions/[id]/page.tsx": "91aca9fcaf96603f3657c94711175c251685a2c0246aeccc24b5ab0b35ea2c57",
+    "apps/customer/src/features/customer/hooks.ts": "9c95c0fdaed17a8f5f75180921300f9c57944d0290ac2b74b3f386cbff760a7c",
+    "apps/operations/app/(portal)/overview/page.tsx": "bc33bf97a2e83a8b6d0ab91b796953c9264fb548f5c5feaf26635d2e58422d61",
+    "frontend/package.json": "492acef8174f44801531184ee2604c785515a77d09a6f58aae8a95da56593317",
+    "frontend/src/lib/api.client.ts": "4fec6cb7703cdfc2e5a577a0237f98c242b9067dc1d3d9abd50c512ac2afe5a2",
+    "packages/api-client/package.json": "60abe48f2574809f4be7de5122d33ad91037fc636d4e397328149761a7dc12b1",
+    "packages/api-client/src/index.ts": "8f50aabb3ce072ae961f0a825ef34896d15b52031a38d413e954c9a51a041033",
+    "tests/api-origin.test.mjs": "30e7caafecdf45a1398c0319d0a462757105eb2c82cb5541d2996d07c3aa1779"
+  },
+  "browser": {
+    "status": "PASS_LOCAL_SYNTHETIC",
+    "happyPathChecks": 23,
+    "negativeChecks": 5,
+    "sessionPortals": 3,
+    "operatorAdminUsersDenied": true,
+    "desktop": [
+      1440,
+      1000
+    ],
+    "mobile": [
+      390,
+      844
+    ],
+    "pageErrors": 0,
+    "happyPathConsoleIssues": 0,
+    "unexpectedHappyPathApiFailures": 0,
+    "mockedBusinessEndpoints": false,
+    "browserPlugin": "not available; standalone Playwright Chromium used"
+  },
+  "backendDefault": {
+    "tests": 205,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 7,
+    "exitCode": 0
+  },
+  "backendInfrastructure": {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exitCode": 0
+  },
+  "frontendChecks": [
+    {
+      "scope": "root",
+      "check": "lint",
+      "exitCode": 0,
+      "seconds": 11.9
+    },
+    {
+      "scope": "root",
+      "check": "typecheck",
+      "exitCode": 0,
+      "seconds": 7.8
+    },
+    {
+      "scope": "root",
+      "check": "test",
+      "exitCode": 0,
+      "seconds": 1.2
+    },
+    {
+      "scope": "root",
+      "check": "build",
+      "exitCode": 0,
+      "seconds": 16.1
+    },
+    {
+      "scope": "legacy",
+      "check": "lint",
+      "exitCode": 0,
+      "seconds": 3.3
+    },
+    {
+      "scope": "legacy",
+      "check": "typecheck",
+      "exitCode": 0,
+      "seconds": 1.4
+    },
+    {
+      "scope": "legacy",
+      "check": "test",
+      "exitCode": 0,
+      "seconds": 0.4
+    },
+    {
+      "scope": "legacy",
+      "check": "build",
+      "exitCode": 0,
+      "seconds": 3.9
+    }
+  ],
+  "authContractChanged": false,
+  "dependenciesChanged": false,
+  "cleanup": {
+    "ownedProcessesStopped": true,
+    "disposableComposeRemoved": true,
+    "port8080Untouched": true
+  },
+  "secretsRecorded": false,
+  "overallClassification": "PARTIAL / NOT_READY",
+  "limitations": [
+    "Local HTTP and dev-server UI verification; no staging/HTTPS SSO or CSRF test",
+    "Fixtures seeded via API and scoped SQL role assignment; resource administration CRUD not proven by this flow",
+    "Selected cancellation recovery passes; mission reject/fail/resource-conflict branches and broad concurrency remain incompletely browser-tested",
+    "Only selected mobile layout/navigation checks; no complete accessibility audit",
+    "No new npm audit/full security scan/hosted CI run",
+    "No commit, push, merge or deployment in this continuation"
+  ]
+}

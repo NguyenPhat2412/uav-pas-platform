@@ -22,8 +22,14 @@ public interface MissionService {
     default MissionResponse assignUav(Long id, Long uavId, Authentication authentication) {
         return assignUav(id, new ResourceAssignmentRequest(uavId), authentication);
     }
+    MissionResponse replaceUav(Long id, MissionUavReplacementRequest request, Authentication authentication);
+    MissionResponse unassignUav(Long id, MissionUavUnassignmentRequest request, Authentication authentication);
     MissionResponse assignOperator(Long id, ResourceAssignmentRequest request, Authentication authentication);
     MissionResponse reserveEquipment(Long id, ResourceAssignmentRequest request, Authentication authentication);
+    MissionDispatchResourcesResponse dispatchResources(Long id, Authentication authentication);
+    MissionResponse redispatchOperator(Long id, MissionResourceRedispatchRequest request, Authentication authentication);
+    MissionResponse redispatchStation(Long id, MissionResourceRedispatchRequest request, Authentication authentication);
+    MissionResponse redispatchEquipment(Long id, MissionEquipmentRedispatchRequest request, Authentication authentication);
     MissionResponse confirm(Long id, Authentication authentication);
     MissionResponse reject(Long id, String reason, Authentication authentication);
     MissionResponse ready(Long id, Authentication authentication);
@@ -34,6 +40,6 @@ public interface MissionService {
     List<MissionMediaResponse> listMedia(Long id, Authentication authentication);
     List<MissionEventResponse> timeline(Long id, Authentication authentication);
     MissionAvailabilityResponse availability(LocalDateTime startTime, LocalDateTime endTime, Long stationId, Long uavId, Long operatorId);
-    MissionResponse acceptOperator(Long id, Authentication authentication);
+    MissionResponse acceptOperator(Long id, MissionAcceptanceRequest request, Authentication authentication);
     MissionResponse reportOperatorConflict(Long id, String note, Authentication authentication);
 }

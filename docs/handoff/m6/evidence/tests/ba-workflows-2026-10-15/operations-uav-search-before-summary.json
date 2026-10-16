@@ -1,0 +1,8 @@
+{
+  "status": "OBSERVED_BEFORE_FIX",
+  "source": "Initial operations-history.mjs real UI run and UavPanel/DataTable source inspection",
+  "observation": "Filtering by the displayed UAV serial did not expose the matching Mở chi tiết action; the history test stopped before opening the drawer. Repeating the history test with the uniquely named model succeeded. The column previously exposed only model to the table filter, while serialNumber was rendered only inside the cell.",
+  "limitation": "The dedicated before-capture attempt later used an incorrect exact empty-state string and timed out; no dedicated successful before screenshot was captured. No numeric serial-match count is claimed from that attempt.",
+  "fix": "Use id=model and accessorFn(model + serialNumber), preserving cell display.",
+  "verification": "Final rebuilt history run must use serial filtering."
+}

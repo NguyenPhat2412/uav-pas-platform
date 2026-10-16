@@ -3,32 +3,27 @@ import Link from 'next/link';
 import { PageGuard } from '@/components/layout';
 import { Panel, Button, Status } from '@/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
-import { useMissions, useServices } from '@/features/customer/hooks';
-import { Activity, ArrowUpRight, Boxes, CheckCircle2, Clock, CreditCard, Plane, ShieldCheck, Sparkles } from 'lucide-react';
+import { useMissions, useServices, useBilling } from '@/features/customer/hooks';
+import { Activity, ArrowUpRight, Boxes, Plane } from 'lucide-react';
 
 export default function DashboardPage() {
   return <PageGuard><Dashboard /></PageGuard>;
 }
 
-const DEMO_MISSIONS = [
-  { id: 1, code: 'MS-2026-SAR01', title: 'Cứu hộ khẩn cấp ngư dân vịnh Lan Hạ', startTime: '2026-10-13T08:30:00Z', status: 'IN_PROGRESS' },
-  { id: 2, code: 'MS-2026-PATROL02', title: 'Tuần tra duyên hải & giám sát sạt lở Cát Bà', startTime: '2026-10-12T14:00:00Z', status: 'COMPLETED' },
-  { id: 3, code: 'MS-2026-MED03', title: 'Vận chuyển thiết bị y tế khẩn cấp trạm Đồ Sơn', startTime: '2026-10-11T09:15:00Z', status: 'COMPLETED' },
-  { id: 4, code: 'MS-2026-SURV04', title: 'Khảo sát bản đồ nhiệt rừng ngập mặn Phù Long', startTime: '2026-10-10T10:00:00Z', status: 'CONFIRMED' },
-];
-
 function Dashboard() {
   const { user } = useAuth();
   const missions = useMissions();
   const services = useServices();
+  const { quota } = useBilling();
   const realRows = missions.data?.content ?? [];
-  const rows = realRows.length > 0 ? realRows : DEMO_MISSIONS;
-  const totalMissions = realRows.length > 0 ? (missions.data?.totalElements ?? rows.length) : rows.length;
+  const rows = realRows;
+  const totalMissions = missions.data?.totalElements ?? 0;
   const inProgressMissions = rows.filter(m => ['PENDING_CONFIRMATION', 'CONFIRMED', 'RESOURCE_RESERVED', 'READY', 'IN_PROGRESS'].includes(m.status)).length;
-  const openServices = services.data?.length ?? 6;
+  const openServices = services.data?.length ?? 0;
 
   return (
     <>
+      {(missions.isError || services.isError) && <div role="alert" className="notice error">Không tải được dữ liệu tổng quan. Vui lòng tải lại trang.</div>}
       <div className="page-heading">
         <div>
           <h1 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -52,7 +47,7 @@ function Dashboard() {
               <Activity size={18} />
             </span>
             <div>
-              <span className="muted" style={{ display: 'block', fontWeight: 600, fontSize: 13 }}>Tổng số Mission</span>
+              <span className="muted" style={{ display: 'block', fontWeight: 600, fontSize: 13 }}>Tổng số nhiệm vụ</span>
               <div className="metric" style={{ marginTop: 8, color: '#0f172a' }}>{totalMissions}</div>
               <small style={{ display: 'block', marginTop: 8, color: '#64748b', fontSize: 12, fontWeight: 500 }}>Đã đăng ký trên hệ thống</small>
             </div>
@@ -65,9 +60,9 @@ function Dashboard() {
               <Plane size={18} />
             </span>
             <div>
-              <span className="muted" style={{ display: 'block', fontWeight: 600, fontSize: 13 }}>Đang tác chiến / xử lý</span>
+              <span className="muted" style={{ display: 'block', fontWeight: 600, fontSize: 13 }}>Đang xử lý trong trang gần đây</span>
               <div className="metric" style={{ marginTop: 8, color: '#007f3e' }}>{inProgressMissions}</div>
-              <small style={{ display: 'block', marginTop: 8, color: '#007f3e', fontSize: 12, fontWeight: 500 }}>Trực ban đang kết nối vệ tinh</small>
+              <small style={{ display: 'block', marginTop: 8, color: '#007f3e', fontSize: 12, fontWeight: 500 }}>Theo trạng thái nhiệm vụ đã tải</small>
             </div>
           </div>
         </Panel>
@@ -90,7 +85,7 @@ function Dashboard() {
       <div className="grid grid-2" style={{ marginTop: 20 }}>
         {/* Frame 2: Mission Table */}
         <Panel
-          title="Mission gần đây"
+          title="Nhiệm vụ gần đây"
           action={<Link href="/missions" className="button-link" style={{ fontSize: 12, color: '#ab2523', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>Xem tất cả <ArrowUpRight size={13} /></Link>}
           style={{ height: '100%' }}
         >
@@ -104,6 +99,7 @@ function Dashboard() {
                 </tr>
               </thead>
               <tbody>
+                {!rows.length && <tr><td colSpan={3}>{missions.isPending ? 'Đang tải nhiệm vụ…' : 'Chưa có nhiệm vụ.'}</td></tr>}
                 {rows.slice(0, 5).map(m => (
                   <tr key={m.id}>
                     <td>
@@ -114,9 +110,9 @@ function Dashboard() {
                     </td>
                     <td style={{ fontSize: 12, color: '#64748b', whiteSpace: 'nowrap', fontFamily: 'monospace' }}>
                       {(() => {
-                        if (!m.startTime) return '13/10/2026';
+                        if (!m.startTime) return '—';
                         const d = new Date(m.startTime);
-                        return isNaN(d.getTime()) ? '13/10/2026' : d.toLocaleDateString('vi-VN');
+                        return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('vi-VN');
                       })()}
                     </td>
                     <td style={{ textAlign: 'right' }}>
@@ -132,27 +128,11 @@ function Dashboard() {
         {/* Frame 3: Quota & Quick Shortcuts */}
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 18, height: '100%' }}>
           <Panel title="Hạn mức bay & Gói cước VJU">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 13, color: '#64748b' }}>Gói dịch vụ hiện tại:</span>
-                <span style={{ fontWeight: 800, color: '#ab2523', fontSize: 12, background: '#fdf2f2', padding: '4px 10px', borderRadius: 9999, border: '1px solid #fecdd3' }}>
-                  Enterprise SAR
-                </span>
-              </div>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
-                  <span style={{ color: '#475569' }}>Giờ bay đã sử dụng:</span>
-                  <strong style={{ fontFamily: 'monospace', color: '#0f172a' }}>18.5 / 50 giờ (37%)</strong>
-                </div>
-                <div style={{ width: '100%', height: 8, background: '#e2e8f0', borderRadius: 9999, overflow: 'hidden' }}>
-                  <div style={{ width: '37%', height: '100%', background: '#ab2523', borderRadius: 9999 }} />
-                </div>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10, borderTop: '1px solid #f1f5f9', fontSize: 12, color: '#64748b' }}>
-                <span>Chu kỳ thanh toán kế tiếp:</span>
-                <strong style={{ color: '#0f172a', fontFamily: 'monospace' }}>01/11/2026</strong>
-              </div>
-            </div>
+            {quota.isPending ? <p>Đang tải hạn mức…</p> : quota.isError ? <p role="status">Chưa tải được thông tin hạn mức. <Link href="/billing">Xem gói cước</Link></p> : <div className="stack">
+              <p>Gói hiện tại: <strong>{quota.data?.planName ?? 'Chưa đăng ký'}</strong></p>
+              <p>Giờ bay đã dùng: <strong>{quota.data?.flightHoursUsed ?? 0} / {quota.data?.flightHoursLimit ?? 0}</strong></p>
+              <p>Kết thúc chu kỳ: <strong>{quota.data?.cycleEnd ? new Date(quota.data.cycleEnd).toLocaleDateString('vi-VN') : '—'}</strong></p>
+            </div>}
           </Panel>
 
           <Panel title="Bắt đầu nhanh" style={{ flex: 1 }}>
@@ -162,7 +142,7 @@ function Dashboard() {
                 <ArrowUpRight size={15} />
               </Link>
               <Link href="/missions/create" className="button button-secondary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px' }}>
-                <span>Tạo yêu cầu bay cứu nạn khẩn cấp</span>
+                <span>Tạo yêu cầu dịch vụ UAV</span>
                 <ArrowUpRight size={15} />
               </Link>
               <Link href="/billing" className="button button-secondary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px' }}>

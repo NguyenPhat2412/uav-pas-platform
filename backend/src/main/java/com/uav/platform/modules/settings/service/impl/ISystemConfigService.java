@@ -38,6 +38,12 @@ public class ISystemConfigService implements SystemConfigService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public String valueOrDefault(String key, String fallback) {
+        return configRepository.findByConfigKey(key).map(SystemConfiguration::getConfigValue).orElse(fallback);
+    }
+
+    @Override
     public SystemConfigurationResponse update(String key, UpdateConfigurationRequest request, Authentication auth) {
         SystemConfiguration cfg = configRepository.findByConfigKey(key)
             .orElseThrow(() -> SystemException.notFound("Config key not found: " + key));

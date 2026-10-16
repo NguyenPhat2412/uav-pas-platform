@@ -1,0 +1,23 @@
+{
+  "status": "FAIL",
+  "command": "./mvnw -Duav.build.directory=<isolated test target> test",
+  "exitCode": 1,
+  "seconds": 10.0,
+  "totals": {
+    "tests": 11,
+    "failures": 10,
+    "errors": 0,
+    "skipped": 0
+  },
+  "database": "uav_ba_test_suite",
+  "storageBucket": "uav-customer-profile-suite",
+  "suites": [
+    {
+      "name": "com.uav.platform.modules.user.UserProfileIntegrationTest",
+      "tests": 11,
+      "failures": 10,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

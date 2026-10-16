@@ -41,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 class MissionPhase2IntegrationTest {
     @Autowired MissionService missions;
+    @Autowired org.springframework.jdbc.core.JdbcTemplate db;
     @Autowired UserRepository users;
     @Autowired StationRepository stations;
     @Autowired UavRepository uavs;
@@ -68,7 +69,9 @@ class MissionPhase2IntegrationTest {
         missions.assignOperator(created.id(), new ResourceAssignmentRequest(operator.getId()), adminAuth);
         MissionResponse reserved = missions.reserveEquipment(created.id(), new ResourceAssignmentRequest(battery.getId(), 1, "flight"), adminAuth);
         assertEquals(MissionStatus.RESOURCE_RESERVED, reserved.status());
+        MissionHandoverTestData.accept(missions,created.id(),operatorAuth);
         missions.ready(created.id(), adminAuth); missions.start(created.id(), operatorAuth);
+        MissionHandoverTestData.result(db,created.id(),operator.getUsername());
         MissionResponse completed = missions.complete(created.id(), new MissionCompletionRequest("Flight complete", "Good"), operatorAuth);
 
         assertEquals(MissionStatus.COMPLETED, completed.status());

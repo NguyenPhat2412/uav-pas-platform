@@ -1,0 +1,304 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Mission UI uploads, confirms and attaches media; customer downloads matching bytes",
+      "status": "PASS"
+    },
+    {
+      "name": "Unassigned operator cannot view the mission or upload to it",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "mission-media-admin",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "mission-media-owner",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "mission-media-owner",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "mission-media-owner",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "mission-media-owner",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "unassigned-operator",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "unassigned-operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "unassigned-operator",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "unassigned-operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "label": "unassigned-operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/missions/7",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/missions/7/media",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/missions/7/timeline",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "POST",
+      "path": "/api/v1/missions/7/media/upload-url",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "POST",
+      "path": "/api/v1/missions/7/media/16/confirm",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "POST",
+      "path": "/api/v1/missions/7/media",
+      "status": 201
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/missions/7",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/missions/7/media",
+      "status": 200
+    },
+    {
+      "label": "mission-media-admin",
+      "method": "GET",
+      "path": "/api/v1/missions/7/timeline",
+      "status": 200
+    },
+    {
+      "label": "mission-media-owner",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "mission-media-owner",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "mission-media-owner",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "mission-media-owner",
+      "method": "GET",
+      "path": "/api/v1/missions/7",
+      "status": 200
+    },
+    {
+      "label": "mission-media-owner",
+      "method": "GET",
+      "path": "/api/v1/missions/7/timeline",
+      "status": 200
+    },
+    {
+      "label": "mission-media-owner",
+      "method": "GET",
+      "path": "/api/v1/missions/7/media",
+      "status": 200
+    },
+    {
+      "label": "mission-media-owner",
+      "method": "GET",
+      "path": "/api/v1/media/16/download-url",
+      "status": 200
+    },
+    {
+      "label": "unassigned-operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "unassigned-operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "unassigned-operator",
+      "method": "GET",
+      "path": "/api/v1/missions/7",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/7/media/upload-url",
+      "status": 403
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "mission-media-admin",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "mission-media-owner",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "unassigned-operator",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 403 ()"
+    }
+  ],
+  "requestFailures": []
+}

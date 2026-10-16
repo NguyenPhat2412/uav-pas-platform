@@ -46,8 +46,23 @@ public class SecurityConfig {
                 builder.domain(cookieDomain.trim());
             }
         });
-        XorCsrfTokenRequestAttributeHandler csrfHandler = new XorCsrfTokenRequestAttributeHandler();
-        csrfHandler.setCsrfRequestAttributeName(null);
+        XorCsrfTokenRequestAttributeHandler maskedHandler = new XorCsrfTokenRequestAttributeHandler();
+        maskedHandler.setCsrfRequestAttributeName(null);
+        var csrfHandler = new org.springframework.security.web.csrf.CsrfTokenRequestHandler() {
+            @Override
+            public void handle(jakarta.servlet.http.HttpServletRequest request,
+                    jakarta.servlet.http.HttpServletResponse response,
+                    java.util.function.Supplier<org.springframework.security.web.csrf.CsrfToken> token) {
+                maskedHandler.handle(request, response, token);
+            }
+            @Override
+            public String resolveCsrfTokenValue(jakarta.servlet.http.HttpServletRequest request,
+                    org.springframework.security.web.csrf.CsrfToken token) {
+                // Preserve the raw cookie/header contract and masked form-token support.
+                return StringUtils.hasText(request.getHeader(token.getHeaderName()))
+                        ? request.getHeader(token.getHeaderName()) : maskedHandler.resolveCsrfTokenValue(request, token);
+            }
+        };
 
         http
                 // Bearer-token clients are CSRF-immune; cookie-authenticated browsers must send X-XSRF-TOKEN.

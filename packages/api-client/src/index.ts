@@ -89,24 +89,26 @@ async function refreshAccess(generation: number) {
 export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const generation = sessionGeneration;
   const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint}`;
+  // Storage URLs authenticate with their signature, not the API session.
+  const isApiOrigin = new URL(url).origin === new URL(baseUrl).origin;
   const headers = new Headers(options.headers);
   if (!headers.has('content-type') && options.body !== undefined) headers.set('content-type', 'application/json');
-  const token = currentToken();
+  const token = isApiOrigin ? currentToken() : null;
   if (token && !headers.has('authorization')) headers.set('authorization', `Bearer ${token}`);
   const method = (options.method ?? 'GET').toUpperCase();
-  if (typeof document !== 'undefined' && !['GET', 'HEAD', 'OPTIONS'].includes(method) && !headers.has('x-xsrf-token')) {
+  if (isApiOrigin && typeof document !== 'undefined' && !['GET', 'HEAD', 'OPTIONS'].includes(method) && !headers.has('x-xsrf-token')) {
     const csrf = readCookie('XSRF-TOKEN');
     if (csrf) headers.set('x-xsrf-token', csrf);
   }
   let response: Response;
-  try { response = await fetch(url, { credentials: 'include', ...options, headers }); }
+  try { response = await fetch(url, { ...options, credentials: isApiOrigin ? 'include' : 'omit', headers }); }
   catch (error) {
     if (error instanceof Error && error.name === 'AbortError') throw error;
     throw new ApiError(0, 'NetworkError', error instanceof Error ? error.message : 'Network error', endpoint, 'NETWORK_ERROR');
   }
   requireCurrent(generation);
   const authCommand = /\/auth\/(login|register|refresh|logout)/.test(endpoint);
-  if (response.status === 401 && typeof window !== 'undefined' && !authCommand) {
+  if (isApiOrigin && response.status === 401 && typeof window !== 'undefined' && !authCommand) {
     const latest = currentToken();
     const accessToken = latest && latest !== token ? latest : await refreshAccess(generation);
     requireCurrent(generation);
@@ -117,7 +119,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
     if (response.status === 401) setAuthSession(null);
   }
   if (!response.ok) {
-    if (typeof window !== 'undefined' && response.status === 403 && endpoint !== '/api/v1/permissions/me') window.dispatchEvent(new Event(PERMISSIONS_EVENT));
+    if (isApiOrigin && typeof window !== 'undefined' && response.status === 403 && endpoint !== '/api/v1/permissions/me') window.dispatchEvent(new Event(PERMISSIONS_EVENT));
     let detail: Partial<ApiErrorShape> = {};
     try { detail = await response.json(); } catch { /* Preserve status for non-JSON errors. */ }
     throw new ApiError(

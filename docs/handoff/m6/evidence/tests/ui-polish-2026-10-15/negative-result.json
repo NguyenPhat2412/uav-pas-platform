@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "result": [
+    {
+      "name": "customer B direct-ID ownership denied",
+      "status": "PASS"
+    },
+    {
+      "name": "customer B list excludes A missions",
+      "status": "PASS"
+    },
+    {
+      "name": "admin audit page loaded",
+      "status": "PASS"
+    },
+    {
+      "name": "stale submit conflict is visible without uncaught rejection",
+      "status": "PASS"
+    },
+    {
+      "name": "cancel after conflict clears stale error and renders CANCELLED",
+      "status": "PASS"
+    }
+  ],
+  "errors": []
+}

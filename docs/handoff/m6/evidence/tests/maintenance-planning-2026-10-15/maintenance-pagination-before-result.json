@@ -1,0 +1,80 @@
+{
+  "results": [
+    {
+      "name": "last filtered row removed on page2",
+      "status": "FAIL",
+      "observation": {
+        "visibleCards": 0,
+        "previousButtons": 0,
+        "matchingRecords": 20
+      }
+    }
+  ],
+  "network": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/schedules/72",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    }
+  ]
+}

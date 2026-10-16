@@ -1,0 +1,30 @@
+ M apps/customer/app/(portal)/profile/page.tsx
+ M apps/customer/app/globals.css
+ M apps/customer/src/components/layout.tsx
+ M backend/src/main/java/com/uav/platform/error/GlobalExceptionHandler.java
+ M backend/src/main/java/com/uav/platform/modules/user/entity/AppUser.java
+ M backend/src/main/java/com/uav/platform/modules/user/repository/UserRepository.java
+ M backend/src/test/java/com/uav/platform/stabilization/MigrationUpgradePostgresTest.java
+ M docs/architecture/UAV_PAS_SCHEMA_INVENTORY.md
+ M docs/handoff/m6/M1_M6_COMPLETION_LEDGER.md
+ M docs/handoff/m6/M6_FINAL_INTEGRATION_HANDOFF.md
+ M docs/handoff/m6/M6_REMAINING_GAPS.md
+ M docs/handoff/m6/M6_TEST_REPORT.md
+ M packages/ui/src/presentation.ts
+ M tests/customer-workflows.test.mjs
+ M tests/m4-customer.test.mjs
+ M tests/mission-presentation.test.mjs
+?? apps/customer/src/features/customer/Profile.tsx
+?? apps/customer/src/features/customer/profile-form.ts
+?? apps/customer/src/features/customer/profile-query.ts
+?? backend/src/main/java/com/uav/platform/modules/user/config/request/UserProfileUpdateRequest.java
+?? backend/src/main/java/com/uav/platform/modules/user/config/response/UserProfileResponse.java
+?? backend/src/main/java/com/uav/platform/modules/user/controller/UserProfileController.java
+?? backend/src/main/java/com/uav/platform/modules/user/service/UserProfileService.java
+?? backend/src/main/resources/db/migration/V4__unique_profile_phone.sql
+?? backend/src/test/java/com/uav/platform/modules/user/UserProfileIntegrationTest.java
+?? backend/src/test/java/com/uav/platform/modules/user/UserProfilePostgresTest.java
+?? docs/handoff/m6/M6_CUSTOMER_PROFILE_2026_10_16.md
+?? docs/handoff/m6/evidence/tests/customer-profile-2026-10-16/
+?? docs/superpowers/plans/2026-10-16-customer-profile.md
+?? docs/superpowers/specs/2026-10-16-customer-profile.md

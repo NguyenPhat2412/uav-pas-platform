@@ -1,12 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { 
-  calculateHaversineDistance, 
-  generateExpandingSquarePattern, 
-  isPointInsideGeofence,
-  calculateRthFeasibility 
-} from '../apps/operations/src/features/sar/utils/sarAlgorithms.ts';
-import { calculateCrc16Ccitt, generateVietQrPayload } from '../apps/customer/src/features/customer/utils/vietqr.ts';
+import ts from 'typescript';
+import { readFile } from 'node:fs/promises';
+async function loadTs(path) {
+  const source = await readFile(new URL(path, import.meta.url), 'utf8');
+  const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
+  return import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
+}
+const { calculateHaversineDistance, generateExpandingSquarePattern, isPointInsideGeofence, calculateRthFeasibility } = await loadTs('../apps/operations/src/features/sar/utils/sarAlgorithms.ts');
+const { calculateCrc16Ccitt, generateVietQrPayload } = await loadTs('../apps/customer/src/features/customer/utils/vietqr.ts');
 
 test('Algorithm 1: Haversine distance calculates accurate geodesic length', () => {
   // Khoảng cách giữa 2 điểm mẫu tại Vịnh Hạ Long / Cát Bà

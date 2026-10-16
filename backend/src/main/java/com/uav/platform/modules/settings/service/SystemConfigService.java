@@ -9,5 +9,6 @@ import java.util.List;
 public interface SystemConfigService {
     List<SystemConfigurationResponse> listAll();
     SystemConfigurationResponse getByKey(String key);
+    String valueOrDefault(String key, String fallback);
     SystemConfigurationResponse update(String key, UpdateConfigurationRequest request, Authentication auth);
 }

@@ -1,0 +1,242 @@
+[
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.terminalMissionRejectsAllMediaWriteEntrypoints(String)[1]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/1/media/upload-url ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.terminalMissionRejectsAllMediaWriteEntrypoints(String)[2]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/2/media/upload-url ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.terminalMissionRejectsAllMediaWriteEntrypoints(String)[3]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/3/media/upload-url ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.terminalMissionRejectsAllMediaWriteEntrypoints(String)[4]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/4/media/upload-url ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.readyRequiresAcceptanceAndDoesNotChangeResources",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/5/ready ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.conflictAfterReadyRequiresAcceptanceAndReadyAgain",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "expected: <RESOURCE_RESERVED> but was: <READY>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.startRechecksAcceptanceForExistingReadyRows",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/7/start ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.newReservationAfterEarlyAcceptanceRequiresAcceptanceAgain",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "expected: <false> but was: <true>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.invalidEvidenceDoesNotSatisfyCompletion(String)[1]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/9/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.invalidEvidenceDoesNotSatisfyCompletion(String)[2]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/10/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.invalidEvidenceDoesNotSatisfyCompletion(String)[3]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/11/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.invalidEvidenceDoesNotSatisfyCompletion(String)[4]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/12/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.invalidEvidenceDoesNotSatisfyCompletion(String)[5]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/13/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.invalidEvidenceDoesNotSatisfyCompletion(String)[6]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/14/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.completionFailureRollsBackResourceReleaseAndHistory",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/15/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.acceptanceRequiresCurrentVersionAndCannotRepeat",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/16/accept ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.resultRequirementDependsOnMissionType(MissionType)[2]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/18/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.resultRequirementDependsOnMissionType(MissionType)[3]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/19/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.resultRequirementDependsOnMissionType(MissionType)[4]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/20/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.missingCompletionFieldsReturn400AndKeepStock(String)[1]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/23/complete ==> expected: <400> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.missingCompletionFieldsReturn400AndKeepStock(String)[2]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/24/complete ==> expected: <400> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.missingCompletionFieldsReturn400AndKeepStock(String)[3]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/25/complete ==> expected: <400> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.missingCompletionFieldsReturn400AndKeepStock(String)[4]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/26/complete ==> expected: <400> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest.missingCompletionFieldsReturn400AndKeepStock(String)[5]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/27/complete ==> expected: <400> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.terminalMissionRejectsAllMediaWriteEntrypoints(String)[1]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/1/media/upload-url ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.terminalMissionRejectsAllMediaWriteEntrypoints(String)[2]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/2/media/upload-url ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.terminalMissionRejectsAllMediaWriteEntrypoints(String)[3]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/3/media/upload-url ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.terminalMissionRejectsAllMediaWriteEntrypoints(String)[4]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/4/media/upload-url ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.readyRequiresAcceptanceAndDoesNotChangeResources",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/5/ready ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.conflictAfterReadyRequiresAcceptanceAndReadyAgain",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "expected: <RESOURCE_RESERVED> but was: <READY>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.startRechecksAcceptanceForExistingReadyRows",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/7/start ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.newReservationAfterEarlyAcceptanceRequiresAcceptanceAgain",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "expected: <false> but was: <true>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.invalidEvidenceDoesNotSatisfyCompletion(String)[1]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/9/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.invalidEvidenceDoesNotSatisfyCompletion(String)[2]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/10/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.invalidEvidenceDoesNotSatisfyCompletion(String)[3]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/11/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.invalidEvidenceDoesNotSatisfyCompletion(String)[4]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/12/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.invalidEvidenceDoesNotSatisfyCompletion(String)[5]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/13/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.invalidEvidenceDoesNotSatisfyCompletion(String)[6]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/14/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.completionFailureRollsBackResourceReleaseAndHistory",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/15/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.acceptanceRequiresCurrentVersionAndCannotRepeat",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/16/accept ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.resultRequirementDependsOnMissionType(MissionType)[2]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/18/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.resultRequirementDependsOnMissionType(MissionType)[3]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/19/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.resultRequirementDependsOnMissionType(MissionType)[4]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/20/complete ==> expected: <409> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.missingCompletionFieldsReturn400AndKeepStock(String)[1]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/23/complete ==> expected: <400> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.missingCompletionFieldsReturn400AndKeepStock(String)[2]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/24/complete ==> expected: <400> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.missingCompletionFieldsReturn400AndKeepStock(String)[3]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/25/complete ==> expected: <400> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.missingCompletionFieldsReturn400AndKeepStock(String)[4]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/26/complete ==> expected: <400> but was: <200>"
+  },
+  {
+    "test": "com.uav.platform.modules.mission.MissionHandoverPostgresTest.missingCompletionFieldsReturn400AndKeepStock(String)[5]",
+    "type": "org.opentest4j.AssertionFailedError",
+    "message": "/api/v1/missions/27/complete ==> expected: <400> but was: <200>"
+  }
+]

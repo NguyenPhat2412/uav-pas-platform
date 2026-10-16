@@ -1,0 +1,23 @@
+{
+  "/actuator/health": {
+    "status": 200,
+    "health": "UP"
+  },
+  "/actuator/health/readiness": {
+    "status": 200,
+    "health": "UP"
+  },
+  "backendReadinessOwnedProcessGroup": true,
+  "ports": {
+    "backend": 18080,
+    "postgres": 55444,
+    "minio": 9014,
+    "frontends": [
+      3100,
+      3101,
+      3102,
+      3103
+    ]
+  },
+  "productionTouched": false
+}

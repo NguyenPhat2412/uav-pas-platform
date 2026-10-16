@@ -1,0 +1,97 @@
+[
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyPostgresTest",
+    "test": "versionFromTheFutureIsRejectedWithoutMutation",
+    "failure": "expected: <409> but was: <200>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyPostgresTest",
+    "test": "lostResponseRetryDoesNotAppendASecondUpdate",
+    "failure": "expected: <409> but was: <200>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyPostgresTest",
+    "test": "oldTabCannotOverwriteAnAlreadyCommittedEditOrAppendHistory",
+    "failure": "expected: <409> but was: <200>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyPostgresTest",
+    "test": "missingOrInvalidVersionCannotBypassTheGuard(String)[1]",
+    "failure": "Status expected:<400> but was:<200>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyPostgresTest",
+    "test": "missingOrInvalidVersionCannotBypassTheGuard(String)[2]",
+    "failure": "Status expected:<400> but was:<200>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyPostgresTest",
+    "test": "missingOrInvalidVersionCannotBypassTheGuard(String)[3]",
+    "failure": "Status expected:<400> but was:<200>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyPostgresTest",
+    "test": "getAndPatchExposeTheCommittedVersionForTheNextEdit",
+    "failure": "No value at JSON path \"$.version\""
+  },
+  {
+    "suite": "com.uav.platform.error.UnknownRouteIntegrationTest",
+    "test": "authenticatedUnknownWriteReturns404",
+    "failure": "Status expected:<404> but was:<500>"
+  },
+  {
+    "suite": "com.uav.platform.error.UnknownRouteIntegrationTest",
+    "test": "unmappedDispatcherWithoutResourceHandlerAlsoReturns404",
+    "failure": "Status expected:<404> but was:<500>"
+  },
+  {
+    "suite": "com.uav.platform.error.UnknownRouteIntegrationTest",
+    "test": "authenticatedUnknownGetReturns404WithSafeErrorEnvelope(String)[1]",
+    "failure": "Status expected:<404> but was:<500>"
+  },
+  {
+    "suite": "com.uav.platform.error.UnknownRouteIntegrationTest",
+    "test": "authenticatedUnknownGetReturns404WithSafeErrorEnvelope(String)[2]",
+    "failure": "Status expected:<404> but was:<500>"
+  },
+  {
+    "suite": "com.uav.platform.error.UnknownRouteIntegrationTest",
+    "test": "authenticatedUnknownGetReturns404WithSafeErrorEnvelope(String)[3]",
+    "failure": "Status expected:<404> but was:<500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyIntegrationTest",
+    "test": "versionFromTheFutureIsRejectedWithoutMutation",
+    "failure": "expected: <409> but was: <200>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyIntegrationTest",
+    "test": "lostResponseRetryDoesNotAppendASecondUpdate",
+    "failure": "expected: <409> but was: <200>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyIntegrationTest",
+    "test": "oldTabCannotOverwriteAnAlreadyCommittedEditOrAppendHistory",
+    "failure": "expected: <409> but was: <200>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyIntegrationTest",
+    "test": "missingOrInvalidVersionCannotBypassTheGuard(String)[1]",
+    "failure": "Status expected:<400> but was:<200>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyIntegrationTest",
+    "test": "missingOrInvalidVersionCannotBypassTheGuard(String)[2]",
+    "failure": "Status expected:<400> but was:<200>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyIntegrationTest",
+    "test": "missingOrInvalidVersionCannotBypassTheGuard(String)[3]",
+    "failure": "Status expected:<400> but was:<200>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.MissionDraftConcurrencyIntegrationTest",
+    "test": "getAndPatchExposeTheCommittedVersionForTheNextEdit",
+    "failure": "No value at JSON path \"$.version\""
+  }
+]

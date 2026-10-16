@@ -1,0 +1,1108 @@
+{
+  "status": "PASS",
+  "scope": "Real Operations UI and disposable backend; API fixture setup and read-back explicitly labeled",
+  "created": {
+    "stationId": 4,
+    "uavId": 4,
+    "equipmentId": 5,
+    "rejectedMissionId": 89,
+    "failedMissionId": 90,
+    "uiEquipmentId": 6
+  },
+  "results": [
+    {
+      "name": "API setup: create isolated resources and authenticate fixture accounts",
+      "mode": "API setup; not UI coverage",
+      "status": "PASS",
+      "details": {
+        "stationId": 4,
+        "uavId": 4,
+        "equipmentId": 5,
+        "availableQuantity": 8
+      }
+    },
+    {
+      "name": "admin logs in to Operations UI",
+      "mode": "browser UI",
+      "status": "PASS"
+    },
+    {
+      "name": "API setup: create and submit partial-assignment mission",
+      "mode": "API setup; not UI coverage",
+      "status": "PASS",
+      "details": {
+        "missionId": 89
+      }
+    },
+    {
+      "name": "UI confirm, assign station/UAV, reserve two items without operator",
+      "mode": "browser UI mutations + API read-back",
+      "status": "PASS",
+      "details": {
+        "missionStatus": "CONFIRMED",
+        "reservedQuantity": 2,
+        "uavStatus": "ASSIGNED"
+      }
+    },
+    {
+      "name": "UI rejection releases partial assignment and records reason",
+      "mode": "browser UI mutation + API read-back",
+      "status": "PASS",
+      "details": {
+        "missionStatus": "REJECTED",
+        "availableQuantity": 8,
+        "reservedQuantity": 0,
+        "uavStatus": "AVAILABLE"
+      }
+    },
+    {
+      "name": "API setup: create and submit execution-failure mission",
+      "mode": "API setup; not UI coverage",
+      "status": "PASS",
+      "details": {
+        "missionId": 90
+      }
+    },
+    {
+      "name": "UI reuses released resources, assigns operator, reserves quantity two",
+      "mode": "browser UI",
+      "status": "PASS"
+    },
+    {
+      "name": "operator logs in and sees failure action at resource-reserved state",
+      "mode": "browser UI",
+      "status": "PASS"
+    },
+    {
+      "name": "UI ready and start move UAV into use",
+      "mode": "browser UI mutations + API read-back",
+      "status": "PASS"
+    },
+    {
+      "name": "failure reason is required and dismissing confirmation sends no mutation",
+      "mode": "browser UI validation + API read-back",
+      "status": "PASS"
+    },
+    {
+      "name": "UI failure stores reason and optional notes, shows outcome and timeline, releases stock/UAV",
+      "mode": "browser UI mutation + API read-back",
+      "status": "PASS",
+      "details": {
+        "missionStatus": "FAILED",
+        "availableQuantity": 8,
+        "reservedQuantity": 0,
+        "uavStatus": "AVAILABLE"
+      }
+    },
+    {
+      "name": "UI creates equipment with an explicitly selected station",
+      "mode": "browser UI mutation + API read-back",
+      "status": "PASS",
+      "details": {
+        "equipmentId": 6,
+        "stationId": 4
+      }
+    },
+    {
+      "name": "browser run has no unexpected API failures or page errors",
+      "mode": "browser UI",
+      "status": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "consoleIssues": [],
+  "network": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/dashboard/missions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/dashboard/summary",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/confirm",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/assign-station",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/reserve-equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/reject",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/89/timeline",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/confirm",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/assign-station",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/assign-uav",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/assign-operator",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/reserve-equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/accept",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/ready",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/start",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/fail",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90/timeline",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    }
+  ],
+  "apiCalls": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/stations",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uavs",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/5/stock-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/89/submit",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/5",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/4",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/5",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/4",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/90/submit",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/4",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/90",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/5",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs/4",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/6",
+      "status": 200
+    }
+  ]
+}

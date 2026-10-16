@@ -17,6 +17,11 @@ public interface RefreshTokenService {
 
     Optional<RefreshToken> findByToken(String token);
 
+    Optional<Long> findUserIdByToken(String token);
+
+    /** Owner lock precedes exact-token re-read and is retained by the auth transaction. */
+    Optional<RefreshToken> findByTokenForUpdate(String token);
+
     RefreshToken verifyExpiration(RefreshToken token);
 
     void revokeToken(String token);

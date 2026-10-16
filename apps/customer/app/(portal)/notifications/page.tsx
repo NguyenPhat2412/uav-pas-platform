@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Bell,
   CheckCheck,
@@ -13,82 +13,12 @@ import {
 } from 'lucide-react';
 import { PageGuard } from '@/components/layout';
 import { Button, Panel } from '@/components/ui';
-import { apiClient } from '@uav/api-client';
-
-interface NotificationItem {
-  id: string;
-  title: string;
-  message: string;
-  type: 'INFO' | 'WARNING' | 'ALERT' | 'SUCCESS';
-  isRead: boolean;
-  createdAt: string;
-}
-
-const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: 'cn-1',
-    title: 'UAV-VJU-01 đã cất cánh cho nhiệm vụ MS-2026-001',
-    message: 'Tổ hợp DJI Matrice 300 RTK tích hợp AI AMD KV260 đã bắt đầu quét vùng biển Vịnh Lan Hạ theo quỹ đạo IAMSAR.',
-    type: 'ALERT',
-    isRead: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
-  },
-  {
-    id: 'cn-2',
-    title: 'Hóa đơn dịch vụ tháng 10/2026 đã phát hành',
-    message: 'Hóa đơn INV-2026-004 đã được tạo cho các giờ bay bổ sung trong nhiệm vụ cứu hộ Lan Hạ. Vui lòng kiểm tra mục Thanh toán & Hạn mức.',
-    type: 'WARNING',
-    isRead: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(),
-  },
-  {
-    id: 'cn-3',
-    title: 'Nhiệm vụ khảo sát Vườn Quốc Gia Cát Bà hoàn thành',
-    message: 'Dữ liệu ảnh Orthophoto 3D RTK và tệp GeoJSON lộ trình đã sẵn sàng tải về qua liên kết bảo mật trong chi tiết nhiệm vụ MS-2026-002.',
-    type: 'SUCCESS',
-    isRead: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 28).toISOString(),
-  },
-  {
-    id: 'cn-4',
-    title: 'Chào mừng quý đối tác đến với Hệ sinh thái VJU UAV PAS',
-    message: 'Tài khoản của bạn đã được cấu hình thành công với gói dịch vụ Doanh Nghiệp (Enterprise) cùng hạn mức 25 giờ bay/tháng.',
-    type: 'INFO',
-    isRead: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(),
-  },
-];
+import { useNotifications, type NotificationItem } from '@uav/query/notifications';
 
 export default function CustomerNotificationsPage() {
-  const [notifications, setNotifications] = useState<NotificationItem[]>(DEFAULT_NOTIFICATIONS);
+  const { notifications, unreadCount, loading, busy, error, reload, markAllRead, markOneRead } = useNotifications();
   const [filter, setFilter] = useState<'ALL' | 'UNREAD'>('ALL');
 
-  useEffect(() => {
-    apiClient
-      .get<{ content?: NotificationItem[] }>('/api/v1/notifications?size=20')
-      .then(res => {
-        if (res?.content && Array.isArray(res.content) && res.content.length > 0) {
-          setNotifications(res.content);
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  const markAllRead = async () => {
-    try {
-      await apiClient.post('/api/v1/notifications/read-all');
-    } catch {}
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-  };
-
-  const markOneRead = async (id: string) => {
-    try {
-      await apiClient.patch(`/api/v1/notifications/${id}/read`);
-    } catch {}
-    setNotifications(prev => prev.map(n => (n.id === id ? { ...n, isRead: true } : n)));
-  };
-
-  const unreadCount = notifications.filter(n => !n.isRead).length;
   const visibleItems = filter === 'UNREAD' ? notifications.filter(n => !n.isRead) : notifications;
 
   const getBadgeStyle = (type: NotificationItem['type']) => {
@@ -151,7 +81,7 @@ export default function CustomerNotificationsPage() {
             </button>
           </div>
           {unreadCount > 0 && (
-            <Button type="button" variant="secondary" onClick={markAllRead}>
+            <Button type="button" variant="secondary" onClick={markAllRead} disabled={busy || loading}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <CheckCheck size={15} /> Đánh dấu đã đọc ({unreadCount})
               </span>
@@ -160,6 +90,8 @@ export default function CustomerNotificationsPage() {
         </div>
       </div>
 
+{loading && <p role="status">Đang tải thông báo…</p>}
+      {error && <div role="alert">{error} <button type="button" onClick={reload}>Thử lại</button></div>}
       <Panel
         title="Danh sách thông báo gần đây"
         action={
@@ -168,8 +100,8 @@ export default function CustomerNotificationsPage() {
           </span>
         }
       >
-        {visibleItems.length === 0 ? (
-          <div className="empty">Bạn đã đọc toàn bộ thông báo mới nhất.</div>
+        {!loading && !error && visibleItems.length === 0 ? (
+          <div className="empty">Không có thông báo phù hợp trong 50 thông báo gần đây.</div>
         ) : (
           <div className="stack" style={{ gap: 12 }}>
             {visibleItems.map(item => {
@@ -177,7 +109,9 @@ export default function CustomerNotificationsPage() {
               return (
                 <div
                   key={item.id}
-                  onClick={() => !item.isRead && markOneRead(item.id)}
+                  role="button" tabIndex={busy ? -1 : 0} aria-disabled={busy || item.isRead}
+                  onKeyDown={event => { if ((event.key === 'Enter' || event.key === ' ') && !busy && !item.isRead) { event.preventDefault(); markOneRead(item.id); } }}
+                  onClick={() => !busy && !item.isRead && markOneRead(item.id)}
                   style={{
                     display: 'flex',
                     alignItems: 'flex-start',

@@ -52,8 +52,31 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
           cache: maven
-      - name: Run Backend Unit & Security Audit Tests
+      - name: Create disposable test credentials
+        shell: bash
+        run: |
+          db_password=$(openssl rand -hex 24)
+          storage_password=$(openssl rand -hex 24)
+          echo "::add-mask::$db_password"
+          echo "::add-mask::$storage_password"
+          echo "UAV_TEST_DB_PASSWORD=$db_password" >> "$GITHUB_ENV"
+          echo "UAV_TEST_STORAGE_USER=uav_ci" >> "$GITHUB_ENV"
+          echo "UAV_TEST_STORAGE_PASSWORD=$storage_password" >> "$GITHUB_ENV"
+      - name: Start disposable PostgreSQL and MinIO
+        run: docker compose -p uav-ci -f docker-compose.stabilization.yml up -d --wait
+      - name: Run complete backend suite including PostgreSQL and MinIO
         working-directory: backend
-        run: mvn -B test -Dtest=SecurityAuditHardeningTest,AuthControllerTest,AuthServiceTest,JwtServiceTest,PermissionEvaluationServiceTest,UserManagementServiceTest,UavServiceTest,StationServiceTest,InventoryServiceTest,MediaServiceTest
+        env:
+          UAV_STABILIZATION_DB_URL: jdbc:postgresql://127.0.0.1:55444/uav_stabilization
+          UAV_STABILIZATION_DB_USER: uav_test
+          UAV_STABILIZATION_DB_PASSWORD: ${{ env.UAV_TEST_DB_PASSWORD }}
+          UAV_STABILIZATION_MINIO_ENDPOINT: http://127.0.0.1:9014
+          UAV_STABILIZATION_MINIO_USER: ${{ env.UAV_TEST_STORAGE_USER }}
+          UAV_STABILIZATION_MINIO_PASSWORD: ${{ env.UAV_TEST_STORAGE_PASSWORD }}
+          UAV_STABILIZATION_MINIO_BUCKET: uav-ci-tests
+        run: ./mvnw -B test
+      - name: Remove disposable services
+        if: always()
+        run: docker compose -p uav-ci -f docker-compose.stabilization.yml down --volumes

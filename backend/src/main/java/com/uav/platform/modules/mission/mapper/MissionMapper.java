@@ -17,6 +17,6 @@ public final class MissionMapper {
                 mission.getOperator() == null ? null : mission.getOperator().getId(), mission.getPriority(),
                 mission.getStatus(), mission.getNotes(), mission.getCreatedAt(), mission.getUpdatedAt(),
                 mission.getCompletionNote(), mission.getEquipmentCondition(), mission.getFailureReason(), mission.getFailureNotes(),
-                mission.isOperatorAccepted(), mission.getOperatorConflictNote());
+                mission.isOperatorAccepted(), mission.getOperatorConflictNote(), mission.getVersion());
     }
 }

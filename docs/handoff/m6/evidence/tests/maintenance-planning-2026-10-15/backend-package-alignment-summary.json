@@ -1,0 +1,41 @@
+{
+  "change": "Move maintenance sources to declared module layers; behavior unchanged. Existing ArchitecturePackageTest was not modified. Clean isolated target used to avoid stale classes.",
+  "suites": [
+    {
+      "name": "com.uav.platform.modules.uav.service.UavMaintenancePolicyTest",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.uav.platform.ArchitecturePackageTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.uav.platform.modules.maintenance.MaintenancePlanningIntegrationTest",
+      "tests": 29,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "sourceSha256": {
+    "backend/src/main/java/com/uav/platform/modules/maintenance/repository/MaintenanceScheduleRepository.java": "e840ffd99349a3adb61eced9b1a06c6455afaf3b0a696bef73960c5c185ee4c8",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/repository/RepairOrderRepository.java": "0fc2d2f983ff2a10f75a21b4a07d1d8af0bb9e947fcee1f37843f98234a47ff1",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/config/response/MaintenanceResponses.java": "f6a17b78f3f44452f6509cd1ebb313c971aa0e0b166247b1516503b0c76f19ab",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/config/request/MaintenanceRequests.java": "9430bb63138316c5a335b9339abb3d899ff66027925d54fbb217d1f224b8f7c5",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/entity/MaintenanceSchedule.java": "673b7ad0620509a6c33cac1bbc19df9c3c1e2254df6bd71d7ce325be88866e05",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/entity/RepairMaterial.java": "a1ca12bcc5deac462065e896eee4eccdced47ba143d20e730c07bf26c7efd4d7",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/entity/RepairOrder.java": "546bf0b4f8b0880826dda0d05e8e1b72dd05d1b8a95f3a818f036a8a7cadcfdb",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/controller/MaintenanceController.java": "72899a12c6db0097154c469b85c0bc4d530abcab0c67cc1f3532eae5199bc5b8",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/common/DueStatus.java": "303cf15cb5021fa1708bc95466d6e2af29d344e99e3889838d3ef626e8c4f905",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/common/RepairStatus.java": "895bb423ea7b9e1b4cc534c3ca8c7383d075a2ab85b92a84c386fc1f51405bbc",
+    "backend/src/main/java/com/uav/platform/modules/maintenance/service/MaintenanceService.java": "2d0f86ac7de509c705d7dccad5a879ec2843546e4f44b88410ea12f51d0c5aa1",
+    "backend/src/main/resources/db/migration/V3__maintenance_schedules_repair_orders.sql": "1f55a15a0fc32d85f214404a59ad76f6d444e433156e3f413d017966b6f877ad",
+    "backend/src/main/java/com/uav/platform/modules/uav/service/impl/IUavService.java": "e013c7edeef23a52576055a43dec9fbea021be5cf459ce5adafbe0570b4d000d"
+  }
+}

@@ -1,0 +1,96 @@
+✔ failure requires assignment, status-update permission, and a permitted nonterminal state (1.07525ms)
+✔ all terminal mission controls stay closed with every permission (0.101167ms)
+✔ failure payload trims surrounding whitespace, preserves authored content, and handles optional notes (0.909125ms)
+✔ invalid failure form cannot reach the API; valid form retains the existing endpoint contract (0.095833ms)
+✔ completion sends equipment condition without converting it into an inventory action (0.075167ms)
+✖ ready and start require current operator acceptance in addition to permissions (0.379458ms)
+✖ accept sends the version the operator reviewed and rejects invalid revisions (0.354875ms)
+✖ completion cannot manufacture missing handover notes or equipment condition (0.074416ms)
+✔ timeline notes accept the persisted 500-character boundary and stop oversized payloads before sending (0.184583ms)
+✔ reservation accepts positive whole quantities up to current availability (0.203875ms)
+✔ later operator and history pages keep their server pagination parameters (0.11425ms)
+✔ maintenance and transfer affordances exclude mission-owned and unknown UAV states (0.099625ms)
+✔ maintenance reason boundaries and encoded stale-state contract are preserved (0.245542ms)
+✔ redispatch requires existing UAV, preflight state, existing assignment and read permissions (0.083375ms)
+✔ redispatch validates before API and sends expected-current UAV with authored reason (0.157583ms)
+✔ redispatch timeline shows Vietnamese action and preserves the supplied reason (0.125834ms)
+✔ UAV history translates generated messages while retaining authored reasons (0.210542ms)
+✔ resource redispatch is preflight only and uses the existing granular permissions (0.079709ms)
+✔ resource redispatch sends the viewed revision and explicit null for removal (0.130291ms)
+✔ resource redispatch timeline retains meaningful Vietnamese actions and authored reasons (0.075667ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 17
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 257.97175
+
+✖ failing tests:
+
+test at tests/operations-workflows.test.mjs:61:1
+✖ ready and start require current operator acceptance in addition to permissions (0.379458ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  true !== false
+
+      at TestContext.<anonymous> (file:///Volumes/D/Codex/projects/uav-pas-platform/tests/operations-workflows.test.mjs:63:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/operations-workflows.test.mjs:68:1
+✖ accept sends the version the operator reviewed and rejects invalid revisions (0.354875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+      {
+  +     body: undefined,
+  -     body: {
+  -       expectedVersion: 8
+  -     },
+        method: 'post',
+        path: '/api/v1/missions/42/accept'
+      }
+    ]
+
+      at TestContext.<anonymous> (file:///Volumes/D/Codex/projects/uav-pas-platform/tests/operations-workflows.test.mjs:71:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { method: 'post', path: '/api/v1/missions/42/redispatch-operator', body: [Object] }, { method: 'post', path: '/api/v1/missions/42/redispatch-station', body: [Object] }, { method: 'post', path: '/api/v1/missions/42/redispatch-equipment', body: [Object] }, { method: 'post', path: '/api/v1/missions/42/redispatch-equipment', body: [Object] } ],
+    expected: [ { method: 'post', path: '/api/v1/missions/42/accept', body: [Object] } ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/operations-workflows.test.mjs:75:1
+✖ completion cannot manufacture missing handover notes or equipment condition (0.074416ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///Volumes/D/Codex/projects/uav-pas-platform/tests/operations-workflows.test.mjs:78:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: undefined,
+    operator: 'throws',
+    diff: 'simple'
+  }

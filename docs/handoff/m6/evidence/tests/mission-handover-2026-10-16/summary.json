@@ -1,0 +1,25 @@
+{
+  "classification": "COMPLETE_LOCAL",
+  "wholeSystem": "PARTIAL_NOT_READY",
+  "backendTests": 592,
+  "backendFailures": 0,
+  "backendErrors": 0,
+  "backendSkips": 0,
+  "rootFrontendTestExecutions": 81,
+  "legacyFrontendTests": 7,
+  "frontendGates": "PASS",
+  "browserMainGroups": 13,
+  "browserLegacyGroups": 4,
+  "browserMediaLockGroups": 1,
+  "authContractChanged": false,
+  "cleanup": "PASS",
+  "knownNonblockingIssue": "favicon.ico 404 in three portals",
+  "notVerified": [
+    "Staging HTTPS",
+    "Hosted CI gates",
+    "Full security scan and npm audit",
+    "Safari/Firefox",
+    "All permission/viewport combinations",
+    "Cross-domain SSO/CSRF"
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "date": "2026-10-15T10:50:01.833901+00:00",
+  "batchStatus": "COMPLETE",
+  "overallProjectStatus": "PARTIAL / NOT_READY",
+  "branch": "codex/m1-monorepo-foundation",
+  "head": "65d1b23da3d888d1ef8120462f2689da8cffd7cb",
+  "workingTree": "Existing dirty tree preserved, features/fixes/tests/evidence added; no commit/push/deploy",
+  "authContractChanged": false,
+  "backendTests": {
+    "tests": 212,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "postgresAndMinioIncluded": true
+  },
+  "rootGates": [
+    {
+      "gate": "lint",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 11.4
+    },
+    {
+      "gate": "typecheck",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 8.0
+    },
+    {
+      "gate": "test",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 2.0
+    },
+    {
+      "gate": "build",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 16.9
+    }
+  ],
+  "rootTestExecutions": 55,
+  "legacyGates": [
+    {
+      "gate": "lint",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 3.4
+    },
+    {
+      "gate": "typecheck",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 1.4
+    },
+    {
+      "gate": "test",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 0.4
+    },
+    {
+      "gate": "build",
+      "status": "PASS",
+      "exitCode": 0,
+      "seconds": 4.2
+    }
+  ],
+  "legacyTests": 7,
+  "operationsGatesAfterSerialSearchFix": [
+    {
+      "gate": "lint",
+      "status": "PASS",
+      "seconds": 2.1
+    },
+    {
+      "gate": "typecheck",
+      "status": "PASS",
+      "seconds": 1.6
+    },
+    {
+      "gate": "test",
+      "status": "PASS",
+      "seconds": 0.4
+    },
+    {
+      "gate": "build",
+      "status": "PASS",
+      "seconds": 4.4
+    }
+  ],
+  "browserResults": {
+    "browser": {
+      "status": "PASS",
+      "checks": 27,
+      "file": "browser-result.json"
+    },
+    "customer-extended": {
+      "status": "PASS",
+      "checks": 12,
+      "file": "customer-extended-result.json"
+    },
+    "customer-viewport": {
+      "status": "PASS",
+      "checks": 0,
+      "file": "customer-viewport-result.json"
+    },
+    "operations-extended": {
+      "status": "PASS",
+      "checks": 13,
+      "file": "operations-extended-result.json"
+    },
+    "operations-history": {
+      "status": "PASS",
+      "checks": 7,
+      "file": "operations-history-result.json"
+    },
+    "final-ui": {
+      "status": "PASS",
+      "checks": 3,
+      "file": "final-ui-result.json"
+    },
+    "negative": {
+      "status": "PASS",
+      "checks": 5,
+      "file": "negative-result.json"
+    },
+    "visual": {
+      "status": "PASS",
+      "checks": 18,
+      "file": "visual-result.json"
+    }
+  },
+  "serialSearchRegression": "operations-uav-search-found.json",
+  "note": "Counts include setup/read-back checks where explicitly labeled. Main workflow and other portal suites ran on rebuilt apps; final isolated UavPanel serial accessor change followed by affected Operations gates and browser history/search regression. No full security/audit/staging/CI run.",
+  "cleanup": {
+    "status": "PASS",
+    "ownedContainersRemaining": 0,
+    "ownedPortsClosed": {
+      "3100": true,
+      "3101": true,
+      "3102": true,
+      "3103": true,
+      "18080": true,
+      "55444": true,
+      "9014": true,
+      "9015": true
+    },
+    "privateCredentialsRemoved": true,
+    "port8080Used": false
+  },
+  "secretScan": {
+    "status": "PASS",
+    "textFilesChecked": 43,
+    "methods": [
+      "known random credential values",
+      "JWT pattern",
+      "signed/token query URL pattern",
+      "manual screenshot review"
+    ],
+    "limits": "Pattern/value scan is evidence hygiene, not a full security scan."
+  },
+  "gitDiffCheck": "PASS",
+  "backendProductionFilesChanged": [
+    "backend/src/main/java/com/uav/platform/modules/mission/service/impl/IMissionService.java"
+  ]
+}

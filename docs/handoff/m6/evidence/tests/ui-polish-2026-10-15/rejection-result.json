@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "results": [
+    {
+      "name": "rejection requires a nonblank reason",
+      "status": "PASS"
+    },
+    {
+      "name": "rejected mission has no mutation controls",
+      "status": "PASS"
+    },
+    {
+      "name": "customer sees rejected status and authored reason in history",
+      "status": "PASS"
+    }
+  ],
+  "errors": []
+}

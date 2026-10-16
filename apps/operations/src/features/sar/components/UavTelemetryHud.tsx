@@ -105,7 +105,7 @@ export function UavTelemetryHud({
 
       {/* Secondary Indicators Bar */}
       <div className="mt-4 pt-3.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <span className="flex items-center gap-1.5">
             <Navigation size={14} className="text-[#007f3e]" />
             <strong className="text-slate-900 font-mono">24</strong> Vệ tinh (GPS+Galileo)

@@ -1,0 +1,132 @@
+[
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[1]",
+    "message": "Oversized reject must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[2]",
+    "message": "Oversized report-conflict must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[3]",
+    "message": "Oversized complete must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[4]",
+    "message": "Oversized equipmentCondition must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[5]",
+    "message": "Oversized failureReason must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[6]",
+    "message": "Oversized failureNotes must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[7]",
+    "message": "Oversized create must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[8]",
+    "message": "Oversized update must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[9]",
+    "message": "Oversized stock-in must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[10]",
+    "message": "Oversized stock-out must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[11]",
+    "message": "Oversized reserve must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[12]",
+    "message": "Oversized release must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthIntegrationTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[13]",
+    "message": "Oversized transfer must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[1]",
+    "message": "Oversized reject must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[2]",
+    "message": "Oversized report-conflict must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[3]",
+    "message": "Oversized complete must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[4]",
+    "message": "Oversized equipmentCondition must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[5]",
+    "message": "Oversized failureReason must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[6]",
+    "message": "Oversized failureNotes must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[7]",
+    "message": "Oversized create must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[8]",
+    "message": "Oversized update must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[9]",
+    "message": "Oversized stock-in must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[10]",
+    "message": "Oversized stock-out must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[11]",
+    "message": "Oversized reserve must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[12]",
+    "message": "Oversized release must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  },
+  {
+    "suite": "com.uav.platform.modules.mission.NoteLengthPostgresTest",
+    "case": "oversizedNoteReturns400WithoutMutation(String)[13]",
+    "message": "Oversized transfer must be an input error, not a persistence error ==> expected: <400> but was: <500>"
+  }
+]

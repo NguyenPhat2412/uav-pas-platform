@@ -1,0 +1,50 @@
+
+> build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 114ms
+
+  Creating an optimized production build ...
+Found 1 warning while optimizing generated CSS:
+
+[2m│   }[22m
+[2m│ }[22m
+[2m│[22m @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+[2m┆[22m        [33m[2m^--[22m @import rules must precede all rules aside from @charset and @layer statements[39m
+[2m┆[22m
+[2m│ @layer theme, base, components, utilities;[22m
+[2m│ @layer theme {[22m
+
+✓ Compiled successfully in 1428ms
+  Running TypeScript ...
+  Finished TypeScript in 1563ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/16) ...
+  Generating static pages using 11 workers (4/16)
+  Generating static pages using 11 workers (8/16)
+  Generating static pages using 11 workers (12/16)
+✓ Generating static pages using 11 workers (16/16) in 200ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /admin/missions
+├ ○ /assigned-missions
+├ ○ /audit
+├ ○ /dispatch/missions
+├ ƒ /health
+├ ○ /inventory
+├ ○ /login
+├ ○ /media
+├ ƒ /missions/[id]
+├ ƒ /operations
+├ ○ /operator/missions
+├ ○ /overview
+├ ○ /stations
+└ ○ /uavs
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

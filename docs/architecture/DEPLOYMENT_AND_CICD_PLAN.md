@@ -1,5 +1,7 @@
 # Deployment and CI/CD Plan
 
+> Cập nhật 16/10/2026: main đã có cookie auth. Workflow hiện kiểm bốn apps/shared, legacy và đầy đủ Maven Java 21 với PostgreSQL/MinIO disposable. Các bước staging/promotion/image publish bên dưới vẫn là kế hoạch, chưa triển khai production trong lượt tích hợp. Xem [báo cáo tích hợp](../handoff/m6/M6_MAIN_INTEGRATION_2026_10_16.md); không giả định đã có cờ rollback tắt cookie.
+
 ## Build units
 
 Build and deploy four artifacts independently from one repository:
@@ -29,7 +31,7 @@ Every app receives only public, validated values at build/runtime:
 
 JWT secrets, database credentials, storage keys and signing secrets remain backend/deployment secrets. They never enter `NEXT_PUBLIC_*` or shared packages.
 
-The current backend CORS default is `http://localhost:3000`. Staging and production must replace it with an exact comma-separated allowlist for the four app origins and the selected auth callback origin; a wildcard is not a valid migration shortcut for credentialed requests.
+The local backend CORS default includes localhost ports 3000 and 3100–3103. Staging and production must replace it with an exact comma-separated allowlist for the four app origins and the selected auth callback origin; a wildcard is not a valid migration shortcut for credentialed requests.
 
 ## CI pipeline
 
@@ -53,7 +55,7 @@ Cache immutable Next static assets by content hash. Do not cache authenticated H
 
 ## Observability and rollback
 
-Tag logs and browser errors with `app_id`, release SHA and environment. Track legacy-route hits, 401/403/409 rates, refresh failures, API latency and build artifact health separately per app. A rollback is a routing/image selection change: restore the previous app artifact, disable the new cookie flag if needed, keep database and refresh data, and leave backend APIs untouched.
+Tag logs and browser errors with `app_id`, release SHA and environment. Track legacy-route hits, 401/403/409 rates, refresh failures, API latency and build artifact health separately per app. A rollback is a routing/image selection change: restore the previous app artifact, restore the matching verified auth configuration if needed, keep database and refresh data, and leave backend APIs untouched.
 
 ## Deployment acceptance
 

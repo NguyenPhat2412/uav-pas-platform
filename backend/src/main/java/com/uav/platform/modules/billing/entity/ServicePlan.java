@@ -29,6 +29,7 @@ public class ServicePlan extends BaseEntity {
     private String billingCycle = "MONTHLY";
 
     @Column(name = "max_monthly_flight_hours", nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double maxMonthlyFlightHours = 20.0;
 
     @Column(name = "max_concurrent_uavs", nullable = false)

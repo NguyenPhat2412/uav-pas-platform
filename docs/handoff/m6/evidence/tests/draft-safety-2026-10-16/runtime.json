@@ -1,0 +1,25 @@
+{
+  "backendPort": 18080,
+  "customerPort": 3101,
+  "composeProject": "uav-draft-safety-20261016",
+  "listeners": {
+    "backend": {
+      "port": 18080,
+      "ownedProcessGroup": true
+    },
+    "customer": {
+      "port": 3101,
+      "ownedProcessGroup": true
+    }
+  },
+  "health": {
+    "/actuator/health": {
+      "status": 200,
+      "health": "UP"
+    },
+    "/actuator/health/readiness": {
+      "status": 200,
+      "health": "UP"
+    }
+  }
+}

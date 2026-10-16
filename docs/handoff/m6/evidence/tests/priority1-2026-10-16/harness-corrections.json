@@ -1,0 +1,19 @@
+{
+  "corrections": [
+    "Initial note fixture used the wrong ResourceAssignmentRequest constructor and transfer URL; both corrected before the recorded 26 HTTP-status regression failures.",
+    "Existing rejection service tests expected DataIntegrityViolationException. They now expect IllegalArgumentException while preserving all no-mutation and valid-boundary assertions. The first full run has two expected obsolete assertions; the final full run passes.",
+    "Role operator includes INVENTORY_MANAGE by default; override reset is compared to the actual template. Manual account lock yields 401, not 403.",
+    "Inventory lost-response test now awaits the real committed response before reading the balance.",
+    "Media linked-resource select label includes option text; use the observed combobox accessible name instead of an exact shortened label. Failed dependent checks from missing upload fixtures are not separate product defects.",
+    "Media deletion is checked within its confirmation panel; screenshot scroll position alone was unstable. Recovery checks the stale upload message instead of counting the empty Next route-announcer alert.",
+    "A root rebuild replaced Customer output while its standalone process still served the preceding build. That invalid run failed before Customer login; all four standalone servers were restarted from the current build and the media suite then passed. No auth code changed. See media-ui-rebuild-mismatch.json."
+  ],
+  "productFailures": [
+    "Overlong notes: 26 expected-400/actual-500 failures across H2 and PostgreSQL.",
+    "Permission form stays disabled after saving and reloading actual permissions.",
+    "Manual lock does not expose unlock on UI because profile status stays ACTIVE.",
+    "Media upload and resource ID labels lacked associated input IDs.",
+    "Attached-media delete error rendered separately above the table, not beside confirmation.",
+    "Successful manual confirmation left the old failed upload message and status on screen."
+  ]
+}

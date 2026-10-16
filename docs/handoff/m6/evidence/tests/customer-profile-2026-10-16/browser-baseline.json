@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Baseline profile is read-only",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "baseline",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "baseline",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "baseline",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    }
+  ],
+  "requestFailures": []
+}

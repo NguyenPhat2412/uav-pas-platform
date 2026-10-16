@@ -5,7 +5,7 @@ import { ApiError } from '@/lib/api.client';
 
 export function ErrorNotice({ error }: { error: Error | null }) {
   if (!error) return null;
-  return <Alert variant="error">{error instanceof ApiError && error.status === 403 ? 'Bạn không có quyền thực hiện thao tác này.' : error.message}</Alert>;
+  return <Alert variant="error">{error instanceof ApiError && error.status === 403 ? 'Bạn không có quyền thực hiện thao tác này.' : error.message === 'MISSION_MEDIA_LOCKED' ? 'Nhiệm vụ đã kết thúc. Tệp chỉ được xem hoặc tải xuống; không thể thêm, sửa hoặc xóa.' : error.message}</Alert>;
 }
 export function ResourceState({ query, children }: { query: { isPending: boolean; error: Error | null; refetch: () => unknown }; children: ReactNode }) {
   if (query.error) return <div className="space-y-3"><ErrorNotice error={query.error} /><Button variant="outline" onClick={() => void query.refetch()}>Thử lại</Button></div>;

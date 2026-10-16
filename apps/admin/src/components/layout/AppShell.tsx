@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BarChart3, ChevronLeft, ChevronRight, CreditCard, FileKey2, KeyRound, LayoutDashboard, LogOut, Menu, Radio, Settings, ShieldCheck, Users, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui';
-import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useI18n } from '@/contexts/I18nContext';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { Button } from '@/components/ui';
+import { displayLabel } from '@uav/ui/presentation';
 import { cn } from '@/lib/utils';
 
 const nav = [
@@ -29,6 +30,30 @@ export function AppShell({ children, activeResource }: { children: React.ReactNo
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const rail = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const trigger = menuButton.current;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    rail.current?.querySelector<HTMLButtonElement>('.rail-close')?.focus();
+    const close = () => { setOpen(false); menuButton.current?.focus(); };
+    const keydown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') close();
+      if (event.key !== 'Tab') return;
+      const items = [...(rail.current?.querySelectorAll<HTMLElement>('a,button:not(:disabled)') ?? [])].filter(el => el.getClientRects().length);
+      const first = items[0], last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    const desktop = window.matchMedia('(min-width: 901px)');
+    const resize = () => { if (desktop.matches) setOpen(false); };
+    desktop.addEventListener('change', resize);
+    document.addEventListener('keydown', keydown);
+    return () => { document.body.style.overflow = previousOverflow; requestAnimationFrame(() => trigger?.focus()); document.removeEventListener('keydown', keydown); desktop.removeEventListener('change', resize); };
+  }, [open]);
+
 
   useEffect(() => {
     try {
@@ -51,10 +76,10 @@ export function AppShell({ children, activeResource }: { children: React.ReactNo
   };
 
   const name = user?.fullName || user?.username || 'Quản trị viên VJU';
-  const roleLabel = user?.role?.replace('ROLE_', '') || 'ADMIN';
-  const visibleNav = nav.filter(item => !item.permission || !permissionsReady || can(item.permission));
+  const roleLabel = displayLabel(user?.role);
+  const visibleNav = nav.filter(item => !item.permission || (permissionsReady && can(item.permission)));
   const activeNav = nav.find(({ href }) => activeResource ? (href.slice(1) === activeResource) : pathname === href || pathname.startsWith(`${href}/`));
-  return <div className="app-shell"><a className="skip-link" href="#workspace">Bỏ qua tới nội dung</a><aside className={cn('app-rail', open && 'app-rail-open', collapsed && 'app-rail-collapsed')}>
+  return <div className="app-shell"><a className="skip-link" href="#workspace">Bỏ qua tới nội dung</a><aside ref={rail} id="portal-navigation" className={cn('app-rail', open && 'app-rail-open', collapsed && 'app-rail-collapsed')}>
     <div className={cn("app-rail-top flex items-center mb-4", collapsed ? "flex-col justify-center gap-2" : "justify-between")}>
       <Link href="/dashboard" className={cn('app-brand !p-0 !gap-2.5', collapsed && 'app-brand-collapsed !justify-center')} onClick={() => setOpen(false)} title="UAV PAS · Administration · VJU">
         <span className="app-brand-mark flex items-center justify-center bg-white p-0.5 rounded-xl border border-rose-100 shadow-sm overflow-hidden flex-shrink-0">
@@ -76,14 +101,14 @@ export function AppShell({ children, activeResource }: { children: React.ReactNo
     {!collapsed && <div className="app-rail-label">QUẢN TRỊ</div>}
     <nav aria-label="Điều hướng quản trị">{visibleNav.map(({ href, label, icon: Icon }) => {
       const active = activeResource ? (href.slice(1) === activeResource) : pathname === href || pathname.startsWith(`${href}/`);
-      return <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined} title={collapsed ? label : undefined} className={cn('app-nav-link', active && 'app-nav-link-active', collapsed && '!justify-center !px-0')}><Icon size={18} className="flex-shrink-0" />{!collapsed && <span className="truncate">{label}</span>}</Link>;
+      return <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined} aria-label={label} title={collapsed ? label : undefined} className={cn('app-nav-link', active && 'app-nav-link-active', collapsed && '!justify-center !px-0')}><Icon size={18} className="flex-shrink-0" />{!collapsed && <span className="truncate">{label}</span>}</Link>;
     })}</nav>
     <div className="rail-footer">
       {!collapsed && <p>UAV PAS <span>Đại học Việt Nhật</span></p>}
-      <Button variant="ghost" size="sm" onClick={() => void logout()} leftIcon={collapsed ? undefined : <LogOut size={16} />} title={collapsed ? t('common.logout') : undefined} className={cn("w-full text-slate-500 hover:bg-slate-100 hover:text-slate-900", collapsed ? "justify-center !px-0" : "justify-start")}>
+      <Button variant="ghost" size="sm" onClick={() => void logout()} leftIcon={collapsed ? undefined : <LogOut size={16} />} aria-label={t('common.logout')} title={collapsed ? t('common.logout') : undefined} className={cn("w-full text-slate-500 hover:bg-slate-100 hover:text-slate-900", collapsed ? "justify-center !px-0" : "justify-start")}>
         {collapsed ? <LogOut size={16} /> : t('common.logout')}
       </Button>
     </div>
   </aside>{open && <button className="nav-scrim" aria-label="Đóng điều hướng" onClick={() => setOpen(false)} />}
-  <div className="workspace-content"><header className="app-topbar"><button className="mobile-menu icon-button" aria-label="Mở điều hướng" aria-expanded={open} onClick={() => setOpen(true)}><Menu size={20} /></button><div className="topbar-location"><span>UAV PAS</span><span>/</span><span>Administration</span>{activeNav && <><span>/</span><strong className="text-[#ab2523] font-semibold">{activeNav.label}</strong></>}</div><div className="account-summary"><LanguageSwitcher variant="compact" /><span className="avatar-chip">{name.slice(0, 1).toUpperCase()}</span><div className="leading-tight"><strong>{name}</strong><small className="text-[11px] font-mono uppercase tracking-wider text-slate-500">{roleLabel}</small></div></div></header><main id="workspace" className="app-main" tabIndex={-1}>{children}</main></div></div>;
+  <div className="workspace-content" inert={open}><header className="app-topbar"><button ref={menuButton} aria-controls="portal-navigation" className="mobile-menu icon-button" aria-label="Mở điều hướng" aria-expanded={open} onClick={() => setOpen(true)}><Menu size={20} /></button><div className="topbar-location"><span>UAV PAS</span><span>/</span><span>Administration</span>{activeNav && <><span>/</span><strong className="text-[#ab2523] font-semibold">{activeNav.label}</strong></>}</div><div className="account-summary"><LanguageSwitcher variant="compact" /><span className="avatar-chip">{name.slice(0, 1).toUpperCase()}</span><div className="leading-tight"><strong>{name}</strong><small className="text-[11px] font-mono uppercase tracking-wider text-slate-500">{roleLabel}</small></div></div></header><main id="workspace" className="app-main" tabIndex={-1}>{children}</main></div></div>;
 }

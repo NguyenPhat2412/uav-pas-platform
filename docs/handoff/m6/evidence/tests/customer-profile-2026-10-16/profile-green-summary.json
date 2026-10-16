@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "command": "./mvnw -Duav.build.directory=<isolated test target> test",
+  "exitCode": 0,
+  "seconds": 11.2,
+  "totals": {
+    "tests": 22,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "database": "uav_ba_test_suite",
+  "storageBucket": "uav-customer-profile-suite",
+  "suites": [
+    {
+      "name": "com.uav.platform.modules.user.UserProfileIntegrationTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.uav.platform.modules.user.UserProfilePostgresTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

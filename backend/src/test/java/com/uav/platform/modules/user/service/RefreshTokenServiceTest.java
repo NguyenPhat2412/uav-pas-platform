@@ -34,11 +34,15 @@ class RefreshTokenServiceTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @Mock private AuthSessionLock sessionLock;
+    @Mock private jakarta.persistence.EntityManager entityManager;
+
     private RefreshTokenService refreshTokenService;
 
     @BeforeEach
     void setUp() {
-        refreshTokenService = new IRefreshTokenService(refreshTokenRepository, jwtTokenProvider);
+        lenient().when(sessionLock.lock(any(AppUser.class))).thenAnswer(i -> i.getArgument(0));
+        refreshTokenService = new IRefreshTokenService(refreshTokenRepository, jwtTokenProvider, sessionLock, entityManager);
     }
 
     @Test
@@ -82,7 +86,10 @@ class RefreshTokenServiceTest {
     void revokeToken_Success() {
         AppUser user = new AppUser("user4", "u4@uav.vn", "h", "0900000004", UserStatus.ACTIVE);
         RefreshToken token = new RefreshToken(user, "tok-revoke", Instant.now().plus(1, ChronoUnit.DAYS));
-        when(refreshTokenRepository.findByToken("tok-revoke")).thenReturn(Optional.of(token));
+        user.setId(4L);
+        when(refreshTokenRepository.findUserIdByToken("tok-revoke")).thenReturn(Optional.of(4L));
+        when(sessionLock.lockById(4L)).thenReturn(Optional.of(user));
+        when(refreshTokenRepository.findByTokenForUpdate("tok-revoke")).thenReturn(Optional.of(token));
 
         refreshTokenService.revokeToken("tok-revoke");
 

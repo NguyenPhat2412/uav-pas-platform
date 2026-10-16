@@ -1,0 +1,69 @@
+{
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "Media library blocks deletion of a completed mission result and explains the rule",
+      "status": "FAIL",
+      "error": "Confirmed UI defect: raw MISSION_MEDIA_LOCKED instead of a Vietnamese explanation"
+    }
+  ],
+  "network": [
+    {
+      "label": "Terminal media library",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Terminal media library",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Terminal media library",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Terminal media library",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Terminal media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "Terminal media library",
+      "method": "DELETE",
+      "path": "/api/v1/media/3",
+      "status": 409
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "Terminal media library",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Terminal media library",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    }
+  ],
+  "requestFailures": [],
+  "failure": "Confirmed UI defect: raw MISSION_MEDIA_LOCKED instead of a Vietnamese explanation"
+}

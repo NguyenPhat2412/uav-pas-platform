@@ -1,0 +1,58 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Admin reads all six redispatch action types for the verified mission across audit pages",
+      "status": "PASS",
+      "detail": {
+        "missionId": 7,
+        "actionTypes": 6
+      }
+    },
+    {
+      "name": "Audit browser has no JavaScript errors",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "admin redispatch audit",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "admin redispatch audit",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "admin redispatch audit",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "admin redispatch audit",
+      "method": "GET",
+      "path": "/api/v1/audit-logs",
+      "status": 200
+    },
+    {
+      "label": "admin redispatch audit",
+      "method": "GET",
+      "path": "/api/v1/audit-logs",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "admin redispatch audit",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    }
+  ],
+  "requestFailures": []
+}

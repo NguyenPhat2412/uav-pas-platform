@@ -1,0 +1,74 @@
+
+> test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/m2-operations.test.mjs ../../tests/operations-workflows.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 2.955042
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.079333
+  ...
+# Subtest: operations owns the M2 canonical routes and compatibility aliases
+ok 3 - operations owns the M2 canonical routes and compatibility aliases
+  ---
+  duration_ms: 0.648417
+  ...
+# Subtest: operations uses real service endpoints and the shared API boundary
+ok 4 - operations uses real service endpoints and the shared API boundary
+  ---
+  duration_ms: 2.703917
+  ...
+# Subtest: failure requires assignment, status-update permission, and a permitted nonterminal state
+ok 5 - failure requires assignment, status-update permission, and a permitted nonterminal state
+  ---
+  duration_ms: 0.674042
+  ...
+# Subtest: all terminal mission controls stay closed with every permission
+ok 6 - all terminal mission controls stay closed with every permission
+  ---
+  duration_ms: 0.082333
+  ...
+# Subtest: failure payload trims surrounding whitespace, preserves authored content, and handles optional notes
+ok 7 - failure payload trims surrounding whitespace, preserves authored content, and handles optional notes
+  ---
+  duration_ms: 0.335417
+  ...
+# Subtest: invalid failure form cannot reach the API; valid form retains the existing endpoint contract
+ok 8 - invalid failure form cannot reach the API; valid form retains the existing endpoint contract
+  ---
+  duration_ms: 0.085459
+  ...
+# Subtest: completion sends equipment condition without converting it into an inventory action
+ok 9 - completion sends equipment condition without converting it into an inventory action
+  ---
+  duration_ms: 0.076125
+  ...
+# Subtest: timeline notes accept the persisted 500-character boundary and stop oversized payloads before sending
+ok 10 - timeline notes accept the persisted 500-character boundary and stop oversized payloads before sending
+  ---
+  duration_ms: 0.102375
+  ...
+# Subtest: reservation accepts positive whole quantities up to current availability
+ok 11 - reservation accepts positive whole quantities up to current availability
+  ---
+  duration_ms: 0.1565
+  ...
+# Subtest: later operator and history pages keep their server pagination parameters
+ok 12 - later operator and history pages keep their server pagination parameters
+  ---
+  duration_ms: 0.076792
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 297.682292

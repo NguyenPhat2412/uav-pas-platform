@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "evidence": [
+    {
+      "page": "draft-edit",
+      "skipLink": {
+        "top": -56,
+        "bottom": -16,
+        "focused": false,
+        "scrollY": 1035,
+        "viewportHeight": 812,
+        "transform": "matrix(1, 0, 0, 1, 0, -64)"
+      },
+      "horizontalOverflow": false
+    },
+    {
+      "page": "mission-list",
+      "skipLink": {
+        "top": -56,
+        "bottom": -16,
+        "focused": false,
+        "scrollY": 3613,
+        "viewportHeight": 812,
+        "transform": "matrix(1, 0, 0, 1, 0, -64)"
+      },
+      "horizontalOverflow": false
+    }
+  ]
+}

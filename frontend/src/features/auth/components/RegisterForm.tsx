@@ -172,7 +172,7 @@ export function RegisterForm({ onSuccess, redirectTo = '/login' }: RegisterFormP
       </div>
 
       {/* Security & Ground Control Badges */}
-      <div className="mt-12 pt-6 flex items-center justify-center gap-3 text-outline border-t border-slate-200/80">
+      <div className="mt-12 pt-6 flex flex-wrap items-center justify-center gap-3 text-outline border-t border-slate-200/80">
         <Badge variant="primary" icon={<ShieldCheck size={14} className="text-primary mr-1" />}>
           {t('auth.multiLayerSecurity')}
         </Badge>

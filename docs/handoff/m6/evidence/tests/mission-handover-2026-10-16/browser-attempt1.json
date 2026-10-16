@@ -1,0 +1,32 @@
+{
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "Real Customer, Operations admin and operator login",
+      "status": "FAIL",
+      "error": "page.waitForResponse: Timeout 12000ms exceeded while waiting for event \"response\""
+    }
+  ],
+  "network": [],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "Customer A",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Customer A",
+      "type": "error",
+      "message": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    }
+  ],
+  "requestFailures": [
+    {
+      "label": "Customer A",
+      "path": "/api/v1/auth/login",
+      "error": "NETWORK_ERROR"
+    }
+  ],
+  "failure": "page.waitForResponse: Timeout 12000ms exceeded while waiting for event \"response\""
+}

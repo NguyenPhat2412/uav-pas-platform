@@ -1,0 +1,523 @@
+
+> test
+> npm run test --workspaces
+
+
+> test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/m3-admin.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.976375
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.084041
+  ...
+# Subtest: admin exposes only supported M3 routes and independent runtime
+ok 3 - admin exposes only supported M3 routes and independent runtime
+  ---
+  duration_ms: 0.739084
+  ...
+# Subtest: admin writes only through shared API client and uses actual permission endpoints
+ok 4 - admin writes only through shared API client and uses actual permission endpoints
+  ---
+  duration_ms: 2.588166
+  ...
+# Subtest: admin keeps mission administration in Operations ownership
+ok 5 - admin keeps mission administration in Operations ownership
+  ---
+  duration_ms: 0.14525
+  ...
+# Subtest: permission editor retains partial write outcomes and supports inherit
+ok 6 - permission editor retains partial write outcomes and supports inherit
+  ---
+  duration_ms: 0.094417
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 39.312125
+
+> test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/m4-customer.test.mjs ../../tests/customer-workflows.test.mjs
+
+TAP version 13
+# Subtest: draft update sends every editable field and never changes service, type or ownership
+ok 1 - draft update sends every editable field and never changes service, type or ownership
+  ---
+  duration_ms: 2.446041
+  ...
+# Subtest: date validation rejects impossible/past dates and non-increasing local times without inventing same-day constraints
+ok 2 - date validation rejects impossible/past dates and non-increasing local times without inventing same-day constraints
+  ---
+  duration_ms: 0.363084
+  ...
+# Subtest: schema limits, whitespace and coordinate boundaries are enforced before API submission
+ok 3 - schema limits, whitespace and coordinate boundaries are enforced before API submission
+  ---
+  duration_ms: 0.102417
+  ...
+# Subtest: service catalogue codes cannot produce an invalid mission enum
+ok 4 - service catalogue codes cannot produce an invalid mission enum
+  ---
+  duration_ms: 0.069
+  ...
+# Subtest: edit action requires the owner, draft status and effective update permission
+ok 5 - edit action requires the owner, draft status and effective update permission
+  ---
+  duration_ms: 0.075
+  ...
+# Subtest: pagination covers records beyond twenty and filter changes return to the first page
+ok 6 - pagination covers records beyond twenty and filter changes return to the first page
+  ---
+  duration_ms: 0.091334
+  ...
+# Subtest: errors do not expose backend internals and distinguish conflict recovery
+ok 7 - errors do not expose backend internals and distinguish conflict recovery
+  ---
+  duration_ms: 0.15325
+  ...
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 8 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.905041
+  ...
+# Subtest: the approved shared package set is present
+ok 9 - the approved shared package set is present
+  ---
+  duration_ms: 0.081208
+  ...
+# Subtest: customer portal exposes supported customer routes and no operations controls
+ok 10 - customer portal exposes supported customer routes and no operations controls
+  ---
+  duration_ms: 0.9145
+  ...
+# Subtest: customer API boundary uses owner-safe mission endpoints and no feature fetch
+ok 11 - customer API boundary uses owner-safe mission endpoints and no feature fetch
+  ---
+  duration_ms: 2.347917
+  ...
+# Subtest: customer app explains unavailable profile edits without exposing implementation details
+ok 12 - customer app explains unavailable profile edits without exposing implementation details
+  ---
+  duration_ms: 0.133917
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 299.661542
+
+> test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/m2-operations.test.mjs ../../tests/operations-workflows.test.mjs ../../tests/maintenance-workflows.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.971542
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.088792
+  ...
+# Subtest: operations owns the M2 canonical routes and compatibility aliases
+ok 3 - operations owns the M2 canonical routes and compatibility aliases
+  ---
+  duration_ms: 0.647625
+  ...
+# Subtest: operations uses real service endpoints and the shared API boundary
+ok 4 - operations uses real service endpoints and the shared API boundary
+  ---
+  duration_ms: 3.820083
+  ...
+# Subtest: maintenance calendar uses Vietnam business date at UTC day boundary
+ok 5 - maintenance calendar uses Vietnam business date at UTC day boundary
+  ---
+  duration_ms: 10.221834
+  ...
+# Subtest: schedules validate real calendar dates, bounded whole day intervals and title
+ok 6 - schedules validate real calendar dates, bounded whole day intervals and title
+  ---
+  duration_ms: 0.619333
+  ...
+# Subtest: order and closing records require actual authored content with persisted size bounds
+ok 7 - order and closing records require actual authored content with persisted size bounds
+  ---
+  duration_ms: 0.130458
+  ...
+# Subtest: material ledger preserves decimal strings and validates quantity/whole-VND price boundaries
+ok 8 - material ledger preserves decimal strings and validates quantity/whole-VND price boundaries
+  ---
+  duration_ms: 0.2455
+  ...
+# Subtest: closed orders remain immutable and all maintenance actions require manage authority
+ok 9 - closed orders remain immutable and all maintenance actions require manage authority
+  ---
+  duration_ms: 0.17025
+  ...
+# Subtest: materials send expected version and decimal strings, never client totals or inventory actions
+ok 10 - materials send expected version and decimal strings, never client totals or inventory actions
+  ---
+  duration_ms: 0.133709
+  ...
+# Subtest: lifecycle mutations preserve expected version, completion confirmation and cancellation reason
+ok 11 - lifecycle mutations preserve expected version, completion confirmation and cancellation reason
+  ---
+  duration_ms: 0.103208
+  ...
+# Subtest: filtered later pages stay server paginated and paused schedule writes retain identity/version
+ok 12 - filtered later pages stay server paginated and paused schedule writes retain identity/version
+  ---
+  duration_ms: 0.253042
+  ...
+# Subtest: VND display retains server integer precision and invalid identifiers cannot enter creation payloads
+ok 13 - VND display retains server integer precision and invalid identifiers cannot enter creation payloads
+  ---
+  duration_ms: 1.838375
+  ...
+# Subtest: neutral repair history is translated without rewriting user-authored text
+ok 14 - neutral repair history is translated without rewriting user-authored text
+  ---
+  duration_ms: 8.761166
+  ...
+# Subtest: maintenance audit translates generated records and retains exact VND amount and unknown text
+ok 15 - maintenance audit translates generated records and retains exact VND amount and unknown text
+  ---
+  duration_ms: 7.721958
+  ...
+# Subtest: removing the last filtered row returns to a real page without losing an empty-first-page state
+ok 16 - removing the last filtered row returns to a real page without losing an empty-first-page state
+  ---
+  duration_ms: 0.123375
+  ...
+# Subtest: failure requires assignment, status-update permission, and a permitted nonterminal state
+ok 17 - failure requires assignment, status-update permission, and a permitted nonterminal state
+  ---
+  duration_ms: 1.220917
+  ...
+# Subtest: all terminal mission controls stay closed with every permission
+ok 18 - all terminal mission controls stay closed with every permission
+  ---
+  duration_ms: 0.21225
+  ...
+# Subtest: failure payload trims surrounding whitespace, preserves authored content, and handles optional notes
+ok 19 - failure payload trims surrounding whitespace, preserves authored content, and handles optional notes
+  ---
+  duration_ms: 0.490583
+  ...
+# Subtest: invalid failure form cannot reach the API; valid form retains the existing endpoint contract
+ok 20 - invalid failure form cannot reach the API; valid form retains the existing endpoint contract
+  ---
+  duration_ms: 0.144625
+  ...
+# Subtest: completion sends equipment condition without converting it into an inventory action
+ok 21 - completion sends equipment condition without converting it into an inventory action
+  ---
+  duration_ms: 0.211625
+  ...
+# Subtest: timeline notes accept the persisted 500-character boundary and stop oversized payloads before sending
+ok 22 - timeline notes accept the persisted 500-character boundary and stop oversized payloads before sending
+  ---
+  duration_ms: 0.123833
+  ...
+# Subtest: reservation accepts positive whole quantities up to current availability
+ok 23 - reservation accepts positive whole quantities up to current availability
+  ---
+  duration_ms: 0.110167
+  ...
+# Subtest: later operator and history pages keep their server pagination parameters
+ok 24 - later operator and history pages keep their server pagination parameters
+  ---
+  duration_ms: 0.093583
+  ...
+# Subtest: maintenance and transfer affordances exclude mission-owned and unknown UAV states
+ok 25 - maintenance and transfer affordances exclude mission-owned and unknown UAV states
+  ---
+  duration_ms: 0.426625
+  ...
+# Subtest: maintenance reason boundaries and encoded stale-state contract are preserved
+ok 26 - maintenance reason boundaries and encoded stale-state contract are preserved
+  ---
+  duration_ms: 0.679833
+  ...
+# Subtest: redispatch requires existing UAV, preflight state, existing assignment and read permissions
+ok 27 - redispatch requires existing UAV, preflight state, existing assignment and read permissions
+  ---
+  duration_ms: 0.118666
+  ...
+# Subtest: redispatch validates before API and sends expected-current UAV with authored reason
+ok 28 - redispatch validates before API and sends expected-current UAV with authored reason
+  ---
+  duration_ms: 0.1685
+  ...
+# Subtest: redispatch timeline shows Vietnamese action and preserves the supplied reason
+ok 29 - redispatch timeline shows Vietnamese action and preserves the supplied reason
+  ---
+  duration_ms: 0.152333
+  ...
+# Subtest: UAV history translates generated messages while retaining authored reasons
+ok 30 - UAV history translates generated messages while retaining authored reasons
+  ---
+  duration_ms: 0.265584
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 351.340417
+
+> test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/m5-web.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 1.028208
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.084916
+  ...
+# Subtest: M5 public route map exists and excludes private portal pages from sitemap
+ok 3 - M5 public route map exists and excludes private portal pages from sitemap
+  ---
+  duration_ms: 0.800667
+  ...
+# Subtest: public app uses environment customer URL without token forwarding
+ok 4 - public app uses environment customer URL without token forwarding
+  ---
+  duration_ms: 0.926625
+  ...
+# Subtest: public content labels planned capabilities and avoids private API calls
+ok 5 - public content labels planned capabilities and avoids private API calls
+  ---
+  duration_ms: 0.312375
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 43.96175
+
+> @uav/api-client@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/api-origin.test.mjs
+
+TAP version 13
+# Subtest: shared: credentials and session recovery stay on the configured API origin
+ok 1 - shared: credentials and session recovery stay on the configured API origin
+  ---
+  duration_ms: 11.428667
+  ...
+# Subtest: legacy: credentials and session recovery stay on the configured API origin
+ok 2 - legacy: credentials and session recovery stay on the configured API origin
+  ---
+  duration_ms: 1.499208
+  ...
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 3 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 1.041291
+  ...
+# Subtest: the approved shared package set is present
+ok 4 - the approved shared package set is present
+  ---
+  duration_ms: 0.088667
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 321.31375
+
+> @uav/auth-contracts@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.961167
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.078958
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 37.382916
+
+> @uav/config@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 1.008291
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.0805
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 38.42325
+
+> @uav/design-tokens@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.898125
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.078125
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 39.651042
+
+> @uav/query@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 0.95475
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.077792
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 58.521375
+
+> @uav/types@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 1.024791
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.083708
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 38.917
+
+> @uav/ui@0.1.0 test
+> node --test ../../tests/m1-foundation.test.mjs ../../tests/mission-presentation.test.mjs
+
+TAP version 13
+# Subtest: each M1 app exposes a 204 health route and standalone build config
+ok 1 - each M1 app exposes a 204 health route and standalone build config
+  ---
+  duration_ms: 1.146791
+  ...
+# Subtest: the approved shared package set is present
+ok 2 - the approved shared package set is present
+  ---
+  duration_ms: 0.089166
+  ...
+# Subtest: closed missions offer no mutation controls, even with all permissions
+ok 3 - closed missions offer no mutation controls, even with all permissions
+  ---
+  duration_ms: 0.674375
+  ...
+# Subtest: execution belongs to the assigned operator and the matching lifecycle stage
+ok 4 - execution belongs to the assigned operator and the matching lifecycle stage
+  ---
+  duration_ms: 0.13575
+  ...
+# Subtest: permissions gate every action; assignment stops after resources are ready
+ok 5 - permissions gate every action; assignment stops after resources are ready
+  ---
+  duration_ms: 0.172292
+  ...
+# Subtest: known codes are translated; unknown data and operator reasons are preserved
+ok 6 - known codes are translated; unknown data and operator reasons are preserved
+  ---
+  duration_ms: 0.17025
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 298.094708

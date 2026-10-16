@@ -1,0 +1,80 @@
+{
+  "date": "2026-10-15",
+  "scopeStatus": "COMPLETE",
+  "projectStatus": "PARTIAL / NOT_READY",
+  "head": "65d1b23da3d888d1ef8120462f2689da8cffd7cb",
+  "branch": "codex/m1-monorepo-foundation",
+  "baselineDirtyTreePreserved": true,
+  "authContractChanged": false,
+  "noCommitPushDeploy": true,
+  "runtime": {
+    "backend": "127.0.0.1:18080",
+    "frontends": [
+      3100,
+      3101,
+      3102,
+      3103
+    ],
+    "postgresPort": 55444,
+    "minioPorts": [
+      9014,
+      9015
+    ],
+    "composeProject": "uav-ui-dispatch-20261015",
+    "data": "disposable synthetic only"
+  },
+  "backend": {
+    "tests": 297,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "frontendTestExecutions": 61,
+  "legacyTestExecutions": 7,
+  "frontendGates": "PASS",
+  "legacyGates": "PASS",
+  "checks": {
+    "browser-result.json": 27,
+    "maintenance-dispatch-ui-result.json": 16,
+    "browser-negative-result.json": 12,
+    "api-negative-result.json": 8
+  },
+  "notes": [
+    "Main maintenance browser has 16 groups including 1 API-fixture-only setup; not 16 purely UI transitions.",
+    "Negative browser labels UI, API concurrent fixture/readback and SQL orphan fixture separately.",
+    "API concurrency checks are not browser coverage.",
+    "Expected 400/403/409 results are deliberate negative tests.",
+    "Historical 212/272 test results are superseded for this final source by the backend total above."
+  ],
+  "notRun": [
+    "staging browser",
+    "hosted CI",
+    "SSO/CSRF implementation",
+    "full security scan",
+    "new npm audit",
+    "Safari/Firefox",
+    "load test",
+    "complete permission matrix"
+  ],
+  "cleanup": {
+    "status": "PASS",
+    "ownedContainersRemaining": 0,
+    "ownedVolumesRemaining": 0,
+    "ports": {
+      "18080": "closed",
+      "3100": "closed",
+      "3101": "closed",
+      "3102": "closed",
+      "3103": "closed",
+      "55444": "closed",
+      "9014": "closed",
+      "9015": "closed"
+    },
+    "privateFixtureAndEnvironmentRemoved": true,
+    "rawLogsAndTestReportTargetsRemoved": true
+  },
+  "diffCheck": "PASS",
+  "evidenceHygiene": "PASS: exact generated secret values, JWT patterns and signed URLs absent in text; selected screenshots visually inspected",
+  "sourceUnchangedAfterFinalVerification": true,
+  "branchAndHeadUnchanged": true
+}

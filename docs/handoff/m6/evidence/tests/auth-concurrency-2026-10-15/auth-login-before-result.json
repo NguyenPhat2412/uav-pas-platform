@@ -1,0 +1,51 @@
+{
+  "status": "FAIL",
+  "scope": "Fresh before-fix HTTP reproduction on current unchanged auth source and disposable PostgreSQL.",
+  "trigger": "Two simultaneous logins for the same synthetic account",
+  "attempts": [
+    {
+      "round": 1,
+      "statuses": [
+        200,
+        500
+      ]
+    },
+    {
+      "round": 2,
+      "statuses": [
+        200,
+        500
+      ]
+    },
+    {
+      "round": 3,
+      "statuses": [
+        200,
+        500
+      ]
+    },
+    {
+      "round": 4,
+      "statuses": [
+        200,
+        500
+      ]
+    },
+    {
+      "round": 5,
+      "statuses": [
+        200,
+        500
+      ]
+    },
+    {
+      "round": 6,
+      "statuses": [
+        500,
+        200
+      ]
+    }
+  ],
+  "observedConstraint": "refresh_tokens_user_id_key",
+  "followUp": "Regression before-fix evidence; no tokens, credentials or response bodies retained."
+}

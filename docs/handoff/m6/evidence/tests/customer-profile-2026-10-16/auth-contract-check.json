@@ -1,0 +1,168 @@
+{
+  "baseline": "ba562ffb3a965c48c3207b30e756c7e7aad297ad",
+  "status": "PASS",
+  "count": 40,
+  "files": [
+    {
+      "path": "apps/admin/package.json",
+      "unchanged": true
+    },
+    {
+      "path": "apps/customer/package.json",
+      "unchanged": true
+    },
+    {
+      "path": "apps/operations/package.json",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/package.json",
+      "unchanged": true
+    },
+    {
+      "path": "backend/pom.xml",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/modules/user/config/request/LoginRequest.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/modules/user/config/request/RefreshTokenRequest.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/modules/user/config/request/RegisterRequest.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/modules/user/config/response/AuthResponse.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/modules/user/config/response/UserResponse.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/modules/user/controller/AuthController.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/modules/user/mapper/AuthMapper.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/modules/user/mapper/UserMapper.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/modules/user/service/AuthSessionLock.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/modules/user/service/RefreshTokenService.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/modules/user/service/impl/IAuthService.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/security/AccessRecoveryGuard.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/security/SecurityConfig.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/security/jwt/JwtAuthenticationFilter.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/main/java/com/uav/platform/security/jwt/JwtTokenProvider.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/test/java/com/uav/platform/modules/user/controller/AuthControllerTest.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/test/java/com/uav/platform/modules/user/service/RefreshTokenServiceTest.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/test/java/com/uav/platform/security/jwt/JwtAuthenticationFilterTest.java",
+      "unchanged": true
+    },
+    {
+      "path": "backend/src/test/java/com/uav/platform/security/jwt/JwtTokenProviderTest.java",
+      "unchanged": true
+    },
+    {
+      "path": "frontend/package-lock.json",
+      "unchanged": true
+    },
+    {
+      "path": "frontend/package.json",
+      "unchanged": true
+    },
+    {
+      "path": "package-lock.json",
+      "unchanged": true
+    },
+    {
+      "path": "package.json",
+      "unchanged": true
+    },
+    {
+      "path": "packages/api-client/package.json",
+      "unchanged": true
+    },
+    {
+      "path": "packages/api-client/src/index.ts",
+      "unchanged": true
+    },
+    {
+      "path": "packages/api-client/tsconfig.json",
+      "unchanged": true
+    },
+    {
+      "path": "packages/auth-contracts/package.json",
+      "unchanged": true
+    },
+    {
+      "path": "packages/config/package.json",
+      "unchanged": true
+    },
+    {
+      "path": "packages/design-tokens/package.json",
+      "unchanged": true
+    },
+    {
+      "path": "packages/query/package.json",
+      "unchanged": true
+    },
+    {
+      "path": "packages/query/src/session/AuthContext.tsx",
+      "unchanged": true
+    },
+    {
+      "path": "packages/query/src/session/service.ts",
+      "unchanged": true
+    },
+    {
+      "path": "packages/query/src/session/types.ts",
+      "unchanged": true
+    },
+    {
+      "path": "packages/types/package.json",
+      "unchanged": true
+    },
+    {
+      "path": "packages/ui/package.json",
+      "unchanged": true
+    }
+  ],
+  "note": "Additive profile endpoint, narrow entity/repository/error-handler changes and V4 index are explicit changes outside protected auth/session contract source."
+}

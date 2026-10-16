@@ -1,0 +1,44 @@
+[
+  {
+    "name": "com.uav.platform.modules.mission.MissionPhase2IntegrationTest",
+    "tests": "1",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  {
+    "name": "com.uav.platform.modules.mission.MissionRedispatchIntegrationTest",
+    "tests": "17",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  {
+    "name": "com.uav.platform.modules.mission.MissionRejectionIntegrationTest",
+    "tests": "7",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  {
+    "name": "com.uav.platform.modules.mission.controller.MissionMediaTimelineTest",
+    "tests": "2",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  {
+    "name": "com.uav.platform.modules.mission.service.MissionAssignmentTest",
+    "tests": "3",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  {
+    "name": "com.uav.platform.modules.mission.service.MissionExecutionTest",
+    "tests": "4",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  }
+]

@@ -13,4 +13,4 @@ public record MissionResponse(Long id, String code, Long customerId, String cust
                               Long operatorId, MissionPriority priority, MissionStatus status, String notes,
                               LocalDateTime createdAt, LocalDateTime updatedAt, String completionNote,
                               String equipmentCondition, String failureReason, String failureNotes,
-                              boolean operatorAccepted, String operatorConflictNote) { }
+                              boolean operatorAccepted, String operatorConflictNote, long version) { }

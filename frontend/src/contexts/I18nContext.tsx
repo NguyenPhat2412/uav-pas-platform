@@ -3,7 +3,7 @@
 import React, {
   createContext,
   useContext,
-  useState,
+  useSyncExternalStore,
   useCallback,
   useEffect,
   ReactNode,
@@ -44,47 +44,23 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'uav_locale';
 
+let memoryLocale: SupportedLocale | undefined;
+function readLocale(): SupportedLocale {
+  if (memoryLocale) return memoryLocale;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const value = params.get('lang') || params.get('locale') || localStorage.getItem(STORAGE_KEY);
+    return value ? normalizeLocale(value) : defaultLocale;
+  } catch { return defaultLocale; }
+}
+function subscribeLocale(listener: () => void) {
+  const onStorage = (event: StorageEvent) => { if (event.key === STORAGE_KEY) { memoryLocale = undefined; listener(); } };
+  window.addEventListener('storage', onStorage);
+  window.addEventListener('uav-locale-change', listener);
+  return () => { window.removeEventListener('storage', onStorage); window.removeEventListener('uav-locale-change', listener); };
+}
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<SupportedLocale>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const queryLang = params.get('lang') || params.get('locale');
-        if (queryLang) {
-          const normalized = normalizeLocale(queryLang);
-          try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
-          return normalized;
-        }
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          return normalizeLocale(saved);
-        }
-      } catch {
-        // localStorage not available
-      }
-    }
-    return defaultLocale;
-  });
-
-  // Sync client query param and local storage on mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const queryLang = params.get('lang') || params.get('locale');
-        if (queryLang) {
-          const normalized = normalizeLocale(queryLang);
-          setLocaleState(normalized);
-          try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
-          return;
-        }
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          setLocaleState(normalizeLocale(saved));
-        }
-      } catch {}
-    }
-  }, []);
+  const locale = useSyncExternalStore(subscribeLocale, readLocale, () => defaultLocale);
 
   // Sync html lang attribute
   useEffect(() => {
@@ -95,7 +71,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLocale = useCallback((newLocaleInput: LocaleInput) => {
     const canonical = normalizeLocale(newLocaleInput);
-    setLocaleState(canonical);
+    memoryLocale = canonical;
+    window.dispatchEvent(new Event('uav-locale-change'));
     try {
       localStorage.setItem(STORAGE_KEY, canonical);
     } catch {

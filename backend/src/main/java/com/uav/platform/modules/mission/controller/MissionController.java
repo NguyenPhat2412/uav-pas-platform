@@ -105,6 +105,20 @@ public class MissionController {
         return ResponseEntity.ok(service.assignUav(id, request, authentication));
     }
 
+    @PostMapping("/{id}/replace-uav")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_UAV')")
+    public ResponseEntity<MissionResponse> replaceUav(@PathVariable Long id, @Valid @RequestBody MissionUavReplacementRequest request,
+                                                      Authentication authentication) {
+        return ResponseEntity.ok(service.replaceUav(id, request, authentication));
+    }
+
+    @PostMapping("/{id}/unassign-uav")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_UAV')")
+    public ResponseEntity<MissionResponse> unassignUav(@PathVariable Long id, @Valid @RequestBody MissionUavUnassignmentRequest request,
+                                                       Authentication authentication) {
+        return ResponseEntity.ok(service.unassignUav(id, request, authentication));
+    }
+
     @PostMapping("/{id}/assign-operator")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_OPERATOR')")
     public ResponseEntity<MissionResponse> assignOperator(@PathVariable Long id, @Valid @RequestBody ResourceAssignmentRequest request,
@@ -117,6 +131,33 @@ public class MissionController {
     public ResponseEntity<MissionResponse> reserveEquipment(@PathVariable Long id, @Valid @RequestBody ResourceAssignmentRequest request,
                                                             Authentication authentication) {
         return ResponseEntity.ok(service.reserveEquipment(id, request, authentication));
+    }
+
+    @GetMapping("/{id}/dispatch-resources")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    public ResponseEntity<MissionDispatchResourcesResponse> dispatchResources(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(service.dispatchResources(id, authentication));
+    }
+
+    @PostMapping("/{id}/redispatch-operator")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_OPERATOR')")
+    public ResponseEntity<MissionResponse> redispatchOperator(@PathVariable Long id,
+            @Valid @RequestBody MissionResourceRedispatchRequest request, Authentication authentication) {
+        return ResponseEntity.ok(service.redispatchOperator(id, request, authentication));
+    }
+
+    @PostMapping("/{id}/redispatch-station")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_STATION')")
+    public ResponseEntity<MissionResponse> redispatchStation(@PathVariable Long id,
+            @Valid @RequestBody MissionResourceRedispatchRequest request, Authentication authentication) {
+        return ResponseEntity.ok(service.redispatchStation(id, request, authentication));
+    }
+
+    @PostMapping("/{id}/redispatch-equipment")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_RESERVE_EQUIPMENT')")
+    public ResponseEntity<MissionResponse> redispatchEquipment(@PathVariable Long id,
+            @Valid @RequestBody MissionEquipmentRedispatchRequest request, Authentication authentication) {
+        return ResponseEntity.ok(service.redispatchEquipment(id, request, authentication));
     }
 
     @PostMapping("/{id}/confirm")
@@ -145,8 +186,9 @@ public class MissionController {
 
     @PostMapping("/{id}/accept")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE')")
-    public ResponseEntity<MissionResponse> accept(@PathVariable Long id, Authentication authentication) {
-        return ResponseEntity.ok(service.acceptOperator(id, authentication));
+    public ResponseEntity<MissionResponse> accept(@PathVariable Long id,
+            @Valid @RequestBody MissionAcceptanceRequest request, Authentication authentication) {
+        return ResponseEntity.ok(service.acceptOperator(id, request, authentication));
     }
 
     @PostMapping("/{id}/report-conflict")
@@ -158,7 +200,7 @@ public class MissionController {
 
     @PostMapping("/{id}/complete")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_COMPLETE')")
-    public ResponseEntity<MissionResponse> complete(@PathVariable Long id, @RequestBody MissionCompletionRequest request,
+    public ResponseEntity<MissionResponse> complete(@PathVariable Long id, @Valid @RequestBody MissionCompletionRequest request,
                                                      Authentication authentication) {
         return ResponseEntity.ok(service.complete(id, request, authentication));
     }

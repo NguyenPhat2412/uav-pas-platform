@@ -26,9 +26,11 @@ public class UserQuota extends BaseEntity {
     private ServicePlan plan;
 
     @Column(name = "flight_hours_used", nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double flightHoursUsed = 0.0;
 
     @Column(name = "flight_hours_limit", nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double flightHoursLimit = 20.0;
 
     @Column(name = "concurrent_uavs_used", nullable = false)

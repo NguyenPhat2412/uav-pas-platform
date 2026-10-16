@@ -1,0 +1,192 @@
+{
+  "before": {
+    "class": "UavMaintenancePolicyTest",
+    "tests": 8,
+    "failures": 8,
+    "errors": 0,
+    "confirmed_defects": [
+      "Home station assignment consumes mission availability",
+      "Assigned/flying UAV can enter maintenance",
+      "Manual status bypasses mission ownership",
+      "Missing reason and oversized reason accepted",
+      "Repeated maintenance rewrites timestamp"
+    ]
+  },
+  "after": [
+    {
+      "name": "com.uav.platform.modules.mission.MissionRejectionIntegrationTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "cases": [
+        {
+          "name": "auditFailureRollsBackRejectionResourceReleaseAndTimelineTogether",
+          "result": "PASS"
+        },
+        {
+          "name": "rejectFromInvalidStatusPreservesAllResourceAndHistoryRecords",
+          "result": "PASS"
+        },
+        {
+          "name": "operatorConflictNoteBeyondTimelineCapacityRollsBack",
+          "result": "PASS"
+        },
+        {
+          "name": "completionNoteBeyondTimelineCapacityRollsBack",
+          "result": "PASS"
+        },
+        {
+          "name": "rejectBeforeResourceAssignmentKeepsStockUntouched",
+          "result": "PASS"
+        },
+        {
+          "name": "rejectAfterPartialAssignmentReleasesEveryReservationAndUavExactlyOnce",
+          "result": "PASS"
+        },
+        {
+          "name": "rejectNoteBeyondTimelineCapacityRollsBack",
+          "result": "PASS"
+        }
+      ]
+    },
+    {
+      "name": "com.uav.platform.modules.uav.UavMaintenanceIntegrationTest",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "cases": [
+        {
+          "name": "activeMissionReferencesProtectEvenIncorrectAvailableStatus",
+          "result": "PASS"
+        },
+        {
+          "name": "maintenanceAuditFailureRollsBackStatusTimestampAndHistory",
+          "result": "PASS"
+        },
+        {
+          "name": "homeStationAssignmentDoesNotConsumeMissionAvailability",
+          "result": "PASS"
+        },
+        {
+          "name": "orphanRecoveryRejectsARealMissionWithoutChangingItsResources",
+          "result": "PASS"
+        },
+        {
+          "name": "concurrentCompletionWithSameExpectedStateWritesOneInspectionOnly",
+          "result": "PASS"
+        },
+        {
+          "name": "explicitOrphanRecoveryPreservesHomeStationAndAddsHistory",
+          "result": "PASS"
+        },
+        {
+          "name": "inactiveFleetRecordCanBeInspectedAndReturnedWithReason",
+          "result": "PASS"
+        },
+        {
+          "name": "historyReasonBoundaryIsValidatedBeforeAnyWrite",
+          "result": "PASS"
+        },
+        {
+          "name": "maintenanceCyclePreventsDispatchUntilInspectionReasonIsRecorded",
+          "result": "PASS"
+        }
+      ]
+    },
+    {
+      "name": "com.uav.platform.modules.uav.service.UavMaintenancePolicyTest",
+      "tests": "17",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "cases": [
+        {
+          "name": "orphanRecoveryNeverReleasesAnActualMissionAssignment",
+          "result": "PASS"
+        },
+        {
+          "name": "repeatedMaintenanceDoesNotRewriteMaintenanceTimestamp",
+          "result": "PASS"
+        },
+        {
+          "name": "manualStatusCannotReleaseFlyingUav",
+          "result": "PASS"
+        },
+        {
+          "name": "inactiveStationCannotReceiveAvailableUav",
+          "result": "PASS"
+        },
+        {
+          "name": "maintenanceUavCannotMoveToAnotherStation",
+          "result": "PASS"
+        },
+        {
+          "name": "maintenanceEntryAndCompletionRecordActorAndTrimmedReasons",
+          "result": "PASS"
+        },
+        {
+          "name": "missionLifecycleUsesSeparateInternalCommand",
+          "result": "PASS"
+        },
+        {
+          "name": "manualStatusCannotManufactureMissionAssignment",
+          "result": "PASS"
+        },
+        {
+          "name": "assignedUavCannotEnterMaintenance",
+          "result": "PASS"
+        },
+        {
+          "name": "staleExpectedStatusDoesNotChangeHistoryOrStatus",
+          "result": "PASS"
+        },
+        {
+          "name": "genericMaintenanceEndpointUsesSameTimestampAndReasonPolicy",
+          "result": "PASS"
+        },
+        {
+          "name": "returningFromMaintenanceRequiresInspectionReason",
+          "result": "PASS"
+        },
+        {
+          "name": "assigningHomeStationKeepsIdleUavAvailableForMission",
+          "result": "PASS"
+        },
+        {
+          "name": "orphanAssignmentRecoveryRequiresExplicitExpectedStatusAndReason",
+          "result": "PASS"
+        },
+        {
+          "name": "statusReasonCannotExceedPersistedHistoryCapacity",
+          "result": "PASS"
+        },
+        {
+          "name": "flyingUavCannotEnterMaintenance",
+          "result": "PASS"
+        },
+        {
+          "name": "activeMissionBlocksMaintenanceEvenWhenStoredStatusIsIncorrectlyAvailable",
+          "result": "PASS"
+        }
+      ]
+    },
+    {
+      "name": "com.uav.platform.modules.uav.service.UavServiceTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "cases": [
+        {
+          "name": "createStartsAvailableAndWritesHistory",
+          "result": "PASS"
+        }
+      ]
+    }
+  ],
+  "runtime": "H2 in-memory; individual service calls commit independently; dedicated Maven output directory",
+  "command": "./mvnw -q -Duav.build.directory=../work/uav-dispatch-20261015/maintenance-target -Dtest=UavMaintenancePolicyTest,UavMaintenanceIntegrationTest,UavServiceTest,MissionRejectionIntegrationTest test",
+  "auth_contract_changes": false
+}

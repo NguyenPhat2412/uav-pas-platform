@@ -233,8 +233,8 @@ export function AiViewfinder({ onSelectCandidate }: AiViewfinderProps) {
         )}
 
         {/* Viewfinder Bottom Controls Bar */}
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200 shadow-md text-slate-800">
-          <div className="flex items-center gap-4 text-xs font-medium">
+        <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200 shadow-md text-slate-800">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
             <button
               type="button"
               onClick={() => setShowBoxes(!showBoxes)}

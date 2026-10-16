@@ -12,7 +12,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, helperText, id, leftIcon, rightIcon, ...props }, ref) => {
     return (
-      <div className="flex flex-col w-full">
+      <div className="flex min-w-0 flex-col w-full">
         {label && (
           <label
             htmlFor={id}
@@ -21,7 +21,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
-        <div className="relative w-full flex items-center">
+        <div className="relative min-w-0 w-full flex items-center">
           {leftIcon && (
             <div className="absolute left-3.5 flex items-center pointer-events-none text-outline select-none">
               {leftIcon}
@@ -31,7 +31,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={id}
             ref={ref}
             className={cn(
-              'w-full h-12 px-4 rounded-xl bg-card text-body-lg font-body-lg text-on-surface placeholder:text-outline transition-colors duration-150 outline-none focus:outline-2 focus:outline-ring shadow-sm border border-border-input',
+              'min-w-0 w-full h-12 px-4 rounded-xl bg-card text-body-lg font-body-lg text-on-surface placeholder:text-outline transition-colors duration-150 outline-none focus:outline-2 focus:outline-ring shadow-sm border border-border-input',
               leftIcon && 'pl-11',
               rightIcon && 'pr-11',
               error && 'border-danger focus:outline-danger',

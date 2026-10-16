@@ -1,0 +1,16 @@
+{
+  "reproductionTests": [
+    "rejectNoteBeyondTimelineCapacityRollsBack",
+    "operatorConflictNoteBeyondTimelineCapacityRollsBack",
+    "completionNoteBeyondTimelineCapacityRollsBack"
+  ],
+  "negativeBoundary": 501,
+  "exception": "DataIntegrityViolationException",
+  "persistence": "mission_events.description varchar(500)",
+  "rollback": "All persisted mission/resource/history state unchanged",
+  "positiveBoundary": 500,
+  "positiveResult": "All 3 operations succeed with 500-character notes",
+  "operationsWorkflowTests": 8,
+  "operationsWorkflowFailures": 0,
+  "contractChange": false
+}

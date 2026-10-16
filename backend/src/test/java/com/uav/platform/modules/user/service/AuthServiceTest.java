@@ -38,11 +38,13 @@ class AuthServiceTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @Mock private AuthSessionLock sessionLock;
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new IAuthService(userRepository, passwordEncoder, jwtTokenProvider);
+        lenient().when(sessionLock.lock(any(AppUser.class))).thenAnswer(call -> call.getArgument(0));
+        authService = new IAuthService(userRepository, passwordEncoder, jwtTokenProvider, null, null, sessionLock);
     }
 
     // ==================== Register Tests ====================

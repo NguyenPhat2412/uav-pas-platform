@@ -32,20 +32,14 @@ export function Dashboard() {
     enabled: permissionsReady && can('AUDIT_READ'),
   });
 
-  // Resilient fallback values for demo & high-availability display
-  const totalUsers = summary.data?.totalUsers ?? 54;
-  const totalStations = summary.data?.totalStations ?? 3;
-  const availableUavs = summary.data?.availableUavs ?? 9;
-  const totalUavs = summary.data?.totalUavs ?? 12;
-  const totalAuditEvents = summary.data?.totalAuditEvents ?? 1420;
+  // Unknown values stay unknown until the authenticated API responds.
+  const totalUsers = summary.data?.totalUsers ?? '—';
+  const totalStations = summary.data?.totalStations ?? '—';
+  const availableUavs = summary.data?.availableUavs ?? '—';
+  const totalUavs = summary.data?.totalUavs ?? '—';
+  const totalAuditEvents = summary.data?.totalAuditEvents ?? '—';
 
-  const auditLogs = audit.data?.content?.length ? audit.data.content : [
-    { id: 101, actorUserId: 1, actorUsername: 'admin_vju', action: 'DISPATCH_MISSION_APPROVED', entityType: 'MISSION', entityId: 'MS-2026-SAR01', details: 'Duyệt bay khẩn cấp cứu nạn vịnh Lan Hạ', createdAt: '2026-10-13T15:42:10' },
-    { id: 102, actorUserId: 3, actorUsername: 'sar_dispatcher', action: 'WEBHOOK_ENDPOINT_SYNC', entityType: 'INTEGRATION', entityId: 'RESCUE_114_HP', details: 'Đồng bộ endpoint Cứu nạn 114 Hải Phòng', createdAt: '2026-10-13T15:30:05' },
-    { id: 103, actorUserId: 2, actorUsername: 'pilot_lanha', action: 'UAV_TELEMETRY_LINK_ESTABLISHED', entityType: 'UAV', entityId: 'UAV-M300-RTK', details: 'Thiết lập luồng D-RTK trạm ST-01 Cát Bà', createdAt: '2026-10-13T15:15:30' },
-    { id: 104, actorUserId: 1, actorUsername: 'admin_vju', action: 'ROLE_PERMISSION_UPDATED', entityType: 'ROLE_TEMPLATE', entityId: 'ROLE_PILOT', details: 'Cập nhật phân quyền lái UAV ngoài tầm nhìn', createdAt: '2026-10-13T14:50:18' },
-    { id: 105, actorUserId: 5, actorUsername: 'ai_engineer_kv260', action: 'FPGA_SAR_MODEL_DEPLOYED', entityType: 'EDGE_AI', entityId: 'AMD-KV260-NODE1', details: 'Nạp mô hình YOLOv8-SAR lên FPGA KV260', createdAt: '2026-10-13T14:10:00' },
-  ];
+  const auditLogs = audit.data?.content ?? [];
 
   return (
     <div className="space-y-6">
@@ -54,10 +48,10 @@ export function Dashboard() {
         <div className="flex items-center gap-3 text-xs text-slate-600">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            Hệ thống 100% Trực tuyến
+            Chưa kết nối giám sát thiết bị
           </span>
           <span className="hidden sm:inline text-slate-400">|</span>
-          <span className="hidden sm:inline">Phạm vi phủ sóng D-RTK: <strong>Hải Phòng, Đồ Sơn & Vịnh Cát Bà</strong></span>
+          <span className="hidden sm:inline">Kịch bản minh họa D-RTK: <strong>Hải Phòng, Đồ Sơn & Vịnh Cát Bà</strong></span>
         </div>
         <div className="flex items-center gap-2">
           <Link
@@ -70,6 +64,8 @@ export function Dashboard() {
         </div>
       </div>
 
+      {summary.isPending && <p role="status">Đang tải số liệu tổng hợp…</p>}
+      {summary.error && <div role="alert">Không tải được số liệu. <button type="button" onClick={() => void summary.refetch()}>Thử lại</button></div>}
       {/* KHUNG 1: KPI Grid (Chỉ số cốt lõi) */}
       <section aria-label="Chỉ số hoạt động cốt lõi">
         <div className="kpi-grid items-stretch">
@@ -80,7 +76,7 @@ export function Dashboard() {
             <div>
               <span>Người dùng hệ thống</span>
               <strong className="font-mono tabular-nums">{totalUsers}</strong>
-              <small className="text-emerald-600 font-medium">12 Trực ban · 8 Phi công</small>
+              <small className="text-emerald-600 font-medium">Tổng tài khoản được quản lý</small>
             </div>
           </div>
 
@@ -91,7 +87,7 @@ export function Dashboard() {
             <div>
               <span>Trạm D-RTK & Cứu hộ</span>
               <strong className="font-mono tabular-nums">{totalStations}</strong>
-              <small className="text-emerald-600 font-medium">100% Trực tuyến kết nối</small>
+              <small className="text-emerald-600 font-medium">Số trạm trong cơ sở dữ liệu</small>
             </div>
           </div>
 
@@ -102,7 +98,7 @@ export function Dashboard() {
             <div>
               <span>Đội bay sẵn sàng</span>
               <strong className="font-mono tabular-nums">{availableUavs} / {totalUavs}</strong>
-              <small className="text-amber-700 font-medium">2 Đang bay · 1 Bảo dưỡng</small>
+              <small className="text-amber-700 font-medium">Sẵn sàng / tổng số UAV</small>
             </div>
           </div>
 
@@ -111,14 +107,15 @@ export function Dashboard() {
               <History size={18} />
             </div>
             <div>
-              <span>Sự kiện Webhook & Audit</span>
+              <span>Sự kiện nhật ký</span>
               <strong className="font-mono tabular-nums">{totalAuditEvents.toLocaleString()}</strong>
-              <small className="text-emerald-600 font-medium">99.8% Giao vận thành công</small>
+              <small className="text-emerald-600 font-medium">Tổng bản ghi nhật ký</small>
             </div>
           </div>
         </div>
       </section>
 
+      <p className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900"><strong>Hai khối giám sát bên dưới là minh họa.</strong> Trạm, endpoint, chữ ký, tỷ lệ thành công và telemetry trong hai khối này chưa được đo từ thiết bị hay dịch vụ bên ngoài.</p>
       {/* BENTO GRID: KHUNG 2 & KHUNG 3 */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         {/* KHUNG 2: Webhook Engine Health Monitor (7 Cols) */}
@@ -303,7 +300,7 @@ export function Dashboard() {
 
           <div className="bg-slate-50 px-4 py-2.5 border-t border-slate-200 text-center">
             <span className="text-[11px] text-slate-500">
-              Phạm vi phủ sóng D-RTK: <strong>Bán kính 45km duyên hải Bắc Bộ</strong>
+              Kịch bản minh họa D-RTK: <strong>Bán kính 45km duyên hải Bắc Bộ</strong>
             </span>
           </div>
         </section>
@@ -339,6 +336,8 @@ export function Dashboard() {
               </tr>
             </thead>
             <tbody>
+                  {audit.error && <tr><td colSpan={6}>Không tải được nhật ký. <button type="button" onClick={() => void audit.refetch()}>Thử lại</button></td></tr>}
+                  {!audit.error && !auditLogs.length && <tr><td colSpan={6}>{audit.isFetching ? 'Đang tải nhật ký…' : can('AUDIT_READ') ? 'Chưa có nhật ký.' : 'Bạn không có quyền xem nhật ký.'}</td></tr>}
               {auditLogs.map((log) => (
                 <tr key={log.id} className="border-b border-slate-100 hover:bg-slate-50/60 transition-colors">
                   <td className="py-3 px-4 text-xs font-mono text-slate-600 whitespace-nowrap">

@@ -1,0 +1,402 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Create equipment through UI with a home station",
+      "status": "PASS"
+    },
+    {
+      "name": "Stock in then reserve through UI preserve quantities and visible history",
+      "status": "PASS"
+    },
+    {
+      "name": "Stock out above available is rejected with no balance change",
+      "status": "PASS"
+    },
+    {
+      "name": "Release then stock out through UI update stock and history",
+      "status": "PASS"
+    },
+    {
+      "name": "Partial transfer preserves reservations and destination stock",
+      "status": "PASS"
+    },
+    {
+      "name": "Release above reserved is rejected and valid release restores availability",
+      "status": "PASS"
+    },
+    {
+      "name": "Retry after a lost response does not apply stock-in twice",
+      "status": "PASS",
+      "detail": {
+        "mode": "actual UI with intentionally dropped real response; no successful API response mocked"
+      }
+    },
+    {
+      "name": "Mobile inventory form and table remain usable",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "inventory-admin",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/stations",
+      "status": 201
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment",
+      "status": 201
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/8/stock-in",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/8",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/8/reserve",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/8",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/8/stock-out",
+      "status": 409
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/8",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/8/release",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/8",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/8/stock-out",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/8",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/8/transfer/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/8",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/8/release",
+      "status": 409
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/8",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/8/release",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/8",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/8",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/8/stock-in",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/8",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "inventory-admin",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "inventory-admin",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "inventory-admin",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "label": "inventory-admin",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "label": "inventory-admin",
+      "type": "error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "requestFailures": [
+    {
+      "label": "inventory-admin",
+      "path": "/api/v1/inventory/equipment/8/stock-in",
+      "error": "NETWORK_ERROR"
+    }
+  ]
+}

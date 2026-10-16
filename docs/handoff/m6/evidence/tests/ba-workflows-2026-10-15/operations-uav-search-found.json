@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "expectation": "found",
+  "resourceId": 7,
+  "matchByModel": 1,
+  "matchBySerial": 1,
+  "finding": "Fixed: both model and displayed UAV serial find the same UAV"
+}

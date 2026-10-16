@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "filesScanned": 35,
+  "matchedFiles": [],
+  "checks": [
+    "exact disposable secrets/password values",
+    "JWT-shaped token literals",
+    "actual signed URL signature values"
+  ],
+  "screenshots": "Synthetic users only; profile/edit/audit screens, no password/token fields. Visually inspected desktop/mobile/audit."
+}

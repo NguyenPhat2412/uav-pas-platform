@@ -10,8 +10,9 @@ export function EmptyState({ title = 'Chưa có dữ liệu', detail, action }: 
 export function LoadingRows() {
   return <div role="status" aria-label="Đang tải dữ liệu" className="space-y-3 p-5"><span className="sr-only">Đang tải dữ liệu</span>{[0,1,2,3,4].map(i => <div key={i} className="h-9 animate-pulse rounded bg-slate-100" />)}</div>;
 }
+const resourceErrors: Record<string, string> = { MISSION_EQUIPMENT_RELEASE_REQUIRED: 'Thiết bị này đang được giữ cho nhiệm vụ. Hãy mở nhiệm vụ và dùng chức năng hoàn trả thiết bị để tránh sai lệch kho.', INVENTORY_NOT_AVAILABLE: 'Thiết bị không hoạt động hoặc không đủ số lượng khả dụng.', 'Equipment is reserved; release reservations before changing station': 'Thiết bị đang được giữ. Hãy hoàn trả các khoản giữ trước khi đổi trạm.' };
 export function ErrorNotice({ error }: { error: Error | null | undefined }) {
-  return error ? <Alert variant="error">{error instanceof ApiError && error.status === 403 ? 'Bạn không có quyền thực hiện thao tác này.' : error.message}</Alert> : null;
+  return error ? <Alert variant="error">{error instanceof ApiError && error.status === 403 ? 'Bạn không có quyền thực hiện thao tác này.' : resourceErrors[error.message] || error.message}</Alert> : null;
 }
 export function QueryState({ query, children }: { query: { isPending: boolean; error: Error | null; refetch: () => unknown }; children: ReactNode }) {
   if (query.error) return <div className="space-y-3 py-4"><ErrorNotice error={query.error} /><Button size="sm" variant="outline" onClick={() => void query.refetch()}>Thử lại</Button></div>;

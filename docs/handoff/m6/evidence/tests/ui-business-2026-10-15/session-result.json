@@ -1,0 +1,218 @@
+{
+  "status": "PASS",
+  "accessTtlMs": 5000,
+  "results": [
+    {
+      "role": "customer",
+      "naturalExpiryRefresh": "PASS",
+      "logout": "PASS",
+      "protectedRouteAfterLogout": "PASS",
+      "errors": [],
+      "network": [
+        {
+          "path": "/api/v1/auth/login",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/permissions/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/missions",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 401
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 401
+        },
+        {
+          "path": "/api/v1/auth/refresh",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/logout",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "role": "operator",
+      "naturalExpiryRefresh": "PASS",
+      "logout": "PASS",
+      "protectedRouteAfterLogout": "PASS",
+      "errors": [],
+      "network": [
+        {
+          "path": "/api/v1/auth/login",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/permissions/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/stations",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/uavs",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/dashboard/summary",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/dashboard/summary",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/missions",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/permissions/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 401
+        },
+        {
+          "path": "/api/v1/missions",
+          "status": 401
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 401
+        },
+        {
+          "path": "/api/v1/auth/refresh",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/missions",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/missions",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/logout",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/missions",
+          "status": 401
+        }
+      ]
+    },
+    {
+      "role": "admin",
+      "naturalExpiryRefresh": "PASS",
+      "logout": "PASS",
+      "protectedRouteAfterLogout": "PASS",
+      "errors": [],
+      "network": [
+        {
+          "path": "/api/v1/auth/login",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/permissions/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/audit-logs",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/dashboard/summary",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/permissions/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/audit-logs",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 401
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 401
+        },
+        {
+          "path": "/api/v1/auth/refresh",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/logout",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "role": "operator",
+      "adminUsersDenied": "PASS"
+    }
+  ],
+  "secretsRecorded": false
+}

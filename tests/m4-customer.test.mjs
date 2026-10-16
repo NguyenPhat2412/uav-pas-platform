@@ -32,7 +32,6 @@ test('customer API boundary uses owner-safe mission endpoints and no feature fet
   }
 });
 
-test('customer app documents unsupported profile/payment/AI behavior in UI', () => {
-  assert.match(read('apps/customer/app/(portal)/profile/page.tsx'), /chưa cung cấp endpoint cập nhật profile/);
-  assert.match(read('apps/customer/app/(portal)/missions/[id]/page.tsx'), /signed URL/);
+test('customer mission page avoids exposing implementation details', () => {
+  assert.doesNotMatch(read('apps/customer/app/(portal)/missions/[id]/page.tsx'), /Download dùng signed URL|Backend timeline/);
 });

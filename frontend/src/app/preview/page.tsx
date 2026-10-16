@@ -54,6 +54,7 @@ export default function PreviewPage() {
   return (
     <AppShell activeResource="uavs">
       <div className="w-full space-y-5">
+        <p className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm">Bản xem trước giao diện với dữ liệu mô phỏng; không phải số liệu vận hành thực tế.</p>
         {/* Top Command Bar - Strictly single line with animated live telemetry beacon */}
         <div className="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-[#e5e7eb]">
           <div className="flex items-center gap-3 min-w-0">
@@ -63,31 +64,31 @@ export default function PreviewPage() {
               <span className="relative inline-flex rounded-full h-4 w-4 bg-[#ab2523] shadow-md shadow-[#ab2523]/40" />
             </div>
 
-            <h1 className="text-xl md:text-2xl font-black tracking-tight text-[#202020] whitespace-nowrap flex items-center gap-2">
+            <h1 className="text-xl md:text-2xl font-black tracking-tight text-[#202020] sm:whitespace-nowrap flex flex-wrap items-center gap-2">
               <span>{t('preview.title')}</span>
-              <span className="text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider bg-[#ab2523] text-white whitespace-nowrap shadow-sm">
+              <span className="text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider bg-[#ab2523] text-white sm:whitespace-nowrap shadow-sm">
                 {t('preview.edition')}
               </span>
             </h1>
 
-            <span className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#ecfdf5] text-[#007f3e] border border-[#a7f3d0] whitespace-nowrap">
+            <span className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#ecfdf5] text-[#007f3e] border border-[#a7f3d0] sm:whitespace-nowrap">
               <span className="h-2 w-2 rounded-full bg-[#007f3e] animate-pulse" />
               {t('preview.realtimeBadge')}
             </span>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-3 min-w-0">
             <Button
               variant="outline"
               size="sm"
               leftIcon={<RotateCw size={14} className="animate-spin" style={{ animationDuration: '3s' }} />}
-              className="border-[#e5e7eb] hover:border-[#ab2523] hover:text-[#ab2523] whitespace-nowrap"
+              className="border-[#e5e7eb] hover:border-[#ab2523] hover:text-[#ab2523] sm:whitespace-nowrap"
             >
               {t('preview.syncRtk')}
             </Button>
             <Link
               href="/operations"
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-bold rounded-lg bg-[#ab2523] hover:bg-[#8f1c1a] text-white shadow-md shadow-[#ab2523]/25 transition whitespace-nowrap group"
+              className="inline-flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-bold rounded-lg bg-[#ab2523] hover:bg-[#8f1c1a] text-white shadow-md shadow-[#ab2523]/25 transition sm:whitespace-nowrap group"
             >
               <PlaneTakeoff size={16} className="group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
               {t('preview.openMap')}
@@ -97,12 +98,12 @@ export default function PreviewPage() {
 
         {/* Tactical Status Ribbon - Single line, animated sensors, no description paragraphs */}
         <section className="inline-summary !py-2.5" aria-label="Tóm tắt tài nguyên tác chiến">
-          <span className="whitespace-nowrap"><Users size={15} className="text-[#ab2523] animate-pulse" /> {t('preview.officers')}: <strong>24</strong></span>
-          <span className="whitespace-nowrap"><MapPinned size={15} className="text-[#007f3e]" /> {t('preview.chargingStations')}: <strong>3</strong></span>
-          <span className="whitespace-nowrap"><PlaneTakeoff size={15} className="text-[#ab2523] animate-bounce" /> {t('preview.readyFleet')}: <strong>12</strong></span>
-          <span className="whitespace-nowrap"><Boxes size={15} className="text-[#64748b]" /> {t('preview.sensors')}: <strong>48</strong></span>
-          <span className="whitespace-nowrap"><Activity size={15} className="text-[#007f3e]" /> {t('preview.combatHours')}: <strong>1,280h</strong></span>
-          <span className="whitespace-nowrap ml-auto hidden sm:inline-flex items-center gap-1.5 text-xs text-[#007f3e] font-bold">
+          <span className="sm:whitespace-nowrap"><Users size={15} className="text-[#ab2523] animate-pulse" /> {t('preview.officers')}: <strong>24</strong></span>
+          <span className="sm:whitespace-nowrap"><MapPinned size={15} className="text-[#007f3e]" /> {t('preview.chargingStations')}: <strong>3</strong></span>
+          <span className="sm:whitespace-nowrap"><PlaneTakeoff size={15} className="text-[#ab2523] animate-bounce" /> {t('preview.readyFleet')}: <strong>12</strong></span>
+          <span className="sm:whitespace-nowrap"><Boxes size={15} className="text-[#64748b]" /> {t('preview.sensors')}: <strong>48</strong></span>
+          <span className="sm:whitespace-nowrap"><Activity size={15} className="text-[#007f3e]" /> {t('preview.combatHours')}: <strong>1,280h</strong></span>
+          <span className="sm:whitespace-nowrap ml-auto hidden sm:inline-flex items-center gap-1.5 text-xs text-[#007f3e] font-bold">
             <Wifi size={13} className="animate-pulse" /> {t('preview.broadbandActive')}
           </span>
         </section>
@@ -114,9 +115,9 @@ export default function PreviewPage() {
               <PlaneTakeoff size={20} className="animate-uav-hover text-[#ab2523]" />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-1">
-                <span className="whitespace-nowrap font-medium text-xs text-[#7c7c7c]">{t('preview.kpiFleet')}</span>
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold text-[#007f3e] bg-[#ecfdf5] border border-[#a7f3d0] whitespace-nowrap">
+              <div className="flex flex-wrap items-center justify-between gap-1">
+                <span className="sm:whitespace-nowrap font-medium text-xs text-[#7c7c7c]">{t('preview.kpiFleet')}</span>
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold text-[#007f3e] bg-[#ecfdf5] border border-[#a7f3d0] sm:whitespace-nowrap">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#007f3e] animate-ping" /> {t('preview.kpiFleetReady', { count: 12 })}
                 </span>
               </div>
@@ -129,9 +130,9 @@ export default function PreviewPage() {
               <Compass size={20} className="animate-spin text-[#007f3e]" style={{ animationDuration: '8s' }} />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-1">
-                <span className="whitespace-nowrap font-medium text-xs text-[#7c7c7c]">{t('preview.kpiSuccessRate')}</span>
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold text-[#007f3e] bg-[#ecfdf5] border border-[#a7f3d0] whitespace-nowrap">
+              <div className="flex flex-wrap items-center justify-between gap-1">
+                <span className="sm:whitespace-nowrap font-medium text-xs text-[#7c7c7c]">{t('preview.kpiSuccessRate')}</span>
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold text-[#007f3e] bg-[#ecfdf5] border border-[#a7f3d0] sm:whitespace-nowrap">
                   {t('preview.kpiFlights', { count: 142 })}
                 </span>
               </div>
@@ -144,9 +145,9 @@ export default function PreviewPage() {
               <BatteryCharging size={20} className="animate-pulse text-[#b45309]" />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-1">
-                <span className="whitespace-nowrap font-medium text-xs text-[#7c7c7c]">{t('preview.kpiStationEnergy')}</span>
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold text-[#b45309] bg-[#fffbeb] border border-[#fde68a] whitespace-nowrap">
+              <div className="flex flex-wrap items-center justify-between gap-1">
+                <span className="sm:whitespace-nowrap font-medium text-xs text-[#7c7c7c]">{t('preview.kpiStationEnergy')}</span>
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold text-[#b45309] bg-[#fffbeb] border border-[#fde68a] sm:whitespace-nowrap">
                   {t('preview.kpiSolar')}
                 </span>
               </div>
@@ -159,9 +160,9 @@ export default function PreviewPage() {
               <RadioTower size={20} className="animate-pulse text-[#ab2523]" />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-1">
-                <span className="whitespace-nowrap font-medium text-xs text-[#7c7c7c]">{t('preview.kpiLatency')}</span>
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold text-[#ab2523] bg-[#fdf2f2] border border-[#fecaca] whitespace-nowrap">
+              <div className="flex flex-wrap items-center justify-between gap-1">
+                <span className="sm:whitespace-nowrap font-medium text-xs text-[#7c7c7c]">{t('preview.kpiLatency')}</span>
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold text-[#ab2523] bg-[#fdf2f2] border border-[#fecaca] sm:whitespace-nowrap">
                   {t('preview.kpiRtkPrecision')}
                 </span>
               </div>
@@ -171,17 +172,17 @@ export default function PreviewPage() {
         </section>
 
         {/* Operations Panels Grid */}
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(350px,0.65fr)]">
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(350px,0.65fr)]">
           {/* Main Table: Fleet Status */}
-          <div className="space-y-5">
+          <div className="min-w-0 space-y-5">
             <div className="console-panel tech-hud-corner">
               {/* Header: strictly single line, no description */}
-              <div className="console-panel-header !min-h-[52px] !py-3">
+              <div className="console-panel-header flex-wrap !min-h-[52px] !py-3">
                 <div className="flex items-center gap-2">
                   <Radar size={18} className="text-[#ab2523] animate-spin" style={{ animationDuration: '5s' }} />
-                  <h2 className="text-sm font-bold text-[#202020] whitespace-nowrap">{t('preview.fleetTableTitle')}</h2>
+                  <h2 className="text-sm font-bold text-[#202020] sm:whitespace-nowrap">{t('preview.fleetTableTitle')}</h2>
                 </div>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#ab2523] px-2.5 py-0.5 rounded-full bg-[#fdf2f2] border border-[#fecaca] whitespace-nowrap">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#ab2523] px-2.5 py-0.5 rounded-full bg-[#fdf2f2] border border-[#fecaca] sm:whitespace-nowrap">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#ab2523] animate-ping" />
                   {t('preview.activeDevices')}
                 </span>
@@ -191,23 +192,23 @@ export default function PreviewPage() {
                 <table className="console-table">
                   <thead>
                     <tr>
-                      <th className="whitespace-nowrap">{t('preview.thDevice')}</th>
-                      <th className="whitespace-nowrap">{t('preview.thStatus')}</th>
-                      <th className="whitespace-nowrap">{t('preview.thStation')}</th>
-                      <th className="whitespace-nowrap">{t('preview.thManufacturer')}</th>
-                      <th className="whitespace-nowrap text-right">{t('preview.thActions')}</th>
+                      <th className="sm:whitespace-nowrap">{t('preview.thDevice')}</th>
+                      <th className="sm:whitespace-nowrap">{t('preview.thStatus')}</th>
+                      <th className="sm:whitespace-nowrap">{t('preview.thStation')}</th>
+                      <th className="sm:whitespace-nowrap">{t('preview.thManufacturer')}</th>
+                      <th className="sm:whitespace-nowrap text-right">{t('preview.thActions')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {mockUavs.map((uav) => (
                       <tr key={uav.id} className="hover:bg-[#fdf2f2]/40 transition group">
-                        <td className="whitespace-nowrap">
+                        <td className="sm:whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             <span className="font-bold text-[#202020]">{uav.model}</span>
                             <span className="font-mono text-[11px] text-[#7c7c7c] px-1.5 py-0.5 rounded bg-slate-100">{uav.serialNumber}</span>
                           </div>
                         </td>
-                        <td className="whitespace-nowrap">
+                        <td className="sm:whitespace-nowrap">
                           {uav.status === 'READY' ? (
                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-bold text-[#007f3e] bg-[#ecfdf5] border border-[#a7f3d0]">
                               <span className="h-2 w-2 rounded-full bg-[#007f3e] animate-ping" /> {t('preview.statusReady')}
@@ -222,9 +223,9 @@ export default function PreviewPage() {
                             </span>
                           )}
                         </td>
-                        <td className="whitespace-nowrap text-sm font-semibold text-[#202020]">{uav.stationName}</td>
-                        <td className="whitespace-nowrap text-sm text-[#7c7c7c]">{uav.manufacturer}</td>
-                        <td className="whitespace-nowrap text-right">
+                        <td className="sm:whitespace-nowrap text-sm font-semibold text-[#202020]">{uav.stationName}</td>
+                        <td className="sm:whitespace-nowrap text-sm text-[#7c7c7c]">{uav.manufacturer}</td>
+                        <td className="sm:whitespace-nowrap text-right">
                           <button
                             type="button"
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold text-[#ab2523] bg-[#fdf2f2] hover:bg-[#ab2523] hover:text-white transition group-hover:shadow-sm"
@@ -241,12 +242,12 @@ export default function PreviewPage() {
 
             {/* Stations Overview - Single line, no description */}
             <div className="console-panel tech-hud-corner">
-              <div className="console-panel-header !min-h-[52px] !py-3">
+              <div className="console-panel-header flex-wrap !min-h-[52px] !py-3">
                 <div className="flex items-center gap-2">
                   <Radio size={18} className="text-[#007f3e] animate-pulse" />
-                  <h2 className="text-sm font-bold text-[#202020] whitespace-nowrap">{t('preview.stationTableTitle')}</h2>
+                  <h2 className="text-sm font-bold text-[#202020] sm:whitespace-nowrap">{t('preview.stationTableTitle')}</h2>
                 </div>
-                <Link href="/operations?tab=stations" className="text-xs font-bold text-[#ab2523] hover:underline flex items-center gap-1 whitespace-nowrap">
+                <Link href="/operations?tab=stations" className="text-xs font-bold text-[#ab2523] hover:underline flex items-center gap-1 sm:whitespace-nowrap">
                   {t('preview.manageStations')} <ArrowUpRight size={13} />
                 </Link>
               </div>
@@ -255,25 +256,25 @@ export default function PreviewPage() {
                 <table className="console-table">
                   <thead>
                     <tr>
-                      <th className="whitespace-nowrap">{t('preview.thCodeName')}</th>
-                      <th className="whitespace-nowrap">{t('preview.thConnection')}</th>
-                      <th className="whitespace-nowrap">{t('preview.thAddress')}</th>
-                      <th className="whitespace-nowrap">{t('preview.thCoords')}</th>
+                      <th className="sm:whitespace-nowrap">{t('preview.thCodeName')}</th>
+                      <th className="sm:whitespace-nowrap">{t('preview.thConnection')}</th>
+                      <th className="sm:whitespace-nowrap">{t('preview.thAddress')}</th>
+                      <th className="sm:whitespace-nowrap">{t('preview.thCoords')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {mockStations.map((station) => (
                       <tr key={station.id} className="hover:bg-slate-50 transition">
-                        <td className="whitespace-nowrap font-bold text-[#202020]">
+                        <td className="sm:whitespace-nowrap font-bold text-[#202020]">
                           <span>{station.code} • {station.name}</span>
                         </td>
-                        <td className="whitespace-nowrap">
+                        <td className="sm:whitespace-nowrap">
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-bold text-[#007f3e] bg-[#ecfdf5] border border-[#a7f3d0]">
                             <span className="h-1.5 w-1.5 rounded-full bg-[#007f3e] animate-pulse" /> ONLINE
                           </span>
                         </td>
-                        <td className="whitespace-nowrap text-sm text-[#202020]">{station.address}</td>
-                        <td className="whitespace-nowrap font-mono text-xs text-[#7c7c7c]">{station.coords}</td>
+                        <td className="sm:whitespace-nowrap text-sm text-[#202020]">{station.address}</td>
+                        <td className="sm:whitespace-nowrap font-mono text-xs text-[#7c7c7c]">{station.coords}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -283,15 +284,15 @@ export default function PreviewPage() {
           </div>
 
           {/* Right Column: Dynamic 3D Radar Stage & Tactical Quick Actions */}
-          <div className="space-y-5">
+          <div className="min-w-0 space-y-5">
             {/* 3D Hangar Card with Dynamic Laser Scan and Radar Sweep */}
             <div className="console-panel tech-hud-corner p-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[#e5e7eb] mb-3">
+              <div className="flex flex-wrap items-center justify-between pb-3 border-b border-[#e5e7eb] mb-3">
                 <div className="flex items-center gap-2">
                   <Crosshair size={16} className="text-[#ab2523] animate-spin" style={{ animationDuration: '6s' }} />
-                  <h3 className="text-sm font-black text-[#202020] whitespace-nowrap">VJU-SkyMaster X4 Quadrotor</h3>
+                  <h3 className="text-sm font-black text-[#202020] sm:whitespace-nowrap">VJU-SkyMaster X4 Quadrotor</h3>
                 </div>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold text-[#007f3e] bg-[#ecfdf5] border border-[#a7f3d0] whitespace-nowrap">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold text-[#007f3e] bg-[#ecfdf5] border border-[#a7f3d0] sm:whitespace-nowrap">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#007f3e] animate-ping" /> {t('preview.statusReady')}
                 </span>
               </div>
@@ -312,8 +313,8 @@ export default function PreviewPage() {
                   <div className="w-16 h-16 mx-auto rounded-2xl bg-[#ab2523]/20 border border-[#ab2523]/40 flex items-center justify-center shadow-lg shadow-[#ab2523]/30 mb-2">
                     <PlaneTakeoff size={36} className="text-white" />
                   </div>
-                  <span className="text-xs font-black text-white tracking-wider block whitespace-nowrap">QUADROTOR AIRFRAME ACTIVE</span>
-                  <span className="text-[11px] font-mono text-[#a3a3a3] block mt-0.5 whitespace-nowrap">PAYLOAD: 4K GIMBAL + MULTISPECTRAL</span>
+                  <span className="text-xs font-black text-white tracking-wider block sm:whitespace-nowrap">QUADROTOR AIRFRAME ACTIVE</span>
+                  <span className="text-[11px] font-mono text-[#a3a3a3] block mt-0.5 sm:whitespace-nowrap">PAYLOAD: 4K GIMBAL + MULTISPECTRAL</span>
                 </div>
 
                 {/* HUD corner brackets */}
@@ -324,21 +325,21 @@ export default function PreviewPage() {
               </div>
 
               {/* Single line telemetry telemetry values */}
-              <div className="mt-3 pt-3 border-t border-[#e5e7eb] flex items-center justify-between text-xs font-semibold">
-                <span className="whitespace-nowrap text-[#7c7c7c]">{t('preview.battery')}: <strong className="text-[#007f3e]">98% (42p)</strong></span>
-                <span className="whitespace-nowrap text-[#7c7c7c]">{t('preview.altitude')}: <strong className="text-[#202020]">120m AGL</strong></span>
-                <span className="whitespace-nowrap text-[#7c7c7c]">RTK: <strong className="text-[#007f3e]">&lt; 1.5 cm</strong></span>
+              <div className="mt-3 pt-3 border-t border-[#e5e7eb] flex flex-wrap items-center justify-between text-xs font-semibold">
+                <span className="sm:whitespace-nowrap text-[#7c7c7c]">{t('preview.battery')}: <strong className="text-[#007f3e]">98% (42p)</strong></span>
+                <span className="sm:whitespace-nowrap text-[#7c7c7c]">{t('preview.altitude')}: <strong className="text-[#202020]">120m AGL</strong></span>
+                <span className="sm:whitespace-nowrap text-[#7c7c7c]">RTK: <strong className="text-[#007f3e]">&lt; 1.5 cm</strong></span>
               </div>
             </div>
 
             {/* Quick Actions Panel - Single line buttons with animated hover effects */}
             <div className="console-panel tech-hud-corner p-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[#e5e7eb] mb-3">
+              <div className="flex flex-wrap items-center justify-between pb-3 border-b border-[#e5e7eb] mb-3">
                 <div className="flex items-center gap-2">
                   <Sparkles size={16} className="text-[#ab2523] animate-pulse" />
-                  <h3 className="text-sm font-black text-[#202020] whitespace-nowrap">{t('preview.quickActions')}</h3>
+                  <h3 className="text-sm font-black text-[#202020] sm:whitespace-nowrap">{t('preview.quickActions')}</h3>
                 </div>
-                <span className="text-xs font-mono text-[#7c7c7c] whitespace-nowrap">{t('preview.modulesCount')}</span>
+                <span className="text-xs font-mono text-[#7c7c7c] sm:whitespace-nowrap">{t('preview.modulesCount')}</span>
               </div>
 
               <div className="grid grid-cols-2 gap-2.5">
@@ -351,7 +352,7 @@ export default function PreviewPage() {
                     <div className="p-2 rounded-md bg-slate-100 text-[#7c7c7c] group-hover:bg-[#ab2523] group-hover:text-white transition shrink-0">
                       <Icon size={18} className="group-hover:scale-110 transition-transform" />
                     </div>
-                    <span className="text-xs font-bold text-[#202020] group-hover:text-[#ab2523] transition whitespace-nowrap truncate">
+                    <span className="text-xs font-bold text-[#202020] group-hover:text-[#ab2523] transition sm:whitespace-nowrap truncate">
                       {label}
                     </span>
                   </Link>

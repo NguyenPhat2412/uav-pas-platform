@@ -20,7 +20,6 @@ import { UavTelemetryHud } from './UavTelemetryHud';
 import { Kv260EdgeStatusCard } from './Kv260EdgeStatusCard';
 import { sarRealtimeService } from '../services/sarRealtimeService';
 import { sarStore, useSarStore } from '../stores/sarStore';
-import { apiClient } from '@/lib/api.client';
 
 export function SarCockpitPanel() {
   const [selectedCandidate, setSelectedCandidate] = useState<DetectionItem | null>(null);
@@ -36,29 +35,24 @@ export function SarCockpitPanel() {
 
   const handleDispatchRescue = () => {
     const gpsCoord = selectedCandidate?.gpsEstimate ?? '20.7284° N, 107.0512° E';
-    void apiClient.post('/api/v1/sar/missions/1/dispatch-rescue', {
-      candidateId: selectedCandidate?.id ?? 'TRK-101',
-      coordinates: gpsCoord,
-      priority: 'URGENT',
-    }).catch(() => null);
-    setAlertSuccess(`Đã gửi gói dữ liệu tọa độ mục tiêu (${gpsCoord}) sang Đội Cứu nạn Mặt đất Cát Bà thành công!`);
-    sarStore.setAlert('Đã phân phối tọa độ cứu hộ thành công.');
+    setAlertSuccess(`Mô phỏng gửi tọa độ (${gpsCoord}). Chưa gửi tới đội cứu nạn thực tế.`);
+    sarStore.setAlert('Đã chạy mô phỏng phân phối tọa độ cứu hộ.');
     setTimeout(() => setAlertSuccess(null), 5000);
   };
 
   const handleEmergencyRth = () => {
-    void apiClient.patch('/api/v1/sar/missions/1/status?status=COMPLETED').catch(() => null);
-    setAlertSuccess('Lệnh RTH (Return to Home) khẩn cấp đã được truyền tới UAV. Đang bay về trạm ST-01.');
-    sarStore.setAlert('Kích hoạt RTH tự động.');
+    setAlertSuccess('Mô phỏng RTH về trạm ST-01. Chưa truyền lệnh tới UAV thực tế.');
+    sarStore.setAlert('Mô phỏng RTH tự động.');
     setTimeout(() => setAlertSuccess(null), 5000);
   };
 
   return (
     <div className="space-y-5">
+      <p role="status" className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900"><strong>Chế độ mô phỏng.</strong> Dữ liệu UAV, camera AI và bo mạch dưới đây chưa được kết nối thiết bị thực tế. Các thao tác chỉ minh họa giao diện.</p>
       {/* Tactical Operation Banner - Light Enterprise VJU Theme */}
       <div className="bg-white border border-slate-200 border-l-4 border-l-[#ab2523] rounded-2xl p-5 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
+          <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <span className="bg-[#fef2f2] text-[#ab2523] border border-[#fecdd3] text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#ab2523] animate-ping"></span>
               ƯU TIÊN KHẨN CẤP (URGENT)
@@ -83,14 +77,14 @@ export function SarCockpitPanel() {
             onClick={handleDispatchRescue}
             className="flex items-center gap-2 px-4 py-2.5 bg-[#007f3e] hover:bg-[#006632] text-white text-xs font-bold rounded-xl shadow-sm transition active:scale-95 cursor-pointer"
           >
-            <Send size={15} /> Gửi tọa độ cho Đội Cứu Nạn
+            <Send size={15} /> Mô phỏng gửi tọa độ cứu nạn
           </button>
           <button
             type="button"
             onClick={handleEmergencyRth}
             className="flex items-center gap-2 px-4 py-2.5 bg-[#ab2523] hover:bg-[#8f1c1a] text-white text-xs font-bold rounded-xl shadow-sm transition active:scale-95 cursor-pointer"
           >
-            <RotateCcw size={15} /> Kích hoạt RTH về trạm
+            <RotateCcw size={15} /> Mô phỏng RTH về trạm
           </button>
         </div>
       </div>

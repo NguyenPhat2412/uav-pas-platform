@@ -1,0 +1,440 @@
+{
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "Upload bytes and confirm mission-linked media through UI without forwarding bearer to storage",
+      "status": "PASS",
+      "detail": {
+        "linkStep": "API fixture/read-back; library upload and confirmation performed on UI"
+      }
+    },
+    {
+      "name": "Preview and open actual private file from UI",
+      "status": "PASS"
+    },
+    {
+      "name": "Customer A sees and downloads the owned mission result",
+      "status": "PASS"
+    },
+    {
+      "name": "Customer B cannot read mission, timeline, media or get a signed download",
+      "status": "PASS"
+    },
+    {
+      "name": "Deleting attached media is rejected with an error visible beside the action",
+      "status": "FAIL",
+      "error": "Delete error is not beside the confirmation action\n\n0 !== 1\n"
+    },
+    {
+      "name": "Interrupted confirm stays unconfirmed and can be recovered on UI",
+      "status": "FAIL",
+      "error": "A stale upload error remains after successful recovery\n\n2 !== 0\n"
+    },
+    {
+      "name": "Delete unlinked file on UI removes metadata visibility and stored bytes",
+      "status": "PASS"
+    },
+    {
+      "name": "Missing object and wrong media scope cannot become confirmed mission output",
+      "status": "PASS"
+    },
+    {
+      "name": "Mobile media screen has no page overflow",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "media-admin",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "POST",
+      "path": "/api/v1/media",
+      "status": 201
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media/7/upload-url",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "POST",
+      "path": "/api/v1/media/7/confirm",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/4/media",
+      "status": 201
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media/7/download-url",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/missions/4",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/missions/4/timeline",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/missions/4/media",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/media/7/download-url",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/4",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/4/timeline",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/4/media",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/7/download-url",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/missions/4",
+      "status": 403
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "DELETE",
+      "path": "/api/v1/media/7",
+      "status": 409
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "POST",
+      "path": "/api/v1/media",
+      "status": 201
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media/8/upload-url",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/8/download-url",
+      "status": 409
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/4/media",
+      "status": 409
+    },
+    {
+      "label": "media-admin",
+      "method": "POST",
+      "path": "/api/v1/media/8/confirm",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/8/upload-url",
+      "status": 409
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/8/download-url",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "DELETE",
+      "path": "/api/v1/media/8",
+      "status": 204
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/8/download-url",
+      "status": 404
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/media",
+      "status": 201
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/media/9/confirm",
+      "status": 409
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/4/media/upload-url",
+      "status": 403
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "requestFailures": [
+    {
+      "label": "media-admin",
+      "path": "/api/v1/media/8/confirm",
+      "error": "NETWORK_ERROR"
+    },
+    {
+      "label": "media-admin",
+      "path": "/api/v1/media/8",
+      "error": "ABORTED"
+    }
+  ],
+  "failure": "One or more media checks failed"
+}

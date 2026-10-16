@@ -1,0 +1,6 @@
+PASS
+{"tests": 77, "failures": 0, "errors": 0, "skipped": 0}
+com.uav.platform.modules.uav.service.UavMaintenancePolicyTest: tests=17 failures=0 errors=0 skipped=0
+com.uav.platform.modules.maintenance.MaintenancePlanningIntegrationTest: tests=29 failures=0 errors=0 skipped=0
+com.uav.platform.stabilization.MigrationUpgradePostgresTest: tests=2 failures=0 errors=0 skipped=0
+com.uav.platform.modules.maintenance.MaintenancePlanningPostgresTest: tests=29 failures=0 errors=0 skipped=0

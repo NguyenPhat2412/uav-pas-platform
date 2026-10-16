@@ -13,4 +13,6 @@ public interface MissionMediaRepository extends JpaRepository<MissionMedia, Long
     boolean existsByMediaId(Long mediaId);
     List<MissionMedia> findByMissionIdOrderByCreatedAtAsc(Long missionId);
     boolean existsByMissionIdAndMediaId(Long missionId, Long mediaId);
+    boolean existsByMissionIdAndMediaRoleInAndMediaConfirmedTrueAndMediaDeletedFalse(
+            Long missionId, java.util.Collection<com.uav.platform.modules.mission.common.MediaRole> roles);
 }

@@ -1,0 +1,29 @@
+{
+  "backendReadiness": {
+    "status": "UP"
+  },
+  "composeProject": "uav-mission-handover-20261016",
+  "ports": {
+    "backend": 18080,
+    "postgres": 55444,
+    "minio": [
+      9014,
+      9015
+    ],
+    "customer": 3101,
+    "operations": 3102,
+    "admin": 3103,
+    "legacy": 3100
+  },
+  "port8080Used": false,
+  "profiles": [
+    "stabilization"
+  ],
+  "ownedProcessNames": [
+    "customer",
+    "admin",
+    "backend",
+    "legacy",
+    "operations"
+  ]
+}

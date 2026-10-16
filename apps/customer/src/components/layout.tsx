@@ -6,12 +6,14 @@ import { Activity, Bell, Boxes, ChevronLeft, ChevronRight, CreditCard, LayoutDas
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { useCustomerProfile } from '@/features/customer/profile-query';
+import { displayLabel } from '@uav/ui/presentation';
 import { Button } from './ui';
 
 const navItems = [
   { href: '/dashboard', key: 'dashboard', defaultLabel: 'Tổng quan', icon: LayoutDashboard, permission: 'MISSION_VIEW' },
   { href: '/services', key: 'services', defaultLabel: 'Dịch vụ UAV', icon: Boxes, permission: 'MISSION_VIEW' },
-  { href: '/missions', key: 'missions', defaultLabel: 'Mission của tôi', icon: Activity, permission: 'MISSION_VIEW' },
+  { href: '/missions', key: 'missions', defaultLabel: 'Nhiệm vụ của tôi', icon: Activity, permission: 'MISSION_VIEW' },
   { href: '/billing', key: 'billing', defaultLabel: 'Gói cước & Hóa đơn', icon: CreditCard },
   { href: '/notifications', key: 'notifications', defaultLabel: 'Thông báo', icon: Bell },
   { href: '/profile', key: 'profile', defaultLabel: 'Tài khoản', icon: User },
@@ -21,6 +23,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user, logout, can, permissionsReady } = useAuth();
   const { t } = useI18n();
+  const profile = useCustomerProfile();
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
@@ -35,6 +38,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     } catch {}
   }, []);
 
+  useEffect(() => { const resize = () => { if (window.innerWidth <= 640) setCollapsed(false); }; resize(); window.addEventListener('resize', resize); return () => window.removeEventListener('resize', resize); }, []);
+
   const toggleCollapsed = () => {
     setCollapsed(prev => {
       const next = !prev;
@@ -43,16 +48,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const name = user?.fullName || user?.username || 'Khách hàng VJU';
-  const roleLabel = user?.role?.replace('ROLE_', '') || 'CUSTOMER';
-  const visibleNav = navItems.filter((item) => !item.permission || !permissionsReady || !user || can(item.permission));
+  const name = (profile.data?.id === user?.id ? profile.data?.fullName : undefined) || user?.fullName || user?.username || 'Khách hàng';
+  const roleLabel = displayLabel(user?.role);
+  const visibleNav = navItems.filter((item) => !item.permission || (permissionsReady && !!user && can(item.permission)));
   const activeNav = navItems.find(({ href }) => pathname === href || pathname.startsWith(`${href}/`));
 
   return (
     <div className="customer-shell">
       <a href="#content" className="skip-link">{t('common.skipToContent')}</a>
       <aside className={`sidebar ${collapsed ? 'sidebar-collapsed' : ''}`}>
-        <div
+        <div className="sidebar-heading"
           style={{
             display: 'flex',
             flexDirection: collapsed ? 'column' : 'row',
@@ -124,7 +129,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         {!collapsed && (
-          <div style={{ padding: '0 8px 10px', color: '#7c7c7c', fontSize: 11, letterSpacing: '0.08em', fontWeight: 700 }}>
+          <div className="sidebar-section-label" style={{ padding: '0 8px 10px', color: '#7c7c7c', fontSize: 11, letterSpacing: '0.08em', fontWeight: 700 }}>
             KHÁCH HÀNG
           </div>
         )}
@@ -138,7 +143,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 key={href}
                 href={href}
                 aria-current={active ? 'page' : undefined}
-                title={collapsed ? labelText : undefined}
+                aria-label={labelText} title={collapsed ? labelText : undefined}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -148,13 +153,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 }}
               >
                 <Icon size={18} style={{ flexShrink: 0 }} />
-                {!collapsed && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{labelText}</span>}
+                {!collapsed && <><span className="nav-label-full">{labelText}</span><span className="nav-label-short">{{dashboard:'Tổng quan',services:'Dịch vụ',missions:'Nhiệm vụ',billing:'Gói cước',notifications:'Thông báo',profile:'Tài khoản'}[key]}</span></>}
               </Link>
             );
           })}
         </nav>
 
-        <div style={{ marginTop: 'auto', borderTop: '1px solid #e5e7eb', paddingTop: 14 }}>
+        <div className="sidebar-footer" style={{ marginTop: 'auto', borderTop: '1px solid #e5e7eb', paddingTop: 14 }}>
           {!collapsed && (
             <p style={{ display: 'flex', justifyContent: 'space-between', padding: '0 8px 10px', fontSize: 11, color: '#7c7c7c', margin: 0 }}>
               UAV PAS <span>Đại học Việt Nhật</span>
@@ -163,7 +168,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <button
             className="logout"
             onClick={() => void logout()}
-            title={collapsed ? t('common.logout') : undefined}
+            aria-label={t('common.logout')} title={collapsed ? t('common.logout') : undefined}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -179,10 +184,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
       <div className="customer-workspace">
         <header className="topbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: 13, color: '#6d7d91' }}>
+          <div className="topbar-breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: 13, color: '#6d7d91' }}>
             <span style={{ color: '#202020', fontWeight: 600 }}>UAV PAS</span>
             <span style={{ color: '#a4b1c0' }}>/</span>
-            <span>Customer Portal</span>
+            <span>Khách hàng</span>
             {activeNav && (
               <>
                 <span style={{ color: '#a4b1c0' }}>/</span>
@@ -192,7 +197,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </>
             )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="topbar-account" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <LanguageSwitcher />
             <Link
               href="/notifications"
@@ -211,7 +216,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               <Bell size={16} />
             </Link>
-            <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Link href="/profile" aria-label={`Hồ sơ của ${name}`} className="account" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span
                 style={{
                   display: 'inline-flex',
@@ -245,55 +250,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function PageGuard({
-  children,
-  permission = 'MISSION_VIEW',
-}: {
-  children: React.ReactNode;
-  permission?: string | null;
-}) {
-  const router = useRouter();
-  const { isAuthenticated, isLoading, permissionsReady, permissionError, refreshPermissions, can } = useAuth();
-  const { t } = useI18n();
-
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const isDemo = isMounted && typeof window !== 'undefined' && window.location.search.includes('demo=true');
-
-  useEffect(() => {
-    if (isMounted && !isDemo && !isLoading && !isAuthenticated) router.replace('/login');
-  }, [router, isLoading, isAuthenticated, isDemo, isMounted]);
-
-  if (isDemo) {
-    return <AppShell>{children}</AppShell>;
-  }
-
-  if (!isMounted || isLoading || !isAuthenticated) {
-    return (
-      <div className="center-state" role="status">
-        {t('common.authenticating')}
-      </div>
-    );
-  }
-
-  return (
-    <AppShell>
-      {permission && permissionError ? (
-        <div className="error" role="alert">
-          {t('common.permissionError')} <Button onClick={() => void refreshPermissions()}>{t('common.retry')}</Button>
-        </div>
-      ) : permission && !permissionsReady ? (
-        <div role="status">{t('common.checkingPermissions')}</div>
-      ) : permission && !can(permission) ? (
-        <div className="notice" role="alert">
-          {t('common.permissionDenied')}
-        </div>
-      ) : (
-        children
-      )}
-    </AppShell>
-  );
+export function PageGuard({ children, permission = 'MISSION_VIEW' }: { children: React.ReactNode; permission?: string | null }) {
+  const router = useRouter(); const { isAuthenticated, isLoading, permissionsReady, permissionError, refreshPermissions, can } = useAuth();
+  useEffect(() => { if (!isLoading && !isAuthenticated) router.replace('/login'); }, [router, isLoading, isAuthenticated]);
+  if (isLoading || !isAuthenticated) return <div className="center-state" role="status">Đang xác thực…</div>;
+  return <AppShell>{permission && permissionError ? <div className="error" role="alert">Không thể kiểm tra quyền truy cập. <Button onClick={() => void refreshPermissions()}>Thử lại</Button></div>
+    : permission && !permissionsReady ? <div role="status">Đang kiểm tra quyền…</div>
+    : permission && !can(permission) ? <div className="notice" role="alert">Tài khoản chưa được cấp quyền cho chức năng này.</div> : children}</AppShell>;
 }

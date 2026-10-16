@@ -7,6 +7,8 @@ import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.entity.RefreshToken;
 import com.uav.platform.modules.user.repository.RefreshTokenRepository;
 import com.uav.platform.modules.user.service.RefreshTokenService;
+import com.uav.platform.modules.user.service.AuthSessionLock;
+import jakarta.persistence.EntityManager;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import org.slf4j.Logger;
@@ -27,23 +29,30 @@ public class IRefreshTokenService implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthSessionLock sessionLock;
+    private final EntityManager entityManager;
 
     public IRefreshTokenService(
             RefreshTokenRepository refreshTokenRepository,
-            JwtTokenProvider jwtTokenProvider
+            JwtTokenProvider jwtTokenProvider,
+            AuthSessionLock sessionLock,
+            EntityManager entityManager
     ) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.sessionLock = sessionLock;
+        this.entityManager = entityManager;
     }
 
     @Override
     public RefreshToken createRefreshToken(AppUser user) {
-        refreshTokenRepository.deleteByUser(user);
+        AppUser lockedUser = sessionLock.lock(user);
+        refreshTokenRepository.deleteByUser(lockedUser);
 
         String token = UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID().toString().replace("-", "");
         Instant expiryDate = Instant.now().plusMillis(jwtTokenProvider.getRefreshExpirationMs());
 
-        RefreshToken refreshToken = new RefreshToken(user, token, expiryDate);
+        RefreshToken refreshToken = new RefreshToken(lockedUser, token, expiryDate);
         return refreshTokenRepository.save(refreshToken);
     }
 
@@ -54,6 +63,23 @@ public class IRefreshTokenService implements RefreshTokenService {
             return Optional.empty();
         }
         return refreshTokenRepository.findByToken(token);
+    }
+
+    @Override @Transactional(readOnly = true)
+    public Optional<Long> findUserIdByToken(String token) {
+        if (token == null || token.isBlank()) return Optional.empty();
+        return refreshTokenRepository.findUserIdByToken(token);
+    }
+
+    @Override
+    public Optional<RefreshToken> findByTokenForUpdate(String token) {
+        Optional<Long> owner = findUserIdByToken(token);
+        if (owner.isEmpty() || sessionLock.lockById(owner.get()).isEmpty()) return Optional.empty();
+        // Login/rotation may have replaced the token while we waited. Never reuse
+        // the old entity snapshot or revoke the user's newer token by user ID.
+        var current = refreshTokenRepository.findByTokenForUpdate(token);
+        current.ifPresent(entityManager::refresh);
+        return current;
     }
 
     @Override
@@ -71,7 +97,7 @@ public class IRefreshTokenService implements RefreshTokenService {
     @Override
     public void revokeToken(String token) {
         if (token != null && !token.isBlank()) {
-            refreshTokenRepository.findByToken(token).ifPresent(rt -> {
+            findByTokenForUpdate(token).ifPresent(rt -> {
                 rt.revoke();
                 refreshTokenRepository.save(rt);
             });
@@ -80,7 +106,7 @@ public class IRefreshTokenService implements RefreshTokenService {
 
     @Override
     public int deleteByUser(AppUser user) {
-        return refreshTokenRepository.deleteByUser(user);
+        return refreshTokenRepository.deleteByUser(sessionLock.lock(user));
     }
 
     @Override

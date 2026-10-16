@@ -1,0 +1,28 @@
+✔ failure requires assignment, status-update permission, and a permitted nonterminal state (0.618916ms)
+✔ all terminal mission controls stay closed with every permission (0.09225ms)
+✔ failure payload trims surrounding whitespace, preserves authored content, and handles optional notes (0.376417ms)
+✔ invalid failure form cannot reach the API; valid form retains the existing endpoint contract (0.087709ms)
+✔ completion sends equipment condition without converting it into an inventory action (0.080791ms)
+✔ ready and start require current operator acceptance in addition to permissions (0.068417ms)
+✔ accept sends the version the operator reviewed and rejects invalid revisions (0.092625ms)
+✔ completion cannot manufacture missing handover notes or equipment condition (0.076ms)
+✔ timeline notes accept the persisted 500-character boundary and stop oversized payloads before sending (0.130792ms)
+✔ reservation accepts positive whole quantities up to current availability (0.133917ms)
+✔ later operator and history pages keep their server pagination parameters (0.091958ms)
+✔ maintenance and transfer affordances exclude mission-owned and unknown UAV states (0.083042ms)
+✔ maintenance reason boundaries and encoded stale-state contract are preserved (0.30875ms)
+✔ redispatch requires existing UAV, preflight state, existing assignment and read permissions (0.080167ms)
+✔ redispatch validates before API and sends expected-current UAV with authored reason (0.152708ms)
+✔ redispatch timeline shows Vietnamese action and preserves the supplied reason (0.133875ms)
+✔ UAV history translates generated messages while retaining authored reasons (0.199ms)
+✔ resource redispatch is preflight only and uses the existing granular permissions (0.067542ms)
+✔ resource redispatch sends the viewed revision and explicit null for removal (0.118666ms)
+✔ resource redispatch timeline retains meaningful Vietnamese actions and authored reasons (0.084541ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 229.292292

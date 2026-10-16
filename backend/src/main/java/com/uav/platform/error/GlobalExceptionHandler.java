@@ -108,7 +108,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
-        log.warn("Data integrity violation on {}: {}", request.getRequestURI(), ex.getMostSpecificCause().getMessage());
+        String detail = ex.getMostSpecificCause().getMessage();
+        if (detail != null && detail.toLowerCase(java.util.Locale.ROOT).contains("uk_users_phone_number")) {
+            return handleSystemException(SystemException.conflict(CoreConstants.PHONE_ALREADY_EXISTS), request);
+        }
+        log.warn("Data integrity violation on {}", request.getRequestURI());
         ErrorResponse body = ErrorResponse.ofCode(
                 HttpStatus.CONFLICT.value(),
                 HttpStatus.CONFLICT.getReasonPhrase(),
@@ -129,6 +133,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConflictState(IllegalStateException ex, HttpServletRequest request) {
         ErrorResponse body = ErrorResponse.ofCode(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT.getReasonPhrase(), "INVALID_STATE", ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
+    @ExceptionHandler(org.springframework.web.servlet.NoHandlerFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(Exception ex, HttpServletRequest request) {
+        ErrorResponse body = ErrorResponse.ofCode(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase(),
+                "NOT_FOUND", "The requested resource was not found", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
     @ExceptionHandler(Exception.class)

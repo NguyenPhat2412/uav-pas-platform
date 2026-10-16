@@ -1,158 +1,43 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
+import { displayLabel } from '@uav/ui/presentation';
 import { PageGuard } from '@/components/layout';
 import { Button, Panel, Status } from '@/components/ui';
+import { useAuth } from '@/contexts/AuthContext';
 import { useMissions } from '@/features/customer/hooks';
-import { DEMO_CUSTOMER_MISSIONS } from '@/features/customer/service';
+import { missionListFilters, missionPageRange, missionStatuses } from '@/features/customer/mission-form';
 import type { MissionStatus } from '@/features/customer/types';
 
-export default function MissionsPage() {
-  return (
-    <PageGuard>
-      <Missions />
-    </PageGuard>
-  );
-}
-
+export default function MissionsPage() { return <PageGuard><Missions /></PageGuard>; }
 function Missions() {
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<MissionStatus | ''>('');
-  const q = useMissions(search, 0, statusFilter || undefined);
-
-  const rawRows = q.data?.content?.length ? q.data.content : DEMO_CUSTOMER_MISSIONS.content;
-  const rows = rawRows.filter(m => {
-    const matchSearch =
-      !search ||
-      m.code.toLowerCase().includes(search.toLowerCase()) ||
-      m.title.toLowerCase().includes(search.toLowerCase()) ||
-      m.locationName.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = !statusFilter || m.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
-
-  return (
-    <>
-      <div className="page-heading">
-        <div>
-          <h1>Mission của tôi</h1>
-          <p>Danh sách các yêu cầu bay, tiến độ phê duyệt vùng trời và kết quả thu thập dữ liệu thuộc phạm vi tài khoản.</p>
-        </div>
-        <Link href="/missions/create">
-          <Button>+ Tạo mission mới</Button>
-        </Link>
+  const [filters, setFilters] = useState(missionListFilters('', ''));
+  const { can } = useAuth();
+  const query = useMissions(filters.search.trim(), filters.page, filters.status || undefined);
+  const page = query.data;
+  const range = page ? missionPageRange(page) : undefined;
+  return <>
+    <div className="page-heading"><div><h1>Nhiệm vụ của tôi</h1><p>Theo dõi tiến độ và kết quả các nhiệm vụ của bạn.</p></div>{can('MISSION_CREATE') && <Link className="button button-primary" href="/missions/create">Tạo nhiệm vụ</Link>}</div>
+    <Panel>
+      <div className="filter-row">
+        <label className="field"><span>Tìm nhiệm vụ</span><input aria-label="Tìm nhiệm vụ" placeholder="Tìm theo mã hoặc tiêu đề" value={filters.search} onChange={event => setFilters(missionListFilters(event.target.value, filters.status))} /></label>
+        <label className="field"><span>Trạng thái</span><select value={filters.status} onChange={event => setFilters(missionListFilters(filters.search, event.target.value as MissionStatus | ''))}><option value="">Tất cả trạng thái</option>{missionStatuses.map(status => <option key={status} value={status}>{displayLabel(status)}</option>)}</select></label>
+        {(filters.search || filters.status) && <Button variant="secondary" onClick={() => setFilters(missionListFilters('', ''))}>Xóa bộ lọc</Button>}
       </div>
-
-      <Panel
-        title={`Danh sách nhiệm vụ (${rows.length})`}
-        action={
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {(['', 'IN_PROGRESS', 'PENDING_CONFIRMATION', 'COMPLETED', 'DRAFT'] as const).map(st => (
-              <button
-                key={st || 'ALL'}
-                type="button"
-                onClick={() => setStatusFilter(st)}
-                style={{
-                  border: statusFilter === st ? '1px solid #ab2523' : '1px solid #e2e8f0',
-                  background: statusFilter === st ? 'rgba(171, 37, 35, 0.08)' : '#ffffff',
-                  color: statusFilter === st ? '#ab2523' : '#475569',
-                  padding: '5px 10px',
-                  borderRadius: 8,
-                  fontSize: 12,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                {st === ''
-                  ? 'Tất cả'
-                  : st === 'IN_PROGRESS'
-                    ? 'Đang bay'
-                    : st === 'PENDING_CONFIRMATION'
-                      ? 'Chờ duyệt'
-                      : st === 'COMPLETED'
-                        ? 'Hoàn thành'
-                        : 'Bản nháp'}
-              </button>
-            ))}
-          </div>
-        }
-      >
-        <div className="table-wrap">
-          <div style={{ paddingBottom: 16 }}>
-            <input
-              aria-label="Tìm mission"
-              className="field"
-              style={{
-                display: 'block',
-                width: '100%',
-                maxWidth: 420,
-                padding: '9px 13px',
-                borderRadius: 9,
-                border: '1px solid #cbd5e1',
-              }}
-              placeholder="Tìm theo mã (MS-2026...), tiêu đề hoặc địa điểm..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
-
-          {rows.length ? (
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Mã nhiệm vụ</th>
-                  <th>Tiêu đề &amp; Nghiệp vụ</th>
-                  <th>Khu vực hoạt động</th>
-                  <th>Thời gian dự kiến</th>
-                  <th>Mức ưu tiên</th>
-                  <th>Trạng thái</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map(m => (
-                  <tr key={m.id}>
-                    <td>
-                      <Link href={`/missions/${m.id}`} className="button-link">
-                        {m.code}
-                      </Link>
-                    </td>
-                    <td>
-                      <div style={{ fontWeight: 600, color: '#0f172a' }}>{m.title}</div>
-                      <div className="muted" style={{ fontSize: 12 }}>
-                        {m.missionType}
-                      </div>
-                    </td>
-                    <td>{m.locationName}</td>
-                    <td>{new Date(m.startTime).toLocaleString('vi-VN')}</td>
-                    <td>
-                      <span
-                        style={{
-                          fontSize: 11.5,
-                          fontWeight: 700,
-                          color: m.priority === 'URGENT' || m.priority === 'HIGH' ? '#ab2523' : '#475569',
-                        }}
-                      >
-                        {m.priority}
-                      </span>
-                    </td>
-                    <td>
-                      <Status value={m.status} />
-                    </td>
-                    <td>
-                      <Link href={`/missions/${m.id}`} className="button-link" style={{ fontSize: 13 }}>
-                        Chi tiết →
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="empty">Bạn chưa có mission phù hợp với bộ lọc hiện tại.</div>
-          )}
-        </div>
-      </Panel>
-    </>
-  );
+      {query.isError ? <div className="error" role="alert">Không thể tải nhiệm vụ. <Button variant="secondary" onClick={() => void query.refetch()}>Thử lại</Button></div>
+        : query.isLoading ? <div className="empty" role="status">Đang tải nhiệm vụ…</div>
+        : <>
+          <p className="muted" role="status">{range?.total ? `Hiển thị ${range.first}–${range.last} / ${range.total} nhiệm vụ` : 'Không có nhiệm vụ phù hợp.'}</p>
+          {page?.content.length ? <div className="table-wrap"><table className="table"><thead><tr><th>Mã</th><th>Tiêu đề</th><th>Thời gian</th><th>Trạng thái</th></tr></thead><tbody>{page.content.map(mission => <tr key={mission.id}>
+            <td data-label="Mã"><Link href={`/missions/${mission.id}`} className="button-link">{mission.code}</Link></td><td data-label="Tiêu đề">{mission.title}</td><td data-label="Thời gian">{new Date(mission.startTime).toLocaleString('vi-VN')}</td><td data-label="Trạng thái"><Status value={mission.status} /></td>
+          </tr>)}</tbody></table></div> : <div className="empty">{filters.page > 0 ? 'Trang này không còn nhiệm vụ. Hãy quay lại trang trước hoặc tải lại từ đầu.' : filters.search || filters.status ? 'Không tìm thấy nhiệm vụ theo bộ lọc đã chọn.' : 'Bạn chưa có nhiệm vụ. Tạo yêu cầu đầu tiên để bắt đầu.'}</div>}
+          {page && (page.totalPages > 1 || filters.page > 0) && <nav className="pagination" aria-label="Phân trang nhiệm vụ">
+            <Button variant="secondary" disabled={filters.page === 0 || query.isFetching} onClick={() => setFilters(value => ({ ...value, page: Math.max(0, value.page - 1) }))}>Trang trước</Button>
+            <span aria-live="polite">Trang {page.page + 1} / {Math.max(page.totalPages, page.page + 1)}</span>
+            <Button variant="secondary" disabled={!page.hasNext || query.isFetching} onClick={() => setFilters(value => ({ ...value, page: value.page + 1 }))}>Trang sau</Button>
+            {!page.content.length && filters.page > 0 && <Button variant="secondary" onClick={() => setFilters(value => ({ ...value, page: 0 }))}>Về trang đầu</Button>}
+          </nav>}
+        </>}
+    </Panel>
+  </>;
 }

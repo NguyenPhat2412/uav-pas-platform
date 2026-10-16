@@ -1,0 +1,430 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Anonymous profile API and protected browser route are denied",
+      "status": "PASS"
+    },
+    {
+      "name": "Customer edits only full name and phone; save updates header and survives reload",
+      "status": "PASS",
+      "detail": {
+        "url": "/profile",
+        "title": "UAV PAS Cổng khách hàng",
+        "editableFields": 2
+      }
+    },
+    {
+      "name": "Cancel keeps saved values; blank phone is rejected without a request",
+      "status": "PASS"
+    },
+    {
+      "name": "Duplicate phone is rejected in the UI and the draft stays editable",
+      "status": "PASS"
+    },
+    {
+      "name": "Two real tabs cannot overwrite; explicit reload recovers from a 409",
+      "status": "PASS"
+    },
+    {
+      "name": "Network failure retains draft and requires reconciliation before another save",
+      "status": "PASS"
+    },
+    {
+      "name": "Lost success response is reconciled without a duplicate write",
+      "status": "PASS"
+    },
+    {
+      "name": "Customer B stays isolated and cannot target A or elevate permissions",
+      "status": "PASS"
+    },
+    {
+      "name": "Automatic session refresh preserves the auth response shape and updated profile",
+      "status": "PASS"
+    },
+    {
+      "name": "Mobile form fits 375 px and can save using visible controls",
+      "status": "PASS"
+    },
+    {
+      "name": "Admin sees a Vietnamese audit record without personal field values",
+      "status": "PASS"
+    },
+    {
+      "name": "Logout denies profile and same browser login as B never restores A data",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "Anonymous",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 401
+    },
+    {
+      "label": "Anonymous",
+      "method": "PATCH",
+      "path": "/api/v1/users/profile",
+      "status": 401
+    },
+    {
+      "label": "Customer A",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "PATCH",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "PATCH",
+      "path": "/api/v1/users/profile",
+      "status": 409
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "PATCH",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/1",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/1/profile",
+      "status": 404
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "PATCH",
+      "path": "/api/v1/users/profile",
+      "status": 400
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "PATCH",
+      "path": "/api/v1/users/profile",
+      "status": 409
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 401
+    },
+    {
+      "label": "Customer A",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "PATCH",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Admin audit",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Admin audit",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin audit",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin audit",
+      "method": "GET",
+      "path": "/api/v1/audit-logs",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "Customer A",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "label": "Customer A",
+      "type": "error",
+      "message": "Failed to load resource: net::ERR_INTERNET_DISCONNECTED"
+    },
+    {
+      "label": "Customer A",
+      "type": "error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "label": "Customer A",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+    },
+    {
+      "label": "Admin audit",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    }
+  ],
+  "requestFailures": [
+    {
+      "label": "Customer A",
+      "path": "/api/v1/users/profile",
+      "error": "NETWORK_ERROR"
+    },
+    {
+      "label": "Customer A",
+      "path": "/api/v1/users/profile",
+      "error": "NETWORK_ERROR"
+    }
+  ]
+}

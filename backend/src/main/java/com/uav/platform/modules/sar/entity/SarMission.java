@@ -24,12 +24,15 @@ public class SarMission extends BaseEntity {
     private String searchAreaPolygon;
 
     @Column(name = "lkp_latitude", nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double lkpLatitude;
 
     @Column(name = "lkp_longitude", nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double lkpLongitude;
 
     @Column(name = "drift_radius_meters")
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double driftRadiusMeters = 500.0;
 
     @Enumerated(EnumType.STRING)

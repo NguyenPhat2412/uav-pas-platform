@@ -1,0 +1,86 @@
+{
+  "results": [],
+  "failure": "locator.waitFor: Timeout 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('20 lịch bảo trì phù hợp bộ lọc', { exact: true }) to be visible\u001b[22m\n\n    at /Volumes/D/Codex/projects/uav-pas-platform/work/uav-maintenance-planning-20261015/maintenance-pagination-ui.mjs:49:71",
+  "network": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/maintenance/schedules/115",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    }
+  ]
+}

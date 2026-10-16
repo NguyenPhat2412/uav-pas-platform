@@ -124,8 +124,26 @@ public class Mission extends BaseEntity {
         transitionTo(MissionStatus.FAILED);
     }
 
-    public void acceptOperator() { operatorAccepted = true; operatorConflictNote = null; }
-    public void reportOperatorConflict(String note) { operatorAccepted = false; operatorConflictNote = note; }
+    public void acceptOperator() { requirePreflight(); operatorAccepted = true; operatorConflictNote = null; }
+    public void reportOperatorConflict(String note) {
+        requirePreflight(); operatorAccepted = false; operatorConflictNote = note;
+        if (status == MissionStatus.READY) status = MissionStatus.RESOURCE_RESERVED;
+    }
+
+    public void invalidateAcceptance() { operatorAccepted = false; operatorConflictNote = null; }
+
+    public void requireMediaWritable() {
+        if (status == MissionStatus.COMPLETED || status == MissionStatus.FAILED
+                || status == MissionStatus.CANCELLED || status == MissionStatus.REJECTED) {
+            throw com.uav.platform.error.SystemException.conflict("MISSION_MEDIA_LOCKED");
+        }
+    }
+
+    private void requirePreflight() {
+        if (status != MissionStatus.CONFIRMED && status != MissionStatus.RESOURCE_RESERVED && status != MissionStatus.READY) {
+            throw new IllegalStateException("MISSION_INVALID_STATUS");
+        }
+    }
 
     public void updateDraft(String title, String description, LocalDate requestedDate,
                             LocalDateTime startTime, LocalDateTime expectedEndTime,
@@ -144,6 +162,24 @@ public class Mission extends BaseEntity {
 
     public void assignStation(Station station) { this.station = station; }
     public void assignUav(Uav uav) { this.uav = uav; }
+    /** Re-dispatch is a pre-flight operation, separate from ordinary lifecycle transitions. */
+    public void redispatchUav(Uav replacement, boolean equipmentReserved) {
+        if (status != MissionStatus.CONFIRMED && status != MissionStatus.RESOURCE_RESERVED && status != MissionStatus.READY) {
+            throw new IllegalStateException("MISSION_INVALID_STATUS");
+        }
+        this.uav = replacement;
+        this.operatorAccepted = false;
+        this.operatorConflictNote = null;
+        this.status = hasRequiredResources(equipmentReserved) ? MissionStatus.RESOURCE_RESERVED : MissionStatus.CONFIRMED;
+    }
+
+    public void resetDispatch(boolean equipmentReserved) {
+        requirePreflight();
+        operatorAccepted = false;
+        operatorConflictNote = null;
+        status = hasRequiredResources(equipmentReserved) ? MissionStatus.RESOURCE_RESERVED : MissionStatus.CONFIRMED;
+    }
+
     public void assignOperator(AppUser operator) { this.operator = operator; }
     public boolean hasRequiredResources(boolean equipmentReserved) {
         return station != null && uav != null && operator != null && equipmentReserved;

@@ -1,0 +1,305 @@
+{
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "Upload bytes and confirm mission-linked media through UI without forwarding bearer to storage",
+      "status": "FAIL",
+      "error": "locator.setInputFiles: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('Tệp tải lên', { exact: true })\u001b[22m\n"
+    },
+    {
+      "name": "Preview and open actual private file from UI",
+      "status": "FAIL",
+      "error": "locator.click: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('row').filter({ hasText: 'mission-result-1792122580659.txt' }).getByRole('button', { name: 'Xem / tải xuống', exact: true })\u001b[22m\n"
+    },
+    {
+      "name": "Customer A sees and downloads the owned mission result",
+      "status": "FAIL",
+      "error": "locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('mission-result-1792122580659.txt', { exact: true }) to be visible\u001b[22m\n"
+    },
+    {
+      "name": "Customer B cannot read mission, timeline, media or get a signed download",
+      "status": "FAIL",
+      "error": "Cannot read properties of undefined (reading 'id')"
+    },
+    {
+      "name": "Deleting attached media is rejected with an error visible beside the action",
+      "status": "FAIL",
+      "error": "locator.click: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('row').filter({ hasText: 'mission-result-1792122580659.txt' }).getByRole('button', { name: 'Xóa', exact: true })\u001b[22m\n"
+    },
+    {
+      "name": "Interrupted confirm stays unconfirmed and can be recovered on UI",
+      "status": "FAIL",
+      "error": "locator.setInputFiles: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('Tệp tải lên', { exact: true })\u001b[22m\n"
+    },
+    {
+      "name": "Delete unlinked file on UI removes metadata visibility and stored bytes",
+      "status": "FAIL",
+      "error": "Cannot read properties of undefined (reading 'id')"
+    },
+    {
+      "name": "Missing object and wrong media scope cannot become confirmed mission output",
+      "status": "PASS"
+    },
+    {
+      "name": "Mobile media screen has no page overflow",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "media-admin",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/missions/1",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 403
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "customer-A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "customer-B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/media",
+      "status": 201
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/media/2/confirm",
+      "status": 409
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/1/media/upload-url",
+      "status": 403
+    },
+    {
+      "label": "media-admin",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "requestFailures": [],
+  "failure": "One or more media checks failed"
+}

@@ -1,0 +1,51 @@
+{
+  "status": "FAIL",
+  "scope": "Pre-existing authentication concurrency gap, outside maintenance change; auth implementation/contract untouched.",
+  "trigger": "Two simultaneous logins for the same synthetic account",
+  "attempts": [
+    {
+      "round": 1,
+      "statuses": [
+        200,
+        500
+      ]
+    },
+    {
+      "round": 2,
+      "statuses": [
+        500,
+        200
+      ]
+    },
+    {
+      "round": 3,
+      "statuses": [
+        500,
+        200
+      ]
+    },
+    {
+      "round": 4,
+      "statuses": [
+        500,
+        200
+      ]
+    },
+    {
+      "round": 5,
+      "statuses": [
+        200,
+        500
+      ]
+    },
+    {
+      "round": 6,
+      "statuses": [
+        200,
+        500
+      ]
+    }
+  ],
+  "observedConstraint": "refresh_tokens_user_id_key",
+  "followUp": "Separate authentication concurrency fix/review required. No tokens, credentials or response bodies retained. Maintenance functional suites log in sequentially."
+}

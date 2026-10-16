@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class IInventoryService implements InventoryService {
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.uav.platform.modules.mission.repository.MissionEquipmentReservationRepository missionReservations;
     private final EquipmentRepository equipment;
     private final InventoryMovementRepository movements;
     private final StationRepository stations;
@@ -45,7 +47,10 @@ public class IInventoryService implements InventoryService {
     }
     @Override
     public EquipmentResponse update(Long id, EquipmentRequest request, String actor) {
-        Equipment item = find(id); item.update(request.name(), request.type(), request.stationId() == null ? null : station(request.stationId()));
+        Equipment item = locked(id);
+        Long currentStation = item.getStation() == null ? null : item.getStation().getId();
+        if (!java.util.Objects.equals(currentStation, request.stationId()) && item.getReservedQuantity() > 0) throw SystemException.conflict("Equipment is reserved; release reservations before changing station");
+        item.update(request.name(), request.type(), request.stationId() == null ? null : station(request.stationId()));
         audit.record(null, actor, AuditAction.UPDATE, "EQUIPMENT", id.toString(), item.getName());
         return EquipmentMapper.toResponse(item);
     }
@@ -85,6 +90,11 @@ public class IInventoryService implements InventoryService {
         Equipment item = locked(id);
         var replay = replay(item, r, actor, type, null);
         if (replay != null) return replay;
+        long missionQuantity = type == MovementType.RELEASE && missionReservations != null ? missionReservations.activeQuantity(id) : 0;
+        if (missionQuantity > 0 && item.getReservedQuantity() - missionQuantity < r.quantity()) {
+            throw SystemException.conflict("MISSION_EQUIPMENT_RELEASE_REQUIRED");
+        }
+        if (type == MovementType.RESERVE && item.getStatus() != com.uav.platform.modules.inventory.common.EquipmentStatus.ACTIVE) throw SystemException.conflict("INVENTORY_NOT_AVAILABLE");
         switch (type) { case STOCK_IN -> item.stockIn(r.quantity()); case STOCK_OUT -> item.stockOut(r.quantity()); case RESERVE -> item.reserve(r.quantity()); case RELEASE -> item.release(r.quantity()); default -> throw new IllegalArgumentException("Unsupported movement"); }
         movements.save(new InventoryMovement(item, type, r.quantity(), item.getStation(), item.getStation(), actor, r.note(), r.requestId()));
         AuditAction action = switch (type) { case STOCK_IN -> AuditAction.STOCK_IN; case STOCK_OUT -> AuditAction.STOCK_OUT; case RESERVE -> AuditAction.RESERVE; default -> AuditAction.RELEASE; };

@@ -3,63 +3,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Bell, CheckCheck, AlertCircle, Info, ShieldAlert, CheckCircle2, ChevronRight } from 'lucide-react';
-import { apiClient } from '@uav/api-client';
-
-export interface NotificationItem {
-  id: string;
-  title: string;
-  message: string;
-  type: 'INFO' | 'WARNING' | 'ALERT' | 'SUCCESS';
-  isRead: boolean;
-  createdAt: string;
-}
-
-const MOCK_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: 'n-01',
-    title: 'Phát hiện mục tiêu người khả nghi',
-    message: 'Hệ thống YOLOv8s trên UAV Matrice 350 RTK vừa nhận diện nạn nhân tại Vịnh Lan Hạ (94.2% tin cậy).',
-    type: 'ALERT',
-    isRead: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 3).toISOString()
-  },
-  {
-    id: 'n-02',
-    title: 'Cảnh báo pin trạm ST-01',
-    message: 'Pin dự phòng TB65 (SN: BAT-TB65-021) tại Trạm Cát Bà đạt 200 chu kỳ sạc, khuyến nghị bảo dưỡng.',
-    type: 'WARNING',
-    isRead: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 25).toISOString()
-  },
-  {
-    id: 'n-03',
-    title: 'Phân công nhiệm vụ mới',
-    message: 'Bạn được phân công làm phi công chỉ huy cho chiến dịch SAR-2026-004.',
-    type: 'INFO',
-    isRead: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString()
-  }
-];
+import { useNotifications } from '@uav/query/notifications';
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<NotificationItem[]>(MOCK_NOTIFICATIONS);
-  const [unreadCount, setUnreadCount] = useState<number>(2);
+  const { notifications, unreadCount, loading, busy, error, reload, markAllRead: markAllAsRead, markOneRead: markAsRead } = useNotifications();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Attempt fetch from backend API with fallback to mock
-    apiClient.get<{ unreadCount: number }>('/api/v1/notifications/unread-count')
-      .then(res => {
-        if (res && typeof res.unreadCount === 'number') {
-          setUnreadCount(res.unreadCount);
-        }
-      })
-      .catch(() => {
-        // Fallback to local count
-        setUnreadCount(notifications.filter(n => !n.isRead).length);
-      });
-
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false);
@@ -67,27 +18,7 @@ export function NotificationBell() {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [notifications]);
-
-  const markAllAsRead = async () => {
-    try {
-      await apiClient.post('/api/v1/notifications/read-all');
-    } catch {
-      // Local fallback
-    }
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-    setUnreadCount(0);
-  };
-
-  const markAsRead = async (id: string) => {
-    try {
-      await apiClient.patch(`/api/v1/notifications/${id}/read`);
-    } catch {
-      // Local fallback
-    }
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
-    setUnreadCount(prev => Math.max(0, prev - 1));
-  };
+  }, []);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -95,7 +26,7 @@ export function NotificationBell() {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer"
-        aria-label="Thông báo"
+        aria-label="Thông báo" aria-expanded={isOpen}
         title="Trung tâm thông báo"
       >
         <Bell size={18} />
@@ -107,7 +38,7 @@ export function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl border border-slate-200 bg-white/95 backdrop-blur-md shadow-2xl z-50 overflow-hidden text-slate-800">
+        <div className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-32px)] sm:w-96 rounded-2xl border border-slate-200 bg-white/95 backdrop-blur-md shadow-2xl z-50 overflow-hidden text-slate-800">
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 bg-slate-50/80">
             <div className="flex items-center gap-2">
               <span className="font-bold text-sm text-slate-900">Thông báo</span>
@@ -120,7 +51,7 @@ export function NotificationBell() {
             {unreadCount > 0 && (
               <button
                 type="button"
-                onClick={markAllAsRead}
+                onClick={markAllAsRead} disabled={busy || loading}
                 className="text-xs text-[#007f3e] hover:text-[#006632] flex items-center gap-1 font-bold cursor-pointer"
               >
                 <CheckCheck size={14} /> Đọc tất cả
@@ -129,7 +60,9 @@ export function NotificationBell() {
           </div>
 
           <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
-            {notifications.length === 0 ? (
+            {loading && <p role="status" className="p-3 text-sm">Đang tải thông báo…</p>}
+            {error && <div role="alert" className="p-3 text-sm">{error} <button type="button" onClick={reload}>Thử lại</button></div>}
+            {!loading && !error && notifications.length === 0 ? (
               <div className="py-8 text-center text-xs text-slate-400">
                 Không có thông báo nào
               </div>
@@ -137,7 +70,9 @@ export function NotificationBell() {
               notifications.map(item => (
                 <div
                   key={item.id}
-                  onClick={() => !item.isRead && markAsRead(item.id)}
+                  role="button" tabIndex={busy ? -1 : 0} aria-disabled={busy || item.isRead}
+                  onKeyDown={event => { if ((event.key === 'Enter' || event.key === ' ') && !busy && !item.isRead) { event.preventDefault(); markAsRead(item.id); } }}
+                  onClick={() => !busy && !item.isRead && markAsRead(item.id)}
                   className={`p-3.5 hover:bg-slate-50 transition cursor-pointer flex gap-3 ${
                     !item.isRead ? 'bg-[#fef2f2]/30' : ''
                   }`}

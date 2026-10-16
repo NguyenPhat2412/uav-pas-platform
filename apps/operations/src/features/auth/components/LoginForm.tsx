@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ArrowRight,
@@ -122,18 +121,7 @@ export function LoginForm({ onSuccess, redirectTo = '/' }: LoginFormProps) {
         </div>
       </form>
 
-      {/* Navigation link to Register */}
-      <div className="mt-8 text-center">
-        <p className="font-body-md text-body-md text-secondary">
-          {t('auth.noAccount')}{' '}
-          <Link
-            href="/register"
-            className="font-semibold text-primary-container hover:underline ml-1"
-          >
-            {t('auth.registerBtn')}
-          </Link>
-        </p>
-      </div>
+      <p className="mt-8 text-center text-sm text-secondary">Chưa có tài khoản vận hành? Liên hệ quản trị viên để được cấp quyền truy cập.</p>
 
       {/* Security & Ground Control Badges */}
       <div className="mt-12 pt-6 flex items-center justify-center gap-3 text-outline border-t border-slate-200/80">

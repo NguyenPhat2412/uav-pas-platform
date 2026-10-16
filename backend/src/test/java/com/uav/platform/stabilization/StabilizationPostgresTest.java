@@ -31,7 +31,7 @@ import java.util.concurrent.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@EnabledIfEnvironmentVariable(named="UAV_STABILIZATION_DB_URL", matches="jdbc:postgresql://127\\.0\\.0\\.1:[0-9]+/uav_stabilization")
+@EnabledIfEnvironmentVariable(named="UAV_STABILIZATION_DB_URL", matches="jdbc:postgresql://127\\.0\\.0\\.1:[0-9]+/uav_(stabilization|ba_test_suite)")
 class StabilizationPostgresTest {
     private static final String SCHEMA="stabilization_"+UUID.randomUUID().toString().replace("-","");
     @DynamicPropertySource static void database(DynamicPropertyRegistry p) {

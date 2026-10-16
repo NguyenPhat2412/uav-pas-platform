@@ -11,5 +11,8 @@ import java.util.List;
 
 public interface MissionEquipmentReservationRepository extends JpaRepository<MissionEquipmentReservation, Long>, JpaSpecificationExecutor<MissionEquipmentReservation> {
     List<MissionEquipmentReservation> findByMissionIdAndReleasedFalse(Long missionId);
+    List<MissionEquipmentReservation> findByMissionIdOrderByIdAsc(Long missionId);
+    @org.springframework.data.jpa.repository.Query("select coalesce(sum(r.quantity), 0) from MissionEquipmentReservation r where r.equipment.id = :id and r.released = false")
+    long activeQuantity(@org.springframework.data.repository.query.Param("id") Long id);
     boolean existsByMissionIdAndReleasedFalse(Long missionId);
 }
