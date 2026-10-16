@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@types/react": "^19",
-    "typescript": "^5",
+    "typescript": "^7",
     "eslint": "^9"
   }
 }
