@@ -201,7 +201,10 @@ class MaintenancePlanningIntegrationTest {
 
     @Test void completedOrderIsImmutableForAllMutations() {
         var o = order(null); o = service.start(o.id(), new Version(o.version()), actor());
-        var done = service.complete(o.id(), new Complete(o.version(), "Inspection passed", true), actor());
+        service.complete(o.id(), new Complete(o.version(), "Inspection passed", true), actor());
+        // Compare persisted snapshots: timestamp columns may round the JVM's nanoseconds.
+        var done = service.order(o.id());
+        assertEquals(RepairStatus.COMPLETED, done.status());
         assertCode("MAINTENANCE_ORDER_TERMINAL", () -> service.materials(done.id(), new Materials(done.version(), List.of()), actor()));
         assertCode("MAINTENANCE_ORDER_TERMINAL", () -> service.updateOrder(done.id(), new UpdateOrder(done.version(), "Changed", "", today, "Other"), actor()));
         assertCode("MAINTENANCE_ORDER_TERMINAL", () -> service.cancel(done.id(), new Cancel(done.version(), "Cancel"), actor()));
@@ -211,7 +214,8 @@ class MaintenancePlanningIntegrationTest {
 
     @Test void auditFailureRollsBackCompletionUavHistoryAndSchedule() {
         var s = schedule(today); var o = order(s.id()); o = service.start(o.id(), new Version(o.version()), actor());
-        var started = o; int histories = count("SELECT count(*) FROM uav_status_history WHERE uav_id=?", uavId);
+        var started = service.order(o.id()); int histories = count("SELECT count(*) FROM uav_status_history WHERE uav_id=?", uavId);
+        assertEquals(RepairStatus.IN_PROGRESS, started.status());
         doThrow(new IllegalStateException("Synthetic audit write failure")).when(audit).record(isNull(), eq(actor()), eq(AuditAction.UPDATE), eq("REPAIR_ORDER"), eq(o.id().toString()), eq("COMPLETED"));
         assertThrows(IllegalStateException.class, () -> service.complete(started.id(), new Complete(started.version(), "Passed", true), actor()));
         assertEquals(started, service.order(o.id())); assertEquals(UavStatus.MAINTENANCE, uavs.get(uavId).status());
@@ -298,19 +302,21 @@ class MaintenancePlanningIntegrationTest {
     @ParameterizedTest @ValueSource(strings = {"0,1", "-1,1", "10001,1", "1.0001,1", "1,-1", "1,1.5", "1,1000000001"})
     void invalidMaterialNumbersReturn400WithoutMutation(String numbers) throws Exception {
         var n = numbers.split(","); var o = order(null);
+        var before = service.order(o.id());
         mvc.perform(put("/api/v1/maintenance/orders/" + o.id() + "/materials").with(authentication(auth(admin)))
                 .contentType(MediaType.APPLICATION_JSON).content("{\"expectedVersion\":0,\"items\":[{\"name\":\"Rotor\",\"unit\":\"set\",\"quantity\":" + n[0] + ",\"unitPrice\":" + n[1] + "}]}"))
                 .andExpect(status().isBadRequest());
-        assertEquals(o, service.order(o.id()));
+        assertEquals(before, service.order(o.id()));
     }
 
     @Test void missingExpectedVersionAndMissingNotesReturn400() throws Exception {
         var o = order(null);
+        var before = service.order(o.id());
         mvc.perform(post("/api/v1/maintenance/orders/" + o.id() + "/start").with(authentication(auth(admin)))
                 .contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isBadRequest());
         mvc.perform(post("/api/v1/maintenance/orders/" + o.id() + "/cancel").with(authentication(auth(admin)))
                 .contentType(MediaType.APPLICATION_JSON).content("{\"expectedVersion\":0,\"reason\":\" \"}")).andExpect(status().isBadRequest());
-        assertEquals(o, service.order(o.id()));
+        assertEquals(before, service.order(o.id()));
     }
 
     private MaintenanceResponses.Schedule schedule(LocalDate date) { return service.createSchedule(new CreateSchedule(uavId, "Periodic inspection", 30, date), actor()); }

@@ -82,3 +82,11 @@ Commit ứng dụng `07d7266` đã được xác minh trên `origin/main`. [Run 
 Follow-up chỉ sửa stack kiểm thử: dựng MinIO từ đúng release/commit và Go toolchain của binary local đã kiểm, pin checksum archive, giữ license và chạy non-root. Không thay backend/auth contract, không đổi dependency ứng dụng hoặc deploy production. Chi tiết ở `infra/minio-test/README.md`; evidence đầu tiên: `hosted-ci-initial.json`. Biên nhận bàn giao ghi kết quả run mới sau sửa, không xóa lịch sử run lỗi.
 
 Kiểm lại local với image dựng từ source: **635/635 test backend PASS, 0 failure/error/skip**; evidence `backend-source-minio-summary.json` và `backend-source-minio-sanitized.txt`. Review độc lập phần CI-only không có finding chặn; reviewer không chạy lại test. Kết quả này chưa thay thế lần chạy trên hosted runner sạch.
+
+## CI hosted: độ chính xác timestamp trong test bảo trì
+
+[Run 38934161789](https://github.com/NguyenPhat2412/uav-pas-platform/actions/runs/38934161789) dựng thành công MinIO từ source; hai job frontend PASS. Backend chạy đủ 635 test, có 20 failure (0 error/skip) tại bốn phương thức kiểm phiếu bảo trì trên H2/PostgreSQL. Mỗi diff chỉ là timestamp trước persistence có nanosecond và timestamp đọc lại được database làm tròn về microsecond. Evidence: `hosted-ci-timestamp-precision.json`.
+
+Bản sửa chỉ lấy snapshot đã lưu **trước** thao tác bị từ chối/rollback để so sánh với snapshot sau thao tác. Vẫn dùng equality toàn bộ record, không bỏ timestamp hoặc tăng tolerance; kiểm tra trạng thái UAV, lịch sử và lịch bảo trì giữ nguyên. Bổ sung assert trạng thái đầu là COMPLETED/IN_PROGRESS. Review độc lập xác nhận không làm yếu kiểm tra và không có finding chặn (reviewer không chạy test). Không thay ứng dụng hay auth contract.
+
+Sau sửa snapshot, chạy lại đầy đủ local: **635/635 PASS, 0 failure/error/skip**, gồm PostgreSQL/MinIO. Evidence: `backend-persisted-snapshot-summary.json`, `backend-persisted-snapshot-sanitized.txt`. Kết quả hosted cuối được ghi trong release receipt sau push.

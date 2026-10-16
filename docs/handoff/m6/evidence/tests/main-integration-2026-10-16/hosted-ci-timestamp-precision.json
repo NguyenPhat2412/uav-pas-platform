@@ -1,0 +1,31 @@
+{
+  "commit": "36871e54c828b8cae19eef2042d941f56e159290",
+  "run": "https://github.com/NguyenPhat2412/uav-pas-platform/actions/runs/38934161789",
+  "frontend": "PASS",
+  "legacy": "PASS",
+  "sourceBuiltMinio": "PASS",
+  "backend": "FAIL",
+  "totals": {
+    "tests": 635,
+    "failures": 20,
+    "errors": 0,
+    "skipped": 0
+  },
+  "failureSummary": "Tests run: 635, Failures: 20, Errors: 0, Skipped: 0",
+  "affectedTests": [
+    "completedOrderIsImmutableForAllMutations",
+    "auditFailureRollsBackCompletionUavHistoryAndSchedule",
+    "invalidMaterialNumbersReturn400WithoutMutation (7 parameters)",
+    "missingExpectedVersionAndMissingNotesReturn400"
+  ],
+  "databases": [
+    "H2",
+    "PostgreSQL"
+  ],
+  "cause": "Full DTO equality compared pre-persistence nanosecond timestamps with database-rounded microseconds. All 20 reported differences were timestamp precision.",
+  "example": {
+    "beforePersistence": "2026-10-16T23:47:56.775729288",
+    "afterRead": "2026-10-16T23:47:56.775729"
+  },
+  "remediation": "Read persisted baseline before rejected mutations and rollback; retain exact full-record equality afterward. No app/auth changes."
+}
