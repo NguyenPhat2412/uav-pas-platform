@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "typescript": "^5",
-    "eslint": "^9",
+    "eslint": "^10",
     "@types/react": "^19"
   },
   "peerDependencies": {
