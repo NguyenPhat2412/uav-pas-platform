@@ -161,6 +161,13 @@ public class Mission extends BaseEntity {
         this.status = hasRequiredResources(equipmentReserved) ? MissionStatus.RESOURCE_RESERVED : MissionStatus.CONFIRMED;
     }
 
+    public void resetDispatch(boolean equipmentReserved) {
+        requirePreflight();
+        operatorAccepted = false;
+        operatorConflictNote = null;
+        status = hasRequiredResources(equipmentReserved) ? MissionStatus.RESOURCE_RESERVED : MissionStatus.CONFIRMED;
+    }
+
     public void assignOperator(AppUser operator) { this.operator = operator; }
     public boolean hasRequiredResources(boolean equipmentReserved) {
         return station != null && uav != null && operator != null && equipmentReserved;

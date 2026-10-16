@@ -131,6 +131,33 @@ public class MissionController {
         return ResponseEntity.ok(service.reserveEquipment(id, request, authentication));
     }
 
+    @GetMapping("/{id}/dispatch-resources")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    public ResponseEntity<MissionDispatchResourcesResponse> dispatchResources(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(service.dispatchResources(id, authentication));
+    }
+
+    @PostMapping("/{id}/redispatch-operator")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_OPERATOR')")
+    public ResponseEntity<MissionResponse> redispatchOperator(@PathVariable Long id,
+            @Valid @RequestBody MissionResourceRedispatchRequest request, Authentication authentication) {
+        return ResponseEntity.ok(service.redispatchOperator(id, request, authentication));
+    }
+
+    @PostMapping("/{id}/redispatch-station")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_STATION')")
+    public ResponseEntity<MissionResponse> redispatchStation(@PathVariable Long id,
+            @Valid @RequestBody MissionResourceRedispatchRequest request, Authentication authentication) {
+        return ResponseEntity.ok(service.redispatchStation(id, request, authentication));
+    }
+
+    @PostMapping("/{id}/redispatch-equipment")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_RESERVE_EQUIPMENT')")
+    public ResponseEntity<MissionResponse> redispatchEquipment(@PathVariable Long id,
+            @Valid @RequestBody MissionEquipmentRedispatchRequest request, Authentication authentication) {
+        return ResponseEntity.ok(service.redispatchEquipment(id, request, authentication));
+    }
+
     @PostMapping("/{id}/confirm")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_CONFIRM')")
     public ResponseEntity<MissionResponse> confirm(@PathVariable Long id, Authentication authentication) {

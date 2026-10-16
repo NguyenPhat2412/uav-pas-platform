@@ -26,6 +26,10 @@ public interface MissionService {
     MissionResponse unassignUav(Long id, MissionUavUnassignmentRequest request, Authentication authentication);
     MissionResponse assignOperator(Long id, ResourceAssignmentRequest request, Authentication authentication);
     MissionResponse reserveEquipment(Long id, ResourceAssignmentRequest request, Authentication authentication);
+    MissionDispatchResourcesResponse dispatchResources(Long id, Authentication authentication);
+    MissionResponse redispatchOperator(Long id, MissionResourceRedispatchRequest request, Authentication authentication);
+    MissionResponse redispatchStation(Long id, MissionResourceRedispatchRequest request, Authentication authentication);
+    MissionResponse redispatchEquipment(Long id, MissionEquipmentRedispatchRequest request, Authentication authentication);
     MissionResponse confirm(Long id, Authentication authentication);
     MissionResponse reject(Long id, String reason, Authentication authentication);
     MissionResponse ready(Long id, Authentication authentication);
