@@ -19,3 +19,6 @@ export interface MissionDashboard { totalMissions: number; pendingMissions: numb
 export interface UavService { id: number; code: string; name: string; description?: string; active: boolean; defaultDurationMinutes: number; }
 export interface SignedMediaUrl { mediaId: number; url: string; operation: string; expiresInSeconds: number; }
 export interface MissionAvailability { available: boolean; stationAvailable: boolean; uavAvailable: boolean; operatorAvailable: boolean; message: string; }
+
+export interface DispatchReservation { id: number; equipmentId: number; equipmentName: string; stationId?: number; quantity: number; released: boolean; releasedAt?: string; }
+export interface DispatchResources { mission: Mission; version: number; stationId?: number; operatorId?: number; reservations: DispatchReservation[]; }

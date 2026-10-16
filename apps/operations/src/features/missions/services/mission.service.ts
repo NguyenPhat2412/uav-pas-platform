@@ -1,6 +1,6 @@
 import { apiClient, apiRequest } from '@/lib/api.client';
-import { failureInput, missionEventNote, uavRedispatchInput } from '../workflows';
-import { Mission, MissionDashboard, MissionEvent, MissionInput, MissionMedia, MissionStatus, MissionType, PageResponse, MediaRole, UavService, MediaType, SignedMediaUrl, MissionAvailability } from '../types/mission.types';
+import { failureInput, missionEventNote, uavRedispatchInput, resourceRedispatchInput } from '../workflows';
+import { DispatchResources, Mission, MissionDashboard, MissionEvent, MissionInput, MissionMedia, MissionStatus, MissionType, PageResponse, MediaRole, UavService, MediaType, SignedMediaUrl, MissionAvailability } from '../types/mission.types';
 
 const base = '/api/v1/missions';
 export const missionService = {
@@ -12,6 +12,10 @@ export const missionService = {
     if (params?.search) query.set('search', params.search);
     return apiClient.get<PageResponse<Mission>>(`${base}?${query.toString()}`);
   },
+  dispatchResources: (id: number) => apiClient.get<DispatchResources>(`${base}/${id}/dispatch-resources`),
+  redispatchResource: (id: number, kind: 'operator' | 'station', expectedVersion: number, replacementId: number | null, reason: string) => apiClient.post<Mission>(`${base}/${id}/redispatch-${kind}`, resourceRedispatchInput(expectedVersion, replacementId, reason)),
+  redispatchEquipment: (id: number, expectedVersion: number, reservationId: number, replacementId: number | null, quantity: number | null, reason: string) => apiClient.post<Mission>(`${base}/${id}/redispatch-equipment`, { ...resourceRedispatchInput(expectedVersion, replacementId, reason), reservationId, quantity }),
+  operatorAvailability: (startTime: string, endTime: string, operatorId: number) => apiClient.get<MissionAvailability>(`${base}/availability?${new URLSearchParams({startTime, endTime, operatorId: String(operatorId)})}`),
   get: (id: number) => apiClient.get<Mission>(`${base}/${id}`),
   create: (data: MissionInput) => apiClient.post<Mission>(base, data),
   update: (id: number, data: Omit<MissionInput, 'missionType'>) => apiClient.patch<Mission>(`${base}/${id}`, data),

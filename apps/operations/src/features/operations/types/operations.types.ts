@@ -38,6 +38,7 @@ export interface Equipment {
   quantity: number;
   availableQuantity: number;
   reservedQuantity: number;
+  status: string;
   stationId?: number;
   stationName?: string;
 }

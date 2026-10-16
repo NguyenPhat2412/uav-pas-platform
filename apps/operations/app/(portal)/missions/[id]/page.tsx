@@ -8,7 +8,8 @@ import { displayLabel, formatDate, missionHint, terminalStatuses } from '@uav/ui
 import { Alert, Button, Spinner } from '@/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { missionService } from '@/features/missions/services/mission.service';
-import type { Mission, MissionEvent, MissionMedia } from '@/features/missions/types/mission.types';
+import { ResourceRedispatch } from '@/features/missions/components/ResourceRedispatch';
+import type { DispatchResources, Mission, MissionEvent, MissionMedia } from '@/features/missions/types/mission.types';
 import { MissionStatusBadge } from '@/features/missions/components/MissionStatusBadge';
 import { missionControls } from '@/features/missions/presentation';
 import { MissionFormError, missionEventNoteLimit, reservationQuantity } from '@/features/missions/workflows';
@@ -21,6 +22,13 @@ import { AppShell } from '@/components/layout/AppShell';
 type Confirmation = 'reject' | 'conflict' | 'complete' | 'cancel' | 'fail';
 const confirmations = { reject: 'Từ chối yêu cầu', conflict: 'Báo vướng mắc', complete: 'Hoàn tất nhiệm vụ', cancel: 'Hủy nhiệm vụ', fail: 'Ghi nhận nhiệm vụ không thành công' };
 const errorLabels: Record<string, string> = {
+  MISSION_DISPATCH_STALE: 'Phân công đã thay đổi ở màn hình khác. Dữ liệu đã được tải lại; hãy kiểm tra trước khi thử lại.',
+  MISSION_RESERVATION_STALE: 'Khoản giữ đã được đổi hoặc hoàn trả. Hãy kiểm tra danh sách mới nhất.',
+  MISSION_STATION_RESOURCES_CONFLICT: 'Tài nguyên không cùng trạm. Hãy gỡ UAV và hoàn trả thiết bị thuộc trạm cũ trước khi đổi trạm.',
+  MISSION_RESERVATION_BALANCE_CONFLICT: 'Số lượng giữ trong kho không khớp với các nhiệm vụ. Chưa hoàn trả để tránh lấy nhầm phần của nhiệm vụ khác.',
+  MISSION_DISPATCH_REQUIRED: 'Tài nguyên đã được phân công. Hãy dùng chức năng điều phối lại.',
+  OPERATOR_NOT_AVAILABLE: 'Người vận hành phải có đúng vai trò, đang hoạt động và không bị khóa.',
+  MISSION_RESOURCE_UNCHANGED: 'Tài nguyên và số lượng chưa thay đổi.',
   MISSION_UAV_ASSIGNMENT_STALE: 'UAV của nhiệm vụ đã thay đổi ở nơi khác. Thông tin đã được tải lại; hãy kiểm tra UAV hiện tại trước khi thao tác.',
   MISSION_INVALID_STATUS: 'Trạng thái nhiệm vụ đã thay đổi. Thông tin đã được tải lại, vui lòng kiểm tra trước khi thao tác.',
   MISSION_RESOURCE_MISSING: 'Chưa đủ tài nguyên hợp lệ. Hãy kiểm tra trạm, UAV, người vận hành và thiết bị.',
@@ -35,6 +43,7 @@ function MissionDetail({ id }: { id: string }) {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, can, permissionsReady } = useAuth();
   const [mission, setMission] = useState<Mission | null>(null);
+  const [dispatch, setDispatch] = useState<DispatchResources | null>(null);
   const [events, setEvents] = useState<MissionEvent[]>([]); const [media, setMedia] = useState<MissionMedia[]>([]);
   const [stations, setStations] = useState<Station[]>([]); const [uavs, setUavs] = useState<Uav[]>([]);
   const [equipment, setEquipment] = useState<Equipment[]>([]); const [operators, setOperators] = useState<Operator[]>([]);
@@ -58,7 +67,7 @@ function MissionDetail({ id }: { id: string }) {
     const generation = ++loadGeneration.current;
     const isCurrent = () => generation === loadGeneration.current;
     let result: Mission;
-    try { result = await missionService.get(Number(id)); }
+    try { const snapshot = await missionService.dispatchResources(Number(id)); result = snapshot.mission; if (isCurrent()) setDispatch(snapshot); }
     catch (err) { if (!isCurrent()) return; throw err; }
     if (!isCurrent()) return;
     setMission(result); setStale(false);
@@ -125,7 +134,7 @@ function MissionDetail({ id }: { id: string }) {
     { key: 'station' as const, label: 'Trạm', options: stations.filter(s => s.status === 'ACTIVE').map(s => ({ id: s.id, label: `${s.name} · ${s.code}` })), run: () => missionService.assignStation(mission.id, Number(resourceIds.station)) },
     { key: 'uav' as const, label: 'UAV', options: uavs.filter(u => u.status === 'AVAILABLE' && (!mission.stationId || !u.stationId || u.stationId === mission.stationId)).map(u => ({ id: u.id, label: `${u.serialNumber} · ${u.model}` })), run: () => missionService.assignUav(mission.id, Number(resourceIds.uav)) },
     { key: 'operator' as const, label: 'Người vận hành', options: operators.filter(o => o.status === 'ACTIVE').map(o => ({ id: o.id, label: o.fullName || o.username })), run: () => missionService.assignOperator(mission.id, Number(resourceIds.operator)) },
-    { key: 'equipment' as const, label: 'Thiết bị', options: equipment.filter(e => e.availableQuantity > 0).map(e => ({ id: e.id, label: `${e.name} · Còn ${e.availableQuantity}` })), run: () => missionService.reserveEquipment(mission.id, Number(resourceIds.equipment), reservationQuantity(quantity, selectedEquipment?.availableQuantity ?? 0)) },
+    { key: 'equipment' as const, label: 'Thiết bị', options: equipment.filter(e => e.status === 'ACTIVE' && e.availableQuantity > 0 && (!mission.stationId || !e.stationId || e.stationId === mission.stationId)).map(e => ({ id: e.id, label: `${e.name} · Còn ${e.availableQuantity}` })), run: () => missionService.reserveEquipment(mission.id, Number(resourceIds.equipment), reservationQuantity(quantity, selectedEquipment?.availableQuantity ?? 0)) },
   ];
   return <AppShell><div className="mission-page">
     <Link href={can('MISSION_VIEW_ALL') ? '/dispatch/missions' : '/assigned-missions'} className="mission-back"><ArrowLeft size={16} aria-hidden="true" />Danh sách nhiệm vụ</Link>
@@ -181,6 +190,8 @@ function MissionDetail({ id }: { id: string }) {
         <div className="mission-actions"><Button type="button" disabled={disabled} variant="outline" onClick={() => setRedispatch(null)}>Giữ nguyên UAV</Button><Button type="submit" disabled={disabled || !redispatchReason.trim() || (redispatch.kind === 'replaceUav' && !replacementUavs.some(uav => String(uav.id) === replacementUavId))}>{redispatch.kind === 'replaceUav' ? 'Xác nhận thay UAV' : 'Xác nhận gỡ UAV'}</Button></div>
       </form>}
     </div></section>}
+    {dispatch && <ResourceRedispatch snapshot={dispatch} stations={stations} operators={operators} equipment={equipment} disabled={disabled}
+      allowed={{ operator: controls.redispatchOperator, station: controls.redispatchStation, equipment: controls.redispatchEquipment }} action={action} />}
     <div className="mission-grid"><div className="grid gap-5">
       <section className="mission-panel" id="resources"><header><h2>Tài nguyên được phân công</h2></header><div className="mission-panel-body"><dl className="mission-resource-list"><Info label="Trạm" value={assignedStation?.name || (mission.stationId ? `Trạm #${mission.stationId}` : 'Chưa phân công')} /><Info label="UAV" value={assignedUav ? `${assignedUav.serialNumber} · ${assignedUav.model}` : mission.uavId ? `UAV #${mission.uavId}` : 'Chưa phân công'} /><Info label="Người vận hành" value={assignedOperator?.fullName || assignedOperator?.username || (mission.operatorId === user?.id ? user?.fullName || user?.username || 'Bạn' : mission.operatorId ? `Người vận hành #${mission.operatorId}` : 'Chưa phân công')} /></dl>{mission.operatorId && <p className="mission-muted" style={{marginTop:16}}>{mission.operatorAccepted ? 'Đã xác nhận nhận nhiệm vụ.' : 'Chưa xác nhận nhận nhiệm vụ.'}</p>}{mission.operatorConflictNote && <p className="mission-muted">Vướng mắc: {mission.operatorConflictNote}</p>}</div></section>
       {(mission.status === 'FAILED' || mission.status === 'COMPLETED') && <section className="mission-panel" aria-labelledby="mission-outcome-title"><header><h2 id="mission-outcome-title">Kết quả thực hiện</h2></header><div className="mission-panel-body"><dl className="mission-resource-list">

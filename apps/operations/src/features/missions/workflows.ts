@@ -34,3 +34,11 @@ export function uavRedispatchInput(expectedCurrentUavId: number, reason: string,
   if (replacementUavId !== undefined && (!Number.isSafeInteger(replacementUavId) || replacementUavId < 1 || replacementUavId === expectedCurrentUavId)) throw new MissionFormError('Hãy chọn một UAV khác để thay thế.');
   return { expectedCurrentUavId, ...(replacementUavId === undefined ? {} : { replacementUavId }), reason: note };
 }
+
+export function resourceRedispatchInput(expectedVersion: number, replacementId: number | null, reason: string) {
+  const note = missionEventNote(reason);
+  if (!note) throw new MissionFormError('Vui lòng nhập lý do điều phối lại.');
+  if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 0) throw new MissionFormError('Hãy tải lại tài nguyên trước khi điều phối.');
+  if (replacementId !== null && (!Number.isSafeInteger(replacementId) || replacementId < 1)) throw new MissionFormError('Tài nguyên thay thế không hợp lệ.');
+  return { expectedVersion, replacementId, reason: note };
+}

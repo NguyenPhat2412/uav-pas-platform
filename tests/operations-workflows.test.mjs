@@ -177,3 +177,42 @@ test('UAV history translates generated messages while retaining authored reasons
   assert.equal(uavHistoryReason('Đã kiểm tra cánh quạt.'), 'Đã kiểm tra cánh quạt.');
   assert.equal(uavHistoryReason('Engine checked by technician'), 'Engine checked by technician');
 });
+
+test('resource redispatch is preflight only and uses the existing granular permissions', () => {
+  for (const status of ['DRAFT','PENDING_CONFIRMATION','CONFIRMED','RESOURCE_RESERVED','READY','IN_PROGRESS','COMPLETED','FAILED','CANCELLED','REJECTED']) {
+    const mission = {status, operatorId: 7, stationId: 2};
+    const expected = ['CONFIRMED','RESOURCE_RESERVED','READY'].includes(status);
+    const controls = missionControls(mission, 7, () => true);
+    assert.equal(controls.redispatchOperator, expected);
+    assert.equal(controls.redispatchStation, expected);
+    assert.equal(controls.redispatchEquipment, expected);
+    assert.equal(missionControls(mission, 7, code => code !== 'MISSION_ASSIGN_OPERATOR').redispatchOperator, false);
+    assert.equal(missionControls(mission, 7, code => code !== 'MISSION_ASSIGN_STATION').redispatchStation, false);
+    assert.equal(missionControls(mission, 7, code => code !== 'MISSION_RESERVE_EQUIPMENT').redispatchEquipment, false);
+    assert.equal(controls.station, false, 'Existing station must use redispatch');
+  }
+});
+
+test('resource redispatch sends the viewed revision and explicit null for removal', async () => {
+  requests.length = 0;
+  for (const args of [[-1,8,'Lý do'],[1,0,'Lý do'],[1,8,' '],[1,8,'x'.repeat(501)]]) assert.throws(() => missionService.redispatchResource(42,'operator',...args));
+  assert.equal(requests.length,0);
+  await missionService.redispatchResource(42,'operator',9,8,' Đổi ca ');
+  await missionService.redispatchResource(42,'station',10,null,' Gỡ trạm ');
+  await missionService.redispatchEquipment(42,11,17,18,3,' Đổi thiết bị ');
+  await missionService.redispatchEquipment(42,12,19,null,null,' Hoàn trả ');
+  assert.deepEqual(requests.map(r => r.body),[
+    {expectedVersion:9,replacementId:8,reason:'Đổi ca'},
+    {expectedVersion:10,replacementId:null,reason:'Gỡ trạm'},
+    {expectedVersion:11,reservationId:17,replacementId:18,quantity:3,reason:'Đổi thiết bị'},
+    {expectedVersion:12,reservationId:19,replacementId:null,quantity:null,reason:'Hoàn trả'},
+  ]);
+});
+
+test('resource redispatch timeline retains meaningful Vietnamese actions and authored reasons', async () => {
+  const { eventTitle, eventNote } = await import(labelsUrl);
+  for (const [eventType,title] of Object.entries({ OPERATOR_REPLACED:'Thay người vận hành', OPERATOR_UNASSIGNED:'Gỡ người vận hành', STATION_REPLACED:'Đổi trạm', STATION_UNASSIGNED:'Gỡ trạm', EQUIPMENT_CHANGED:'Đổi thiết bị hoặc số lượng', EQUIPMENT_RELEASED:'Hoàn trả thiết bị' })) {
+    assert.equal(eventTitle({eventType}),title);
+    assert.equal(eventNote({eventType,description:'Cần điều phối lại ca vận hành.'}),'Cần điều phối lại ca vận hành.');
+  }
+});

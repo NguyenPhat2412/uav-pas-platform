@@ -18,11 +18,14 @@ export function missionControls(mission: Mission, userId: number | undefined, ca
     complete: assigned && status === 'IN_PROGRESS' && can('MISSION_COMPLETE'),
     fail: assigned && ['RESOURCE_RESERVED', 'READY', 'IN_PROGRESS'].includes(status) && can('MISSION_STATUS_UPDATE'),
     upload: !terminalStatuses.includes(status) && can('MISSION_MEDIA_UPLOAD'),
-    station: planning && can('MISSION_ASSIGN_STATION') && can('STATION_READ'),
+    station: planning && !mission.stationId && can('MISSION_ASSIGN_STATION') && can('STATION_READ'),
     uav: planning && !mission.uavId && can('MISSION_ASSIGN_UAV') && can('UAV_READ'),
     replaceUav: preflight && !!mission.uavId && can('MISSION_ASSIGN_UAV') && can('UAV_READ'),
     unassignUav: preflight && !!mission.uavId && can('MISSION_ASSIGN_UAV') && can('UAV_READ'),
     operator: planning && !mission.operatorId && can('MISSION_ASSIGN_OPERATOR') && can('USER_READ'),
+    redispatchOperator: preflight && !!mission.operatorId && can('MISSION_ASSIGN_OPERATOR') && can('USER_READ'),
+    redispatchStation: preflight && !!mission.stationId && can('MISSION_ASSIGN_STATION') && can('STATION_READ'),
+    redispatchEquipment: preflight && can('MISSION_RESERVE_EQUIPMENT') && can('INVENTORY_READ'),
     equipment: planning && can('MISSION_RESERVE_EQUIPMENT') && can('INVENTORY_READ'),
   };
 }
