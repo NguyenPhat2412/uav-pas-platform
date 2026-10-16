@@ -7,6 +7,7 @@ import com.uav.platform.modules.mission.common.MissionPriority;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,5 +23,5 @@ public record MissionUpdateRequest(
         BigDecimal latitude,
         BigDecimal longitude,
         MissionPriority priority,
-        String notes
+        @Size(max = 2000) String notes
 ) {}

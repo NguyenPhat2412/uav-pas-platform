@@ -170,7 +170,7 @@ public class MissionController {
 
     @PostMapping("/{id}/complete")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_COMPLETE')")
-    public ResponseEntity<MissionResponse> complete(@PathVariable Long id, @RequestBody MissionCompletionRequest request,
+    public ResponseEntity<MissionResponse> complete(@PathVariable Long id, @Valid @RequestBody MissionCompletionRequest request,
                                                      Authentication authentication) {
         return ResponseEntity.ok(service.complete(id, request, authentication));
     }

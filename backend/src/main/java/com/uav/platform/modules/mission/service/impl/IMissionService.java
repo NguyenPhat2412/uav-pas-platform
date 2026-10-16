@@ -356,6 +356,7 @@ public class IMissionService implements MissionService {
     @Override
     public MissionResponse reject(Long id, String reason, Authentication authentication) {
         Mission mission = accessibleForUpdate(id, authentication);
+        if (reason != null && reason.length() > 500) throw new IllegalArgumentException("Lý do từ chối không được vượt quá 500 ký tự.");
         MissionStatus old = mission.getStatus();
         mission.transitionTo(MissionStatus.REJECTED);
         releaseResources(mission, authentication.getName());
@@ -491,6 +492,7 @@ public class IMissionService implements MissionService {
     public MissionResponse reportOperatorConflict(Long id, String note, Authentication authentication) {
         Mission mission = accessibleForUpdate(id, authentication);
         requireAssignedOperator(mission, authentication);
+        if (note != null && note.length() > 500) throw new IllegalArgumentException("Ghi chú vướng mắc không được vượt quá 500 ký tự.");
         mission.reportOperatorConflict(note);
         event(mission, MissionEventType.OPERATOR_CONFLICT, authentication, mission.getStatus(), mission.getStatus(), note);
         audit.record(null, authentication.getName(), AuditAction.STATUS_CHANGE, "MISSION", id.toString(), "OPERATOR_CONFLICT");

@@ -153,7 +153,7 @@ class MissionRejectionIntegrationTest {
         Long missionId = partiallyAssignedMission();
         var before = snapshot(missionId);
 
-        assertThrows(DataIntegrityViolationException.class,
+        assertThrows(IllegalArgumentException.class,
                 () -> missions.reject(missionId, "x".repeat(501), auth(admin)));
 
         assertEquals(before, snapshot(missionId));
@@ -166,7 +166,7 @@ class MissionRejectionIntegrationTest {
         missions.assignOperator(missionId, new ResourceAssignmentRequest(operator.getId()), auth(admin));
         var before = snapshot(missionId);
 
-        assertThrows(DataIntegrityViolationException.class,
+        assertThrows(IllegalArgumentException.class,
                 () -> missions.reportOperatorConflict(missionId, "x".repeat(501), auth(operator)));
 
         assertEquals(before, snapshot(missionId));
