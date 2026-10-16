@@ -61,6 +61,13 @@ export function missionUpdatePayload(form: MissionInput): MissionUpdateInput {
   };
 }
 
+export function missionDraftUpdatePayload(form: MissionInput, expectedVersion: number): MissionUpdateInput & { expectedVersion: number } {
+  if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 0) {
+    throw new Error('Thiếu phiên bản bản nháp hợp lệ. Hãy tải bản mới nhất trước khi lưu.');
+  }
+  return { ...missionUpdatePayload(form), expectedVersion };
+}
+
 export function missionFormFromDetail(mission: Mission): MissionInput {
   return { ...missionUpdatePayload(mission), missionType: mission.missionType, serviceId: mission.serviceId };
 }

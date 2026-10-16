@@ -141,6 +141,7 @@ class NoteLengthIntegrationTest {
             request.contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(body));
         } else if (action.equals("create") || action.equals("update")) {
             Map<String,Object> body = new java.util.HashMap<>(Map.of("missionType","AREA_INSPECTION","title","Note mission","requestedDate",start.toLocalDate().toString(),"startTime",start.toString(),"expectedEndTime",start.plusHours(1).toString(),"locationName","Hanoi","notes",note));
+            if (action.equals("update")) body.put("expectedVersion", missions.get(missionId, auth(customer)).version());
             request = (action.equals("create") ? post("/api/v1/missions") : patch("/api/v1/missions/" + missionId)).with(authentication(auth(customer))).contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(body));
         } else {
             request = post("/api/v1/inventory/equipment/" + equipmentId + "/" + action).with(authentication(auth(admin))).contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(Map.of("quantity",1,"note",note)));

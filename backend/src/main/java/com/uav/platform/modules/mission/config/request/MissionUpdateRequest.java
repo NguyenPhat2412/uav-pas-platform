@@ -8,12 +8,14 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Min;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record MissionUpdateRequest(
+        @NotNull @Min(0) Long expectedVersion,
         @NotBlank String title,
         String description,
         @NotNull @FutureOrPresent LocalDate requestedDate,

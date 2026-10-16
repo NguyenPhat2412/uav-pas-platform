@@ -148,14 +148,21 @@ public class IMissionService implements MissionService {
 
     @Override
     public MissionResponse updateDraft(Long id, MissionUpdateRequest request, Authentication authentication) {
-        Mission mission = find(id);
-        enforceVisibility(mission, authentication);
+        Mission mission = accessibleForUpdate(id, authentication);
+        if (request.expectedVersion() == null || request.expectedVersion() < 0) {
+            throw SystemException.badRequest("MISSION_DRAFT_VERSION_REQUIRED");
+        }
+        if (mission.getVersion() != request.expectedVersion()) {
+            throw SystemException.conflict("MISSION_DRAFT_STALE");
+        }
         mission.updateDraft(request.title(), request.description(), request.requestedDate(), request.startTime(),
                 request.expectedEndTime(), request.locationName(), request.latitude(), request.longitude(),
                 request.priority(), request.notes());
         events.save(new MissionEvent(mission, MissionEventType.UPDATED, user(authentication.getName()),
                 MissionStatus.DRAFT, MissionStatus.DRAFT, "Mission updated", null));
         audit.record(null, authentication.getName(), AuditAction.UPDATE, "MISSION", id.toString(), mission.getCode());
+        // Return the version persisted by this edit, not the pre-flush JPA version.
+        missions.flush();
         return MissionMapper.toResponse(mission);
     }
 

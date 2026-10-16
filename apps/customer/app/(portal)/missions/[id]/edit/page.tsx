@@ -32,6 +32,8 @@ function DraftEditor({ mission, reload }: { mission: Mission; reload: () => Prom
   const actions = useMissionActions();
   const services = useServices();
   const [form, setForm] = useState(() => missionFormFromDetail(mission));
+  // Keep the version paired with the visible form, even if a background refetch updates the query.
+  const [expectedVersion, setExpectedVersion] = useState(mission.version);
   const [errors, setErrors] = useState<MissionFormErrors>({});
   const [error, setError] = useState('');
   const [mustReload, setMustReload] = useState(false);
@@ -44,7 +46,7 @@ function DraftEditor({ mission, reload }: { mission: Mission; reload: () => Prom
     if (Object.keys(nextErrors).length) { focusMissionErrors(); return; }
     if (mustReload) return;
     try {
-      await actions.update.mutateAsync({ id: mission.id, data: form });
+      await actions.update.mutateAsync({ id: mission.id, data: form, expectedVersion });
       router.replace(`/missions/${mission.id}`);
     } catch (err) {
       setError(missionFormError(err));
@@ -56,7 +58,7 @@ function DraftEditor({ mission, reload }: { mission: Mission; reload: () => Prom
     try {
       const current = await reload();
       if (!current) { setError('Chưa tải được bản nháp mới nhất. Hãy thử lại.'); return; }
-      setForm(missionFormFromDetail(current)); setErrors({}); setError(''); setMustReload(false);
+      setForm(missionFormFromDetail(current)); setExpectedVersion(current.version); setErrors({}); setError(''); setMustReload(false);
     } catch { setError('Chưa tải được bản nháp mới nhất. Hãy thử lại.'); }
     finally { setReloading(false); }
   };

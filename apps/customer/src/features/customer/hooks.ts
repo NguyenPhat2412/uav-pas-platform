@@ -35,6 +35,6 @@ export function useMissionActions() {
   const submit = useMutation({ mutationFn: (id: number) => customerService.submit(id), onSettled: (_data, _error, id) => refresh(id), retry: false });
   const cancel = useMutation({ mutationFn: (id: number) => customerService.cancel(id), onSettled: (_data, _error, id) => refresh(id), retry: false });
   const create = useMutation({ mutationFn: (data: MissionInput) => customerService.create(data), onSuccess: data => refresh(data.id), retry: false });
-  const update = useMutation({ mutationFn: ({ id, data }: { id: number; data: MissionInput }) => customerService.update(id, data), onSettled: (_data, _error, { id }) => refresh(id), retry: false });
+  const update = useMutation({ mutationFn: ({ id, data, expectedVersion }: { id: number; data: MissionInput; expectedVersion: number }) => customerService.update(id, data, expectedVersion), onSettled: (_data, _error, { id }) => refresh(id), retry: false });
   return { submit, cancel, create, update };
 }

@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 
 const source = await readFile(new URL('../apps/customer/src/features/customer/mission-form.ts', import.meta.url), 'utf8');
 const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
-const { validateMissionForm, missionUpdatePayload, missionFormFromDetail, missionTypeForService, canEditMission, missionPageRange, missionListFilters, localDateToday, missionFormError } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`);
+const { validateMissionForm, missionDraftUpdatePayload, missionUpdatePayload, missionFormFromDetail, missionTypeForService, canEditMission, missionPageRange, missionListFilters, localDateToday, missionFormError } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`);
 const form = { missionType: 'AREA_INSPECTION', title: 'Khảo sát ruộng lúa', requestedDate: '2030-05-01', startTime: '2030-05-01T10:00', expectedEndTime: '2030-05-01T11:00', locationName: 'Hà Nội', serviceId: 8, priority: 'HIGH', latitude: 0, longitude: 105.1234567, notes: 'Giữ nguyên ghi chú', description: 'Mô tả yêu cầu' };
 
 test('draft update sends every editable field and never changes service, type or ownership', () => {
@@ -65,4 +65,19 @@ test('errors do not expose backend internals and distinguish conflict recovery',
   assert.match(missionFormError({ status: 409, message: 'secret internal details' }), /bản mới nhất/);
   assert.match(missionFormError({ status: 403 }), /không có quyền/);
   assert.doesNotMatch(missionFormError(new Error('SQL diagnostic')), /SQL|diagnostic/);
+});
+
+
+test('draft PATCH carries the version loaded with the form and excludes privileged fields', () => {
+  const payload = missionDraftUpdatePayload({ ...form, version: 99, customerId: 50, status: 'COMPLETED' }, 3);
+  assert.equal(payload.expectedVersion, 3);
+  assert.equal(payload.title, form.title);
+  for (const field of ['version', 'customerId', 'status', 'serviceId', 'missionType']) assert.equal(field in payload, false);
+});
+
+test('a missing or invalid draft version cannot produce an unprotected PATCH', () => {
+  for (const version of [undefined, null, -1, 1.5, NaN, Number.MAX_SAFE_INTEGER + 1]) {
+    assert.throws(() => missionDraftUpdatePayload(form, version), /phiên bản/);
+  }
+  assert.equal(missionDraftUpdatePayload(form, 0).expectedVersion, 0);
 });
