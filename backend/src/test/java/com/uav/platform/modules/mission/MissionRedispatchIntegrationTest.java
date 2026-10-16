@@ -72,7 +72,8 @@ class MissionRedispatchIntegrationTest {
     @Test
     void replacingReadyUavPreservesOtherResourcesAndRequiresReadyAgain() {
         Long id = allocated(previousId, true);
-        missions.acceptOperator(id, auth(operator));
+        missions.acceptOperator(id, new com.uav.platform.modules.mission.config.request.MissionAcceptanceRequest(missions.get(id, auth(operator)).version()), auth(operator));
+        MissionHandoverTestData.accept(missions,id,auth(operator));
         missions.ready(id, auth(admin));
         var result = missions.replaceUav(id, replace(previousId, replacementId, "r".repeat(500)), auth(admin));
         assertEquals(MissionStatus.RESOURCE_RESERVED, result.status());
@@ -89,8 +90,10 @@ class MissionRedispatchIntegrationTest {
         assertTrue(event.metadata().contains("\"previousUavId\":" + previousId));
         assertTrue(event.metadata().contains("\"replacementUavId\":" + replacementId));
         assertThrows(IllegalStateException.class, () -> missions.start(id, auth(operator)));
+        MissionHandoverTestData.accept(missions,id,auth(operator));
         missions.ready(id, auth(admin));
         missions.start(id, auth(operator));
+        MissionHandoverTestData.result(db,id,operator.getUsername());
         missions.complete(id, new MissionCompletionRequest("Done", "Intact"), auth(operator));
         assertEquals(UavStatus.AVAILABLE, status(replacementId));
         assertEquals(0, inventory.get(equipmentId).reservedQuantity());
@@ -99,7 +102,8 @@ class MissionRedispatchIntegrationTest {
     @Test
     void unassignIsAtomicRetainsEquipmentAndDuplicateIsStale() {
         Long id = allocated(previousId, true);
-        missions.acceptOperator(id, auth(operator));
+        missions.acceptOperator(id, new com.uav.platform.modules.mission.config.request.MissionAcceptanceRequest(missions.get(id, auth(operator)).version()), auth(operator));
+        MissionHandoverTestData.accept(missions,id,auth(operator));
         missions.ready(id, auth(admin));
         var result = missions.unassignUav(id, new MissionUavUnassignmentRequest(previousId, "Inspect aircraft"), auth(admin));
         assertEquals(MissionStatus.CONFIRMED, result.status());
@@ -214,7 +218,8 @@ class MissionRedispatchIntegrationTest {
     @Test
     void auditFailureRollsBackAssignmentStatusHistoryAcceptanceAndTimeline() {
         Long id = allocated(previousId, true);
-        missions.acceptOperator(id, auth(operator));
+        missions.acceptOperator(id, new com.uav.platform.modules.mission.config.request.MissionAcceptanceRequest(missions.get(id, auth(operator)).version()), auth(operator));
+        MissionHandoverTestData.accept(missions,id,auth(operator));
         missions.ready(id, auth(admin));
         var before = snapshot(id);
         doThrow(new IllegalStateException("Injected dispatch audit failure")).when(audit)
@@ -282,14 +287,15 @@ class MissionRedispatchIntegrationTest {
     @Test
     void executionAndTerminalMissionsRejectAcceptanceAndConflictWithoutChangingHistory() {
         Long id = allocated(previousId, true);
-        missions.acceptOperator(id, auth(operator));
+        missions.acceptOperator(id, new com.uav.platform.modules.mission.config.request.MissionAcceptanceRequest(missions.get(id, auth(operator)).version()), auth(operator));
+        MissionHandoverTestData.accept(missions,id,auth(operator));
         missions.ready(id, auth(admin));
         missions.start(id, auth(operator));
         for (MissionStatus blocked : List.of(MissionStatus.IN_PROGRESS, MissionStatus.COMPLETED, MissionStatus.CANCELLED,
                 MissionStatus.FAILED, MissionStatus.REJECTED)) {
             db.update("UPDATE missions SET status=? WHERE id=?", blocked.name(), id);
             var before = snapshot(id);
-            assertThrows(IllegalStateException.class, () -> missions.acceptOperator(id, auth(operator)), blocked.name());
+            assertThrows(IllegalStateException.class, () -> missions.acceptOperator(id, new com.uav.platform.modules.mission.config.request.MissionAcceptanceRequest(missions.get(id, auth(operator)).version()), auth(operator)), blocked.name());
             assertThrows(IllegalStateException.class, () -> missions.reportOperatorConflict(id, "Late conflict", auth(operator)), blocked.name());
             assertEquals(before, snapshot(id));
         }
@@ -300,7 +306,7 @@ class MissionRedispatchIntegrationTest {
         Long id = allocated(previousId, true);
         for (MissionStatus allowed : List.of(MissionStatus.CONFIRMED, MissionStatus.RESOURCE_RESERVED, MissionStatus.READY)) {
             db.update("UPDATE missions SET status=? WHERE id=?", allowed.name(), id);
-            assertTrue(missions.acceptOperator(id, auth(operator)).operatorAccepted());
+            assertTrue(missions.acceptOperator(id, new com.uav.platform.modules.mission.config.request.MissionAcceptanceRequest(missions.get(id, auth(operator)).version()), auth(operator)).operatorAccepted());
             var conflict = missions.reportOperatorConflict(id, "Recheck dispatch", auth(operator));
             assertFalse(conflict.operatorAccepted());
             assertEquals("Recheck dispatch", conflict.operatorConflictNote());

@@ -1,5 +1,5 @@
 import { apiClient, apiRequest } from '@/lib/api.client';
-import { failureInput, missionEventNote, uavRedispatchInput, resourceRedispatchInput } from '../workflows';
+import { failureInput, missionEventNote, uavRedispatchInput, resourceRedispatchInput, acceptanceInput, completionInput } from '../workflows';
 import { DispatchResources, Mission, MissionDashboard, MissionEvent, MissionInput, MissionMedia, MissionStatus, MissionType, PageResponse, MediaRole, UavService, MediaType, SignedMediaUrl, MissionAvailability } from '../types/mission.types';
 
 const base = '/api/v1/missions';
@@ -25,9 +25,9 @@ export const missionService = {
   reject: (id: number, reason: string) => apiClient.post<Mission>(`${base}/${id}/reject?reason=${encodeURIComponent(missionEventNote(reason))}`),
   ready: (id: number) => apiClient.post<Mission>(`${base}/${id}/ready`),
   start: (id: number) => apiClient.post<Mission>(`${base}/${id}/start`),
-  accept: (id: number) => apiClient.post<Mission>(`${base}/${id}/accept`),
+  accept: (id: number, expectedVersion: number) => apiClient.post<Mission>(`${base}/${id}/accept`, acceptanceInput(expectedVersion)),
   reportConflict: (id: number, note: string) => apiClient.post<Mission>(`${base}/${id}/report-conflict?note=${encodeURIComponent(missionEventNote(note))}`),
-  complete: (id: number, completionNote: string, equipmentCondition?: string) => apiClient.post<Mission>(`${base}/${id}/complete`, { completionNote: missionEventNote(completionNote), equipmentCondition }),
+  complete: (id: number, completionNote: string, equipmentCondition?: string) => apiClient.post<Mission>(`${base}/${id}/complete`, completionInput(completionNote, equipmentCondition)),
   fail: (id: number, failureReason: string, notes?: string) => apiClient.post<Mission>(`${base}/${id}/fail`, failureInput(failureReason, notes)),
   assignStation: (id: number, resourceId: number) => apiClient.post<Mission>(`${base}/${id}/assign-station`, { resourceId, quantity: 1 }),
   assignUav: (id: number, resourceId: number) => apiClient.post<Mission>(`${base}/${id}/assign-uav`, { resourceId, quantity: 1 }),
@@ -38,7 +38,7 @@ export const missionService = {
   media: (id: number) => apiClient.get<MissionMedia[]>(`${base}/${id}/media`),
   attachMedia: (id: number, mediaId: number, mediaRole: MediaRole) => apiClient.post<MissionMedia>(`${base}/${id}/media`, { mediaId, mediaRole }),
   requestMediaUpload: (id: number, file: File) => apiClient.post<SignedMediaUrl>(`${base}/${id}/media/upload-url`, { originalName: file.name, contentType: file.type || 'application/octet-stream', size: file.size, type: file.type.startsWith('video/') ? 'VIDEO' as MediaType : file.type.startsWith('image/') ? 'IMAGE' as MediaType : 'DOCUMENT' as MediaType }),
-  uploadFile: async (url: string, file: File) => apiRequest<void>(url, { method: 'PUT', headers: { 'Content-Type': file.type || 'application/octet-stream' }, body: file }),
+  uploadFile: async (url: string, file: File) => apiRequest<void>(url, { method: 'PUT', headers: { 'If-None-Match': '*', 'Content-Type': file.type || 'application/octet-stream' }, body: file }),
   confirmMedia: (id: number, mediaId: number) => apiClient.post(`${base}/${id}/media/${mediaId}/confirm`),
   timeline: (id: number) => apiClient.get<MissionEvent[]>(`${base}/${id}/timeline`),
   dashboard: () => apiClient.get<MissionDashboard>('/api/v1/dashboard/missions'),

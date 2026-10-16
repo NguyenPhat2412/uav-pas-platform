@@ -10,6 +10,24 @@ export function missionEventNote(value: string) {
   return note;
 }
 
+export function acceptanceInput(expectedVersion: number) {
+  if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 0) throw new MissionFormError('Hãy tải lại nhiệm vụ trước khi tiếp nhận.');
+  return { expectedVersion };
+}
+
+export function completionInput(completionNote: string, equipmentCondition?: string) {
+  const note = missionEventNote(completionNote);
+  const condition = missionEventNote(equipmentCondition ?? '');
+  if (!note || !condition) throw new MissionFormError('Vui lòng nhập ghi chú kết quả và tình trạng thiết bị khi hoàn trả.');
+  return { completionNote: note, equipmentCondition: condition };
+}
+
+export function handoverEvidence(missionType: string, media: { mediaRole: string; media: { id: number; confirmed?: boolean; deleted?: boolean } }[]) {
+  const required = ['AREA_INSPECTION', 'AERIAL_RECORDING', 'DATA_COLLECTION'].includes(missionType);
+  const count = media.filter(item => ['OUTPUT', 'DOCUMENT'].includes(item.mediaRole) && item.media.confirmed !== false && !item.media.deleted).length;
+  return { required, count, satisfied: !required || count > 0 };
+}
+
 export function failureInput(failureReason: string, notes?: string) {
   const reason = failureReason.trim();
   const detail = notes?.trim();

@@ -99,6 +99,7 @@ class MissionResourceRedispatchIntegrationTest {
     @Test
     void startRechecksStationAfterReady() {
         Long id = allocated(previousId, true);
+        MissionHandoverTestData.accept(missions,id,auth(operator));
         missions.ready(id, auth(admin));
         db.update("UPDATE uav_stations SET status='INACTIVE' WHERE id=?", station.getId());
         assertThrows(SystemException.class, () -> missions.start(id, auth(operator)));
@@ -108,14 +109,15 @@ class MissionResourceRedispatchIntegrationTest {
     void operatorReplacementResetsAcceptanceAndRequiresReadyAgain() {
         Long id = allocated(previousId, true);
         AppUser replacement = user("replacement_", UserRole.ROLE_OPERATOR);
-        missions.acceptOperator(id, auth(operator)); missions.ready(id, auth(admin));
+        missions.acceptOperator(id, new com.uav.platform.modules.mission.config.request.MissionAcceptanceRequest(missions.get(id, auth(operator)).version()), auth(operator)); missions.ready(id, auth(admin));
         var result = missions.redispatchOperator(id, change(id, replacement.getId()), auth(admin));
         assertEquals(replacement.getId(), result.operatorId());
         assertFalse(result.operatorAccepted()); assertNull(result.operatorConflictNote());
         assertEquals(MissionStatus.RESOURCE_RESERVED, result.status());
         assertThrows(AccessDeniedException.class, () -> missions.start(id, auth(operator)));
         assertThrows(IllegalStateException.class, () -> missions.start(id, auth(replacement)));
-        missions.acceptOperator(id, auth(replacement)); missions.ready(id, auth(admin)); missions.start(id, auth(replacement));
+        missions.acceptOperator(id, new com.uav.platform.modules.mission.config.request.MissionAcceptanceRequest(missions.get(id, auth(replacement)).version()), auth(replacement)); missions.ready(id, auth(admin)); missions.start(id, auth(replacement));
+        MissionHandoverTestData.result(db,id,replacement.getUsername());
         missions.complete(id, new MissionCompletionRequest("Done", "Intact"), auth(replacement));
         assertEquals(0, inventory.get(equipmentId).reservedQuantity());
         assertEquals(1, count("SELECT count(*) FROM mission_events WHERE mission_id=? AND event_type='OPERATOR_REPLACED'", id));
@@ -144,6 +146,7 @@ class MissionResourceRedispatchIntegrationTest {
         var end = missions.get(id, auth(admin)).expectedEndTime();
         db.update("UPDATE missions SET start_time=?,expected_end_time=? WHERE id=?", end, end.plusHours(1), other);
         missions.redispatchOperator(id, change(id, replacement.getId()), auth(admin));
+        MissionHandoverTestData.accept(missions,id,auth(replacement));
         missions.ready(id, auth(admin));
         assertEquals(MissionStatus.READY, missions.get(id, auth(admin)).status());
     }
@@ -187,6 +190,7 @@ class MissionResourceRedispatchIntegrationTest {
     @Test
     void equipmentDecreaseReplaceAndReturnPreserveBalancesAndHistory() {
         Long id = allocated(previousId, true);
+        MissionHandoverTestData.accept(missions,id,auth(operator));
         missions.ready(id, auth(admin));
         Long original = reservation(id);
         var saved = missions.redispatchEquipment(id, equipmentChange(id, original, equipmentId, 1), auth(admin));
@@ -197,7 +201,9 @@ class MissionResourceRedispatchIntegrationTest {
         inventory.stockIn(alternate, new QuantityRequest(5, "Fixture"), admin.getUsername());
         missions.redispatchEquipment(id, equipmentChange(id, reservation(id), alternate, 3), auth(admin));
         assertEquals(0, inventory.get(equipmentId).reservedQuantity()); assertEquals(3, inventory.get(alternate).reservedQuantity());
+        MissionHandoverTestData.accept(missions,id,auth(operator));
         missions.ready(id, auth(admin)); missions.start(id, auth(operator));
+        MissionHandoverTestData.result(db,id,operator.getUsername());
         missions.complete(id, new MissionCompletionRequest("Done", "Intact"), auth(operator));
         assertEquals(0, inventory.get(alternate).reservedQuantity());
         assertEquals(2, count("SELECT count(*) FROM inventory_movements WHERE equipment_id=? AND type='RELEASE'", equipmentId));

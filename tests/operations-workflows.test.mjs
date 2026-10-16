@@ -58,6 +58,28 @@ test('completion sends equipment condition without converting it into an invento
   assert.deepEqual(requests, [{ method: 'post', path: '/api/v1/missions/42/complete', body: { completionNote: 'Đã bàn giao ảnh', equipmentCondition: 'Cần kiểm tra pin' } }]);
 });
 
+test('ready and start require current operator acceptance in addition to permissions', () => {
+  for (const operatorAccepted of [false, true]) {
+    assert.equal(missionControls({ status: 'RESOURCE_RESERVED', operatorId: 7, operatorAccepted }, 7, () => true).ready, operatorAccepted);
+    assert.equal(missionControls({ status: 'READY', operatorId: 7, operatorAccepted }, 7, () => true).start, operatorAccepted);
+  }
+});
+
+test('accept sends the version the operator reviewed and rejects invalid revisions', async () => {
+  requests.length = 0;
+  await missionService.accept(42, 8);
+  assert.deepEqual(requests, [{ method: 'post', path: '/api/v1/missions/42/accept', body: { expectedVersion: 8 } }]);
+  for (const v of [-1, NaN, undefined]) assert.throws(() => missionService.accept(42, v));
+});
+
+test('completion cannot manufacture missing handover notes or equipment condition', () => {
+  for (const [note, condition] of [['', 'Intact'], ['Done', ''], ['   ', 'Intact'], ['Done', undefined], ['Done', 'x'.repeat(501)]]) {
+    requests.length = 0;
+    assert.throws(() => missionService.complete(42, note, condition));
+    assert.equal(requests.length, 0);
+  }
+});
+
 test('timeline notes accept the persisted 500-character boundary and stop oversized payloads before sending', async () => {
   assert.equal(missionEventNoteLimit, 500);
   assert.equal(missionEventNote('  ' + 'x'.repeat(500) + '  ').length, 500);

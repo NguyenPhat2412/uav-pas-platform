@@ -178,16 +178,18 @@ class MissionRejectionIntegrationTest {
     void completionNoteBeyondTimelineCapacityRollsBack() {
         Long missionId = partiallyAssignedMission();
         missions.assignOperator(missionId, new ResourceAssignmentRequest(operator.getId()), auth(admin));
+        MissionHandoverTestData.accept(missions,missionId,auth(operator));
         missions.ready(missionId, auth(admin));
         missions.start(missionId, auth(operator));
+        MissionHandoverTestData.result(db,missionId,operator.getUsername());
         var before = snapshot(missionId);
 
-        assertThrows(DataIntegrityViolationException.class,
-                () -> missions.complete(missionId, new MissionCompletionRequest("x".repeat(501), null), auth(operator)));
+        assertThrows(com.uav.platform.error.SystemException.class,
+                () -> missions.complete(missionId, new MissionCompletionRequest("x".repeat(501), "Intact"), auth(operator)));
 
         assertEquals(before, snapshot(missionId));
         assertNull(missions.get(missionId, auth(admin)).completionNote());
-        var completed = missions.complete(missionId, new MissionCompletionRequest("x".repeat(500), null), auth(operator));
+        var completed = missions.complete(missionId, new MissionCompletionRequest("x".repeat(500), "Intact"), auth(operator));
         assertEquals(MissionStatus.COMPLETED, completed.status());
         assertEquals(500, completed.completionNote().length());
     }

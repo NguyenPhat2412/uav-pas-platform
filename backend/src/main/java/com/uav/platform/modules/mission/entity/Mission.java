@@ -125,7 +125,19 @@ public class Mission extends BaseEntity {
     }
 
     public void acceptOperator() { requirePreflight(); operatorAccepted = true; operatorConflictNote = null; }
-    public void reportOperatorConflict(String note) { requirePreflight(); operatorAccepted = false; operatorConflictNote = note; }
+    public void reportOperatorConflict(String note) {
+        requirePreflight(); operatorAccepted = false; operatorConflictNote = note;
+        if (status == MissionStatus.READY) status = MissionStatus.RESOURCE_RESERVED;
+    }
+
+    public void invalidateAcceptance() { operatorAccepted = false; operatorConflictNote = null; }
+
+    public void requireMediaWritable() {
+        if (status == MissionStatus.COMPLETED || status == MissionStatus.FAILED
+                || status == MissionStatus.CANCELLED || status == MissionStatus.REJECTED) {
+            throw com.uav.platform.error.SystemException.conflict("MISSION_MEDIA_LOCKED");
+        }
+    }
 
     private void requirePreflight() {
         if (status != MissionStatus.CONFIRMED && status != MissionStatus.RESOURCE_RESERVED && status != MissionStatus.READY) {

@@ -184,8 +184,9 @@ public class MissionController {
 
     @PostMapping("/{id}/accept")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE')")
-    public ResponseEntity<MissionResponse> accept(@PathVariable Long id, Authentication authentication) {
-        return ResponseEntity.ok(service.acceptOperator(id, authentication));
+    public ResponseEntity<MissionResponse> accept(@PathVariable Long id,
+            @Valid @RequestBody MissionAcceptanceRequest request, Authentication authentication) {
+        return ResponseEntity.ok(service.acceptOperator(id, request, authentication));
     }
 
     @PostMapping("/{id}/report-conflict")

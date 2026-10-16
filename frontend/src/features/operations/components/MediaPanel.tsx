@@ -29,7 +29,7 @@ export function MediaPanel() {
       linkedEntityType: link.type || undefined, linkedEntityId: link.type ? link.id : undefined });
     setStage(`Đang tải nội dung #${asset.id}…`);
     const signed = await service.uploadUrl(asset.id);
-    const result = await fetch(signed.url, { method: 'PUT', headers: { 'Content-Type': contentType }, body: file });
+    const result = await fetch(signed.url, { method: 'PUT', headers: { 'If-None-Match': '*', 'Content-Type': contentType }, body: file });
     if (!result.ok) throw new Error(`Storage từ chối tải tệp (${result.status}). Có thể chọn tải lại tệp đang chờ.`);
     setStage('Đang xác nhận nội dung…');
     await service.confirmMedia(asset.id);

@@ -40,6 +40,6 @@ public interface MissionService {
     List<MissionMediaResponse> listMedia(Long id, Authentication authentication);
     List<MissionEventResponse> timeline(Long id, Authentication authentication);
     MissionAvailabilityResponse availability(LocalDateTime startTime, LocalDateTime endTime, Long stationId, Long uavId, Long operatorId);
-    MissionResponse acceptOperator(Long id, Authentication authentication);
+    MissionResponse acceptOperator(Long id, MissionAcceptanceRequest request, Authentication authentication);
     MissionResponse reportOperatorConflict(Long id, String note, Authentication authentication);
 }

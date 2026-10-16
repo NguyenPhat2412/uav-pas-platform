@@ -25,6 +25,8 @@ import java.util.UUID;
 @Service
 @Transactional
 public class IMediaService implements MediaService {
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
     private final MediaAssetRepository repository;
     private final ObjectStorageService storage;
     private final AuditLogService audit;
@@ -66,12 +68,12 @@ public class IMediaService implements MediaService {
         audit.record(null, actor, AuditAction.UPLOAD, "MEDIA", asset.getId().toString(), objectKey);
         return MediaMapper.toResponse(asset);
     }
-    @Override @Transactional(readOnly = true)
-    public SignedMediaUrlResponse uploadUrl(Long id) { MediaAsset asset = find(id); requireAccess(asset, currentActor(), true); if(asset.isConfirmed()) throw SystemException.conflict("Confirmed media cannot be overwritten"); return new SignedMediaUrlResponse(id, storage.createSignedUploadUrl(asset.getObjectKey(), asset.getContentType()), "upload", 900); }
+    @Override
+    public SignedMediaUrlResponse uploadUrl(Long id) { MediaAsset asset = find(id); requireAccess(asset, currentActor(), true); if(asset.isDeleted()) throw SystemException.notFound("Media asset not found"); if(asset.isConfirmed()) throw SystemException.conflict("Confirmed media cannot be overwritten"); return new SignedMediaUrlResponse(id, storage.createSignedUploadUrl(asset.getObjectKey(), asset.getContentType()), "upload", 900); }
     @Override
     public SignedMediaUrlResponse downloadUrl(Long id, String actor) { MediaAsset asset = find(id); requireAccess(asset,actor,false); if (!asset.isConfirmed()) throw SystemException.conflict("Media upload is not confirmed"); audit.record(null, actor, AuditAction.DOWNLOAD, "MEDIA", id.toString(), asset.getObjectKey()); return new SignedMediaUrlResponse(id, storage.createSignedDownloadUrl(asset.getObjectKey()), "download", 900); }
     @Override
-    public MediaAssetResponse confirm(Long id, String actor) { MediaAsset asset = find(id); requireAccess(asset,actor,true); if(asset.isConfirmed()) return MediaMapper.toResponse(asset); if (!storage.objectExists(asset.getObjectKey())) throw SystemException.conflict("Media object is not present in storage"); var metadata=storage.metadata(asset.getObjectKey());
+    public MediaAssetResponse confirm(Long id, String actor) { MediaAsset asset = find(id); requireAccess(asset,actor,true); if(asset.isDeleted()) throw SystemException.notFound("Media asset not found"); if(asset.isConfirmed()) return MediaMapper.toResponse(asset); if (!storage.objectExists(asset.getObjectKey())) throw SystemException.conflict("Media object is not present in storage"); var metadata=storage.metadata(asset.getObjectKey());
         if(metadata == null || metadata.size()!=asset.getSize() || !java.util.Objects.equals(metadata.contentType(),asset.getContentType())) throw SystemException.conflict("Storage object metadata differs from registered upload");
         asset.confirm(); audit.record(null, actor, AuditAction.UPDATE, "MEDIA", id.toString(), "CONFIRMED"); return MediaMapper.toResponse(asset); }
     @Override
@@ -95,6 +97,11 @@ public class IMediaService implements MediaService {
         return confirm(id,actor);
     }
     private String currentActor() { var auth=org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication(); return auth==null?null:auth.getName(); }
-    private void requireAccess(MediaAsset asset,String actor,boolean write) { if(access!=null) access.requireFile(asset,actor,write); }
+    private void requireAccess(MediaAsset asset,String actor,boolean write) {
+        if(access!=null) access.requireFile(asset,actor,write);
+        // Mission writes serialize on the mission row. Refresh an asset loaded before that lock,
+        // otherwise a waiting confirm/delete could act on stale confirmed/deleted flags.
+        if(write && entityManager!=null && entityManager.contains(asset)) entityManager.refresh(asset);
+    }
     private MediaAsset find(Long id) { return repository.findById(id).filter(asset -> !asset.isDeleted()).orElseThrow(() -> SystemException.notFound("Media asset not found")); }
 }

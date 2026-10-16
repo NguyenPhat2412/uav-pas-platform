@@ -36,10 +36,12 @@ public class IMediaAccessService implements MediaAccessService {
             case "MISSION" -> {
                 String capability=write ? "MISSION_MEDIA_UPLOAD" : "MISSION_MEDIA_VIEW";
                 if (!permissions.has(auth,capability)) throw denied();
-                var mission=missions.findById(resourceId).orElseThrow(IMediaAccessService::denied);
+                var mission=(write ? missions.findByIdForUpdate(resourceId) : missions.findById(resourceId))
+                        .orElseThrow(IMediaAccessService::denied);
                 boolean visible=permissions.has(auth,"MISSION_VIEW_ALL") || mission.getCustomer().getUsername().equals(actor)
                         || (mission.getOperator()!=null && mission.getOperator().getUsername().equals(actor));
                 if(!visible) throw denied();
+                if(write) mission.requireMediaWritable();
             }
             case "STATION" -> { if(!permissions.has(auth,write?"STATION_MANAGE":"STATION_READ") || !stations.existsById(resourceId)) throw denied(); }
             case "UAV" -> { if(!permissions.has(auth,write?"UAV_MANAGE":"UAV_READ") || !uavs.existsById(resourceId)) throw denied(); }

@@ -202,6 +202,7 @@ public class IMissionService implements MissionService {
             throw SystemException.conflict("MISSION_STATION_RESOURCES_CONFLICT");
         }
         mission.assignStation(station);
+        mission.invalidateAcceptance();
         event(mission, MissionEventType.STATION_ASSIGNED, authentication, mission.getStatus(), mission.getStatus(), "Station assigned");
         maybeMarkResourcesReserved(mission, authentication);
         audit.record(null, authentication.getName(), AuditAction.ASSIGN, "MISSION", id.toString(), "STATION:" + station.getCode());
@@ -225,6 +226,7 @@ public class IMissionService implements MissionService {
             throw SystemException.conflict("UAV_TIME_CONFLICT");
         }
         mission.assignUav(uav);
+        mission.invalidateAcceptance();
         changeUavStatus(uav, UavStatus.ASSIGNED, "Mission UAV assigned", authentication.getName());
         event(mission, MissionEventType.UAV_ASSIGNED, authentication, mission.getStatus(), mission.getStatus(), "UAV assigned");
         maybeMarkResourcesReserved(mission, authentication);
@@ -330,6 +332,7 @@ public class IMissionService implements MissionService {
         AppUser operator = lockOperator(request.resourceId());
         requireOperatorAvailable(operator, mission);
         mission.assignOperator(operator);
+        mission.invalidateAcceptance();
         event(mission, MissionEventType.OPERATOR_ASSIGNED, authentication, mission.getStatus(), mission.getStatus(), "Operator assigned");
         maybeMarkResourcesReserved(mission, authentication);
         audit.record(operator.getId(), authentication.getName(), AuditAction.ASSIGN, "MISSION", id.toString(), "OPERATOR:" + operator.getUsername());
@@ -347,6 +350,7 @@ public class IMissionService implements MissionService {
         }
         inventory.reserve(item.getId(), new QuantityRequest(request.quantity(), request.note()), authentication.getName());
         reservations.save(new MissionEquipmentReservation(mission, item, request.quantity(), authentication.getName()));
+        mission.invalidateAcceptance();
         bumpDispatchVersion(mission);
         event(mission, MissionEventType.EQUIPMENT_RESERVED, authentication, mission.getStatus(), mission.getStatus(), "Equipment reserved");
         maybeMarkResourcesReserved(mission, authentication);
@@ -569,7 +573,9 @@ public class IMissionService implements MissionService {
     @Override
     public MissionResponse ready(Long id, Authentication authentication) {
         Mission mission = accessibleForUpdate(id, authentication);
+        if (mission.getStatus() != MissionStatus.RESOURCE_RESERVED) throw new IllegalStateException("MISSION_INVALID_STATUS");
         validatePreflightResources(mission);
+        requireAcceptance(mission);
         MissionStatus old = mission.getStatus(); mission.transitionTo(MissionStatus.READY);
         event(mission, MissionEventType.STATUS_CHANGED, authentication, old, mission.getStatus(), "Mission ready");
         audit.record(null, authentication.getName(), AuditAction.STATUS_CHANGE, "MISSION", id.toString(), "READY");
@@ -580,7 +586,9 @@ public class IMissionService implements MissionService {
     public MissionResponse start(Long id, Authentication authentication) {
         Mission mission = accessibleForUpdate(id, authentication);
         requireAssignedOperator(mission, authentication);
+        if (mission.getStatus() != MissionStatus.READY) throw new IllegalStateException("MISSION_INVALID_STATUS");
         validatePreflightResources(mission);
+        requireAcceptance(mission);
         MissionStatus old = mission.getStatus(); mission.transitionTo(MissionStatus.IN_PROGRESS);
         changeUavStatus(mission.getUav(), UavStatus.IN_USE, "Mission started", authentication.getName());
         event(mission, MissionEventType.STATUS_CHANGED, authentication, old, mission.getStatus(), "Mission started");
@@ -592,10 +600,22 @@ public class IMissionService implements MissionService {
     public MissionResponse complete(Long id, MissionCompletionRequest request, Authentication authentication) {
         Mission mission = accessibleForUpdate(id, authentication);
         requireAssignedOperator(mission, authentication);
+        if (mission.getStatus() != MissionStatus.IN_PROGRESS) throw new IllegalStateException("MISSION_INVALID_STATUS");
+        if (request == null || request.completionNote() == null || request.completionNote().isBlank()
+                || request.equipmentCondition() == null || request.equipmentCondition().isBlank()
+                || request.completionNote().length() > 500 || request.equipmentCondition().length() > 500) {
+            throw SystemException.badRequest("MISSION_HANDOVER_NOTES_REQUIRED");
+        }
+        boolean needsResult = java.util.Set.of(MissionType.AREA_INSPECTION, MissionType.AERIAL_RECORDING,
+                MissionType.DATA_COLLECTION).contains(mission.getMissionType());
+        if (needsResult && (missionMedia == null || !missionMedia.existsByMissionIdAndMediaRoleInAndMediaConfirmedTrueAndMediaDeletedFalse(
+                id, java.util.List.of(MediaRole.OUTPUT, MediaRole.DOCUMENT)))) {
+            throw SystemException.conflict("MISSION_HANDOVER_RESULT_REQUIRED");
+        }
         MissionStatus old = mission.getStatus();
         releaseResources(mission, authentication.getName());
-        mission.complete(request.completionNote(), request.equipmentCondition());
-        event(mission, MissionEventType.COMPLETED, authentication, old, mission.getStatus(), request.completionNote());
+        mission.complete(request.completionNote().trim(), request.equipmentCondition().trim());
+        event(mission, MissionEventType.COMPLETED, authentication, old, mission.getStatus(), request.completionNote().trim());
         audit.record(null, authentication.getName(), AuditAction.STATUS_CHANGE, "MISSION", id.toString(), "COMPLETED");
         return MissionMapper.toResponse(mission);
     }
@@ -618,6 +638,7 @@ public class IMissionService implements MissionService {
             throw new org.springframework.security.access.AccessDeniedException("Mission media upload is not permitted");
         }
         Mission mission = accessibleForUpdate(id, authentication);
+        mission.requireMediaWritable();
         if (missionMedia.existsByMissionIdAndMediaId(id, request.mediaId())) throw SystemException.conflict("Media already attached");
         MediaAsset media = mediaAssets.findById(request.mediaId()).orElseThrow(() -> SystemException.notFound("Media not found"));
         if(media.isDeleted() || !media.isConfirmed()) throw SystemException.conflict("Media upload must be confirmed before attachment");
@@ -665,22 +686,36 @@ public class IMissionService implements MissionService {
     }
 
     @Override
-    public MissionResponse acceptOperator(Long id, Authentication authentication) {
+    public MissionResponse acceptOperator(Long id, MissionAcceptanceRequest request, Authentication authentication) {
         Mission mission = accessibleForUpdate(id, authentication);
         requireAssignedOperator(mission, authentication);
+        if (mission.getStatus() != MissionStatus.CONFIRMED && mission.getStatus() != MissionStatus.RESOURCE_RESERVED
+                && mission.getStatus() != MissionStatus.READY) throw new IllegalStateException("MISSION_INVALID_STATUS");
+        if (request == null || request.expectedVersion() == null || request.expectedVersion() < 0) {
+            throw SystemException.badRequest("MISSION_ACCEPTANCE_VERSION_REQUIRED");
+        }
+        if (request.expectedVersion() != mission.getVersion() || mission.isOperatorAccepted()) {
+            throw SystemException.conflict("MISSION_ACCEPTANCE_STALE");
+        }
         mission.acceptOperator();
         event(mission, MissionEventType.OPERATOR_ACCEPTED, authentication, mission.getStatus(), mission.getStatus(), "Operator accepted assignment");
         audit.record(null, authentication.getName(), AuditAction.STATUS_CHANGE, "MISSION", id.toString(), "OPERATOR_ACCEPTED");
+        missions.flush();
         return MissionMapper.toResponse(mission);
+    }
+
+    private void requireAcceptance(Mission mission) {
+        if (!mission.isOperatorAccepted()) throw SystemException.conflict("MISSION_ACCEPTANCE_REQUIRED");
     }
 
     @Override
     public MissionResponse reportOperatorConflict(Long id, String note, Authentication authentication) {
         Mission mission = accessibleForUpdate(id, authentication);
         requireAssignedOperator(mission, authentication);
-        if (note != null && note.length() > 500) throw new IllegalArgumentException("Ghi chú vướng mắc không được vượt quá 500 ký tự.");
-        mission.reportOperatorConflict(note);
-        event(mission, MissionEventType.OPERATOR_CONFLICT, authentication, mission.getStatus(), mission.getStatus(), note);
+        if (note == null || note.isBlank() || note.length() > 500) throw new IllegalArgumentException("Ghi chú vướng mắc phải có nội dung và không vượt quá 500 ký tự.");
+        MissionStatus old = mission.getStatus();
+        mission.reportOperatorConflict(note.trim());
+        event(mission, MissionEventType.OPERATOR_CONFLICT, authentication, old, mission.getStatus(), note.trim());
         audit.record(null, authentication.getName(), AuditAction.STATUS_CHANGE, "MISSION", id.toString(), "OPERATOR_CONFLICT");
         return MissionMapper.toResponse(mission);
     }

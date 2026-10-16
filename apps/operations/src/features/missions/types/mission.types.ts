@@ -6,7 +6,7 @@ export type MediaType = 'IMAGE' | 'VIDEO' | 'DOCUMENT';
 
 export interface PageResponse<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; first: boolean; last: boolean; hasNext: boolean; hasPrevious: boolean; }
 export interface Mission {
-  id: number; code: string; customerId?: number; customerName?: string; serviceId?: number; missionType: MissionType;
+  id: number; version: number; code: string; customerId?: number; customerName?: string; serviceId?: number; missionType: MissionType;
   title: string; description?: string; requestedDate: string; startTime: string; expectedEndTime: string; locationName: string;
   latitude?: number; longitude?: number; stationId?: number; uavId?: number; operatorId?: number; priority: MissionPriority;
   status: MissionStatus; notes?: string; operatorAccepted?: boolean; operatorConflictNote?: string; createdAt?: string; updatedAt?: string;

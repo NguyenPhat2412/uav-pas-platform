@@ -13,7 +13,8 @@ test('closed missions offer no mutation controls, even with all permissions', ()
   for (const status of terminalStatuses) assert.ok(Object.values(missionControls({...mission, status},10,all)).every(v => v === false), status);
 });
 test('execution belongs to the assigned operator and the matching lifecycle stage', () => {
-  assert.equal(missionControls(mission,10,all).start,true);
+  assert.equal(missionControls(mission,10,all).start,false);
+  assert.equal(missionControls({...mission,operatorAccepted:true},10,all).start,true);
   assert.equal(missionControls(mission,11,all).start,false);
   assert.equal(missionControls({...mission,status:'IN_PROGRESS'},10,all).complete,true);
   assert.equal(missionControls({...mission,status:'IN_PROGRESS'},10,all).start,false);

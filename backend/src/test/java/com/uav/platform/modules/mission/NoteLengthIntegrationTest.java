@@ -109,13 +109,13 @@ class NoteLengthIntegrationTest {
     }
 
     @Test
-    void optionalCompletionNotesRemainOptional() throws Exception {
+    void missingCompletionNotesAreRejectedWithoutReleasingResources() throws Exception {
         prepare("complete");
         mvc.perform(post("/api/v1/missions/" + missionId + "/complete").with(authentication(auth(operator)))
                 .contentType(MediaType.APPLICATION_JSON).content("{}"))
-                .andExpect(status().isOk());
-        assertEquals(MissionStatus.COMPLETED, missions.get(missionId, auth(admin)).status());
-        assertEquals(5, inventory.get(equipmentId).availableQuantity());
+                .andExpect(status().isBadRequest());
+        assertEquals(MissionStatus.IN_PROGRESS, missions.get(missionId, auth(admin)).status());
+        assertEquals(3, inventory.get(equipmentId).availableQuantity());
     }
 
     private int limit(String action) { return switch(action) { case "failureNotes", "create", "update" -> 2000; case "stock-in", "stock-out", "reserve", "release", "transfer" -> 255; default -> 500; }; }
@@ -128,7 +128,9 @@ class NoteLengthIntegrationTest {
         missions.assignOperator(missionId, new com.uav.platform.modules.mission.config.request.ResourceAssignmentRequest(operator.getId()), auth(admin));
         if (action.equals("reject") || action.equals("report-conflict")) return;
         missions.reserveEquipment(missionId, new com.uav.platform.modules.mission.config.request.ResourceAssignmentRequest(equipmentId, 2, null), auth(admin));
+        MissionHandoverTestData.accept(missions,missionId,auth(operator));
         missions.ready(missionId, auth(admin)); missions.start(missionId, auth(operator));
+        MissionHandoverTestData.result(db,missionId,operator.getUsername());
     }
     private org.springframework.test.web.servlet.MvcResult invoke(String action, String note) throws Exception {
         var request = post("/api/v1/missions/" + missionId + "/" + action).with(authentication(auth(operator)));
@@ -137,7 +139,7 @@ class NoteLengthIntegrationTest {
         else if (List.of("complete", "equipmentCondition", "failureReason", "failureNotes").contains(action)) {
             boolean fail = action.startsWith("failure");
             request = post("/api/v1/missions/" + missionId + (fail ? "/fail" : "/complete")).with(authentication(auth(operator)));
-            Map<String,String> body = switch(action) { case "complete" -> Map.of("completionNote",note); case "equipmentCondition" -> Map.of("equipmentCondition",note); case "failureReason" -> Map.of("failureReason",note); default -> Map.of("failureReason","Fixture reason","notes",note); };
+            Map<String,String> body = switch(action) { case "complete" -> Map.of("completionNote",note,"equipmentCondition","Intact"); case "equipmentCondition" -> Map.of("equipmentCondition",note,"completionNote","Done"); case "failureReason" -> Map.of("failureReason",note); default -> Map.of("failureReason","Fixture reason","notes",note); };
             request.contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(body));
         } else if (action.equals("create") || action.equals("update")) {
             Map<String,Object> body = new java.util.HashMap<>(Map.of("missionType","AREA_INSPECTION","title","Note mission","requestedDate",start.toLocalDate().toString(),"startTime",start.toString(),"expectedEndTime",start.plusHours(1).toString(),"locationName","Hanoi","notes",note));

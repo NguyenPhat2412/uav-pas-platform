@@ -56,6 +56,7 @@ class StabilizationMinioTest {
         HttpResponse<Void> upload = client.send(
                 HttpRequest.newBuilder(URI.create(uploadUrl))
                         .header("Content-Type", "text/plain")
+                        .header("If-None-Match", "*")
                         .PUT(HttpRequest.BodyPublishers.ofByteArray(CONTENT))
                         .build(),
                 HttpResponse.BodyHandlers.discarding());
@@ -64,6 +65,17 @@ class StabilizationMinioTest {
         assertTrue(storage.objectExists(OBJECT_KEY));
         assertEquals(CONTENT.length, storage.metadata(OBJECT_KEY).size());
         assertEquals("text/plain", storage.metadata(OBJECT_KEY).contentType());
+
+        HttpResponse<Void> repeat = client.send(HttpRequest.newBuilder(URI.create(uploadUrl))
+                .header("Content-Type", "text/plain").header("If-None-Match", "*")
+                .PUT(HttpRequest.BodyPublishers.ofString("Must not overwrite handover evidence")).build(),
+                HttpResponse.BodyHandlers.discarding());
+        assertEquals(412, repeat.statusCode());
+        HttpResponse<Void> unsignedCondition = client.send(HttpRequest.newBuilder(URI.create(uploadUrl))
+                .header("Content-Type", "text/plain")
+                .PUT(HttpRequest.BodyPublishers.ofString("Missing signed condition")).build(),
+                HttpResponse.BodyHandlers.discarding());
+        assertTrue(unsignedCondition.statusCode() >= 400 && unsignedCondition.statusCode() < 500);
 
         HttpResponse<byte[]> download = client.send(
                 HttpRequest.newBuilder(URI.create(storage.createSignedDownloadUrl(OBJECT_KEY))).GET().build(),

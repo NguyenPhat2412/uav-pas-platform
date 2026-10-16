@@ -34,7 +34,7 @@ export function MediaPanel() {
     setIncompleteUploadId(asset.id);
     setStage(`Đang tải nội dung #${asset.id}…`);
     const signed = await service.uploadUrl(asset.id);
-    await apiRequest<void>(signed.url, { method: 'PUT', headers: { 'Content-Type': contentType }, body: file });
+    await apiRequest<void>(signed.url, { method: 'PUT', headers: { 'If-None-Match': '*', 'Content-Type': contentType }, body: file });
     setStage('Đang xác nhận nội dung…');
     await service.confirmMedia(asset.id);
     setIncompleteUploadId(undefined);

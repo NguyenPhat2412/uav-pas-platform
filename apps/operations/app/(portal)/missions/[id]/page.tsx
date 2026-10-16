@@ -9,10 +9,10 @@ import { Alert, Button, Spinner } from '@/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { missionService } from '@/features/missions/services/mission.service';
 import { ResourceRedispatch } from '@/features/missions/components/ResourceRedispatch';
-import type { DispatchResources, Mission, MissionEvent, MissionMedia } from '@/features/missions/types/mission.types';
+import type { DispatchResources, Mission, MissionEvent, MissionMedia, MediaRole } from '@/features/missions/types/mission.types';
 import { MissionStatusBadge } from '@/features/missions/components/MissionStatusBadge';
 import { missionControls } from '@/features/missions/presentation';
-import { MissionFormError, missionEventNoteLimit, reservationQuantity } from '@/features/missions/workflows';
+import { MissionFormError, missionEventNoteLimit, reservationQuantity, handoverEvidence } from '@/features/missions/workflows';
 import { collectPages } from '@/lib/collection';
 import { ApiError } from '@/lib/api.client';
 import { operationsService } from '@/features/operations/services/operations.service';
@@ -22,6 +22,11 @@ import { AppShell } from '@/components/layout/AppShell';
 type Confirmation = 'reject' | 'conflict' | 'complete' | 'cancel' | 'fail';
 const confirmations = { reject: 'Từ chối yêu cầu', conflict: 'Báo vướng mắc', complete: 'Hoàn tất nhiệm vụ', cancel: 'Hủy nhiệm vụ', fail: 'Ghi nhận nhiệm vụ không thành công' };
 const errorLabels: Record<string, string> = {
+  MISSION_ACCEPTANCE_REQUIRED: 'Người vận hành cần tiếp nhận phân công hiện tại trước khi sẵn sàng hoặc bắt đầu.',
+  MISSION_ACCEPTANCE_STALE: 'Phân công đã thay đổi hoặc đã được tiếp nhận. Hãy xem lại tài nguyên mới nhất trước khi xác nhận.',
+  MISSION_HANDOVER_NOTES_REQUIRED: 'Cần ghi chú kết quả và tình trạng thiết bị khi hoàn trả.',
+  MISSION_HANDOVER_RESULT_REQUIRED: 'Cần ít nhất một tệp Kết quả bàn giao hoặc Báo cáo đã tải lên và gắn thành công.',
+  MISSION_MEDIA_LOCKED: 'Nhiệm vụ đã kết thúc. Tệp chỉ còn được xem và tải xuống.',
   MISSION_DISPATCH_STALE: 'Phân công đã thay đổi ở màn hình khác. Dữ liệu đã được tải lại; hãy kiểm tra trước khi thử lại.',
   MISSION_RESERVATION_STALE: 'Khoản giữ đã được đổi hoặc hoàn trả. Hãy kiểm tra danh sách mới nhất.',
   MISSION_STATION_RESOURCES_CONFLICT: 'Tài nguyên không cùng trạm. Hãy gỡ UAV và hoàn trả thiết bị thuộc trạm cũ trước khi đổi trạm.',
@@ -55,6 +60,8 @@ function MissionDetail({ id }: { id: string }) {
   const mutationError = useRef<HTMLDivElement>(null);
   const focusMutationError = useRef(false);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null); const [note, setNote] = useState('');
+  const [mediaRole, setMediaRole] = useState<MediaRole>('OUTPUT');
+  const [downloading, setDownloading] = useState<number | null>(null);
   const [extraNote, setExtraNote] = useState(''); const [quantity, setQuantity] = useState('1');
   const [redispatch, setRedispatch] = useState<{ kind: 'replaceUav' | 'unassignUav'; expectedCurrentUavId: number } | null>(null);
   const [redispatchReason, setRedispatchReason] = useState('');
@@ -102,6 +109,9 @@ function MissionDetail({ id }: { id: string }) {
   if (isLoading || !isAuthenticated || !permissionsReady || !mission || mission.id !== Number(id)) return <div className="min-h-screen flex items-center justify-center">{error ? <p role="alert" className="text-error">{error}</p> : <Spinner size="lg" label="Đang tải nhiệm vụ" />}</div>;
   const controls = missionControls(mission, user?.id, can);
   const disabled = busy || uploading || stale;
+  const evidence = handoverEvidence(mission.missionType, media);
+  const evidenceKnown = readMedia && !sectionErrors.includes('tệp');
+  const canFinish = !evidence.required || (evidenceKnown && evidence.satisfied);
   const action = async (run: () => Promise<Mission>) => {
     if (disabled || actionLock.current) return; actionLock.current = true; loadGeneration.current += 1; setBusy(true); setError('');
     try { setMission(await run()); setConfirmation(null); setRedispatch(null); setNote(''); setExtraNote(''); }
@@ -110,15 +120,22 @@ function MissionDetail({ id }: { id: string }) {
   };
   const uploadMedia = async (file: File) => {
     if (disabled || actionLock.current || !controls.upload) return; actionLock.current = true; loadGeneration.current += 1; setUploading(true); setError('');
-    try { const signed = await missionService.requestMediaUpload(Number(id), file); await missionService.uploadFile(signed.url, file); await missionService.confirmMedia(Number(id), signed.mediaId); await missionService.attachMedia(Number(id), signed.mediaId, file.type.startsWith('video/') ? 'FLIGHT_DATA' : 'OUTPUT'); await load(); }
-    catch { focusMutationError.current = true; setError('Không thể tải tệp lên. Vui lòng thử lại.'); } finally { actionLock.current = false; setUploading(false); }
+    try { const signed = await missionService.requestMediaUpload(Number(id), file); await missionService.uploadFile(signed.url, file); await missionService.confirmMedia(Number(id), signed.mediaId); await missionService.attachMedia(Number(id), signed.mediaId, mediaRole); await load(); }
+    catch (err) { focusMutationError.current = true; setError(errorLabels[err instanceof Error ? err.message : ''] || 'Chưa xác nhận được việc gắn tệp. Hãy kiểm tra danh sách đã tải lại trước khi thử lại.'); try { await load(); } catch { setStale(true); } } finally { actionLock.current = false; setUploading(false); }
   };
   const openConfirmation = (value: Confirmation) => { setRedispatch(null); setNote(''); setExtraNote(''); setConfirmation(value); setError(''); };
   const confirmAction = () => {
     if (!confirmation || !controls[confirmation]) return;
-    if (['reject', 'conflict', 'fail'].includes(confirmation) && !note.trim()) return;
-    const run = { reject: () => missionService.reject(mission.id, note.trim()), conflict: () => missionService.reportConflict(mission.id, note.trim()), complete: () => missionService.complete(mission.id, note.trim() || 'Hoàn tất vận hành', extraNote.trim() || undefined), cancel: () => missionService.cancel(mission.id), fail: () => missionService.fail(mission.id, note, extraNote) }[confirmation];
+    if (['reject', 'conflict', 'fail', 'complete'].includes(confirmation) && !note.trim()) return;
+    if (confirmation === 'complete' && (!extraNote.trim() || !canFinish)) return;
+    const run = { reject: () => missionService.reject(mission.id, note.trim()), conflict: () => missionService.reportConflict(mission.id, note.trim()), complete: () => missionService.complete(mission.id, note, extraNote), cancel: () => missionService.cancel(mission.id), fail: () => missionService.fail(mission.id, note, extraNote) }[confirmation];
     void action(run);
+  };
+  const download = async (mediaId: number) => {
+    setDownloading(mediaId); setError('');
+    try { const signed = await operationsService.downloadUrl(mediaId); window.open(signed.url, '_blank', 'noopener,noreferrer'); }
+    catch { focusMutationError.current = true; setError('Không thể tải tệp lúc này. Vui lòng thử lại.'); }
+    finally { setDownloading(null); }
   };
   const assignedStation = stations.find(s => s.id === mission.stationId);
   const assignedUav = uavs.find(u => u.id === mission.uavId);
@@ -146,7 +163,7 @@ function MissionDetail({ id }: { id: string }) {
       {controls.submit && <Button disabled={disabled} onClick={() => void action(() => missionService.submit(mission.id))}>Gửi xác nhận</Button>}
       {controls.confirm && <Button disabled={disabled} onClick={() => void action(() => missionService.confirm(mission.id))}>Xác nhận</Button>}
       {controls.ready && <Button disabled={disabled} onClick={() => void action(() => missionService.ready(mission.id))}>Sẵn sàng</Button>}
-      {controls.accept && <Button disabled={disabled} onClick={() => void action(() => missionService.accept(mission.id))}>Nhận nhiệm vụ</Button>}
+      {controls.accept && <Button disabled={disabled} onClick={() => void action(() => missionService.accept(mission.id, mission.version))}>Nhận nhiệm vụ</Button>}
       {controls.start && <Button disabled={disabled} onClick={() => void action(() => missionService.start(mission.id))} leftIcon={<Play size={16} />}>Bắt đầu</Button>}
       {controls.complete && <Button disabled={disabled} onClick={() => openConfirmation('complete')} leftIcon={<CheckCircle2 size={16} />}>Hoàn tất</Button>}
       {controls.fail && <Button disabled={disabled} variant="danger" onClick={() => openConfirmation('fail')}>Ghi nhận không thành công</Button>}
@@ -155,18 +172,20 @@ function MissionDetail({ id }: { id: string }) {
       {controls.cancel && <Button disabled={disabled} variant="outline" onClick={() => openConfirmation('cancel')}>Hủy nhiệm vụ</Button>}
       {busy && <span role="status">Đang xử lý…</span>}
     </div></div></section>
+    {['CONFIRMED', 'RESOURCE_RESERVED', 'READY'].includes(mission.status) && !mission.operatorAccepted && <div className="mission-note" role="status"><strong>Chờ người vận hành tiếp nhận</strong><p>Người được phân công cần xem lại tài nguyên và nhận nhiệm vụ trước khi sẵn sàng. Mỗi lần điều chỉnh nguồn lực sẽ yêu cầu tiếp nhận lại.</p></div>}
     {confirmation && controls[confirmation] && <form className="mission-note" aria-label={confirmations[confirmation]} onSubmit={e => { e.preventDefault(); confirmAction(); }}>
       <strong>{confirmations[confirmation]}</strong>
+      {confirmation === 'complete' && <div role="status"><p>{evidence.required ? evidenceKnown ? `Đã có ${evidence.count} tệp kết quả/báo cáo. Cần ít nhất 1 tệp để hoàn tất.` : 'Chưa kiểm tra được tệp kết quả. Hãy tải lại danh sách hoặc nhờ người có quyền xem tệp.' : 'Loại nhiệm vụ này không bắt buộc tệp kết quả.'}</p>{!canFinish && <a href="#media">Đến phần tệp và kết quả</a>}<p>Hoàn tất sẽ hoàn trả tài nguyên và khóa cập nhật tệp. Hãy kiểm tra kết quả trước khi xác nhận.</p></div>}
       {confirmation === 'cancel' ? <p className="mission-muted">Nhiệm vụ đã hủy sẽ không thể tiếp tục. Tài nguyên được hoàn trả theo quy trình.</p> : <>
         {confirmation === 'fail' && <p className="mission-muted">Thao tác này kết thúc nhiệm vụ và giải phóng tài nguyên đang giữ. Nhiệm vụ sẽ không thể tiếp tục; lý do được lưu trong lịch sử.</p>}
-        <label>{confirmation === 'complete' ? 'Ghi chú kết quả (tùy chọn)' : confirmation === 'fail' ? 'Lý do không thành công' : 'Lý do / vướng mắc'}
-          <textarea autoFocus required={confirmation !== 'complete'} disabled={disabled} maxLength={missionEventNoteLimit} value={note} onChange={e => setNote(e.target.value)} />
+        <label>{confirmation === 'complete' ? 'Ghi chú kết quả' : confirmation === 'fail' ? 'Lý do không thành công' : 'Lý do / vướng mắc'}
+          <textarea autoFocus required disabled={disabled} maxLength={missionEventNoteLimit} value={note} onChange={e => setNote(e.target.value)} />
           <span className="mission-muted">Tối đa {missionEventNoteLimit} ký tự.</span>
         </label>
         {confirmation === 'fail' && <label>Ghi chú sự cố (tùy chọn)<textarea disabled={disabled} maxLength={2000} value={extraNote} onChange={e => setExtraNote(e.target.value)} /></label>}
-        {confirmation === 'complete' && <label>Tình trạng thiết bị khi hoàn trả (tùy chọn)<textarea disabled={disabled} aria-label="Tình trạng thiết bị khi hoàn trả (tùy chọn)" maxLength={500} value={extraNote} onChange={e => setExtraNote(e.target.value)} /><span className="mission-muted">Ghi nhận này không tự thay đổi trạng thái hỏng hoặc bảo trì của thiết bị.</span></label>}
+        {confirmation === 'complete' && <label>Tình trạng thiết bị khi hoàn trả<textarea required disabled={disabled} aria-label="Tình trạng thiết bị khi hoàn trả" maxLength={500} value={extraNote} onChange={e => setExtraNote(e.target.value)} /><span className="mission-muted">Ghi nhận này không tự thay đổi trạng thái hỏng hoặc bảo trì của thiết bị.</span></label>}
       </>}
-      <div className="mission-actions"><Button type="button" variant="outline" disabled={disabled} onClick={() => setConfirmation(null)}>Quay lại</Button><Button type="submit" variant={confirmation === 'fail' ? 'danger' : 'primary'} disabled={disabled || (['reject','conflict','fail'].includes(confirmation) && !note.trim())}>{confirmation === 'fail' ? 'Xác nhận không thành công' : `Xác nhận ${confirmation === 'complete' ? 'hoàn tất' : confirmation === 'cancel' ? 'hủy' : confirmation === 'reject' ? 'từ chối' : 'báo vướng mắc'}`}</Button></div>
+      <div className="mission-actions"><Button type="button" variant="outline" disabled={disabled} onClick={() => setConfirmation(null)}>Quay lại</Button><Button type="submit" variant={confirmation === 'fail' ? 'danger' : 'primary'} disabled={disabled || (['reject','conflict','fail','complete'].includes(confirmation) && !note.trim()) || (confirmation === 'complete' && (!extraNote.trim() || !canFinish))}>{confirmation === 'fail' ? 'Xác nhận không thành công' : `Xác nhận ${confirmation === 'complete' ? 'hoàn tất' : confirmation === 'cancel' ? 'hủy' : confirmation === 'reject' ? 'từ chối' : 'báo vướng mắc'}`}</Button></div>
     </form>}
     {error && <div ref={mutationError} role="alert" tabIndex={-1}><Alert role="presentation" variant="error">{error}</Alert></div>}
     {stale && <Button variant="outline" disabled={busy || uploading} onClick={async () => { setBusy(true); try { await load(); setError(''); } catch { setError('Chưa thể tải lại trạng thái. Vui lòng kiểm tra kết nối và thử lại.'); } finally { setBusy(false); } }}>Tải lại trạng thái</Button>}
@@ -198,8 +217,8 @@ function MissionDetail({ id }: { id: string }) {
         {mission.status === 'FAILED' ? <><Info label="Lý do không thành công" value={mission.failureReason || 'Chưa có ghi nhận'} />{mission.failureNotes && <Info label="Ghi chú sự cố" value={mission.failureNotes} />}</> : <><Info label="Ghi chú kết quả" value={mission.completionNote || 'Chưa có ghi nhận'} />{mission.equipmentCondition && <Info label="Tình trạng thiết bị khi hoàn trả" value={mission.equipmentCondition} />}</>}
       </dl></div></section>}
       <section className="mission-panel" id="media"><header><h2>Tệp và kết quả</h2><span className="mission-count">{media.length} tệp</span></header><div className="mission-panel-body">
-        {controls.upload && <label className="mission-upload" aria-disabled={disabled}><input type="file" className="sr-only" disabled={disabled} onChange={e => { const file=e.target.files?.[0]; if(file) void uploadMedia(file); e.target.value=''; }} />{uploading ? 'Đang tải tệp lên…' : 'Tải tệp kết quả lên'}</label>}
-        {!readMedia ? <p className="mission-muted">Bạn chưa được cấp quyền xem tệp.</p> : media.length ? <ul className="mission-files">{media.map(item => <li className="mission-file" key={item.id}><div className="mission-file-info"><span className="mission-file-name">{item.media.originalName}</span><span className="mission-file-meta">{displayLabel(item.mediaRole)} · {Math.max(1, Math.ceil(item.media.size / 1024))} KB</span></div></li>)}</ul> : <p className="mission-empty">Chưa có tệp được đính kèm.</p>}
+        {controls.upload && <><label>Vai trò tệp<select className="mt-2 mb-3 min-h-11 w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3" aria-label="Vai trò tệp" disabled={disabled} value={mediaRole} onChange={e => setMediaRole(e.target.value as MediaRole)}><option value="OUTPUT">Kết quả bàn giao</option><option value="DOCUMENT">Báo cáo / tài liệu bàn giao</option><option value="FLIGHT_DATA">Dữ liệu bay (chưa phải kết quả bàn giao)</option></select></label><label className="mission-upload" aria-disabled={disabled}><input type="file" className="sr-only" disabled={disabled} onChange={e => { const file=e.target.files?.[0]; if(file) void uploadMedia(file); e.target.value=''; }} />{uploading ? 'Đang tải tệp lên…' : 'Tải tệp kết quả lên'}</label><p className="mission-muted">Tệp được tính cho bàn giao sau khi tải lên, xác nhận và gắn vào nhiệm vụ thành công. Dữ liệu bay không thay thế tệp kết quả/báo cáo.</p></>}
+        {!readMedia ? <p className="mission-muted">Bạn chưa được cấp quyền xem tệp.</p> : media.length ? <ul className="mission-files">{media.map(item => <li className="mission-file" key={item.id}><div className="mission-file-info"><span className="mission-file-name">{item.media.originalName}</span><span className="mission-file-meta">{displayLabel(item.mediaRole)} · {Math.max(1, Math.ceil(item.media.size / 1024))} KB</span></div>{can('MEDIA_READ') && <Button variant="outline" disabled={downloading !== null} onClick={() => void download(item.media.id)}>{downloading === item.media.id ? 'Đang tải…' : 'Tải xuống'}</Button>}</li>)}</ul> : <p className="mission-empty">Chưa có tệp được đính kèm.</p>}
         {terminalStatuses.includes(mission.status) && <p className="mission-muted" style={{marginTop:16}}>Nhiệm vụ đã kết thúc. Tệp được giữ lại để tra cứu.</p>}
       </div></section>
     </div><section className="mission-panel" id="timeline"><header><h2>Lịch sử nhiệm vụ</h2></header><div className="mission-panel-body">{readTimeline ? <MissionTimeline events={events} showActor /> : <p className="mission-muted">Bạn chưa được cấp quyền xem lịch sử.</p>}</div></section></div>

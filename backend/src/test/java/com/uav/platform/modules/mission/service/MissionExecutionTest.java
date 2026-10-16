@@ -71,13 +71,14 @@ class MissionExecutionTest {
     @Test
     void completeReleasesAssignedUav() {
         Mission mission = missionAt(MissionStatus.IN_PROGRESS);
+        org.springframework.test.util.ReflectionTestUtils.setField(mission,"missionType",MissionType.UAV_RENTAL);
         Uav uav = new Uav("Model", "UAV-EXEC", "Maker"); uav.setStatus(UavStatus.IN_USE); mission.assignUav(uav);
         mission.assignOperator(new AppUser("operator", "operator@complete.vn", "hash", null, UserStatus.ACTIVE));
         MissionRepository missions = repository(mission);
         MissionService service = service(missions, mock(MissionEquipmentReservationRepository.class), mock(UavRepository.class),
                 mock(InventoryService.class), permissions(true));
 
-        service.complete(1L, new MissionCompletionRequest("Done", null), auth("operator"));
+        service.complete(1L, new MissionCompletionRequest("Done", "Intact"), auth("operator"));
 
         assertEquals(MissionStatus.COMPLETED, mission.getStatus());
         assertEquals(UavStatus.AVAILABLE, uav.getStatus());

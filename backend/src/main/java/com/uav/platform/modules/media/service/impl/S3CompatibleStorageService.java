@@ -92,7 +92,8 @@ public class S3CompatibleStorageService implements ObjectStorageService {
     void closeClients() { presigner.close(); client.close(); }
     @Override public String provider() { return provider; }
     @Override public String createSignedUploadUrl(String objectKey, String contentType) {
-        PutObjectRequest request = PutObjectRequest.builder().bucket(bucket).key(objectKey).contentType(contentType).build();
+        // The condition is signed: reusing a still-valid URL cannot overwrite delivered content.
+        PutObjectRequest request = PutObjectRequest.builder().bucket(bucket).key(objectKey).contentType(contentType).ifNoneMatch("*").build();
         return presigner.presignPutObject(builder -> builder.signatureDuration(Duration.ofMinutes(15)).putObjectRequest(request)).url().toString();
     }
     @Override public String createSignedDownloadUrl(String objectKey) {
