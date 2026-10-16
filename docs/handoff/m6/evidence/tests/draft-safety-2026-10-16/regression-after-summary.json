@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "command": "./mvnw -Duav.build.directory=<isolated test target> test",
+  "exitCode": 0,
+  "seconds": 13.0,
+  "totals": {
+    "tests": 36,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "database": "uav_ba_test_suite",
+  "storageBucket": "uav-draft-safety-suite",
+  "suites": [
+    {
+      "name": "com.uav.platform.modules.mission.MissionDraftConcurrencyPostgresTest",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.uav.platform.error.UnknownRouteIntegrationTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.uav.platform.modules.mission.MissionDraftConcurrencyIntegrationTest",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

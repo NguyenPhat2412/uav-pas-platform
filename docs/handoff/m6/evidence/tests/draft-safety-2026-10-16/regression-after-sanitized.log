@@ -1,0 +1,5 @@
+./mvnw -Duav.build.directory=<isolated test target> test
+{'tests': 36, 'failures': 0, 'errors': 0, 'skipped': 0}
+com.uav.platform.modules.mission.MissionDraftConcurrencyPostgresTest: tests=15 failures=0 errors=0 skipped=0
+com.uav.platform.error.UnknownRouteIntegrationTest: tests=6 failures=0 errors=0 skipped=0
+com.uav.platform.modules.mission.MissionDraftConcurrencyIntegrationTest: tests=15 failures=0 errors=0 skipped=0
