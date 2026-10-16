@@ -1,6 +1,12 @@
 # M6 business E2E report
 
-## Bảo vệ bản nháp và unknown route — 2026-10-16 (mới nhất)
+## Tiếp nhận và bàn giao — 2026-10-16 (mới nhất)
+
+Luồng Customer tạo/gửi → điều phối gán tài nguyên → operator tiếp nhận/Sẵn sàng/Bắt đầu → tải báo cáo/Hoàn tất → Customer xem/tải → admin audit đã PASS cục bộ, gồm tab cũ, báo vướng mắc, lỗi upload, phân quyền và mobile. Legacy phục hồi sau 409/mất phản hồi, media kết thúc bị khóa. **18 nhóm browser/API hỗ trợ**, không phải toàn bộ đều UI thuần túy. Xem [báo cáo tiếp nhận/bàn giao](M6_MISSION_HANDOVER_2026_10_16.md). Staging/SSO/CSRF và mọi tổ hợp nghiệp vụ chưa được nghiệm thu.
+
+Các kết quả phía dưới là lịch sử của revision tương ứng.
+
+## Bảo vệ bản nháp và unknown route — 2026-10-16 (lịch sử, 530 tests)
 
 Đã chặn ghi đè DRAFT từ hai tab bằng phiên bản đi cùng nội dung biểu mẫu; backend khóa giao dịch và trả 409 khi bản cũ. UI giữ dữ liệu đang nhập, chỉ thay khi người dùng chọn tải bản mới. Đường dẫn không tồn tại trả 404; anonymous trên đường dẫn bảo vệ vẫn 401. **530 backend tests PASS, 0 skip; root/legacy đủ bốn gate PASS (78/7 lượt test); 13 nhóm browser/API hỗ trợ PASS** cho tạo/sửa/gửi/hủy, hai tab, mất phản hồi và quyền sở hữu. Auth contract/schema/dependencies không đổi; API nghiệp vụ PATCH mission mới yêu cầu `expectedVersion`. Xem [báo cáo bản nháp](M6_DRAFT_SAFETY_2026_10_16.md) và `evidence/tests/draft-safety-2026-10-16/`. Phạm vi **COMPLETE_LOCAL**; toàn dự án **PARTIAL / NOT_READY**. Baseline `f7b9f13`; mã nguồn kiểm chứng đã được đóng gói trong `dc83c67` (bản nháp) và `9f1bbfa` (404), cùng commit tài liệu/evidence đi sau. Môi trường thử nghiệm đã dọn. Các kết quả phía dưới là lịch sử của source tương ứng, không cộng lượt chạy lặp.
 

@@ -1,0 +1,426 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Synthetic API setup and actual legacy operator login",
+      "status": "PASS"
+    },
+    {
+      "name": "Legacy stale acceptance refreshes the reviewed version and retry succeeds",
+      "status": "PASS"
+    },
+    {
+      "name": "Legacy lost acceptance response reloads committed state without duplicate acceptance",
+      "status": "PASS"
+    },
+    {
+      "name": "Legacy result upload satisfies new completion gate and authored fields persist",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "Legacy dispatcher fixture",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Legacy dispatcher fixture",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy dispatcher fixture",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "Legacy dispatcher fixture",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy dispatcher fixture",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/5/submit",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/5/confirm",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/5/assign-station",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/5/assign-uav",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/5/assign-operator",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/5/reserve-equipment",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/5/reserve-equipment",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "POST",
+      "path": "/api/v1/missions/5/accept",
+      "status": 409
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "POST",
+      "path": "/api/v1/missions/5/accept",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/5/report-conflict",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/5/ready",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "POST",
+      "path": "/api/v1/missions/5/start",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "POST",
+      "path": "/api/v1/missions/5/media/upload-url",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "POST",
+      "path": "/api/v1/missions/5/media/5/confirm",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "POST",
+      "path": "/api/v1/missions/5/media",
+      "status": 201
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "POST",
+      "path": "/api/v1/missions/5/complete",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy operator",
+      "method": "GET",
+      "path": "/api/v1/missions/5/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "Legacy dispatcher fixture",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Legacy operator",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "label": "Legacy operator",
+      "type": "error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "requestFailures": [
+    {
+      "label": "Legacy operator",
+      "path": "/api/v1/missions/5/accept",
+      "error": "NETWORK_ERROR"
+    }
+  ]
+}

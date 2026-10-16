@@ -1,0 +1,30 @@
+{
+  "status": "FAIL",
+  "command": "./mvnw -Duav.build.directory=<isolated test target> test",
+  "exitCode": 1,
+  "seconds": 13.8,
+  "totals": {
+    "tests": 54,
+    "failures": 48,
+    "errors": 0,
+    "skipped": 0
+  },
+  "database": "uav_ba_test_suite",
+  "storageBucket": "uav-mission-handover-suite",
+  "suites": [
+    {
+      "name": "com.uav.platform.modules.mission.MissionHandoverIntegrationTest",
+      "tests": 27,
+      "failures": 24,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.uav.platform.modules.mission.MissionHandoverPostgresTest",
+      "tests": 27,
+      "failures": 24,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

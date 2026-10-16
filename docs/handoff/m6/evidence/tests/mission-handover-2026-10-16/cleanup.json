@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "composeProject": "uav-mission-handover-20261016",
+  "ownedContainersRemaining": 0,
+  "ownedVolumesRemaining": 0,
+  "listenersRemainingOnOwnedPorts": {
+    "18080": false,
+    "55444": false,
+    "9014": false,
+    "9015": false,
+    "3100": false,
+    "3101": false,
+    "3102": false,
+    "3103": false
+  },
+  "secretFixturesAndPrivateLogsRemoved": true,
+  "rawBuildTargetsRemoved": [
+    "regression-before-target",
+    "backend-full-target",
+    "response-version-before-target",
+    "regression-after-target",
+    "backend-fixtures-target",
+    "backend-target",
+    "backend-final-target"
+  ],
+  "port8080Touched": false
+}

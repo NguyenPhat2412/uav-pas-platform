@@ -1,5 +1,9 @@
 # UAV PAS — BA và nghiệm thu M1–M6
 
+## Bổ sung kiểm chứng — 2026-10-16
+
+Ba quy tắc tiếp nhận/bàn giao/media kết thúc đã được chủ dự án duyệt và triển khai. Phạm vi liên quan BA-08, BA-15–18 có 592 backend tests và 18 nhóm browser/API hỗ trợ PASS cục bộ; xem [báo cáo bàn giao](../handoff/m6/M6_MISSION_HANDOVER_2026_10_16.md). Không nâng trạng thái toàn bộ hàng BA hoặc mẫu số hoàn thành sản phẩm chỉ từ lượt này. Nội dung dưới đây giữ làm baseline lịch sử.
+
 Ngày: 2026-10-09. Trạng thái: **DRAFT / cần kiểm kê đầy đủ trước khi chốt mẫu số**.
 
 ## Nguồn và giới hạn

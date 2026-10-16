@@ -1,0 +1,47 @@
+{
+  "checks": [
+    {
+      "label": "customer",
+      "status": "PASS",
+      "resourceErrors": [],
+      "console": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "path": "/favicon.ico"
+        }
+      ],
+      "pageErrors": []
+    },
+    {
+      "label": "operations",
+      "status": "PASS",
+      "resourceErrors": [],
+      "console": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "path": "/favicon.ico"
+        }
+      ],
+      "pageErrors": []
+    },
+    {
+      "label": "admin",
+      "status": "PASS",
+      "resourceErrors": [],
+      "console": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "path": "/favicon.ico"
+        }
+      ],
+      "pageErrors": []
+    },
+    {
+      "label": "legacy",
+      "status": "PASS",
+      "resourceErrors": [],
+      "console": [],
+      "pageErrors": []
+    }
+  ]
+}

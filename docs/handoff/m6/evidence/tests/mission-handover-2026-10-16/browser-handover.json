@@ -1,0 +1,1623 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Real Customer, Operations admin and operator login",
+      "status": "PASS"
+    },
+    {
+      "name": "Customer creates AREA_INSPECTION and submits through UI",
+      "status": "PASS"
+    },
+    {
+      "name": "Dispatcher confirms and assigns resources; ready is unavailable until acceptance",
+      "status": "PASS"
+    },
+    {
+      "name": "Old operator tab cannot accept a changed equipment assignment",
+      "status": "PASS"
+    },
+    {
+      "name": "Conflict after ready returns to preparation; reaccept and ready are required",
+      "status": "PASS"
+    },
+    {
+      "name": "Completion form requires both notes and a real handover result; mobile has no overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "Raw flight data uploads to MinIO but does not substitute for handover evidence",
+      "status": "PASS"
+    },
+    {
+      "name": "A failed browser upload preserves authored completion notes and can recover",
+      "status": "PASS"
+    },
+    {
+      "name": "Operator uploads a report, downloads it and completes; stock returns exactly once",
+      "status": "PASS"
+    },
+    {
+      "name": "Replaying signed upload cannot overwrite the delivered object",
+      "status": "PASS"
+    },
+    {
+      "name": "Customer sees handover notes, equipment condition, timeline and actual downloadable result",
+      "status": "PASS"
+    },
+    {
+      "name": "Another customer and unassigned operator cannot read mission, timeline, files or download",
+      "status": "PASS"
+    },
+    {
+      "name": "Admin audit includes acceptance, conflict and completion; no unexpected runtime failure",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "Customer A",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/availability",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "POST",
+      "path": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/1",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "POST",
+      "path": "/api/v1/missions/1/submit",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/1",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "POST",
+      "path": "/api/v1/missions/1/confirm",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "POST",
+      "path": "/api/v1/missions/1/assign-station",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "POST",
+      "path": "/api/v1/missions/1/assign-uav",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "POST",
+      "path": "/api/v1/missions/1/assign-operator",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "POST",
+      "path": "/api/v1/missions/1/reserve-equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/1/ready",
+      "status": 409
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "POST",
+      "path": "/api/v1/missions/1/redispatch-equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/accept",
+      "status": 409
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/accept",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "POST",
+      "path": "/api/v1/missions/1/ready",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/report-conflict",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/1/start",
+      "status": 409
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/accept",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "POST",
+      "path": "/api/v1/missions/1/ready",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Dispatcher",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/start",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/1/complete",
+      "status": 409
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/media/upload-url",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/media/1/confirm",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/media",
+      "status": 201
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/media/upload-url",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/media/upload-url",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/media/3/confirm",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/media",
+      "status": 201
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/media/3/download-url",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "POST",
+      "path": "/api/v1/missions/1/complete",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/1",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/1/complete",
+      "status": 409
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/missions/1/media/upload-url",
+      "status": 409
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "DELETE",
+      "path": "/api/v1/media/3",
+      "status": 409
+    },
+    {
+      "label": "Assigned operator",
+      "method": "GET",
+      "path": "/api/v1/media/3/download-url",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/1",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 200
+    },
+    {
+      "label": "Customer A",
+      "method": "GET",
+      "path": "/api/v1/media/3/download-url",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "Unassigned operator",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Unassigned operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Unassigned operator",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "Unassigned operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/3/download-url",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1",
+      "status": 403
+    },
+    {
+      "label": "Unassigned operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1/media",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/3/download-url",
+      "status": 403
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/missions/1",
+      "status": 403
+    },
+    {
+      "label": "Customer B",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin audit",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Admin audit",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin audit",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin audit",
+      "method": "GET",
+      "path": "/api/v1/audit-logs",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/missions/1/timeline",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "Customer A",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Dispatcher",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Assigned operator",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "label": "Assigned operator",
+      "type": "error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "label": "Customer B",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 403 ()"
+    },
+    {
+      "label": "Admin audit",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    }
+  ],
+  "requestFailures": []
+}

@@ -1,5 +1,11 @@
 # M6 legacy compatibility
 
+## Tiếp nhận và bàn giao — 2026-10-16 (mới nhất)
+
+Legacy đã gửi expectedVersion khi nhận nhiệm vụ, yêu cầu hai nội dung bàn giao, tải tệp mặc định OUTPUT và gửi header PUT có điều kiện. 409 hoặc mất phản hồi được tải lại trạng thái, giữ ghi chú và chặn ghi nếu tải lại thất bại. **Bốn gate PASS, 7 tests; 4 nhóm browser/API fixture PASS**. Bản cũ không gửi version/header cần cập nhật cùng backend. Auth contract không đổi. Xem [báo cáo tiếp nhận/bàn giao](M6_MISSION_HANDOVER_2026_10_16.md).
+
+Các kết quả phía dưới là lịch sử của revision tương ứng.
+
 ## Login, refresh và logout đồng thời — 2026-10-15 (lượt hiện tại)
 
 Bản vá dùng khóa giao dịch theo tài khoản để tuần tự hóa login/refresh/logout, đọc lại đúng refresh token sau khi chờ khóa và giữ đúng số lần nhập sai. Giữ nguyên một refresh token hiện hành/tài khoản, logout theo token được cung cấp và **auth contract JSON bearer hiện có**; không đổi endpoint, DTO, schema, cookie, SSO hoặc CSRF.
