@@ -74,3 +74,11 @@ Security coverage trong lượt này gồm test quyền/ownership/cookie/CSRF/st
 Backend port 18080; frontend 3100–3104; PostgreSQL 55444; MinIO 9014/9015. Không chiếm 8080. Chỉ tạo người dùng/dữ liệu synthetic trong database/container disposable. Evidence không chứa password, access/refresh token, signed URL hoặc secret. Process/container do lượt này tạo được dọn sau bàn giao; biên nhận cleanup và remote SHA lưu cùng bộ đầu ra.
 
 Đích phát hành mã nguồn là `origin/main`, bằng push thông thường sau test. Không deploy ứng dụng hay cơ sở dữ liệu production. SHA thực tế, trạng thái CI hosted và kết quả đối chiếu Drive được ghi trong biên nhận bàn giao sau push để tránh tài liệu tự tham chiếu SHA của chính commit.
+
+## CI hosted sau lần push đầu
+
+Commit ứng dụng `07d7266` đã được xác minh trên `origin/main`. [Run 38932538126](https://github.com/NguyenPhat2412/uav-pas-platform/actions/runs/38932538126) có cả hai job frontend PASS; job backend dừng trước Maven vì không kéo được image MinIO từ Docker Hub. Đây là lỗi khởi tạo môi trường CI, không được tính là backend test PASS trên hosted runner.
+
+Follow-up chỉ sửa stack kiểm thử: dựng MinIO từ đúng release/commit và Go toolchain của binary local đã kiểm, pin checksum archive, giữ license và chạy non-root. Không thay backend/auth contract, không đổi dependency ứng dụng hoặc deploy production. Chi tiết ở `infra/minio-test/README.md`; evidence đầu tiên: `hosted-ci-initial.json`. Biên nhận bàn giao ghi kết quả run mới sau sửa, không xóa lịch sử run lỗi.
+
+Kiểm lại local với image dựng từ source: **635/635 test backend PASS, 0 failure/error/skip**; evidence `backend-source-minio-summary.json` và `backend-source-minio-sanitized.txt`. Review độc lập phần CI-only không có finding chặn; reviewer không chạy lại test. Kết quả này chưa thay thế lần chạy trên hosted runner sạch.

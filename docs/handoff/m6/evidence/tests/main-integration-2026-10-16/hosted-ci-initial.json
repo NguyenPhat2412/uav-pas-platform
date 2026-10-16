@@ -1,0 +1,12 @@
+{
+  "commit": "07d7266be86d5251c398ad18900d9dff41eac685",
+  "run": "https://github.com/NguyenPhat2412/uav-pas-platform/actions/runs/38932538126",
+  "frontend": "PASS",
+  "legacy": "PASS",
+  "backend": "BLOCKED_BEFORE_TESTS",
+  "cause": "Disposable MinIO image could not be pulled from Docker Hub on the clean hosted runner. PostgreSQL/MinIO startup failed before Maven tests.",
+  "localImageVersion": "RELEASE.2025-09-07T16-13-09Z",
+  "localImageCommit": "07c3a429bfed433e49018cb0f78a52145d4bedeb",
+  "sourceArchiveSha256": "8819e3e7817e46b7b3798f8f200ead208562e571563c2e040352378031abe9f2",
+  "remediation": "Build disposable test image from the same upstream commit with checksum verification; no app/auth or production deployment change."
+}
