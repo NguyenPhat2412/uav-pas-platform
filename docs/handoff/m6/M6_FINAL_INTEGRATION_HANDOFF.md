@@ -1,6 +1,10 @@
 # UAV PAS — M6 final integration handoff
 
-## Tiếp nhận và bàn giao — 2026-10-16 (mới nhất)
+## Hồ sơ khách hàng — 2026-10-16 (mới nhất)
+
+Đã chốt và hoàn thiện tự sửa **họ tên/số điện thoại**; backend chặn trường nhạy cảm và ghi đè giữa hai tab, có unique phone index V4, audit không lưu giá trị cá nhân. **620 backend tests, 0 skip; root/legacy đủ bốn gate PASS (85/7 lượt test); 15 nhóm browser/API hỗ trợ PASS**. Auth contract không đổi; schema có thêm index, cần kiểm dữ liệu trùng trước khi nâng cấp môi trường thật. Xem [báo cáo hồ sơ khách hàng](M6_CUSTOMER_PROFILE_2026_10_16.md) và evidence `evidence/tests/customer-profile-2026-10-16/`. Phạm vi **COMPLETE_LOCAL**; toàn dự án **PARTIAL / NOT_READY**. Chưa commit/push. Các kết quả bên dưới là lịch sử; không cộng lượt chạy lặp.
+
+## Tiếp nhận và bàn giao — 2026-10-16 (lịch sử)
 
 Đã thực thi ba quy tắc chủ dự án chốt: tiếp nhận trước READY và nhận lại sau đổi nguồn lực; ghi chú/tình trạng thiết bị và tệp kết quả theo loại trước COMPLETE; khóa ghi media ở cả bốn trạng thái kết thúc. Sửa tab cũ/mất phản hồi ở legacy và thông báo khóa tệp. **592 backend tests PASS, 0 skip; root/legacy bốn gate PASS (81/7 lượt test); 18 nhóm browser/API hỗ trợ PASS.** Auth contract và dependency không đổi; accept cần expectedVersion và PUT lưu trữ cần header có điều kiện. Phạm vi **COMPLETE_LOCAL**; toàn hệ thống **PARTIAL / NOT_READY**. Baseline `15936b9`; theo yêu cầu sau kiểm chứng, mã nguồn đã được đóng gói trong `02d4d18` cùng commit tài liệu/evidence đi sau, đích push `origin/codex/m1-monorepo-foundation`. Không deploy. Xem [báo cáo tiếp nhận/bàn giao](M6_MISSION_HANDOVER_2026_10_16.md).
 

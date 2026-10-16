@@ -11,7 +11,7 @@ const labels: Record<string, string> = {
   SUSPENDED: 'Đã khóa', UNKNOWN: 'Chưa xác định', ONLINE: 'Trực tuyến', OFFLINE: 'Ngoại tuyến', RESERVED: 'Đã giữ', ERROR: 'Có lỗi', WARNING: 'Cần chú ý', PERMISSION: 'Quyền truy cập', INVENTORY: 'Kho thiết bị', DASHBOARD: 'Tổng quan', AUTH: 'Đăng nhập', AUDIT: 'Nhật ký',
   CREATE: 'Tạo mới', UPDATE: 'Cập nhật', DELETE: 'Xóa', STATUS_CHANGE: 'Đổi trạng thái', ASSIGN: 'Phân công', RESERVE: 'Giữ thiết bị', RELEASE: 'Hoàn trả', UPLOAD: 'Tải lên', DOWNLOAD: 'Tải xuống',
   LOGIN: 'Đăng nhập', LOGOUT: 'Đăng xuất', GRANT: 'Cấp quyền', REVOKE: 'Thu hồi quyền', STOCK_IN: 'Nhập kho', STOCK_OUT: 'Xuất kho', TRANSFER: 'Điều chuyển', OPERATOR: 'Người vận hành',
-  MISSION: 'Nhiệm vụ', MISSION_MEDIA: 'Tệp nhiệm vụ', MEDIA: 'Tệp', UAV: 'UAV', EQUIPMENT: 'Thiết bị', STATION: 'Trạm', USER: 'Người dùng',
+  MISSION: 'Nhiệm vụ', MISSION_MEDIA: 'Tệp nhiệm vụ', MEDIA: 'Tệp', UAV: 'UAV', EQUIPMENT: 'Thiết bị', STATION: 'Trạm', USER: 'Người dùng', USER_PROFILE: 'Hồ sơ cá nhân',
   OPERATOR_REPLACED: 'Thay người vận hành', OPERATOR_UNASSIGNED: 'Gỡ người vận hành', STATION_REPLACED: 'Đổi trạm', STATION_UNASSIGNED: 'Gỡ trạm', EQUIPMENT_CHANGED: 'Đổi thiết bị hoặc số lượng', EQUIPMENT_RELEASED: 'Hoàn trả thiết bị', UAV_REPLACED: 'Thay UAV', UAV_UNASSIGNED: 'Gỡ UAV khỏi nhiệm vụ',
   OPERATOR_ACCEPTED: 'Đã nhận nhiệm vụ', OPERATOR_CONFLICT: 'Báo vướng mắc',
   MAINTENANCE_SCHEDULE: 'Lịch bảo trì', REPAIR_ORDER: 'Phiếu sửa chữa',
@@ -20,6 +20,8 @@ const labels: Record<string, string> = {
 export function displayLabel(value?: string | null): string { return value ? labels[value] ?? value : '—'; }
 export function auditDetail(value?: string | null): string {
   if (!value) return '—';
+  const profile = /^Updated fields: (fullName(?:, phoneNumber)?|phoneNumber)$/.exec(value);
+  if (profile) return `Cập nhật hồ sơ: ${profile[1].split(', ').map(field => field === 'fullName' ? 'họ tên' : 'số điện thoại').join(', ')}`;
   const materials = /^MATERIALS_UPDATED lines=([0-9]+) totalVND=([0-9]+)$/.exec(value);
   if (materials) return `Cập nhật ${materials[1]} dòng vật tư · Tổng ${new Intl.NumberFormat('vi-VN').format(BigInt(materials[2]))} ₫`;
   const advanced = /^ADVANCED order=([0-9]+)$/.exec(value);

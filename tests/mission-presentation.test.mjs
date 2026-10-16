@@ -40,3 +40,10 @@ test('known codes are translated; unknown data and operator reasons are preserve
   assert.equal(eventNote({eventType:'OPERATOR_CONFLICT',description:'Gió lớn, cần đổi lịch'}),'Gió lớn, cần đổi lịch');
   assert.equal(eventNote({eventType:'CREATED',description:'Mission created'}),undefined);
 });
+
+test('profile audit renders approved field names in Vietnamese and preserves unrelated notes', () => {
+  assert.equal(displayLabel('USER_PROFILE'),'Hồ sơ cá nhân');
+  assert.equal(auditDetail('Updated fields: fullName, phoneNumber'),'Cập nhật hồ sơ: họ tên, số điện thoại');
+  assert.equal(auditDetail('Updated fields: phoneNumber'),'Cập nhật hồ sơ: số điện thoại');
+  assert.equal(auditDetail('Updated fields: unknown'),'Updated fields: unknown');
+});

@@ -1,0 +1,138 @@
+TAP version 13
+# Subtest: draft update sends every editable field and never changes service, type or ownership
+ok 1 - draft update sends every editable field and never changes service, type or ownership
+  ---
+  duration_ms: 2.020709
+  ...
+# Subtest: date validation rejects impossible/past dates and non-increasing local times without inventing same-day constraints
+ok 2 - date validation rejects impossible/past dates and non-increasing local times without inventing same-day constraints
+  ---
+  duration_ms: 0.278
+  ...
+# Subtest: schema limits, whitespace and coordinate boundaries are enforced before API submission
+ok 3 - schema limits, whitespace and coordinate boundaries are enforced before API submission
+  ---
+  duration_ms: 0.089834
+  ...
+# Subtest: service catalogue codes cannot produce an invalid mission enum
+ok 4 - service catalogue codes cannot produce an invalid mission enum
+  ---
+  duration_ms: 0.061541
+  ...
+# Subtest: edit action requires the owner, draft status and effective update permission
+ok 5 - edit action requires the owner, draft status and effective update permission
+  ---
+  duration_ms: 0.117375
+  ...
+# Subtest: pagination covers records beyond twenty and filter changes return to the first page
+ok 6 - pagination covers records beyond twenty and filter changes return to the first page
+  ---
+  duration_ms: 0.074083
+  ...
+# Subtest: errors do not expose backend internals and distinguish conflict recovery
+ok 7 - errors do not expose backend internals and distinguish conflict recovery
+  ---
+  duration_ms: 0.095334
+  ...
+# Subtest: draft PATCH carries the version loaded with the form and excludes privileged fields
+ok 8 - draft PATCH carries the version loaded with the form and excludes privileged fields
+  ---
+  duration_ms: 0.101166
+  ...
+# Subtest: a missing or invalid draft version cannot produce an unprotected PATCH
+ok 9 - a missing or invalid draft version cannot produce an unprotected PATCH
+  ---
+  duration_ms: 0.198708
+  ...
+# Subtest: profile payload trims approved fields, preserves revision and excludes administrative fields
+not ok 10 - profile payload trims approved fields, preserves revision and excludes administrative fields
+  ---
+  duration_ms: 2.194209
+  location: '/Volumes/D/Codex/projects/uav-pas-platform/tests/customer-workflows.test.mjs:89:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + {}
+    - {
+    -   expectedRevision: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    -   fullName: 'Nguyễn Xuân Phát',
+    -   phoneNumber: '0912345678'
+    - }
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    fullName: 'Nguyễn Xuân Phát'
+    phoneNumber: '0912345678'
+    expectedRevision: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Volumes/D/Codex/projects/uav-pas-platform/tests/customer-workflows.test.mjs:91:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.start (node:internal/test_runner/test:702:17)
+    startSubtest (node:internal/test_runner/harness:259:17)
+    run (node:internal/test_runner/harness:267:14)
+    test (node:internal/test_runner/harness:278:12)
+    file:///Volumes/D/Codex/projects/uav-pas-platform/tests/customer-workflows.test.mjs:89:1
+  ...
+# Subtest: profile validation enforces existing field lengths and required phone without inventing country rules
+not ok 11 - profile validation enforces existing field lengths and required phone without inventing country rules
+  ---
+  duration_ms: 5.1575
+  location: '/Volumes/D/Codex/projects/uav-pas-platform/tests/customer-workflows.test.mjs:95:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert.ok(validateProfile({fullName:'x'.repeat(101),phoneNumber:'1'.repeat(21)}).fullName)
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///Volumes/D/Codex/projects/uav-pas-platform/tests/customer-workflows.test.mjs:97:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async startSubtest (node:internal/test_runner/harness:259:3)
+  ...
+# Subtest: profile failures distinguish stale data, duplicate phone and uncertain network outcome without exposing internals
+not ok 12 - profile failures distinguish stale data, duplicate phone and uncertain network outcome without exposing internals
+  ---
+  duration_ms: 0.173875
+  location: '/Volumes/D/Codex/projects/uav-pas-platform/tests/customer-workflows.test.mjs:102:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - 'phone'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'phone'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Volumes/D/Codex/projects/uav-pas-platform/tests/customer-workflows.test.mjs:103:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 9
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 313.218666

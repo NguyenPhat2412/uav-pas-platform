@@ -81,3 +81,28 @@ test('a missing or invalid draft version cannot produce an unprotected PATCH', (
   }
   assert.equal(missionDraftUpdatePayload(form, 0).expectedVersion, 0);
 });
+
+const profileSource = await readFile(new URL('../apps/customer/src/features/customer/profile-form.ts', import.meta.url), 'utf8');
+const profileCompiled = ts.transpileModule(profileSource, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
+const { profilePayload, validateProfile, profileError } = await import(`data:text/javascript;base64,${Buffer.from(profileCompiled).toString('base64')}`);
+
+test('profile payload trims approved fields, preserves revision and excludes administrative fields', () => {
+  const data=profilePayload({fullName:'  Nguyễn Xuân Phát  ',phoneNumber:' 0912345678 ',role:'ROLE_ADMIN',id:77},'a'.repeat(64));
+  assert.deepEqual(data,{fullName:'Nguyễn Xuân Phát',phoneNumber:'0912345678',expectedRevision:'a'.repeat(64)});
+  assert.equal(profilePayload({fullName:'   ',phoneNumber:'0912345678'},'b'.repeat(64)).fullName,null);
+  assert.throws(()=>profilePayload({fullName:'A',phoneNumber:'123'},undefined),/phiên bản/);
+});
+test('profile validation enforces existing field lengths and required phone without inventing country rules', () => {
+  assert.deepEqual(validateProfile({fullName:'',phoneNumber:'+84 (24) 1234-5678'}),{});
+  assert.ok(validateProfile({fullName:'x'.repeat(101),phoneNumber:'1'.repeat(21)}).fullName);
+  assert.ok(validateProfile({fullName:'A',phoneNumber:'1'.repeat(21)}).phoneNumber);
+  assert.ok(validateProfile({fullName:'A',phoneNumber:'  '} ).phoneNumber);
+  assert.deepEqual(validateProfile({fullName:'x'.repeat(100),phoneNumber:'1'.repeat(20)}),{});
+});
+test('profile failures distinguish stale data, duplicate phone and uncertain network outcome without exposing internals', () => {
+  assert.equal(profileError({status:409,message:'Phone number already exists in the system'}).kind,'phone');
+  assert.equal(profileError({status:409,message:'internal'}).kind,'conflict');
+  assert.equal(profileError({status:0}).kind,'uncertain');
+  assert.doesNotMatch(profileError(new Error('SQL secret')).message,/SQL|secret/);
+  assert.match(profileError({status:403}).message,/tài khoản|Tài khoản/);
+});

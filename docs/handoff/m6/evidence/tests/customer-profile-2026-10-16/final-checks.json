@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "baselineHead": "ba562ffb3a965c48c3207b30e756c7e7aad297ad",
+  "branch": "codex/m1-monorepo-foundation",
+  "gitDiffCheckExitCode": 0,
+  "ownedContainersRemaining": [],
+  "ownedVolumesRemaining": [],
+  "isolatedPorts": {
+    "18080": "free",
+    "55444": "free",
+    "9014": "free",
+    "9015": "free",
+    "3101": "free",
+    "3103": "free"
+  },
+  "privateFilesRemaining": [],
+  "authContractCheck": "PASS (40 unchanged protected files)",
+  "commitPushDeploy": "Not performed",
+  "scope": "Customer self-profile code/tests/docs; new V4 index; no auth contract or dependency changes"
+}

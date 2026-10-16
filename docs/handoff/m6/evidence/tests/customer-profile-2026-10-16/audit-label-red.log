@@ -1,0 +1,56 @@
+TAP version 13
+# Subtest: closed missions offer no mutation controls, even with all permissions
+ok 1 - closed missions offer no mutation controls, even with all permissions
+  ---
+  duration_ms: 0.577084
+  ...
+# Subtest: execution belongs to the assigned operator and the matching lifecycle stage
+ok 2 - execution belongs to the assigned operator and the matching lifecycle stage
+  ---
+  duration_ms: 0.094
+  ...
+# Subtest: permissions gate every action; assignment stops after resources are ready
+ok 3 - permissions gate every action; assignment stops after resources are ready
+  ---
+  duration_ms: 0.170125
+  ...
+# Subtest: known codes are translated; unknown data and operator reasons are preserved
+ok 4 - known codes are translated; unknown data and operator reasons are preserved
+  ---
+  duration_ms: 0.145625
+  ...
+# Subtest: profile audit renders approved field names in Vietnamese and preserves unrelated notes
+not ok 5 - profile audit renders approved field names in Vietnamese and preserves unrelated notes
+  ---
+  duration_ms: 0.637
+  location: '/Volumes/D/Codex/projects/uav-pas-platform/tests/mission-presentation.test.mjs:44:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'USER_PROFILE'
+    - 'Hồ sơ cá nhân'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'Hồ sơ cá nhân'
+  actual: 'USER_PROFILE'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Volumes/D/Codex/projects/uav-pas-platform/tests/mission-presentation.test.mjs:45:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 4
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 293.608916

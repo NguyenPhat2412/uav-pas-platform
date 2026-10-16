@@ -1,5 +1,9 @@
 # UAV PAS PostgreSQL schema inventory
 
+## Cập nhật 2026-10-16
+
+V4 thêm `uk_users_phone_number` trên `btrim(users.phone_number)` cho giá trị khác NULL/rỗng; không thêm bảng/cột. Xem [hồ sơ khách hàng](../handoff/m6/M6_CUSTOMER_PROFILE_2026_10_16.md) về preflight dữ liệu trùng. Nội dung kiểm kê phía dưới là baseline lịch sử; V3 bổ sung các bảng bảo trì/sửa chữa, tổng hiện tại 22 bảng nghiệp vụ.
+
 Ngày kiểm kê: 2026-10-09. Product source under review: `ca8a36bbbd12742f75c3c61d2ae5045d38bde753`; documentation checkpoint: `f280943`.
 
 Đây là inventory được đọc từ Flyway migrations và JPA model hiện tại, không phải xác nhận rằng mọi acceptance BA đã đạt. Nguồn chuẩn để replay là `backend/src/main/resources/db/migration/V1__baseline_uav_pas.sql` và `V2__media_confirmation_inventory_requests.sql`.

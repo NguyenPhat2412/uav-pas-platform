@@ -1,0 +1,14 @@
+{
+  "diagnostics": [
+    {
+      "type": "console",
+      "path": "/favicon.ico",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "explicit check",
+      "path": "/favicon.ico",
+      "status": 404
+    }
+  ]
+}

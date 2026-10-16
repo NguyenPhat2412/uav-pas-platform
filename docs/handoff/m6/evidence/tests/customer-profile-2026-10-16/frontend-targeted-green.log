@@ -1,0 +1,95 @@
+TAP version 13
+# Subtest: draft update sends every editable field and never changes service, type or ownership
+ok 1 - draft update sends every editable field and never changes service, type or ownership
+  ---
+  duration_ms: 2.238834
+  ...
+# Subtest: date validation rejects impossible/past dates and non-increasing local times without inventing same-day constraints
+ok 2 - date validation rejects impossible/past dates and non-increasing local times without inventing same-day constraints
+  ---
+  duration_ms: 0.402583
+  ...
+# Subtest: schema limits, whitespace and coordinate boundaries are enforced before API submission
+ok 3 - schema limits, whitespace and coordinate boundaries are enforced before API submission
+  ---
+  duration_ms: 0.117333
+  ...
+# Subtest: service catalogue codes cannot produce an invalid mission enum
+ok 4 - service catalogue codes cannot produce an invalid mission enum
+  ---
+  duration_ms: 0.075417
+  ...
+# Subtest: edit action requires the owner, draft status and effective update permission
+ok 5 - edit action requires the owner, draft status and effective update permission
+  ---
+  duration_ms: 0.13
+  ...
+# Subtest: pagination covers records beyond twenty and filter changes return to the first page
+ok 6 - pagination covers records beyond twenty and filter changes return to the first page
+  ---
+  duration_ms: 0.083417
+  ...
+# Subtest: errors do not expose backend internals and distinguish conflict recovery
+ok 7 - errors do not expose backend internals and distinguish conflict recovery
+  ---
+  duration_ms: 0.113583
+  ...
+# Subtest: draft PATCH carries the version loaded with the form and excludes privileged fields
+ok 8 - draft PATCH carries the version loaded with the form and excludes privileged fields
+  ---
+  duration_ms: 0.114333
+  ...
+# Subtest: a missing or invalid draft version cannot produce an unprotected PATCH
+ok 9 - a missing or invalid draft version cannot produce an unprotected PATCH
+  ---
+  duration_ms: 0.215292
+  ...
+# Subtest: profile payload trims approved fields, preserves revision and excludes administrative fields
+ok 10 - profile payload trims approved fields, preserves revision and excludes administrative fields
+  ---
+  duration_ms: 0.267666
+  ...
+# Subtest: profile validation enforces existing field lengths and required phone without inventing country rules
+ok 11 - profile validation enforces existing field lengths and required phone without inventing country rules
+  ---
+  duration_ms: 0.069958
+  ...
+# Subtest: profile failures distinguish stale data, duplicate phone and uncertain network outcome without exposing internals
+ok 12 - profile failures distinguish stale data, duplicate phone and uncertain network outcome without exposing internals
+  ---
+  duration_ms: 0.143042
+  ...
+# Subtest: closed missions offer no mutation controls, even with all permissions
+ok 13 - closed missions offer no mutation controls, even with all permissions
+  ---
+  duration_ms: 0.601208
+  ...
+# Subtest: execution belongs to the assigned operator and the matching lifecycle stage
+ok 14 - execution belongs to the assigned operator and the matching lifecycle stage
+  ---
+  duration_ms: 0.096958
+  ...
+# Subtest: permissions gate every action; assignment stops after resources are ready
+ok 15 - permissions gate every action; assignment stops after resources are ready
+  ---
+  duration_ms: 0.172125
+  ...
+# Subtest: known codes are translated; unknown data and operator reasons are preserved
+ok 16 - known codes are translated; unknown data and operator reasons are preserved
+  ---
+  duration_ms: 0.1955
+  ...
+# Subtest: profile audit renders approved field names in Vietnamese and preserves unrelated notes
+ok 17 - profile audit renders approved field names in Vietnamese and preserves unrelated notes
+  ---
+  duration_ms: 0.106875
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 293.984625

@@ -1,0 +1,123 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Initial load failure has a usable retry and cannot expose an edit form",
+      "status": "PASS"
+    },
+    {
+      "name": "Optional name can be cleared and header falls back to username",
+      "status": "PASS"
+    },
+    {
+      "name": "Delayed save response after logout cannot revive session or leak profile into account B",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "Profile recovery",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 503
+    },
+    {
+      "label": "Profile recovery",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "PATCH",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "PATCH",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Profile recovery",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "Profile recovery",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Profile recovery",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    }
+  ],
+  "requestFailures": []
+}

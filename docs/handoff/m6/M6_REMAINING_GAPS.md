@@ -1,6 +1,10 @@
 # M6 remaining gaps
 
-## Tiếp nhận và bàn giao — 2026-10-16 (mới nhất)
+## Hồ sơ khách hàng — 2026-10-16 (mới nhất)
+
+Đã chốt và hoàn thiện tự sửa **họ tên/số điện thoại**; backend chặn trường nhạy cảm và ghi đè giữa hai tab, có unique phone index V4, audit không lưu giá trị cá nhân. **620 backend tests, 0 skip; root/legacy đủ bốn gate PASS (85/7 lượt test); 15 nhóm browser/API hỗ trợ PASS**. Auth contract không đổi; schema có thêm index, cần kiểm dữ liệu trùng trước khi nâng cấp môi trường thật. Xem [báo cáo hồ sơ khách hàng](M6_CUSTOMER_PROFILE_2026_10_16.md) và evidence `evidence/tests/customer-profile-2026-10-16/`. Phạm vi **COMPLETE_LOCAL**; toàn dự án **PARTIAL / NOT_READY**. Chưa commit/push. Các kết quả bên dưới là lịch sử; không cộng lượt chạy lặp.
+
+## Tiếp nhận và bàn giao — 2026-10-16 (lịch sử)
 
 Đã đóng trong môi trường local các gap tiếp nhận trước READY/START, tiếp nhận lại sau đổi nguồn lực, điều kiện bàn giao theo loại và bất biến tệp sau COMPLETED/FAILED/CANCELLED/REJECTED. Xem [báo cáo tiếp nhận/bàn giao](M6_MISSION_HANDOVER_2026_10_16.md) với **592 backend tests, 18 nhóm browser/API hỗ trợ PASS**. Còn mở staging HTTPS, hosted CI đầy đủ, security coverage, SSO/CSRF cần duyệt contract, retention/orphan media và các tổ hợp UI chưa kiểm. Favicon của ba portal còn trả 404 (lỗi hiển thị nhỏ). Không coi các policy accept/media trong phần lịch sử dưới đây là chưa chốt nữa.
 

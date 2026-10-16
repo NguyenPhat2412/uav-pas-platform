@@ -34,7 +34,7 @@ class MigrationUpgradePostgresTest {
             s.executeUpdate("INSERT INTO uavs(id,model,serial_number,manufacturer,status,station_id) VALUES (501,'Synthetic','MIGRATION-UAV','Synthetic','AVAILABLE',501)");
             s.executeUpdate("INSERT INTO equipment(id,name,type,status,station_id,quantity,available_quantity,reserved_quantity) VALUES (501,'Synthetic battery','BATTERY','ACTIVE',501,7,5,2)");
             migrate(schema, null);
-            assertEquals(3, version(c, schema));
+            assertEquals(4, version(c, schema));
             assertTrue(hasUniqueIndex(c, schema, "uk_repair_order_active_uav"));
             try (ResultSet r = s.executeQuery("SELECT u.status,u.station_id,e.quantity,e.available_quantity,e.reserved_quantity FROM uavs u JOIN equipment e ON u.station_id=e.station_id WHERE u.id=501")) {
                 assertTrue(r.next()); assertEquals("AVAILABLE", r.getString(1)); assertEquals(501, r.getLong(2));
@@ -59,7 +59,7 @@ class MigrationUpgradePostgresTest {
             createSchema(connection, upgradeSchema);
 
             migrate(freshSchema, null);
-            assertEquals(3, version(connection, freshSchema));
+            assertEquals(4, version(connection, freshSchema));
             assertTrue(hasColumn(connection, freshSchema, "media_assets", "confirmed"));
             assertEquals(22, tableCount(connection, freshSchema));
 
@@ -69,7 +69,7 @@ class MigrationUpgradePostgresTest {
             assertEquals(1, countSyntheticUser(connection, upgradeSchema));
 
             migrate(upgradeSchema, null);
-            assertEquals(3, version(connection, upgradeSchema));
+            assertEquals(4, version(connection, upgradeSchema));
             assertTrue(hasColumn(connection, upgradeSchema, "media_assets", "deleted"));
             assertTrue(hasUniqueIndex(connection, upgradeSchema, "uk_inventory_request_id"));
             assertEquals(1, countSyntheticUser(connection, upgradeSchema));
@@ -79,6 +79,31 @@ class MigrationUpgradePostgresTest {
                 statement.execute("DROP SCHEMA IF EXISTS " + upgradeSchema + " CASCADE");
             }
         }
+    }
+
+    @Test
+    void profilePhoneIndexAllowsAbsentValuesButRejectsTrimmedDuplicates() throws Exception {
+        String schema = schema("profile_phone");
+        try (Connection c = connection(); Statement s = c.createStatement()) {
+            migrate(schema, null); s.execute("SET search_path TO " + schema);
+            assertTrue(hasUniqueIndex(c, schema, "uk_users_phone_number"));
+            String prefix = "INSERT INTO users(username,email,phone_number,role,status,failed_attempts,manual_locked) VALUES ";
+            s.executeUpdate(prefix + "('absent1','absent1@example.invalid',NULL,'ROLE_PILOT','ACTIVE',0,false),('absent2','absent2@example.invalid',NULL,'ROLE_PILOT','ACTIVE',0,false),('blank1','blank1@example.invalid','','ROLE_PILOT','ACTIVE',0,false),('blank2','blank2@example.invalid','  ','ROLE_PILOT','ACTIVE',0,false)");
+            s.executeUpdate(prefix + "('phone1','phone1@example.invalid',' 0900123123 ','ROLE_PILOT','ACTIVE',0,false)");
+            assertEquals("23505", assertThrows(SQLException.class, () -> s.executeUpdate(prefix + "('phone2','phone2@example.invalid','0900123123','ROLE_PILOT','ACTIVE',0,false)")).getSQLState());
+        } finally { try(Connection c=connection(); Statement s=c.createStatement()){s.execute("DROP SCHEMA IF EXISTS " + schema + " CASCADE");} }
+    }
+
+    @Test
+    void profileMigrationRefusesLegacyDuplicatesWithoutRewritingPersonalData() throws Exception {
+        String schema = schema("profile_duplicate");
+        try(Connection c=connection(); Statement s=c.createStatement()) {
+            migrate(schema, MigrationVersion.fromVersion("3"));s.execute("SET search_path TO " + schema);
+            s.executeUpdate("INSERT INTO users(username,email,phone_number,role,status,failed_attempts,manual_locked) VALUES ('dup1','dup1@example.invalid','0900123999','ROLE_PILOT','ACTIVE',0,false),('dup2','dup2@example.invalid','0900123999','ROLE_PILOT','ACTIVE',0,false)");
+            assertThrows(org.flywaydb.core.api.FlywayException.class, () -> migrate(schema,null));
+            assertEquals(3,version(c,schema));
+            try(ResultSet r=s.executeQuery("SELECT count(*) FROM users WHERE phone_number='0900123999'")){assertTrue(r.next());assertEquals(2,r.getInt(1));}
+        } finally { try(Connection c=connection(); Statement s=c.createStatement()){s.execute("DROP SCHEMA IF EXISTS " + schema + " CASCADE");} }
     }
 
     private static void migrate(String schema, MigrationVersion target) {

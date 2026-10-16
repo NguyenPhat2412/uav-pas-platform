@@ -16,7 +16,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(name = "uk_users_phone_number", columnNames = "phone_number"))
+@org.hibernate.annotations.DynamicUpdate
 @Getter
 @Setter
 @NoArgsConstructor

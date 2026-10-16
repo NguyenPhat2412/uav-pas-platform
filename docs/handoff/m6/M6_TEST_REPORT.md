@@ -1,6 +1,10 @@
 # M6 test report
 
-## Tiếp nhận và bàn giao — 2026-10-16 (mới nhất)
+## Hồ sơ khách hàng — 2026-10-16 (mới nhất)
+
+Đã chốt và hoàn thiện tự sửa **họ tên/số điện thoại**; backend chặn trường nhạy cảm và ghi đè giữa hai tab, có unique phone index V4, audit không lưu giá trị cá nhân. **620 backend tests, 0 skip; root/legacy đủ bốn gate PASS (85/7 lượt test); 15 nhóm browser/API hỗ trợ PASS**. Auth contract không đổi; schema có thêm index, cần kiểm dữ liệu trùng trước khi nâng cấp môi trường thật. Xem [báo cáo hồ sơ khách hàng](M6_CUSTOMER_PROFILE_2026_10_16.md) và evidence `evidence/tests/customer-profile-2026-10-16/`. Phạm vi **COMPLETE_LOCAL**; toàn dự án **PARTIAL / NOT_READY**. Chưa commit/push. Các kết quả bên dưới là lịch sử; không cộng lượt chạy lặp.
+
+## Tiếp nhận và bàn giao — 2026-10-16 (lịch sử)
 
 Kết quả mới nhất: **592/592 backend tests, 0 failure/error/skip**, bao gồm 62 lượt bàn giao H2/PostgreSQL và kiểm MinIO thật. Root và legacy lint/typecheck/test/build PASS, **81/7 lượt frontend test**. **13 nhóm luồng chính + 4 legacy + 1 thư viện media PASS**, có API fixture/read-back. Các lỗi thực tế, lần thử harness, console favicon 404 và giới hạn được tách trong [báo cáo tiếp nhận/bàn giao](M6_MISSION_HANDOVER_2026_10_16.md); evidence tại `evidence/tests/mission-handover-2026-10-16/`. Không cộng các lượt lịch sử bên dưới.
 

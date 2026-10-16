@@ -84,6 +84,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleIntegrity(org.springframework.dao.DataIntegrityViolationException ex, HttpServletRequest request) {
+        String detail = ex.getMostSpecificCause().getMessage();
+        if (detail != null && detail.toLowerCase(java.util.Locale.ROOT).contains("uk_users_phone_number")) {
+            return handleSystemException(SystemException.conflict(CoreConstants.PHONE_ALREADY_EXISTS), request);
+        }
+        return handleGenericException(ex, request);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
         log.error("Unhandled exception: ", ex);

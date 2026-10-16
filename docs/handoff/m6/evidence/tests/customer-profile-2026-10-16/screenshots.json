@@ -1,0 +1,42 @@
+[
+  {
+    "file": "/Volumes/D/Codex/outputs/uav-customer-profile-20261016/profile-admin-audit.png",
+    "sha256": "b70931206969712212096ad234652aed774c22d547c504b94325c0be81554204"
+  },
+  {
+    "file": "/Volumes/D/Codex/outputs/uav-customer-profile-20261016/profile-before.png",
+    "sha256": "e742f072aa4bb17e494077e75ab6b7926eba48246e75e21fb3d44fa57fd23644"
+  },
+  {
+    "file": "/Volumes/D/Codex/outputs/uav-customer-profile-20261016/profile-desktop-saved.png",
+    "sha256": "f6bf6c21bdb4d7b763e87f9a9d94f2b1ed56252dabbadd1afbb21fe1f69c2c19"
+  },
+  {
+    "file": "/Volumes/D/Codex/outputs/uav-customer-profile-20261016/profile-duplicate.png",
+    "sha256": "90a1727a2fc6c90ca83cd1ba2d9d07a81f3997990e0ebf508fd57be508d6734c"
+  },
+  {
+    "file": "/Volumes/D/Codex/outputs/uav-customer-profile-20261016/profile-load-retry.png",
+    "sha256": "00fae23ae489becb8abe6e4d209c93dad5124ef024bcba34ab5584f42c1dc8b6"
+  },
+  {
+    "file": "/Volumes/D/Codex/outputs/uav-customer-profile-20261016/profile-mobile-edit.png",
+    "sha256": "4ac49fc726d7b349c745e880f6ce562be11a5b8ae1621cb96483e5cf69230e2e"
+  },
+  {
+    "file": "/Volumes/D/Codex/outputs/uav-customer-profile-20261016/profile-mobile-saved.png",
+    "sha256": "e45a8c6d819ddc16f0c26aeab39d984890eea3bb6a4d8232861f311c9820295d"
+  },
+  {
+    "file": "/Volumes/D/Codex/outputs/uav-customer-profile-20261016/profile-network-recovery.png",
+    "sha256": "96c63e4bed9a5ce16cb5ef6049d7892baa26210b27faeb90ac144cc4ce6a2d04"
+  },
+  {
+    "file": "/Volumes/D/Codex/outputs/uav-customer-profile-20261016/profile-two-tabs-conflict.png",
+    "sha256": "f74615e3e391b2723a25499c7b85a7ee111b6f10b4dd3edf392eb0ac55a59720"
+  },
+  {
+    "file": "/Volumes/D/Codex/outputs/uav-customer-profile-20261016/profile-validation.png",
+    "sha256": "15d277fe33281105e73de8e9ee12142456a1a8891d9d2394a064a05991daae45"
+  }
+]
