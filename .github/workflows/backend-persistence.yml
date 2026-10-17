@@ -41,7 +41,7 @@ jobs:
           cache: maven
       - name: Verify unit, H2, PostgreSQL concurrency and migration tests
         run: ./mvnw --batch-mode verify
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: backend-test-reports
