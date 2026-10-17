@@ -7,9 +7,12 @@ import org.springframework.test.context.DynamicPropertySource;
 import java.util.UUID;
 
 /** Verifies committed code allocation against migrated PostgreSQL in an isolated schema. */
-@EnabledIfEnvironmentVariable(named = "UAV_STABILIZATION_DB_URL", matches = "jdbc:postgresql://127\\.0\\.0\\.1:[0-9]+/uav_(stabilization|ba_test_suite)")
+@EnabledIfEnvironmentVariable(
+        named = "UAV_STABILIZATION_DB_URL",
+        matches = "jdbc:postgresql://127\\.0\\.0\\.1:[0-9]+/uav_(stabilization|ba_test_suite)")
 class MissionCodeConcurrencyPostgresTest extends MissionCodeConcurrencyIntegrationTest {
-    private static final String SCHEMA = "mission_code_" + UUID.randomUUID().toString().replace("-", "");
+    private static final String SCHEMA =
+            "mission_code_" + UUID.randomUUID().toString().replace("-", "");
 
     @DynamicPropertySource
     static void postgres(DynamicPropertyRegistry p) {

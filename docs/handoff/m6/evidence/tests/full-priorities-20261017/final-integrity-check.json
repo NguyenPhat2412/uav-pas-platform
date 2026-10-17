@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-17T04:45:34.152937+00:00",
+  "branch": "codex/m1-monorepo-foundation",
+  "head": "55db26eabb0a4a0bc6b3454eb931bc3671c4ef0f",
+  "gitDiffCheckExit": 0,
+  "backendSourceHashCount": 445,
+  "backendDrift": [],
+  "frontendCutoverManifestCount": 202,
+  "subsequentFrontendChanges": [
+    "frontend/apps/web/app/about/page.tsx",
+    "frontend/apps/web/app/globals.css",
+    "frontend/apps/web/app/page.tsx",
+    "frontend/apps/web/app/services/[slug]/page.tsx",
+    "frontend/apps/web/app/services/page.tsx",
+    "frontend/legacy/src/styles/portal.css",
+    "frontend/packages/design-tokens/src/portal.css",
+    "frontend/packages/ui/src/PortalAuthLayout.tsx"
+  ],
+  "frontendChangeContext": "Separate direct user request in runtime owner chat to add people/UAV images after LIVE_MAIN_PASS. Earlier202hashproof applies at cutover, not later image overlay. No source rollback attempted.",
+  "commitOrPushPerformedByThisPackage": false,
+  "visibleRootDirectories": [
+    "backend",
+    "docs",
+    "frontend"
+  ]
+}

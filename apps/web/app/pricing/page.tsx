@@ -1,4 +1,0 @@
-import { pageMetadata } from '../../src/content/metadata';
-export const metadata = pageMetadata("Pricing information", "UAV PAS pricing and packages are not published. Learn how to prepare a service request.", "/pricing", true);
-import { PublicPage, CustomerCta } from '../../src/components/public-page';
-export default function PricingPage(){return <PublicPage eyebrow="Pricing" title="Pricing is not published yet." intro="We are keeping commercial information out of the public site until an approved pricing model is available."><div className="page-copy"><p>No prices, package totals, minimums, or quote promises are shown here. Mission scope, operating conditions, and outputs need to be reviewed before a commercial response can be prepared.</p><h2>What you can do now</h2><p>Review the service catalogue and open the Customer Portal to submit a request. Operations can confirm the next step from the mission brief.</p><CustomerCta/></div></PublicPage>}

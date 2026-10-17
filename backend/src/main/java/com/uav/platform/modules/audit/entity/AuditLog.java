@@ -1,14 +1,14 @@
 package com.uav.platform.modules.audit.entity;
 
-
-import com.uav.platform.modules.audit.common.*;
-
 import com.uav.platform.common.entity.BaseEntity;
+import com.uav.platform.modules.audit.enums.*;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,8 +37,13 @@ public class AuditLog extends BaseEntity {
     @Column(length = 2000)
     private String details;
 
-    public AuditLog(Long actorUserId, String actorUsername, AuditAction action,
-                    String entityType, String entityId, String details) {
+    public AuditLog(
+            Long actorUserId,
+            String actorUsername,
+            AuditAction action,
+            String entityType,
+            String entityId,
+            String details) {
         this.actorUserId = actorUserId;
         this.actorUsername = actorUsername;
         this.action = action;
@@ -46,5 +51,4 @@ public class AuditLog extends BaseEntity {
         this.entityId = entityId;
         this.details = details;
     }
-
 }

@@ -1,0 +1,140 @@
+{
+  "status": "PASS",
+  "apiOrigin": "http://localhost:18082",
+  "liveSourceChanged": false,
+  "results": [
+    {
+      "gate": "workspace-lint",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "exitCode": 0,
+      "seconds": 15.4,
+      "log": "docs/work/full-priorities-20261017/release-frontend-workspace-lint.log"
+    },
+    {
+      "gate": "workspace-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "seconds": 9.8,
+      "log": "docs/work/full-priorities-20261017/release-frontend-workspace-typecheck.log"
+    },
+    {
+      "gate": "workspace-tests",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 2.3,
+      "log": "docs/work/full-priorities-20261017/release-frontend-workspace-tests.log"
+    },
+    {
+      "gate": "contracts",
+      "command": [
+        "node",
+        "--test",
+        "tests/algorithms.test.mjs",
+        "tests/api-origin.test.mjs",
+        "tests/business-route-contract.test.mjs",
+        "tests/customer-workflows.test.mjs",
+        "tests/m1-foundation.test.mjs",
+        "tests/m2-operations.test.mjs",
+        "tests/m3-admin.test.mjs",
+        "tests/m4-customer.test.mjs",
+        "tests/m5-web.test.mjs",
+        "tests/maintenance-workflows.test.mjs",
+        "tests/media-upload-policy.test.mjs",
+        "tests/mission-presentation.test.mjs",
+        "tests/notifications-billing-reporting.test.mjs",
+        "tests/operations-workflows.test.mjs",
+        "tests/portal-guard-regression.test.mjs",
+        "tests/sar-ai-cockpit.test.mjs",
+        "tests/webhook-contract.test.mjs"
+      ],
+      "exitCode": 0,
+      "seconds": 0.8,
+      "log": "docs/work/full-priorities-20261017/release-frontend-contracts.log"
+    },
+    {
+      "gate": "workspace-build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exitCode": 0,
+      "seconds": 82.3,
+      "log": "docs/work/full-priorities-20261017/release-frontend-workspace-build.log"
+    },
+    {
+      "gate": "legacy-lint",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "exitCode": 0,
+      "seconds": 6.4,
+      "log": "docs/work/full-priorities-20261017/release-frontend-legacy-lint.log"
+    },
+    {
+      "gate": "legacy-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "seconds": 3.0,
+      "log": "docs/work/full-priorities-20261017/release-frontend-legacy-typecheck.log"
+    },
+    {
+      "gate": "legacy-tests",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 0.4,
+      "log": "docs/work/full-priorities-20261017/release-frontend-legacy-tests.log"
+    },
+    {
+      "gate": "legacy-build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exitCode": 0,
+      "seconds": 21.5,
+      "log": "docs/work/full-priorities-20261017/release-frontend-legacy-build.log"
+    }
+  ],
+  "testCounts": {
+    "workspace-tests": {
+      "tests": 151,
+      "pass": 151,
+      "fail": 0,
+      "skipped": 0
+    },
+    "contracts": {
+      "tests": 151,
+      "pass": 151,
+      "fail": 0,
+      "skipped": 0
+    },
+    "legacy-tests": {
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "skipped": 0
+    }
+  }
+}

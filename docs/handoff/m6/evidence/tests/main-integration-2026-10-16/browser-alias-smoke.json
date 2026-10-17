@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "port": 3101,
+      "from": "/",
+      "to": "/dashboard",
+      "status": "PASS"
+    },
+    {
+      "port": 3102,
+      "from": "/",
+      "to": "/overview",
+      "status": "PASS"
+    },
+    {
+      "port": 3102,
+      "from": "/operations?tab=media",
+      "to": "/media",
+      "status": "PASS"
+    },
+    {
+      "port": 3102,
+      "from": "/admin/missions",
+      "to": "/dispatch/missions",
+      "status": "PASS"
+    },
+    {
+      "port": 3102,
+      "from": "/operator/missions",
+      "to": "/assigned-missions",
+      "status": "PASS"
+    },
+    {
+      "port": 3103,
+      "from": "/",
+      "to": "/dashboard",
+      "status": "PASS"
+    },
+    {
+      "endpoint": "/actuator/health/readiness",
+      "status": 200
+    },
+    {
+      "endpoint": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "check": "invalid bearer",
+      "status": 401
+    },
+    {
+      "check": "CORS allowlisted",
+      "status": 200
+    },
+    {
+      "check": "CORS rejected",
+      "status": 403
+    }
+  ]
+}

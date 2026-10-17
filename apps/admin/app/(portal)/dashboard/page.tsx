@@ -1,1 +1,0 @@
-import { AdminPage } from '@/components/layout/AdminPage'; import { Dashboard } from '@/features/admin/components/Dashboard'; export default function Page(){return <AdminPage title="Administration Dashboard" meta="Tổng quan dữ liệu nền tảng" permission="DASHBOARD_READ" activeResource="dashboard"><Dashboard/></AdminPage>;}

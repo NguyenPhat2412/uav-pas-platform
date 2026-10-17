@@ -1,5 +1,7 @@
 # Kiểm tra trước khi đưa hồ sơ khách hàng lên main
 
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
+
 **Trạng thái: cần chốt cách tích hợp, chưa thay đổi main.**
 
 - Source đã kiểm chứng và commit: `ba8060f0f39787a32ebaf36c606257a841cda75d`, nhánh `codex/m1-monorepo-foundation`.

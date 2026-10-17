@@ -1,0 +1,22 @@
+{
+  "pass": true,
+  "scope": "Original application data after login QA; ephemeral login sessions evaluated separately",
+  "originalDatabaseByteEquivalentRowsToVerifiedBackup": true,
+  "allOriginalRowsAtAdoption": 117,
+  "allOriginalTablesAtAdoption": 22,
+  "originalBusinessAndConfigurationRowsPreservedAfterStartup": 116,
+  "tablesExcludingRefreshSessions": 21,
+  "expectedSessionChange": {
+    "table": "refresh_tokens",
+    "oldSessions": 1,
+    "reason": "Successful login replaces prior refresh token under the existing one-session-per-user policy; subsequent UI login/logout may rotate/delete these temporary session records.",
+    "code": "backend/src/main/java/com/uav/platform/modules/auth/service/impl/RefreshTokenServiceImpl.java:45",
+    "originalSessionStillRetainedInUntouchedOriginalDatabaseAndBackup": true
+  },
+  "expectedBootstrapAdditions": {
+    "users": 2,
+    "user_permissions": 31
+  },
+  "rawStrictComparison": "../merge-verification-20261017/main-after-startup-preservation.json",
+  "originalDatabaseComparison": "../merge-verification-20261017/original-database-after-cutover.json"
+}

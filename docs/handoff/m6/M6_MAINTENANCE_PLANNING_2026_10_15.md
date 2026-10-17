@@ -1,5 +1,7 @@
 # UAV PAS — Lịch bảo trì, phiếu sửa chữa và chi phí vật tư
 
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
+
 **Cập nhật kế tiếp ngày 15/10/2026 — auth concurrency:** Báo cáo này giữ kết quả lịch sử của lượt bảo trì (356 backend tests), bao gồm lỗi login đồng thời và evidence FAIL trước sửa. Lỗi đó đã được sửa trong lượt auth kế tiếp: **M6-B9 RESOLVED trên môi trường cục bộ**, với 390/390 backend tests, 14/14 nhóm HTTP (813 phản hồi, không có 500) và 13/13 browser checks PASS. Xem [báo cáo auth concurrency](M6_AUTH_CONCURRENCY_2026_10_15.md) để biết bản vá, phạm vi và evidence cuối; các dòng “còn mở” phía dưới phản ánh thời điểm trước bản vá. Auth contract không đổi; toàn dự án vẫn **PARTIAL / NOT_READY** do các giới hạn SSO/CSRF, staging, hosted CI và full security coverage.
 
 **Ngày:** 15/10/2026. **Yêu cầu:** tiếp tục BA và luồng UAV, bổ sung lịch định kỳ, phiếu sửa chữa và chi phí vật tư; kiểm tra qua giao diện và không đổi auth contract. Người dùng xác nhận ghi vật tư/số lượng/đơn giá VND trong phiếu, **chưa trừ kho thiết bị**.

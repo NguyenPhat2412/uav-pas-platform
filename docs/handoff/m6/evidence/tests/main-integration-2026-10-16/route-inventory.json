@@ -1,0 +1,337 @@
+[
+  {
+    "app": "web",
+    "route": "/about",
+    "source": "apps/web/app/about/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/contact",
+    "source": "apps/web/app/contact/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/faq",
+    "source": "apps/web/app/faq/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/how-it-works",
+    "source": "apps/web/app/how-it-works/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/login",
+    "source": "apps/web/app/login/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/",
+    "source": "apps/web/app/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/pricing",
+    "source": "apps/web/app/pricing/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/privacy",
+    "source": "apps/web/app/privacy/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/register",
+    "source": "apps/web/app/register/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/services/[slug]",
+    "source": "apps/web/app/services/[slug]/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/services",
+    "source": "apps/web/app/services/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/solutions/[slug]",
+    "source": "apps/web/app/solutions/[slug]/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/solutions",
+    "source": "apps/web/app/solutions/page.tsx"
+  },
+  {
+    "app": "web",
+    "route": "/terms",
+    "source": "apps/web/app/terms/page.tsx"
+  },
+  {
+    "app": "customer",
+    "route": "/login",
+    "source": "apps/customer/app/(auth)/login/page.tsx"
+  },
+  {
+    "app": "customer",
+    "route": "/register",
+    "source": "apps/customer/app/(auth)/register/page.tsx"
+  },
+  {
+    "app": "customer",
+    "route": "/billing",
+    "source": "apps/customer/app/(portal)/billing/page.tsx"
+  },
+  {
+    "app": "customer",
+    "route": "/dashboard",
+    "source": "apps/customer/app/(portal)/dashboard/page.tsx"
+  },
+  {
+    "app": "customer",
+    "route": "/missions/[id]/edit",
+    "source": "apps/customer/app/(portal)/missions/[id]/edit/page.tsx"
+  },
+  {
+    "app": "customer",
+    "route": "/missions/[id]",
+    "source": "apps/customer/app/(portal)/missions/[id]/page.tsx"
+  },
+  {
+    "app": "customer",
+    "route": "/missions/create",
+    "source": "apps/customer/app/(portal)/missions/create/page.tsx"
+  },
+  {
+    "app": "customer",
+    "route": "/missions",
+    "source": "apps/customer/app/(portal)/missions/page.tsx"
+  },
+  {
+    "app": "customer",
+    "route": "/notifications",
+    "source": "apps/customer/app/(portal)/notifications/page.tsx"
+  },
+  {
+    "app": "customer",
+    "route": "/profile",
+    "source": "apps/customer/app/(portal)/profile/page.tsx"
+  },
+  {
+    "app": "customer",
+    "route": "/services",
+    "source": "apps/customer/app/(portal)/services/page.tsx"
+  },
+  {
+    "app": "customer",
+    "route": "/",
+    "source": "apps/customer/app/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/login",
+    "source": "apps/operations/app/(auth)/login/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/assigned-missions",
+    "source": "apps/operations/app/(portal)/assigned-missions/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/audit",
+    "source": "apps/operations/app/(portal)/audit/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/dispatch/missions",
+    "source": "apps/operations/app/(portal)/dispatch/missions/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/inventory",
+    "source": "apps/operations/app/(portal)/inventory/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/maintenance",
+    "source": "apps/operations/app/(portal)/maintenance/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/media",
+    "source": "apps/operations/app/(portal)/media/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/missions/[id]",
+    "source": "apps/operations/app/(portal)/missions/[id]/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/notifications",
+    "source": "apps/operations/app/(portal)/notifications/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/overview",
+    "source": "apps/operations/app/(portal)/overview/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/sar-cockpit",
+    "source": "apps/operations/app/(portal)/sar-cockpit/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/stations",
+    "source": "apps/operations/app/(portal)/stations/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/uavs",
+    "source": "apps/operations/app/(portal)/uavs/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/admin/missions",
+    "source": "apps/operations/app/admin/missions/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/operations",
+    "source": "apps/operations/app/operations/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/operator/missions",
+    "source": "apps/operations/app/operator/missions/page.tsx"
+  },
+  {
+    "app": "operations",
+    "route": "/",
+    "source": "apps/operations/app/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/login",
+    "source": "apps/admin/app/(auth)/login/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/access-control",
+    "source": "apps/admin/app/(portal)/access-control/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/audit-logs",
+    "source": "apps/admin/app/(portal)/audit-logs/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/billing",
+    "source": "apps/admin/app/(portal)/billing/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/dashboard",
+    "source": "apps/admin/app/(portal)/dashboard/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/permissions",
+    "source": "apps/admin/app/(portal)/permissions/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/reports",
+    "source": "apps/admin/app/(portal)/reports/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/role-templates",
+    "source": "apps/admin/app/(portal)/role-templates/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/settings",
+    "source": "apps/admin/app/(portal)/settings/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/users/[id]",
+    "source": "apps/admin/app/(portal)/users/[id]/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/users",
+    "source": "apps/admin/app/(portal)/users/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/webhooks",
+    "source": "apps/admin/app/(portal)/webhooks/page.tsx"
+  },
+  {
+    "app": "admin",
+    "route": "/",
+    "source": "apps/admin/app/page.tsx"
+  },
+  {
+    "app": "legacy",
+    "route": "/login",
+    "source": "frontend/src/app/(auth)/login/page.tsx"
+  },
+  {
+    "app": "legacy",
+    "route": "/register",
+    "source": "frontend/src/app/(auth)/register/page.tsx"
+  },
+  {
+    "app": "legacy",
+    "route": "/access-control",
+    "source": "frontend/src/app/access-control/page.tsx"
+  },
+  {
+    "app": "legacy",
+    "route": "/admin/missions",
+    "source": "frontend/src/app/admin/missions/page.tsx"
+  },
+  {
+    "app": "legacy",
+    "route": "/missions/[id]",
+    "source": "frontend/src/app/missions/[id]/page.tsx"
+  },
+  {
+    "app": "legacy",
+    "route": "/missions/create",
+    "source": "frontend/src/app/missions/create/page.tsx"
+  },
+  {
+    "app": "legacy",
+    "route": "/missions",
+    "source": "frontend/src/app/missions/page.tsx"
+  },
+  {
+    "app": "legacy",
+    "route": "/operations",
+    "source": "frontend/src/app/operations/page.tsx"
+  },
+  {
+    "app": "legacy",
+    "route": "/operator/missions",
+    "source": "frontend/src/app/operator/missions/page.tsx"
+  },
+  {
+    "app": "legacy",
+    "route": "/",
+    "source": "frontend/src/app/page.tsx"
+  },
+  {
+    "app": "legacy",
+    "route": "/preview",
+    "source": "frontend/src/app/preview/page.tsx"
+  }
+]

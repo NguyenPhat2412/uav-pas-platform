@@ -1,0 +1,39 @@
+{
+  "version": "3.0",
+  "date": "2026-10-17",
+  "pages": 94,
+  "chapters": 33,
+  "scope": "Reviewed cutover-time local evidence; whole project PARTIAL / production NOT_READY; Q14 KPI decision pending; later frontend overlays outside this snapshot",
+  "files": [
+    {
+      "path": "/Volumes/D/Codex/outputs/uav-pas-full-priorities-20261017/UAV_PAS_BA_Nguyen_Xuan_Phat_23110209_v3.docx",
+      "bytes": 799036,
+      "sha256": "d858609c851fddc6f77fdaf94575c6cd7e4682d127c3ba0de8820db0498e7460"
+    },
+    {
+      "path": "/Volumes/D/Codex/outputs/uav-pas-full-priorities-20261017/UAV_PAS_BA_Nguyen_Xuan_Phat_23110209_v3.pdf",
+      "bytes": 3038606,
+      "sha256": "ea9d8b7a7902b691b39e5319b8f467f1f9e64a7bb793066db9a9ec759f15e744"
+    },
+    {
+      "path": "/Volumes/D/Codex/outputs/uav-pas-full-priorities-20261017/UAV_PAS_BA_v3_SOURCE.zip",
+      "bytes": 737299,
+      "sha256": "b349ee876e9f824d1e91f10767166b114242141134dee69d4f02b4efa0b1ab01"
+    },
+    {
+      "path": "/Volumes/D/Codex/outputs/uav-pas-full-priorities-20261017/BA_V3.md",
+      "bytes": 279302,
+      "sha256": "c99a2346d62eca4cca29822d2d962ae06aba1a654689f2eed6e39a1ed6ccec07"
+    },
+    {
+      "path": "/Volumes/D/Codex/outputs/uav-pas-full-priorities-20261017/TRACEABILITY_V3.md",
+      "bytes": 10922,
+      "sha256": "0917113117ae64e850a763a5ae0dd3f608add0da803eab78fa116f414592c696"
+    },
+    {
+      "path": "/Volumes/D/Codex/outputs/uav-pas-full-priorities-20261017/QA_FINAL.md",
+      "bytes": 1318,
+      "sha256": "74ee94482d9891b7b34e80e494780100bc035805407e716c4a447d051671d3cc"
+    }
+  ]
+}

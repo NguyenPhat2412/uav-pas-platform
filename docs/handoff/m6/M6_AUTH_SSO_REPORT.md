@@ -1,4 +1,17 @@
+# Auth và giới hạn SSO — 17/10/2026
+
+Giữ contract đã tích hợp: cookie HttpOnly +JSON token tương thích/bearer, /auth/me, CSRF cookie/header và credentials include. Preview cuối15HTTPchecksPASS; thiếuCSRF bị từ chối401 trong probe này, không khẳng định mọi nhánh trả403. Cookie localhost dùng chung hostname qua các port không chứng minh SSO liên miền. Natural expiry browser là evidence lịch sử riêng; lượt cuối không tự nhận đã lặp lại TTLexpiry.
+
+Xem [báo cáo hiện tại và bảng PASS/FAIL/BLOCKED](M6_FULL_PRIORITIES_2026_10_17.md) và [index evidence](evidence/tests/full-priorities-20261017/README.md). Các giới hạn có trong báo cáo hiện tại được giữ nguyên; không suy từ kết quả local thành production-ready.
+
+<details>
+<summary>Hồ sơ lịch sử trước 17/10/2026 — không phải trạng thái hiện tại</summary>
+
+Những tiêu đề “mới nhất”, số test, cấu trúc thư mục và trạng thái auth trong phần lưu trữ dưới đây chỉ đúng tại ngày/bản nguồn được ghi. Báo cáo hiện tại phía trên có ưu tiên khi đọc trạng thái hôm nay.
+
 # M6 authentication and SSO report
+
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
 
 ## Cập nhật 2026-10-16
 
@@ -65,3 +78,6 @@ Not implemented in the current contract:
 - Cross-origin SSO across four independent origins.
 
 The approved cross-domain design requires backend cookie/session support (or a reviewed OAuth/OIDC authorization-code + PKCE flow). The current localStorage bearer mode is origin-local and cannot be called SSO. No token was copied between origins or put in a URL. Do not cut over to cookie SSO until the backend contract is approved and browser-tested over HTTPS.
+
+
+</details>

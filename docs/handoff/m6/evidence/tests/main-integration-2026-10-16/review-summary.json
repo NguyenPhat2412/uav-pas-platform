@@ -1,0 +1,24 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "scope": [
+    "both merge parents",
+    "cookie/CSRF implementation",
+    "session concurrency",
+    "profile ownership/revision",
+    "storage origin separation",
+    "migration numbering and mappings",
+    "mission handover/billing integration",
+    "notification DTO/method/cache/error handling",
+    "mobile navigation",
+    "SAR simulation actions"
+  ],
+  "blockingFindings": 0,
+  "resolved": [
+    "Duplicate rejection releaseResources call removed"
+  ],
+  "preexistingGaps": [
+    "Quota concurrency",
+    "Some invoice errors swallowed by main"
+  ],
+  "reviewerRanTests": false
+}

@@ -1,0 +1,305 @@
+{
+  "scope": "Evidence is separated by source stage. Final refactor:726 backend tests/445 source hashes,26 browser checks,15 auth requests. Earlier725 tests and primary portable run5 retain pre-refactor provenance. Live activation/security closure recorded separately; no production-readiness claim.",
+  "files": [
+    {
+      "file": "backend-frozen-725-summary.json",
+      "source": "docs/work/full-priorities-20261017/canonical-task4-media-full-summary.json",
+      "sha256": "8e27f0abd563ff38ec4bef1ac1e6cc4c0452a9c6c4dcbe36695b3a4a8a838486",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "backend-frozen-source-hashes.json",
+      "source": "docs/work/full-priorities-20261017/canonical-task4-media-full-source-before.json",
+      "sha256": "c70ef79f35d362c44af45d5f5086c0426031a6fffcdda79609842d423826ae3c",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "backend-frozen-source-drift.json",
+      "source": "docs/work/full-priorities-20261017/canonical-task4-media-full-source-drift.json",
+      "sha256": "73d10045f2a8382b2c351398b20379ba790c6021d983b37774369b3cbcddf5aa",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "frontend-gates.json",
+      "source": "docs/work/full-priorities-20261017/release-frontend-gates.json",
+      "sha256": "4079e03a0a63d58d7598bdc07807c8220678b429c8b2041ebb44f10f8e2917c4",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "admin-layout-build.json",
+      "source": "docs/work/full-priorities-20261017/release-frontend-admin-layout-build.json",
+      "sha256": "c90380fa8c713957e9948e9bf41631da6c60102e4d45e4c25dbfbfa4c83fbc06",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "legacy-layout-build.json",
+      "source": "docs/work/full-priorities-20261017/release-frontend-legacy-layout-build.json",
+      "sha256": "fe616086ea912a7c655e12a74ff13996280eb8d6d7e9f58da17089a6922d2850",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "canonical-dependency-audit-summary.json",
+      "source": "docs/work/full-priorities-20261017/canonical-dependency-audit-summary.json",
+      "sha256": "35756d6695abe3fdc7e236ca5f12892ffc3f829ca61b2d5bbf4903d253b682d8",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "portable-browser-primary.json",
+      "source": "docs/work/full-priorities-20261017/task5-safe-run5/browser.json",
+      "sha256": "eb8f706c205f3ee58bc5824fe90bfd6cb7317dc19b955df841320146fc0ce808",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "portable-recovery-primary.json",
+      "source": "docs/work/full-priorities-20261017/task5-safe-run5/runner.json",
+      "sha256": "af8f00a1077561c51164e1c0a3de48623b1f4b776ce342693343605dd167f26e",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "portable-source-provenance.json",
+      "source": "docs/work/full-priorities-20261017/task5-source-provenance.json",
+      "sha256": "5da5eff22dc1d983d6c5de3d2678821fbe74c1b22e5845bf5cc99ad1a27398f4",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "final-layout-review.md",
+      "source": "docs/work/full-priorities-20261017/ledger/final-layout-review.md",
+      "sha256": "4c8c76932db649ec6863e630bb302bc2331b9e718074b93a9ebb62d4616a2d67",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "webhook-media-preview-ui.json",
+      "source": "docs/work/portal-interior-sync-20261017/task4-preview-ui.json",
+      "sha256": "b124925c9e56a9cea9ca7cbf2a7edcc3d022855e876ecf97ea56773f1ec38b5a",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "task2-browser.json",
+      "source": "docs/work/canonical-preview-20261017/task2-browser.json",
+      "sha256": "0894cf42a349ac53e5a74aef8d0cb7ed4842fb67ac1635fad5a10aab400083c9",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "task2-recovery-browser.json",
+      "source": "docs/work/canonical-preview-20261017/task2-recovery-browser.json",
+      "sha256": "5d9301b4fe08a4ab78ef1d658988b8c0cb879979e14b25c92076d3922daae7bb",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "task3-browser-handover.json",
+      "source": "docs/work/canonical-preview-20261017/task3-browser-handover.json",
+      "sha256": "fc0371474ab8d2a2c7164cbea3744dbde9c42f7ca47c65ae8dd0b3099d3957f7",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "task4-browser.json",
+      "source": "docs/work/canonical-preview-20261017/task4-browser.json",
+      "sha256": "b0affef6aaf6e28c34eb274ac60404b0ed8b388c74781fdcb297f0fbd1980669",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "task4-media-library-browser.json",
+      "source": "docs/work/canonical-preview-20261017/task4-media-library-browser.json",
+      "sha256": "d48dc14bcec3dc8f1458f80ff404bd89663465b3818896e122358799aec2b3f8",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "auth-contract-probe.json",
+      "source": "docs/work/canonical-preview-20261017/auth-contract-probe.json",
+      "sha256": "874dc51d38774a6a76a180967de6458302ce37b4c90979b1e5a95e4bd5179c4f",
+      "stage": "pre-refactor-frozen-product-or-frontend"
+    },
+    {
+      "file": "backend-final-726-summary.json",
+      "source": "docs/work/full-priorities-20261017/post-refactor-independent-check.json",
+      "sha256": "d82e952bec6ad846d8c170252c99a946cb70c2b392aa4be90041463c82c85e64",
+      "stage": "final-refactor"
+    },
+    {
+      "file": "backend-final-source-hashes.json",
+      "source": "docs/work/backend-structure-20261017/final-source-hashes.json",
+      "sha256": "52dbabb7cfa3e5239e58eaeea964d9e470f420738926ea3ec620cb841afbe740",
+      "stage": "final-refactor"
+    },
+    {
+      "file": "final-source-review.md",
+      "source": "docs/work/full-priorities-20261017/ledger/final-source-review.md",
+      "sha256": "6318f756115b19a23c5fc32f20ddd166a82b1a0ccaa4ef3a63e36b398dfb9a71",
+      "stage": "final-refactor"
+    },
+    {
+      "file": "ci-review.md",
+      "source": "docs/work/full-priorities-20261017/ledger/task-5-review.md",
+      "sha256": "7f71abe30c32a49fce5ef098fdc3b67bc0b2350b6bcda12203cba747b80df89a",
+      "stage": "scoped-ci-or-cutover"
+    },
+    {
+      "file": "api-contract-parity.json",
+      "source": "docs/work/main-activation-20261017/api-contract-verification.json",
+      "sha256": "a658d6547e95f6753dac8bd0ff0843f1dc4b6b1f5d94769faf7fef3bc218feaa",
+      "stage": "final-refactor"
+    },
+    {
+      "file": "backup-verification.json",
+      "source": "docs/work/main-activation-20261017/backup-complete.json",
+      "sha256": "b133749e090e7bc71ee55ecca674e24c7abcd060815b243ab1129e00d6bc023a",
+      "stage": "scoped-ci-or-cutover"
+    },
+    {
+      "file": "data-preservation-before-start.json",
+      "source": "docs/work/main-activation-20261017/final-preservation.json",
+      "sha256": "ac7765afc6cee5813fae466b16325140f8fce05844f65c7302a2bd1878f81085",
+      "stage": "scoped-ci-or-cutover"
+    },
+    {
+      "file": "adoption-before-start.json",
+      "source": "docs/work/main-activation-20261017/cutover-preactivation.json",
+      "sha256": "1c12f5015f4d7349396bf115d62d4be4a6d1dded89f5cade32e08576883ab3dd",
+      "stage": "scoped-ci-or-cutover"
+    },
+    {
+      "file": "post-refactor-handover.json",
+      "source": "docs/work/canonical-preview-20261017/post-refactor-handover.json",
+      "sha256": "22a268b339bcf42b94642ef8603fce648cf14df42b450dc76e291a7c45b56f03",
+      "stage": "final-refactor"
+    },
+    {
+      "file": "post-refactor-webhook-sar.json",
+      "source": "docs/work/canonical-preview-20261017/post-refactor-webhook-sar.json",
+      "sha256": "bbff1269011dd87d5adde5978da441c07c70ba2ad23c911e38829dbd4f4d3fb0",
+      "stage": "final-refactor"
+    },
+    {
+      "file": "post-refactor-media-library.json",
+      "source": "docs/work/canonical-preview-20261017/post-refactor-media-library.json",
+      "sha256": "5ab368adcf5df7b468629973d653f58009ab616d750d448aaad38c05a57a1f9e",
+      "stage": "final-refactor"
+    },
+    {
+      "file": "post-refactor-auth-contract-probe.json",
+      "source": "docs/work/canonical-preview-20261017/post-refactor-auth-contract-probe.json",
+      "sha256": "874dc51d38774a6a76a180967de6458302ce37b4c90979b1e5a95e4bd5179c4f",
+      "stage": "final-refactor"
+    },
+    {
+      "file": "ci-failure-tests.log",
+      "source": "Previously copied safe scoped evidence",
+      "sha256": "68407b8d023982a55468f0fd70254cf42403bea09b6ed58e9db718d30f2b7807",
+      "stage": "scoped-ci-review"
+    },
+    {
+      "file": "live-readiness-root.json",
+      "source": "docs/work/main-activation-20261017/live-readiness-root.json",
+      "sha256": "b05740687ec43f5db7f52ba8c494d9034e69131b8538e7c1048e06a9ebdf82ba",
+      "stage": "live-final-or-document-review"
+    },
+    {
+      "file": "live-ui-report.json",
+      "source": "docs/work/portal-interior-sync-20261017/live-browser-report.json",
+      "sha256": "eb61bf47365f42d8ffae5dd6d64d5ccfb781fc75f9c019c45a3c982951da6405",
+      "stage": "live-final-or-document-review"
+    },
+    {
+      "file": "live-main-verification.json",
+      "source": "docs/work/main-activation-20261017/FINAL-VERIFICATION.json",
+      "sha256": "634fa2ad39956e0f3eae1b3b0e5996aa0d53d8b6011acad06e75a96293456914",
+      "stage": "live-final-or-document-review"
+    },
+    {
+      "file": "post-startup-data-verification.json",
+      "source": "docs/work/main-activation-20261017/post-startup-data-verification.json",
+      "sha256": "8f53a916771fa0fe94fa23ff9c74708f37b74ffbfd3af6f425d1d3fcd2ad14ad",
+      "stage": "live-final-or-document-review"
+    },
+    {
+      "file": "preview-shutdown.json",
+      "source": "docs/work/main-activation-20261017/preview-shutdown.json",
+      "sha256": "2f643a63c000d5f15214a7c97367e3759dbbb9c1aea3c88d2dfb9f2f5eee2125",
+      "stage": "live-final-or-document-review"
+    },
+    {
+      "file": "frontend-cutover-builds.json",
+      "source": "docs/work/main-activation-20261017/frontend-applied-and-built.json",
+      "sha256": "658ddef60c7be77de1fcde8baee29601c5dd699c5c21b4778de42f399584886a",
+      "stage": "live-final-or-document-review"
+    },
+    {
+      "file": "ba-factual-review.md",
+      "source": "docs/work/full-priorities-20261017/ledger/ba-v3-final-factual-review.md",
+      "sha256": "83ea2d6f5d6ce8471efb7094cf7a2b74397bdb17427bc305452968b3f0b1d3f2",
+      "stage": "live-final-or-document-review"
+    },
+    {
+      "file": "security-scan-report.md",
+      "source": "/Volumes/D/Codex/outputs/uav-pas-full-priorities-20261017/security",
+      "sha256": "dc2c621edad23c0b70535fb697db28c9364eca09c554c1ba8e5bad54e98156aa",
+      "stage": "completed-standard-scan-original-baseline-partial-coverage"
+    },
+    {
+      "file": "security-scan-summary.json",
+      "source": "/Volumes/D/Codex/outputs/uav-pas-full-priorities-20261017/security",
+      "sha256": "70cd4f9baa7ff1e860650d0c802e3b90789415922fec94c97113c2a52edf05f6",
+      "stage": "completed-standard-scan-original-baseline-partial-coverage"
+    },
+    {
+      "file": "security-fix-verification.md",
+      "source": "/Volumes/D/Codex/outputs/uav-pas-full-priorities-20261017/security",
+      "sha256": "76232ea235a0d7d98dc2808b601bdc34ec55908b10899d44662c73554c746b79",
+      "stage": "completed-standard-scan-original-baseline-partial-coverage"
+    },
+    {
+      "file": "final-integrity-check.json",
+      "source": "Root integrity verification after local activation",
+      "sha256": "01f183fa297d160f667785b29a908ca884d3a936f9d547778da503235e5b9b3d",
+      "stage": "after-live-main-before-later-image-overlay-verification"
+    },
+    {
+      "file": "empty-report-kpi-observation.json",
+      "source": "UI reviewer observation and root source trace",
+      "sha256": "d8120ee06693d8ab544ed2829657f606933c71403cbb90c296cd770ccdd1f7eb",
+      "stage": "live-observed-issue-policy-pending"
+    },
+    {
+      "file": "final-integrity-with-imagery.json",
+      "source": "Main cutover plus authorized later frontend-imagery-20261017 overlay",
+      "sha256": "18a80e1a8deaf3391d49cb1d6dc87c27b8b80448ecc474d34625c8e4f14cb0f3",
+      "stage": "after-imagery-local-verification"
+    },
+    {
+      "file": "imagery-live-verification.json",
+      "source": "Main cutover plus authorized later frontend-imagery-20261017 overlay",
+      "sha256": "9478f83fdd9b250ebefe5b1ee1d6a6e9aecc893057b7eb911b8c7925e9b2fcdf",
+      "stage": "after-imagery-local-verification"
+    },
+    {
+      "file": "imagery-source-manifest.json",
+      "source": "Main cutover plus authorized later frontend-imagery-20261017 overlay",
+      "sha256": "ffd02101f0f06e6f6aa6d4e822f634bcecae862b9ca719f529b8b2d5adf0959c",
+      "stage": "after-imagery-local-verification"
+    },
+    {
+      "file": "ba-delivery-report.md",
+      "source": "Final BA3 delivery and all-page QA",
+      "sha256": "dde07880fa764f62e633cca6048a9734d35b15e2e4963c252fb19d414fa47aec",
+      "stage": "final-document-delivery"
+    },
+    {
+      "file": "ba-document-validation.json",
+      "source": "Final BA3 delivery and all-page QA",
+      "sha256": "1611e60184e3cb7b0212613732de8f87d511fcc023078cf60ab183c70bd6f56a",
+      "stage": "final-document-delivery"
+    },
+    {
+      "file": "ba-visual-qa.json",
+      "source": "Final BA3 delivery and all-page QA",
+      "sha256": "9a4802c9d6bda884c0e496d95c7a4f199bdbe25004f041209583f79346d0e928",
+      "stage": "final-document-delivery"
+    },
+    {
+      "file": "ba-deliverables.json",
+      "source": "Final BA3 delivery and all-page QA",
+      "sha256": "68e531866bae29ea0870897d7dd0b898fe1d0c63bdfcec4baa9b8b3804516048",
+      "stage": "final-document-delivery"
+    }
+  ]
+}

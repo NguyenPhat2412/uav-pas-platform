@@ -1,4 +1,17 @@
+# Cô lập và bảo toàn dữ liệu — 17/10/2026
+
+Preview cuối kiểm tra customerA thấy kết quả của mình; customerB và operator không được giao bị chặn mission/timeline/media/download. Tệp terminal chỉ đọc/tải, signedPUT cũ không ghi đèobject. Backup/adoption main kiểm22bảng117dòng cũ,25tệpMinIO; đây là bảo toàn dữ liệu local, không phải bằng chứng multi-tenant production.
+
+Xem [báo cáo hiện tại và bảng PASS/FAIL/BLOCKED](M6_FULL_PRIORITIES_2026_10_17.md) và [index evidence](evidence/tests/full-priorities-20261017/README.md). Các giới hạn có trong báo cáo hiện tại được giữ nguyên; không suy từ kết quả local thành production-ready.
+
+<details>
+<summary>Hồ sơ lịch sử trước 17/10/2026 — không phải trạng thái hiện tại</summary>
+
+Những tiêu đề “mới nhất”, số test, cấu trúc thư mục và trạng thái auth trong phần lưu trữ dưới đây chỉ đúng tại ngày/bản nguồn được ghi. Báo cáo hiện tại phía trên có ưu tiên khi đọc trạng thái hôm nay.
+
 # M6 data isolation report
+
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
 
 ## Điều phối operator, trạm và thiết bị — 2026-10-16 (mới nhất)
 
@@ -49,3 +62,6 @@ What is still missing:
 - Cookie SSO/CSRF behavior after the approved contract is implemented.
 
 No private data was fabricated or exposed in M6 evidence.
+
+
+</details>

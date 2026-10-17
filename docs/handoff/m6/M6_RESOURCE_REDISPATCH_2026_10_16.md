@@ -1,5 +1,7 @@
 # UAV PAS — Điều phối lại operator, trạm và thiết bị
 
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
+
 Ngày kiểm chứng: 16/10/2026. **Phạm vi chức năng này: COMPLETE trong môi trường cục bộ cô lập. Toàn dự án: PARTIAL / NOT_READY.**
 
 ## Baseline và phạm vi

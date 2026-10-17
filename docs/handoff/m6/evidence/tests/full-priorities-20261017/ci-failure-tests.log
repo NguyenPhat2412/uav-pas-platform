@@ -1,0 +1,13 @@
+test_backend_empty_suite_fails (test_failure_paths.FailurePaths.test_backend_empty_suite_fails) ... ok
+test_backend_maven_failure_remains_failure (test_failure_paths.FailurePaths.test_backend_maven_failure_remains_failure) ... ok
+test_backend_nonempty_zero_skip_success_passes (test_failure_paths.FailurePaths.test_backend_nonempty_zero_skip_success_passes) ... ok
+test_backend_skipped_suite_fails_even_when_maven_succeeds (test_failure_paths.FailurePaths.test_backend_skipped_suite_fails_even_when_maven_succeeds) ... ok
+test_backend_xml_error_fails_even_when_maven_succeeds (test_failure_paths.FailurePaths.test_backend_xml_error_fails_even_when_maven_succeeds) ... ok
+test_backend_xml_failure_fails_even_when_maven_succeeds (test_failure_paths.FailurePaths.test_backend_xml_failure_fails_even_when_maven_succeeds) ... ok
+test_failed_cleanup_preserves_fallback_ownership_and_private_material (test_failure_paths.FailurePaths.test_failed_cleanup_preserves_fallback_ownership_and_private_material) ... ok
+test_successful_cleanup_removes_private_directory (test_failure_paths.FailurePaths.test_successful_cleanup_removes_private_directory) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.037s
+
+OK

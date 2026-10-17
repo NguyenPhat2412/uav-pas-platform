@@ -1,5 +1,7 @@
 # UAV PAS — Hoàn thiện luồng giao diện theo BA, 15/10/2026
 
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
+
 > Cập nhật tiếp theo: policy bảo trì/gán trạm, thay/gỡ UAV, UAT-X15 và một phần UAT-X16 đã được xử lý/kiểm tra trong [báo cáo bảo trì và điều phối](M6_UAV_MAINTENANCE_REDISPATCH_2026_10_15.md). Nội dung dưới đây là snapshot của lượt BA workflow trước.
 
 **Phạm vi:** bản BA v2 của Nguyễn Xuân Phát (23110209), ưu tiên chức năng khách hàng/vận hành và lỗi có bằng chứng. Báo cáo này là phần cập nhật sau BA v2; không thay đổi kết quả lịch sử trong PDF/Word đã xuất.

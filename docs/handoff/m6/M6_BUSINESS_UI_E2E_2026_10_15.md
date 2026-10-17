@@ -1,5 +1,7 @@
 # M6 — authenticated business UI verification, 2026-10-15
 
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
+
 **Result: PASS for the local synthetic main workflow and selected negative/session checks. Overall M1–M6 remains PARTIAL / NOT_READY.**
 
 Baseline: branch `codex/m1-monorepo-foundation`, HEAD `65d1b23da3d888d1ef8120462f2689da8cffd7cb`, initially clean. This continuation has an uncommitted product/test/documentation patch. `evidence/tests/ui-business-2026-10-15/summary.json` records the SHA-256 of each tested changed product/test file. No backend source, auth contract, dependency version, Git history, remote branch or production deployment changed.

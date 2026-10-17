@@ -1,43 +1,36 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "uav-pas-platform",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "test": "node --test tests/*.test.mjs ../tests/api-origin.test.mjs",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^5.9.1",
-    "@tanstack/react-query": "^5.104.1",
-    "@tanstack/react-table": "^8.21.3",
-    "clsx": "^2.1.1",
-    "lucide-react": "^1.50.0",
-    "next": "16.3.8",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "react-hook-form": "^7.89.0",
-    "tailwind-merge": "^3.7.0",
-    "three": "^0.186.1",
-    "zod": "^4.6.5"
+    "lint": "npm run lint --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "test": "npm run test --workspaces",
+    "build": "npm run build --workspaces",
+    "dev": "npm run dev --prefix legacy",
+    "start": "npm run start --prefix legacy",
+    "dev:web": "npm run dev --workspace=@uav/web",
+    "dev:customer": "npm run dev --workspace=@uav/customer",
+    "dev:operations": "npm run dev --workspace=@uav/operations",
+    "dev:admin": "npm run dev --workspace=@uav/admin",
+    "lint:legacy": "npm run lint --prefix legacy",
+    "typecheck:legacy": "npm run typecheck --prefix legacy",
+    "test:legacy": "npm test --prefix legacy",
+    "build:legacy": "npm run build --prefix legacy",
+    "dev:unified": "npm --prefix legacy run dev",
+    "test:e2e": "node tests/e2e/mission.mjs",
+    "test:contracts": "node --test tests/*.test.mjs"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0",
-    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/three": "^0.186.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  },
-  "overrides": {
-    "sharp": "0.35.5",
-    "source-map-js": "1.2.2"
+    "typescript": "^5",
+    "playwright": "1.63.0"
   }
 }

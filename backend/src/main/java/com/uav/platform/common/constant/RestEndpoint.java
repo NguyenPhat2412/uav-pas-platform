@@ -14,8 +14,6 @@ public final class RestEndpoint {
     public static final String AUTH = ApiRoutes.Auth.BASE;
     public static final String REGISTER = ApiRoutes.Auth.REGISTER;
     public static final String LOGIN = ApiRoutes.Auth.LOGIN;
-    public static final String ZALO_URL = ApiRoutes.Auth.ZALO_URL;
-    public static final String ZALO_CALLBACK = ApiRoutes.Auth.ZALO_CALLBACK;
     public static final String ME = ApiRoutes.Auth.ME;
     public static final String REFRESH = ApiRoutes.Auth.REFRESH;
     public static final String LOGOUT = ApiRoutes.Auth.LOGOUT;

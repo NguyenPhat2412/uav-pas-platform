@@ -1,0 +1,4663 @@
+{
+  "status": "COMPLETE",
+  "inventory": [
+    {
+      "group": "web",
+      "route": "/",
+      "label": "/",
+      "title": "UAV PAS | Mission operations platform",
+      "resolvedPath": "/",
+      "httpStatus": 200,
+      "heading": "From mission intent to a clearer flight plan.",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/about",
+      "label": "/about",
+      "title": "About UAV PAS | UAV PAS",
+      "resolvedPath": "/about",
+      "httpStatus": 200,
+      "heading": "A shared language for UAV missions.",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/contact",
+      "label": "/contact",
+      "title": "Contact and service requests | UAV PAS",
+      "resolvedPath": "/contact",
+      "httpStatus": 200,
+      "heading": "Start with the mission context you already have.",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/faq",
+      "label": "/faq",
+      "title": "Frequently asked questions | UAV PAS",
+      "resolvedPath": "/faq",
+      "httpStatus": 200,
+      "heading": "Clear answers for the public surface.",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/how-it-works",
+      "label": "/how-it-works",
+      "title": "How it works | UAV PAS",
+      "resolvedPath": "/how-it-works",
+      "httpStatus": 200,
+      "heading": "A request becomes a mission through review.",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/pricing",
+      "label": "/pricing",
+      "title": "Pricing information | UAV PAS",
+      "resolvedPath": "/pricing",
+      "httpStatus": 200,
+      "heading": "Pricing is not published yet.",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/privacy",
+      "label": "/privacy",
+      "title": "Privacy publication status | UAV PAS",
+      "resolvedPath": "/privacy",
+      "httpStatus": 200,
+      "heading": "Privacy information is under publication review.",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/terms",
+      "label": "/terms",
+      "title": "Terms publication status | UAV PAS",
+      "resolvedPath": "/terms",
+      "httpStatus": 200,
+      "heading": "Terms are under publication review.",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/services",
+      "label": "/services",
+      "title": "UAV services | UAV PAS",
+      "resolvedPath": "/services",
+      "httpStatus": 200,
+      "heading": "Choose a mission starting point.",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/solutions",
+      "label": "/solutions",
+      "title": "UAV solutions | UAV PAS",
+      "resolvedPath": "/solutions",
+      "httpStatus": 200,
+      "heading": "A capability map for different mission outcomes.",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/login",
+      "label": "/login",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/login",
+      "httpStatus": 200,
+      "heading": "Chào mừng trở lại",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/register",
+      "label": "/register",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/register",
+      "httpStatus": 200,
+      "heading": "Tạo tài khoản",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/services/uav-rental",
+      "label": "/services/uav-rental",
+      "title": "Service: UAV rental | UAV PAS",
+      "resolvedPath": "/services/uav-rental",
+      "httpStatus": 200,
+      "heading": "UAV rental",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/services/aerial-inspection",
+      "label": "/services/aerial-inspection",
+      "title": "Service: Aerial inspection | UAV PAS",
+      "resolvedPath": "/services/aerial-inspection",
+      "httpStatus": 200,
+      "heading": "Aerial inspection",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/services/aerial-recording",
+      "label": "/services/aerial-recording",
+      "title": "Service: Aerial recording | UAV PAS",
+      "resolvedPath": "/services/aerial-recording",
+      "httpStatus": 200,
+      "heading": "Aerial recording",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/services/data-collection",
+      "label": "/services/data-collection",
+      "title": "Service: Data collection | UAV PAS",
+      "resolvedPath": "/services/data-collection",
+      "httpStatus": 200,
+      "heading": "Data collection",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/solutions/uav-rental",
+      "label": "/solutions/uav-rental",
+      "title": "Solution: UAV rental | UAV PAS",
+      "resolvedPath": "/solutions/uav-rental",
+      "httpStatus": 200,
+      "heading": "UAV rental",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/solutions/aerial-inspection",
+      "label": "/solutions/aerial-inspection",
+      "title": "Solution: Aerial inspection | UAV PAS",
+      "resolvedPath": "/solutions/aerial-inspection",
+      "httpStatus": 200,
+      "heading": "Aerial inspection",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/solutions/ai-detection",
+      "label": "/solutions/ai-detection",
+      "title": "Solution: AI-assisted detection | UAV PAS",
+      "resolvedPath": "/solutions/ai-detection",
+      "httpStatus": 200,
+      "heading": "AI-assisted detection",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "web",
+      "route": "/solutions/search-and-rescue",
+      "label": "/solutions/search-and-rescue",
+      "title": "Solution: Search and rescue support | UAV PAS",
+      "resolvedPath": "/solutions/search-and-rescue",
+      "httpStatus": 200,
+      "heading": "Search and rescue support",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/dashboard",
+      "label": "/dashboard",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/dashboard",
+      "httpStatus": 200,
+      "heading": "Xin chào, Hồ sơ khách hàng trên điện thoại",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/services",
+      "label": "/services",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/services",
+      "httpStatus": 200,
+      "heading": "Dịch vụ UAV",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/missions",
+      "label": "/missions",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/missions",
+      "httpStatus": 200,
+      "heading": "Nhiệm vụ của tôi",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/missions/create",
+      "label": "/missions/create",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/missions/create",
+      "httpStatus": 200,
+      "heading": "Tạo yêu cầu UAV",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/billing",
+      "label": "/billing",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/billing",
+      "httpStatus": 200,
+      "heading": "Quản lý Gói cước & Hạn mức sử dụng",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/notifications",
+      "label": "/notifications",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/notifications",
+      "httpStatus": 200,
+      "heading": "Thông báo & Tin nhắn hệ thống",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/profile",
+      "label": "/profile",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/profile",
+      "httpStatus": 200,
+      "heading": "Tài khoản",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/missions/2",
+      "label": "/missions/2",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/missions/2",
+      "httpStatus": 200,
+      "heading": "Kiểm tra bàn giao 1792166200843",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/missions/3",
+      "label": "/missions/3",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/missions/3",
+      "httpStatus": 200,
+      "heading": "Khảo sát khu vực thực nghiệm Việt Nhật",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/missions/3/edit",
+      "label": "/missions/3/edit",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/missions/3/edit",
+      "httpStatus": 200,
+      "heading": "Chỉnh sửa bản nháp",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/profile",
+      "label": "ho-so-chinh-sua",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/profile",
+      "httpStatus": 200,
+      "heading": "Tài khoản",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "admin",
+      "route": "/dashboard",
+      "label": "/dashboard",
+      "title": "UAV PAS · Quản trị",
+      "resolvedPath": "/dashboard",
+      "httpStatus": 200,
+      "heading": "Tổng quan Quản trị Hệ thống",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "admin",
+      "route": "/users",
+      "label": "/users",
+      "title": "UAV PAS · Quản trị",
+      "resolvedPath": "/users",
+      "httpStatus": 200,
+      "heading": "Người dùng",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "admin",
+      "route": "/access-control",
+      "label": "/access-control",
+      "title": "UAV PAS · Quản trị",
+      "resolvedPath": "/access-control",
+      "httpStatus": 200,
+      "heading": "Kiểm soát truy cập",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "admin",
+      "route": "/role-templates",
+      "label": "/role-templates",
+      "title": "UAV PAS · Quản trị",
+      "resolvedPath": "/role-templates",
+      "httpStatus": 200,
+      "heading": "Mẫu vai trò",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "admin",
+      "route": "/permissions",
+      "label": "/permissions",
+      "title": "UAV PAS · Quản trị",
+      "resolvedPath": "/permissions",
+      "httpStatus": 200,
+      "heading": "Danh mục quyền",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "admin",
+      "route": "/billing",
+      "label": "/billing",
+      "title": "UAV PAS · Quản trị",
+      "resolvedPath": "/billing",
+      "httpStatus": 200,
+      "heading": "Gói cước & Hạn mức sử dụng",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "admin",
+      "route": "/reports",
+      "label": "/reports",
+      "title": "UAV PAS · Quản trị",
+      "resolvedPath": "/reports",
+      "httpStatus": 200,
+      "heading": "Báo cáo & Thống kê Hệ thống",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "admin",
+      "route": "/settings",
+      "label": "/settings",
+      "title": "UAV PAS · Quản trị",
+      "resolvedPath": "/settings",
+      "httpStatus": 200,
+      "heading": "Cấu hình hệ thống",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "admin",
+      "route": "/webhooks",
+      "label": "/webhooks",
+      "title": "UAV PAS · Quản trị",
+      "resolvedPath": "/webhooks",
+      "httpStatus": 200,
+      "heading": "Quản lý Webhooks & Tích Hợp",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "admin",
+      "route": "/audit-logs",
+      "label": "/audit-logs",
+      "title": "UAV PAS · Quản trị",
+      "resolvedPath": "/audit-logs",
+      "httpStatus": 200,
+      "heading": "Nhật ký quản trị",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "admin",
+      "route": "/users/6",
+      "label": "/users/6",
+      "title": "UAV PAS · Quản trị",
+      "resolvedPath": "/users/6",
+      "httpStatus": 200,
+      "heading": "Chi tiết người dùng",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/login",
+      "label": "/login",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/login",
+      "httpStatus": 200,
+      "heading": "Chào mừng trở lại",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "customer",
+      "route": "/register",
+      "label": "/register",
+      "title": "UAV PAS Cổng khách hàng",
+      "resolvedPath": "/register",
+      "httpStatus": 200,
+      "heading": "Tạo tài khoản",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "admin",
+      "route": "/login",
+      "label": "/login",
+      "title": "UAV PAS · Quản trị",
+      "resolvedPath": "/login",
+      "httpStatus": 200,
+      "heading": "Đăng nhập quản trị",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/overview",
+      "label": "/overview",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/overview",
+      "httpStatus": 200,
+      "heading": "Tổng quan vận hành",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/dispatch/missions",
+      "label": "/dispatch/missions",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/dispatch/missions",
+      "httpStatus": 200,
+      "heading": "Điều phối nhiệm vụ",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/stations",
+      "label": "/stations",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/stations",
+      "httpStatus": 200,
+      "heading": "Trạm UAV",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/uavs",
+      "label": "/uavs",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/uavs",
+      "httpStatus": 200,
+      "heading": "Đội UAV",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/inventory",
+      "label": "/inventory",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/inventory",
+      "httpStatus": 200,
+      "heading": "Kho thiết bị",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/media",
+      "label": "/media",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/media",
+      "httpStatus": 200,
+      "heading": "Tệp và tài liệu",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/maintenance",
+      "label": "/maintenance",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/maintenance",
+      "httpStatus": 200,
+      "heading": "Bảo trì và sửa chữa",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/notifications",
+      "label": "/notifications",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/notifications",
+      "httpStatus": 200,
+      "heading": "Thông báo",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/audit",
+      "label": "/audit",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/audit",
+      "httpStatus": 200,
+      "heading": "Nhật ký hoạt động",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/sar-cockpit",
+      "label": "/sar-cockpit",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/sar-cockpit",
+      "httpStatus": 200,
+      "heading": "Tác chiến AI & Tìm kiếm cứu nạn (SAR Cockpit)",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/missions/2",
+      "label": "/missions/2",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/missions/2",
+      "httpStatus": 200,
+      "heading": "Kiểm tra bàn giao 1792166200843",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/maintenance",
+      "label": "bao-tri-tao-lich",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/maintenance",
+      "httpStatus": 200,
+      "heading": "Bảo trì và sửa chữa",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/maintenance",
+      "label": "phieu-sua-chua",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/maintenance",
+      "httpStatus": 200,
+      "heading": "Bảo trì và sửa chữa",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/maintenance",
+      "label": "phieu-sua-chua-chi-tiet",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/maintenance",
+      "httpStatus": 200,
+      "heading": "Bảo trì và sửa chữa",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operator",
+      "route": "/assigned-missions",
+      "label": "/assigned-missions",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/assigned-missions",
+      "httpStatus": 200,
+      "heading": "Nhiệm vụ được giao",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operator",
+      "route": "/missions/2",
+      "label": "/missions/2",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/missions/2",
+      "httpStatus": 200,
+      "heading": "Kiểm tra bàn giao 1792166200843",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operator",
+      "route": "/notifications",
+      "label": "/notifications",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/notifications",
+      "httpStatus": 200,
+      "heading": "Thông báo",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/",
+      "label": "/",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/",
+      "httpStatus": 200,
+      "heading": "Tổng quan vận hành",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/missions",
+      "label": "/missions",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/missions",
+      "httpStatus": 200,
+      "heading": "Quản lý mission",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/missions/create",
+      "label": "/missions/create",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/missions/create",
+      "httpStatus": 200,
+      "heading": null,
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/admin/missions",
+      "label": "/admin/missions",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/admin/missions",
+      "httpStatus": 200,
+      "heading": null,
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/operator/missions",
+      "label": "/operator/missions",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/operator/missions",
+      "httpStatus": 200,
+      "heading": null,
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/missions/2",
+      "label": "/missions/2",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/missions/2",
+      "httpStatus": 200,
+      "heading": "Kiểm tra bàn giao 1792166200843",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/access-control",
+      "label": "/access-control",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/access-control",
+      "httpStatus": 200,
+      "heading": "Quản lý người dùng và quyền",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=stations",
+      "label": "/operations?tab=stations",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/operations",
+      "httpStatus": 200,
+      "heading": "Vận hành tài nguyên",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=uavs",
+      "label": "/operations?tab=uavs",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/operations",
+      "httpStatus": 200,
+      "heading": "Vận hành tài nguyên",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=equipment",
+      "label": "/operations?tab=equipment",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/operations",
+      "httpStatus": 200,
+      "heading": "Vận hành tài nguyên",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=media",
+      "label": "/operations?tab=media",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/operations",
+      "httpStatus": 200,
+      "heading": "Vận hành tài nguyên",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=audit",
+      "label": "/operations?tab=audit",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/operations",
+      "httpStatus": 200,
+      "heading": "Vận hành tài nguyên",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/preview",
+      "label": "/preview",
+      "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
+      "resolvedPath": "/preview",
+      "httpStatus": 200,
+      "heading": "TRUNG TÂM CHỈ HUY BAY TỰ ĐỘNG UAV PAS\nVJU EDITION",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "operations",
+      "route": "/login",
+      "label": "/login",
+      "title": "UAV PAS · Vận hành",
+      "resolvedPath": "/login",
+      "httpStatus": 200,
+      "heading": "Chào mừng đến với UAV PAS",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/login",
+      "label": "/login",
+      "title": "Đăng nhập | UAV PAS Platform",
+      "resolvedPath": "/login",
+      "httpStatus": 200,
+      "heading": "Chào mừng đến với UAV PAS",
+      "runtimeErrors": [],
+      "status": "PASS"
+    },
+    {
+      "group": "legacy",
+      "route": "/register",
+      "label": "/register",
+      "title": "Đăng ký | UAV PAS Platform",
+      "resolvedPath": "/register",
+      "httpStatus": 200,
+      "heading": "Chào mừng đến với UAV PAS",
+      "runtimeErrors": [],
+      "status": "PASS"
+    }
+  ],
+  "captures": [
+    {
+      "group": "web",
+      "route": "/",
+      "label": "/",
+      "size": "desktop",
+      "file": "web/trang-chu-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/",
+      "label": "/",
+      "size": "mobile",
+      "file": "web/trang-chu-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/about",
+      "label": "/about",
+      "size": "desktop",
+      "file": "web/about-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/about",
+      "label": "/about",
+      "size": "mobile",
+      "file": "web/about-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/contact",
+      "label": "/contact",
+      "size": "desktop",
+      "file": "web/contact-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/contact",
+      "label": "/contact",
+      "size": "mobile",
+      "file": "web/contact-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/faq",
+      "label": "/faq",
+      "size": "desktop",
+      "file": "web/faq-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/faq",
+      "label": "/faq",
+      "size": "mobile",
+      "file": "web/faq-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/how-it-works",
+      "label": "/how-it-works",
+      "size": "desktop",
+      "file": "web/how-it-works-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/how-it-works",
+      "label": "/how-it-works",
+      "size": "mobile",
+      "file": "web/how-it-works-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/pricing",
+      "label": "/pricing",
+      "size": "desktop",
+      "file": "web/pricing-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/pricing",
+      "label": "/pricing",
+      "size": "mobile",
+      "file": "web/pricing-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/privacy",
+      "label": "/privacy",
+      "size": "desktop",
+      "file": "web/privacy-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/privacy",
+      "label": "/privacy",
+      "size": "mobile",
+      "file": "web/privacy-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/terms",
+      "label": "/terms",
+      "size": "desktop",
+      "file": "web/terms-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/terms",
+      "label": "/terms",
+      "size": "mobile",
+      "file": "web/terms-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/services",
+      "label": "/services",
+      "size": "desktop",
+      "file": "web/services-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/services",
+      "label": "/services",
+      "size": "mobile",
+      "file": "web/services-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/solutions",
+      "label": "/solutions",
+      "size": "desktop",
+      "file": "web/solutions-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/solutions",
+      "label": "/solutions",
+      "size": "mobile",
+      "file": "web/solutions-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/login",
+      "label": "/login",
+      "size": "desktop",
+      "file": "web/login-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/login",
+      "label": "/login",
+      "size": "mobile",
+      "file": "web/login-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/register",
+      "label": "/register",
+      "size": "desktop",
+      "file": "web/register-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/register",
+      "label": "/register",
+      "size": "mobile",
+      "file": "web/register-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/services/uav-rental",
+      "label": "/services/uav-rental",
+      "size": "desktop",
+      "file": "web/services-uav-rental-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/services/uav-rental",
+      "label": "/services/uav-rental",
+      "size": "mobile",
+      "file": "web/services-uav-rental-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/services/aerial-inspection",
+      "label": "/services/aerial-inspection",
+      "size": "desktop",
+      "file": "web/services-aerial-inspection-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/services/aerial-inspection",
+      "label": "/services/aerial-inspection",
+      "size": "mobile",
+      "file": "web/services-aerial-inspection-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/services/aerial-recording",
+      "label": "/services/aerial-recording",
+      "size": "desktop",
+      "file": "web/services-aerial-recording-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/services/aerial-recording",
+      "label": "/services/aerial-recording",
+      "size": "mobile",
+      "file": "web/services-aerial-recording-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/services/data-collection",
+      "label": "/services/data-collection",
+      "size": "desktop",
+      "file": "web/services-data-collection-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/services/data-collection",
+      "label": "/services/data-collection",
+      "size": "mobile",
+      "file": "web/services-data-collection-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/solutions/uav-rental",
+      "label": "/solutions/uav-rental",
+      "size": "desktop",
+      "file": "web/solutions-uav-rental-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/solutions/uav-rental",
+      "label": "/solutions/uav-rental",
+      "size": "mobile",
+      "file": "web/solutions-uav-rental-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/solutions/aerial-inspection",
+      "label": "/solutions/aerial-inspection",
+      "size": "desktop",
+      "file": "web/solutions-aerial-inspection-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/solutions/aerial-inspection",
+      "label": "/solutions/aerial-inspection",
+      "size": "mobile",
+      "file": "web/solutions-aerial-inspection-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/solutions/ai-detection",
+      "label": "/solutions/ai-detection",
+      "size": "desktop",
+      "file": "web/solutions-ai-detection-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/solutions/ai-detection",
+      "label": "/solutions/ai-detection",
+      "size": "mobile",
+      "file": "web/solutions-ai-detection-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/solutions/search-and-rescue",
+      "label": "/solutions/search-and-rescue",
+      "size": "desktop",
+      "file": "web/solutions-search-and-rescue-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "web",
+      "route": "/solutions/search-and-rescue",
+      "label": "/solutions/search-and-rescue",
+      "size": "mobile",
+      "file": "web/solutions-search-and-rescue-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/dashboard",
+      "label": "/dashboard",
+      "size": "desktop",
+      "file": "customer/dashboard-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/dashboard",
+      "label": "/dashboard",
+      "size": "mobile",
+      "file": "customer/dashboard-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/services",
+      "label": "/services",
+      "size": "desktop",
+      "file": "customer/services-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/services",
+      "label": "/services",
+      "size": "mobile",
+      "file": "customer/services-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/missions",
+      "label": "/missions",
+      "size": "desktop",
+      "file": "customer/missions-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/missions",
+      "label": "/missions",
+      "size": "mobile",
+      "file": "customer/missions-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/missions/create",
+      "label": "/missions/create",
+      "size": "desktop",
+      "file": "customer/missions-create-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/missions/create",
+      "label": "/missions/create",
+      "size": "mobile",
+      "file": "customer/missions-create-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/billing",
+      "label": "/billing",
+      "size": "desktop",
+      "file": "customer/billing-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/billing",
+      "label": "/billing",
+      "size": "mobile",
+      "file": "customer/billing-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "vju-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": "vju-thead-tr"
+          },
+          {
+            "tag": "TH",
+            "cls": "vju-th"
+          },
+          {
+            "tag": "TH",
+            "cls": "vju-th"
+          }
+        ]
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/notifications",
+      "label": "/notifications",
+      "size": "desktop",
+      "file": "customer/notifications-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/notifications",
+      "label": "/notifications",
+      "size": "mobile",
+      "file": "customer/notifications-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/profile",
+      "label": "/profile",
+      "size": "desktop",
+      "file": "customer/profile-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/profile",
+      "label": "/profile",
+      "size": "mobile",
+      "file": "customer/profile-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/missions/2",
+      "label": "/missions/2",
+      "size": "desktop",
+      "file": "customer/missions-2-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/missions/2",
+      "label": "/missions/2",
+      "size": "mobile",
+      "file": "customer/missions-2-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/missions/3",
+      "label": "/missions/3",
+      "size": "desktop",
+      "file": "customer/missions-3-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/missions/3",
+      "label": "/missions/3",
+      "size": "mobile",
+      "file": "customer/missions-3-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/missions/3/edit",
+      "label": "/missions/3/edit",
+      "size": "desktop",
+      "file": "customer/missions-3-edit-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/missions/3/edit",
+      "label": "/missions/3/edit",
+      "size": "mobile",
+      "file": "customer/missions-3-edit-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/profile",
+      "label": "ho-so-chinh-sua",
+      "size": "desktop",
+      "file": "customer/ho-so-chinh-sua-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/profile",
+      "label": "ho-so-chinh-sua",
+      "size": "mobile",
+      "file": "customer/ho-so-chinh-sua-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/dashboard",
+      "label": "/dashboard",
+      "size": "desktop",
+      "file": "admin/dashboard-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/dashboard",
+      "label": "/dashboard",
+      "size": "mobile",
+      "file": "admin/dashboard-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table w-full"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": "bg-slate-50/70 border-b border-slate-200"
+          },
+          {
+            "tag": "TH",
+            "cls": "py-3 px-4 text-xs font-semibold text-slate-600"
+          },
+          {
+            "tag": "TH",
+            "cls": "py-3 px-4 text-xs font-semibold text-slate-600"
+          }
+        ]
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/users",
+      "label": "/users",
+      "size": "desktop",
+      "file": "admin/users-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/users",
+      "label": "/users",
+      "size": "mobile",
+      "file": "admin/users-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/access-control",
+      "label": "/access-control",
+      "size": "desktop",
+      "file": "admin/access-control-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/access-control",
+      "label": "/access-control",
+      "size": "mobile",
+      "file": "admin/access-control-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/role-templates",
+      "label": "/role-templates",
+      "size": "desktop",
+      "file": "admin/role-templates-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/role-templates",
+      "label": "/role-templates",
+      "size": "mobile",
+      "file": "admin/role-templates-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/permissions",
+      "label": "/permissions",
+      "size": "desktop",
+      "file": "admin/permissions-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/permissions",
+      "label": "/permissions",
+      "size": "mobile",
+      "file": "admin/permissions-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/billing",
+      "label": "/billing",
+      "size": "desktop",
+      "file": "admin/billing-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/billing",
+      "label": "/billing",
+      "size": "mobile",
+      "file": "admin/billing-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "w-full text-left text-xs"
+          },
+          {
+            "tag": "THEAD",
+            "cls": "bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200"
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": "px-5 py-3"
+          },
+          {
+            "tag": "TH",
+            "cls": "px-5 py-3"
+          }
+        ]
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/reports",
+      "label": "/reports",
+      "size": "desktop",
+      "file": "admin/reports-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/reports",
+      "label": "/reports",
+      "size": "mobile",
+      "file": "admin/reports-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/settings",
+      "label": "/settings",
+      "size": "desktop",
+      "file": "admin/settings-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/settings",
+      "label": "/settings",
+      "size": "mobile",
+      "file": "admin/settings-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/webhooks",
+      "label": "/webhooks",
+      "size": "desktop",
+      "file": "admin/webhooks-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/webhooks",
+      "label": "/webhooks",
+      "size": "mobile",
+      "file": "admin/webhooks-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "w-full text-left text-xs"
+          },
+          {
+            "tag": "THEAD",
+            "cls": "bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200"
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": "px-5 py-3"
+          },
+          {
+            "tag": "TH",
+            "cls": "px-5 py-3"
+          }
+        ]
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/audit-logs",
+      "label": "/audit-logs",
+      "size": "desktop",
+      "file": "admin/audit-logs-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/audit-logs",
+      "label": "/audit-logs",
+      "size": "mobile",
+      "file": "admin/audit-logs-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/users/6",
+      "label": "/users/6",
+      "size": "desktop",
+      "file": "admin/users-6-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/users/6",
+      "label": "/users/6",
+      "size": "mobile",
+      "file": "admin/users-6-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/login",
+      "label": "/login",
+      "size": "desktop",
+      "file": "customer/login-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/login",
+      "label": "/login",
+      "size": "mobile",
+      "file": "customer/login-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/register",
+      "label": "/register",
+      "size": "desktop",
+      "file": "customer/register-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "customer",
+      "route": "/register",
+      "label": "/register",
+      "size": "mobile",
+      "file": "customer/register-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/login",
+      "label": "/login",
+      "size": "desktop",
+      "file": "admin/login-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "admin",
+      "route": "/login",
+      "label": "/login",
+      "size": "mobile",
+      "file": "admin/login-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/overview",
+      "label": "/overview",
+      "size": "desktop",
+      "file": "operations/overview-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/overview",
+      "label": "/overview",
+      "size": "mobile",
+      "file": "operations/overview-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/dispatch/missions",
+      "label": "/dispatch/missions",
+      "size": "desktop",
+      "file": "operations/dispatch-missions-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/dispatch/missions",
+      "label": "/dispatch/missions",
+      "size": "mobile",
+      "file": "operations/dispatch-missions-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/stations",
+      "label": "/stations",
+      "size": "desktop",
+      "file": "operations/stations-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/stations",
+      "label": "/stations",
+      "size": "mobile",
+      "file": "operations/stations-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "BUTTON",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/uavs",
+      "label": "/uavs",
+      "size": "desktop",
+      "file": "operations/uavs-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/uavs",
+      "label": "/uavs",
+      "size": "mobile",
+      "file": "operations/uavs-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TBODY",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/inventory",
+      "label": "/inventory",
+      "size": "desktop",
+      "file": "operations/inventory-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/inventory",
+      "label": "/inventory",
+      "size": "mobile",
+      "file": "operations/inventory-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "BUTTON",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/media",
+      "label": "/media",
+      "size": "desktop",
+      "file": "operations/media-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/media",
+      "label": "/media",
+      "size": "mobile",
+      "file": "operations/media-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table min-w-[680px]"
+          },
+          {
+            "tag": "THEAD",
+            "cls": "sticky top-0 z-10 bg-white"
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/maintenance",
+      "label": "/maintenance",
+      "size": "desktop",
+      "file": "operations/maintenance-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/maintenance",
+      "label": "/maintenance",
+      "size": "mobile",
+      "file": "operations/maintenance-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/notifications",
+      "label": "/notifications",
+      "size": "desktop",
+      "file": "operations/notifications-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/notifications",
+      "label": "/notifications",
+      "size": "mobile",
+      "file": "operations/notifications-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "BUTTON",
+            "cls": "px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer bg-white border b"
+          }
+        ]
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/audit",
+      "label": "/audit",
+      "size": "desktop",
+      "file": "operations/audit-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/audit",
+      "label": "/audit",
+      "size": "mobile",
+      "file": "operations/audit-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/sar-cockpit",
+      "label": "/sar-cockpit",
+      "size": "desktop",
+      "file": "operations/sar-cockpit-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": [
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]"
+          }
+        ]
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/sar-cockpit",
+      "label": "/sar-cockpit",
+      "size": "mobile",
+      "file": "operations/sar-cockpit-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]"
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]"
+          },
+          {
+            "tag": "path",
+            "cls": "[object SVGAnimatedString]"
+          },
+          {
+            "tag": "DIV",
+            "cls": "absolute top-1/4 left-1/3 w-64 h-32 bg-white/40 blur-2xl rounded-full pointer-events-none"
+          }
+        ]
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/missions/2",
+      "label": "/missions/2",
+      "size": "desktop",
+      "file": "operations/missions-2-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/missions/2",
+      "label": "/missions/2",
+      "size": "mobile",
+      "file": "operations/missions-2-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/maintenance",
+      "label": "bao-tri-tao-lich",
+      "size": "desktop",
+      "file": "operations/bao-tri-tao-lich-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/maintenance",
+      "label": "bao-tri-tao-lich",
+      "size": "mobile",
+      "file": "operations/bao-tri-tao-lich-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/maintenance",
+      "label": "phieu-sua-chua",
+      "size": "desktop",
+      "file": "operations/phieu-sua-chua-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/maintenance",
+      "label": "phieu-sua-chua",
+      "size": "mobile",
+      "file": "operations/phieu-sua-chua-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/maintenance",
+      "label": "phieu-sua-chua-chi-tiet",
+      "size": "desktop",
+      "file": "operations/phieu-sua-chua-chi-tiet-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/maintenance",
+      "label": "phieu-sua-chua-chi-tiet",
+      "size": "mobile",
+      "file": "operations/phieu-sua-chua-chi-tiet-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "operator",
+      "route": "/assigned-missions",
+      "label": "/assigned-missions",
+      "size": "desktop",
+      "file": "operator/assigned-missions-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operator",
+      "route": "/assigned-missions",
+      "label": "/assigned-missions",
+      "size": "mobile",
+      "file": "operator/assigned-missions-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "operator",
+      "route": "/missions/2",
+      "label": "/missions/2",
+      "size": "desktop",
+      "file": "operator/missions-2-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operator",
+      "route": "/missions/2",
+      "label": "/missions/2",
+      "size": "mobile",
+      "file": "operator/missions-2-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "operator",
+      "route": "/notifications",
+      "label": "/notifications",
+      "size": "desktop",
+      "file": "operator/notifications-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operator",
+      "route": "/notifications",
+      "label": "/notifications",
+      "size": "mobile",
+      "file": "operator/notifications-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "BUTTON",
+            "cls": "px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer bg-white border b"
+          }
+        ]
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/",
+      "label": "/",
+      "size": "desktop",
+      "file": "legacy/trang-chu-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/",
+      "label": "/",
+      "size": "mobile",
+      "file": "legacy/trang-chu-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": "whitespace-nowrap"
+          },
+          {
+            "tag": "TH",
+            "cls": "whitespace-nowrap"
+          }
+        ]
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/missions",
+      "label": "/missions",
+      "size": "desktop",
+      "file": "legacy/missions-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/missions",
+      "label": "/missions",
+      "size": "mobile",
+      "file": "legacy/missions-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/missions/create",
+      "label": "/missions/create",
+      "size": "desktop",
+      "file": "legacy/missions-create-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/missions/create",
+      "label": "/missions/create",
+      "size": "mobile",
+      "file": "legacy/missions-create-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/admin/missions",
+      "label": "/admin/missions",
+      "size": "desktop",
+      "file": "legacy/admin-missions-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/admin/missions",
+      "label": "/admin/missions",
+      "size": "mobile",
+      "file": "legacy/admin-missions-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/operator/missions",
+      "label": "/operator/missions",
+      "size": "desktop",
+      "file": "legacy/operator-missions-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/operator/missions",
+      "label": "/operator/missions",
+      "size": "mobile",
+      "file": "legacy/operator-missions-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/missions/2",
+      "label": "/missions/2",
+      "size": "desktop",
+      "file": "legacy/missions-2-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/missions/2",
+      "label": "/missions/2",
+      "size": "mobile",
+      "file": "legacy/missions-2-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/access-control",
+      "label": "/access-control",
+      "size": "desktop",
+      "file": "legacy/access-control-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/access-control",
+      "label": "/access-control",
+      "size": "mobile",
+      "file": "legacy/access-control-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=stations",
+      "label": "/operations?tab=stations",
+      "size": "desktop",
+      "file": "legacy/operations-tab-stations-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=stations",
+      "label": "/operations?tab=stations",
+      "size": "mobile",
+      "file": "legacy/operations-tab-stations-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=uavs",
+      "label": "/operations?tab=uavs",
+      "size": "desktop",
+      "file": "legacy/operations-tab-uavs-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=uavs",
+      "label": "/operations?tab=uavs",
+      "size": "mobile",
+      "file": "legacy/operations-tab-uavs-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=equipment",
+      "label": "/operations?tab=equipment",
+      "size": "desktop",
+      "file": "legacy/operations-tab-equipment-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=equipment",
+      "label": "/operations?tab=equipment",
+      "size": "mobile",
+      "file": "legacy/operations-tab-equipment-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=media",
+      "label": "/operations?tab=media",
+      "size": "desktop",
+      "file": "legacy/operations-tab-media-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=media",
+      "label": "/operations?tab=media",
+      "size": "mobile",
+      "file": "legacy/operations-tab-media-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table min-w-[680px]"
+          },
+          {
+            "tag": "THEAD",
+            "cls": "sticky top-0 z-10 bg-white"
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=audit",
+      "label": "/operations?tab=audit",
+      "size": "desktop",
+      "file": "legacy/operations-tab-audit-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/operations?tab=audit",
+      "label": "/operations?tab=audit",
+      "size": "mobile",
+      "file": "legacy/operations-tab-audit-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": ""
+          },
+          {
+            "tag": "BUTTON",
+            "cls": ""
+          }
+        ]
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/preview",
+      "label": "/preview",
+      "size": "desktop",
+      "file": "legacy/preview-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/preview",
+      "label": "/preview",
+      "size": "mobile",
+      "file": "legacy/preview-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": [
+          {
+            "tag": "TABLE",
+            "cls": "console-table"
+          },
+          {
+            "tag": "THEAD",
+            "cls": ""
+          },
+          {
+            "tag": "TR",
+            "cls": ""
+          },
+          {
+            "tag": "TH",
+            "cls": "sm:whitespace-nowrap"
+          },
+          {
+            "tag": "TH",
+            "cls": "sm:whitespace-nowrap"
+          }
+        ]
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/login",
+      "label": "/login",
+      "size": "desktop",
+      "file": "operations/login-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "operations",
+      "route": "/login",
+      "label": "/login",
+      "size": "mobile",
+      "file": "operations/login-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/login",
+      "label": "/login",
+      "size": "desktop",
+      "file": "legacy/login-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/login",
+      "label": "/login",
+      "size": "mobile",
+      "file": "legacy/login-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/register",
+      "label": "/register",
+      "size": "desktop",
+      "file": "legacy/register-desktop.png",
+      "width": 1440,
+      "overflow": false,
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "wide": []
+      }
+    },
+    {
+      "group": "legacy",
+      "route": "/register",
+      "label": "/register",
+      "size": "mobile",
+      "file": "legacy/register-mobile.png",
+      "width": 375,
+      "overflow": false,
+      "dimensions": {
+        "width": 375,
+        "scrollWidth": 375,
+        "wide": []
+      }
+    }
+  ],
+  "errors": [],
+  "consoleMessages": [
+    {
+      "label": "operations",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "operations",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "operations",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "operator",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "operator",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "legacy",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "legacy",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    }
+  ],
+  "network": [
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "operations",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "operations",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/dashboard/missions",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/dashboard/summary",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/audit-logs",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/missions/2/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/missions/2/timeline",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/missions/2/media",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/maintenance/schedules",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders",
+      "status": 200
+    },
+    {
+      "label": "operations",
+      "method": "GET",
+      "path": "/api/v1/maintenance/orders/1",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "operator",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "operator",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/2/dispatch-resources",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/2/media",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/missions/2/timeline",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "legacy",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "legacy",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/dashboard/missions",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/dashboard/summary",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/missions/2",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/missions/2/media",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/missions/2/timeline",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/users",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/role-templates",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/audit-logs",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "legacy",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    }
+  ]
+}

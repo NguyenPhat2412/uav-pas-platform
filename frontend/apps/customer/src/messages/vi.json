@@ -1,0 +1,48 @@
+{
+  "common": {
+    "appTitle": "UAV PAS Customer Portal",
+    "language": "Ngôn ngữ",
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "japanese": "日本語",
+    "loading": "Đang tải...",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "retry": "Thử lại",
+    "back": "Quay lại",
+    "close": "Đóng",
+    "logout": "Đăng xuất",
+    "status": "Trạng thái",
+    "skipToContent": "Bỏ qua tới nội dung",
+    "authenticating": "Đang xác thực...",
+    "checkingPermissions": "Đang kiểm tra quyền...",
+    "permissionError": "Không thể kiểm tra quyền truy cập.",
+    "permissionDenied": "Tài khoản chưa được cấp quyền cho chức năng này."
+  },
+  "nav": {
+    "dashboard": "Tổng quan",
+    "services": "Dịch vụ UAV",
+    "missions": "Nhiệm vụ của tôi",
+    "billing": "Gói cước & Hóa đơn",
+    "notifications": "Thông báo",
+    "profile": "Tài khoản",
+    "portalTitle": "Customer Portal"
+  },
+  "billing": {
+    "title": "Gói Cước & Quota Vận Hành",
+    "subtitle": "Theo dõi hạn mức giờ bay, UAV đồng thời và quản trị thanh toán hóa đơn dịch vụ",
+    "currentPlan": "Gói Cước Đang Sử Dụng",
+    "flightHours": "Giờ bay tháng",
+    "concurrentUavs": "UAV đồng thời",
+    "unpaidInvoices": "Hóa đơn chờ thanh toán",
+    "payNow": "Thanh toán ngay",
+    "vietQrTitle": "Thanh toán qua VietQR"
+  },
+  "notifications": {
+    "title": "Trung Tâm Thông Báo",
+    "subtitle": "Thông báo tiến độ bay, cập nhật hóa đơn và cảnh báo hệ thống",
+    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "noNotifications": "Chưa có thông báo nào"
+  }
+}

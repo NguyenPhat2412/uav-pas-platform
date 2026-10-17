@@ -1,0 +1,558 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Operations and legacy media libraries login and show shared limits",
+      "status": "PASS"
+    },
+    {
+      "name": "3312 actual cross-origin PDF upload, preview, byte-equal download and explicit deletion",
+      "status": "PASS",
+      "detail": {
+        "origin": "http://localhost:3312",
+        "putStatus": 200,
+        "contentLength": 1425
+      }
+    },
+    {
+      "name": "3330 actual cross-origin PDF upload, preview, byte-equal download and explicit deletion",
+      "status": "PASS",
+      "detail": {
+        "origin": "http://localhost:3330",
+        "putStatus": 200,
+        "contentLength": 1425
+      }
+    },
+    {
+      "name": "Wrong PDF bytes remain unconfirmed with visible error; deletion and a new valid upload recover",
+      "status": "PASS"
+    },
+    {
+      "name": "Expired unconfirmed record returns real409 in browser and is removable",
+      "status": "PASS"
+    },
+    {
+      "name": "No JavaScript runtime errors or server5xx in media-library checks",
+      "status": "PASS"
+    }
+  ],
+  "network": [
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Operations media library",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "Operations media library",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/uavs",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy media library",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Legacy media library",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Legacy media library",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "Legacy media library",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Legacy media library",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy media library",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy media library",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy media library",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Legacy media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "POST",
+      "path": "/api/v1/media",
+      "status": 201
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media/13/upload-url",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "POST",
+      "path": "/api/v1/media/13/confirm",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media/13/download-url",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "DELETE",
+      "path": "/api/v1/media/13",
+      "status": 204
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/13/download-url",
+      "status": 404
+    },
+    {
+      "label": "Legacy media library",
+      "method": "POST",
+      "path": "/api/v1/media",
+      "status": 201
+    },
+    {
+      "label": "Legacy media library",
+      "method": "GET",
+      "path": "/api/v1/media/14/upload-url",
+      "status": 200
+    },
+    {
+      "label": "Legacy media library",
+      "method": "POST",
+      "path": "/api/v1/media/14/confirm",
+      "status": 200
+    },
+    {
+      "label": "Legacy media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "Legacy media library",
+      "method": "GET",
+      "path": "/api/v1/media/14/download-url",
+      "status": 200
+    },
+    {
+      "label": "Legacy media library",
+      "method": "DELETE",
+      "path": "/api/v1/media/14",
+      "status": 204
+    },
+    {
+      "label": "Legacy media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/14/download-url",
+      "status": 404
+    },
+    {
+      "label": "Operations media library",
+      "method": "POST",
+      "path": "/api/v1/media",
+      "status": 201
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media/15/upload-url",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "POST",
+      "path": "/api/v1/media/15/confirm",
+      "status": 409
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "DELETE",
+      "path": "/api/v1/media/15",
+      "status": 204
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "POST",
+      "path": "/api/v1/media",
+      "status": 201
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media/16/upload-url",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "POST",
+      "path": "/api/v1/media/16/confirm",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "DELETE",
+      "path": "/api/v1/media/16",
+      "status": 204
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "POST",
+      "path": "/api/v1/media",
+      "status": 201
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media/17/upload-url",
+      "status": 200
+    },
+    {
+      "label": "Operations media library",
+      "method": "POST",
+      "path": "/api/v1/media/17/confirm",
+      "status": 409
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/media/17/upload-url",
+      "status": 409
+    },
+    {
+      "label": "Operations media library",
+      "method": "DELETE",
+      "path": "/api/v1/media/17",
+      "status": 204
+    },
+    {
+      "label": "Operations media library",
+      "method": "GET",
+      "path": "/api/v1/media",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "Operations media library",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Operations media library",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Operations media library",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Operations media library",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "Legacy media library",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Legacy media library",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Legacy media library",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "Operations media library",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    },
+    {
+      "label": "Operations media library",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 409 ()"
+    }
+  ],
+  "requestFailures": [
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/uavs",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/stations",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/notifications",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/notifications/unread-count",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/notifications",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/notifications/unread-count",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/media",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Legacy media library",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Legacy media library",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Legacy media library",
+      "path": "/api/v1/uavs",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Legacy media library",
+      "path": "/api/v1/stations",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Legacy media library",
+      "path": "/api/v1/media",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/media/13",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Legacy media library",
+      "path": "/api/v1/media/14",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/media/15",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/media/16",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operations media library",
+      "path": "/api/v1/media/17",
+      "error": "ABORTED"
+    }
+  ]
+}

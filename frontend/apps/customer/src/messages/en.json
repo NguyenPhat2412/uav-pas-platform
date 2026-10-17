@@ -1,0 +1,48 @@
+{
+  "common": {
+    "appTitle": "UAV PAS Customer Portal",
+    "language": "Language",
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "japanese": "日本語",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "retry": "Retry",
+    "back": "Back",
+    "close": "Close",
+    "logout": "Sign out",
+    "status": "Status",
+    "skipToContent": "Skip to content",
+    "authenticating": "Authenticating...",
+    "checkingPermissions": "Checking permissions...",
+    "permissionError": "Unable to verify access permissions.",
+    "permissionDenied": "This account has not been granted permission for this action."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "services": "UAV Services",
+    "missions": "My Missions",
+    "billing": "Plans & Billing",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "portalTitle": "Customer Portal"
+  },
+  "billing": {
+    "title": "Service Plans & Operational Quota",
+    "subtitle": "Track monthly flight hours, concurrent UAV limits, and manage invoice payments",
+    "currentPlan": "Active Subscription Plan",
+    "flightHours": "Monthly flight hours",
+    "concurrentUavs": "Concurrent UAVs",
+    "unpaidInvoices": "Pending invoices",
+    "payNow": "Pay now",
+    "vietQrTitle": "Pay via VietQR"
+  },
+  "notifications": {
+    "title": "Notification Center",
+    "subtitle": "Mission flight milestones, invoice notices, and system alerts",
+    "markAllRead": "Mark all as read",
+    "noNotifications": "No notifications yet"
+  }
+}

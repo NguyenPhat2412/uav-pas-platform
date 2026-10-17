@@ -4,17 +4,19 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.UUID;
+
+import javax.crypto.SecretKey;
 
 @Component
 public class JwtTokenProvider {
@@ -31,11 +33,12 @@ public class JwtTokenProvider {
     public JwtTokenProvider(
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.expiration-ms:" + DEFAULT_EXPIRATION_MS + "}") long expirationMs,
-            @Value("${app.jwt.refresh-expiration-ms:" + DEFAULT_REFRESH_EXPIRATION_MS + "}") long refreshExpirationMs
-    ) {
+            @Value("${app.jwt.refresh-expiration-ms:" + DEFAULT_REFRESH_EXPIRATION_MS + "}")
+                    long refreshExpirationMs) {
         this.expirationMs = expirationMs;
         this.refreshExpirationMs = refreshExpirationMs;
-        if (secret == null || secret.isBlank()) throw new IllegalStateException("APP_JWT_SECRET must be configured");
+        if (secret == null || secret.isBlank())
+            throw new IllegalStateException("APP_JWT_SECRET must be configured");
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
 
         if (keyBytes.length < 32) {
@@ -65,7 +68,8 @@ public class JwtTokenProvider {
         return generateToken(userId, username, email, "ROLE_PILOT", validityMs);
     }
 
-    public String generateToken(Long userId, String username, String email, String role, long validityMs) {
+    public String generateToken(
+            Long userId, String username, String email, String role, long validityMs) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + validityMs);
 
@@ -82,11 +86,7 @@ public class JwtTokenProvider {
     }
 
     public Claims getClaimsFromToken(String token) {
-        return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
     }
 
     public String getUsernameFromToken(String token) {
@@ -118,7 +118,8 @@ public class JwtTokenProvider {
             if (id != null && !id.isBlank()) {
                 return id;
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         // Fallback: SHA-256 hash of token string
         try {
@@ -143,10 +144,7 @@ public class JwtTokenProvider {
             return false;
         }
         try {
-            Jwts.parser()
-                    .verifyWith(key)
-                    .build()
-                    .parseSignedClaims(token);
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             log.warn("Invalid JWT token: {}", e.getMessage());

@@ -1,4 +1,17 @@
+# Kiểm thử hiện tại — 17/10/2026
+
+Bản backend cuối726 tests/0failure/0error/0skip,445 sourcehashes không drift; contracts151. Workspace151 và legacy10;9 frontend gates PASS. Post-refactor browser14 handover+6webhook/SAR+6media và15auth PASS. Portable16browser/12runner thuộc bản frozen725 riêng, không gộp vào bản refactor.
+
+Xem [báo cáo hiện tại và bảng PASS/FAIL/BLOCKED](M6_FULL_PRIORITIES_2026_10_17.md) và [index evidence](evidence/tests/full-priorities-20261017/README.md). Các giới hạn có trong báo cáo hiện tại được giữ nguyên; không suy từ kết quả local thành production-ready.
+
+<details>
+<summary>Hồ sơ lịch sử trước 17/10/2026 — không phải trạng thái hiện tại</summary>
+
+Những tiêu đề “mới nhất”, số test, cấu trúc thư mục và trạng thái auth trong phần lưu trữ dưới đây chỉ đúng tại ngày/bản nguồn được ghi. Báo cáo hiện tại phía trên có ưu tiên khi đọc trạng thái hôm nay.
+
 # M6 test report
+
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
 
 ## Hồ sơ khách hàng — 2026-10-16 (mới nhất)
 
@@ -84,3 +97,6 @@ Local authenticated mission UI now passes 23 checks, with 5 negative checks and 
 - Current Codex Security scan `3b9f81ce-188c-4aa8-ad16-4d0be497515c` is complete with 0 reportable findings in 5 reviewed surfaces, but coverage is partial (827 files) and is not a clean full-repository attestation.
 
 Evidence files are in evidence/tests/, evidence/runtime/ and evidence/screenshots/.
+
+
+</details>

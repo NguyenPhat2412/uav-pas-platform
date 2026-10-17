@@ -1,12 +1,15 @@
 package com.uav.platform.security.jwt;
 
-import com.uav.platform.modules.user.service.InvalidatedTokenService;
-import com.uav.platform.modules.user.repository.UserRepository;
+import com.uav.platform.modules.auth.service.InvalidatedTokenService;
 import com.uav.platform.modules.user.entity.AppUser;
+import com.uav.platform.modules.user.repository.UserRepository;
+import com.uav.platform.security.AuthCookieHelper;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,28 +28,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final InvalidatedTokenService invalidatedTokenService;
     private final UserRepository userRepository;
+    private final AuthCookieHelper authCookieHelper;
 
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
-        this(jwtTokenProvider, null, null);
+        this(jwtTokenProvider, null, null, null);
     }
 
     @Autowired
     public JwtAuthenticationFilter(
             JwtTokenProvider jwtTokenProvider,
             @Autowired(required = false) InvalidatedTokenService invalidatedTokenService,
-            @Autowired(required = false) UserRepository userRepository
-    ) {
+            @Autowired(required = false) UserRepository userRepository,
+            @Autowired(required = false) AuthCookieHelper authCookieHelper) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.invalidatedTokenService = invalidatedTokenService;
         this.userRepository = userRepository;
+        this.authCookieHelper = authCookieHelper;
     }
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         String token = resolveToken(request);
 
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
@@ -59,16 +62,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String role = jwtTokenProvider.getRoleFromToken(token);
             if (userRepository != null) {
                 AppUser currentUser = userRepository.findByUsername(username).orElse(null);
-                if (currentUser == null || !currentUser.isEnabled() || !currentUser.isAccountNonLocked()) {
+                if (currentUser == null
+                        || !currentUser.isEnabled()
+                        || !currentUser.isAccountNonLocked()) {
                     filterChain.doFilter(request, response);
                     return;
                 }
                 // Resolve role from current state so role changes invalidate stale authorities.
                 role = currentUser.getRole() != null ? currentUser.getRole().name() : role;
             }
-            List<SimpleGrantedAuthority> authorities = StringUtils.hasText(role)
-                    ? List.of(new SimpleGrantedAuthority(role))
-                    : java.util.Collections.emptyList();
+            List<SimpleGrantedAuthority> authorities =
+                    StringUtils.hasText(role)
+                            ? List.of(new SimpleGrantedAuthority(role))
+                            : java.util.Collections.emptyList();
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(username, null, authorities);
@@ -81,8 +87,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.trim().regionMatches(true, 0, "Bearer ", 0, 7)) {
+        if (StringUtils.hasText(bearerToken)
+                && bearerToken.trim().regionMatches(true, 0, "Bearer ", 0, 7)) {
             return bearerToken.trim().substring(7).trim();
+        }
+        if (authCookieHelper != null) {
+            String cookieToken = authCookieHelper.resolveAccessToken(request);
+            if (StringUtils.hasText(cookieToken)) {
+                return cookieToken.trim();
+            }
         }
         return null;
     }

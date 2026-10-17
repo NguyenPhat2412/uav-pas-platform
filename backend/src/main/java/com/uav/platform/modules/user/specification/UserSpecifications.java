@@ -1,11 +1,9 @@
 package com.uav.platform.modules.user.specification;
 
-
-import com.uav.platform.modules.user.common.*;
-
 import com.uav.platform.modules.user.entity.AppUser;
-import com.uav.platform.modules.user.common.UserRole;
-import com.uav.platform.modules.user.common.UserStatus;
+import com.uav.platform.modules.user.enums.UserRole;
+import com.uav.platform.modules.user.enums.UserStatus;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
@@ -34,9 +32,7 @@ public final class UserSpecifications {
                     cb.like(cb.lower(root.get("email")), pattern),
                     cb.and(
                             cb.isNotNull(root.get("fullName")),
-                            cb.like(cb.lower(root.get("fullName")), pattern)
-                    )
-            );
+                            cb.like(cb.lower(root.get("fullName")), pattern)));
         };
     }
 
@@ -63,8 +59,7 @@ public final class UserSpecifications {
             if (from != null && to != null) {
                 return cb.and(
                         cb.greaterThanOrEqualTo(root.get("createdAt"), from),
-                        cb.lessThan(root.get("createdAt"), to)
-                );
+                        cb.lessThan(root.get("createdAt"), to));
             }
             return from != null
                     ? cb.greaterThanOrEqualTo(root.get("createdAt"), from)

@@ -1,20 +1,20 @@
 package com.uav.platform.modules.user.repository;
 
-
-import com.uav.platform.modules.user.common.*;
-
 import com.uav.platform.modules.user.entity.AppUser;
+
+import jakarta.persistence.LockModeType;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
-import jakarta.persistence.LockModeType;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<AppUser, Long>, JpaSpecificationExecutor<AppUser> {
+public interface UserRepository
+        extends JpaRepository<AppUser, Long>, JpaSpecificationExecutor<AppUser> {
 
     boolean existsByEmail(String email);
 
@@ -35,5 +35,4 @@ public interface UserRepository extends JpaRepository<AppUser, Long>, JpaSpecifi
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from AppUser u where u.id = :id")
     Optional<AppUser> findByIdForUpdate(Long id);
-
 }

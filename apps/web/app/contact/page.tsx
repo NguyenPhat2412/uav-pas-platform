@@ -1,4 +1,0 @@
-import { pageMetadata } from '../../src/content/metadata';
-export const metadata = pageMetadata("Contact and service requests", "Continue through the supported Customer Portal request flow. Public contact intake is not yet configured.", "/contact", true);
-import { PublicPage, CustomerCta } from '../../src/components/public-page';
-export default function ContactPage(){return <PublicPage eyebrow="Contact" title="Start with the mission context you already have." intro="There is no verified public contact address or intake endpoint configured on this site yet."><div className="page-copy"><p>For a service request, use the Customer Portal so the information reaches the supported workflow. For general product context, the public pages and FAQ are the current source of truth.</p><CustomerCta/></div></PublicPage>}

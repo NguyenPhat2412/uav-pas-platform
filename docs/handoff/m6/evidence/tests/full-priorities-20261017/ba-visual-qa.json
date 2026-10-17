@@ -1,0 +1,671 @@
+{
+  "status": "PASS",
+  "pageCount": 94,
+  "renderDpi": 120,
+  "reviewedPages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94
+  ],
+  "method": "Every page displayed individually in sequential image batches at original resolution; prior inspected pages 1–36 hash-compared after final render; changed TOC page 2 redisplayed. No contact-sheet-only acceptance.",
+  "findings": [],
+  "geometryIssues": [],
+  "pdfSha256": "ea9d8b7a7902b691b39e5319b8f467f1f9e64a7bb793066db9a9ec759f15e744",
+  "pages": [
+    {
+      "page": 1,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "cba518d1a22b7848fd4dc36eebba1a724c127925dd899d8b45ab5b8bb59d9a2d"
+    },
+    {
+      "page": 2,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "6353085f27e5f2ffa4490fff27a7ab3f995aff7571cfd87c393678e681e1d00e"
+    },
+    {
+      "page": 3,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "fadc0fced62c158a4d8cb2388715bbbeadbb2840f0bb59f75cec34febf20f940"
+    },
+    {
+      "page": 4,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "8b458bb2edce137d5210f1bc171dc02b4adfae693905e23ed5c9b34bc35a291c"
+    },
+    {
+      "page": 5,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "3f0adad189ccabca653b9c82f7b62a409bc16cf9db69f7f0a6bd97c68cde94fa"
+    },
+    {
+      "page": 6,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "1dca7f0532ee8b671add5f4bc27c52a9281824a2460ade8a58b31268e9189a8d"
+    },
+    {
+      "page": 7,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "bc2cc2119ad2b1cb8ed51cd8b6bda25e06b404811ba9cfe08ec4e5d1aa275872"
+    },
+    {
+      "page": 8,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "4a3cd330610641b43aef6090e7f58824f12912f41ef22fb0557d830cf19693c6"
+    },
+    {
+      "page": 9,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "5c5313d06106f263194cff42fde32226893482688e772807608e2f2635924f31"
+    },
+    {
+      "page": 10,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "e9e5c1911a8c110779789fb8cbd97a24571c8e636dd2d8fa88aa3d9911cd73c4"
+    },
+    {
+      "page": 11,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "0f455303a61a7a25645c0a026470cb97b60bad9776528d688799dc32b08881d4"
+    },
+    {
+      "page": 12,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "513cc477305ae5ba157a38aa989f6aea4502c44e23d9b8c46ead0ff88e7f4fc0"
+    },
+    {
+      "page": 13,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "a0b2cd5fcd5164e9bc9a59606a4e91d4e9d0d956973ee9b2de64c81df9b6d675"
+    },
+    {
+      "page": 14,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "521e7337a4e17b498d36becff4df86e0a370fbef6e10955226e4eb144a3ddc22"
+    },
+    {
+      "page": 15,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "a6af005ff2e229949cbb165db22fca250ccdafc73a4d4f0f4b659f2f8e63bde9"
+    },
+    {
+      "page": 16,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "f3953cb0162987f4ca46afff855daf3adbb3a55623d92d8f886e11deec43f93c"
+    },
+    {
+      "page": 17,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "66bba358d161ce613921340b88cb5e019a45d32e1dd200ba6db67643e60a77fc"
+    },
+    {
+      "page": 18,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "03944a96a1c24a00f1681c6442f3270114a700199eb6c2163e5e4ba7b533873a"
+    },
+    {
+      "page": 19,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "c206c79893d7a3b90ca290577e46aca4d495eb6e66c84488fa897a1788c692a3"
+    },
+    {
+      "page": 20,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "64794048a01d6b08e8f04ed3e9594fb9c7a33226bdf04c0efee18fdc0cfd739c"
+    },
+    {
+      "page": 21,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "cb98a48653dcf3ec050fc1f2c1bb4424bf7ac10fb007cf861e10fe8f6fc2a7e8"
+    },
+    {
+      "page": 22,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "b27a26171a2aea11c1f34062961a0e2659ccf185924dd4ea131348ea7062ade2"
+    },
+    {
+      "page": 23,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "500db8dce9372e30cf4315813ed83e02f760821969533cc9b18f17f58f79f46b"
+    },
+    {
+      "page": 24,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "4b0d974ba64bec2c58f8ce08343d4aea37d3ae447b6d4153465d6aea5cc2639c"
+    },
+    {
+      "page": 25,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "de180e1742e069791cc743b0f7af810016a1f79d91a223609f87832c4af558f4"
+    },
+    {
+      "page": 26,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "46f40a8f062ccae6c38d4db180861306ec26ee92faeed7456ad21d02c96c7447"
+    },
+    {
+      "page": 27,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "44d5197b383fcdd76c97c0bd8a0b41484e3daa61f6567124bec6db692923e839"
+    },
+    {
+      "page": 28,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "727b6f7736369c2bbca333d6e033725cf66bf4b99821b0e31794fa42a838dc2e"
+    },
+    {
+      "page": 29,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "1e5c4294acb5e43b01d73cb957c3dbac2af8630f9f8883bdc472e2fb555406a3"
+    },
+    {
+      "page": 30,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "6c772723e6096b25a863243be0ffc374e0b4e00f9aec94abfdc0d8cecca1c3af"
+    },
+    {
+      "page": 31,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "57fa743d07de9aba69806de0ea47907bdf279bb8e4bba4086e578b1eaaab76c2"
+    },
+    {
+      "page": 32,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "bbefc3b86b3ec1a513b1ef63e344ca841863174b27a4562f5132067f09a77a25"
+    },
+    {
+      "page": 33,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "ca967076dbeac857a012e96f9bb589ed8065a958536cf16b99bb968a4a9b621e"
+    },
+    {
+      "page": 34,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "cd48e8fa7245eb9a472ed89ce1a6a450daf5f0a910d971353d2430fc51ec027b"
+    },
+    {
+      "page": 35,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "7c6ebbf2fde2e8af036c9cf6738ee8206085dddd475ff00562391f061acef1f9"
+    },
+    {
+      "page": 36,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "9854ba9c790eb0a939d1404896caa8f734d7a3f77e2c0e1d8c5ad3947c780899"
+    },
+    {
+      "page": 37,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "0221742123f6a37ac65629cd37f6d6bac3324a818e6bc53defd7d61fc62cc127"
+    },
+    {
+      "page": 38,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "a6229443a89b0771b534dd2875e7104cd3a2d84be1deea7e53fdf6eefc434a39"
+    },
+    {
+      "page": 39,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "7b3dd9dce1da3eb0a8b0da83c0ee23e9ca1ad2ce80349a60a52e199e57d479df"
+    },
+    {
+      "page": 40,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "0da52b59bfce10536ae7f1c99e0217669bd1917e6e58fd31a020ede0bd0af1ac"
+    },
+    {
+      "page": 41,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "d15fbc570066d49a94e5b40658f5f13a7981456b598b6fb4d7af7485a2f1915c"
+    },
+    {
+      "page": 42,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "1e77c46134202854f169401ebd56ff1aeb62119f12a582a8027648b02d430dee"
+    },
+    {
+      "page": 43,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "d11e25bf7b188eeefb729228a1565a51f85414198eb89d668faf5d2548fb7b96"
+    },
+    {
+      "page": 44,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "a4d1026947f047f49e6edbaab12781d241d7b55df320d5e257515c46437832bf"
+    },
+    {
+      "page": 45,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "90f8f4550d43a99560098896d79ca69be05d4e0d768cc27b09a5c30c43da6ea8"
+    },
+    {
+      "page": 46,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "279950441fe1ae290a12430782d5cb69217cf278d68fbfc55a714aee82903704"
+    },
+    {
+      "page": 47,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "37861c8860a2c07cfc29456e2bb2cfd9d7027d50b9a1b94a44143a9cb4552f70"
+    },
+    {
+      "page": 48,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "98cfe294f64fcf299c736cd118f4d914eea54e11e814376a5fd938ccb2609c0d"
+    },
+    {
+      "page": 49,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "b16734aa07b1210b81ba7fe05564d82a1c7485cf5904488e5323e71e8912886f"
+    },
+    {
+      "page": 50,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "811f9a19b4b4ac629686fae1ed29833f1f22b106038c06cf50fb9b002dec072a"
+    },
+    {
+      "page": 51,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "fb14a669fad4cfeb05c359d879a258dbc85ee3d5ae4a5ae3121db25dbe980ac2"
+    },
+    {
+      "page": 52,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "ccdb4759ab2f9aae16fd0bc7b4148290e8b500da2be820dd47d95bfcb491720d"
+    },
+    {
+      "page": 53,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "1cc6e349c14aba7e01ff82d1e6556827d95770490cf9cbf555da5b8d1e9120f8"
+    },
+    {
+      "page": 54,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "006595d6a0b22fbe68fe46073a661cbf24add97079393273dcc04ece18806489"
+    },
+    {
+      "page": 55,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "be22ef40b06b5d4d48658802b253a8454c4eadc63eb9c2d46e9e74cdd486c1a1"
+    },
+    {
+      "page": 56,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "168ea7031fa720a935ad22dc1a83e23a2e7ba7ef346bd35be5e1520a9c79ec9a"
+    },
+    {
+      "page": 57,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "d68d6c409e115443994b07f4daca2634fac3e43dc3047faa18a2a44c6c8ab64d"
+    },
+    {
+      "page": 58,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "30d6648ddb60653f5874756d2aac1b4fe44bc8dfb0193161b3798733abbbbcba"
+    },
+    {
+      "page": 59,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "b27d6719c3cb511672905a0329607e8cf55aef6c90e583b26d91bda07287bd73"
+    },
+    {
+      "page": 60,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "70c103b119fc1100f2849370e674532c2e0d6cd1ecabb142055f05e4d755e9c4"
+    },
+    {
+      "page": 61,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "e3e25afa6942af54abe1385d889856e40ba6e36b450064991e7ef9c84d463f14"
+    },
+    {
+      "page": 62,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "39b6d64968f3596316f05257f1a405c95c8ff41a137ab1cb36f7374d37b59aef"
+    },
+    {
+      "page": 63,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "1a09de8f8152910f405a0503bb90e55670d4c2fe110b219507ae9a0a70bb2a2d"
+    },
+    {
+      "page": 64,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "5e2ad1a36826cf83f6525f39491add8868e04f156f8dbc012860821ee87d725e"
+    },
+    {
+      "page": 65,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "04f44d84368a46a4bc945aad68c3e095156090083816d13ad4a28f1d52687d3e"
+    },
+    {
+      "page": 66,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "f1bf56a0152abfa7d17f0988825e3c7a2641a18dbb742a30647d11567008042d"
+    },
+    {
+      "page": 67,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "70c38ef53beced0d406fdb4ace31213acca4e8cadcfd293f41cbe83e3240a31a"
+    },
+    {
+      "page": 68,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "f7034c4a8c492b45a65cb4877b590da87446c904f096d460d8257bdd898a5fb1"
+    },
+    {
+      "page": 69,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "b74cbc3b858200bf89073a8e9ffb08389220adcc17f6baea04cc1aa581d1a6e6"
+    },
+    {
+      "page": 70,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "d2b5d36ce7ce879fdddb2a7d0f6d625b7786a8fbd8a786261357557db03bc609"
+    },
+    {
+      "page": 71,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "d728cefe0912f1494c717d965ee0775d9977b60429d7c48c5efae9b691e8e39a"
+    },
+    {
+      "page": 72,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "86a99e7b92d0a2776aba5cca3f4096ff3629d1fb8f9233e8eb0762494e7fbcff"
+    },
+    {
+      "page": 73,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "e686f1c203d2cdb61b639d627417bc0340fee4bb5f8873683f8edb84fb7acec5"
+    },
+    {
+      "page": 74,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "d12a22901920fd189bf2d1f4c1e016d0841da15c7c8236d4f574b6df13e98db9"
+    },
+    {
+      "page": 75,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "c201a11d9f7653a34464c657d71fc3b853ea7a828a7d1b40269d79726d5e058b"
+    },
+    {
+      "page": 76,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "e5b0d0c71159a4fb98710ab0b23ed0fa262398cee34a1982ccc66f953a917aed"
+    },
+    {
+      "page": 77,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "3669b5ac2cafec8d3e491375fa58535d295295c97c960d66fe7d4be3be7de72e"
+    },
+    {
+      "page": 78,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "b0f9add5fe06a9bcdf7a4c37f1eb4281fd9f5dd86474f5419dc92590264aa9b3"
+    },
+    {
+      "page": 79,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "2cf09a9ad1cfc1525825a58abd13c7a97a1bd26546e1d5c33bac4370a786a932"
+    },
+    {
+      "page": 80,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "0e8d40c14c1ede47c867e6a2ad0884ebe3ccc8a3c24f9d7203b8f763de4b8dcf"
+    },
+    {
+      "page": 81,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "1cff05be1af92d282a10fb40fee2ffa755b48881344efc388819e52d5277e138"
+    },
+    {
+      "page": 82,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "c81406d940d6a28c7b73606a9b0fa57d8f0f9b1616b932665cb6538dfc91a513"
+    },
+    {
+      "page": 83,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "2f288a3fba268d4ccb0fc7778f34ed6ce4a481c3a9b88497204b5fe2939d194a"
+    },
+    {
+      "page": 84,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "e5fbca26981659a4feeaa8f8e7f0f5b901cbbbacf3bfc6fbab2ad3db5cdaf9c5"
+    },
+    {
+      "page": 85,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "d62619ea280ce175f7d899fe771702ae9767049b7811b72d25b996d29ee3d4ae"
+    },
+    {
+      "page": 86,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "6ca80ac7689496b1daa0dd3d4f6701b822eab0511efab5c090e3688d716f70f4"
+    },
+    {
+      "page": 87,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "43736105c9bbec57d2d7ed0cbaac2ab8d9a4239232ef9466e11d0275bb4b2e73"
+    },
+    {
+      "page": 88,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "bef0893dadda39785ed0df042c3674b487a094b06fcb4fb29692c9f7d8cc5a16"
+    },
+    {
+      "page": 89,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "e3ef10e296b82e7c3e645e88d2e2332e109fba61983b15037877a49e3fcf09b5"
+    },
+    {
+      "page": 90,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "1ffdb790a46ee5e895e20e8fc5a92df45d11cc621336e98df012cb97df9b5782"
+    },
+    {
+      "page": 91,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "0e0810a8e7a112ec0201ef5ffcf3e5616b055ebb905bf68c9055a94dffdf187c"
+    },
+    {
+      "page": 92,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "f9392f8cb9ebfff47679cf6288e04d3f0c9a41016c1be7f8f4137fa97bc6739b"
+    },
+    {
+      "page": 93,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "71943c932bc85f3a191ed01dc6c3c2155ff3fbc3703ef1856a110ccaf2c71a93"
+    },
+    {
+      "page": 94,
+      "status": "PASS",
+      "inspection": "Individual full-page PNG at original resolution / 100%; text, tables, headings, margins, footer and diagrams checked",
+      "sha256": "6326b5859340dd1d606f9464e639daefa88b478787a2af4763684c47a9366e96"
+    }
+  ]
+}

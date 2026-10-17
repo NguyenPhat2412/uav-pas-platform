@@ -1,57 +1,41 @@
 # Cross-Domain Authentication Design
 
-## Current state and problem
+## Kiểm chứng hiện tại — 17/10/2026
 
-The current frontend receives access/refresh tokens as JSON, stores them in browser `localStorage`, reads them in `api.client.ts`, refreshes on a 401 and keys permission queries by user ID. This works for one origin, but storage is origin-local and cannot provide SSO across four independently hosted apps. Copying tokens through query strings or postMessage without a one-time exchange would create a new credential leak.
+Giữ nguyên cơ chế cookie/bearer/CSRF đã tích hợp. Bản backend sau chuẩn hóa đã qua 726 test không skip và 151 frontend contract checks; 130 operation OpenAPI không đổi schema/parameter/security. Probe trên preview cuối có 15 HTTP checks PASS: login, cookie HttpOnly, `/auth/me`, refresh, logout, anonymous/invalid bearer 401, CORS allowed 200/rejected 403 và cookie write hợp lệ. Cookie write thiếu CSRF bị từ chối **401 trong probe này**; không suy rằng mọi đường đi đều phải trả 403 hoặc mọi exemption đã được kiểm.
 
-## Recommended topology
+Sau backup và chuyển localhost, readiness cùng kiểm tra anonymous/invalid bearer/CORS và năm frontend đều PASS. Các portal sử dụng cùng hostname/backend có thể dùng lại cookie phiên qua các port; bộ nhớ/cache UI của từng origin vẫn riêng. Điều này không chứng minh SSO trên các hostname hoặc registrable domain khác nhau. Lượt browser hết hạn tự nhiên với TTL 5 giây là evidence ngày 15/10, không được gắn thành một lượt chạy lại trên artifact cuối.
 
-Use one registrable domain in production:
+Không đổi auth contract trong gói ưu tiên này. Các yêu cầu HTTPS, cookie scope, CSRF coverage đầy đủ và SSO bên dưới vẫn cần kiểm chứng tại staging thật. Xem [báo cáo ngày 17/10 và evidence](../handoff/m6/M6_FULL_PRIORITIES_2026_10_17.md).
 
-```text
-www.uavpas.example       -> web
-customer.uavpas.example  -> customer
-ops.uavpas.example       -> operations
-admin.uavpas.example     -> admin
-api.uavpas.example       -> existing Spring Boot app
-```
+## Trạng thái sau tích hợp main — 16/10/2026
 
-The backend is the session authority. It remains one Spring Boot service and one database. Subdomains are deployment boundaries, not backend services.
+Main `bbcf437` đã chuyển browser sang cookie trước lượt tích hợp. Bản tích hợp giữ contract này: login/refresh tiếp tục trả JSON `{accessToken, refreshToken, tokenType, user}` để tương thích API client; đồng thời đặt cookie HttpOnly `uav_access_token` (path `/`) và `uav_refresh_token` (path `/api/v1/auth`). JWT filter nhận bearer hoặc cookie. Browser dùng `credentials: include`, `/api/v1/auth/me`, và cache theo chủ thể; logout xóa cookie và dữ liệu phiên.
 
-## Session transition
+`XSRF-TOKEN` là cookie đọc được từ JavaScript; lệnh nghiệp vụ gửi `X-XSRF-TOKEN`. Cách đọc token thô được sửa để tương thích cơ chế có sẵn của main. CookieSessionIntegrationTest và browser test chứng minh login, 403 khi thiếu/sai CSRF, ghi hợp lệ, refresh và logout. Những exemption của main cho auth/webhook vẫn giữ nguyên và cần đánh giá riêng; chưa tuyên bố CSRF coverage toàn diện.
 
-1. The user visits any app and is redirected to `www` `/login` with a signed, short-lived `returnTo` allowlisted by the backend.
-2. Login or Zalo callback is handled by the backend. It preserves the current JSON response for legacy clients and sets a secure HttpOnly session/access cookie for the new apps.
-3. The browser returns to the allowlisted app. The app calls `/api/v1/auth/me` with `credentials: include`; no token is placed in a URL or JavaScript storage.
-4. The backend refresh endpoint rotates the refresh/session material and resets the cookie. Logout invalidates the current access and refresh records and clears the cookie.
-5. All four apps load `/api/v1/permissions/me` and use the current server result. A permission change invalidates that Query key and private feature keys.
+Shared/legacy API client không mang cookie hoặc CSRF của API tới signed storage URL. Bearer hỗ trợ client ngoài browser; không gọi localStorage bearer là SSO. Zalo đã bị loại khỏi main và không được khôi phục trong tích hợp.
 
-The preferred production cookie is `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, and `Domain=.uavpas.example`. Use exact CORS allowlists and `Access-Control-Allow-Credentials: true`; never use `*` with credentials. If the apps must live on unrelated registrable domains, replace the shared cookie with an OAuth authorization-code + PKCE flow and one-time codes; do not broaden the cookie domain.
+## Điều chưa được chứng minh
 
-## Backend changes required before cutover
+Các portal local chạy cùng hostname `localhost`, khác port. Cookie chia sẻ giữa port không phải bằng chứng SSO giữa tên miền. Chưa có nghiệm thu HTTPS staging cho bốn hostname, redirect/returnTo tập trung, expiry/refresh race xuyên portal, logout đồng bộ, Safari/iOS hoặc các domain không cùng registrable domain.
 
-These are a separate, explicitly reviewed backend change; this document does not implement them:
+Các tùy chọn backend hiện có: `APP_COOKIE_SECURE` (mặc định local false), `APP_COOKIE_SAME_SITE` (Lax), `APP_COOKIE_DOMAIN` (rỗng, host-only). Không coi mặc định local là cấu hình production.
 
-- emit/clear the session cookie on login, refresh and logout;
-- make the JWT filter accept the HttpOnly cookie when no bearer header is present, while retaining bearer compatibility;
-- expose a session/me check that returns the existing `UserResponse` shape;
-- enforce short-lived, rotated refresh material and server-side invalidation already represented by current refresh-token services;
-- add CSRF protection for cookie-authenticated state-changing requests (double-submit or synchronizer token). Current bearer-only mode disables CSRF, which is insufficient once browsers automatically attach cookies;
-- configure exact app origins in `app.cors.allowed-origins` and storage CORS settings.
+## Topology dự kiến cần nghiệm thu
 
-## Local development
+- `www.uavpas.example`: public web.
+- `customer.uavpas.example`, `ops.uavpas.example`, `admin.uavpas.example`: ba portal.
+- `api.uavpas.example`: một Spring Boot backend và cơ sở dữ liệu chung.
 
-Use hosts such as `www.uavpas.localhost`, `customer.uavpas.localhost`, `ops.uavpas.localhost`, `admin.uavpas.localhost` and `api.uavpas.localhost`, or run all apps under one development origin with a compatibility flag. HTTPS is required to test `Secure` cookies. Legacy localStorage mode remains available only behind a development/rollback flag and is removed after cutover evidence.
+Trước cutover phải chọn phạm vi cookie đủ hẹp, bật HTTPS/Secure, cấu hình chính xác CORS origin/credentials và kiểm khả năng portal đọc CSRF cookie theo Domain đã chọn. Nếu dùng các registrable domain khác nhau, cần thiết kế authorization-code + PKCE/one-time exchange riêng; không truyền token qua URL hay mở rộng cookie tùy tiện. Mọi thay đổi auth contract phải được chủ dự án chốt trước.
 
-## Threat controls
+## Acceptance tiếp theo
 
-- Allowlist return URLs server-side; reject open redirects.
-- Never put access or refresh tokens in URLs, localStorage, sessionStorage, logs or analytics.
-- Use `HttpOnly`, `Secure`, narrow `SameSite`, short access lifetime, refresh rotation and logout invalidation.
-- Treat frontend permission gates as UX only; keep all `@PreAuthorize` and domain scope checks.
-- Clear QueryClient state on subject/session change and on logout.
-- Test login, refresh race, logout during refresh, account switch, revoked permission, CSRF rejection and cross-subdomain cookie behavior.
+1. Đăng nhập từ từng portal, deep link, refresh sau hết hạn, đăng xuất và chuyển tài khoản trên hostname staging thật.
+2. CSRF âm/dương cho toàn bộ cookie writes; xem xét login/refresh/logout và webhook exemptions thay vì suy diễn từ profile PATCH.
+3. Quyền backend, ownership và cache isolation khi đổi vai trò hoặc tài khoản; không dựa riêng vào menu ẩn.
+4. Kiểm cookie flags/domain/path, CORS, redirect allowlist, storage credential isolation và không lộ token trong URL/log/evidence.
+5. Hosted CI, full security coverage và kiểm trên browser/thiết bị hỗ trợ trước kết luận production-ready.
 
-## Rollback
-
-Keep bearer JSON responses and the legacy host route while the cookie path is dark-launched. A failed cookie-session release can disable the new cookie flag and route traffic back to the single legacy frontend without changing data or permissions. Do not delete refresh-token rows or old route aliases as part of the first rollout.
+Xem [báo cáo tích hợp và evidence](../handoff/m6/M6_MAIN_INTEGRATION_2026_10_16.md). Rollback là quay về artifact đã biết tốt và cấu hình tương ứng; không giả định có cờ tắt cookie chưa được triển khai, không xóa dữ liệu/refresh rows hoặc sửa migration đã xuất bản.

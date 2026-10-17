@@ -1,0 +1,26 @@
+{
+  "status": "PRESERVATION_PASS_AWAITING_FRONTEND",
+  "source": "uav_pas_dev",
+  "target": "uav_pas_integrated_20261017",
+  "sourceUntouched": true,
+  "sourceTables": 22,
+  "sourceRows": 117,
+  "versions": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "placeholderWebhooksDisabled": 3
+}

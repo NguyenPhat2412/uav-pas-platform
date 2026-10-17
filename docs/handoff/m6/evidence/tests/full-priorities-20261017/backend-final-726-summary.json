@@ -1,0 +1,18 @@
+{
+  "sourceFiles": 445,
+  "drift": [],
+  "xmlReports": 94,
+  "totals": {
+    "tests": 726,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "fullLogBuildSuccess": true,
+  "frontendContracts": {
+    "tests": 151,
+    "fail": 0,
+    "skip": 0,
+    "backendSymlink": "/Volumes/D/Codex/projects/uav-pas-platform/backend"
+  }
+}

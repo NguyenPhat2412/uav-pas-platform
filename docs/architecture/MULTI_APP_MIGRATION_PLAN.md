@@ -1,5 +1,7 @@
 # Multi-App Frontend Migration Plan
 
+> Current layout (2026-10-17): apps and packages now live under `frontend/`; the previous frontend is `frontend/legacy/`. See [current setup and path mapping](../README.md).
+
 Migration is additive and reversible. No phase moves files until the review checkpoint approves this plan. At every step, preserve the current `frontend/` app and backend API.
 
 ## M0 — Discovery and baseline

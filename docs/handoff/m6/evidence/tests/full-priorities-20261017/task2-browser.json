@@ -1,0 +1,687 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Unsigned failed callback cannot pay or grant quota",
+      "status": "PASS",
+      "detail": {
+        "http": 503,
+        "invoiceStatus": "PENDING",
+        "quotaUnchanged": true
+      }
+    },
+    {
+      "name": "Customer sees truthful payment information without self-confirmation",
+      "status": "PASS",
+      "detail": {
+        "selfSettlementControls": 0
+      }
+    },
+    {
+      "name": "Admin report and CSV match API values",
+      "status": "PASS",
+      "detail": {
+        "totalMissions": 3,
+        "plannedHours": 3,
+        "verifiedDetections": 0,
+        "csvMatches": true
+      }
+    },
+    {
+      "name": "Rejected invoice enablement is visible and persisted OFF",
+      "status": "PASS",
+      "detail": {
+        "rejectedStatus": 400,
+        "storedValue": "false",
+        "customerUpdateStatus": 403
+      }
+    },
+    {
+      "name": "Operator inventory movement updates stock and history",
+      "status": "PASS",
+      "detail": {
+        "stockDelta": 3,
+        "availableDelta": 3,
+        "customerMutation": 403
+      }
+    },
+    {
+      "name": "Mobile billing report inventory fit viewport",
+      "status": "PASS",
+      "detail": [
+        {
+          "page": "billing",
+          "width": 375,
+          "scroll": 375
+        },
+        {
+          "page": "settings",
+          "width": 375,
+          "scroll": 375
+        },
+        {
+          "page": "inventory",
+          "width": 375,
+          "scroll": 375
+        }
+      ]
+    }
+  ],
+  "network": [
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Customer billing",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "Customer billing",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/billing/quota",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/billing/invoices",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/billing/plans",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/billing/plans",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/billing/quota",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/billing/invoices",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Admin reports",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "Admin reports",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/reports/operations-summary",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/reports/operations-summary",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Operator inventory",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "Operator inventory",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/billing/invoices",
+      "status": 201
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/billing/quota",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/billing/webhook/payment-ipn",
+      "status": 503
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/billing/quota",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/billing/invoices/1",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/billing/plans",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/billing/invoices",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/billing/quota",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "Customer billing",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/reports/operations-summary",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/reports/export-csv",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/settings",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/settings",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "PUT",
+      "path": "/api/v1/settings/billing.auto_generate_invoice",
+      "status": 400
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/settings/billing.auto_generate_invoice",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "PUT",
+      "path": "/api/v1/settings/billing.auto_generate_invoice",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/1",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/settings",
+      "status": 200
+    },
+    {
+      "label": "Admin reports",
+      "method": "GET",
+      "path": "/api/v1/settings",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/1/stock-in",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Operator inventory",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/1",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/1/stock-in",
+      "status": 403
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "Customer billing",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Customer billing",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Customer billing",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Customer billing",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "Admin reports",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Admin reports",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Admin reports",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Admin reports",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "Operator inventory",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Operator inventory",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Operator inventory",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Operator inventory",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "Admin reports",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    }
+  ],
+  "requestFailures": [
+    {
+      "label": "Customer billing",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer billing",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer billing",
+      "path": "/api/v1/users/profile",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer billing",
+      "path": "/api/v1/missions",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer billing",
+      "path": "/api/v1/uav-services",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer billing",
+      "path": "/api/v1/billing/quota",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer billing",
+      "path": "/api/v1/billing/invoices",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer billing",
+      "path": "/api/v1/billing/plans",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer billing",
+      "path": "/api/v1/users/profile",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin reports",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin reports",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator inventory",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator inventory",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator inventory",
+      "path": "/api/v1/notifications",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator inventory",
+      "path": "/api/v1/notifications/unread-count",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator inventory",
+      "path": "/api/v1/inventory/equipment",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator inventory",
+      "path": "/api/v1/inventory/equipment/history",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator inventory",
+      "path": "/api/v1/stations",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer billing",
+      "path": "/api/v1/users/profile",
+      "error": "ABORTED"
+    }
+  ]
+}

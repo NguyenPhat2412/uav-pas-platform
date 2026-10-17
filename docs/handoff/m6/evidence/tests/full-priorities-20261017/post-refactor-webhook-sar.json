@@ -1,0 +1,740 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Webhook page reads actual routes and shows disabled delivery truthfully",
+      "status": "PASS",
+      "detail": {
+        "runtime": "UNCONFIGURED",
+        "subscriptions": 3,
+        "pageShape": true,
+        "dispatchDisabled": true
+      }
+    },
+    {
+      "name": "Unconfigured dispatch and denied roles produce no fake success",
+      "status": "PASS",
+      "detail": {
+        "dispatchStatus": "UNCONFIGURED",
+        "deliveryDelta": 0,
+        "deniedRoleRequests": 4
+      }
+    },
+    {
+      "name": "Private network webhook destinations are rejected before persistence",
+      "status": "PASS",
+      "detail": {
+        "unsafeUrlClasses": 4,
+        "rejectedStatus": 400,
+        "subscriptionDelta": 0,
+        "externalDeliveryRequested": false
+      }
+    },
+    {
+      "name": "Webhook API failure has visible error and recovers without sample data",
+      "status": "PASS",
+      "detail": {
+        "errorVisible": true,
+        "recovered": true
+      }
+    },
+    {
+      "name": "SAR missing mission and unassigned operator are blocked before side effects",
+      "status": "PASS",
+      "detail": {
+        "unassigned": 403,
+        "missing": 404,
+        "wrongUav": 400,
+        "deniedSideEffectDelta": 0,
+        "authorized": 200,
+        "flightCommandSent": false,
+        "externalDeliveryConfirmed": false
+      }
+    },
+    {
+      "name": "Webhook page remains usable at mobile width",
+      "status": "PASS",
+      "detail": {
+        "width": 390,
+        "scroll": 390
+      }
+    }
+  ],
+  "network": [
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Admin webhook",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "Admin webhook",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/dashboard/summary",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/audit-logs",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/webhooks/subscriptions",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/webhooks/logs",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/webhooks/status",
+      "status": 200
+    },
+    {
+      "label": "Assigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Assigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Assigned SAR operator",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "Assigned SAR operator",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Assigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Assigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "Assigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Assigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Assigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "Assigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "Assigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/webhooks/status",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/webhooks/subscriptions",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/webhooks/logs",
+      "status": 200
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "GET",
+      "path": "/api/v1/billing/plans",
+      "status": 200
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "GET",
+      "path": "/api/v1/billing/invoices",
+      "status": 200
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "GET",
+      "path": "/api/v1/uav-services",
+      "status": 200
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "GET",
+      "path": "/api/v1/billing/quota",
+      "status": 200
+    },
+    {
+      "label": "Customer webhook denial",
+      "method": "GET",
+      "path": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/webhooks/test-dispatch",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/webhooks/subscriptions",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/webhooks/test-dispatch",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/webhooks/subscriptions",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/webhooks/test-dispatch",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/webhooks/subscriptions",
+      "status": 400
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/webhooks/subscriptions",
+      "status": 400
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/webhooks/subscriptions",
+      "status": 400
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/webhooks/subscriptions",
+      "status": 400
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/webhooks/logs",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/webhooks/status",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/webhooks/status",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/webhooks/subscriptions",
+      "status": 200
+    },
+    {
+      "label": "Admin webhook",
+      "method": "GET",
+      "path": "/api/v1/webhooks/logs",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/uavs/1",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/sar/telemetry-evaluate",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/sar/missions/4/dispatch-rescue",
+      "status": 403
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/sar/telemetry-evaluate",
+      "status": 404
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/sar/telemetry-evaluate",
+      "status": 400
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/sar/telemetry-evaluate",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "POST",
+      "path": "/api/v1/sar/missions/4/dispatch-rescue",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "Admin webhook",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Admin webhook",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Admin webhook",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Admin webhook",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "Assigned SAR operator",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Assigned SAR operator",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Assigned SAR operator",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Assigned SAR operator",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "Customer webhook denial",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Customer webhook denial",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Customer webhook denial",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Customer webhook denial",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "Admin webhook",
+      "type": "error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "requestFailures": [
+    {
+      "label": "Admin webhook",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin webhook",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin webhook",
+      "path": "/api/v1/dashboard/summary",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin webhook",
+      "path": "/api/v1/audit-logs",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin webhook",
+      "path": "/api/v1/webhooks/subscriptions",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin webhook",
+      "path": "/api/v1/webhooks/logs",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin webhook",
+      "path": "/api/v1/webhooks/status",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Assigned SAR operator",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Assigned SAR operator",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Assigned SAR operator",
+      "path": "/api/v1/notifications",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Assigned SAR operator",
+      "path": "/api/v1/notifications/unread-count",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "path": "/api/v1/notifications",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Unassigned SAR operator",
+      "path": "/api/v1/notifications/unread-count",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer webhook denial",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer webhook denial",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer webhook denial",
+      "path": "/api/v1/users/profile",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer webhook denial",
+      "path": "/api/v1/users/profile",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer webhook denial",
+      "path": "/api/v1/missions",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer webhook denial",
+      "path": "/api/v1/uav-services",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer webhook denial",
+      "path": "/api/v1/billing/quota",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer webhook denial",
+      "path": "/api/v1/billing/invoices",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Customer webhook denial",
+      "path": "/api/v1/billing/plans",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin webhook",
+      "path": "/api/v1/webhooks/subscriptions",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin webhook",
+      "path": "/api/v1/webhooks/logs",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin webhook",
+      "path": "/api/v1/webhooks/status",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin webhook",
+      "path": "/api/v1/webhooks/subscriptions",
+      "error": "NETWORK_ERROR"
+    }
+  ]
+}

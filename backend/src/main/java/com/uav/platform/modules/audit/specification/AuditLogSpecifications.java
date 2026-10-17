@@ -1,10 +1,9 @@
 package com.uav.platform.modules.audit.specification;
 
-
-import com.uav.platform.modules.audit.common.*;
-
-import com.uav.platform.modules.audit.common.AuditAction;
 import com.uav.platform.modules.audit.entity.AuditLog;
+import com.uav.platform.modules.audit.enums.*;
+import com.uav.platform.modules.audit.enums.AuditAction;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
@@ -36,8 +35,7 @@ public final class AuditLogSpecifications {
                     cb.like(cb.lower(cb.coalesce(root.get("actorUsername"), "")), pattern),
                     cb.like(cb.lower(cb.coalesce(root.get("entityType"), "")), pattern),
                     cb.like(cb.lower(cb.coalesce(root.get("entityId"), "")), pattern),
-                    cb.like(cb.lower(cb.coalesce(root.get("details"), "")), pattern)
-            );
+                    cb.like(cb.lower(cb.coalesce(root.get("details"), "")), pattern));
         };
     }
 
@@ -49,7 +47,9 @@ public final class AuditLogSpecifications {
             if (actorUsername == null || actorUsername.isBlank()) {
                 return null;
             }
-            return cb.equal(cb.lower(root.get("actorUsername")), actorUsername.trim().toLowerCase(Locale.ROOT));
+            return cb.equal(
+                    cb.lower(root.get("actorUsername")),
+                    actorUsername.trim().toLowerCase(Locale.ROOT));
         };
     }
 
@@ -57,7 +57,8 @@ public final class AuditLogSpecifications {
      * Filters audit logs by actor user ID.
      */
     public static Specification<AuditLog> hasActorUserId(Long actorUserId) {
-        return (root, query, cb) -> actorUserId == null ? null : cb.equal(root.get("actorUserId"), actorUserId);
+        return (root, query, cb) ->
+                actorUserId == null ? null : cb.equal(root.get("actorUserId"), actorUserId);
     }
 
     /**
@@ -75,7 +76,8 @@ public final class AuditLogSpecifications {
             if (entityType == null || entityType.isBlank()) {
                 return null;
             }
-            return cb.equal(cb.lower(root.get("entityType")), entityType.trim().toLowerCase(Locale.ROOT));
+            return cb.equal(
+                    cb.lower(root.get("entityType")), entityType.trim().toLowerCase(Locale.ROOT));
         };
     }
 
@@ -102,8 +104,7 @@ public final class AuditLogSpecifications {
             if (from != null && to != null) {
                 return cb.and(
                         cb.greaterThanOrEqualTo(root.get("createdAt"), from),
-                        cb.lessThanOrEqualTo(root.get("createdAt"), to)
-                );
+                        cb.lessThanOrEqualTo(root.get("createdAt"), to));
             }
             return from != null
                     ? cb.greaterThanOrEqualTo(root.get("createdAt"), from)
@@ -114,9 +115,13 @@ public final class AuditLogSpecifications {
     /**
      * Composable composite filter for common audit log search scenarios.
      */
-    public static Specification<AuditLog> filter(String actorUsername, AuditAction action,
-                                                 String entityType, String entityId,
-                                                 LocalDateTime from, LocalDateTime to) {
+    public static Specification<AuditLog> filter(
+            String actorUsername,
+            AuditAction action,
+            String entityType,
+            String entityId,
+            LocalDateTime from,
+            LocalDateTime to) {
         return Specification.where(hasActor(actorUsername))
                 .and(hasAction(action))
                 .and(hasEntityType(entityType))

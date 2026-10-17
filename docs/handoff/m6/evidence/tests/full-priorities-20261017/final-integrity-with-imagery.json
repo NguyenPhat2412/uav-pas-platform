@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-17T04:48:49.684210+00:00",
+  "backendHashes": 445,
+  "backendDrift": [],
+  "frontendCutoverHashes": 202,
+  "separateImageOverlayPaths": 25,
+  "mergedFrontendPaths": 219,
+  "frontendDrift": [],
+  "overlappingPreimagesMatch": true,
+  "gitDiffCheckExit": 0,
+  "note": "Integrity of known reviewed cutover paths plus separately authorized image overlay; not an exhaustive source security audit"
+}

@@ -1,4 +1,17 @@
+# Baseline kiểm chứng hiện tại — 17/10/2026
+
+Canonical /Volumes/D/Codex/projects/uav-pas-platform; branchcodex/m1-monorepo-foundation; HEAD55db26eabb0a4a0bc6b3454eb931bc3671c4ef0f cộng workingtree chưacommit. Backend445hashes0drift, finalreview890packagehashes; frontendcutover202hashes. Các số725/421 và baseline55c trong lịch sử là nguồn trước refactor, không thay thế726/445 cuối.
+
+Xem [báo cáo hiện tại và bảng PASS/FAIL/BLOCKED](M6_FULL_PRIORITIES_2026_10_17.md) và [index evidence](evidence/tests/full-priorities-20261017/README.md). Các giới hạn có trong báo cáo hiện tại được giữ nguyên; không suy từ kết quả local thành production-ready.
+
+<details>
+<summary>Hồ sơ lịch sử trước 17/10/2026 — không phải trạng thái hiện tại</summary>
+
+Những tiêu đề “mới nhất”, số test, cấu trúc thư mục và trạng thái auth trong phần lưu trữ dưới đây chỉ đúng tại ngày/bản nguồn được ghi. Báo cáo hiện tại phía trên có ưu tiên khi đọc trạng thái hôm nay.
+
 # M6 baseline report
+
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
 
 ## Cập nhật 2026-10-16
 
@@ -62,3 +75,6 @@ The frontend, legacy, Maven and disposable infrastructure checks below were reru
 | Backend infra | disposable PostgreSQL 16 + MinIO stack, targeted stabilization tests | PASS, exit 0; PostgreSQL 5 and MinIO 1 |
 
 Evidence is under evidence/tests/. The npm commands used the pinned Node 20 runtime directly because the desktop npm shim pointed at an unavailable application path; this is an environment/tooling issue, not a source failure. Browser smoke is recorded in `evidence/tests/browser.json`; authenticated browser E2E remains NOT_VERIFIED because the existing dev servers are locked to the 3100-series API configuration.
+
+
+</details>

@@ -1,4 +1,17 @@
+# Nghiệp vụ E2E hiện tại — 17/10/2026
+
+Post-refactor14checks qua giao diện: tạo/gửi,duyệt/gán tài nguyên, tiếp nhận cũ409/tiếp nhận lại,ready/conflict/reaccept/start,ghi chú+tệp,failedPUTrecovery,PDFdownloadbyte-equal,complete/hoàntrảkho một lần,khóa tệp terminal,customer/audit/ownership. Media6 vàwebhook/SAR6 bổ sung riêng. Setup tài nguyên bằngfixture/API được tách khỏi thao tác UI; không chứng nhận mọi CRUD.
+
+Xem [báo cáo hiện tại và bảng PASS/FAIL/BLOCKED](M6_FULL_PRIORITIES_2026_10_17.md) và [index evidence](evidence/tests/full-priorities-20261017/README.md). Các giới hạn có trong báo cáo hiện tại được giữ nguyên; không suy từ kết quả local thành production-ready.
+
+<details>
+<summary>Hồ sơ lịch sử trước 17/10/2026 — không phải trạng thái hiện tại</summary>
+
+Những tiêu đề “mới nhất”, số test, cấu trúc thư mục và trạng thái auth trong phần lưu trữ dưới đây chỉ đúng tại ngày/bản nguồn được ghi. Báo cáo hiện tại phía trên có ưu tiên khi đọc trạng thái hôm nay.
+
 # M6 business E2E report
+
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
 
 ## Tiếp nhận và bàn giao — 2026-10-16 (mới nhất)
 
@@ -64,3 +77,6 @@ The current complete flow was executed against Spring on port 18080 with disposa
 The first probe returned errors caused by the synthetic fixture, not a source change: `ResourceAssignmentRequest.quantity` is required, assigning a UAV to a station first changes it out of `AVAILABLE`, media size must match the uploaded bytes, and the accepted media role is `OUTPUT` rather than `DELIVERABLE`. The corrected rerun passed all of those steps; these corrections were confined to the disposable test harness.
 
 The flow proves direct API business behavior for synthetic data. It does not prove cross-portal browser SSO because the approved cookie/session contract is not implemented. AI, SAR and Payment remain deferred/not implemented and were not expanded in M6.
+
+
+</details>

@@ -1,5 +1,7 @@
 # UAV PAS Multi-App Frontend Architecture
 
+> Current layout (2026-10-17): apps and packages now live under `frontend/`; the previous frontend is `frontend/legacy/`. See [current setup and path mapping](../README.md).
+
 **Status:** proposed; review checkpoint before source migration  
 **Baseline:** `main` / `6ecc85111a28e53679b2a6d8ac7ec93730d80be4`  
 **Scope:** frontend decomposition only. The Spring Boot backend remains one deployable application.

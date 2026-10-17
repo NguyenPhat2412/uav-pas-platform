@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "at": "2026-10-17T10:38:14.236481+07:00",
+  "scope": "final integrated preview API18582 admin3313 operations3312",
+  "viewports": [
+    1440,
+    390
+  ],
+  "webhook": {
+    "runtimeStatus": "UNCONFIGURED",
+    "subscriptionsOff": 3,
+    "deliveryLogCount": 0,
+    "testButtonDisabled": true,
+    "refreshPass": true,
+    "noMockSuccess": true
+  },
+  "media": {
+    "operatorRows": 5,
+    "searchEmptyStatePass": true,
+    "clearRestoresRows": true
+  },
+  "documentOverflow": 0,
+  "consoleErrors": 0,
+  "businessMutations": false,
+  "pending": null,
+  "buttonLayout": {
+    "recheckedAt": "2026-10-17T10:39:16.305635+07:00",
+    "width": 390,
+    "bothButtonHeight": 44,
+    "iconsAligned": true,
+    "noDocumentOverflow": true
+  },
+  "legacyAccountFollowup": {
+    "status": "PASS",
+    "viewports": [
+      375,
+      390,
+      1440
+    ],
+    "documentOverflow": 0,
+    "roleLabelWraps": true,
+    "nameTruncates": true,
+    "mutations": false
+  }
+}

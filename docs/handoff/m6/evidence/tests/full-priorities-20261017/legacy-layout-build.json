@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "exitCode": 0,
+  "seconds": 11.5,
+  "scope": "Legacy account header wrap+ellipsis after mobile375 overflow",
+  "apiOrigin": "http://localhost:18082"
+}

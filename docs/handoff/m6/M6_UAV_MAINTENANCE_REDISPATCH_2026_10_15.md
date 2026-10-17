@@ -1,5 +1,7 @@
 # UAV PAS — Bảo trì và điều phối lại UAV, 15/10/2026
 
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
+
 **Ghi chú phiên bản:** đây là báo cáo lịch sử của lượt 297 backend tests. Lượt tiếp theo đã bổ sung lịch định kỳ theo ngày, phiếu sửa chữa và chi phí vật tư VND, không trừ kho, giữ nguyên auth contract; xem [báo cáo hiện tại](M6_MAINTENANCE_PLANNING_2026_10_15.md). Kết quả và giới hạn của lượt mới, gồm lỗi login đồng thời còn mở, được ghi riêng; không dùng số kiểm thử bên dưới làm số hiện tại.
 
 **Phạm vi:** tiếp tục BA v2 và lượt hoàn thiện nghiệp vụ trước; ưu tiên thao tác trên giao diện Operations và lỗi tái hiện được. **Auth contract giữ nguyên.** Không commit, push, đổi lịch sử Git hoặc deploy. Kết quả cuối và dấu vân tay source nằm trong `evidence/tests/uav-maintenance-dispatch-2026-10-15/summary.json`.

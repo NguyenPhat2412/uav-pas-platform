@@ -1,0 +1,286 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "isolated PostgreSQL and MinIO readiness",
+      "status": "PASS"
+    },
+    {
+      "name": "compile backend into private target",
+      "status": "PASS"
+    },
+    {
+      "name": "generated synthetic fixture",
+      "status": "PASS",
+      "users": 5
+    },
+    {
+      "name": "production frontend builds",
+      "status": "PASS",
+      "reused": true
+    },
+    {
+      "name": "portable real browser mission suite",
+      "status": "PASS"
+    },
+    {
+      "name": "financial pending work survives physical backend restart",
+      "status": "PASS",
+      "physicalBackendRestarts": 2,
+      "controlledFailureObserved": true,
+      "invoices": 1,
+      "payments": 0,
+      "localNotifications": 1,
+      "quotaUnchanged": true,
+      "externalSends": 0
+    },
+    {
+      "name": "named-volume backup restore and association readback",
+      "status": "PASS",
+      "counts": {
+        "users": 5,
+        "missions": 1,
+        "media_assets": 3,
+        "mission_media": 2,
+        "invoices": 1,
+        "payment_transactions": 0,
+        "user_quotas": 1,
+        "notifications": 21,
+        "financial_outbox_events": 1,
+        "flyway_schema_history": 15
+      },
+      "objectSha256": "ae64c1e803b771feff2fe941248a89f7390c7797ab94f803fe4e06636810e5d6",
+      "associationVerified": true,
+      "backupPrivate": true,
+      "freshDestination": true
+    },
+    {
+      "name": "physical container restart preserves named-volume data",
+      "status": "PASS",
+      "counts": {
+        "users": 5,
+        "missions": 1,
+        "media_assets": 3,
+        "mission_media": 2,
+        "invoices": 1,
+        "payment_transactions": 0,
+        "user_quotas": 1,
+        "notifications": 21,
+        "financial_outbox_events": 1,
+        "flyway_schema_history": 15
+      },
+      "objectSha256": "ae64c1e803b771feff2fe941248a89f7390c7797ab94f803fe4e06636810e5d6",
+      "associationVerified": true
+    },
+    {
+      "name": "prior application artifact rollback without downmigration",
+      "status": "PASS",
+      "olderArtifactReady": true,
+      "downmigration": false,
+      "counts": {
+        "users": 5,
+        "missions": 1,
+        "media_assets": 3,
+        "mission_media": 2,
+        "invoices": 1,
+        "payment_transactions": 0,
+        "user_quotas": 1,
+        "notifications": 21,
+        "financial_outbox_events": 1,
+        "flyway_schema_history": 15
+      },
+      "objectSha256": "ae64c1e803b771feff2fe941248a89f7390c7797ab94f803fe4e06636810e5d6",
+      "associationVerified": true
+    },
+    {
+      "name": "final application restored after rollback",
+      "status": "PASS",
+      "counts": {
+        "users": 5,
+        "missions": 1,
+        "media_assets": 3,
+        "mission_media": 2,
+        "invoices": 1,
+        "payment_transactions": 0,
+        "user_quotas": 1,
+        "notifications": 21,
+        "financial_outbox_events": 1,
+        "flyway_schema_history": 15
+      },
+      "objectSha256": "ae64c1e803b771feff2fe941248a89f7390c7797ab94f803fe4e06636810e5d6",
+      "associationVerified": true
+    },
+    {
+      "name": "bounded authenticated local load",
+      "status": "PASS",
+      "concurrency": 4,
+      "requests": 40,
+      "durationSeconds": 0.213,
+      "errors": 0,
+      "p50Ms": 18.37,
+      "p95Ms": 39.6,
+      "maxMs": 39.8,
+      "productionSla": false
+    },
+    {
+      "name": "owned process/container/volume cleanup",
+      "status": "PASS"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "uav-priority5-rehearsal-20261017",
+        "-f",
+        "$ROOT/backend/infra/ci/compose.yml",
+        "up",
+        "-d",
+        "--wait",
+        "--wait-timeout",
+        "90"
+      ],
+      "timeoutSeconds": 900
+    },
+    {
+      "command": [
+        "./mvnw",
+        "-B",
+        "-Duav.build.directory=$ROOT/docs/work/full-priorities-20261017/task5-private-run5/backend-target",
+        "compile",
+        "dependency:build-classpath",
+        "-Dmdep.outputFile=$ROOT/docs/work/full-priorities-20261017/task5-private-run5/classpath.txt"
+      ],
+      "timeoutSeconds": 600
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test:e2e"
+      ],
+      "timeoutSeconds": 420
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "uav-priority5-rehearsal-20261017",
+        "-f",
+        "$ROOT/backend/infra/ci/compose.yml",
+        "stop",
+        "minio"
+      ],
+      "timeoutSeconds": 180
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "uav-priority5-rehearsal-20261017",
+        "-f",
+        "$ROOT/backend/infra/ci/compose.yml",
+        "down"
+      ],
+      "timeoutSeconds": 180
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "uav-priority5-rehearsal-20261017",
+        "-f",
+        "$ROOT/backend/infra/ci/compose.yml",
+        "up",
+        "-d",
+        "--wait",
+        "--wait-timeout",
+        "90"
+      ],
+      "timeoutSeconds": 900
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "uav-priority5-rehearsal-20261017",
+        "-f",
+        "$ROOT/backend/infra/ci/compose.yml",
+        "stop",
+        "minio"
+      ],
+      "timeoutSeconds": 180
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "uav-priority5-rehearsal-20261017",
+        "-f",
+        "$ROOT/backend/infra/ci/compose.yml",
+        "start",
+        "minio"
+      ],
+      "timeoutSeconds": 180
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "uav-priority5-rehearsal-20261017",
+        "-f",
+        "$ROOT/backend/infra/ci/compose.yml",
+        "restart"
+      ],
+      "timeoutSeconds": 180
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "uav-priority5-rehearsal-20261017",
+        "-f",
+        "$ROOT/backend/infra/ci/compose.yml",
+        "down",
+        "--volumes",
+        "--remove-orphans"
+      ],
+      "timeoutSeconds": 180
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "uav-priority5-rehearsal-20261017",
+        "-f",
+        "$ROOT/backend/infra/ci/compose.yml",
+        "down",
+        "--volumes",
+        "--remove-orphans"
+      ],
+      "timeoutSeconds": 180
+    }
+  ],
+  "ports": {
+    "db": 55446,
+    "storage": 9044,
+    "storage_console": 9045,
+    "backend": 18584,
+    "web": 3410,
+    "customer": 3411,
+    "operations": 3412,
+    "admin": 3413,
+    "legacy": 3430
+  },
+  "hostedCiExecuted": false
+}

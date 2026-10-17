@@ -1,0 +1,14 @@
+{
+  "pass": true,
+  "stoppedPreviewPorts": [
+    3310,
+    3311,
+    3312,
+    3313,
+    3330,
+    18582
+  ],
+  "mainStillRunning": true,
+  "databasesVolumesContainersDeleted": false,
+  "stoppedAt": "2026-10-17T11:08:38.004325+07:00"
+}

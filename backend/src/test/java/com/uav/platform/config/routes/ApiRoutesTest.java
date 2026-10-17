@@ -1,20 +1,18 @@
 package com.uav.platform.config.routes;
 
-import com.uav.platform.modules.user.common.*;
-import com.uav.platform.modules.uav.common.*;
-import com.uav.platform.modules.station.common.*;
-import com.uav.platform.modules.inventory.common.*;
-import com.uav.platform.modules.media.common.*;
-import com.uav.platform.modules.audit.common.*;
-import com.uav.platform.modules.mission.common.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import com.uav.platform.modules.audit.enums.*;
+import com.uav.platform.modules.inventory.enums.*;
+import com.uav.platform.modules.media.enums.*;
+import com.uav.platform.modules.mission.enums.*;
+import com.uav.platform.modules.station.enums.*;
+import com.uav.platform.modules.uav.enums.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("ApiRoutes & ApiRouteConfig Unit Tests")
 class ApiRoutesTest {
@@ -28,16 +26,12 @@ class ApiRoutesTest {
         assertEquals("/api/v1/auth", ApiRoutes.Auth.BASE);
         assertEquals("/register", ApiRoutes.Auth.REGISTER);
         assertEquals("/login", ApiRoutes.Auth.LOGIN);
-        assertEquals("/zalo/url", ApiRoutes.Auth.ZALO_URL);
-        assertEquals("/zalo/callback", ApiRoutes.Auth.ZALO_CALLBACK);
         assertEquals("/me", ApiRoutes.Auth.ME);
         assertEquals("/refresh", ApiRoutes.Auth.REFRESH);
         assertEquals("/logout", ApiRoutes.Auth.LOGOUT);
 
         assertEquals("/api/v1/auth/register", ApiRoutes.Auth.FULL_REGISTER);
         assertEquals("/api/v1/auth/login", ApiRoutes.Auth.FULL_LOGIN);
-        assertEquals("/api/v1/auth/zalo/url", ApiRoutes.Auth.FULL_ZALO_URL);
-        assertEquals("/api/v1/auth/zalo/callback", ApiRoutes.Auth.FULL_ZALO_CALLBACK);
         assertEquals("/api/v1/auth/me", ApiRoutes.Auth.FULL_ME);
         assertEquals("/api/v1/auth/refresh", ApiRoutes.Auth.FULL_REFRESH);
         assertEquals("/api/v1/auth/logout", ApiRoutes.Auth.FULL_LOGOUT);
@@ -75,28 +69,35 @@ class ApiRoutesTest {
     void apiRoutes_WhitelistsIntegrity() {
         assertNotNull(ApiRoutes.SWAGGER_WHITELIST);
         assertEquals(3, ApiRoutes.SWAGGER_WHITELIST.length);
-        assertArrayEquals(new String[]{"/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"}, ApiRoutes.SWAGGER_WHITELIST);
+        assertArrayEquals(
+                new String[] {"/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"},
+                ApiRoutes.SWAGGER_WHITELIST);
 
         assertNotNull(ApiRoutes.PUBLIC_AUTH_WHITELIST);
-        assertEquals(1, ApiRoutes.PUBLIC_AUTH_WHITELIST.length);
-        assertEquals("/api/v1/auth/**", ApiRoutes.PUBLIC_AUTH_WHITELIST[0]);
+        assertEquals(3, ApiRoutes.PUBLIC_AUTH_WHITELIST.length);
+        assertArrayEquals(
+                new String[] {
+                    "/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/refresh"
+                },
+                ApiRoutes.PUBLIC_AUTH_WHITELIST);
     }
 
     @Test
     @DisplayName("Private constructors should be protected via reflection")
     void privateConstructors_ReflectionSafety() throws Exception {
         Class<?>[] classes = {
-                ApiRoutes.class,
-                ApiRoutes.Auth.class,
-                ApiRoutes.Users.class,
-                ApiRoutes.Drones.class,
-                ApiRoutes.Missions.class,
-                ApiRoutes.Docs.class
+            ApiRoutes.class,
+            ApiRoutes.Auth.class,
+            ApiRoutes.Users.class,
+            ApiRoutes.Drones.class,
+            ApiRoutes.Missions.class,
+            ApiRoutes.Docs.class
         };
 
         for (Class<?> clazz : classes) {
             Constructor<?> constructor = clazz.getDeclaredConstructor();
-            assertTrue(java.lang.reflect.Modifier.isPrivate(constructor.getModifiers()),
+            assertTrue(
+                    java.lang.reflect.Modifier.isPrivate(constructor.getModifiers()),
                     clazz.getSimpleName() + " constructor must be private");
             constructor.setAccessible(true);
             Object instance = constructor.newInstance();
@@ -109,6 +110,10 @@ class ApiRoutesTest {
     void apiRouteConfig_InstantiatesCleanly() {
         ApiRouteConfig config = new ApiRouteConfig();
         assertNotNull(config);
-        assertDoesNotThrow(() -> config.configurePathMatch(new org.springframework.web.servlet.config.annotation.PathMatchConfigurer()));
+        assertDoesNotThrow(
+                () ->
+                        config.configurePathMatch(
+                                new org.springframework.web.servlet.config.annotation
+                                        .PathMatchConfigurer()));
     }
 }

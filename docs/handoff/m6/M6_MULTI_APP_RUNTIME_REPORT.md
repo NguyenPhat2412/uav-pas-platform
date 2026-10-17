@@ -1,4 +1,17 @@
+# Ứng dụng localhost — 17/10/2026
+
+Bốn frontend mới3100/3101/3102/3103, legacy3300, Spring18082; PostgreSQL5500, MinIO9034/9035. Bản mới dùng database nhập dữ liệu đã kiểm chứngV1–V15; database gốc giữ nguyên. Năm frontend buildproductionPASS trước mở cổng. Không chiếm8080; tài khoản/secret chỉ ở cấu hình riêng, không nằm trong evidence.
+
+Xem [báo cáo hiện tại và bảng PASS/FAIL/BLOCKED](M6_FULL_PRIORITIES_2026_10_17.md) và [index evidence](evidence/tests/full-priorities-20261017/README.md). Các giới hạn có trong báo cáo hiện tại được giữ nguyên; không suy từ kết quả local thành production-ready.
+
+<details>
+<summary>Hồ sơ lịch sử trước 17/10/2026 — không phải trạng thái hiện tại</summary>
+
+Những tiêu đề “mới nhất”, số test, cấu trúc thư mục và trạng thái auth trong phần lưu trữ dưới đây chỉ đúng tại ngày/bản nguồn được ghi. Báo cáo hiện tại phía trên có ưu tiên khi đọc trạng thái hôm nay.
+
 # M6 multi-app runtime report
+
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
 
 ## Điều phối operator, trạm và thiết bị — 2026-10-16 (mới nhất)
 
@@ -55,3 +68,6 @@ This is portal authentication smoke only. An earlier combined multi-portal run e
 ## Backend runtime evidence
 
 Port 8080 remained untouched because an unrelated Expo process owns it. Spring was started on isolated port 18080 with disposable PostgreSQL 55444 and MinIO 9014. `/actuator/health` returned 200/UP; allowed CORS preflight returned 200 with credentials; a disallowed origin returned 403; the synthetic authenticated API and business flow passed. See `evidence/tests/m6-current-isolated-runtime.json`.
+
+
+</details>

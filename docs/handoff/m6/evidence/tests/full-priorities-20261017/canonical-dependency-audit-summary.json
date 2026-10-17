@@ -1,0 +1,48 @@
+{
+  "status": "PARTIAL",
+  "production": "PASS",
+  "development": "FAIL_HIGH_FINDINGS",
+  "results": {
+    "root": {
+      "production": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "all": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 5,
+        "critical": 0,
+        "total": 5
+      }
+    },
+    "legacy": {
+      "production": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "all": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 5,
+        "critical": 0,
+        "total": 5
+      }
+    }
+  },
+  "source": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+  "checkedDate": "2026-10-17",
+  "patchedVersionReported": null,
+  "majorDowngradeApplied": false,
+  "note": "Do not sum duplicated transitive chains as ten unique root causes; root and legacy are independently audited dependency trees."
+}

@@ -1,25 +1,26 @@
 package com.uav.platform.modules.media.service.impl;
 
-
-import com.uav.platform.modules.media.common.*;
+import com.uav.platform.modules.media.enums.*;
 import com.uav.platform.modules.media.service.ObjectStorageService;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import software.amazon.awssdk.services.s3.S3Client;
+
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
-import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.net.URI;
@@ -49,19 +50,41 @@ public class S3CompatibleStorageService implements ObjectStorageService {
             @Value("${app.storage.public-endpoint:}") String publicEndpoint,
             @Value("${app.storage.ensure-bucket:false}") boolean ensureBucket,
             @Value("${app.storage.cors-origin:http://localhost:3000}") String corsOrigin) {
-        this.provider = provider; this.bucket = bucket; this.publicEndpoint = publicEndpoint; this.corsOrigin = corsOrigin;
+        this.provider = provider;
+        this.bucket = bucket;
+        this.publicEndpoint = publicEndpoint;
+        this.corsOrigin = corsOrigin;
         this.ensureBucket = ensureBucket;
-        var credentials = StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
-        var serviceConfiguration = S3Configuration.builder().pathStyleAccessEnabled("minio".equals(provider) || "test".equals(provider)).build();
-        var builder = S3Presigner.builder().region(Region.of(region))
-                .credentialsProvider(credentials).serviceConfiguration(serviceConfiguration);
-        String signingEndpoint = publicEndpoint != null && !publicEndpoint.isBlank() ? publicEndpoint : endpoint;
-        if (signingEndpoint != null && !signingEndpoint.isBlank()) builder.endpointOverride(URI.create(signingEndpoint));
+        var credentials =
+                StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
+        var serviceConfiguration =
+                S3Configuration.builder()
+                        .pathStyleAccessEnabled("minio".equals(provider) || "test".equals(provider))
+                        .build();
+        var builder =
+                S3Presigner.builder()
+                        .region(Region.of(region))
+                        .credentialsProvider(credentials)
+                        .serviceConfiguration(serviceConfiguration);
+        String signingEndpoint =
+                publicEndpoint != null && !publicEndpoint.isBlank() ? publicEndpoint : endpoint;
+        if (signingEndpoint != null && !signingEndpoint.isBlank())
+            builder.endpointOverride(URI.create(signingEndpoint));
         this.presigner = builder.build();
-        var clientBuilder = S3Client.builder().region(Region.of(region)).credentialsProvider(credentials).serviceConfiguration(serviceConfiguration);
-        if (endpoint != null && !endpoint.isBlank()) clientBuilder.endpointOverride(URI.create(endpoint));
+        var clientBuilder =
+                S3Client.builder()
+                        .overrideConfiguration(
+                                config ->
+                                        config.apiCallTimeout(Duration.ofSeconds(15))
+                                                .apiCallAttemptTimeout(Duration.ofSeconds(5)))
+                        .region(Region.of(region))
+                        .credentialsProvider(credentials)
+                        .serviceConfiguration(serviceConfiguration);
+        if (endpoint != null && !endpoint.isBlank())
+            clientBuilder.endpointOverride(URI.create(endpoint));
         this.client = clientBuilder.build();
     }
+
     @PostConstruct
     void initializeBucket() {
         if (!ensureBucket) return;
@@ -69,38 +92,94 @@ public class S3CompatibleStorageService implements ObjectStorageService {
             client.headBucket(HeadBucketRequest.builder().bucket(bucket).build());
             applyCors();
         } catch (S3Exception missing) {
-            if (missing.statusCode() == 404 || "NoSuchBucket".equals(missing.awsErrorDetails().errorCode())) {
+            if (missing.statusCode() == 404
+                    || "NoSuchBucket".equals(missing.awsErrorDetails().errorCode())) {
                 client.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
                 applyCors();
             } else throw missing;
         }
     }
+
     private void applyCors() {
         if (corsOrigin == null || corsOrigin.isBlank()) return;
         try {
-            client.putBucketCors(software.amazon.awssdk.services.s3.model.PutBucketCorsRequest.builder()
-                    .bucket(bucket)
-                    .corsConfiguration(software.amazon.awssdk.services.s3.model.CORSConfiguration.builder().corsRules(
-                            software.amazon.awssdk.services.s3.model.CORSRule.builder().allowedOrigins(corsOrigin).allowedMethods("GET", "PUT", "HEAD").allowedHeaders("*").maxAgeSeconds(900).build()).build())
-                    .build());
+            client.putBucketCors(
+                    software.amazon.awssdk.services.s3.model.PutBucketCorsRequest.builder()
+                            .bucket(bucket)
+                            .corsConfiguration(
+                                    software.amazon.awssdk.services.s3.model.CORSConfiguration
+                                            .builder()
+                                            .corsRules(
+                                                    software.amazon.awssdk.services.s3.model
+                                                            .CORSRule.builder()
+                                                            .allowedOrigins(corsOrigin)
+                                                            .allowedMethods("GET", "PUT", "HEAD")
+                                                            .allowedHeaders("*")
+                                                            .maxAgeSeconds(900)
+                                                            .build())
+                                            .build())
+                            .build());
         } catch (S3Exception ex) {
             // Some MinIO builds do not implement bucket CORS; proxy-level CORS remains available.
             if (ex.statusCode() != 501) throw ex;
         }
     }
+
     @PreDestroy
-    void closeClients() { presigner.close(); client.close(); }
-    @Override public String provider() { return provider; }
-    @Override public String createSignedUploadUrl(String objectKey, String contentType) {
+    void closeClients() {
+        presigner.close();
+        client.close();
+    }
+
+    @Override
+    public String provider() {
+        return provider;
+    }
+
+    @Override
+    public String createSignedUploadUrl(String objectKey, String contentType) {
+        return signedUpload(objectKey, contentType, null, Duration.ofMinutes(15));
+    }
+
+    @Override
+    public String createSignedUploadUrl(
+            String objectKey, String contentType, long size, Duration validity) {
+        return signedUpload(objectKey, contentType, size, validity);
+    }
+
+    private String signedUpload(
+            String objectKey, String contentType, Long size, Duration validity) {
+        // Exact length is signed. Browsers supply Content-Length automatically for a File body.
         // The condition is signed: reusing a still-valid URL cannot overwrite delivered content.
-        PutObjectRequest request = PutObjectRequest.builder().bucket(bucket).key(objectKey).contentType(contentType).ifNoneMatch("*").build();
-        return presigner.presignPutObject(builder -> builder.signatureDuration(Duration.ofMinutes(15)).putObjectRequest(request)).url().toString();
+        PutObjectRequest request =
+                PutObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(objectKey)
+                        .contentType(contentType)
+                        .contentLength(size)
+                        .ifNoneMatch("*")
+                        .build();
+        return presigner
+                .presignPutObject(
+                        builder -> builder.signatureDuration(validity).putObjectRequest(request))
+                .url()
+                .toString();
     }
-    @Override public String createSignedDownloadUrl(String objectKey) {
+
+    @Override
+    public String createSignedDownloadUrl(String objectKey) {
         GetObjectRequest request = GetObjectRequest.builder().bucket(bucket).key(objectKey).build();
-        return presigner.presignGetObject(builder -> builder.signatureDuration(Duration.ofMinutes(15)).getObjectRequest(request)).url().toString();
+        return presigner
+                .presignGetObject(
+                        builder ->
+                                builder.signatureDuration(Duration.ofMinutes(15))
+                                        .getObjectRequest(request))
+                .url()
+                .toString();
     }
-    @Override public boolean objectExists(String objectKey) {
+
+    @Override
+    public boolean objectExists(String objectKey) {
         try {
             client.headObject(HeadObjectRequest.builder().bucket(bucket).key(objectKey).build());
             return true;
@@ -109,11 +188,38 @@ public class S3CompatibleStorageService implements ObjectStorageService {
             throw ex;
         }
     }
-    @Override public ObjectMetadata metadata(String objectKey) {
-        var response=client.headObject(HeadObjectRequest.builder().bucket(bucket).key(objectKey).build());
-        return new ObjectMetadata(response.contentLength(),response.contentType());
+
+    @Override
+    public ObjectMetadata metadata(String objectKey) {
+        var response =
+                client.headObject(
+                        HeadObjectRequest.builder().bucket(bucket).key(objectKey).build());
+        return new ObjectMetadata(response.contentLength(), response.contentType());
     }
-    @Override public void deleteObject(String objectKey) {
+
+    @Override
+    public byte[] readHeader(String objectKey) {
+        var stream =
+                client.getObject(
+                        GetObjectRequest.builder()
+                                .bucket(bucket)
+                                .key(objectKey)
+                                .range("bytes=0-63")
+                                .build());
+        try {
+            return stream.readNBytes(64);
+        } catch (java.io.IOException ex) {
+            throw new IllegalStateException("Cannot read media header", ex);
+        } finally {
+            // ResponseInputStream.close() may drain an ignored-Range response with Apache
+            // transport.
+            // Abort instead so early termination never consumes the remaining object body.
+            stream.abort();
+        }
+    }
+
+    @Override
+    public void deleteObject(String objectKey) {
         client.deleteObject(DeleteObjectRequest.builder().bucket(bucket).key(objectKey).build());
     }
 }

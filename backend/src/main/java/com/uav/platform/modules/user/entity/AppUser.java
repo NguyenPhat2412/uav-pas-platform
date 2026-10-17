@@ -1,22 +1,27 @@
 package com.uav.platform.modules.user.entity;
 
-
-import com.uav.platform.modules.user.common.*;
-
 import com.uav.platform.common.entity.BaseEntity;
+import com.uav.platform.modules.user.enums.UserRole;
+import com.uav.platform.modules.user.enums.UserStatus;
+
 import jakarta.persistence.*;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Table(name = "users", uniqueConstraints = @UniqueConstraint(name = "uk_users_phone_number", columnNames = "phone_number"))
+@Table(
+        name = "users",
+        uniqueConstraints =
+                @UniqueConstraint(name = "uk_users_phone_number", columnNames = "phone_number"))
 @org.hibernate.annotations.DynamicUpdate
 @Getter
 @Setter
@@ -64,15 +69,55 @@ public class AppUser extends BaseEntity implements UserDetails {
     public static final int MAX_FAILED_ATTEMPTS = 5;
     public static final long LOCK_TIME_DURATION_MINUTES = 15;
 
-    public AppUser(String username, String email, String passwordHash, String phoneNumber, UserStatus status) {
-        this(username, email, passwordHash, phoneNumber, null, null, null, UserRole.ROLE_PILOT, status);
+    public AppUser(
+            String username,
+            String email,
+            String passwordHash,
+            String phoneNumber,
+            UserStatus status) {
+        this(
+                username,
+                email,
+                passwordHash,
+                phoneNumber,
+                null,
+                null,
+                null,
+                UserRole.ROLE_PILOT,
+                status);
     }
 
-    public AppUser(String username, String email, String passwordHash, String phoneNumber, String zaloId, String fullName, String avatarUrl, UserStatus status) {
-        this(username, email, passwordHash, phoneNumber, zaloId, fullName, avatarUrl, UserRole.ROLE_PILOT, status);
+    public AppUser(
+            String username,
+            String email,
+            String passwordHash,
+            String phoneNumber,
+            String zaloId,
+            String fullName,
+            String avatarUrl,
+            UserStatus status) {
+        this(
+                username,
+                email,
+                passwordHash,
+                phoneNumber,
+                zaloId,
+                fullName,
+                avatarUrl,
+                UserRole.ROLE_PILOT,
+                status);
     }
 
-    public AppUser(String username, String email, String passwordHash, String phoneNumber, String zaloId, String fullName, String avatarUrl, UserRole role, UserStatus status) {
+    public AppUser(
+            String username,
+            String email,
+            String passwordHash,
+            String phoneNumber,
+            String zaloId,
+            String fullName,
+            String avatarUrl,
+            UserRole role,
+            UserStatus status) {
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
@@ -99,7 +144,9 @@ public class AppUser extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.role != null ? this.role.name() : UserRole.ROLE_PILOT.name()));
+        return List.of(
+                new SimpleGrantedAuthority(
+                        this.role != null ? this.role.name() : UserRole.ROLE_PILOT.name()));
     }
 
     @Override
@@ -161,7 +208,9 @@ public class AppUser extends BaseEntity implements UserDetails {
         if (this.lockTime == null) {
             return false;
         }
-        boolean expired = java.time.LocalDateTime.now().isAfter(this.lockTime.plusMinutes(LOCK_TIME_DURATION_MINUTES));
+        boolean expired =
+                java.time.LocalDateTime.now()
+                        .isAfter(this.lockTime.plusMinutes(LOCK_TIME_DURATION_MINUTES));
         if (expired) {
             resetFailedAttempts();
             return false;
@@ -178,5 +227,4 @@ public class AppUser extends BaseEntity implements UserDetails {
         this.manualLocked = false;
         resetFailedAttempts();
     }
-
 }

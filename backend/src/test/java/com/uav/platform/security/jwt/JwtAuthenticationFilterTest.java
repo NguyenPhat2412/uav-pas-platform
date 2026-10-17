@@ -1,15 +1,18 @@
 package com.uav.platform.security.jwt;
 
-import com.uav.platform.modules.user.common.*;
-import com.uav.platform.modules.uav.common.*;
-import com.uav.platform.modules.station.common.*;
-import com.uav.platform.modules.inventory.common.*;
-import com.uav.platform.modules.media.common.*;
-import com.uav.platform.modules.audit.common.*;
-import com.uav.platform.modules.mission.common.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import com.uav.platform.modules.audit.enums.*;
+import com.uav.platform.modules.inventory.enums.*;
+import com.uav.platform.modules.media.enums.*;
+import com.uav.platform.modules.mission.enums.*;
+import com.uav.platform.modules.station.enums.*;
+import com.uav.platform.modules.uav.enums.*;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,17 +25,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class JwtAuthenticationFilterTest {
 
-    @Mock
-    private JwtTokenProvider jwtTokenProvider;
+    @Mock private JwtTokenProvider jwtTokenProvider;
 
-    @Mock
-    private FilterChain filterChain;
+    @Mock private FilterChain filterChain;
 
     private JwtAuthenticationFilter jwtAuthenticationFilter;
     private MockHttpServletRequest request;
@@ -67,7 +65,8 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void doFilterInternal_InvalidToken_DoesNotSetAuthentication() throws ServletException, IOException {
+    void doFilterInternal_InvalidToken_DoesNotSetAuthentication()
+            throws ServletException, IOException {
         String token = "invalid-token";
         request.addHeader("Authorization", "Bearer " + token);
 
@@ -80,7 +79,8 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void doFilterInternal_NoAuthorizationHeader_ContinuesChain() throws ServletException, IOException {
+    void doFilterInternal_NoAuthorizationHeader_ContinuesChain()
+            throws ServletException, IOException {
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
         assertNull(SecurityContextHolder.getContext().getAuthentication());

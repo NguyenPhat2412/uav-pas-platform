@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Real API totals displayed with no fabricated fallback",
+    "Static hardware/webhook monitoring explicitly labelled as illustration",
+    "Desktop/mobile page fits viewport",
+    "Failed summary fetch shows visible error"
+  ]
+}

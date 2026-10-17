@@ -1,5 +1,7 @@
 # UAV PAS — Hồ sơ khách hàng tự chỉnh sửa
 
+> **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
+
 **Ngày:** 16/10/2026. **Kết quả phạm vi:** COMPLETE_LOCAL. **Toàn dự án:** PARTIAL / NOT_READY.
 
 **Người yêu cầu:** Nguyễn Xuân Phát. **Phạm vi đã chốt:** khách hàng tự sửa **họ tên và số điện thoại**. Không đổi auth contract; email, tên đăng nhập, mật khẩu, vai trò/quyền, trạng thái, ảnh đại diện không nằm trong biểu mẫu và không được phép gửi vào lệnh sửa hồ sơ.

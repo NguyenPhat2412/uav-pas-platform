@@ -1,18 +1,20 @@
 package com.uav.platform.modules.audit.specification;
 
-import com.uav.platform.modules.user.common.*;
-import com.uav.platform.modules.uav.common.*;
-import com.uav.platform.modules.station.common.*;
-import com.uav.platform.modules.inventory.common.*;
-import com.uav.platform.modules.media.common.*;
-import com.uav.platform.modules.audit.common.*;
-import com.uav.platform.modules.mission.common.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
-import com.uav.platform.modules.audit.common.*;
-
-import com.uav.platform.modules.audit.common.AuditAction;
 import com.uav.platform.modules.audit.entity.AuditLog;
+import com.uav.platform.modules.audit.enums.*;
+import com.uav.platform.modules.audit.enums.AuditAction;
+import com.uav.platform.modules.inventory.enums.*;
+import com.uav.platform.modules.media.enums.*;
+import com.uav.platform.modules.mission.enums.*;
+import com.uav.platform.modules.station.enums.*;
+import com.uav.platform.modules.uav.enums.*;
+
 import jakarta.persistence.criteria.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,52 +24,35 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuditLogSpecifications Unit Tests")
 class AuditLogSpecificationsTest {
 
-    @Mock
-    private Root<AuditLog> root;
+    @Mock private Root<AuditLog> root;
 
-    @Mock
-    private CriteriaQuery<?> query;
+    @Mock private CriteriaQuery<?> query;
 
-    @Mock
-    private CriteriaBuilder cb;
+    @Mock private CriteriaBuilder cb;
 
-    @Mock
-    private Path<String> actorUsernamePath;
+    @Mock private Path<String> actorUsernamePath;
 
-    @Mock
-    private Path<Long> actorUserIdPath;
+    @Mock private Path<Long> actorUserIdPath;
 
-    @Mock
-    private Path<AuditAction> actionPath;
+    @Mock private Path<AuditAction> actionPath;
 
-    @Mock
-    private Path<String> entityTypePath;
+    @Mock private Path<String> entityTypePath;
 
-    @Mock
-    private Path<String> entityIdPath;
+    @Mock private Path<String> entityIdPath;
 
-    @Mock
-    private Path<String> detailsPath;
+    @Mock private Path<String> detailsPath;
 
-    @Mock
-    private Path<LocalDateTime> createdAtPath;
+    @Mock private Path<LocalDateTime> createdAtPath;
 
-    @Mock
-    private Expression<String> lowerExpr;
+    @Mock private Expression<String> lowerExpr;
 
-    @Mock
-    private Expression<String> coalesceExpr;
+    @Mock private Expression<String> coalesceExpr;
 
-    @Mock
-    private Predicate predicate;
+    @Mock private Predicate predicate;
 
     @Test
     @DisplayName("empty or null keyword produces null predicate")
@@ -114,7 +99,8 @@ class AuditLogSpecificationsTest {
     @Test
     @DisplayName("hasActorUserId null produces null, non-null builds equal predicate")
     void hasActorUserId_Tests() {
-        assertThat(AuditLogSpecifications.hasActorUserId(null).toPredicate(root, query, cb)).isNull();
+        assertThat(AuditLogSpecifications.hasActorUserId(null).toPredicate(root, query, cb))
+                .isNull();
 
         when(root.<Long>get("actorUserId")).thenReturn(actorUserIdPath);
         when(cb.equal(actorUserIdPath, 42L)).thenReturn(predicate);
@@ -131,32 +117,38 @@ class AuditLogSpecificationsTest {
         when(root.<AuditAction>get("action")).thenReturn(actionPath);
         when(cb.equal(actionPath, AuditAction.LOGIN)).thenReturn(predicate);
 
-        Predicate result = AuditLogSpecifications.hasAction(AuditAction.LOGIN).toPredicate(root, query, cb);
+        Predicate result =
+                AuditLogSpecifications.hasAction(AuditAction.LOGIN).toPredicate(root, query, cb);
         assertThat(result).isSameAs(predicate);
     }
 
     @Test
     @DisplayName("hasEntityType and hasEntityId tests")
     void entityTypeAndId_Tests() {
-        assertThat(AuditLogSpecifications.hasEntityType(null).toPredicate(root, query, cb)).isNull();
-        assertThat(AuditLogSpecifications.hasEntityType("   ").toPredicate(root, query, cb)).isNull();
+        assertThat(AuditLogSpecifications.hasEntityType(null).toPredicate(root, query, cb))
+                .isNull();
+        assertThat(AuditLogSpecifications.hasEntityType("   ").toPredicate(root, query, cb))
+                .isNull();
         assertThat(AuditLogSpecifications.hasEntityId(null).toPredicate(root, query, cb)).isNull();
         assertThat(AuditLogSpecifications.hasEntityId("   ").toPredicate(root, query, cb)).isNull();
 
         when(root.<String>get("entityType")).thenReturn(entityTypePath);
         when(cb.lower(entityTypePath)).thenReturn(lowerExpr);
         when(cb.equal(lowerExpr, "mission")).thenReturn(predicate);
-        assertThat(AuditLogSpecifications.hasEntityType("MISSION").toPredicate(root, query, cb)).isSameAs(predicate);
+        assertThat(AuditLogSpecifications.hasEntityType("MISSION").toPredicate(root, query, cb))
+                .isSameAs(predicate);
 
         when(root.<String>get("entityId")).thenReturn(entityIdPath);
         when(cb.equal(entityIdPath, "105")).thenReturn(predicate);
-        assertThat(AuditLogSpecifications.hasEntityId("105").toPredicate(root, query, cb)).isSameAs(predicate);
+        assertThat(AuditLogSpecifications.hasEntityId("105").toPredicate(root, query, cb))
+                .isSameAs(predicate);
     }
 
     @Test
     @DisplayName("createdBetween null bounds produce null, bounds build predicate")
     void createdBetween_Tests() {
-        assertThat(AuditLogSpecifications.createdBetween(null, null).toPredicate(root, query, cb)).isNull();
+        assertThat(AuditLogSpecifications.createdBetween(null, null).toPredicate(root, query, cb))
+                .isNull();
 
         LocalDateTime now = LocalDateTime.now();
         when(root.<LocalDateTime>get("createdAt")).thenReturn(createdAtPath);
@@ -164,14 +156,17 @@ class AuditLogSpecificationsTest {
         when(cb.lessThanOrEqualTo(createdAtPath, now)).thenReturn(predicate);
         when(cb.and(any(Predicate.class), any(Predicate.class))).thenReturn(predicate);
 
-        Predicate result = AuditLogSpecifications.createdBetween(now.minusDays(7), now).toPredicate(root, query, cb);
+        Predicate result =
+                AuditLogSpecifications.createdBetween(now.minusDays(7), now)
+                        .toPredicate(root, query, cb);
         assertThat(result).isSameAs(predicate);
     }
 
     @Test
     @DisplayName("filter composite specification combines null-safe criteria")
     void filter_Composite_Tests() {
-        Specification<AuditLog> spec = AuditLogSpecifications.filter(null, null, null, null, null, null);
+        Specification<AuditLog> spec =
+                AuditLogSpecifications.filter(null, null, null, null, null, null);
         assertThat(spec.toPredicate(root, query, cb)).isNull();
     }
 }

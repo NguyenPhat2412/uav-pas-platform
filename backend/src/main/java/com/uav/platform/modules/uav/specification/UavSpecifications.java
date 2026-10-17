@@ -1,10 +1,9 @@
 package com.uav.platform.modules.uav.specification;
 
-
-import com.uav.platform.modules.uav.common.*;
-
 import com.uav.platform.modules.uav.entity.Uav;
-import com.uav.platform.modules.uav.common.UavStatus;
+import com.uav.platform.modules.uav.enums.*;
+import com.uav.platform.modules.uav.enums.UavStatus;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Collection;
@@ -29,8 +28,7 @@ public final class UavSpecifications {
             return cb.or(
                     cb.like(cb.lower(root.get("model")), pattern),
                     cb.like(cb.lower(root.get("serialNumber")), pattern),
-                    cb.like(cb.lower(root.get("manufacturer")), pattern)
-            );
+                    cb.like(cb.lower(root.get("manufacturer")), pattern));
         };
     }
 
@@ -45,21 +43,26 @@ public final class UavSpecifications {
      * Filter by a collection of allowed UavStatuses.
      */
     public static Specification<Uav> hasStatusIn(Collection<UavStatus> statuses) {
-        return (root, query, cb) -> (statuses == null || statuses.isEmpty()) ? null : root.get("status").in(statuses);
+        return (root, query, cb) ->
+                (statuses == null || statuses.isEmpty()) ? null : root.get("status").in(statuses);
     }
 
     /**
      * Filter UAVs assigned to a specific station ID.
      */
     public static Specification<Uav> belongsToStation(Long stationId) {
-        return (root, query, cb) -> stationId == null ? null : cb.equal(root.get("station").get("id"), stationId);
+        return (root, query, cb) ->
+                stationId == null ? null : cb.equal(root.get("station").get("id"), stationId);
     }
 
     /**
      * Filter UAVs matching a specific model name.
      */
     public static Specification<Uav> hasModel(String model) {
-        return (root, query, cb) -> (model == null || model.isBlank()) ? null : cb.equal(root.get("model"), model.trim());
+        return (root, query, cb) ->
+                (model == null || model.isBlank())
+                        ? null
+                        : cb.equal(root.get("model"), model.trim());
     }
 
     /**

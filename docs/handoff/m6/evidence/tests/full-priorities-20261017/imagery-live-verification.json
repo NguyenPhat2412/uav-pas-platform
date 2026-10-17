@@ -1,0 +1,26 @@
+{
+  "status": "IMAGERY_LIVE_PASS",
+  "completedAt": "2026-10-17T11:47:27.038434+07:00",
+  "generatedImages": 3,
+  "generationMode": "built-in image_gen",
+  "sourceManifestFiles": 25,
+  "sourceDrift": 0,
+  "frontendBuilds": 5,
+  "lintExitCode": 0,
+  "frontendContracts": 151,
+  "previewChecks": 14,
+  "liveChecks": 23,
+  "preservedCustomerLogin": "PASS",
+  "backendProcessUnchanged": true,
+  "businessDataChanges": false,
+  "preview3510Stopped": true,
+  "oldFrontendBuildsRetained": "previous-builds",
+  "sourcePreimagesRetained": "before",
+  "releaseArchive": "imagery-release-and-preimages.tar.gz",
+  "releaseArchiveSha256": "0dafffdd01fae25eab7b60bb25144515a7e7f92c5618cd64cd08bd915f840098",
+  "publicImageWebPBytes": [
+    205566,
+    164438,
+    135524
+  ]
+}

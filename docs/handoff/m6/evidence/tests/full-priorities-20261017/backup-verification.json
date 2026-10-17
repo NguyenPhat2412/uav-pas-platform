@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "originalDatabaseRetained": true,
+  "sourceTables": 22,
+  "sourceRows": 117,
+  "databaseRestoreVerified": true,
+  "minioRestoreVerified": true,
+  "sourceArchiveVerified": true,
+  "sourceArchive": "source-config-git.private.tar.gz",
+  "minioArchive": "minio-entire-volume.private.tar.gz"
+}
