@@ -21,11 +21,11 @@
     "@uav/api-client": "*"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@types/react": "^19",
     "eslint": "^9",
-    "@types/react": "^19"
+    "typescript": "^5"
   },
   "peerDependencies": {
-    "react": "^19"
+    "react": "^19.3.0"
   }
 }
