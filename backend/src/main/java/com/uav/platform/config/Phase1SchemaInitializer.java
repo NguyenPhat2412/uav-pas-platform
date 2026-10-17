@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 /** Small idempotent bridge for development databases created before Phase 1 auth fields existed. */
 @Component
-@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name="app.phase1.compatibility-schema.enabled", havingValue="true", matchIfMissing=true)
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name="app.phase1.compatibility-schema.enabled", havingValue="true", matchIfMissing=false)
 @Order(0)
 public class Phase1SchemaInitializer implements org.springframework.boot.ApplicationRunner {
     private static final Logger log = LoggerFactory.getLogger(Phase1SchemaInitializer.class);
