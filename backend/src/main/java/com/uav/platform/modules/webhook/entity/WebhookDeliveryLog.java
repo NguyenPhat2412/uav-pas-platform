@@ -4,11 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "webhook_delivery_logs")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@Getter
+@Setter
 public class WebhookDeliveryLog {
 
     @Id
@@ -52,30 +57,6 @@ public class WebhookDeliveryLog {
     @Column(name = "next_attempt_at")
     private LocalDateTime nextAttemptAt = LocalDateTime.now();
 
-    public String getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(String value) {
-        eventId = value;
-    }
-
-    public String getDeliveryStatus() {
-        return deliveryStatus;
-    }
-
-    public void setDeliveryStatus(String value) {
-        deliveryStatus = value;
-    }
-
-    public LocalDateTime getNextAttemptAt() {
-        return nextAttemptAt;
-    }
-
-    public void setNextAttemptAt(LocalDateTime value) {
-        nextAttemptAt = value;
-    }
-
     public WebhookDeliveryLog() {}
 
     public WebhookDeliveryLog(
@@ -95,85 +76,5 @@ public class WebhookDeliveryLog {
         this.isSuccess = isSuccess;
         this.retryCount = 0;
         this.attemptedAt = LocalDateTime.now();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public WebhookSubscription getSubscription() {
-        return subscription;
-    }
-
-    public void setSubscription(WebhookSubscription subscription) {
-        this.subscription = subscription;
-    }
-
-    public String getEventType() {
-        return eventType;
-    }
-
-    public void setEventType(String eventType) {
-        this.eventType = eventType;
-    }
-
-    public String getPayload() {
-        return payload;
-    }
-
-    public void setPayload(String payload) {
-        this.payload = payload;
-    }
-
-    public Integer getResponseStatusCode() {
-        return responseStatusCode;
-    }
-
-    public void setResponseStatusCode(Integer responseStatusCode) {
-        this.responseStatusCode = responseStatusCode;
-    }
-
-    public String getResponseBody() {
-        return responseBody;
-    }
-
-    public void setResponseBody(String responseBody) {
-        this.responseBody = responseBody;
-    }
-
-    public Integer getDeliveryDurationMs() {
-        return deliveryDurationMs;
-    }
-
-    public void setDeliveryDurationMs(Integer deliveryDurationMs) {
-        this.deliveryDurationMs = deliveryDurationMs;
-    }
-
-    public Boolean getIsSuccess() {
-        return isSuccess;
-    }
-
-    public void setIsSuccess(Boolean isSuccess) {
-        this.isSuccess = isSuccess;
-    }
-
-    public Integer getRetryCount() {
-        return retryCount;
-    }
-
-    public void setRetryCount(Integer retryCount) {
-        this.retryCount = retryCount;
-    }
-
-    public LocalDateTime getAttemptedAt() {
-        return attemptedAt;
-    }
-
-    public void setAttemptedAt(LocalDateTime attemptedAt) {
-        this.attemptedAt = attemptedAt;
     }
 }
