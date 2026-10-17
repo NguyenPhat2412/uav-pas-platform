@@ -25,6 +25,94 @@ class MigrationUpgradePostgresTest {
     private static final String MIGRATIONS = "classpath:db/migration";
 
     @Test
+    void missionSequenceStartsAtOneAndDoesNotReuseRolledBackNumbers() throws Exception {
+        String schema = schema("mission_sequence_fresh");
+        try (Connection c = connection(); Statement s = c.createStatement()) {
+            migrate(schema, null);
+            s.execute("SET search_path TO " + schema);
+            assertEquals(1, nextMissionNumber(c));
+            c.setAutoCommit(false);
+            assertEquals(2, nextMissionNumber(c));
+            c.rollback();
+            c.setAutoCommit(true);
+            assertEquals(3, nextMissionNumber(c));
+            migrate(schema, null);
+            assertEquals(4, nextMissionNumber(c), "Restarting migration must not rewind the sequence");
+        } finally {
+            dropSchema(schema);
+        }
+    }
+
+    @Test
+    void v4UpgradeContinuesAboveLegacyCodesAcrossYearsWithoutChangingMissions() throws Exception {
+        String schema = schema("mission_sequence_upgrade");
+        try (Connection c = connection(); Statement s = c.createStatement()) {
+            migrate(schema, MigrationVersion.fromVersion("4"));
+            s.execute("SET search_path TO " + schema);
+            insertSyntheticUser(c, schema);
+            insertLegacyMission(c, "MSN-2025-900001");
+            insertLegacyMission(c, "MSN-2026-000007");
+            insertLegacyMission(c, "IMPORTED-1234567");
+            migrate(schema, null);
+            assertEquals(900002, nextMissionNumber(c));
+            try (ResultSet r = s.executeQuery("SELECT code FROM missions ORDER BY code")) {
+                assertTrue(r.next()); assertEquals("IMPORTED-1234567", r.getString(1));
+                assertTrue(r.next()); assertEquals("MSN-2025-900001", r.getString(1));
+                assertTrue(r.next()); assertEquals("MSN-2026-000007", r.getString(1));
+                assertEquals(false, r.next());
+            }
+        } finally {
+            dropSchema(schema);
+        }
+    }
+
+    @Test
+    void unmanagedDatabaseIsRefusedUntilAnExplicitVerifiedV4Baseline() throws Exception {
+        String schema = schema("mission_sequence_adoption");
+        try (Connection c = connection(); Statement s = c.createStatement()) {
+            // A known V4-equivalent schema models an audited legacy database without Flyway history.
+            migrate(schema, MigrationVersion.fromVersion("4"));
+            s.execute("SET search_path TO " + schema);
+            insertSyntheticUser(c, schema);
+            insertLegacyMission(c, "MSN-2026-800001");
+            s.execute("DROP TABLE flyway_schema_history");
+            assertThrows(org.flywaydb.core.api.FlywayException.class, () -> migrate(schema, null));
+            assertEquals(1, countSyntheticUser(c, schema));
+            Flyway.configure().dataSource(System.getenv("UAV_STABILIZATION_DB_URL"),
+                            System.getenv("UAV_STABILIZATION_DB_USER"), System.getenv("UAV_STABILIZATION_DB_PASSWORD"))
+                    .schemas(schema).defaultSchema(schema).baselineVersion("4").load().baseline();
+            migrate(schema, null);
+            assertEquals(800002, nextMissionNumber(c));
+            assertEquals(1, countSyntheticUser(c, schema));
+        } finally {
+            dropSchema(schema);
+        }
+    }
+
+    private static long nextMissionNumber(Connection c) throws SQLException {
+        try (Statement s = c.createStatement(); ResultSet r = s.executeQuery("SELECT nextval('mission_code_seq')")) {
+            assertTrue(r.next());
+            return r.getLong(1);
+        }
+    }
+
+    private static void insertLegacyMission(Connection c, String code) throws SQLException {
+        String sql = "INSERT INTO missions(code,customer_id,title,requested_date,start_time,expected_end_time,location_name,mission_type,priority,status,operator_accepted,version) "
+                + "SELECT ?,id,'Legacy mission',DATE '2026-10-17',TIMESTAMP '2026-10-17 10:00:00',TIMESTAMP '2026-10-17 11:00:00','Hanoi','AREA_INSPECTION','NORMAL','DRAFT',false,0 "
+                + "FROM users WHERE username='upgrade_fixture'";
+        try (var s = c.prepareStatement(sql)) {
+            s.setString(1, code);
+            assertEquals(1, s.executeUpdate());
+        }
+    }
+
+    private static void dropSchema(String schema) throws SQLException {
+        try (Connection c = connection(); Statement s = c.createStatement()) {
+            s.execute("DROP SCHEMA IF EXISTS " + schema + " CASCADE");
+        }
+    }
+
+    @Test
     void v2UpgradePreservesFleetAndInventoryAndEnforcesOneActiveRepairOrder() throws Exception {
         String schema = schema("maintenance_upgrade");
         try (Connection c = connection(); Statement s = c.createStatement()) {
@@ -34,7 +122,7 @@ class MigrationUpgradePostgresTest {
             s.executeUpdate("INSERT INTO uavs(id,model,serial_number,manufacturer,status,station_id) VALUES (501,'Synthetic','MIGRATION-UAV','Synthetic','AVAILABLE',501)");
             s.executeUpdate("INSERT INTO equipment(id,name,type,status,station_id,quantity,available_quantity,reserved_quantity) VALUES (501,'Synthetic battery','BATTERY','ACTIVE',501,7,5,2)");
             migrate(schema, null);
-            assertEquals(4, version(c, schema));
+            assertEquals(5, version(c, schema));
             assertTrue(hasUniqueIndex(c, schema, "uk_repair_order_active_uav"));
             try (ResultSet r = s.executeQuery("SELECT u.status,u.station_id,e.quantity,e.available_quantity,e.reserved_quantity FROM uavs u JOIN equipment e ON u.station_id=e.station_id WHERE u.id=501")) {
                 assertTrue(r.next()); assertEquals("AVAILABLE", r.getString(1)); assertEquals(501, r.getLong(2));
@@ -59,7 +147,7 @@ class MigrationUpgradePostgresTest {
             createSchema(connection, upgradeSchema);
 
             migrate(freshSchema, null);
-            assertEquals(4, version(connection, freshSchema));
+            assertEquals(5, version(connection, freshSchema));
             assertTrue(hasColumn(connection, freshSchema, "media_assets", "confirmed"));
             assertEquals(22, tableCount(connection, freshSchema));
 
@@ -69,7 +157,7 @@ class MigrationUpgradePostgresTest {
             assertEquals(1, countSyntheticUser(connection, upgradeSchema));
 
             migrate(upgradeSchema, null);
-            assertEquals(4, version(connection, upgradeSchema));
+            assertEquals(5, version(connection, upgradeSchema));
             assertTrue(hasColumn(connection, upgradeSchema, "media_assets", "deleted"));
             assertTrue(hasUniqueIndex(connection, upgradeSchema, "uk_inventory_request_id"));
             assertEquals(1, countSyntheticUser(connection, upgradeSchema));

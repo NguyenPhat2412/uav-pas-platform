@@ -50,7 +50,7 @@ class MissionServiceTest {
         AppUser customer = new AppUser("customer", "customer@test.vn", "hash", null, UserStatus.ACTIVE);
         customer.setId(7L);
         when(users.findByUsername("customer")).thenReturn(Optional.of(customer));
-        when(missions.count()).thenReturn(0L);
+        when(missions.nextCodeValue()).thenReturn(1L);
         when(missions.save(any(Mission.class))).thenAnswer(invocation -> {
             Mission saved = invocation.getArgument(0);
             saved.setId(10L);

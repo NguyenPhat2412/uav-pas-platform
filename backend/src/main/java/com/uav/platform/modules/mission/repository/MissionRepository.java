@@ -15,6 +15,10 @@ import jakarta.persistence.LockModeType;
 public interface MissionRepository extends JpaRepository<Mission, Long>, JpaSpecificationExecutor<Mission> {
     Optional<Mission> findByCode(String code);
 
+    // Database allocation remains unique across transactions and application instances.
+    @Query(value = "select nextval('mission_code_seq')", nativeQuery = true)
+    long nextCodeValue();
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select m from Mission m where m.id = :id")
     Optional<Mission> findByIdForUpdate(Long id);

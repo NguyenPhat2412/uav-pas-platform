@@ -721,11 +721,7 @@ public class IMissionService implements MissionService {
     }
 
     private String nextCode(int year) {
-        long next = missions.count() + 1;
-        String code;
-        do { code = String.format("MSN-%d-%06d", year, next++); }
-        while (missions.findByCode(code).isPresent());
-        return code;
+        return String.format(java.util.Locale.ROOT, "MSN-%d-%06d", year, missions.nextCodeValue());
     }
 
     private Mission accessibleForUpdate(Long id, Authentication authentication) {
