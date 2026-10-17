@@ -1,4 +1,0 @@
-import { pageMetadata } from '../../src/content/metadata';
-export const metadata = pageMetadata("Terms publication status", "Approved terms are pending publication. Public information is not a booking or mission authorisation.", "/terms", false);
-import { PublicPage } from '../../src/components/public-page';
-export default function TermsPage(){return <PublicPage eyebrow="Terms" title="Terms are under publication review." intro="This page is a transparent placeholder until approved terms are supplied."><div className="page-copy"><p>Public pages describe capabilities and readiness only. They do not create a service booking, quote, emergency response commitment, or mission authorisation.</p><p>Publication review is required before this page is treated as complete legal terms.</p></div></PublicPage>}

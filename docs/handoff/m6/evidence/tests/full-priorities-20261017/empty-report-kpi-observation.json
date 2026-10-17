@@ -1,0 +1,19 @@
+{
+  "status": "FAIL_PENDING_BUSINESS_DECISION",
+  "observedBy": "Authorized UI reviewer on activated main localhost3103/reports; source confirmed by root using knowledge graph",
+  "observed": {
+    "totalMissions": 0,
+    "completedMissions": 0,
+    "displayedMissionSuccessRatePercent": 100.0
+  },
+  "source": {
+    "backend": "backend/src/main/java/com/uav/platform/modules/reporting/service/impl/ReportServiceImpl.java#getOperationsSummary",
+    "frontend": "frontend/apps/admin/app/(portal)/reports/page.tsx#AdminReportsContent",
+    "csv": "ReportServiceImpl.exportOperationsCsv uses the same missionSuccessRate"
+  },
+  "currentFormula": "totalMissions>0 ? completedMissions/totalMissions*100 : 100; total includes all mission statuses",
+  "questionPending": "Preserve formula with no-data empty state, or use completed/(completed+failed) with no-data until terminal sample exists",
+  "authContractChanged": false,
+  "productSourceChangedForThisObservation": false,
+  "scope": "Actual semantic KPI issue, separate from layout-only42checksPASS. No real business records created."
+}

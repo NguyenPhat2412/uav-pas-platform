@@ -1,5 +1,7 @@
 # Shared Packages Design
 
+> Current layout (2026-10-17): apps and packages now live under `frontend/`; the previous frontend is `frontend/legacy/`. See [current setup and path mapping](../README.md).
+
 ## Package contracts
 
 | Package | Public responsibility | Dependencies | Explicit boundary |

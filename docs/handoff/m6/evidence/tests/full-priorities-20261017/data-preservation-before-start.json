@@ -1,0 +1,184 @@
+{
+  "source": "uav_pas_dev",
+  "target": "uav_pas_integrated_20261017",
+  "read_only": true,
+  "pass": true,
+  "tables": [
+    {
+      "table": "audit_logs",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "equipment",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "invalidated_tokens",
+      "source_rows": 1,
+      "target_rows": 1,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "inventory_movements",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "maintenance_schedules",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "media_assets",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "mission_equipment_reservations",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "mission_events",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "mission_media",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "missions",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "permissions",
+      "source_rows": 31,
+      "target_rows": 31,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "refresh_tokens",
+      "source_rows": 1,
+      "target_rows": 1,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "repair_materials",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "repair_orders",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "role_template_permissions",
+      "source_rows": 75,
+      "target_rows": 75,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "role_templates",
+      "source_rows": 4,
+      "target_rows": 4,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "uav_services",
+      "source_rows": 4,
+      "target_rows": 4,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "uav_stations",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "uav_status_history",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "uavs",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "user_permissions",
+      "source_rows": 0,
+      "target_rows": 0,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    },
+    {
+      "table": "users",
+      "source_rows": 1,
+      "target_rows": 1,
+      "missing_or_changed_source_rows": 0,
+      "additional_target_rows": 0,
+      "pass": true
+    }
+  ]
+}

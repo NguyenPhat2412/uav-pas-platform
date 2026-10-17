@@ -1,0 +1,127 @@
+[
+  {
+    "path": "frontend/apps/admin/public/images/uav-people/uav-workshop-team-640.webp",
+    "beforeSha256": null,
+    "afterSha256": "63d01d1386826333c7c842a78d8d203005f48cc66ae0bdec6ae3fab97fc3d5b1"
+  },
+  {
+    "path": "frontend/apps/admin/public/images/uav-people/uav-workshop-team-960.webp",
+    "beforeSha256": null,
+    "afterSha256": "97f8bf2115b0a7b654b9cdf8cc7f7b7ac2244abcded176761c368d272c6c444f"
+  },
+  {
+    "path": "frontend/apps/customer/public/images/uav-people/uav-workshop-team-640.webp",
+    "beforeSha256": null,
+    "afterSha256": "63d01d1386826333c7c842a78d8d203005f48cc66ae0bdec6ae3fab97fc3d5b1"
+  },
+  {
+    "path": "frontend/apps/customer/public/images/uav-people/uav-workshop-team-960.webp",
+    "beforeSha256": null,
+    "afterSha256": "97f8bf2115b0a7b654b9cdf8cc7f7b7ac2244abcded176761c368d272c6c444f"
+  },
+  {
+    "path": "frontend/apps/operations/public/images/uav-people/uav-workshop-team-640.webp",
+    "beforeSha256": null,
+    "afterSha256": "63d01d1386826333c7c842a78d8d203005f48cc66ae0bdec6ae3fab97fc3d5b1"
+  },
+  {
+    "path": "frontend/apps/operations/public/images/uav-people/uav-workshop-team-960.webp",
+    "beforeSha256": null,
+    "afterSha256": "97f8bf2115b0a7b654b9cdf8cc7f7b7ac2244abcded176761c368d272c6c444f"
+  },
+  {
+    "path": "frontend/apps/web/app/about/page.tsx",
+    "beforeSha256": "29318bcfba03de009b65a3e12ac6723ff024fbd4bc004fd411a1e53bccdd94c9",
+    "afterSha256": "ad52acfd8a2eee68fc678b771df797ddc103d621d84dbc623c789f105b67b844"
+  },
+  {
+    "path": "frontend/apps/web/app/globals.css",
+    "beforeSha256": "1711c778c3e700644fa640ea7c7b09201dc94b6138727ca01e10ccba3a4000dc",
+    "afterSha256": "39d010902950b2e77f4f0d073200a922104d5762fbd8c4af20f1dcc84df5eae9"
+  },
+  {
+    "path": "frontend/apps/web/app/page.tsx",
+    "beforeSha256": "a17c4e5afb24aef8432e3a4a9bcfa4fd7c584cff1839222e107f45568781a24c",
+    "afterSha256": "586a07ce158450674bde8e2005f887bab677f6b4e72ce03b9f11812a1f570671"
+  },
+  {
+    "path": "frontend/apps/web/app/services/[slug]/page.tsx",
+    "beforeSha256": "5be11686a9cb58187b9236ca2bd0f8c1f3cfeddcb0adec5afd2951bfc85b610b",
+    "afterSha256": "7bf4760002920313dcb000d0b626da61155ddc8cedecb4dbdf18b3f24feb3917"
+  },
+  {
+    "path": "frontend/apps/web/app/services/page.tsx",
+    "beforeSha256": "89b2e3a916ff114cef8dbf559889acafc8792c341eefc18bb30eed7a910a28a0",
+    "afterSha256": "6fa295e370665df784e7cd0b8ed9b18ecb8151bb7b83534342305a2c99d28325"
+  },
+  {
+    "path": "frontend/apps/web/public/images/uav-people/uav-field-team.webp",
+    "beforeSha256": null,
+    "afterSha256": "74bcd8fdcdbe1635b01e1ee47df8cde9b882dbeb55223a246c0f86bd4bb3ad93"
+  },
+  {
+    "path": "frontend/apps/web/public/images/uav-people/uav-survey-team.webp",
+    "beforeSha256": null,
+    "afterSha256": "7fc80a4f32d9a03ff7a67b38915e5f516e8619d92ff943c6832cffbfa55cf9e1"
+  },
+  {
+    "path": "frontend/apps/web/public/images/uav-people/uav-workshop-team.webp",
+    "beforeSha256": null,
+    "afterSha256": "2f21a3ffe2766e3ac7ba995dd546b634fdec98ea834a0004bcc1504ab4613372"
+  },
+  {
+    "path": "frontend/apps/web/src/components/uav-photo.tsx",
+    "beforeSha256": null,
+    "afterSha256": "46f3b40d76dcd81cc7473feb32fffb2b8ab994db53fa8778a0dbb25e1436d66e"
+  },
+  {
+    "path": "frontend/assets/uav-people/prompts.json",
+    "beforeSha256": null,
+    "afterSha256": "b2461b5befee8cadfaac5f7145ef6116c34f1e679a1f90ca4b3d20853eec4d06"
+  },
+  {
+    "path": "frontend/assets/uav-people/uav-field-team.png",
+    "beforeSha256": null,
+    "afterSha256": "d5dbca17c9c9568939baa796165cdc62a3cfe8b59fbf4d96e340cc5dcce967d1"
+  },
+  {
+    "path": "frontend/assets/uav-people/uav-survey-team.png",
+    "beforeSha256": null,
+    "afterSha256": "ea950a9fe5bebd8857806b544e94dfe5d9a2c13775b50c47b0437cd59c6a9f70"
+  },
+  {
+    "path": "frontend/assets/uav-people/uav-workshop-team.png",
+    "beforeSha256": null,
+    "afterSha256": "fce5a691bed0cc6140d0e1af549e30ab244d540a6a2d8f66140fbde226669af0"
+  },
+  {
+    "path": "frontend/legacy/public/images/uav-people/uav-workshop-team-640.webp",
+    "beforeSha256": null,
+    "afterSha256": "63d01d1386826333c7c842a78d8d203005f48cc66ae0bdec6ae3fab97fc3d5b1"
+  },
+  {
+    "path": "frontend/legacy/public/images/uav-people/uav-workshop-team-960.webp",
+    "beforeSha256": null,
+    "afterSha256": "97f8bf2115b0a7b654b9cdf8cc7f7b7ac2244abcded176761c368d272c6c444f"
+  },
+  {
+    "path": "frontend/legacy/src/components/brand/PortalAuthLayout.tsx",
+    "beforeSha256": "928b80b4993a58a11d36bcc6f17998bcfbb6f6508d2917833caaac4fddf134cb",
+    "afterSha256": "98193e8faea282cd80d734e255abc76d91ed1c1617dd9dd05c082f6683d02226"
+  },
+  {
+    "path": "frontend/legacy/src/styles/portal.css",
+    "beforeSha256": "d7153157702da4ba610f78add4a6b7e890ad93c93c5f0873972b9a30302cff8b",
+    "afterSha256": "dedd8badefedc4bf26dffb4b07879523556d08e735dd9befbd5edac151a64c47"
+  },
+  {
+    "path": "frontend/packages/design-tokens/src/portal.css",
+    "beforeSha256": "8fa0fb45031f2833843b23f5d98c540cd6b8d4ee96310ff3e295d0420ae45de7",
+    "afterSha256": "3dd5c199c055ef58e966a9974c7f44fd411e1625200eda6412e2aa78603d77b5"
+  },
+  {
+    "path": "frontend/packages/ui/src/PortalAuthLayout.tsx",
+    "beforeSha256": "cc845d7edf225152807f7ced395d0bd6ae260639ef87ee6235acd1697c586ccb",
+    "afterSha256": "a1b3987be765154c5e2d9c1ddbfa34eb64fa7ef92ede6498a12bf5ad0a0d309e"
+  }
+]

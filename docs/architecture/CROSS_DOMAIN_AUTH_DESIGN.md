@@ -1,5 +1,13 @@
 # Cross-Domain Authentication Design
 
+## Kiểm chứng hiện tại — 17/10/2026
+
+Giữ nguyên cơ chế cookie/bearer/CSRF đã tích hợp. Bản backend sau chuẩn hóa đã qua 726 test không skip và 151 frontend contract checks; 130 operation OpenAPI không đổi schema/parameter/security. Probe trên preview cuối có 15 HTTP checks PASS: login, cookie HttpOnly, `/auth/me`, refresh, logout, anonymous/invalid bearer 401, CORS allowed 200/rejected 403 và cookie write hợp lệ. Cookie write thiếu CSRF bị từ chối **401 trong probe này**; không suy rằng mọi đường đi đều phải trả 403 hoặc mọi exemption đã được kiểm.
+
+Sau backup và chuyển localhost, readiness cùng kiểm tra anonymous/invalid bearer/CORS và năm frontend đều PASS. Các portal sử dụng cùng hostname/backend có thể dùng lại cookie phiên qua các port; bộ nhớ/cache UI của từng origin vẫn riêng. Điều này không chứng minh SSO trên các hostname hoặc registrable domain khác nhau. Lượt browser hết hạn tự nhiên với TTL 5 giây là evidence ngày 15/10, không được gắn thành một lượt chạy lại trên artifact cuối.
+
+Không đổi auth contract trong gói ưu tiên này. Các yêu cầu HTTPS, cookie scope, CSRF coverage đầy đủ và SSO bên dưới vẫn cần kiểm chứng tại staging thật. Xem [báo cáo ngày 17/10 và evidence](../handoff/m6/M6_FULL_PRIORITIES_2026_10_17.md).
+
 ## Trạng thái sau tích hợp main — 16/10/2026
 
 Main `bbcf437` đã chuyển browser sang cookie trước lượt tích hợp. Bản tích hợp giữ contract này: login/refresh tiếp tục trả JSON `{accessToken, refreshToken, tokenType, user}` để tương thích API client; đồng thời đặt cookie HttpOnly `uav_access_token` (path `/`) và `uav_refresh_token` (path `/api/v1/auth`). JWT filter nhận bearer hoặc cookie. Browser dùng `credentials: include`, `/api/v1/auth/me`, và cache theo chủ thể; logout xóa cookie và dữ liệu phiên.

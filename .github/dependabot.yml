@@ -1,7 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/frontend"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -11,7 +11,7 @@ updates:
       - "frontend"
 
   - package-ecosystem: "npm"
-    directory: "/frontend"
+    directory: "/frontend/legacy"
     schedule:
       interval: "weekly"
       day: "monday"

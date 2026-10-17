@@ -1,7 +1,9 @@
 package com.uav.platform.modules.billing.entity;
 
 import com.uav.platform.modules.user.entity.AppUser;
+
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -31,10 +33,10 @@ public class PaymentTransaction {
     private BigDecimal amount;
 
     @Column(name = "bank_bin", length = 20)
-    private String bankBin = "970415"; // VietinBank
+    private String bankBin;
 
     @Column(name = "bank_account_number", length = 50)
-    private String bankAccountNumber = "101869876543";
+    private String bankAccountNumber;
 
     @Column(name = "emvco_payload", columnDefinition = "TEXT")
     private String emvcoPayload;
@@ -53,7 +55,8 @@ public class PaymentTransaction {
 
     public PaymentTransaction() {}
 
-    public PaymentTransaction(Invoice invoice, AppUser user, String transactionCode, BigDecimal amount) {
+    public PaymentTransaction(
+            Invoice invoice, AppUser user, String transactionCode, BigDecimal amount) {
         this.invoice = invoice;
         this.user = user;
         this.transactionCode = transactionCode;
@@ -62,42 +65,107 @@ public class PaymentTransaction {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Invoice getInvoice() { return invoice; }
-    public void setInvoice(Invoice invoice) { this.invoice = invoice; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public AppUser getUser() { return user; }
-    public void setUser(AppUser user) { this.user = user; }
+    public Invoice getInvoice() {
+        return invoice;
+    }
 
-    public String getTransactionCode() { return transactionCode; }
-    public void setTransactionCode(String transactionCode) { this.transactionCode = transactionCode; }
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
+    }
 
-    public String getGatewayName() { return gatewayName; }
-    public void setGatewayName(String gatewayName) { this.gatewayName = gatewayName; }
+    public AppUser getUser() {
+        return user;
+    }
 
-    public BigDecimal getAmount() { return amount; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
+    public void setUser(AppUser user) {
+        this.user = user;
+    }
 
-    public String getBankBin() { return bankBin; }
-    public void setBankBin(String bankBin) { this.bankBin = bankBin; }
+    public String getTransactionCode() {
+        return transactionCode;
+    }
 
-    public String getBankAccountNumber() { return bankAccountNumber; }
-    public void setBankAccountNumber(String bankAccountNumber) { this.bankAccountNumber = bankAccountNumber; }
+    public void setTransactionCode(String transactionCode) {
+        this.transactionCode = transactionCode;
+    }
 
-    public String getEmvcoPayload() { return emvcoPayload; }
-    public void setEmvcoPayload(String emvcoPayload) { this.emvcoPayload = emvcoPayload; }
+    public String getGatewayName() {
+        return gatewayName;
+    }
 
-    public String getRawIpnCallback() { return rawIpnCallback; }
-    public void setRawIpnCallback(String rawIpnCallback) { this.rawIpnCallback = rawIpnCallback; }
+    public void setGatewayName(String gatewayName) {
+        this.gatewayName = gatewayName;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public BigDecimal getAmount() {
+        return amount;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
 
-    public LocalDateTime getCompletedAt() { return completedAt; }
-    public void setCompletedAt(LocalDateTime completedAt) { this.completedAt = completedAt; }
+    public String getBankBin() {
+        return bankBin;
+    }
+
+    public void setBankBin(String bankBin) {
+        this.bankBin = bankBin;
+    }
+
+    public String getBankAccountNumber() {
+        return bankAccountNumber;
+    }
+
+    public void setBankAccountNumber(String bankAccountNumber) {
+        this.bankAccountNumber = bankAccountNumber;
+    }
+
+    public String getEmvcoPayload() {
+        return emvcoPayload;
+    }
+
+    public void setEmvcoPayload(String emvcoPayload) {
+        this.emvcoPayload = emvcoPayload;
+    }
+
+    public String getRawIpnCallback() {
+        return rawIpnCallback;
+    }
+
+    public void setRawIpnCallback(String rawIpnCallback) {
+        this.rawIpnCallback = rawIpnCallback;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
+    }
 }

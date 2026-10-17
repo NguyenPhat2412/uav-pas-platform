@@ -1,0 +1,54 @@
+{
+  "pass": true,
+  "results": [
+    {
+      "gate": "install-root",
+      "command": [
+        "npm",
+        "ci",
+        "--no-audit",
+        "--ignore-scripts"
+      ],
+      "exitCode": 0,
+      "seconds": 7.3,
+      "log": "docs/work/main-activation-20261017/frontend-cutover-install-root.log"
+    },
+    {
+      "gate": "build-workspace",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exitCode": 0,
+      "seconds": 36.7,
+      "log": "docs/work/main-activation-20261017/frontend-cutover-build-workspace.log"
+    },
+    {
+      "gate": "build-legacy",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exitCode": 0,
+      "seconds": 10.9,
+      "log": "docs/work/main-activation-20261017/frontend-cutover-build-legacy.log"
+    },
+    {
+      "gate": "contracts",
+      "command": [
+        "npm",
+        "run",
+        "test:contracts"
+      ],
+      "exitCode": 0,
+      "seconds": 0.8,
+      "log": "docs/work/main-activation-20261017/frontend-cutover-contracts.log"
+    }
+  ],
+  "apiOrigin": "http://localhost:18082",
+  "authOrigin": "http://localhost:3100",
+  "sourceHashCount": 202,
+  "noSecretsInEvidence": true
+}

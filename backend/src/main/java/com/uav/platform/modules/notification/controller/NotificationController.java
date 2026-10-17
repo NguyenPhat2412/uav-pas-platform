@@ -1,10 +1,12 @@
 package com.uav.platform.modules.notification.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
-import com.uav.platform.modules.notification.config.request.CreateNotificationRequest;
-import com.uav.platform.modules.notification.config.response.NotificationResponse;
+import com.uav.platform.modules.notification.dto.request.CreateNotificationRequest;
+import com.uav.platform.modules.notification.dto.response.NotificationResponse;
 import com.uav.platform.modules.notification.service.NotificationService;
+
 import jakarta.validation.Valid;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +28,16 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<PageResponse<NotificationResponse>> listForUser(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size,
-        Authentication auth
-    ) {
-        return ResponseEntity.ok(notificationService.listForUser(auth, PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100), Sort.by("createdAt").descending())));
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            Authentication auth) {
+        return ResponseEntity.ok(
+                notificationService.listForUser(
+                        auth,
+                        PageRequest.of(
+                                Math.max(page, 0),
+                                Math.min(Math.max(size, 1), 100),
+                                Sort.by("createdAt").descending())));
     }
 
     @GetMapping("/unread-count")
@@ -40,7 +47,8 @@ public class NotificationController {
     }
 
     @PatchMapping("/{id}/read")
-    public ResponseEntity<NotificationResponse> markAsRead(@PathVariable Long id, Authentication auth) {
+    public ResponseEntity<NotificationResponse> markAsRead(
+            @PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(notificationService.markAsRead(id, auth));
     }
 
@@ -52,7 +60,8 @@ public class NotificationController {
 
     @PostMapping
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
-    public ResponseEntity<NotificationResponse> sendNotification(@Valid @RequestBody CreateNotificationRequest request) {
+    public ResponseEntity<NotificationResponse> sendNotification(
+            @Valid @RequestBody CreateNotificationRequest request) {
         return ResponseEntity.status(201).body(notificationService.sendNotification(request));
     }
 }

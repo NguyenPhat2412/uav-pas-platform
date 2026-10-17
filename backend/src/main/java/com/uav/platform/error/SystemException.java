@@ -20,7 +20,9 @@ public class SystemException extends RuntimeException {
         return status;
     }
 
-    public String getCode() { return code; }
+    public String getCode() {
+        return code;
+    }
 
     private static String normalize(String message) {
         if (message == null || message.isBlank()) return "SYSTEM_ERROR";

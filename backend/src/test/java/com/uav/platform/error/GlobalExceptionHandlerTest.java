@@ -1,5 +1,7 @@
 package com.uav.platform.error;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -13,8 +15,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class GlobalExceptionHandlerTest {
 
@@ -31,7 +31,8 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleSystemException_ReturnsCorrectStatusAndBody() {
         SystemException ex = SystemException.conflict("Data already exists");
-        ResponseEntity<ErrorResponse> response = exceptionHandler.handleSystemException(ex, request);
+        ResponseEntity<ErrorResponse> response =
+                exceptionHandler.handleSystemException(ex, request);
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -43,7 +44,8 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleGenericException_ReturnsInternalServerError() {
         Exception ex = new RuntimeException("Unexpected error");
-        ResponseEntity<ErrorResponse> response = exceptionHandler.handleGenericException(ex, request);
+        ResponseEntity<ErrorResponse> response =
+                exceptionHandler.handleGenericException(ex, request);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -54,9 +56,11 @@ class GlobalExceptionHandlerTest {
     void handleValidationException_ReturnsBadRequestWithFieldErrors() {
         BindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "target");
         bindingResult.addError(new FieldError("target", "email", "must not be blank"));
-        MethodArgumentNotValidException ex = new MethodArgumentNotValidException(null, bindingResult);
+        MethodArgumentNotValidException ex =
+                new MethodArgumentNotValidException(null, bindingResult);
 
-        ResponseEntity<ErrorResponse> response = exceptionHandler.handleValidationException(ex, request);
+        ResponseEntity<ErrorResponse> response =
+                exceptionHandler.handleValidationException(ex, request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -67,7 +71,9 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleMalformedJson_ReturnsBadRequestWithCode() {
-        HttpMessageNotReadableException ex = new HttpMessageNotReadableException("Unexpected character", (HttpInputMessage) null);
+        HttpMessageNotReadableException ex =
+                new HttpMessageNotReadableException(
+                        "Unexpected character", (HttpInputMessage) null);
         ResponseEntity<ErrorResponse> response = exceptionHandler.handleMalformedJson(ex, request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -78,8 +84,10 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleParameterException_ReturnsBadRequestWithCode() {
-        MissingServletRequestParameterException ex = new MissingServletRequestParameterException("stationId", "Long");
-        ResponseEntity<ErrorResponse> response = exceptionHandler.handleParameterException(ex, request);
+        MissingServletRequestParameterException ex =
+                new MissingServletRequestParameterException("stationId", "Long");
+        ResponseEntity<ErrorResponse> response =
+                exceptionHandler.handleParameterException(ex, request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -88,8 +96,11 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleDataIntegrityViolation_ReturnsConflictWithoutLeakingSql() {
-        DataIntegrityViolationException ex = new DataIntegrityViolationException("Duplicate entry 'ST-01' for key 'stations.uk_code'");
-        ResponseEntity<ErrorResponse> response = exceptionHandler.handleDataIntegrityViolation(ex, request);
+        DataIntegrityViolationException ex =
+                new DataIntegrityViolationException(
+                        "Duplicate entry 'ST-01' for key 'stations.uk_code'");
+        ResponseEntity<ErrorResponse> response =
+                exceptionHandler.handleDataIntegrityViolation(ex, request);
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertNotNull(response.getBody());

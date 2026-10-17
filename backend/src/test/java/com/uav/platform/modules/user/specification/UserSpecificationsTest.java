@@ -1,11 +1,15 @@
 package com.uav.platform.modules.user.specification;
 
-import com.uav.platform.modules.user.common.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import com.uav.platform.modules.user.entity.AppUser;
-import com.uav.platform.modules.user.common.UserRole;
-import com.uav.platform.modules.user.common.UserStatus;
+import com.uav.platform.modules.user.enums.UserRole;
+import com.uav.platform.modules.user.enums.UserStatus;
+
 import jakarta.persistence.criteria.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,49 +21,33 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserSpecifications Unit Tests")
 class UserSpecificationsTest {
 
-    @Mock
-    private Root<AppUser> root;
+    @Mock private Root<AppUser> root;
 
-    @Mock
-    private CriteriaQuery<?> query;
+    @Mock private CriteriaQuery<?> query;
 
-    @Mock
-    private CriteriaBuilder cb;
+    @Mock private CriteriaBuilder cb;
 
-    @Mock
-    private Path<UserRole> rolePath;
+    @Mock private Path<UserRole> rolePath;
 
-    @Mock
-    private Path<UserStatus> statusPath;
+    @Mock private Path<UserStatus> statusPath;
 
-    @Mock
-    private Path<LocalDateTime> createdAtPath;
+    @Mock private Path<LocalDateTime> createdAtPath;
 
-    @Mock
-    private Path<Long> idPath;
+    @Mock private Path<Long> idPath;
 
-    @Mock
-    private Path<String> usernamePath;
+    @Mock private Path<String> usernamePath;
 
-    @Mock
-    private Path<String> emailPath;
+    @Mock private Path<String> emailPath;
 
-    @Mock
-    private Path<String> fullNamePath;
+    @Mock private Path<String> fullNamePath;
 
-    @Mock
-    private Expression<String> lowerExpr;
+    @Mock private Expression<String> lowerExpr;
 
-    @Mock
-    private Predicate predicate;
+    @Mock private Predicate predicate;
 
     @Test
     @DisplayName("empty or null keyword produces null predicate")
@@ -97,7 +85,8 @@ class UserSpecificationsTest {
         when(root.<UserRole>get("role")).thenReturn(rolePath);
         when(cb.equal(rolePath, UserRole.ROLE_ADMIN)).thenReturn(predicate);
 
-        Predicate result = UserSpecifications.hasRole(UserRole.ROLE_ADMIN).toPredicate(root, query, cb);
+        Predicate result =
+                UserSpecifications.hasRole(UserRole.ROLE_ADMIN).toPredicate(root, query, cb);
         assertThat(result).isSameAs(predicate);
     }
 
@@ -109,14 +98,16 @@ class UserSpecificationsTest {
         when(root.<UserStatus>get("status")).thenReturn(statusPath);
         when(cb.equal(statusPath, UserStatus.ACTIVE)).thenReturn(predicate);
 
-        Predicate result = UserSpecifications.hasStatus(UserStatus.ACTIVE).toPredicate(root, query, cb);
+        Predicate result =
+                UserSpecifications.hasStatus(UserStatus.ACTIVE).toPredicate(root, query, cb);
         assertThat(result).isSameAs(predicate);
     }
 
     @Test
     @DisplayName("createdBetween null bounds produce null, bounds build predicate")
     void createdBetween_Test() {
-        assertThat(UserSpecifications.createdBetween(null, null).toPredicate(root, query, cb)).isNull();
+        assertThat(UserSpecifications.createdBetween(null, null).toPredicate(root, query, cb))
+                .isNull();
 
         LocalDateTime now = LocalDateTime.now();
         when(root.<LocalDateTime>get("createdAt")).thenReturn(createdAtPath);
@@ -124,7 +115,9 @@ class UserSpecificationsTest {
         when(cb.lessThan(createdAtPath, now)).thenReturn(predicate);
         when(cb.and(any(Predicate.class), any(Predicate.class))).thenReturn(predicate);
 
-        Predicate result = UserSpecifications.createdBetween(now.minusDays(1), now).toPredicate(root, query, cb);
+        Predicate result =
+                UserSpecifications.createdBetween(now.minusDays(1), now)
+                        .toPredicate(root, query, cb);
         assertThat(result).isSameAs(predicate);
     }
 
@@ -134,13 +127,16 @@ class UserSpecificationsTest {
         Predicate disjunction = mock(Predicate.class);
         when(cb.disjunction()).thenReturn(disjunction);
 
-        assertThat(UserSpecifications.idIn(null).toPredicate(root, query, cb)).isSameAs(disjunction);
-        assertThat(UserSpecifications.idIn(Collections.emptyList()).toPredicate(root, query, cb)).isSameAs(disjunction);
+        assertThat(UserSpecifications.idIn(null).toPredicate(root, query, cb))
+                .isSameAs(disjunction);
+        assertThat(UserSpecifications.idIn(Collections.emptyList()).toPredicate(root, query, cb))
+                .isSameAs(disjunction);
 
         when(root.<Long>get("id")).thenReturn(idPath);
         Predicate inPredicate = mock(Predicate.class);
         when(idPath.in(anyCollection())).thenReturn(inPredicate);
 
-        assertThat(UserSpecifications.idIn(List.of(1L, 2L)).toPredicate(root, query, cb)).isSameAs(inPredicate);
+        assertThat(UserSpecifications.idIn(List.of(1L, 2L)).toPredicate(root, query, cb))
+                .isSameAs(inPredicate);
     }
 }

@@ -3,10 +3,12 @@ package com.uav.platform.modules.sar.entity;
 import com.uav.platform.common.entity.BaseEntity;
 import com.uav.platform.modules.media.entity.MediaAsset;
 import com.uav.platform.modules.mission.entity.Mission;
-import com.uav.platform.modules.sar.common.AiTaskStatus;
-import com.uav.platform.modules.sar.common.AiTaskType;
-import com.uav.platform.modules.sar.common.ProcessingNode;
+import com.uav.platform.modules.sar.enums.AiTaskStatus;
+import com.uav.platform.modules.sar.enums.AiTaskType;
+import com.uav.platform.modules.sar.enums.ProcessingNode;
+
 import jakarta.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -65,7 +67,12 @@ public class AiTask extends BaseEntity {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
-    public AiTask(Mission mission, MediaAsset media, AiTaskType taskType, ProcessingNode processingNode, Double confidenceThreshold) {
+    public AiTask(
+            Mission mission,
+            MediaAsset media,
+            AiTaskType taskType,
+            ProcessingNode processingNode,
+            Double confidenceThreshold) {
         this.mission = mission;
         this.media = media;
         this.taskType = taskType != null ? taskType : AiTaskType.OBJECT_DETECTION_YOLOV8S;

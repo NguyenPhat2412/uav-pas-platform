@@ -1,6 +1,7 @@
 package com.uav.platform.common.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import org.springframework.data.domain.Page;
 
 import java.util.Collections;
@@ -15,36 +16,23 @@ import java.util.function.Function;
  */
 @Schema(description = "Standardized pagination and sorting response wrapper")
 public record PageResponse<T>(
-        @Schema(description = "List of items in the current page")
-        List<T> content,
-
-        @Schema(description = "Current page index (0-based)", example = "0")
-        int page,
-
+        @Schema(description = "List of items in the current page") List<T> content,
+        @Schema(description = "Current page index (0-based)", example = "0") int page,
         @Schema(description = "Page size (number of items requested per page)", example = "10")
-        int size,
-
+                int size,
         @Schema(description = "Total number of elements matching the query", example = "42")
-        long totalElements,
-
-        @Schema(description = "Total number of pages", example = "5")
-        int totalPages,
-
-        @Schema(description = "Whether this is the first page", example = "true")
-        boolean first,
-
-        @Schema(description = "Whether this is the last page", example = "false")
-        boolean last,
-
+                long totalElements,
+        @Schema(description = "Total number of pages", example = "5") int totalPages,
+        @Schema(description = "Whether this is the first page", example = "true") boolean first,
+        @Schema(description = "Whether this is the last page", example = "false") boolean last,
         @Schema(description = "Whether there is a next page available", example = "true")
-        boolean hasNext,
-
+                boolean hasNext,
         @Schema(description = "Whether there is a previous page available", example = "false")
-        boolean hasPrevious
-) {
+                boolean hasPrevious) {
     public static <T> PageResponse<T> from(Page<T> springPage) {
         if (springPage == null) {
-            return new PageResponse<>(Collections.emptyList(), 0, 0, 0, 0, true, true, false, false);
+            return new PageResponse<>(
+                    Collections.emptyList(), 0, 0, 0, 0, true, true, false, false);
         }
         return new PageResponse<>(
                 springPage.getContent(),
@@ -55,17 +43,15 @@ public record PageResponse<T>(
                 springPage.isFirst(),
                 springPage.isLast(),
                 springPage.hasNext(),
-                springPage.hasPrevious()
-        );
+                springPage.hasPrevious());
     }
 
     public static <E, T> PageResponse<T> from(Page<E> springPage, Function<E, T> mapper) {
         if (springPage == null) {
-            return new PageResponse<>(Collections.emptyList(), 0, 0, 0, 0, true, true, false, false);
+            return new PageResponse<>(
+                    Collections.emptyList(), 0, 0, 0, 0, true, true, false, false);
         }
-        List<T> mappedContent = springPage.getContent().stream()
-                .map(mapper)
-                .toList();
+        List<T> mappedContent = springPage.getContent().stream().map(mapper).toList();
 
         return new PageResponse<>(
                 mappedContent,
@@ -76,7 +62,6 @@ public record PageResponse<T>(
                 springPage.isFirst(),
                 springPage.isLast(),
                 springPage.hasNext(),
-                springPage.hasPrevious()
-        );
+                springPage.hasPrevious());
     }
 }

@@ -1,11 +1,10 @@
 package com.uav.platform.modules.inventory.specification;
 
-
-import com.uav.platform.modules.inventory.common.*;
-
 import com.uav.platform.modules.inventory.entity.Equipment;
-import com.uav.platform.modules.inventory.common.EquipmentStatus;
-import com.uav.platform.modules.inventory.common.EquipmentType;
+import com.uav.platform.modules.inventory.enums.*;
+import com.uav.platform.modules.inventory.enums.EquipmentStatus;
+import com.uav.platform.modules.inventory.enums.EquipmentType;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Collection;
@@ -29,8 +28,7 @@ public final class EquipmentSpecifications {
             String pattern = "%" + keyword.trim().toLowerCase(Locale.ROOT) + "%";
             return cb.or(
                     cb.like(cb.lower(root.get("name")), pattern),
-                    cb.like(cb.lower(cb.coalesce(root.get("serialNumber"), "")), pattern)
-            );
+                    cb.like(cb.lower(cb.coalesce(root.get("serialNumber"), "")), pattern));
         };
     }
 
@@ -57,7 +55,8 @@ public final class EquipmentSpecifications {
      * Filter equipment belonging to a specific station ID.
      */
     public static Specification<Equipment> belongsToStation(Long stationId) {
-        return (root, query, cb) -> stationId == null ? null : cb.equal(root.get("station").get("id"), stationId);
+        return (root, query, cb) ->
+                stationId == null ? null : cb.equal(root.get("station").get("id"), stationId);
     }
 
     /**

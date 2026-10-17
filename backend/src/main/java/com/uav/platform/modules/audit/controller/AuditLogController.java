@@ -1,9 +1,9 @@
 package com.uav.platform.modules.audit.controller;
 
-
-import com.uav.platform.modules.audit.config.response.AuditLogResponse;
-import com.uav.platform.modules.audit.service.AuditLogService;
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.modules.audit.dto.response.AuditLogResponse;
+import com.uav.platform.modules.audit.service.AuditLogService;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +27,11 @@ public class AuditLogController {
     public ResponseEntity<PageResponse<AuditLogResponse>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "25") int size) {
-        return ResponseEntity.ok(auditLogService.findAll(PageRequest.of(
-                Math.max(page, 0), Math.min(Math.max(size, 1), 100),
-                Sort.by(Sort.Direction.DESC, "createdAt"))));
+        return ResponseEntity.ok(
+                auditLogService.findAll(
+                        PageRequest.of(
+                                Math.max(page, 0),
+                                Math.min(Math.max(size, 1), 100),
+                                Sort.by(Sort.Direction.DESC, "createdAt"))));
     }
 }

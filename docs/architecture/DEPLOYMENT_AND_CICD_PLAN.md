@@ -1,5 +1,15 @@
 # Deployment and CI/CD Plan
 
+## Trạng thái thực tế — 17/10/2026
+
+Workflow `.github/workflows/m1-foundation.yml` hiện có năm job: workspace, legacy, backend, audit và browser. Backend dùng PostgreSQL/MinIO riêng, từ chối test bị skip; browser chạy bản dựng production và chỉ xuất evidence đã lọc bí mật. Cleanup lỗi giữ dấu sở hữu để bước dự phòng tiếp tục dọn. Hai nhánh lỗi này đã có 8 kiểm thử mock PASS và review PASS/APPROVE. Đây là cấu hình đã triển khai trong source, **chưa phải hosted CI thành công cho các thay đổi chưa commit**.
+
+Portable run5 đã thực thi 16 browser checks và 12 runner checks, gồm restart vật lý, retry bền vững, named-volume persistence, restore database/object có kiểm hash và rollback về artifact cũ. Nguồn run5 là frozen725 trước refactor; bằng chứng 726 test/445 hash và browser cuối sau refactor được giữ riêng. Không thực hiện down-migration hoặc coi rollback artifact là quyền xóa dữ liệu.
+
+Bản hiện tại đã chạy trên localhost sau backup toàn bộ và restore verification, giữ database gốc. Production dependency audit là 0 cho cả root và legacy; full audit còn 5 HIGH mỗi cây ở dev toolchain. Không bỏ qua finding hoặc nâng major tùy ý. HTTPS staging chưa có, full security coverage và hosted CI còn thiếu; trạng thái sản xuất **NOT_READY**. Các mục image publishing, staging promotion, CDN và domain bên dưới là kế hoạch, không phải hạng mục đã nghiệm thu.
+
+Xem [báo cáo kiểm chứng hiện tại](../handoff/m6/M6_FULL_PRIORITIES_2026_10_17.md) và [portable CI/recovery](../handoff/m6/PORTABLE_CI_AND_RECOVERY.md).
+
 > Cập nhật 16/10/2026: main đã có cookie auth. Workflow hiện kiểm bốn apps/shared, legacy và đầy đủ Maven Java 21 với PostgreSQL/MinIO disposable. Các bước staging/promotion/image publish bên dưới vẫn là kế hoạch, chưa triển khai production trong lượt tích hợp. Xem [báo cáo tích hợp](../handoff/m6/M6_MAIN_INTEGRATION_2026_10_16.md); không giả định đã có cờ rollback tắt cookie.
 
 ## Build units
@@ -15,7 +25,7 @@ admin       -> admin.uavpas.example
 
 Each app uses Next standalone output and has its own image/tag, health check, environment binding, CDN/cache policy and rollback target. The backend image and database lifecycle remain separate and unchanged.
 
-The current baseline has one `frontend/Dockerfile`, one root Compose `frontend` service, a build-time `NEXT_PUBLIC_API_URL` argument and a default `3000` host port. M1 introduces four equivalent build units alongside that service; the legacy service remains available until M6 proves parity.
+The current baseline has one `frontend/legacy/Dockerfile`, one Compose `frontend` service in `backend/docker-compose.yml`, a build-time `NEXT_PUBLIC_API_URL` argument and a default `3000` host port. M1 introduces four equivalent build units alongside that service; the legacy service remains available until M6 proves parity.
 
 ## Environment contract
 
@@ -35,7 +45,7 @@ The local backend CORS default includes localhost ports 3000 and 3100–3103. St
 
 ## CI pipeline
 
-1. Install once from the committed lockfile.
+1. Install from `frontend/package-lock.json` with `npm ci` in `frontend/`; install the independent legacy app with `npm ci --prefix legacy`.
 2. Determine changed apps/packages; changes to a shared package fan out to all consuming apps.
 3. Run package lint/typecheck/unit tests.
 4. Run each affected app lint/typecheck/test/build independently.

@@ -1,9 +1,10 @@
 package com.uav.platform.modules.billing.specification;
 
-import com.uav.platform.modules.billing.common.InvoiceStatus;
 import com.uav.platform.modules.billing.entity.Invoice;
 import com.uav.platform.modules.billing.entity.ServicePlan;
 import com.uav.platform.modules.billing.entity.UserQuota;
+import com.uav.platform.modules.billing.enums.InvoiceStatus;
+
 import org.springframework.data.jpa.domain.Specification;
 
 public final class BillingSpecifications {
@@ -11,7 +12,8 @@ public final class BillingSpecifications {
     private BillingSpecifications() {}
 
     public static Specification<Invoice> belongsToUser(Long userId) {
-        return (root, query, cb) -> userId == null ? null : cb.equal(root.get("user").get("id"), userId);
+        return (root, query, cb) ->
+                userId == null ? null : cb.equal(root.get("user").get("id"), userId);
     }
 
     public static Specification<Invoice> hasStatus(InvoiceStatus status) {
@@ -23,6 +25,7 @@ public final class BillingSpecifications {
     }
 
     public static Specification<UserQuota> quotaForUser(Long userId) {
-        return (root, query, cb) -> userId == null ? null : cb.equal(root.get("user").get("id"), userId);
+        return (root, query, cb) ->
+                userId == null ? null : cb.equal(root.get("user").get("id"), userId);
     }
 }

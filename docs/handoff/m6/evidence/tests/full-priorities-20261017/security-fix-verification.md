@@ -1,0 +1,12 @@
+# Follow-up verification on canonical product snapshot
+
+The four reported findings remain true findings of registered baseline snapshot55c2fd7. This artifact records later remediation evidence; it does not change that snapshot or certify the refactor now in progress.
+
+- payment-callback-authentication-bypass: provider disabled by default; unsigned customer callback returns503 and invoice/quota remain unchanged. PaymentProof/BillingConfiguration/integration coverage checks signature authority, amount/currency/status/identity, replay and atomic plan benefit. Browser evidence task2-browser.json; complete backend725 tests0 failures/errors/skips.
+- embedded-payment-verification-secret: embedded fallback removed, configured secret required to enable provider. No external provider use or credential transmission.
+- cross-mission-safety-alert-authorization: missing mission404, unassigned operator403, mismatched UAV400 before alert/notification/mission effects. Assigned local SAR returns explicit flightCommandSent=false, externalDeliveryConfirmed=false and UNCONFIGURED dispatch; browser task4-browser.json confirms these checks. No hardware or emergency-service integration is claimed.
+- webhook-private-ipv6-ssrf: exact operator-approved destination configuration and globalOFF default; all DNS answers checked for public addresses and actual connection pinned, original host TLSverification retained, redirects disabled, bounded resolution/response/wholeattempt. Controlled transport tests cover privateIPv6/rebinding/timeouts/non2xx; browser rejects127.0.0.1/ULA/userinfo/fragment before persistence. No public receiver send.
+
+Frozen canonical provenance: docs/work/full-priorities-20261017/canonical-task4-media-full-source-before.json421files; fullsummary725PASS0skips; source-drift=[] during run. FinalTask4browser6PASS, medialibrary6PASS, UI independent desktop/mobilePASS. Subscription deletion now retains CANCELLED/DESTINATION_REMOVED financial deliveryhistory; backlog and restart tests present. Later new chat's refactor preimage matches421/421 but current refactor is NOT covered by this source audit or frozen725 result.
+
+Coverage remains partial: deduplicated83 source files independently reviewed against estimated1677 repository files. No real HTTPSstaging, fullcrossdomainSSO, allproductionconfiguration, realprovider/government/hardware, or complete postrefactor security audit. Dependency audits are separate: root+legacy production0, full5HIGH each devtoolchain; not a clean-all claim.

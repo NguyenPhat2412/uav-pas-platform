@@ -1,0 +1,84 @@
+{
+  "status": "PASS",
+  "scope": "Isolated localhost18582 cookie/bearer API behavior; not cross-domain SSO or staging validation",
+  "liveRuntimeTouched": false,
+  "checks": [
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/missions",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/register",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/missions",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/missions",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/missions",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/logout",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 400
+    }
+  ],
+  "sessionCookiesHttpOnly": true,
+  "missingCsrfDenialStatus": 401
+}

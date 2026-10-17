@@ -2,7 +2,9 @@ package com.uav.platform.modules.sar.entity;
 
 import com.uav.platform.common.entity.BaseEntity;
 import com.uav.platform.modules.mission.entity.Mission;
+
 import jakarta.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,6 +50,7 @@ public class AiDetection extends BaseEntity {
 
     @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double latitude;
+
     @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.NUMERIC)
     private Double longitude;
 
@@ -60,9 +63,18 @@ public class AiDetection extends BaseEntity {
     @Column(name = "verified_by", length = 100)
     private String verifiedBy;
 
-    public AiDetection(AiTask aiTask, Mission mission, String label, Double confidence,
-                       Double boxTop, Double boxLeft, Double boxWidth, Double boxHeight,
-                       Double latitude, Double longitude, String trackingId) {
+    public AiDetection(
+            AiTask aiTask,
+            Mission mission,
+            String label,
+            Double confidence,
+            Double boxTop,
+            Double boxLeft,
+            Double boxWidth,
+            Double boxHeight,
+            Double latitude,
+            Double longitude,
+            String trackingId) {
         this.aiTask = aiTask;
         this.mission = mission;
         this.label = label;

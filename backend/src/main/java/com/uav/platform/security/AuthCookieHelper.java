@@ -2,6 +2,7 @@ package com.uav.platform.security;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -21,20 +22,20 @@ public class AuthCookieHelper {
     public AuthCookieHelper(
             @Value("${app.cookie.secure:false}") boolean secure,
             @Value("${app.cookie.same-site:Lax}") String sameSite,
-            @Value("${app.cookie.domain:}") String domain
-    ) {
+            @Value("${app.cookie.domain:}") String domain) {
         this.secure = secure;
         this.sameSite = sameSite;
         this.domain = domain;
     }
 
     public ResponseCookie createAccessTokenCookie(String token, long maxAgeSeconds) {
-        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(ACCESS_TOKEN_COOKIE, token)
-                .httpOnly(true)
-                .secure(secure)
-                .sameSite(sameSite)
-                .path("/")
-                .maxAge(Duration.ofSeconds(maxAgeSeconds));
+        ResponseCookie.ResponseCookieBuilder builder =
+                ResponseCookie.from(ACCESS_TOKEN_COOKIE, token)
+                        .httpOnly(true)
+                        .secure(secure)
+                        .sameSite(sameSite)
+                        .path("/")
+                        .maxAge(Duration.ofSeconds(maxAgeSeconds));
 
         if (domain != null && !domain.isBlank()) {
             builder.domain(domain.trim());
@@ -43,12 +44,13 @@ public class AuthCookieHelper {
     }
 
     public ResponseCookie createRefreshTokenCookie(String refreshToken, long maxAgeSeconds) {
-        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(REFRESH_TOKEN_COOKIE, refreshToken)
-                .httpOnly(true)
-                .secure(secure)
-                .sameSite(sameSite)
-                .path("/api/v1/auth")
-                .maxAge(Duration.ofSeconds(maxAgeSeconds));
+        ResponseCookie.ResponseCookieBuilder builder =
+                ResponseCookie.from(REFRESH_TOKEN_COOKIE, refreshToken)
+                        .httpOnly(true)
+                        .secure(secure)
+                        .sameSite(sameSite)
+                        .path("/api/v1/auth")
+                        .maxAge(Duration.ofSeconds(maxAgeSeconds));
 
         if (domain != null && !domain.isBlank()) {
             builder.domain(domain.trim());
@@ -57,12 +59,13 @@ public class AuthCookieHelper {
     }
 
     public ResponseCookie clearAccessTokenCookie() {
-        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(ACCESS_TOKEN_COOKIE, "")
-                .httpOnly(true)
-                .secure(secure)
-                .sameSite(sameSite)
-                .path("/")
-                .maxAge(0);
+        ResponseCookie.ResponseCookieBuilder builder =
+                ResponseCookie.from(ACCESS_TOKEN_COOKIE, "")
+                        .httpOnly(true)
+                        .secure(secure)
+                        .sameSite(sameSite)
+                        .path("/")
+                        .maxAge(0);
 
         if (domain != null && !domain.isBlank()) {
             builder.domain(domain.trim());
@@ -71,12 +74,13 @@ public class AuthCookieHelper {
     }
 
     public ResponseCookie clearRefreshTokenCookie() {
-        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(REFRESH_TOKEN_COOKIE, "")
-                .httpOnly(true)
-                .secure(secure)
-                .sameSite(sameSite)
-                .path("/api/v1/auth")
-                .maxAge(0);
+        ResponseCookie.ResponseCookieBuilder builder =
+                ResponseCookie.from(REFRESH_TOKEN_COOKIE, "")
+                        .httpOnly(true)
+                        .secure(secure)
+                        .sameSite(sameSite)
+                        .path("/api/v1/auth")
+                        .maxAge(0);
 
         if (domain != null && !domain.isBlank()) {
             builder.domain(domain.trim());

@@ -1,13 +1,25 @@
 package com.uav.platform.modules.mission;
 
-import com.uav.platform.modules.audit.common.AuditAction;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import com.uav.platform.modules.audit.enums.AuditAction;
 import com.uav.platform.modules.audit.service.AuditLogService;
-import com.uav.platform.modules.mission.common.*;
-import com.uav.platform.modules.mission.config.request.MissionCreateRequest;
+import com.uav.platform.modules.billing.repository.ServicePlanRepository;
+import com.uav.platform.modules.mission.dto.request.MissionCreateRequest;
+import com.uav.platform.modules.mission.enums.*;
 import com.uav.platform.modules.mission.service.MissionService;
-import com.uav.platform.modules.user.common.*;
 import com.uav.platform.modules.user.entity.AppUser;
+import com.uav.platform.modules.user.enums.UserRole;
+import com.uav.platform.modules.user.enums.UserStatus;
 import com.uav.platform.modules.user.repository.UserRepository;
+import com.uav.platform.support.ServicePlanTestData;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,17 +37,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doThrow;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 /** HTTP requests commit independently: stale sequential tabs and actual database contention. */
-@SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:draft_concurrency;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=10000")
+@SpringBootTest(
+        properties =
+                "spring.datasource.url=jdbc:h2:mem:draft_concurrency;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=10000")
 class MissionDraftConcurrencyIntegrationTest {
+    @Autowired ServicePlanRepository servicePlans;
     @Autowired MissionService missions;
     @Autowired UserRepository users;
     @Autowired WebApplicationContext context;
@@ -46,18 +53,45 @@ class MissionDraftConcurrencyIntegrationTest {
     private Long id;
     private LocalDateTime start;
 
-    @BeforeEach void fixture() {
-        customer = user(); other = user();
+    @BeforeEach
+    void fixture() {
+        ServicePlanTestData.ensureBasicPlan(servicePlans);
+        customer = user();
+        other = user();
         start = LocalDateTime.now().plusDays(3).withNano(0);
-        id = missions.create(new MissionCreateRequest(MissionType.AREA_INSPECTION, "Original draft", "Original description",
-                start.toLocalDate(), start, start.plusHours(1), "Hanoi", null, null, null, MissionPriority.NORMAL, "Original notes"), customer.getUsername()).id();
-        mvc = MockMvcBuilders.webAppContextSetup(context)
-                .defaultRequest(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/")
-                        .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()))
-                .apply(springSecurity()).build();
+        id =
+                missions.create(
+                                new MissionCreateRequest(
+                                        MissionType.AREA_INSPECTION,
+                                        "Original draft",
+                                        "Original description",
+                                        start.toLocalDate(),
+                                        start,
+                                        start.plusHours(1),
+                                        "Hanoi",
+                                        null,
+                                        null,
+                                        null,
+                                        MissionPriority.NORMAL,
+                                        "Original notes"),
+                                customer.getUsername())
+                        .id();
+        mvc =
+                MockMvcBuilders.webAppContextSetup(context)
+                        .defaultRequest(
+                                org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                        .get("/")
+                                        .with(
+                                                org.springframework.security.test.web.servlet
+                                                        .request
+                                                        .SecurityMockMvcRequestPostProcessors
+                                                        .csrf()))
+                        .apply(springSecurity())
+                        .build();
     }
 
-    @Test void oldTabCannotOverwriteAnAlreadyCommittedEditOrAppendHistory() throws Exception {
+    @Test
+    void oldTabCannotOverwriteAnAlreadyCommittedEditOrAppendHistory() throws Exception {
         long readVersion = version();
         assertEquals(200, edit(customer, "Saved by tab A", readVersion));
         var saved = snapshot();
@@ -66,75 +100,120 @@ class MissionDraftConcurrencyIntegrationTest {
         assertEquals("Saved by tab A", title());
     }
 
-    @Test void getAndPatchExposeTheCommittedVersionForTheNextEdit() throws Exception {
+    @Test
+    void getAndPatchExposeTheCommittedVersionForTheNextEdit() throws Exception {
         long first = version();
-        mvc.perform(get(path()).with(authentication(auth(customer)))).andExpect(status().isOk())
+        mvc.perform(get(path()).with(authentication(auth(customer))))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.version").value(first));
-        mvc.perform(patch(path()).with(authentication(auth(customer))).contentType("application/json").content(body("First edit", first)))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.version").value(first + 1));
+        mvc.perform(
+                        patch(path())
+                                .with(authentication(auth(customer)))
+                                .contentType("application/json")
+                                .content(body("First edit", first)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.version").value(first + 1));
         assertEquals(first + 1, version());
         assertEquals(200, edit(customer, "Second edit after reload", version()));
         assertEquals("Second edit after reload", title());
     }
 
-    @ParameterizedTest @ValueSource(strings = {"missing", "null", "-1"})
+    @ParameterizedTest
+    @ValueSource(strings = {"missing", "null", "-1"})
     void missingOrInvalidVersionCannotBypassTheGuard(String value) throws Exception {
         var before = snapshot();
-        String json = body("Bypass attempt", 0).replace("\"expectedVersion\":0,", value.equals("missing") ? "" : "\"expectedVersion\":" + value + ",");
-        mvc.perform(patch(path()).with(authentication(auth(customer))).contentType("application/json").content(json))
+        String json =
+                body("Bypass attempt", 0)
+                        .replace(
+                                "\"expectedVersion\":0,",
+                                value.equals("missing")
+                                        ? ""
+                                        : "\"expectedVersion\":" + value + ",");
+        mvc.perform(
+                        patch(path())
+                                .with(authentication(auth(customer)))
+                                .contentType("application/json")
+                                .content(json))
                 .andExpect(status().isBadRequest());
         assertEquals(before, snapshot());
     }
 
-    @Test void versionFromTheFutureIsRejectedWithoutMutation() throws Exception {
+    @Test
+    void versionFromTheFutureIsRejectedWithoutMutation() throws Exception {
         var before = snapshot();
         assertEquals(409, edit(customer, "Future version", version() + 5));
         assertEquals(before, snapshot());
     }
 
-    @Test void otherCustomerCannotEditEvenWithTheCorrectVersion() throws Exception {
+    @Test
+    void otherCustomerCannotEditEvenWithTheCorrectVersion() throws Exception {
         var before = snapshot();
         assertEquals(403, edit(other, "Other customer", version()));
         assertEquals(before, snapshot());
     }
 
-    @Test void anonymousCannotReadOrEditDraft() throws Exception {
+    @Test
+    void anonymousCannotReadOrEditDraft() throws Exception {
         mvc.perform(get(path())).andExpect(status().isUnauthorized());
-        mvc.perform(patch(path()).contentType("application/json").content(body("Anonymous", version())))
+        mvc.perform(
+                        patch(path())
+                                .contentType("application/json")
+                                .content(body("Anonymous", version())))
                 .andExpect(status().isUnauthorized());
     }
 
-    @ParameterizedTest @ValueSource(strings = {"submit", "cancel"})
-    void aDraftCannotBeEditedAfterLeavingDraftEvenWithTheLatestVersion(String action) throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"submit", "cancel"})
+    void aDraftCannotBeEditedAfterLeavingDraftEvenWithTheLatestVersion(String action)
+            throws Exception {
         assertEquals(200, transition(action));
         var before = snapshot();
         assertEquals(409, edit(customer, "Late edit", version()));
         assertEquals(before, snapshot());
     }
 
-    @Test void twoConcurrentEditsFromOneSnapshotHaveExactlyOneWinner() throws Exception {
+    @Test
+    void twoConcurrentEditsFromOneSnapshotHaveExactlyOneWinner() throws Exception {
         long first = version();
-        var statuses = race(() -> edit(customer, "Concurrent A", first), () -> edit(customer, "Concurrent B", first));
+        var statuses =
+                race(
+                        () -> edit(customer, "Concurrent A", first),
+                        () -> edit(customer, "Concurrent B", first));
         assertEquals(List.of(200, 409), statuses.stream().sorted().toList());
         assertEquals(first + 1, version());
-        assertEquals(1, db.queryForObject("SELECT count(*) FROM mission_events WHERE mission_id=? AND event_type='UPDATED'", Integer.class, id));
+        assertEquals(
+                1,
+                db.queryForObject(
+                        "SELECT count(*) FROM mission_events WHERE mission_id=? AND event_type='UPDATED'",
+                        Integer.class,
+                        id));
         assertTrue(Set.of("Concurrent A", "Concurrent B").contains(title()));
     }
 
-    @ParameterizedTest @ValueSource(strings = {"submit", "cancel"})
+    @ParameterizedTest
+    @ValueSource(strings = {"submit", "cancel"})
     void editRacingWithTransitionNeverWritesAfterTheTransition(String action) throws Exception {
         long first = version();
-        var statuses = race(() -> edit(customer, "Edit racing transition", first), () -> transition(action));
+        var statuses =
+                race(
+                        () -> edit(customer, "Edit racing transition", first),
+                        () -> transition(action));
         assertEquals(200, statuses.get(1));
         assertTrue(Set.of(200, 409).contains(statuses.get(0)));
-        assertEquals(action.equals("submit") ? "PENDING_CONFIRMATION" : "CANCELLED",
+        assertEquals(
+                action.equals("submit") ? "PENDING_CONFIRMATION" : "CANCELLED",
                 db.queryForObject("SELECT status FROM missions WHERE id=?", String.class, id));
         assertEquals(statuses.get(0) == 200 ? "Edit racing transition" : "Original draft", title());
-        var events = db.queryForList("SELECT event_type FROM mission_events WHERE mission_id=? ORDER BY id", String.class, id);
+        var events =
+                db.queryForList(
+                        "SELECT event_type FROM mission_events WHERE mission_id=? ORDER BY id",
+                        String.class,
+                        id);
         assertEquals(action.equals("submit") ? "SUBMITTED" : "CANCELLED", events.getLast());
     }
 
-    @Test void lostResponseRetryDoesNotAppendASecondUpdate() throws Exception {
+    @Test
+    void lostResponseRetryDoesNotAppendASecondUpdate() throws Exception {
         long first = version();
         assertEquals(200, edit(customer, "Committed before disconnect", first));
         var saved = snapshot();
@@ -142,50 +221,115 @@ class MissionDraftConcurrencyIntegrationTest {
         assertEquals(saved, snapshot());
     }
 
-    @Test void auditFailureRollsBackDraftVersionContentAndTimeline() throws Exception {
+    @Test
+    void auditFailureRollsBackDraftVersionContentAndTimeline() throws Exception {
         var before = snapshot();
-        doThrow(new IllegalStateException("Synthetic audit failure")).when(audit)
-                .record(isNull(), eq(customer.getUsername()), eq(AuditAction.UPDATE), eq("MISSION"), eq(id.toString()), anyString());
+        doThrow(new IllegalStateException("Synthetic audit failure"))
+                .when(audit)
+                .record(
+                        isNull(),
+                        eq(customer.getUsername()),
+                        eq(AuditAction.UPDATE),
+                        eq("MISSION"),
+                        eq(id.toString()),
+                        anyString());
         assertEquals(409, edit(customer, "Must roll back", version()));
         assertEquals(before, snapshot());
     }
 
     private int edit(AppUser actor, String title, long version) throws Exception {
-        return mvc.perform(patch(path()).with(authentication(auth(actor))).contentType("application/json")
-                .content(body(title, version))).andReturn().getResponse().getStatus();
+        return mvc.perform(
+                        patch(path())
+                                .with(authentication(auth(actor)))
+                                .contentType("application/json")
+                                .content(body(title, version)))
+                .andReturn()
+                .getResponse()
+                .getStatus();
     }
+
     private int transition(String action) throws Exception {
-        return mvc.perform(post(path() + "/" + action).with(authentication(auth(customer)))).andReturn().getResponse().getStatus();
+        return mvc.perform(post(path() + "/" + action).with(authentication(auth(customer))))
+                .andReturn()
+                .getResponse()
+                .getStatus();
     }
+
     private String body(String title, long version) {
         return """
                 {"expectedVersion":%d,"title":"%s","description":"Updated description","requestedDate":"%s",
                  "startTime":"%s","expectedEndTime":"%s","locationName":"Hanoi","priority":"HIGH","notes":"Updated notes"}
-                """.formatted(version, title, start.toLocalDate(), start, start.plusHours(1));
+                """
+                .formatted(version, title, start.toLocalDate(), start, start.plusHours(1));
     }
-    private String path() { return "/api/v1/missions/" + id; }
-    private long version() { return db.queryForObject("SELECT version FROM missions WHERE id=?", Long.class, id); }
-    private String title() { return db.queryForObject("SELECT title FROM missions WHERE id=?", String.class, id); }
+
+    private String path() {
+        return "/api/v1/missions/" + id;
+    }
+
+    private long version() {
+        return db.queryForObject("SELECT version FROM missions WHERE id=?", Long.class, id);
+    }
+
+    private String title() {
+        return db.queryForObject("SELECT title FROM missions WHERE id=?", String.class, id);
+    }
+
     private List<?> snapshot() {
-        return List.of(db.queryForMap("SELECT title,description,status,notes,version,updated_at FROM missions WHERE id=?", id),
-                db.queryForObject("SELECT count(*) FROM mission_events WHERE mission_id=?", Integer.class, id),
-                db.queryForObject("SELECT count(*) FROM audit_logs WHERE actor_username=?", Integer.class, customer.getUsername()));
+        return List.of(
+                db.queryForMap(
+                        "SELECT title,description,status,notes,version,updated_at FROM missions WHERE id=?",
+                        id),
+                db.queryForObject(
+                        "SELECT count(*) FROM mission_events WHERE mission_id=?",
+                        Integer.class,
+                        id),
+                db.queryForObject(
+                        "SELECT count(*) FROM audit_logs WHERE actor_username=?",
+                        Integer.class,
+                        customer.getUsername()));
     }
+
     private AppUser user() {
         String username = "draft_" + UUID.randomUUID().toString().substring(0, 8);
-        return users.save(new AppUser(username, username + "@example.invalid", "fixture-placeholder", null, null, null, null, UserRole.ROLE_PILOT, UserStatus.ACTIVE));
+        return users.save(
+                new AppUser(
+                        username,
+                        username + "@example.invalid",
+                        "fixture-placeholder",
+                        null,
+                        null,
+                        null,
+                        null,
+                        UserRole.ROLE_PILOT,
+                        UserStatus.ACTIVE));
     }
+
     private UsernamePasswordAuthenticationToken auth(AppUser actor) {
-        return UsernamePasswordAuthenticationToken.authenticated(actor.getUsername(), "n/a", List.of());
+        return UsernamePasswordAuthenticationToken.authenticated(
+                actor.getUsername(), "n/a", List.of());
     }
+
     private List<Integer> race(Callable<Integer> left, Callable<Integer> right) throws Exception {
         var pool = Executors.newFixedThreadPool(2);
         var gate = new CountDownLatch(1);
         try {
-            var a = pool.submit(() -> { gate.await(); return left.call(); });
-            var b = pool.submit(() -> { gate.await(); return right.call(); });
+            var a =
+                    pool.submit(
+                            () -> {
+                                gate.await();
+                                return left.call();
+                            });
+            var b =
+                    pool.submit(
+                            () -> {
+                                gate.await();
+                                return right.call();
+                            });
             gate.countDown();
             return List.of(a.get(25, TimeUnit.SECONDS), b.get(25, TimeUnit.SECONDS));
-        } finally { pool.shutdownNow(); }
+        } finally {
+            pool.shutdownNow();
+        }
     }
 }

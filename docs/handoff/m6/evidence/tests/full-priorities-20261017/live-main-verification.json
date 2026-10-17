@@ -1,0 +1,59 @@
+{
+  "status": "LIVE_MAIN_PASS",
+  "completedAt": "2026-10-17T11:10:18.076801+07:00",
+  "project": "/Volumes/D/Codex/projects/uav-pas-platform",
+  "urls": {
+    "Website": "http://localhost:3100/",
+    "Khách hàng": "http://localhost:3101/login",
+    "Vận hành": "http://localhost:3102/login",
+    "Quản trị": "http://localhost:3103/login",
+    "Giao diện cũ": "http://localhost:3300/login",
+    "Backend": "http://localhost:18082/actuator/health"
+  },
+  "backendTests": {
+    "tests": 726,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "apiPaths": 109,
+  "unchangedApiOperations": 130,
+  "frontendProductionBuilds": 5,
+  "frontendContractChecks": 151,
+  "postRefactorPreviewChecks": {
+    "handover": 14,
+    "webhookAndSar": 6,
+    "media": 6,
+    "authentication": 15
+  },
+  "liveUI": {
+    "routes": 21,
+    "viewportChecks": 42,
+    "horizontalOverflow": 0,
+    "alerts": 0,
+    "consoleErrors": 0
+  },
+  "frozenBackendSourceFilesVerified": 445,
+  "deployedFrontendSourceFilesVerified": 202,
+  "originalDataBeforeActivation": {
+    "tables": 22,
+    "rows": 117,
+    "fullyRestoredAndCompared": true
+  },
+  "postStartupPreservation": "post-startup-data-verification.json",
+  "originalDatabaseRetained": true,
+  "originalMediaVolumeRetained": true,
+  "backupIndex": "BACKUP-INDEX.json",
+  "activatedReleaseArchive": "activated-release-archive.json",
+  "previewServersStopped": true,
+  "mainServersLeftRunning": true,
+  "visibleRootDirectories": [
+    "backend",
+    "docs",
+    "frontend"
+  ],
+  "npmWorksWithoutPathChanges": true,
+  "outboundWebhooksEnabled": false,
+  "testBusinessFixturesImportedIntoMain": false,
+  "scope": "Verified local main runtime; no remote production deployment or hosted CI claim. BA documentation completion remains in its owning chat."
+}

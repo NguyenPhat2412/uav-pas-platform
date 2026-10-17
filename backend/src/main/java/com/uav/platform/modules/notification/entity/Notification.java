@@ -1,9 +1,11 @@
 package com.uav.platform.modules.notification.entity;
 
 import com.uav.platform.common.entity.BaseEntity;
-import com.uav.platform.modules.notification.common.NotificationType;
+import com.uav.platform.modules.notification.enums.NotificationType;
 import com.uav.platform.modules.user.entity.AppUser;
+
 import jakarta.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,7 +41,13 @@ public class Notification extends BaseEntity {
     @Column(name = "is_read", nullable = false)
     private Boolean isRead = false;
 
-    public Notification(AppUser user, String title, String content, NotificationType type, String referenceType, Long referenceId) {
+    public Notification(
+            AppUser user,
+            String title,
+            String content,
+            NotificationType type,
+            String referenceType,
+            Long referenceId) {
         this.user = user;
         this.title = title;
         this.content = content;

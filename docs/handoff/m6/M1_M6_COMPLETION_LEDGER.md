@@ -1,3 +1,14 @@
+# Sổ hoàn thiện hiện tại — 17/10/2026
+
+M1–M6 có nền tảng bốnapp/shared/legacy và luồng nghiệp vụ đã kiểm cục bộ. Các ưu tiên ngày17/10 đã có source review, test và localhost activation; tổng dự ánPARTIAL, sản xuấtNOT_READY. Chưa có hostedCI/sourcecuối, HTTPSstaging/SSO và fullsecuritycoverage. BA3 truy vết48FR với phạm vi evidence, không tự đặt tỷ lệ hoàn thiện.
+
+Xem [báo cáo hiện tại và bảng PASS/FAIL/BLOCKED](M6_FULL_PRIORITIES_2026_10_17.md) và [index evidence](evidence/tests/full-priorities-20261017/README.md). Các giới hạn có trong báo cáo hiện tại được giữ nguyên; không suy từ kết quả local thành production-ready.
+
+<details>
+<summary>Hồ sơ lịch sử trước 17/10/2026 — không phải trạng thái hiện tại</summary>
+
+Những tiêu đề “mới nhất”, số test, cấu trúc thư mục và trạng thái auth trong phần lưu trữ dưới đây chỉ đúng tại ngày/bản nguồn được ghi. Báo cáo hiện tại phía trên có ưu tiên khi đọc trạng thái hôm nay.
+
 # UAV PAS — Sổ hoàn thiện M1–M6
 
 > **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
@@ -110,3 +121,6 @@ Ghi ngày, requirement/task ID, mô tả trước/sau, files/FE/API/schema affec
 | BA-32 clean code/release docs | NOT_VERIFIED | Goal/plan/ledger now define the bar | Review every touched slice and final same-SHA regression |
 
 These statuses are a starting ledger, not a completion claim. Update them with test/evidence and commit SHA as each task closes.
+
+
+</details>

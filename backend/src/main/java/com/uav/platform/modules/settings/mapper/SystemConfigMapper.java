@@ -1,6 +1,6 @@
 package com.uav.platform.modules.settings.mapper;
 
-import com.uav.platform.modules.settings.config.response.SystemConfigurationResponse;
+import com.uav.platform.modules.settings.dto.response.SystemConfigurationResponse;
 import com.uav.platform.modules.settings.entity.SystemConfiguration;
 
 public final class SystemConfigMapper {
@@ -9,13 +9,12 @@ public final class SystemConfigMapper {
 
     public static SystemConfigurationResponse toResponse(SystemConfiguration c) {
         return new SystemConfigurationResponse(
-            c.getId(),
-            c.getConfigKey(),
-            c.getConfigValue(),
-            c.getCategory(),
-            c.getDescription(),
-            c.getUpdatedAt(),
-            c.getUpdatedBy()
-        );
+                c.getId(),
+                c.getConfigKey(),
+                c.getConfigValue(),
+                c.getCategory(),
+                c.getDescription(),
+                c.getUpdatedAt(),
+                c.getUpdatedBy());
     }
 }

@@ -1,3 +1,14 @@
+# Shared packages hiện tại — 17/10/2026
+
+Bảy sharedpackages trongfrontend/packages; bốn app dùng chung hợp đồng/API/query/session/types/UI/config. Lint/typecheck/test/build đủ gate; contracts151 với backendcuốiPASS. Sharedmedia policy vàportalCSS được sinh cholegacy,byteparity đãreview. Không chuyển credential củaAPI sangsignedstorageorigin.
+
+Xem [báo cáo hiện tại và bảng PASS/FAIL/BLOCKED](M6_FULL_PRIORITIES_2026_10_17.md) và [index evidence](evidence/tests/full-priorities-20261017/README.md). Các giới hạn có trong báo cáo hiện tại được giữ nguyên; không suy từ kết quả local thành production-ready.
+
+<details>
+<summary>Hồ sơ lịch sử trước 17/10/2026 — không phải trạng thái hiện tại</summary>
+
+Những tiêu đề “mới nhất”, số test, cấu trúc thư mục và trạng thái auth trong phần lưu trữ dưới đây chỉ đúng tại ngày/bản nguồn được ghi. Báo cáo hiện tại phía trên có ưu tiên khi đọc trạng thái hôm nay.
+
 # M6 shared packages report
 
 > **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
@@ -44,3 +55,6 @@ Vietnamese portal UI, lifecycle/permission-aware controls, compact history and m
 The workspace resolves and builds @uav/api-client, @uav/auth-contracts, @uav/config, @uav/design-tokens, @uav/query, @uav/types and @uav/ui for all four apps. Root lint, typecheck, tests and production builds pass. App configs use transpilePackages; no app-to-app dependency was introduced.
 
 The shared auth/query boundary still exposes the current bearer/localStorage compatibility model. That is documented as an SSO blocker rather than hidden in a package wrapper.
+
+
+</details>

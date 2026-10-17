@@ -1,16 +1,17 @@
 package com.uav.platform.security;
 
-import com.uav.platform.modules.user.common.*;
-
-import com.uav.platform.modules.user.common.PermissionCode;
-import com.uav.platform.modules.user.repository.PermissionRepository;
-import com.uav.platform.modules.user.repository.UserRepository;
-import com.uav.platform.modules.user.service.PermissionService;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.permission.enums.PermissionCode;
+import com.uav.platform.modules.permission.repository.PermissionRepository;
+import com.uav.platform.modules.permission.service.PermissionService;
+import com.uav.platform.modules.user.repository.UserRepository;
+
 import jakarta.persistence.EntityManager;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 /** Serializes changes affecting recovery permissions, regardless of role labels. */
@@ -20,23 +21,44 @@ public class AccessRecoveryGuard {
     private final UserRepository users;
     private final ObjectProvider<PermissionService> permissions;
     private final EntityManager entityManager;
-    public AccessRecoveryGuard(PermissionRepository catalog, UserRepository users, ObjectProvider<PermissionService> permissions, EntityManager entityManager) {
-        this.catalog=catalog; this.users=users; this.permissions=permissions; this.entityManager=entityManager;
+
+    public AccessRecoveryGuard(
+            PermissionRepository catalog,
+            UserRepository users,
+            ObjectProvider<PermissionService> permissions,
+            EntityManager entityManager) {
+        this.catalog = catalog;
+        this.users = users;
+        this.permissions = permissions;
+        this.entityManager = entityManager;
     }
+
     public long begin() {
-        catalog.findByCodeForUpdate(PermissionCode.PERMISSION_MANAGE).orElseThrow(() -> SystemException.conflict("Permission catalog is not initialized"));
+        catalog.findByCodeForUpdate(PermissionCode.PERMISSION_MANAGE)
+                .orElseThrow(
+                        () -> SystemException.conflict("Permission catalog is not initialized"));
         return countManagers();
     }
+
     public void finish(long before) {
         entityManager.flush();
-        if(before > 0 && countManagers() == 0) throw SystemException.conflict("LAST_ACCESS_MANAGER: retain an active account with USER_MANAGE and PERMISSION_MANAGE");
+        if (before > 0 && countManagers() == 0)
+            throw SystemException.conflict(
+                    "LAST_ACCESS_MANAGER: retain an active account with USER_MANAGE and PERMISSION_MANAGE");
     }
+
     private long countManagers() {
-        PermissionService service=permissions.getObject();
-        return users.findAll().stream().filter(u -> {
-            if (!u.isEnabled() || !u.isAccountNonLocked()) return false;
-            var auth=UsernamePasswordAuthenticationToken.authenticated(u.getUsername(),null,List.of());
-            return service.has(auth,"PERMISSION_MANAGE") && service.has(auth,"USER_MANAGE");
-        }).count();
+        PermissionService service = permissions.getObject();
+        return users.findAll().stream()
+                .filter(
+                        u -> {
+                            if (!u.isEnabled() || !u.isAccountNonLocked()) return false;
+                            var auth =
+                                    UsernamePasswordAuthenticationToken.authenticated(
+                                            u.getUsername(), null, List.of());
+                            return service.has(auth, "PERMISSION_MANAGE")
+                                    && service.has(auth, "USER_MANAGE");
+                        })
+                .count();
     }
 }

@@ -27,4 +27,3 @@ coverage/
 # Backend Maven build output
 backend/target/
 .mvn/wrapper/maven-wrapper.jar
-

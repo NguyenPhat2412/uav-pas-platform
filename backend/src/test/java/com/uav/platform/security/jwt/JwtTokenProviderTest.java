@@ -1,21 +1,21 @@
 package com.uav.platform.security.jwt;
 
-import com.uav.platform.modules.user.common.*;
-import com.uav.platform.modules.uav.common.*;
-import com.uav.platform.modules.station.common.*;
-import com.uav.platform.modules.inventory.common.*;
-import com.uav.platform.modules.media.common.*;
-import com.uav.platform.modules.audit.common.*;
-import com.uav.platform.modules.mission.common.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import com.uav.platform.modules.audit.enums.*;
+import com.uav.platform.modules.inventory.enums.*;
+import com.uav.platform.modules.media.enums.*;
+import com.uav.platform.modules.mission.enums.*;
+import com.uav.platform.modules.station.enums.*;
+import com.uav.platform.modules.uav.enums.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class JwtTokenProviderTest {
 
-    private static final String TEST_SECRET = "test-secret-key-that-is-at-least-256-bits-long-for-hmac-sha256-testing-purposes";
+    private static final String TEST_SECRET =
+            "test-secret-key-that-is-at-least-256-bits-long-for-hmac-sha256-testing-purposes";
     private static final long EXPIRATION_MS = 3600000L; // 1 hour
 
     private JwtTokenProvider jwtTokenProvider;
@@ -58,10 +58,10 @@ class JwtTokenProviderTest {
 
     @Test
     void validateToken_InvalidSignature_ReturnsFalse() {
-        JwtTokenProvider otherProvider = new JwtTokenProvider(
-                "another-very-secure-secret-key-at-least-256-bits-long-for-testing",
-                EXPIRATION_MS
-        );
+        JwtTokenProvider otherProvider =
+                new JwtTokenProvider(
+                        "another-very-secure-secret-key-at-least-256-bits-long-for-testing",
+                        EXPIRATION_MS);
         String token = otherProvider.generateToken(1L, "user", "user@example.com");
 
         assertFalse(jwtTokenProvider.validateToken(token));
@@ -82,7 +82,8 @@ class JwtTokenProviderTest {
 
     @Test
     void validateToken_ExpiredToken_ReturnsFalse() {
-        String expiredToken = jwtTokenProvider.generateToken(1L, "expiredUser", "expired@example.com", -1000L);
+        String expiredToken =
+                jwtTokenProvider.generateToken(1L, "expiredUser", "expired@example.com", -1000L);
         assertFalse(jwtTokenProvider.validateToken(expiredToken));
     }
 }

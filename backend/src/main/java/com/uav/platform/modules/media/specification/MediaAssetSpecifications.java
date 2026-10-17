@@ -1,10 +1,9 @@
 package com.uav.platform.modules.media.specification;
 
-
-import com.uav.platform.modules.media.common.*;
-
 import com.uav.platform.modules.media.entity.MediaAsset;
-import com.uav.platform.modules.media.common.MediaType;
+import com.uav.platform.modules.media.enums.*;
+import com.uav.platform.modules.media.enums.MediaType;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
@@ -35,8 +34,7 @@ public final class MediaAssetSpecifications {
             return cb.or(
                     cb.like(cb.lower(root.get("originalName")), pattern),
                     cb.like(cb.lower(root.get("objectKey")), pattern),
-                    cb.like(cb.lower(root.get("uploadedBy")), pattern)
-            );
+                    cb.like(cb.lower(root.get("uploadedBy")), pattern));
         };
     }
 
@@ -48,7 +46,8 @@ public final class MediaAssetSpecifications {
             if (uploadedBy == null || uploadedBy.isBlank()) {
                 return null;
             }
-            return cb.equal(cb.lower(root.get("uploadedBy")), uploadedBy.trim().toLowerCase(Locale.ROOT));
+            return cb.equal(
+                    cb.lower(root.get("uploadedBy")), uploadedBy.trim().toLowerCase(Locale.ROOT));
         };
     }
 
@@ -67,7 +66,8 @@ public final class MediaAssetSpecifications {
             if (contentType == null || contentType.isBlank()) {
                 return null;
             }
-            return cb.equal(cb.lower(root.get("contentType")), contentType.trim().toLowerCase(Locale.ROOT));
+            return cb.equal(
+                    cb.lower(root.get("contentType")), contentType.trim().toLowerCase(Locale.ROOT));
         };
     }
 
@@ -75,7 +75,8 @@ public final class MediaAssetSpecifications {
      * Filters media assets by confirmation status.
      */
     public static Specification<MediaAsset> isConfirmed(Boolean confirmed) {
-        return (root, query, cb) -> confirmed == null ? null : cb.equal(root.get("confirmed"), confirmed);
+        return (root, query, cb) ->
+                confirmed == null ? null : cb.equal(root.get("confirmed"), confirmed);
     }
 
     /**
@@ -88,7 +89,8 @@ public final class MediaAssetSpecifications {
     /**
      * Filters media assets linked to a specific domain entity.
      */
-    public static Specification<MediaAsset> hasLinkedEntity(String linkedEntityType, String linkedEntityId) {
+    public static Specification<MediaAsset> hasLinkedEntity(
+            String linkedEntityType, String linkedEntityId) {
         return (root, query, cb) -> {
             boolean hasType = linkedEntityType != null && !linkedEntityType.isBlank();
             boolean hasId = linkedEntityId != null && !linkedEntityId.isBlank();
@@ -98,12 +100,15 @@ public final class MediaAssetSpecifications {
             }
             if (hasType && hasId) {
                 return cb.and(
-                        cb.equal(cb.lower(root.get("linkedEntityType")), linkedEntityType.trim().toLowerCase(Locale.ROOT)),
-                        cb.equal(root.get("linkedEntityId"), linkedEntityId.trim())
-                );
+                        cb.equal(
+                                cb.lower(root.get("linkedEntityType")),
+                                linkedEntityType.trim().toLowerCase(Locale.ROOT)),
+                        cb.equal(root.get("linkedEntityId"), linkedEntityId.trim()));
             }
             if (hasType) {
-                return cb.equal(cb.lower(root.get("linkedEntityType")), linkedEntityType.trim().toLowerCase(Locale.ROOT));
+                return cb.equal(
+                        cb.lower(root.get("linkedEntityType")),
+                        linkedEntityType.trim().toLowerCase(Locale.ROOT));
             }
             return cb.equal(root.get("linkedEntityId"), linkedEntityId.trim());
         };
@@ -120,8 +125,7 @@ public final class MediaAssetSpecifications {
             if (from != null && to != null) {
                 return cb.and(
                         cb.greaterThanOrEqualTo(root.get("createdAt"), from),
-                        cb.lessThanOrEqualTo(root.get("createdAt"), to)
-                );
+                        cb.lessThanOrEqualTo(root.get("createdAt"), to));
             }
             return from != null
                     ? cb.greaterThanOrEqualTo(root.get("createdAt"), from)
@@ -132,7 +136,8 @@ public final class MediaAssetSpecifications {
     /**
      * Composable composite filter for common media query scenarios.
      */
-    public static Specification<MediaAsset> filter(String keyword, MediaType type, Boolean confirmed, Boolean deleted) {
+    public static Specification<MediaAsset> filter(
+            String keyword, MediaType type, Boolean confirmed, Boolean deleted) {
         return Specification.where(hasKeyword(keyword))
                 .and(hasType(type))
                 .and(isConfirmed(confirmed))
@@ -142,9 +147,14 @@ public final class MediaAssetSpecifications {
     /**
      * Detailed composite filter for media asset search and audit filtering.
      */
-    public static Specification<MediaAsset> filter(String keyword, MediaType type, String uploadedBy,
-                                                   Boolean confirmed, Boolean deleted,
-                                                   LocalDateTime from, LocalDateTime to) {
+    public static Specification<MediaAsset> filter(
+            String keyword,
+            MediaType type,
+            String uploadedBy,
+            Boolean confirmed,
+            Boolean deleted,
+            LocalDateTime from,
+            LocalDateTime to) {
         return Specification.where(hasKeyword(keyword))
                 .and(hasType(type))
                 .and(hasUploader(uploadedBy))

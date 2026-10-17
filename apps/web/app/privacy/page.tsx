@@ -1,4 +1,0 @@
-import { pageMetadata } from '../../src/content/metadata';
-export const metadata = pageMetadata("Privacy publication status", "Privacy policy publication remains pending approval. Read the current public website boundary.", "/privacy", false);
-import { PublicPage } from '../../src/components/public-page';
-export default function PrivacyPage(){return <PublicPage eyebrow="Privacy" title="Privacy information is under publication review." intro="This page is a transparent placeholder until the approved privacy policy is supplied."><div className="page-copy"><p>The public site does not ask for mission details, store customer credentials, or copy Customer Portal tokens. Account and mission processing remains in the Customer Portal and its supported backend workflow.</p><p>Publication review is required before this page is treated as a complete legal policy.</p></div></PublicPage>}

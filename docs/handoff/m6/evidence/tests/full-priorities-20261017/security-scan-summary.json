@@ -1,0 +1,26 @@
+{
+  "status": "COMPLETE",
+  "coverage": "PARTIAL",
+  "scanId": "cd738839-6cd6-4635-8ba0-071be24903d7",
+  "baseline": "55c2fd7464f6f653b89aaca3166dc39d9adf142a",
+  "findings": {
+    "high": 1,
+    "medium": 2,
+    "low": 1
+  },
+  "fullyReviewedFiles": 83,
+  "hostInventoryEstimate": 1677,
+  "currentFixStatus": "Four baseline issues remediated and locally verified in Tasks2/4; final726regression and scopedreview support refactor parity, not a new exhaustive security audit",
+  "tokenUsage": {
+    "source": "host codex_rollout aggregate",
+    "coverage": "partial",
+    "inputTokens": 158662372,
+    "outputTokens": 683617,
+    "totalTokens": 159345989,
+    "cachedInputTokens": 154397056,
+    "threadCount": 22,
+    "missingThreadCount": 2,
+    "warning": "rollout_unavailable; aggregate host history, not isolated scan-only incremental usage"
+  },
+  "generatedReportSha256": "dc2c621edad23c0b70535fb697db28c9364eca09c554c1ba8e5bad54e98156aa"
+}

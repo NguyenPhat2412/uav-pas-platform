@@ -3,10 +3,13 @@ package com.uav.platform.modules.mission;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+
 import java.util.UUID;
 
 /** Runs the same transactional and concurrency contract against a disposable, uniquely named PostgreSQL schema. */
-@EnabledIfEnvironmentVariable(named = "UAV_STABILIZATION_DB_URL", matches = "jdbc:postgresql://127\\.0\\.0\\.1:[0-9]+/uav_(stabilization|ba_test_suite)")
+@EnabledIfEnvironmentVariable(
+        named = "UAV_STABILIZATION_DB_URL",
+        matches = "jdbc:postgresql://127\\.0\\.0\\.1:[0-9]+/uav_(stabilization|ba_test_suite)")
 class NoteLengthPostgresTest extends NoteLengthIntegrationTest {
     private static final String SCHEMA = "notes_" + UUID.randomUUID().toString().replace("-", "");
 

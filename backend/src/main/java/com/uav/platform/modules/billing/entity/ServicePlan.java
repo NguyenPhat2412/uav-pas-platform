@@ -1,7 +1,9 @@
 package com.uav.platform.modules.billing.entity;
 
 import com.uav.platform.common.entity.BaseEntity;
+
 import jakarta.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,8 +46,15 @@ public class ServicePlan extends BaseEntity {
     @Column(nullable = false)
     private Boolean active = true;
 
-    public ServicePlan(String code, String name, BigDecimal price, String billingCycle,
-                       Double maxMonthlyFlightHours, Integer maxConcurrentUavs, Boolean allowSarAi, String description) {
+    public ServicePlan(
+            String code,
+            String name,
+            BigDecimal price,
+            String billingCycle,
+            Double maxMonthlyFlightHours,
+            Integer maxConcurrentUavs,
+            Boolean allowSarAi,
+            String description) {
         this.code = code;
         this.name = name;
         this.price = price != null ? price : BigDecimal.ZERO;

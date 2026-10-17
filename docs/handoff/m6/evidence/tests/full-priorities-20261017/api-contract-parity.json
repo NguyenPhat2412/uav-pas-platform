@@ -1,0 +1,7 @@
+{
+  "pass": true,
+  "paths": 109,
+  "operations": 130,
+  "changedOperations": [],
+  "comparison": "Resolved request/response JSON schemas, parameters and security; documentation labels and component type names excluded"
+}

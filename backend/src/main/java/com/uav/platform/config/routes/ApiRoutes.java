@@ -53,6 +53,7 @@ public final class ApiRoutes {
      */
     public static final class Permissions {
         private Permissions() {}
+
         public static final String BASE = API_V1_PREFIX + "/permissions";
         public static final String ME = "/me";
         public static final String BY_USER = "/users/{userId}";
@@ -61,12 +62,14 @@ public final class ApiRoutes {
 
     public static final class RoleTemplates {
         private RoleTemplates() {}
+
         public static final String BASE = API_V1_PREFIX + "/role-templates";
         public static final String ROLE_PERMISSION = "/{role}/permissions/{code}";
     }
 
     public static final class Phase1 {
         private Phase1() {}
+
         public static final String STATIONS = API_V1_PREFIX + "/stations/**";
         public static final String UAVS = API_V1_PREFIX + "/uavs/**";
         public static final String INVENTORY = API_V1_PREFIX + "/inventory/**";
@@ -81,6 +84,7 @@ public final class ApiRoutes {
      */
     public static final class Uavs {
         private Uavs() {}
+
         public static final String BASE = API_V1_PREFIX + "/uavs";
         public static final String BY_ID = "/{id}";
         public static final String ASSIGN_STATION = "/{id}/station/{stationId}";
@@ -91,17 +95,20 @@ public final class ApiRoutes {
 
     public static final class Stations {
         private Stations() {}
+
         public static final String BASE = API_V1_PREFIX + "/stations";
         public static final String BY_ID = "/{id}";
     }
 
     public static final class Inventory {
         private Inventory() {}
+
         public static final String BASE = API_V1_PREFIX + "/inventory";
     }
 
     public static final class Media {
         private Media() {}
+
         public static final String BASE = API_V1_PREFIX + "/media";
     }
 
@@ -157,6 +164,7 @@ public final class ApiRoutes {
 
     public static final class UavServices {
         private UavServices() {}
+
         public static final String BASE = API_V1_PREFIX + "/uav-services";
     }
 
@@ -165,6 +173,7 @@ public final class ApiRoutes {
      */
     public static final class Sar {
         private Sar() {}
+
         public static final String BASE = API_V1_PREFIX + "/sar";
         public static final String MISSIONS = "/missions";
         public static final String MISSION_BY_ID = "/missions/{missionId}";
@@ -176,6 +185,7 @@ public final class ApiRoutes {
 
     public static final class Ai {
         private Ai() {}
+
         public static final String BASE = API_V1_PREFIX + "/ai";
         public static final String DISPATCH = "/dispatch";
         public static final String MISSION_DETECTIONS = "/missions/{missionId}/detections";
@@ -188,6 +198,7 @@ public final class ApiRoutes {
      */
     public static final class Billing {
         private Billing() {}
+
         public static final String BASE = API_V1_PREFIX + "/billing";
         public static final String PLANS = "/plans";
         public static final String QUOTA = "/quota";
@@ -200,6 +211,7 @@ public final class ApiRoutes {
 
     public static final class Webhook {
         private Webhook() {}
+
         public static final String BASE = API_V1_PREFIX + "/billing/webhook";
         public static final String PAYMENT_IPN = "/payment-ipn";
         public static final String WILDCARD = BASE + "/**";
@@ -207,6 +219,7 @@ public final class ApiRoutes {
 
     public static final class Webhooks {
         private Webhooks() {}
+
         public static final String BASE = API_V1_PREFIX + "/webhooks";
         public static final String SUBSCRIPTIONS = "/subscriptions";
         public static final String TOGGLE_SUBSCRIPTION = "/subscriptions/{id}/toggle";
@@ -220,6 +233,7 @@ public final class ApiRoutes {
      */
     public static final class Notifications {
         private Notifications() {}
+
         public static final String BASE = API_V1_PREFIX + "/notifications";
         public static final String UNREAD_COUNT = "/unread-count";
         public static final String MARK_READ = "/{id}/read";
@@ -228,12 +242,14 @@ public final class ApiRoutes {
 
     public static final class Settings {
         private Settings() {}
+
         public static final String BASE = API_V1_PREFIX + "/settings";
         public static final String BY_KEY = "/{key}";
     }
 
     public static final class Reports {
         private Reports() {}
+
         public static final String BASE = API_V1_PREFIX + "/reports";
         public static final String OPERATIONS_SUMMARY = "/operations-summary";
         public static final String EXPORT_CSV = "/export-csv";
@@ -241,11 +257,13 @@ public final class ApiRoutes {
 
     public static final class Dashboard {
         private Dashboard() {}
+
         public static final String BASE = API_V1_PREFIX + "/dashboard";
     }
 
     public static final class AuditLogs {
         private AuditLogs() {}
+
         public static final String BASE = API_V1_PREFIX + "/audit-logs";
     }
 
@@ -262,6 +280,7 @@ public final class ApiRoutes {
 
     public static final class Health {
         private Health() {}
+
         public static final String ENDPOINT = "/actuator/health";
         public static final String LIVENESS = ENDPOINT + "/**";
     }
@@ -270,17 +289,13 @@ public final class ApiRoutes {
      * Danh sách route Swagger công khai (không yêu cầu JWT Bearer)
      */
     public static final String[] SWAGGER_WHITELIST = {
-            Docs.API_DOCS,
-            Docs.SWAGGER_UI,
-            Docs.SWAGGER_HTML
+        Docs.API_DOCS, Docs.SWAGGER_UI, Docs.SWAGGER_HTML
     };
 
     /**
      * Danh sách route Auth công khai (cho phép truy cập trước khi đăng nhập)
      */
     public static final String[] PUBLIC_AUTH_WHITELIST = {
-            Auth.FULL_LOGIN,
-            Auth.FULL_REGISTER,
-            Auth.FULL_REFRESH
+        Auth.FULL_LOGIN, Auth.FULL_REGISTER, Auth.FULL_REFRESH
     };
 }

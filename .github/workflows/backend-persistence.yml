@@ -1,0 +1,49 @@
+name: Backend persistence checks
+
+on:
+  pull_request:
+    paths: ["backend/**", ".github/workflows/backend-persistence.yml"]
+  push:
+    branches: [main]
+    paths: ["backend/**", ".github/workflows/backend-persistence.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  persistence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: uav_ba_test_suite
+          POSTGRES_USER: uav_test
+          POSTGRES_PASSWORD: ci-disposable-only
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U uav_test -d uav_ba_test_suite"
+          --health-interval 2s --health-timeout 2s --health-retries 30
+    env:
+      UAV_STABILIZATION_DB_URL: jdbc:postgresql://127.0.0.1:5432/uav_ba_test_suite
+      UAV_STABILIZATION_DB_USER: uav_test
+      UAV_STABILIZATION_DB_PASSWORD: ci-disposable-only
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Verify unit, H2, PostgreSQL concurrency and migration tests
+        run: ./mvnw --batch-mode verify
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-test-reports
+          path: backend/target/surefire-reports
+

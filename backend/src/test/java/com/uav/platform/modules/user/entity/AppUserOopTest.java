@@ -1,15 +1,16 @@
 package com.uav.platform.modules.user.entity;
 
-import com.uav.platform.modules.user.common.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.uav.platform.common.entity.BaseEntity;
 import com.uav.platform.common.entity.Identifiable;
+import com.uav.platform.modules.user.enums.UserRole;
+import com.uav.platform.modules.user.enums.UserStatus;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("AppUser OOP Inheritance & Polymorphism Tests")
 class AppUserOopTest {
@@ -17,7 +18,9 @@ class AppUserOopTest {
     @Test
     @DisplayName("AppUser must inherit from BaseEntity and implement Identifiable & UserDetails")
     void appUser_ImplementsInterfacesAndExtendsBaseEntity() {
-        AppUser user = new AppUser("pilot_alpha", "alpha@uav.vn", "hash123", "0912345678", UserStatus.ACTIVE);
+        AppUser user =
+                new AppUser(
+                        "pilot_alpha", "alpha@uav.vn", "hash123", "0912345678", UserStatus.ACTIVE);
         user.setId(1L);
 
         // Polymorphism tests
@@ -35,7 +38,17 @@ class AppUserOopTest {
     @Test
     @DisplayName("AppUser should grant correct Role authority polymorphically")
     void appUser_RoleAuthorities() {
-        AppUser commander = new AppUser("commander_01", "cmd@uav.vn", "hash", "0900000000", null, null, null, UserRole.ROLE_COMMANDER, UserStatus.ACTIVE);
+        AppUser commander =
+                new AppUser(
+                        "commander_01",
+                        "cmd@uav.vn",
+                        "hash",
+                        "0900000000",
+                        null,
+                        null,
+                        null,
+                        UserRole.ROLE_COMMANDER,
+                        UserStatus.ACTIVE);
 
         assertEquals(1, commander.getAuthorities().size());
         GrantedAuthority auth = commander.getAuthorities().iterator().next();
@@ -45,7 +58,8 @@ class AppUserOopTest {
     @Test
     @DisplayName("Suspended AppUser should reflect account locked state")
     void appUser_Suspended_ReflectsAccountLocked() {
-        AppUser suspended = new AppUser("bad_actor", "bad@uav.vn", "hash", "0900000000", UserStatus.SUSPENDED);
+        AppUser suspended =
+                new AppUser("bad_actor", "bad@uav.vn", "hash", "0900000000", UserStatus.SUSPENDED);
 
         assertFalse(suspended.isAccountNonLocked());
         assertFalse(suspended.isEnabled());
@@ -54,7 +68,8 @@ class AppUserOopTest {
     @Test
     @DisplayName("AppUser should lock account after 5 failed attempts")
     void appUser_BruteForceLockAfterFiveAttempts() {
-        AppUser user = new AppUser("locked_user", "lock@uav.vn", "hash", "0900000000", UserStatus.ACTIVE);
+        AppUser user =
+                new AppUser("locked_user", "lock@uav.vn", "hash", "0900000000", UserStatus.ACTIVE);
         assertFalse(user.isAccountLocked());
         assertTrue(user.isAccountNonLocked());
 

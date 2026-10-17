@@ -1,7 +1,9 @@
 package com.uav.platform.modules.webhook.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -41,11 +43,49 @@ public class WebhookDeliveryLog {
     @Column(name = "attempted_at")
     private LocalDateTime attemptedAt = LocalDateTime.now();
 
+    @Column(name = "event_id", length = 150)
+    private String eventId;
+
+    @Column(name = "delivery_status", nullable = false, length = 24)
+    private String deliveryStatus = "QUEUED";
+
+    @Column(name = "next_attempt_at")
+    private LocalDateTime nextAttemptAt = LocalDateTime.now();
+
+    public String getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(String value) {
+        eventId = value;
+    }
+
+    public String getDeliveryStatus() {
+        return deliveryStatus;
+    }
+
+    public void setDeliveryStatus(String value) {
+        deliveryStatus = value;
+    }
+
+    public LocalDateTime getNextAttemptAt() {
+        return nextAttemptAt;
+    }
+
+    public void setNextAttemptAt(LocalDateTime value) {
+        nextAttemptAt = value;
+    }
+
     public WebhookDeliveryLog() {}
 
-    public WebhookDeliveryLog(WebhookSubscription subscription, String eventType, String payload,
-                              Integer responseStatusCode, String responseBody, Integer deliveryDurationMs,
-                              Boolean isSuccess) {
+    public WebhookDeliveryLog(
+            WebhookSubscription subscription,
+            String eventType,
+            String payload,
+            Integer responseStatusCode,
+            String responseBody,
+            Integer deliveryDurationMs,
+            Boolean isSuccess) {
         this.subscription = subscription;
         this.eventType = eventType;
         this.payload = payload;
@@ -57,33 +97,83 @@ public class WebhookDeliveryLog {
         this.attemptedAt = LocalDateTime.now();
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public WebhookSubscription getSubscription() { return subscription; }
-    public void setSubscription(WebhookSubscription subscription) { this.subscription = subscription; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getEventType() { return eventType; }
-    public void setEventType(String eventType) { this.eventType = eventType; }
+    public WebhookSubscription getSubscription() {
+        return subscription;
+    }
 
-    public String getPayload() { return payload; }
-    public void setPayload(String payload) { this.payload = payload; }
+    public void setSubscription(WebhookSubscription subscription) {
+        this.subscription = subscription;
+    }
 
-    public Integer getResponseStatusCode() { return responseStatusCode; }
-    public void setResponseStatusCode(Integer responseStatusCode) { this.responseStatusCode = responseStatusCode; }
+    public String getEventType() {
+        return eventType;
+    }
 
-    public String getResponseBody() { return responseBody; }
-    public void setResponseBody(String responseBody) { this.responseBody = responseBody; }
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
+    }
 
-    public Integer getDeliveryDurationMs() { return deliveryDurationMs; }
-    public void setDeliveryDurationMs(Integer deliveryDurationMs) { this.deliveryDurationMs = deliveryDurationMs; }
+    public String getPayload() {
+        return payload;
+    }
 
-    public Boolean getIsSuccess() { return isSuccess; }
-    public void setIsSuccess(Boolean isSuccess) { this.isSuccess = isSuccess; }
+    public void setPayload(String payload) {
+        this.payload = payload;
+    }
 
-    public Integer getRetryCount() { return retryCount; }
-    public void setRetryCount(Integer retryCount) { this.retryCount = retryCount; }
+    public Integer getResponseStatusCode() {
+        return responseStatusCode;
+    }
 
-    public LocalDateTime getAttemptedAt() { return attemptedAt; }
-    public void setAttemptedAt(LocalDateTime attemptedAt) { this.attemptedAt = attemptedAt; }
+    public void setResponseStatusCode(Integer responseStatusCode) {
+        this.responseStatusCode = responseStatusCode;
+    }
+
+    public String getResponseBody() {
+        return responseBody;
+    }
+
+    public void setResponseBody(String responseBody) {
+        this.responseBody = responseBody;
+    }
+
+    public Integer getDeliveryDurationMs() {
+        return deliveryDurationMs;
+    }
+
+    public void setDeliveryDurationMs(Integer deliveryDurationMs) {
+        this.deliveryDurationMs = deliveryDurationMs;
+    }
+
+    public Boolean getIsSuccess() {
+        return isSuccess;
+    }
+
+    public void setIsSuccess(Boolean isSuccess) {
+        this.isSuccess = isSuccess;
+    }
+
+    public Integer getRetryCount() {
+        return retryCount;
+    }
+
+    public void setRetryCount(Integer retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public LocalDateTime getAttemptedAt() {
+        return attemptedAt;
+    }
+
+    public void setAttemptedAt(LocalDateTime attemptedAt) {
+        this.attemptedAt = attemptedAt;
+    }
 }

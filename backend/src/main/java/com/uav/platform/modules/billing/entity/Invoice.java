@@ -1,10 +1,12 @@
 package com.uav.platform.modules.billing.entity;
 
 import com.uav.platform.common.entity.BaseEntity;
-import com.uav.platform.modules.billing.common.InvoiceStatus;
+import com.uav.platform.modules.billing.enums.InvoiceStatus;
 import com.uav.platform.modules.mission.entity.Mission;
 import com.uav.platform.modules.user.entity.AppUser;
+
 import jakarta.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,7 +53,14 @@ public class Invoice extends BaseEntity {
     @Column(length = 500)
     private String notes;
 
-    public Invoice(String code, AppUser user, Mission mission, ServicePlan plan, BigDecimal amount, LocalDateTime dueDate, String notes) {
+    public Invoice(
+            String code,
+            AppUser user,
+            Mission mission,
+            ServicePlan plan,
+            BigDecimal amount,
+            LocalDateTime dueDate,
+            String notes) {
         this.code = code;
         this.user = user;
         this.mission = mission;

@@ -1,3 +1,14 @@
+# Quyền và bảo mật hiện tại — 17/10/2026
+
+Post-refactor browser chứng minh customerB/unassignedoperator bị chặn mission/timeline/media/download của người khác, customer không có UIwebhook; audit và handover theo phạm vi14+6checks. Không phải toàn bộ ma trận31permission. Ngoại lệ kế thừa: backendwebhook cho adminauthorityORUSER_MANAGE, UI yêu cầuUSER_MANAGE. Scanbaseline83tệp/4findings và sửa có evidence; coverage toàn mã cuối chưa đạt. Productionaudit0, fullaudit5HIGH mỗi cây.
+
+Xem [báo cáo hiện tại và bảng PASS/FAIL/BLOCKED](M6_FULL_PRIORITIES_2026_10_17.md) và [index evidence](evidence/tests/full-priorities-20261017/README.md). Các giới hạn có trong báo cáo hiện tại được giữ nguyên; không suy từ kết quả local thành production-ready.
+
+<details>
+<summary>Hồ sơ lịch sử trước 17/10/2026 — không phải trạng thái hiện tại</summary>
+
+Những tiêu đề “mới nhất”, số test, cấu trúc thư mục và trạng thái auth trong phần lưu trữ dưới đây chỉ đúng tại ngày/bản nguồn được ghi. Báo cáo hiện tại phía trên có ưu tiên khi đọc trạng thái hôm nay.
+
 # M6 permission and security matrix
 
 > **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
@@ -56,3 +67,6 @@ Local browser proves customer B mission denial/list isolation and operator Admin
 | Cross-user direct ID | Backend ownership | Customer B mission/timeline/media/download URL return 403 | LIVE VERIFIED for isolated API |
 
 Permission inventory reviewed includes USER_READ/USER_MANAGE, PERMISSION_MANAGE, station/UAV/inventory/media/dashboard/audit codes and mission lifecycle codes from the M3 matrix. Frontend gates remain UX only; the backend must remain authoritative.
+
+
+</details>

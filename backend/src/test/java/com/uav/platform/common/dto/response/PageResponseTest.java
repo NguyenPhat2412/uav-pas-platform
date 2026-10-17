@@ -1,6 +1,6 @@
 package com.uav.platform.common.dto.response;
 
-import com.uav.platform.common.dto.response.PageResponse;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,8 +9,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("PageResponse DTO Unit Tests")
 class PageResponseTest {

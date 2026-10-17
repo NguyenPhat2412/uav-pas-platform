@@ -2,8 +2,10 @@ package com.uav.platform.modules.sar.entity;
 
 import com.uav.platform.common.entity.BaseEntity;
 import com.uav.platform.modules.mission.entity.Mission;
-import com.uav.platform.modules.sar.common.SarStatus;
+import com.uav.platform.modules.sar.enums.SarStatus;
+
 import jakarta.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,8 +50,15 @@ public class SarMission extends BaseEntity {
     @Column(length = 2000)
     private String notes;
 
-    public SarMission(Mission mission, String searchAreaPolygon, Double lkpLatitude, Double lkpLongitude,
-                      Double driftRadiusMeters, String emergencyContact, Integer victimCountEstimated, String notes) {
+    public SarMission(
+            Mission mission,
+            String searchAreaPolygon,
+            Double lkpLatitude,
+            Double lkpLongitude,
+            Double driftRadiusMeters,
+            String emergencyContact,
+            Integer victimCountEstimated,
+            String notes) {
         this.mission = mission;
         this.searchAreaPolygon = searchAreaPolygon;
         this.lkpLatitude = lkpLatitude;

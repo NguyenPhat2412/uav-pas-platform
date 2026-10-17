@@ -1,10 +1,15 @@
 package com.uav.platform.modules.user.specification;
 
-import com.uav.platform.modules.user.common.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import com.uav.platform.modules.user.entity.AppUser;
-import com.uav.platform.modules.user.common.UserRole;
+import com.uav.platform.modules.user.enums.UserRole;
+
 import jakarta.persistence.criteria.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,41 +17,27 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserSpecification Unit Tests")
 class UserSpecificationsLegacyContractTest {
 
-    @Mock
-    private Root<AppUser> root;
+    @Mock private Root<AppUser> root;
 
-    @Mock
-    private CriteriaQuery<?> query;
+    @Mock private CriteriaQuery<?> query;
 
-    @Mock
-    private CriteriaBuilder cb;
+    @Mock private CriteriaBuilder cb;
 
-    @Mock
-    private Path<Object> rolePath;
+    @Mock private Path<Object> rolePath;
 
-    @Mock
-    private Path<String> usernamePath;
+    @Mock private Path<String> usernamePath;
 
-    @Mock
-    private Path<String> emailPath;
+    @Mock private Path<String> emailPath;
 
-    @Mock
-    private Path<String> fullNamePath;
+    @Mock private Path<String> fullNamePath;
 
-    @Mock
-    private Expression<String> lowerExpr;
+    @Mock private Expression<String> lowerExpr;
 
-    @Mock
-    private Predicate predicate;
+    @Mock private Predicate predicate;
 
     @Test
     @DisplayName("filter with nulls should return null predicate")

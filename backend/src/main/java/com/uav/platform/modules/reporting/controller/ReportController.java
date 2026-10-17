@@ -1,7 +1,8 @@
 package com.uav.platform.modules.reporting.controller;
 
-import com.uav.platform.modules.reporting.config.response.OperationsReportResponse;
+import com.uav.platform.modules.reporting.dto.response.OperationsReportResponse;
 import com.uav.platform.modules.reporting.service.ReportService;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +37,10 @@ public class ReportController {
         byte[] bytes = csvContent.getBytes(StandardCharsets.UTF_8);
 
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"uav_pas_operations_report.csv\"")
-            .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
-            .body(bytes);
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"uav_pas_operations_report.csv\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(bytes);
     }
 }

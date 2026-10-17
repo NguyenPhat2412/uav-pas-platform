@@ -1,10 +1,9 @@
 package com.uav.platform.modules.uav.specification;
 
-
-import com.uav.platform.modules.uav.common.*;
-
-import com.uav.platform.modules.uav.common.UavStatus;
 import com.uav.platform.modules.uav.entity.UavStatusHistory;
+import com.uav.platform.modules.uav.enums.*;
+import com.uav.platform.modules.uav.enums.UavStatus;
+
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -18,7 +17,8 @@ public final class UavStatusHistorySpecifications {
      * Filter history records for a specific UAV ID.
      */
     public static Specification<UavStatusHistory> belongsToUav(Long uavId) {
-        return (root, query, cb) -> uavId == null ? null : cb.equal(root.get("uav").get("id"), uavId);
+        return (root, query, cb) ->
+                uavId == null ? null : cb.equal(root.get("uav").get("id"), uavId);
     }
 
     /**

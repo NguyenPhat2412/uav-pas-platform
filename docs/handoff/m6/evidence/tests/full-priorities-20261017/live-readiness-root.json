@@ -1,0 +1,86 @@
+{
+  "at": "2026-10-17T04:05:45.686901+00:00",
+  "status": "PASS",
+  "scope": "Live localhost read-only HTTP checks; no account login or business writes, no cross-domain SSO claim",
+  "checks": [
+    {
+      "name": "Backend /actuator/health",
+      "method": "GET",
+      "endpoint": "http://localhost:18082/actuator/health",
+      "httpStatus": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "Backend /actuator/health/readiness",
+      "method": "GET",
+      "endpoint": "http://localhost:18082/actuator/health/readiness",
+      "httpStatus": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "Anonymous protected endpoint",
+      "method": "GET",
+      "endpoint": "http://localhost:18082/api/v1/auth/me",
+      "httpStatus": 401,
+      "status": "PASS"
+    },
+    {
+      "name": "Invalid bearer",
+      "method": "GET",
+      "endpoint": "http://localhost:18082/api/v1/auth/me",
+      "httpStatus": 401,
+      "status": "PASS"
+    },
+    {
+      "name": "Allowed CORS origin",
+      "method": "OPTIONS",
+      "endpoint": "http://localhost:18082/api/v1/missions",
+      "httpStatus": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "Rejected CORS origin",
+      "method": "OPTIONS",
+      "endpoint": "http://localhost:18082/api/v1/missions",
+      "httpStatus": 403,
+      "status": "PASS"
+    },
+    {
+      "name": "Production frontend 3100",
+      "method": "GET",
+      "endpoint": "http://localhost:3100/",
+      "httpStatus": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "Production frontend 3101",
+      "method": "GET",
+      "endpoint": "http://localhost:3101/login",
+      "httpStatus": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "Production frontend 3102",
+      "method": "GET",
+      "endpoint": "http://localhost:3102/login",
+      "httpStatus": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "Production frontend 3103",
+      "method": "GET",
+      "endpoint": "http://localhost:3103/login",
+      "httpStatus": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "Production frontend 3300",
+      "method": "GET",
+      "endpoint": "http://localhost:3300/login",
+      "httpStatus": 200,
+      "status": "PASS"
+    }
+  ],
+  "businessWrites": 0,
+  "credentialValuesRecorded": false
+}

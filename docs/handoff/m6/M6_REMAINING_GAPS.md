@@ -1,3 +1,16 @@
+# Các phần còn thiếu hiện tại — 17/10/2026
+
+Đã đóng cục bộ các sửa chữa quota/report/settings/kho, media lifecycle và outbox/webhook theo phạm vi kiểm thử. Còn mở: HTTPS staging/SSO thực; hosted CI cho source cuối; full security coverage;5HIGH dev-toolchain mỗi cây; các tổ hợp UI/quyền/thiết bị chưa chạy. Cookie/CSRF hiện đã có, không còn đúng khi gọi hệ thống chỉ dùng localStorage bearer. Ngoại lệ quyền webhook adminORUSER_MANAGE so với UI cần quyết định riêng.
+
+**KPI báo cáo chưa chốt:** dữ liệu trống hiện trả100%; đã hỏi chính sách mẫu số/hiển thị, chưa sửa khi chưa có câu trả lời. LayoutPASS không phải KPI correctnessPASS.
+
+Xem [báo cáo hiện tại và bảng PASS/FAIL/BLOCKED](M6_FULL_PRIORITIES_2026_10_17.md) và [index evidence](evidence/tests/full-priorities-20261017/README.md). Các giới hạn có trong báo cáo hiện tại được giữ nguyên; không suy từ kết quả local thành production-ready.
+
+<details>
+<summary>Hồ sơ lịch sử trước 17/10/2026 — không phải trạng thái hiện tại</summary>
+
+Những tiêu đề “mới nhất”, số test, cấu trúc thư mục và trạng thái auth trong phần lưu trữ dưới đây chỉ đúng tại ngày/bản nguồn được ghi. Báo cáo hiện tại phía trên có ưu tiên khi đọc trạng thái hôm nay.
+
 # M6 remaining gaps
 
 > **Cập nhật tích hợp main — 16/10/2026:** xem [M6_MAIN_INTEGRATION_2026_10_16.md](M6_MAIN_INTEGRATION_2026_10_16.md) cho source và kiểm chứng mới nhất. Phần dưới giữ lịch sử của nhánh/lượt kiểm tương ứng; migration hồ sơ hiện là V10, bảo trì là V9, auth browser giữ cookie của main. Toàn hệ thống vẫn PARTIAL / NOT_READY.
@@ -70,3 +83,6 @@ Vietnamese portal UI, lifecycle/permission-aware controls, compact history and m
 | M6-B9 | RESOLVED — local verification (2026-10-15) | Lỗi login/refresh/logout đồng thời và mất số lần nhập sai đã được sửa; 390/390 backend tests, 14/14 nhóm HTTP (813 phản hồi, 0 HTTP 500), 13/13 browser checks PASS. Evidence FAIL trước sửa được giữ nguyên; xem [báo cáo auth concurrency](M6_AUTH_CONCURRENCY_2026_10_15.md) | Backend auth/session concurrency | Đạt kiểm chứng cục bộ: một refresh hiện hành/tài khoản, refresh chỉ tiêu thụ một lần, logout đúng token và khóa tài khoản theo số lần sai; giữ nguyên auth contract. Staging/SSO/CSRF thuộc các mục còn mở riêng | Backend/Security |
 
 2026-10-15 local evidence and repaired findings: [business UI report](M6_BUSINESS_UI_E2E_2026_10_15.md). Historical dependency/security findings were not re-audited in this continuation.
+
+
+</details>

@@ -1,10 +1,9 @@
 package com.uav.platform.modules.station.specification;
 
-
-import com.uav.platform.modules.station.common.*;
-
 import com.uav.platform.modules.station.entity.Station;
-import com.uav.platform.modules.station.common.StationStatus;
+import com.uav.platform.modules.station.enums.*;
+import com.uav.platform.modules.station.enums.StationStatus;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Collection;
@@ -29,8 +28,7 @@ public final class StationSpecifications {
             return cb.or(
                     cb.like(cb.lower(root.get("code")), pattern),
                     cb.like(cb.lower(root.get("name")), pattern),
-                    cb.like(cb.lower(cb.coalesce(root.get("address"), "")), pattern)
-            );
+                    cb.like(cb.lower(cb.coalesce(root.get("address"), "")), pattern));
         };
     }
 
@@ -45,7 +43,8 @@ public final class StationSpecifications {
      * Filter by a collection of allowed StationStatuses.
      */
     public static Specification<Station> hasStatusIn(Collection<StationStatus> statuses) {
-        return (root, query, cb) -> (statuses == null || statuses.isEmpty()) ? null : root.get("status").in(statuses);
+        return (root, query, cb) ->
+                (statuses == null || statuses.isEmpty()) ? null : root.get("status").in(statuses);
     }
 
     /**

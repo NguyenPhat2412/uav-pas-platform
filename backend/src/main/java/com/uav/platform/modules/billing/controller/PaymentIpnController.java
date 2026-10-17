@@ -1,9 +1,11 @@
 package com.uav.platform.modules.billing.controller;
 
-import com.uav.platform.modules.billing.config.request.PaymentIpnRequest;
-import com.uav.platform.modules.billing.config.response.PaymentIpnResponse;
+import com.uav.platform.modules.billing.dto.request.PaymentIpnRequest;
+import com.uav.platform.modules.billing.dto.response.PaymentIpnResponse;
 import com.uav.platform.modules.billing.service.BillingService;
+
 import jakarta.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +32,15 @@ public class PaymentIpnController {
             @Valid @RequestBody PaymentIpnRequest request,
             @RequestHeader(value = "X-Signature-SHA256", required = false) String signatureHeader,
             @RequestHeader(value = "X-Webhook-Secret", required = false) String webhookSecret,
-            Authentication auth
-    ) {
-        log.info("Received Payment IPN Callback for invoiceCode={}", request != null ? request.invoiceCode() : null);
-        String resolvedSignature = (signatureHeader != null && !signatureHeader.isBlank()) ? signatureHeader : webhookSecret;
-        return ResponseEntity.ok(billingService.processPaymentIpn(request, resolvedSignature, auth));
+            Authentication auth) {
+        log.info(
+                "Received Payment IPN Callback for invoiceCode={}",
+                request != null ? request.invoiceCode() : null);
+        String resolvedSignature =
+                (signatureHeader != null && !signatureHeader.isBlank())
+                        ? signatureHeader
+                        : webhookSecret;
+        return ResponseEntity.ok(
+                billingService.processPaymentIpn(request, resolvedSignature, auth));
     }
 }

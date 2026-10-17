@@ -1,0 +1,424 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Report failure has no fabricated metrics or export",
+      "status": "PASS",
+      "detail": {
+        "errorVisible": true,
+        "fakeExportAbsent": true,
+        "recovered": true
+      }
+    },
+    {
+      "name": "CSV network failure is visible and recoverable",
+      "status": "PASS",
+      "detail": {
+        "errorVisible": true,
+        "recoveredDownload": true
+      }
+    },
+    {
+      "name": "Lost stock response and UI retry apply exactly one inventory movement",
+      "status": "PASS",
+      "detail": {
+        "sameRequestId": true,
+        "attempts": 2,
+        "stockDelta": 2,
+        "movements": 1
+      }
+    }
+  ],
+  "network": [
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/reports/operations-summary",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/reports/operations-summary",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "status": 400
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/notifications",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/notifications/unread-count",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/stations",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/permissions/me",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/reports/operations-summary",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/reports/operations-summary",
+      "status": 200
+    },
+    {
+      "label": "Admin report recovery",
+      "method": "GET",
+      "path": "/api/v1/reports/export-csv",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/1",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/1",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "POST",
+      "path": "/api/v1/inventory/equipment/1/stock-in",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    },
+    {
+      "label": "Operator stock recovery",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/1",
+      "status": 200
+    },
+    {
+      "label": "API fixture/read-back",
+      "method": "GET",
+      "path": "/api/v1/inventory/equipment/history",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "consoleMessages": [
+    {
+      "label": "Admin report recovery",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Admin report recovery",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Admin report recovery",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Admin report recovery",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "Operator stock recovery",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "label": "Operator stock recovery",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Operator stock recovery",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "label": "Operator stock recovery",
+      "type": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()"
+    },
+    {
+      "label": "Admin report recovery",
+      "type": "error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "label": "Admin report recovery",
+      "type": "error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "label": "Admin report recovery",
+      "type": "error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "label": "Operator stock recovery",
+      "type": "error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "requestFailures": [
+    {
+      "label": "Admin report recovery",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin report recovery",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator stock recovery",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator stock recovery",
+      "path": "/api/v1/auth/me",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator stock recovery",
+      "path": "/api/v1/uavs",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator stock recovery",
+      "path": "/api/v1/stations",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator stock recovery",
+      "path": "/api/v1/notifications",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator stock recovery",
+      "path": "/api/v1/notifications/unread-count",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator stock recovery",
+      "path": "/api/v1/notifications",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator stock recovery",
+      "path": "/api/v1/notifications/unread-count",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator stock recovery",
+      "path": "/api/v1/inventory/equipment",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator stock recovery",
+      "path": "/api/v1/inventory/equipment/history",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Operator stock recovery",
+      "path": "/api/v1/stations",
+      "error": "ABORTED"
+    },
+    {
+      "label": "Admin report recovery",
+      "path": "/api/v1/reports/operations-summary",
+      "error": "NETWORK_ERROR"
+    },
+    {
+      "label": "Admin report recovery",
+      "path": "/api/v1/reports/operations-summary",
+      "error": "NETWORK_ERROR"
+    },
+    {
+      "label": "Admin report recovery",
+      "path": "/api/v1/reports/export-csv",
+      "error": "NETWORK_ERROR"
+    },
+    {
+      "label": "Operator stock recovery",
+      "path": "/api/v1/inventory/equipment/1/stock-in",
+      "error": "NETWORK_ERROR"
+    }
+  ]
+}
