@@ -20,14 +20,17 @@ import com.uav.platform.modules.billing.repository.InvoiceRepository;
 import com.uav.platform.modules.billing.repository.PaymentTransactionRepository;
 import com.uav.platform.modules.billing.repository.ServicePlanRepository;
 import com.uav.platform.modules.billing.service.impl.BillingServiceImpl;
+import com.uav.platform.modules.billing.service.impl.ServicePlanOperations;
 import com.uav.platform.modules.mission.entity.Mission;
 import com.uav.platform.modules.mission.enums.MissionPriority;
 import com.uav.platform.modules.mission.enums.MissionType;
 import com.uav.platform.modules.mission.repository.MissionRepository;
+import com.uav.platform.modules.mission.service.impl.MissionOperations;
 import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.enums.UserStatus;
 import com.uav.platform.modules.user.repository.UserRepository;
+import com.uav.platform.modules.user.service.impl.UserAccountServiceImpl;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,6 +59,12 @@ class BillingServiceTest {
     @Mock UserRepository userRepository;
     @Mock MissionRepository missionRepository;
     @Mock PermissionService permissions;
+
+    @org.mockito.Spy
+    com.uav.platform.modules.billing.mapper.BillingMapper mapper =
+            org.mapstruct.factory.Mappers.getMapper(
+                    com.uav.platform.modules.billing.mapper.BillingMapper.class);
+
     @InjectMocks BillingServiceImpl service;
 
     @org.junit.jupiter.api.BeforeEach
@@ -208,7 +217,7 @@ class BillingServiceTest {
     @Test
     void lockedUserIsDenied() {
         AppUser locked = user(1L, "owner");
-        locked.lockAccount();
+        UserAccountServiceImpl.lockAccount(locked);
         Authentication auth = authentication("owner");
         stubUser(auth, locked);
 
@@ -312,7 +321,7 @@ class BillingServiceTest {
         AppUser owner = user(1L, "owner");
         Authentication auth = authentication("manager");
         Mission mission =
-                Mission.draft(
+                MissionOperations.draft(
                         owner,
                         MissionType.OTHER,
                         "Inspection",
@@ -384,7 +393,7 @@ class BillingServiceTest {
     }
 
     private ServicePlan plan() {
-        return new ServicePlan(
+        return ServicePlanOperations.create(
                 "PLAN-TEST",
                 "Test Plan",
                 new BigDecimal("100.00"),

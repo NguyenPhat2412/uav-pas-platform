@@ -24,3 +24,6 @@ export function VjuLogo({ size = 32, className, alt = 'VJU - Trường Đại h�
 }
 
 export { PortalAuthLayout } from './PortalAuthLayout';
+
+export { LanguageSelect } from './LanguageSelect';
+export { AuthCredentials } from './AuthCredentials';

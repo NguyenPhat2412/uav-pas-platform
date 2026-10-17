@@ -10,8 +10,9 @@ import com.uav.platform.security.jwt.JwtTokenProvider;
 
 import jakarta.persistence.EntityManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,27 +21,16 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService {
-
-    private static final Logger log = LoggerFactory.getLogger(RefreshTokenServiceImpl.class);
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthSessionLock sessionLock;
     private final EntityManager entityManager;
-
-    public RefreshTokenServiceImpl(
-            RefreshTokenRepository refreshTokenRepository,
-            JwtTokenProvider jwtTokenProvider,
-            AuthSessionLock sessionLock,
-            EntityManager entityManager) {
-        this.refreshTokenRepository = refreshTokenRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.sessionLock = sessionLock;
-        this.entityManager = entityManager;
-    }
 
     @Override
     public RefreshToken createRefreshToken(AppUser user) {
@@ -83,12 +73,24 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         return current;
     }
 
+    public static boolean isExpired(RefreshToken token) {
+        return Instant.now().isAfter(token.getExpiryDate());
+    }
+
+    public static boolean isValid(RefreshToken token) {
+        return !token.isRevoked() && !isExpired(token);
+    }
+
+    public static void revoke(RefreshToken token) {
+        token.setRevoked(true);
+    }
+
     @Override
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token == null) {
             throw SystemException.unauthorized("Refresh token does not exist");
         }
-        if (!token.isValid()) {
+        if (!isValid(token)) {
             refreshTokenRepository.delete(token);
             throw SystemException.unauthorized(
                     "Refresh token is expired or revoked. Please log in again.");
@@ -102,7 +104,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             findByTokenForUpdate(token)
                     .ifPresent(
                             rt -> {
-                                rt.revoke();
+                                revoke(rt);
                                 refreshTokenRepository.save(rt);
                             });
         }

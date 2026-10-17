@@ -30,6 +30,12 @@ class UavServiceTest {
     @Mock StationRepository stations;
     @Mock UavStatusHistoryRepository history;
     @Mock AuditLogService audit;
+
+    @org.mockito.Spy
+    com.uav.platform.modules.uav.mapper.UavMapper mapper =
+            org.mapstruct.factory.Mappers.getMapper(
+                    com.uav.platform.modules.uav.mapper.UavMapper.class);
+
     @InjectMocks UavServiceImpl service;
 
     @Test

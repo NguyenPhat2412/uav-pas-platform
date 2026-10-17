@@ -43,6 +43,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AuditLogService auditLogService;
     private final com.uav.platform.security.AccessRecoveryGuard recovery;
+    private final UserMapper userMapper;
 
     public UserServiceImpl(UserRepository userRepository) {
         this(userRepository, null);
@@ -55,14 +56,27 @@ public class UserServiceImpl implements UserService {
         this(userRepository, auditLogService, null);
     }
 
-    @org.springframework.beans.factory.annotation.Autowired
     public UserServiceImpl(
             UserRepository userRepository,
             AuditLogService auditLogService,
             com.uav.platform.security.AccessRecoveryGuard recovery) {
+        this(
+                userRepository,
+                auditLogService,
+                recovery,
+                org.mapstruct.factory.Mappers.getMapper(UserMapper.class));
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public UserServiceImpl(
+            UserRepository userRepository,
+            AuditLogService auditLogService,
+            com.uav.platform.security.AccessRecoveryGuard recovery,
+            UserMapper userMapper) {
         this.recovery = recovery;
         this.userRepository = userRepository;
         this.auditLogService = auditLogService;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -85,7 +99,7 @@ public class UserServiceImpl implements UserService {
                         .and(UserSpecifications.hasRole(role));
         Page<AppUser> userPage = userRepository.findAll(spec, pageable);
 
-        return PageResponse.from(userPage, UserMapper::toResponse);
+        return PageResponse.from(userPage, userMapper::toResponse);
     }
 
     @Override
@@ -99,7 +113,7 @@ public class UserServiceImpl implements UserService {
                         .findById(id)
                         .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
 
-        return UserMapper.toResponse(user);
+        return userMapper.toResponse(user);
     }
 
     @Override
@@ -110,7 +124,7 @@ public class UserServiceImpl implements UserService {
                 userRepository
                         .findById(id)
                         .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
-        user.lockAccount();
+        UserAccountServiceImpl.lockAccount(user);
         userRepository.save(user);
         if (recovery != null) recovery.finish(before);
         record(actor, AuditAction.STATUS_CHANGE, id, "LOCKED");
@@ -123,7 +137,7 @@ public class UserServiceImpl implements UserService {
                 userRepository
                         .findById(id)
                         .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
-        user.unlockAccount();
+        UserAccountServiceImpl.unlockAccount(user);
         userRepository.save(user);
         record(actor, AuditAction.STATUS_CHANGE, id, "UNLOCKED");
     }
@@ -137,11 +151,11 @@ public class UserServiceImpl implements UserService {
                         .findById(id)
                         .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
         UserRole previous = user.getRole();
-        user.setRole(request.role());
+        UserAccountServiceImpl.setRole(user, request.role());
         userRepository.save(user);
         if (recovery != null) recovery.finish(before);
         record(actor, AuditAction.UPDATE, id, "ROLE:" + previous + "->" + request.role());
-        return UserMapper.toResponse(user);
+        return userMapper.toResponse(user);
     }
 
     private void record(String actor, AuditAction action, Long id, String details) {

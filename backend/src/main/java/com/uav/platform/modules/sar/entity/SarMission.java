@@ -6,7 +6,6 @@ import com.uav.platform.modules.sar.enums.SarStatus;
 
 import jakarta.persistence.*;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +14,7 @@ import lombok.Setter;
 @Table(name = "sar_missions")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class SarMission extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -49,24 +48,4 @@ public class SarMission extends BaseEntity {
 
     @Column(length = 2000)
     private String notes;
-
-    public SarMission(
-            Mission mission,
-            String searchAreaPolygon,
-            Double lkpLatitude,
-            Double lkpLongitude,
-            Double driftRadiusMeters,
-            String emergencyContact,
-            Integer victimCountEstimated,
-            String notes) {
-        this.mission = mission;
-        this.searchAreaPolygon = searchAreaPolygon;
-        this.lkpLatitude = lkpLatitude;
-        this.lkpLongitude = lkpLongitude;
-        this.driftRadiusMeters = driftRadiusMeters != null ? driftRadiusMeters : 500.0;
-        this.emergencyContact = emergencyContact;
-        this.victimCountEstimated = victimCountEstimated != null ? victimCountEstimated : 1;
-        this.notes = notes;
-        this.sarStatus = SarStatus.SEARCHING;
-    }
 }

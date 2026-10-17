@@ -5,9 +5,12 @@ import com.uav.platform.modules.media.entity.MediaAsset;
 import com.uav.platform.modules.media.enums.*;
 import com.uav.platform.modules.media.service.MediaAccessService;
 import com.uav.platform.modules.mission.repository.MissionRepository;
+import com.uav.platform.modules.mission.service.impl.MissionOperations;
 import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.station.repository.StationRepository;
 import com.uav.platform.modules.uav.repository.UavRepository;
+
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class MediaAccessServiceImpl implements MediaAccessService {
     private final PermissionService permissions;
     private final MissionRepository missions;
@@ -23,26 +27,12 @@ public class MediaAccessServiceImpl implements MediaAccessService {
     private final UavRepository uavs;
     private final EquipmentRepository equipment;
 
-    public MediaAccessServiceImpl(
-            PermissionService permissions,
-            MissionRepository missions,
-            StationRepository stations,
-            UavRepository uavs,
-            EquipmentRepository equipment) {
-        this.permissions = permissions;
-        this.missions = missions;
-        this.stations = stations;
-        this.uavs = uavs;
-        this.equipment = equipment;
-    }
-
     @Override
     public org.springframework.data.jpa.domain.Specification<MediaAsset> readableBy(String actor) {
         if (actor == null) return (root, query, cb) -> cb.disjunction();
         var auth = UsernamePasswordAuthenticationToken.authenticated(actor, null, List.of());
         var scope =
-                new com.uav.platform.modules.media.specification.MediaVisibilitySpecifications
-                        .ReadPermissions(
+                new com.uav.platform.modules.media.dto.record.ReadPermissions(
                         permissions.has(auth, "MEDIA_MANAGE"),
                                 permissions.has(auth, "MISSION_MEDIA_VIEW"),
                         permissions.has(auth, "MISSION_VIEW_ALL"),
@@ -78,7 +68,7 @@ public class MediaAccessServiceImpl implements MediaAccessService {
                                 || (mission.getOperator() != null
                                         && mission.getOperator().getUsername().equals(actor));
                 if (!visible) throw denied();
-                if (write) mission.requireMediaWritable();
+                if (write) MissionOperations.requireMediaWritable(mission);
             }
             case "STATION" -> {
                 if (!permissions.has(auth, write ? "STATION_MANAGE" : "STATION_READ")

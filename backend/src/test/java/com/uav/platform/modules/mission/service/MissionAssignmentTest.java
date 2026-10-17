@@ -16,6 +16,7 @@ import com.uav.platform.modules.mission.dto.request.ResourceAssignmentRequest;
 import com.uav.platform.modules.mission.entity.*;
 import com.uav.platform.modules.mission.enums.*;
 import com.uav.platform.modules.mission.repository.*;
+import com.uav.platform.modules.mission.service.impl.MissionOperations;
 import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.station.enums.*;
 import com.uav.platform.modules.station.repository.StationRepository;
@@ -131,7 +132,7 @@ class MissionAssignmentTest {
 
     private Mission mission() {
         Mission mission =
-                Mission.draft(
+                MissionOperations.draft(
                         new AppUser(
                                 "customer", "customer@assign.vn", "hash", null, UserStatus.ACTIVE),
                         MissionType.AREA_INSPECTION,

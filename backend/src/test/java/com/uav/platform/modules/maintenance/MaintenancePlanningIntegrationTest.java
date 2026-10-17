@@ -20,9 +20,9 @@ import com.uav.platform.modules.maintenance.service.MaintenanceService;
 import com.uav.platform.modules.mission.dto.request.*;
 import com.uav.platform.modules.mission.enums.*;
 import com.uav.platform.modules.mission.service.MissionService;
-import com.uav.platform.modules.station.entity.Station;
 import com.uav.platform.modules.station.enums.StationStatus;
 import com.uav.platform.modules.station.repository.StationRepository;
+import com.uav.platform.modules.station.service.impl.StationOperations;
 import com.uav.platform.modules.uav.dto.request.UavRequest;
 import com.uav.platform.modules.uav.enums.UavStatus;
 import com.uav.platform.modules.uav.service.UavService;
@@ -80,7 +80,7 @@ class MaintenancePlanningIntegrationTest {
         customer = user("plan_customer_" + s, UserRole.ROLE_PILOT);
         stationId =
                 stations.save(
-                                new Station(
+                                StationOperations.create(
                                         "PLAN-" + s,
                                         "Synthetic repair station",
                                         "Hanoi",

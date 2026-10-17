@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { planName } from '@uav/ui/presentation';
 import {
   CreditCard,
   CheckCircle,
@@ -48,7 +49,7 @@ export default function CustomerBillingPage() {
         <div className="vju-billing-header">
           <div>
             <h1 className="vju-billing-title">
-              <CreditCard color="#ab2523" size={28} /> Quản lý Gói cước & Hạn mức sử dụng
+              <CreditCard color="#ab2523" size={28} /> Gói cước và hóa đơn
             </h1>
             <p className="vju-billing-subtitle">
               Theo dõi hạn mức giờ dự kiến theo lịch và hóa đơn. Cổng thanh toán chưa được cấu hình.
@@ -88,7 +89,7 @@ export default function CustomerBillingPage() {
                     Chu kỳ kết thúc: {formatDate(quota.cycleEnd)}
                   </span>
                 </div>
-                <h3 className="vju-plan-title">{quota.planName}</h3>
+                <h3 className="vju-plan-title">{planName(quota.planName)}</h3>
                 <p className="vju-plan-desc">
                   Hạn mức sử dụng theo gói dịch vụ hiện tại. Giờ sử dụng được ghi nhận khi nhiệm vụ hoàn thành, dựa trên thời lượng dự kiến theo lịch.
                 </p>
@@ -195,7 +196,7 @@ export default function CustomerBillingPage() {
                 {invoices.map(inv => (
                   <tr key={inv.id} className="vju-tbody-tr">
                     <td className="vju-td-mono">{inv.code}</td>
-                    <td className="vju-td">{inv.missionTitle ?? inv.planName ?? inv.notes ?? '—'}</td>
+                    <td className="vju-td">{inv.missionTitle ?? (inv.planName ? planName(inv.planName) : inv.notes ?? '—')}</td>
                     <td className="vju-td-muted">{formatDate(inv.createdAt)}</td>
                     <td className="vju-td-muted">{formatDate(inv.dueDate)}</td>
                     <td className="vju-td-mono">

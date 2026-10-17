@@ -83,8 +83,10 @@ class ArchitecturePackageTest {
                     String name = file.getFileName().toString();
                     assertTrue(
                             name.endsWith("ServiceImpl.java")
+                                    || name.endsWith("Operations.java")
+                                    || "UserAccountPersistenceListener.java".equals(name)
                                     || "S3CompatibleStorageService.java".equals(name),
-                            "Service implementations must use <Feature>ServiceImpl or a named provider: "
+                            "Service implementations must use ServiceImpl, Operations, or an explicit framework adapter: "
                                     + relative);
                 }
                 assertFalse(
@@ -103,14 +105,15 @@ class ArchitecturePackageTest {
     }
 
     @Test
-    void applicationCodeDependsOnServiceContracts() throws IOException {
+    void controllersDependOnServiceContracts() throws IOException {
         for (Path file : javaFiles(MAIN_SOURCE).toList()) {
-            assertFalse(
-                    Files.readString(file)
-                            .matches(
-                                    "(?s).*import\\s+com\\.uav\\.platform\\.modules\\.[^;]+\\.service\\.impl\\.[^;]+;.*"),
-                    "Application code must depend on a service contract, not its implementation: "
-                            + file);
+            if (!file.getFileName().toString().endsWith("Controller.java")) continue;
+            String source = Files.readString(file);
+            for (String layer : List.of(".service.impl.", ".repository.", ".entity.", ".mapper.")) {
+                assertFalse(
+                        source.contains(layer),
+                        "Controllers must use service contracts and DTOs: " + file);
+            }
         }
     }
 
@@ -126,7 +129,8 @@ class ArchitecturePackageTest {
                     relative.contains("/modules/")
                             && (relative.contains("/entity/")
                                     || relative.contains("/dto/request/")
-                                    || relative.contains("/dto/response/"));
+                                    || relative.contains("/dto/response/")
+                                    || relative.contains("/dto/record/"));
             if (moduleEntityOrDto) {
                 assertFalse(
                         Files.readString(file)

@@ -1,14 +1,15 @@
 package com.uav.platform.modules.station.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.common.util.Pageables;
 import com.uav.platform.modules.station.dto.request.StationRequest;
 import com.uav.platform.modules.station.dto.response.StationResponse;
 import com.uav.platform.modules.station.service.StationService;
 
 import jakarta.validation.Valid;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -16,24 +17,16 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/stations")
+@RequiredArgsConstructor
 public class StationController {
     private final StationService service;
-
-    public StationController(StationService service) {
-        this.service = service;
-    }
 
     @GetMapping
     @PreAuthorize("@permissionService.has(authentication, 'STATION_READ')")
     public ResponseEntity<PageResponse<StationResponse>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(
-                service.list(
-                        PageRequest.of(
-                                Math.max(page, 0),
-                                Math.min(Math.max(size, 1), 100),
-                                Sort.by("name").ascending())));
+        return ResponseEntity.ok(service.list(Pageables.asc(page, size, "name")));
     }
 
     @GetMapping("/{id}")

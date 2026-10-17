@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.role.dto.request.RoleUpdateRequest;
 import com.uav.platform.modules.user.dto.response.UserResponse;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.enums.UserRole;
@@ -120,5 +121,38 @@ class UserServiceTest {
         when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThrows(SystemException.class, () -> userService.getUserById(999L));
+    }
+
+    @Test
+    void lockAndUnlockPersistManualLockAndClearFailedAttempts() {
+        AppUser user = new AppUser();
+        user.setId(10L);
+        user.setFailedAttempts(3);
+        when(userRepository.findById(10L)).thenReturn(Optional.of(user));
+
+        userService.lockUser(10L, "admin");
+        assertTrue(user.isManualLocked());
+        assertNotNull(user.getLockTime());
+        assertEquals(3, user.getFailedAttempts());
+
+        userService.unlockUser(10L, "admin");
+        assertFalse(user.isManualLocked());
+        assertNull(user.getLockTime());
+        assertEquals(0, user.getFailedAttempts());
+        verify(userRepository, times(2)).save(user);
+    }
+
+    @Test
+    void updateRolePreservesDefaultForNullAssignment() {
+        AppUser user = new AppUser();
+        user.setId(10L);
+        user.setRole(UserRole.ROLE_COMMANDER);
+        when(userRepository.findById(10L)).thenReturn(Optional.of(user));
+
+        UserResponse response = userService.updateRole(10L, new RoleUpdateRequest(null), "admin");
+
+        assertEquals(UserRole.ROLE_PILOT, user.getRole());
+        assertEquals(UserRole.ROLE_PILOT, response.role());
+        verify(userRepository).save(user);
     }
 }

@@ -106,7 +106,7 @@ test('Admin Portal has Billing Management, Reports & CSV Export, and Settings Co
   assert.match(reportsContent, /victimsRescued/);
 
   const settingsContent = readFileSync(settingsPath, 'utf8');
-  assert.match(settingsContent, /Geofencing/i);
+  assert.match(settingsContent, /An toàn bay và giới hạn khu vực/i);
   assert.match(settingsContent, /KV260/i);
   assert.match(settingsContent, /YOLOv8s/i);
 

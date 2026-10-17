@@ -2,6 +2,8 @@ package com.uav.platform.error;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.uav.platform.common.dto.response.ErrorResponse;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -106,5 +108,21 @@ class GlobalExceptionHandlerTest {
         assertNotNull(response.getBody());
         assertEquals("DATA_INTEGRITY_CONFLICT", response.getBody().code());
         assertFalse(response.getBody().message().contains("uk_code"));
+    }
+
+    @Test
+    void normalize_PreservesVietnameseCharactersAsAsciiWords() {
+        SystemException ex = SystemException.badRequest("Họ tên không được vượt quá 100 ký tự.");
+        assertEquals("HO_TEN_KHONG_DUOC_VUOT_QUA_100_KY_TU", ex.getCode());
+    }
+
+    @Test
+    void handleConflictState_PreservesDomainErrorCodeWhenUppercase() {
+        ResponseEntity<ErrorResponse> response =
+                exceptionHandler.handleConflictState(
+                        new IllegalStateException("MISSION_INVALID_STATUS"), request);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("MISSION_INVALID_STATUS", response.getBody().code());
     }
 }

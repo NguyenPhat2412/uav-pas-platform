@@ -19,6 +19,7 @@ import com.uav.platform.modules.mission.service.MissionService;
 import com.uav.platform.modules.station.entity.Station;
 import com.uav.platform.modules.station.enums.StationStatus;
 import com.uav.platform.modules.station.repository.StationRepository;
+import com.uav.platform.modules.station.service.impl.StationOperations;
 import com.uav.platform.modules.uav.entity.Uav;
 import com.uav.platform.modules.uav.enums.UavStatus;
 import com.uav.platform.modules.uav.repository.UavRepository;
@@ -71,7 +72,7 @@ class MissionRedispatchIntegrationTest {
         operator = user("dispatch_operator_", UserRole.ROLE_OPERATOR);
         station =
                 stations.save(
-                        new Station(
+                        StationOperations.create(
                                 "DSP-" + suffix,
                                 "Dispatch station",
                                 "Hanoi",
@@ -197,7 +198,7 @@ class MissionRedispatchIntegrationTest {
                                 auth(admin)));
         var other =
                 stations.save(
-                        new Station(
+                        StationOperations.create(
                                 "DSP-OTHER-" + suffix,
                                 "Other",
                                 null,

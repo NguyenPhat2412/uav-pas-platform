@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import { displayLabel } from '@uav/ui/presentation';
+import { displayLabel, formatDate } from '@uav/ui/presentation';
 import { PageGuard } from '@/components/layout';
 import { Button, Panel, Status } from '@/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
@@ -27,9 +27,9 @@ function Missions() {
       {query.isError ? <div className="error" role="alert">Không thể tải nhiệm vụ. <Button variant="secondary" onClick={() => void query.refetch()}>Thử lại</Button></div>
         : query.isLoading ? <div className="empty" role="status">Đang tải nhiệm vụ…</div>
         : <>
-          <p className="muted" role="status">{range?.total ? `Hiển thị ${range.first}–${range.last} / ${range.total} nhiệm vụ` : 'Không có nhiệm vụ phù hợp.'}</p>
+          {!!range?.total && <p className="muted" role="status">Hiển thị {range.first}–{range.last} / {range.total} nhiệm vụ</p>}
           {page?.content.length ? <div className="table-wrap"><table className="table"><thead><tr><th>Mã</th><th>Tiêu đề</th><th>Thời gian</th><th>Trạng thái</th></tr></thead><tbody>{page.content.map(mission => <tr key={mission.id}>
-            <td data-label="Mã"><Link href={`/missions/${mission.id}`} className="button-link">{mission.code}</Link></td><td data-label="Tiêu đề">{mission.title}</td><td data-label="Thời gian">{new Date(mission.startTime).toLocaleString('vi-VN')}</td><td data-label="Trạng thái"><Status value={mission.status} /></td>
+            <td data-label="Mã"><Link href={`/missions/${mission.id}`} className="button-link">{mission.code}</Link></td><td data-label="Tiêu đề">{mission.title}</td><td data-label="Thời gian">{formatDate(mission.startTime)}</td><td data-label="Trạng thái"><Status value={mission.status} /></td>
           </tr>)}</tbody></table></div> : <div className="empty">{filters.page > 0 ? 'Trang này không còn nhiệm vụ. Hãy quay lại trang trước hoặc tải lại từ đầu.' : filters.search || filters.status ? 'Không tìm thấy nhiệm vụ theo bộ lọc đã chọn.' : 'Bạn chưa có nhiệm vụ. Tạo yêu cầu đầu tiên để bắt đầu.'}</div>}
           {page && (page.totalPages > 1 || filters.page > 0) && <nav className="pagination" aria-label="Phân trang nhiệm vụ">
             <Button variant="secondary" disabled={filters.page === 0 || query.isFetching} onClick={() => setFilters(value => ({ ...value, page: Math.max(0, value.page - 1) }))}>Trang trước</Button>

@@ -11,6 +11,7 @@ import com.uav.platform.modules.dashboard.service.impl.DashboardServiceImpl;
 import com.uav.platform.modules.inventory.entity.Equipment;
 import com.uav.platform.modules.inventory.enums.*;
 import com.uav.platform.modules.inventory.repository.EquipmentRepository;
+import com.uav.platform.modules.inventory.service.impl.EquipmentOperations;
 import com.uav.platform.modules.media.enums.*;
 import com.uav.platform.modules.media.repository.MediaAssetRepository;
 import com.uav.platform.modules.mission.enums.*;
@@ -63,8 +64,8 @@ class MissionDashboardTest {
                         com.uav.platform.modules.inventory.enums.EquipmentType.BATTERY,
                         null,
                         null);
-        active.stockIn(8);
-        active.reserve(3);
+        EquipmentOperations.stockIn(active, 8);
+        EquipmentOperations.reserve(active, 3);
         when(equipment.findAll(any(Specification.class))).thenReturn(List.of(active));
         DashboardServiceImpl service =
                 new DashboardServiceImpl(

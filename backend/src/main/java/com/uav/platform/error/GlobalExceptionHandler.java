@@ -1,11 +1,13 @@
 package com.uav.platform.error;
 
 import com.uav.platform.common.constant.CoreConstants;
+import com.uav.platform.common.constant.RestEndpoint;
+import com.uav.platform.common.dto.response.ErrorResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
@@ -17,27 +19,21 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.Locale;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(SystemException.class)
     public ResponseEntity<ErrorResponse> handleSystemException(
             SystemException ex, HttpServletRequest request) {
         log.warn("System exception occurred [{}]: {}", ex.getStatus(), ex.getMessage());
-        ErrorResponse body =
-                ErrorResponse.ofCode(
-                        ex.getStatus().value(),
-                        ex.getStatus().getReasonPhrase(),
-                        ex.getCode(),
-                        ex.getMessage(),
-                        request.getRequestURI());
-        return ResponseEntity.status(ex.getStatus()).body(body);
+        return respond(ex.getStatus(), ex.getCode(), ex.getMessage(), request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -48,29 +44,25 @@ public class GlobalExceptionHandler {
                         .map(err -> err.getField() + ": " + err.getDefaultMessage())
                         .collect(Collectors.joining("; "));
         log.warn("Validation failed: {}", details);
-
-        ErrorResponse body =
-                ErrorResponse.ofCode(
-                        HttpStatus.BAD_REQUEST.value(),
-                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                        "VALIDATION_ERROR",
-                        details,
-                        request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+        return respond(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", details, request);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleMalformedJson(
             HttpMessageNotReadableException ex, HttpServletRequest request) {
         log.warn("Malformed JSON request on {}: {}", request.getRequestURI(), ex.getMessage());
-        ErrorResponse body =
-                ErrorResponse.ofCode(
-                        HttpStatus.BAD_REQUEST.value(),
-                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                        "MALFORMED_JSON_REQUEST",
-                        "Malformed or unreadable request payload.",
-                        request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+        if ((RestEndpoint.USERS + "/profile").equals(request.getRequestURI())) {
+            return respond(
+                    HttpStatus.BAD_REQUEST,
+                    "INVALID_PROFILE_REQUEST",
+                    "Thông tin hồ sơ không đúng định dạng.",
+                    request);
+        }
+        return respond(
+                HttpStatus.BAD_REQUEST,
+                "MALFORMED_JSON_REQUEST",
+                "Malformed or unreadable request payload.",
+                request);
     }
 
     @ExceptionHandler({
@@ -80,124 +72,106 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleParameterException(
             Exception ex, HttpServletRequest request) {
         log.warn("Invalid request parameter on {}: {}", request.getRequestURI(), ex.getMessage());
-        ErrorResponse body =
-                ErrorResponse.ofCode(
-                        HttpStatus.BAD_REQUEST.value(),
-                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                        "INVALID_REQUEST_PARAMETER",
-                        ex.getMessage(),
-                        request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+        return respond(
+                HttpStatus.BAD_REQUEST, "INVALID_REQUEST_PARAMETER", ex.getMessage(), request);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(
             AccessDeniedException ex, HttpServletRequest request) {
-        ErrorResponse body =
-                ErrorResponse.ofCode(
-                        HttpStatus.FORBIDDEN.value(),
-                        HttpStatus.FORBIDDEN.getReasonPhrase(),
-                        "ACCESS_DENIED",
-                        "You do not have permission to access this resource",
-                        request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+        return respond(
+                HttpStatus.FORBIDDEN,
+                "ACCESS_DENIED",
+                "You do not have permission to access this resource",
+                request);
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoResourceFound(
             NoResourceFoundException ex, HttpServletRequest request) {
-        ErrorResponse body =
-                ErrorResponse.ofCode(
-                        HttpStatus.NOT_FOUND.value(),
-                        HttpStatus.NOT_FOUND.getReasonPhrase(),
-                        "RESOURCE_NOT_FOUND",
-                        "The requested endpoint or resource does not exist.",
-                        request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+        return respond(
+                HttpStatus.NOT_FOUND,
+                "RESOURCE_NOT_FOUND",
+                "The requested endpoint or resource does not exist.",
+                request);
     }
 
     @ExceptionHandler(OptimisticLockingFailureException.class)
     public ResponseEntity<ErrorResponse> handleOptimisticLock(
             OptimisticLockingFailureException ex, HttpServletRequest request) {
-        ErrorResponse body =
-                ErrorResponse.ofCode(
-                        HttpStatus.CONFLICT.value(),
-                        HttpStatus.CONFLICT.getReasonPhrase(),
-                        "OPTIMISTIC_LOCK_CONFLICT",
-                        "The resource changed while you were editing it. Reload and try again.",
-                        request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+        return respond(
+                HttpStatus.CONFLICT,
+                "OPTIMISTIC_LOCK_CONFLICT",
+                "The resource changed while you were editing it. Reload and try again.",
+                request);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
             DataIntegrityViolationException ex, HttpServletRequest request) {
         String detail = ex.getMostSpecificCause().getMessage();
-        if (detail != null
-                && detail.toLowerCase(java.util.Locale.ROOT).contains("uk_users_phone_number")) {
+        if (detail != null && detail.toLowerCase(Locale.ROOT).contains("uk_users_phone_number")) {
             return handleSystemException(
                     SystemException.conflict(CoreConstants.PHONE_ALREADY_EXISTS), request);
         }
         log.warn("Data integrity violation on {}", request.getRequestURI());
-        ErrorResponse body =
-                ErrorResponse.ofCode(
-                        HttpStatus.CONFLICT.value(),
-                        HttpStatus.CONFLICT.getReasonPhrase(),
-                        "DATA_INTEGRITY_CONFLICT",
-                        "Data integrity constraint violated. Please check duplicate or referenced records.",
-                        request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+        return respond(
+                HttpStatus.CONFLICT,
+                "DATA_INTEGRITY_CONFLICT",
+                "Data integrity constraint violated. Please check duplicate or referenced records.",
+                request);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleBadArgument(
             IllegalArgumentException ex, HttpServletRequest request) {
-        ErrorResponse body =
-                ErrorResponse.ofCode(
-                        HttpStatus.BAD_REQUEST.value(),
-                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                        "INVALID_ARGUMENT",
-                        ex.getMessage(),
-                        request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+        return respond(
+                HttpStatus.BAD_REQUEST,
+                resolveCode(ex.getMessage(), "INVALID_ARGUMENT"),
+                ex.getMessage(),
+                request);
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> handleConflictState(
             IllegalStateException ex, HttpServletRequest request) {
-        ErrorResponse body =
-                ErrorResponse.ofCode(
-                        HttpStatus.CONFLICT.value(),
-                        HttpStatus.CONFLICT.getReasonPhrase(),
-                        "INVALID_STATE",
-                        ex.getMessage(),
-                        request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+        return respond(
+                HttpStatus.CONFLICT,
+                resolveCode(ex.getMessage(), "INVALID_STATE"),
+                ex.getMessage(),
+                request);
     }
 
-    @ExceptionHandler(org.springframework.web.servlet.NoHandlerFoundException.class)
+    @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(Exception ex, HttpServletRequest request) {
-        ErrorResponse body =
-                ErrorResponse.ofCode(
-                        HttpStatus.NOT_FOUND.value(),
-                        HttpStatus.NOT_FOUND.getReasonPhrase(),
-                        "NOT_FOUND",
-                        "The requested resource was not found",
-                        request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+        return respond(
+                HttpStatus.NOT_FOUND, "NOT_FOUND", "The requested resource was not found", request);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(
             Exception ex, HttpServletRequest request) {
         log.error("Unhandled exception: ", ex);
-        ErrorResponse body =
-                ErrorResponse.ofCode(
-                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                        "INTERNAL_SERVER_ERROR",
-                        CoreConstants.INTERNAL_SERVER_ERROR,
-                        request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+        return respond(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "INTERNAL_SERVER_ERROR",
+                CoreConstants.INTERNAL_SERVER_ERROR,
+                request);
+    }
+
+    private String resolveCode(String message, String defaultCode) {
+        return message != null && message.matches("[A-Z0-9_]+") ? message : defaultCode;
+    }
+
+    private ResponseEntity<ErrorResponse> respond(
+            HttpStatus status, String code, String message, HttpServletRequest request) {
+        return ResponseEntity.status(status)
+                .body(
+                        ErrorResponse.ofCode(
+                                status.value(),
+                                status.getReasonPhrase(),
+                                code,
+                                message,
+                                request.getRequestURI()));
     }
 }

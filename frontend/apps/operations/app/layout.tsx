@@ -1,6 +1,7 @@
 import '@uav/design-tokens/styles.css';
 import './globals.css';
 import '@uav/design-tokens/portal.css';
+import '@uav/design-tokens/consistency.css';
 import { Providers } from './providers';
 
 export const metadata = { title: 'UAV PAS · Vận hành', description: 'Điều phối và thực hiện nhiệm vụ UAV' };

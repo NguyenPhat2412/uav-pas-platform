@@ -19,6 +19,7 @@ import com.uav.platform.modules.mission.service.MissionService;
 import com.uav.platform.modules.station.entity.Station;
 import com.uav.platform.modules.station.enums.StationStatus;
 import com.uav.platform.modules.station.repository.StationRepository;
+import com.uav.platform.modules.station.service.impl.StationOperations;
 import com.uav.platform.modules.uav.entity.Uav;
 import com.uav.platform.modules.uav.enums.UavStatus;
 import com.uav.platform.modules.uav.repository.UavRepository;
@@ -71,7 +72,7 @@ class MissionResourceRedispatchIntegrationTest {
         operator = user("dispatch_operator_", UserRole.ROLE_OPERATOR);
         station =
                 stations.save(
-                        new Station(
+                        StationOperations.create(
                                 "DSP-" + suffix,
                                 "Dispatch station",
                                 "Hanoi",
@@ -234,7 +235,7 @@ class MissionResourceRedispatchIntegrationTest {
         Long id = allocated(previousId, true);
         Station target =
                 stations.save(
-                        new Station(
+                        StationOperations.create(
                                 "NEW-" + suffix,
                                 "New station",
                                 null,
@@ -272,7 +273,7 @@ class MissionResourceRedispatchIntegrationTest {
         Long id = confirmed(3);
         Station target =
                 stations.save(
-                        new Station(
+                        StationOperations.create(
                                 "OFF-" + suffix,
                                 "Inactive",
                                 null,
@@ -425,7 +426,7 @@ class MissionResourceRedispatchIntegrationTest {
                                 id, equipmentChange(id, original, equipmentId, 99), auth(admin)));
         Station other =
                 stations.save(
-                        new Station(
+                        StationOperations.create(
                                 "E-" + suffix,
                                 "Elsewhere",
                                 null,

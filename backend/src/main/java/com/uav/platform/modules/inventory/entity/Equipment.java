@@ -6,14 +6,15 @@ import com.uav.platform.modules.station.entity.Station;
 
 import jakarta.persistence.*;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "equipment")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 public class Equipment extends BaseEntity {
     @Version
     @Column(nullable = false, columnDefinition = "bigint default 0")
@@ -51,53 +52,5 @@ public class Equipment extends BaseEntity {
         this.type = type;
         this.serialNumber = serialNumber;
         this.station = station;
-    }
-
-    public void update(String name, EquipmentType type, Station station) {
-        this.name = name;
-        this.type = type;
-        this.station = station;
-    }
-
-    public void stockIn(int amount) {
-        requirePositive(amount);
-        quantity += amount;
-        availableQuantity += amount;
-    }
-
-    public void stockOut(int amount) {
-        requirePositive(amount);
-        if (availableQuantity < amount)
-            throw new IllegalStateException("Insufficient available equipment");
-        quantity -= amount;
-        availableQuantity -= amount;
-    }
-
-    public void reserve(int amount) {
-        requirePositive(amount);
-        if (availableQuantity < amount)
-            throw new IllegalStateException("Insufficient available equipment");
-        availableQuantity -= amount;
-        reservedQuantity += amount;
-    }
-
-    public void release(int amount) {
-        requirePositive(amount);
-        if (reservedQuantity < amount)
-            throw new IllegalStateException("Insufficient reserved equipment");
-        reservedQuantity -= amount;
-        availableQuantity += amount;
-    }
-
-    public void transferOut(int amount) {
-        stockOut(amount);
-    }
-
-    public void setStation(Station station) {
-        this.station = station;
-    }
-
-    private void requirePositive(int amount) {
-        if (amount <= 0) throw new IllegalArgumentException("Quantity must be positive");
     }
 }

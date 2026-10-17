@@ -5,9 +5,9 @@ import static org.mockito.Mockito.*;
 
 import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.settings.dto.request.UpdateConfigurationRequest;
-import com.uav.platform.modules.settings.entity.SystemConfiguration;
 import com.uav.platform.modules.settings.repository.SystemConfigurationRepository;
 import com.uav.platform.modules.settings.service.impl.SystemConfigServiceImpl;
+import com.uav.platform.modules.settings.service.impl.SystemConfigurationOperations;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,7 @@ class BillingConfigurationTest {
     void enablingWithoutPriceIsRejected() {
         var repo = mock(SystemConfigurationRepository.class);
         var flag =
-                new SystemConfiguration(
+                SystemConfigurationOperations.create(
                         "billing.auto_generate_invoice", "false", "BILLING", null, "SYSTEM");
         when(repo.findByConfigKey("billing.auto_generate_invoice")).thenReturn(Optional.of(flag));
         lenient().when(repo.save(any())).thenAnswer(i -> i.getArgument(0));
@@ -38,7 +38,8 @@ class BillingConfigurationTest {
     void nonPositiveOrMalformedRatesAreRejected() {
         var repo = mock(SystemConfigurationRepository.class);
         var rate =
-                new SystemConfiguration("billing.hourly_rate_vnd", "", "BILLING", null, "SYSTEM");
+                SystemConfigurationOperations.create(
+                        "billing.hourly_rate_vnd", "", "BILLING", null, "SYSTEM");
         when(repo.findByConfigKey(rate.getConfigKey())).thenReturn(Optional.of(rate));
         lenient().when(repo.save(any())).thenAnswer(i -> i.getArgument(0));
         var service = new SystemConfigServiceImpl(repo);

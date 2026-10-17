@@ -19,5 +19,8 @@ public interface MediaService {
 
     MediaAssetResponse confirmMission(Long id, Long missionId, String actor);
 
+    SignedMediaUrlResponse registerMissionUploadUrl(
+            Long missionId, MediaUploadRequest request, String actor);
+
     void delete(Long id, String actor);
 }

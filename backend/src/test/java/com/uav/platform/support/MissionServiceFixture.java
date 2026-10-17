@@ -14,7 +14,7 @@ import com.uav.platform.modules.mission.repository.MissionMediaRepository;
 import com.uav.platform.modules.mission.repository.MissionRepository;
 import com.uav.platform.modules.mission.repository.ServiceOfferingRepository;
 import com.uav.platform.modules.mission.service.*;
-import com.uav.platform.modules.mission.service.impl.MissionServiceImpl;
+import com.uav.platform.modules.mission.service.impl.*;
 import com.uav.platform.modules.notification.service.NotificationService;
 import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.station.repository.StationRepository;
@@ -133,10 +133,19 @@ public final class MissionServiceFixture {
         com.uav.platform.modules.media.service.MediaAccessService mediaAccess = null;
         com.uav.platform.modules.billing.service.QuotaService quotaService = null;
         com.uav.platform.modules.billing.service.MissionInvoiceService missionInvoiceService = null;
-        var access = new MissionAccessService(entityManager, missions, users, permissions);
-        var missionEvents = new MissionEventService(events, notifications, access);
+        var missionMapper =
+                org.mapstruct.factory.Mappers.getMapper(
+                        com.uav.platform.modules.mission.mapper.MissionMapper.class);
+        var missionEventMapper =
+                org.mapstruct.factory.Mappers.getMapper(
+                        com.uav.platform.modules.mission.mapper.MissionEventMapper.class);
+        var missionMediaMapper =
+                org.mapstruct.factory.Mappers.getMapper(
+                        com.uav.platform.modules.mission.mapper.MissionMediaMapper.class);
+        var access = new MissionAccessServiceImpl(entityManager, missions, users, permissions);
+        var missionEvents = new MissionEventServiceImpl(events, notifications, access);
         var resources =
-                new MissionResourceService(
+                new MissionResourceServiceImpl(
                         entityManager,
                         missions,
                         users,
@@ -146,7 +155,7 @@ public final class MissionServiceFixture {
                         reservations,
                         uavService);
         var dispatch =
-                new MissionDispatchService(
+                new MissionDispatchServiceImpl(
                         entityManager,
                         missions,
                         permissions,
@@ -157,22 +166,33 @@ public final class MissionServiceFixture {
                         reservations,
                         access,
                         missionEvents,
-                        resources);
+                        resources,
+                        missionMapper);
         var queries =
-                new MissionQueryService(
-                        missions, users, permissions, events, stations, uavs, access, resources);
+                new MissionQueryServiceImpl(
+                        missions,
+                        users,
+                        permissions,
+                        events,
+                        stations,
+                        uavs,
+                        access,
+                        resources,
+                        missionMapper,
+                        missionEventMapper);
         var media =
-                new MissionMediaService(
+                new MissionMediaServiceImpl(
                         permissions,
                         audit,
                         mediaAssets,
                         mediaAccess,
                         missionMedia,
                         access,
-                        missionEvents);
-        var billing = new MissionBillingService(quotaService, missionInvoiceService);
+                        missionEvents,
+                        missionMediaMapper);
+        var billing = new MissionBillingServiceImpl(quotaService, missionInvoiceService);
         var lifecycle =
-                new MissionLifecycleService(
+                new MissionLifecycleServiceImpl(
                         missions,
                         services,
                         audit,
@@ -182,7 +202,8 @@ public final class MissionServiceFixture {
                         access,
                         missionEvents,
                         resources,
-                        billing);
+                        billing,
+                        missionMapper);
         return new MissionServiceImpl(lifecycle, queries, dispatch, media);
     }
 }

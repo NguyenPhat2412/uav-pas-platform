@@ -3,40 +3,18 @@ package com.uav.platform.modules.mission.mapper;
 import com.uav.platform.modules.mission.dto.response.MissionResponse;
 import com.uav.platform.modules.mission.entity.Mission;
 
-public final class MissionMapper {
-    private MissionMapper() {}
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
-    public static MissionResponse toResponse(Mission mission) {
-        return new MissionResponse(
-                mission.getId(),
-                mission.getCode(),
-                mission.getCustomer() == null ? null : mission.getCustomer().getId(),
-                mission.getCustomer() == null ? null : mission.getCustomer().getFullName(),
-                mission.getService() == null ? null : mission.getService().getId(),
-                mission.getMissionType(),
-                mission.getTitle(),
-                mission.getDescription(),
-                mission.getRequestedDate(),
-                mission.getStartTime(),
-                mission.getExpectedEndTime(),
-                mission.getLocationName(),
-                mission.getLatitude(),
-                mission.getLongitude(),
-                mission.getStation() == null ? null : mission.getStation().getId(),
-                mission.getUav() == null ? null : mission.getUav().getId(),
-                mission.getOperator() == null ? null : mission.getOperator().getId(),
-                mission.getPriority(),
-                mission.getStatus(),
-                mission.getNotes(),
-                mission.getCreatedAt(),
-                mission.getUpdatedAt(),
-                mission.getCompletionNote(),
-                mission.getEquipmentCondition(),
-                mission.getFailureReason(),
-                mission.getFailureNotes(),
-                mission.isOperatorAccepted(),
-                mission.getOperatorConflictNote(),
-                mission.getVersion(),
-                mission.getBillingStatus());
-    }
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface MissionMapper {
+
+    @Mapping(target = "customerId", source = "customer.id")
+    @Mapping(target = "customerName", source = "customer.fullName")
+    @Mapping(target = "serviceId", source = "service.id")
+    @Mapping(target = "stationId", source = "station.id")
+    @Mapping(target = "uavId", source = "uav.id")
+    @Mapping(target = "operatorId", source = "operator.id")
+    MissionResponse toResponse(Mission mission);
 }

@@ -7,8 +7,12 @@ import com.uav.platform.modules.role.entity.RoleTemplate;
 import com.uav.platform.modules.role.entity.RoleTemplatePermission;
 import com.uav.platform.modules.role.repository.RoleTemplatePermissionRepository;
 import com.uav.platform.modules.role.repository.RoleTemplateRepository;
+import com.uav.platform.modules.role.service.impl.RoleTemplateOperations;
 import com.uav.platform.modules.user.enums.UserRole;
 
+import lombok.RequiredArgsConstructor;
+
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
@@ -19,23 +23,15 @@ import java.util.EnumSet;
 
 @Component
 @Order(1)
+@RequiredArgsConstructor
 public class PermissionDataInitializer implements ApplicationRunner {
     private final PermissionRepository repository;
     private final RoleTemplateRepository roleTemplates;
     private final RoleTemplatePermissionRepository templatePermissions;
 
-    public PermissionDataInitializer(
-            PermissionRepository repository,
-            RoleTemplateRepository roleTemplates,
-            RoleTemplatePermissionRepository templatePermissions) {
-        this.repository = repository;
-        this.roleTemplates = roleTemplates;
-        this.templatePermissions = templatePermissions;
-    }
-
     @Override
     @Transactional
-    public void run(ApplicationArguments args) {
+    public void run(@NonNull ApplicationArguments args) {
         for (PermissionCode code : PermissionCode.values()) {
             if (repository.findByCode(code).isEmpty())
                 repository.save(new Permission(code, code.name()));
@@ -56,7 +52,7 @@ public class PermissionDataInitializer implements ApplicationRunner {
                                         template, repository.findByCode(code).orElseThrow()));
                     }
                 }
-                template.initializeDefaults();
+                RoleTemplateOperations.initializeDefaults(template);
             }
         }
     }

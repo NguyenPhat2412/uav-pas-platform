@@ -3,18 +3,13 @@ package com.uav.platform.modules.mission.mapper;
 import com.uav.platform.modules.mission.dto.response.MissionEventResponse;
 import com.uav.platform.modules.mission.entity.MissionEvent;
 
-public final class MissionEventMapper {
-    private MissionEventMapper() {}
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
-    public static MissionEventResponse toResponse(MissionEvent event) {
-        return new MissionEventResponse(
-                event.getId(),
-                event.getEventType(),
-                event.getActor() == null ? null : event.getActor().getUsername(),
-                event.getOldStatus(),
-                event.getNewStatus(),
-                event.getDescription(),
-                event.getMetadata(),
-                event.getCreatedAt());
-    }
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface MissionEventMapper {
+
+    @Mapping(target = "actor", source = "actor.username")
+    MissionEventResponse toResponse(MissionEvent event);
 }

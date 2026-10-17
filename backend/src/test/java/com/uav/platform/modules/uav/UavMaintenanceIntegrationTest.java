@@ -13,9 +13,9 @@ import com.uav.platform.modules.mission.dto.request.ResourceAssignmentRequest;
 import com.uav.platform.modules.mission.enums.MissionPriority;
 import com.uav.platform.modules.mission.enums.MissionType;
 import com.uav.platform.modules.mission.service.MissionService;
-import com.uav.platform.modules.station.entity.Station;
 import com.uav.platform.modules.station.enums.StationStatus;
 import com.uav.platform.modules.station.repository.StationRepository;
+import com.uav.platform.modules.station.service.impl.StationOperations;
 import com.uav.platform.modules.uav.dto.request.UavRequest;
 import com.uav.platform.modules.uav.enums.UavStatus;
 import com.uav.platform.modules.uav.service.UavService;
@@ -66,7 +66,7 @@ class UavMaintenanceIntegrationTest {
         customer = user("maint_customer_" + suffix, UserRole.ROLE_PILOT);
         stationId =
                 stations.save(
-                                new Station(
+                                StationOperations.create(
                                         "MAINT-" + suffix,
                                         "Maintenance home",
                                         "Hanoi",

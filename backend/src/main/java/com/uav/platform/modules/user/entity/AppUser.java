@@ -3,6 +3,7 @@ package com.uav.platform.modules.user.entity;
 import com.uav.platform.common.entity.BaseEntity;
 import com.uav.platform.modules.user.enums.UserRole;
 import com.uav.platform.modules.user.enums.UserStatus;
+import com.uav.platform.modules.user.service.impl.UserAccountPersistenceListener;
 
 import jakarta.persistence.*;
 
@@ -10,14 +11,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(UserAccountPersistenceListener.class)
 @Table(
         name = "users",
         uniqueConstraints =
@@ -26,7 +23,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AppUser extends BaseEntity implements UserDetails {
+public class AppUser extends BaseEntity {
 
     @Column(nullable = false, unique = true, length = 50)
     private String username;
@@ -61,13 +58,10 @@ public class AppUser extends BaseEntity implements UserDetails {
     private int failedAttempts = 0;
 
     @Column(name = "lock_time")
-    private java.time.LocalDateTime lockTime;
+    private LocalDateTime lockTime;
 
     @Column(name = "manual_locked", nullable = false, columnDefinition = "boolean default false")
     private boolean manualLocked = false;
-
-    public static final int MAX_FAILED_ATTEMPTS = 5;
-    public static final long LOCK_TIME_DURATION_MINUTES = 15;
 
     public AppUser(
             String username,
@@ -125,106 +119,7 @@ public class AppUser extends BaseEntity implements UserDetails {
         this.zaloId = zaloId;
         this.fullName = fullName;
         this.avatarUrl = avatarUrl;
-        this.role = role != null ? role : UserRole.ROLE_PILOT;
-        this.status = status != null ? status : UserStatus.ACTIVE;
-    }
-
-    @Override
-    protected void onCreate() {
-        super.onCreate();
-        if (this.role == null) {
-            this.role = UserRole.ROLE_PILOT;
-        }
-        if (this.status == null) {
-            this.status = UserStatus.ACTIVE;
-        }
-    }
-
-    // --- UserDetails Polymorphic Implementations ---
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(
-                new SimpleGrantedAuthority(
-                        this.role != null ? this.role.name() : UserRole.ROLE_PILOT.name()));
-    }
-
-    @Override
-    public String getPassword() {
-        return this.passwordHash;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return this.status != UserStatus.SUSPENDED && !isAccountLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.status == UserStatus.ACTIVE;
-    }
-
-    // --- Getters & Setters ---
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role != null ? role : UserRole.ROLE_PILOT;
-    }
-
-    public void setStatus(UserStatus status) {
-        this.status = status != null ? status : UserStatus.ACTIVE;
-    }
-
-    public void incrementFailedAttempts() {
-        this.failedAttempts++;
-        if (this.failedAttempts >= MAX_FAILED_ATTEMPTS) {
-            this.lockTime = java.time.LocalDateTime.now();
-        }
-    }
-
-    public void resetFailedAttempts() {
-        this.failedAttempts = 0;
-        this.lockTime = null;
-    }
-
-    public boolean isAccountLocked() {
-        if (this.manualLocked) {
-            return true;
-        }
-        if (this.lockTime == null) {
-            return false;
-        }
-        boolean expired =
-                java.time.LocalDateTime.now()
-                        .isAfter(this.lockTime.plusMinutes(LOCK_TIME_DURATION_MINUTES));
-        if (expired) {
-            resetFailedAttempts();
-            return false;
-        }
-        return true;
-    }
-
-    public void lockAccount() {
-        this.manualLocked = true;
-        this.lockTime = java.time.LocalDateTime.now();
-    }
-
-    public void unlockAccount() {
-        this.manualLocked = false;
-        resetFailedAttempts();
+        this.role = role;
+        this.status = status;
     }
 }

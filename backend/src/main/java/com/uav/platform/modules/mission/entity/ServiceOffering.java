@@ -1,7 +1,6 @@
 package com.uav.platform.modules.mission.entity;
 
 import com.uav.platform.common.entity.BaseEntity;
-import com.uav.platform.modules.mission.enums.*;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,10 +9,12 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name = "UavService")
 @Table(name = "uav_services")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ServiceOffering extends BaseEntity {
     @Column(nullable = false, unique = true, length = 60)
@@ -33,15 +34,9 @@ public class ServiceOffering extends BaseEntity {
 
     public ServiceOffering(
             String code, String name, String description, int defaultDurationMinutes) {
-        if (defaultDurationMinutes <= 0)
-            throw new IllegalArgumentException("Default duration must be positive");
         this.code = code;
         this.name = name;
         this.description = description;
         this.defaultDurationMinutes = defaultDurationMinutes;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 }

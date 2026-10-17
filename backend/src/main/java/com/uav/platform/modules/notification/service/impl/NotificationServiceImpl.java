@@ -11,6 +11,8 @@ import com.uav.platform.modules.notification.service.NotificationService;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -19,16 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
-
-    public NotificationServiceImpl(
-            NotificationRepository notificationRepository, UserRepository userRepository) {
-        this.notificationRepository = notificationRepository;
-        this.userRepository = userRepository;
-    }
+    private final NotificationMapper notificationMapper;
 
     private AppUser getCurrentUser(Authentication auth) {
         return userRepository
@@ -42,7 +40,7 @@ public class NotificationServiceImpl implements NotificationService {
         AppUser user = getCurrentUser(auth);
         Page<Notification> page =
                 notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
-        return PageResponse.from(page.map(NotificationMapper::toResponse));
+        return PageResponse.from(page.map(notificationMapper::toResponse));
     }
 
     @Override
@@ -68,7 +66,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         notification.setIsRead(true);
-        return NotificationMapper.toResponse(notificationRepository.save(notification));
+        return notificationMapper.toResponse(notificationRepository.save(notification));
     }
 
     @Override
@@ -88,7 +86,7 @@ public class NotificationServiceImpl implements NotificationService {
                                                 "User not found with id: " + request.userId()));
 
         Notification notif =
-                new Notification(
+                NotificationOperations.create(
                         user,
                         request.title(),
                         request.content(),
@@ -96,6 +94,6 @@ public class NotificationServiceImpl implements NotificationService {
                         request.referenceType(),
                         request.referenceId());
 
-        return NotificationMapper.toResponse(notificationRepository.save(notif));
+        return notificationMapper.toResponse(notificationRepository.save(notif));
     }
 }

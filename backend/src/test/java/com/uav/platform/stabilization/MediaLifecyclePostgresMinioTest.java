@@ -9,9 +9,11 @@ import com.uav.platform.modules.media.entity.MediaAsset;
 import com.uav.platform.modules.media.enums.MediaType;
 import com.uav.platform.modules.media.repository.MediaAssetRepository;
 import com.uav.platform.modules.media.service.*;
+import com.uav.platform.modules.media.service.impl.MediaCleanupServiceImpl;
 import com.uav.platform.modules.mission.entity.*;
 import com.uav.platform.modules.mission.enums.*;
 import com.uav.platform.modules.mission.repository.*;
+import com.uav.platform.modules.mission.service.impl.MissionOperations;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.enums.UserRole;
 import com.uav.platform.modules.user.enums.UserStatus;
@@ -106,7 +108,7 @@ class MediaLifecyclePostgresMinioTest {
                                 UserStatus.ACTIVE));
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         mission =
-                Mission.draft(
+                MissionOperations.draft(
                         owner,
                         MissionType.AREA_INSPECTION,
                         "Media lifecycle",
@@ -568,7 +570,7 @@ class MediaLifecyclePostgresMinioTest {
         assertFalse(assets.findById(a.getId()).orElseThrow().isDeleted());
         reset(storage);
         var restarted =
-                new MediaCleanupService(
+                new MediaCleanupServiceImpl(
                         assets, missions, links, storage, entityManager, transactionManager, false);
         assertTrue(restarted.process(a.getId()));
         assertNotNull(assets.findById(a.getId()).orElseThrow().getObjectDeletedAt());

@@ -1,7 +1,6 @@
 package com.uav.platform.modules.mission.specification;
 
 import com.uav.platform.modules.mission.entity.ServiceOffering;
-import com.uav.platform.modules.mission.enums.*;
 
 import org.springframework.data.jpa.domain.Specification;
 

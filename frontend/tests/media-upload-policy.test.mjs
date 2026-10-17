@@ -13,7 +13,7 @@ test('all allowed media use exact decimal limits and reject one byte overflow', 
     assert.equal(policy.validateMediaFile({ type, size: max }), type);
     assert.equal(policy.validateMediaFile({ type, size: 1 }), type);
     for (const size of [max + 1, 0, -1, NaN, Infinity, 1.5]) {
-      assert.throws(() => policy.validateMediaFile({ type, size }), /100000000.*1000000000/);
+      assert.throws(() => policy.validateMediaFile({ type, size }), /100 MB.*1 GB/);
     }
   }
 });

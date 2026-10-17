@@ -16,12 +16,15 @@ import com.uav.platform.modules.inventory.service.InventoryService;
 import com.uav.platform.modules.station.entity.Station;
 import com.uav.platform.modules.station.repository.StationRepository;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
     @org.springframework.beans.factory.annotation.Autowired
     private com.uav.platform.modules.mission.repository.MissionEquipmentReservationRepository
@@ -34,28 +37,19 @@ public class InventoryServiceImpl implements InventoryService {
     private final InventoryMovementRepository movements;
     private final StationRepository stations;
     private final AuditLogService audit;
-
-    public InventoryServiceImpl(
-            EquipmentRepository equipment,
-            InventoryMovementRepository movements,
-            StationRepository stations,
-            AuditLogService audit) {
-        this.equipment = equipment;
-        this.movements = movements;
-        this.stations = stations;
-        this.audit = audit;
-    }
+    private final EquipmentMapper equipmentMapper;
+    private final InventoryMovementMapper movementMapper;
 
     @Override
     @Transactional(readOnly = true)
     public PageResponse<EquipmentResponse> list(Pageable pageable) {
-        return PageResponse.from(equipment.findAll(pageable), EquipmentMapper::toResponse);
+        return PageResponse.from(equipment.findAll(pageable), equipmentMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
     public EquipmentResponse get(Long id) {
-        return EquipmentMapper.toResponse(find(id));
+        return equipmentMapper.toResponse(find(id));
     }
 
     @Override
@@ -76,7 +70,7 @@ public class InventoryServiceImpl implements InventoryService {
                 "EQUIPMENT",
                 saved.getId().toString(),
                 saved.getName());
-        return EquipmentMapper.toResponse(saved);
+        return equipmentMapper.toResponse(saved);
     }
 
     @Override
@@ -87,12 +81,13 @@ public class InventoryServiceImpl implements InventoryService {
                 && item.getReservedQuantity() > 0)
             throw SystemException.conflict(
                     "Equipment is reserved; release reservations before changing station");
-        item.update(
+        EquipmentOperations.update(
+                item,
                 request.name(),
                 request.type(),
                 request.stationId() == null ? null : station(request.stationId()));
         audit.record(null, actor, AuditAction.UPDATE, "EQUIPMENT", id.toString(), item.getName());
-        return EquipmentMapper.toResponse(item);
+        return equipmentMapper.toResponse(item);
     }
 
     @Override
@@ -135,9 +130,9 @@ public class InventoryServiceImpl implements InventoryService {
         if (r.quantity() == item.getQuantity()) {
             item.setStation(target);
         } else {
-            item.stockOut(r.quantity());
+            EquipmentOperations.stockOut(item, r.quantity());
             Equipment destination = new Equipment(item.getName(), item.getType(), null, target);
-            destination.stockIn(r.quantity());
+            EquipmentOperations.stockIn(destination, r.quantity());
             equipment.save(destination);
         }
         movements.save(
@@ -152,13 +147,13 @@ public class InventoryServiceImpl implements InventoryService {
                         r.requestId()));
         audit.record(
                 null, actor, AuditAction.TRANSFER, "EQUIPMENT", id.toString(), target.getCode());
-        return EquipmentMapper.toResponse(item);
+        return equipmentMapper.toResponse(item);
     }
 
     @Override
     @Transactional(readOnly = true)
     public PageResponse<InventoryMovementResponse> history(Pageable pageable) {
-        return PageResponse.from(movements.findAll(pageable), InventoryMovementMapper::toResponse);
+        return PageResponse.from(movements.findAll(pageable), movementMapper::toResponse);
     }
 
     private EquipmentResponse movement(
@@ -179,10 +174,10 @@ public class InventoryServiceImpl implements InventoryService {
                         != com.uav.platform.modules.inventory.enums.EquipmentStatus.ACTIVE)
             throw SystemException.conflict("INVENTORY_NOT_AVAILABLE");
         switch (type) {
-            case STOCK_IN -> item.stockIn(r.quantity());
-            case STOCK_OUT -> item.stockOut(r.quantity());
-            case RESERVE -> item.reserve(r.quantity());
-            case RELEASE -> item.release(r.quantity());
+            case STOCK_IN -> EquipmentOperations.stockIn(item, r.quantity());
+            case STOCK_OUT -> EquipmentOperations.stockOut(item, r.quantity());
+            case RESERVE -> EquipmentOperations.reserve(item, r.quantity());
+            case RELEASE -> EquipmentOperations.release(item, r.quantity());
             default -> throw new IllegalArgumentException("Unsupported movement");
         }
         movements.save(
@@ -203,7 +198,7 @@ public class InventoryServiceImpl implements InventoryService {
                     default -> AuditAction.RELEASE;
                 };
         audit.record(null, actor, action, "EQUIPMENT", id.toString(), String.valueOf(r.quantity()));
-        return EquipmentMapper.toResponse(item);
+        return equipmentMapper.toResponse(item);
     }
 
     private void lockRequest(QuantityRequest request) {
@@ -235,7 +230,7 @@ public class InventoryServiceImpl implements InventoryService {
                                 throw SystemException.conflict(
                                         "Request ID already used with different operation or payload");
                             }
-                            return EquipmentMapper.toResponse(item);
+                            return equipmentMapper.toResponse(item);
                         })
                 .orElse(null);
     }

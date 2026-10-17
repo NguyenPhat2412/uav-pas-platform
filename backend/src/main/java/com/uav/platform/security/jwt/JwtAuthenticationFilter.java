@@ -3,6 +3,7 @@ package com.uav.platform.security.jwt;
 import com.uav.platform.modules.auth.service.InvalidatedTokenService;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.repository.UserRepository;
+import com.uav.platform.modules.user.service.impl.UserAccountServiceImpl;
 import com.uav.platform.security.AuthCookieHelper;
 
 import jakarta.servlet.FilterChain;
@@ -63,8 +64,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (userRepository != null) {
                 AppUser currentUser = userRepository.findByUsername(username).orElse(null);
                 if (currentUser == null
-                        || !currentUser.isEnabled()
-                        || !currentUser.isAccountNonLocked()) {
+                        || !UserAccountServiceImpl.isEnabled(currentUser)
+                        || !UserAccountServiceImpl.isAccountNonLocked(currentUser)) {
                     filterChain.doFilter(request, response);
                     return;
                 }

@@ -1,19 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
+import { AuthCredentials } from '@uav/ui';
 import { useRouter } from 'next/navigation';
 import {
   ArrowRight,
   CheckCircle2,
-  Mail,
-  Lock,
-  ShieldCheck,
-  Satellite,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { AuthResponse } from '../types/auth.types';
-import { Button, Input, PasswordInput, Alert, Badge } from '@/components/ui';
+import { Button, Alert } from '@/components/ui';
 
 export interface LoginFormProps {
   onSuccess?: (response: AuthResponse) => void;
@@ -76,30 +73,7 @@ export function LoginForm({ onSuccess, redirectTo = '/' }: LoginFormProps) {
 
       {/* Login Form */}
       <form className="space-y-6" onSubmit={handleSubmit}>
-        <Input
-          id="uav-email"
-          name="email"
-          type="text"
-          leftIcon={<Mail size={18} />}
-          label={t('auth.email')}
-          placeholder={t('auth.emailPlaceholder')}
-          autoComplete="username"
-          required
-          value={usernameOrEmail}
-          onChange={(e) => setUsernameOrEmail(e.target.value)}
-        />
-
-        <PasswordInput
-          id="uav-password"
-          name="password"
-          leftIcon={<Lock size={18} />}
-          label={t('auth.password')}
-          placeholder={t('auth.passwordPlaceholder')}
-          autoComplete="current-password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <AuthCredentials identity={usernameOrEmail} password={password} onIdentityChange={setUsernameOrEmail} onPasswordChange={setPassword} disabled={status === 'loading' || status === 'success'} />
 
         <div className="pt-2">
           <Button
@@ -123,16 +97,7 @@ export function LoginForm({ onSuccess, redirectTo = '/' }: LoginFormProps) {
 
       <p className="mt-8 text-center text-sm text-secondary">Chưa có tài khoản vận hành? Liên hệ quản trị viên để được cấp quyền truy cập.</p>
 
-      {/* Security & Ground Control Badges */}
-      <div className="mt-12 pt-6 flex items-center justify-center gap-3 text-outline border-t border-slate-200/80">
-        <Badge variant="primary" icon={<ShieldCheck size={14} className="text-primary mr-1" />}>
-          {t('auth.multiLayerSecurity')}
-        </Badge>
-        <span className="w-1 h-1 rounded-full bg-outline-variant" />
-        <Badge variant="outline" icon={<Satellite size={14} className="text-primary mr-1" />}>
-          {t('auth.groundControl')}
-        </Badge>
-      </div>
+
     </div>
   );
 }

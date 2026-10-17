@@ -8,6 +8,8 @@ import com.uav.platform.modules.settings.mapper.SystemConfigMapper;
 import com.uav.platform.modules.settings.repository.SystemConfigurationRepository;
 import com.uav.platform.modules.settings.service.SystemConfigService;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,18 +18,20 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor(onConstructor_ = @org.springframework.beans.factory.annotation.Autowired)
 public class SystemConfigServiceImpl implements SystemConfigService {
 
     private final SystemConfigurationRepository configRepository;
+    private final SystemConfigMapper systemConfigMapper;
 
     public SystemConfigServiceImpl(SystemConfigurationRepository configRepository) {
-        this.configRepository = configRepository;
+        this(configRepository, org.mapstruct.factory.Mappers.getMapper(SystemConfigMapper.class));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SystemConfigurationResponse> listAll() {
-        return configRepository.findAll().stream().map(SystemConfigMapper::toResponse).toList();
+        return configRepository.findAll().stream().map(systemConfigMapper::toResponse).toList();
     }
 
     @Override
@@ -38,7 +42,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
                         .findByConfigKey(key)
                         .orElseThrow(
                                 () -> SystemException.notFound("Config key not found: " + key));
-        return SystemConfigMapper.toResponse(cfg);
+        return systemConfigMapper.toResponse(cfg);
     }
 
     @Override
@@ -88,6 +92,6 @@ public class SystemConfigServiceImpl implements SystemConfigService {
         cfg.setUpdatedBy(auth != null ? auth.getName() : "ADMIN");
 
         SystemConfiguration saved = configRepository.save(cfg);
-        return SystemConfigMapper.toResponse(saved);
+        return systemConfigMapper.toResponse(saved);
     }
 }

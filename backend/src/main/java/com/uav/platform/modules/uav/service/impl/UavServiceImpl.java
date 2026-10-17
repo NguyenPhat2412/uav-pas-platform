@@ -22,6 +22,8 @@ import com.uav.platform.modules.uav.service.UavService;
 
 import jakarta.persistence.EntityManager;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ import java.util.EnumSet;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class UavServiceImpl implements UavService {
     private final UavRepository repository;
     private final StationRepository stations;
@@ -40,6 +43,7 @@ public class UavServiceImpl implements UavService {
     private final EntityManager entityManager;
     private final com.uav.platform.modules.maintenance.repository.RepairOrderRepository
             repairOrders;
+    private final UavMapper uavMapper;
     private static final EnumSet<MissionStatus> TERMINAL_MISSIONS =
             EnumSet.of(
                     MissionStatus.COMPLETED,
@@ -47,33 +51,16 @@ public class UavServiceImpl implements UavService {
                     MissionStatus.REJECTED,
                     MissionStatus.FAILED);
 
-    public UavServiceImpl(
-            UavRepository repository,
-            StationRepository stations,
-            UavStatusHistoryRepository history,
-            AuditLogService audit,
-            MissionRepository missions,
-            EntityManager entityManager,
-            com.uav.platform.modules.maintenance.repository.RepairOrderRepository repairOrders) {
-        this.repository = repository;
-        this.stations = stations;
-        this.history = history;
-        this.audit = audit;
-        this.missions = missions;
-        this.entityManager = entityManager;
-        this.repairOrders = repairOrders;
-    }
-
     @Override
     @Transactional(readOnly = true)
     public PageResponse<UavResponse> list(Pageable pageable) {
-        return PageResponse.from(repository.findAll(pageable), UavMapper::toResponse);
+        return PageResponse.from(repository.findAll(pageable), uavMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
     public UavResponse get(Long id) {
-        return UavMapper.toResponse(find(id));
+        return uavMapper.toResponse(find(id));
     }
 
     @Override
@@ -91,15 +78,15 @@ public class UavServiceImpl implements UavService {
                 "UAV",
                 saved.getId().toString(),
                 saved.getSerialNumber());
-        return UavMapper.toResponse(saved);
+        return uavMapper.toResponse(saved);
     }
 
     @Override
     public UavResponse update(Long id, UavRequest request, String actor) {
         Uav uav = findForUpdate(id);
-        uav.update(request.model(), request.manufacturer());
+        UavOperations.update(uav, request.model(), request.manufacturer());
         audit.record(null, actor, AuditAction.UPDATE, "UAV", id.toString(), uav.getSerialNumber());
-        return UavMapper.toResponse(uav);
+        return uavMapper.toResponse(uav);
     }
 
     @Override
@@ -115,7 +102,7 @@ public class UavServiceImpl implements UavService {
         if (station.getStatus() != StationStatus.ACTIVE)
             throw SystemException.conflict("STATION_NOT_ACTIVE");
         Long previousStationId = uav.getStation() == null ? null : uav.getStation().getId();
-        if (stationId.equals(previousStationId)) return UavMapper.toResponse(uav);
+        if (stationId.equals(previousStationId)) return uavMapper.toResponse(uav);
         uav.setStation(station);
         history.save(
                 new UavStatusHistory(
@@ -128,7 +115,7 @@ public class UavServiceImpl implements UavService {
                                 + stationId,
                         actor));
         audit.record(null, actor, AuditAction.ASSIGN, "UAV", id.toString(), station.getCode());
-        return UavMapper.toResponse(uav);
+        return uavMapper.toResponse(uav);
     }
 
     @Override
@@ -162,7 +149,7 @@ public class UavServiceImpl implements UavService {
         if (status == UavStatus.MAINTENANCE) return startMaintenance(uav, checkedReason, actor);
         changeStatusInternal(uav, status, checkedReason, actor);
         audit.record(null, actor, AuditAction.STATUS_CHANGE, "UAV", id.toString(), status.name());
-        return UavMapper.toResponse(uav);
+        return uavMapper.toResponse(uav);
     }
 
     @Override
@@ -184,7 +171,7 @@ public class UavServiceImpl implements UavService {
         if (uav.getStatus() == UavStatus.MAINTENANCE)
             throw SystemException.conflict("UAV_ALREADY_IN_MAINTENANCE");
         UavStatus previous = uav.getStatus();
-        uav.markMaintenance();
+        UavOperations.markMaintenance(uav);
         history.save(new UavStatusHistory(uav, previous, UavStatus.MAINTENANCE, reason, actor));
         audit.record(
                 null,
@@ -193,7 +180,7 @@ public class UavServiceImpl implements UavService {
                 "UAV",
                 uav.getId().toString(),
                 "MAINTENANCE");
-        return UavMapper.toResponse(uav);
+        return uavMapper.toResponse(uav);
     }
 
     @Override
@@ -209,7 +196,7 @@ public class UavServiceImpl implements UavService {
         if (!valid) throw SystemException.conflict("UAV_INVALID_MISSION_TRANSITION");
         changeStatusInternal(uav, status, requireReason(reason), actor);
         audit.record(null, actor, AuditAction.STATUS_CHANGE, "UAV", id.toString(), status.name());
-        return UavMapper.toResponse(uav);
+        return uavMapper.toResponse(uav);
     }
 
     private void requireNoActiveRepair(Uav uav) {
@@ -256,7 +243,7 @@ public class UavServiceImpl implements UavService {
                                 com.uav.platform.modules.uav.specification
                                         .UavStatusHistorySpecifications.belongsToUav(id)),
                         pageable),
-                UavMapper::toResponse);
+                uavMapper::toResponse);
     }
 
     private Uav find(Long id) {

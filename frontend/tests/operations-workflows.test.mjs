@@ -245,7 +245,7 @@ test('resource redispatch timeline retains meaningful Vietnamese actions and aut
 test('mission upload rejects disallowed type and decimal overflow before registering', async () => {
   for (const file of [{ name: 'file.txt', type: 'text/plain', size: 5 }, { name: 'large.pdf', type: 'application/pdf', size: 100_000_001 }]) {
     requests.length = 0;
-    await assert.rejects(missionService.requestMediaUpload(42, file), /100000000/);
+    await assert.rejects(missionService.requestMediaUpload(42, file), /100 MB/);
     assert.equal(requests.length, 0);
   }
   requests.length = 0;

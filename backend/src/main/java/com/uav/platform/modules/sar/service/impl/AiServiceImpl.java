@@ -45,6 +45,7 @@ public class AiServiceImpl implements AiService {
     private final NotificationService notificationService;
     private final WebhookService webhookService;
     private final com.uav.platform.modules.permission.service.PermissionService permissionService;
+    private final SarMapper sarMapper;
 
     public AiServiceImpl(
             AiTaskRepository aiTaskRepository,
@@ -81,6 +82,27 @@ public class AiServiceImpl implements AiService {
                 null);
     }
 
+    public AiServiceImpl(
+            AiTaskRepository aiTaskRepository,
+            AiDetectionRepository aiDetectionRepository,
+            MissionRepository missionRepository,
+            MediaAssetRepository mediaAssetRepository,
+            SarMissionRepository sarMissionRepository,
+            NotificationService notificationService,
+            WebhookService webhookService,
+            com.uav.platform.modules.permission.service.PermissionService permissionService) {
+        this(
+                aiTaskRepository,
+                aiDetectionRepository,
+                missionRepository,
+                mediaAssetRepository,
+                sarMissionRepository,
+                notificationService,
+                webhookService,
+                permissionService,
+                org.mapstruct.factory.Mappers.getMapper(SarMapper.class));
+    }
+
     @Autowired
     public AiServiceImpl(
             AiTaskRepository aiTaskRepository,
@@ -91,8 +113,8 @@ public class AiServiceImpl implements AiService {
             @Autowired(required = false) NotificationService notificationService,
             @Autowired(required = false) WebhookService webhookService,
             @Autowired(required = false)
-                    com.uav.platform.modules.permission.service.PermissionService
-                            permissionService) {
+                    com.uav.platform.modules.permission.service.PermissionService permissionService,
+            SarMapper sarMapper) {
         this.aiTaskRepository = aiTaskRepository;
         this.aiDetectionRepository = aiDetectionRepository;
         this.missionRepository = missionRepository;
@@ -101,6 +123,7 @@ public class AiServiceImpl implements AiService {
         this.notificationService = notificationService;
         this.webhookService = webhookService;
         this.permissionService = permissionService;
+        this.sarMapper = sarMapper;
     }
 
     private void requireMissionAccess(
@@ -166,7 +189,7 @@ public class AiServiceImpl implements AiService {
         }
 
         AiTask task =
-                new AiTask(
+                AiTaskOperations.create(
                         mission,
                         media,
                         request.taskType(),
@@ -236,7 +259,7 @@ public class AiServiceImpl implements AiService {
             }
         }
 
-        return SarMapper.toAiTaskResponse(savedTask);
+        return sarMapper.toAiTaskResponse(savedTask);
     }
 
     @Override
@@ -253,7 +276,7 @@ public class AiServiceImpl implements AiService {
             requireMissionAccess(mission, authentication, false);
         }
         return aiDetectionRepository.findByMissionIdOrderByCreatedAtDesc(missionId).stream()
-                .map(SarMapper::toAiDetectionResponse)
+                .map(sarMapper::toAiDetectionResponse)
                 .toList();
     }
 
@@ -271,7 +294,7 @@ public class AiServiceImpl implements AiService {
             requireMissionAccess(mission, authentication, false);
         }
         return aiTaskRepository.findByMissionIdOrderByCreatedAtDesc(missionId).stream()
-                .map(SarMapper::toAiTaskResponse)
+                .map(sarMapper::toAiTaskResponse)
                 .toList();
     }
 
@@ -345,6 +368,6 @@ public class AiServiceImpl implements AiService {
             }
         }
 
-        return SarMapper.toAiDetectionResponse(saved);
+        return sarMapper.toAiDetectionResponse(saved);
     }
 }

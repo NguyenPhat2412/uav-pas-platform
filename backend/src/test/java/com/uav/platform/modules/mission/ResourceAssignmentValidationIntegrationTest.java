@@ -20,6 +20,7 @@ import com.uav.platform.modules.mission.service.MissionService;
 import com.uav.platform.modules.station.entity.Station;
 import com.uav.platform.modules.station.enums.StationStatus;
 import com.uav.platform.modules.station.repository.StationRepository;
+import com.uav.platform.modules.station.service.impl.StationOperations;
 import com.uav.platform.modules.uav.entity.Uav;
 import com.uav.platform.modules.uav.repository.UavRepository;
 import com.uav.platform.modules.user.entity.AppUser;
@@ -88,7 +89,7 @@ class ResourceAssignmentValidationIntegrationTest {
         operatorId = user("validation_operator_" + suffix, UserRole.ROLE_OPERATOR).getId();
         Station station =
                 stations.save(
-                        new Station(
+                        StationOperations.create(
                                 "VAL-" + suffix,
                                 "Validation station",
                                 "Hanoi",

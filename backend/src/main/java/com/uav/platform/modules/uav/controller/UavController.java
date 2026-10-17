@@ -1,6 +1,7 @@
 package com.uav.platform.modules.uav.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.common.util.Pageables;
 import com.uav.platform.modules.uav.dto.request.UavRequest;
 import com.uav.platform.modules.uav.dto.response.UavResponse;
 import com.uav.platform.modules.uav.dto.response.UavStatusHistoryResponse;
@@ -9,8 +10,8 @@ import com.uav.platform.modules.uav.service.UavService;
 
 import jakarta.validation.Valid;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -18,24 +19,16 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/uavs")
+@RequiredArgsConstructor
 public class UavController {
     private final UavService service;
-
-    public UavController(UavService service) {
-        this.service = service;
-    }
 
     @GetMapping
     @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
     public ResponseEntity<PageResponse<UavResponse>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(
-                service.list(
-                        PageRequest.of(
-                                Math.max(page, 0),
-                                Math.min(Math.max(size, 1), 100),
-                                Sort.by("createdAt").descending())));
+        return ResponseEntity.ok(service.list(Pageables.desc(page, size, "createdAt")));
     }
 
     @GetMapping("/{id}")
@@ -93,12 +86,6 @@ public class UavController {
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size) {
-        return ResponseEntity.ok(
-                service.history(
-                        id,
-                        PageRequest.of(
-                                Math.max(page, 0),
-                                Math.min(Math.max(size, 1), 100),
-                                Sort.by("createdAt").descending())));
+        return ResponseEntity.ok(service.history(id, Pageables.desc(page, size, "createdAt")));
     }
 }

@@ -3,18 +3,11 @@ package com.uav.platform.modules.audit.mapper;
 import com.uav.platform.modules.audit.dto.response.AuditLogResponse;
 import com.uav.platform.modules.audit.entity.AuditLog;
 
-public final class AuditLogMapper {
-    private AuditLogMapper() {}
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-    public static AuditLogResponse toResponse(AuditLog log) {
-        return new AuditLogResponse(
-                log.getId(),
-                log.getActorUserId(),
-                log.getActorUsername(),
-                log.getAction(),
-                log.getEntityType(),
-                log.getEntityId(),
-                log.getDetails(),
-                log.getCreatedAt());
-    }
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface AuditLogMapper {
+
+    AuditLogResponse toResponse(AuditLog log);
 }

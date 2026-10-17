@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { activeDestination } from '@uav/ui/navigation';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Activity, Bell, Boxes, ChevronLeft, ChevronRight, ClipboardList, Crosshair, FileKey2, LayoutDashboard, LogOut, MapPinned, Menu, PlaneTakeoff, Wrench, X } from 'lucide-react';
@@ -80,7 +81,7 @@ export function AppShell({ children, activeResource }: { children: React.ReactNo
   const name = user?.fullName || user?.username || 'Trực ban VJU';
   const roleLabel = displayLabel(user?.role);
   const visibleNav = nav.filter(item => !item.permission || (permissionsReady && can(item.permission)));
-  const activeNav = nav.find(({ href }) => activeResource ? (href.slice(1) === activeResource) : pathname === href || pathname.startsWith(`${href}/`));
+  const activeNav = activeDestination(visibleNav, pathname, activeResource);
   const railCollapsed = collapsed && !open;
   return <div className="app-shell"><a className="skip-link" href="#workspace">Bỏ qua tới nội dung</a><aside ref={rail} id="portal-navigation" className={cn('app-rail', open && 'app-rail-open', railCollapsed && 'app-rail-collapsed')}>
     <div className={cn("app-rail-top flex items-center mb-4", railCollapsed ? "flex-col justify-center gap-2" : "justify-between")}>
@@ -103,7 +104,7 @@ export function AppShell({ children, activeResource }: { children: React.ReactNo
     <button type="button" className="rail-close icon-button" aria-label="Đóng điều hướng" onClick={() => setOpen(false)}><X size={18} /></button>
     {!railCollapsed && <div className="app-rail-label">VẬN HÀNH</div>}
     <nav aria-label="Điều hướng vận hành">{visibleNav.map(({ href, label, icon: Icon }) => {
-      const active = activeResource ? (href.slice(1) === activeResource) : pathname === href || pathname.startsWith(`${href}/`);
+      const active = href === activeNav?.href;
       return <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined} aria-label={label} title={railCollapsed ? label : undefined} className={cn('app-nav-link', active && 'app-nav-link-active', railCollapsed && '!justify-center !px-0')}><Icon size={18} className="flex-shrink-0" />{!railCollapsed && <span className="truncate">{label}</span>}</Link>;
     })}</nav>
     <div className="rail-footer">

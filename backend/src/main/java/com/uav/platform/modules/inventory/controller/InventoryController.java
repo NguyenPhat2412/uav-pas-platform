@@ -1,14 +1,15 @@
 package com.uav.platform.modules.inventory.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.common.util.Pageables;
 import com.uav.platform.modules.inventory.dto.request.*;
 import com.uav.platform.modules.inventory.dto.response.*;
 import com.uav.platform.modules.inventory.service.InventoryService;
 
 import jakarta.validation.Valid;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -16,24 +17,16 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/inventory/equipment")
+@RequiredArgsConstructor
 public class InventoryController {
     private final InventoryService service;
-
-    public InventoryController(InventoryService service) {
-        this.service = service;
-    }
 
     @GetMapping
     @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_READ')")
     public ResponseEntity<PageResponse<EquipmentResponse>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(
-                service.list(
-                        PageRequest.of(
-                                Math.max(page, 0),
-                                Math.min(Math.max(size, 1), 100),
-                                Sort.by("name"))));
+        return ResponseEntity.ok(service.list(Pageables.asc(page, size, "name")));
     }
 
     @GetMapping("/{id}")
@@ -47,12 +40,7 @@ public class InventoryController {
     public ResponseEntity<PageResponse<InventoryMovementResponse>> history(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size) {
-        return ResponseEntity.ok(
-                service.history(
-                        PageRequest.of(
-                                Math.max(page, 0),
-                                Math.min(Math.max(size, 1), 100),
-                                Sort.by("createdAt").descending())));
+        return ResponseEntity.ok(service.history(Pageables.desc(page, size, "createdAt")));
     }
 
     @PostMapping

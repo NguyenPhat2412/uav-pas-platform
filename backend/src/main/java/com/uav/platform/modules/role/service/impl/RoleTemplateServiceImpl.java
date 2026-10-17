@@ -28,6 +28,7 @@ public class RoleTemplateServiceImpl implements RoleTemplateService {
     private final PermissionRepository permissions;
     private final AuditLogService audit;
     private final com.uav.platform.security.AccessRecoveryGuard recovery;
+    private final RoleTemplateMapper roleTemplateMapper;
 
     public RoleTemplateServiceImpl(
             RoleTemplateRepository templates,
@@ -37,18 +38,35 @@ public class RoleTemplateServiceImpl implements RoleTemplateService {
         this(templates, assignments, permissions, audit, null);
     }
 
-    @org.springframework.beans.factory.annotation.Autowired
     public RoleTemplateServiceImpl(
             RoleTemplateRepository templates,
             RoleTemplatePermissionRepository assignments,
             PermissionRepository permissions,
             AuditLogService audit,
             com.uav.platform.security.AccessRecoveryGuard recovery) {
+        this(
+                templates,
+                assignments,
+                permissions,
+                audit,
+                recovery,
+                org.mapstruct.factory.Mappers.getMapper(RoleTemplateMapper.class));
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public RoleTemplateServiceImpl(
+            RoleTemplateRepository templates,
+            RoleTemplatePermissionRepository assignments,
+            PermissionRepository permissions,
+            AuditLogService audit,
+            com.uav.platform.security.AccessRecoveryGuard recovery,
+            RoleTemplateMapper roleTemplateMapper) {
         this.recovery = recovery;
         this.templates = templates;
         this.assignments = assignments;
         this.permissions = permissions;
         this.audit = audit;
+        this.roleTemplateMapper = roleTemplateMapper;
     }
 
     @Override
@@ -57,7 +75,7 @@ public class RoleTemplateServiceImpl implements RoleTemplateService {
         return templates.findAll().stream()
                 .map(
                         t ->
-                                RoleTemplateMapper.toResponse(
+                                roleTemplateMapper.toResponse(
                                         t,
                                         assignments.findByRoleTemplateId(t.getId()).stream()
                                                 .map(a -> a.getPermission().getCode())

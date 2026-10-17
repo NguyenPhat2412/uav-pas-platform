@@ -6,6 +6,8 @@ import com.uav.platform.modules.settings.service.SystemConfigService;
 
 import jakarta.validation.Valid;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -15,13 +17,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/settings")
+@RequiredArgsConstructor
 public class SystemConfigController {
 
     private final SystemConfigService configService;
-
-    public SystemConfigController(SystemConfigService configService) {
-        this.configService = configService;
-    }
 
     @GetMapping
     @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")

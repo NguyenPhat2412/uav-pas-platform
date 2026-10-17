@@ -67,6 +67,5 @@ public class PaymentTransaction {
         this.transactionCode = transactionCode;
         this.amount = amount;
         this.status = "PENDING";
-        this.createdAt = LocalDateTime.now();
     }
 }

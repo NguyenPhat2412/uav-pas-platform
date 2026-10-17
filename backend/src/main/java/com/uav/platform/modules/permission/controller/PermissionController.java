@@ -1,8 +1,12 @@
 package com.uav.platform.modules.permission.controller;
 
+import com.uav.platform.modules.permission.dto.response.PermissionCodesResponse;
 import com.uav.platform.modules.permission.dto.response.PermissionResponse;
+import com.uav.platform.modules.permission.dto.response.UserPermissionResponse;
 import com.uav.platform.modules.permission.enums.PermissionCode;
 import com.uav.platform.modules.permission.service.PermissionService;
+
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,21 +17,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/permissions")
+@RequiredArgsConstructor
 public class PermissionController {
     private final PermissionService permissionService;
 
-    public PermissionController(PermissionService permissionService) {
-        this.permissionService = permissionService;
-    }
-
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<String>> current(Authentication authentication) {
-        return ResponseEntity.ok(
-                java.util.Arrays.stream(PermissionCode.values())
-                        .filter(code -> permissionService.has(authentication, code.name()))
-                        .map(Enum::name)
-                        .toList());
+    public ResponseEntity<PermissionCodesResponse> current(Authentication authentication) {
+        return ResponseEntity.ok(permissionService.current(authentication));
     }
 
     @GetMapping
@@ -38,9 +35,7 @@ public class PermissionController {
 
     @GetMapping("/users/{userId}")
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
-    public ResponseEntity<
-                    List<com.uav.platform.modules.permission.dto.response.UserPermissionResponse>>
-            listUser(@PathVariable Long userId) {
+    public ResponseEntity<List<UserPermissionResponse>> listUser(@PathVariable Long userId) {
         return ResponseEntity.ok(permissionService.listUserPermissions(userId));
     }
 

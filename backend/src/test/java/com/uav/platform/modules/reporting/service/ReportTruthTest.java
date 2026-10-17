@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.uav.platform.error.SystemException;
-import com.uav.platform.modules.mission.entity.Mission;
 import com.uav.platform.modules.mission.enums.*;
 import com.uav.platform.modules.mission.repository.MissionRepository;
+import com.uav.platform.modules.mission.service.impl.MissionOperations;
 import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.reporting.service.impl.ReportServiceImpl;
 import com.uav.platform.modules.sar.repository.*;
@@ -53,7 +53,7 @@ class ReportTruthTest {
         stranger.setId(2L);
         var start = LocalDateTime.of(2026, 10, 17, 10, 0);
         var a =
-                Mission.draft(
+                MissionOperations.draft(
                         owner,
                         MissionType.OTHER,
                         "Draft",
@@ -68,7 +68,7 @@ class ReportTruthTest {
                         null);
         a.setId(1L);
         var b =
-                Mission.draft(
+                MissionOperations.draft(
                         owner,
                         MissionType.OTHER,
                         "Cancelled",
@@ -85,7 +85,7 @@ class ReportTruthTest {
         org.springframework.test.util.ReflectionTestUtils.setField(
                 b, "status", MissionStatus.CANCELLED);
         var c =
-                Mission.draft(
+                MissionOperations.draft(
                         owner,
                         MissionType.OTHER,
                         "Completed",
@@ -102,7 +102,7 @@ class ReportTruthTest {
         org.springframework.test.util.ReflectionTestUtils.setField(
                 c, "status", MissionStatus.COMPLETED);
         var other =
-                Mission.draft(
+                MissionOperations.draft(
                         stranger,
                         MissionType.OTHER,
                         "Hidden",

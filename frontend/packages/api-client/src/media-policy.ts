@@ -1,6 +1,6 @@
 /** Decimal limits shared by mission uploads and the media library. */
 export const MEDIA_ACCEPT = 'image/jpeg,image/png,image/webp,application/pdf,video/mp4,video/webm';
-export const MEDIA_UPLOAD_POLICY = 'JPEG/PNG/WebP/PDF: tối đa 100 MB (100000000 byte); MP4/WebM: tối đa 1 GB (1000000000 byte).';
+export const MEDIA_UPLOAD_POLICY = 'JPEG/PNG/WebP/PDF: tối đa 100 MB; MP4/WebM: tối đa 1 GB.';
 export const MEDIA_UPLOAD_RETENTION = 'Tệp chưa xác nhận hết hạn sau 24 giờ. Tệp đã xác nhận và kết quả bàn giao được giữ lại.';
 
 export class MediaFileError extends Error {}

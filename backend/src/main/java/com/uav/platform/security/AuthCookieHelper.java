@@ -1,10 +1,19 @@
 package com.uav.platform.security;
 
+import com.uav.platform.common.dto.response.MessageResponse;
+import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.auth.dto.request.LogoutRequest;
+import com.uav.platform.modules.auth.dto.request.RefreshTokenRequest;
+import com.uav.platform.modules.auth.dto.response.AuthResponse;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -110,5 +119,72 @@ public class AuthCookieHelper {
             }
         }
         return null;
+    }
+
+    public static ResponseEntity<AuthResponse> okWithCookies(
+            AuthCookieHelper helper, AuthResponse response) {
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (helper != null) {
+            if (response.accessToken() != null) {
+                builder.header(
+                        HttpHeaders.SET_COOKIE,
+                        helper.createAccessTokenCookie(response.accessToken(), 86400).toString());
+            }
+            if (response.refreshToken() != null) {
+                builder.header(
+                        HttpHeaders.SET_COOKIE,
+                        helper.createRefreshTokenCookie(response.refreshToken(), 604800)
+                                .toString());
+            }
+        }
+        return builder.body(response);
+    }
+
+    public static RefreshTokenRequest requireRefreshRequest(
+            AuthCookieHelper helper, HttpServletRequest httpRequest, RefreshTokenRequest request) {
+        String tokenString = request != null ? request.refreshToken() : null;
+        if ((tokenString == null || tokenString.isBlank()) && helper != null) {
+            tokenString = helper.resolveRefreshToken(httpRequest);
+        }
+        if (tokenString == null || tokenString.isBlank()) {
+            throw SystemException.badRequest("Refresh token is required");
+        }
+        return new RefreshTokenRequest(tokenString);
+    }
+
+    public static String extractAccessToken(AuthCookieHelper helper, HttpServletRequest request) {
+        String authHeader = request != null ? request.getHeader("Authorization") : null;
+        if (authHeader != null && authHeader.trim().regionMatches(true, 0, "Bearer ", 0, 7)) {
+            return authHeader.trim().substring(7).trim();
+        }
+        return helper != null ? helper.resolveAccessToken(request) : null;
+    }
+
+    public static String extractRefreshToken(
+            AuthCookieHelper helper, HttpServletRequest request, LogoutRequest logoutRequest) {
+        String refreshToken = logoutRequest != null ? logoutRequest.refreshToken() : null;
+        if ((refreshToken == null || refreshToken.isBlank()) && helper != null) {
+            return helper.resolveRefreshToken(request);
+        }
+        return refreshToken;
+    }
+
+    public static ResponseEntity<MessageResponse> okClearedCookies(
+            AuthCookieHelper helper, String message) {
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (helper != null) {
+            builder.header(HttpHeaders.SET_COOKIE, helper.clearAccessTokenCookie().toString());
+            builder.header(HttpHeaders.SET_COOKIE, helper.clearRefreshTokenCookie().toString());
+        }
+        return builder.body(new MessageResponse(message));
+    }
+
+    public static String requireAuthenticatedUsername(Authentication authentication) {
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getName())) {
+            throw SystemException.unauthorized("Authentication required");
+        }
+        return authentication.getName();
     }
 }

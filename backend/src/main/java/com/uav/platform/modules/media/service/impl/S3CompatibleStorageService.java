@@ -1,5 +1,6 @@
 package com.uav.platform.modules.media.service.impl;
 
+import com.uav.platform.modules.media.dto.record.ObjectMetadata;
 import com.uav.platform.modules.media.enums.*;
 import com.uav.platform.modules.media.service.ObjectStorageService;
 

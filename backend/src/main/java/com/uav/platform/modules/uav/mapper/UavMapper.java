@@ -5,30 +5,17 @@ import com.uav.platform.modules.uav.dto.response.UavStatusHistoryResponse;
 import com.uav.platform.modules.uav.entity.Uav;
 import com.uav.platform.modules.uav.entity.UavStatusHistory;
 
-public final class UavMapper {
-    private UavMapper() {}
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
-    public static UavResponse toResponse(Uav uav) {
-        return new UavResponse(
-                uav.getId(),
-                uav.getModel(),
-                uav.getSerialNumber(),
-                uav.getManufacturer(),
-                uav.getStatus(),
-                uav.getStation() == null ? null : uav.getStation().getId(),
-                uav.getStation() == null ? null : uav.getStation().getName(),
-                uav.getLastMaintenanceAt(),
-                uav.getCreatedAt());
-    }
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface UavMapper {
 
-    public static UavStatusHistoryResponse toResponse(UavStatusHistory history) {
-        return new UavStatusHistoryResponse(
-                history.getId(),
-                history.getUav().getId(),
-                history.getFromStatus(),
-                history.getToStatus(),
-                history.getReason(),
-                history.getChangedBy(),
-                history.getCreatedAt());
-    }
+    @Mapping(target = "stationId", source = "station.id")
+    @Mapping(target = "stationName", source = "station.name")
+    UavResponse toResponse(Uav uav);
+
+    @Mapping(target = "uavId", source = "uav.id")
+    UavStatusHistoryResponse toResponse(UavStatusHistory history);
 }

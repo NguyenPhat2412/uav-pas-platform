@@ -1,22 +1,33 @@
-# Backend getter/setter conventions
+# Backend Entity, Service and DTO conventions
 
-Use Lombok for mechanical accessors while preserving the existing public contract and domain behavior.
+The 2026-10-17 entity/service refactor supersedes the earlier accessor-only policy. Feature entities now hold persistence data, JPA mappings, defaults and simple constructors/accessors. Business validation and transitions belong to service implementations.
 
-- Prefer `@Getter` for ordinary field reads. Retain explicit methods that calculate a value or implement framework behavior.
-- Use `@Setter` only where unrestricted assignment is already intentional. A class-level `@Setter` is appropriate when every existing instance field already has a plain public setter.
-- Preserve explicit setters that validate, normalize, apply defaults, or update related fields. Examples include `AppUser.setRole()` and `AppUser.setStatus()`.
-- Keep domain operations such as `Mission.transitionTo()` and `MediaAsset.confirm()`. Do not add a class-level setter to these entities merely to make their annotations look alike.
-- Preserve constructors, defaults, JPA mappings, accessor names, types, and visibility during accessor-only refactors. In particular, boxed `Boolean isActive` and `Boolean isSuccess` retain `getIsActive()` and `getIsSuccess()`.
-- Do not replace these annotations with `@Data`: that also introduces equality, hash-code, and string-generation behavior outside the accessor scope.
-- Changing inherited setters for identity or audit fields in `BaseEntity` requires a separate caller review; it is not a mechanical cleanup.
+## Layers
 
-The 2026-10-17 cleanup replaces 70 plain accessors in `PaymentTransaction`, `WebhookSubscription`, and `WebhookDeliveryLog`. It preserves their six constructors and does not alter business methods, database migrations, or JSON property names.
+- `modules/<feature>/entity`: persisted fields, mapping annotations, Lombok getters/setters and assignment-only constructors. Do not use `@Data`, which would also change identity and string output. Do not add business methods or validation to entity constructors.
+- `modules/<feature>/service`: application service contracts and existing orchestration services. Controllers depend on service contracts and never query repositories or map entities directly.
+- `modules/<feature>/service/impl`: application implementations and internal `*Operations` helpers for state changes, validation and calculations. These helpers operate on entities inside the transaction and locking boundaries owned by application services. Helpers do not open transactions or expose entities through HTTP.
+- `modules/<feature>/mapper`: conversion to response DTOs; persistence objects remain internal.
+- `modules/<feature>/dto/request`: HTTP JSON input, including Java records used as input DTOs.
+- `modules/<feature>/dto/response`: HTTP output, including Java records used as response DTOs. Shared response DTOs live in `common/dto/response`.
+- `modules/<feature>/dto/record`: intermediate records used inside the backend, such as object metadata, media permission snapshots, queue counts and internal alert results. These are not endpoint request or response types.
 
-Verification for future accessor-only changes should compare the compiled public methods and JavaBean properties, then run the backend suite with disposable PostgreSQL and MinIO. A passing run must have no skipped integration tests.
+## Entity and framework behavior
 
-## Verification of the 2026-10-17 cleanup
+Business operations formerly on Mission, Equipment, maintenance, MediaAsset, Station, Uav, RoleTemplate, AppUser and RefreshToken now live in service implementations. Creation rules for billing plans/quotas, SAR tasks/missions, notification types and configuration categories also live in service helpers. ServiceOffering duration validation also runs in the service layer. Its controller delegates listing and creation to ServiceOfferingService.
 
-- Before/after compilation comparison: all 70 accessors and six constructors retain their signatures and bytecode instructions, after normalizing declaration order and constant-pool references. Field names, types, and descriptors are unchanged.
-- Source comparison: constructors, defaults, JPA annotations, and all non-accessor source are unchanged.
-- Full Maven `verify`: 726 tests, zero failures, zero errors, zero skipped; formatting and packaging passed. PostgreSQL and MinIO used disposable, dedicated containers that were removed afterward.
-- Existing local runtime: backend health `UP`; web, customer, operations, admin, and legacy pages returned HTTP 200. The running services were not restarted or redeployed as part of this source cleanup.
+Lombok accessors perform literal field reads/writes. Rules that normalize values, enforce quantity or state constraints, update multiple fields, or apply account defaults must use the corresponding service helper. Application callers were migrated together with their existing behavioral tests.
+
+`BaseEntity` retains technical identity (`equals`, `hashCode`, `isNew`) and JPA audit timestamp callbacks; these are persistence infrastructure, not domain operations. `UserAccountPersistenceListener` delegates insertion defaults to `UserAccountServiceImpl`, preserving direct repository inserts without putting rules back in AppUser. AppUser is no longer a Spring Security UserDetails implementation; authentication continues using the existing username principal and service-generated authorities.
+
+## API compatibility
+
+Controllers receive request DTOs and return response DTOs, optionally wrapped in a list, page or ResponseEntity. Empty responses and binary CSV exports retain their HTTP transport types. Authentication, path variables, query parameters and pagination are transport metadata.
+
+The JSON format is unchanged. Flexible webhook/rescue payloads and strict profile patches use delegating request DTOs to preserve the original flat JSON object, including unknown fields and explicit nulls. Profile allowlist/type validation still runs before writes. PermissionCodesResponse serializes as the original JSON array. Status, count and message DTOs preserve their original field names. ErrorResponse moved to common/dto/response without changing its payload.
+
+## Verification
+
+EntityDtoBoundaryTest checks entity method boundaries, constructor assignment-only rules, request/response endpoint types and record placement. EntityCreationRulesTest verifies defaults and billing-cycle derivation at the service boundary. ArchitecturePackageTest checks package and controller dependencies. DtoWireContractTest checks flat JSON input, arbitrary payload preservation, malformed bodies, optional rescue input and response shapes. Existing behavioral, authorization, concurrency, database and media-storage tests remain required.
+
+Run the full backend verify with disposable PostgreSQL and MinIO, with zero failures, errors or skipped tests. No database migration is required for this refactor. Keep production data and running services separate from verification environments.

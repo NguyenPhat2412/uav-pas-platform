@@ -15,6 +15,7 @@ import com.uav.platform.modules.mission.dto.request.MissionMediaRequest;
 import com.uav.platform.modules.mission.entity.*;
 import com.uav.platform.modules.mission.enums.*;
 import com.uav.platform.modules.mission.repository.*;
+import com.uav.platform.modules.mission.service.impl.MissionOperations;
 import com.uav.platform.modules.mission.service.impl.MissionServiceImpl;
 import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.station.enums.*;
@@ -131,7 +132,7 @@ class MissionMediaTimelineTest {
         AppUser customer =
                 new AppUser("customer", "customer@media.vn", "hash", null, UserStatus.ACTIVE);
         Mission m =
-                Mission.draft(
+                MissionOperations.draft(
                         customer,
                         MissionType.AREA_INSPECTION,
                         "Inspect",

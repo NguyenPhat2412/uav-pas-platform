@@ -6,9 +6,10 @@ import com.uav.platform.modules.audit.enums.*;
 import com.uav.platform.modules.inventory.enums.*;
 import com.uav.platform.modules.media.enums.*;
 import com.uav.platform.modules.mission.enums.*;
-import com.uav.platform.modules.station.entity.Station;
+import com.uav.platform.modules.mission.service.impl.MissionOperations;
 import com.uav.platform.modules.station.enums.*;
 import com.uav.platform.modules.station.enums.StationStatus;
+import com.uav.platform.modules.station.service.impl.StationOperations;
 import com.uav.platform.modules.uav.entity.Uav;
 import com.uav.platform.modules.uav.enums.*;
 import com.uav.platform.modules.user.entity.AppUser;
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 
 class MissionStateTest {
     private Mission mission() {
-        return Mission.draft(
+        return MissionOperations.draft(
                 null,
                 MissionType.AREA_INSPECTION,
                 "Inspect area",
@@ -40,12 +41,12 @@ class MissionStateTest {
     void acceptsOnlyDeclaredForwardTransitions() {
         Mission mission = mission();
 
-        mission.transitionTo(MissionStatus.PENDING_CONFIRMATION);
-        mission.transitionTo(MissionStatus.CONFIRMED);
-        mission.transitionTo(MissionStatus.RESOURCE_RESERVED);
-        mission.transitionTo(MissionStatus.READY);
-        mission.transitionTo(MissionStatus.IN_PROGRESS);
-        mission.transitionTo(MissionStatus.COMPLETED);
+        MissionOperations.transitionTo(mission, MissionStatus.PENDING_CONFIRMATION);
+        MissionOperations.transitionTo(mission, MissionStatus.CONFIRMED);
+        MissionOperations.transitionTo(mission, MissionStatus.RESOURCE_RESERVED);
+        MissionOperations.transitionTo(mission, MissionStatus.READY);
+        MissionOperations.transitionTo(mission, MissionStatus.IN_PROGRESS);
+        MissionOperations.transitionTo(mission, MissionStatus.COMPLETED);
 
         assertEquals(MissionStatus.COMPLETED, mission.getStatus());
     }
@@ -55,22 +56,28 @@ class MissionStateTest {
         Mission mission = mission();
 
         assertThrows(
-                IllegalStateException.class, () -> mission.transitionTo(MissionStatus.COMPLETED));
-        mission.transitionTo(MissionStatus.CANCELLED);
-        assertThrows(IllegalStateException.class, () -> mission.transitionTo(MissionStatus.DRAFT));
+                IllegalStateException.class,
+                () -> MissionOperations.transitionTo(mission, MissionStatus.COMPLETED));
+        MissionOperations.transitionTo(mission, MissionStatus.CANCELLED);
+        assertThrows(
+                IllegalStateException.class,
+                () -> MissionOperations.transitionTo(mission, MissionStatus.DRAFT));
     }
 
     @Test
     void readyRequiresEveryResource() {
         Mission mission = mission();
-        assertFalse(mission.hasRequiredResources(false));
+        assertFalse(MissionOperations.hasRequiredResources(mission, false));
 
-        mission.assignStation(
-                new Station("ST-1", "Station", null, null, null, StationStatus.ACTIVE));
-        mission.assignUav(new Uav("Model", "UAV-1", "Maker"));
-        mission.assignOperator(
+        MissionOperations.assignStation(
+                mission,
+                StationOperations.create(
+                        "ST-1", "Station", null, null, null, StationStatus.ACTIVE));
+        MissionOperations.assignUav(mission, new Uav("Model", "UAV-1", "Maker"));
+        MissionOperations.assignOperator(
+                mission,
                 new AppUser("operator", "operator@test.vn", "hash", null, UserStatus.ACTIVE));
-        assertFalse(mission.hasRequiredResources(false));
-        assertTrue(mission.hasRequiredResources(true));
+        assertFalse(MissionOperations.hasRequiredResources(mission, false));
+        assertTrue(MissionOperations.hasRequiredResources(mission, true));
     }
 }

@@ -1,4 +1,4 @@
-package com.uav.platform.error;
+package com.uav.platform.common.dto.response;
 
 import java.time.LocalDateTime;
 

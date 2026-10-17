@@ -11,6 +11,7 @@ import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.enums.UserStatus;
 import com.uav.platform.modules.webhook.repository.FinancialOutboxRepository;
 import com.uav.platform.modules.webhook.service.FinancialOutboxService;
+import com.uav.platform.modules.webhook.service.impl.FinancialOutboxServiceImpl;
 import com.uav.platform.modules.webhook.service.impl.WebhookServiceImpl;
 import com.uav.platform.modules.webhook.transport.WebhookTransport;
 
@@ -119,7 +120,7 @@ class FinancialOutboxPostgresTest {
         assertEquals("PENDING", events.findById(id).orElseThrow().getStatus());
         assertEquals(
                 0, db.queryForObject("SELECT count(*) FROM webhook_delivery_logs", Integer.class));
-        var restarted = new FinancialOutboxService(events, notifications, hooks, manager);
+        var restarted = new FinancialOutboxServiceImpl(events, notifications, hooks, manager);
         var pool = Executors.newFixedThreadPool(4);
         try {
             var tasks = new ArrayList<Future<?>>();
@@ -239,7 +240,7 @@ class FinancialOutboxPostgresTest {
                         "SELECT count(*) FROM notifications WHERE reference_id=?",
                         Integer.class,
                         invoice.id()));
-        var restarted = new FinancialOutboxService(events, notifications, hooks, manager);
+        var restarted = new FinancialOutboxServiceImpl(events, notifications, hooks, manager);
         restarted.process(id);
         hooks.createSubscription(
                 "Fixture",
@@ -391,8 +392,8 @@ class FinancialOutboxPostgresTest {
         freshHooks.processDelivery(pendingId);
         freshHooks.processDelivery(retryId);
         freshHooks.retryDue();
-        new FinancialOutboxService(events, notifications, hooks, manager).process(issued);
-        new FinancialOutboxService(events, notifications, hooks, manager).process(paid);
+        new FinancialOutboxServiceImpl(events, notifications, hooks, manager).process(issued);
+        new FinancialOutboxServiceImpl(events, notifications, hooks, manager).process(paid);
         verifyNoInteractions(transport);
         assertEquals(originalLogs, logs.count());
         assertEquals("CANCELLED", logs.findById(pendingId).orElseThrow().getDeliveryStatus());
@@ -513,7 +514,7 @@ class FinancialOutboxPostgresTest {
                         "UPDATE financial_outbox_events SET payload='invalid-json-fixture' WHERE id=?",
                         id);
         }
-        var fresh = new FinancialOutboxService(events, notifications, hooks, manager);
+        var fresh = new FinancialOutboxServiceImpl(events, notifications, hooks, manager);
         ReflectionTestUtils.setField(fresh, "workerEnabled", true);
         fresh.retryDue();
         assertEquals(

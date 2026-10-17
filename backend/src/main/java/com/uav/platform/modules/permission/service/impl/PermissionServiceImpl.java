@@ -1,8 +1,11 @@
 package com.uav.platform.modules.permission.service.impl;
 
+import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.audit.enums.AuditAction;
 import com.uav.platform.modules.audit.service.AuditLogService;
+import com.uav.platform.modules.permission.dto.response.PermissionCodesResponse;
 import com.uav.platform.modules.permission.dto.response.PermissionResponse;
+import com.uav.platform.modules.permission.dto.response.UserPermissionResponse;
 import com.uav.platform.modules.permission.entity.Permission;
 import com.uav.platform.modules.permission.entity.UserPermission;
 import com.uav.platform.modules.permission.enums.PermissionCode;
@@ -15,11 +18,16 @@ import com.uav.platform.modules.role.repository.RoleTemplateRepository;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.enums.UserRole;
 import com.uav.platform.modules.user.repository.UserRepository;
+import com.uav.platform.modules.user.service.impl.UserAccountServiceImpl;
+import com.uav.platform.security.AccessRecoveryGuard;
 
+import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -32,7 +40,8 @@ public class PermissionServiceImpl implements PermissionService {
     private final AuditLogService auditLogService;
     private final RoleTemplateRepository roleTemplates;
     private final RoleTemplatePermissionRepository roleTemplatePermissions;
-    private final com.uav.platform.security.AccessRecoveryGuard recovery;
+    private final AccessRecoveryGuard recovery;
+    private final PermissionMapper permissionMapper;
 
     public PermissionServiceImpl(
             PermissionRepository permissions,
@@ -59,7 +68,6 @@ public class PermissionServiceImpl implements PermissionService {
                 null);
     }
 
-    @org.springframework.beans.factory.annotation.Autowired
     public PermissionServiceImpl(
             PermissionRepository permissions,
             UserPermissionRepository userPermissions,
@@ -67,7 +75,28 @@ public class PermissionServiceImpl implements PermissionService {
             AuditLogService auditLogService,
             RoleTemplateRepository roleTemplates,
             RoleTemplatePermissionRepository roleTemplatePermissions,
-            com.uav.platform.security.AccessRecoveryGuard recovery) {
+            AccessRecoveryGuard recovery) {
+        this(
+                permissions,
+                userPermissions,
+                users,
+                auditLogService,
+                roleTemplates,
+                roleTemplatePermissions,
+                recovery,
+                Mappers.getMapper(PermissionMapper.class));
+    }
+
+    @Autowired
+    public PermissionServiceImpl(
+            PermissionRepository permissions,
+            UserPermissionRepository userPermissions,
+            UserRepository users,
+            AuditLogService auditLogService,
+            RoleTemplateRepository roleTemplates,
+            RoleTemplatePermissionRepository roleTemplatePermissions,
+            AccessRecoveryGuard recovery,
+            PermissionMapper permissionMapper) {
         this.recovery = recovery;
         this.permissions = permissions;
         this.userPermissions = userPermissions;
@@ -75,6 +104,7 @@ public class PermissionServiceImpl implements PermissionService {
         this.auditLogService = auditLogService;
         this.roleTemplates = roleTemplates;
         this.roleTemplatePermissions = roleTemplatePermissions;
+        this.permissionMapper = permissionMapper;
     }
 
     @Override
@@ -88,7 +118,10 @@ public class PermissionServiceImpl implements PermissionService {
             return false;
         }
         return users.findByUsername(authentication.getName())
-                .filter(user -> user.isEnabled() && user.isAccountNonLocked())
+                .filter(
+                        user ->
+                                UserAccountServiceImpl.isEnabled(user)
+                                        && UserAccountServiceImpl.isAccountNonLocked(user))
                 .map(
                         user ->
                                 userPermissions
@@ -107,26 +140,33 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PermissionResponse> list() {
-        return permissions.findAll().stream().map(PermissionMapper::toResponse).toList();
+    public PermissionCodesResponse current(Authentication authentication) {
+        return new PermissionCodesResponse(
+                Arrays.stream(PermissionCode.values())
+                        .filter(code -> has(authentication, code.name()))
+                        .map(Enum::name)
+                        .toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<com.uav.platform.modules.permission.dto.response.UserPermissionResponse>
-            listUserPermissions(Long userId) {
-        if (!users.existsById(userId))
-            throw com.uav.platform.error.SystemException.notFound("User not found");
+    public List<PermissionResponse> list() {
+        return permissions.findAll().stream().map(permissionMapper::toResponse).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserPermissionResponse> listUserPermissions(Long userId) {
+        if (!users.existsById(userId)) throw SystemException.notFound("User not found");
         return userPermissions.findByUserId(userId).stream()
-                .map(PermissionMapper::toResponse)
+                .map(permissionMapper::toResponse)
                 .toList();
     }
 
     @Override
     public void removeUserPermission(Long userId, PermissionCode code, String actorUsername) {
         long before = recovery == null ? 0 : recovery.begin();
-        if (!users.existsById(userId))
-            throw com.uav.platform.error.SystemException.notFound("User not found");
+        if (!users.existsById(userId)) throw SystemException.notFound("User not found");
         userPermissions.deleteByUserIdAndPermissionCode(userId, code);
         if (recovery != null) recovery.finish(before);
         auditLogService.record(
@@ -144,7 +184,7 @@ public class PermissionServiceImpl implements PermissionService {
         long before = recovery == null ? 0 : recovery.begin();
         AppUser user =
                 users.findById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                        .orElseThrow(() -> SystemException.notFound("User not found"));
         Permission permission =
                 permissions
                         .findByCode(code)

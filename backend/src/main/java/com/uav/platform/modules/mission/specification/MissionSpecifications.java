@@ -1,8 +1,7 @@
 package com.uav.platform.modules.mission.specification;
 
-import com.uav.platform.modules.mission.dto.request.MissionFilter;
+import com.uav.platform.modules.mission.dto.record.MissionFilter;
 import com.uav.platform.modules.mission.entity.Mission;
-import com.uav.platform.modules.mission.enums.*;
 import com.uav.platform.modules.mission.enums.MissionStatus;
 import com.uav.platform.modules.mission.enums.MissionType;
 

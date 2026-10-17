@@ -1,9 +1,11 @@
 package com.uav.platform.modules.sar.controller;
 
 import com.uav.platform.modules.sar.dto.request.FlightPlanRequest;
+import com.uav.platform.modules.sar.dto.request.RescueDispatchRequest;
 import com.uav.platform.modules.sar.dto.request.SarMissionRequest;
 import com.uav.platform.modules.sar.dto.request.TelemetryEvaluateRequest;
 import com.uav.platform.modules.sar.dto.response.FlightPlanResponse;
+import com.uav.platform.modules.sar.dto.response.RescueDispatchResponse;
 import com.uav.platform.modules.sar.dto.response.SarMissionResponse;
 import com.uav.platform.modules.sar.dto.response.TelemetryEvaluateResponse;
 import com.uav.platform.modules.sar.enums.SarStatus;
@@ -11,22 +13,19 @@ import com.uav.platform.modules.sar.service.SarService;
 
 import jakarta.validation.Valid;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/v1/sar")
+@RequiredArgsConstructor
 public class SarController {
 
     private final SarService sarService;
-
-    public SarController(SarService sarService) {
-        this.sarService = sarService;
-    }
 
     @PostMapping("/missions")
     @PreAuthorize(
@@ -71,10 +70,10 @@ public class SarController {
     @PostMapping("/missions/{missionId}/dispatch-rescue")
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
-    public ResponseEntity<Map<String, Object>> dispatchRescue(
+    public ResponseEntity<RescueDispatchResponse> dispatchRescue(
             @PathVariable Long missionId,
-            @RequestBody(required = false) Map<String, Object> payload,
+            @RequestBody(required = false) RescueDispatchRequest request,
             Authentication auth) {
-        return ResponseEntity.ok(sarService.dispatchRescueCoordinates(missionId, payload, auth));
+        return ResponseEntity.ok(sarService.dispatchRescueCoordinates(missionId, request, auth));
     }
 }

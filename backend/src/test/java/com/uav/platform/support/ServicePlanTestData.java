@@ -1,7 +1,7 @@
 package com.uav.platform.support;
 
-import com.uav.platform.modules.billing.entity.ServicePlan;
 import com.uav.platform.modules.billing.repository.ServicePlanRepository;
+import com.uav.platform.modules.billing.service.impl.ServicePlanOperations;
 
 import java.math.BigDecimal;
 
@@ -12,7 +12,7 @@ public final class ServicePlanTestData {
     public static void ensureBasicPlan(ServicePlanRepository plans) {
         if (plans.findByCode("BASIC").isEmpty()) {
             plans.save(
-                    new ServicePlan(
+                    ServicePlanOperations.create(
                             "BASIC",
                             "Synthetic mission test plan",
                             BigDecimal.ZERO,

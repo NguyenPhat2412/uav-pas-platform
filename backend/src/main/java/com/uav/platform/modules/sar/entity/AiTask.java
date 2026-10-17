@@ -9,7 +9,6 @@ import com.uav.platform.modules.sar.enums.ProcessingNode;
 
 import jakarta.persistence.*;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +19,7 @@ import java.time.LocalDateTime;
 @Table(name = "ai_tasks")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class AiTask extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -66,18 +65,4 @@ public class AiTask extends BaseEntity {
 
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
-
-    public AiTask(
-            Mission mission,
-            MediaAsset media,
-            AiTaskType taskType,
-            ProcessingNode processingNode,
-            Double confidenceThreshold) {
-        this.mission = mission;
-        this.media = media;
-        this.taskType = taskType != null ? taskType : AiTaskType.OBJECT_DETECTION_YOLOV8S;
-        this.processingNode = processingNode != null ? processingNode : ProcessingNode.KV260_EDGE;
-        this.confidenceThreshold = confidenceThreshold != null ? confidenceThreshold : 0.75;
-        this.status = AiTaskStatus.PENDING;
-    }
 }

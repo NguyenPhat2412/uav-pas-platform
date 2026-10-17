@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.uav.platform.modules.user.entity.AppUser;
+import com.uav.platform.modules.user.enums.UserRole;
 import com.uav.platform.modules.user.enums.UserStatus;
 import com.uav.platform.modules.user.repository.UserRepository;
 
@@ -141,5 +142,36 @@ class CookieSessionIntegrationTest {
                         .filter(c -> c.getName().startsWith("uav_"))
                         .allMatch(c -> c.getMaxAge() == 0));
         mvc.perform(get("/api/v1/auth/me").cookie(refreshed)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void repositoryInsertNormalizesExplicitNullDefaultsOutsideServiceFactory() {
+        String name = "defaults_" + UUID.randomUUID().toString().substring(0, 8);
+        AppUser user =
+                new AppUser(
+                        name,
+                        name + "@example.invalid",
+                        "hash",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
+        user.setRole(null);
+        user.setStatus(null);
+        assertNull(user.getRole());
+        assertNull(user.getStatus());
+
+        AppUser saved = users.saveAndFlush(user);
+        try {
+            AppUser loaded = users.findById(saved.getId()).orElseThrow();
+            assertEquals(UserRole.ROLE_PILOT, loaded.getRole());
+            assertEquals(UserStatus.ACTIVE, loaded.getStatus());
+            assertNotNull(loaded.getCreatedAt());
+            assertNotNull(loaded.getUpdatedAt());
+        } finally {
+            users.delete(saved);
+        }
     }
 }

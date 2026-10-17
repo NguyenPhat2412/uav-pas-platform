@@ -18,18 +18,25 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuditLogServiceImpl implements AuditLogService {
     private final AuditLogRepository repository;
     private final UserRepository users;
+    private final AuditLogMapper auditLogMapper;
 
     public AuditLogServiceImpl(AuditLogRepository repository) {
         this(repository, null);
+    }
+
+    public AuditLogServiceImpl(AuditLogRepository repository, UserRepository users) {
+        this(repository, users, org.mapstruct.factory.Mappers.getMapper(AuditLogMapper.class));
     }
 
     @org.springframework.beans.factory.annotation.Autowired
     public AuditLogServiceImpl(
             AuditLogRepository repository,
             @org.springframework.beans.factory.annotation.Autowired(required = false)
-                    UserRepository users) {
+                    UserRepository users,
+            AuditLogMapper auditLogMapper) {
         this.repository = repository;
         this.users = users;
+        this.auditLogMapper = auditLogMapper;
     }
 
     @Override
@@ -55,6 +62,6 @@ public class AuditLogServiceImpl implements AuditLogService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<AuditLogResponse> findAll(Pageable pageable) {
-        return PageResponse.from(repository.findAll(pageable), AuditLogMapper::toResponse);
+        return PageResponse.from(repository.findAll(pageable), auditLogMapper::toResponse);
     }
 }

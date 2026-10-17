@@ -5,7 +5,6 @@ import com.uav.platform.modules.user.entity.AppUser;
 
 import jakarta.persistence.*;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "user_quotas")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class UserQuota extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -46,15 +45,4 @@ public class UserQuota extends BaseEntity {
 
     @Column(name = "cycle_end")
     private LocalDateTime cycleEnd;
-
-    public UserQuota(AppUser user, ServicePlan plan) {
-        this.user = user;
-        this.plan = plan;
-        this.flightHoursUsed = 0.0;
-        this.flightHoursLimit = plan.getMaxMonthlyFlightHours();
-        this.concurrentUavsUsed = 0;
-        this.concurrentUavsLimit = plan.getMaxConcurrentUavs();
-        this.cycleStart = LocalDateTime.now();
-        this.cycleEnd = LocalDateTime.now().plusMonths(1);
-    }
 }

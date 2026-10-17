@@ -4,13 +4,17 @@ import com.uav.platform.modules.permission.enums.PermissionCode;
 import com.uav.platform.modules.role.dto.response.RoleTemplateResponse;
 import com.uav.platform.modules.role.entity.RoleTemplate;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+
 import java.util.Set;
 
-public final class RoleTemplateMapper {
-    private RoleTemplateMapper() {}
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface RoleTemplateMapper {
 
-    public static RoleTemplateResponse toResponse(
-            RoleTemplate template, Set<PermissionCode> permissions) {
-        return new RoleTemplateResponse(template.getRole(), template.getName(), permissions);
-    }
+    @Mapping(target = "role", source = "template.role")
+    @Mapping(target = "name", source = "template.name")
+    @Mapping(target = "permissions", source = "permissions")
+    RoleTemplateResponse toResponse(RoleTemplate template, Set<PermissionCode> permissions);
 }

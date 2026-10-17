@@ -61,7 +61,12 @@ class SarAuthorizationTest {
         verifyNoInteractions(notices, hooks);
         assertThrows(
                 RuntimeException.class,
-                () -> service.dispatchRescueCoordinates(123L, Map.of(), auth));
+                () ->
+                        service.dispatchRescueCoordinates(
+                                123L,
+                                new com.uav.platform.modules.sar.dto.request.RescueDispatchRequest(
+                                        Map.of()),
+                                auth));
         verifyNoInteractions(notices, hooks);
     }
 

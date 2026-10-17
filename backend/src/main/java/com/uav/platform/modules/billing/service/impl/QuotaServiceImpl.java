@@ -13,6 +13,8 @@ import com.uav.platform.modules.billing.service.QuotaService;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -20,20 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class QuotaServiceImpl implements QuotaService {
 
     private final UserQuotaRepository quotaRepository;
     private final ServicePlanRepository planRepository;
     private final UserRepository userRepository;
-
-    public QuotaServiceImpl(
-            UserQuotaRepository quotaRepository,
-            ServicePlanRepository planRepository,
-            UserRepository userRepository) {
-        this.quotaRepository = quotaRepository;
-        this.planRepository = planRepository;
-        this.userRepository = userRepository;
-    }
+    private final BillingMapper billingMapper;
 
     private UserQuota getOrCreateUserQuota(Long userId) {
         // The user row exists before the quota: lock it for both creation and every mutation.
@@ -53,7 +48,7 @@ public class QuotaServiceImpl implements QuotaService {
                                                             SystemException.conflict(
                                                                     "Default service plan is not configured"));
 
-                            UserQuota newQuota = new UserQuota(user, defaultPlan);
+                            UserQuota newQuota = UserQuotaOperations.create(user, defaultPlan);
                             return quotaRepository.save(newQuota);
                         });
     }
@@ -68,20 +63,20 @@ public class QuotaServiceImpl implements QuotaService {
                                         SystemException.notFound(
                                                 "User not found: " + authentication.getName()));
         UserQuota quota = getOrCreateUserQuota(user.getId());
-        return BillingMapper.toQuotaResponse(quota);
+        return billingMapper.toQuotaResponse(quota);
     }
 
     @Override
     public UserQuotaResponse getQuotaByUserId(Long userId) {
         UserQuota quota = getOrCreateUserQuota(userId);
-        return BillingMapper.toQuotaResponse(quota);
+        return billingMapper.toQuotaResponse(quota);
     }
 
     @Override
     @Transactional(readOnly = true)
     public PageResponse<UserQuotaResponse> listQuotas(Pageable pageable) {
         return PageResponse.from(
-                quotaRepository.findAll(pageable).map(BillingMapper::toQuotaResponse));
+                quotaRepository.findAll(pageable).map(billingMapper::toQuotaResponse));
     }
 
     @Override
@@ -103,7 +98,7 @@ public class QuotaServiceImpl implements QuotaService {
                         ? request.flightHoursLimit()
                         : plan.getMaxMonthlyFlightHours());
         quota.setConcurrentUavsLimit(plan.getMaxConcurrentUavs());
-        return BillingMapper.toQuotaResponse(quotaRepository.save(quota));
+        return billingMapper.toQuotaResponse(quotaRepository.save(quota));
     }
 
     @Override

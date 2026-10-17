@@ -12,6 +12,7 @@ import com.uav.platform.modules.media.service.impl.MediaAccessServiceImpl;
 import com.uav.platform.modules.mission.entity.*;
 import com.uav.platform.modules.mission.enums.*;
 import com.uav.platform.modules.mission.repository.MissionRepository;
+import com.uav.platform.modules.mission.service.impl.MissionOperations;
 import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.station.enums.*;
 import com.uav.platform.modules.station.repository.StationRepository;
@@ -38,7 +39,7 @@ class MediaAccessServiceTest {
                         null,
                         com.uav.platform.modules.user.enums.UserStatus.ACTIVE);
         Mission mission =
-                Mission.draft(
+                MissionOperations.draft(
                         owner,
                         MissionType.AREA_INSPECTION,
                         "Inspect",

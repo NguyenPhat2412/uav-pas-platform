@@ -2,8 +2,9 @@ package com.uav.platform.config;
 
 import com.uav.platform.modules.permission.enums.PermissionCode;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -12,19 +13,16 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /** Small idempotent bridge for development databases created before Phase 1 auth fields existed. */
+@Slf4j
 @Component
 @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
         name = "app.phase1.compatibility-schema.enabled",
         havingValue = "true",
         matchIfMissing = false)
 @Order(0)
+@RequiredArgsConstructor
 public class Phase1SchemaInitializer implements org.springframework.boot.ApplicationRunner {
-    private static final Logger log = LoggerFactory.getLogger(Phase1SchemaInitializer.class);
     private final JdbcTemplate jdbc;
-
-    public Phase1SchemaInitializer(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
 
     @Override
     public void run(org.springframework.boot.ApplicationArguments args) {

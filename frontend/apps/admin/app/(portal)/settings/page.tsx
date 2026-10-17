@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { settingLabel } from '@uav/ui/presentation';
 import { AdminPage } from '@/components/layout/AdminPage';
 import { 
   Settings, 
@@ -62,7 +63,7 @@ function AdminSettingsContent() {
       <div className="portal-card bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Settings className="text-primary" /> Cấu hình Tham số Vận hành & AI Toàn Hệ Thống
+            <Settings className="text-primary" /> Tham số vận hành và AI
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
             Thay đổi ngưỡng an toàn bay, tham số suy luận YOLOv8s trên phần cứng KV260 và cơ chế tự động hóa
@@ -94,33 +95,37 @@ function AdminSettingsContent() {
       {/* Group 1: Safety & Flight Limits */}
       <div className="portal-card bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
         <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2 border-b border-slate-100 pb-3">
-          <ShieldCheck size={18} className="text-emerald-600" /> Tham Số An Toàn Bay & Giới Hạn Geofencing
+          <ShieldCheck size={18} className="text-emerald-600" /> An toàn bay và giới hạn khu vực
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {safetyConfigs.map(c => (
             <div key={c.configKey} className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-800 flex items-center justify-between">
-                <span>{c.configKey}</span>
+              <label htmlFor={`setting-${c.configKey}`} className="text-sm font-semibold text-slate-800">
+                <span>{settingLabel(c.configKey, c.description)}</span>
               </label>
               {c.configKey.includes('enforced') ? (
                 <select
+                  id={`setting-${c.configKey}`}
+                  disabled={isSaving}
                   value={c.configValue}
                   onChange={e => handleChange(c.configKey, e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-900 font-semibold focus:outline-none focus:border-primary"
                 >
-                  <option value="true">BẮT BUỘC (TRUE)</option>
-                  <option value="false">TẮT (FALSE)</option>
+                  <option value="true">Bắt buộc</option>
+                  <option value="false">Tắt</option>
                 </select>
               ) : (
                 <input
                   type="text"
+                  id={`setting-${c.configKey}`}
+                  disabled={isSaving}
                   value={c.configValue}
                   onChange={e => handleChange(c.configKey, e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-primary"
                 />
               )}
-              <p className="text-[11px] text-slate-400">{c.description}</p>
+              <p className="text-sm text-slate-500">{c.description}</p>
             </div>
           ))}
         </div>
@@ -129,33 +134,37 @@ function AdminSettingsContent() {
       {/* Group 2: AI & KV260 Edge Processing */}
       <div className="portal-card bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
         <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2 border-b border-slate-100 pb-3">
-          <Cpu size={18} className="text-indigo-600" /> Trí Tuệ Nhân Tạo & Điều Phối Xử Lý Cạnh KV260
+          <Cpu size={18} className="text-indigo-600" /> Nhận diện AI và xử lý biên KV260
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {aiConfigs.map(c => (
             <div key={c.configKey} className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-800 flex items-center justify-between">
-                <span>{c.configKey}</span>
+              <label htmlFor={`setting-${c.configKey}`} className="text-sm font-semibold text-slate-800">
+                <span>{settingLabel(c.configKey, c.description)}</span>
               </label>
               {c.configKey.includes('prefer') ? (
                 <select
+                  id={`setting-${c.configKey}`}
+                  disabled={isSaving}
                   value={c.configValue}
                   onChange={e => handleChange(c.configKey, e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-900 font-semibold focus:outline-none focus:border-primary"
                 >
-                  <option value="true">ƯU TIÊN KV260 DPU (TRUE)</option>
-                  <option value="false">ƯU TIÊN CLOUD GPU (FALSE)</option>
+                  <option value="true">Ưu tiên xử lý trên KV260</option>
+                  <option value="false">Ưu tiên xử lý trên máy chủ</option>
                 </select>
               ) : (
                 <input
                   type="text"
+                  id={`setting-${c.configKey}`}
+                  disabled={isSaving}
                   value={c.configValue}
                   onChange={e => handleChange(c.configKey, e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-primary"
                 />
               )}
-              <p className="text-[11px] text-slate-400">{c.description}</p>
+              <p className="text-sm text-slate-500">{c.description}</p>
             </div>
           ))}
         </div>
@@ -164,22 +173,24 @@ function AdminSettingsContent() {
       {/* Group 3: Operations & Dispatch */}
       <div className="portal-card bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
         <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2 border-b border-slate-100 pb-3">
-          <MapPin size={18} className="text-amber-600" /> Tự Động Hóa Vận Hành & Điều Phối
+          <MapPin size={18} className="text-amber-600" /> Vận hành và thanh toán
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {opConfigs.map(c => (
             <div key={c.configKey} className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-800 flex items-center justify-between">
-                <span>{c.configKey}</span>
+              <label htmlFor={`setting-${c.configKey}`} className="text-sm font-semibold text-slate-800">
+                <span>{settingLabel(c.configKey, c.description)}</span>
               </label>
               <input
                 type="text"
-                value={c.configValue}
+                id={`setting-${c.configKey}`}
+                  disabled={isSaving}
+                  value={c.configValue}
                 onChange={e => handleChange(c.configKey, e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-primary"
               />
-              <p className="text-[11px] text-slate-400">{c.description}</p>
+              <p className="text-sm text-slate-500">{c.description}</p>
             </div>
           ))}
         </div>

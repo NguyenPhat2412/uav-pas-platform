@@ -2,10 +2,12 @@ package com.uav.platform.modules.webhook.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.webhook.dto.record.QueueResult;
 import com.uav.platform.modules.webhook.dto.request.WebhookSubscriptionRequest;
+import com.uav.platform.modules.webhook.dto.request.WebhookTestDispatchRequest;
 import com.uav.platform.modules.webhook.dto.response.WebhookDeliveryLogResponse;
+import com.uav.platform.modules.webhook.dto.response.WebhookDispatchResponse;
 import com.uav.platform.modules.webhook.dto.response.WebhookSubscriptionResponse;
-import com.uav.platform.modules.webhook.entity.WebhookDeliveryLog;
 import com.uav.platform.modules.webhook.entity.WebhookSubscription;
 import com.uav.platform.modules.webhook.mapper.WebhookMapper;
 import com.uav.platform.modules.webhook.repository.WebhookDeliveryLogRepository;
@@ -31,10 +33,20 @@ import javax.crypto.spec.SecretKeySpec;
 @Service
 @Transactional
 public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
+    @Override
+    public WebhookDispatchResponse dispatchTest(WebhookTestDispatchRequest request) {
+        String eventType =
+                (String) request.payload().getOrDefault("eventType", "SAR_EMERGENCY_TRIGGERED");
+        String outcome = dispatchEvent(eventType, request.payload());
+        return new WebhookDispatchResponse(
+                outcome,
+                "Đã ghi nhận yêu cầu. Kiểm tra nhật ký để biết kết quả HTTP; chưa xác nhận bên nhận đã xử lý.");
+    }
 
     private final WebhookSubscriptionRepository subscriptionRepository;
     private final WebhookDeliveryLogRepository deliveryLogRepository;
     private final ObjectMapper objectMapper;
+    private final WebhookMapper webhookMapper;
 
     @org.springframework.beans.factory.annotation.Value("${app.webhook.enabled:false}")
     private boolean enabled;
@@ -69,10 +81,24 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
     public WebhookServiceImpl(
             WebhookSubscriptionRepository subscriptionRepository,
             WebhookDeliveryLogRepository deliveryLogRepository,
-            @Autowired(required = false) ObjectMapper objectMapper) {
+            ObjectMapper objectMapper) {
+        this(
+                subscriptionRepository,
+                deliveryLogRepository,
+                objectMapper,
+                org.mapstruct.factory.Mappers.getMapper(WebhookMapper.class));
+    }
+
+    @Autowired
+    public WebhookServiceImpl(
+            WebhookSubscriptionRepository subscriptionRepository,
+            WebhookDeliveryLogRepository deliveryLogRepository,
+            @Autowired(required = false) ObjectMapper objectMapper,
+            WebhookMapper webhookMapper) {
         this.subscriptionRepository = subscriptionRepository;
         this.deliveryLogRepository = deliveryLogRepository;
         this.objectMapper = objectMapper != null ? objectMapper : new ObjectMapper();
+        this.webhookMapper = webhookMapper;
     }
 
     @Override
@@ -80,7 +106,7 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
     public List<WebhookSubscriptionResponse> listSubscriptions() {
         return subscriptionRepository.findAll().stream()
                 .filter(sub -> sub.getDeletedAt() == null)
-                .map(WebhookMapper::toSubscriptionResponse)
+                .map(webhookMapper::toSubscriptionResponse)
                 .toList();
     }
 
@@ -99,7 +125,7 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
         validateSafeWebhookUrl(targetUrl);
         WebhookSubscription sub =
                 new WebhookSubscription(name, targetUrl.trim(), secretKey, eventsSubscribed);
-        return WebhookMapper.toSubscriptionResponse(subscriptionRepository.save(sub));
+        return webhookMapper.toSubscriptionResponse(subscriptionRepository.save(sub));
     }
 
     public static void validateSafeWebhookUrl(String targetUrl) {
@@ -150,8 +176,6 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
                 : "UNCONFIGURED";
     }
 
-    private record QueueResult(int total, int ready) {}
-
     /** Caller holds the durable event row lock; delivery insertion and local notification commit together. */
     @Override
     public int queueEvent(String eventId, String eventType, Map<String, Object> eventData) {
@@ -177,7 +201,9 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
                 if (approved(sub.getTargetUrl())) ready++;
                 if (deliveryLogRepository.existsByEventIdAndSubscriptionId(eventId, sub.getId()))
                     continue;
-                var entry = new WebhookDeliveryLog(sub, eventType, payload, null, null, 0, false);
+                var entry =
+                        WebhookDeliveryLogOperations.create(
+                                sub, eventType, payload, null, null, 0, false);
                 entry.setEventId(eventId);
                 entry.setDeliveryStatus(approved(sub.getTargetUrl()) ? "QUEUED" : "UNCONFIGURED");
                 deliveryLogRepository.save(entry);
@@ -266,7 +292,7 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
     public Page<WebhookDeliveryLogResponse> listDeliveryLogs(Pageable pageable) {
         return deliveryLogRepository
                 .findAllByOrderByAttemptedAtDesc(pageable)
-                .map(WebhookMapper::toDeliveryLogResponse);
+                .map(webhookMapper::toDeliveryLogResponse);
     }
 
     @Override
@@ -279,7 +305,7 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
             byte[] hmacBytes = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(hmacBytes);
         } catch (Exception e) {
-            throw new RuntimeException("Error calculating HMAC-SHA256", e);
+            throw new IllegalStateException("Error calculating HMAC-SHA256", e);
         }
     }
 }

@@ -11,11 +11,13 @@ import com.uav.platform.modules.inventory.enums.*;
 import com.uav.platform.modules.inventory.enums.EquipmentType;
 import com.uav.platform.modules.inventory.repository.EquipmentRepository;
 import com.uav.platform.modules.inventory.repository.InventoryMovementRepository;
+import com.uav.platform.modules.inventory.service.impl.EquipmentOperations;
 import com.uav.platform.modules.inventory.service.impl.InventoryServiceImpl;
 import com.uav.platform.modules.media.enums.*;
 import com.uav.platform.modules.mission.enums.*;
 import com.uav.platform.modules.station.enums.*;
 import com.uav.platform.modules.station.repository.StationRepository;
+import com.uav.platform.modules.station.service.impl.StationOperations;
 import com.uav.platform.modules.uav.enums.*;
 
 import org.junit.jupiter.api.Test;
@@ -30,13 +32,24 @@ class InventoryServiceTest {
     @Mock InventoryMovementRepository movements;
     @Mock StationRepository stations;
     @Mock AuditLogService audit;
+
+    @org.mockito.Spy
+    com.uav.platform.modules.inventory.mapper.EquipmentMapper equipmentMapper =
+            org.mapstruct.factory.Mappers.getMapper(
+                    com.uav.platform.modules.inventory.mapper.EquipmentMapper.class);
+
+    @org.mockito.Spy
+    com.uav.platform.modules.inventory.mapper.InventoryMovementMapper movementMapper =
+            org.mapstruct.factory.Mappers.getMapper(
+                    com.uav.platform.modules.inventory.mapper.InventoryMovementMapper.class);
+
     @InjectMocks InventoryServiceImpl service;
 
     @Test
     void stockReserveAndReleaseKeepQuantitiesConsistent() {
         Equipment item = new Equipment("Battery", EquipmentType.BATTERY, "BAT-01", null);
         item.setId(1L);
-        item.stockIn(10);
+        EquipmentOperations.stockIn(item, 10);
         when(equipment.findByIdForUpdate(1L)).thenReturn(java.util.Optional.of(item));
         assertEquals(
                 7, service.reserve(1L, new QuantityRequest(3, null), "admin").availableQuantity());
@@ -50,7 +63,7 @@ class InventoryServiceTest {
     void repeatedRequestIdDoesNotApplyMovementTwice() {
         Equipment item = new Equipment("Battery", EquipmentType.BATTERY, "BAT-02", null);
         item.setId(2L);
-        item.stockIn(10);
+        EquipmentOperations.stockIn(item, 10);
         when(equipment.findByIdForUpdate(2L)).thenReturn(java.util.Optional.of(item));
         when(movements.findByRequestId("reserve-1"))
                 .thenReturn(
@@ -74,17 +87,13 @@ class InventoryServiceTest {
 
     @Test
     void partialTransferCreatesDestinationBalance() {
-        var from =
-                new com.uav.platform.modules.station.entity.Station(
-                        "A", "A", null, null, null, null);
+        var from = StationOperations.create("A", "A", null, null, null, null);
         from.setId(1L);
-        var to =
-                new com.uav.platform.modules.station.entity.Station(
-                        "B", "B", null, null, null, null);
+        var to = StationOperations.create("B", "B", null, null, null, null);
         to.setId(2L);
         Equipment item = new Equipment("Battery", EquipmentType.BATTERY, null, from);
         item.setId(3L);
-        item.stockIn(10);
+        EquipmentOperations.stockIn(item, 10);
         when(equipment.findByIdForUpdate(3L)).thenReturn(java.util.Optional.of(item));
         when(stations.findById(2L)).thenReturn(java.util.Optional.of(to));
         service.transfer(3L, 2L, new QuantityRequest(4, "partial", "transfer-1"), "admin");

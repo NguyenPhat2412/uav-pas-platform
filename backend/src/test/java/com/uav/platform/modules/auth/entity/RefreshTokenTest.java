@@ -2,6 +2,7 @@ package com.uav.platform.modules.auth.entity;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.uav.platform.modules.auth.service.impl.RefreshTokenServiceImpl;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.enums.UserStatus;
 
@@ -24,22 +25,22 @@ class RefreshTokenTest {
         Instant future = Instant.now().plus(7, ChronoUnit.DAYS);
         RefreshToken token = new RefreshToken(user, "valid-token-string", future);
 
-        assertFalse(token.isExpired());
+        assertFalse(RefreshTokenServiceImpl.isExpired(token));
         assertFalse(token.isRevoked());
-        assertTrue(token.isValid());
+        assertTrue(RefreshTokenServiceImpl.isValid(token));
         assertEquals("testpilot", token.getUser().getUsername());
         assertEquals("valid-token-string", token.getToken());
 
         // Revoke token
-        token.revoke();
+        RefreshTokenServiceImpl.revoke(token);
         assertTrue(token.isRevoked());
-        assertFalse(token.isValid());
+        assertFalse(RefreshTokenServiceImpl.isValid(token));
 
         // Expired token
         Instant past = Instant.now().minus(1, ChronoUnit.HOURS);
         RefreshToken expiredToken = new RefreshToken(user, "expired-token", past);
-        assertTrue(expiredToken.isExpired());
-        assertFalse(expiredToken.isValid());
+        assertTrue(RefreshTokenServiceImpl.isExpired(expiredToken));
+        assertFalse(RefreshTokenServiceImpl.isValid(expiredToken));
     }
 
     @Test

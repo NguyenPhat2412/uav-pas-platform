@@ -5,6 +5,9 @@ import { fileURLToPath } from 'node:url';
 // Legacy has its own Next.js root. Materialize shared UI and upload policy before dev/build
 // so it stays synchronized without importing outside that isolated root.
 const files = [
+  ['../../packages/design-tokens/src/consistency.css', '../src/styles/consistency.css'],
+  ['../../packages/ui/src/LanguageSelect.tsx', '../src/components/brand/LanguageSelect.tsx'],
+  ['../../packages/ui/src/AuthCredentials.tsx', '../src/components/brand/AuthCredentials.tsx'],
   ['../../packages/api-client/src/media-policy.ts', '../src/lib/media-policy.ts'],
   ['../../packages/design-tokens/src/styles.css', '../src/styles/brand-tokens.css'],
   ['../../packages/design-tokens/src/portal.css', '../src/styles/portal.css'],

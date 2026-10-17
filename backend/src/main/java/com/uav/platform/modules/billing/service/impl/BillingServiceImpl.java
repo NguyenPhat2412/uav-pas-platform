@@ -2,6 +2,7 @@ package com.uav.platform.modules.billing.service.impl;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.billing.dto.record.IpnSignaturePayload;
 import com.uav.platform.modules.billing.dto.request.CreateInvoiceRequest;
 import com.uav.platform.modules.billing.dto.request.PayInvoiceRequest;
 import com.uav.platform.modules.billing.dto.request.PaymentIpnRequest;
@@ -24,12 +25,14 @@ import com.uav.platform.modules.mission.repository.MissionRepository;
 import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.repository.UserRepository;
+import com.uav.platform.modules.user.service.impl.UserAccountServiceImpl;
 import com.uav.platform.modules.webhook.service.WebhookService;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +44,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @Transactional
 public class BillingServiceImpl implements BillingService {
@@ -54,6 +58,7 @@ public class BillingServiceImpl implements BillingService {
     private final UserQuotaRepository quotaRepository;
     private final WebhookService webhookService;
     private final String ipnSecret;
+    private final BillingMapper billingMapper;
 
     @org.springframework.beans.factory.annotation.Value("${app.billing.provider-enabled:false}")
     private boolean providerEnabled;
@@ -104,6 +109,29 @@ public class BillingServiceImpl implements BillingService {
                 "");
     }
 
+    public BillingServiceImpl(
+            ServicePlanRepository planRepository,
+            InvoiceRepository invoiceRepository,
+            PaymentTransactionRepository paymentRepository,
+            UserRepository userRepository,
+            MissionRepository missionRepository,
+            PermissionService permissions,
+            UserQuotaRepository quotaRepository,
+            WebhookService webhookService,
+            String ipnSecret) {
+        this(
+                planRepository,
+                invoiceRepository,
+                paymentRepository,
+                userRepository,
+                missionRepository,
+                permissions,
+                quotaRepository,
+                webhookService,
+                ipnSecret,
+                org.mapstruct.factory.Mappers.getMapper(BillingMapper.class));
+    }
+
     @Autowired
     public BillingServiceImpl(
             ServicePlanRepository planRepository,
@@ -115,7 +143,8 @@ public class BillingServiceImpl implements BillingService {
             @Autowired(required = false) UserQuotaRepository quotaRepository,
             @Autowired(required = false) WebhookService webhookService,
             @org.springframework.beans.factory.annotation.Value("${app.billing.ipn-secret:}")
-                    String ipnSecret) {
+                    String ipnSecret,
+            BillingMapper billingMapper) {
         this.planRepository = planRepository;
         this.invoiceRepository = invoiceRepository;
         this.paymentRepository = paymentRepository;
@@ -125,6 +154,7 @@ public class BillingServiceImpl implements BillingService {
         this.quotaRepository = quotaRepository;
         this.webhookService = webhookService;
         this.ipnSecret = (ipnSecret != null && !ipnSecret.isBlank()) ? ipnSecret : "";
+        this.billingMapper = billingMapper;
     }
 
     private AppUser getCurrentUser(Authentication auth) {
@@ -137,7 +167,10 @@ public class BillingServiceImpl implements BillingService {
         }
         return userRepository
                 .findByUsername(auth.getName())
-                .filter(user -> user.isEnabled() && user.isAccountNonLocked())
+                .filter(
+                        user ->
+                                UserAccountServiceImpl.isEnabled(user)
+                                        && UserAccountServiceImpl.isAccountNonLocked(user))
                 .orElseThrow(() -> SystemException.unauthorized("Authentication required"));
     }
 
@@ -158,7 +191,7 @@ public class BillingServiceImpl implements BillingService {
     @Transactional(readOnly = true)
     public List<ServicePlanResponse> listActivePlans() {
         return planRepository.findByActiveTrue().stream()
-                .map(BillingMapper::toPlanResponse)
+                .map(billingMapper::toPlanResponse)
                 .toList();
     }
 
@@ -174,21 +207,20 @@ public class BillingServiceImpl implements BillingService {
                         : invoiceRepository.findByUserIdOrderByCreatedAtDesc(
                                 user.getId(), pageable);
 
-        return PageResponse.from(page.map(BillingMapper::toInvoiceResponse));
+        return PageResponse.from(page.map(billingMapper::toInvoiceResponse));
     }
 
     @Override
     @Transactional(readOnly = true)
     public InvoiceResponse getInvoice(Long id, Authentication auth) {
-        return BillingMapper.toInvoiceResponse(accessibleInvoice(id, auth));
+        return billingMapper.toInvoiceResponse(accessibleInvoice(id, auth));
     }
 
     @Override
     public InvoiceResponse createInvoice(CreateInvoiceRequest request, Authentication auth) {
         getCurrentUser(auth);
         if (!permissions.has(auth, "USER_MANAGE")) {
-            throw new SystemException(
-                    "Permission denied", HttpStatus.FORBIDDEN, "PERMISSION_DENIED");
+            throw SystemException.forbidden("Permission denied", "PERMISSION_DENIED");
         }
         AppUser user =
                 userRepository
@@ -231,16 +263,14 @@ public class BillingServiceImpl implements BillingService {
                 new Invoice(code, user, mission, plan, request.amount(), dueDate, request.notes());
         Invoice saved = invoiceRepository.save(invoice);
         financialEvents.recordInvoiceIssued(saved);
-        return BillingMapper.toInvoiceResponse(saved);
+        return billingMapper.toInvoiceResponse(saved);
     }
 
     @Override
     public PaymentResponse payInvoice(Long id, PayInvoiceRequest request, Authentication auth) {
         accessibleInvoice(id, auth);
-        throw new SystemException(
-                "Payment gateway is not configured",
-                HttpStatus.SERVICE_UNAVAILABLE,
-                "PAYMENT_UNAVAILABLE");
+        throw SystemException.serviceUnavailable(
+                "Payment gateway is not configured", "PAYMENT_UNAVAILABLE");
     }
 
     @Override
@@ -251,20 +281,19 @@ public class BillingServiceImpl implements BillingService {
     @Override
     public PaymentIpnResponse processPaymentIpn(
             PaymentIpnRequest request, String signatureHeader, Authentication auth) {
+        log.info(
+                "Received Payment IPN Callback for invoiceCode={}",
+                request != null ? request.invoiceCode() : null);
         if (request == null) {
             throw SystemException.badRequest("Payment IPN request is required");
         }
         if (!providerEnabled || ipnSecret.length() < 32) {
-            throw new SystemException(
-                    "Payment gateway is not configured",
-                    HttpStatus.SERVICE_UNAVAILABLE,
-                    "PAYMENT_UNAVAILABLE");
+            throw SystemException.serviceUnavailable(
+                    "Payment gateway is not configured", "PAYMENT_UNAVAILABLE");
         }
         if (!isValidIpnSignature(request, signatureHeader)) {
-            throw new SystemException(
-                    "Invalid or missing payment provider signature",
-                    HttpStatus.UNAUTHORIZED,
-                    "IPN_SIGNATURE_INVALID");
+            throw SystemException.unauthorized(
+                    "Invalid or missing payment provider signature", "IPN_SIGNATURE_INVALID");
         }
         if (!"SUCCESS".equals(request.status())
                 || request.transactionCode() == null
@@ -317,10 +346,8 @@ public class BillingServiceImpl implements BillingService {
         if (request.amount() == null
                 || paidAmount.signum() <= 0
                 || paidAmount.compareTo(requiredAmount) != 0) {
-            throw new SystemException(
-                    "Payment amount must match invoice amount",
-                    HttpStatus.BAD_REQUEST,
-                    "INVALID_PAYMENT_AMOUNT");
+            throw SystemException.badRequest(
+                    "Payment amount must match invoice amount", "INVALID_PAYMENT_AMOUNT");
         }
 
         String transactionCode =
@@ -342,7 +369,8 @@ public class BillingServiceImpl implements BillingService {
         }
 
         PaymentTransaction txn =
-                new PaymentTransaction(invoice, invoice.getUser(), transactionCode, paidAmount);
+                PaymentTransactionOperations.create(
+                        invoice, invoice.getUser(), transactionCode, paidAmount);
         txn.setGatewayName("VIETQR_NAPAS_247");
         txn.setStatus(request.status() != null ? request.status() : "SUCCESS");
         txn.setCompletedAt(LocalDateTime.now());
@@ -363,18 +391,7 @@ public class BillingServiceImpl implements BillingService {
     }
 
     public String computeIpnSignature(PaymentIpnRequest request) {
-        String canonical =
-                (request.invoiceCode() != null ? request.invoiceCode() : "")
-                        + "|"
-                        + (request.invoiceId() != null ? request.invoiceId() : "")
-                        + "|"
-                        + (request.amount() != null
-                                ? request.amount().stripTrailingZeros().toPlainString()
-                                : "")
-                        + "|"
-                        + (request.transactionCode() != null ? request.transactionCode() : "")
-                        + "|"
-                        + (request.status() != null ? request.status() : "");
+        String canonical = IpnSignaturePayload.from(request).canonical();
         try {
             javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
             javax.crypto.spec.SecretKeySpec keySpec =

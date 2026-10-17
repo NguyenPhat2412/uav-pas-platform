@@ -32,10 +32,26 @@ public class MediaServiceImpl implements MediaService {
     private final AuditLogService audit;
     private final MissionMediaRepository missionMedia;
     private final com.uav.platform.modules.media.service.MediaAccessService access;
+    private final MediaMapper mediaMapper;
 
     public MediaServiceImpl(
             MediaAssetRepository repository, ObjectStorageService storage, AuditLogService audit) {
         this(repository, storage, audit, null, null);
+    }
+
+    public MediaServiceImpl(
+            MediaAssetRepository repository,
+            ObjectStorageService storage,
+            AuditLogService audit,
+            MissionMediaRepository missionMedia,
+            com.uav.platform.modules.media.service.MediaAccessService access) {
+        this(
+                repository,
+                storage,
+                audit,
+                missionMedia,
+                access,
+                org.mapstruct.factory.Mappers.getMapper(MediaMapper.class));
     }
 
     @org.springframework.beans.factory.annotation.Autowired
@@ -45,12 +61,14 @@ public class MediaServiceImpl implements MediaService {
             AuditLogService audit,
             @org.springframework.beans.factory.annotation.Autowired(required = false)
                     MissionMediaRepository missionMedia,
-            com.uav.platform.modules.media.service.MediaAccessService access) {
+            com.uav.platform.modules.media.service.MediaAccessService access,
+            MediaMapper mediaMapper) {
         this.repository = repository;
         this.storage = storage;
         this.audit = audit;
         this.missionMedia = missionMedia;
         this.access = access;
+        this.mediaMapper = mediaMapper;
     }
 
     @Override
@@ -67,7 +85,7 @@ public class MediaServiceImpl implements MediaService {
                             pageable.getPageSize(),
                             pageable.getSort().and(Sort.by("id")));
         }
-        return PageResponse.from(repository.findAll(scope, pageable), MediaMapper::toResponse);
+        return PageResponse.from(repository.findAll(scope, pageable), mediaMapper::toResponse);
     }
 
     @Override
@@ -95,7 +113,7 @@ public class MediaServiceImpl implements MediaService {
                                 actor,
                                 storage.provider()));
         audit.record(null, actor, AuditAction.UPLOAD, "MEDIA", asset.getId().toString(), objectKey);
-        return MediaMapper.toResponse(asset);
+        return mediaMapper.toResponse(asset);
     }
 
     @Override
@@ -121,7 +139,8 @@ public class MediaServiceImpl implements MediaService {
         if (seconds < 1)
             throw SystemException.conflict(
                     "Tệp chưa xác nhận đã hết hạn sau 24 giờ. Vui lòng tải lại tệp.");
-        asset.recordUploadUntil(java.time.LocalDateTime.now().plusSeconds(seconds));
+        MediaAssetOperations.recordUploadUntil(
+                asset, java.time.LocalDateTime.now().plusSeconds(seconds));
         return new SignedMediaUrlResponse(
                 id,
                 storage.createSignedUploadUrl(
@@ -149,7 +168,7 @@ public class MediaServiceImpl implements MediaService {
         MediaAsset asset = find(id);
         requireAccess(asset, actor, true);
         if (asset.isDeleted()) throw SystemException.notFound("Media asset not found");
-        if (asset.isConfirmed()) return MediaMapper.toResponse(asset);
+        if (asset.isConfirmed()) return mediaMapper.toResponse(asset);
         com.uav.platform.modules.media.service.MediaUploadPolicy.requireCurrent(
                 asset.getCreatedAt());
         com.uav.platform.modules.media.service.MediaUploadPolicy.validate(
@@ -164,9 +183,9 @@ public class MediaServiceImpl implements MediaService {
                     "Storage object metadata differs from registered upload");
         com.uav.platform.modules.media.service.MediaUploadPolicy.validateHeader(
                 asset.getContentType(), storage.readHeader(asset.getObjectKey()));
-        asset.confirm();
+        MediaAssetOperations.confirm(asset);
         audit.record(null, actor, AuditAction.UPDATE, "MEDIA", id.toString(), "CONFIRMED");
-        return MediaMapper.toResponse(asset);
+        return mediaMapper.toResponse(asset);
     }
 
     @Override
@@ -182,14 +201,14 @@ public class MediaServiceImpl implements MediaService {
         }
         if (missionMedia != null && missionMedia.existsByMediaId(id))
             throw SystemException.conflict("Media is attached to a mission");
-        asset.markDeleted();
+        MediaAssetOperations.markDeleted(asset);
         repository.save(asset);
         scheduleDelete(asset);
         audit.record(null, actor, AuditAction.DELETE, "MEDIA", id.toString(), asset.getObjectKey());
     }
 
     private void scheduleDelete(MediaAsset asset) {
-        asset.queueDeletion(java.time.LocalDateTime.now());
+        MediaAssetOperations.queueDeletion(asset, java.time.LocalDateTime.now());
         repository.save(asset);
         // Persist intent in the caller transaction; the bounded worker resumes it after restart.
     }
@@ -202,6 +221,22 @@ public class MediaServiceImpl implements MediaService {
             throw new org.springframework.security.access.AccessDeniedException(
                     "Media is not linked to this mission");
         return confirm(id, actor);
+    }
+
+    @Override
+    public SignedMediaUrlResponse registerMissionUploadUrl(
+            Long missionId, MediaUploadRequest request, String actor) {
+        var asset =
+                register(
+                        new MediaUploadRequest(
+                                request.originalName(),
+                                request.contentType(),
+                                request.size(),
+                                request.type(),
+                                "MISSION",
+                                missionId.toString()),
+                        actor);
+        return uploadUrl(asset.id());
     }
 
     private String currentActor() {

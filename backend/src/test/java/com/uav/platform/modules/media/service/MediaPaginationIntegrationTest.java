@@ -7,9 +7,12 @@ import static org.mockito.Mockito.*;
 import com.uav.platform.modules.media.entity.MediaAsset;
 import com.uav.platform.modules.media.enums.MediaType;
 import com.uav.platform.modules.media.repository.MediaAssetRepository;
+import com.uav.platform.modules.media.service.impl.MediaAssetOperations;
 import com.uav.platform.modules.mission.entity.Mission;
 import com.uav.platform.modules.mission.enums.*;
+import com.uav.platform.modules.mission.service.impl.MissionOperations;
 import com.uav.platform.modules.permission.service.PermissionService;
+import com.uav.platform.modules.station.service.impl.StationOperations;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.enums.UserRole;
 import com.uav.platform.modules.user.enums.UserStatus;
@@ -164,9 +167,7 @@ class MediaPaginationIntegrationTest {
     void numericSpellingsMatchFileAuthorizationForEveryLinkedResourceType() {
         grants.addAll(Set.of("MISSION_MEDIA_VIEW", "STATION_READ", "UAV_READ", "INVENTORY_READ"));
         var m = mission(owner);
-        var station =
-                new com.uav.platform.modules.station.entity.Station(
-                        "PAGE-NUMERIC", "Test", null, null, null, null);
+        var station = StationOperations.create("PAGE-NUMERIC", "Test", null, null, null, null);
         var uav = new com.uav.platform.modules.uav.entity.Uav("Test", "PAGE-NUMERIC", "Test");
         var equipment =
                 new com.uav.platform.modules.inventory.entity.Equipment(
@@ -256,9 +257,7 @@ class MediaPaginationIntegrationTest {
         asset("MISSION", assigned.getId().toString(), other.getUsername());
         asset("MISSION", foreign.getId().toString(), owner.getUsername());
         asset("MISSION", "999999999", owner.getUsername());
-        var station =
-                new com.uav.platform.modules.station.entity.Station(
-                        "PAGE-STATION", "Test", null, null, null, null);
+        var station = StationOperations.create("PAGE-STATION", "Test", null, null, null, null);
         entityManager.persist(station);
         var uav = new com.uav.platform.modules.uav.entity.Uav("Test", "PAGE-UAV", "Test");
         entityManager.persist(uav);
@@ -282,7 +281,7 @@ class MediaPaginationIntegrationTest {
             asset(entry.getKey(), entry.getValue().toString(), other.getUsername());
             asset(entry.getKey(), "999999999", owner.getUsername());
         }
-        asset(null, null, owner.getUsername()).markDeleted();
+        MediaAssetOperations.markDeleted(asset(null, null, owner.getUsername()));
         entityManager.flush();
         entityManager.clear();
         for (Set<String> allowed :
@@ -388,7 +387,7 @@ class MediaPaginationIntegrationTest {
     private Mission mission(AppUser customer) {
         var start = LocalDateTime.of(2091, 1, 1, 9, 0);
         var m =
-                Mission.draft(
+                MissionOperations.draft(
                         customer,
                         MissionType.AREA_INSPECTION,
                         "Test",

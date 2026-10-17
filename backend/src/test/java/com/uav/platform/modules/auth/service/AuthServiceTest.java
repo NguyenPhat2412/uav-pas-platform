@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -267,5 +268,63 @@ class AuthServiceTest {
     void getCurrentUser_BlankUsername_ThrowsBadRequest() {
         assertThrows(SystemException.class, () -> authService.getCurrentUser(""));
         assertThrows(SystemException.class, () -> authService.getCurrentUser(null));
+    }
+
+    @Test
+    void login_FifthFailureLocksAndPersistsAccount() {
+        AppUser user =
+                new AppUser("pilot", "pilot@uav.vn", "hash", "0900000000", UserStatus.ACTIVE);
+        user.setFailedAttempts(4);
+        when(userRepository.findByEmail("pilot")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("wrong", "hash")).thenReturn(false);
+
+        SystemException ex =
+                assertThrows(
+                        SystemException.class,
+                        () -> authService.login(new LoginRequest("pilot", "wrong")));
+
+        assertEquals(401, ex.getStatus().value());
+        assertTrue(ex.getMessage().contains("15"));
+        assertEquals(5, user.getFailedAttempts());
+        assertNotNull(user.getLockTime());
+        verify(userRepository).save(user);
+        verifyNoInteractions(jwtTokenProvider);
+    }
+
+    @Test
+    void login_ExpiredTemporaryLockResetsBeforeCountingNextFailure() {
+        AppUser user =
+                new AppUser("pilot", "pilot@uav.vn", "hash", "0900000000", UserStatus.ACTIVE);
+        user.setFailedAttempts(5);
+        user.setLockTime(LocalDateTime.now().minusMinutes(16));
+        when(userRepository.findByEmail("pilot")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("wrong", "hash")).thenReturn(false);
+
+        SystemException ex =
+                assertThrows(
+                        SystemException.class,
+                        () -> authService.login(new LoginRequest("pilot", "wrong")));
+
+        assertEquals(CoreConstants.INVALID_CREDENTIALS, ex.getMessage());
+        assertEquals(1, user.getFailedAttempts());
+        assertNull(user.getLockTime());
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void login_ManualLockRejectsBeforeCheckingPassword() {
+        AppUser user =
+                new AppUser("pilot", "pilot@uav.vn", "hash", "0900000000", UserStatus.ACTIVE);
+        user.setManualLocked(true);
+        user.setLockTime(LocalDateTime.now().minusDays(1));
+        when(userRepository.findByEmail("pilot")).thenReturn(Optional.of(user));
+
+        assertThrows(
+                SystemException.class,
+                () -> authService.login(new LoginRequest("pilot", "correct")));
+
+        assertTrue(user.isManualLocked());
+        verifyNoInteractions(passwordEncoder, jwtTokenProvider);
+        verify(userRepository, never()).save(any());
     }
 }

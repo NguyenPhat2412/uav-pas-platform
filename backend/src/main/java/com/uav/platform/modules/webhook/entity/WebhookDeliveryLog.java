@@ -75,6 +75,5 @@ public class WebhookDeliveryLog {
         this.deliveryDurationMs = deliveryDurationMs;
         this.isSuccess = isSuccess;
         this.retryCount = 0;
-        this.attemptedAt = LocalDateTime.now();
     }
 }

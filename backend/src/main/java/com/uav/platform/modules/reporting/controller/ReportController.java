@@ -3,6 +3,8 @@ package com.uav.platform.modules.reporting.controller;
 import com.uav.platform.modules.reporting.dto.response.OperationsReportResponse;
 import com.uav.platform.modules.reporting.service.ReportService;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +18,10 @@ import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/api/v1/reports")
+@RequiredArgsConstructor
 public class ReportController {
 
     private final ReportService reportService;
-
-    public ReportController(ReportService reportService) {
-        this.reportService = reportService;
-    }
 
     @GetMapping("/operations-summary")
     @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")

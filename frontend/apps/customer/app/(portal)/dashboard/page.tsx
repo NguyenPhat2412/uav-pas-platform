@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
+import { planName } from '@uav/ui/presentation';
 import { PageGuard } from '@/components/layout';
-import { Panel, Button, Status } from '@/components/ui';
+import { Panel, Status } from '@/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMissions, useServices, useBilling } from '@/features/customer/hooks';
 import { Activity, ArrowUpRight, Boxes, Plane } from 'lucide-react';
@@ -30,13 +31,9 @@ function Dashboard() {
             <span style={{ width: 8, height: 26, background: '#ab2523', borderRadius: 9999, display: 'inline-block' }} />
             Xin chào, {user?.fullName || user?.username || 'Khách hàng VJU'}
           </h1>
-          <p>Hệ thống giám sát nhiệm vụ UAV, điều phối bay khẩn cấp và gói dịch vụ duyên hải VJU.</p>
+          <p>Theo dõi yêu cầu dịch vụ, tiến độ nhiệm vụ và hạn mức sử dụng.</p>
         </div>
-        <Link href="/missions/create">
-          <Button style={{ background: '#ab2523', color: '#fff', fontWeight: 700 }}>
-            + Đặt dịch vụ UAV
-          </Button>
-        </Link>
+        <Link href="/missions/create" className="button button-primary">Đặt dịch vụ UAV</Link>
       </div>
 
       {/* Frame 1: KPI Grid */}
@@ -75,7 +72,7 @@ function Dashboard() {
             <div>
               <span className="muted" style={{ display: 'block', fontWeight: 600, fontSize: 13 }}>Dịch vụ đang mở</span>
               <div className="metric" style={{ marginTop: 8, color: '#0f172a' }}>{openServices}</div>
-              <small style={{ display: 'block', marginTop: 8, color: '#64748b', fontSize: 12, fontWeight: 500 }}>Cứu hộ, khảo sát, kiểm tra</small>
+              <small style={{ display: 'block', marginTop: 8, color: '#64748b', fontSize: 12, fontWeight: 500 }}>Các dịch vụ UAV đang được hỗ trợ</small>
             </div>
           </div>
         </Panel>
@@ -129,7 +126,7 @@ function Dashboard() {
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 18, height: '100%' }}>
           <Panel title="Hạn mức bay & Gói cước VJU">
             {quota.isPending ? <p>Đang tải hạn mức…</p> : quota.isError ? <p role="status">Chưa tải được thông tin hạn mức. <Link href="/billing">Xem gói cước</Link></p> : <div className="stack">
-              <p>Gói hiện tại: <strong>{quota.data?.planName ?? 'Chưa đăng ký'}</strong></p>
+              <p>Gói hiện tại: <strong>{quota.data?.planName ? planName(quota.data.planName) : 'Chưa đăng ký'}</strong></p>
               <p>Giờ bay đã dùng: <strong>{quota.data?.flightHoursUsed ?? 0} / {quota.data?.flightHoursLimit ?? 0}</strong></p>
               <p>Kết thúc chu kỳ: <strong>{quota.data?.cycleEnd ? new Date(quota.data.cycleEnd).toLocaleDateString('vi-VN') : '—'}</strong></p>
             </div>}

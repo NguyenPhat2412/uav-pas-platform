@@ -9,6 +9,7 @@ import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.audit.enums.*;
 import com.uav.platform.modules.audit.service.AuditLogService;
 import com.uav.platform.modules.inventory.enums.*;
+import com.uav.platform.modules.media.dto.record.ObjectMetadata;
 import com.uav.platform.modules.media.entity.MediaAsset;
 import com.uav.platform.modules.media.enums.*;
 import com.uav.platform.modules.media.enums.MediaType;
@@ -38,6 +39,12 @@ class MediaServiceTest {
     @Mock MediaAssetRepository repository;
     @Mock ObjectStorageService storage;
     @Mock AuditLogService audit;
+
+    @org.mockito.Spy
+    com.uav.platform.modules.media.mapper.MediaMapper mapper =
+            org.mapstruct.factory.Mappers.getMapper(
+                    com.uav.platform.modules.media.mapper.MediaMapper.class);
+
     @InjectMocks MediaServiceImpl service;
 
     @Test
@@ -171,8 +178,7 @@ class MediaServiceTest {
         asset.setId(7L);
         when(repository.findById(7L)).thenReturn(Optional.of(asset));
         when(storage.objectExists("image/key")).thenReturn(true);
-        when(storage.metadata("image/key"))
-                .thenReturn(new ObjectStorageService.ObjectMetadata(10, "image/jpeg"));
+        when(storage.metadata("image/key")).thenReturn(new ObjectMetadata(10, "image/jpeg"));
         when(storage.readHeader("image/key"))
                 .thenReturn(new byte[] {(byte) 255, (byte) 216, (byte) 255});
         when(storage.createSignedDownloadUrl("image/key"))

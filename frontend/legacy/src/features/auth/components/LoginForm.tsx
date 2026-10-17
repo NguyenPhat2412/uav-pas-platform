@@ -1,20 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
+import { AuthCredentials } from '@/components/brand/AuthCredentials';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ArrowRight,
   CheckCircle2,
-  Mail,
-  Lock,
-  ShieldCheck,
-  Satellite,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { AuthResponse } from '../types/auth.types';
-import { Button, Input, PasswordInput, Alert, Badge } from '@/components/ui';
+import { Button, Alert } from '@/components/ui';
 
 export interface LoginFormProps {
   onSuccess?: (response: AuthResponse) => void;
@@ -61,9 +58,7 @@ export function LoginForm({ onSuccess, redirectTo = '/' }: LoginFormProps) {
       {/* Header - Single line, no tiny description */}
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-[#202020] whitespace-nowrap flex items-center gap-2.5">
-          <span className="p-1.5 rounded-lg bg-[#ebf4fb] text-[#00558f] inline-flex items-center justify-center">
-            <ShieldCheck size={22} className="animate-pulse" />
-          </span>
+
           {t('auth.loginTitle')}
         </h2>
       </div>
@@ -77,30 +72,7 @@ export function LoginForm({ onSuccess, redirectTo = '/' }: LoginFormProps) {
 
       {/* Login Form */}
       <form className="space-y-6" onSubmit={handleSubmit}>
-        <Input
-          id="uav-email"
-          name="email"
-          type="text"
-          leftIcon={<Mail size={18} />}
-          label={t('auth.email')}
-          placeholder={t('auth.emailPlaceholder')}
-          autoComplete="username"
-          required
-          value={usernameOrEmail}
-          onChange={(e) => setUsernameOrEmail(e.target.value)}
-        />
-
-        <PasswordInput
-          id="uav-password"
-          name="password"
-          leftIcon={<Lock size={18} />}
-          label={t('auth.password')}
-          placeholder={t('auth.passwordPlaceholder')}
-          autoComplete="current-password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <AuthCredentials identity={usernameOrEmail} password={password} onIdentityChange={setUsernameOrEmail} onPasswordChange={setPassword} disabled={status === 'loading' || status === 'success'} />
 
         <div className="pt-2">
           <Button
@@ -135,16 +107,7 @@ export function LoginForm({ onSuccess, redirectTo = '/' }: LoginFormProps) {
         </p>
       </div>
 
-      {/* Security & Ground Control Badges */}
-      <div className="mt-12 pt-6 flex flex-wrap items-center justify-center gap-3 text-outline border-t border-slate-200/80">
-        <Badge variant="primary" icon={<ShieldCheck size={14} className="text-primary mr-1" />}>
-          {t('auth.multiLayerSecurity')}
-        </Badge>
-        <span className="w-1 h-1 rounded-full bg-outline-variant" />
-        <Badge variant="outline" icon={<Satellite size={14} className="text-primary mr-1" />}>
-          {t('auth.groundControl')}
-        </Badge>
-      </div>
+
     </div>
   );
 }

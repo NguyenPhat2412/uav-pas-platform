@@ -6,16 +6,17 @@ import com.uav.platform.modules.uav.enums.*;
 
 import jakarta.persistence.*;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "uavs")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 public class Uav extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String model;
@@ -41,23 +42,5 @@ public class Uav extends BaseEntity {
         this.model = model;
         this.serialNumber = serialNumber;
         this.manufacturer = manufacturer;
-    }
-
-    public void update(String model, String manufacturer) {
-        this.model = model;
-        this.manufacturer = manufacturer;
-    }
-
-    public void setStatus(UavStatus status) {
-        this.status = status;
-    }
-
-    public void setStation(Station station) {
-        this.station = station;
-    }
-
-    public void markMaintenance() {
-        this.status = UavStatus.MAINTENANCE;
-        this.lastMaintenanceAt = LocalDateTime.now();
     }
 }

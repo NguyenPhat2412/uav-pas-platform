@@ -5,15 +5,15 @@ import com.uav.platform.modules.permission.dto.response.UserPermissionResponse;
 import com.uav.platform.modules.permission.entity.Permission;
 import com.uav.platform.modules.permission.entity.UserPermission;
 
-public final class PermissionMapper {
-    private PermissionMapper() {}
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
-    public static PermissionResponse toResponse(Permission permission) {
-        return new PermissionResponse(permission.getCode(), permission.getDescription());
-    }
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface PermissionMapper {
 
-    public static UserPermissionResponse toResponse(UserPermission permission) {
-        return new UserPermissionResponse(
-                permission.getPermission().getCode(), permission.isGranted());
-    }
+    PermissionResponse toResponse(Permission permission);
+
+    @Mapping(target = "code", source = "permission.code")
+    UserPermissionResponse toResponse(UserPermission permission);
 }

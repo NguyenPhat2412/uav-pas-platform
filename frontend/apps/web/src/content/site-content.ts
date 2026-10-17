@@ -19,14 +19,14 @@ export const capabilities = [
 
 export const services = [
   { slug: 'uav-rental', title: 'Thuê UAV', text: 'Yêu cầu thiết bị UAV và người điều khiển cho một nhiệm vụ cụ thể.', status: 'AVAILABLE' as Readiness },
-  { slug: 'aerial-inspection', title: 'Kiểm tra từ trên cao', text: 'Chuẩn bị yêu cầu kiểm tra có cấu trúc và xem xét kết quả nhiệm vụ.', status: 'AVAILABLE' as Readiness },
-  { slug: 'aerial-recording', title: 'Ghi hình từ trên cao', text: 'Ghi lại hình ảnh từ trên cao theo yêu cầu thương mại hoặc vận hành đã được phê duyệt.', status: 'AVAILABLE' as Readiness },
+  { slug: 'aerial-inspection', title: 'Khảo sát khu vực', text: 'Chuẩn bị yêu cầu kiểm tra có cấu trúc và xem xét kết quả nhiệm vụ.', status: 'AVAILABLE' as Readiness },
+  { slug: 'aerial-recording', title: 'Quay chụp trên không', text: 'Ghi lại hình ảnh từ trên cao theo yêu cầu thương mại hoặc vận hành đã được phê duyệt.', status: 'AVAILABLE' as Readiness },
   { slug: 'data-collection', title: 'Thu thập dữ liệu', text: 'Mô tả khu vực, đầu ra và các ràng buộc của nhiệm vụ thu thập dữ liệu.', status: 'AVAILABLE' as Readiness },
 ];
 
 export const solutions = [
   { slug: 'uav-rental', title: 'Thuê UAV', text: 'Bắt đầu yêu cầu về thiết bị UAV và người điều khiển.', status: 'AVAILABLE' as Readiness },
-  { slug: 'aerial-inspection', title: 'Kiểm tra từ trên cao', text: 'Chuyển nhu cầu kiểm tra thành yêu cầu nhiệm vụ để đội vận hành xem xét.', status: 'AVAILABLE' as Readiness },
+  { slug: 'aerial-inspection', title: 'Khảo sát khu vực', text: 'Chuyển nhu cầu kiểm tra thành yêu cầu nhiệm vụ để đội vận hành xem xét.', status: 'AVAILABLE' as Readiness },
   { slug: 'ai-detection', title: 'Phát hiện có AI hỗ trợ', text: 'Công cụ hỗ trợ xem xét dự kiến, với kết quả do con người xác minh.', status: 'PLANNED' as Readiness },
   { slug: 'search-and-rescue', title: 'Hỗ trợ tìm kiếm cứu nạn', text: 'Tính năng dự kiến có giám sát dành cho quy trình ứng phó được phê duyệt.', status: 'PLANNED' as Readiness },
 ];

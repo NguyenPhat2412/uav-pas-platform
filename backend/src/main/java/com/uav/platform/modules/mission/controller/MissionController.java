@@ -1,10 +1,12 @@
 package com.uav.platform.modules.mission.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.common.util.Pageables;
 import com.uav.platform.modules.media.dto.request.MediaUploadRequest;
 import com.uav.platform.modules.media.dto.response.MediaAssetResponse;
 import com.uav.platform.modules.media.dto.response.SignedMediaUrlResponse;
 import com.uav.platform.modules.media.service.MediaService;
+import com.uav.platform.modules.mission.dto.record.MissionFilter;
 import com.uav.platform.modules.mission.dto.request.*;
 import com.uav.platform.modules.mission.dto.response.*;
 import com.uav.platform.modules.mission.enums.MissionStatus;
@@ -13,30 +15,27 @@ import com.uav.platform.modules.mission.service.MissionService;
 
 import jakarta.validation.Valid;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/missions")
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MissionController {
     private final MissionService service;
     private final MediaService mediaService;
 
     public MissionController(MissionService service) {
         this(service, null);
-    }
-
-    @Autowired
-    public MissionController(MissionService service, MediaService mediaService) {
-        this.service = service;
-        this.mediaService = mediaService;
     }
 
     @GetMapping
@@ -47,34 +46,30 @@ public class MissionController {
             @RequestParam(required = false) Long stationId,
             @RequestParam(required = false) Long operatorId,
             @RequestParam(required = false) Long customerId,
-            @RequestParam(required = false) java.time.LocalDate requestedDate,
+            @RequestParam(required = false) LocalDate requestedDate,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             Authentication authentication) {
-        MissionFilter filter =
-                new MissionFilter(
-                        status,
-                        missionType,
-                        stationId,
-                        operatorId,
-                        customerId,
-                        requestedDate,
-                        search);
-        int safePage = Math.max(page, 0);
-        int safeSize = Math.min(Math.max(size, 1), 100);
         return ResponseEntity.ok(
                 service.list(
-                        filter,
-                        PageRequest.of(safePage, safeSize, Sort.by("createdAt").descending()),
+                        new MissionFilter(
+                                status,
+                                missionType,
+                                stationId,
+                                operatorId,
+                                customerId,
+                                requestedDate,
+                                search),
+                        Pageables.desc(page, size, "createdAt"),
                         authentication));
     }
 
     @GetMapping("/availability")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
     public ResponseEntity<MissionAvailabilityResponse> availability(
-            @RequestParam java.time.LocalDateTime startTime,
-            @RequestParam java.time.LocalDateTime endTime,
+            @RequestParam LocalDateTime startTime,
+            @RequestParam LocalDateTime endTime,
             @RequestParam(required = false) Long stationId,
             @RequestParam(required = false) Long uavId,
             @RequestParam(required = false) Long operatorId) {
@@ -292,16 +287,8 @@ public class MissionController {
             @Valid @RequestBody MediaUploadRequest request,
             Authentication authentication) {
         service.get(id, authentication);
-        MediaUploadRequest linked =
-                new MediaUploadRequest(
-                        request.originalName(),
-                        request.contentType(),
-                        request.size(),
-                        request.type(),
-                        "MISSION",
-                        id.toString());
-        var asset = mediaService.register(linked, authentication.getName());
-        return ResponseEntity.ok(mediaService.uploadUrl(asset.id()));
+        return ResponseEntity.ok(
+                mediaService.registerMissionUploadUrl(id, request, authentication.getName()));
     }
 
     @PostMapping("/{id}/media/{mediaId}/confirm")

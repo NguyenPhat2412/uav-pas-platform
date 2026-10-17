@@ -100,4 +100,21 @@ class RefreshTokenServiceTest {
         assertTrue(token.isRevoked());
         verify(refreshTokenRepository).save(token);
     }
+
+    @Test
+    void verifyExpiration_RevokedTokenIsDeletedEvenBeforeExpiry() {
+        RefreshToken revoked =
+                new RefreshToken(new AppUser(), "revoked", Instant.now().plusSeconds(60));
+        revoked.setRevoked(true);
+
+        assertThrows(SystemException.class, () -> refreshTokenService.verifyExpiration(revoked));
+
+        verify(refreshTokenRepository).delete(revoked);
+    }
+
+    @Test
+    void verifyExpiration_MissingTokenRejectsWithoutDeleting() {
+        assertThrows(SystemException.class, () -> refreshTokenService.verifyExpiration(null));
+        verifyNoInteractions(refreshTokenRepository);
+    }
 }

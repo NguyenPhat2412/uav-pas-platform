@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import '@/styles/brand-tokens.css';
 import './globals.css';
 import '@/styles/portal.css';
+import '@/styles/consistency.css';
 import { I18nProvider } from '@/contexts/I18nContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { QueryProvider } from '@/providers/QueryProvider';

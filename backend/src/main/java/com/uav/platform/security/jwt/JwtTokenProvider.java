@@ -5,8 +5,8 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,10 +18,10 @@ import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtTokenProvider.class);
     private static final long DEFAULT_EXPIRATION_MS = 86400000L; // 24 hours
     private static final long DEFAULT_REFRESH_EXPIRATION_MS = 604800000L; // 7 days
 

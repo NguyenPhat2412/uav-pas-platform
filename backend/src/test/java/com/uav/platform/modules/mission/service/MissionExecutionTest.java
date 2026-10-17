@@ -15,6 +15,7 @@ import com.uav.platform.modules.mission.dto.request.MissionFailureRequest;
 import com.uav.platform.modules.mission.entity.*;
 import com.uav.platform.modules.mission.enums.*;
 import com.uav.platform.modules.mission.repository.*;
+import com.uav.platform.modules.mission.service.impl.MissionOperations;
 import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.station.enums.*;
 import com.uav.platform.modules.station.repository.StationRepository;
@@ -60,8 +61,8 @@ class MissionExecutionTest {
         Mission mission = missionAt(MissionStatus.READY);
         AppUser operator =
                 new AppUser("operator", "operator@exec.vn", "hash", null, UserStatus.ACTIVE);
-        mission.assignOperator(operator);
-        mission.assignUav(new Uav("Model", "UAV-EXEC", "Maker"));
+        MissionOperations.assignOperator(mission, operator);
+        MissionOperations.assignUav(mission, new Uav("Model", "UAV-EXEC", "Maker"));
         mission.getUav().setStatus(UavStatus.ASSIGNED);
         MissionRepository missions = repository(mission);
         MissionService service =
@@ -82,8 +83,9 @@ class MissionExecutionTest {
                 mission, "missionType", MissionType.UAV_RENTAL);
         Uav uav = new Uav("Model", "UAV-EXEC", "Maker");
         uav.setStatus(UavStatus.IN_USE);
-        mission.assignUav(uav);
-        mission.assignOperator(
+        MissionOperations.assignUav(mission, uav);
+        MissionOperations.assignOperator(
+                mission,
                 new AppUser("operator", "operator@complete.vn", "hash", null, UserStatus.ACTIVE));
         MissionRepository missions = repository(mission);
         MissionService service =
@@ -105,8 +107,9 @@ class MissionExecutionTest {
         Mission mission = missionAt(MissionStatus.IN_PROGRESS);
         Uav uav = new Uav("Model", "UAV-FAIL", "Maker");
         uav.setStatus(UavStatus.IN_USE);
-        mission.assignUav(uav);
-        mission.assignOperator(
+        MissionOperations.assignUav(mission, uav);
+        MissionOperations.assignOperator(
+                mission,
                 new AppUser("operator", "operator@fail.vn", "hash", null, UserStatus.ACTIVE));
         MissionRepository missions = repository(mission);
         MissionService service =
@@ -165,7 +168,7 @@ class MissionExecutionTest {
 
     private Mission missionAt(MissionStatus target) {
         Mission m =
-                Mission.draft(
+                MissionOperations.draft(
                         new AppUser(
                                 "customer", "customer@exec.vn", "hash", null, UserStatus.ACTIVE),
                         MissionType.AREA_INSPECTION,
@@ -189,7 +192,7 @@ class MissionExecutionTest {
                         MissionStatus.READY,
                         MissionStatus.IN_PROGRESS)) {
             if (m.getStatus() == target) break;
-            m.transitionTo(status);
+            MissionOperations.transitionTo(m, status);
         }
         return m;
     }

@@ -1,5 +1,6 @@
 package com.uav.platform.modules.media.service;
 
+import com.uav.platform.modules.media.dto.record.ObjectMetadata;
 import com.uav.platform.modules.media.enums.*;
 
 public interface ObjectStorageService {
@@ -17,8 +18,6 @@ public interface ObjectStorageService {
     boolean objectExists(String objectKey);
 
     ObjectMetadata metadata(String objectKey);
-
-    record ObjectMetadata(long size, String contentType) {}
 
     void deleteObject(String objectKey);
 }

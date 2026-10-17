@@ -8,21 +8,21 @@ import com.uav.platform.modules.user.entity.AppUser;
 
 import jakarta.persistence.*;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.EnumSet;
 
 @Entity
 @Table(
         name = "missions",
         uniqueConstraints = @UniqueConstraint(name = "uk_mission_code", columnNames = "code"))
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 public class Mission extends BaseEntity {
     @Version
     @Column(nullable = false, columnDefinition = "bigint default 0")
@@ -114,216 +114,6 @@ public class Mission extends BaseEntity {
     @Column(name = "billing_status", nullable = false, length = 20)
     private String billingStatus = "NOT_REQUESTED";
 
-    public void setBillingStatus(String status) {
-        this.billingStatus = status;
-    }
-
     @Column(name = "operator_conflict_note", length = 1000)
     private String operatorConflictNote;
-
-    public static Mission draft(
-            AppUser customer,
-            MissionType type,
-            String title,
-            String description,
-            LocalDate requestedDate,
-            LocalDateTime startTime,
-            LocalDateTime expectedEndTime,
-            String locationName,
-            BigDecimal latitude,
-            BigDecimal longitude,
-            MissionPriority priority,
-            String notes) {
-        if (type == null
-                || title == null
-                || title.isBlank()
-                || requestedDate == null
-                || startTime == null
-                || expectedEndTime == null
-                || !expectedEndTime.isAfter(startTime)
-                || locationName == null
-                || locationName.isBlank()) {
-            throw new IllegalArgumentException("Mission input is invalid");
-        }
-        Mission mission = new Mission();
-        mission.customer = customer;
-        mission.missionType = type;
-        mission.title = title.trim();
-        mission.description = description;
-        mission.requestedDate = requestedDate;
-        mission.startTime = startTime;
-        mission.expectedEndTime = expectedEndTime;
-        mission.locationName = locationName.trim();
-        mission.latitude = latitude;
-        mission.longitude = longitude;
-        mission.priority = priority == null ? MissionPriority.NORMAL : priority;
-        mission.notes = notes;
-        return mission;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public void setService(ServiceOffering service) {
-        this.service = service;
-    }
-
-    public void complete(String completionNote, String equipmentCondition) {
-        this.completionNote = completionNote;
-        this.equipmentCondition = equipmentCondition;
-        transitionTo(MissionStatus.COMPLETED);
-    }
-
-    public void fail(String failureReason, String failureNotes) {
-        this.failureReason = failureReason;
-        this.failureNotes = failureNotes;
-        transitionTo(MissionStatus.FAILED);
-    }
-
-    public void acceptOperator() {
-        requirePreflight();
-        operatorAccepted = true;
-        operatorConflictNote = null;
-    }
-
-    public void reportOperatorConflict(String note) {
-        requirePreflight();
-        operatorAccepted = false;
-        operatorConflictNote = note;
-        if (status == MissionStatus.READY) status = MissionStatus.RESOURCE_RESERVED;
-    }
-
-    public void invalidateAcceptance() {
-        operatorAccepted = false;
-        operatorConflictNote = null;
-    }
-
-    public void requireMediaWritable() {
-        if (status == MissionStatus.COMPLETED
-                || status == MissionStatus.FAILED
-                || status == MissionStatus.CANCELLED
-                || status == MissionStatus.REJECTED) {
-            throw com.uav.platform.error.SystemException.conflict("MISSION_MEDIA_LOCKED");
-        }
-    }
-
-    private void requirePreflight() {
-        if (status != MissionStatus.CONFIRMED
-                && status != MissionStatus.RESOURCE_RESERVED
-                && status != MissionStatus.READY) {
-            throw new IllegalStateException("MISSION_INVALID_STATUS");
-        }
-    }
-
-    public void updateDraft(
-            String title,
-            String description,
-            LocalDate requestedDate,
-            LocalDateTime startTime,
-            LocalDateTime expectedEndTime,
-            String locationName,
-            BigDecimal latitude,
-            BigDecimal longitude,
-            MissionPriority priority,
-            String notes) {
-        if (status != MissionStatus.DRAFT)
-            throw new IllegalStateException("MISSION_INVALID_STATUS");
-        if (title == null
-                || title.isBlank()
-                || requestedDate == null
-                || startTime == null
-                || expectedEndTime == null
-                || !expectedEndTime.isAfter(startTime)
-                || locationName == null
-                || locationName.isBlank()) {
-            throw new IllegalArgumentException("Mission input is invalid");
-        }
-        this.title = title.trim();
-        this.description = description;
-        this.requestedDate = requestedDate;
-        this.startTime = startTime;
-        this.expectedEndTime = expectedEndTime;
-        this.locationName = locationName.trim();
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.priority = priority == null ? MissionPriority.NORMAL : priority;
-        this.notes = notes;
-    }
-
-    public void assignStation(Station station) {
-        this.station = station;
-    }
-
-    public void assignUav(Uav uav) {
-        this.uav = uav;
-    }
-
-    /** Re-dispatch is a pre-flight operation, separate from ordinary lifecycle transitions. */
-    public void redispatchUav(Uav replacement, boolean equipmentReserved) {
-        if (status != MissionStatus.CONFIRMED
-                && status != MissionStatus.RESOURCE_RESERVED
-                && status != MissionStatus.READY) {
-            throw new IllegalStateException("MISSION_INVALID_STATUS");
-        }
-        this.uav = replacement;
-        this.operatorAccepted = false;
-        this.operatorConflictNote = null;
-        this.status =
-                hasRequiredResources(equipmentReserved)
-                        ? MissionStatus.RESOURCE_RESERVED
-                        : MissionStatus.CONFIRMED;
-    }
-
-    public void resetDispatch(boolean equipmentReserved) {
-        requirePreflight();
-        operatorAccepted = false;
-        operatorConflictNote = null;
-        status =
-                hasRequiredResources(equipmentReserved)
-                        ? MissionStatus.RESOURCE_RESERVED
-                        : MissionStatus.CONFIRMED;
-    }
-
-    public void assignOperator(AppUser operator) {
-        this.operator = operator;
-    }
-
-    public boolean hasRequiredResources(boolean equipmentReserved) {
-        return station != null && uav != null && operator != null && equipmentReserved;
-    }
-
-    public void transitionTo(MissionStatus target) {
-        if (target == null || !allowedTransitions(status).contains(target)) {
-            throw new IllegalStateException("MISSION_INVALID_STATUS");
-        }
-        status = target;
-        if (target == MissionStatus.CANCELLED) cancelledAt = LocalDateTime.now();
-        if (target == MissionStatus.COMPLETED) completedAt = LocalDateTime.now();
-    }
-
-    private static EnumSet<MissionStatus> allowedTransitions(MissionStatus current) {
-        return switch (current) {
-            case DRAFT -> EnumSet.of(MissionStatus.PENDING_CONFIRMATION, MissionStatus.CANCELLED);
-            case PENDING_CONFIRMATION ->
-                    EnumSet.of(
-                            MissionStatus.CONFIRMED,
-                            MissionStatus.CANCELLED,
-                            MissionStatus.REJECTED);
-            case CONFIRMED ->
-                    EnumSet.of(
-                            MissionStatus.RESOURCE_RESERVED,
-                            MissionStatus.CANCELLED,
-                            MissionStatus.REJECTED);
-            case RESOURCE_RESERVED ->
-                    EnumSet.of(MissionStatus.READY, MissionStatus.CANCELLED, MissionStatus.FAILED);
-            case READY ->
-                    EnumSet.of(
-                            MissionStatus.IN_PROGRESS,
-                            MissionStatus.CANCELLED,
-                            MissionStatus.FAILED);
-            case IN_PROGRESS -> EnumSet.of(MissionStatus.COMPLETED, MissionStatus.FAILED);
-            case COMPLETED, CANCELLED, REJECTED, FAILED -> EnumSet.noneOf(MissionStatus.class);
-        };
-    }
 }

@@ -8,6 +8,8 @@ import com.uav.platform.modules.sar.service.AiService;
 
 import jakarta.validation.Valid;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -17,13 +19,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/ai")
+@RequiredArgsConstructor
 public class AiController {
 
     private final AiService aiService;
-
-    public AiController(AiService aiService) {
-        this.aiService = aiService;
-    }
 
     @PostMapping("/dispatch")
     @PreAuthorize(

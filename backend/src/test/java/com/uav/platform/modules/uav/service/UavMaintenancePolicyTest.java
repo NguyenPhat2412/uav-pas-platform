@@ -9,11 +9,13 @@ import com.uav.platform.modules.mission.repository.MissionRepository;
 import com.uav.platform.modules.station.entity.Station;
 import com.uav.platform.modules.station.enums.StationStatus;
 import com.uav.platform.modules.station.repository.StationRepository;
+import com.uav.platform.modules.station.service.impl.StationOperations;
 import com.uav.platform.modules.uav.entity.Uav;
 import com.uav.platform.modules.uav.entity.UavStatusHistory;
 import com.uav.platform.modules.uav.enums.UavStatus;
 import com.uav.platform.modules.uav.repository.UavRepository;
 import com.uav.platform.modules.uav.repository.UavStatusHistoryRepository;
+import com.uav.platform.modules.uav.service.impl.UavOperations;
 import com.uav.platform.modules.uav.service.impl.UavServiceImpl;
 
 import jakarta.persistence.EntityManager;
@@ -37,6 +39,12 @@ class UavMaintenancePolicyTest {
     @Mock MissionRepository missions;
     @Mock EntityManager entityManager;
     @Mock com.uav.platform.modules.maintenance.repository.RepairOrderRepository repairOrders;
+
+    @org.mockito.Spy
+    com.uav.platform.modules.uav.mapper.UavMapper mapper =
+            org.mapstruct.factory.Mappers.getMapper(
+                    com.uav.platform.modules.uav.mapper.UavMapper.class);
+
     @InjectMocks UavServiceImpl service;
     private Uav uav;
 
@@ -50,7 +58,8 @@ class UavMaintenancePolicyTest {
 
     @Test
     void assigningHomeStationKeepsIdleUavAvailableForMission() {
-        Station station = new Station("HOME", "Home", null, null, null, StationStatus.ACTIVE);
+        Station station =
+                StationOperations.create("HOME", "Home", null, null, null, StationStatus.ACTIVE);
         station.setId(2L);
         when(stations.findById(2L)).thenReturn(Optional.of(station));
         assertEquals(UavStatus.AVAILABLE, service.assign(1L, 2L, "manager").status());
@@ -94,7 +103,7 @@ class UavMaintenancePolicyTest {
 
     @Test
     void returningFromMaintenanceRequiresInspectionReason() {
-        uav.markMaintenance();
+        UavOperations.markMaintenance(uav);
         assertThrows(
                 SystemException.class,
                 () -> service.changeStatus(1L, UavStatus.AVAILABLE, "  ", "manager"));
@@ -113,7 +122,7 @@ class UavMaintenancePolicyTest {
 
     @Test
     void repeatedMaintenanceDoesNotRewriteMaintenanceTimestamp() {
-        uav.markMaintenance();
+        UavOperations.markMaintenance(uav);
         var before = uav.getLastMaintenanceAt();
         assertThrows(SystemException.class, () -> service.maintenance(1L, "manager"));
         assertEquals(before, uav.getLastMaintenanceAt());
@@ -137,7 +146,7 @@ class UavMaintenancePolicyTest {
 
     @Test
     void staleExpectedStatusDoesNotChangeHistoryOrStatus() {
-        uav.markMaintenance();
+        UavOperations.markMaintenance(uav);
         assertEquals(
                 "UAV_STATUS_CHANGED",
                 assertThrows(
@@ -192,7 +201,9 @@ class UavMaintenancePolicyTest {
 
     @Test
     void inactiveStationCannotReceiveAvailableUav() {
-        Station station = new Station("CLOSED", "Closed", null, null, null, StationStatus.INACTIVE);
+        Station station =
+                StationOperations.create(
+                        "CLOSED", "Closed", null, null, null, StationStatus.INACTIVE);
         when(stations.findById(2L)).thenReturn(Optional.of(station));
         assertEquals(
                 "STATION_NOT_ACTIVE",
@@ -204,7 +215,7 @@ class UavMaintenancePolicyTest {
 
     @Test
     void maintenanceUavCannotMoveToAnotherStation() {
-        uav.markMaintenance();
+        UavOperations.markMaintenance(uav);
         assertThrows(SystemException.class, () -> service.assign(1L, 2L, "manager"));
         verifyNoInteractions(stations, history, audit);
     }

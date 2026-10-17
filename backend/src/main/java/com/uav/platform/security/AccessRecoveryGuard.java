@@ -5,6 +5,7 @@ import com.uav.platform.modules.permission.enums.PermissionCode;
 import com.uav.platform.modules.permission.repository.PermissionRepository;
 import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.user.repository.UserRepository;
+import com.uav.platform.modules.user.service.impl.UserAccountServiceImpl;
 
 import jakarta.persistence.EntityManager;
 
@@ -52,7 +53,8 @@ public class AccessRecoveryGuard {
         return users.findAll().stream()
                 .filter(
                         u -> {
-                            if (!u.isEnabled() || !u.isAccountNonLocked()) return false;
+                            if (!UserAccountServiceImpl.isEnabled(u)
+                                    || !UserAccountServiceImpl.isAccountNonLocked(u)) return false;
                             var auth =
                                     UsernamePasswordAuthenticationToken.authenticated(
                                             u.getUsername(), null, List.of());

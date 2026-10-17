@@ -5,14 +5,15 @@ import com.uav.platform.modules.user.enums.UserRole;
 
 import jakarta.persistence.*;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "role_templates")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 public class RoleTemplate extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true, length = 30)
@@ -30,9 +31,5 @@ public class RoleTemplate extends BaseEntity {
     public RoleTemplate(UserRole role, String name) {
         this.role = role;
         this.name = name;
-    }
-
-    public void initializeDefaults() {
-        defaultsInitialized = true;
     }
 }

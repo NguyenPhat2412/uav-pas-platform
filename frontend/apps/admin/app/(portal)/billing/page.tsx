@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { displayLabel } from '@uav/ui/presentation';
+import { displayLabel, planName } from '@uav/ui/presentation';
 import { AdminPage } from '@/components/layout/AdminPage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -96,7 +96,7 @@ function AdminBillingContent() {
                     <CheckCircle2 size={12} /> Khả dụng
                   </span>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">{p.name}</h3>
+                <h3 className="text-lg font-bold text-slate-900">{planName(p.name)}</h3>
                 <p className="text-2xl font-black text-[#ab2523] tabular-nums mt-2">
                   {p.price.toLocaleString('vi-VN')} đ <span className="text-xs font-normal text-slate-500">/ {displayLabel(p.billingCycle)}</span>
                 </p>
@@ -111,7 +111,7 @@ function AdminBillingContent() {
                     <strong className="tabular-nums text-slate-900">{p.maxConcurrentUavs} UAV</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span>AI YOLOv8s Video:</span>
+                    <span>Nhận diện video bằng AI:</span>
                     <strong className={p.allowSarAi ? 'text-[#007f3e]' : 'text-slate-400'}>
                       {p.allowSarAi ? 'Có' : 'Không'}
                     </strong>
@@ -234,7 +234,7 @@ function AdminBillingContent() {
                   className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs text-slate-800 focus:outline-none focus:border-primary"
                 >
                   {plans.map(p => (
-                    <option key={p.code} value={p.code}>{p.name} ({p.code} - {p.maxMonthlyFlightHours} giờ)</option>
+                    <option key={p.code} value={p.code}>{planName(p.name)} ({p.code} - {p.maxMonthlyFlightHours} giờ)</option>
                   ))}
                 </select>
               </div>

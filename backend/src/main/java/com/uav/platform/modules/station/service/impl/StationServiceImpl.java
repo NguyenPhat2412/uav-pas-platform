@@ -11,31 +11,30 @@ import com.uav.platform.modules.station.mapper.StationMapper;
 import com.uav.platform.modules.station.repository.StationRepository;
 import com.uav.platform.modules.station.service.StationService;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class StationServiceImpl implements StationService {
     private final StationRepository repository;
     private final AuditLogService audit;
-
-    public StationServiceImpl(StationRepository repository, AuditLogService audit) {
-        this.repository = repository;
-        this.audit = audit;
-    }
+    private final StationMapper stationMapper;
 
     @Override
     @Transactional(readOnly = true)
     public PageResponse<StationResponse> list(Pageable pageable) {
-        return PageResponse.from(repository.findAll(pageable), StationMapper::toResponse);
+        return PageResponse.from(repository.findAll(pageable), stationMapper::toResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
     public StationResponse get(Long id) {
-        return StationMapper.toResponse(
+        return stationMapper.toResponse(
                 repository
                         .findById(id)
                         .orElseThrow(() -> SystemException.notFound("Station not found")));
@@ -47,7 +46,7 @@ public class StationServiceImpl implements StationService {
             throw SystemException.conflict("Station code already exists");
         Station saved =
                 repository.save(
-                        new Station(
+                        StationOperations.create(
                                 request.code(),
                                 request.name(),
                                 request.address(),
@@ -61,7 +60,7 @@ public class StationServiceImpl implements StationService {
                 "STATION",
                 saved.getId().toString(),
                 saved.getCode());
-        return StationMapper.toResponse(saved);
+        return stationMapper.toResponse(saved);
     }
 
     @Override
@@ -70,14 +69,15 @@ public class StationServiceImpl implements StationService {
                 repository
                         .findById(id)
                         .orElseThrow(() -> SystemException.notFound("Station not found"));
-        station.update(
+        StationOperations.update(
+                station,
                 request.name(),
                 request.address(),
                 request.latitude(),
                 request.longitude(),
                 request.status());
         audit.record(null, actor, AuditAction.UPDATE, "STATION", id.toString(), station.getCode());
-        return StationMapper.toResponse(station);
+        return stationMapper.toResponse(station);
     }
 
     @Override

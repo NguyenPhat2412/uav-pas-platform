@@ -15,6 +15,7 @@ import com.uav.platform.modules.station.dto.request.StationRequest;
 import com.uav.platform.modules.station.entity.Station;
 import com.uav.platform.modules.station.enums.*;
 import com.uav.platform.modules.station.repository.StationRepository;
+import com.uav.platform.modules.station.service.impl.StationOperations;
 import com.uav.platform.modules.station.service.impl.StationServiceImpl;
 import com.uav.platform.modules.uav.enums.*;
 
@@ -28,11 +29,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class StationServiceTest {
     @Mock StationRepository repository;
     @Mock AuditLogService audit;
+
+    @org.mockito.Spy
+    com.uav.platform.modules.station.mapper.StationMapper mapper =
+            org.mapstruct.factory.Mappers.getMapper(
+                    com.uav.platform.modules.station.mapper.StationMapper.class);
+
     @InjectMocks StationServiceImpl service;
 
     @Test
     void createPersistsStationAndRecordsAudit() {
-        Station station = new Station("ST-01", "North", "Address", 21.0, 105.0, null);
+        Station station = StationOperations.create("ST-01", "North", "Address", 21.0, 105.0, null);
         station.setId(1L);
         when(repository.existsByCode("ST-01")).thenReturn(false);
         when(repository.save(any(Station.class))).thenReturn(station);

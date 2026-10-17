@@ -1,6 +1,7 @@
 package com.uav.platform.modules.dashboard.service.impl;
 
 import com.uav.platform.modules.audit.repository.AuditLogRepository;
+import com.uav.platform.modules.dashboard.dto.record.AppUserView;
 import com.uav.platform.modules.dashboard.dto.response.DashboardResponse;
 import com.uav.platform.modules.dashboard.dto.response.MissionDashboardResponse;
 import com.uav.platform.modules.dashboard.mapper.DashboardMapper;
@@ -34,6 +35,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final AuditLogRepository audit;
     private final PermissionService permissionService;
     private final MissionRepository missions;
+    private final DashboardMapper dashboardMapper;
 
     public DashboardServiceImpl(
             UserRepository users,
@@ -53,14 +55,28 @@ public class DashboardServiceImpl implements DashboardService {
             MediaAssetRepository media,
             AuditLogRepository audit,
             PermissionService permissionService) {
-        this.users = users;
-        this.stations = stations;
-        this.uavs = uavs;
-        this.equipment = equipment;
-        this.media = media;
-        this.audit = audit;
-        this.permissionService = permissionService;
-        this.missions = null;
+        this(users, stations, uavs, equipment, media, audit, permissionService, null);
+    }
+
+    public DashboardServiceImpl(
+            UserRepository users,
+            StationRepository stations,
+            UavRepository uavs,
+            EquipmentRepository equipment,
+            MediaAssetRepository media,
+            AuditLogRepository audit,
+            PermissionService permissionService,
+            MissionRepository missions) {
+        this(
+                users,
+                stations,
+                uavs,
+                equipment,
+                media,
+                audit,
+                permissionService,
+                missions,
+                org.mapstruct.factory.Mappers.getMapper(DashboardMapper.class));
     }
 
     @org.springframework.beans.factory.annotation.Autowired
@@ -72,7 +88,8 @@ public class DashboardServiceImpl implements DashboardService {
             MediaAssetRepository media,
             AuditLogRepository audit,
             PermissionService permissionService,
-            MissionRepository missions) {
+            MissionRepository missions,
+            DashboardMapper dashboardMapper) {
         this.users = users;
         this.stations = stations;
         this.uavs = uavs;
@@ -81,6 +98,7 @@ public class DashboardServiceImpl implements DashboardService {
         this.audit = audit;
         this.permissionService = permissionService;
         this.missions = missions;
+        this.dashboardMapper = dashboardMapper;
     }
 
     @Override
@@ -97,7 +115,7 @@ public class DashboardServiceImpl implements DashboardService {
             units += item.getQuantity();
             reserved += item.getReservedQuantity();
         }
-        return DashboardMapper.toResponse(
+        return dashboardMapper.toResponse(
                 usersVisible ? users.count() : 0,
                 stationsVisible ? stations.count() : 0,
                 uavsVisible ? uavs.count() : 0,
@@ -120,7 +138,7 @@ public class DashboardServiceImpl implements DashboardService {
             count = status -> missions.count(MissionSpecifications.hasStatus(status));
         } else {
             AppUserView owner = owner(authentication);
-            if (owner.id() == null) return DashboardMapper.toMissionResponse(0, 0, 0, 0, 0, 0, 0);
+            if (owner.id() == null) return dashboardMapper.toMissionResponse(0, 0, 0, 0, 0, 0, 0);
             total = missions.count(MissionSpecifications.hasCustomer(owner.id()));
             count =
                     status ->
@@ -129,7 +147,7 @@ public class DashboardServiceImpl implements DashboardService {
                                                     MissionSpecifications.hasCustomer(owner.id()))
                                             .and(MissionSpecifications.hasStatus(status)));
         }
-        return DashboardMapper.toMissionResponse(
+        return dashboardMapper.toMissionResponse(
                 total,
                 count.apply(MissionStatus.PENDING_CONFIRMATION),
                 count.apply(MissionStatus.CONFIRMED),
@@ -144,8 +162,6 @@ public class DashboardServiceImpl implements DashboardService {
                 .map(user -> new AppUserView(user.getId()))
                 .orElse(new AppUserView(null));
     }
-
-    private record AppUserView(Long id) {}
 
     private boolean visible(Authentication authentication, String permission) {
         return permissionService == null || permissionService.has(authentication, permission);

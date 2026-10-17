@@ -16,6 +16,7 @@ import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.enums.UserStatus;
 import com.uav.platform.modules.user.mapper.UserMapper;
 import com.uav.platform.modules.user.repository.UserRepository;
+import com.uav.platform.modules.user.service.impl.UserAccountServiceImpl;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,26 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenService refreshTokenService;
     private final InvalidatedTokenService invalidatedTokenService;
     private final com.uav.platform.modules.auth.service.AuthSessionLock sessionLock;
+    private final AuthMapper authMapper;
+    private final UserMapper userMapper;
+
+    public AuthServiceImpl(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            JwtTokenProvider jwtTokenProvider,
+            RefreshTokenService refreshTokenService,
+            InvalidatedTokenService invalidatedTokenService,
+            com.uav.platform.modules.auth.service.AuthSessionLock sessionLock) {
+        this(
+                userRepository,
+                passwordEncoder,
+                jwtTokenProvider,
+                refreshTokenService,
+                invalidatedTokenService,
+                sessionLock,
+                org.mapstruct.factory.Mappers.getMapper(AuthMapper.class),
+                org.mapstruct.factory.Mappers.getMapper(UserMapper.class));
+    }
 
     @Autowired
     public AuthServiceImpl(
@@ -41,13 +62,17 @@ public class AuthServiceImpl implements AuthService {
             JwtTokenProvider jwtTokenProvider,
             @Autowired(required = false) RefreshTokenService refreshTokenService,
             @Autowired(required = false) InvalidatedTokenService invalidatedTokenService,
-            com.uav.platform.modules.auth.service.AuthSessionLock sessionLock) {
+            com.uav.platform.modules.auth.service.AuthSessionLock sessionLock,
+            AuthMapper authMapper,
+            UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.refreshTokenService = refreshTokenService;
         this.invalidatedTokenService = invalidatedTokenService;
         this.sessionLock = sessionLock;
+        this.authMapper = authMapper;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -75,10 +100,19 @@ public class AuthServiceImpl implements AuthService {
         String hashedPassword = passwordEncoder.encode(request.password());
 
         AppUser newUser =
-                new AppUser(username, email, hashedPassword, phoneNumber, UserStatus.ACTIVE);
+                UserAccountServiceImpl.createUser(
+                        username,
+                        email,
+                        hashedPassword,
+                        phoneNumber,
+                        null,
+                        null,
+                        null,
+                        null,
+                        UserStatus.ACTIVE);
 
         AppUser savedUser = userRepository.save(newUser);
-        return UserMapper.toResponse(savedUser);
+        return userMapper.toResponse(savedUser);
     }
 
     @Override
@@ -102,16 +136,16 @@ public class AuthServiceImpl implements AuthService {
                                                 CoreConstants.INVALID_CREDENTIALS));
         user = sessionLock.lock(user);
 
-        if (user.isAccountLocked()) {
+        if (UserAccountServiceImpl.isAccountLocked(user)) {
             throw SystemException.unauthorized(
                     "Tài khoản đã bị tạm khóa do nhập sai mật khẩu quá 5 lần. Vui lòng thử lại sau 15 phút.");
         }
 
         if (user.getPasswordHash() == null
                 || !passwordEncoder.matches(password, user.getPasswordHash())) {
-            user.incrementFailedAttempts();
+            UserAccountServiceImpl.incrementFailedAttempts(user);
             userRepository.save(user);
-            if (user.isAccountLocked()) {
+            if (UserAccountServiceImpl.isAccountLocked(user)) {
                 throw SystemException.unauthorized(
                         "Tài khoản đã bị tạm khóa do nhập sai mật khẩu quá 5 lần. Vui lòng thử lại sau 15 phút.");
             }
@@ -123,7 +157,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (user.getFailedAttempts() > 0) {
-            user.resetFailedAttempts();
+            UserAccountServiceImpl.resetFailedAttempts(user);
             userRepository.save(user);
         }
 
@@ -136,7 +170,7 @@ public class AuthServiceImpl implements AuthService {
             refreshTokenString = refreshToken.getToken();
         }
 
-        return AuthMapper.toResponse(token, refreshTokenString, UserMapper.toResponse(user));
+        return authMapper.toResponse(token, refreshTokenString, userMapper.toResponse(user));
     }
 
     @Override
@@ -167,8 +201,8 @@ public class AuthServiceImpl implements AuthService {
                         user.getId(), user.getUsername(), user.getEmail(), user.getRole().name());
         RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
 
-        return AuthMapper.toResponse(
-                newAccessToken, newRefreshToken.getToken(), UserMapper.toResponse(user));
+        return authMapper.toResponse(
+                newAccessToken, newRefreshToken.getToken(), userMapper.toResponse(user));
     }
 
     @Override
@@ -217,6 +251,6 @@ public class AuthServiceImpl implements AuthService {
                         .or(() -> userRepository.findByEmail(username))
                         .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
 
-        return UserMapper.toResponse(user);
+        return userMapper.toResponse(user);
     }
 }

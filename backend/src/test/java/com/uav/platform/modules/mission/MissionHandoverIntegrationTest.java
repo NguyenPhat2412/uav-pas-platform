@@ -12,6 +12,7 @@ import com.uav.platform.modules.inventory.entity.Equipment;
 import com.uav.platform.modules.inventory.enums.EquipmentType;
 import com.uav.platform.modules.inventory.repository.EquipmentRepository;
 import com.uav.platform.modules.inventory.service.InventoryService;
+import com.uav.platform.modules.media.service.impl.MediaAssetOperations;
 import com.uav.platform.modules.mission.dto.request.MissionCreateRequest;
 import com.uav.platform.modules.mission.dto.request.ResourceAssignmentRequest;
 import com.uav.platform.modules.mission.enums.MediaRole;
@@ -22,6 +23,7 @@ import com.uav.platform.modules.mission.service.MissionService;
 import com.uav.platform.modules.station.entity.Station;
 import com.uav.platform.modules.station.enums.StationStatus;
 import com.uav.platform.modules.station.repository.StationRepository;
+import com.uav.platform.modules.station.service.impl.StationOperations;
 import com.uav.platform.modules.uav.entity.Uav;
 import com.uav.platform.modules.uav.repository.UavRepository;
 import com.uav.platform.modules.user.entity.AppUser;
@@ -80,7 +82,7 @@ class MissionHandoverIntegrationTest {
     void fixture() {
         if (servicePlans.findByCode("BASIC").isEmpty())
             servicePlans.save(
-                    new com.uav.platform.modules.billing.entity.ServicePlan(
+                    com.uav.platform.modules.billing.service.impl.ServicePlanOperations.create(
                             "BASIC",
                             "Synthetic handover plan",
                             java.math.BigDecimal.ZERO,
@@ -107,7 +109,7 @@ class MissionHandoverIntegrationTest {
         operator = user("note_operator_" + suffix, UserRole.ROLE_OPERATOR);
         Station station =
                 stations.save(
-                        new Station(
+                        StationOperations.create(
                                 "NOTE-" + suffix,
                                 "Note station",
                                 "Hanoi",
@@ -522,8 +524,8 @@ class MissionHandoverIntegrationTest {
                         missionId.toString(),
                         operator.getUsername(),
                         "test");
-        if (confirmed) a.confirm();
-        if (deleted) a.markDeleted();
+        if (confirmed) MediaAssetOperations.confirm(a);
+        if (deleted) MediaAssetOperations.markDeleted(a);
         return assets.save(a);
     }
 

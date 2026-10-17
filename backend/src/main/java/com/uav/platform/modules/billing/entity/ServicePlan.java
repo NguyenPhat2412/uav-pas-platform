@@ -4,7 +4,6 @@ import com.uav.platform.common.entity.BaseEntity;
 
 import jakarta.persistence.*;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +14,7 @@ import java.math.BigDecimal;
 @Table(name = "service_plans")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class ServicePlan extends BaseEntity {
 
     @Column(nullable = false, unique = true, length = 40)
@@ -45,24 +44,4 @@ public class ServicePlan extends BaseEntity {
 
     @Column(nullable = false)
     private Boolean active = true;
-
-    public ServicePlan(
-            String code,
-            String name,
-            BigDecimal price,
-            String billingCycle,
-            Double maxMonthlyFlightHours,
-            Integer maxConcurrentUavs,
-            Boolean allowSarAi,
-            String description) {
-        this.code = code;
-        this.name = name;
-        this.price = price != null ? price : BigDecimal.ZERO;
-        this.billingCycle = billingCycle != null ? billingCycle : "MONTHLY";
-        this.maxMonthlyFlightHours = maxMonthlyFlightHours != null ? maxMonthlyFlightHours : 20.0;
-        this.maxConcurrentUavs = maxConcurrentUavs != null ? maxConcurrentUavs : 1;
-        this.allowSarAi = allowSarAi != null ? allowSarAi : false;
-        this.description = description;
-        this.active = true;
-    }
 }

@@ -19,7 +19,7 @@ export function PortalAuthLayout({ portal, title, description, homeUrl, tools, c
     </header>
     <main className="portal-auth-main">
       <section className="portal-auth-intro">
-        <p className="portal-eyebrow">UAV MISSION OPERATIONS PLATFORM</p>
+        <p className="portal-eyebrow">NỀN TẢNG ĐIỀU PHỐI NHIỆM VỤ UAV</p>
         <h1>{title}</h1>
         <p className="portal-auth-description">{description}</p>
         <figure className="portal-team-photo">

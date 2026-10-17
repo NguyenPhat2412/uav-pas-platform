@@ -18,6 +18,7 @@ import com.uav.platform.modules.mission.service.MissionService;
 import com.uav.platform.modules.station.entity.*;
 import com.uav.platform.modules.station.enums.*;
 import com.uav.platform.modules.station.repository.StationRepository;
+import com.uav.platform.modules.station.service.impl.StationOperations;
 import com.uav.platform.modules.uav.entity.*;
 import com.uav.platform.modules.uav.enums.*;
 import com.uav.platform.modules.uav.repository.UavRepository;
@@ -90,7 +91,7 @@ class MissionPhase2IntegrationTest {
                                 UserStatus.ACTIVE));
         Station station =
                 stations.save(
-                        new Station(
+                        StationOperations.create(
                                 "ST-" + suffix,
                                 "Hanoi Station",
                                 "Hanoi",

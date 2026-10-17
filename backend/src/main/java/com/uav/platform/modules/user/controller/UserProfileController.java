@@ -1,29 +1,24 @@
 package com.uav.platform.modules.user.controller;
 
 import com.uav.platform.common.constant.RestEndpoint;
-import com.uav.platform.error.ErrorResponse;
-import com.uav.platform.modules.user.dto.request.UserProfileUpdateRequest;
+import com.uav.platform.modules.user.dto.request.UserProfilePatchRequest;
 import com.uav.platform.modules.user.dto.response.UserProfileResponse;
 import com.uav.platform.modules.user.service.UserProfileService;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping(RestEndpoint.USERS + "/profile")
 @PreAuthorize("isAuthenticated()")
+@RequiredArgsConstructor
 public class UserProfileController {
     private final UserProfileService profiles;
-
-    public UserProfileController(UserProfileService profiles) {
-        this.profiles = profiles;
-    }
 
     @GetMapping
     public ResponseEntity<UserProfileResponse> get(Authentication authentication) {
@@ -34,23 +29,9 @@ public class UserProfileController {
 
     @PatchMapping
     public ResponseEntity<UserProfileResponse> update(
-            Authentication authentication, @RequestBody Map<String, Object> body) {
+            Authentication authentication, @RequestBody UserProfilePatchRequest request) {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.noStore())
-                .body(
-                        profiles.update(
-                                authentication.getName(), UserProfileUpdateRequest.from(body)));
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> malformedBody() {
-        return ResponseEntity.badRequest()
-                .body(
-                        ErrorResponse.ofCode(
-                                400,
-                                "Bad Request",
-                                "INVALID_PROFILE_REQUEST",
-                                "Thông tin hồ sơ không đúng định dạng.",
-                                RestEndpoint.USERS + "/profile"));
+                .body(profiles.updatePayload(authentication.getName(), request));
     }
 }

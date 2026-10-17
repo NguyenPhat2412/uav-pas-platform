@@ -7,7 +7,8 @@
     ".": "./src/index.tsx",
     "./presentation": "./src/presentation.ts",
     "./timeline": "./src/MissionTimeline.tsx",
-    "./mission.css": "./src/mission.css"
+    "./mission.css": "./src/mission.css",
+    "./navigation": "./src/navigation.ts"
   },
   "scripts": {
     "lint": "eslint src",

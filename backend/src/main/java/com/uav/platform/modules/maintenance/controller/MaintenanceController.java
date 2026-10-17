@@ -1,7 +1,7 @@
 package com.uav.platform.modules.maintenance.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
-import com.uav.platform.error.SystemException;
+import com.uav.platform.common.util.Pageables;
 import com.uav.platform.modules.maintenance.dto.request.*;
 import com.uav.platform.modules.maintenance.dto.response.*;
 import com.uav.platform.modules.maintenance.enums.DueStatus;
@@ -10,8 +10,8 @@ import com.uav.platform.modules.maintenance.service.MaintenanceService;
 
 import jakarta.validation.Valid;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -20,12 +20,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/maintenance")
 @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
+@RequiredArgsConstructor
 public class MaintenanceController {
     private final MaintenanceService service;
-
-    public MaintenanceController(MaintenanceService service) {
-        this.service = service;
-    }
 
     @GetMapping("/schedules")
     public PageResponse<MaintenanceScheduleResponse> schedules(
@@ -33,7 +30,10 @@ public class MaintenanceController {
             @RequestParam(required = false) DueStatus dueStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return service.schedules(uavId, dueStatus, page(page, size));
+        return service.schedules(
+                uavId,
+                dueStatus,
+                Pageables.strictDesc(page, size, "id", "MAINTENANCE_INVALID_PAGE"));
     }
 
     @PostMapping("/schedules")
@@ -56,7 +56,8 @@ public class MaintenanceController {
             @RequestParam(required = false) RepairStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return service.orders(uavId, status, page(page, size));
+        return service.orders(
+                uavId, status, Pageables.strictDesc(page, size, "id", "MAINTENANCE_INVALID_PAGE"));
     }
 
     @GetMapping("/orders/{id}")
@@ -108,11 +109,5 @@ public class MaintenanceController {
             @Valid @RequestBody CancelRepairOrderRequest r,
             Authentication auth) {
         return service.cancel(id, r, auth.getName());
-    }
-
-    private PageRequest page(int page, int size) {
-        if (page < 0 || size < 1 || size > 100)
-            throw SystemException.badRequest("MAINTENANCE_INVALID_PAGE");
-        return PageRequest.of(page, size, Sort.by("id").descending());
     }
 }

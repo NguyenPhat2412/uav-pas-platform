@@ -2,6 +2,7 @@ package com.uav.platform.error;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.uav.platform.common.dto.response.ErrorResponse;
 import com.uav.platform.modules.audit.enums.*;
 import com.uav.platform.modules.inventory.enums.*;
 import com.uav.platform.modules.media.enums.*;

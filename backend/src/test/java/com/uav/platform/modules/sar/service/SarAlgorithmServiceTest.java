@@ -161,11 +161,14 @@ class SarAlgorithmServiceTest {
         when(webhookService.dispatchEvent(eq("SAR_EMERGENCY_TRIGGERED"), anyMap()))
                 .thenReturn("UNCONFIGURED");
 
-        Map<String, Object> result =
+        var result =
                 sarService.dispatchRescueCoordinates(
-                        1L, Map.of("coordinates", "20.7284, 107.0512", "victimCount", 2), auth);
+                        1L,
+                        new com.uav.platform.modules.sar.dto.request.RescueDispatchRequest(
+                                Map.of("coordinates", "20.7284, 107.0512", "victimCount", 2)),
+                        auth);
 
-        assertEquals(false, result.get("externalDeliveryConfirmed"));
+        assertEquals(false, result.externalDeliveryConfirmed());
         verify(webhookService).dispatchEvent(eq("SAR_EMERGENCY_TRIGGERED"), anyMap());
     }
 }

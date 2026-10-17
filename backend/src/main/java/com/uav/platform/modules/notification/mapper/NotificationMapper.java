@@ -3,20 +3,13 @@ package com.uav.platform.modules.notification.mapper;
 import com.uav.platform.modules.notification.dto.response.NotificationResponse;
 import com.uav.platform.modules.notification.entity.Notification;
 
-public final class NotificationMapper {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
-    private NotificationMapper() {}
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface NotificationMapper {
 
-    public static NotificationResponse toResponse(Notification n) {
-        return new NotificationResponse(
-                n.getId(),
-                n.getUser().getId(),
-                n.getTitle(),
-                n.getContent(),
-                n.getType(),
-                n.getReferenceType(),
-                n.getReferenceId(),
-                n.getIsRead(),
-                n.getCreatedAt());
-    }
+    @Mapping(target = "userId", source = "user.id")
+    NotificationResponse toResponse(Notification n);
 }

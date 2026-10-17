@@ -8,12 +8,14 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(
         name = "user_permissions",
         uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "permission_id"}))
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserPermission extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -30,10 +32,6 @@ public class UserPermission extends BaseEntity {
     public UserPermission(AppUser user, Permission permission, boolean granted) {
         this.user = user;
         this.permission = permission;
-        this.granted = granted;
-    }
-
-    public void setGranted(boolean granted) {
         this.granted = granted;
     }
 }

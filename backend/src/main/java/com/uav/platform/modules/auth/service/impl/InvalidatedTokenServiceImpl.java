@@ -5,8 +5,9 @@ import com.uav.platform.modules.auth.repository.InvalidatedTokenRepository;
 import com.uav.platform.modules.auth.service.InvalidatedTokenService;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,21 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.Date;
 
+@Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class InvalidatedTokenServiceImpl implements InvalidatedTokenService {
-
-    private static final Logger log = LoggerFactory.getLogger(InvalidatedTokenServiceImpl.class);
 
     private final InvalidatedTokenRepository invalidatedTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
-
-    public InvalidatedTokenServiceImpl(
-            InvalidatedTokenRepository invalidatedTokenRepository,
-            JwtTokenProvider jwtTokenProvider) {
-        this.invalidatedTokenRepository = invalidatedTokenRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
 
     @Override
     public void invalidate(String token) {

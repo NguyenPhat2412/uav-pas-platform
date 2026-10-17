@@ -5,23 +5,23 @@ import com.uav.platform.modules.webhook.dto.response.WebhookSubscriptionResponse
 import com.uav.platform.modules.webhook.entity.WebhookDeliveryLog;
 import com.uav.platform.modules.webhook.entity.WebhookSubscription;
 
-public final class WebhookMapper {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.Named;
 
-    private WebhookMapper() {}
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface WebhookMapper {
 
-    public static WebhookSubscriptionResponse toSubscriptionResponse(WebhookSubscription sub) {
-        return new WebhookSubscriptionResponse(
-                sub.getId(),
-                sub.getName(),
-                sub.getTargetUrl(),
-                maskSecret(sub.getSecretKey()),
-                sub.getEventsSubscribed(),
-                sub.getIsActive(),
-                sub.getCreatedAt(),
-                sub.getUpdatedAt());
-    }
+    @Mapping(target = "secretKey", source = "secretKey", qualifiedByName = "maskSecret")
+    WebhookSubscriptionResponse toSubscriptionResponse(WebhookSubscription sub);
 
-    public static String maskSecret(String secretKey) {
+    @Mapping(target = "subscriptionId", source = "subscription.id")
+    @Mapping(target = "subscriptionName", source = "subscription.name", defaultValue = "N/A")
+    WebhookDeliveryLogResponse toDeliveryLogResponse(WebhookDeliveryLog log);
+
+    @Named("maskSecret")
+    default String maskSecret(String secretKey) {
         if (secretKey == null || secretKey.isBlank()) {
             return "****";
         }
@@ -30,22 +30,5 @@ public final class WebhookMapper {
             return "****";
         }
         return "********" + trimmed.substring(trimmed.length() - 4);
-    }
-
-    public static WebhookDeliveryLogResponse toDeliveryLogResponse(WebhookDeliveryLog log) {
-        return new WebhookDeliveryLogResponse(
-                log.getId(),
-                log.getSubscription() != null ? log.getSubscription().getId() : null,
-                log.getSubscription() != null ? log.getSubscription().getName() : "N/A",
-                log.getEventType(),
-                log.getPayload(),
-                log.getResponseStatusCode(),
-                log.getResponseBody(),
-                log.getDeliveryDurationMs(),
-                log.getIsSuccess(),
-                log.getRetryCount(),
-                log.getAttemptedAt(),
-                log.getEventId(),
-                log.getDeliveryStatus());
     }
 }

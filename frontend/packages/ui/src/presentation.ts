@@ -51,3 +51,17 @@ export function eventNote(event: TimelineEvent): string | undefined {
   // Preserve user-authored reasons, while keeping generated backend messages out of the interface.
   return ['REJECTED','FAILED','COMPLETED','OPERATOR_CONFLICT','UAV_REPLACED','UAV_UNASSIGNED','OPERATOR_REPLACED','OPERATOR_UNASSIGNED','STATION_REPLACED','STATION_UNASSIGNED','EQUIPMENT_CHANGED','EQUIPMENT_RELEASED'].includes(event.eventType) ? event.description : undefined;
 }
+
+export function planName(value?: string): string {
+  return ({ 'Gói Tiêu Chuẩn (Basic)': 'Gói tiêu chuẩn', 'Gói Chuyên Nghiệp (Pro)': 'Gói chuyên nghiệp', 'Gói Tác Chiến Đặc Biệt (Enterprise/SAR)': 'Gói tác chiến đặc biệt' } as Record<string,string>)[value ?? ''] ?? value ?? '—';
+}
+export function permissionLabel(code: string, description?: string): string {
+  const labels: Record<string,string> = {
+    MISSION_STATUS_UPDATE:'Cập nhật trạng thái nhiệm vụ', MISSION_MEDIA_VIEW:'Xem tệp nhiệm vụ', MISSION_MEDIA_UPLOAD:'Tải tệp lên nhiệm vụ', MISSION_TIMELINE_VIEW:'Xem lịch sử nhiệm vụ', DASHBOARD_MISSION:'Xem tổng quan nhiệm vụ', MISSION_VIEW:'Xem nhiệm vụ được phép truy cập', MISSION_VIEW_ALL:'Xem tất cả nhiệm vụ', MISSION_CREATE:'Tạo nhiệm vụ', MISSION_UPDATE:'Cập nhật nhiệm vụ', MISSION_SUBMIT:'Gửi yêu cầu nhiệm vụ', MISSION_CANCEL:'Hủy nhiệm vụ', MISSION_CONFIRM:'Xác nhận nhiệm vụ', MISSION_REJECT:'Từ chối nhiệm vụ', MISSION_ASSIGN_STATION:'Bố trí trạm', MISSION_ASSIGN_UAV:'Bố trí UAV', MISSION_ASSIGN_OPERATOR:'Phân công người vận hành', MISSION_RESERVE_EQUIPMENT:'Giữ thiết bị cho nhiệm vụ', MISSION_READY:'Đánh dấu sẵn sàng', MISSION_START:'Bắt đầu nhiệm vụ', MISSION_COMPLETE:'Hoàn tất nhiệm vụ', MISSION_FAIL:'Ghi nhận nhiệm vụ không thành công',
+    USER_READ:'Xem người dùng', USER_MANAGE:'Quản lý người dùng', PERMISSION_MANAGE:'Quản lý quyền truy cập', DASHBOARD_READ:'Xem tổng quan', AUDIT_READ:'Xem nhật ký', STATION_READ:'Xem trạm', STATION_MANAGE:'Quản lý trạm', UAV_READ:'Xem UAV', UAV_MANAGE:'Quản lý UAV', INVENTORY_READ:'Xem kho thiết bị', INVENTORY_MANAGE:'Quản lý kho thiết bị', MEDIA_READ:'Xem tệp', MEDIA_MANAGE:'Quản lý tệp'
+  };
+  return labels[code] ?? description ?? code;
+}
+export function settingLabel(key: string, description?: string): string {
+  return ({ 'uav.safety.min_battery_threshold':'Ngưỡng pin tối thiểu (%)', 'uav.safety.max_wind_speed_limit':'Tốc độ gió tối đa (m/s)', 'uav.mission.max_flight_duration_minutes':'Thời lượng ca bay tối đa (phút)', 'ai.detection.default_model':'Mô hình nhận diện mặc định', 'ai.detection.confidence_threshold':'Ngưỡng tin cậy nhận diện', 'ai.detection.orchestration_mode':'Chế độ phân bổ xử lý AI', 'billing.currency':'Đơn vị tiền tệ', 'billing.auto_generate_invoice':'Tự động lập hóa đơn', 'billing.hourly_rate_vnd':'Đơn giá mỗi giờ dự kiến (VND)' } as Record<string,string>)[key] ?? description ?? key;
+}

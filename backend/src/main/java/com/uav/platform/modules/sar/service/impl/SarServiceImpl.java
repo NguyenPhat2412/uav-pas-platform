@@ -6,10 +6,13 @@ import com.uav.platform.modules.mission.repository.MissionRepository;
 import com.uav.platform.modules.notification.dto.request.CreateNotificationRequest;
 import com.uav.platform.modules.notification.enums.NotificationType;
 import com.uav.platform.modules.notification.service.NotificationService;
+import com.uav.platform.modules.sar.dto.record.AlertResult;
 import com.uav.platform.modules.sar.dto.request.FlightPlanRequest;
+import com.uav.platform.modules.sar.dto.request.RescueDispatchRequest;
 import com.uav.platform.modules.sar.dto.request.SarMissionRequest;
 import com.uav.platform.modules.sar.dto.request.TelemetryEvaluateRequest;
 import com.uav.platform.modules.sar.dto.response.FlightPlanResponse;
+import com.uav.platform.modules.sar.dto.response.RescueDispatchResponse;
 import com.uav.platform.modules.sar.dto.response.SarMissionResponse;
 import com.uav.platform.modules.sar.dto.response.TelemetryEvaluateResponse;
 import com.uav.platform.modules.sar.dto.response.WaypointResponse;
@@ -42,6 +45,7 @@ public class SarServiceImpl implements SarService {
     private final NotificationService notificationService;
     private final WebhookService webhookService;
     private final com.uav.platform.modules.permission.service.PermissionService permissionService;
+    private final SarMapper sarMapper;
 
     public SarServiceImpl(SarMissionRepository sarRepository, MissionRepository missionRepository) {
         this(sarRepository, missionRepository, null, null, null);
@@ -55,6 +59,21 @@ public class SarServiceImpl implements SarService {
         this(sarRepository, missionRepository, notificationService, webhookService, null);
     }
 
+    public SarServiceImpl(
+            SarMissionRepository sarRepository,
+            MissionRepository missionRepository,
+            NotificationService notificationService,
+            WebhookService webhookService,
+            com.uav.platform.modules.permission.service.PermissionService permissionService) {
+        this(
+                sarRepository,
+                missionRepository,
+                notificationService,
+                webhookService,
+                permissionService,
+                org.mapstruct.factory.Mappers.getMapper(SarMapper.class));
+    }
+
     @Autowired
     public SarServiceImpl(
             SarMissionRepository sarRepository,
@@ -62,13 +81,14 @@ public class SarServiceImpl implements SarService {
             @Autowired(required = false) NotificationService notificationService,
             @Autowired(required = false) WebhookService webhookService,
             @Autowired(required = false)
-                    com.uav.platform.modules.permission.service.PermissionService
-                            permissionService) {
+                    com.uav.platform.modules.permission.service.PermissionService permissionService,
+            SarMapper sarMapper) {
         this.sarRepository = sarRepository;
         this.missionRepository = missionRepository;
         this.notificationService = notificationService;
         this.webhookService = webhookService;
         this.permissionService = permissionService;
+        this.sarMapper = sarMapper;
     }
 
     private void requireMissionAccess(
@@ -119,7 +139,7 @@ public class SarServiceImpl implements SarService {
                         .findByMissionId(request.missionId())
                         .orElseGet(
                                 () ->
-                                        new SarMission(
+                                        SarMissionOperations.create(
                                                 mission,
                                                 request.searchAreaPolygon(),
                                                 request.lkpLatitude(),
@@ -140,7 +160,7 @@ public class SarServiceImpl implements SarService {
         if (request.notes() != null) sar.setNotes(request.notes());
 
         SarMission saved = sarRepository.save(sar);
-        return SarMapper.toSarMissionResponse(saved);
+        return sarMapper.toSarMissionResponse(saved);
     }
 
     @Override
@@ -155,7 +175,7 @@ public class SarServiceImpl implements SarService {
                                                 "SAR details not found for mission id: "
                                                         + missionId));
         requireMissionAccess(sar.getMission(), authentication, false);
-        return SarMapper.toSarMissionResponse(sar);
+        return sarMapper.toSarMissionResponse(sar);
     }
 
     @Override
@@ -172,7 +192,7 @@ public class SarServiceImpl implements SarService {
         requireMissionAccess(sar.getMission(), authentication, true);
         sar.setSarStatus(status);
         SarMission saved = sarRepository.save(sar);
-        return SarMapper.toSarMissionResponse(saved);
+        return sarMapper.toSarMissionResponse(saved);
     }
 
     @Override
@@ -323,8 +343,8 @@ public class SarServiceImpl implements SarService {
     }
 
     @Override
-    public Map<String, Object> dispatchRescueCoordinates(
-            Long missionId, Map<String, Object> payload, Authentication authentication) {
+    public RescueDispatchResponse dispatchRescueCoordinates(
+            Long missionId, RescueDispatchRequest request, Authentication authentication) {
         requiredMission(missionId, authentication);
         sarRepository
                 .findByMissionId(missionId)
@@ -335,8 +355,8 @@ public class SarServiceImpl implements SarService {
                         });
 
         Map<String, Object> eventData = new HashMap<>();
-        if (payload != null) {
-            eventData.putAll(payload);
+        if (request != null && request.payload() != null) {
+            eventData.putAll(request.payload());
         }
         eventData.put("missionId", missionId != null ? missionId : 1L);
         eventData.put(
@@ -374,18 +394,12 @@ public class SarServiceImpl implements SarService {
                             });
         }
 
-        return Map.of(
-                "status",
+        return new RescueDispatchResponse(
                 outcome,
-                "externalDeliveryConfirmed",
                 false,
-                "eventType",
                 "SAR_EMERGENCY_TRIGGERED",
-                "missionId",
                 missionId != null ? missionId : 1L,
-                "timestamp",
                 LocalDateTime.now().toString(),
-                "message",
                 "Đã ghi nhận cảnh báo cứu hộ nội bộ. Chưa có xác nhận từ cơ quan cứu hộ; không gửi lệnh điều khiển UAV.");
     }
 
@@ -398,8 +412,6 @@ public class SarServiceImpl implements SarService {
         requireMissionAccess(mission, auth, true);
         return mission;
     }
-
-    private record AlertResult(boolean accepted, String deliveryStatus) {}
 
     private AlertResult triggerSafetyAlert(
             Mission mission,

@@ -12,6 +12,7 @@ import com.uav.platform.modules.inventory.repository.EquipmentRepository;
 import com.uav.platform.modules.inventory.service.InventoryService;
 import com.uav.platform.modules.media.enums.*;
 import com.uav.platform.modules.mission.enums.*;
+import com.uav.platform.modules.mission.service.impl.MissionOperations;
 import com.uav.platform.modules.permission.enums.PermissionCode;
 import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.station.dto.request.StationRequest;
@@ -170,7 +171,7 @@ class StabilizationPostgresTest {
             AppUser customer, AppUser operator, double hours) {
         var start = java.time.LocalDateTime.of(2026, 10, 17, 10, 0);
         var m =
-                com.uav.platform.modules.mission.entity.Mission.draft(
+                MissionOperations.draft(
                         customer,
                         MissionType.UAV_RENTAL,
                         "Billing mission",
@@ -184,7 +185,7 @@ class StabilizationPostgresTest {
                         MissionPriority.NORMAL,
                         null);
         m.setCode("MSN-TEST-" + UUID.randomUUID().toString().substring(0, 8));
-        m.assignOperator(operator);
+        MissionOperations.assignOperator(m, operator);
         org.springframework.test.util.ReflectionTestUtils.setField(
                 m, "status", MissionStatus.IN_PROGRESS);
         return missionRepository.save(m);
@@ -408,7 +409,7 @@ class StabilizationPostgresTest {
         quotas.recordMissionUsage(customer.getId(), 3.5);
         var before = quotas.getQuotaByUserId(customer.getId());
         var plan =
-                new com.uav.platform.modules.billing.entity.ServicePlan(
+                com.uav.platform.modules.billing.service.impl.ServicePlanOperations.create(
                         "PAID-TEST",
                         "Paid test",
                         java.math.BigDecimal.valueOf(100),
@@ -523,7 +524,7 @@ class StabilizationPostgresTest {
         quotas.recordMissionUsage(customer.getId(), 2);
         var paidPlan =
                 plans.save(
-                        new com.uav.platform.modules.billing.entity.ServicePlan(
+                        com.uav.platform.modules.billing.service.impl.ServicePlanOperations.create(
                                 "ROLLBACK-PLAN",
                                 "Rollback test",
                                 java.math.BigDecimal.valueOf(100),

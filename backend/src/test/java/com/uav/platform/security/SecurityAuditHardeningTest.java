@@ -25,6 +25,7 @@ import com.uav.platform.modules.mission.entity.Mission;
 import com.uav.platform.modules.mission.enums.MissionPriority;
 import com.uav.platform.modules.mission.enums.MissionType;
 import com.uav.platform.modules.mission.repository.MissionRepository;
+import com.uav.platform.modules.mission.service.impl.MissionOperations;
 import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.reporting.service.impl.ReportServiceImpl;
 import com.uav.platform.modules.sar.dto.request.VerifyDetectionRequest;
@@ -35,6 +36,7 @@ import com.uav.platform.modules.sar.repository.AiDetectionRepository;
 import com.uav.platform.modules.sar.repository.AiTaskRepository;
 import com.uav.platform.modules.sar.repository.SarMissionRepository;
 import com.uav.platform.modules.sar.service.impl.AiServiceImpl;
+import com.uav.platform.modules.sar.service.impl.SarMissionOperations;
 import com.uav.platform.modules.sar.service.impl.SarServiceImpl;
 import com.uav.platform.modules.station.repository.StationRepository;
 import com.uav.platform.modules.uav.repository.UavRepository;
@@ -237,7 +239,9 @@ class SecurityAuditHardeningTest {
                         "SAR_CRITICAL_ALERT,PAYMENT_COMPLETED");
         sub.setId(1L);
 
-        var dto = WebhookMapper.toSubscriptionResponse(sub);
+        var dto =
+                org.mapstruct.factory.Mappers.getMapper(WebhookMapper.class)
+                        .toSubscriptionResponse(sub);
 
         assertEquals("********9948", dto.secretKey());
         assertTrue(!dto.secretKey().contains("vju_sec_live"));
@@ -261,7 +265,7 @@ class SecurityAuditHardeningTest {
 
         AppUser customer1 = user(1L, "customer1");
         Mission mission =
-                Mission.draft(
+                MissionOperations.draft(
                         customer1,
                         MissionType.OTHER,
                         "SAR Flood",
@@ -277,7 +281,7 @@ class SecurityAuditHardeningTest {
         mission.setId(100L);
 
         SarMission sar =
-                new SarMission(
+                SarMissionOperations.create(
                         mission,
                         "POLYGON((0 0, 1 0, 1 1, 0 0))",
                         21.7,
@@ -386,7 +390,7 @@ class SecurityAuditHardeningTest {
         AppUser customer2 = user(2L, "customer2");
 
         Mission m1 =
-                Mission.draft(
+                MissionOperations.draft(
                         customer1,
                         MissionType.OTHER,
                         "M1",
@@ -401,7 +405,7 @@ class SecurityAuditHardeningTest {
                         null);
         m1.setId(1L);
         Mission m2 =
-                Mission.draft(
+                MissionOperations.draft(
                         customer2,
                         MissionType.OTHER,
                         "M2",

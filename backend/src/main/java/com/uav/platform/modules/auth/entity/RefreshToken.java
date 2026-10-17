@@ -46,16 +46,4 @@ public class RefreshToken extends BaseEntity {
         this.expiryDate = expiryDate;
         this.revoked = false;
     }
-
-    public boolean isExpired() {
-        return Instant.now().isAfter(this.expiryDate);
-    }
-
-    public boolean isValid() {
-        return !this.revoked && !isExpired();
-    }
-
-    public void revoke() {
-        this.revoked = true;
-    }
 }

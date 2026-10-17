@@ -1,6 +1,7 @@
 package com.uav.platform.modules.media.specification;
 
 import com.uav.platform.modules.inventory.entity.Equipment;
+import com.uav.platform.modules.media.dto.record.ReadPermissions;
 import com.uav.platform.modules.media.entity.MediaAsset;
 import com.uav.platform.modules.mission.entity.Mission;
 import com.uav.platform.modules.station.entity.Station;
@@ -38,14 +39,6 @@ public final class MediaVisibilitySpecifications {
     }
 
     private MediaVisibilitySpecifications() {}
-
-    public record ReadPermissions(
-            boolean manageMedia,
-            boolean viewMissionMedia,
-            boolean viewAllMissions,
-            boolean readStations,
-            boolean readUavs,
-            boolean readInventory) {}
 
     public static Specification<MediaAsset> readableBy(String actor, ReadPermissions permissions) {
         return (asset, query, cb) -> {

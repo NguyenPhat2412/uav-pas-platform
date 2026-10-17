@@ -4,17 +4,17 @@ import com.uav.platform.common.entity.BaseEntity;
 
 import jakarta.persistence.*;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 @Entity
 @Table(name = "repair_materials")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 public class RepairMaterial extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
@@ -43,9 +43,5 @@ public class RepairMaterial extends BaseEntity {
         this.unit = unit;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
-    }
-
-    public BigDecimal lineTotal() {
-        return quantity.multiply(unitPrice).setScale(0, RoundingMode.HALF_UP);
     }
 }

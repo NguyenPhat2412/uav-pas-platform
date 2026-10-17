@@ -1,61 +1,52 @@
 package com.uav.platform.modules.maintenance.mapper;
 
-import com.uav.platform.modules.maintenance.dto.response.*;
+import com.uav.platform.modules.maintenance.dto.response.MaintenanceScheduleResponse;
+import com.uav.platform.modules.maintenance.dto.response.RepairMaterialResponse;
+import com.uav.platform.modules.maintenance.dto.response.RepairOrderResponse;
 import com.uav.platform.modules.maintenance.entity.MaintenanceSchedule;
+import com.uav.platform.modules.maintenance.entity.RepairMaterial;
 import com.uav.platform.modules.maintenance.entity.RepairOrder;
+import com.uav.platform.modules.maintenance.service.impl.MaintenanceScheduleOperations;
+import com.uav.platform.modules.maintenance.service.impl.RepairMaterialOperations;
+import com.uav.platform.modules.maintenance.service.impl.RepairOrderOperations;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
 import java.time.LocalDate;
 
-public final class MaintenanceMapper {
-    private MaintenanceMapper() {}
+@Mapper(
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        imports = {
+            MaintenanceScheduleOperations.class,
+            RepairMaterialOperations.class,
+            RepairOrderOperations.class
+        })
+public interface MaintenanceMapper {
 
-    public static MaintenanceScheduleResponse toScheduleResponse(
-            MaintenanceSchedule s, LocalDate today) {
-        return new MaintenanceScheduleResponse(
-                s.getId(),
-                s.getUav().getId(),
-                s.getUav().getSerialNumber(),
-                s.getTitle(),
-                s.getIntervalDays(),
-                s.getNextDueDate(),
-                s.getLastCompletedDate(),
-                s.isActive(),
-                s.getVersion(),
-                s.dueStatus(today));
-    }
+    @Mapping(target = "uavId", source = "s.uav.id")
+    @Mapping(target = "uavSerialNumber", source = "s.uav.serialNumber")
+    @Mapping(
+            target = "dueStatus",
+            expression = "java(MaintenanceScheduleOperations.dueStatus(s, today))")
+    MaintenanceScheduleResponse toScheduleResponse(MaintenanceSchedule s, LocalDate today);
 
-    public static RepairOrderResponse toOrderResponse(RepairOrder o) {
-        return new RepairOrderResponse(
-                o.getId(),
-                o.getUav().getId(),
-                o.getUav().getSerialNumber(),
-                o.getSchedule() == null ? null : o.getSchedule().getId(),
-                o.getTitle(),
-                o.getDescription(),
-                o.getPlannedDate(),
-                o.getTechnicianName(),
-                o.getStatus(),
-                o.getVersion(),
-                o.getCreatedAt(),
-                o.getStartedAt(),
-                o.getCompletedAt(),
-                o.getCancelledAt(),
-                o.getInspectionNotes(),
-                o.getCancelReason(),
-                o.getMaterials().stream()
-                        .map(
-                                m ->
-                                        new RepairMaterialResponse(
-                                                m.getId(),
-                                                m.getName(),
-                                                m.getUnit(),
-                                                m.getQuantity()
-                                                        .stripTrailingZeros()
-                                                        .toPlainString(),
-                                                m.getUnitPrice().toPlainString(),
-                                                m.lineTotal().toPlainString()))
-                        .toList(),
-                o.totalMaterialCost().toPlainString(),
-                "VND");
-    }
+    @Mapping(
+            target = "quantity",
+            expression = "java(m.getQuantity().stripTrailingZeros().toPlainString())")
+    @Mapping(target = "unitPrice", expression = "java(m.getUnitPrice().toPlainString())")
+    @Mapping(
+            target = "lineTotal",
+            expression = "java(RepairMaterialOperations.lineTotal(m).toPlainString())")
+    RepairMaterialResponse toMaterialResponse(RepairMaterial m);
+
+    @Mapping(target = "uavId", source = "uav.id")
+    @Mapping(target = "uavSerialNumber", source = "uav.serialNumber")
+    @Mapping(target = "scheduleId", source = "schedule.id")
+    @Mapping(
+            target = "totalMaterialCost",
+            expression = "java(RepairOrderOperations.totalMaterialCost(o).toPlainString())")
+    @Mapping(target = "currency", constant = "VND")
+    RepairOrderResponse toOrderResponse(RepairOrder o);
 }

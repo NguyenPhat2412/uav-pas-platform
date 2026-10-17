@@ -1,6 +1,7 @@
 package com.uav.platform.modules.billing.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.common.util.Pageables;
 import com.uav.platform.modules.billing.dto.request.CreateInvoiceRequest;
 import com.uav.platform.modules.billing.dto.request.PayInvoiceRequest;
 import com.uav.platform.modules.billing.dto.request.UpdateQuotaRequest;
@@ -13,8 +14,8 @@ import com.uav.platform.modules.billing.service.QuotaService;
 
 import jakarta.validation.Valid;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -24,15 +25,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/billing")
+@RequiredArgsConstructor
 public class BillingController {
 
     private final BillingService billingService;
     private final QuotaService quotaService;
-
-    public BillingController(BillingService billingService, QuotaService quotaService) {
-        this.billingService = billingService;
-        this.quotaService = quotaService;
-    }
 
     @GetMapping("/plans")
     public ResponseEntity<List<ServicePlanResponse>> listPlans() {
@@ -49,9 +46,7 @@ public class BillingController {
     public ResponseEntity<PageResponse<UserQuotaResponse>> listQuotas(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(
-                quotaService.listQuotas(
-                        PageRequest.of(Math.max(page, 0), Math.clamp(size, 1, 100))));
+        return ResponseEntity.ok(quotaService.listQuotas(Pageables.of(page, size)));
     }
 
     @PutMapping("/admin/quotas/{userId}")
@@ -67,12 +62,7 @@ public class BillingController {
             @RequestParam(defaultValue = "20") int size,
             Authentication auth) {
         return ResponseEntity.ok(
-                billingService.listInvoices(
-                        auth,
-                        PageRequest.of(
-                                Math.max(page, 0),
-                                Math.clamp(size, 1, 100),
-                                Sort.by("createdAt").descending())));
+                billingService.listInvoices(auth, Pageables.desc(page, size, "createdAt")));
     }
 
     @GetMapping("/invoices/{id}")

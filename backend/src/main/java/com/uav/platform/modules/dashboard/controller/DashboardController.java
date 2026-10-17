@@ -4,6 +4,8 @@ import com.uav.platform.modules.dashboard.dto.response.DashboardResponse;
 import com.uav.platform.modules.dashboard.dto.response.MissionDashboardResponse;
 import com.uav.platform.modules.dashboard.service.DashboardService;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -13,12 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/dashboard")
+@RequiredArgsConstructor
 public class DashboardController {
     private final DashboardService service;
-
-    public DashboardController(DashboardService service) {
-        this.service = service;
-    }
 
     @GetMapping("/summary")
     @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
