@@ -20,14 +20,17 @@ function CreateMission() {
   const services = useServices();
   const actions = useMissionActions();
   const { can } = useAuth();
-  const [form, setForm] = useState<MissionInput>({ ...initial, serviceId: params.has('serviceId') ? Number(params.get('serviceId')) || -1 : undefined });
+  const [formValues, setForm] = useState<MissionInput>({ ...initial, serviceId: params.has('serviceId') ? Number(params.get('serviceId')) || -1 : undefined });
+  const [missionTypeOverride, setMissionTypeOverride] = useState<MissionType | null>(null);
   const [step, setStep] = useState<1 | 2>(1);
   const [errors, setErrors] = useState<MissionFormErrors>({});
   const [error, setError] = useState('');
   const [availability, setAvailability] = useState('');
   const [checking, setChecking] = useState(false);
   const activeServices = (services.data ?? []).filter(service => service.active);
-  const selectedService = activeServices.find(service => service.id === form.serviceId);
+  const selectedService = activeServices.find(service => service.id === formValues.serviceId);
+  // Resolve a linked service after its catalogue arrives; keep an explicit type choice.
+  const form: MissionInput = { ...formValues, missionType: missionTypeOverride ?? missionTypeForService(selectedService?.code, formValues.missionType) };
   const validate = () => {
     const nextErrors = validateMissionForm(form);
     if (form.serviceId != null && !selectedService) nextErrors.serviceId = 'Dịch vụ không còn khả dụng. Chọn lại dịch vụ hoặc bỏ lựa chọn này.';
@@ -67,9 +70,10 @@ function CreateMission() {
         <fieldset disabled={checking}><legend className="visually-hidden">Thông tin yêu cầu</legend><div className="form-grid">
           <label className="field"><span>Dịch vụ (tùy chọn)</span><select id="mission-serviceId" value={form.serviceId ?? ''} aria-invalid={!!errors.serviceId} aria-describedby={errors.serviceId ? 'mission-serviceId-error' : undefined} onChange={event => {
             const service = activeServices.find(item => item.id === Number(event.target.value));
-            setForm(value => ({ ...value, serviceId: event.target.value ? Number(event.target.value) : undefined, missionType: missionTypeForService(service?.code, value.missionType) }));
+            setMissionTypeOverride(null);
+            setForm(value => ({ ...value, serviceId: event.target.value ? Number(event.target.value) : undefined, missionType: missionTypeForService(service?.code, form.missionType) }));
           }}><option value="">Không chọn dịch vụ</option>{form.serviceId != null && !selectedService && <option value={form.serviceId}>{services.isLoading ? 'Đang tải dịch vụ đã chọn…' : 'Dịch vụ không khả dụng — hãy chọn lại'}</option>}{activeServices.map(service => <option key={service.id} value={service.id}>{serviceName(service)}</option>)}</select>{errors.serviceId && <span className="field-error" id="mission-serviceId-error">{errors.serviceId}</span>}</label>
-          <label className="field"><span>Loại nhiệm vụ</span><select id="mission-missionType" value={form.missionType} onChange={event => setForm(value => ({ ...value, missionType: event.target.value as MissionType }))}>{missionTypes.map(type => <option key={type} value={type}>{displayLabel(type)}</option>)}</select></label>
+          <label className="field"><span>Loại nhiệm vụ</span><select id="mission-missionType" value={form.missionType} onChange={event => setMissionTypeOverride(event.target.value as MissionType)}>{missionTypes.map(type => <option key={type} value={type}>{displayLabel(type)}</option>)}</select></label>
           <MissionFields form={form} onChange={setForm} errors={errors} />
           <div className="form-actions form-wide"><Button type="submit" disabled={checking || (form.serviceId != null && services.isLoading)}>{checking ? 'Đang kiểm tra…' : 'Kiểm tra & xem lại'}</Button></div>
         </div></fieldset>

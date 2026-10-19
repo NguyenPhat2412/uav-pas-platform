@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { MissionRequestDetails } from '@/features/missions/components/MissionRequestDetails';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { MissionTimeline } from "@/components/shared/MissionTimeline";
@@ -44,6 +45,7 @@ function MissionDetail() {
           <div><dt>Mức ưu tiên</dt><dd>{displayLabel(mission.priority)}</dd></div>
         </dl>
         {mission.description && <p className="mission-muted" style={{ marginTop: 20 }}>{mission.description}</p>}
+        <MissionRequestDetails mission={mission} />
       </div>
       <div className="mission-guidance"><p>{missionHint(mission.status)}</p>{(canSubmit || canCancel) && <div className="mission-actions">
         {canSubmit && !actions.submit.isPending && !actions.cancel.isPending && <Link className="button button-secondary" href={`/customer/missions/${mission.id}/edit`}>Chỉnh sửa bản nháp</Link>}

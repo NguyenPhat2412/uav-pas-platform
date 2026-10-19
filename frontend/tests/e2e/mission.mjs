@@ -7,7 +7,7 @@ function syntheticPdf() {
 const pdf=syntheticPdf();
 const storageMatcher = url => url.port === String(fixture.storagePort);
 let browser,error,current,id,customer,admin,operator,otherCustomer,otherOperator;
-const stamp=Date.now();const date=new Date(stamp+30*86400000).toISOString().slice(0,10);const note='Đã kiểm tra khu vực và bàn giao kết quả khảo sát.';const condition='Đủ thiết bị, nguyên vẹn, pin đã kiểm tra.';
+const stamp=Date.now();const date=new Date(stamp+30*86400000).toISOString().slice(0,10);const note='Đã kiểm tra khu vực và bàn giao kết quả khảo sát.';const condition='Đủ thiết bị, nguyên vẹn, pin đã kiểm tra.';const requestNote='Ưu tiên khảo sát ranh giới phía bắc.\nBàn giao báo cáo trước 16 giờ.';
 let uploadUrl,mediaId;
 async function mutation(page,label,suffix,expected=200){
  const pending=page.waitForResponse(r=>new URL(r.url()).pathname.endsWith(suffix)&&r.request().method()==='POST');
@@ -49,14 +49,41 @@ try {
   await p.getByLabel('Họ và tên',{exact:true}).fill('Synthetic browser profile');await p.getByRole('button',{name:'Lưu thay đổi',exact:true}).click();
   await p.getByRole('status').filter({hasText:'Đã lưu hồ sơ của bạn.'}).waitFor();await p.reload();await p.locator('.profile-details dd').getByText('Synthetic browser profile',{exact:true}).waitFor();
  });
+ await check('Every linked service resolves its mission type after navigation and a cold reload',async()=>{
+  const p=customer.page;current=p;
+  const services=await api(customer.token,'GET','/api/v1/uav-services');
+  const known=['UAV_RENTAL','AREA_INSPECTION','AERIAL_RECORDING','DATA_COLLECTION'];
+  const waitForCatalogue=id=>p.waitForFunction(serviceId=>{
+   const select=document.querySelector('#mission-serviceId');
+   return select&&select.options.length>2&&select.value===String(serviceId);
+  },id);
+  for(const code of known){
+   const service=services.find(s=>s.code===code&&s.active);assert.ok(service,code);
+   await p.goto(origin('customer')+'/services');
+   await p.locator(`a[href="/customer/missions/create?serviceId=${service.id}"]`).click();
+   await waitForCatalogue(service.id);
+   assert.equal(await p.locator('#mission-missionType').inputValue(),code,code+' card link');
+   // Reload removes the query cache, reproducing an asynchronous catalogue response.
+   await p.reload();await waitForCatalogue(service.id);
+   assert.equal(await p.locator('#mission-missionType').inputValue(),code,code+' cold link');
+   await p.locator('#mission-missionType').selectOption('OTHER');
+   await p.getByLabel(/^Tiêu đề/).fill('Keep explicit mission type');
+   assert.equal(await p.locator('#mission-missionType').inputValue(),'OTHER',code+' explicit override');
+   const other=services.find(s=>s.id!==service.id&&s.active&&known.includes(s.code));
+   await p.locator('#mission-serviceId').selectOption(String(other.id));
+   assert.equal(await p.locator('#mission-missionType').inputValue(),other.code,code+' switch service');
+   await p.locator('#mission-serviceId').selectOption(String(service.id));
+   assert.equal(await p.locator('#mission-missionType').inputValue(),code,code+' selected service');
+  }
+ });
  await check('Customer creates AREA_INSPECTION and submits through UI',async()=>{
   const p=customer.page;await p.goto(`${origin('customer')}/missions/create`);await p.locator('#mission-missionType').selectOption('AREA_INSPECTION');
   await p.getByLabel(/^Tiêu đề/).fill('Kiểm tra bàn giao '+stamp);await p.getByLabel('Ngày yêu cầu').fill(date);
-  await p.getByLabel(/^Bắt đầu/).fill(date+'T09:00');await p.getByLabel('Kết thúc dự kiến').fill(date+'T10:00');await p.getByLabel(/^Địa điểm/).fill('Khu vực thử nghiệm Hà Nội');
-  await p.getByRole('button',{name:'Kiểm tra & xem lại'}).click();await p.getByRole('button',{name:'Lưu bản nháp',exact:true}).click();await p.waitForURL(/\/missions\/\d+$/);id=Number(new URL(p.url()).pathname.split('/').pop());await mutation(p,'Gửi xác nhận','/submit');
+  await p.getByLabel(/^Bắt đầu/).fill(date+'T09:00');await p.getByLabel('Kết thúc dự kiến').fill(date+'T10:00');await p.getByLabel(/^Địa điểm/).fill('Khu vực thử nghiệm Hà Nội');await p.locator('#mission-notes').fill(requestNote);await p.locator('#mission-latitude').fill('0');await p.locator('#mission-longitude').fill('105.834');
+  await p.getByRole('button',{name:'Kiểm tra & xem lại'}).click();await p.getByRole('button',{name:'Lưu bản nháp',exact:true}).click();await p.waitForURL(/\/missions\/\d+$/);id=Number(new URL(p.url()).pathname.split('/').pop());await p.getByText(requestNote,{exact:true}).waitFor();await p.getByText('Vĩ độ: 0 · Kinh độ: 105.834',{exact:true}).waitFor();await mutation(p,'Gửi xác nhận','/submit');
  });
  await check('Dispatcher confirms and assigns resources; ready is unavailable until acceptance',async()=>{
-  current=admin.page;await admin.page.goto(`${origin("operations")}/missions/${id}`);await mutation(admin.page,'Xác nhận','/confirm');
+  current=admin.page;await admin.page.goto(`${origin("operations")}/missions/${id}`);await admin.page.getByText(requestNote,{exact:true}).waitFor();await admin.page.getByText('Vĩ độ: 0 · Kinh độ: 105.834',{exact:true}).waitFor();await mutation(admin.page,'Xác nhận','/confirm');
   await assign('Trạm',fixture.stationId,'Gán trạm','assign-station');await assign('UAV',fixture.uavId,'Gán uav','assign-uav');await assign('Người vận hành',operator.user.id,'Gán người vận hành','assign-operator');
   await admin.page.getByRole('combobox',{name:'Thiết bị',exact:true}).selectOption(String(fixture.equipmentId));await admin.page.getByLabel('Số lượng giữ',{exact:true}).fill('2');await mutation(admin.page,'Giữ thiết bị','/reserve-equipment');
   await admin.page.getByText('Chờ người vận hành tiếp nhận',{exact:true}).waitFor();assert.equal(await admin.page.getByRole('button',{name:'Sẵn sàng',exact:true}).count(),0);

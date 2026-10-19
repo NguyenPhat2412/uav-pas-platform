@@ -2,6 +2,7 @@
 import { MEDIA_ACCEPT, MEDIA_UPLOAD_POLICY, MEDIA_UPLOAD_RETENTION, MediaFileError } from "@/lib/api/media-policy";
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { MissionRequestDetails } from '@/features/missions/components/MissionRequestDetails';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, Play } from 'lucide-react';
 import { MissionTimeline } from "@/components/shared/MissionTimeline";
@@ -160,6 +161,7 @@ function MissionDetail({ id }: { id: string }) {
       <div className="mission-title-row"><div><p className="mission-code">{mission.code}</p><h1 id="mission-title">{mission.title}</h1><p className="mission-muted">{mission.locationName}</p></div><MissionStatusBadge status={mission.status} /></div>
       <dl className="mission-facts"><Info label="Loại nhiệm vụ" value={displayLabel(mission.missionType)} /><Info label="Bắt đầu dự kiến" value={formatDate(mission.startTime)} /><Info label="Kết thúc dự kiến" value={formatDate(mission.expectedEndTime)} /><Info label="Mức ưu tiên" value={displayLabel(mission.priority)} /></dl>
       {mission.description && <p className="mission-muted" style={{ marginTop: 20 }}>{mission.description}</p>}
+        <MissionRequestDetails mission={mission} />
     </div><div className="mission-guidance"><p>{missionHint(mission.status)}</p><div className="mission-actions">
       {controls.submit && <Button disabled={disabled} onClick={() => void action(() => missionService.submit(mission.id))}>Gửi xác nhận</Button>}
       {controls.confirm && <Button disabled={disabled} onClick={() => void action(() => missionService.confirm(mission.id))}>Xác nhận</Button>}
