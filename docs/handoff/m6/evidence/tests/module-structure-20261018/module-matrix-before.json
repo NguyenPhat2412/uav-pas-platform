@@ -1,0 +1,110 @@
+[
+  {
+    "module": "audit",
+    "request": 0,
+    "response": 1,
+    "record": 0
+  },
+  {
+    "module": "auth",
+    "request": 4,
+    "response": 1,
+    "record": 0
+  },
+  {
+    "module": "billing",
+    "request": 4,
+    "response": 5,
+    "record": 1
+  },
+  {
+    "module": "dashboard",
+    "request": 0,
+    "response": 2,
+    "record": 1
+  },
+  {
+    "module": "inventory",
+    "request": 2,
+    "response": 2,
+    "record": 0
+  },
+  {
+    "module": "maintenance",
+    "request": 9,
+    "response": 3,
+    "record": 0
+  },
+  {
+    "module": "media",
+    "request": 1,
+    "response": 2,
+    "record": 2
+  },
+  {
+    "module": "mission",
+    "request": 12,
+    "response": 6,
+    "record": 1
+  },
+  {
+    "module": "notification",
+    "request": 1,
+    "response": 2,
+    "record": 0
+  },
+  {
+    "module": "permission",
+    "request": 0,
+    "response": 3,
+    "record": 0
+  },
+  {
+    "module": "reporting",
+    "request": 0,
+    "response": 1,
+    "record": 0
+  },
+  {
+    "module": "role",
+    "request": 1,
+    "response": 1,
+    "record": 0
+  },
+  {
+    "module": "sar",
+    "request": 6,
+    "response": 7,
+    "record": 1
+  },
+  {
+    "module": "settings",
+    "request": 1,
+    "response": 1,
+    "record": 0
+  },
+  {
+    "module": "station",
+    "request": 1,
+    "response": 1,
+    "record": 0
+  },
+  {
+    "module": "uav",
+    "request": 1,
+    "response": 2,
+    "record": 0
+  },
+  {
+    "module": "user",
+    "request": 1,
+    "response": 2,
+    "record": 1
+  },
+  {
+    "module": "webhook",
+    "request": 2,
+    "response": 4,
+    "record": 1
+  }
+]

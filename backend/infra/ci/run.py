@@ -19,7 +19,7 @@ assert not W.exists(), 'Use a fresh private work directory'
 assert W != O and W not in O.parents, 'Safe results must be outside private work'
 W.mkdir(parents=True); O.mkdir(parents=True,exist_ok=True)
 (W/'owner.json').write_text(json.dumps({'project':ARGS.project}))
-PORTS={k:int(os.getenv('UAV_E2E_'+k.upper()+'_PORT',v)) for k,v in dict(db=55446,storage=9044,storage_console=9045,backend=18584,web=3410,customer=3411,operations=3412,admin=3413,legacy=3430).items()}
+PORTS={k:int(os.getenv('UAV_E2E_'+k.upper()+'_PORT',v)) for k,v in dict(db=55446,storage=9044,storage_console=9045,backend=18584,web=3410).items()}
 assert len(set(PORTS.values()))==len(PORTS), 'Ports must be distinct'
 for port in PORTS.values():
     with socket.socket() as sock:
@@ -36,7 +36,7 @@ ENV.update(COMPOSE_PROJECT_NAME=ARGS.project,UAV_VOLUME_GENERATION='source',UAV_
  SPRING_PROFILES_ACTIVE='stabilization',SERVER_PORT=str(PORTS['backend']),SERVER_ADDRESS='127.0.0.1',
  SPRING_DATASOURCE_URL=f"jdbc:postgresql://127.0.0.1:{PORTS['db']}/uav_e2e",SPRING_DATASOURCE_USERNAME='uav_test',SPRING_DATASOURCE_PASSWORD=ENV['UAV_TEST_DB_PASSWORD'],
  APP_STORAGE_ENDPOINT=f"http://127.0.0.1:{PORTS['storage']}",APP_STORAGE_PUBLIC_ENDPOINT=f"http://127.0.0.1:{PORTS['storage']}",APP_STORAGE_ACCESS_KEY='uav_e2e',APP_STORAGE_SECRET_KEY=ENV['UAV_TEST_STORAGE_PASSWORD'],APP_STORAGE_BUCKET='uav-e2e',APP_STORAGE_ENSURE_BUCKET='true',
- APP_CORS_ALLOWED_ORIGINS=','.join(f'http://localhost:{PORTS[k]}' for k in ['web','customer','operations','admin','legacy']),APP_STORAGE_CORS_ORIGIN=f"http://localhost:{PORTS['operations']}",
+ APP_CORS_ALLOWED_ORIGINS=f"http://localhost:{PORTS['web']}",APP_STORAGE_CORS_ORIGIN=f"http://localhost:{PORTS['web']}",
  APP_WEBHOOK_ENABLED='false',APP_WEBHOOK_APPROVED_URLS='',APP_BILLING_PROVIDER_ENABLED='false',APP_COOKIE_SECURE='false',APP_COOKIE_DOMAIN='',APP_COOKIE_SAME_SITE='Lax',
  APP_BILLING_INVOICE_WORKER_ENABLED='false',APP_FINANCIAL_OUTBOX_WORKER_ENABLED='false',APP_FINANCIAL_OUTBOX_RETRY_DELAY_MS='1000',
  NEXT_TELEMETRY_DISABLED='1',NEXT_PUBLIC_API_URL=f"http://localhost:{PORTS['backend']}",UAV_E2E_PRIVATE_DIR=str(W),UAV_E2E_RESULT_DIR=str(O))
@@ -273,16 +273,13 @@ try:
     if ARGS.reuse_build:
         assert manifest.exists() and json.loads(manifest.read_text())==identity,'STALE_BUILD_OR_API_ORIGIN'
     else:
-        command(['npm','run','build','--workspaces'],cwd=F,timeout=900)
-        command(['npm','run','build'],cwd=F/'legacy',timeout=600)
+        command(['npm','run','build'],cwd=F,timeout=900)
         manifest.parent.mkdir(parents=True,exist_ok=True);manifest.write_text(json.dumps(frontend_build_identity()))
-    for app in ['web','customer','operations','admin','legacy']:
-        directory=F/'apps'/app if app!='legacy' else F/'legacy'
-        # Use the documented production server; no dev server or demo auth bypass.
-        cli=F/'node_modules/next/dist/bin/next' if app!='legacy' else F/'legacy/node_modules/next/dist/bin/next'
-        assert (directory/'.next/BUILD_ID').exists(),'PRODUCTION_BUILD_REQUIRED'
-        process=start(app,['node',cli,'start','-p',str(PORTS[app]),'-H','127.0.0.1'],directory)
-        wait_url(f'http://127.0.0.1:{PORTS[app]}',process)
+    # One production application serves public, customer, operations and admin paths.
+    ENV['PORT']=str(PORTS['web']); ENV['UAV_FRONTEND_HOST']='127.0.0.1'
+    assert (F/'.next/BUILD_ID').exists(),'PRODUCTION_BUILD_REQUIRED'
+    process=start('frontend',['node',F/'scripts/start.mjs'],F)
+    wait_url(f'http://127.0.0.1:{PORTS["web"]}',process)
     passed(CURRENT,reused=ARGS.reuse_build)
     stage('portable real browser mission suite');command(['npm','run','test:e2e'],cwd=F,timeout=420);passed(CURRENT)
     if ARGS.recovery: recovery()

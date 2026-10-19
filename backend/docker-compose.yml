@@ -49,8 +49,8 @@ services:
       APP_STORAGE_ENDPOINT: http://minio:9000
       APP_STORAGE_PUBLIC_ENDPOINT: http://localhost:9000
       APP_STORAGE_ENSURE_BUCKET: "true"
-      APP_STORAGE_CORS_ORIGIN: http://localhost:3000
-      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:3100,http://localhost:3101,http://localhost:3102,http://localhost:3103}
+      APP_STORAGE_CORS_ORIGIN: ${NEXT_PUBLIC_APP_URL:-http://localhost:3100}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost:3100}
       APP_STORAGE_BUCKET: ${MINIO_BUCKET:-uav-pas}
       APP_STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
       APP_STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-change-me-minio}
@@ -65,14 +65,16 @@ services:
 
   frontend:
     build:
-      context: ../frontend/legacy
+      context: ../frontend
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3100}
+        NEXT_PUBLIC_ENVIRONMENT: ${NEXT_PUBLIC_ENVIRONMENT:-local}
     env_file:
       - ../.env
     ports:
-      - "${FRONTEND_PORT:-3000}:3000"
+      - "${FRONTEND_PORT:-3100}:3100"
     depends_on:
       - backend
     restart: unless-stopped

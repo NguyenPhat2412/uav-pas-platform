@@ -5,14 +5,14 @@ import com.uav.platform.modules.maintenance.dto.request.CancelRepairOrderRequest
 import com.uav.platform.modules.maintenance.dto.request.CompleteRepairOrderRequest;
 import com.uav.platform.modules.maintenance.dto.request.CreateMaintenanceScheduleRequest;
 import com.uav.platform.modules.maintenance.dto.request.CreateRepairOrderRequest;
+import com.uav.platform.modules.maintenance.dto.request.MaintenanceScheduleQueryRequest;
+import com.uav.platform.modules.maintenance.dto.request.RepairOrderQueryRequest;
 import com.uav.platform.modules.maintenance.dto.request.RepairOrderVersionRequest;
 import com.uav.platform.modules.maintenance.dto.request.UpdateMaintenanceScheduleRequest;
 import com.uav.platform.modules.maintenance.dto.request.UpdateRepairMaterialsRequest;
 import com.uav.platform.modules.maintenance.dto.request.UpdateRepairOrderRequest;
 import com.uav.platform.modules.maintenance.dto.response.MaintenanceScheduleResponse;
 import com.uav.platform.modules.maintenance.dto.response.RepairOrderResponse;
-import com.uav.platform.modules.maintenance.enums.DueStatus;
-import com.uav.platform.modules.maintenance.enums.RepairStatus;
 
 import jakarta.validation.Valid;
 
@@ -22,7 +22,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public interface MaintenanceService {
     PageResponse<MaintenanceScheduleResponse> schedules(
-            Long uavId, DueStatus dueStatus, Pageable page);
+            MaintenanceScheduleQueryRequest request, Pageable page);
 
     MaintenanceScheduleResponse createSchedule(
             @Valid CreateMaintenanceScheduleRequest r, String actor);
@@ -30,7 +30,7 @@ public interface MaintenanceService {
     MaintenanceScheduleResponse updateSchedule(
             Long id, @Valid UpdateMaintenanceScheduleRequest r, String actor);
 
-    PageResponse<RepairOrderResponse> orders(Long uavId, RepairStatus status, Pageable page);
+    PageResponse<RepairOrderResponse> orders(RepairOrderQueryRequest request, Pageable page);
 
     RepairOrderResponse order(Long id);
 

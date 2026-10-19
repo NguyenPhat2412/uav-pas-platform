@@ -5,7 +5,7 @@ import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.audit.enums.AuditAction;
 import com.uav.platform.modules.audit.service.AuditLogService;
 import com.uav.platform.modules.auth.service.AuthSessionLock;
-import com.uav.platform.modules.user.dto.record.UserProfileUpdateRequest;
+import com.uav.platform.modules.user.dto.record.UserProfileUpdateCommand;
 import com.uav.platform.modules.user.dto.request.UserProfilePatchRequest;
 import com.uav.platform.modules.user.dto.response.UserProfileResponse;
 import com.uav.platform.modules.user.entity.AppUser;
@@ -42,10 +42,10 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     @Transactional
     public UserProfileResponse updatePayload(String username, UserProfilePatchRequest request) {
-        return update(username, toUpdateRequest(request.fields()));
+        return update(username, toUpdateCommand(request.fields()));
     }
 
-    private UserProfileUpdateRequest toUpdateRequest(Map<String, Object> body) {
+    private UserProfileUpdateCommand toUpdateCommand(Map<String, Object> body) {
         if (!body.keySet().equals(Set.of("fullName", "phoneNumber", "expectedRevision"))) {
             throw SystemException.badRequest(
                     "Chỉ được cập nhật họ tên và số điện thoại kèm phiên bản hồ sơ.");
@@ -55,7 +55,7 @@ public class UserProfileServiceImpl implements UserProfileService {
                 || !(body.get("expectedRevision") instanceof String)) {
             throw SystemException.badRequest("Thông tin hồ sơ không đúng định dạng.");
         }
-        return new UserProfileUpdateRequest(
+        return new UserProfileUpdateCommand(
                 (String) body.get("fullName"),
                 (String) body.get("phoneNumber"),
                 (String) body.get("expectedRevision"));
@@ -63,7 +63,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     @Transactional
-    public UserProfileResponse update(String username, UserProfileUpdateRequest request) {
+    public UserProfileResponse update(String username, UserProfileUpdateCommand request) {
         String name = request.fullName() == null ? null : request.fullName().trim();
         if (name != null && name.isEmpty()) name = null;
         String phone = request.phoneNumber() == null ? "" : request.phoneNumber().trim();

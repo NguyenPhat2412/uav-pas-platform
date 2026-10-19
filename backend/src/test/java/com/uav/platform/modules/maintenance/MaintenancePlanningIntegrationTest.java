@@ -135,7 +135,12 @@ class MaintenancePlanningIntegrationTest {
         assertEquals(RepairStatus.COMPLETED, o.status());
         assertEquals(UavStatus.AVAILABLE, uavs.get(uavId).status());
         assertEquals("335", o.totalMaterialCost());
-        var after = service.schedules(uavId, null, PageRequest.of(0, 20)).content().getFirst();
+        var after =
+                service.schedules(
+                                new MaintenanceScheduleQueryRequest(uavId, null),
+                                PageRequest.of(0, 20))
+                        .content()
+                        .getFirst();
         assertEquals(today, after.lastCompletedDate());
         assertEquals(today.plusDays(30), after.nextDueDate());
         assertTrue(after.version() > s.version());
@@ -148,7 +153,12 @@ class MaintenancePlanningIntegrationTest {
                                 new CompleteRepairOrderRequest(completed.version(), "Repeat", true),
                                 actor()));
         assertEquals(
-                after, service.schedules(uavId, null, PageRequest.of(0, 20)).content().getFirst());
+                after,
+                service.schedules(
+                                new MaintenanceScheduleQueryRequest(uavId, null),
+                                PageRequest.of(0, 20))
+                        .content()
+                        .getFirst());
         assertEquals(
                 0,
                 count(
@@ -205,7 +215,13 @@ class MaintenancePlanningIntegrationTest {
                 actor());
         assertEquals(UavStatus.ASSIGNED, uavs.get(uavId).status());
         assertEquals(uavId, missions.get(mission, auth(admin)).uavId());
-        assertEquals(s, service.schedules(uavId, null, PageRequest.of(0, 20)).content().getFirst());
+        assertEquals(
+                s,
+                service.schedules(
+                                new MaintenanceScheduleQueryRequest(uavId, null),
+                                PageRequest.of(0, 20))
+                        .content()
+                        .getFirst());
     }
 
     @Test
@@ -227,7 +243,13 @@ class MaintenancePlanningIntegrationTest {
         assertEquals(RepairStatus.CANCELLED, o.status());
         assertEquals("300000", o.totalMaterialCost());
         assertEquals(UavStatus.MAINTENANCE, uavs.get(uavId).status());
-        assertEquals(s, service.schedules(uavId, null, PageRequest.of(0, 20)).content().getFirst());
+        assertEquals(
+                s,
+                service.schedules(
+                                new MaintenanceScheduleQueryRequest(uavId, null),
+                                PageRequest.of(0, 20))
+                        .content()
+                        .getFirst());
         var followup = order(s.id());
         assertEquals(
                 RepairStatus.IN_PROGRESS,
@@ -360,7 +382,10 @@ class MaintenancePlanningIntegrationTest {
                                 new CreateRepairOrderRequest(
                                         other, s.id(), "Wrong UAV", "", today, "Technician"),
                                 actor()));
-        assertEquals(0, service.orders(other, null, PageRequest.of(0, 20)).totalElements());
+        assertEquals(
+                0,
+                service.orders(new RepairOrderQueryRequest(other, null), PageRequest.of(0, 20))
+                        .totalElements());
     }
 
     @Test
@@ -371,20 +396,29 @@ class MaintenancePlanningIntegrationTest {
         assertEquals(
                 List.of(overdue.id()),
                 service
-                        .schedules(uavId, DueStatus.OVERDUE, PageRequest.of(0, 20))
+                        .schedules(
+                                new MaintenanceScheduleQueryRequest(uavId, DueStatus.OVERDUE),
+                                PageRequest.of(0, 20))
                         .content()
                         .stream()
                         .map(MaintenanceScheduleResponse::id)
                         .toList());
         assertEquals(
                 List.of(due.id()),
-                service.schedules(uavId, DueStatus.DUE, PageRequest.of(0, 20)).content().stream()
+                service
+                        .schedules(
+                                new MaintenanceScheduleQueryRequest(uavId, DueStatus.DUE),
+                                PageRequest.of(0, 20))
+                        .content()
+                        .stream()
                         .map(MaintenanceScheduleResponse::id)
                         .toList());
         assertEquals(
                 List.of(upcoming.id()),
                 service
-                        .schedules(uavId, DueStatus.UPCOMING, PageRequest.of(0, 20))
+                        .schedules(
+                                new MaintenanceScheduleQueryRequest(uavId, DueStatus.UPCOMING),
+                                PageRequest.of(0, 20))
                         .content()
                         .stream()
                         .map(MaintenanceScheduleResponse::id)
@@ -396,10 +430,16 @@ class MaintenancePlanningIntegrationTest {
                 actor());
         assertEquals(
                 0,
-                service.schedules(uavId, DueStatus.OVERDUE, PageRequest.of(0, 20)).totalElements());
+                service.schedules(
+                                new MaintenanceScheduleQueryRequest(uavId, DueStatus.OVERDUE),
+                                PageRequest.of(0, 20))
+                        .totalElements());
         assertEquals(
                 1,
-                service.schedules(uavId, DueStatus.PAUSED, PageRequest.of(0, 20)).totalElements());
+                service.schedules(
+                                new MaintenanceScheduleQueryRequest(uavId, DueStatus.PAUSED),
+                                PageRequest.of(0, 20))
+                        .totalElements());
     }
 
     @Test
@@ -472,7 +512,13 @@ class MaintenancePlanningIntegrationTest {
         assertEquals(UavStatus.MAINTENANCE, uavs.get(uavId).status());
         assertEquals(
                 histories, count("SELECT count(*) FROM uav_status_history WHERE uav_id=?", uavId));
-        assertEquals(s, service.schedules(uavId, null, PageRequest.of(0, 20)).content().getFirst());
+        assertEquals(
+                s,
+                service.schedules(
+                                new MaintenanceScheduleQueryRequest(uavId, null),
+                                PageRequest.of(0, 20))
+                        .content()
+                        .getFirst());
     }
 
     @Test
@@ -509,7 +555,11 @@ class MaintenancePlanningIntegrationTest {
     void concurrentCreatesYieldOneActiveOrder() throws Exception {
         assertEquals(1, race(() -> order(null), () -> order(null)));
         assertEquals(
-                1, service.orders(uavId, RepairStatus.OPEN, PageRequest.of(0, 20)).totalElements());
+                1,
+                service.orders(
+                                new RepairOrderQueryRequest(uavId, RepairStatus.OPEN),
+                                PageRequest.of(0, 20))
+                        .totalElements());
         assertEquals(UavStatus.AVAILABLE, uavs.get(uavId).status());
     }
 
@@ -557,7 +607,11 @@ class MaintenancePlanningIntegrationTest {
                                         actor())));
         var finalOrder = service.order(o.id());
         var finalSchedule =
-                service.schedules(uavId, null, PageRequest.of(0, 20)).content().getFirst();
+                service.schedules(
+                                new MaintenanceScheduleQueryRequest(uavId, null),
+                                PageRequest.of(0, 20))
+                        .content()
+                        .getFirst();
         if (finalOrder.status() == RepairStatus.COMPLETED) {
             assertEquals(UavStatus.AVAILABLE, uavs.get(uavId).status());
             assertEquals(today.plusDays(30), finalSchedule.nextDueDate());

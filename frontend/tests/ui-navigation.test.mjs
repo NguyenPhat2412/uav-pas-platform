@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import ts from 'typescript';
-const code = await readFile(new URL('../packages/ui/src/navigation.ts', import.meta.url), 'utf8');
+const code = await readFile(new URL('../src/components/shared/navigation.ts', import.meta.url), 'utf8');
 const js = ts.transpileModule(code, { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText;
 const { activeDestination } = await import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
 const items = [{href:'/overview'}, {href:'/dispatch/missions'}, {href:'/users'}, {href:'/users/permissions'}];

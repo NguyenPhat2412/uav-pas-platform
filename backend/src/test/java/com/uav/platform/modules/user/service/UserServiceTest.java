@@ -6,7 +6,8 @@ import static org.mockito.Mockito.*;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.modules.role.dto.request.RoleUpdateRequest;
+import com.uav.platform.modules.user.dto.request.RoleUpdateRequest;
+import com.uav.platform.modules.user.dto.request.UserQueryRequest;
 import com.uav.platform.modules.user.dto.response.UserResponse;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.enums.UserRole;
@@ -56,7 +57,7 @@ class UserServiceTest {
                 .thenReturn(userPage);
 
         PageResponse<UserResponse> response =
-                userService.getUsers(0, 10, "username", "asc", null, null);
+                userService.getUsers(new UserQueryRequest(0, 10, "username", "asc", null, null));
 
         assertNotNull(response);
         assertEquals(2, response.content().size());
@@ -80,7 +81,8 @@ class UserServiceTest {
         when(userRepository.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(emptyPage);
 
-        userService.getUsers(0, 10, "invalid_column_injection", "desc", null, null);
+        userService.getUsers(
+                new UserQueryRequest(0, 10, "invalid_column_injection", "desc", null, null));
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
         verify(userRepository).findAll(any(Specification.class), captor.capture());
@@ -97,7 +99,8 @@ class UserServiceTest {
         when(userRepository.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(emptyPage);
 
-        userService.getUsers(0, 10, "createdAt", "desc", "  pilot  ", UserRole.ROLE_PILOT);
+        userService.getUsers(
+                new UserQueryRequest(0, 10, "createdAt", "desc", "  pilot  ", UserRole.ROLE_PILOT));
 
         verify(userRepository).findAll(any(Specification.class), any(Pageable.class));
     }

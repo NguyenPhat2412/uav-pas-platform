@@ -1,0 +1,10 @@
+{
+  "command": "python3 -m unittest discover -s backend/infra/ci/tests -p test_failure_paths.py",
+  "tests": 9,
+  "failures": 0,
+  "errors": 0,
+  "staleReportRegression": {
+    "before": "FAIL: stale 748-test report incorrectly accepted",
+    "after": "PASS: NO_TESTS_EXECUTED rejects stale evidence"
+  }
+}

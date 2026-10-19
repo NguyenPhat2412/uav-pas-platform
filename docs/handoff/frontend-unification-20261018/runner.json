@@ -1,0 +1,110 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "isolated PostgreSQL and MinIO readiness",
+      "status": "PASS"
+    },
+    {
+      "name": "compile backend into private target",
+      "status": "PASS"
+    },
+    {
+      "name": "generated synthetic fixture",
+      "status": "PASS",
+      "users": 5
+    },
+    {
+      "name": "production frontend builds",
+      "status": "PASS",
+      "reused": false
+    },
+    {
+      "name": "portable real browser mission suite",
+      "status": "PASS"
+    },
+    {
+      "name": "bounded authenticated local load",
+      "status": "PASS",
+      "concurrency": 4,
+      "requests": 40,
+      "durationSeconds": 0.129,
+      "errors": 0,
+      "p50Ms": 10.09,
+      "p95Ms": 27.96,
+      "maxMs": 28.4,
+      "productionSla": false
+    },
+    {
+      "name": "owned process/container/volume cleanup",
+      "status": "PASS"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "uav-unified-20261018",
+        "-f",
+        "$ROOT/backend/infra/ci/compose.yml",
+        "up",
+        "-d",
+        "--wait",
+        "--wait-timeout",
+        "90"
+      ],
+      "timeoutSeconds": 900
+    },
+    {
+      "command": [
+        "./mvnw",
+        "-B",
+        "-Duav.build.directory=$ROOT/docs/work/frontend-unification-20261018/e2e-private-3/backend-target",
+        "compile",
+        "dependency:build-classpath",
+        "-Dmdep.outputFile=$ROOT/docs/work/frontend-unification-20261018/e2e-private-3/classpath.txt"
+      ],
+      "timeoutSeconds": 600
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "timeoutSeconds": 900
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test:e2e"
+      ],
+      "timeoutSeconds": 420
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "uav-unified-20261018",
+        "-f",
+        "$ROOT/backend/infra/ci/compose.yml",
+        "down",
+        "--volumes",
+        "--remove-orphans"
+      ],
+      "timeoutSeconds": 180
+    }
+  ],
+  "ports": {
+    "db": 55446,
+    "storage": 9044,
+    "storage_console": 9045,
+    "backend": 18584,
+    "web": 3410
+  },
+  "hostedCiExecuted": false
+}

@@ -5,11 +5,11 @@ import ts from 'typescript';
 
 const source = path => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 const compile = value => `data:text/javascript;base64,${Buffer.from(ts.transpileModule(value, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText).toString('base64')}`;
-const workflowUrl = compile(await source('apps/operations/src/features/maintenance/workflows.ts'));
+const workflowUrl = compile(await source('src/features/maintenance/workflows.ts'));
 const { orderControls, scheduleInput, orderInput, materialInput, closingNote, positiveId, formatVnd, businessToday } = await import(workflowUrl);
 const apiUrl = compile(`export const requests = []; export const apiClient = Object.fromEntries(['get','post','put'].map(method => [method, async (path, body) => { requests.push({method,path,body}); return {}; }]));`);
 const { requests } = await import(apiUrl);
-const { maintenanceService } = await import(compile((await source('apps/operations/src/features/maintenance/service.ts')).replace('@/lib/api.client', apiUrl).replace('./workflows', workflowUrl)));
+const { maintenanceService } = await import(compile((await source('src/features/maintenance/service.ts')).replace('@/lib/api.client', apiUrl).replace('@/features/maintenance/workflows', workflowUrl)));
 const schedule = { title: ' Kiểm tra pin ', intervalDays: '30', nextDueDate: '2028-02-29' };
 const order = { title: ' Kiểm tra pin ', description: ' Ghi nhận tình trạng ', technicianName: ' Nguyễn Văn A ', plannedDate: '2028-02-29' };
 
@@ -88,14 +88,14 @@ test('VND display retains server integer precision and invalid identifiers canno
   for (const value of ['', '0', '-1', '1.2', 'NaN', '9007199254740993']) assert.throws(() => positiveId(value));
 });
 test('neutral repair history is translated without rewriting user-authored text', async () => {
-  const { uavHistoryReason } = await import(compile(await source('apps/operations/src/features/operations/uav-workflows.ts')));
+  const { uavHistoryReason } = await import(compile(await source('src/features/uavs/workflows.ts')));
   assert.equal(uavHistoryReason('Repair order #42 started'), 'Bắt đầu phiếu sửa chữa #42');
   assert.equal(uavHistoryReason('Repair order #42 completed'), 'Hoàn tất phiếu sửa chữa #42');
   assert.equal(uavHistoryReason('Đã kiểm tra động cơ'), 'Đã kiểm tra động cơ');
 });
 
 test('maintenance audit translates generated records and retains exact VND amount and unknown text', async () => {
-  const { displayLabel, auditDetail } = await import(compile(await source('packages/ui/src/presentation.ts')));
+  const { displayLabel, auditDetail } = await import(compile(await source('src/components/shared/presentation.ts')));
   assert.equal(displayLabel('REPAIR_ORDER'), 'Phiếu sửa chữa');
   assert.equal(displayLabel('MAINTENANCE_SCHEDULE'), 'Lịch bảo trì');
   assert.equal(auditDetail('MATERIALS_UPDATED lines=2 totalVND=1000000000000000'), 'Cập nhật 2 dòng vật tư · Tổng 1.000.000.000.000.000 ₫');

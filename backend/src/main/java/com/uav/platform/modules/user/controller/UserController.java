@@ -2,7 +2,8 @@ package com.uav.platform.modules.user.controller;
 
 import com.uav.platform.common.constant.RestEndpoint;
 import com.uav.platform.common.dto.response.PageResponse;
-import com.uav.platform.modules.role.dto.request.RoleUpdateRequest;
+import com.uav.platform.modules.user.dto.request.RoleUpdateRequest;
+import com.uav.platform.modules.user.dto.request.UserQueryRequest;
 import com.uav.platform.modules.user.dto.response.UserResponse;
 import com.uav.platform.modules.user.enums.UserRole;
 import com.uav.platform.modules.user.service.UserService;
@@ -52,7 +53,8 @@ public class UserController {
             @Parameter(description = "Filter by specific user role") @RequestParam(required = false)
                     UserRole role) {
         PageResponse<UserResponse> response =
-                userService.getUsers(page, size, sortBy, direction, keyword, role);
+                userService.getUsers(
+                        new UserQueryRequest(page, size, sortBy, direction, keyword, role));
         return ResponseEntity.ok(response);
     }
 

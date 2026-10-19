@@ -8,22 +8,20 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 
 test('customer portal exposes supported customer routes and no operations controls', () => {
   const routes = ['dashboard/page.tsx', 'services/page.tsx', 'missions/page.tsx', 'missions/create/page.tsx', 'missions/[id]/page.tsx', 'profile/page.tsx'];
-  for (const route of routes) assert.ok(fs.existsSync(path.join(root, 'apps/customer/app/(portal)', route)), route);
-  const detail = read('apps/customer/app/(portal)/missions/[id]/page.tsx');
-  assert.match(detail, /features\/customer\/hooks/);
+  for (const route of routes) assert.ok(fs.existsSync(path.join(root, 'src/app/(customer)/customer/(portal)', route)), route);
+  const detail = read('src/features/missions/pages/customer/missions-[id].tsx');
+  assert.match(detail, /lib\/query\/customer/);
   assert.doesNotMatch(detail, /assignStation|assignUav|assignOperator|confirm\(|reject\(/);
 });
 
 test('customer API boundary uses owner-safe mission endpoints and no feature fetch', () => {
-  const service = read('apps/customer/src/features/customer/service.ts');
+  const service = read('src/lib/api/customer.ts');
   assert.match(service, /\/api\/v1\/missions/);
   assert.match(service, /\/submit/);
   assert.match(service, /\/cancel/);
   assert.doesNotMatch(service, /customerId=/);
-  const files = fs.readdirSync(path.join(root, 'apps/customer/src/features/customer'));
-  for (const file of files) if (file.endsWith('.ts') || file.endsWith('.tsx')) assert.doesNotMatch(read(`apps/customer/src/features/customer/${file}`), /\bfetch\s*\(/);
-  assert.match(read('apps/customer/src/contexts/AuthContext.tsx'), /@uav\/query\/session/);
-  for (const dir of ['apps/customer/src', 'packages/query/src/session']) {
+  assert.match(read('src/providers/PortalProviders.tsx'), /AuthProvider/);
+  for (const dir of ['src/features', 'src/contexts']) {
     const entries = fs.readdirSync(path.join(root, dir), { recursive: true });
     for (const entry of entries) if (String(entry).endsWith('.ts') || String(entry).endsWith('.tsx')) {
       const filePath = path.join(root, dir, String(entry));
@@ -33,5 +31,5 @@ test('customer API boundary uses owner-safe mission endpoints and no feature fet
 });
 
 test('customer mission page avoids exposing implementation details', () => {
-  assert.doesNotMatch(read('apps/customer/app/(portal)/missions/[id]/page.tsx'), /Download dùng signed URL|Backend timeline/);
+  assert.doesNotMatch(read('src/features/missions/pages/customer/missions-[id].tsx'), /Download dùng signed URL|Backend timeline/);
 });

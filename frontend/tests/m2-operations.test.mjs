@@ -5,7 +5,7 @@ import test from 'node:test';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const atRoot = path => `${root}${path}`;
-const operations = atRoot('apps/operations');
+const operations = atRoot('src/app/(operations)/operations');
 
 function filesUnder(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
@@ -20,14 +20,14 @@ test('operations owns the M2 canonical routes and compatibility aliases', () => 
     'media/page.tsx', 'audit/page.tsx', 'dispatch/missions/page.tsx',
     'assigned-missions/page.tsx', 'missions/[id]/page.tsx', '(auth)/login/page.tsx',
     'operations/page.tsx', 'admin/missions/page.tsx', 'operator/missions/page.tsx',
-  ]) assert.equal(existsSync(`${operations}/app/(portal)/${route}`) || existsSync(`${operations}/app/${route}`), true, route);
+  ]) assert.equal(existsSync(`${operations}/(portal)/${route}`) || existsSync(`${operations}/${route}`), true, route);
 });
 
 test('operations uses real service endpoints and the shared API boundary', () => {
-  const service = readFileSync(`${operations}/src/features/operations/services/operations.service.ts`, 'utf8');
+  const service = readFileSync(`${root}src/lib/api/resources.ts`, 'utf8');
   for (const endpoint of ['/api/v1/stations', '/api/v1/uavs', '/api/v1/inventory', '/api/v1/media', '/api/v1/audit-logs']) assert.match(service, new RegExp(endpoint.replaceAll('/', '\\/')));
-  assert.match(readFileSync(`${operations}/src/lib/api.client.ts`, 'utf8'), /@uav\/api-client/);
-  for (const path of filesUnder(`${operations}/src`)) {
+  assert.match(readFileSync(`${root}src/lib/api.client.ts`, 'utf8'), /@\/lib\/api/);
+  for (const path of filesUnder(atRoot('src/features'))) {
     if (/\.(ts|tsx)$/.test(path)) assert.doesNotMatch(readFileSync(path, 'utf8'), /\bfetch\s*\(/, path);
   }
 });

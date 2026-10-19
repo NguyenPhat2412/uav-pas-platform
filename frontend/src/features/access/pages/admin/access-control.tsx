@@ -1,0 +1,1 @@
+import { AdminPage } from '@/components/layout/AdminPage'; import { AccessControl } from "@/features/access/components/PermissionEditor"; export default function Page(){return <AdminPage title="Kiểm soát truy cập" meta="Quản lý quyền theo vai trò và điều chỉnh cho từng tài khoản." permission="PERMISSION_MANAGE" activeResource="access-control"><AccessControl/></AdminPage>;}

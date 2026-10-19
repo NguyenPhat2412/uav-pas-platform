@@ -5,7 +5,8 @@ import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.audit.enums.AuditAction;
 import com.uav.platform.modules.audit.service.AuditLogService;
-import com.uav.platform.modules.role.dto.request.RoleUpdateRequest;
+import com.uav.platform.modules.user.dto.request.RoleUpdateRequest;
+import com.uav.platform.modules.user.dto.request.UserQueryRequest;
 import com.uav.platform.modules.user.dto.response.UserResponse;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.enums.UserRole;
@@ -80,8 +81,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResponse<UserResponse> getUsers(
-            int page, int size, String sortBy, String direction, String keyword, UserRole role) {
+    public PageResponse<UserResponse> getUsers(UserQueryRequest request) {
+        int page = request.page();
+        int size = request.size();
+        String sortBy = request.sortBy();
+        String direction = request.direction();
+        String keyword = request.keyword();
+        UserRole role = request.role();
         // Sanitize page and size parameters
         int pageIndex = Math.max(page, 0);
         int pageSize = Math.min(Math.max(size, 1), 100);

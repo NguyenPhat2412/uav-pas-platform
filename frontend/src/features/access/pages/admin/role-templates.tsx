@@ -1,0 +1,1 @@
+import { AdminPage } from '@/components/layout/AdminPage'; import { TemplateEditor } from "@/features/access/components/PermissionEditor"; export default function Page(){return <AdminPage title="Mẫu vai trò" meta="Thiết lập quyền mặc định cho từng vai trò." permission="PERMISSION_MANAGE" activeResource="role-templates"><TemplateEditor/></AdminPage>;}

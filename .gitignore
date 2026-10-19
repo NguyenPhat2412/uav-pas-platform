@@ -27,3 +27,10 @@ coverage/
 # Backend Maven build output
 backend/target/
 .mvn/wrapper/maven-wrapper.jar
+
+# Incremental TypeScript compilation cache
+*.tsbuildinfo
+
+# Python interpreter cache
+__pycache__/
+*.py[cod]

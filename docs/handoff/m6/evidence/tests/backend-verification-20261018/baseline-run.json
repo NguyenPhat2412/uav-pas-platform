@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "mavenExitCode": 0,
+  "counts": {
+    "tests": 763,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "failedTests": [],
+  "isolatedPostgresAndMinio": true,
+  "ownedServicesRemoved": true
+}

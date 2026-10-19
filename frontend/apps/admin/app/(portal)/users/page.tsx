@@ -1,1 +1,0 @@
-import { AdminPage } from '@/components/layout/AdminPage'; import { Users } from '@/features/admin/components/Users'; export default function Page(){return <AdminPage title="Người dùng" meta="Tài khoản và trạng thái truy cập" permission="USER_READ" activeResource="users"><Users/></AdminPage>;}

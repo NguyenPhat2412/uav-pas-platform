@@ -12,38 +12,53 @@ permissions:
 
 jobs:
   persistence:
+    name: Complete backend verification (zero skipped tests)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_DB: uav_ba_test_suite
-          POSTGRES_USER: uav_test
-          POSTGRES_PASSWORD: ci-disposable-only
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd "pg_isready -U uav_test -d uav_ba_test_suite"
-          --health-interval 2s --health-timeout 2s --health-retries 30
-    env:
-      UAV_STABILIZATION_DB_URL: jdbc:postgresql://127.0.0.1:5432/uav_ba_test_suite
-      UAV_STABILIZATION_DB_USER: uav_test
-      UAV_STABILIZATION_DB_PASSWORD: ci-disposable-only
-    defaults:
-      run:
-        working-directory: backend
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: 21
           cache: maven
-      - name: Verify unit, H2, PostgreSQL concurrency and migration tests
-        run: ./mvnw --batch-mode verify
+      - name: Check verification failure paths
+        run: python3 -m unittest discover -s backend/infra/ci/tests -p test_failure_paths.py
+      - name: Create disposable test credentials
+        shell: bash
+        run: |
+          db_password=$(openssl rand -hex 24)
+          storage_password=$(openssl rand -hex 24)
+          echo "::add-mask::$db_password"
+          echo "::add-mask::$storage_password"
+          echo "UAV_TEST_DB_PASSWORD=$db_password" >> "$GITHUB_ENV"
+          echo "UAV_TEST_STORAGE_USER=uav_ci" >> "$GITHUB_ENV"
+          echo "UAV_TEST_STORAGE_PASSWORD=$storage_password" >> "$GITHUB_ENV"
+      - name: Start disposable PostgreSQL and MinIO
+        run: docker compose -p uav-ci -f backend/docker-compose.stabilization.yml up -d --wait --wait-timeout 90
+      - name: Wait for real object storage readiness
+        run: curl --fail --silent --retry 30 --retry-connrefused --retry-delay 1 --max-time 2 http://127.0.0.1:9014/minio/health/ready
+      - name: Run complete backend suite including PostgreSQL and MinIO
+        working-directory: backend
+        env:
+          UAV_STABILIZATION_DB_URL: jdbc:postgresql://127.0.0.1:55444/uav_ba_test_suite
+          UAV_STABILIZATION_DB_USER: uav_test
+          UAV_STABILIZATION_DB_PASSWORD: ${{ env.UAV_TEST_DB_PASSWORD }}
+          UAV_STABILIZATION_MINIO_ENDPOINT: http://127.0.0.1:9014
+          UAV_STABILIZATION_MINIO_USER: ${{ env.UAV_TEST_STORAGE_USER }}
+          UAV_STABILIZATION_MINIO_PASSWORD: ${{ env.UAV_TEST_STORAGE_PASSWORD }}
+          UAV_STABILIZATION_MINIO_BUCKET: uav-ci-tests
+        run: python3 infra/ci/backend_tests.py
+      - name: Remove disposable services
+        if: always()
+        run: docker compose -p uav-ci -f backend/docker-compose.stabilization.yml down --volumes
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: backend-test-reports
-          path: backend/target/surefire-reports
+          name: backend-test-counts
+          path: docs/work/backend-test-safe/result.json
+          retention-days: 7
+      - name: Remove private backend logs
+        if: always()
+        run: rm -rf docs/work/backend-test-private
 

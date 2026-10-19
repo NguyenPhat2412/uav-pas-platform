@@ -35,7 +35,7 @@ function harness(auth, search, storedDemo) {
     'next/navigation': { useRouter: () => ({ replace: path => redirects.push(path) }) },
     'lucide-react': Object.fromEntries(['Database', 'ShieldAlert', 'ArrowUpRight', 'Users', 'MapPin', 'Plane', 'History'].map(name => [name, () => null])),
     'next/link': { default: ({ children }) => children },
-    '@uav/ui/presentation': { displayLabel: value => value, formatDate: value => value, auditDetail: value => value },
+    '@/components/shared/presentation': { displayLabel: value => value, formatDate: value => value, auditDetail: value => value },
     '@tanstack/react-query': { useQuery: options => Object.hasOwn(auth, 'summary') ? { data: options.queryKey.includes('admin-dashboard') ? auth.summary : { content: [] }, isPending: false, error: null } : options },
     '@/contexts/AuthContext': { useAuth: () => context },
     '@/components/ui': { KpiCard: props => { cards.push(props); return [props.value, props.meta]; }, Spinner: () => 'AUTH_LOADING', Alert: ({ children }) => children, Button: ({ children }) => children },
@@ -47,6 +47,9 @@ function harness(auth, search, storedDemo) {
     './services/admin.service': { adminService: {} },
     '../services/admin.service': { adminService: {} },
   };
+  modules['@/components/admin/ui'] = modules['@/components/ui'];
+  modules['@/components/admin/layout/AppShell'] = modules['@/components/layout/AppShell'];
+  modules['@/lib/api/admin'] = { adminService: {} };
   function load(path) {
     const compiled = ts.transpileModule(source(path), { compilerOptions: {
       module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX,
@@ -58,7 +61,7 @@ function harness(auth, search, storedDemo) {
     }, window: { location: { search }, localStorage: { getItem: key => key === 'isDemo' ? storedDemo : null } } }, { filename: path });
     return exports;
   }
-  modules['@/components/data/WorkspaceState'] = load('apps/admin/src/components/data/WorkspaceState.tsx');
+  modules['@/components/admin/data/WorkspaceState'] = load('src/components/admin/data/WorkspaceState.tsx');
   return { load, redirects, permissions, cards };
 }
 
@@ -73,24 +76,24 @@ for (const [search, storedDemo] of [['', null], ['?demo=true', null], ['', 'true
     { name: 'authorized', isAuthenticated: true, isLoading: false, permissionsReady: true, allowed: true, visible: true, redirect: false },
   ]) test(`AdminPage protects ${state.name} with ${mode}`, () => {
     const h = harness(state, search, storedDemo);
-    const { AdminPage } = h.load('apps/admin/src/components/layout/AdminPage.tsx');
+    const { AdminPage } = h.load('src/components/layout/AdminPage.tsx');
     const rendered = content(AdminPage({ title: 'Users', permission: 'USER_READ', activeResource: 'users', children: 'PROTECTED_USER_DATA' }));
     assert.equal(rendered.includes('PROTECTED_USER_DATA'), state.visible);
-    assert.deepEqual(h.redirects, state.redirect ? ['/login'] : []);
+    assert.deepEqual(h.redirects, state.redirect ? ['/admin/login'] : []);
     if (state.visible) assert.ok(h.permissions.includes('USER_READ'));
   });
 
   for (const [ready, allowed] of [[false, false], [false, true], [true, false], [true, true]]) {
     test(`admin user query requires ready USER_READ (${ready}/${allowed}) with ${mode}`, () => {
       const h = harness({ isAuthenticated: true, permissionsReady: ready, allowed }, search, storedDemo);
-      const { useAdminUsers } = h.load('apps/admin/src/features/admin/hooks.ts');
+      const { useAdminUsers } = h.load('src/lib/query/admin.ts');
       assert.equal(useAdminUsers(0, '').enabled, ready && allowed);
     });
   }
   for (const [enabled, allowed] of [[false, false], [false, true], [true, false], [true, true]]) {
     test(`operations collection honors MEDIA_READ and caller enable (${enabled}/${allowed}) with ${mode}`, () => {
       const h = harness({ isAuthenticated: true, permissionsReady: true, allowed }, search, storedDemo);
-      const { useCollection } = h.load('apps/operations/src/features/operations/hooks/useCollections.ts');
+      const { useCollection } = h.load('src/hooks/useCollections.ts');
       assert.equal(useCollection('media', enabled).enabled, enabled && allowed);
       if (enabled) assert.ok(h.permissions.includes('MEDIA_READ'));
     });
@@ -104,7 +107,7 @@ for (const [available, total, expectedValue, expectedMeta] of [
 ]) test(`admin dashboard preserves ready/total fleet data (${available}/${total})`, () => {
   const h = harness({ isAuthenticated: true, permissionsReady: true, allowed: true,
     summary: { totalUsers: 1, totalStations: 1, availableUavs: available, totalUavs: total, totalAuditEvents: 1 } }, '', null);
-  const { Dashboard } = h.load('apps/admin/src/features/admin/components/Dashboard.tsx');
+  const { Dashboard } = h.load('src/features/dashboard/components/AdminDashboard.tsx');
   content(Dashboard());
   const fleet = h.cards.find(card => card.label === 'UAV sẵn sàng');
   assert.ok(fleet);

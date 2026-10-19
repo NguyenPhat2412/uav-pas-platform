@@ -5,10 +5,9 @@ import test from 'node:test';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const atRoot = path => `${root}${path}`;
-const operations = atRoot('apps/operations');
 
 test('SAR AI Cockpit route exists and is configured with OperationsPage', () => {
-  const pagePath = `${operations}/app/(portal)/sar-cockpit/page.tsx`;
+  const pagePath = `${root}src/features/sar/pages/operations/sar-cockpit.tsx`;
   assert.equal(existsSync(pagePath), true, 'sar-cockpit route should exist');
   
   const content = readFileSync(pagePath, 'utf8');
@@ -18,14 +17,14 @@ test('SAR AI Cockpit route exists and is configured with OperationsPage', () => 
 });
 
 test('AppShell includes SAR AI Cockpit in navigation', () => {
-  const shellPath = `${operations}/src/components/layout/AppShell.tsx`;
+  const shellPath = `${root}src/components/layout/AppShell.tsx`;
   const content = readFileSync(shellPath, 'utf8');
   assert.match(content, /\/sar-cockpit/, 'AppShell navigation should have /sar-cockpit link');
   assert.match(content, /Tác chiến AI & SAR/, 'AppShell navigation should label Tác chiến AI & SAR');
 });
 
 test('AiViewfinder defines YOLOv8s Bounding Boxes, thermal mode and candidate stream', () => {
-  const viewfinderPath = `${operations}/src/features/sar/components/AiViewfinder.tsx`;
+  const viewfinderPath = `${root}src/features/sar/components/AiViewfinder.tsx`;
   assert.equal(existsSync(viewfinderPath), true);
   
   const content = readFileSync(viewfinderPath, 'utf8');
@@ -36,7 +35,7 @@ test('AiViewfinder defines YOLOv8s Bounding Boxes, thermal mode and candidate st
 });
 
 test('SarTacticalMap renders search polygon, LKP marker, flight path, and grid sectors', () => {
-  const mapPath = `${operations}/src/features/sar/components/SarTacticalMap.tsx`;
+  const mapPath = `${root}src/features/sar/components/SarTacticalMap.tsx`;
   assert.equal(existsSync(mapPath), true);
   
   const content = readFileSync(mapPath, 'utf8');
@@ -47,8 +46,8 @@ test('SarTacticalMap renders search polygon, LKP marker, flight path, and grid s
 });
 
 test('UavTelemetryHud and Kv260EdgeStatusCard render core hardware & flight telemetry', () => {
-  const hudPath = `${operations}/src/features/sar/components/UavTelemetryHud.tsx`;
-  const kv260Path = `${operations}/src/features/sar/components/Kv260EdgeStatusCard.tsx`;
+  const hudPath = `${root}src/features/sar/components/UavTelemetryHud.tsx`;
+  const kv260Path = `${root}src/features/sar/components/Kv260EdgeStatusCard.tsx`;
   assert.equal(existsSync(hudPath), true);
   assert.equal(existsSync(kv260Path), true);
 

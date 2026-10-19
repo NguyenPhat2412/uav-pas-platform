@@ -32,18 +32,39 @@ class FailurePaths(unittest.TestCase):
     def backend_gate(self, counts, maven_exit=0):
         script = self.source / 'backend_tests.py'
         shutil.copy2(SOURCE / script.name, script)
-        reports = self.root / 'backend/target/surefire-reports'
-        reports.mkdir(parents=True)
-        if counts is not None:
-            attributes = ' '.join(f'{key}="{value}"' for key, value in counts.items())
-            (reports / 'TEST-synthetic.xml').write_text(f'<testsuite {attributes}/>')
-        with patch.object(subprocess, 'run', return_value=SimpleNamespace(returncode=maven_exit)) as invoked, contextlib.redirect_stdout(io.StringIO()):
+        def fake_maven(args, **kwargs):
+            build = Path(next(arg.split('=', 1)[1] for arg in args if arg.startswith('-Duav.build.directory=')))
+            reports = build / 'surefire-reports'
+            reports.mkdir(parents=True)
+            if counts is not None:
+                attributes = ' '.join(f'{key}="{value}"' for key, value in counts.items())
+                (reports / 'TEST-synthetic.xml').write_text(f'<testsuite {attributes}/>')
+            return SimpleNamespace(returncode=maven_exit)
+
+        with patch.object(subprocess, 'run', side_effect=fake_maven) as invoked, contextlib.redirect_stdout(io.StringIO()):
             with self.assertRaises(SystemExit) as exit_result:
                 runpy.run_path(str(script), run_name='__main__')
         invoked.assert_called_once()
-        self.assertEqual(invoked.call_args.args[0], ['./mvnw', '-B', 'verify'])
+        command = invoked.call_args.args[0]
+        self.assertEqual(command[:2], ['./mvnw', '-B'])
+        self.assertTrue(command[2].startswith('-Duav.build.directory='))
+        self.assertEqual(command[-1], 'verify')
         summary = json.loads((self.root / 'docs/work/backend-test-safe/result.json').read_text())
         return exit_result.exception.code, summary
+
+    def test_backend_stale_reports_cannot_turn_an_empty_run_green(self):
+        script = self.source / 'backend_tests.py'
+        shutil.copy2(SOURCE / script.name, script)
+        reports = self.root / 'backend/target/surefire-reports'
+        reports.mkdir(parents=True)
+        (reports / 'TEST-previous-run.xml').write_text(
+            '<testsuite tests="748" failures="0" errors="0" skipped="0"/>')
+        with patch.object(subprocess, 'run', return_value=SimpleNamespace(returncode=0)), contextlib.redirect_stdout(io.StringIO()):
+            with self.assertRaises(SystemExit) as result:
+                runpy.run_path(str(script), run_name='__main__')
+        self.assertNotEqual(result.exception.code, 0)
+        summary = json.loads((self.root / 'docs/work/backend-test-safe/result.json').read_text())
+        self.assertIn('NO_TESTS_EXECUTED', summary['failureReasons'])
 
     def test_backend_skipped_suite_fails_even_when_maven_succeeds(self):
         code, summary = self.backend_gate(dict(tests=3, failures=0, errors=0, skipped=1))

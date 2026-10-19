@@ -5,11 +5,11 @@ import test from 'node:test';
 
 let ts;
 try { ts = createRequire(import.meta.url)('typescript'); }
-catch { ts = createRequire(new URL('../legacy/package.json', import.meta.url))('typescript'); }
+catch { ts = createRequire(new URL('../package.json', import.meta.url))('typescript'); }
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const compile = source => ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
 const load = source => import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'));
-const { API_ROUTES } = await load(compile(read('packages/api-client/src/routes.ts')));
+const { API_ROUTES } = await load(compile(read('src/lib/api/routes.ts')));
 
 // Compare actual consumer requests to controller mappings, so changing a wrong shared literal
 // and its static assertion together cannot conceal a nonexistent business endpoint.
@@ -33,7 +33,7 @@ async function service(path, exportedName) {
 }
 
 test('customer quota consumer calls the controller quota route and forwards cancellation', async () => {
-  const { instance, calls } = await service('apps/customer/src/features/customer/service.ts', 'customerService');
+  const { instance, calls } = await service('src/lib/api/customer.ts', 'customerService');
   const signal = new AbortController().signal;
   await instance.quota(signal);
   assert.equal(calls[0].endpoint, controllerGet('billing/controller/BillingController.java', 'getQuota'));
@@ -41,7 +41,7 @@ test('customer quota consumer calls the controller quota route and forwards canc
 });
 
 test('admin summary and CSV consumers call their actual role-protected report endpoints', async () => {
-  const { instance, calls } = await service('apps/admin/src/features/admin/services/admin.service.ts', 'adminService');
+  const { instance, calls } = await service('src/lib/api/admin.ts', 'adminService');
   await instance.operationsReport();
   assert.equal(calls[0].endpoint, controllerGet('reporting/controller/ReportController.java', 'getOperationsSummary'));
   assert.equal(API_ROUTES.reports.exportOperationsCsv, controllerGet('reporting/controller/ReportController.java', 'exportCsv'));

@@ -38,8 +38,8 @@ async function downloadResult(session,name){
 try {
  browser=await launch();
  await check('Real Customer, Operations admin and operator login',async()=>{
-  customer=await pageFor(browser,'Customer A',fixture.ports.customer,'customer','/missions');admin=await pageFor(browser,'Dispatcher',fixture.ports.operations,'admin','/dispatch/missions');
-  operator=await pageFor(browser,'Assigned operator',fixture.ports.operations,'operator','/assigned-missions');current=customer.page;
+  customer=await pageFor(browser,'Customer A','customer','customer','/missions');admin=await pageFor(browser,'Dispatcher','operations','admin','/dispatch/missions');
+  operator=await pageFor(browser,'Assigned operator','operations','operator','/assigned-missions');current=customer.page;
  });
  await check('Protected routes require login and own profile persists',async()=>{
   const anonymous=await browser.newContext();const page=await anonymous.newPage();
@@ -127,16 +127,17 @@ try {
   await p.getByRole('heading',{name:'Kết quả bàn giao',exact:true}).scrollIntoViewIfNeeded();await shot(p,'customer-handover');await p.setViewportSize({width:375,height:812});assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);await shot(p,'customer-handover-mobile');
  });
  await check('Another customer and unassigned operator cannot read mission, timeline, files or download',async()=>{
-  otherCustomer=await pageFor(browser,'Customer B',fixture.ports.customer,'customer_b','/missions');otherOperator=await pageFor(browser,'Unassigned operator',fixture.ports.operations,'operator_b','/assigned-missions');
+  otherCustomer=await pageFor(browser,'Customer B','customer','customer_b','/missions');otherOperator=await pageFor(browser,'Unassigned operator','operations','operator_b','/assigned-missions');
   for(const session of [otherCustomer,otherOperator]){for(const suffix of ['', '/timeline','/media'])await api(session.token,'GET',`/api/v1/missions/${id}${suffix}`,undefined,403);await api(session.token,'GET',`/api/v1/media/${mediaId}/download-url`,undefined,403);}
   current=otherCustomer.page;await otherCustomer.page.goto(`${origin("customer")}/missions/${id}`);await otherCustomer.page.getByRole('alert').filter({hasText:'không thuộc tài khoản'}).waitFor();assert.equal(await otherCustomer.page.getByText('handover-report.pdf',{exact:true}).count(),0);
  });
  await check('Admin audit includes acceptance, conflict and completion; no unexpected runtime failure',async()=>{
-  const portal=await pageFor(browser,'Admin audit',fixture.ports.admin,'admin','/audit-logs');current=portal.page;await portal.page.getByRole('heading',{name:'Nhật ký quản trị',exact:true}).waitFor();await portal.page.locator('tbody tr').first().waitFor();await portal.page.getByLabel('Tìm trong trang hiện tại').fill('Hoàn tất');await portal.page.getByRole('row').filter({hasText:'Hoàn tất'}).first().waitFor();await shot(portal.page,'handover-audit');
+  const portal=await pageFor(browser,'Admin audit','admin','admin','/audit-logs');current=portal.page;await portal.page.getByRole('heading',{name:'Nhật ký quản trị',exact:true}).waitFor();await portal.page.locator('tbody tr').first().waitFor();await portal.page.getByLabel('Tìm trong trang hiện tại').fill('Hoàn tất');await portal.page.getByRole('row').filter({hasText:'Hoàn tất'}).first().waitFor();await shot(portal.page,'handover-audit');
   const timeline=await api(operator.token,'GET',`/api/v1/missions/${id}/timeline`);for(const type of ['OPERATOR_ACCEPTED','OPERATOR_CONFLICT','COMPLETED','MEDIA_ATTACHED'])assert.ok(timeline.some(e=>e.eventType===type));
   assert.equal(timeline.filter(e=>e.eventType==='COMPLETED').length,1);assert.deepEqual(errors,[]);assert.deepEqual(network.filter(r=>r.status>=500),[]);
  });
  await check('Logout clears browser access to protected customer routes',async()=>{
+  if (customer.page.viewportSize().width < 901) await customer.page.getByRole('button',{name:'Mở điều hướng',exact:true}).click();
   await customer.page.getByRole('button',{name:/Đăng xuất/}).click();await customer.page.waitForURL(/\/login/);
   await customer.page.goto(origin('customer')+'/missions');await customer.page.waitForURL(/\/login/);
  });

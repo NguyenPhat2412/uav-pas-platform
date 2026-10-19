@@ -1,0 +1,123 @@
+{
+  "retrievedAt": "2026-10-18",
+  "purpose": "Ảnh tư liệu chụp thật thay bộ ảnh AI trên frontend",
+  "usageNote": "Ảnh mô tả hoạt động của đơn vị gốc, không phải nhân sự/cơ sở của UAV PAS. Không hàm ý USGS hoặc tác giả bảo trợ UAV PAS.",
+  "usgsPolicy": "https://www.usgs.gov/information-policies-and-instructions/copyrights-and-credits",
+  "assets": [
+    {
+      "id": "usgs-yosemite-preflight",
+      "input": "yosemite-preflight.jpg",
+      "title": "Chuẩn bị UAV tại Yosemite",
+      "sourcePage": "https://www.usgs.gov/media/images/readying-uas-flight-yosemite-national-park",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/20260721_USGS_NUSO_-_Ackerson_Meadow_UAS_lidar.JPG",
+      "credit": "U.S. Geological Survey",
+      "license": "Public Domain",
+      "published": "2026-07-21",
+      "role": "Trang chủ, dịch vụ thuê UAV và ghi hình",
+      "crop": {
+        "left": 0,
+        "top": 1350,
+        "width": 3024,
+        "height": 2016
+      },
+      "sha256": "e128e8423fd0fd8b6ab5d86327c00e2a46335118e6a5471dfa5ceee40f1c1fb8",
+      "originalDimensions": {
+        "width": 3024,
+        "height": 4032
+      },
+      "originalFile": "originals/usgs-yosemite-preflight.jpg",
+      "webFile": "frontend/public/images/uav-photos/usgs-yosemite-preflight.webp",
+      "webBytes": 563554
+    },
+    {
+      "id": "usgs-golden-survey",
+      "input": "golden-survey.png",
+      "title": "Bay thu thập dữ liệu tại Golden, Colorado",
+      "sourcePage": "https://www.usgs.gov/media/images/collecting-data-using-uncrewed-aircraft-systems-uas",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/2025_CO_Golden_-_Burgess_flies_hyperspectral.png",
+      "credit": "U.S. Geological Survey",
+      "license": "Public Domain",
+      "published": "2025-06-14",
+      "role": "Dịch vụ khảo sát và thu thập dữ liệu",
+      "sha256": "21a4bdbdf56460e54f38d9be20ac0c0cae24aaa22d323820a583a72a2ed1ee75",
+      "originalDimensions": {
+        "width": 3840,
+        "height": 2160
+      },
+      "originalFile": "originals/usgs-golden-survey.png",
+      "webFile": "frontend/public/images/uav-photos/usgs-golden-survey.webp",
+      "webBytes": 538020
+    },
+    {
+      "id": "usgs-plum-island-team",
+      "input": "plum-flight.jpg",
+      "title": "Nhóm vận hành tại Plum Island",
+      "sourcePage": "https://www.usgs.gov/media/images/uas-imagery-collected-plum-island",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/DSC_4892.jpg",
+      "credit": "Sandy Brosnahan / USGS",
+      "license": "Public Domain",
+      "published": "2019-07-11",
+      "role": "Giới thiệu và khung đăng nhập",
+      "sha256": "705122c32a27d5d21c66b1e2fdc9081b479c9486665f3f6cffc73441999a4dac",
+      "originalDimensions": {
+        "width": 7360,
+        "height": 4912
+      },
+      "originalFile": "originals/usgs-plum-island-team.jpg",
+      "webFile": "frontend/public/images/uav-photos/usgs-plum-island-team.webp",
+      "webBytes": 432558
+    },
+    {
+      "id": "usgs-plum-island-preflight",
+      "input": "plum-preflight.jpg",
+      "title": "Kiểm tra UAV trên bãi cất cánh",
+      "sourcePage": "https://www.usgs.gov/media/images/uas-imagery-taken-plum-island",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/DSC_4909.jpg",
+      "credit": "Sandy Brosnahan / USGS",
+      "license": "Public Domain",
+      "published": "2019-07-11",
+      "role": "Ảnh bổ sung để dùng tiếp",
+      "sha256": "ea883c6ec4e86441406ae5f640573de4b32e1b1c5de40d0f5f026c4be6212106",
+      "originalDimensions": {
+        "width": 7177,
+        "height": 4790
+      },
+      "originalFile": "originals/usgs-plum-island-preflight.jpg"
+    },
+    {
+      "id": "usgs-plum-island-coordination",
+      "input": "plum-island.jpg",
+      "title": "Phối hợp chuẩn bị chuyến bay",
+      "sourcePage": "https://www.usgs.gov/media/images/uas-imagery-collected-plum-island-1",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/DSC_4905.jpg",
+      "credit": "Sandy Brosnahan / USGS",
+      "license": "Public Domain",
+      "published": "2019-07-10",
+      "role": "Ảnh dọc bổ sung để dùng tiếp",
+      "sha256": "a3e53f13b37f2a657851cc4f632640680f730046cb7f84ad4acf0de9536bb35c",
+      "originalDimensions": {
+        "width": 4912,
+        "height": 7360
+      },
+      "originalFile": "originals/usgs-plum-island-coordination.jpg"
+    },
+    {
+      "id": "aan-nizal-drone-controller",
+      "input": "bali-controller.jpg",
+      "title": "Cận cảnh bộ điều khiển UAV",
+      "sourcePage": "https://unsplash.com/photos/person-holding-black-drone-controller-1uqe5wMIzqA",
+      "downloadUrl": "https://images.unsplash.com/photo-1548569709-edd69e55c57b?auto=format&fit=max&w=2400&q=90",
+      "credit": "Aan Nizal / Unsplash",
+      "license": "Unsplash License",
+      "licenseUrl": "https://unsplash.com/license",
+      "published": "2019-01-27",
+      "role": "Ảnh bổ sung để dùng tiếp",
+      "sha256": "99dc40d5fe51de24e88c4c45769768aeb702896f9891aaf322bc977547f38861",
+      "originalDimensions": {
+        "width": 2400,
+        "height": 1600
+      },
+      "originalFile": "originals/aan-nizal-drone-controller.jpg"
+    }
+  ]
+}

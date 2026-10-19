@@ -9,6 +9,7 @@ import com.uav.platform.common.constant.RestEndpoint;
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.user.dto.request.UserQueryRequest;
 import com.uav.platform.modules.user.dto.response.UserResponse;
 import com.uav.platform.modules.user.enums.UserStatus;
 import com.uav.platform.modules.user.service.UserService;
@@ -59,7 +60,7 @@ class UserControllerTest {
         PageResponse<UserResponse> pageResponse =
                 new PageResponse<>(List.of(user), 0, 10, 1, 1, true, true, false, false);
 
-        when(userService.getUsers(eq(0), eq(10), eq("createdAt"), eq("desc"), isNull(), isNull()))
+        when(userService.getUsers(new UserQueryRequest(0, 10, "createdAt", "desc", null, null)))
                 .thenReturn(pageResponse);
 
         mockMvc.perform(

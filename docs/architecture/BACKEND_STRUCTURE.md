@@ -15,6 +15,7 @@ com.uav.platform
         ├── controller      HTTP endpoints
         ├── dto/request     Validated API inputs
         ├── dto/response    API outputs
+        ├── dto/record      Internal working data, filters and commands
         ├── entity          Persistent domain state
         ├── enums           Domain enums
         ├── mapper          Entity-to-DTO conversion
@@ -25,6 +26,12 @@ com.uav.platform
 ```
 
 Create only the layers a feature needs. A small internal service does not need an otherwise unused interface. When a contract exists, use `StationService` for the interface and `StationServiceImpl` for the implementation. Provider implementations may have descriptive names such as `S3CompatibleStorageService`.
+
+The layout is a vocabulary, not a requirement to create empty folders. Every feature currently has response DTOs. A JSON body or compound query belongs in `dto/request`; internal snapshots/filters/commands belong in `dto/record`. A feature with only read endpoints, path variables or a scalar query parameter does not need a placeholder request DTO. See [the complete module matrix](BACKEND_MODULE_MATRIX.md) for intentional omissions and current file counts.
+
+Keep DTOs with the feature that owns the operation. For example, changing an account's role is owned by `user`, so `RoleUpdateRequest` lives in `user/dto/request`; `role` owns role-template permissions. Internal records must not end in `Request` or `Response`: the profile service uses `UserProfileUpdateCommand` after validating the public `UserProfilePatchRequest`.
+
+Compound list queries use request records (`UserQueryRequest`, `MaintenanceScheduleQueryRequest`, `RepairOrderQueryRequest`) at the service boundary. Controllers keep their explicit HTTP parameter binding/defaults; pagination, sorting allowlists, validation and authorization retain their existing behavior. Request records do not perform repository access or business transitions.
 
 `config` holds configuration, not API DTOs. Public maintenance request/response DTOs each have a descriptive file name; their conversions are in `MaintenanceMapper`.
 

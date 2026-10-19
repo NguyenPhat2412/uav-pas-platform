@@ -1,0 +1,9 @@
+{
+  "command": "npm run test:contracts",
+  "directory": "frontend",
+  "exitCode": 0,
+  "tests": 154,
+  "passed": 154,
+  "failed": 0,
+  "skipped": 0
+}

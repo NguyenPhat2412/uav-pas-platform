@@ -23,38 +23,12 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
-      - run: npm run lint --workspaces
-      - run: npm run typecheck --workspaces
-      - run: npm run test --workspaces
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run architecture:check
       - name: Run Architecture & API Contract Tests
         run: npm run test:contracts
-      - run: npm run build --workspaces
-
-  legacy-frontend:
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22.23.2
-          cache: npm
-          cache-dependency-path: |
-            frontend/package-lock.json
-            frontend/legacy/package-lock.json
-      # Shared API-origin tests resolve TypeScript from the frontend workspace.
-      - run: npm ci
-        working-directory: frontend
-      - run: npm ci
-        working-directory: frontend/legacy
-      - run: npm run lint
-        working-directory: frontend/legacy
-      - run: npm run typecheck
-        working-directory: frontend/legacy
-      - run: npm test
-        working-directory: frontend/legacy
       - run: npm run build
-        working-directory: frontend/legacy
 
   backend-ci:
     name: Spring Boot Backend & Security Hardening Tests
@@ -117,10 +91,8 @@ jobs:
           cache: npm
           cache-dependency-path: |
             frontend/package-lock.json
-            frontend/legacy/package-lock.json
       - run: npm ci --prefix frontend
-      - run: npm ci --prefix frontend/legacy
-      - name: Audit both final dependency trees; full dev findings fail visibly
+      - name: Audit the single application; full dev findings fail visibly
         run: python3 backend/infra/ci/audit.py --output docs/work/audit-safe
       - uses: actions/upload-artifact@v4
         if: always()
@@ -141,14 +113,12 @@ jobs:
           cache: npm
           cache-dependency-path: |
             frontend/package-lock.json
-            frontend/legacy/package-lock.json
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
           cache: maven
       - run: npm ci --prefix frontend
-      - run: npm ci --prefix frontend/legacy
       - run: npx --no-install playwright install --with-deps chromium
         working-directory: frontend
       - name: Build and run isolated browser suite

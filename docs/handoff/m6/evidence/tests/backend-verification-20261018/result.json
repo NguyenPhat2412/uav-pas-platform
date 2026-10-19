@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "command": "./mvnw -B -Duav.build.directory=<isolated-build> verify",
+  "exitCode": 0,
+  "mavenExitCode": 0,
+  "failureReasons": [],
+  "counts": {
+    "tests": 763,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "failedTests": [],
+  "isolatedPostgresAndMinio": true,
+  "ownedServicesRemoved": true,
+  "baselineCommit": "b7091ec2c6488931147c0d78ba1c54d28a9daa92",
+  "suiteCount": 97,
+  "authContractChanged": false,
+  "productionOrLocalRuntimeRestarted": false,
+  "hostedCi": "NOT_RUN"
+}

@@ -1,17 +1,16 @@
 package com.uav.platform.modules.user.service;
 
 import com.uav.platform.common.dto.response.PageResponse;
-import com.uav.platform.modules.role.dto.request.RoleUpdateRequest;
+import com.uav.platform.modules.user.dto.request.RoleUpdateRequest;
+import com.uav.platform.modules.user.dto.request.UserQueryRequest;
 import com.uav.platform.modules.user.dto.response.UserResponse;
-import com.uav.platform.modules.user.enums.UserRole;
 
 /**
  * Service quản lý và truy vấn người dùng có hỗ trợ phân trang và sắp xếp.
  */
 public interface UserService {
 
-    PageResponse<UserResponse> getUsers(
-            int page, int size, String sortBy, String direction, String keyword, UserRole role);
+    PageResponse<UserResponse> getUsers(UserQueryRequest request);
 
     UserResponse getUserById(Long id);
 

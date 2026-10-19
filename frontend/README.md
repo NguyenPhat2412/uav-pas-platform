@@ -1,13 +1,25 @@
 # UAV PAS Frontend
 
-Workspace này chứa bốn ứng dụng trong `apps`, thư viện chung trong `packages` và kiểm thử trong `tests`. Giao diện cũ nằm trong `legacy`, có lockfile và thư viện độc lập.
+Một ứng dụng Next.js chia theo nghiệp vụ trong `src/features`. `src/app` chỉ định tuyến và layout. Không còn kiến trúc workspace nhiều app hoặc giao diện legacy.
 
-Xem [hướng dẫn cài đặt, chạy và kiểm thử](../docs/README.md).
+```sh
+npm ci
+# Tạo .env.local từ .env.example, đặt API_URL đúng backend hiện hành.
+npm run dev
+```
 
-- Cài workspace: `npm ci`.
-- Cài giao diện cũ: `npm ci --prefix legacy`.
-- Chạy giao diện cũ: `npm run dev`.
-- Chạy ứng dụng mới: `npm run dev:web`, `npm run dev:customer`, `npm run dev:operations`, `npm run dev:admin`.
-- `npm run build` build bốn ứng dụng và thư viện chung; `npm run build:legacy` build giao diện cũ.
+Website: http://localhost:3100. Các khu vực: `/customer`, `/operations`, `/admin`.
 
-Cài thư viện tại đây để `node_modules` luôn nằm trong `frontend`.
+Bản production: `npm run build` rồi `npm start`. Cài thư viện tại thư mục này để `node_modules` nằm trong frontend.
+
+```sh
+npm run architecture:check
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+`npm run test:e2e` dùng fixture từ runner cô lập `backend/infra/ci/run.py`; không chạy bộ tạo nhiệm vụ trên DB chính. `npm run test:ui` kiểm tra route, quyền và responsive bằng dữ liệu giả lập riêng trong trình duyệt, không thay dữ liệu backend.
+
+Xem [kiến trúc](../docs/architecture/FRONTEND_STRUCTURE.md), [ánh xạ đường dẫn](../docs/architecture/FRONTEND_ROUTE_MIGRATION.md) và [hướng dẫn toàn dự án](../docs/README.md).

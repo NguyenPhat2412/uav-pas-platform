@@ -31,8 +31,7 @@ public class MaintenanceController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         return service.schedules(
-                uavId,
-                dueStatus,
+                new MaintenanceScheduleQueryRequest(uavId, dueStatus),
                 Pageables.strictDesc(page, size, "id", "MAINTENANCE_INVALID_PAGE"));
     }
 
@@ -57,7 +56,8 @@ public class MaintenanceController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         return service.orders(
-                uavId, status, Pageables.strictDesc(page, size, "id", "MAINTENANCE_INVALID_PAGE"));
+                new RepairOrderQueryRequest(uavId, status),
+                Pageables.strictDesc(page, size, "id", "MAINTENANCE_INVALID_PAGE"));
     }
 
     @GetMapping("/orders/{id}")

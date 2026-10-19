@@ -6,9 +6,6 @@ import test from 'node:test';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const atRoot = path => `${root}${path}`;
 const backend = atRoot('../backend');
-const operations = atRoot('apps/operations');
-const customer = atRoot('apps/customer');
-const admin = atRoot('apps/admin');
 
 test('Database Flyway migrations V4, V5, V6, V7 exist and contain proper schemas', () => {
   const migrationsDir = `${backend}/src/main/resources/db/migration`;
@@ -44,16 +41,16 @@ test('Database Flyway migrations V4, V5, V6, V7 exist and contain proper schemas
 });
 
 test('Operations App has NotificationBell and Notifications page', () => {
-  const bellPath = `${operations}/src/components/notifications/NotificationBell.tsx`;
-  const pagePath = `${operations}/app/(portal)/notifications/page.tsx`;
-  const shellPath = `${operations}/src/components/layout/AppShell.tsx`;
+  const bellPath = `${root}src/components/notifications/NotificationBell.tsx`;
+  const pagePath = `${root}src/features/notifications/pages/operations/notifications.tsx`;
+  const shellPath = `${root}src/components/layout/AppShell.tsx`;
 
   assert.equal(existsSync(bellPath), true, 'NotificationBell must exist');
   assert.equal(existsSync(pagePath), true, 'Notifications page must exist in operations');
 
   const bellContent = readFileSync(bellPath, 'utf8');
   assert.match(bellContent, /useNotifications/);
-  const hook = readFileSync(atRoot('packages/query/src/notifications.ts'), 'utf8');
+  const hook = readFileSync(atRoot('src/features/notifications/hooks/useNotifications.ts'), 'utf8');
   assert.match(hook, /API_ROUTES.notifications.unreadCount/);
   assert.match(hook, /NotificationItem/);
 
@@ -63,9 +60,9 @@ test('Operations App has NotificationBell and Notifications page', () => {
 });
 
 test('Customer Portal has Billing & Quotas and Notifications pages', () => {
-  const billingPath = `${customer}/app/(portal)/billing/page.tsx`;
-  const notifPath = `${customer}/app/(portal)/notifications/page.tsx`;
-  const layoutPath = `${customer}/src/components/layout.tsx`;
+  const billingPath = `${root}src/features/billing/pages/customer/billing.tsx`;
+  const notifPath = `${root}src/features/notifications/pages/customer/notifications.tsx`;
+  const layoutPath = `${root}src/components/customer/layout.tsx`;
 
   assert.equal(existsSync(billingPath), true, 'Customer billing page must exist');
   assert.equal(existsSync(notifPath), true, 'Customer notifications page must exist');
@@ -86,10 +83,10 @@ test('Customer Portal has Billing & Quotas and Notifications pages', () => {
 });
 
 test('Admin Portal has Billing Management, Reports & CSV Export, and Settings Configuration', () => {
-  const billingPath = `${admin}/app/(portal)/billing/page.tsx`;
-  const reportsPath = `${admin}/app/(portal)/reports/page.tsx`;
-  const settingsPath = `${admin}/app/(portal)/settings/page.tsx`;
-  const shellPath = `${admin}/src/components/layout/AppShell.tsx`;
+  const billingPath = `${root}src/features/billing/pages/admin/billing.tsx`;
+  const reportsPath = `${root}src/features/reports/pages/admin/reports.tsx`;
+  const settingsPath = `${root}src/features/settings/pages/admin/settings.tsx`;
+  const shellPath = `${root}src/components/admin/layout/AppShell.tsx`;
 
   assert.equal(existsSync(billingPath), true, 'Admin billing page must exist');
   assert.equal(existsSync(reportsPath), true, 'Admin reports page must exist');
@@ -116,10 +113,10 @@ test('Admin Portal has Billing Management, Reports & CSV Export, and Settings Co
   assert.match(shellContent, /\/settings/);
 });
 
-test('Centralized API_ROUTES registry in @uav/api-client and Service-Layer delegation', () => {
-  const routesPath = atRoot('packages/api-client/src/routes.ts');
-  const indexClientPath = atRoot('packages/api-client/src/index.ts');
-  assert.equal(existsSync(routesPath), true, 'API_ROUTES registry must exist in packages/api-client/src/routes.ts');
+test('Centralized API_ROUTES registry in @/lib/api and Service-Layer delegation', () => {
+  const routesPath = atRoot('src/lib/api/routes.ts');
+  const indexClientPath = atRoot('src/lib/api/index.ts');
+  assert.equal(existsSync(routesPath), true, 'API_ROUTES registry must exist in src/lib/api/routes.ts');
 
   const routesContent = readFileSync(routesPath, 'utf8');
   assert.match(routesContent, /export const API_ROUTES = \{/);
@@ -130,17 +127,17 @@ test('Centralized API_ROUTES registry in @uav/api-client and Service-Layer deleg
   assert.match(routesContent, /\/api\/v1\/notifications\/unread-count/);
 
   const indexContent = readFileSync(indexClientPath, 'utf8');
-  assert.match(indexContent, /export \{ API_ROUTES, type ApiRoutes \} from '\.\/routes'/);
+  assert.match(indexContent, /export \{ API_ROUTES, type ApiRoutes \} from ['"]@\/lib\/api\/routes['"]/);
 
-  const customerBillingContent = readFileSync(`${customer}/app/(portal)/billing/page.tsx`, 'utf8');
+  const customerBillingContent = readFileSync(`${root}src/features/billing/pages/customer/billing.tsx`, 'utf8');
   assert.doesNotMatch(customerBillingContent, /fetch\(['"`]\/api\/v1\//);
   assert.doesNotMatch(customerBillingContent, /simulatePaymentIpn|Xác nhận thủ công|101869876543/);
   assert.match(customerBillingContent, /Cổng thanh toán chưa được cấu hình/);
 
-  const adminReportsContent = readFileSync(`${admin}/app/(portal)/reports/page.tsx`, 'utf8');
+  const adminReportsContent = readFileSync(`${root}src/features/reports/pages/admin/reports.tsx`, 'utf8');
   assert.match(adminReportsContent, /adminService\.operationsReport/);
 
-  const adminSettingsContent = readFileSync(`${admin}/app/(portal)/settings/page.tsx`, 'utf8');
+  const adminSettingsContent = readFileSync(`${root}src/features/settings/pages/admin/settings.tsx`, 'utf8');
   assert.match(adminSettingsContent, /adminService\.settings/);
   assert.match(adminSettingsContent, /adminService\.updateSetting/);
 });
@@ -148,7 +145,7 @@ test('Centralized API_ROUTES registry in @uav/api-client and Service-Layer deleg
 
 test('Notifications adapt actual backend DTOs and preserve HTTP and user-cache contracts', async () => {
   const ts = await import('typescript');
-  const routesSource = readFileSync(atRoot('packages/api-client/src/routes.ts'), 'utf8');
+  const routesSource = readFileSync(atRoot('src/lib/api/routes.ts'), 'utf8');
   const compile = source => ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
   const { API_ROUTES } = await import('data:text/javascript;base64,' + Buffer.from(compile(routesSource)).toString('base64'));
   const queries = [], calls = [], invalidations = [];
@@ -166,18 +163,18 @@ test('Notifications adapt actual backend DTOs and preserve HTTP and user-cache c
     }])),
   };
   try {
-    const source = readFileSync(atRoot('packages/query/src/notifications.ts'), 'utf8')
+    const source = readFileSync(atRoot('src/features/notifications/hooks/useNotifications.ts'), 'utf8')
       .replace(/^import .*;$/gm, '') + '\n';
-    const module = await import('data:text/javascript;base64,' + Buffer.from(compile('const {useAuth,useQuery,useQueryClient,useMutation,apiClient,API_ROUTES}=globalThis.__notificationTest;\n' + source)).toString('base64'));
-    const state = module.useNotifications();
+    const notificationModule = await import('data:text/javascript;base64,' + Buffer.from(compile('const {useAuth,useQuery,useQueryClient,useMutation,apiClient,API_ROUTES}=globalThis.__notificationTest;\n' + source)).toString('base64'));
+    const state = notificationModule.useNotifications();
     assert.deepEqual(state.notifications, [], 'no synthetic notifications while loading');
     const items = await queries[0].queryFn({ signal: undefined });
     assert.equal(items[0].message, response.content);
     assert.equal(items[0].id, '17');
     assert.equal(items[0].isRead, false);
     assert.equal(items[0].type, 'INFO');
-    assert.equal(module.toNotificationItem({ ...response, type: 'SAR_TARGET_FOUND' }).type, 'ALERT');
-    assert.equal(module.toNotificationItem({ ...response, type: 'QUOTA_WARNING' }).type, 'WARNING');
+    assert.equal(notificationModule.toNotificationItem({ ...response, type: 'SAR_TARGET_FOUND' }).type, 'ALERT');
+    assert.equal(notificationModule.toNotificationItem({ ...response, type: 'QUOTA_WARNING' }).type, 'WARNING');
     assert.equal((await queries[1].queryFn({ signal: undefined })).unreadCount, 1);
     await mutation.mutationFn('17');
     await mutation.mutationFn(null);

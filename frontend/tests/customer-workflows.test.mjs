@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import ts from 'typescript';
 import { readFile } from 'node:fs/promises';
 
-const source = await readFile(new URL('../apps/customer/src/features/customer/mission-form.ts', import.meta.url), 'utf8');
+const source = await readFile(new URL('../src/features/missions/forms/mission-form.ts', import.meta.url), 'utf8');
 const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
 const { validateMissionForm, missionDraftUpdatePayload, missionUpdatePayload, missionFormFromDetail, missionTypeForService, canEditMission, missionPageRange, missionListFilters, localDateToday, missionFormError } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`);
 const form = { missionType: 'AREA_INSPECTION', title: 'Khảo sát ruộng lúa', requestedDate: '2030-05-01', startTime: '2030-05-01T10:00', expectedEndTime: '2030-05-01T11:00', locationName: 'Hà Nội', serviceId: 8, priority: 'HIGH', latitude: 0, longitude: 105.1234567, notes: 'Giữ nguyên ghi chú', description: 'Mô tả yêu cầu' };
@@ -82,7 +82,7 @@ test('a missing or invalid draft version cannot produce an unprotected PATCH', (
   assert.equal(missionDraftUpdatePayload(form, 0).expectedVersion, 0);
 });
 
-const profileSource = await readFile(new URL('../apps/customer/src/features/customer/profile-form.ts', import.meta.url), 'utf8');
+const profileSource = await readFile(new URL('../src/features/profile/forms/profile-form.ts', import.meta.url), 'utf8');
 const profileCompiled = ts.transpileModule(profileSource, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
 const { profilePayload, validateProfile, profileError } = await import(`data:text/javascript;base64,${Buffer.from(profileCompiled).toString('base64')}`);
 

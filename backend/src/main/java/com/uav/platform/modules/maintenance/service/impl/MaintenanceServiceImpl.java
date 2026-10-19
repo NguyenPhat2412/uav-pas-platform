@@ -66,7 +66,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<MaintenanceScheduleResponse> schedules(
-            Long uavId, DueStatus dueStatus, Pageable page) {
+            MaintenanceScheduleQueryRequest request, Pageable page) {
+        Long uavId = request.uavId();
+        DueStatus dueStatus = request.dueStatus();
         LocalDate today = LocalDate.now(BUSINESS_ZONE);
         Specification<MaintenanceSchedule> spec =
                 (r, q, b) -> {
@@ -123,7 +125,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<RepairOrderResponse> orders(
-            Long uavId, RepairStatus status, Pageable page) {
+            RepairOrderQueryRequest request, Pageable page) {
+        Long uavId = request.uavId();
+        RepairStatus status = request.status();
         Specification<RepairOrder> spec =
                 (r, q, b) ->
                         b.and(

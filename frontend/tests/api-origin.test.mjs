@@ -1,15 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-// The legacy CI job installs only frontend/node_modules; root CI installs the workspace.
+// Tests resolve TypeScript from the single application dependency tree.
 let ts;
 try { ts = createRequire(import.meta.url)('typescript'); }
-catch { ts = createRequire(new URL('../legacy/package.json', import.meta.url))('typescript'); }
+catch { ts = createRequire(new URL('../package.json', import.meta.url))('typescript'); }
 import { readFile } from 'node:fs/promises';
 
 process.env.NEXT_PUBLIC_API_URL = 'http://localhost:18080';
-for (const [name, path] of [['shared', '../packages/api-client/src/index.ts'], ['legacy', '../legacy/src/lib/api.client.ts']]) {
-  const source = (await readFile(new URL(path, import.meta.url), 'utf8')).replace(/^export \{ API_ROUTES.*?from '\.\/routes';$/m, '');
+for (const [name, path] of [['application', '../src/lib/api/index.ts']]) {
+  const source = (await readFile(new URL(path, import.meta.url), 'utf8')).replace(/^export \{ API_ROUTES.*?from [\'"](?:\.\/routes|@\/lib\/api\/routes)[\'"];$/m, '');
   const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
   const api = await import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
   test(`${name}: credentials and session recovery stay on the configured API origin`, async () => {
@@ -61,8 +61,8 @@ for (const [name, path] of [['shared', '../packages/api-client/src/index.ts'], [
   });
 }
 
-for (const [name, path] of [['shared', '../packages/api-client/src/index.ts'], ['legacy', '../legacy/src/lib/api.client.ts']]) {
-  const source = (await readFile(new URL(path, import.meta.url), 'utf8')).replace(/^export \{ API_ROUTES.*?from '\.\/routes';$/m, '');
+for (const [name, path] of [['application', '../src/lib/api/index.ts']]) {
+  const source = (await readFile(new URL(path, import.meta.url), 'utf8')).replace(/^export \{ API_ROUTES.*?from [\'"](?:\.\/routes|@\/lib\/api\/routes)[\'"];$/m, '');
   const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
   const api = await import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
   test(`${name}: browser upload never sends API cookies or CSRF tokens to storage`, async () => {

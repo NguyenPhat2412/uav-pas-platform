@@ -1,6 +1,6 @@
 package com.uav.platform.modules.user.service;
 
-import com.uav.platform.modules.user.dto.record.UserProfileUpdateRequest;
+import com.uav.platform.modules.user.dto.record.UserProfileUpdateCommand;
 import com.uav.platform.modules.user.dto.request.UserProfilePatchRequest;
 import com.uav.platform.modules.user.dto.response.UserProfileResponse;
 
@@ -9,5 +9,5 @@ public interface UserProfileService {
 
     UserProfileResponse updatePayload(String username, UserProfilePatchRequest request);
 
-    UserProfileResponse update(String username, UserProfileUpdateRequest request);
+    UserProfileResponse update(String username, UserProfileUpdateCommand request);
 }

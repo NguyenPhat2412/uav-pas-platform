@@ -1,0 +1,20 @@
+{
+  "before": {
+    "command": "./mvnw -B -Duav.build.directory=<isolated-build> -Dtest=ModuleDtoStructureTest,QueryDtoContractTest test",
+    "tests": 5,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "failure": "Internal UserProfileUpdateRequest had an HTTP Request suffix in dto/record"
+  },
+  "targetedAfter": {
+    "tests": 61,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "addedTests": {
+    "ModuleDtoStructureTest": 1,
+    "QueryDtoContractTest": 7
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "user/controller/UserController.java": {
+    "httpAndSecurityAnnotationsUnchanged": true
+  },
+  "maintenance/controller/MaintenanceController.java": {
+    "httpAndSecurityAnnotationsUnchanged": true
+  },
+  "protectedPathsUnchanged": true,
+  "roleUpdateRequestOnlyMovedPackage": true,
+  "preexistingBuildAndCiFilesPreserved": {
+    ".github/workflows/backend-persistence.yml": true,
+    "backend/infra/ci/backend_tests.py": true,
+    "backend/infra/ci/tests/test_failure_paths.py": true,
+    "backend/pom.xml": true
+  }
+}

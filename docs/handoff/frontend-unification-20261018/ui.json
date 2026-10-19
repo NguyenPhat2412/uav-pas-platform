@@ -1,0 +1,522 @@
+{
+  "checks": [
+    {
+      "route": "/",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/about",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/services",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/solutions",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/how-it-works",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/pricing",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/contact",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/faq",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/privacy",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/terms",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/services/uav-rental",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/services/aerial-inspection",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/services/aerial-recording",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/services/data-collection",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/solutions/uav-rental",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/solutions/aerial-inspection",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/solutions/ai-detection",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/solutions/search-and-rescue",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/login",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/login",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/login",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/login",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/about",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/services",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/solutions",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/how-it-works",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/pricing",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/contact",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/faq",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/privacy",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/terms",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/services/uav-rental",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/services/aerial-inspection",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/services/aerial-recording",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/services/data-collection",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/solutions/uav-rental",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/solutions/aerial-inspection",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/solutions/ai-detection",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/solutions/search-and-rescue",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/login",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/login",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/login",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/login",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/users",
+      "state": "permission-denied",
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/stations",
+      "state": "permission-denied",
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/missions",
+      "state": "permission-denied",
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/dashboard",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/users",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/access-control",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/role-templates",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/permissions",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/audit-logs",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/billing",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/reports",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/settings",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/webhooks",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/dashboard",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/users",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/access-control",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/role-templates",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/permissions",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/audit-logs",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/billing",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/reports",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/settings",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/admin/webhooks",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/overview",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/stations",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/uavs",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/inventory",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/media",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/audit",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/dispatch/missions",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/assigned-missions",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/maintenance",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/notifications",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/sar-cockpit",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/overview",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/stations",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/uavs",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/inventory",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/media",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/audit",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/dispatch/missions",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/assigned-missions",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/maintenance",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/notifications",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/operations/sar-cockpit",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/dashboard",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/services",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/missions",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/missions/create",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/billing",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/notifications",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/profile",
+      "width": 1440,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/dashboard",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/services",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/missions",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/missions/create",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/billing",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/notifications",
+      "width": 390,
+      "status": "PASS"
+    },
+    {
+      "route": "/customer/profile",
+      "width": 390,
+      "status": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "serverErrors": [],
+  "consoleIssues": []
+}
