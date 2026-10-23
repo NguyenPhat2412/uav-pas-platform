@@ -3,6 +3,7 @@ import "@/styles/styles.css";
 import "@/styles/web/globals.css";
 import "@/styles/web/public-pages.css";
 import "@/styles/web/accessibility.css";
+import "@/styles/web/home.css";
 import { PublicFooter } from "@/features/marketing/components/public-footer";
 import { PublicHeader } from "@/features/marketing/components/public-header";
 
