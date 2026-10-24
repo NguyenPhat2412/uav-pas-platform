@@ -207,7 +207,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                         <button
                             ref={menuButton}
                             aria-controls="portal-navigation"
-                            className="lg:hidden inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-slate-700 hover:bg-slate-100"
+                            className="lg:hidden inline-flex h-8 w-8 items-center justify-center rounded-none border border-border text-slate-700 hover:bg-slate-100"
                             aria-label={t('shell.openNavigation')}
                             aria-expanded={open}
                             onClick={() => setOpen(true)}
@@ -232,7 +232,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                         <AccountMenu portal="admin"/>
                     </div>
                 </header>
-                <main id="workspace" className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6 lg:p-8 space-y-6 outline-none" tabIndex={-1}>
+                <main id="workspace" className="w-full flex-1 space-y-6 outline-none" tabIndex={-1}>
                     {children}
                 </main>
             </div>

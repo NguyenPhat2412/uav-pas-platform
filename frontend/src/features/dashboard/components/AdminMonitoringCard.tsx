@@ -90,7 +90,7 @@ export function AdminMonitoringCard({fleet, summaryLoaded}: { fleet: FleetSummar
         href: '/operations/sar-cockpit',
     });
 
-    return <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+    return <section className="min-w-0 rounded-none border border-border bg-card">
         <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-[18px] py-3.5">
             <h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.dashboard.status.title')}</h2>
             {canHealth && health.data && <span className={cn('inline-flex items-center gap-1.5 text-xs font-semibold',
@@ -112,9 +112,9 @@ export function AdminMonitoringCard({fleet, summaryLoaded}: { fleet: FleetSummar
             })}
         </ul>
         {can('PERMISSION_MANAGE') && <div className="flex flex-wrap gap-2 px-[18px] pb-[18px]">
-            <Link href="/admin/system-health" className="inline-flex min-h-[40px] items-center rounded-full border border-border bg-card px-4 text-[13px] font-bold text-foreground transition hover:bg-background">
+            <Link href="/admin/system-health" className="inline-flex min-h-[40px] items-center rounded-none border border-border bg-card px-4 text-[13px] font-bold text-foreground transition hover:bg-background">
                 {t('admin.dashboard.status.openHealth')}</Link>
-            <Link href="/admin/webhooks" className="inline-flex min-h-[40px] items-center rounded-full border border-border bg-card px-4 text-[13px] font-bold text-foreground transition hover:bg-background">
+            <Link href="/admin/webhooks" className="inline-flex min-h-[40px] items-center rounded-none border border-border bg-card px-4 text-[13px] font-bold text-foreground transition hover:bg-background">
                 {t('admin.dashboard.status.manageIntegrations')}</Link>
         </div>}
     </section>;

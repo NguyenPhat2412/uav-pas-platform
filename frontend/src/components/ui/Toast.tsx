@@ -38,7 +38,7 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                 <div
                     key={item.id}
                     className={cn(
-                        'group pointer-events-auto relative overflow-hidden rounded-xl border bg-white shadow-xl shadow-slate-900/10 transition-all',
+                        'group pointer-events-auto relative overflow-hidden rounded-none border bg-white shadow-xl shadow-slate-900/10 transition-all',
                         item.isExiting ? 'animate-slide-out-right' : 'animate-slide-in-right',
                         item.type === 'success' && 'border-l-4 border-l-toast-success-border border-slate-200/80',
                         item.type === 'error' && 'border-l-4 border-l-toast-error-border border-slate-200/80',
@@ -53,7 +53,7 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                         <div className="relative flex-shrink-0">
                             <div
                                 className={cn(
-                                    'w-9 h-9 rounded-lg flex items-center justify-center font-bold shadow-sm',
+                                    'w-9 h-9 rounded-none flex items-center justify-center font-bold',
                                     item.type === 'success' && 'bg-toast-success-bg text-toast-success-icon',
                                     item.type === 'error' && 'bg-toast-error-bg text-toast-error-icon',
                                     item.type === 'warning' && 'bg-toast-warning-bg text-toast-warning-icon',
@@ -65,7 +65,7 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                                 {item.type === 'warning' && <AlertTriangle size={20} strokeWidth={2.5}/>}
                                 {item.type === 'info' && <Info size={20} strokeWidth={2.5}/>}
                             </div>
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center overflow-hidden">
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-none bg-white border border-slate-100 flex items-center justify-center overflow-hidden">
                                 <img src="/vju-logo.svg" alt="UAV" className="w-3.5 h-3.5 object-contain"/>
                             </div>
                         </div>
@@ -84,7 +84,7 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                                 </h4>
                                 <span
                                     className={cn(
-                                        'text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full ml-auto shrink-0',
+                                        'text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-none ml-auto shrink-0',
                                         item.type === 'success' && 'bg-uav-blue-light text-uav-blue border border-blue-200',
                                         item.type === 'error' && 'bg-red-50 text-red-700 border border-red-200',
                                         item.type === 'warning' && 'bg-amber-50 text-amber-700 border border-amber-200',
@@ -100,7 +100,7 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                         <button
                             type="button"
                             onClick={() => onDismiss(item.id)}
-                            className="flex-shrink-0 text-slate-400 hover:text-slate-700 hover:bg-slate-100 p-1 rounded-md transition-colors -mr-1 -mt-1"
+                            className="flex-shrink-0 text-slate-400 hover:text-slate-700 hover:bg-slate-100 p-1 rounded-none transition-colors -mr-1 -mt-1"
                             aria-label="Đóng thông báo"
                         >
                             <X size={15}/>

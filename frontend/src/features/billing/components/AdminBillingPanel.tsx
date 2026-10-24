@@ -70,14 +70,14 @@ function AdminBillingContent() {
         <div className="space-y-6">
             {isLoading && (
                 <div
-                    className="bg-card border border-border rounded-xl p-6 text-center text-xs text-slate-500">
+                    className="bg-card border border-border rounded-none p-6 text-center text-xs text-slate-500">
                     {t('admin.billing.loading')}
                 </div>
             )}
 
             {queryError && !isLoading && (
                 <div
-                    className="bg-rose-50 border border-rose-300 text-rose-700 px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-2">
+                    className="bg-rose-50 border border-rose-300 text-rose-700 px-4 py-3 rounded-none text-xs font-semibold flex items-center gap-2">
                     <AlertCircle size={16} className="text-rose-500 shrink-0"/>
                     <span>{t('admin.billing.loadError', {message: queryError instanceof Error ? queryError.message : t('admin.billing.unknownError')})}</span>
                 </div>
@@ -85,7 +85,7 @@ function AdminBillingContent() {
 
             {updateQuota.isSuccess && (
                 <div
-                    className="bg-uav-blue-light border border-blue-200 text-uav-blue px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm">
+                    className="bg-uav-blue-light border border-blue-200 text-uav-blue px-4 py-2.5 rounded-none text-xs font-semibold flex items-center gap-2">
                     <CheckCircle2 size={16} className="text-uav-blue"/>
                     <span>{t('admin.billing.quotaUpdated')}</span>
                 </div>
@@ -94,7 +94,7 @@ function AdminBillingContent() {
             <AdminPlansManager/>
 
             {/* User Quotas Management Table */}
-            <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+            <div className="bg-card border border-border rounded-none overflow-hidden">
                 <div
                     className="p-4 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
@@ -114,7 +114,7 @@ function AdminBillingContent() {
                             placeholder={t('admin.billing.searchPlaceholder')}
                             value={search}
                             onChange={e => setSearch(e.target.value)}
-                            className="bg-slate-50 border border-border rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary transition w-60"
+                            className="bg-slate-50 border border-border rounded-none pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary transition w-60"
                         />
                     </div>
                 </div>
@@ -151,7 +151,7 @@ function AdminBillingContent() {
                                     </td>
                                     <td className="px-5 py-3.5">
                       <span
-                          className="tabular-nums font-bold px-2 py-0.5 rounded text-[11px] bg-blue-50 text-blue-700 border border-border">
+                          className="tabular-nums font-bold px-2 py-0.5 rounded-none text-[11px] bg-blue-50 text-blue-700 border border-border">
                         {q.planCode}
                       </span>
                                     </td>
@@ -159,7 +159,7 @@ function AdminBillingContent() {
                                     <td className="px-5 py-3.5 tabular-nums text-slate-700">{t('admin.billing.hours', {hours: q.flightHoursUsed})}</td>
                                     <td className="px-5 py-3.5">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-20 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                            <div className="w-20 bg-slate-100 rounded-none h-1.5 overflow-hidden">
                                                 <div
                                                     className={`h-full ${ratio > 85 ? 'bg-rose-500' : 'bg-blue-600'}`}
                                                     style={{width: `${Math.min(100, ratio)}%`}}
@@ -175,7 +175,7 @@ function AdminBillingContent() {
                                         <button
                                             type="button"
                                             onClick={() => handleOpenEdit(q)}
-                                            className="px-2.5 py-1 text-primary hover:bg-primary/5 rounded border border-border transition font-medium inline-flex items-center gap-1 cursor-pointer"
+                                            className="px-2.5 py-1 text-primary hover:bg-primary/5 rounded-none border border-border transition font-medium inline-flex items-center gap-1 cursor-pointer"
                                         >
                                             <Edit3 size={12}/> {t('admin.billing.edit')}
                                         </button>
@@ -206,7 +206,7 @@ function AdminBillingContent() {
                                     required
                                     value={newPlan}
                                     onChange={e => setNewPlan(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs text-slate-800 focus:outline-none focus:border-primary"
+                                    className="w-full bg-slate-50 border border-slate-300 rounded-none p-2 text-xs text-slate-800 focus:outline-none focus:border-primary"
                                 >
                                     {plans.map(p => (
                                         <option key={p.code}
@@ -217,7 +217,7 @@ function AdminBillingContent() {
 
                             {updateQuota.error && (
                                 <div
-                                    className="bg-rose-50 border border-rose-200 rounded-lg p-2.5 flex items-start gap-2 text-rose-700">
+                                    className="bg-rose-50 border border-rose-200 rounded-none p-2.5 flex items-start gap-2 text-rose-700">
                                     <AlertCircle size={14} className="shrink-0 mt-0.5"/>
                                     <span>{t('admin.billing.saveFailed', {message: updateQuota.error instanceof Error ? updateQuota.error.message : t('admin.billing.unknownError')})}</span>
                                 </div>
@@ -233,7 +233,7 @@ function AdminBillingContent() {
                                     max="1000"
                                     value={newLimit}
                                     onChange={e => setNewLimit(Number(e.target.value))}
-                                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs tabular-nums font-bold text-slate-800 focus:outline-none focus:border-primary"
+                                    className="w-full bg-slate-50 border border-slate-300 rounded-none p-2 text-xs tabular-nums font-bold text-slate-800 focus:outline-none focus:border-primary"
                                 />
                             </div>
                         </div>
@@ -242,7 +242,7 @@ function AdminBillingContent() {
                             <button
                                 type="button"
                                 onClick={() => setEditingUser(null)}
-                                className="px-3 py-1.5 text-xs font-medium text-slate-600 border border-border bg-card hover:bg-slate-100 rounded-lg transition cursor-pointer"
+                                className="px-3 py-1.5 text-xs font-medium text-slate-600 border border-border bg-card hover:bg-slate-100 rounded-none transition cursor-pointer"
                             >
                                 {t('admin.billing.cancel')}
                             </button>
@@ -250,7 +250,7 @@ function AdminBillingContent() {
                                 type="button"
                                 disabled={updateQuota.isPending}
                                 onClick={handleSaveQuota}
-                                className="px-3.5 py-1.5 text-xs font-bold text-primary-foreground bg-primary hover:bg-primary-hover rounded-lg transition shadow-sm disabled:opacity-50 cursor-pointer"
+                                className="px-3.5 py-1.5 text-xs font-bold text-primary-foreground bg-primary hover:bg-primary-hover rounded-none transition disabled:opacity-50 cursor-pointer"
                             >
                                 {updateQuota.isPending ? t('admin.billing.saving') : t('admin.billing.saveChanges')}
                             </button>

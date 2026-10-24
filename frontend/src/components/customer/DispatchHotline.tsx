@@ -13,12 +13,12 @@ export function DispatchHotline({variant, collapsed = false}: { variant: 'sideba
     if (variant === 'topbar') {
         // Only on narrow screens, where the sidebar (and its hotline) is hidden behind the menu button.
         return <a href={href} title={label} aria-label={label}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-danger/30 bg-danger/10 text-danger transition-colors hover:bg-danger/15 lg:hidden">
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-none border border-danger/30 bg-danger/10 text-danger transition-colors hover:bg-danger/15 lg:hidden">
             <PhoneCall size={16} aria-hidden="true"/>
         </a>;
     }
     return <a href={href} title={collapsed ? label : undefined} aria-label={label}
-              className={`mb-1 flex items-center gap-2.5 rounded-lg border border-danger/25 bg-danger/5 text-danger transition-colors hover:bg-danger/10 ${
+              className={`mb-1 flex items-center gap-2.5 rounded-none border border-danger/25 bg-danger/5 text-danger transition-colors hover:bg-danger/10 ${
                   collapsed ? 'mx-auto h-8 w-8 justify-center' : 'px-2.5 py-1.5'
               }`}>
         <PhoneCall size={16} className="shrink-0" aria-hidden="true"/>

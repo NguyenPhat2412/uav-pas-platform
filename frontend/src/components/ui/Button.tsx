@@ -28,7 +28,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref
     ) => {
         const baseStyles =
-            'rounded-lg font-title-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed select-none focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2';
+            'rounded-none font-title-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed select-none focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2';
 
         const sizes = {
             sm: 'h-9 px-3 text-sm gap-1.5',
@@ -38,15 +38,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
         const variants = {
             primary:
-                'bg-primary text-primary-foreground hover:bg-primary-hover shadow-sm hover:shadow active:scale-[0.99]',
+                'bg-primary text-primary-foreground hover:bg-primary-hover',
             secondary:
-                'bg-secondary-container text-on-surface hover:bg-secondary-fixed-dim shadow-sm',
+                'bg-secondary-container text-on-surface hover:bg-secondary-fixed-dim',
             outline:
                 'bg-transparent border border-outline text-on-surface hover:bg-surface-container-low active:bg-surface-container',
             ghost:
                 'bg-transparent text-primary hover:bg-surface-container-low',
             danger:
-                'bg-danger text-danger-foreground hover:bg-danger-hover shadow-sm',
+                'bg-danger text-danger-foreground hover:bg-danger-hover',
         };
 
         return (

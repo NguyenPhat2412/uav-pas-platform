@@ -11,9 +11,9 @@ export function Registry() {
     const [filter, setFilter] = useState('');
     const {t} = useI18n();
     const rows = permissions.data?.filter(p => (p.code + ' ' + permissionLabel(p.code, p.description)).toLowerCase().includes(filter.toLowerCase()));
-    return <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+    return <div className="min-w-0 overflow-hidden rounded-none border border-border bg-card">
         <div className="flex flex-wrap items-center gap-2 border-b border-border p-4">
-            <label className="flex min-h-[44px] min-w-[160px] max-w-[320px] flex-1 items-center gap-2 rounded-[10px] border border-border-input bg-card px-2.5 text-muted focus-within:outline-2 focus-within:outline-primary"><Search size={18} aria-hidden="true"/><span
+            <label className="flex min-h-[44px] min-w-[160px] max-w-[320px] flex-1 items-center gap-2 rounded-none border border-border-input bg-card px-2.5 text-muted focus-within:outline-2 focus-within:outline-primary"><Search size={18} aria-hidden="true"/><span
                 className="sr-only">{t('admin.access.registry.search')}</span><input className="min-h-[42px] w-full min-w-0 bg-transparent text-sm text-foreground outline-none" placeholder={t('admin.access.registry.placeholder')} value={filter}
                                                            onChange={e => setFilter(e.target.value)}/></label>
             {permissions.data && <span className="ml-auto text-[13px] text-muted" role="status">{t('admin.access.registry.count', {count: rows?.length ?? 0})}</span>}

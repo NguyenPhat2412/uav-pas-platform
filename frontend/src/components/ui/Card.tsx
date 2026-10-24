@@ -9,11 +9,11 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
     ({className, variant = 'default', children, ...props}, ref) => {
         const variants = {
             default:
-                'bg-card text-card-foreground border border-border shadow-sm rounded-2xl overflow-hidden',
+                'bg-card text-card-foreground border border-slate-200 rounded-none overflow-hidden',
             surface:
-                'bg-surface-container-low border border-outline-variant/40 shadow-sm rounded-2xl overflow-hidden',
+                'bg-surface-container-low border border-outline-variant/40 rounded-none overflow-hidden',
             glass:
-                'bg-card/80 backdrop-blur-md border border-border/30 shadow-md rounded-2xl overflow-hidden',
+                'bg-card/80 backdrop-blur-md border border-border/30 rounded-none overflow-hidden',
         };
 
         return (
@@ -27,7 +27,7 @@ Card.displayName = 'Card';
 
 export const CardHeader = React.forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
     ({className, ...props}, ref) => (
-        <div ref={ref} className={cn('p-6 pb-4 flex flex-col space-y-1.5', className)} {...props} />
+        <div ref={ref} className={cn('flex flex-col space-y-1 border-b border-slate-100 px-5 py-3.5', className)} {...props} />
     )
 );
 CardHeader.displayName = 'CardHeader';
@@ -52,7 +52,7 @@ export const CardDescription = React.forwardRef<
 CardDescription.displayName = 'CardDescription';
 
 export const CardContent = React.forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-    ({className, ...props}, ref) => <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
+    ({className, ...props}, ref) => <div ref={ref} className={cn('p-5', className)} {...props} />
 );
 CardContent.displayName = 'CardContent';
 
@@ -60,7 +60,7 @@ export const CardFooter = React.forwardRef<HTMLDivElement, HTMLAttributes<HTMLDi
     ({className, ...props}, ref) => (
         <div
             ref={ref}
-            className={cn('p-6 pt-0 flex items-center justify-between', className)}
+            className={cn('flex items-center justify-between border-t border-slate-100 px-5 py-3', className)}
             {...props}
         />
     )

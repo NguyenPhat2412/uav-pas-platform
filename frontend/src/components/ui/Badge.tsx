@@ -26,11 +26,11 @@ export const Badge: React.FC<BadgeProps> = ({
                                                 ...props
                                             }) => {
     const baseStyles =
-        'inline-flex items-center font-medium rounded-full select-none transition-colors';
+        'inline-flex items-center font-bold uppercase tracking-wider rounded-none select-none transition-colors';
 
     const sizes = {
-        sm: 'text-label-caps px-2 py-0.5 gap-1',
-        md: 'text-label-md px-2.5 py-1 gap-1.5',
+        sm: 'text-[10px] px-1.5 py-0.5 gap-1',
+        md: 'text-[11px] px-2 py-0.5 gap-1.5',
     };
 
     const variants = {

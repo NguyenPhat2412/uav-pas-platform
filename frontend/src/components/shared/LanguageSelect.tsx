@@ -5,7 +5,7 @@ export function LanguageSelect<T extends string>({value, onChange, options, clas
     value: T; onChange: (value: T) => void; options: readonly { value: T; label: string; flag?: ReactNode }[]; className?: string;
 }) {
     return (
-        <div className={cn('inline-flex items-center gap-1 rounded-xl border border-border bg-slate-100/80 p-1', className)} role="group" aria-label="Ngôn ngữ">
+        <div className={cn('inline-flex items-center gap-1 rounded-none border border-border bg-slate-100/80 p-1', className)} role="group" aria-label="Ngôn ngữ">
             {options.map(option => {
                 const active = option.value === value;
                 return (
@@ -17,8 +17,8 @@ export function LanguageSelect<T extends string>({value, onChange, options, clas
                         aria-pressed={active}
                         onClick={() => option.value !== value && onChange(option.value)}
                         className={cn(
-                            'inline-flex h-7 items-center justify-center rounded-lg px-2 text-xs font-bold transition-colors cursor-pointer',
-                            active ? 'bg-card text-foreground shadow-xs ring-1 ring-border' : 'text-slate-600 opacity-75 hover:opacity-100 hover:bg-card/60'
+                            'inline-flex h-7 items-center justify-center rounded-none px-2 text-xs font-bold transition-colors cursor-pointer',
+                            active ? 'bg-card text-foreground ring-1 ring-border' : 'text-slate-600 opacity-75 hover:opacity-100 hover:bg-card/60'
                         )}
                     >
                         {option.flag ?? option.label}

@@ -42,7 +42,7 @@ export function Drawer({title, onClose, children, wide = false}: {
                     type="button"
                     aria-label={t('opsShared.state.close')}
                     onClick={onClose}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border text-slate-600 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-none border border-border text-slate-600 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
                 >
                     <X size={18}/>
                 </button>
@@ -60,7 +60,7 @@ export function Tabs({items, value, onChange}: {
     const {t} = useI18n();
     const id = useId();
     return (
-        <div role="tablist" aria-label={t('opsShared.state.detailTabs')} className="flex flex-wrap gap-1.5 rounded-xl bg-slate-100 p-1">
+        <div role="tablist" aria-label={t('opsShared.state.detailTabs')} className="flex flex-wrap gap-1.5 rounded-none bg-slate-100 p-1">
             {items.map((item, index) => {
                 const selected = value === item.id;
                 return (
@@ -71,8 +71,8 @@ export function Tabs({items, value, onChange}: {
                         role="tab"
                         aria-selected={selected}
                         tabIndex={selected ? 0 : -1}
-                        className={`rounded-lg px-3.5 py-2 text-xs font-bold transition-colors cursor-pointer ${
-                            selected ? 'bg-card text-primary shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                        className={`rounded-none px-3.5 py-2 text-xs font-bold transition-colors cursor-pointer ${
+                            selected ? 'bg-card text-primary' : 'text-slate-600 hover:text-slate-900'
                         }`}
                         onClick={() => onChange(item.id)}
                         onKeyDown={event => {
@@ -97,7 +97,7 @@ export function Metadata({items}: { items: [string, ReactNode][] }) {
     return (
         <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {items.map(([label, value]) => (
-                <div key={label} className="rounded-xl border border-slate-100 bg-slate-50/70 p-3.5">
+                <div key={label} className="rounded-none border border-slate-100 bg-slate-50/70 p-3.5">
                     <dt className="text-xs font-semibold uppercase tracking-wider text-slate-400">{label}</dt>
                     <dd className="mt-1 text-sm font-semibold text-slate-900 break-words">{value ?? '—'}</dd>
                 </div>

@@ -63,7 +63,7 @@ function OrderConfirmation({order, mode, disabled, onConfirm, onCancel}: {
     const [note, setNote] = useState(''), [passed, setPassed] = useState(false), [error, setError] = useState('');
     const {t} = useI18n();
     const label = t(`opsAssets.maintenance.order.confirm.${mode}`);
-    return <form className="space-y-4 rounded-lg border border-border bg-slate-50 p-4" aria-label={label}
+    return <form className="space-y-4 rounded-none border border-border bg-slate-50 p-4" aria-label={label}
                  onSubmit={event => {
                      event.preventDefault();
                      try {
@@ -129,7 +129,7 @@ export function OrderDetail({id, onClose, refreshLists}: {
                                                                                                       disabled={action.busy}
                                                                                                       onClick={() => void query.refetch()}>{t('opsAssets.maintenance.order.reload')}</Button></>}{order && <>
             <header className="space-y-2"><span data-order-status={order.status}
-                                                className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{t(`opsAssets.maintenance.orderStatus.${order.status}`)}</span>
+                                                className="inline-flex rounded-none bg-slate-100 px-3 py-1 text-sm font-semibold">{t(`opsAssets.maintenance.orderStatus.${order.status}`)}</span>
                 <h3 className="break-words text-xl font-semibold">{order.title}</h3><p
                     className="text-sm text-slate-600">{order.uavSerialNumber} · {order.scheduleId ? t('opsAssets.maintenance.order.scheduled', {id: order.scheduleId}) : t('opsAssets.maintenance.order.adHoc')}</p>
             </header>
@@ -137,9 +137,9 @@ export function OrderDetail({id, onClose, refreshLists}: {
                 [t('opsAssets.maintenance.order.plannedDate'), calendarDate(order.plannedDate, t, locale)], [t('opsAssets.maintenance.order.technician'), order.technicianName], [t('opsAssets.maintenance.order.createdAt'), formatDate(order.createdAt)], [t('opsAssets.maintenance.order.startedAt'), order.startedAt ? formatDate(order.startedAt) : t('opsAssets.maintenance.order.notStarted')], [t('opsAssets.maintenance.order.completedAt'), order.completedAt ? formatDate(order.completedAt) : t('opsAssets.maintenance.order.notCompleted')], [t('opsAssets.maintenance.order.cancelledAt'), order.cancelledAt ? formatDate(order.cancelledAt) : t('opsAssets.maintenance.order.notCancelled')],
             ]}/>{order.description &&
             <p className="whitespace-pre-wrap break-words text-sm text-slate-700">{order.description}</p>}{order.inspectionNotes &&
-            <div className="rounded-lg bg-uav-blue-light border border-blue-200 p-4"><strong>{t('opsAssets.maintenance.order.inspection')}</strong><p
+            <div className="rounded-none bg-uav-blue-light border border-blue-200 p-4"><strong>{t('opsAssets.maintenance.order.inspection')}</strong><p
                 className="mt-2 whitespace-pre-wrap break-words text-sm">{order.inspectionNotes}</p>
-            </div>}{order.cancelReason && <div className="rounded-lg bg-amber-50 p-4"><strong>{t('opsAssets.maintenance.order.cancelReasonShort')}</strong><p
+            </div>}{order.cancelReason && <div className="rounded-none bg-amber-50 p-4"><strong>{t('opsAssets.maintenance.order.cancelReasonShort')}</strong><p
             className="mt-2 whitespace-pre-wrap break-words text-sm">{order.cancelReason}</p></div>}
             {mode === 'view' && <>
                 <section aria-label={t('opsAssets.maintenance.order.materialsSection')} className="space-y-3">
@@ -148,13 +148,13 @@ export function OrderDetail({id, onClose, refreshLists}: {
                     </div>
                     <p className="text-sm text-slate-600">{t('opsAssets.maintenance.order.materialsNote')}</p>{order.materials.length ?
                     <ul className="space-y-2">{order.materials.map(item => <li key={item.id}
-                                                                               className="rounded-lg border border-slate-200 p-3">
+                                                                               className="rounded-none border border-slate-200 p-3">
                         <div className="flex flex-wrap items-start justify-between gap-2"><strong
                             className="break-words">{item.name}</strong><strong>{vnd(item.lineTotal)}</strong>
                         </div>
                         <p className="mt-1 break-words text-sm text-slate-600">{item.quantity} {item.unit} × {vnd(item.unitPrice)}</p>
                     </li>)}</ul> :
-                    <p className="rounded-lg bg-slate-50 p-4 text-sm text-slate-600">{t('opsAssets.maintenance.order.noMaterials')}</p>}
+                    <p className="rounded-none bg-slate-50 p-4 text-sm text-slate-600">{t('opsAssets.maintenance.order.noMaterials')}</p>}
                 </section>
                 <div className="flex flex-wrap gap-3">{controls?.edit && <><Button type="button" variant="outline"
                                                                                    disabled={blocked}
@@ -164,7 +164,7 @@ export function OrderDetail({id, onClose, refreshLists}: {
                     <Button type="button" disabled={blocked} onClick={() => setMode('complete')}>{t('opsAssets.maintenance.order.complete')}</Button>}{controls?.cancel &&
                     <Button type="button" variant="outline" disabled={blocked} onClick={() => setMode('cancel')}>{t('opsAssets.maintenance.order.cancel')}</Button>}</div>
                 {!controls?.edit &&
-                    <p className="rounded-lg bg-slate-100 p-4 text-sm">{t('opsAssets.maintenance.order.closedNote')}</p>}</>}
+                    <p className="rounded-none bg-slate-100 p-4 text-sm">{t('opsAssets.maintenance.order.closedNote')}</p>}</>}
             {mode === 'edit' && controls?.edit &&
                 <EditOrder key={order.version} order={order} disabled={blocked} onCancel={() => setMode('view')}
                            onSave={fields => submit(() => service.updateOrder(order, fields), 'opsAssets.maintenance.order.success.updated')}/>}

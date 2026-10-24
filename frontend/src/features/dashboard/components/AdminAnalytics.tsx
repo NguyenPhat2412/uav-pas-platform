@@ -44,9 +44,9 @@ export function AdminAnalytics() {
 
     return <section className="space-y-5">
         <div className="flex flex-wrap items-center justify-end gap-3">
-            <div className="inline-flex rounded-[9px] border border-border bg-card p-[3px]" role="group" aria-label={t('admin.analytics.range')}>{ranges.map(range =>
+            <div className="inline-flex rounded-none border border-border bg-card p-[3px]" role="group" aria-label={t('admin.analytics.range')}>{ranges.map(range =>
                 <button key={range} type="button" aria-pressed={days === range}
-                        className={cn('cursor-pointer rounded-md border-0 px-3 py-[5px] text-[12.5px] font-medium text-muted transition-colors', days === range ? 'bg-uav-red-light font-semibold text-primary' : 'bg-transparent hover:text-foreground')}
+                        className={cn('cursor-pointer rounded-none border-0 px-3 py-[5px] text-[12.5px] font-medium text-muted transition-colors', days === range ? 'bg-uav-red-light font-semibold text-primary' : 'bg-transparent hover:text-foreground')}
                         onClick={() => setDays(range)}>{t('admin.analytics.days', {count: range})}</button>)}</div>
         </div>
         <QueryState query={query}>{query.data && <AnalyticsBody data={query.data} money={money} />}</QueryState>
@@ -75,14 +75,14 @@ function AnalyticsBody({data, money}: { data: Analytics; money: Intl.NumberForma
     ].filter(k => k.show);
 
     return <>
-        {kpis.length > 0 && <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-3.5">{kpis.map(kpi => <article key={kpi.key} className="flex flex-col gap-1 rounded-xl border border-border bg-card px-[18px] py-4">
+        {kpis.length > 0 && <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-px border border-slate-200 bg-slate-200">{kpis.map(kpi => <article key={kpi.key} className="flex flex-col gap-1 border-t-2 border-t-uav-blue bg-white px-[18px] py-4">
             <span className="text-[12.5px] text-muted">{t(`admin.analytics.kpi.${kpi.key}`)}</span>
             <strong className="text-2xl font-bold leading-tight tabular-nums text-foreground">{kpi.value}</strong>
             {kpi.delta}
         </article>)}</div>}
 
-        <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
-            {missionsVisible && <section className="col-span-full min-w-0 rounded-xl border border-border bg-card shadow-sm">
+        <div className="grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 xl:grid-cols-2 xl:[&>*:last-child:nth-child(odd)]:col-span-full">
+            {missionsVisible && <section className="col-span-full min-w-0 rounded-none border border-border bg-card">
                 <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.dailyTitle')}</h2>
                     <Legend items={[{label: t('admin.analytics.completed'), color: seriesColors.blue},
                         {label: t('admin.analytics.failed'), color: seriesColors.red, dashed: true}]}/></header>
@@ -95,26 +95,26 @@ function AnalyticsBody({data, money}: { data: Analytics; money: Intl.NumberForma
                                 ]}/>
                 </div>
             </section>}
-            {missionsVisible && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+            {missionsVisible && <section className="min-w-0 rounded-none border border-border bg-card">
                 <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.statusTitle')}</h2></header>
                 <div className="p-6"><SegmentBar items={status} ariaLabel={t('admin.analytics.statusTitle')}/></div>
             </section>}
-            {missionsVisible && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+            {missionsVisible && <section className="min-w-0 rounded-none border border-border bg-card">
                 <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.stationTitle')}</h2></header>
                 <div className="p-6">{data.flightHoursByStation.length ?
                     <BarList items={data.flightHoursByStation.map(s => ({label: s.name, value: s.value}))}
                              format={v => t('admin.analytics.hours', {value: v})}/> :
                     <p className="m-0 text-[13px] text-muted">{t('admin.analytics.noFlights')}</p>}</div>
             </section>}
-            {fleetTotal > 0 && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+            {fleetTotal > 0 && <section className="min-w-0 rounded-none border border-border bg-card">
                 <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.fleetTitle')}</h2>
                     <span className="text-xs text-slate-500">{t('admin.analytics.fleetTotal', {count: fleetTotal})}</span></header>
                 <ul className="m-0 flex list-none flex-col gap-3 px-[18px] pb-4 pt-2.5">{Object.entries(data.fleet).map(([state, count]) => <li key={state}>
                     <div className="mb-[5px] flex justify-between gap-2 text-[13px]"><span className="truncate text-muted">{displayLabel(state)}</span><strong>{count}/{fleetTotal}</strong></div>
-                    <span className="flex h-[7px] gap-0.5 overflow-hidden rounded bg-slate-100"><span className="rounded" style={{width: `${count / fleetTotal * 100}%`, background: fleetColors[state] ?? seriesColors.gray}}/></span>
+                    <span className="flex h-[7px] gap-0.5 overflow-hidden rounded-none bg-slate-100"><span className="rounded-none" style={{width: `${count / fleetTotal * 100}%`, background: fleetColors[state] ?? seriesColors.gray}}/></span>
                 </li>)}</ul>
             </section>}
-            {billingVisible && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+            {billingVisible && <section className="min-w-0 rounded-none border border-border bg-card">
                 <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.revenueTitle')}</h2>
                     <Legend items={[{label: t('admin.analytics.paid'), color: seriesColors.blue},
                         {label: t('admin.analytics.outstanding'), color: seriesColors.orange}]}/></header>
@@ -124,32 +124,32 @@ function AnalyticsBody({data, money}: { data: Analytics; money: Intl.NumberForma
                                  groups={data.revenueByMonth.map(m => ({label: `${Number(m.month.slice(5))}/${m.month.slice(2, 4)}`, values: [m.paid, m.outstanding]}))}/>
                 </div>
             </section>}
-            {billingVisible && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+            {billingVisible && <section className="min-w-0 rounded-none border border-border bg-card">
                 <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.quotaTitle')}</h2>
                     <Link href="/admin/billing" className="text-[13px] font-semibold text-primary hover:underline">{t('admin.analytics.manage')}</Link></header>
                 {data.quotaWarnings.length ? <ul className="m-0 flex list-none flex-col gap-3 px-[18px] pb-4 pt-2.5">{data.quotaWarnings.map(q => {
                     const ratio = Math.min(1, q.used / q.limit);
                     return <li key={q.username}>
                         <div className="mb-[5px] flex justify-between gap-2 text-[13px]"><span className="truncate text-muted">{q.username}</span><strong>{t('admin.analytics.quotaUsage', {used: q.used, limit: q.limit})}</strong></div>
-                        <span className="flex h-[7px] gap-0.5 overflow-hidden rounded bg-slate-100"><span className="rounded" style={{width: `${ratio * 100}%`, background: ratio >= 1 ? 'var(--danger)' : 'var(--warning)'}}/></span>
+                        <span className="flex h-[7px] gap-0.5 overflow-hidden rounded-none bg-slate-100"><span className="rounded-none" style={{width: `${ratio * 100}%`, background: ratio >= 1 ? 'var(--danger)' : 'var(--warning)'}}/></span>
                     </li>;
                 })}</ul> : <p className="m-0 p-6 text-[13px] text-muted">{t('admin.analytics.quotaEmpty')}</p>}
             </section>}
-            {missionsVisible && <section className="col-span-full min-w-0 rounded-xl border border-border bg-card shadow-sm">
+            {missionsVisible && <section className="col-span-full min-w-0 rounded-none border border-border bg-card">
                 <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.mapTitle')}</h2>
                     <Legend items={statusGroups.slice(0, 5).map(g => ({label: t(`admin.analytics.status.${g.key}`), color: g.color}))}/></header>
                 {data.missionLocations.length ? <MissionMap ariaLabel={t('admin.analytics.mapAria', {count: data.missionLocations.length})}
                                                             points={data.missionLocations.map(p => ({...p, color: groupOf(p.status).color, label: displayLabel(p.status)}))}/> :
                     <p className="m-0 p-6 text-[13px] text-muted">{t('admin.analytics.mapEmpty')}</p>}
             </section>}
-            {can('USER_MANAGE') && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+            {can('USER_MANAGE') && <section className="min-w-0 rounded-none border border-border bg-card">
                 <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.webhookTitle')}</h2>
                     <Link href="/admin/webhooks" className="text-[13px] font-semibold text-primary hover:underline">{t('admin.analytics.manage')}</Link></header>
                 {data.webhooks.length ? <ul className="m-0 flex list-none flex-col gap-3 px-[18px] pb-4 pt-2.5">{data.webhooks.map(w => {
                     const total = w.success + w.failed;
                     return <li key={w.name}>
                         <div className="mb-[5px] flex justify-between gap-2 text-[13px]"><span className="truncate text-muted">{w.name}</span><strong>{t('admin.analytics.webhookRate', {rate: Math.round(w.success / total * 100), total})}</strong></div>
-                        <span className="flex h-[7px] gap-0.5 overflow-hidden rounded bg-slate-100"><span style={{flexGrow: w.success, background: 'var(--success)'}}/><span style={{flexGrow: w.failed, background: 'var(--danger)'}}/></span>
+                        <span className="flex h-[7px] gap-0.5 overflow-hidden rounded-none bg-slate-100"><span style={{flexGrow: w.success, background: 'var(--success)'}}/><span style={{flexGrow: w.failed, background: 'var(--danger)'}}/></span>
                     </li>;
                 })}</ul> : <p className="m-0 p-6 text-[13px] text-muted">{t('admin.analytics.webhookEmpty')}</p>}
             </section>}

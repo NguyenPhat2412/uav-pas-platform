@@ -87,7 +87,7 @@ export function StationPanel() {
                                                                             onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.shared.closeForm') : t('opsAssets.station.create')}</Button>
         </div>}
         {openCreate &&
-            <form className="space-y-4 rounded-lg border border-border bg-slate-50 p-4" onSubmit={async event => {
+            <form className="space-y-4 rounded-none border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 try {
                     await create.mutateAsync(form);

@@ -12,38 +12,36 @@ export function ServicePlanCards({plans, currentPlanCode, onSelect, pendingCode}
     pendingCode?: string | null;
 }) {
     const {t, formatCurrency} = useI18n();
-    return <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-5">
+    return <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-px border border-slate-200 bg-slate-200">
         {plans.map(plan => {
             // A visual editorial highlight, independent of the customer's subscribed plan.
             const featured = plan.active && plan.code === 'PRO';
             const current = plan.code === currentPlanCode;
             return <article
                 key={plan.id}
-                className={`min-w-0 flex flex-col gap-5 rounded-[18px] text-card-foreground shadow-xs ${
-                    featured
-                        ? 'border-2 border-primary p-[23px] bg-rose-50/40'
-                        : 'border border-border p-6 bg-card'
+                className={`flex min-w-0 flex-col gap-5 p-5 text-card-foreground ${
+                    current ? 'border-t-4 border-t-primary bg-uav-red-light/20' : 'border-t-4 border-t-transparent bg-white'
                 }`}
             >
                 <div className="flex items-start justify-between gap-3">
-                    <span className={`inline-flex items-center justify-center shrink-0 w-12 h-12 rounded-[14px] ${
+                    <span className={`inline-flex items-center justify-center shrink-0 w-12 h-12 rounded-none ${
                         featured ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'
                     }`}>
                         <UavIcon size={26} aria-hidden="true"/>
                     </span>
                     <div className="flex flex-col items-end gap-1.5">
                         {featured && (
-                            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold leading-snug bg-primary text-primary-foreground">
+                            <span className="inline-flex items-center gap-1.5 rounded-none px-2.5 py-1 text-[11px] font-bold leading-snug bg-primary text-primary-foreground">
                                 <Sparkles size={13} aria-hidden="true"/>{t('planCard.featured')}
                             </span>
                         )}
                         {current && (
-                            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold leading-snug bg-uav-blue-light text-uav-blue">
+                            <span className="inline-flex items-center gap-1.5 rounded-none px-2.5 py-1 text-[11px] font-bold leading-snug bg-uav-blue-light text-uav-blue">
                                 <BadgeCheck size={13} aria-hidden="true"/>{t('planCard.current')}
                             </span>
                         )}
                         {!plan.active && (
-                            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold leading-snug bg-slate-100 text-slate-600">
+                            <span className="inline-flex items-center gap-1.5 rounded-none px-2.5 py-1 text-[11px] font-bold leading-snug bg-slate-100 text-slate-600">
                                 {t('planCard.inactive')}
                             </span>
                         )}

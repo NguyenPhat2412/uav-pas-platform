@@ -89,10 +89,10 @@ function WebhooksContent() {
     }
 
     return <div className="space-y-6">
-        <div className="flex flex-wrap items-center justify-end gap-4 rounded-[18px] border border-border bg-card p-5 text-foreground shadow-sm">
+        <div className="flex flex-wrap items-center justify-end gap-4 rounded-none border border-border bg-card p-5 text-foreground">
             <div className="flex flex-wrap gap-2">
                 <button
-                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-border bg-card px-4 font-bold text-foreground transition hover:-translate-y-px hover:bg-background disabled:cursor-not-allowed disabled:opacity-55"
+                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-none border border-border bg-card px-4 font-bold text-foreground transition hover:bg-background disabled:cursor-not-allowed disabled:opacity-55"
                     onClick={() => {
                         setLoading(true);
                         setError(null);
@@ -100,20 +100,20 @@ function WebhooksContent() {
                     }} disabled={loading}><RotateCw size={16}/> {t('admin.webhooks.refresh')}
                 </button>
                 <button
-                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-primary px-4 font-bold text-primary-foreground transition hover:-translate-y-px hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-55"
+                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-none bg-primary px-4 font-bold text-primary-foreground transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-55"
                     onClick={() => void handleTestDispatch()}
                     disabled={loading || isDispatching || status !== 'QUEUED'}><Send
                     size={16}/> {isDispatching ? t('admin.webhooks.recording') : t('admin.webhooks.testEvent')}</button>
             </div>
         </div>
-        <div className="rounded-[18px] border border-border bg-card p-4 text-foreground shadow-sm" role="status">
+        <div className="rounded-none border border-border bg-card p-4 text-foreground" role="status">
             {status === 'UNCONFIGURED' ? t('admin.webhooks.runtime.unconfigured') : status === 'QUEUED' ? t('admin.webhooks.runtime.queued') : t('admin.webhooks.runtime.unknown')}
         </div>
-        {error && <div role="alert" className="rounded-[18px] border border-border bg-card p-4 text-danger shadow-sm">{t(error)}</div>}
-        {message && <div role="status" className="rounded-[18px] border border-border bg-card p-4 text-foreground shadow-sm">{message}</div>}
+        {error && <div role="alert" className="rounded-none border border-border bg-card p-4 text-danger">{t(error)}</div>}
+        {message && <div role="status" className="rounded-none border border-border bg-card p-4 text-foreground">{message}</div>}
         {loading ? <p role="status">{t('admin.webhooks.loading')}</p> : <>
             <WebhookSubscriptions items={webhooks} onChanged={() => void refresh()}/>
-            <section className="overflow-hidden rounded-[18px] border border-border bg-card text-foreground shadow-sm"><h3 className="p-5 font-semibold">{t('admin.webhooks.deliveryLog', {count: logs.length})}</h3>
+            <section className="overflow-hidden rounded-none border border-border bg-card text-foreground"><h3 className="p-5 font-semibold">{t('admin.webhooks.deliveryLog', {count: logs.length})}</h3>
                 {logs.length === 0 ? <p className="p-5">{t('admin.webhooks.noDeliveries')}</p> :
                     <div className="overflow-x-auto" tabIndex={0} aria-label={t('admin.webhooks.logTable')}>
                         <table className="w-full min-w-[760px] border-separate border-spacing-0 text-left text-sm">

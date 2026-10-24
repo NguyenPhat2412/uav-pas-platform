@@ -52,7 +52,7 @@ export function AdminProfilePanel() {
     const saveError = save.error ? profileError(save.error, tp) : null;
     const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none';
 
-    return <div className="grid gap-5 lg:grid-cols-2">
+    return <div className="grid gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 lg:grid-cols-2">
         <section className="border border-slate-200 bg-white" aria-labelledby="profile-title">
             <header className="flex items-center gap-2 border-b border-slate-100 px-5 py-3.5">
                 <UserRound size={17} className="text-primary" aria-hidden="true"/>

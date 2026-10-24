@@ -30,7 +30,7 @@ export function AuthCredentials({identity, password, onIdentityChange, onPasswor
                     disabled={disabled}
                     value={identity}
                     onChange={event => onIdentityChange(event.target.value)}
-                    className="w-full min-h-11 rounded-xl border border-border-input bg-card px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20 disabled:bg-slate-100 disabled:text-slate-500"
+                    className="w-full min-h-11 rounded-none border border-border-input bg-card px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20 disabled:bg-slate-100 disabled:text-slate-500"
                 />
             </div>
             <PasswordField

@@ -40,7 +40,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
                         ref={ref}
                         type={showPassword ? 'text' : 'password'}
                         className={cn(
-                            'w-full h-12 pl-4 pr-12 rounded-xl bg-card text-body-lg font-body-lg text-on-surface placeholder:text-outline transition-colors duration-150 outline-none focus:outline-2 focus:outline-ring shadow-sm border border-border-input',
+                            'w-full h-12 pl-4 pr-12 rounded-none bg-card text-body-lg font-body-lg text-on-surface placeholder:text-outline transition-colors duration-150 outline-none focus:outline-2 focus:outline-ring border border-border-input',
                             leftIcon && 'pl-11',
                             error && 'border-danger focus:outline-danger',
                             className
@@ -51,7 +51,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
                         type="button"
                         aria-label={showPassword ? t('authShared.hidePassword') : t('authShared.showPassword')}
                         onClick={() => setShowPassword((prev) => !prev)}
-                        className="absolute right-0 top-0 w-12 h-12 flex items-center justify-center text-outline hover:text-on-surface transition-colors cursor-pointer rounded-r-xl select-none focus:outline-none"
+                        className="absolute right-0 top-0 w-12 h-12 flex items-center justify-center text-outline hover:text-on-surface transition-colors cursor-pointer rounded-r-none select-none focus:outline-none"
                     >
                         {showPassword ? (
                             <EyeOff size={18} className="select-none"/>

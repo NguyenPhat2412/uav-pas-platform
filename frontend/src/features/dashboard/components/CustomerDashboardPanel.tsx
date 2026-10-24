@@ -32,23 +32,23 @@ function Dashboard() {
     return (
         <>
             {(missions.isError || services.isError) &&
-                <div role="alert" className="mb-4 rounded-lg bg-danger/10 px-3.5 py-3 text-[13px] text-danger">{t('dashboard.loadError')}</div>}
+                <div role="alert" className="mb-4 rounded-none bg-danger/10 px-3.5 py-3 text-[13px] text-danger">{t('dashboard.loadError')}</div>}
             <div className="mb-7 flex flex-wrap items-center justify-between gap-5">
                 <div>
                     <h1 className="m-0 flex items-center gap-2.5 text-[28px] font-extrabold leading-tight tracking-tight text-foreground">
-                        <span className="inline-block h-[26px] w-2 rounded-full bg-primary"/>
+                        <span className="inline-block h-[26px] w-2 rounded-none bg-primary"/>
                         {t('dashboard.greeting', {name: user?.fullName || user?.username || t('dashboard.defaultName')})}
                     </h1>
                     <p className="mt-2.5 text-sm text-muted">{t('dashboard.subtitle')}</p>
                 </div>
-                <Link href="/customer/missions/create" className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-primary px-4 text-[13px] font-bold text-primary-foreground transition hover:-translate-y-px hover:bg-primary-hover">{t('dashboard.bookService')}</Link>
+                <Link href="/customer/missions/create" className="inline-flex min-h-[44px] items-center justify-center rounded-none bg-primary px-4 text-[13px] font-bold text-primary-foreground transition hover:bg-primary-hover">{t('dashboard.bookService')}</Link>
             </div>
 
             {/* Frame 1: KPI Grid */}
-            <div className="grid grid-cols-1 items-stretch gap-[18px] md:grid-cols-2 lg:grid-cols-3">
-                <Panel className="h-full border-l-4 border-l-primary">
+            <div className="grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 md:grid-cols-3">
+                <Panel className="h-full border-0 border-t-2 border-t-primary">
                     <div className="flex items-start gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-uav-red-light text-primary">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none bg-uav-red-light text-primary">
                             <Activity size={18}/>
                         </span>
                         <div>
@@ -59,9 +59,9 @@ function Dashboard() {
                     </div>
                 </Panel>
 
-                <Panel className="h-full border-l-4 border-l-uav-blue">
+                <Panel className="h-full border-0 border-t-2 border-t-uav-blue">
                     <div className="flex items-start gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-uav-blue-light text-uav-blue">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none bg-uav-blue-light text-uav-blue">
                             <Plane size={18}/>
                         </span>
                         <div>
@@ -72,9 +72,9 @@ function Dashboard() {
                     </div>
                 </Panel>
 
-                <Panel className="h-full border-l-4 border-l-amber-600">
+                <Panel className="h-full border-0 border-t-2 border-t-amber-500">
                     <div className="flex items-start gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none bg-amber-50 text-amber-600">
                             <Boxes size={18}/>
                         </span>
                         <div>
@@ -89,7 +89,7 @@ function Dashboard() {
             <div className="mt-6"><CustomerAnalytics/></div>
 
             {/* Frame 2 & 3: Mission Stream & Quick Shortcuts */}
-            <div className="mt-5 grid grid-cols-1 items-stretch gap-[18px] md:grid-cols-2">
+            <div className="mt-5 grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 lg:grid-cols-[minmax(0,1fr)_300px] [&>*]:border-0">
                 {/* Frame 2: Mission Table */}
                 <Panel
                     title={t('dashboard.recentMissions')}
@@ -131,16 +131,16 @@ function Dashboard() {
                 </Panel>
 
                 {/* Frame 3: Quota & Quick Shortcuts */}
-                <div className="flex h-full flex-col justify-between gap-[18px]">
-                    <Panel title={t('dashboard.quickStart')} className="flex-1">
-                        <div className="flex flex-col gap-2.5">
-                            <Link href="/customer/services" className="flex min-h-[44px] items-center justify-between rounded-full border border-border bg-card px-3.5 py-2.5 text-[13px] font-bold text-foreground transition hover:-translate-y-px hover:bg-background">
+                <div className="flex h-full flex-col bg-white">
+                    <Panel title={t('dashboard.quickStart')} className="flex-1 border-0 [&>div]:p-0">
+                        <div className="flex flex-col divide-y divide-slate-200">
+                            <Link href="/customer/services" className="flex min-h-[44px] items-center justify-between px-4 py-2.5 text-[13px] font-bold text-foreground transition hover:bg-slate-50 hover:text-primary">
                                 <span>{t('dashboard.exploreServices')}</span>
                             </Link>
-                            <Link href="/customer/missions/create" className="flex min-h-[44px] items-center justify-between rounded-full border border-border bg-card px-3.5 py-2.5 text-[13px] font-bold text-foreground transition hover:-translate-y-px hover:bg-background">
+                            <Link href="/customer/missions/create" className="flex min-h-[44px] items-center justify-between px-4 py-2.5 text-[13px] font-bold text-foreground transition hover:bg-slate-50 hover:text-primary">
                                 <span>{t('dashboard.createRequest')}</span>
                             </Link>
-                            <Link href="/customer/billing" className="flex min-h-[44px] items-center justify-between rounded-full border border-border bg-card px-3.5 py-2.5 text-[13px] font-bold text-foreground transition hover:-translate-y-px hover:bg-background">
+                            <Link href="/customer/billing" className="flex min-h-[44px] items-center justify-between px-4 py-2.5 text-[13px] font-bold text-foreground transition hover:bg-slate-50 hover:text-primary">
                                 <span>{t('dashboard.manageBilling')}</span>
                             </Link>
                         </div>

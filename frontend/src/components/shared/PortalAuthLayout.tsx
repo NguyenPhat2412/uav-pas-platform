@@ -20,7 +20,7 @@ export function PortalAuthLayout({title, description, homeUrl, tools, children}:
                 </a>
                 <div className="flex items-center gap-3 text-sm font-semibold text-slate-600">
                     {tools}
-                    <a href={homeUrl} className="rounded-xl border border-border bg-card px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+                    <a href={homeUrl} className="rounded-none border border-border bg-card px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors">
                         {t('authShared.backHome')}
                     </a>
                 </div>
@@ -30,7 +30,7 @@ export function PortalAuthLayout({title, description, homeUrl, tools, children}:
                     <p className="text-xs font-extrabold uppercase tracking-widest text-primary">{t('authShared.eyebrow')}</p>
                     <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">{keepVietnamesePhrases(title)}</h1>
                     <p className="text-base leading-relaxed text-slate-600">{description}</p>
-                    <figure className="overflow-hidden rounded-2xl border border-border bg-card shadow-md">
+                    <figure className="overflow-hidden rounded-none border border-border bg-card">
                         <img
                             src="/images/uav-photos/usgs-plum-island-team-960.webp"
                             srcSet="/images/uav-photos/usgs-plum-island-team-640.webp 640w, /images/uav-photos/usgs-plum-island-team-960.webp 960w"
@@ -43,7 +43,7 @@ export function PortalAuthLayout({title, description, homeUrl, tools, children}:
                         />
                     </figure>
                 </section>
-                <section className="rounded-2xl border border-border bg-card p-6 shadow-lg sm:p-8 lg:col-span-6" aria-label={t('authShared.formLabel')}>
+                <section className="rounded-none border border-border bg-card p-6 shadow-lg sm:p-8 lg:col-span-6" aria-label={t('authShared.formLabel')}>
                     {children}
                 </section>
             </main>

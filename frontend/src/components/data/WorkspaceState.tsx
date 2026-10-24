@@ -25,7 +25,7 @@ export function EmptyState({title, detail, action}: {
 export function LoadingRows() {
     const {t} = useI18n();
     return <div role="status" aria-label={t('opsShared.state.loadingData')} className="space-y-3 p-5"><span className="sr-only">{t('opsShared.state.loadingData')}</span>{[0, 1, 2, 3, 4].map(i =>
-        <div key={i} className="h-9 animate-pulse rounded bg-slate-100"/>)}</div>;
+        <div key={i} className="h-9 animate-pulse rounded-none bg-slate-100"/>)}</div>;
 }
 
 // Known server error codes mapped to catalog keys under opsShared.state.errors.
@@ -66,7 +66,7 @@ export function PermissionGate({code, children}: { code: string; children: React
     if (!permissionsReady) return <LoadingRows/>;
     if (!can(code)) {
         return (
-            <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-amber-200 bg-amber-50/60 p-8 text-center text-slate-700" role="status" data-permission={code}>
+            <div className="flex flex-col items-center justify-center gap-2 rounded-none border border-amber-200 bg-amber-50/60 p-8 text-center text-slate-700" role="status" data-permission={code}>
                 <ShieldAlert size={24} className="text-warning"/>
                 <h3 className="text-base font-bold text-slate-900">{t('opsShared.state.noAccessTitle')}</h3>
                 <p className="max-w-md text-sm text-slate-600">{t('opsShared.state.noAccessDetail')}</p>

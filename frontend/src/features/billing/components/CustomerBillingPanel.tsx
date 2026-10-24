@@ -51,7 +51,7 @@ export default function CustomerBillingPage() {
 
     return (
         <PageGuard permission={null}>
-            <div className="max-w-[1180px] mx-auto flex flex-col gap-6">
+            <div className="flex flex-col gap-6">
                 {/* Header */}
                 <div className="border-b border-border pb-4 flex justify-between items-end">
                     <div>
@@ -65,13 +65,13 @@ export default function CustomerBillingPage() {
                 </div>
 
                 {isLoading && (
-                    <div className="bg-card border border-border rounded-2xl p-8 text-center text-slate-500">
+                    <div className="bg-card border border-border rounded-none p-8 text-center text-slate-500">
                         {t('billingPage.loading')}
                     </div>
                 )}
 
                 {queryError && !isLoading && (
-                    <div className="bg-rose-50 border border-rose-200 rounded-2xl p-5 flex gap-3 text-rose-700">
+                    <div className="bg-rose-50 border border-rose-200 rounded-none p-5 flex gap-3 text-rose-700">
                         <AlertCircle size={20} className="shrink-0 mt-0.5"/>
                         <div>
                             <p className="m-0 font-bold">{t('billingPage.loadError')}</p>
@@ -84,37 +84,37 @@ export default function CustomerBillingPage() {
 
                 {/* Quota & Plan Overview Cards */}
                 {quota && (
-                    <div data-testid="my-quota" className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div data-testid="my-quota" className="grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 lg:grid-cols-3">
                         {/* Card 1: Current Plan */}
-                        <div className="bg-gradient-to-br from-primary-hover to-primary text-primary-foreground rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden min-h-[220px]">
-                            <div className="absolute -top-2.5 -right-2.5 opacity-15 pointer-events-none text-white">
-                                <UavIcon size={140} className="text-white" aria-hidden="true"/>
+                        <div className="relative flex min-h-[200px] flex-col justify-between overflow-hidden border-t-2 border-t-primary bg-white p-5 text-slate-900">
+                            <div className="pointer-events-none absolute -right-2.5 -top-2.5 text-primary opacity-[0.07]">
+                                <UavIcon size={140} aria-hidden="true"/>
                             </div>
                             <div>
                                 <div className="flex justify-between items-center mb-3">
-                                    <span className="bg-white/20 text-white text-[11px] font-bold px-2.5 py-1 rounded-full border border-white/30 inline-flex w-fit">
+                                    <span className="inline-flex w-fit border border-rose-200 bg-uav-red-light px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary">
                                         {t('billingPage.currentPlan')}
                                     </span>
-                                    <span className="text-[11px] text-rose-100">
+                                    <span className="text-[11px] text-slate-500">
                                         {t('billingPage.cycleEnds', {date: formatDate(quota.cycleEnd)})}
                                     </span>
                                 </div>
-                                <h3 className="mt-3 mb-1.5 text-xl font-extrabold text-white leading-snug">{planName(quota.planName)}</h3>
-                                <p className="m-0 text-xs text-rose-200 leading-relaxed">
+                                <h3 className="mt-3 mb-1.5 text-xl font-extrabold leading-snug text-slate-900">{planName(quota.planName)}</h3>
+                                <p className="m-0 text-xs leading-relaxed text-slate-500">
                                     {t('billingPage.planDescription')}
                                 </p>
                             </div>
 
-                            <div className="border-t border-white/20 pt-3 mt-4 flex justify-between items-center text-xs text-rose-100">
+                            <div className="mt-4 flex items-center justify-between border-t border-slate-200 pt-3 text-xs text-slate-500">
                                 <span>{t('billingPage.concurrentMissions')}</span>
-                                <strong className="tabular-nums text-sm text-white">
+                                <strong className="tabular-nums text-sm text-slate-900">
                                     {quota.concurrentUavsUsed} / {quota.concurrentUavsLimit} UAV
                                 </strong>
                             </div>
                         </div>
 
                         {/* Card 2: Flight Hours Quota */}
-                        <div className="bg-card border border-border border-t-[3px] border-t-primary rounded-2xl p-6 shadow-xs flex flex-col justify-between min-h-[220px]">
+                        <div className="flex min-h-[200px] flex-col justify-between border-t-2 border-t-uav-blue bg-white p-5">
                             <div>
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t('billingPage.hoursUsed')}</span>
@@ -128,9 +128,9 @@ export default function CustomerBillingPage() {
                                 </div>
 
                                 {/* Progress bar */}
-                                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden mt-3">
+                                <div className="w-full h-2 bg-slate-200 rounded-none overflow-hidden mt-3">
                                     <div
-                                        className={`h-full rounded-full transition-[width] duration-300 ${usagePercent > 80 ? 'bg-primary' : 'bg-success'}`}
+                                        className={`h-full rounded-none transition-[width] duration-300 ${usagePercent > 80 ? 'bg-primary' : 'bg-success'}`}
                                         style={{width: `${usagePercent}%`}}
                                     />
                                 </div>
@@ -142,7 +142,7 @@ export default function CustomerBillingPage() {
                         </div>
 
                         {/* Card 3: AI & Features Access */}
-                        <div className="bg-card border border-border border-t-[3px] border-t-success rounded-2xl p-6 shadow-xs flex flex-col justify-between min-h-[220px]">
+                        <div className="flex min-h-[200px] flex-col justify-between border-t-2 border-t-amber-500 bg-white p-5">
                             <div>
                                 <span className="block mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                                     {t('billingPage.features')}
@@ -152,7 +152,7 @@ export default function CustomerBillingPage() {
                                         <span className="flex items-center gap-1.5 text-slate-700">
                                             <Radar size={15} aria-hidden="true"/> {t('billingPage.sarAi')}
                                         </span>
-                                        <span className="bg-uav-blue-light text-uav-blue text-[11px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1 border border-blue-200">
+                                        <span className="bg-uav-blue-light text-uav-blue text-[11px] font-bold px-2.5 py-1 rounded-none inline-flex items-center gap-1 border border-blue-200">
                                             {currentPlan ? t(currentPlan.allowSarAi ? 'billingPage.yes' : 'billingPage.no') : '—'}
                                         </span>
                                     </li>
@@ -204,7 +204,7 @@ export default function CustomerBillingPage() {
                     )}
                 </section>
                 {/* Invoices Table */}
-                <div data-testid="my-invoices" className="bg-card border border-border rounded-2xl shadow-xs overflow-hidden">
+                <div data-testid="my-invoices" className="bg-card border border-border rounded-none overflow-hidden">
                     <div className="px-6 py-4 border-b border-border flex justify-between items-center gap-3 flex-wrap">
                         <h2 className="m-0 text-base font-extrabold text-slate-900 flex items-center gap-2">
                             <FileText size={20} className="text-slate-500"/> {t('billingPage.invoiceHistory')}
@@ -238,7 +238,7 @@ export default function CustomerBillingPage() {
                                         {formatCurrency(inv.amount)}
                                     </td>
                                     <td className="px-5 py-4 text-slate-700 text-xs">
-                                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold border ${
+                                        <span className={`inline-flex items-center gap-1 rounded-none px-2.5 py-1 text-[11px] font-bold border ${
                                             inv.status === 'PAID'
                                                 ? 'bg-uav-blue-light text-uav-blue border-blue-200'
                                                 : 'bg-amber-50 text-amber-700 border-amber-200'
@@ -252,7 +252,7 @@ export default function CustomerBillingPage() {
                                             <button
                                                 type="button"
                                                 onClick={() => setPayingInvoice(inv)}
-                                                className="bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-bold px-3.5 py-1.5 rounded-lg border-0 cursor-pointer transition-colors shadow-xs"
+                                                className="bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-bold px-3.5 py-1.5 rounded-none border-0 cursor-pointer transition-colors"
                                             >
                                                 {t('billingPage.viewPayment')}
                                             </button>

@@ -57,16 +57,16 @@ function AdminSettingsContent() {
     const opConfigs = configs.filter(c => c.category === 'OPERATIONS' || !['SAFETY', 'AI', 'AI_EDGE'].includes(c.category));
 
     return (
-        <div className="max-w-4xl space-y-6 pb-12">
+        <div className="space-y-6 pb-12">
             {/* Top action header */}
             <div
-                className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 shadow-sm sm:flex-row sm:items-center sm:justify-end">
+                className="flex flex-col gap-4 rounded-none border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-end">
 
                 <button
                     type="button"
                     onClick={handleSaveAll}
                     disabled={isSaving || isLoading || configs.length === 0}
-                    className="flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground shadow-sm transition hover:-translate-y-px hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-none bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     <Save size={16}/>
                     {isSaving ? t('admin.settings.saving') : t('admin.settings.saveAll')}
@@ -79,14 +79,14 @@ function AdminSettingsContent() {
             {/* Success Notification */}
             {successMsg && (
                 <div
-                    className="flex items-center gap-2 rounded-xl border border-blue-200 bg-uav-blue-light px-4 py-3 text-xs font-semibold text-uav-blue shadow-sm">
+                    className="flex items-center gap-2 rounded-none border border-blue-200 bg-uav-blue-light px-4 py-3 text-xs font-semibold text-uav-blue">
                     <CheckCircle2 size={16} className="shrink-0 text-uav-blue"/>
                     <span>{successMsg}</span>
                 </div>
             )}
 
             {/* Group 1: Safety & Flight Limits */}
-            <div className="space-y-4 rounded-xl border border-border bg-card p-6 shadow-sm">
+            <div className="space-y-4 rounded-none border border-border bg-card p-6">
                 <h3 className="flex items-center gap-2 border-b border-slate-100 pb-3 text-sm font-bold text-slate-900">
                     <ShieldCheck size={18} className="text-primary"/> {t('admin.settings.safetyGroup')}
                 </h3>
@@ -103,7 +103,7 @@ function AdminSettingsContent() {
                                     disabled={isSaving}
                                     value={c.configValue}
                                     onChange={e => handleChange(c.configKey, e.target.value)}
-                                    className="min-h-[44px] w-full rounded-lg border border-border-input bg-slate-50 p-2.5 text-xs font-semibold text-slate-900 focus:border-primary focus:outline-none"
+                                    className="min-h-[44px] w-full rounded-none border border-border-input bg-slate-50 p-2.5 text-xs font-semibold text-slate-900 focus:border-primary focus:outline-none"
                                 >
                                     <option value="true">{t('admin.settings.enforced')}</option>
                                     <option value="false">{t('admin.settings.off')}</option>
@@ -115,7 +115,7 @@ function AdminSettingsContent() {
                                     disabled={isSaving}
                                     value={c.configValue}
                                     onChange={e => handleChange(c.configKey, e.target.value)}
-                                    className="min-h-[44px] w-full rounded-lg border border-border-input bg-slate-50 p-2.5 tabular-nums text-xs font-bold text-slate-900 focus:border-primary focus:outline-none"
+                                    className="min-h-[44px] w-full rounded-none border border-border-input bg-slate-50 p-2.5 tabular-nums text-xs font-bold text-slate-900 focus:border-primary focus:outline-none"
                                 />
                             )}
                             <p className="text-sm text-slate-500">{c.description}</p>
@@ -125,7 +125,7 @@ function AdminSettingsContent() {
             </div>
 
             {/* Group 2: AI & KV260 Edge Processing */}
-            <div className="space-y-4 rounded-xl border border-border bg-card p-6 shadow-sm">
+            <div className="space-y-4 rounded-none border border-border bg-card p-6">
                 <h3 className="flex items-center gap-2 border-b border-slate-100 pb-3 text-sm font-bold text-slate-900">
                     <Cpu size={18} className="text-indigo-600"/> {t('admin.settings.aiGroup')}
                 </h3>
@@ -142,7 +142,7 @@ function AdminSettingsContent() {
                                     disabled={isSaving}
                                     value={c.configValue}
                                     onChange={e => handleChange(c.configKey, e.target.value)}
-                                    className="min-h-[44px] w-full rounded-lg border border-border-input bg-slate-50 p-2.5 text-xs font-semibold text-slate-900 focus:border-primary focus:outline-none"
+                                    className="min-h-[44px] w-full rounded-none border border-border-input bg-slate-50 p-2.5 text-xs font-semibold text-slate-900 focus:border-primary focus:outline-none"
                                 >
                                     <option value="true">{t('admin.settings.preferEdge')}</option>
                                     <option value="false">{t('admin.settings.preferServer')}</option>
@@ -154,7 +154,7 @@ function AdminSettingsContent() {
                                     disabled={isSaving}
                                     value={c.configValue}
                                     onChange={e => handleChange(c.configKey, e.target.value)}
-                                    className="min-h-[44px] w-full rounded-lg border border-border-input bg-slate-50 p-2.5 tabular-nums text-xs font-bold text-slate-900 focus:border-primary focus:outline-none"
+                                    className="min-h-[44px] w-full rounded-none border border-border-input bg-slate-50 p-2.5 tabular-nums text-xs font-bold text-slate-900 focus:border-primary focus:outline-none"
                                 />
                             )}
                             <p className="text-sm text-slate-500">{c.description}</p>
@@ -164,7 +164,7 @@ function AdminSettingsContent() {
             </div>
 
             {/* Group 3: Operations & Dispatch */}
-            <div className="space-y-4 rounded-xl border border-border bg-card p-6 shadow-sm">
+            <div className="space-y-4 rounded-none border border-border bg-card p-6">
                 <h3 className="flex items-center gap-2 border-b border-slate-100 pb-3 text-sm font-bold text-slate-900">
                     <MapPin size={18} className="text-amber-600"/> {t('admin.settings.opsGroup')}
                 </h3>
@@ -181,7 +181,7 @@ function AdminSettingsContent() {
                                 disabled={isSaving}
                                 value={c.configValue}
                                 onChange={e => handleChange(c.configKey, e.target.value)}
-                                className="min-h-[44px] w-full rounded-lg border border-border-input bg-slate-50 p-2.5 tabular-nums text-xs font-bold text-slate-900 focus:border-primary focus:outline-none"
+                                className="min-h-[44px] w-full rounded-none border border-border-input bg-slate-50 p-2.5 tabular-nums text-xs font-bold text-slate-900 focus:border-primary focus:outline-none"
                             />
                             <p className="text-sm text-slate-500">{c.description}</p>
                         </div>

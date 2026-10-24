@@ -53,13 +53,13 @@ function AdminReportsContent() {
         <div className="space-y-6">
             {/* Top Banner with CSV Export */}
             <div
-                className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 shadow-sm sm:flex-row sm:items-center sm:justify-end">
+                className="flex flex-col gap-4 rounded-none border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-end">
 
                 <button
                     type="button"
                     onClick={handleExportCsv}
                     disabled={isExporting}
-                    className="flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:-translate-y-px hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-none bg-primary px-4 py-2.5 text-xs font-bold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     <FileSpreadsheet size={16}/>
                     {isExporting ? t('admin.reports.exporting') : t('admin.reports.exportCsv')}
@@ -69,9 +69,9 @@ function AdminReportsContent() {
             {exportError && <p role="alert" className="text-sm text-red-700">{exportError}</p>}
 
             {/* Main KPI Grid */}
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 md:grid-cols-4">
                 <div
-                    className="rounded-xl border border-border border-t-2 border-t-primary bg-card p-4 shadow-sm">
+                    className="rounded-none border border-border border-t-2 border-t-primary bg-card p-4">
                     <div className="mb-2 flex items-center justify-between text-slate-500">
                         <span className="text-xs font-bold uppercase tracking-wider">{t('admin.reports.plannedHours')}</span>
                         <Clock size={16} className="text-primary"/>
@@ -82,7 +82,7 @@ function AdminReportsContent() {
                     </div>
                 </div>
 
-                <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+                <div className="rounded-none border border-border bg-card p-4">
                     <div className="mb-2 flex items-center justify-between text-slate-500">
                         <span className="text-xs font-bold uppercase tracking-wider">{t('admin.reports.completedMissions')}</span>
                         <CheckCircle2 size={16} className="text-uav-blue"/>
@@ -98,7 +98,7 @@ function AdminReportsContent() {
                 </div>
 
                 <div
-                    className="rounded-xl border border-border border-t-2 border-t-primary bg-card p-4 shadow-sm">
+                    className="rounded-none border border-border border-t-2 border-t-primary bg-card p-4">
                     <div className="mb-2 flex items-center justify-between text-slate-500">
                         <span className="text-xs font-bold uppercase tracking-wider">{t('admin.reports.sarOperations')}</span>
                         <LifeBuoy size={16} className="text-primary"/>
@@ -110,7 +110,7 @@ function AdminReportsContent() {
                     </div>
                 </div>
 
-                <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+                <div className="rounded-none border border-border bg-card p-4">
                     <div className="mb-2 flex items-center justify-between text-slate-500">
                         <span className="text-xs font-bold uppercase tracking-wider">{t('admin.reports.uavStatus')}</span>
                         <PlaneTakeoff size={16} className="text-primary"/>

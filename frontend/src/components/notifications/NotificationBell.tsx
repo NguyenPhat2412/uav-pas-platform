@@ -37,14 +37,14 @@ export function NotificationBell({viewAllHref = '/operations/notifications'}: { 
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-border bg-card text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+                className="relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-none border border-border bg-card text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
                 aria-label={t('opsMissions.notifications.title')} aria-expanded={isOpen}
                 title={t('opsMissions.notifications.center')}
             >
                 <Bell size={18}/>
                 {unreadCount > 0 && (
                     <span
-                        className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground shadow-xs ring-2 ring-white animate-pulse">
+                        className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-none bg-primary px-1 text-[10px] font-bold text-primary-foreground ring-2 ring-white animate-pulse">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
                 )}
@@ -52,14 +52,14 @@ export function NotificationBell({viewAllHref = '/operations/notifications'}: { 
 
             {isOpen && (
                 <div
-                    className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-32px)] sm:w-96 rounded-2xl border border-slate-200 bg-white/95 backdrop-blur-md shadow-2xl z-50 overflow-hidden text-slate-800">
+                    className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-32px)] sm:w-96 rounded-none border border-slate-200 bg-white/95 backdrop-blur-md shadow-2xl z-50 overflow-hidden text-slate-800">
                     <div
                         className="flex items-center justify-between border-b border-slate-100 px-4 py-3 bg-slate-50/80">
                         <div className="flex items-center gap-2">
                             <span className="font-bold text-sm text-slate-900">{t('opsMissions.notifications.title')}</span>
                             {unreadCount > 0 && (
                                 <span
-                                    className="bg-uav-red-light text-primary text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-200">
+                                    className="bg-uav-red-light text-primary text-[10px] font-bold px-2 py-0.5 rounded-none border border-red-200">
                   {t('opsMissions.notifications.bell.newCount', {count: unreadCount})}
                 </span>
                             )}

@@ -5,7 +5,7 @@ import type {OrderFields, ScheduleFields} from "@/features/maintenance/types/mai
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/contexts/I18nContext';
 
-export const fieldClass = 'min-h-11 w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm';
+export const fieldClass = 'min-h-11 w-full min-w-0 rounded-none border border-slate-300 bg-white px-3 py-2 text-sm';
 
 export function UavField({value, onChange, uavs, disabled, locked, canRead}: {
     value: string;

@@ -57,7 +57,7 @@ function Body({data, refreshing, onRefresh, checkedAt}: { data: SystemHealth; re
             </div>
         </section>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 md:grid-cols-2 md:[&>*:last-child:nth-child(odd)]:col-span-full">
             {data.components.map(c => {
                 const s = tone[c.status] ?? tone.UNKNOWN;
                 const Icon = componentIcon[c.key] ?? Activity;

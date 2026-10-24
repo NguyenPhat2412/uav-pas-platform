@@ -63,7 +63,7 @@ export function AiViewfinder({missionId, detections, task, loading, failed, sele
 
     const pct = (v: number) => `${Math.round(v * 100)}%`;
 
-    return <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card text-slate-900 shadow-sm">
+    return <div className="flex h-full flex-col overflow-hidden rounded-none border border-border bg-card text-slate-900">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-slate-50 px-4 py-2.5">
             <div className="flex min-w-0 items-center gap-2.5">
                 <Flame size={15} className="shrink-0 text-primary" aria-hidden="true"/>
@@ -93,15 +93,15 @@ export function AiViewfinder({missionId, detections, task, loading, failed, sele
                                aria-pressed={active}
                                style={{top: `${d.boxTop}%`, left: `${d.boxLeft}%`, width: `${d.boxWidth}%`, height: `${d.boxHeight}%`}}
                                className={cn('absolute z-10 border-2 bg-white/5 transition', tone.border, active ? 'z-20 ring-4 ring-primary/30' : 'hover:ring-2 hover:ring-white/70')}>
-                    <span className={cn('absolute -top-6 left-0 flex items-center gap-1 whitespace-nowrap rounded px-2 py-0.5 text-[10px] font-bold text-white shadow-sm', tone.badge)}>
+                    <span className={cn('absolute -top-6 left-0 flex items-center gap-1 whitespace-nowrap rounded-none px-2 py-0.5 text-[10px] font-bold text-white', tone.badge)}>
                         {d.label} {pct(d.confidence)}{d.verified && <CheckCircle2 size={11} aria-hidden="true"/>}
                     </span>
                 </button>;
             })}
 
-            <div className="absolute bottom-3 left-3 right-3 z-30 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-white/95 px-3.5 py-2 text-slate-800 shadow-md">
+            <div className="absolute bottom-3 left-3 right-3 z-30 flex flex-wrap items-center justify-between gap-2 rounded-none border border-border bg-white/95 px-3.5 py-2 text-slate-800">
                 <button type="button" onClick={() => setShowBoxes(v => !v)} aria-pressed={showBoxes}
-                        className={cn('flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold transition',
+                        className={cn('flex items-center gap-1.5 rounded-none px-2.5 py-1 text-xs font-bold transition',
                             showBoxes ? 'border border-blue-200 bg-uav-blue-light text-uav-blue' : 'text-slate-500 hover:text-slate-900')}>
                     {showBoxes ? <Eye size={14} aria-hidden="true"/> : <EyeOff size={14} aria-hidden="true"/>}
                     {t('opsShared.sar.viewfinder.boxes', {count: framed.length})}
@@ -126,8 +126,8 @@ export function AiViewfinder({missionId, detections, task, loading, failed, sele
                     {visible.map(d => <li key={d.id}>
                         <div role="button" tabIndex={0} onClick={() => onSelect(d.id)} onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onSelect(d.id)}
                              aria-pressed={d.id === selectedId}
-                             className={cn('cursor-pointer rounded-xl border bg-card p-3 text-left transition',
-                                 d.id === selectedId ? 'border-primary shadow-sm ring-2 ring-primary/20' : 'border-border hover:border-slate-300')}>
+                             className={cn('cursor-pointer rounded-none border bg-card p-3 text-left transition',
+                                 d.id === selectedId ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-slate-300')}>
                             <div className="flex items-center justify-between gap-2">
                                 <span className="flex min-w-0 items-center gap-1.5 truncate text-xs font-bold text-slate-900">
                                     <span className={cn('h-2.5 w-2.5 shrink-0 rounded-full', detectionTone(d).dot)} aria-hidden="true"/>{d.label}</span>
@@ -144,7 +144,7 @@ export function AiViewfinder({missionId, detections, task, loading, failed, sele
                                                           e.stopPropagation();
                                                           verify.mutate(d);
                                                       }}
-                                                      className={cn('shrink-0 rounded-md px-2 py-0.5 text-[10px] font-bold transition disabled:opacity-60',
+                                                      className={cn('shrink-0 rounded-none px-2 py-0.5 text-[10px] font-bold transition disabled:opacity-60',
                                                           d.verified ? 'border border-blue-200 bg-uav-blue-light text-uav-blue' : 'bg-slate-100 text-slate-700 hover:bg-slate-200')}>
                                     {d.verified ? t('opsShared.sar.viewfinder.verified') : t('opsShared.sar.viewfinder.verify')}</button>}
                             </div>

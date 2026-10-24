@@ -34,7 +34,7 @@ export const Alert: React.FC<AlertProps> = ({
         <div
             role="alert"
             className={cn(
-                'w-full p-4 rounded-xl border flex items-start gap-3 transition-all',
+                'w-full p-4 rounded-none border border-l-4 flex items-start gap-3 transition-all',
                 variants[variant],
                 className
             )}

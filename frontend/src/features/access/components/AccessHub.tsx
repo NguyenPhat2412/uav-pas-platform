@@ -24,11 +24,11 @@ export function AccessHub({tab}: { tab: AccessTab }) {
             const active = item.id === tab;
             return <Link key={item.id} href={item.href} aria-current={active ? 'page' : undefined}
                          className={cn(
-                             'flex items-center gap-3 rounded-xl border bg-card px-4 py-3.5 text-foreground transition',
+                             'flex items-center gap-3 rounded-none border bg-card px-4 py-3.5 text-foreground transition',
                              active ? 'border-primary ring-3 ring-primary/12' : 'border-border hover:border-slate-300'
                          )}>
                 <span className={cn(
-                    'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px]',
+                    'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-none',
                     active ? 'bg-uav-red-light text-primary' : 'bg-slate-100 text-slate-500'
                 )} aria-hidden="true"><Icon size={18}/></span>
                 <span className="flex min-w-0 flex-col"><strong className="text-sm">{t(item.label)}</strong><small className="hidden text-xs text-muted md:inline">{t(item.hint)}</small></span>

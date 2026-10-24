@@ -4,7 +4,7 @@ import {useQuery} from '@tanstack/react-query';
 import {ChevronRight, CreditCard, History, MapPin, Plane, Settings, ShieldCheck, Users} from 'lucide-react';
 import {auditDetail, displayLabel, formatDate} from "@/components/shared/presentation";
 import {useAuth} from '@/contexts/AuthContext';
-import {KpiCard} from "@/components/ui";
+import {KpiCard, MetricStrip} from "@/components/ui";
 import {EmptyState, QueryState} from "@/components/data/WorkspaceState";
 import {adminService} from "@/lib/api/admin";
 import {useI18n} from '@/contexts/I18nContext';
@@ -76,7 +76,7 @@ export function Dashboard() {
             permission: 'PERMISSION_MANAGE'
         },
     ].filter(item => can(item.permission));
-    const pendingPanel = can('MISSION_VIEW_ALL') && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+    const pendingPanel = can('MISSION_VIEW_ALL') && <section className="min-w-0 rounded-none border border-border bg-card">
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.dashboard.pending.title')}</h2>
             <Link href="/operations/dispatch/missions" className="text-[13px] font-semibold text-primary hover:underline">{t('admin.dashboard.pending.openDispatch')}</Link>
         </header>
@@ -91,7 +91,7 @@ export function Dashboard() {
         </QueryState>
     </section>;
     const auditPanel = can('AUDIT_READ') && <QueryState query={audit}>
-        <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <section className="min-w-0 overflow-hidden rounded-none border border-border bg-card">
             <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.dashboard.audit.title')}</h2><Link
                 href="/admin/audit-logs" className="text-[13px] font-semibold text-primary hover:underline">{t('admin.dashboard.audit.viewAll')}</Link>
             </header>
@@ -114,7 +114,7 @@ export function Dashboard() {
                             <td data-label={t('admin.auditTable.actor')} className="px-4 py-3.5 align-top text-foreground"><span
                                 className="font-semibold text-foreground">{log.actorUsername || t('admin.auditTable.system')}</span></td>
                             <td data-label={t('admin.auditTable.action')} className="px-4 py-3.5 align-top text-foreground"><span
-                                className="inline-block whitespace-nowrap rounded-md bg-uav-red-light px-2 py-1 text-xs font-medium text-primary">{displayLabel(log.action)}</span></td>
+                                className="inline-block whitespace-nowrap rounded-none bg-uav-red-light px-2 py-1 text-xs font-medium text-primary">{displayLabel(log.action)}</span></td>
                             <td data-label={t('admin.auditTable.entity')} className="px-4 py-3.5 align-top text-foreground">{displayLabel(log.entityType)} · {log.entityId}</td>
                             <td data-label={t('admin.auditTable.details')} className="max-w-[320px] px-4 py-3.5 align-top text-[13px] text-foreground">{auditDetail(log.details)}</td>
                         </tr>)}</tbody>
@@ -125,18 +125,18 @@ export function Dashboard() {
     </QueryState>;
     return <div className="space-y-6">
         <QueryState query={summary}>{summary.data &&
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">{cards.map(card => <KpiCard key={card.label} {...card} />)}</div>}</QueryState>
-        <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
-            <div className="flex min-w-0 flex-col gap-5">
+            <MetricStrip>{cards.map(card => <KpiCard key={card.label} {...card} />)}</MetricStrip>}</QueryState>
+        <div className="grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 xl:grid-cols-[minmax(0,1fr)_340px]">
+            <div className="flex min-w-0 flex-col divide-y divide-slate-200 bg-white [&>*]:border-0">
                 {pendingPanel}
                 {auditPanel}
             </div>
-            <aside className="flex min-w-0 flex-col gap-5">
-                {shortcuts.length > 0 && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+            <aside className="flex min-w-0 flex-col divide-y divide-slate-200 bg-white [&>*]:border-0">
+                {shortcuts.length > 0 && <section className="min-w-0 rounded-none border border-border bg-card">
                     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.dashboard.quickAccess')}</h2></header>
                     <div className="divide-y divide-border px-[18px] py-1">{shortcuts.map(item => <Link key={item.href} href={item.href}
                                                                                    className="group flex items-center justify-between gap-3 py-3 text-foreground transition-colors hover:text-primary">
-                        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-uav-red-light text-primary" aria-hidden="true">{item.icon}</span>
+                        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-none bg-uav-red-light text-primary" aria-hidden="true">{item.icon}</span>
                         <span className="flex min-w-0 flex-1 flex-col"><strong>{item.label}</strong><small className="mt-1 block text-xs text-muted">{item.detail}</small></span>
                         <ChevronRight size={16} aria-hidden="true" className="text-slate-300 transition-colors group-hover:text-primary"/>
                     </Link>)}</div>

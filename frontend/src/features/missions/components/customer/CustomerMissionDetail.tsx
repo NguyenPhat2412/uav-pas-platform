@@ -41,7 +41,7 @@ function MissionDetail() {
     const mission = q.detail.data;
     const actionError = actions.submit.error || actions.cancel.error;
     if (q.detail.isLoading) return <div className="grid min-h-[70vh] place-items-center text-sm text-muted" role="status">{t('missionDetail.loading')}</div>;
-    if (q.detail.isError || !mission || mission.customerId !== user?.id) return <div className="flex flex-wrap items-center gap-3 rounded-lg bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline"
+    if (q.detail.isError || !mission || mission.customerId !== user?.id) return <div className="flex flex-wrap items-center gap-3 rounded-none bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline"
                                                                                      role="alert">{t('missionDetail.loadError')} <Button variant="secondary" onClick={() => void q.detail.refetch()}>{t('common.retry')}</Button> <Link href="/customer/missions">{t('missionDetail.backToList')}</Link></div>;
     const finished = ['COMPLETED', 'CANCELLED', 'REJECTED', 'FAILED'].includes(mission.status);
     const tabs: MissionTab[] = finished ? ['monitoring', 'delivery', 'history'] : ['monitoring', 'weather', 'delivery', 'history'];
@@ -61,14 +61,14 @@ function MissionDetail() {
             setDownloading(null);
         }
     };
-    const panelClass = 'min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-sm';
+    const panelClass = 'min-w-0 overflow-hidden rounded-none border border-border bg-card';
     const panelHeaderClass = 'flex items-center justify-between gap-3 border-b border-border px-5 py-4 md:px-6 md:py-5';
     const panelTitleClass = 'm-0 text-lg font-bold text-foreground';
     const panelBodyClass = 'p-5 md:p-6';
     const mutedClass = 'm-0 text-sm leading-relaxed text-muted';
-    const errorBoxClass = 'flex flex-wrap items-center gap-3 rounded-lg bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline';
-    return <div className="mx-auto grid max-w-[1200px] gap-4 leading-normal text-foreground md:gap-6">
-        <Link href="/customer/missions" className="inline-flex min-h-11 w-fit items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('missionCreate.back')}</Link>
+    const errorBoxClass = 'flex flex-wrap items-center gap-3 rounded-none bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline';
+    return <div className="grid gap-0 leading-normal text-foreground [&>*+*]:-mt-px">
+        <Link href="/customer/missions" className="mb-3 inline-flex min-h-10 w-fit items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('missionCreate.back')}</Link>
         <section className={panelClass} aria-labelledby="mission-title">
             <div className="p-5 md:p-7">
                 <div className="flex flex-col-reverse items-start justify-between gap-3 md:flex-row md:gap-5">
@@ -99,7 +99,7 @@ function MissionDetail() {
             <div className="flex flex-col items-stretch justify-between gap-4 border-t border-border bg-background px-5 py-4 md:flex-row md:items-center md:px-7"><p className="m-0 max-w-[70ch] text-sm text-muted">{missionHint(mission.status)}</p>{(canSubmit || canCancel) &&
                 <div className="flex w-full flex-wrap items-center gap-2.5 md:w-auto">
                     {canSubmit && !actions.submit.isPending && !actions.cancel.isPending &&
-                        <Link className="inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-border bg-card px-4 text-sm font-bold text-foreground transition-colors hover:bg-background" href={`/customer/missions/${toMissionSlug(mission)}/edit`}>{t('missionDetail.editDraft')}</Link>}
+                        <Link className="inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-none border border-border bg-card px-4 text-sm font-bold text-foreground transition-colors hover:bg-background" href={`/customer/missions/${toMissionSlug(mission)}/edit`}>{t('missionDetail.editDraft')}</Link>}
                     {canSubmit &&
                         <Button disabled={actions.submit.isPending || actions.cancel.isPending} onClick={() => {
                             actions.cancel.reset();
@@ -112,7 +112,7 @@ function MissionDetail() {
         </section>
         <MissionProgress status={mission.status}/>
         {confirmCancel && canCancel &&
-            <div className="grid gap-3 rounded-xl border border-border bg-background p-4 md:p-5" role="group" aria-label={t('missionDetail.cancelConfirmLabel')}><strong>{t('missionDetail.cancelQuestion')}</strong><p className={mutedClass}>{t('missionDetail.cancelWarning')}</p>
+            <div className="grid gap-3 rounded-none border border-border bg-background p-4 md:p-5" role="group" aria-label={t('missionDetail.cancelConfirmLabel')}><strong>{t('missionDetail.cancelQuestion')}</strong><p className={mutedClass}>{t('missionDetail.cancelWarning')}</p>
                 <div className="flex flex-wrap items-center gap-2.5"><Button variant="secondary"
                                                          disabled={actions.cancel.isPending || actions.submit.isPending}
                                                          onClick={() => setConfirmCancel(false)}>{t('missionDetail.keepRequest')}</Button><Button variant="danger" disabled={actions.cancel.isPending || actions.submit.isPending}
@@ -137,14 +137,14 @@ function MissionDetail() {
                                            }}
                                            className={`-mb-px inline-flex min-h-12 shrink-0 items-center gap-2 border-b-2 px-3 text-sm font-semibold transition-colors ${tab === key ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-foreground'}`}>
                     {t(`missionTabs.${key}`)}
-                    {key === 'delivery' && (q.media.data?.length ?? 0) > 0 && <span className="rounded-full bg-background px-2 py-0.5 text-xs text-muted">{q.media.data!.length}</span>}
+                    {key === 'delivery' && (q.media.data?.length ?? 0) > 0 && <span className="rounded-none bg-background px-2 py-0.5 text-xs text-muted">{q.media.data!.length}</span>}
                 </button>)}
             </div>
             <div role="tabpanel" id={`mission-panel-${tab}`} aria-labelledby={`mission-tab-${tab}`} className={panelBodyClass}>
                 {tab === 'monitoring' && <MissionMonitoring mission={mission}/>}
                 {tab === 'weather' && <SiteWeather mission={mission}/>}
                 {tab === 'delivery' && <div className="grid gap-5">
-        {mission.status === 'COMPLETED' && <section className="min-w-0 overflow-hidden rounded-xl border border-border" aria-labelledby="handover-title">
+        {mission.status === 'COMPLETED' && <section className="min-w-0 overflow-hidden rounded-none border border-border" aria-labelledby="handover-title">
             <header className={panelHeaderClass}><h2 id="handover-title" className={panelTitleClass}>{t('missionDetail.handover')}</h2></header>
             <div className={panelBodyClass}>
                 <dl className="m-0 grid gap-4 [&_dt]:text-xs [&_dt]:text-muted [&_dd]:m-0 [&_dd]:mt-1 [&_dd]:break-words [&_dd]:text-sm [&_dd]:font-semibold [&_dd]:text-foreground">
@@ -163,7 +163,7 @@ function MissionDetail() {
                 </dl>
                 <p className="m-0 mt-4 text-sm leading-relaxed text-muted">{t('missionDetail.completedNote')}</p></div>
         </section>}
-        {mission.status === 'FAILED' && <section className="min-w-0 overflow-hidden rounded-xl border border-border">
+        {mission.status === 'FAILED' && <section className="min-w-0 overflow-hidden rounded-none border border-border">
             <header className={panelHeaderClass}><h2 className={panelTitleClass}>{t('missionDetail.outcome')}</h2></header>
             <div className={panelBodyClass}>
                 <p className="m-0 text-sm text-foreground">{mission.failureReason || t('missionDetail.failedDefault')}</p>{mission.failureNotes &&

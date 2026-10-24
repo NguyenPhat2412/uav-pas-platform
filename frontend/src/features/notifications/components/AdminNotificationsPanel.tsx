@@ -70,26 +70,26 @@ export function AdminNotificationsPanel() {
 
     return <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-3">
-            <div className="inline-flex rounded-lg border border-border bg-card p-1" role="group" aria-label={t('admin.notifications.readFilter')}>
+            <div className="inline-flex rounded-none border border-border bg-card p-1" role="group" aria-label={t('admin.notifications.readFilter')}>
                 {(['all', 'unread', 'read'] as const).map(value =>
                     <button key={value} type="button" aria-pressed={readFilter === value} onClick={() => setReadFilter(value)}
-                            className={cn('rounded-md px-3 py-1.5 text-[13px] font-medium text-slate-500 hover:text-slate-900',
+                            className={cn('rounded-none px-3 py-1.5 text-[13px] font-medium text-slate-500 hover:text-slate-900',
                                 readFilter === value && 'bg-primary/10 font-semibold text-primary hover:text-primary')}>
                         {t(`admin.notifications.filter.${value}`)}
                         {value === 'unread' && unreadOnPage > 0 &&
-                            <span className="ml-1.5 rounded-full bg-primary px-1.5 text-[11px] font-bold text-primary-foreground">{unreadOnPage}</span>}
+                            <span className="ml-1.5 rounded-none bg-primary px-1.5 text-[11px] font-bold text-primary-foreground">{unreadOnPage}</span>}
                     </button>)}
             </div>
             <label className="relative">
                 <span className="sr-only">{t('admin.notifications.search')}</span>
                 <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true"/>
                 <input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder={t('admin.notifications.search')}
-                       className="h-9 w-60 rounded-lg border border-border bg-card pl-9 pr-3 text-[13px] focus:border-primary focus:outline-none"/>
+                       className="h-9 w-60 rounded-none border border-border bg-card pl-9 pr-3 text-[13px] focus:border-primary focus:outline-none"/>
             </label>
             <label>
                 <span className="sr-only">{t('admin.notifications.type')}</span>
                 <select value={type} onChange={e => setType(e.target.value as NotificationType | '')}
-                        className="h-9 rounded-lg border border-border bg-card px-3 text-[13px] focus:border-primary focus:outline-none">
+                        className="h-9 rounded-none border border-border bg-card px-3 text-[13px] focus:border-primary focus:outline-none">
                     <option value="">{t('admin.notifications.allTypes')}</option>
                     {notificationTypes.map(value => <option key={value} value={value}>{typeLabel(value)}</option>)}
                 </select>
@@ -105,7 +105,7 @@ export function AdminNotificationsPanel() {
         {notice && <Alert variant="success">{notice}</Alert>}
         <ErrorNotice error={markOne.error || markAll.error}/>
 
-        <section className="overflow-hidden rounded-xl border border-border bg-card">
+        <section className="overflow-hidden rounded-none border border-border bg-card">
             <QueryState query={query}>{query.data && <>
                 {rows.length ? <div className="overflow-x-auto" tabIndex={0} aria-label={t('admin.notifications.table')}>
                     <table className="w-full min-w-[820px] border-collapse text-left text-[13px]">
@@ -133,7 +133,7 @@ export function AdminNotificationsPanel() {
                                     <span className="mt-0.5 line-clamp-2 block text-slate-500">{n.content}</span>
                                 </td>
                                 <td className="px-4 py-3">
-                                    <span className={cn('inline-flex rounded-md px-2 py-0.5 text-xs font-semibold ring-1 ring-inset', typeTone[n.type ?? 'SYSTEM'])}>
+                                    <span className={cn('inline-flex rounded-none px-2 py-0.5 text-xs font-semibold ring-1 ring-inset', typeTone[n.type ?? 'SYSTEM'])}>
                                         {typeLabel(n.type)}</span>
                                 </td>
                                 <td className="px-4 py-3 text-slate-600">{n.referenceType ? (href ?
@@ -144,7 +144,7 @@ export function AdminNotificationsPanel() {
                                 </td>
                                 <td className="px-4 py-3 text-right">{!n.isRead &&
                                     <button type="button" disabled={markOne.isPending} onClick={() => markOne.mutate(n.id)}
-                                            className="rounded-md px-2 py-1 text-xs font-semibold text-primary hover:bg-primary/10 disabled:opacity-50">
+                                            className="rounded-none px-2 py-1 text-xs font-semibold text-primary hover:bg-primary/10 disabled:opacity-50">
                                         {t('admin.notifications.markRead')}</button>}</td>
                             </tr>;
                         })}</tbody>
@@ -189,26 +189,26 @@ function SendDialog({onClose, onSent}: { onClose: () => void; onSent: (name: str
         } catch {/* The error is shown in the dialog. */
         }
     };
-    const field = 'mt-1 w-full rounded-lg border border-border px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none';
+    const field = 'mt-1 w-full rounded-none border border-border px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none';
     return <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/45 p-4" role="presentation"
                 onMouseDown={e => e.target === e.currentTarget && onClose()}>
         <form role="dialog" aria-modal="true" aria-labelledby="send-notification-title" onSubmit={e => void submit(e)}
               onKeyDown={e => e.key === 'Escape' && onClose()}
-              className="flex max-h-[calc(100dvh-32px)] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-2xl bg-card p-6 shadow-2xl">
+              className="flex max-h-[calc(100dvh-32px)] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-none bg-card p-6 shadow-2xl">
             <header className="flex items-center justify-between">
                 <h2 id="send-notification-title" className="text-lg font-bold">{t('admin.notifications.sendTitle')}</h2>
                 <button type="button" onClick={onClose} aria-label={t('admin.notifications.cancel')}
-                        className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"><X size={18}/></button>
+                        className="rounded-none p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"><X size={18}/></button>
             </header>
             <div className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.recipient')}
-                {recipient ? <div className="mt-1 flex items-center justify-between rounded-lg bg-primary/10 px-3 py-2 text-primary">
+                {recipient ? <div className="mt-1 flex items-center justify-between rounded-none bg-primary/10 px-3 py-2 text-primary">
                     <span>{recipient.name}</span>
                     <button type="button" onClick={() => setRecipient(null)} className="text-xs font-semibold hover:underline">
                         {t('admin.notifications.change')}</button>
                 </div> : <>
                     <input autoFocus value={keyword} onChange={e => setKeyword(e.target.value)} className={field}
                            placeholder={t('admin.notifications.recipientSearch')} aria-label={t('admin.notifications.recipient')}/>
-                    {users.data?.content.length ? <ul className="mt-1 max-h-48 overflow-y-auto rounded-lg border border-border">
+                    {users.data?.content.length ? <ul className="mt-1 max-h-48 overflow-y-auto rounded-none border border-border">
                         {users.data.content.map(u => <li key={u.id}>
                             <button type="button" onClick={() => setRecipient({id: u.id, name: u.fullName || u.username})}
                                     className="flex w-full justify-between px-3 py-2 text-left font-normal hover:bg-slate-50">

@@ -115,7 +115,7 @@ function CreateMission() {
         }
     };
     const fieldClass = 'grid gap-1.5 text-xs font-bold text-foreground';
-    const selectClass = 'min-h-11 w-full rounded-lg border border-border-input bg-card px-3 py-2 text-base font-normal text-foreground sm:text-sm aria-[invalid=true]:border-danger';
+    const selectClass = 'min-h-11 w-full rounded-none border border-border-input bg-card px-3 py-2 text-base font-normal text-foreground sm:text-sm aria-[invalid=true]:border-danger';
     return <>
         <Link href="/customer/missions" className="inline-flex min-h-11 w-fit items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('missionCreate.back')}</Link>
         <div className="sr-only">
@@ -123,14 +123,14 @@ function CreateMission() {
         </div>
         <Panel title={step === 1 ? t('missionCreate.step1') : t('missionCreate.step2')}>
             {error &&
-                <div className="mb-5 rounded-lg bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline" role="alert">{error} <Link href="/customer/missions">{t('missionCreate.viewMissions')}</Link></div>}
+                <div className="mb-5 rounded-none bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline" role="alert">{error} <Link href="/customer/missions">{t('missionCreate.viewMissions')}</Link></div>}
             {step === 1 ? <form onSubmit={event => {
                 event.preventDefault();
                 void review();
             }}>
                 <MissionErrorSummary errors={errors}/>
                 {services.isError &&
-                    <div className="mb-5 flex flex-wrap items-center gap-3 rounded-lg bg-amber-50 px-3.5 py-3 text-xs text-warning" role="alert">{t('missionCreate.servicesError')} <Button type="button" variant="secondary"
+                    <div className="mb-5 flex flex-wrap items-center gap-3 rounded-none bg-amber-50 px-3.5 py-3 text-xs text-warning" role="alert">{t('missionCreate.servicesError')} <Button type="button" variant="secondary"
                                                     onClick={() => void services.refetch()}>{t('missionCreate.reloadServices')}</Button>
                     </div>}
                 <fieldset className="m-0 border-0 p-0 disabled:opacity-65" disabled={checking}>
@@ -216,7 +216,7 @@ function CreateMission() {
                     <dd>{form.notes}</dd>
                 </div>}
                 </dl>
-                <div className="mt-4 rounded-lg bg-amber-50 px-3.5 py-3 text-xs text-warning">{availability && t(`missionCreate.${{ok: 'availabilityOk', conflict: 'availabilityConflict', draft: 'availabilityDraft'}[availability]}`)}</div>
+                <div className="mt-4 rounded-none bg-amber-50 px-3.5 py-3 text-xs text-warning">{availability && t(`missionCreate.${{ok: 'availabilityOk', conflict: 'availabilityConflict', draft: 'availabilityDraft'}[availability]}`)}</div>
                 <div className="mt-5 flex flex-wrap justify-end gap-3">
                     <Button type="button" variant="secondary" onClick={() => setStep(1)} disabled={busy}>{t('missionCreate.edit')}</Button>
                     <Button type="button" variant={canSendNow ? 'secondary' : undefined} onClick={() => void submit(false)}

@@ -39,8 +39,8 @@ export function MaterialEditor({order, disabled, onSave, onCancel}: {
             setError(failure instanceof Error ? failure.message : t('opsAssets.maintenance.materials.invalid'));
         }
     }}><Feedback error={error}/><p className="text-sm text-slate-600">{t('opsAssets.maintenance.materials.notePrefix')}<strong>{t('opsAssets.maintenance.materials.noteStrong')}</strong>{t('opsAssets.maintenance.materials.noteSuffix')}</p>{items.length === 0 &&
-        <p className="rounded-lg bg-slate-50 p-4 text-sm">{t('opsAssets.maintenance.materials.empty')}</p>}{items.map((item, index) => <fieldset key={index}
-                                                         className="space-y-3 rounded-lg border border-border p-4 disabled:opacity-70"
+        <p className="rounded-none bg-slate-50 p-4 text-sm">{t('opsAssets.maintenance.materials.empty')}</p>}{items.map((item, index) => <fieldset key={index}
+                                                         className="space-y-3 rounded-none border border-border p-4 disabled:opacity-70"
                                                          disabled={disabled}>
         <legend className="px-1 text-sm font-semibold">{t('opsAssets.maintenance.materials.line', {line: index + 1})}</legend>
         <div className="grid gap-3 sm:grid-cols-2"><label

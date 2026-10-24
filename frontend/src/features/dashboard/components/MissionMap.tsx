@@ -46,5 +46,5 @@ export function MissionMap({points, ariaLabel}: { points: MapPoint[]; ariaLabel:
         map.current = null;
     }, []);
 
-    return <div ref={container} className="z-0 h-[340px] rounded-b-xl border-t border-border" role="img" aria-label={ariaLabel}/>;
+    return <div ref={container} className="z-0 h-[340px] rounded-b-none border-t border-border" role="img" aria-label={ariaLabel}/>;
 }

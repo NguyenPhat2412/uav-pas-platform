@@ -71,7 +71,7 @@ export function AdminFleetMapPanel() {
         </p>
 
         <QueryState query={query}>{query.data && <>
-            <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
+            <div className="grid gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 lg:grid-cols-[320px_minmax(0,1fr)]">
                 <section className="flex max-h-[560px] flex-col border border-slate-200 bg-white" aria-label={t('admin.fleetMap.listLabel')}>
                     <label className="relative block border-b border-slate-100 p-3">
                         <span className="sr-only">{t('admin.fleetMap.search')}</span>

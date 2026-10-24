@@ -21,6 +21,6 @@ const flags: Record<SupportedLocale, ReactNode> = {
 };
 
 export function LocaleFlag({code}: { code: SupportedLocale }) {
-    return <svg className="h-4 w-6 shrink-0 rounded-xs shadow-2xs" viewBox="0 0 30 20" width="24" height="16" aria-hidden="true"
+    return <svg className="h-4 w-6 shrink-0 rounded-xs" viewBox="0 0 30 20" width="24" height="16" aria-hidden="true"
                 focusable="false">{flags[code]}</svg>;
 }

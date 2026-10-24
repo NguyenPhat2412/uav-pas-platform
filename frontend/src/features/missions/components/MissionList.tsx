@@ -57,8 +57,8 @@ export function MissionList({missions, loading, error, onRefresh, label, showCus
             filterFn: 'equalsString',
         },
     ];
-    if (loading) return <div className="flex min-h-48 items-center justify-center rounded-2xl border border-border bg-card"><Spinner size="lg"/></div>;
-    if (error) return <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-danger">
+    if (loading) return <div className="flex min-h-48 items-center justify-center rounded-none border border-border bg-card"><Spinner size="lg"/></div>;
+    if (error) return <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-none border border-rose-200 bg-rose-50 p-4 text-sm text-danger">
         <span>{error}</span>
         <Button size="sm" variant="outline" onClick={onRefresh} leftIcon={<RefreshCw size={15}/>}>{t('opsMissions.list.refresh')}</Button>
     </div>;

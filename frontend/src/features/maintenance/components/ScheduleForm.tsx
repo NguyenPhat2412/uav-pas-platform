@@ -50,7 +50,7 @@ export function ScheduleForm({schedule, uavId: initialUavId, uavs, canRead, onCl
                 }
             }, 'opsAssets.maintenance.schedule.saved', onClose);
         }}><ActionFeedback action={action}/>{conflicted &&
-            <p className="rounded-lg bg-amber-50 p-3 text-sm">{t('opsAssets.maintenance.schedule.conflict')}</p>}<p className="text-sm text-slate-600">{t('opsAssets.maintenance.schedule.note')}</p><UavField value={uavId} onChange={setUavId}
+            <p className="rounded-none bg-amber-50 p-3 text-sm">{t('opsAssets.maintenance.schedule.conflict')}</p>}<p className="text-sm text-slate-600">{t('opsAssets.maintenance.schedule.note')}</p><UavField value={uavId} onChange={setUavId}
                                                                               uavs={uavs} canRead={canRead}
                                                                               disabled={action.blocked || conflicted}
                                                                               locked={!!schedule}/><ScheduleFieldsForm

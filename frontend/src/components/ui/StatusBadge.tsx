@@ -25,7 +25,7 @@ export function StatusBadge({status, label}: { status?: string; label?: string }
     const normalized = (status || 'UNKNOWN').toUpperCase();
     const tone = tones[normalized] || defaultTone;
     return (
-        <span className={cn('inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold leading-none', tone.badge)}>
+        <span className={cn('inline-flex items-center gap-1.5 rounded-none border px-2 py-0.5 text-[11px] font-bold uppercase leading-4 tracking-wider', tone.badge)}>
             <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', tone.dot)}/>
             {label || displayLabel(normalized)}
         </span>

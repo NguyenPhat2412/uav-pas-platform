@@ -58,7 +58,7 @@ export function AdminAlertsPopover() {
                 ref={trigger}
                 type="button"
                 className={cn(
-                    'relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border transition-colors',
+                    'relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-none border transition-colors',
                     urgent
                         ? 'border-red-200 bg-red-50 text-danger hover:bg-red-100'
                         : alerts.length > 0
@@ -74,7 +74,7 @@ export function AdminAlertsPopover() {
             >
                 <Bell size={17} aria-hidden="true"/>
                 {alerts.length > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+                    <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-none bg-primary px-1 text-[10px] font-bold text-primary-foreground">
                         {alerts.length}
                     </span>
                 )}

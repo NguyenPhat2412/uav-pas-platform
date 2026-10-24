@@ -31,14 +31,12 @@ function Missions() {
     const page = query.data;
     const range = page ? missionPageRange(page) : undefined;
     const fieldClass = 'grid min-w-0 flex-1 gap-1.5 text-xs font-bold text-foreground sm:min-w-[140px]';
-    const controlClass = 'min-h-11 w-full rounded-lg border border-border-input bg-card px-3 py-2 text-base font-normal text-foreground sm:text-sm';
+    const controlClass = 'min-h-10 w-full rounded-none border border-slate-300 bg-white px-3 py-2 text-base font-normal text-foreground sm:text-sm';
     return <>
-        <div className="mb-0 flex flex-wrap items-center justify-between gap-4 has-[a]:mb-6">
-            <div className="min-w-0"><h1 className="sr-only">{t('missions.title')}</h1><p className="sr-only">{t('missions.subtitle')}</p></div>
-            {can('MISSION_CREATE') &&
-                <Link className="inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-primary px-4 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover" href="/customer/missions/create">{t('missions.create')}</Link>}</div>
+        <div className="sr-only">
+            <div className="min-w-0"><h1 className="sr-only">{t('missions.title')}</h1><p className="sr-only">{t('missions.subtitle')}</p></div></div>
         <Panel>
-            <div className="mb-4 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+            <div className="-mx-4 -mt-4 mb-4 flex flex-col items-stretch gap-3 border-b border-slate-200 bg-slate-50/70 p-3.5 sm:flex-row sm:flex-wrap sm:items-end">
                 <label className={fieldClass}><span>{t('missions.search')}</span><input className={controlClass} aria-label={t('missions.search')}
                                                                          placeholder={t('missions.searchPlaceholder')}
                                                                          value={filters.search}
@@ -61,8 +59,9 @@ function Missions() {
                         setFilters(missionListFilters('', ''));
                         setMissionType('');
                     }}>{t('missions.clearFilters')}</Button>}
+                {can('MISSION_CREATE') && <div className="sm:ml-auto"><Link className="inline-flex min-h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-none bg-primary px-4 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover" href="/customer/missions/create">{t('missions.create')}</Link></div>}
             </div>
-            {query.isError ? <div className="flex flex-wrap items-center gap-3 rounded-lg bg-red-50 px-3.5 py-3 text-xs text-danger" role="alert">{t('missions.loadError')} <Button variant="secondary"
+            {query.isError ? <div className="flex flex-wrap items-center gap-3 rounded-none bg-red-50 px-3.5 py-3 text-xs text-danger" role="alert">{t('missions.loadError')} <Button variant="secondary"
                                                                                                  onClick={() => void query.refetch()}>{t('common.retry')}</Button></div>
                 : query.isLoading ? <div className="px-6 py-9 text-center text-sm leading-relaxed text-muted" role="status">{t('missions.loading')}</div>
                     : <>
