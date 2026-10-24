@@ -73,15 +73,16 @@ test('Customer Portal has Billing & Quotas and Notifications pages', () => {
     assert.match(billingContent, /bankTransferService/, 'payments go through the VietQR bank-transfer API');
     assert.match(billingContent, /payment\.awaitingTransferHint/);
     assert.equal(customerVi.billingPage.gatewayNotice, undefined, 'no "gateway not configured" copy');
-    assert.doesNotMatch(customerVi.billingPage.subtitle, /chưa được cấu hình/);
+    assert.equal(customerVi.billingPage.subtitle, undefined, 'customer pages carry no title/description block');
+    assert.doesNotMatch(billingContent, /billingPage\.(title|subtitle)/);
     assert.match(billingContent, /flightHoursUsed/);
     assert.match(billingContent, /flightHoursLimit/);
     assert.match(billingContent, /my-quota/);
     assert.match(billingContent, /my-invoices/);
 
     const notifContent = readFileSync(notifPath, 'utf8');
-    assert.match(notifContent, /notificationsPage\.title/);
-    assert.match(customerVi.notificationsPage.title, /Thông báo/);
+    assert.doesNotMatch(notifContent, /notificationsPage\.(title|subtitle)/, 'no page title block');
+    assert.match(notifContent, /notificationsPage\.all/);
 
     const layoutContent = readFileSync(layoutPath, 'utf8');
     assert.match(layoutContent, /\/billing/);

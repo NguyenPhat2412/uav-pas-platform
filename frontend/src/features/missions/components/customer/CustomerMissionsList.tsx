@@ -33,8 +33,6 @@ function Missions() {
     const fieldClass = 'grid min-w-0 flex-1 gap-1.5 text-xs font-bold text-foreground sm:min-w-[140px]';
     const controlClass = 'min-h-10 w-full rounded-none border border-slate-300 bg-white px-3 py-2 text-base font-normal text-foreground sm:text-sm';
     return <>
-        <div className="sr-only">
-            <div className="min-w-0"><h1 className="sr-only">{t('missions.title')}</h1><p className="sr-only">{t('missions.subtitle')}</p></div></div>
         <Panel>
             <div className="-mx-4 -mt-4 mb-4 flex flex-col items-stretch gap-3 border-b border-slate-200 bg-slate-50/70 p-3.5 sm:flex-row sm:flex-wrap sm:items-end">
                 <label className={fieldClass}><span>{t('missions.search')}</span><input className={controlClass} aria-label={t('missions.search')}

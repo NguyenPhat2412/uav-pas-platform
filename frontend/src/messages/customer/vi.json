@@ -57,8 +57,6 @@
         "noNotifications": "Chưa có thông báo nào"
     },
     "services": {
-        "title": "Dịch vụ UAV",
-        "subtitle": "Chọn dịch vụ phù hợp với nhu cầu của bạn.",
         "loading": "Đang tải danh mục dịch vụ…",
         "loadError": "Không thể tải danh mục dịch vụ.",
         "defaultDescription": "Dịch vụ UAV theo yêu cầu.",
@@ -97,9 +95,6 @@
     },
     "dashboard": {
         "loadError": "Không tải được dữ liệu tổng quan. Vui lòng tải lại trang.",
-        "greeting": "Xin chào, {name}",
-        "defaultName": "Khách hàng VJU",
-        "subtitle": "Theo dõi yêu cầu dịch vụ, tiến độ nhiệm vụ và hạn mức sử dụng.",
         "bookService": "Đặt dịch vụ UAV",
         "totalMissions": "Tổng số nhiệm vụ",
         "totalMissionsHint": "Đã đăng ký trên hệ thống",
@@ -186,8 +181,6 @@
         }
     },
     "missions": {
-        "title": "Nhiệm vụ của tôi",
-        "subtitle": "Theo dõi tiến độ và kết quả các nhiệm vụ của bạn.",
         "create": "Tạo nhiệm vụ",
         "search": "Tìm nhiệm vụ",
         "searchPlaceholder": "Tìm theo mã hoặc tiêu đề",
@@ -254,8 +247,6 @@
         "availabilityDraft": "Yêu cầu sẽ được lưu nháp. Đội điều phối sẽ kiểm tra tài nguyên khi tiếp nhận.",
         "availabilityError": "Không thể kiểm tra khung giờ lúc này. Dữ liệu đã nhập vẫn được giữ; vui lòng thử lại.",
         "back": "← Nhiệm vụ của tôi",
-        "title": "Tạo yêu cầu UAV",
-        "subtitle": "Điền thông tin, kiểm tra lại rồi gửi ngay cho đội điều phối hoặc lưu nháp để chỉnh sửa sau.",
         "step1": "1. Thông tin yêu cầu",
         "step2": "2. Kiểm tra và gửi yêu cầu",
         "viewMissions": "Xem danh sách nhiệm vụ",
@@ -334,8 +325,6 @@
         "viewDetail": "Xem chi tiết nhiệm vụ",
         "reloadError": "Chưa tải được bản nháp mới nhất. Hãy thử lại.",
         "back": "← Chi tiết nhiệm vụ",
-        "title": "Chỉnh sửa bản nháp",
-        "subtitle": "Lưu thay đổi để kiểm tra lại trước khi gửi xác nhận.",
         "serviceNumber": "Dịch vụ #{id}",
         "fixedService": "Dịch vụ và loại nhiệm vụ được giữ nguyên từ lúc tạo yêu cầu.",
         "reloadWarning": "Tải lại sẽ thay các nội dung đang nhập bằng bản mới nhất. Sau đó, hãy kiểm tra và nhập lại thay đổi cần thiết.",
@@ -378,8 +367,6 @@
             "FAILED": "Thanh toán thất bại",
             "CANCELLED": "Đã hủy"
         },
-        "title": "Gói cước và hóa đơn",
-        "subtitle": "Theo dõi hạn mức giờ bay theo gói, đăng ký gói cước và thanh toán hóa đơn bằng chuyển khoản VietQR.",
         "loading": "Đang tải dữ liệu thanh toán…",
         "loadError": "Không tải được dữ liệu thanh toán.",
         "unknownError": "Lỗi không xác định",
@@ -421,8 +408,6 @@
         "warning": "Cảnh báo",
         "done": "Hoàn tất",
         "system": "Hệ thống",
-        "title": "Thông báo và tin nhắn hệ thống",
-        "subtitle": "Nhận thông tin cập nhật tức thời về tiến độ bay, cảnh báo SAR, hóa đơn phát hành và trạng thái đặt dịch vụ UAV.",
         "all": "Tất cả ({count})",
         "unread": "Chưa đọc ({count})",
         "markRead": "Đánh dấu đã đọc ({count})",
@@ -447,8 +432,6 @@
         "reloadConfirm": "Tải bản mới nhất sẽ thay nội dung đang nhập. Bạn có muốn tiếp tục?",
         "reloadError": "Chưa tải được hồ sơ. Nội dung đang nhập vẫn được giữ lại. Vui lòng thử lại.",
         "saved": "Đã lưu hồ sơ của bạn.",
-        "title": "Tài khoản",
-        "subtitle": "Quản lý thông tin liên hệ của bạn.",
         "personalInfo": "Thông tin cá nhân",
         "edit": "Chỉnh sửa hồ sơ",
         "loading": "Đang tải hồ sơ…",

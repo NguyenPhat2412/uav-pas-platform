@@ -118,9 +118,6 @@ function CreateMission() {
     const selectClass = 'min-h-11 w-full rounded-none border border-border-input bg-card px-3 py-2 text-base font-normal text-foreground sm:text-sm aria-[invalid=true]:border-danger';
     return <>
         <Link href="/customer/missions" className="inline-flex min-h-11 w-fit items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('missionCreate.back')}</Link>
-        <div className="sr-only">
-            <div><h1>{t('missionCreate.title')}</h1><p>{t('missionCreate.subtitle')}</p></div>
-        </div>
         <Panel title={step === 1 ? t('missionCreate.step1') : t('missionCreate.step2')}>
             {error &&
                 <div className="mb-5 rounded-none bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline" role="alert">{error} <Link href="/customer/missions">{t('missionCreate.viewMissions')}</Link></div>}

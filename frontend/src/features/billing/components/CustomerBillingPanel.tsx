@@ -8,7 +8,7 @@ import {bankTransferService} from '@/features/billing/services/bank-transfer.ser
 import {toast} from '@/contexts/ToastContext';
 import {useCustomerScope} from '@/lib/query/customer';
 import {displayLabel, planName} from "@/components/shared/presentation";
-import {AlertCircle, CheckCircle, Clock, CreditCard, FileText, Radar} from 'lucide-react';
+import {AlertCircle, CheckCircle, Clock, FileText, Radar} from 'lucide-react';
 import {PageGuard} from "@/components/customer/layout";
 import {useBilling} from "@/lib/query/customer";
 import {ServicePlanCards} from '@/features/billing/components/ServicePlanCard';
@@ -52,17 +52,6 @@ export default function CustomerBillingPage() {
     return (
         <PageGuard permission={null}>
             <div className="flex flex-col gap-6">
-                {/* Header */}
-                <div className="border-b border-border pb-4 flex justify-between items-end">
-                    <div>
-                        <h1 className="m-0 text-[26px] font-extrabold text-slate-900 flex items-center gap-2.5">
-                            <CreditCard className="text-primary shrink-0" size={28}/> {t('billingPage.title')}
-                        </h1>
-                        <p className="mt-1.5 mb-0 text-[13px] text-slate-500">
-                            {t('billingPage.subtitle')}
-                        </p>
-                    </div>
-                </div>
 
                 {isLoading && (
                     <div className="bg-card border border-border rounded-none p-8 text-center text-slate-500">

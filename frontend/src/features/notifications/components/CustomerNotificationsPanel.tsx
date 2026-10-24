@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useState} from 'react';
-import {AlertCircle, Bell, CheckCheck, CheckCircle2, Clock, Filter, Info, ShieldAlert,} from 'lucide-react';
+import {AlertCircle, CheckCheck, CheckCircle2, Clock, Filter, Info, ShieldAlert} from 'lucide-react';
 import {PageGuard} from "@/components/customer/layout";
 import {Button, Panel} from "@/components/customer/ui";
 import {type NotificationItem, useNotifications} from "@/features/notifications/hooks/useNotifications";
@@ -29,13 +29,7 @@ export default function CustomerNotificationsPage() {
 
     return (
         <PageGuard permission={null}>
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-                <div>
-                    <h1 className="m-0 text-[25px] sm:text-[28px] leading-tight font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
-                        <Bell size={24} className="text-primary shrink-0"/> {t('notificationsPage.title')}
-                    </h1>
-                    <p className="mt-1.5 mb-0 text-[13px] text-slate-500">{t('notificationsPage.subtitle')}</p>
-                </div>
+            <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
                 <div className="flex flex-wrap items-center gap-2.5">
                     <div className="inline-flex bg-slate-100 p-1 rounded-none border border-border">
                         <button

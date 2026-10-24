@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import {PageGuard} from "@/components/customer/layout";
 import {Panel, Status} from "@/components/customer/ui";
-import {useAuth} from '@/contexts/AuthContext';
 import {CustomerAnalytics} from "@/features/dashboard/components/CustomerAnalytics";
 import {useMissions, useServices} from "@/lib/query/customer";
 import {toMissionSlug} from "@/lib/url-slugs";
@@ -14,7 +13,6 @@ export default function DashboardPage() {
 }
 
 function Dashboard() {
-    const {user} = useAuth();
     const {t, formatDate} = useI18n();
     const shortDate = (value?: string) => {
         if (!value) return '—';
@@ -33,14 +31,7 @@ function Dashboard() {
         <>
             {(missions.isError || services.isError) &&
                 <div role="alert" className="mb-4 rounded-none bg-danger/10 px-3.5 py-3 text-[13px] text-danger">{t('dashboard.loadError')}</div>}
-            <div className="mb-7 flex flex-wrap items-center justify-between gap-5">
-                <div>
-                    <h1 className="m-0 flex items-center gap-2.5 text-[28px] font-extrabold leading-tight tracking-tight text-foreground">
-                        <span className="inline-block h-[26px] w-2 rounded-none bg-primary"/>
-                        {t('dashboard.greeting', {name: user?.fullName || user?.username || t('dashboard.defaultName')})}
-                    </h1>
-                    <p className="mt-2.5 text-sm text-muted">{t('dashboard.subtitle')}</p>
-                </div>
+            <div className="mb-4 flex flex-wrap items-center justify-end gap-5">
                 <Link href="/customer/missions/create" className="inline-flex min-h-[44px] items-center justify-center rounded-none bg-primary px-4 text-[13px] font-bold text-primary-foreground transition hover:bg-primary-hover">{t('dashboard.bookService')}</Link>
             </div>
 

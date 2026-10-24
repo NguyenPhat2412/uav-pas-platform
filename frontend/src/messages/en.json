@@ -36,7 +36,9 @@
     "authenticating": "Authenticating...",
     "notifications": "Notifications",
     "vjuUniversity": "Vietnam Japan University",
-    "dutyOfficer": "Duty Officer VJU"
+    "dutyOfficer": "Duty Officer VJU",
+    "welcomeBack": "Welcome back!",
+    "welcomeBackMessage": "Hello {name}, have a productive day with UAV PAS."
   },
   "operationsNavGroups": {
     "command": "Command & Control",

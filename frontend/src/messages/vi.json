@@ -36,7 +36,9 @@
     "authenticating": "Đang xác thực...",
     "notifications": "Thông báo",
     "vjuUniversity": "Đại học Việt Nhật",
-    "dutyOfficer": "Trực ban VJU"
+    "dutyOfficer": "Trực ban VJU",
+    "welcomeBack": "Chào mừng quay trở lại!",
+    "welcomeBackMessage": "Xin chào {name}, chúc bạn một ngày làm việc hiệu quả cùng UAV PAS."
   },
   "operationsNavGroups": {
     "command": "Chỉ huy & Tác chiến",

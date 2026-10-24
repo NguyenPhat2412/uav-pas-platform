@@ -36,7 +36,9 @@
     "authenticating": "認証中...",
     "notifications": "通知",
     "vjuUniversity": "日越大学",
-    "dutyOfficer": "VJU 当直幹部"
+    "dutyOfficer": "VJU 当直幹部",
+    "welcomeBack": "おかえりなさい！",
+    "welcomeBackMessage": "{name} さん、UAV PAS で良い一日をお過ごしください。"
   },
   "operationsNavGroups": {
     "command": "作戦指揮・管制",

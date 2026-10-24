@@ -56,20 +56,20 @@ function Body({data}: { data: Analytics }) {
             <Link href="/customer/billing" className="inline-flex items-center gap-0.5 whitespace-nowrap text-[12.5px] font-semibold hover:underline">{t('dashboard.analytics.payNow')}<ChevronRight size={14} aria-hidden="true"/></Link>
         </div>}
 
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-px border border-slate-200 bg-slate-200">
-            <article className="flex flex-col gap-1 border-t-2 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.completed')}</span>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] border-l border-slate-200 bg-white">
+            <article className="flex flex-col gap-1 border-b border-r border-t-2 border-slate-200 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.completed')}</span>
                 <strong className="text-[22px] font-bold leading-tight tabular-nums text-foreground">{data.thisMonth.completedMissions}</strong>
                 <Delta current={data.thisMonth.completedMissions} previous={data.lastMonth.completedMissions} label={vs}/></article>
-            <article className="flex flex-col gap-1 border-t-2 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.flightHours')}</span>
+            <article className="flex flex-col gap-1 border-b border-r border-t-2 border-slate-200 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.flightHours')}</span>
                 <strong className="text-[22px] font-bold leading-tight tabular-nums text-foreground">{t('dashboard.analytics.hours', {value: formatNumber(data.thisMonth.flightHours)})}</strong>
                 <Delta current={data.thisMonth.flightHours} previous={data.lastMonth.flightHours} label={vs}/></article>
-            <article className="flex flex-col gap-1 border-t-2 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.spend')}</span>
+            <article className="flex flex-col gap-1 border-b border-r border-t-2 border-slate-200 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.spend')}</span>
                 <strong className="text-[22px] font-bold leading-tight tabular-nums text-foreground">{formatCurrency(data.thisMonth.spend)}</strong>
                 <Delta current={data.thisMonth.spend} previous={data.lastMonth.spend} higherIsBetter={false} label={vs}/></article>
-            <article className="flex flex-col gap-1 border-t-2 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.successRate')}</span>
+            <article className="flex flex-col gap-1 border-b border-r border-t-2 border-slate-200 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.successRate')}</span>
                 <strong className="text-[22px] font-bold leading-tight tabular-nums text-foreground">{finished ? `${formatNumber(data.outcomes.successRate)}%` : '—'}</strong>
                 <small className="inline-flex items-center gap-[3px] text-xs font-normal text-muted">{t('dashboard.analytics.finishedCount', {count: finished})}</small></article>
-            <article className="flex flex-col gap-1 border-t-2 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.media')}</span>
+            <article className="flex flex-col gap-1 border-b border-r border-t-2 border-slate-200 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.media')}</span>
                 <strong className="text-[22px] font-bold leading-tight tabular-nums text-foreground">{data.mediaFiles}</strong>
                 <small className="inline-flex items-center gap-[3px] text-xs font-normal text-muted">{t('dashboard.analytics.mediaHint')}</small></article>
         </div>

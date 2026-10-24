@@ -1,4 +1,5 @@
 'use client';
+import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import Link from 'next/link';
 import {useEffect, useRef, useState} from 'react';
 import {usePathname, useRouter} from 'next/navigation';
@@ -237,6 +238,7 @@ export function AppShell({children}: { children: React.ReactNode }) {
                         <CustomerAccountMenu name={name}/>
                     </div>
                 </header>
+                <WelcomeBack/>
                 <main id="content" className="w-full flex-1 outline-none" tabIndex={-1}>
                     {children}
                 </main>

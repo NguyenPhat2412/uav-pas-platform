@@ -1,5 +1,6 @@
 'use client';
 
+import {clearWelcomeFlags} from '@/lib/welcome-flag';
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import type {AuthResponse, RegisterRequest, UserResponse} from "@/features/auth/types/auth.types";
@@ -132,6 +133,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
     })), [authenticate]);
     const register = useCallback((data: RegisterRequest) => authService.register(data), []);
     const logout = useCallback(async () => {
+        clearWelcomeFlags();
         identity.current = null;
         setUser(null);
         setToken(null);

@@ -102,10 +102,6 @@ function DraftEditor({mission, reload}: { mission: Mission; reload: () => Promis
     };
     return <>
         <Link href={`/customer/missions/${toMissionSlug(mission)}`} className="inline-flex min-h-11 w-fit items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('missionEdit.back')}</Link>
-        <div className="sr-only">
-            <div><h1>{t('missionEdit.title')}</h1><p>{mission.code} · {t('missionEdit.subtitle')}</p>
-            </div>
-        </div>
         <Panel title={t('missionCreate.requestDetails')}>
             <div className="mb-5 rounded-none bg-amber-50 px-3.5 py-3 text-xs text-warning">
                 <strong>{displayLabel(mission.missionType)}</strong>{mission.serviceId && <> · {selectedService ? serviceName(selectedService) : t('missionEdit.serviceNumber', {id: mission.serviceId})}</>}

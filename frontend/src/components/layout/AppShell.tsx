@@ -1,4 +1,5 @@
 'use client';
+import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import React, {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
@@ -230,6 +231,7 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                         <AccountMenu portal="operations"/>
                     </div>
                 </header>
+                <WelcomeBack/>
                 <main id="workspace" className="w-full flex-1 space-y-6 outline-none" tabIndex={-1}>
                     {children}
                 </main>

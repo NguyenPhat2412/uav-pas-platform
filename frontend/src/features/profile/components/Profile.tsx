@@ -106,15 +106,7 @@ function Profile() {
     }
 
     return <>
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-            <div>
-                <h1 className="m-0 text-[25px] sm:text-[28px] leading-tight font-bold tracking-tight text-slate-900">
-                    {t('profile.title')}
-                </h1>
-                <p className="mt-1.5 mb-0 text-[13px] text-slate-500">{t('profile.subtitle')}</p>
-            </div>
-        </div>
-        <div className="grid gap-5 sm:gap-6 max-w-[960px]">
+        <div className="grid gap-5 sm:gap-6">
             <AvatarEditor name={profile?.fullName || user?.fullName || user?.username || ''}/>
             <Panel title={t('profile.personalInfo')} action={!draft && profile ?
                 <Button variant="secondary" onClick={() => edit(profile)}>{t('profile.edit')}</Button> : undefined}>

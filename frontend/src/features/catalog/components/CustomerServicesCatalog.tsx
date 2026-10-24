@@ -27,14 +27,6 @@ function Services() {
     const hours = (value?: number | null) => value == null ? t('services.sla.contact') : t('services.sla.hours', {value: formatNumber(value)});
     const services = q.data ?? [];
     return <>
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-            <div>
-                <h1 className="m-0 text-[25px] sm:text-[28px] leading-tight font-bold tracking-tight text-slate-900">
-                    {t('services.title')}
-                </h1>
-                <p className="mt-1.5 mb-0 text-[13px] text-slate-500">{t('services.subtitle')}</p>
-            </div>
-        </div>
         {q.isLoading ? (
             <div className="p-8 text-center text-slate-500" role="status">{t('services.loading')}</div>
         ) : q.isError ? (

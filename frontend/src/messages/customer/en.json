@@ -57,8 +57,6 @@
         "noNotifications": "No notifications yet"
     },
     "services": {
-        "title": "UAV services",
-        "subtitle": "Choose the service that fits your needs.",
         "loading": "Loading services…",
         "loadError": "Could not load services.",
         "defaultDescription": "On-demand UAV service.",
@@ -97,9 +95,6 @@
     },
     "dashboard": {
         "loadError": "Could not load the overview. Please reload the page.",
-        "greeting": "Hello, {name}",
-        "defaultName": "VJU customer",
-        "subtitle": "Track service requests, mission progress and usage limits.",
         "bookService": "Book a UAV service",
         "totalMissions": "Total missions",
         "totalMissionsHint": "Registered in the system",
@@ -186,8 +181,6 @@
         }
     },
     "missions": {
-        "title": "My missions",
-        "subtitle": "Track the progress and results of your missions.",
         "create": "Create mission",
         "search": "Search missions",
         "searchPlaceholder": "Search by code or title",
@@ -254,8 +247,6 @@
         "availabilityDraft": "The request will be saved as a draft. The dispatch team will check resources when it is received.",
         "availabilityError": "Could not check the time slot right now. Your input is kept; please try again.",
         "back": "← My missions",
-        "title": "Create a UAV request",
-        "subtitle": "Fill in the details, review them, then send to the dispatch team or save a draft to edit later.",
         "step1": "1. Request details",
         "step2": "2. Review and send",
         "viewMissions": "View mission list",
@@ -334,8 +325,6 @@
         "viewDetail": "View mission details",
         "reloadError": "Could not load the latest draft. Please try again.",
         "back": "← Mission details",
-        "title": "Edit draft",
-        "subtitle": "Save your changes to review them before submitting for confirmation.",
         "serviceNumber": "Service #{id}",
         "fixedService": "The service and mission type are kept from when the request was created.",
         "reloadWarning": "Reloading replaces your current input with the latest version. Then review and re-enter any changes you need.",
@@ -378,8 +367,6 @@
             "FAILED": "Payment failed",
             "CANCELLED": "Cancelled"
         },
-        "title": "Plans and invoices",
-        "subtitle": "Track your plan's flight-hour quota, subscribe to plans and pay invoices by VietQR bank transfer.",
         "loading": "Loading billing data…",
         "loadError": "Could not load billing data.",
         "unknownError": "Unknown error",
@@ -421,8 +408,6 @@
         "warning": "Warning",
         "done": "Completed",
         "system": "System",
-        "title": "Notifications and system messages",
-        "subtitle": "Get instant updates on flight progress, SAR alerts, issued invoices and UAV booking status.",
         "all": "All ({count})",
         "unread": "Unread ({count})",
         "markRead": "Mark as read ({count})",
@@ -447,8 +432,6 @@
         "reloadConfirm": "Loading the latest version will replace your current input. Continue?",
         "reloadError": "Could not load the profile. Your input is kept. Please try again.",
         "saved": "Your profile has been saved.",
-        "title": "Account",
-        "subtitle": "Manage your contact information.",
         "personalInfo": "Personal information",
         "edit": "Edit profile",
         "loading": "Loading profile…",

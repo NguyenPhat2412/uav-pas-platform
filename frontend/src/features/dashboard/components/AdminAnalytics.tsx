@@ -75,7 +75,7 @@ function AnalyticsBody({data, money}: { data: Analytics; money: Intl.NumberForma
     ].filter(k => k.show);
 
     return <>
-        {kpis.length > 0 && <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-px border border-slate-200 bg-slate-200">{kpis.map(kpi => <article key={kpi.key} className="flex flex-col gap-1 border-t-2 border-t-uav-blue bg-white px-[18px] py-4">
+        {kpis.length > 0 && <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] border-l border-slate-200 bg-white">{kpis.map(kpi => <article key={kpi.key} className="flex flex-col gap-1 border-b border-r border-t-2 border-slate-200 border-t-uav-blue bg-white px-[18px] py-4">
             <span className="text-[12.5px] text-muted">{t(`admin.analytics.kpi.${kpi.key}`)}</span>
             <strong className="text-2xl font-bold leading-tight tabular-nums text-foreground">{kpi.value}</strong>
             {kpi.delta}
