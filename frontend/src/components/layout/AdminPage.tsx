@@ -29,6 +29,6 @@ export function AdminPage({title, permission, activeResource, children}: {
     }, [isAuthenticated, isAdmin, isLoading, router, user?.role]);
     if (isLoading || !isAuthenticated || !isAdmin) return <div className="flex min-h-screen items-center justify-center"><Spinner
         size="lg" label={t('admin.page.authenticating')}/></div>;
-    return <AppShell activeResource={activeResource}><h1 className="sr-only">{t(title)}</h1><PermissionGate
+    return <AppShell activeResource={activeResource} pageTitle={t(title)}><h1 className="sr-only">{t(title)}</h1><PermissionGate
         code={permission}>{children}</PermissionGate></AppShell>;
 }

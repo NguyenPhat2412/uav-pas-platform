@@ -20,4 +20,12 @@ public interface ObjectStorageService {
     ObjectMetadata metadata(String objectKey);
 
     void deleteObject(String objectKey);
+
+    /**
+     * Whether the configured bucket answers right now; used by the admin health page. Implementations that cannot
+     * check cheaply keep this default, which the health page reports as UNKNOWN.
+     */
+    default boolean bucketReachable() {
+        throw new UnsupportedOperationException("Storage health check not supported");
+    }
 }

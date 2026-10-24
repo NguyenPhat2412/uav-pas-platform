@@ -51,6 +51,9 @@
       },
       "profile": {
         "title": "My profile"
+      },
+      "systemHealth": {
+        "title": "System health"
       }
     },
     "page": {
@@ -735,7 +738,7 @@
       "fullName": "Full name",
       "phone": "Phone number",
       "save": "Save changes",
-      "saved": "Profile saved. The name in the top bar updates after you reload the page.",
+      "saved": "Profile saved.",
       "reload": "Load latest version",
       "password": {
         "title": "Change password",
@@ -760,6 +763,115 @@
         "uncertain": "The save could not be confirmed. Your input is kept; check the latest version once your connection is stable.",
         "other": "Could not save the profile. Check your name and phone number, then try again."
       }
+    },
+    "plans": {
+      "title": "Plan management",
+      "intro": "Active plans are shown to customers and can be assigned in the quota table below.",
+      "add": "Add plan",
+      "table": "Service plans table",
+      "col": {
+        "plan": "Plan",
+        "price": "Price",
+        "hours": "Flight hours/month",
+        "uavs": "Concurrent UAVs",
+        "sarAi": "SAR AI",
+        "status": "Status"
+      },
+      "cycle": {
+        "MONTHLY": "per month",
+        "YEARLY": "per year"
+      },
+      "hours": "{count} h",
+      "yes": "Yes",
+      "no": "No",
+      "active": "Active",
+      "inactive": "Inactive",
+      "toggleLabel": "Turn plan {name} on or off",
+      "deactivateConfirm": "Deactivate {name}? Customers won't be able to choose it; current subscribers keep their quota.",
+      "defaultLocked": "Default plan for new customers; it can't be deactivated.",
+      "edit": "Edit plan {name}",
+      "empty": "No plans yet.",
+      "addTitle": "Add service plan",
+      "editTitle": "Edit service plan",
+      "code": "Plan code",
+      "codeHint": "Uppercase letters, digits and underscores (2–40 characters); can't be changed later.",
+      "name": "Plan name",
+      "price": "Price (VND)",
+      "cycleLabel": "Billing cycle",
+      "hoursLabel": "Max flight hours per month",
+      "uavsLabel": "Max concurrent UAVs",
+      "sarAiLabel": "Allow SAR AI",
+      "description": "Description",
+      "editNote": "Changes apply the next time the plan is assigned; current subscribers' quotas don't change automatically.",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "health": {
+      "overall": {
+        "UP": "All systems operational",
+        "DEGRADED": "System degraded",
+        "DOWN": "System down",
+        "UNKNOWN": "Status unknown"
+      },
+      "problems": "Needs attention: {list}.",
+      "allGood": "Every component is responding normally.",
+      "checkedAt": "Checked at {time} · refreshes every 30 seconds",
+      "refresh": "Check again",
+      "component": {
+        "database": "Database",
+        "storage": "Media storage",
+        "webhooks": "Webhook queue",
+        "financialOutbox": "Financial event queue"
+      },
+      "status": {
+        "UP": "Up",
+        "DEGRADED": "Degraded",
+        "DOWN": "Down",
+        "UNKNOWN": "Unknown"
+      },
+      "latency": "Response time",
+      "detail": {
+        "product": "Engine",
+        "version": "Version",
+        "provider": "Provider",
+        "queued": "Queued",
+        "stuck": "Stuck over 5 min",
+        "failed24h": "Failed in 24 h",
+        "pending": "Pending",
+        "lagging": "Waiting over 10 min",
+        "failed": "Failed",
+        "error": "Error"
+      },
+      "hint": {
+        "database": {
+          "DOWN": "Can't reach the database. Check PostgreSQL and the backend connection settings.",
+          "DEGRADED": "The database is responding abnormally.",
+          "UNKNOWN": "The database couldn't be checked."
+        },
+        "storage": {
+          "DOWN": "Can't reach object storage (MinIO/S3). Result file uploads and downloads fail until it's back.",
+          "DEGRADED": "Storage is responding slowly.",
+          "UNKNOWN": "The current storage provider doesn't support health checks."
+        },
+        "webhooks": {
+          "DEGRADED": "Some deliveries are stuck or failing. See the delivery log on Webhooks & integrations.",
+          "DOWN": "Can't read the webhook queue.",
+          "UNKNOWN": "The webhook queue couldn't be checked."
+        },
+        "financialOutbox": {
+          "DEGRADED": "Financial events (invoices, payments) have waited too long or failed. Check the backend outbox processor.",
+          "DOWN": "Can't read the financial event queue.",
+          "UNKNOWN": "The financial event queue couldn't be checked."
+        }
+      },
+      "runtime": "Application server",
+      "uptime": "Uptime",
+      "heap": "Heap memory",
+      "load": "System load",
+      "java": "Java version",
+      "uptimeDays": "{days} d {hours} h",
+      "uptimeHours": "{hours} h {minutes} min",
+      "note": "Only counts and versions are shown; server addresses and credentials are never returned."
     }
   }
 }

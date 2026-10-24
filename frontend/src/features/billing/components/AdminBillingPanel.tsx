@@ -1,6 +1,5 @@
 'use client';
 
-import {UavIcon} from '@/components/shared/UavIcon';
 import React, {useState} from 'react';
 import {planName} from "@/components/shared/presentation";
 import {AdminPage} from '@/components/layout/AdminPage';
@@ -8,11 +7,11 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {AlertCircle, CheckCircle2, Edit3, Search, Users} from 'lucide-react';
 import {adminService} from "@/lib/api/admin";
 import {Drawer} from '@/components/data/Drawer';
-import {ServicePlanCards} from '@/features/billing/components/ServicePlanCard';
 import type {UserQuota} from "@/types/admin";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/contexts/I18nContext';
 import {AdminInvoicesPanel} from '@/features/billing/components/AdminInvoicesPanel';
+import {AdminPlansManager} from '@/features/billing/components/AdminPlansManager';
 import {cn} from '@/lib/utils';
 
 // API route: /api/v1/billing
@@ -92,13 +91,7 @@ function AdminBillingContent() {
                 </div>
             )}
 
-            {/* Service Plans Cards */}
-            <div>
-                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
-                    <UavIcon size={18} className="text-primary"/> {t('admin.billing.plansHeading')}
-                </h2>
-                <ServicePlanCards plans={plans}/>
-            </div>
+            <AdminPlansManager/>
 
             {/* User Quotas Management Table */}
             <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">

@@ -37,6 +37,9 @@ export type RequestOptions = Omit<RequestInit, 'body' | 'headers'> & {
 // Backend auth and account errors are English constants; show them in the portal language.
 const apiMessages: Record<PresentationLocale, Record<string, string>> = {
     vi: {
+        'Service plan code already exists': "Mã gói cước này đã tồn tại.",
+        'The default BASIC plan cannot be deactivated': "Không thể tắt gói mặc định BASIC.",
+        'Service plan not found': "Không tìm thấy gói cước.",
         'Current password is incorrect': 'Mật khẩu hiện tại không đúng.',
         'New password must differ from the current password': 'Mật khẩu mới phải khác mật khẩu hiện tại.',
         'Service code already exists': 'Mã dịch vụ này đã tồn tại.',
@@ -49,6 +52,9 @@ const apiMessages: Record<PresentationLocale, Record<string, string>> = {
         'Phone number already exists in the system': 'Số điện thoại này đã được sử dụng.',
     },
     en: {
+        'Service plan code already exists': "This plan code already exists.",
+        'The default BASIC plan cannot be deactivated': "The default BASIC plan can't be deactivated.",
+        'Service plan not found': "Plan not found.",
         'Current password is incorrect': 'Your current password is incorrect.',
         'New password must differ from the current password': 'Choose a new password that differs from the current one.',
         'Service code already exists': 'This service code already exists.',
@@ -61,6 +67,9 @@ const apiMessages: Record<PresentationLocale, Record<string, string>> = {
         'Phone number already exists in the system': 'This phone number is already in use.',
     },
     ja: {
+        'Service plan code already exists': "このプランコードは既に存在します。",
+        'The default BASIC plan cannot be deactivated': "既定のBASICプランは無効にできません。",
+        'Service plan not found': "プランが見つかりません。",
         'Current password is incorrect': '現在のパスワードが正しくありません。',
         'New password must differ from the current password': '新しいパスワードは現在のものと異なる必要があります。',
         'Service code already exists': 'このサービスコードは既に存在します。',

@@ -4,11 +4,13 @@ import com.uav.platform.modules.dashboard.dto.response.AdminAnalyticsResponse;
 import com.uav.platform.modules.dashboard.dto.response.CustomerAnalyticsResponse;
 import com.uav.platform.modules.dashboard.dto.response.DashboardResponse;
 import com.uav.platform.modules.dashboard.dto.response.FleetMapResponse;
+import com.uav.platform.modules.dashboard.dto.response.SystemHealthResponse;
 import com.uav.platform.modules.dashboard.dto.response.MissionDashboardResponse;
 import com.uav.platform.modules.dashboard.service.AdminAnalyticsService;
 import com.uav.platform.modules.dashboard.service.CustomerAnalyticsService;
 import com.uav.platform.modules.dashboard.service.DashboardService;
 import com.uav.platform.modules.dashboard.service.FleetMapService;
+import com.uav.platform.modules.dashboard.service.SystemHealthService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +30,7 @@ public class DashboardController {
     private final AdminAnalyticsService analytics;
     private final CustomerAnalyticsService customerAnalytics;
     private final FleetMapService fleetMap;
+    private final SystemHealthService systemHealth;
 
     @GetMapping("/summary")
     @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
@@ -55,9 +58,20 @@ public class DashboardController {
         return ResponseEntity.ok(customerAnalytics.analytics(authentication));
     }
 
+    /**
+     * Every UAV with the active mission it serves, across all customers. Customers hold UAV_READ for their own
+     * assigned equipment, so the fleet-wide view requires the dispatcher-level MISSION_VIEW_ALL instead.
+     */
     @GetMapping("/fleet-map")
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<FleetMapResponse> fleetMap() {
         return ResponseEntity.ok(fleetMap.fleetMap());
+    }
+
+    /** Admin-only health snapshot; the public actuator endpoints stay limited to health and info. */
+    @GetMapping("/system-health")
+    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    public ResponseEntity<SystemHealthResponse> systemHealth() {
+        return ResponseEntity.ok(systemHealth.check());
     }
 }

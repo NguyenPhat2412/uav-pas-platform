@@ -51,6 +51,9 @@
       },
       "profile": {
         "title": "Hồ sơ của tôi"
+      },
+      "systemHealth": {
+        "title": "Sức khỏe hệ thống"
       }
     },
     "page": {
@@ -735,7 +738,7 @@
       "fullName": "Họ tên",
       "phone": "Số điện thoại",
       "save": "Lưu thay đổi",
-      "saved": "Đã lưu hồ sơ. Tên hiển thị trên thanh trên cập nhật sau khi tải lại trang.",
+      "saved": "Đã lưu hồ sơ.",
       "reload": "Tải bản mới nhất",
       "password": {
         "title": "Đổi mật khẩu",
@@ -760,6 +763,115 @@
         "uncertain": "Chưa xác nhận được kết quả lưu. Nội dung đang nhập vẫn được giữ lại; hãy kiểm tra bản mới nhất khi kết nối ổn định.",
         "other": "Không thể lưu hồ sơ. Vui lòng kiểm tra họ tên và số điện thoại rồi thử lại."
       }
+    },
+    "plans": {
+      "title": "Quản lý gói cước",
+      "intro": "Gói đang bật hiển thị cho khách hàng và có thể gán trong bảng hạn mức bên dưới.",
+      "add": "Thêm gói",
+      "table": "Bảng gói cước",
+      "col": {
+        "plan": "Gói",
+        "price": "Giá",
+        "hours": "Giờ bay/tháng",
+        "uavs": "UAV cùng lúc",
+        "sarAi": "AI SAR",
+        "status": "Trạng thái"
+      },
+      "cycle": {
+        "MONTHLY": "mỗi tháng",
+        "YEARLY": "mỗi năm"
+      },
+      "hours": "{count} giờ",
+      "yes": "Có",
+      "no": "Không",
+      "active": "Đang bật",
+      "inactive": "Đã tắt",
+      "toggleLabel": "Bật hoặc tắt gói {name}",
+      "deactivateConfirm": "Tắt gói {name}? Khách hàng sẽ không chọn được gói này nữa; khách đang dùng vẫn giữ hạn mức hiện tại.",
+      "defaultLocked": "Gói mặc định cho khách hàng mới, không thể tắt.",
+      "edit": "Sửa gói {name}",
+      "empty": "Chưa có gói cước nào.",
+      "addTitle": "Thêm gói cước",
+      "editTitle": "Sửa gói cước",
+      "code": "Mã gói",
+      "codeHint": "Chữ in hoa, số và dấu gạch dưới (2–40 ký tự); không đổi được sau khi tạo.",
+      "name": "Tên gói",
+      "price": "Giá (VND)",
+      "cycleLabel": "Chu kỳ thanh toán",
+      "hoursLabel": "Giờ bay tối đa mỗi tháng",
+      "uavsLabel": "Số UAV bay cùng lúc tối đa",
+      "sarAiLabel": "Cho phép dùng AI SAR",
+      "description": "Mô tả",
+      "editNote": "Thay đổi áp dụng cho lần gán gói tiếp theo; hạn mức của khách đang dùng gói không tự đổi.",
+      "cancel": "Hủy",
+      "save": "Lưu"
+    },
+    "health": {
+      "overall": {
+        "UP": "Hệ thống hoạt động bình thường",
+        "DEGRADED": "Hệ thống đang suy giảm",
+        "DOWN": "Hệ thống ngừng hoạt động",
+        "UNKNOWN": "Chưa xác định được trạng thái"
+      },
+      "problems": "Cần kiểm tra: {list}.",
+      "allGood": "Mọi thành phần đều phản hồi bình thường.",
+      "checkedAt": "Kiểm tra lúc {time} · tự làm mới mỗi 30 giây",
+      "refresh": "Kiểm tra lại",
+      "component": {
+        "database": "Cơ sở dữ liệu",
+        "storage": "Lưu trữ media",
+        "webhooks": "Hàng đợi webhook",
+        "financialOutbox": "Hàng đợi sự kiện tài chính"
+      },
+      "status": {
+        "UP": "Hoạt động",
+        "DEGRADED": "Suy giảm",
+        "DOWN": "Ngừng",
+        "UNKNOWN": "Không rõ"
+      },
+      "latency": "Thời gian phản hồi",
+      "detail": {
+        "product": "Hệ quản trị",
+        "version": "Phiên bản",
+        "provider": "Nhà cung cấp",
+        "queued": "Đang chờ gửi",
+        "stuck": "Kẹt quá 5 phút",
+        "failed24h": "Thất bại trong 24 giờ",
+        "pending": "Đang chờ xử lý",
+        "lagging": "Chờ quá 10 phút",
+        "failed": "Thất bại",
+        "error": "Lỗi"
+      },
+      "hint": {
+        "database": {
+          "DOWN": "Không kết nối được cơ sở dữ liệu. Kiểm tra PostgreSQL và cấu hình kết nối của backend.",
+          "DEGRADED": "Cơ sở dữ liệu phản hồi bất thường.",
+          "UNKNOWN": "Chưa kiểm tra được cơ sở dữ liệu."
+        },
+        "storage": {
+          "DOWN": "Không truy cập được kho lưu trữ (MinIO/S3). Tải lên và tải xuống tệp kết quả sẽ thất bại cho đến khi kho hoạt động lại.",
+          "DEGRADED": "Kho lưu trữ phản hồi chậm.",
+          "UNKNOWN": "Nhà cung cấp lưu trữ hiện tại không hỗ trợ kiểm tra tình trạng."
+        },
+        "webhooks": {
+          "DEGRADED": "Có lần gửi bị kẹt hoặc thất bại nhiều. Xem nhật ký gửi ở trang Webhooks & Tích hợp.",
+          "DOWN": "Không đọc được hàng đợi webhook.",
+          "UNKNOWN": "Chưa kiểm tra được hàng đợi webhook."
+        },
+        "financialOutbox": {
+          "DEGRADED": "Có sự kiện tài chính (hóa đơn, thanh toán) chờ xử lý quá lâu hoặc đã thất bại. Kiểm tra tiến trình xử lý outbox của backend.",
+          "DOWN": "Không đọc được hàng đợi sự kiện tài chính.",
+          "UNKNOWN": "Chưa kiểm tra được hàng đợi sự kiện tài chính."
+        }
+      },
+      "runtime": "Máy chủ ứng dụng",
+      "uptime": "Thời gian chạy",
+      "heap": "Bộ nhớ heap",
+      "load": "Tải hệ thống",
+      "java": "Phiên bản Java",
+      "uptimeDays": "{days} ngày {hours} giờ",
+      "uptimeHours": "{hours} giờ {minutes} phút",
+      "note": "Trang chỉ hiển thị số đếm và phiên bản; địa chỉ máy chủ và thông tin đăng nhập không bao giờ được trả về."
     }
   }
 }

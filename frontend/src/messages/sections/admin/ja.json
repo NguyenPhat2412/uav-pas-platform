@@ -51,6 +51,9 @@
       },
       "profile": {
         "title": "マイプロフィール"
+      },
+      "systemHealth": {
+        "title": "システム状態"
       }
     },
     "page": {
@@ -735,7 +738,7 @@
       "fullName": "氏名",
       "phone": "電話番号",
       "save": "変更を保存",
-      "saved": "プロフィールを保存しました。上部バーの名前はページを再読み込みすると更新されます。",
+      "saved": "プロフィールを保存しました。",
       "reload": "最新版を読み込む",
       "password": {
         "title": "パスワード変更",
@@ -760,6 +763,115 @@
         "uncertain": "保存結果を確認できませんでした。入力内容は保持されています。接続が安定したら最新版を確認してください。",
         "other": "プロフィールを保存できませんでした。氏名と電話番号を確認して再度お試しください。"
       }
+    },
+    "plans": {
+      "title": "プラン管理",
+      "intro": "有効なプランは顧客に表示され、下の利用枠表で割り当てられます。",
+      "add": "プランを追加",
+      "table": "サービスプラン一覧",
+      "col": {
+        "plan": "プラン",
+        "price": "料金",
+        "hours": "月間飛行時間",
+        "uavs": "同時UAV数",
+        "sarAi": "SAR AI",
+        "status": "状態"
+      },
+      "cycle": {
+        "MONTHLY": "毎月",
+        "YEARLY": "毎年"
+      },
+      "hours": "{count}時間",
+      "yes": "あり",
+      "no": "なし",
+      "active": "有効",
+      "inactive": "無効",
+      "toggleLabel": "プラン{name}のオン・オフ",
+      "deactivateConfirm": "{name}を無効にしますか？顧客は選択できなくなりますが、現在の利用者の枠は維持されます。",
+      "defaultLocked": "新規顧客の既定プランのため無効にできません。",
+      "edit": "プラン{name}を編集",
+      "empty": "プランはまだありません。",
+      "addTitle": "サービスプランを追加",
+      "editTitle": "サービスプランを編集",
+      "code": "プランコード",
+      "codeHint": "英大文字・数字・アンダースコア（2〜40文字）。作成後は変更できません。",
+      "name": "プラン名",
+      "price": "料金（VND）",
+      "cycleLabel": "請求サイクル",
+      "hoursLabel": "月間最大飛行時間",
+      "uavsLabel": "同時最大UAV数",
+      "sarAiLabel": "SAR AIを許可",
+      "description": "説明",
+      "editNote": "変更は次回プランを割り当てたときに適用されます。現在の利用者の枠は自動では変わりません。",
+      "cancel": "キャンセル",
+      "save": "保存"
+    },
+    "health": {
+      "overall": {
+        "UP": "すべて正常に稼働中",
+        "DEGRADED": "一部機能が低下",
+        "DOWN": "システム停止",
+        "UNKNOWN": "状態不明"
+      },
+      "problems": "要確認: {list}。",
+      "allGood": "すべてのコンポーネントが正常に応答しています。",
+      "checkedAt": "{time}に確認 · 30秒ごとに自動更新",
+      "refresh": "再確認",
+      "component": {
+        "database": "データベース",
+        "storage": "メディアストレージ",
+        "webhooks": "Webhookキュー",
+        "financialOutbox": "財務イベントキュー"
+      },
+      "status": {
+        "UP": "正常",
+        "DEGRADED": "低下",
+        "DOWN": "停止",
+        "UNKNOWN": "不明"
+      },
+      "latency": "応答時間",
+      "detail": {
+        "product": "エンジン",
+        "version": "バージョン",
+        "provider": "プロバイダー",
+        "queued": "送信待ち",
+        "stuck": "5分以上停滞",
+        "failed24h": "24時間の失敗",
+        "pending": "処理待ち",
+        "lagging": "10分以上待機",
+        "failed": "失敗",
+        "error": "エラー"
+      },
+      "hint": {
+        "database": {
+          "DOWN": "データベースに接続できません。PostgreSQLとバックエンドの接続設定を確認してください。",
+          "DEGRADED": "データベースの応答が異常です。",
+          "UNKNOWN": "データベースを確認できませんでした。"
+        },
+        "storage": {
+          "DOWN": "オブジェクトストレージ（MinIO/S3）に接続できません。復旧するまで成果ファイルのアップロード・ダウンロードは失敗します。",
+          "DEGRADED": "ストレージの応答が遅れています。",
+          "UNKNOWN": "現在のストレージプロバイダーは状態確認に対応していません。"
+        },
+        "webhooks": {
+          "DEGRADED": "停滞または失敗している配信があります。Webhook・連携ページの配信ログを確認してください。",
+          "DOWN": "Webhookキューを読み取れません。",
+          "UNKNOWN": "Webhookキューを確認できませんでした。"
+        },
+        "financialOutbox": {
+          "DEGRADED": "財務イベント（請求書・支払い）の処理が滞っているか失敗しています。バックエンドのアウトボックス処理を確認してください。",
+          "DOWN": "財務イベントキューを読み取れません。",
+          "UNKNOWN": "財務イベントキューを確認できませんでした。"
+        }
+      },
+      "runtime": "アプリケーションサーバー",
+      "uptime": "稼働時間",
+      "heap": "ヒープメモリ",
+      "load": "システム負荷",
+      "java": "Javaバージョン",
+      "uptimeDays": "{days}日{hours}時間",
+      "uptimeHours": "{hours}時間{minutes}分",
+      "note": "表示されるのは件数とバージョンのみで、サーバーのアドレスや認証情報は返されません。"
     }
   }
 }

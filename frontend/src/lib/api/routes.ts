@@ -100,12 +100,8 @@ export const API_ROUTES = {
     billing: {
         plans: '/api/v1/billing/plans',
         subscription: '/api/v1/billing/quota',
-        subscribe: '/api/v1/billing/subscribe',
         invoices: '/api/v1/billing/invoices',
-        createInvoice: '/api/v1/billing/invoices/create',
         paymentIpn: '/api/v1/billing/webhook/payment-ipn',
-        allInvoices: '/api/v1/billing/admin/all-invoices',
-        revenueSummary: '/api/v1/billing/admin/revenue-summary',
     },
     reports: {
         operations: '/api/v1/reports/operations-summary',

@@ -23,7 +23,7 @@ const profileEndpoint = '/api/v1/users/profile';
 
 /** The admin's own account: editable name and phone, read-only identity, and a self-service password change. */
 export function AdminProfilePanel() {
-    const {user} = useAuth();
+    const {user, refreshUser} = useAuth();
     const {t} = useI18n();
     // The shared profile helpers look up profile.errors.*; admin keeps those strings under admin.profile.errors.
     const tp = (key: string, params?: Record<string, string | number>) => t(key.replace(/^profile\./, 'admin.profile.'), params);
@@ -53,6 +53,7 @@ export function AdminProfilePanel() {
         try {
             await save.mutateAsync();
             setSaved(true);
+            void refreshUser();
         } catch {/* Shown below. */
         }
     };

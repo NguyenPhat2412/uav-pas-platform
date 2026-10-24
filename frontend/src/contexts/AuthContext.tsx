@@ -18,6 +18,8 @@ interface AuthContextType {
     permissionError: Error | null;
     can: (code: string) => boolean;
     refreshPermissions: () => Promise<unknown>;
+    /** Re-reads the signed-in user, e.g. after the profile name changed; ignored if the session switched meanwhile. */
+    refreshUser: () => Promise<void>;
     login: (usernameOrEmail: string, password: string) => Promise<AuthResponse>;
     register: (data: RegisterRequest) => Promise<UserResponse>;
     logout: () => Promise<void>;
@@ -144,11 +146,19 @@ export function AuthProvider({children}: { children: ReactNode }) {
             toast.info(t('authShared.loggedOut'), t('authShared.logoutTitle'));
         }
     }, [client, t]);
+    const refreshUser = useCallback(async () => {
+        const expected = identity.current;
+        try {
+            const current = await authService.getMe();
+            if (current && current.id === expected && identity.current === expected) setUser(current);
+        } catch { /* Keep the current user; a broken session is handled by the API client. */
+        }
+    }, []);
     const permissions = permissionQuery.isError ? [] : permissionQuery.data ?? [];
     return <AuthContext.Provider value={{
         user, token, isLoading, isAuthenticated: !!user,
         permissions, permissionsReady: permissionQuery.isSuccess, permissionError: permissionQuery.error,
-        can: code => permissions.includes(code), refreshPermissions: permissionQuery.refetch,
+        can: code => permissions.includes(code), refreshPermissions: permissionQuery.refetch, refreshUser,
         login, register, logout
     }}>{children}</AuthContext.Provider>;
 }

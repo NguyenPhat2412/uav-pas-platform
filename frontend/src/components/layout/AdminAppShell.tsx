@@ -5,6 +5,7 @@ import {activeDestination} from "@/components/shared/navigation";
 import {usePathname} from 'next/navigation';
 import {useEffect, useRef, useState} from 'react';
 import {
+    Activity,
     BarChart3,
     ChevronLeft,
     ChevronRight,
@@ -33,7 +34,7 @@ const nav = [
     {href: "/admin/dashboard", key: 'dashboard', group: 'overview', icon: LayoutDashboard, permission: 'DASHBOARD_READ'},
     {href: "/admin/reports", key: 'reports', group: 'overview', icon: BarChart3, permission: 'DASHBOARD_READ'},
     {href: "/admin/notifications", key: 'notifications', group: 'overview', icon: Inbox, permission: 'DASHBOARD_READ'},
-    {href: "/admin/fleet-map", key: 'fleetMap', group: 'fleet', icon: MapIcon, permission: 'UAV_READ'},
+    {href: "/admin/fleet-map", key: 'fleetMap', group: 'fleet', icon: MapIcon, permission: 'MISSION_VIEW_ALL'},
     {href: "/operations/uavs", key: 'uavs', group: 'fleet', icon: Plane, permission: 'UAV_READ'},
     {href: "/admin/users", key: 'users', group: 'access', icon: Users, permission: 'USER_READ'},
     {href: "/admin/access-control", key: 'accessControl', group: 'access', icon: ShieldCheck, permission: 'PERMISSION_MANAGE', aliases: ['/admin/role-templates', '/admin/role-matrix', '/admin/permissions']},
@@ -41,11 +42,13 @@ const nav = [
     {href: "/admin/billing", key: 'billing', group: 'system', icon: CreditCard, permission: 'PERMISSION_MANAGE'},
     {href: "/admin/webhooks", key: 'webhooks', group: 'system', icon: Radio, permission: 'USER_MANAGE'},
     {href: "/admin/settings", key: 'settings', group: 'system', icon: Settings, permission: 'PERMISSION_MANAGE'},
+    {href: "/admin/system-health", key: 'systemHealth', group: 'system', icon: Activity, permission: 'PERMISSION_MANAGE'},
     {href: "/admin/audit-logs", key: 'auditLogs', group: 'system', icon: ScrollText, permission: 'AUDIT_READ'},
 ];
 const navGroups = ['overview', 'fleet', 'access', 'system'] as const;
 
-export function AppShell({children, activeResource}: { children: React.ReactNode; activeResource?: string }) {
+/** pageTitle names pages that have no sidebar entry (e.g. the profile) in the breadcrumb. */
+export function AppShell({children, activeResource, pageTitle}: { children: React.ReactNode; activeResource?: string; pageTitle?: string }) {
     const pathname = usePathname();
     const {can, permissionsReady} = useAuth();
     const {t} = useI18n();
@@ -238,10 +241,10 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                             <span>UAV PAS</span>
                             <span>/</span>
                             <span>{t('shell.adminSection')}</span>
-                            {activeNav && (
+                            {(activeNav || pageTitle) && (
                                 <>
                                     <span>/</span>
-                                    <strong className="text-primary font-semibold">{getNavLabel(activeNav)}</strong>
+                                    <strong className="text-primary font-semibold">{activeNav ? getNavLabel(activeNav) : pageTitle}</strong>
                                 </>
                             )}
                         </div>

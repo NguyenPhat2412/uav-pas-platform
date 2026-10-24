@@ -72,7 +72,8 @@
     "notifications": "通知",
     "fleetMap": "UAV機体マップ",
     "uavs": "UAV機体",
-    "services": "サービスカタログ"
+    "services": "サービスカタログ",
+    "systemHealth": "システム状態"
   },
   "sidebar": {
     "title": "UAV PAS",

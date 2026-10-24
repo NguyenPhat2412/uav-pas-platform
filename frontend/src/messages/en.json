@@ -72,7 +72,8 @@
     "notifications": "Notifications",
     "fleetMap": "Fleet map",
     "uavs": "UAV fleet",
-    "services": "Service catalog"
+    "services": "Service catalog",
+    "systemHealth": "System health"
   },
   "sidebar": {
     "title": "UAV PAS",

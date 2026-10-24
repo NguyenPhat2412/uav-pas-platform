@@ -72,7 +72,8 @@
     "notifications": "Thông báo",
     "fleetMap": "Bản đồ đội UAV",
     "uavs": "Đội UAV",
-    "services": "Danh mục dịch vụ"
+    "services": "Danh mục dịch vụ",
+    "systemHealth": "Sức khỏe hệ thống"
   },
   "sidebar": {
     "title": "UAV PAS",

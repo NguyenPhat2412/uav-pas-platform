@@ -86,6 +86,16 @@ public class S3CompatibleStorageService implements ObjectStorageService {
         this.client = clientBuilder.build();
     }
 
+    @Override
+    public boolean bucketReachable() {
+        try {
+            client.headBucket(HeadBucketRequest.builder().bucket(bucket).build());
+            return true;
+        } catch (RuntimeException unreachable) {
+            return false;
+        }
+    }
+
     @PostConstruct
     void initializeBucket() {
         if (!ensureBucket) return;
