@@ -891,8 +891,7 @@
       "note": "Trang chỉ hiển thị số đếm và phiên bản; địa chỉ máy chủ và thông tin đăng nhập không bao giờ được trả về."
     },
     "aiRouter": {
-      "statusTitle": "Cổng AI 9router",
-      "openDashboard": "Mở dashboard 9router",
+      "statusTitle": "Kết nối trợ lý AI",
       "recheck": "Kiểm tra lại",
       "reachable": "Kết nối",
       "online": "Hoạt động",
@@ -911,8 +910,8 @@
       "connection": "Kết nối",
       "baseUrl": "Địa chỉ API (OpenAI-compatible)",
       "baseUrlHint": "Ví dụ https://router.anhchau.all1.vn/v1 — bắt buộc HTTPS.",
-      "apiKey": "API key 9router",
-      "apiKeyPlaceholder": "Dán API key tạo trong dashboard 9router",
+      "apiKey": "API key cổng AI",
+      "apiKeyPlaceholder": "Dán API key được cấp cho trợ lý",
       "apiKeyStored": "Đã lưu (…{hint}) — để trống nếu giữ nguyên",
       "apiKeyHint": "Key được mã hóa AES-GCM trên máy chủ và không bao giờ gửi lại trình duyệt.",
       "disconnect": "Ngắt kết nối (xóa key)",
@@ -921,16 +920,16 @@
       "modes": "Hai phương thức AI",
       "modeName": "Tên phương thức {n}",
       "modeModel": "Model phương thức {n}",
-      "modelsFromRouter": "Gợi ý {count} model lấy trực tiếp từ 9router. Có thể nhập tên combo.",
-      "modelsManual": "Nhập tên model hoặc combo của 9router (ví dụ cc/claude-sonnet-4-5). Danh sách gợi ý hiện ra sau khi API key hợp lệ.",
+      "modelsFromRouter": "Gợi ý {count} model lấy trực tiếp từ cổng AI. Có thể nhập tên combo.",
+      "modelsManual": "Nhập tên model hoặc combo (ví dụ cc/claude-sonnet-4-5). Danh sách gợi ý hiện ra sau khi API key hợp lệ.",
       "systemPrompt": "Chỉ dẫn hệ thống (system prompt)",
       "securityNote": "Mọi lời gọi AI đi qua máy chủ UAV PAS; giới hạn 20 tin nhắn/phút cho mỗi người dùng.",
       "save": "Lưu cấu hình",
       "saving": "Đang lưu…",
-      "saved": "Đã lưu cấu hình 9router.",
+      "saved": "Đã lưu cấu hình trợ lý.",
       "saveFailed": "Không lưu được cấu hình.",
       "error": {
-        "GENERIC": "Lỗi từ 9router ({code}).",
+        "GENERIC": "Lỗi từ cổng AI ({code}).",
         "AI_ROUTER_NO_KEY": "Chưa có API key",
         "AI_ROUTER_UNAUTHORIZED": "API key bị từ chối",
         "AI_ROUTER_TIMEOUT": "Hết thời gian chờ",
@@ -938,11 +937,16 @@
         "AI_ROUTER_INCOMPLETE": "Cần API key và ít nhất một model trước khi bật trợ lý.",
         "AI_ROUTER_SETTINGS_STALE": "Cấu hình vừa được người khác thay đổi — đã tải lại, vui lòng kiểm tra rồi lưu lại.",
         "AI_ROUTER_URL_HTTPS_REQUIRED": "Địa chỉ API phải dùng HTTPS."
-      }
+      },
+      "frameHint": "Nếu khung trống, máy chủ trợ lý chưa cho phép nhúng vào địa chỉ này.",
+      "openNewTab": "Mở trong tab mới",
+      "assistantSettings": "Cài đặt trợ lý",
+      "frameTitle": "Bảng điều khiển Trợ lý UAV",
+      "openConsole": "Mở Trợ lý UAV"
     },
     "assistant": {
       "title": "Trợ lý UAV PAS",
-      "via": "qua 9router",
+      "via": "Trợ lý AI",
       "open": "Mở trợ lý AI",
       "close": "Đóng trợ lý",
       "clear": "Xóa cuộc trò chuyện",
@@ -950,8 +954,8 @@
       "modeUnset": "Phương thức {n} (chưa cấu hình model)",
       "loading": "Đang tải…",
       "offTitle": "Trợ lý AI đang tắt",
-      "offBody": "Kết nối API key 9router và chọn model ở trang 9router để bắt đầu trò chuyện.",
-      "openSettings": "Mở trang 9router",
+      "offBody": "Quản trị viên cần nhập API key và chọn model trong Cấu hình hệ thống → Trợ lý AI để bắt đầu trò chuyện.",
+      "openSettings": "Mở cài đặt trợ lý",
       "hello": "Xin chào {name}!",
       "helloBody": "Hỏi tôi về vận hành UAV, nhiệm vụ, hóa đơn hay cấu hình hệ thống.",
       "thinking": "Đang suy nghĩ…",
@@ -961,13 +965,22 @@
       "failed": "Trợ lý không trả lời được ({code}).",
       "error": {
         "AI_ROUTER_DISABLED": "Trợ lý AI đang tắt.",
-        "AI_ROUTER_UNAUTHORIZED": "API key 9router bị từ chối — kiểm tra lại ở trang 9router.",
-        "AI_ROUTER_BUSY": "9router đang quá tải, thử lại sau ít phút.",
-        "AI_ROUTER_TIMEOUT": "9router phản hồi quá lâu, thử lại.",
-        "AI_ROUTER_UNREACHABLE": "Không kết nối được 9router.",
+        "AI_ROUTER_UNAUTHORIZED": "API key của trợ lý bị từ chối — kiểm tra lại trong Cấu hình hệ thống.",
+        "AI_ROUTER_BUSY": "Trợ lý đang quá tải, thử lại sau ít phút.",
+        "AI_ROUTER_TIMEOUT": "Trợ lý phản hồi quá lâu, thử lại.",
+        "AI_ROUTER_UNREACHABLE": "Không kết nối được tới trợ lý AI.",
         "AI_ROUTER_RATE_LIMIT": "Bạn gửi quá nhanh — chờ một chút rồi thử lại.",
         "AI_ROUTER_MODE_UNSET": "Phương thức này chưa có model.",
         "AI_ROUTER_EMPTY": "Model không trả về nội dung."
+      },
+      "faqTitle": "Câu hỏi thường gặp",
+      "faq": {
+        "statuses": "Các trạng thái của một nhiệm vụ bay là gì?",
+        "dispatch": "Làm sao phân công UAV và người vận hành cho nhiệm vụ?",
+        "payment": "Quy trình xác nhận thanh toán chuyển khoản VietQR?",
+        "createMission": "Khách hàng tạo yêu cầu bay với vùng bay như thế nào?",
+        "maintenance": "Lịch bảo trì định kỳ và phiếu sửa chữa hoạt động ra sao?",
+        "sarRth": "Nút gửi tọa độ cứu nạn và yêu cầu RTH làm gì?"
       }
     }
   }

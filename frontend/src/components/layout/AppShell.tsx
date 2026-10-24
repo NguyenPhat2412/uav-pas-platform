@@ -1,4 +1,5 @@
 'use client';
+import {useSidebarShortcut} from '@/components/layout/useSidebarShortcut';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import React, {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
@@ -94,6 +95,7 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
             return next;
         });
     };
+    const shortcut = useSidebarShortcut(toggleCollapsed);
 
     const visibleNav = nav.filter(item => !item.permission || (permissionsReady && can(item.permission)));
     const activeNav = resolveSidebarActiveItem(visibleNav, pathname, activeResource);
@@ -139,7 +141,8 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                         className="hidden lg:inline-flex items-center justify-center w-7 h-7 shrink-0 rounded-lg border border-slate-200/80 bg-slate-50/80 text-slate-500 hover:border-primary/30 hover:bg-uav-red-light hover:text-primary transition-colors cursor-pointer"
                         onClick={toggleCollapsed}
                         aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
-                        title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                        aria-keyshortcuts="Control+B Meta+B"
+                        title={`${railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')} (${shortcut})`}
                     >
                         {railCollapsed ? <PanelLeftOpen size={14}/> : <PanelLeftClose size={14}/>}
                     </button>

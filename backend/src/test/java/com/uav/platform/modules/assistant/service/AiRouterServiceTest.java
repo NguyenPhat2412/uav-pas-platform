@@ -30,15 +30,22 @@ class AiRouterServiceTest {
     final HttpClient http = mock(HttpClient.class);
     final SecretCipherOperations cipher = new SecretCipherOperations("test-secret");
     final AiRouterServiceImpl service = build();
-    final UsernamePasswordAuthenticationToken admin = new UsernamePasswordAuthenticationToken("admin", "", List.of());
+    final UsernamePasswordAuthenticationToken admin =
+            new UsernamePasswordAuthenticationToken("admin", "", List.of());
     final AiRouterSettings row = new AiRouterSettings();
 
     AiRouterServiceImpl build() {
         try {
-            Constructor<AiRouterServiceImpl> c = AiRouterServiceImpl.class.getDeclaredConstructor(
-                    AiRouterSettingsRepository.class, AuditLogService.class, ObjectMapper.class, SecretCipherOperations.class, HttpClient.class);
+            Constructor<AiRouterServiceImpl> c =
+                    AiRouterServiceImpl.class.getDeclaredConstructor(
+                            AiRouterSettingsRepository.class,
+                            AuditLogService.class,
+                            ObjectMapper.class,
+                            SecretCipherOperations.class,
+                            HttpClient.class);
             c.setAccessible(true);
-            return c.newInstance(repo, mock(AuditLogService.class), new ObjectMapper(), cipher, http);
+            return c.newInstance(
+                    repo, mock(AuditLogService.class), new ObjectMapper(), cipher, http);
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException(e);
         }
@@ -54,7 +61,16 @@ class AiRouterServiceTest {
     }
 
     private AiRouterSettingsRequest req(String key, String m1, boolean enabled) {
-        return new AiRouterSettingsRequest("https://router.example.test/v1/", key, "Nhanh", m1, "Chuyên sâu", null, "Be brief", enabled, 0L);
+        return new AiRouterSettingsRequest(
+                "https://router.example.test/v1/",
+                key,
+                "Nhanh",
+                m1,
+                "Chuyên sâu",
+                null,
+                "Be brief",
+                enabled,
+                0L);
     }
 
     @Test
@@ -65,7 +81,9 @@ class AiRouterServiceTest {
         char[] c = sealed.toCharArray();
         c[c.length / 2] = c[c.length / 2] == 'A' ? 'B' : 'A';
         assertThrows(IllegalStateException.class, () -> cipher.decrypt(new String(c)));
-        assertThrows(IllegalStateException.class, () -> new SecretCipherOperations("other").decrypt(sealed));
+        assertThrows(
+                IllegalStateException.class,
+                () -> new SecretCipherOperations("other").decrypt(sealed));
     }
 
     @Test
@@ -86,9 +104,11 @@ class AiRouterServiceTest {
     @Test
     void enablingNeedsKeyAndModelAndVersionMustMatch() {
         assertThrows(SystemException.class, () -> service.update(req(null, "m", true), admin));
-        assertThrows(SystemException.class, () -> service.update(req("sk-x12345", null, true), admin));
+        assertThrows(
+                SystemException.class, () -> service.update(req("sk-x12345", null, true), admin));
         row.setVersion(3);
-        assertThrows(SystemException.class, () -> service.update(req("sk-x12345", "m", true), admin));
+        assertThrows(
+                SystemException.class, () -> service.update(req("sk-x12345", "m", true), admin));
     }
 
     @Test
@@ -100,19 +120,38 @@ class AiRouterServiceTest {
         row.setEnabled(true);
         HttpResponse<String> ok = mock(HttpResponse.class);
         when(ok.statusCode()).thenReturn(200);
-        when(ok.body()).thenReturn("{\"model\":\"cc/claude-haiku\",\"choices\":[{\"message\":{\"content\":\" Xin chào! \"}}],\"usage\":{\"prompt_tokens\":12,\"completion_tokens\":3}}");
-        when(http.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn((HttpResponse<Object>) (HttpResponse<?>) ok);
+        when(ok.body())
+                .thenReturn(
+                        "{\"model\":\"cc/claude-haiku\",\"choices\":[{\"message\":{\"content\":\" Xin chào! \"}}],\"usage\":{\"prompt_tokens\":12,\"completion_tokens\":3}}");
+        when(http.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn((HttpResponse<Object>) (HttpResponse<?>) ok);
         var chat = new AssistantChatRequest(1, List.of(new AssistantMessageRequest("user", "hi")));
         var res = service.chat(chat, admin);
         assertEquals("Xin chào!", res.reply());
         assertEquals(12, res.promptTokens());
-        verify(http).send(argThat(r -> r.uri().toString().equals("https://router.example.test/v1/chat/completions")
-                && r.headers().firstValue("Authorization").orElse("").equals("Bearer sk-test-0001")), any());
+        assertFalse(AiRouterServiceImplGuide.guide().isBlank(), "platform guide is bundled");
+        assertTrue(AiRouterServiceImplGuide.guide().contains("PENDING_CONFIRMATION"));
+        verify(http)
+                .send(
+                        argThat(
+                                r ->
+                                        r.uri()
+                                                        .toString()
+                                                        .equals(
+                                                                "https://router.example.test/v1/chat/completions")
+                                                && r.headers()
+                                                        .firstValue("Authorization")
+                                                        .orElse("")
+                                                        .equals("Bearer sk-test-0001")),
+                        any());
 
         when(ok.statusCode()).thenReturn(401);
         SystemException e = assertThrows(SystemException.class, () -> service.chat(chat, admin));
         assertTrue(e.getMessage().contains("API key"));
-        assertThrows(SystemException.class, () -> service.chat(new AssistantChatRequest(2, chat.messages()), admin), "mode 2 has no model");
+        assertThrows(
+                SystemException.class,
+                () -> service.chat(new AssistantChatRequest(2, chat.messages()), admin),
+                "mode 2 has no model");
         row.setEnabled(false);
         assertThrows(SystemException.class, () -> service.chat(chat, admin));
     }
@@ -135,7 +174,8 @@ class AiRouterServiceTest {
         HttpResponse<String> ok = mock(HttpResponse.class);
         when(ok.statusCode()).thenReturn(200);
         when(ok.body()).thenReturn("{\"choices\":[{\"message\":{\"content\":\"ok\"}}]}");
-        when(http.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn((HttpResponse<Object>) (HttpResponse<?>) ok);
+        when(http.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn((HttpResponse<Object>) (HttpResponse<?>) ok);
         var chat = new AssistantChatRequest(1, List.of(new AssistantMessageRequest("user", "x")));
         for (int i = 0; i < 20; i++) service.chat(chat, admin);
         SystemException e = assertThrows(SystemException.class, () -> service.chat(chat, admin));

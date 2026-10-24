@@ -891,8 +891,7 @@
       "note": "表示されるのは件数とバージョンのみで、サーバーのアドレスや認証情報は返されません。"
     },
     "aiRouter": {
-      "statusTitle": "9router AIゲートウェイ",
-      "openDashboard": "9routerダッシュボードを開く",
+      "statusTitle": "アシスタント接続",
       "recheck": "再確認",
       "reachable": "接続",
       "online": "稼働中",
@@ -911,8 +910,8 @@
       "connection": "接続",
       "baseUrl": "APIアドレス(OpenAI互換)",
       "baseUrlHint": "例: https://router.anhchau.all1.vn/v1(HTTPS必須)",
-      "apiKey": "9router APIキー",
-      "apiKeyPlaceholder": "9routerダッシュボードで作成したAPIキーを貼り付け",
+      "apiKey": "AIゲートウェイのAPIキー",
+      "apiKeyPlaceholder": "アシスタント用に発行されたAPIキーを貼り付け",
       "apiKeyStored": "保存済み(…{hint})— 変更しない場合は空欄",
       "apiKeyHint": "キーはサーバーでAES-GCM暗号化され、ブラウザには返されません。",
       "disconnect": "切断(キーを削除)",
@@ -921,16 +920,16 @@
       "modes": "2つのAIモード",
       "modeName": "モード{n}の名前",
       "modeModel": "モード{n}のモデル",
-      "modelsFromRouter": "9routerから{count}件のモデル候補を取得しました。コンボ名も使用できます。",
-      "modelsManual": "9routerのモデル名またはコンボ名を入力(例: cc/claude-sonnet-4-5)。APIキーが有効になると候補が表示されます。",
+      "modelsFromRouter": "AIゲートウェイから{count}件のモデル候補を取得しました。コンボ名も使用できます。",
+      "modelsManual": "モデル名またはコンボ名を入力(例: cc/claude-sonnet-4-5)。APIキーが有効になると候補が表示されます。",
       "systemPrompt": "システムプロンプト",
       "securityNote": "AI呼び出しはすべてUAV PASサーバー経由。1ユーザーあたり毎分20メッセージまで。",
       "save": "設定を保存",
       "saving": "保存中…",
-      "saved": "9router設定を保存しました。",
+      "saved": "アシスタント設定を保存しました。",
       "saveFailed": "設定を保存できませんでした。",
       "error": {
-        "GENERIC": "9routerエラー({code})",
+        "GENERIC": "AIゲートウェイのエラー({code})",
         "AI_ROUTER_NO_KEY": "APIキー未設定",
         "AI_ROUTER_UNAUTHORIZED": "APIキーが拒否されました",
         "AI_ROUTER_TIMEOUT": "タイムアウト",
@@ -938,11 +937,16 @@
         "AI_ROUTER_INCOMPLETE": "有効化にはAPIキーと1つ以上のモデルが必要です。",
         "AI_ROUTER_SETTINGS_STALE": "他の人が設定を変更しました。再読み込みしたので確認して保存し直してください。",
         "AI_ROUTER_URL_HTTPS_REQUIRED": "APIアドレスはHTTPSである必要があります。"
-      }
+      },
+      "frameHint": "枠が空白の場合、アシスタントサーバーがこのアドレスへの埋め込みをまだ許可していません。",
+      "openNewTab": "新しいタブで開く",
+      "assistantSettings": "アシスタント設定",
+      "frameTitle": "UAVアシスタントコンソール",
+      "openConsole": "UAVアシスタントを開く"
     },
     "assistant": {
       "title": "UAV PASアシスタント",
-      "via": "9router経由",
+      "via": "AIアシスタント",
       "open": "AIアシスタントを開く",
       "close": "アシスタントを閉じる",
       "clear": "会話を消去",
@@ -950,8 +954,8 @@
       "modeUnset": "モード{n}(モデル未設定)",
       "loading": "読み込み中…",
       "offTitle": "AIアシスタントは無効です",
-      "offBody": "9routerページでAPIキーを接続しモデルを選ぶと会話できます。",
-      "openSettings": "9routerページを開く",
+      "offBody": "管理者がシステム設定 → AIアシスタントでAPIキーとモデルを設定すると会話できます。",
+      "openSettings": "アシスタント設定を開く",
       "hello": "こんにちは、{name}さん!",
       "helloBody": "UAV運用、任務、請求書、システム設定について質問してください。",
       "thinking": "考え中…",
@@ -961,13 +965,22 @@
       "failed": "アシスタントが応答できませんでした({code})。",
       "error": {
         "AI_ROUTER_DISABLED": "AIアシスタントは無効です。",
-        "AI_ROUTER_UNAUTHORIZED": "9routerがAPIキーを拒否しました。9routerページを確認してください。",
-        "AI_ROUTER_BUSY": "9routerが混雑しています。しばらくして再試行してください。",
-        "AI_ROUTER_TIMEOUT": "9routerの応答が遅すぎます。再試行してください。",
-        "AI_ROUTER_UNREACHABLE": "9routerに接続できません。",
+        "AI_ROUTER_UNAUTHORIZED": "アシスタントのAPIキーが拒否されました。システム設定を確認してください。",
+        "AI_ROUTER_BUSY": "アシスタントが混雑しています。しばらくして再試行してください。",
+        "AI_ROUTER_TIMEOUT": "アシスタントの応答が遅すぎます。再試行してください。",
+        "AI_ROUTER_UNREACHABLE": "AIアシスタントに接続できません。",
         "AI_ROUTER_RATE_LIMIT": "送信が速すぎます。少し待ってください。",
         "AI_ROUTER_MODE_UNSET": "このモードにはモデルがありません。",
         "AI_ROUTER_EMPTY": "モデルが内容を返しませんでした。"
+      },
+      "faqTitle": "よくある質問",
+      "faq": {
+        "statuses": "飛行任務のステータスには何がありますか?",
+        "dispatch": "任務にUAVとオペレーターを割り当てるには?",
+        "payment": "VietQR銀行振込の入金確認の流れは?",
+        "createMission": "顧客は飛行区域付きの依頼をどう作成しますか?",
+        "maintenance": "定期整備計画と修理作業票の仕組みは?",
+        "sarRth": "救助座標送信とRTH要求ボタンは何をしますか?"
       }
     }
   }

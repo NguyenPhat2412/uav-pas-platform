@@ -83,7 +83,7 @@
     "uavs": "UAV fleet",
     "services": "Service catalog",
     "systemHealth": "System health",
-    "aiRouter": "9router"
+    "aiRouter": "UAV Assistant"
   },
   "sidebar": {
     "title": "UAV PAS",

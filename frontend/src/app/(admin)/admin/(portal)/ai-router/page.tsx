@@ -1,5 +1,5 @@
-import AdminAiRouterPanel from '@/features/assistant/components/AdminAiRouterPanel';
+import AdminRouterConsole from '@/features/assistant/components/AdminRouterConsole';
 
 export default function AdminAiRouterRoutePage() {
-    return <AdminAiRouterPanel/>;
+    return <AdminRouterConsole/>;
 }

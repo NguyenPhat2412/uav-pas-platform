@@ -1,9 +1,9 @@
 'use client';
 
 import {type FormEvent, useState} from 'react';
+import Link from 'next/link';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {KeyRound, RefreshCw, Router, Save, Unplug} from 'lucide-react';
-import {AdminPage} from '@/components/layout/AdminPage';
 import {KpiCard, MetricStrip} from '@/components/ui';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {ApiError} from '@/lib/api';
@@ -27,13 +27,8 @@ function useErrorText() {
 
 const label = 'block text-[12px] font-semibold uppercase tracking-wide text-slate-600';
 
-export default function AdminAiRouterPanel() {
-    return <AdminPage title="adminNav.aiRouter" permission="PERMISSION_MANAGE" activeResource="ai-router">
-        <AiRouterWorkspace/>
-    </AdminPage>;
-}
-
-function AiRouterWorkspace() {
+/** Assistant connection, API key and the two AI modes; lives in the admin System settings page. */
+export function AssistantSettingsSection() {
     const settings = useQuery({queryKey: assistantKeys.settings, queryFn: ({signal}) => assistantService.settings(signal)});
     const status = useQuery({queryKey: assistantKeys.status, queryFn: ({signal}) => assistantService.status(signal), retry: false});
     return <div className="space-y-4">
@@ -48,15 +43,14 @@ function StatusStrip({status, loading, settings, onRefresh}: {
 }) {
     const {t, formatNumber} = useI18n();
     const errorText = useErrorText();
-    const dashboard = settings ? settings.baseUrl.replace(/\/v1$/, '') + '/dashboard' : null;
     return <section className="border border-slate-200 bg-white">
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
             <h2 className="m-0 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-800">
                 <Router size={16} className="text-primary" aria-hidden="true"/>{t('admin.aiRouter.statusTitle')}</h2>
             <div className="flex flex-wrap items-center gap-2">
-                {dashboard && <a href={dashboard} target="_blank" rel="noopener noreferrer"
+                <Link href="/admin/ai-router"
                                  className="rounded-control inline-flex h-8 items-center border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50">
-                    {t('admin.aiRouter.openDashboard')}</a>}
+                                 {t('admin.aiRouter.openConsole')}</Link>
                 <button type="button" onClick={onRefresh} disabled={loading}
                         className="rounded-control inline-flex h-8 items-center gap-1.5 border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60">
                     <RefreshCw size={13} className={cn(loading && 'animate-spin')} aria-hidden="true"/>{t('admin.aiRouter.recheck')}</button>

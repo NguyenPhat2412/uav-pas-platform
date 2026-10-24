@@ -15,6 +15,8 @@ import {cn} from '@/lib/utils';
 
 /** History sent back to the model; older turns are dropped so each request stays small. */
 const HISTORY_LIMIT = 12;
+/** Suggested starter questions; the backend's built-in platform guide answers them. */
+const FAQ_KEYS = ['statuses', 'dispatch', 'payment', 'createMission', 'maintenance', 'sarRth'] as const;
 
 function loadHistory(key: string): AssistantMessage[] {
     try {
@@ -27,7 +29,7 @@ function loadHistory(key: string): AssistantMessage[] {
     }
 }
 
-/** Floating admin assistant (bottom-right) that chats through the 9router gateway in one of two modes. */
+/** Floating admin assistant (bottom-right) that chats through the AI gateway in one of two modes. */
 export function AdminAssistant() {
     const {user, can, permissionsReady} = useAuth();
     const {t} = useI18n();
@@ -75,14 +77,17 @@ export function AdminAssistant() {
 
     if (!allowed) return null;
 
-    const submit = (event?: FormEvent) => {
-        event?.preventDefault();
-        const text = draft.trim();
+    const ask = (question: string) => {
+        const text = question.trim();
         if (!text || !activeMode || send.isPending) return;
         const next: AssistantMessage[] = [...messages, {role: 'user', content: text.slice(0, 4000)}];
         setMessages(next);
         setDraft('');
         send.mutate(next);
+    };
+    const submit = (event?: FormEvent) => {
+        event?.preventDefault();
+        ask(draft);
     };
     const onKey = (event: KeyboardEvent<HTMLTextAreaElement>) => {
         if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
@@ -128,7 +133,7 @@ export function AdminAssistant() {
                         <SuperheroLogo size={64}/>
                         <p className="mb-2 mt-3 text-sm font-semibold text-slate-800">{t('admin.assistant.offTitle')}</p>
                         <p className="m-0 text-xs text-slate-500">{t('admin.assistant.offBody')}</p>
-                        {can('PERMISSION_MANAGE') && <Link href="/admin/ai-router" onClick={() => setOpen(false)}
+                        {can('PERMISSION_MANAGE') && <Link href="/admin/settings#assistant" onClick={() => setOpen(false)}
                                                            className="mt-3 inline-flex h-8 items-center bg-primary px-3 text-xs font-bold text-primary-foreground hover:bg-primary-hover">
                             {t('admin.assistant.openSettings')}</Link>}
                     </div>
@@ -136,6 +141,14 @@ export function AdminAssistant() {
                         <SuperheroLogo size={64}/>
                         <p className="mb-1 mt-3 text-sm font-semibold text-slate-800">{t('admin.assistant.hello', {name: user?.fullName || user?.username || ''})}</p>
                         <p className="m-0 text-xs text-slate-500">{t('admin.assistant.helloBody')}</p>
+                        <div className="mt-4 text-left">
+                            <p className="mb-1.5 mt-0 text-[11px] font-bold uppercase tracking-wider text-slate-500">{t('admin.assistant.faqTitle')}</p>
+                            <ul className="m-0 grid list-none gap-1.5 p-0">{FAQ_KEYS.map(key => <li key={key}>
+                                <button type="button" onClick={() => ask(t(`admin.assistant.faq.${key}`))} disabled={send.isPending}
+                                        className="w-full rounded-control border border-slate-200 bg-white px-3 py-2 text-left text-[12.5px] font-medium text-slate-700 transition-colors hover:border-primary hover:bg-uav-red-light hover:text-primary disabled:opacity-60">
+                                    {t(`admin.assistant.faq.${key}`)}</button>
+                            </li>)}</ul>
+                        </div>
                     </div>
                     : messages.map((m, i) => <div key={i} className={cn('flex', m.role === 'user' ? 'justify-end' : 'justify-start gap-2')}>
                         {m.role === 'assistant' && <span className="mt-0.5 shrink-0"><SuperheroLogo size={22}/></span>}

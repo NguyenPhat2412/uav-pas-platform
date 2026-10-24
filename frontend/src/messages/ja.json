@@ -83,7 +83,7 @@
     "uavs": "UAV機体",
     "services": "サービスカタログ",
     "systemHealth": "システム状態",
-    "aiRouter": "9router"
+    "aiRouter": "UAVアシスタント"
   },
   "sidebar": {
     "title": "UAV PAS",

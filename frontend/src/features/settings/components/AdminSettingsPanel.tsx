@@ -3,6 +3,7 @@
 import React, {useEffect, useState} from 'react';
 import {settingLabel} from "@/components/shared/presentation";
 import {AdminPage} from '@/components/layout/AdminPage';
+import {AssistantSettingsSection} from '@/features/assistant/components/AssistantSettingsSection';
 import {CheckCircle2, Cpu, MapPin, Save, ShieldCheck} from 'lucide-react';
 import {adminService} from "@/lib/api/admin";
 import type {SystemSettingItem as ConfigItem} from "@/types/admin";
@@ -200,6 +201,9 @@ export default function AdminSettingsPage() {
             activeResource="settings"
         >
             <AdminSettingsContent/>
+            <section id="assistant" className="scroll-mt-16">
+                <AssistantSettingsSection/>
+            </section>
         </AdminPage>
     );
 }
