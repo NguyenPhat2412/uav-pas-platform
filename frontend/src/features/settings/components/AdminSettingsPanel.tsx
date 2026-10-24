@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from 'react';
 import {settingLabel} from "@/components/shared/presentation";
 import {AdminPage} from '@/components/layout/AdminPage';
-import {CheckCircle2, Cpu, MapPin, Save, Settings, ShieldCheck} from 'lucide-react';
+import {CheckCircle2, Cpu, MapPin, Save, ShieldCheck} from 'lucide-react';
 import {adminService} from "@/lib/api/admin";
 import type {SystemSettingItem as ConfigItem} from "@/types/admin";
 import {useI18n} from '@/contexts/I18nContext';
@@ -60,15 +60,7 @@ function AdminSettingsContent() {
         <div className="max-w-4xl space-y-6 pb-12">
             {/* Top action header */}
             <div
-                className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h2 className="flex items-center gap-2 text-lg font-bold tracking-tight text-slate-900">
-                        <Settings className="text-primary"/> {t('admin.settings.heading')}
-                    </h2>
-                    <p className="mt-0.5 text-xs text-slate-500">
-                        {t('admin.settings.intro')}
-                    </p>
-                </div>
+                className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 shadow-sm sm:flex-row sm:items-center sm:justify-end">
 
                 <button
                     type="button"
@@ -204,7 +196,6 @@ export default function AdminSettingsPage() {
     return (
         <AdminPage
             title="admin.pages.settings.title"
-            meta="admin.pages.settings.meta"
             permission="PERMISSION_MANAGE"
             activeResource="settings"
         >

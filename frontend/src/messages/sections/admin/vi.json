@@ -2,16 +2,13 @@
   "admin": {
     "pages": {
       "dashboard": {
-        "title": "Tổng quan hệ thống",
-        "meta": "Người dùng, đội UAV, yêu cầu chờ xử lý và hoạt động quản trị gần đây"
+        "title": "Tổng quan hệ thống"
       },
       "users": {
-        "title": "Người dùng",
-        "meta": "Tài khoản và trạng thái truy cập"
+        "title": "Người dùng"
       },
       "userDetail": {
-        "title": "Chi tiết người dùng",
-        "meta": "Thông tin tài khoản, vai trò và quyền hiệu lực"
+        "title": "Chi tiết người dùng"
       },
       "access": {
         "title": "Phân quyền",
@@ -21,24 +18,19 @@
         "matrixMeta": "So sánh quyền mặc định của từng vai trò trên một bảng."
       },
       "auditLogs": {
-        "title": "Nhật ký quản trị",
-        "meta": "Tra cứu hoạt động và thay đổi trong hệ thống."
+        "title": "Nhật ký quản trị"
       },
       "billing": {
-        "title": "Gói cước & Hạn mức sử dụng",
-        "meta": "Quản lý chính sách định giá, quota giờ bay và đặc quyền AI cho khách hàng"
+        "title": "Gói cước & Hạn mức sử dụng"
       },
       "reports": {
-        "title": "Báo cáo & Thống kê Hệ thống",
-        "meta": "Báo cáo hiệu suất đội bay, chiến dịch SAR, tỷ lệ hoàn thành và xuất dữ liệu CSV"
+        "title": "Báo cáo & Thống kê Hệ thống"
       },
       "settings": {
-        "title": "Cấu hình hệ thống",
-        "meta": "Quản lý tham số bay an toàn, nhận diện AI YOLOv8s và phần cứng biên KV260"
+        "title": "Cấu hình hệ thống"
       },
       "webhooks": {
-        "title": "Quản lý Webhooks & Tích hợp",
-        "meta": "Đăng ký nhận sự kiện và theo dõi kết quả phân phối thực tế"
+        "title": "Quản lý Webhooks & Tích hợp"
       },
       "notifications": {
         "title": "Thông báo"
@@ -233,8 +225,6 @@
       },
       "loadError": "Không tải được dữ liệu webhook. Kiểm tra quyền truy cập và thử lại.",
       "testError": "Không ghi nhận được yêu cầu thử webhook. Chưa có xác nhận gửi.",
-      "heading": "Webhook & tích hợp",
-      "intro": "Kết quả HTTP xác nhận bên nhận tiếp nhận yêu cầu; chưa xác nhận xử lý cứu hộ hay điều khiển UAV.",
       "refresh": "Làm mới",
       "recording": "Đang ghi nhận…",
       "testEvent": "Thử sự kiện WEBHOOK_TEST",
@@ -428,8 +418,6 @@
       "exportError": "Không xuất được báo cáo CSV. Vui lòng thử lại.",
       "loadError": "Không tải được báo cáo. Chưa có dữ liệu để hiển thị hoặc xuất CSV.",
       "loading": "Đang tải báo cáo…",
-      "heading": "Báo cáo Tổng thể Hoạt động & Vận hành Đội Bay",
-      "intro": "Dữ liệu nhiệm vụ theo quyền truy cập. Giờ là thời lượng dự kiến của mọi trạng thái; phát hiện đã xác minh không chứng minh kết quả cứu hộ.",
       "exporting": "Đang xuất CSV…",
       "exportCsv": "Xuất Báo Cáo CSV",
       "plannedHours": "Giờ dự kiến theo lịch",
@@ -470,8 +458,6 @@
       "noChanges": "Không có thay đổi cần lưu.",
       "partialSave": "Chưa lưu được tất cả thay đổi. Các mục đã được máy chủ xác nhận vẫn có hiệu lực. {detail}",
       "checkAndRetry": "Vui lòng kiểm tra dữ liệu và thử lại.",
-      "heading": "Tham số vận hành và AI",
-      "intro": "Thay đổi ngưỡng an toàn bay, tham số suy luận YOLOv8s trên phần cứng KV260 và cơ chế tự động hóa",
       "saving": "Đang lưu…",
       "saveAll": "Lưu tất cả thay đổi",
       "loading": "Đang tải cấu hình…",
@@ -510,7 +496,6 @@
     },
     "loading": "Đang tải quản trị…",
     "analytics": {
-      "title": "Thống kê & phân tích",
       "range": "Khoảng thời gian",
       "days": "{count} ngày",
       "vsPrevious": "so với kỳ trước",
@@ -797,8 +782,6 @@
       }
     },
     "plans": {
-      "title": "Quản lý gói cước",
-      "intro": "Gói đang bật hiển thị cho khách hàng và có thể gán trong bảng hạn mức bên dưới.",
       "add": "Thêm gói",
       "table": "Bảng gói cước",
       "col": {

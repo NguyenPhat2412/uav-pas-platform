@@ -9,11 +9,9 @@ import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {canUsePortal, portalForRole, portalHome} from '@/features/auth/utils/portal';
 
-// title may be a catalog key; plain text passes through t() unchanged. The breadcrumb names the page visually,
-// so the heading is kept for screen readers only and meta is no longer shown.
+// title may be a catalog key; plain text passes through t() unchanged. It only names the page in the breadcrumb.
 export function AdminPage({title, permission, activeResource, children}: {
     title: string;
-    meta?: string;
     permission: string;
     activeResource: string;
     children: React.ReactNode
@@ -29,6 +27,6 @@ export function AdminPage({title, permission, activeResource, children}: {
     }, [isAuthenticated, isAdmin, isLoading, router, user?.role]);
     if (isLoading || !isAuthenticated || !isAdmin) return <div className="flex min-h-screen items-center justify-center"><Spinner
         size="lg" label={t('admin.page.authenticating')}/></div>;
-    return <AppShell activeResource={activeResource} pageTitle={t(title)}><h1 className="sr-only">{t(title)}</h1><PermissionGate
+    return <AppShell activeResource={activeResource} pageTitle={t(title)}><PermissionGate
         code={permission}>{children}</PermissionGate></AppShell>;
 }

@@ -28,11 +28,7 @@ export function AdminPlansManager() {
     });
 
     return <section className="border border-slate-200 bg-white">
-        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
-            <div>
-                <h2 className="text-sm font-bold text-slate-900">{t('admin.plans.title')}</h2>
-                <p className="m-0 text-xs text-slate-500">{t('admin.plans.intro')}</p>
-            </div>
+        <header className="flex flex-wrap items-center justify-end gap-3 border-b border-slate-100 px-4 py-3">
             <button type="button" onClick={() => setEditing('new')}
                     className="inline-flex h-9 items-center gap-1.5 bg-primary px-3 text-[13px] font-semibold text-primary-foreground hover:opacity-90">
                 <Plus size={15} aria-hidden="true"/>{t('admin.plans.add')}</button>

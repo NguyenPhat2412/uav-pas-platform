@@ -2,16 +2,13 @@
   "admin": {
     "pages": {
       "dashboard": {
-        "title": "System overview",
-        "meta": "Users, UAV fleet, pending requests and recent admin activity"
+        "title": "System overview"
       },
       "users": {
-        "title": "Users",
-        "meta": "Accounts and access status"
+        "title": "Users"
       },
       "userDetail": {
-        "title": "User details",
-        "meta": "Account information, role and effective permissions"
+        "title": "User details"
       },
       "access": {
         "title": "Access control",
@@ -21,24 +18,19 @@
         "matrixMeta": "Compare each role's default permissions in one table."
       },
       "auditLogs": {
-        "title": "Admin audit log",
-        "meta": "Look up activity and changes in the system."
+        "title": "Admin audit log"
       },
       "billing": {
-        "title": "Plans & usage quotas",
-        "meta": "Manage pricing policies, flight-hour quotas and AI entitlements for customers"
+        "title": "Plans & usage quotas"
       },
       "reports": {
-        "title": "System reports & analytics",
-        "meta": "Fleet performance, SAR operations, completion rates and CSV export"
+        "title": "System reports & analytics"
       },
       "settings": {
-        "title": "System settings",
-        "meta": "Manage flight safety parameters, YOLOv8s AI detection and KV260 edge hardware"
+        "title": "System settings"
       },
       "webhooks": {
-        "title": "Webhooks & integrations",
-        "meta": "Event subscriptions and actual delivery results"
+        "title": "Webhooks & integrations"
       },
       "notifications": {
         "title": "Notifications"
@@ -233,8 +225,6 @@
       },
       "loadError": "Could not load webhook data. Check your access and try again.",
       "testError": "The webhook test request was not recorded. No delivery has been confirmed.",
-      "heading": "Webhooks & integrations",
-      "intro": "An HTTP result confirms the receiver accepted the request; it does not confirm rescue handling or UAV control.",
       "refresh": "Refresh",
       "recording": "Recording…",
       "testEvent": "Send WEBHOOK_TEST event",
@@ -428,8 +418,6 @@
       "exportError": "Could not export the CSV report. Please try again.",
       "loadError": "Could not load the report. There is no data to show or export as CSV.",
       "loading": "Loading report…",
-      "heading": "Overall fleet activity & operations report",
-      "intro": "Mission data is scoped to your access. Hours are planned durations across all statuses; verified detections do not prove rescue outcomes.",
       "exporting": "Exporting CSV…",
       "exportCsv": "Export CSV report",
       "plannedHours": "Scheduled planned hours",
@@ -470,8 +458,6 @@
       "noChanges": "No changes to save.",
       "partialSave": "Not all changes were saved. Items confirmed by the server remain in effect. {detail}",
       "checkAndRetry": "Please check the data and try again.",
-      "heading": "Operations and AI parameters",
-      "intro": "Change flight safety thresholds, YOLOv8s inference parameters on KV260 hardware and automation",
       "saving": "Saving…",
       "saveAll": "Save all changes",
       "loading": "Loading settings…",
@@ -510,7 +496,6 @@
     },
     "loading": "Loading administration…",
     "analytics": {
-      "title": "Analytics",
       "range": "Time range",
       "days": "{count} days",
       "vsPrevious": "vs previous period",
@@ -797,8 +782,6 @@
       }
     },
     "plans": {
-      "title": "Plan management",
-      "intro": "Active plans are shown to customers and can be assigned in the quota table below.",
       "add": "Add plan",
       "table": "Service plans table",
       "col": {

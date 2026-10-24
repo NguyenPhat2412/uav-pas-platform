@@ -42,9 +42,8 @@ export function AdminAnalytics() {
     const money = useMemo(() => new Intl.NumberFormat(numberLocale, {notation: 'compact', maximumFractionDigits: 1}), [numberLocale]);
     if (!can('DASHBOARD_READ')) return null;
 
-    return <section className="space-y-5" aria-labelledby="analytics-title">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 id="analytics-title" className="text-[17px] font-bold text-foreground">{t('admin.analytics.title')}</h2>
+    return <section className="space-y-5">
+        <div className="flex flex-wrap items-center justify-end gap-3">
             <div className="inline-flex rounded-[9px] border border-border bg-card p-[3px]" role="group" aria-label={t('admin.analytics.range')}>{ranges.map(range =>
                 <button key={range} type="button" aria-pressed={days === range}
                         className={cn('cursor-pointer rounded-md border-0 px-3 py-[5px] text-[12.5px] font-medium text-muted transition-colors', days === range ? 'bg-uav-red-light font-semibold text-primary' : 'bg-transparent hover:text-foreground')}

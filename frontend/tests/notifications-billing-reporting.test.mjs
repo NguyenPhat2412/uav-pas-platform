@@ -114,9 +114,8 @@ test('Admin Portal has Billing Management, Reports & CSV Export, and Settings Co
     assert.match(settingsContent, /admin\.settings\.safetyGroup/);
     assert.match(adminVi.settings.safetyGroup, /An toàn bay và giới hạn khu vực/i);
     assert.match(settingsContent, /KV260/i);
-    assert.match(settingsContent, /admin\.settings\.intro/);
-    assert.match(adminVi.settings.intro, /YOLOv8s/i);
-    assert.match(adminVi.settings.intro, /KV260/i);
+    assert.doesNotMatch(settingsContent, /admin\.settings\.(heading|intro)/, 'admin pages carry no title/description block');
+    assert.match(JSON.stringify(adminVi.settings), /KV260/i);
 
     const shellContent = readFileSync(shellPath, 'utf8');
     assert.match(shellContent, /\/billing/);

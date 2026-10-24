@@ -285,7 +285,6 @@ export default function AdminBillingPage() {
     return (
         <AdminPage
             title="admin.pages.billing.title"
-            meta="admin.pages.billing.meta"
             permission="PERMISSION_MANAGE"
             activeResource="billing"
         >

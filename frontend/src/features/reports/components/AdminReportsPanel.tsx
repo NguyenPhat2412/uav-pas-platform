@@ -2,16 +2,7 @@
 
 import React, {useEffect, useState} from 'react';
 import {AdminPage} from '@/components/layout/AdminPage';
-import {
-    BarChart3,
-    CheckCircle2,
-    Clock,
-    FileSpreadsheet,
-    LifeBuoy,
-    PlaneTakeoff,
-    TrendingUp,
-    Wrench
-} from 'lucide-react';
+import {CheckCircle2, Clock, FileSpreadsheet, LifeBuoy, PlaneTakeoff, TrendingUp, Wrench} from 'lucide-react';
 import {adminService} from "@/lib/api/admin";
 import type {OperationsReportData} from "@/types/admin";
 import {MissionCharts} from "@/features/reports/components/MissionCharts";
@@ -62,15 +53,7 @@ function AdminReportsContent() {
         <div className="space-y-6">
             {/* Top Banner with CSV Export */}
             <div
-                className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h2 className="flex items-center gap-2 text-lg font-bold tracking-tight text-slate-900">
-                        <BarChart3 className="text-primary"/> {t('admin.reports.heading')}
-                    </h2>
-                    <p className="mt-0.5 text-xs text-slate-500">
-                        {t('admin.reports.intro')}
-                    </p>
-                </div>
+                className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 shadow-sm sm:flex-row sm:items-center sm:justify-end">
 
                 <button
                     type="button"
@@ -152,7 +135,6 @@ export default function AdminReportsPage() {
     return (
         <AdminPage
             title="admin.pages.reports.title"
-            meta="admin.pages.reports.meta"
             permission="DASHBOARD_READ"
             activeResource="reports"
         >

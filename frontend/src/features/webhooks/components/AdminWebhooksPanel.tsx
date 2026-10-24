@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {adminService} from "@/lib/api/admin";
 import type {WebhookDeliveryLogItem, WebhookEndpointItem} from "@/types/admin";
-import {Radio, RotateCw, Send} from 'lucide-react';
+import {RotateCw, Send} from 'lucide-react';
 import {useI18n} from '@/contexts/I18nContext';
 import {WebhookSubscriptions} from '@/features/webhooks/components/WebhookSubscriptions';
 
@@ -89,9 +89,7 @@ function WebhooksContent() {
     }
 
     return <div className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-[18px] border border-border bg-card p-5 text-foreground shadow-sm">
-            <div><h2 className="flex items-center gap-2 text-lg font-bold text-foreground"><Radio size={20}/> {t('admin.webhooks.heading')}</h2>
-                <p className="mt-2 text-sm text-slate-500">{t('admin.webhooks.intro')}</p></div>
+        <div className="flex flex-wrap items-center justify-end gap-4 rounded-[18px] border border-border bg-card p-5 text-foreground shadow-sm">
             <div className="flex flex-wrap gap-2">
                 <button
                     className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-border bg-card px-4 font-bold text-foreground transition hover:-translate-y-px hover:bg-background disabled:cursor-not-allowed disabled:opacity-55"
@@ -147,7 +145,6 @@ function WebhooksContent() {
 }
 
 export default function WebhooksPage() {
-    return <AdminPage title="admin.pages.webhooks.title"
-                      meta="admin.pages.webhooks.meta" permission="USER_MANAGE"
+    return <AdminPage title="admin.pages.webhooks.title" permission="USER_MANAGE"
                       activeResource="webhooks"><WebhooksContent/></AdminPage>;
 }
