@@ -1,5 +1,6 @@
 'use client';
 
+import {AdminAssistant} from '@/features/assistant/components/AdminAssistant';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
@@ -237,6 +238,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                 <main id="workspace" className="w-full flex-1 space-y-6 outline-none" tabIndex={-1}>
                     {children}
                 </main>
+                <AdminAssistant/>
             </div>
         </div>
     );

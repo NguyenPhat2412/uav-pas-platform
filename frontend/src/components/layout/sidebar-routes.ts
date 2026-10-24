@@ -19,6 +19,7 @@ import {
     Plane,
     PlaneTakeoff,
     Radio,
+    Router,
     ScrollText,
     Settings,
     ShieldCheck,
@@ -166,6 +167,13 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         group: 'system',
         icon: Radio,
         permission: 'USER_MANAGE',
+    },
+    {
+        href: '/admin/ai-router',
+        key: 'aiRouter',
+        group: 'system',
+        icon: Router,
+        permission: 'PERMISSION_MANAGE',
     },
     {
         href: '/admin/settings',

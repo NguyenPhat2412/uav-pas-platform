@@ -82,7 +82,8 @@
     "fleetMap": "Fleet map",
     "uavs": "UAV fleet",
     "services": "Service catalog",
-    "systemHealth": "System health"
+    "systemHealth": "System health",
+    "aiRouter": "9router"
   },
   "sidebar": {
     "title": "UAV PAS",

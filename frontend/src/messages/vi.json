@@ -82,7 +82,8 @@
     "fleetMap": "Bản đồ đội UAV",
     "uavs": "Đội UAV",
     "services": "Danh mục dịch vụ",
-    "systemHealth": "Sức khỏe hệ thống"
+    "systemHealth": "Sức khỏe hệ thống",
+    "aiRouter": "9router"
   },
   "sidebar": {
     "title": "UAV PAS",

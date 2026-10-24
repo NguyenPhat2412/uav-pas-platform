@@ -52,6 +52,14 @@ export const API_ROUTES = {
         systemHealth: '/api/v1/dashboard/system-health',
         fleetMap: '/api/v1/dashboard/fleet-map',
     },
+    aiRouter: {
+        settings: '/api/v1/admin/ai-router',
+        status: '/api/v1/admin/ai-router/status',
+    },
+    assistant: {
+        info: '/api/v1/assistant',
+        chat: '/api/v1/assistant/chat',
+    },
     uavServices: {
         list: '/api/v1/uav-services',
         all: '/api/v1/uav-services/all',
