@@ -10,7 +10,7 @@ import {operationsService as service} from "@/lib/api/resources";
 import type {MediaAsset} from "@/types/resources";
 import {DataTable, Detail, ErrorNotice, selectClass} from "@/components/data/ResourceState";
 import {QueryState} from '@/components/data/WorkspaceState';
-import {apiRequest} from '@/lib/api.client';
+import {apiRequest} from '@/lib/api';
 import {useI18n} from '@/contexts/I18nContext';
 
 export function MediaPanel() {
@@ -72,9 +72,9 @@ export function MediaPanel() {
         } catch { /* Visible confirmation error replaces the preceding upload error. */
         }
     };
-    return <div className="portal-management space-y-5">
+    return <div className="space-y-5">
         {can('MEDIA_MANAGE') &&
-            <form className="portal-card space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4"
+            <form className="space-y-3 rounded-xl border border-border bg-slate-50 p-4 shadow-sm"
                   onSubmit={event => {
                       event.preventDefault();
                       if (file) void runUpload(file);
@@ -101,7 +101,7 @@ export function MediaPanel() {
             </form>}
         <ErrorNotice error={upload.error || confirm.error || open.error}/>
         <QueryState query={query}>
-            <div className="portal-filter-bar"><Input label={t('opsAssets.media.search')} aria-label={t('opsAssets.media.search')} placeholder={t('opsAssets.media.searchPlaceholder')}
+            <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-card p-4 sm:px-6 sm:py-5"><Input label={t('opsAssets.media.search')} aria-label={t('opsAssets.media.search')} placeholder={t('opsAssets.media.searchPlaceholder')}
                                                       value={search} onChange={event => setSearch(event.target.value)}/><select
                 aria-label={t('opsAssets.media.typeFilter')} className={selectClass} value={typeFilter}
                 onChange={event => setTypeFilter(event.target.value)}>

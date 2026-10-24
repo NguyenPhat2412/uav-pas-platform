@@ -9,7 +9,7 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 test('customer portal exposes supported customer routes and no operations controls', () => {
     const routes = ['dashboard/page.tsx', 'services/page.tsx', 'missions/page.tsx', 'missions/create/page.tsx', 'missions/[id]/page.tsx', 'profile/page.tsx'];
     for (const route of routes) assert.ok(fs.existsSync(path.join(root, 'src/app/(customer)/customer/(portal)', route)), route);
-    const detail = read('src/features/missions/pages/customer/missions-[id].tsx');
+    const detail = read('src/features/missions/components/customer/CustomerMissionDetail.tsx');
     assert.match(detail, /lib\/query\/customer/);
     assert.doesNotMatch(detail, /assignStation|assignUav|assignOperator|confirm\(|reject\(/);
 });
@@ -31,5 +31,5 @@ test('customer API boundary uses owner-safe mission endpoints and no feature fet
 });
 
 test('customer mission page avoids exposing implementation details', () => {
-    assert.doesNotMatch(read('src/features/missions/pages/customer/missions-[id].tsx'), /Download dùng signed URL|Backend timeline/);
+    assert.doesNotMatch(read('src/features/missions/components/customer/CustomerMissionDetail.tsx'), /Download dùng signed URL|Backend timeline/);
 });

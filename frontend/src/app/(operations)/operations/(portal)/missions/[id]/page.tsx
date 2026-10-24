@@ -1,1 +1,5 @@
-export {default} from '@/features/missions/pages/operations/missions-[id]';
+import OperationsMissionDetail from '@/features/missions/components/operations/OperationsMissionDetail';
+
+export default function OperationsMissionDetailRoutePage() {
+    return <OperationsMissionDetail/>;
+}

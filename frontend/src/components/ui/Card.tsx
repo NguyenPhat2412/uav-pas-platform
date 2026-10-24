@@ -17,7 +17,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         };
 
         return (
-            <div ref={ref} className={cn('portal-card', variants[variant], className)} {...props}>
+            <div ref={ref} className={cn(variants[variant], className)} {...props}>
                 {children}
             </div>
         );
@@ -27,7 +27,7 @@ Card.displayName = 'Card';
 
 export const CardHeader = React.forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
     ({className, ...props}, ref) => (
-        <div ref={ref} className={cn('portal-card-header p-6 pb-4 flex flex-col space-y-1.5', className)} {...props} />
+        <div ref={ref} className={cn('p-6 pb-4 flex flex-col space-y-1.5', className)} {...props} />
     )
 );
 CardHeader.displayName = 'CardHeader';
@@ -36,7 +36,7 @@ export const CardTitle = React.forwardRef<HTMLHeadingElement, HTMLAttributes<HTM
     ({className, ...props}, ref) => (
         <h3
             ref={ref}
-            className={cn('portal-card-title font-headline-sm text-headline-sm font-semibold tracking-tight text-on-surface', className)}
+            className={cn('font-headline-sm text-headline-sm font-semibold tracking-tight text-on-surface', className)}
             {...props}
         />
     )

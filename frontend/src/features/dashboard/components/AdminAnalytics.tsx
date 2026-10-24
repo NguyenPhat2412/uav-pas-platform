@@ -2,17 +2,16 @@
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {useMemo, useState} from 'react';
-import {AlertTriangle, ChevronRight, CircleAlert, Info} from 'lucide-react';
 import {displayLabel} from '@/components/shared/presentation';
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
-import {QueryState} from '@/components/admin/data/WorkspaceState';
-import {BarList, ColumnChart, Delta, Legend, SegmentBar, seriesColors, TrendChart} from '@/components/admin/charts/AdminCharts';
+import {QueryState} from '@/components/data/WorkspaceState';
+import {BarList, ColumnChart, Delta, Legend, SegmentBar, seriesColors, TrendChart} from '@/features/dashboard/components/AdminCharts';
 import {useAdminAnalytics} from '@/lib/query/admin';
-import type {AdminAlert, AdminAnalytics as Analytics} from '@/types/admin';
+import type {AdminAnalytics as Analytics} from '@/types/admin';
 import {cn} from '@/lib/utils';
 
-const MissionMap = dynamic(() => import('@/components/admin/charts/MissionMap').then(m => m.MissionMap), {ssr: false});
+const MissionMap = dynamic(() => import('@/features/dashboard/components/MissionMap').then(m => m.MissionMap), {ssr: false});
 
 const ranges = [7, 30, 90] as const;
 
@@ -27,10 +26,8 @@ const statusGroups = [
 ] as const;
 
 const fleetColors: Record<string, string> = {
-    AVAILABLE: '#0ca30c', ASSIGNED: seriesColors.violet, IN_USE: seriesColors.blue, MAINTENANCE: '#fab219', INACTIVE: seriesColors.gray,
+    AVAILABLE: 'var(--success)', ASSIGNED: seriesColors.violet, IN_USE: seriesColors.blue, MAINTENANCE: 'var(--warning)', INACTIVE: seriesColors.gray,
 };
-
-const alertIcon = {danger: CircleAlert, warning: AlertTriangle, info: Info};
 
 function groupOf(status: string) {
     return statusGroups.find(group => (group.states as readonly string[]).includes(status)) ?? statusGroups[5];
@@ -45,11 +42,12 @@ export function AdminAnalytics() {
     const money = useMemo(() => new Intl.NumberFormat(numberLocale, {notation: 'compact', maximumFractionDigits: 1}), [numberLocale]);
     if (!can('DASHBOARD_READ')) return null;
 
-    return <section className="admin-analytics space-y-5" aria-labelledby="analytics-title">
-        <div className="analytics-toolbar">
-            <h2 id="analytics-title">{t('admin.analytics.title')}</h2>
-            <div className="segmented" role="group" aria-label={t('admin.analytics.range')}>{ranges.map(range =>
-                <button key={range} type="button" aria-pressed={days === range} className={cn(days === range && 'segmented-active')}
+    return <section className="space-y-5" aria-labelledby="analytics-title">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 id="analytics-title" className="text-[17px] font-bold text-foreground">{t('admin.analytics.title')}</h2>
+            <div className="inline-flex rounded-[9px] border border-border bg-card p-[3px]" role="group" aria-label={t('admin.analytics.range')}>{ranges.map(range =>
+                <button key={range} type="button" aria-pressed={days === range}
+                        className={cn('cursor-pointer rounded-md border-0 px-3 py-[5px] text-[12.5px] font-medium text-muted transition-colors', days === range ? 'bg-uav-red-light font-semibold text-primary' : 'bg-transparent hover:text-foreground')}
                         onClick={() => setDays(range)}>{t('admin.analytics.days', {count: range})}</button>)}</div>
         </div>
         <QueryState query={query}>{query.data && <AnalyticsBody data={query.data} money={money} />}</QueryState>
@@ -78,19 +76,18 @@ function AnalyticsBody({data, money}: { data: Analytics; money: Intl.NumberForma
     ].filter(k => k.show);
 
     return <>
-        <AlertsPanel alerts={data.alerts}/>
-        {kpis.length > 0 && <div className="analytics-kpis">{kpis.map(kpi => <article key={kpi.key} className="analytics-kpi">
-            <span>{t(`admin.analytics.kpi.${kpi.key}`)}</span>
-            <strong>{kpi.value}</strong>
+        {kpis.length > 0 && <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-3.5">{kpis.map(kpi => <article key={kpi.key} className="flex flex-col gap-1 rounded-xl border border-border bg-card px-[18px] py-4">
+            <span className="text-[12.5px] text-muted">{t(`admin.analytics.kpi.${kpi.key}`)}</span>
+            <strong className="text-2xl font-bold leading-tight tabular-nums text-foreground">{kpi.value}</strong>
             {kpi.delta}
         </article>)}</div>}
 
-        <div className="analytics-grid">
-            {missionsVisible && <section className="console-panel analytics-wide">
-                <header className="console-panel-header"><h2>{t('admin.analytics.dailyTitle')}</h2>
+        <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
+            {missionsVisible && <section className="col-span-full min-w-0 rounded-xl border border-border bg-card shadow-sm">
+                <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.dailyTitle')}</h2>
                     <Legend items={[{label: t('admin.analytics.completed'), color: seriesColors.blue},
                         {label: t('admin.analytics.failed'), color: seriesColors.red, dashed: true}]}/></header>
-                <div className="panel-body">
+                <div className="p-6">
                     <TrendChart labels={data.daily.map(d => shortDate(d.date))}
                                 ariaLabel={t('admin.analytics.dailyAria', {from: shortDate(data.from), to: shortDate(data.to)})}
                                 series={[
@@ -99,86 +96,64 @@ function AnalyticsBody({data, money}: { data: Analytics; money: Intl.NumberForma
                                 ]}/>
                 </div>
             </section>}
-            {missionsVisible && <section className="console-panel">
-                <header className="console-panel-header"><h2>{t('admin.analytics.statusTitle')}</h2></header>
-                <div className="panel-body"><SegmentBar items={status} ariaLabel={t('admin.analytics.statusTitle')}/></div>
+            {missionsVisible && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+                <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.statusTitle')}</h2></header>
+                <div className="p-6"><SegmentBar items={status} ariaLabel={t('admin.analytics.statusTitle')}/></div>
             </section>}
-            {missionsVisible && <section className="console-panel">
-                <header className="console-panel-header"><h2>{t('admin.analytics.stationTitle')}</h2></header>
-                <div className="panel-body">{data.flightHoursByStation.length ?
+            {missionsVisible && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+                <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.stationTitle')}</h2></header>
+                <div className="p-6">{data.flightHoursByStation.length ?
                     <BarList items={data.flightHoursByStation.map(s => ({label: s.name, value: s.value}))}
                              format={v => t('admin.analytics.hours', {value: v})}/> :
-                    <p className="chart-empty">{t('admin.analytics.noFlights')}</p>}</div>
+                    <p className="m-0 text-[13px] text-muted">{t('admin.analytics.noFlights')}</p>}</div>
             </section>}
-            {fleetTotal > 0 && <section className="console-panel">
-                <header className="console-panel-header"><h2>{t('admin.analytics.fleetTitle')}</h2>
+            {fleetTotal > 0 && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+                <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.fleetTitle')}</h2>
                     <span className="text-xs text-slate-500">{t('admin.analytics.fleetTotal', {count: fleetTotal})}</span></header>
-                <ul className="meter-list">{Object.entries(data.fleet).map(([state, count]) => <li key={state}>
-                    <div><span>{displayLabel(state)}</span><strong>{count}/{fleetTotal}</strong></div>
-                    <span className="meter-track"><span style={{width: `${count / fleetTotal * 100}%`, background: fleetColors[state] ?? seriesColors.gray}}/></span>
+                <ul className="m-0 flex list-none flex-col gap-3 px-[18px] pb-4 pt-2.5">{Object.entries(data.fleet).map(([state, count]) => <li key={state}>
+                    <div className="mb-[5px] flex justify-between gap-2 text-[13px]"><span className="truncate text-muted">{displayLabel(state)}</span><strong>{count}/{fleetTotal}</strong></div>
+                    <span className="flex h-[7px] gap-0.5 overflow-hidden rounded bg-slate-100"><span className="rounded" style={{width: `${count / fleetTotal * 100}%`, background: fleetColors[state] ?? seriesColors.gray}}/></span>
                 </li>)}</ul>
             </section>}
-            {billingVisible && <section className="console-panel">
-                <header className="console-panel-header"><h2>{t('admin.analytics.revenueTitle')}</h2>
+            {billingVisible && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+                <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.revenueTitle')}</h2>
                     <Legend items={[{label: t('admin.analytics.paid'), color: seriesColors.blue},
                         {label: t('admin.analytics.outstanding'), color: seriesColors.orange}]}/></header>
-                <div className="panel-body">
+                <div className="p-6">
                     <ColumnChart ariaLabel={t('admin.analytics.revenueTitle')} format={v => `${money.format(v)} đ`}
                                  series={[{label: t('admin.analytics.paid'), color: seriesColors.blue}, {label: t('admin.analytics.outstanding'), color: seriesColors.orange}]}
                                  groups={data.revenueByMonth.map(m => ({label: `${Number(m.month.slice(5))}/${m.month.slice(2, 4)}`, values: [m.paid, m.outstanding]}))}/>
                 </div>
             </section>}
-            {billingVisible && <section className="console-panel">
-                <header className="console-panel-header"><h2>{t('admin.analytics.quotaTitle')}</h2>
-                    <Link href="/admin/billing" className="text-primary font-semibold">{t('admin.analytics.manage')}</Link></header>
-                {data.quotaWarnings.length ? <ul className="meter-list">{data.quotaWarnings.map(q => {
+            {billingVisible && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+                <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.quotaTitle')}</h2>
+                    <Link href="/admin/billing" className="text-[13px] font-semibold text-primary hover:underline">{t('admin.analytics.manage')}</Link></header>
+                {data.quotaWarnings.length ? <ul className="m-0 flex list-none flex-col gap-3 px-[18px] pb-4 pt-2.5">{data.quotaWarnings.map(q => {
                     const ratio = Math.min(1, q.used / q.limit);
                     return <li key={q.username}>
-                        <div><span>{q.username}</span><strong>{t('admin.analytics.quotaUsage', {used: q.used, limit: q.limit})}</strong></div>
-                        <span className="meter-track"><span style={{width: `${ratio * 100}%`, background: ratio >= 1 ? '#d03b3b' : '#fab219'}}/></span>
+                        <div className="mb-[5px] flex justify-between gap-2 text-[13px]"><span className="truncate text-muted">{q.username}</span><strong>{t('admin.analytics.quotaUsage', {used: q.used, limit: q.limit})}</strong></div>
+                        <span className="flex h-[7px] gap-0.5 overflow-hidden rounded bg-slate-100"><span className="rounded" style={{width: `${ratio * 100}%`, background: ratio >= 1 ? 'var(--danger)' : 'var(--warning)'}}/></span>
                     </li>;
-                })}</ul> : <p className="chart-empty panel-body">{t('admin.analytics.quotaEmpty')}</p>}
+                })}</ul> : <p className="m-0 p-6 text-[13px] text-muted">{t('admin.analytics.quotaEmpty')}</p>}
             </section>}
-            {missionsVisible && <section className="console-panel analytics-wide">
-                <header className="console-panel-header"><h2>{t('admin.analytics.mapTitle')}</h2>
+            {missionsVisible && <section className="col-span-full min-w-0 rounded-xl border border-border bg-card shadow-sm">
+                <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.mapTitle')}</h2>
                     <Legend items={statusGroups.slice(0, 5).map(g => ({label: t(`admin.analytics.status.${g.key}`), color: g.color}))}/></header>
                 {data.missionLocations.length ? <MissionMap ariaLabel={t('admin.analytics.mapAria', {count: data.missionLocations.length})}
                                                             points={data.missionLocations.map(p => ({...p, color: groupOf(p.status).color, label: displayLabel(p.status)}))}/> :
-                    <p className="chart-empty panel-body">{t('admin.analytics.mapEmpty')}</p>}
+                    <p className="m-0 p-6 text-[13px] text-muted">{t('admin.analytics.mapEmpty')}</p>}
             </section>}
-            {can('USER_MANAGE') && <section className="console-panel">
-                <header className="console-panel-header"><h2>{t('admin.analytics.webhookTitle')}</h2>
-                    <Link href="/admin/webhooks" className="text-primary font-semibold">{t('admin.analytics.manage')}</Link></header>
-                {data.webhooks.length ? <ul className="meter-list">{data.webhooks.map(w => {
+            {can('USER_MANAGE') && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+                <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.analytics.webhookTitle')}</h2>
+                    <Link href="/admin/webhooks" className="text-[13px] font-semibold text-primary hover:underline">{t('admin.analytics.manage')}</Link></header>
+                {data.webhooks.length ? <ul className="m-0 flex list-none flex-col gap-3 px-[18px] pb-4 pt-2.5">{data.webhooks.map(w => {
                     const total = w.success + w.failed;
                     return <li key={w.name}>
-                        <div><span>{w.name}</span><strong>{t('admin.analytics.webhookRate', {rate: Math.round(w.success / total * 100), total})}</strong></div>
-                        <span className="meter-track meter-split"><span style={{flexGrow: w.success, background: '#0ca30c'}}/><span style={{flexGrow: w.failed, background: '#d03b3b'}}/></span>
+                        <div className="mb-[5px] flex justify-between gap-2 text-[13px]"><span className="truncate text-muted">{w.name}</span><strong>{t('admin.analytics.webhookRate', {rate: Math.round(w.success / total * 100), total})}</strong></div>
+                        <span className="flex h-[7px] gap-0.5 overflow-hidden rounded bg-slate-100"><span style={{flexGrow: w.success, background: 'var(--success)'}}/><span style={{flexGrow: w.failed, background: 'var(--danger)'}}/></span>
                     </li>;
-                })}</ul> : <p className="chart-empty panel-body">{t('admin.analytics.webhookEmpty')}</p>}
+                })}</ul> : <p className="m-0 p-6 text-[13px] text-muted">{t('admin.analytics.webhookEmpty')}</p>}
             </section>}
         </div>
     </>;
-}
-
-function AlertsPanel({alerts}: { alerts: AdminAlert[] }) {
-    const {t} = useI18n();
-    const message = (alert: AdminAlert) => {
-        const key = `admin.analytics.alertCodes.${alert.code}`;
-        const text = t(key, {count: alert.count});
-        return text === key ? alert.message : text;
-    };
-    return <section id="alerts" className="console-panel analytics-alerts" aria-labelledby="alerts-title">
-        <header className="console-panel-header"><h2 id="alerts-title">{t('admin.analytics.alertsTitle')}</h2>
-            <span className={cn('status-badge', alerts.length ? 'status-badge-warning' : 'status-badge-online')}>
-                {alerts.length ? t('admin.analytics.alertsCount', {count: alerts.length}) : t('admin.analytics.alertsNone')}</span></header>
-        {alerts.length ? <ul className="alert-list">{alerts.map(alert => {
-            const Icon = alertIcon[alert.level] ?? Info;
-            return <li key={alert.code} className={`alert-item alert-${alert.level}`}>
-                <Icon size={17} aria-hidden="true"/>
-                <span>{message(alert)}</span>
-                <Link href={alert.href}>{t('admin.analytics.resolve')}<ChevronRight size={14} aria-hidden="true"/></Link>
-            </li>;
-        })}</ul> : <p className="chart-empty panel-body">{t('admin.analytics.alertsEmpty')}</p>}
-    </section>;
 }

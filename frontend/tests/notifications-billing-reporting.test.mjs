@@ -44,7 +44,7 @@ test('Database Flyway migrations V4, V5, V6, V7 exist and contain proper schemas
 
 test('Operations App has NotificationBell and Notifications page', () => {
     const bellPath = `${root}src/components/notifications/NotificationBell.tsx`;
-    const pagePath = `${root}src/features/notifications/pages/operations/notifications.tsx`;
+    const pagePath = `${root}src/features/notifications/components/OperationsNotificationsPanel.tsx`;
     const shellPath = `${root}src/components/layout/AppShell.tsx`;
 
     assert.equal(existsSync(bellPath), true, 'NotificationBell must exist');
@@ -62,8 +62,8 @@ test('Operations App has NotificationBell and Notifications page', () => {
 });
 
 test('Customer Portal has Billing & Quotas and Notifications pages', () => {
-    const billingPath = `${root}src/features/billing/pages/customer/billing.tsx`;
-    const notifPath = `${root}src/features/notifications/pages/customer/notifications.tsx`;
+    const billingPath = `${root}src/features/billing/components/CustomerBillingPanel.tsx`;
+    const notifPath = `${root}src/features/notifications/components/CustomerNotificationsPanel.tsx`;
     const layoutPath = `${root}src/components/customer/layout.tsx`;
 
     assert.equal(existsSync(billingPath), true, 'Customer billing page must exist');
@@ -87,10 +87,10 @@ test('Customer Portal has Billing & Quotas and Notifications pages', () => {
 });
 
 test('Admin Portal has Billing Management, Reports & CSV Export, and Settings Configuration', () => {
-    const billingPath = `${root}src/features/billing/pages/admin/billing.tsx`;
-    const reportsPath = `${root}src/features/reports/pages/admin/reports.tsx`;
-    const settingsPath = `${root}src/features/settings/pages/admin/settings.tsx`;
-    const shellPath = `${root}src/components/admin/layout/AppShell.tsx`;
+    const billingPath = `${root}src/features/billing/components/AdminBillingPanel.tsx`;
+    const reportsPath = `${root}src/features/reports/components/AdminReportsPanel.tsx`;
+    const settingsPath = `${root}src/features/settings/components/AdminSettingsPanel.tsx`;
+    const shellPath = `${root}src/components/layout/AdminAppShell.tsx`;
 
     assert.equal(existsSync(billingPath), true, 'Admin billing page must exist');
     assert.equal(existsSync(reportsPath), true, 'Admin reports page must exist');
@@ -138,15 +138,15 @@ test('Centralized API_ROUTES registry in @/lib/api and Service-Layer delegation'
     const indexContent = readFileSync(indexClientPath, 'utf8');
     assert.match(indexContent, /export \{ API_ROUTES, type ApiRoutes \} from ['"]@\/lib\/api\/routes['"]/);
 
-    const customerBillingContent = readFileSync(`${root}src/features/billing/pages/customer/billing.tsx`, 'utf8');
+    const customerBillingContent = readFileSync(`${root}src/features/billing/components/CustomerBillingPanel.tsx`, 'utf8');
     assert.doesNotMatch(customerBillingContent, /fetch\(['"`]\/api\/v1\//);
     assert.doesNotMatch(customerBillingContent, /simulatePaymentIpn|Xác nhận thủ công|101869876543/);
     assert.match(customerBillingContent, /billingPage\.gatewayNotice/);
 
-    const adminReportsContent = readFileSync(`${root}src/features/reports/pages/admin/reports.tsx`, 'utf8');
+    const adminReportsContent = readFileSync(`${root}src/features/reports/components/AdminReportsPanel.tsx`, 'utf8');
     assert.match(adminReportsContent, /adminService\.operationsReport/);
 
-    const adminSettingsContent = readFileSync(`${root}src/features/settings/pages/admin/settings.tsx`, 'utf8');
+    const adminSettingsContent = readFileSync(`${root}src/features/settings/components/AdminSettingsPanel.tsx`, 'utf8');
     assert.match(adminSettingsContent, /adminService\.settings/);
     assert.match(adminSettingsContent, /adminService\.updateSetting/);
 });

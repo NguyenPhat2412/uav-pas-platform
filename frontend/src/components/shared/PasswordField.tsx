@@ -16,15 +16,31 @@ export function PasswordField({
     const [visible, setVisible] = useState(false);
     const {t} = useI18n();
 
-    return <div className="portal-auth-field">
-        <label htmlFor={inputId}>{label ?? t('authShared.password')}{props.required && <RequiredMark/>}</label>
-        <div className="portal-password">
-            <input {...props} id={inputId} type={visible ? 'text' : 'password'} disabled={disabled}/>
-            <button type="button" disabled={disabled} aria-label={visible ? t('authShared.hidePassword') : t('authShared.showPassword')}
-                    aria-pressed={visible} aria-controls={inputId} onClick={() => setVisible(value => !value)}
-                    style={{display: 'inline-flex', alignItems: 'center', justifyContent: 'center'}}>
-                {visible ? <EyeOff size={20} aria-hidden="true"/> : <Eye size={20} aria-hidden="true"/>}
-            </button>
+    return (
+        <div className="grid gap-1.5">
+            <label htmlFor={inputId} className="text-sm font-semibold text-slate-700">
+                {label ?? t('authShared.password')}{props.required && <RequiredMark/>}
+            </label>
+            <div className="portal-password relative flex items-center">
+                <input
+                    {...props}
+                    id={inputId}
+                    type={visible ? 'text' : 'password'}
+                    disabled={disabled}
+                    className="w-full min-h-11 rounded-xl border border-border-input bg-card pl-3.5 pr-11 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20 disabled:bg-slate-100 disabled:text-slate-500"
+                />
+                <button
+                    type="button"
+                    disabled={disabled}
+                    aria-label={visible ? t('authShared.hidePassword') : t('authShared.showPassword')}
+                    aria-pressed={visible}
+                    aria-controls={inputId}
+                    onClick={() => setVisible(value => !value)}
+                    className="absolute right-1 inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 disabled:opacity-50 cursor-pointer"
+                >
+                    {visible ? <EyeOff size={18} aria-hidden="true"/> : <Eye size={18} aria-hidden="true"/>}
+                </button>
+            </div>
         </div>
-    </div>;
+    );
 }

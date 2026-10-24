@@ -4,8 +4,8 @@ import {AuthCredentials} from "@/components/shared";
 import {useRouter} from 'next/navigation';
 import {useAuth} from '@/contexts/AuthContext';
 import {useToast} from '@/contexts/ToastContext';
-import {Alert, Button} from "@/components/admin/ui";
-import {canUsePortal, portalForRole, portalHome, portalName} from "@/features/auth/portal";
+import {Alert, Button} from "@/components/ui";
+import {canUsePortal, portalForRole, portalHome, portalName} from "@/features/auth/utils/portal";
 import {useI18n} from '@/contexts/I18nContext';
 
 export function LoginForm() {

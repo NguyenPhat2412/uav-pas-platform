@@ -8,6 +8,7 @@ import com.uav.platform.modules.billing.dto.response.InvoiceResponse;
 import com.uav.platform.modules.billing.dto.response.PaymentIpnResponse;
 import com.uav.platform.modules.billing.dto.response.PaymentResponse;
 import com.uav.platform.modules.billing.dto.response.ServicePlanResponse;
+import com.uav.platform.modules.billing.enums.InvoiceStatus;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,9 @@ public interface BillingService {
     List<ServicePlanResponse> listActivePlans();
 
     PageResponse<InvoiceResponse> listInvoices(Authentication auth, Pageable pageable);
+
+    /** status narrows to one state; overdue keeps only PENDING invoices whose due date has passed. */
+    PageResponse<InvoiceResponse> listInvoices(Authentication auth, Pageable pageable, InvoiceStatus status, boolean overdue);
 
     InvoiceResponse getInvoice(Long id, Authentication auth);
 

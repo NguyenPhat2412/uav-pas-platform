@@ -13,34 +13,23 @@ export default function CustomerErrorPage({
 }) {
     const {t} = useI18n();
     return (
-        <main style={{maxWidth: 620, margin: '64px auto', padding: '0 20px'}}>
+        <main className="mx-auto my-16 max-w-xl px-5">
             <Panel
                 title={t('opsShared.routes.customer.errorTitle')}
                 action={
-                    <span
-                        style={{
-                            fontSize: 11,
-                            fontWeight: 700,
-                            padding: '3px 8px',
-                            borderRadius: 999,
-                            background: '#fef2f2',
-                            color: '#ab2523',
-                            border: '1px solid #fecaca',
-                        }}
-                    >
-            {error?.code || (error?.status ? `HTTP_${error.status}` : 'CLIENT_EXCEPTION')}
-          </span>
+                    <span className="rounded-full border border-red-200 bg-uav-red-light px-2.5 py-1 text-[11px] font-bold text-primary">
+                        {error?.code || (error?.status ? `HTTP_${error.status}` : 'CLIENT_EXCEPTION')}
+                    </span>
                 }
             >
-                <p className="muted" style={{marginTop: 0, lineHeight: 1.6}}>
+                <p className="text-sm leading-relaxed text-slate-600">
                     {error?.message || t('opsShared.routes.customer.errorDetail')}
                 </p>
-                <div className="form-actions" style={{marginTop: 18}}>
+                <div className="mt-4 flex flex-wrap items-center gap-3">
                     <Button type="button" onClick={reset}>
                         {t('opsShared.routes.customer.retry')}
                     </Button>
-                    <Link href="/customer/dashboard" className="button-link"
-                          style={{alignSelf: 'center', marginLeft: 8}}>
+                    <Link href="/customer/dashboard" className="text-sm font-bold text-primary hover:underline">
                         {t('opsShared.routes.customer.backOverview')}
                     </Link>
                 </div>

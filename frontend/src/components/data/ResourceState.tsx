@@ -2,7 +2,7 @@
 import type {ReactNode} from 'react';
 import {EmptyState} from '@/components/data/WorkspaceState';
 import {Alert, Button, Spinner} from '@/components/ui';
-import {ApiError} from '@/lib/api.client';
+import {ApiError} from '@/lib/api';
 import {useI18n} from '@/contexts/I18nContext';
 
 export function ErrorNotice({error}: { error: Error | null }) {
@@ -26,20 +26,35 @@ export function ResourceState({query, children}: {
 
 export function DataTable({headers, rows}: { headers: string[]; rows: ReactNode[][] }) {
     const {t} = useI18n();
-    if (!rows.length) return <div className="data-table"><EmptyState title={t('opsShared.state.noMatchingData')}
-                                                                     detail={t('opsShared.state.noMatchingDetail')}/>
-    </div>;
-    return <div className="table-scroll data-table" tabIndex={0} aria-label={t('opsShared.state.dataTable')}>
-        <table className="console-table min-w-[680px]">
-            <thead className="sticky top-0 z-10 bg-white">
-            <tr>{headers.map(h => <th key={h}>{h}</th>)}</tr>
-            </thead>
-            <tbody>{rows.length ? rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td
-                key={j}>{cell}</td>)}</tr>) : <tr>
-                <td colSpan={headers.length} className="px-4 py-10 text-center text-secondary">{t('opsShared.state.empty')}</td>
-            </tr>}</tbody>
-        </table>
-    </div>;
+    if (!rows.length) {
+        return (
+            <div className="rounded-2xl border border-border bg-card p-6">
+                <EmptyState title={t('opsShared.state.noMatchingData')} detail={t('opsShared.state.noMatchingDetail')}/>
+            </div>
+        );
+    }
+    return (
+        <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-xs" tabIndex={0} aria-label={t('opsShared.state.dataTable')}>
+            <table className="w-full min-w-[680px] border-collapse text-left text-sm">
+                <thead className="sticky top-0 z-10 border-b border-border bg-slate-50/90 text-xs font-bold uppercase tracking-wider text-slate-500">
+                    <tr>{headers.map(h => <th key={h} className="px-4 py-3">{h}</th>)}</tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                    {rows.length ? (
+                        rows.map((row, i) => (
+                            <tr key={i} className="hover:bg-slate-50/70 transition-colors">
+                                {row.map((cell, j) => <td key={j} className="px-4 py-3 text-sm text-slate-700">{cell}</td>)}
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan={headers.length} className="px-4 py-10 text-center text-secondary">{t('opsShared.state.empty')}</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+        </div>
+    );
 }
 
 export function Pagination({page, pages, onPage}: { page: number; pages?: number; onPage: (page: number) => void }) {

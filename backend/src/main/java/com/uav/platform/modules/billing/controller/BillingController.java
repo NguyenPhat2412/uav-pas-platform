@@ -9,6 +9,7 @@ import com.uav.platform.modules.billing.dto.response.InvoiceResponse;
 import com.uav.platform.modules.billing.dto.response.PaymentResponse;
 import com.uav.platform.modules.billing.dto.response.ServicePlanResponse;
 import com.uav.platform.modules.billing.dto.response.UserQuotaResponse;
+import com.uav.platform.modules.billing.enums.InvoiceStatus;
 import com.uav.platform.modules.billing.service.BillingService;
 import com.uav.platform.modules.billing.service.QuotaService;
 
@@ -60,9 +61,11 @@ public class BillingController {
     public ResponseEntity<PageResponse<InvoiceResponse>> listInvoices(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) InvoiceStatus status,
+            @RequestParam(defaultValue = "false") boolean overdue,
             Authentication auth) {
         return ResponseEntity.ok(
-                billingService.listInvoices(auth, Pageables.desc(page, size, "createdAt")));
+                billingService.listInvoices(auth, Pageables.desc(page, size, "createdAt"), status, overdue));
     }
 
     @GetMapping("/invoices/{id}")

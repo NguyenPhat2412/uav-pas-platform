@@ -1,1 +1,5 @@
-export {default} from '@/features/missions/pages/customer/missions';
+import CustomerMissionsList from '@/features/missions/components/customer/CustomerMissionsList';
+
+export default function CustomerMissionsRoutePage() {
+    return <CustomerMissionsList/>;
+}

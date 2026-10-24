@@ -4,7 +4,7 @@ import {Button} from '@/components/ui';
 import type {Equipment, Operator, Station} from "@/types/resources";
 import type {DispatchResources, Mission} from "@/features/missions/types/mission.types";
 import {missionService} from "@/features/missions/services/mission.service";
-import {missionEventNoteLimit, reservationQuantity} from "@/features/missions/workflows";
+import {missionEventNoteLimit, reservationQuantity} from "@/features/missions/utils/workflows";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/contexts/I18nContext';
 
@@ -86,34 +86,34 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
     const formStale = !!form && form.version !== snapshot.version;
     const submitDisabled = disabled || formStale || !reason.trim() || !validReplacement || unchanged ||
         (form?.kind === 'equipment' && !!replacement && !validQuantity) || (form?.kind === 'operator' && !!replacement && schedule !== 'available');
-    return <section className="mission-panel" aria-labelledby="resource-redispatch-title">
-        <header><h2 id="resource-redispatch-title">{t('opsMissions.redispatch.title')}</h2></header>
-        <div className="mission-panel-body grid gap-4">
-            <p className="mission-muted">{t('opsMissions.redispatch.description')}</p>
-            <div className="mission-actions">
+    return <section className="min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-sm" aria-labelledby="resource-redispatch-title">
+        <header className="flex items-center justify-between gap-3 border-b border-border px-6 py-5"><h2 id="resource-redispatch-title" className="m-0 text-lg font-bold text-foreground">{t('opsMissions.redispatch.title')}</h2></header>
+        <div className="grid gap-4 p-6">
+            <p className="m-0 text-sm leading-relaxed text-muted">{t('opsMissions.redispatch.description')}</p>
+            <div className="flex flex-wrap items-center gap-2.5">
                 {allowed.operator &&
                     <Button disabled={disabled} variant="outline" onClick={() => open('operator')}>{t('opsMissions.redispatch.changeOperator')}</Button>}
                 {allowed.station &&
                     <Button disabled={disabled} variant="outline" onClick={() => open('station')}>{t('opsMissions.redispatch.changeStation')}</Button>}
             </div>
-            <h3 className="font-semibold">{t('opsMissions.redispatch.reserved')}</h3>
+            <h3 className="m-0 font-semibold text-foreground">{t('opsMissions.redispatch.reserved')}</h3>
             {snapshot.reservations.some(r => !r.released) ?
-                <ul className="grid gap-3">{snapshot.reservations.filter(r => !r.released).map(r => <li key={r.id}
-                                                                                                        className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">
+                <ul className="m-0 grid list-none gap-3 p-0">{snapshot.reservations.filter(r => !r.released).map(r => <li key={r.id}
+                                                                                                        className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-3">
                     <div className="min-w-0 break-words"><strong>{r.equipmentName}</strong><p
-                        className="mission-muted">{t('opsMissions.redispatch.reservationLine', {id: r.id, quantity: r.quantity})}</p></div>
+                        className="m-0 text-sm leading-relaxed text-muted">{t('opsMissions.redispatch.reservationLine', {id: r.id, quantity: r.quantity})}</p></div>
                     {allowed.equipment &&
                         <Button disabled={disabled} variant="outline" aria-label={t('opsMissions.redispatch.changeReservationLabel', {id: r.id})}
                                 onClick={() => open('equipment', r.id)}>{t('opsMissions.redispatch.changeReservation')}</Button>}
                 </li>)}</ul> :
-                <p className="mission-muted">{t('opsMissions.redispatch.noReservations')}</p>}
+                <p className="m-0 text-sm leading-relaxed text-muted">{t('opsMissions.redispatch.noReservations')}</p>}
             {snapshot.reservations.some(r => r.released) && <details>
-                <summary className="cursor-pointer font-medium">{t('opsMissions.redispatch.released', {count: snapshot.reservations.filter(r => r.released).length})}</summary>
-                <ul className="mt-2 grid gap-2">{snapshot.reservations.filter(r => r.released).map(r => <li key={r.id}
-                                                                                                            className="mission-muted">{t('opsMissions.redispatch.releasedLine', {name: r.equipmentName, quantity: r.quantity, id: r.id})}</li>)}</ul>
+                <summary className="cursor-pointer font-medium text-foreground">{t('opsMissions.redispatch.released', {count: snapshot.reservations.filter(r => r.released).length})}</summary>
+                <ul className="mt-2 grid list-none gap-2 p-0">{snapshot.reservations.filter(r => r.released).map(r => <li key={r.id}
+                                                                                                            className="text-sm leading-relaxed text-muted">{t('opsMissions.redispatch.releasedLine', {name: r.equipmentName, quantity: r.quantity, id: r.id})}</li>)}</ul>
             </details>}
             {form && allowed[form.kind] &&
-                <form className="mission-note" aria-label={t('opsMissions.redispatch.formTitle', {kind: t(`opsMissions.redispatch.kind.${form.kind}`)})}
+                <form className="mt-5 grid gap-3 rounded-xl border border-border bg-background p-5" aria-label={t('opsMissions.redispatch.formTitle', {kind: t(`opsMissions.redispatch.kind.${form.kind}`)})}
                       onSubmit={async event => {
                           event.preventDefault();
                           if (submitDisabled) return;
@@ -122,36 +122,37 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
                               : missionService.redispatchResource(mission.id, form.kind, form.version, replacement ? Number(replacement) : null, reason));
                           setForm(null);
                       }}>
-                    <strong>{t('opsMissions.redispatch.formTitle', {kind: t(`opsMissions.redispatch.kind.${form.kind}`)})}</strong>
+                    <strong className="text-foreground">{t('opsMissions.redispatch.formTitle', {kind: t(`opsMissions.redispatch.kind.${form.kind}`)})}</strong>
                     {form.kind === 'station' &&
-                        <p className="mission-muted">{t('opsMissions.redispatch.stationHint')}</p>}
+                        <p className="m-0 text-sm leading-relaxed text-muted">{t('opsMissions.redispatch.stationHint')}</p>}
                     {form.kind === 'equipment' &&
-                        <p className="mission-muted">{t('opsMissions.redispatch.equipmentHint', {id: form.reservationId ?? '', quantity: form.oldQuantity ?? 0})}</p>}
-                    <label>{form.kind === 'equipment' ? t('opsMissions.redispatch.replacementEquipment') : form.kind === 'operator' ? t('opsMissions.redispatch.replacementOperator') : t('opsMissions.redispatch.replacementStation')}<select
+                        <p className="m-0 text-sm leading-relaxed text-muted">{t('opsMissions.redispatch.equipmentHint', {id: form.reservationId ?? '', quantity: form.oldQuantity ?? 0})}</p>}
+                    <label className="grid gap-1.5 text-sm font-semibold text-foreground">{form.kind === 'equipment' ? t('opsMissions.redispatch.replacementEquipment') : form.kind === 'operator' ? t('opsMissions.redispatch.replacementOperator') : t('opsMissions.redispatch.replacementStation')}<select
                         autoFocus
-                        className="mt-2 min-h-11 w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3"
+                        className="mt-1 min-h-11 w-full min-w-0 rounded-lg border border-border-input bg-card px-3 text-sm font-normal text-foreground"
                         disabled={disabled} value={replacement} onChange={e => selectReplacement(e.target.value)}>
                         <option
                             value="">{form.kind === 'equipment' ? t('opsMissions.redispatch.releaseReservation') : t(`opsMissions.redispatch.removeCurrent.${form.kind}`)}</option>
                         {candidates.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                     </select></label>
                     {form.kind === 'operator' && !!replacement && <div role="status"
-                                                                       className="mission-muted">{schedule === 'checking' ? t('opsMissions.redispatch.schedule.checking') : schedule === 'available' ? t('opsMissions.redispatch.schedule.available') : schedule === 'conflict' ? t('opsMissions.redispatch.schedule.conflict') : t('opsMissions.redispatch.schedule.error')}{schedule === 'error' &&
+                                                                       className="flex flex-wrap items-center gap-2 text-sm leading-relaxed text-muted">{schedule === 'checking' ? t('opsMissions.redispatch.schedule.checking') : schedule === 'available' ? t('opsMissions.redispatch.schedule.available') : schedule === 'conflict' ? t('opsMissions.redispatch.schedule.conflict') : t('opsMissions.redispatch.schedule.error')}{schedule === 'error' &&
                         <Button type="button" disabled={disabled} variant="outline" onClick={() => {
                             setSchedule('checking');
                             setRetry(v => v + 1);
                         }}>{t('opsMissions.redispatch.schedule.retry')}</Button>}</div>}
-                    {form.kind === 'equipment' && !!replacement && <label>{t('opsMissions.redispatch.newQuantity')}<input
-                        className="mt-2 min-h-11 w-full rounded-lg border border-slate-300 px-3" type="number" min={1}
+                    {form.kind === 'equipment' && !!replacement && <label className="grid gap-1.5 text-sm font-semibold text-foreground">{t('opsMissions.redispatch.newQuantity')}<input
+                        className="mt-1 min-h-11 w-full rounded-lg border border-border-input bg-card px-3 text-sm font-normal text-foreground" type="number" min={1}
                         max={available} step={1} inputMode="numeric" disabled={disabled} value={quantity}
                         onChange={e => setQuantity(e.target.value)}/><span
-                        className="mission-muted">{t('opsMissions.redispatch.maxQuantity', {count: available})}</span></label>}
-                    <label>{t('opsMissions.redispatch.reason')}<RequiredMark/><textarea required disabled={disabled}
+                        className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.redispatch.maxQuantity', {count: available})}</span></label>}
+                    <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{t('opsMissions.redispatch.reason')}<RequiredMark/></span><textarea required disabled={disabled}
+                                                              className="min-h-22 w-full min-w-0 rounded-lg border border-border-input bg-card p-2.5 text-sm font-normal text-foreground"
                                                               maxLength={missionEventNoteLimit} value={reason}
                                                               onChange={e => setReason(e.target.value)}/><span
-                        className="mission-muted">{t('opsMissions.redispatch.reasonHint', {count: missionEventNoteLimit})}</span></label>
-                    {formStale && <p role="alert">{t('opsMissions.redispatch.stale')}</p>}
-                    <div className="mission-actions"><Button type="button" disabled={disabled} variant="outline"
+                        className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.redispatch.reasonHint', {count: missionEventNoteLimit})}</span></label>
+                    {formStale && <p role="alert" className="m-0 text-sm text-danger">{t('opsMissions.redispatch.stale')}</p>}
+                    <div className="flex flex-wrap items-center gap-2.5"><Button type="button" disabled={disabled} variant="outline"
                                                              onClick={() => setForm(null)}>{t('opsMissions.redispatch.keep')}</Button><Button type="submit"
                                                disabled={submitDisabled}>{replacement ? t('opsMissions.redispatch.confirmChange') : form.kind === 'equipment' ? t('opsMissions.redispatch.confirmRelease') : t('opsMissions.redispatch.confirmRemove')}</Button>
                     </div>

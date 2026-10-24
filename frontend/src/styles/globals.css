@@ -1,0 +1,147 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+@import "tailwindcss";
+
+@config "../../tailwind.config.mjs";
+
+:root {
+    --uav-color-primary: #ab2523;
+    --uav-color-primary-hover: #8f1c1a;
+    --uav-color-primary-light: #fdf2f2;
+    --uav-color-secondary: #007f3e;
+    --uav-color-secondary-hover: #006632;
+    --uav-color-secondary-light: #ecfdf5;
+    --uav-color-blue: #004ac6;
+    --uav-color-blue-hover: #003799;
+    --uav-color-blue-light: #eff4ff;
+    --uav-color-vju-red: #ab2523;
+    --uav-color-vju-green: #007f3e;
+    --uav-color-surface: #ffffff;
+    --uav-color-canvas: #faf6f6;
+    --uav-color-text: #202020;
+    --uav-color-text-secondary: #646464;
+    --uav-color-muted: #7c7c7c;
+    --uav-color-border: #e5e7eb;
+    --uav-color-input-border: #d1d5db;
+    --uav-color-danger: #b42318;
+    --uav-color-danger-hover: #912018;
+    --uav-color-danger-light: #fef3f2;
+    --uav-color-success: #007f3e;
+    --uav-color-success-light: #ecfdf5;
+    --uav-color-warning: #b54708;
+    --uav-color-warning-light: #fffaeb;
+    --uav-font-sans: Arial, Helvetica, sans-serif;
+    --font-sans: var(--uav-font-sans);
+    --font-mono: var(--uav-font-sans);
+    --font-serif: var(--uav-font-sans);
+    --default-font-family: var(--uav-font-sans);
+    --default-mono-font-family: var(--uav-font-sans);
+
+    /* Semantic Design Tokens (Single Source of Truth) */
+    --background: var(--uav-color-canvas);
+    --foreground: var(--uav-color-text);
+    --card: var(--uav-color-surface);
+    --card-foreground: var(--uav-color-text);
+    --muted: var(--uav-color-text-secondary);
+    --muted-foreground: var(--uav-color-muted);
+    --border: #e2e8f0;
+    --input-border: #cbd5e1;
+    --ring: var(--uav-color-primary);
+    --primary: var(--uav-color-primary);
+    --primary-hover: var(--uav-color-primary-hover);
+    --primary-foreground: #ffffff;
+    --secondary: var(--uav-color-secondary);
+    --secondary-hover: var(--uav-color-secondary-hover);
+    --secondary-foreground: #ffffff;
+    --brand-zalo: #0068ff;
+    --brand-zalo-hover: #0054d1;
+    --danger: #dc2626;
+    --danger-hover: #8b0000;
+    --danger-foreground: #ffffff;
+    --success: #007f3e;
+    --warning: #f59e0b;
+    --surface-variant: #f1f3f5;
+    --surface-dim: #f3f4f6;
+    --surface-container-low: #fafafa;
+    --outline: #9ca3af;
+
+    /* Toast Semantic Variables */
+    --toast-success-border: #007f3e;
+    --toast-success-bg: #ecfdf5;
+    --toast-success-text: #065f46;
+    --toast-success-icon: #007f3e;
+    --toast-success-progress: #007f3e;
+    --toast-error-border: #ab2523;
+    --toast-error-bg: #fdf2f2;
+    --toast-error-text: #991b1b;
+    --toast-error-icon: #ab2523;
+    --toast-error-progress: #ab2523;
+    --toast-warning-border: #f59e0b;
+    --toast-warning-bg: #fffbeb;
+    --toast-warning-text: #92400e;
+    --toast-warning-icon: #d97706;
+    --toast-warning-progress: #f59e0b;
+    --toast-info-border: #004ac6;
+    --toast-info-bg: #eff4ff;
+    --toast-info-text: #1e40af;
+    --toast-info-icon: #004ac6;
+    --toast-info-progress: #004ac6;
+}
+
+.dark {
+    --background: #0b1320;
+    --foreground: #f8fafc;
+    --card: #131d2e;
+    --card-foreground: #f8fafc;
+    --muted: #94a3b8;
+    --muted-foreground: #64748b;
+    --border: #23334d;
+    --input-border: #334460;
+    --ring: #3b82f6;
+    --primary: #3b82f6;
+    --primary-hover: #60a5fa;
+    --primary-foreground: #ffffff;
+    --secondary: #10b981;
+    --secondary-hover: #059669;
+    --secondary-foreground: #ffffff;
+    --brand-zalo: #0068ff;
+    --brand-zalo-hover: #0054d1;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+    --danger-foreground: #ffffff;
+    --success: #10b981;
+    --warning: #f59e0b;
+}
+
+@layer base {
+    *, *::before, *::after {
+        @apply box-border;
+    }
+
+    html {
+        @apply scroll-smooth font-sans antialiased;
+    }
+
+    body {
+        @apply m-0 min-h-screen bg-background font-sans text-sm leading-relaxed text-foreground;
+    }
+
+    button, input, select, textarea, optgroup, code, kbd, samp, pre {
+        @apply font-sans;
+    }
+
+    .leaflet-container {
+        @apply font-sans;
+    }
+
+    h1, h2, h3, h4 {
+        @apply break-words text-balance;
+    }
+
+    a {
+        @apply text-inherit no-underline;
+    }
+
+    button {
+        @apply cursor-pointer disabled:cursor-not-allowed;
+    }
+}

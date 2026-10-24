@@ -1,1 +1,5 @@
-export {default} from '@/features/catalog/pages/customer/services';
+import CustomerServicesCatalog from '@/features/catalog/components/CustomerServicesCatalog';
+
+export default function CustomerServicesRoutePage() {
+    return <CustomerServicesCatalog/>;
+}

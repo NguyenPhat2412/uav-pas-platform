@@ -20,6 +20,8 @@ assert.ok(!Object.keys(manifest.dependencies).some(name => name.startsWith('@uav
 const lock = JSON.parse(read('package-lock.json'));
 assert.ok(!Object.keys(lock.packages).some(name => /^(apps|packages|legacy)\//.test(name)));
 const files = walk(path.join(root, 'src'));
+const cssFiles = files.filter(name => name.endsWith('.css')).map(name => path.relative(root, name).replaceAll('\\', '/'));
+assert.deepEqual(cssFiles, ['src/styles/globals.css'], `Only src/styles/globals.css is allowed in 100% Tailwind architecture, found: ${cssFiles.join(', ')}`);
 let routes = 0;
 for (const file of files.filter(name => /\.[cm]?[jt]sx?$/.test(name))) {
     const source = readFileSync(file, 'utf8');
@@ -33,10 +35,15 @@ for (const file of files.filter(name => /\.[cm]?[jt]sx?$/.test(name))) {
         ts.forEachChild(node, visit);
     };
     visit(tree);
-    if (file.includes('/src/features/')) assert.doesNotMatch(source, /\bfetch\s*\(/, `${file}: use the central API client`);
+    if (file.includes('/src/features/')) {
+        assert.doesNotMatch(source, /\bfetch\s*\(/, `${file}: use the central API client`);
+        assert.ok(!file.includes('/pages/'), `${file}: feature pages belong in components/ or app/`);
+    }
+    assert.ok(source.trim().split('\n').length > 1, `${file}: 1-line proxy files are not allowed`);
     if (file.includes('/src/app/') && file.endsWith('/page.tsx')) {
         routes++;
-        assert.match(source, /export \{[^}]*default[^}]*\} from ['"]@\/features\//, file);
+        assert.match(source, /from ['"]@\/features\//, file);
+        assert.doesNotMatch(source, /^\s*export\s+\{\s*default\b/, `${file}: route pages must be real components, not 1-line re-exports`);
         assert.doesNotMatch(source, /useState|useQuery|apiClient/, `${file}: keep route entries thin`);
     }
 }

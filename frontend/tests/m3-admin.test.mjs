@@ -25,11 +25,11 @@ test('admin writes only through shared API client and uses actual permission end
     assert.match(adminVi.access.overrideHint, /Quyền cho phép hoặc từ chối riêng/);
 });
 test('admin keeps mission administration in Operations ownership', () => {
-    assert.equal(existsSync(at('src/features/navigation/pages/operations/admin-missions.tsx')), true);
-    assert.doesNotMatch(readFileSync(`${root}src/components/admin/layout/AppShell.tsx`, 'utf8'), /MISSION_VIEW_ALL|dispatch\/missions/);
+    assert.equal(existsSync(at('src/app/(operations)/operations/admin/missions/page.tsx')), true);
+    assert.doesNotMatch(readFileSync(`${root}src/components/layout/AdminAppShell.tsx`, 'utf8'), /MISSION_VIEW_ALL|dispatch\/missions/);
 });
 test('permission editor retains partial write outcomes and supports inherit', () => {
-    const model = readFileSync(`${root}src/features/access/permission-model.ts`, 'utf8');
+    const model = readFileSync(`${root}src/features/access/utils/permission-model.ts`, 'utf8');
     assert.match(model, /for \(const change of changes\)/);
     assert.match(model, /failed\.push/);
     assert.match(model, /allowed: null/);

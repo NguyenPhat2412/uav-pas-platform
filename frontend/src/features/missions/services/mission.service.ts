@@ -1,5 +1,5 @@
 import {validateMediaFile} from "@/lib/api/media-policy";
-import {API_ROUTES, apiClient, apiRequest} from '@/lib/api.client';
+import {API_ROUTES, apiClient, apiRequest} from '@/lib/api';
 import {
     acceptanceInput,
     completionInput,
@@ -7,7 +7,7 @@ import {
     missionEventNote,
     resourceRedispatchInput,
     uavRedispatchInput
-} from "@/features/missions/workflows";
+} from "@/features/missions/utils/workflows";
 import {
     DispatchResources,
     MediaRole,

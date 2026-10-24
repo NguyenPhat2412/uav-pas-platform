@@ -9,7 +9,7 @@ import {useI18n} from '@/contexts/I18nContext';
 import {useToast} from '@/contexts/ToastContext';
 import {AuthResponse} from "@/features/auth/types/auth.types";
 import {Alert, Button} from '@/components/ui';
-import {canUsePortal, portalForRole, portalHome, portalName} from '@/features/auth/portal';
+import {canUsePortal, portalForRole, portalHome, portalName} from '@/features/auth/utils/portal';
 
 export interface LoginFormProps {
     onSuccess?: (response: AuthResponse) => void;

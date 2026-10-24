@@ -1,7 +1,7 @@
 'use client';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/contexts/AuthContext';
-import {queryKeys} from '@/lib/query-keys';
+import {queryKeys} from '@/lib/query';
 import {operationsService as service} from "@/lib/api/resources";
 
 export function useStations(page = 0, size = 20) {

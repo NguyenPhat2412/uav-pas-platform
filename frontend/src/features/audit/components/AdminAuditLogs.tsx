@@ -2,10 +2,10 @@
 import {useState, type FormEvent} from 'react';
 import {auditDetail, displayLabel, formatDate} from "@/components/shared/presentation";
 import {useAdminAnalytics, useAdminAudit} from "@/lib/query/admin";
-import {EmptyState, QueryState} from "@/components/admin/data/WorkspaceState";
+import {EmptyState, QueryState} from "@/components/data/WorkspaceState";
 import {Pagination} from "@/components/data/Pagination";
-import {Button} from "@/components/admin/ui";
-import {Heatmap} from "@/components/admin/charts/AdminCharts";
+import {Button} from "@/components/ui";
+import {Heatmap} from "@/features/dashboard/components/AdminCharts";
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import type {AuditFilters} from "@/types/admin";
@@ -31,29 +31,30 @@ export function AuditLogs() {
         setPage(0);
     };
     const weekdays = t('admin.audit.weekdays').split(',');
+    const filterInputClass = "h-9 rounded-lg border border-border-input bg-card px-2.5 text-[13px] font-normal text-foreground";
 
     return <div className="space-y-5">
-        {can('DASHBOARD_READ') && analytics.data && <section className="console-panel">
-            <header className="console-panel-header"><h2>{t('admin.audit.heatmapTitle')}</h2>
+        {can('DASHBOARD_READ') && analytics.data && <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
+            <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.audit.heatmapTitle')}</h2>
                 <span className="text-xs text-slate-500">{t('admin.audit.heatmapRange')}</span></header>
-            <div className="panel-body">
+            <div className="p-6">
                 <Heatmap grid={analytics.data.auditHeatmap} rowLabels={weekdays} ariaLabel={t('admin.audit.heatmapAria')}
                          cellTitle={(row, hour, value) => t('admin.audit.heatmapCell', {day: weekdays[row], hour, count: value})}/>
             </div>
         </section>}
-        <div className="data-table audit-table">
-            <form className="audit-filters" onSubmit={apply} aria-label={t('admin.audit.filtersLabel')}>
-                <label>{t('admin.audit.filter.actor')}<input type="search" value={draft.actor} onChange={set('actor')}
+        <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+            <form className="grid grid-cols-1 items-end gap-2.5 border-b border-border px-4 py-3.5 sm:grid-cols-2 lg:grid-cols-[minmax(150px,1.2fr)_repeat(2,minmax(130px,1fr))_repeat(2,minmax(130px,0.9fr))_auto]" onSubmit={apply} aria-label={t('admin.audit.filtersLabel')}>
+                <label className="flex flex-col gap-1 text-xs font-semibold text-muted">{t('admin.audit.filter.actor')}<input className={filterInputClass} type="search" value={draft.actor} onChange={set('actor')}
                                                             placeholder={t('admin.audit.filter.actorPlaceholder')}/></label>
-                <label>{t('admin.audit.filter.action')}<select value={draft.action} onChange={set('action')}>
+                <label className="flex flex-col gap-1 text-xs font-semibold text-muted">{t('admin.audit.filter.action')}<select className={filterInputClass} value={draft.action} onChange={set('action')}>
                     <option value="">{t('admin.audit.filter.all')}</option>
                     {actions.map(a => <option key={a} value={a}>{displayLabel(a)}</option>)}</select></label>
-                <label>{t('admin.audit.filter.entity')}<select value={draft.entityType} onChange={set('entityType')}>
+                <label className="flex flex-col gap-1 text-xs font-semibold text-muted">{t('admin.audit.filter.entity')}<select className={filterInputClass} value={draft.entityType} onChange={set('entityType')}>
                     <option value="">{t('admin.audit.filter.all')}</option>
                     {entityTypes.map(a => <option key={a} value={a}>{displayLabel(a)}</option>)}</select></label>
-                <label>{t('admin.audit.filter.from')}<input type="date" value={draft.from} max={draft.to || undefined} onChange={set('from')}/></label>
-                <label>{t('admin.audit.filter.to')}<input type="date" value={draft.to} min={draft.from || undefined} onChange={set('to')}/></label>
-                <div className="audit-filter-actions">
+                <label className="flex flex-col gap-1 text-xs font-semibold text-muted">{t('admin.audit.filter.from')}<input className={filterInputClass} type="date" value={draft.from} max={draft.to || undefined} onChange={set('from')}/></label>
+                <label className="flex flex-col gap-1 text-xs font-semibold text-muted">{t('admin.audit.filter.to')}<input className={filterInputClass} type="date" value={draft.to} min={draft.from || undefined} onChange={set('to')}/></label>
+                <div className="flex gap-2">
                     <Button type="submit" size="sm">{t('admin.audit.filter.apply')}</Button>
                     {active && <Button type="button" size="sm" variant="outline" onClick={() => {
                         setDraft(emptyFilters);
@@ -63,28 +64,28 @@ export function AuditLogs() {
                 </div>
             </form>
             <QueryState query={q}>{q.data?.content.length ? <>
-                <div className="table-scroll" tabIndex={0} aria-label={t('admin.audit.table')}>
-                    <table className="console-table">
+                <div className="overflow-x-auto" tabIndex={0} aria-label={t('admin.audit.table')}>
+                    <table className="w-full min-w-[560px] border-separate border-spacing-0 text-sm">
                         <thead>
                         <tr>
-                            <th>{t('admin.auditTable.time')}</th>
-                            <th>{t('admin.auditTable.actor')}</th>
-                            <th>{t('admin.auditTable.action')}</th>
-                            <th>{t('admin.auditTable.entity')}</th>
-                            <th>{t('admin.auditTable.id')}</th>
-                            <th>{t('admin.auditTable.details')}</th>
+                            <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">{t('admin.auditTable.time')}</th>
+                            <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">{t('admin.auditTable.actor')}</th>
+                            <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">{t('admin.auditTable.action')}</th>
+                            <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">{t('admin.auditTable.entity')}</th>
+                            <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">{t('admin.auditTable.id')}</th>
+                            <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">{t('admin.auditTable.details')}</th>
                         </tr>
                         </thead>
-                        <tbody>{q.data.content.map(log => <tr key={log.id}>
-                            <td data-label={t('admin.auditTable.time')}>
+                        <tbody className="divide-y divide-border">{q.data.content.map(log => <tr key={log.id} className="transition-colors hover:bg-background">
+                            <td data-label={t('admin.auditTable.time')} className="px-4 py-3.5 align-top text-foreground">
                                 <time dateTime={log.createdAt}>{formatDate(log.createdAt)}</time>
                             </td>
-                            <td data-label={t('admin.auditTable.actor')}><span
-                                className="table-primary">{log.actorUsername || t('admin.auditTable.system')}</span></td>
-                            <td data-label={t('admin.auditTable.action')}><span className="audit-action">{displayLabel(log.action)}</span></td>
-                            <td data-label={t('admin.auditTable.entity')}>{displayLabel(log.entityType)}</td>
-                            <td data-label={t('admin.auditTable.id')}>{log.entityId}</td>
-                            <td data-label={t('admin.auditTable.details')} className="audit-details">{auditDetail(log.details)}</td>
+                            <td data-label={t('admin.auditTable.actor')} className="px-4 py-3.5 align-top text-foreground"><span
+                                className="font-semibold text-foreground">{log.actorUsername || t('admin.auditTable.system')}</span></td>
+                            <td data-label={t('admin.auditTable.action')} className="px-4 py-3.5 align-top text-foreground"><span className="inline-block whitespace-nowrap rounded-md bg-uav-red-light px-2 py-1 text-xs font-medium text-primary">{displayLabel(log.action)}</span></td>
+                            <td data-label={t('admin.auditTable.entity')} className="px-4 py-3.5 align-top text-foreground">{displayLabel(log.entityType)}</td>
+                            <td data-label={t('admin.auditTable.id')} className="px-4 py-3.5 align-top text-foreground">{log.entityId}</td>
+                            <td data-label={t('admin.auditTable.details')} className="max-w-[320px] px-4 py-3.5 align-top text-[13px] text-foreground">{auditDetail(log.details)}</td>
                         </tr>)}</tbody>
                     </table>
                 </div>

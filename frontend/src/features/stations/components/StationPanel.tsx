@@ -29,7 +29,7 @@ export function StationPanel() {
         {
             accessorKey: 'code',
             header: t('opsAssets.station.code'),
-            cell: ({row}: { row: { original: Station } }) => <span className="table-primary">{row.original.code}</span>
+            cell: ({row}: { row: { original: Station } }) => <span className="font-semibold text-slate-900">{row.original.code}</span>
         },
         {accessorKey: 'name', header: t('opsAssets.station.name')},
         {
@@ -58,7 +58,7 @@ export function StationPanel() {
                                                                             onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.shared.closeForm') : t('opsAssets.station.create')}</Button>
         </div>}
         {openCreate &&
-            <form className="schema-form rounded-lg border border-slate-200 bg-slate-50 p-4" onSubmit={async event => {
+            <form className="space-y-4 rounded-lg border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 try {
                     await create.mutateAsync(form);
@@ -68,8 +68,8 @@ export function StationPanel() {
                 } catch { /* visible below */
                 }
             }}>
-                <div className="form-grid">
-                    <div className="form-field"><label htmlFor="station-code">{t('opsAssets.station.code')}<RequiredMark/></label><Input id="station-code"
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="station-code">{t('opsAssets.station.code')}<RequiredMark/></label><Input id="station-code"
                                                                                                     required
                                                                                                     maxLength={40}
                                                                                                     value={form.code}
@@ -77,7 +77,7 @@ export function StationPanel() {
                                                                                                         ...form,
                                                                                                         code: e.target.value
                                                                                                     })}/></div>
-                    <div className="form-field"><label htmlFor="station-name">{t('opsAssets.station.name')}<RequiredMark/></label><Input id="station-name"
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="station-name">{t('opsAssets.station.name')}<RequiredMark/></label><Input id="station-name"
                                                                                                      required
                                                                                                      maxLength={120}
                                                                                                      value={form.name}
@@ -85,11 +85,11 @@ export function StationPanel() {
                                                                                                          ...form,
                                                                                                          name: e.target.value
                                                                                                      })}/></div>
-                    <div className="form-field form-field-wide"><label htmlFor="station-address">{t('opsAssets.station.address')}</label><Input
+                    <div className="col-span-full flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="station-address">{t('opsAssets.station.address')}</label><Input
                         id="station-address" maxLength={255} value={form.address}
                         onChange={e => setForm({...form, address: e.target.value})}/></div>
                 </div>
-                <div className="form-actions"><Button size="sm" type="submit" isLoading={create.isPending}>{t('opsAssets.station.create')}</Button></div>
+                <div className="mt-6 flex flex-wrap justify-end"><Button size="sm" type="submit" isLoading={create.isPending}>{t('opsAssets.station.create')}</Button></div>
                 <ErrorNotice error={create.error}/></form>}
         <QueryState query={query}><DataTable label={t('opsAssets.station.tableLabel')} data={rows} columns={columns} filters={[{
             column: 'status',

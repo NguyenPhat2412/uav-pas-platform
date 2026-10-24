@@ -82,13 +82,35 @@ export function UavPhoto({scene, className = '', preload = false, compact = fals
     compact?: boolean;
 }) {
     const photo = scenes[scene];
-    return <figure className={`uav-photo ${compact ? 'uav-photo-compact' : ''} ${className}`}>
-        <Image src={photo.src} alt={photo.alt} title={`Ảnh tư liệu: ${photo.credit}`}
-               width={1536} height={1024}
-               sizes={compact ? '(max-width: 700px) 100vw, (max-width: 900px) 50vw, 25vw' : '(max-width: 700px) 100vw, (max-width: 1200px) 60vw, 780px'}
-               preload={preload}/>
-        {!compact &&
-            <figcaption><a className="uav-photo-note" href={photo.source} target="_blank" rel="noopener noreferrer">Ảnh
-                tư liệu: {photo.credit}</a></figcaption>}
-    </figure>;
+    return (
+        <figure
+            className={`overflow-hidden rounded-2xl border border-border bg-slate-50 ${
+                compact ? 'mb-4 rounded-b-none border-0' : 'mb-8'
+            } ${className}`}
+        >
+            <Image
+                src={photo.src}
+                alt={photo.alt}
+                title={`Ảnh tư liệu: ${photo.credit}`}
+                width={1536}
+                height={1024}
+                className="aspect-[3/2] h-auto w-full object-cover"
+                sizes={compact ? '(max-width: 700px) 100vw, (max-width: 900px) 50vw, 25vw' : '(max-width: 700px) 100vw, (max-width: 1200px) 60vw, 780px'}
+                preload={preload}
+            />
+            {!compact && (
+                <figcaption className="flex flex-wrap items-center justify-between gap-2 bg-card px-5 py-3.5 text-xs text-slate-700">
+                    <span>{photo.caption}</span>
+                    <a
+                        className="text-[11px] font-medium text-slate-500 hover:text-primary"
+                        href={photo.source}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Ảnh tư liệu: {photo.credit}
+                    </a>
+                </figcaption>
+            )}
+        </figure>
+    );
 }

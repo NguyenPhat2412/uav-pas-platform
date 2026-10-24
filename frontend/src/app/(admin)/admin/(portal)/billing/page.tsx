@@ -1,1 +1,5 @@
-export {default} from '@/features/billing/pages/admin/billing';
+import AdminBillingPanel from '@/features/billing/components/AdminBillingPanel';
+
+export default function AdminBillingRoutePage() {
+    return <AdminBillingPanel/>;
+}

@@ -1,4 +1,4 @@
-import {API_ROUTES, apiClient} from '@/lib/api.client';
+import {API_ROUTES, apiClient} from '@/lib/api';
 import type {
     Invoice,
     Mission,

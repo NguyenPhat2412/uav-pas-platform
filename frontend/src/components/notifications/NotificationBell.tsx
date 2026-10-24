@@ -43,7 +43,7 @@ export function NotificationBell() {
                 <Bell size={18}/>
                 {unreadCount > 0 && (
                     <span
-                        className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ab2523] px-1 text-[10px] font-bold text-white shadow-xs ring-2 ring-white animate-pulse">
+                        className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground shadow-xs ring-2 ring-white animate-pulse">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
                 )}
@@ -58,7 +58,7 @@ export function NotificationBell() {
                             <span className="font-bold text-sm text-slate-900">{t('opsMissions.notifications.title')}</span>
                             {unreadCount > 0 && (
                                 <span
-                                    className="bg-[#fef2f2] text-[#ab2523] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#fecdd3]">
+                                    className="bg-uav-red-light text-primary text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-200">
                   {t('opsMissions.notifications.bell.newCount', {count: unreadCount})}
                 </span>
                             )}
@@ -67,7 +67,7 @@ export function NotificationBell() {
                             <button
                                 type="button"
                                 onClick={markAllAsRead} disabled={busy || loading}
-                                className="text-xs text-[#007f3e] hover:text-[#006632] flex items-center gap-1 font-bold cursor-pointer"
+                                className="text-xs text-success hover:text-uav-green-dark flex items-center gap-1 font-bold cursor-pointer"
                             >
                                 <CheckCheck size={14}/> {t('opsMissions.notifications.bell.readAll')}
                             </button>
@@ -96,14 +96,14 @@ export function NotificationBell() {
                                     }}
                                     onClick={() => !busy && !item.isRead && markAsRead(item.id)}
                                     className={`p-3.5 hover:bg-slate-50 transition cursor-pointer flex gap-3 ${
-                                        !item.isRead ? 'bg-[#fef2f2]/30' : ''
+                                        !item.isRead ? 'bg-uav-red-light/40' : ''
                                     }`}
                                 >
                                     <div className="mt-0.5 shrink-0">
-                                        {item.type === 'ALERT' && <ShieldAlert size={16} className="text-[#ab2523]"/>}
+                                        {item.type === 'ALERT' && <ShieldAlert size={16} className="text-primary"/>}
                                         {item.type === 'WARNING' && <AlertCircle size={16} className="text-amber-500"/>}
                                         {item.type === 'SUCCESS' &&
-                                            <CheckCircle2 size={16} className="text-[#007f3e]"/>}
+                                            <CheckCircle2 size={16} className="text-success"/>}
                                         {item.type === 'INFO' && <Info size={16} className="text-sky-500"/>}
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -112,7 +112,7 @@ export function NotificationBell() {
                                                 {item.title}
                                             </p>
                                             {!item.isRead && (
-                                                <span className="w-1.5 h-1.5 rounded-full bg-[#ab2523] shrink-0"/>
+                                                <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0"/>
                                             )}
                                         </div>
                                         <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2 leading-relaxed">
@@ -131,7 +131,7 @@ export function NotificationBell() {
                         <Link
                             href="/operations/notifications"
                             onClick={() => setIsOpen(false)}
-                            className="text-xs text-slate-600 hover:text-[#ab2523] font-bold inline-flex items-center gap-1 py-1 transition"
+                            className="text-xs text-slate-600 hover:text-primary font-bold inline-flex items-center gap-1 py-1 transition"
                         >
                             {t('opsMissions.notifications.bell.viewAll')} <ChevronRight size={13}/>
                         </Link>

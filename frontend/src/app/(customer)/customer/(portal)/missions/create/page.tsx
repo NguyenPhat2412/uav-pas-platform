@@ -1,1 +1,5 @@
-export {default} from '@/features/missions/pages/customer/missions-create';
+import CustomerMissionCreate from '@/features/missions/components/customer/CustomerMissionCreate';
+
+export default function CustomerMissionCreateRoutePage() {
+    return <CustomerMissionCreate/>;
+}

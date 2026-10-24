@@ -55,7 +55,8 @@
     "overview": "概要",
     "access": "ユーザーと権限",
     "system": "システム",
-    "account": "アカウント"
+    "account": "アカウント",
+    "fleet": "機体"
   },
   "adminNav": {
     "dashboard": "概要",
@@ -67,7 +68,11 @@
     "reports": "レポート・統計",
     "webhooks": "Webhook・連携",
     "settings": "システム設定",
-    "auditLogs": "管理者監査ログ"
+    "auditLogs": "管理者監査ログ",
+    "notifications": "通知",
+    "fleetMap": "UAV機体マップ",
+    "uavs": "UAV機体",
+    "services": "サービスカタログ"
   },
   "sidebar": {
     "title": "UAV PAS",

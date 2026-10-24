@@ -44,26 +44,26 @@ export function SarCockpitPanel() {
                 <strong>{t('opsShared.sar.cockpit.simulationTitle')}</strong> {t('opsShared.sar.cockpit.simulationBody')}</p>
             {/* Tactical Operation Banner - Light Enterprise VJU Theme */}
             <div
-                className="bg-white border border-slate-200 border-l-4 border-l-[#ab2523] rounded-2xl p-5 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                className="bg-card border border-border border-l-4 border-l-primary rounded-2xl p-5 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div>
                     <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <span
-                className="bg-[#fef2f2] text-[#ab2523] border border-[#fecdd3] text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#ab2523] animate-ping"></span>
+                className="bg-red-50 text-primary border border-rose-200 text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
               {t('opsShared.sar.cockpit.urgent')}
             </span>
                         <span
-                            className="bg-[#ecfdf5] text-[#007f3e] border border-[#a7f3d0] text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                            className="bg-emerald-50 text-success border border-emerald-200 text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
               {t('opsShared.sar.cockpit.inProgress')}
             </span>
                         <span
-                            className="text-xs text-slate-500 font-mono font-semibold">{t('opsShared.sar.cockpit.missionCode', {code: 'SAR-2026-004'})}</span>
+                            className="text-xs text-slate-500 tabular-nums font-semibold">{t('opsShared.sar.cockpit.missionCode', {code: 'SAR-2026-004'})}</span>
                     </div>
                     <h2 className="text-lg font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
                         {t('opsShared.sar.cockpit.missionTitle')}
                     </h2>
                     <p className="text-xs text-slate-500 mt-1">
-                        {t('opsShared.sar.cockpit.station')} <strong className="text-slate-800">{t('opsShared.sar.cockpit.stationName')}</strong> · {t('opsShared.sar.cockpit.pilot')} <strong className="text-slate-800">Nguyễn Văn An (Pilot #01)</strong> · {t('opsShared.sar.cockpit.flightTime')} <strong className="text-[#007f3e] font-mono font-bold">00:42:18</strong>
+                        {t('opsShared.sar.cockpit.station')} <strong className="text-slate-800">{t('opsShared.sar.cockpit.stationName')}</strong> · {t('opsShared.sar.cockpit.pilot')} <strong className="text-slate-800">Nguyễn Văn An (Pilot #01)</strong> · {t('opsShared.sar.cockpit.flightTime')} <strong className="text-success tabular-nums font-bold">00:42:18</strong>
                     </p>
                 </div>
 
@@ -72,14 +72,14 @@ export function SarCockpitPanel() {
                     <button
                         type="button"
                         onClick={handleDispatchRescue}
-                        className="portal-button portal-button-outline flex items-center gap-2 px-4 py-2.5 bg-[#007f3e] hover:bg-[#006632] text-white text-xs font-bold rounded-xl shadow-sm transition active:scale-95 cursor-pointer"
+                        className="flex min-h-11 items-center gap-2 px-4 py-2.5 bg-success hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-sm transition active:scale-95 cursor-pointer"
                     >
                         <Send size={15}/> {t('opsShared.sar.cockpit.dispatchButton')}
                     </button>
                     <button
                         type="button"
                         onClick={handleEmergencyRth}
-                        className="portal-button portal-button-primary flex items-center gap-2 px-4 py-2.5 bg-[#ab2523] hover:bg-[#8f1c1a] text-white text-xs font-bold rounded-xl shadow-sm transition active:scale-95 cursor-pointer"
+                        className="flex min-h-11 items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl shadow-sm transition active:scale-95 cursor-pointer"
                     >
                         <RotateCcw size={15}/> {t('opsShared.sar.cockpit.rthButton')}
                     </button>
@@ -89,8 +89,8 @@ export function SarCockpitPanel() {
             {/* Floating Alert Notice */}
             {alertSuccess && (
                 <div
-                    className="bg-[#ecfdf5] border border-[#a7f3d0] text-[#007f3e] px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-2.5 shadow-sm animate-fade-in">
-                    <CheckCircle2 size={18} className="text-[#007f3e] shrink-0"/>
+                    className="bg-emerald-50 border border-emerald-200 text-success px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-2.5 shadow-sm animate-fade-in">
+                    <CheckCircle2 size={18} className="text-success shrink-0"/>
                     <span>{t(alertSuccess.key, alertSuccess.params)}</span>
                 </div>
             )}

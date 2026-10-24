@@ -2,21 +2,50 @@ import Link from 'next/link';
 import {customerUrl} from "@/features/marketing/content/site-content";
 
 export function PublicFooter() {
-    return <footer className="site-footer">
-        <div className="shell footer-grid">
-            <div><Link className="brand" href="/" style={{display: 'flex', alignItems: 'center', gap: '10px'}}><img
-                src="/vju-logo.svg" alt="Biểu trưng Đại học Việt Nhật" width={30} height={30}
-                style={{width: 30, height: 30, objectFit: 'contain'}}/><span>UAV PAS</span></Link><p
-                className="footer-note">Nền tảng kết nối yêu cầu dịch vụ với hoạt động điều phối nhiệm vụ UAV.</p></div>
-            <div><h2>Khám phá</h2><Link href="/services">Dịch vụ</Link><Link href="/solutions">Giải pháp</Link><Link
-                href="/how-it-works">Quy trình thực hiện</Link><Link href="/faq">Câu hỏi thường gặp</Link></div>
-            <div><h2>Tiếp tục</h2><a href={`${customerUrl}/login`}>Đăng nhập</a><a href={`${customerUrl}/register`}>Tạo
-                tài khoản</a><Link href="/contact">Liên hệ</Link></div>
-            <div><h2>Thông tin pháp lý</h2><Link href="/privacy">Quyền riêng tư</Link><Link href="/terms">Điều
-                khoản</Link><p className="footer-note">Bảng giá và thông tin liên hệ sẽ được công bố sau khi phê
-                duyệt.</p></div>
-        </div>
-        <div className="shell footer-bottom"><span>© {new Date().getFullYear()} UAV PAS</span><span>NguyenPhat2412</span>
-        </div>
-    </footer>;
+    return (
+        <footer className="border-t border-border bg-slate-50/70 pt-14 pb-8 text-sm text-slate-600">
+            <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
+                <div className="space-y-3">
+                    <Link className="inline-flex items-center gap-2.5 text-base font-extrabold tracking-wider text-foreground" href="/">
+                        <img
+                            src="/vju-logo.svg"
+                            alt="Biểu trưng Đại học Việt Nhật"
+                            width={30}
+                            height={30}
+                            className="h-[30px] w-[30px] object-contain"
+                        />
+                        <span>UAV PAS</span>
+                    </Link>
+                    <p className="text-xs leading-relaxed text-slate-500">
+                        Nền tảng kết nối yêu cầu dịch vụ với hoạt động điều phối nhiệm vụ UAV.
+                    </p>
+                </div>
+                <div className="flex flex-col gap-2">
+                    <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Khám phá</h2>
+                    <Link className="hover:text-primary transition-colors" href="/services">Dịch vụ</Link>
+                    <Link className="hover:text-primary transition-colors" href="/solutions">Giải pháp</Link>
+                    <Link className="hover:text-primary transition-colors" href="/how-it-works">Quy trình thực hiện</Link>
+                    <Link className="hover:text-primary transition-colors" href="/faq">Câu hỏi thường gặp</Link>
+                </div>
+                <div className="flex flex-col gap-2">
+                    <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Tiếp tục</h2>
+                    <a className="hover:text-primary transition-colors" href={`${customerUrl}/login`}>Đăng nhập</a>
+                    <a className="hover:text-primary transition-colors" href={`${customerUrl}/register`}>Tạo tài khoản</a>
+                    <Link className="hover:text-primary transition-colors" href="/contact">Liên hệ</Link>
+                </div>
+                <div className="flex flex-col gap-2">
+                    <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Thông tin pháp lý</h2>
+                    <Link className="hover:text-primary transition-colors" href="/privacy">Quyền riêng tư</Link>
+                    <Link className="hover:text-primary transition-colors" href="/terms">Điều khoản</Link>
+                    <p className="text-xs leading-relaxed text-slate-500">
+                        Bảng giá và thông tin liên hệ sẽ được công bố sau khi phê duyệt.
+                    </p>
+                </div>
+            </div>
+            <div className="mx-auto mt-10 flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 border-t border-border px-4 pt-6 text-xs text-slate-500 sm:px-6">
+                <span>© {new Date().getFullYear()} UAV PAS</span>
+                <span>NguyenPhat2412</span>
+            </div>
+        </footer>
+    );
 }

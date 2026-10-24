@@ -403,4 +403,34 @@ class BillingServiceTest {
                 false,
                 null);
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void filteredInvoiceListingUsesASpecificationQuery() {
+        AppUser owner = user(1L, "owner");
+        Authentication auth = authentication("owner");
+        Pageable pageable = PageRequest.of(0, 10);
+        stubUser(auth, owner);
+        when(invoiceRepository.findAll(org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<Invoice>>any(), org.mockito.ArgumentMatchers.eq(pageable)))
+                .thenReturn(new PageImpl<>(List.of(invoice(owner)), pageable, 1));
+
+        assertEquals(1, service.listInvoices(auth, pageable, InvoiceStatus.PENDING, true).content().size());
+
+        verify(invoiceRepository).findAll(org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<Invoice>>any(), org.mockito.ArgumentMatchers.eq(pageable));
+        verify(invoiceRepository, never()).findByUserIdOrderByCreatedAtDesc(1L, pageable);
+    }
+
+    @Test
+    void unfilteredInvoiceListingKeepsTheOriginalQueries() {
+        AppUser owner = user(1L, "owner");
+        Authentication auth = authentication("owner");
+        Pageable pageable = PageRequest.of(0, 10);
+        stubUser(auth, owner);
+        when(invoiceRepository.findByUserIdOrderByCreatedAtDesc(1L, pageable))
+                .thenReturn(new PageImpl<>(List.of(invoice(owner)), pageable, 1));
+
+        assertEquals(1, service.listInvoices(auth, pageable, null, false).content().size());
+
+        verify(invoiceRepository).findByUserIdOrderByCreatedAtDesc(1L, pageable);
+    }
 }

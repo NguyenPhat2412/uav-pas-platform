@@ -1,3 +1,8 @@
+import type {PageResponse, ServicePlan, UserQuota} from '@/types';
+import type {DashboardSummary} from '@/features/dashboard/types/dashboard.types';
+
+export type {PageResponse, ServicePlan, UserQuota, DashboardSummary};
+
 export type UserRole = 'ROLE_PILOT' | 'ROLE_COMMANDER' | 'ROLE_OPERATOR' | 'ROLE_ADMIN';
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 export type PermissionCode = string;
@@ -72,18 +77,6 @@ export interface AdminAnalytics {
     alerts: AdminAlert[];
 }
 
-export interface PageResponse<T> {
-    content: T[];
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-    first: boolean;
-    last: boolean;
-    hasNext: boolean;
-    hasPrevious: boolean;
-}
-
 export interface Permission {
     code: PermissionCode;
     description: string;
@@ -100,18 +93,6 @@ export interface RoleTemplate {
     permissions: PermissionCode[];
 }
 
-export interface DashboardSummary {
-    totalUsers: number;
-    totalStations: number;
-    totalUavs: number;
-    availableUavs: number;
-    maintenanceUavs: number;
-    totalEquipmentUnits: number;
-    reservedEquipmentUnits: number;
-    totalMediaAssets: number;
-    totalAuditEvents: number;
-}
-
 export interface AuditLog {
     id: number;
     actorUserId: number;
@@ -124,35 +105,6 @@ export interface AuditLog {
 }
 
 export const roles: UserRole[] = ['ROLE_PILOT', 'ROLE_COMMANDER', 'ROLE_OPERATOR', 'ROLE_ADMIN'];
-
-export interface ServicePlan {
-    id: number;
-    code: string;
-    name: string;
-    price: number;
-    billingCycle: string;
-    maxMonthlyFlightHours: number;
-    maxConcurrentUavs: number;
-    allowSarAi: boolean;
-    description?: string;
-    active: boolean;
-}
-
-export interface UserQuota {
-    id: number;
-    userId: number;
-    username: string;
-    fullName?: string;
-    planCode: string;
-    planName: string;
-    flightHoursUsed: number;
-    flightHoursLimit: number;
-    flightHoursRemaining: number;
-    concurrentUavsUsed: number;
-    concurrentUavsLimit: number;
-    cycleStart: string;
-    cycleEnd: string;
-}
 
 export interface OperationsReportData {
     totalMissions: number;

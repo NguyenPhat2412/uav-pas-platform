@@ -84,12 +84,12 @@ function harness(auth, search, storedDemo) {
         },
         '@/components/layout/AppShell': {AppShell: ({children}) => children},
         '@/components/layout/PageHeader': {PageHeader: () => null},
-        '@/lib/api.client': {
+        '@/lib/api': {
             ApiError: class extends Error {
             }
         },
-        '@/lib/query-keys': {queryKeys: {feature: (id, feature) => ['session', id, feature]}},
-        '@/lib/collection': {
+        '@/lib/query': {queryKeys: {feature: (id, feature) => ['session', id, feature]}},
+        '@/lib/api/collection': {
             fetchCollection: () => {
                 throw new Error('Guard test must not issue network requests');
             }
@@ -97,8 +97,8 @@ function harness(auth, search, storedDemo) {
         './services/admin.service': {adminService: {}},
         '../services/admin.service': {adminService: {}},
     };
-    modules['@/components/admin/ui'] = modules['@/components/ui'];
-    modules['@/components/admin/layout/AppShell'] = modules['@/components/layout/AppShell'];
+    modules['@/components/ui'] = modules['@/components/ui'];
+    modules['@/components/layout/AdminAppShell'] = modules['@/components/layout/AppShell'];
     modules['@/lib/api/admin'] = {adminService: {}};
 
     function load(path) {
@@ -117,8 +117,8 @@ function harness(auth, search, storedDemo) {
         return exports;
     }
 
-    modules['@/components/admin/data/WorkspaceState'] = load('src/components/admin/data/WorkspaceState.tsx');
-    modules['@/features/auth/portal'] = load('src/features/auth/portal.ts');
+    modules['@/components/data/WorkspaceState'] = load('src/components/data/WorkspaceState.tsx');
+    modules['@/features/auth/utils/portal'] = load('src/features/auth/utils/portal.ts');
     return {load, redirects, permissions, cards};
 }
 

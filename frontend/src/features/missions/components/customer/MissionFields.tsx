@@ -26,66 +26,69 @@ export function MissionFields({form, onChange, errors = {}}: {
         'aria-describedby': errors[key] ? `mission-${key}-error` : undefined
     });
     const error = (key: keyof MissionInput) => errors[key] ?
-        <span className="field-error" id={`mission-${key}-error`}>{errors[key]}</span> : null;
+        <span className="text-sm font-normal leading-normal text-danger" id={`mission-${key}-error`}>{errors[key]}</span> : null;
+    const fieldClass = 'grid gap-1.5 text-xs font-bold text-foreground';
+    const inputClass = 'min-h-11 w-full rounded-lg border border-border-input bg-card px-3 py-2 text-base font-normal text-foreground sm:text-sm aria-[invalid=true]:border-danger';
+    const textareaClass = 'min-h-28 w-full resize-y rounded-lg border border-border-input bg-card px-3 py-2.5 text-base font-normal text-foreground sm:text-sm aria-[invalid=true]:border-danger';
     return <>
-        <label className="field"><span>{t('missionForm.title')}<RequiredMark/></span><input {...attributes('title')}
+        <label className={fieldClass}><span>{t('missionForm.title')}<RequiredMark/></span><input className={inputClass} {...attributes('title')}
                                                                                               value={form.title}
                                                                                               onChange={set('title')}
                                                                                               required
                                                                                               maxLength={missionLimits.title}/>{error('title')}
         </label>
-        <label className="field"><span>{t('missionForm.requestedDate')}<RequiredMark/></span><input {...attributes('requestedDate')} type="date"
+        <label className={fieldClass}><span>{t('missionForm.requestedDate')}<RequiredMark/></span><input className={inputClass} {...attributes('requestedDate')} type="date"
                                                      value={form.requestedDate} min={localDateToday()}
                                                      onChange={set('requestedDate')} required/>{error('requestedDate')}
         </label>
-        <label className="field"><span>{t('missionForm.start')}<RequiredMark/></span><input {...attributes('startTime')} type="datetime-local" step="any"
+        <label className={fieldClass}><span>{t('missionForm.start')}<RequiredMark/></span><input className={inputClass} {...attributes('startTime')} type="datetime-local" step="any"
                                                      value={form.startTime} onChange={set('startTime')}
                                                      required/>{error('startTime')}</label>
-        <label className="field"><span>{t('missionForm.expectedEnd')}<RequiredMark/></span><input {...attributes('expectedEndTime')} type="datetime-local" step="any"
+        <label className={fieldClass}><span>{t('missionForm.expectedEnd')}<RequiredMark/></span><input className={inputClass} {...attributes('expectedEndTime')} type="datetime-local" step="any"
                                                      value={form.expectedEndTime} onChange={set('expectedEndTime')}
                                                      required/>{error('expectedEndTime')}</label>
-        <p className="form-hint form-wide">{t('missionForm.timeHint')}</p>
-        <label className="field"><span>{t('missionForm.location')}<RequiredMark/></span><input {...attributes('locationName')} value={form.locationName}
+        <p className="col-span-full m-0 text-sm text-muted">{t('missionForm.timeHint')}</p>
+        <label className={fieldClass}><span>{t('missionForm.location')}<RequiredMark/></span><input className={inputClass} {...attributes('locationName')} value={form.locationName}
                                                      onChange={set('locationName')}
                                                      maxLength={missionLimits.locationName}
                                                      required/>{error('locationName')}</label>
-        <label className="field"><span>{t('missionForm.priority')}</span><select {...attributes('priority')}
+        <label className={fieldClass}><span>{t('missionForm.priority')}</span><select className={inputClass} {...attributes('priority')}
                                                                  value={form.priority ?? 'NORMAL'}
                                                                  onChange={set('priority')}>{['LOW', 'NORMAL', 'HIGH', 'URGENT'].map(priority =>
             <option key={priority} value={priority}>{displayLabel(priority)}</option>)}</select>{error('priority')}
         </label>
         <LocationPicker latitude={form.latitude} longitude={form.longitude}
                         onChange={(latitude, longitude) => onChange({...form, latitude, longitude})}/>
-        <label className="field"><span>{t('missionForm.latitude')}</span><input {...attributes('latitude')} type="number" min={-90}
+        <label className={fieldClass}><span>{t('missionForm.latitude')}</span><input className={inputClass} {...attributes('latitude')} type="number" min={-90}
                                                                      max={90} step="0.0000001"
                                                                      value={form.latitude ?? ''}
                                                                      onChange={set('latitude')}/>{error('latitude')}
         </label>
-        <label className="field"><span>{t('missionForm.longitude')}</span><input {...attributes('longitude')} type="number"
+        <label className={fieldClass}><span>{t('missionForm.longitude')}</span><input className={inputClass} {...attributes('longitude')} type="number"
                                                                        min={-180} max={180} step="0.0000001"
                                                                        value={form.longitude ?? ''}
                                                                        onChange={set('longitude')}/>{error('longitude')}
         </label>
-        <label className="field form-wide"><span>{t('missionForm.description')}</span><textarea {...attributes('description')}
+        <label className={`${fieldClass} col-span-full`}><span>{t('missionForm.description')}</span><textarea className={textareaClass} {...attributes('description')}
                                                                        value={form.description ?? ''}
                                                                        onChange={set('description')}
                                                                        maxLength={missionLimits.description}
                                                                        rows={4}/>{error('description')}<span
-            className="form-hint">{t('missionForm.maxChars')}</span></label>
-        <label className="field form-wide"><span>{t('missionForm.notes')}</span><textarea {...attributes('notes')}
+            className="text-sm font-normal text-muted">{t('missionForm.maxChars')}</span></label>
+        <label className={`${fieldClass} col-span-full`}><span>{t('missionForm.notes')}</span><textarea className={textareaClass} {...attributes('notes')}
                                                                          value={form.notes ?? ''}
                                                                          onChange={set('notes')}
                                                                          maxLength={missionLimits.notes}
                                                                          rows={3}/>{error('notes')}<span
-            className="form-hint">{t('missionForm.maxChars')}</span></label>
+            className="text-sm font-normal text-muted">{t('missionForm.maxChars')}</span></label>
     </>;
 }
 
 export function MissionErrorSummary({errors}: { errors: MissionFormErrors }) {
     const {t} = useI18n();
     if (!Object.keys(errors).length) return null;
-    return <div className="error form-error-summary" role="alert" tabIndex={-1} id="mission-error-summary"><strong>{t('missionForm.checkErrors')}</strong>
-        <ul>{Object.entries(errors).map(([key, message]) => <li key={key}><a href={`#mission-${key}`}>{message}</a>
+    return <div className="mb-5 rounded-lg bg-red-50 px-3.5 py-3 text-xs text-danger" role="alert" tabIndex={-1} id="mission-error-summary"><strong>{t('missionForm.checkErrors')}</strong>
+        <ul className="m-0 mt-2 list-disc pl-5">{Object.entries(errors).map(([key, message]) => <li key={key}><a className="underline" href={`#mission-${key}`}>{message}</a>
         </li>)}</ul>
     </div>;
 }

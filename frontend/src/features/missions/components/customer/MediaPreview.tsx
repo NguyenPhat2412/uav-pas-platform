@@ -26,24 +26,25 @@ export function MediaPreview({items}: { items: MissionMedia[] }) {
     if (!images.length) return null;
     const active = open == null ? null : images.findIndex(item => item.media.id === open);
     return <>
-        <ul className="media-preview" aria-label={t('media.previewLabel')}>{images.map((item, index) => {
+        <ul className="m-0 mb-4 grid list-none grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2.5 p-0" aria-label={t('media.previewLabel')}>{images.map((item, index) => {
             const url = urls[index]?.data?.url;
             return <li key={item.id}>
-                <button type="button" onClick={() => setOpen(item.media.id)} disabled={!url}
+                <button type="button" className="grid aspect-4/3 w-full cursor-zoom-in place-items-center overflow-hidden rounded-lg border border-border bg-background p-0 text-xs text-muted disabled:cursor-default" onClick={() => setOpen(item.media.id)} disabled={!url}
                         aria-label={t('media.viewImage', {name: item.media.originalName})}>
-                    {url ? <img src={url} alt={item.media.originalName} loading="lazy"/> :
+                    {url ? <img src={url} alt={item.media.originalName} loading="lazy" className="h-full w-full object-cover"/> :
                         <span>{urls[index]?.isError ? t('media.loadFailed') : t('media.loading')}</span>}
                 </button>
             </li>;
         })}</ul>
         {active != null && active >= 0 && urls[active]?.data?.url &&
-            <div className="media-lightbox" role="dialog" aria-modal="true" aria-label={images[active].media.originalName}
+            <div className="fixed inset-0 z-100 flex flex-col items-center justify-center gap-3 bg-black/80 px-4 pt-12 pb-6 text-white" role="dialog" aria-modal="true" aria-label={images[active].media.originalName}
                  onClick={() => setOpen(null)} onKeyDown={event => event.key === 'Escape' && setOpen(null)}>
-                <button type="button" className="icon-button" aria-label={t('common.close')} autoFocus
+                <button type="button" className="absolute top-3 right-3 inline-flex size-11 items-center justify-center rounded-lg border border-white/20 bg-white/15 text-white hover:bg-white/25" aria-label={t('common.close')} autoFocus
                         onClick={() => setOpen(null)}><X size={20}/></button>
                 <img src={urls[active].data!.url} alt={images[active].media.originalName}
+                     className="max-h-[calc(100vh-140px)] max-w-full rounded-lg object-contain"
                      onClick={event => event.stopPropagation()}/>
-                <p>{images[active].media.originalName}</p>
+                <p className="m-0 text-sm">{images[active].media.originalName}</p>
             </div>}
     </>;
 }

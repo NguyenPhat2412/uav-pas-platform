@@ -33,8 +33,8 @@ export function EquipmentPanel() {
             accessorKey: 'name',
             header: t('opsAssets.equipment.equipment'),
             cell: ({row}: { row: { original: Equipment } }) => <div><span
-                className="table-primary">{row.original.name}</span><span
-                className="table-secondary">{row.original.serialNumber || t('opsAssets.equipment.notSerialized')}</span></div>
+                className="font-semibold text-slate-900">{row.original.name}</span><span
+                className="mt-0.5 block text-xs text-slate-500">{row.original.serialNumber || t('opsAssets.equipment.notSerialized')}</span></div>
         },
         {accessorKey: 'type', header: t('opsAssets.equipment.type')},
         {
@@ -55,7 +55,7 @@ export function EquipmentPanel() {
                                                                               onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.shared.closeForm') : t('opsAssets.equipment.create')}</Button>
         </div>}
         {openCreate && can('INVENTORY_MANAGE') &&
-            <form className="schema-form rounded-lg border border-slate-200 bg-slate-50 p-4" onSubmit={async event => {
+            <form className="space-y-4 rounded-lg border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 try {
                     await create.mutateAsync({
@@ -69,23 +69,25 @@ export function EquipmentPanel() {
                 } catch { /* visible below */
                 }
             }}>
-                <div className="form-grid">
-                    <div className="form-field"><label htmlFor="equipment-name">{t('opsAssets.equipment.name')}<RequiredMark/></label><Input
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-name">{t('opsAssets.equipment.name')}<RequiredMark/></label><Input
                         id="equipment-name" required maxLength={100} value={form.name}
                         onChange={event => setForm({...form, name: event.target.value})}/></div>
-                    <div className="form-field"><label htmlFor="equipment-type">{t('opsAssets.equipment.type')}</label><select id="equipment-type"
-                                                                                                    value={form.type}
-                                                                                                    onChange={event => setForm({
-                                                                                                        ...form,
-                                                                                                        type: event.target.value
-                                                                                                    })}>{['BATTERY', 'CAMERA', 'KV260', 'SENSOR', 'ACCESSORY'].map(type =>
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-type">{t('opsAssets.equipment.type')}</label><select id="equipment-type"
+                                                                                                     className="min-h-11 w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                                                                                                     value={form.type}
+                                                                                                     onChange={event => setForm({
+                                                                                                         ...form,
+                                                                                                         type: event.target.value
+                                                                                                     })}>{['BATTERY', 'CAMERA', 'KV260', 'SENSOR', 'ACCESSORY'].map(type =>
                         <option key={type}>{type}</option>)}</select></div>
-                    <div className="form-field"><label htmlFor="equipment-serial">{t('opsAssets.equipment.serial')}</label><Input
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-serial">{t('opsAssets.equipment.serial')}</label><Input
                         id="equipment-serial" maxLength={100} value={form.serialNumber}
                         onChange={event => setForm({...form, serialNumber: event.target.value})}/></div>
                 </div>
                 {can('STATION_READ') &&
-                    <div className="form-field"><label htmlFor="equipment-station">{t('opsAssets.equipment.storageStation')}</label><select id="equipment-station"
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-station">{t('opsAssets.equipment.storageStation')}</label><select id="equipment-station"
+                                             className="min-h-11 w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
                                              disabled={create.isPending || stations.isPending || !!stations.error}
                                              value={form.stationId}
                                              onChange={event => setForm({...form, stationId: event.target.value})}>
@@ -93,10 +95,10 @@ export function EquipmentPanel() {
                         {stations.data?.filter(station => station.status === 'ACTIVE').map(station => <option
                             key={station.id} value={station.id}>{station.code} · {station.name}</option>)}
                     </select><ErrorNotice error={stations.error}/></div>}
-                <div className="form-actions"><Button size="sm" type="submit" isLoading={create.isPending}>{t('opsAssets.equipment.create')}</Button></div>
+                <div className="mt-6 flex flex-wrap justify-end"><Button size="sm" type="submit" isLoading={create.isPending}>{t('opsAssets.equipment.create')}</Button></div>
                 <ErrorNotice error={create.error}/></form>}
         {can('INVENTORY_MANAGE') &&
-            <form className="rounded-lg border border-slate-200 bg-slate-50 p-4" onSubmit={async event => {
+            <form className="rounded-lg border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 setSuccess('');
                 const payload = JSON.stringify(movement);
@@ -117,25 +119,25 @@ export function EquipmentPanel() {
                 } catch { /* same request id is retained for safe retry */
                 }
             }}><h3 className="mb-3 text-sm font-semibold text-slate-800">{t('opsAssets.equipment.movementTitle')}</h3>
-                <div className="form-grid">
-                    <div className="form-field"><label htmlFor="movement-equipment">{t('opsAssets.equipment.equipment')}<RequiredMark/></label><select
-                        id="movement-equipment" required value={movement.id}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-equipment">{t('opsAssets.equipment.equipment')}<RequiredMark/></label><select
+                        id="movement-equipment" className="min-h-11 w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" required value={movement.id}
                         onChange={event => setMovement({...movement, id: event.target.value})}>
                         <option value="">{t('opsAssets.equipment.selectEquipment')}</option>
                         {rows.map(item => <option key={item.id} value={item.id}>{item.name} · #{item.id}</option>)}
                     </select></div>
-                    <div className="form-field"><label htmlFor="movement-action">{t('opsAssets.equipment.action')}</label><select
-                        id="movement-action" value={movement.action} onChange={event => setMovement({
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-action">{t('opsAssets.equipment.action')}</label><select
+                        id="movement-action" className="min-h-11 w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" value={movement.action} onChange={event => setMovement({
                         ...movement,
                         action: event.target.value
                     })}>{[['stock-in', t('opsAssets.equipment.actions.stockIn')], ['stock-out', t('opsAssets.equipment.actions.stockOut')], ['reserve', t('opsAssets.equipment.actions.reserve')], ['release', t('opsAssets.equipment.actions.release')], ['transfer', t('opsAssets.equipment.actions.transfer')]].map(([value, label]) =>
                         <option key={value} value={value}
                                 disabled={value === 'transfer' && !can('STATION_READ')}>{label}</option>)}</select>
                     </div>
-                    <div className="form-field"><label htmlFor="movement-quantity">{t('opsAssets.equipment.quantity')}<RequiredMark/></label><Input
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-quantity">{t('opsAssets.equipment.quantity')}<RequiredMark/></label><Input
                         id="movement-quantity" required type="number" min={1} step={1} value={movement.quantity}
                         onChange={event => setMovement({...movement, quantity: event.target.value})}/></div>
-                    <div className="form-field"><label htmlFor="movement-note">{t('opsAssets.equipment.note')}</label><Input id="movement-note"
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-note">{t('opsAssets.equipment.note')}</label><Input id="movement-note"
                                                                                                      maxLength={255}
                                                                                                      value={movement.note}
                                                                                                      onChange={event => setMovement({
@@ -144,8 +146,8 @@ export function EquipmentPanel() {
                                                                                                      })}/></div>
                 </div>
                 {movement.action === 'transfer' &&
-                    <div className="form-field mt-3 max-w-sm"><label htmlFor="movement-station">{t('opsAssets.equipment.targetStation')}<RequiredMark/></label><select
-                        id="movement-station" disabled={stations.isPending || !!stations.error || move.isPending}
+                    <div className="mt-3 flex max-w-sm flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-station">{t('opsAssets.equipment.targetStation')}<RequiredMark/></label><select
+                        id="movement-station" className="min-h-11 w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" disabled={stations.isPending || !!stations.error || move.isPending}
                         required value={movement.stationId}
                         onChange={event => setMovement({...movement, stationId: event.target.value})}>
                         <option value="">{t('opsAssets.equipment.selectTargetStation')}</option>
@@ -162,30 +164,30 @@ export function EquipmentPanel() {
         }, {column: 'stationName', label: t('opsAssets.equipment.station'), options: options(rows.map(row => row.stationName))}]}/></QueryState>
         <section aria-label={t('opsAssets.equipment.history')} className="space-y-3"><h3
             className="text-base font-semibold text-slate-800">{t('opsAssets.equipment.history')}</h3><QueryState query={history}>
-            <div className="overflow-auto rounded-lg border border-slate-200">
-                <table className="console-table">
+            <div className="overflow-auto rounded-lg border border-border bg-card">
+                <table className="w-full min-w-[560px] border-separate border-spacing-0 text-sm">
                     <caption className="sr-only">{t('opsAssets.equipment.historyCaption')}</caption>
                     <thead>
                     <tr>
-                        <th>{t('opsAssets.equipment.time')}</th>
-                        <th>{t('opsAssets.equipment.equipment')}</th>
-                        <th>{t('opsAssets.equipment.action')}</th>
-                        <th>{t('opsAssets.equipment.quantity')}</th>
-                        <th>{t('opsAssets.equipment.station')}</th>
-                        <th>{t('opsAssets.equipment.handledBy')}</th>
-                        <th>{t('opsAssets.equipment.note')}</th>
+                        <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-600">{t('opsAssets.equipment.time')}</th>
+                        <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-600">{t('opsAssets.equipment.equipment')}</th>
+                        <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-600">{t('opsAssets.equipment.action')}</th>
+                        <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-600">{t('opsAssets.equipment.quantity')}</th>
+                        <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-600">{t('opsAssets.equipment.station')}</th>
+                        <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-600">{t('opsAssets.equipment.handledBy')}</th>
+                        <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-600">{t('opsAssets.equipment.note')}</th>
                     </tr>
                     </thead>
-                    <tbody>{(history.data?.content || []).map(item => <tr key={item.id}>
-                        <td>{formatDate(item.createdAt)}</td>
-                        <td className="table-primary">{item.equipmentName}</td>
-                        <td>{displayLabel(item.type)}</td>
-                        <td>{item.quantity}</td>
-                        <td>{String(item.fromStationId || '—') + ' → ' + String(item.toStationId || '—')}</td>
-                        <td>{item.actor || '—'}</td>
-                        <td>{item.note || '—'}</td>
+                    <tbody>{(history.data?.content || []).map(item => <tr key={item.id} className="transition-colors hover:bg-slate-50">
+                        <td className="border-b border-slate-100 px-4 py-3.5 align-middle text-slate-700">{formatDate(item.createdAt)}</td>
+                        <td className="border-b border-slate-100 px-4 py-3.5 align-middle font-semibold text-slate-900">{item.equipmentName}</td>
+                        <td className="border-b border-slate-100 px-4 py-3.5 align-middle text-slate-700">{displayLabel(item.type)}</td>
+                        <td className="border-b border-slate-100 px-4 py-3.5 align-middle text-slate-700">{item.quantity}</td>
+                        <td className="border-b border-slate-100 px-4 py-3.5 align-middle text-slate-700">{String(item.fromStationId || '—') + ' → ' + String(item.toStationId || '—')}</td>
+                        <td className="border-b border-slate-100 px-4 py-3.5 align-middle text-slate-700">{item.actor || '—'}</td>
+                        <td className="border-b border-slate-100 px-4 py-3.5 align-middle text-slate-700">{item.note || '—'}</td>
                     </tr>)}{!history.data?.content.length && <tr>
-                        <td colSpan={7}>{t('opsAssets.equipment.noHistory')}</td>
+                        <td colSpan={7} className="px-4 py-6 text-center text-slate-500">{t('opsAssets.equipment.noHistory')}</td>
                     </tr>}</tbody>
                 </table>
             </div>

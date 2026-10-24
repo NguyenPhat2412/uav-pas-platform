@@ -10,7 +10,7 @@ export default function AdminNotFoundPage() {
             <div
                 className="max-w-md w-full bg-white rounded-2xl border border-slate-200 p-8 shadow-sm text-center space-y-4">
         <span
-            className="inline-block text-xs font-mono font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#fef2f2] text-[#ab2523] border border-[#fecaca]">
+            className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-uav-red-light text-primary border border-red-200">
           404 · RESOURCE_NOT_FOUND
         </span>
                 <h1 className="text-xl font-extrabold text-slate-900">{t('admin.notFound.title')}</h1>
@@ -19,7 +19,7 @@ export default function AdminNotFoundPage() {
                 </p>
                 <Link
                     href="/admin/dashboard"
-                    className="inline-flex items-center justify-center px-4 py-2.5 bg-[#ab2523] hover:bg-[#8f1c1a] text-white text-xs font-bold rounded-xl shadow-xs transition"
+                    className="inline-flex items-center justify-center px-4 py-2.5 bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-bold rounded-xl shadow-xs transition"
                 >
                     {t('admin.notFound.back')}
                 </Link>

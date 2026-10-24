@@ -14,9 +14,9 @@ export default function ErrorPage({
     return (
         <main className="min-h-[80vh] flex items-center justify-center p-8 bg-slate-50">
             <div
-                className="max-w-lg w-full bg-white rounded-2xl border border-slate-200 border-t-4 border-t-[#ab2523] p-8 shadow-sm space-y-4 text-center">
+                className="max-w-lg w-full bg-white rounded-2xl border border-slate-200 border-t-4 border-t-primary p-8 shadow-sm space-y-4 text-center">
         <span
-            className="inline-block text-[11px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#fef2f2] text-[#ab2523] border border-[#fecaca]">
+            className="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-uav-red-light text-primary border border-red-200">
           {error?.code || 'ADMIN_PORTAL_EXCEPTION'}
         </span>
                 <h1 className="text-xl font-extrabold text-slate-900">{t('admin.error.title')}</h1>
@@ -27,7 +27,7 @@ export default function ErrorPage({
                     <button
                         type="button"
                         onClick={reset}
-                        className="px-4 py-2 bg-[#ab2523] hover:bg-[#8f1c1a] text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer"
+                        className="px-4 py-2 bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-bold rounded-xl shadow-xs transition cursor-pointer"
                     >
                         {t('admin.error.retry')}
                     </button>

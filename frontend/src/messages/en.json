@@ -55,7 +55,8 @@
     "overview": "Overview",
     "access": "Users & Access",
     "system": "System",
-    "account": "Account"
+    "account": "Account",
+    "fleet": "Fleet"
   },
   "adminNav": {
     "dashboard": "Dashboard",
@@ -67,7 +68,11 @@
     "reports": "Reports & Analytics",
     "webhooks": "Webhooks & Integrations",
     "settings": "System Settings",
-    "auditLogs": "Admin Audit Logs"
+    "auditLogs": "Admin Audit Logs",
+    "notifications": "Notifications",
+    "fleetMap": "Fleet map",
+    "uavs": "UAV fleet",
+    "services": "Service catalog"
   },
   "sidebar": {
     "title": "UAV PAS",

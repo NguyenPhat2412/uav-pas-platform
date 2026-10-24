@@ -1,14 +1,6 @@
-export interface PageResponse<T> {
-    content: T[];
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-    first: boolean;
-    last: boolean;
-    hasNext: boolean;
-    hasPrevious: boolean;
-}
+import type {PageResponse} from '@/types';
+
+export type {PageResponse};
 
 export interface Station {
     id: number;

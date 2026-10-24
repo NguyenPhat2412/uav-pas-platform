@@ -1,1 +1,49 @@
-export {default, generateStaticParams, generateMetadata} from '@/features/catalog/pages/web/services-[slug]';
+import {serviceScenes} from "@/features/marketing/components/uav-photo";
+import {pageMetadata} from "@/features/marketing/content/metadata";
+import {notFound} from 'next/navigation';
+import {serviceDetails} from "@/features/marketing/content/service-details";
+import {services} from "@/features/marketing/content/site-content";
+import {CustomerCta, PublicPage} from "@/features/marketing/components/public-page";
+
+export function generateStaticParams() {
+    return services.map(({slug}) => ({slug}))
+}
+
+export async function generateMetadata({params}: { params: Promise<{ slug: string }> }) {
+    const {slug} = await params;
+    const service = services.find((item) => item.slug === slug);
+    if (!service) notFound();
+    return pageMetadata(`Dịch vụ: ${service.title}`, service.text, `/services/${slug}`)
+}
+
+export default async function ServiceDetail({params}: { params: Promise<{ slug: string }> }) {
+    const {slug} = await params;
+    const service = services.find((item) => item.slug === slug);
+    if (!service) notFound();
+    const detail = serviceDetails[slug];
+    return (
+        <PublicPage
+            eyebrow="Loại yêu cầu được hỗ trợ"
+            title={service.title}
+            intro={service.text}
+            scene={serviceScenes[slug]}
+        >
+            <div className="max-w-3xl space-y-5 text-slate-600">
+                <p className="text-base leading-relaxed">
+                    Đã hỗ trợ gửi yêu cầu cho loại nhiệm vụ này. Đây không phải danh sách thiết bị sẵn có. Xem danh mục dịch vụ đang hoạt động sau khi đăng nhập.
+                </p>
+                <h2 className="pt-3 text-xl font-bold text-foreground">Đối tượng phù hợp</h2>
+                <p className="text-base leading-relaxed">{detail.audience}</p>
+                <h2 className="pt-3 text-xl font-bold text-foreground">Gợi ý mô tả yêu cầu</h2>
+                <p className="text-base leading-relaxed">{detail.example}</p>
+                <h2 className="pt-3 text-xl font-bold text-foreground">Kết quả dự kiến</h2>
+                <p className="text-base leading-relaxed">{detail.output}</p>
+                <h2 className="pt-3 text-xl font-bold text-foreground">Cách gửi yêu cầu</h2>
+                <p className="text-base leading-relaxed">
+                    Đăng nhập tài khoản, chọn dịch vụ đang hoạt động, tạo bản nháp nhiệm vụ rồi gửi để đội vận hành xem xét.
+                </p>
+                <CustomerCta/>
+            </div>
+        </PublicPage>
+    );
+}

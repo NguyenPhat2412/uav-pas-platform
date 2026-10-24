@@ -1,5 +1,5 @@
-import {API_ROUTES, apiClient} from '@/lib/api.client';
-import {uavChangeReason} from "@/features/uavs/workflows";
+import {API_ROUTES, apiClient} from '@/lib/api';
+import {uavChangeReason} from "@/features/uavs/utils/workflows";
 import type {
     AuditLog,
     Equipment,

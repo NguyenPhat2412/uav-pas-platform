@@ -10,7 +10,7 @@ const compile = value => `data:text/javascript;base64,${Buffer.from(ts.transpile
         target: ts.ScriptTarget.ES2022
     }
 }).outputText).toString('base64')}`;
-const workflowUrl = compile(await source('src/features/maintenance/workflows.ts'));
+const workflowUrl = compile(await source('src/features/maintenance/utils/workflows.ts'));
 const {
     orderControls,
     scheduleInput,
@@ -23,7 +23,7 @@ const {
 } = await import(workflowUrl);
 const apiUrl = compile(`export const requests = []; export const apiClient = Object.fromEntries(['get','post','put'].map(method => [method, async (path, body) => { requests.push({method,path,body}); return {}; }]));`);
 const {requests} = await import(apiUrl);
-const {maintenanceService} = await import(compile((await source('src/features/maintenance/service.ts')).replace('@/lib/api.client', apiUrl).replace('@/features/maintenance/workflows', workflowUrl)));
+const {maintenanceService} = await import(compile((await source('src/features/maintenance/services/maintenance.service.ts')).replace('@/lib/api', apiUrl).replace('@/features/maintenance/utils/workflows', workflowUrl)));
 const schedule = {title: ' Kiểm tra pin ', intervalDays: '30', nextDueDate: '2028-02-29'};
 const order = {
     title: ' Kiểm tra pin ',
@@ -143,7 +143,7 @@ test('VND display retains server integer precision and invalid identifiers canno
     for (const value of ['', '0', '-1', '1.2', 'NaN', '9007199254740993']) assert.throws(() => positiveId(value));
 });
 test('neutral repair history is translated without rewriting user-authored text', async () => {
-    const {uavHistoryReason} = await import(compile(await source('src/features/uavs/workflows.ts')));
+    const {uavHistoryReason} = await import(compile(await source('src/features/uavs/utils/workflows.ts')));
     assert.equal(uavHistoryReason('Repair order #42 started'), 'Bắt đầu phiếu sửa chữa #42');
     assert.equal(uavHistoryReason('Repair order #42 completed'), 'Hoàn tất phiếu sửa chữa #42');
     assert.equal(uavHistoryReason('Đã kiểm tra động cơ'), 'Đã kiểm tra động cơ');

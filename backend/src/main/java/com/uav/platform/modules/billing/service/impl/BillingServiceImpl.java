@@ -212,6 +212,34 @@ public class BillingServiceImpl implements BillingService {
 
     @Override
     @Transactional(readOnly = true)
+    public PageResponse<InvoiceResponse> listInvoices(
+            Authentication auth, Pageable pageable, InvoiceStatus status, boolean overdue) {
+        if (status == null && !overdue) return listInvoices(auth, pageable);
+        AppUser user = getCurrentUser(auth);
+        boolean canManage = permissions.has(auth, "USER_MANAGE");
+        Long ownerId = canManage ? null : user.getId();
+        return PageResponse.from(
+                invoiceRepository.findAll(invoiceFilter(ownerId, status, overdue, LocalDateTime.now()), pageable)
+                        .map(billingMapper::toInvoiceResponse));
+    }
+
+    /** Customers are always pinned to their own invoices; managers see every invoice. */
+    static org.springframework.data.jpa.domain.Specification<Invoice> invoiceFilter(
+            Long ownerId, InvoiceStatus status, boolean overdue, LocalDateTime now) {
+        return (root, query, cb) -> {
+            java.util.List<jakarta.persistence.criteria.Predicate> where = new java.util.ArrayList<>();
+            if (ownerId != null) where.add(cb.equal(root.get("user").get("id"), ownerId));
+            if (status != null) where.add(cb.equal(root.get("status"), status));
+            if (overdue) {
+                where.add(cb.equal(root.get("status"), InvoiceStatus.PENDING));
+                where.add(cb.lessThan(root.get("dueDate"), now));
+            }
+            return cb.and(where.toArray(jakarta.persistence.criteria.Predicate[]::new));
+        };
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public InvoiceResponse getInvoice(Long id, Authentication auth) {
         return billingMapper.toInvoiceResponse(accessibleInvoice(id, auth));
     }

@@ -20,13 +20,19 @@ const tabs = [
 export function AccessHub({tab}: { tab: AccessTab }) {
     const {t} = useI18n();
     return <div className="space-y-5">
-        <nav className="access-tabs" aria-label={t('admin.access.tabs.nav')}>{tabs.map(item => {
+        <nav className="grid grid-cols-1 gap-3 md:grid-cols-[repeat(auto-fit,minmax(210px,1fr))]" aria-label={t('admin.access.tabs.nav')}>{tabs.map(item => {
             const Icon = item.icon;
             const active = item.id === tab;
             return <Link key={item.id} href={item.href} aria-current={active ? 'page' : undefined}
-                         className={cn('access-tab', active && 'access-tab-active')}>
-                <span className="access-tab-icon" aria-hidden="true"><Icon size={18}/></span>
-                <span className="min-w-0"><strong>{t(item.label)}</strong><small>{t(item.hint)}</small></span>
+                         className={cn(
+                             'flex items-center gap-3 rounded-xl border bg-card px-4 py-3.5 text-foreground transition',
+                             active ? 'border-primary ring-3 ring-primary/12' : 'border-border hover:border-slate-300'
+                         )}>
+                <span className={cn(
+                    'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px]',
+                    active ? 'bg-uav-red-light text-primary' : 'bg-slate-100 text-slate-500'
+                )} aria-hidden="true"><Icon size={18}/></span>
+                <span className="flex min-w-0 flex-col"><strong className="text-sm">{t(item.label)}</strong><small className="hidden text-xs text-muted md:inline">{t(item.hint)}</small></span>
             </Link>;
         })}</nav>
         {tab === 'accounts' && <AccessControl/>}

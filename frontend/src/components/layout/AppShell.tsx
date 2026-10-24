@@ -128,84 +128,155 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
     const getNavLabel = (item: typeof nav[0]) => t(`operationsNav.${item.key}`);
     const railCollapsed = collapsed && !open;
 
-    return <div className="app-shell">
-        <a className="skip-link" href="#workspace">{t('shell.skipToContent')}</a>
-        <aside ref={rail} id="portal-navigation"
-               className={cn('app-rail', open && 'app-rail-open', railCollapsed && 'app-rail-collapsed')}>
-            <div
-                className={cn("app-rail-top flex items-center mb-4", railCollapsed ? "flex-col justify-center gap-2" : "justify-between")}>
-                <Link href="/operations/overview"
-                      className={cn('app-brand !p-0 !gap-2.5', railCollapsed && 'app-brand-collapsed !justify-center')}
-                      onClick={() => setOpen(false)} title={`UAV PAS · ${t('shell.operationsTitle')}`}>
-                    <span
-                        className="app-brand-mark flex items-center justify-center bg-white p-0.5 rounded-xl border border-rose-100 shadow-sm overflow-hidden flex-shrink-0">
-                      <img src="/vju-logo.svg" alt={t('shell.vjuUniversity')} width={32} height={32}
-                           className="w-[32px] h-[32px] object-contain"/>
-                    </span>
-                    {!railCollapsed && <span className="brand-text flex flex-col leading-tight"><strong
-                        className="text-[15px] font-bold text-slate-800">UAV PAS</strong><small
-                        className="text-[11px] text-slate-500 font-medium">{t('shell.operationsTitle')}</small></span>}
-                </Link>
+    return (
+        <div className="flex min-h-screen bg-background text-foreground">
+            <a
+                className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-primary-foreground"
+                href="#workspace"
+            >
+                {t('shell.skipToContent')}
+            </a>
+            <aside
+                ref={rail}
+                id="portal-navigation"
+                className={cn(
+                    'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-card p-3.5 transition-all duration-200 lg:sticky lg:top-0 lg:h-screen',
+                    railCollapsed ? 'w-[74px]' : 'w-64',
+                    open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
+                )}
+            >
+                <div className={cn("flex items-center mb-4", railCollapsed ? "flex-col justify-center gap-2" : "justify-between")}>
+                    <Link
+                        href="/operations/overview"
+                        className={cn('flex items-center gap-2.5 p-0', railCollapsed && 'justify-center')}
+                        onClick={() => setOpen(false)}
+                        title={`UAV PAS · ${t('shell.operationsTitle')}`}
+                    >
+                        <span className="flex items-center justify-center bg-white p-0.5 rounded-xl border border-rose-100 shadow-xs overflow-hidden shrink-0">
+                            <img src="/vju-logo.svg" alt={t('shell.vjuUniversity')} width={32} height={32} className="w-[32px] h-[32px] object-contain"/>
+                        </span>
+                        {!railCollapsed && (
+                            <span className="flex flex-col leading-tight">
+                                <strong className="text-[15px] font-bold text-slate-800">UAV PAS</strong>
+                                <small className="text-[11px] text-slate-500 font-medium">{t('shell.operationsTitle')}</small>
+                            </span>
+                        )}
+                    </Link>
+                    <button
+                        type="button"
+                        className="hidden lg:inline-flex items-center justify-center w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                        onClick={toggleCollapsed}
+                        aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                        title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                    >
+                        {railCollapsed ? <ChevronRight size={15}/> : <ChevronLeft size={15}/>}
+                    </button>
+                </div>
                 <button
                     type="button"
-                    className="collapse-toggle hidden lg:inline-flex items-center justify-center w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-                    onClick={toggleCollapsed}
-                    aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
-                    title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                    className="rail-close lg:hidden mb-3 inline-flex h-9 w-9 items-center justify-center self-end rounded-lg border border-border text-slate-600 hover:bg-slate-100"
+                    aria-label={t('shell.closeNavigation')}
+                    onClick={() => setOpen(false)}
                 >
-                    {railCollapsed ? <ChevronRight size={15}/> : <ChevronLeft size={15}/>}
+                    <X size={18}/>
                 </button>
-            </div>
-            <button type="button" className="rail-close icon-button" aria-label={t('shell.closeNavigation')}
-                    onClick={() => setOpen(false)}><X size={18}/></button>
-            {!railCollapsed && <div className="app-rail-label">{t('shell.operationsSection')}</div>}
-            <nav aria-label={t('shell.operationsSection')}>{visibleNav.map((item) => {
-                const {href, icon: Icon} = item;
-                const label = getNavLabel(item);
-                const active = href === activeNav?.href;
-                return <Link key={href} href={href} onClick={() => setOpen(false)}
-                             aria-current={active ? 'page' : undefined} aria-label={label}
-                             title={railCollapsed ? label : undefined}
-                             className={cn('app-nav-link', active && 'app-nav-link-active', railCollapsed && '!justify-center !px-0')}><Icon
-                    size={18} className="flex-shrink-0"/>{!railCollapsed && <span className="truncate">{label}</span>}
-                </Link>;
-            })}</nav>
-            <div className="rail-footer">
-                {!railCollapsed && <p>UAV PAS <span>{t('shell.vjuUniversity')}</span></p>}
-                <Button variant="ghost" size="sm" onClick={() => void logout()}
-                        leftIcon={railCollapsed ? undefined : <LogOut size={16}/>} aria-label={t('common.logout')}
-                        title={railCollapsed ? t('common.logout') : undefined}
-                        className={cn("w-full text-slate-500 hover:bg-slate-100 hover:text-slate-900", railCollapsed ? "justify-center !px-0" : "justify-start")}>
-                    {railCollapsed ? <LogOut size={16}/> : t('common.logout')}
-                </Button>
-            </div>
-        </aside>
-        {open && <button className="nav-scrim" aria-label={t('shell.closeNavigation')} onClick={() => setOpen(false)}/>}
-        <div className="workspace-content" inert={open}>
-            <header className="app-topbar">
-                <button ref={menuButton} aria-controls="portal-navigation" className="mobile-menu icon-button"
-                        aria-label={t('shell.openNavigation')} aria-expanded={open} onClick={() => setOpen(true)}><Menu size={20}/>
-                </button>
-                <div className="topbar-location">
-                    <span>UAV PAS</span>
-                    <span>/</span>
-                    <span>{t('shell.operationsSection')}</span>
-                    {activeNav && <>
-                        <span>/</span>
-                        <strong className="text-[#ab2523] font-semibold">{getNavLabel(activeNav)}</strong>
-                    </>}
-                </div>
-                <div className="account-summary">
-                    <LanguageSwitcher variant="compact"/>
-                    <NotificationBell/>
-                    <span className="avatar-chip">{name.slice(0, 1).toUpperCase()}</span>
-                    <div className="leading-tight">
-                        <strong>{name}</strong>
-                        <small className="text-[11px] font-mono uppercase tracking-wider text-slate-500">{roleLabel}</small>
+                {!railCollapsed && (
+                    <div className="mb-2 px-2.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        {t('shell.operationsSection')}
                     </div>
+                )}
+                <nav aria-label={t('shell.operationsSection')} className="flex flex-1 flex-col gap-1 overflow-y-auto">
+                    {visibleNav.map((item) => {
+                        const {href, icon: Icon} = item;
+                        const label = getNavLabel(item);
+                        const active = href === activeNav?.href;
+                        return (
+                            <Link
+                                key={href}
+                                href={href}
+                                onClick={() => setOpen(false)}
+                                aria-current={active ? 'page' : undefined}
+                                aria-label={label}
+                                title={railCollapsed ? label : undefined}
+                                className={cn(
+                                    'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors',
+                                    active ? 'bg-uav-red-light text-primary' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                                    railCollapsed && 'justify-center px-0'
+                                )}
+                            >
+                                <Icon size={18} className="shrink-0"/>
+                                {!railCollapsed && <span className="truncate">{label}</span>}
+                            </Link>
+                        );
+                    })}
+                </nav>
+                <div className="mt-auto border-t border-slate-100 pt-3 space-y-2">
+                    {!railCollapsed && (
+                        <p className="px-2 text-[11px] font-medium text-slate-400">
+                            UAV PAS <span className="block text-[10px]">{t('shell.vjuUniversity')}</span>
+                        </p>
+                    )}
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => void logout()}
+                        leftIcon={railCollapsed ? undefined : <LogOut size={16}/>}
+                        aria-label={t('common.logout')}
+                        title={railCollapsed ? t('common.logout') : undefined}
+                        className={cn("w-full text-slate-500 hover:bg-slate-100 hover:text-slate-900", railCollapsed ? "justify-center px-0" : "justify-start")}
+                    >
+                        {railCollapsed ? <LogOut size={16}/> : t('common.logout')}
+                    </Button>
                 </div>
-            </header>
-            <main id="workspace" className="app-main" tabIndex={-1}>{children}</main>
+            </aside>
+            {open && (
+                <button
+                    className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-xs lg:hidden"
+                    aria-label={t('shell.closeNavigation')}
+                    onClick={() => setOpen(false)}
+                />
+            )}
+            <div className="flex min-w-0 flex-1 flex-col" inert={open}>
+                <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-4 border-b border-border bg-card/90 px-4 sm:px-6 backdrop-blur-md">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <button
+                            ref={menuButton}
+                            aria-controls="portal-navigation"
+                            className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border text-slate-700 hover:bg-slate-100"
+                            aria-label={t('shell.openNavigation')}
+                            aria-expanded={open}
+                            onClick={() => setOpen(true)}
+                        >
+                            <Menu size={20}/>
+                        </button>
+                        <div className="flex flex-wrap items-center gap-1.5 text-sm text-slate-500 truncate">
+                            <span>UAV PAS</span>
+                            <span>/</span>
+                            <span>{t('shell.operationsSection')}</span>
+                            {activeNav && (
+                                <>
+                                    <span>/</span>
+                                    <strong className="text-primary font-semibold">{getNavLabel(activeNav)}</strong>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <LanguageSwitcher variant="compact"/>
+                        <NotificationBell/>
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shrink-0">
+                            {name.slice(0, 1).toUpperCase()}
+                        </span>
+                        <div className="hidden sm:flex flex-col leading-tight">
+                            <strong className="text-sm font-semibold text-slate-800">{name}</strong>
+                            <small className="text-[11px] font-medium text-slate-500">{roleLabel}</small>
+                        </div>
+                    </div>
+                </header>
+                <main id="workspace" className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6 lg:p-8 space-y-6 outline-none" tabIndex={-1}>
+                    {children}
+                </main>
+            </div>
         </div>
-    </div>;
+    );
 }

@@ -1,8 +1,8 @@
 'use client';
 import {useQuery} from '@tanstack/react-query';
 import {useAuth} from '@/contexts/AuthContext';
-import {queryKeys} from '@/lib/query-keys';
-import {fetchCollection} from '@/lib/collection';
+import {queryKeys} from '@/lib/query';
+import {fetchCollection} from '@/lib/api/collection';
 import type {AuditLog, Equipment, InventoryMovement, MediaAsset, Station, Uav} from "@/types/resources";
 import type {User} from '@/features/access/types/access.types';
 import type {Mission} from '@/features/missions/types/mission.types';

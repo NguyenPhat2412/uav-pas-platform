@@ -1,1 +1,5 @@
-export {default} from '@/features/dashboard/pages/operations/overview';
+import OperationsOverviewPanel from '@/features/dashboard/components/OperationsOverviewPanel';
+
+export default function OperationsOverviewRoutePage() {
+    return <OperationsOverviewPanel/>;
+}

@@ -1,1 +1,5 @@
-export {default} from '@/features/missions/pages/operations/assigned-missions';
+import AssignedMissionsPanel from '@/features/missions/components/operations/AssignedMissionsPanel';
+
+export default function OperationsAssignedMissionsRoutePage() {
+    return <AssignedMissionsPanel/>;
+}

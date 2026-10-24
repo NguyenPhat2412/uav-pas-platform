@@ -2,8 +2,8 @@
 
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
-import type {AuthResponse, RegisterRequest, UserResponse} from "@/features/auth/types/session";
-import {authService} from "@/features/auth/api/session";
+import type {AuthResponse, RegisterRequest, UserResponse} from "@/features/auth/types/auth.types";
+import {authService} from "@/features/auth/services/auth.service";
 import {apiClient, PERMISSIONS_EVENT, SESSION_EVENT, setAuthSession} from "@/lib/api";
 import {toast} from '@/contexts/ToastContext';
 import {useI18n} from '@/contexts/I18nContext';

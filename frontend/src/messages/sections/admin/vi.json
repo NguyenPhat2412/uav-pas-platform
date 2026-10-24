@@ -39,6 +39,18 @@
       "webhooks": {
         "title": "Quản lý Webhooks & Tích hợp",
         "meta": "Đăng ký nhận sự kiện và theo dõi kết quả phân phối thực tế"
+      },
+      "notifications": {
+        "title": "Thông báo"
+      },
+      "fleetMap": {
+        "title": "Bản đồ đội UAV"
+      },
+      "services": {
+        "title": "Danh mục dịch vụ"
+      },
+      "profile": {
+        "title": "Hồ sơ của tôi"
       }
     },
     "page": {
@@ -235,10 +247,30 @@
         "event": "Sự kiện",
         "status": "Trạng thái",
         "attempts": "Số lần thử",
-        "time": "Thời gian"
+        "time": "Thời gian",
+        "actions": "Thao tác"
       },
       "legacyEvent": "Lịch sử cũ",
-      "noResponse": "Chưa có"
+      "noResponse": "Chưa có",
+      "crud": {
+        "add": "Thêm đích nhận",
+        "colName": "Đích nhận",
+        "colEvents": "Sự kiện",
+        "colActive": "Trạng thái",
+        "toggleLabel": "Bật hoặc tắt {name}",
+        "delete": "Xóa {name}",
+        "deleteConfirm": "Xóa đích nhận {name}? Các lần gửi đang chờ sẽ bị hủy.",
+        "title": "Thêm đích nhận webhook",
+        "name": "Tên hiển thị",
+        "url": "URL nhận (HTTPS)",
+        "urlHint": "Chỉ chấp nhận địa chỉ HTTPS công khai; địa chỉ nội bộ sẽ bị từ chối.",
+        "secret": "Khóa ký (secret)",
+        "regenerate": "Tạo mới",
+        "secretHint": "Dùng để ký nội dung gửi đi. Lưu lại khóa này ở hệ thống nhận; sau khi lưu chỉ còn hiện 4 ký tự cuối.",
+        "events": "Sự kiện đăng ký",
+        "cancel": "Hủy",
+        "submit": "Lưu đích nhận"
+      }
     },
     "users": {
       "allAccounts": "Tất cả tài khoản",
@@ -523,6 +555,210 @@
         "PENDING_STALE": "{count} yêu cầu chờ xác nhận quá 24 giờ",
         "INVOICE_OVERDUE": "{count} hóa đơn quá hạn thanh toán",
         "WEBHOOK_FAILURES": "{count} lần gửi webhook thất bại trong 24 giờ"
+      },
+      "allNotifications": "Xem tất cả thông báo →"
+    },
+    "account": {
+      "open": "Mở menu tài khoản của {name}",
+      "menu": "Tài khoản",
+      "myAccount": "Tài khoản của tôi",
+      "operations": "Chuyển sang cổng Điều phối",
+      "settings": "Cấu hình hệ thống"
+    },
+    "notifications": {
+      "readFilter": "Lọc theo trạng thái đọc",
+      "filter": {
+        "all": "Tất cả",
+        "unread": "Chưa đọc",
+        "read": "Đã đọc"
+      },
+      "search": "Tìm tiêu đề hoặc nội dung",
+      "type": "Loại thông báo",
+      "allTypes": "Tất cả loại",
+      "types": {
+        "MISSION_ASSIGNED": "Phân công nhiệm vụ",
+        "MISSION_STATUS_CHANGED": "Trạng thái nhiệm vụ",
+        "SAR_TARGET_FOUND": "Phát hiện mục tiêu SAR",
+        "QUOTA_WARNING": "Cảnh báo hạn mức",
+        "PAYMENT": "Thanh toán",
+        "SYSTEM": "Hệ thống"
+      },
+      "markAll": "Đánh dấu tất cả đã đọc",
+      "markRead": "Đánh dấu đã đọc",
+      "send": "Gửi thông báo",
+      "table": "Bảng thông báo",
+      "col": {
+        "status": "Trạng thái",
+        "content": "Nội dung",
+        "type": "Loại",
+        "reference": "Liên quan",
+        "time": "Thời gian",
+        "actions": "Thao tác"
+      },
+      "read": "Đã đọc",
+      "unread": "Chưa đọc",
+      "empty": "Bạn chưa có thông báo nào.",
+      "noMatch": "Không có thông báo nào khớp bộ lọc trên trang này.",
+      "filterHint": "Bộ lọc trạng thái, loại và tìm kiếm áp dụng cho trang đang xem.",
+      "sendTitle": "Gửi thông báo cho người dùng",
+      "recipient": "Người nhận",
+      "recipientSearch": "Nhập ít nhất 2 ký tự tên, email hoặc tên đăng nhập",
+      "noRecipient": "Không tìm thấy người dùng.",
+      "change": "Đổi",
+      "titleField": "Tiêu đề",
+      "contentField": "Nội dung",
+      "cancel": "Hủy",
+      "submit": "Gửi",
+      "sent": "Đã gửi thông báo cho {name}."
+    },
+    "fleetMap": {
+      "all": "Tất cả",
+      "refresh": "Làm mới",
+      "manage": "Quản lý đội UAV",
+      "positionNote": "Vị trí được suy ra: UAV đã phân công hoặc đang bay hiển thị tại vị trí nhiệm vụ, các UAV khác tại trạm đóng. Đây chưa phải GPS thời gian thực.",
+      "listLabel": "Danh sách UAV",
+      "search": "Tìm model, số seri, trạm, mã nhiệm vụ",
+      "emptyFilter": "Không có UAV nào khớp bộ lọc.",
+      "summary": "{located}/{total} UAV có vị trí trên bản đồ",
+      "atMission": "Tại nhiệm vụ {code}",
+      "atStation": "Tại trạm {name}",
+      "noPosition": "Chưa xác định vị trí (chưa gắn trạm)",
+      "mapAria": "Bản đồ {count} UAV có vị trí",
+      "stationTooltip": "Trạm {name} · {count} UAV",
+      "station": "Trạm",
+      "updatedAt": "Cập nhật lúc {time} · tự làm mới mỗi phút",
+      "field": {
+        "serial": "Số seri",
+        "manufacturer": "Nhà sản xuất",
+        "status": "Trạng thái",
+        "station": "Trạm đóng",
+        "position": "Vị trí",
+        "lastMaintenance": "Bảo trì gần nhất"
+      },
+      "noStation": "Chưa gắn trạm",
+      "editInOperations": "Sửa trong cổng Điều phối →",
+      "closeDetail": "Đóng chi tiết",
+      "activeMission": "Nhiệm vụ hiện tại",
+      "noActiveMission": "Không có nhiệm vụ đang giữ UAV này.",
+      "history": "Lịch sử thay đổi trạng thái",
+      "noHistory": "Chưa có thay đổi trạng thái nào.",
+      "changedBy": "bởi {name}"
+    },
+    "invoices": {
+      "tabs": {
+        "label": "Gói cước và hóa đơn",
+        "plans": "Gói cước & hạn mức",
+        "invoices": "Hóa đơn"
+      },
+      "filter": {
+        "ALL": "Tất cả",
+        "PENDING": "Chờ thanh toán",
+        "OVERDUE": "Quá hạn",
+        "PAID": "Đã thanh toán",
+        "FAILED": "Thất bại",
+        "CANCELLED": "Đã hủy"
+      },
+      "status": {
+        "PENDING": "Chờ thanh toán",
+        "PAID": "Đã thanh toán",
+        "FAILED": "Thất bại",
+        "CANCELLED": "Đã hủy"
+      },
+      "overdue": "Quá hạn",
+      "create": "Phát hành hóa đơn",
+      "table": "Bảng hóa đơn",
+      "col": {
+        "code": "Mã hóa đơn",
+        "customer": "Khách hàng",
+        "item": "Nhiệm vụ / Gói",
+        "amount": "Số tiền",
+        "status": "Trạng thái",
+        "due": "Hạn thanh toán",
+        "paid": "Ngày thanh toán"
+      },
+      "empty": "Chưa có hóa đơn nào.",
+      "emptyFilter": "Không có hóa đơn nào khớp bộ lọc.",
+      "created": "Đã phát hành hóa đơn {code}.",
+      "createTitle": "Phát hành hóa đơn mới",
+      "customer": "Khách hàng",
+      "customerSearch": "Nhập ít nhất 2 ký tự tên, email hoặc tên đăng nhập",
+      "noCustomer": "Không tìm thấy khách hàng.",
+      "change": "Đổi",
+      "amount": "Số tiền (VND)",
+      "plan": "Gói cước",
+      "missionId": "Mã số nhiệm vụ (ID)",
+      "none": "Không chọn",
+      "notes": "Ghi chú",
+      "cancel": "Hủy",
+      "submit": "Phát hành"
+    },
+    "services": {
+      "filter": {
+        "all": "Tất cả",
+        "active": "Đang mở",
+        "inactive": "Đã tắt"
+      },
+      "search": "Tìm mã, tên hoặc mô tả",
+      "summary": "{active}/{total} dịch vụ đang mở",
+      "add": "Thêm dịch vụ",
+      "table": "Bảng dịch vụ UAV",
+      "col": {
+        "service": "Dịch vụ",
+        "description": "Mô tả",
+        "duration": "Thời lượng mặc định",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "minutes": "{count} phút",
+      "toggleLabel": "Bật hoặc tắt {name}",
+      "deactivateConfirm": "Tắt dịch vụ {name}? Khách hàng sẽ không thể đặt dịch vụ này nữa; các nhiệm vụ đã có vẫn giữ nguyên.",
+      "active": "Đang mở",
+      "inactive": "Đã tắt",
+      "edit": "Sửa {name}",
+      "empty": "Không có dịch vụ nào khớp bộ lọc.",
+      "note": "Dịch vụ đã tắt sẽ ẩn khỏi danh mục của khách hàng. Mã dịch vụ không sửa được vì các nhiệm vụ đã tạo tham chiếu tới nó.",
+      "addTitle": "Thêm dịch vụ UAV",
+      "editTitle": "Sửa dịch vụ",
+      "code": "Mã dịch vụ",
+      "codeHint": "Chữ in hoa, số và dấu gạch dưới; không đổi được sau khi tạo.",
+      "name": "Tên dịch vụ",
+      "description": "Mô tả",
+      "duration": "Thời lượng mặc định (phút)",
+      "cancel": "Hủy",
+      "save": "Lưu"
+    },
+    "profile": {
+      "title": "Thông tin tài khoản",
+      "username": "Tên đăng nhập",
+      "email": "Email",
+      "role": "Vai trò",
+      "fullName": "Họ tên",
+      "phone": "Số điện thoại",
+      "save": "Lưu thay đổi",
+      "saved": "Đã lưu hồ sơ. Tên hiển thị trên thanh trên cập nhật sau khi tải lại trang.",
+      "reload": "Tải bản mới nhất",
+      "password": {
+        "title": "Đổi mật khẩu",
+        "current": "Mật khẩu hiện tại",
+        "new": "Mật khẩu mới",
+        "confirm": "Nhập lại mật khẩu mới",
+        "hint": "Tối thiểu 8 ký tự. Sau khi đổi, mọi phiên đăng nhập (kể cả phiên này) phải đăng nhập lại.",
+        "tooShort": "Mật khẩu mới cần ít nhất 8 ký tự.",
+        "mismatch": "Hai mật khẩu mới chưa khớp.",
+        "submit": "Đổi mật khẩu",
+        "done": "Đã đổi mật khẩu. Vui lòng đăng nhập lại bằng mật khẩu mới.",
+        "signInAgain": "Đăng nhập lại"
+      },
+      "errors": {
+        "nameTooLong": "Họ tên không được vượt quá 100 ký tự.",
+        "phoneRequired": "Vui lòng nhập số điện thoại.",
+        "phoneTooLong": "Số điện thoại không được vượt quá 20 ký tự.",
+        "phoneTaken": "Số điện thoại đã được sử dụng. Vui lòng nhập số khác.",
+        "conflict": "Hồ sơ đã thay đổi ở nơi khác. Nội dung bạn đang nhập vẫn được giữ lại. Hãy tải bản mới nhất trước khi sửa tiếp.",
+        "session": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+        "forbidden": "Tài khoản hiện không thể cập nhật hồ sơ. Vui lòng liên hệ quản trị viên.",
+        "uncertain": "Chưa xác nhận được kết quả lưu. Nội dung đang nhập vẫn được giữ lại; hãy kiểm tra bản mới nhất khi kết nối ổn định.",
+        "other": "Không thể lưu hồ sơ. Vui lòng kiểm tra họ tên và số điện thoại rồi thử lại."
       }
     }
   }

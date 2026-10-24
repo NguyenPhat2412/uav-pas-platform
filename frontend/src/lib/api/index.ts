@@ -1,8 +1,32 @@
-import type {ApiError as ApiErrorShape} from "@/types";
-import {toast} from "@/contexts/ToastContext";
-import {getPresentationLocale, type PresentationLocale} from "@/components/shared/presentation";
+import type { ApiError as ApiErrorShape } from "@/types";
+export { API_ROUTES, type ApiRoutes } from "@/lib/api/routes";
 
-export {API_ROUTES, type ApiRoutes} from "@/lib/api/routes";
+type PresentationLocale = 'vi' | 'en' | 'ja';
+
+function currentLocale(): PresentationLocale {
+    if (typeof document !== 'undefined' && document.documentElement?.lang) {
+        const lang = document.documentElement.lang.toLowerCase();
+        if (lang.startsWith('en')) return 'en';
+        if (lang.startsWith('ja') || lang.startsWith('jp')) return 'ja';
+    }
+    if (typeof window !== 'undefined' && window.localStorage) {
+        try {
+            const saved = window.localStorage.getItem('uav_locale')?.toLowerCase();
+            if (saved === 'en') return 'en';
+            if (saved === 'ja' || saved === 'jp') return 'ja';
+        } catch {
+            // ignore
+        }
+    }
+    return 'vi';
+}
+
+function dispatchErrorToast(message: string, title: string) {
+    if (typeof window !== 'undefined' && typeof CustomEvent !== 'undefined') {
+        const id = 'toast_' + Math.random().toString(36).substring(2, 9);
+        window.dispatchEvent(new CustomEvent('uav:toast', { detail: { id, type: 'error', message, title } }));
+    }
+}
 
 export type RequestOptions = Omit<RequestInit, 'body' | 'headers'> & {
     body?: unknown;
@@ -13,6 +37,10 @@ export type RequestOptions = Omit<RequestInit, 'body' | 'headers'> & {
 // Backend auth and account errors are English constants; show them in the portal language.
 const apiMessages: Record<PresentationLocale, Record<string, string>> = {
     vi: {
+        'Current password is incorrect': 'Mật khẩu hiện tại không đúng.',
+        'New password must differ from the current password': 'Mật khẩu mới phải khác mật khẩu hiện tại.',
+        'Service code already exists': 'Mã dịch vụ này đã tồn tại.',
+        'Service not found': 'Không tìm thấy dịch vụ.',
         'Invalid username/email or password': 'Tên đăng nhập, email hoặc mật khẩu không đúng.',
         'Account is not active': 'Tài khoản chưa được kích hoạt hoặc đã bị khóa.',
         'User not found': 'Không tìm thấy tài khoản.',
@@ -21,6 +49,10 @@ const apiMessages: Record<PresentationLocale, Record<string, string>> = {
         'Phone number already exists in the system': 'Số điện thoại này đã được sử dụng.',
     },
     en: {
+        'Current password is incorrect': 'Your current password is incorrect.',
+        'New password must differ from the current password': 'Choose a new password that differs from the current one.',
+        'Service code already exists': 'This service code already exists.',
+        'Service not found': 'Service not found.',
         'Invalid username/email or password': 'Incorrect username, email or password.',
         'Account is not active': 'The account is not active or has been locked.',
         'User not found': 'Account not found.',
@@ -29,6 +61,10 @@ const apiMessages: Record<PresentationLocale, Record<string, string>> = {
         'Phone number already exists in the system': 'This phone number is already in use.',
     },
     ja: {
+        'Current password is incorrect': '現在のパスワードが正しくありません。',
+        'New password must differ from the current password': '新しいパスワードは現在のものと異なる必要があります。',
+        'Service code already exists': 'このサービスコードは既に存在します。',
+        'Service not found': 'サービスが見つかりません。',
         'Invalid username/email or password': 'ユーザー名、メールアドレス、またはパスワードが正しくありません。',
         'Account is not active': 'アカウントが有効化されていないか、ロックされています。',
         'User not found': 'アカウントが見つかりません。',
@@ -55,7 +91,7 @@ const apiMessageCodes: Record<string, string> = {
 };
 
 function localizeApiMessage(message: string | undefined): string | undefined {
-    return message ? apiMessages[getPresentationLocale()][message] ?? message : message;
+    return message ? apiMessages[currentLocale()][message] ?? message : message;
 }
 
 export class ApiError extends Error {
@@ -131,7 +167,7 @@ async function refreshAccess(generation: number) {
         requireCurrent(generation);
         if (!response.ok) {
             setAuthSession(null);
-            throw new ApiError(401, 'Unauthorized', clientText[getPresentationLocale()].sessionExpired, '/api/v1/auth/refresh', 'SESSION_EXPIRED');
+            throw new ApiError(401, 'Unauthorized', clientText[currentLocale()].sessionExpired, '/api/v1/auth/refresh', 'SESSION_EXPIRED');
         }
         const session = await response.json() as { accessToken?: string; refreshToken?: string };
         storeSession(session);
@@ -181,7 +217,8 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
     if (!response.ok) {
         if (isApiOrigin && typeof window !== 'undefined' && response.status === 403 && endpoint !== '/api/v1/permissions/me') {
             window.dispatchEvent(new Event(PERMISSIONS_EVENT));
-            toast.error(clientText[getPresentationLocale()].forbidden, clientText[getPresentationLocale()].forbiddenTitle);
+            const locale = currentLocale();
+            dispatchErrorToast(clientText[locale].forbidden, clientText[locale].forbiddenTitle);
         }
         let detail: Partial<ApiErrorShape> = {};
         try {
@@ -191,7 +228,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
         throw new ApiError(
             response.status,
             detail.error || response.statusText,
-            localizeApiMessage(detail.message) || clientText[getPresentationLocale()].failed(response.status),
+            localizeApiMessage(detail.message) || clientText[currentLocale()].failed(response.status),
             detail.path || endpoint,
             detail.code ?? (detail.message ? apiMessageCodes[detail.message] : undefined),
         );

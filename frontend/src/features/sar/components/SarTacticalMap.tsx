@@ -3,7 +3,7 @@
 import React, {useMemo, useState} from 'react';
 import {BatteryCharging, CheckCircle2, Compass, RotateCcw, Route, ShieldAlert, ZoomIn, ZoomOut} from 'lucide-react';
 import type {DetectionItem} from "@/features/sar/components/AiViewfinder";
-import {apiClient} from '@/lib/api.client';
+import {apiClient} from '@/lib/api';
 import {
     calculateRthFeasibility,
     generateExpandingSquarePattern,
@@ -111,23 +111,23 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
 
     return (
         <div
-            className="flex flex-col h-full bg-white text-slate-900 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+            className="flex flex-col h-full bg-card text-slate-900 rounded-2xl overflow-hidden border border-border shadow-sm">
             {/* Top Tactical Command Toolbar */}
             <div
-                className="flex flex-wrap items-center justify-between px-4 py-2.5 bg-slate-50 border-b border-slate-200 gap-2">
+                className="flex flex-wrap items-center justify-between px-4 py-2.5 bg-slate-50 border-b border-border gap-2">
                 <div className="flex items-center gap-2">
-                    <Compass size={17} className="text-[#007f3e] animate-spin-slow"/>
+                    <Compass size={17} className="text-success animate-spin-slow"/>
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-900">
             {t('opsShared.sar.map.title')}
           </span>
                     <span
-                        className="text-[10px] bg-[#fdf2f2] text-[#ab2523] px-2 py-0.5 rounded font-mono font-bold border border-[#fecaca]">
+                        className="text-[10px] bg-red-50 text-primary px-2 py-0.5 rounded tabular-nums font-bold border border-red-200">
             VJU DEFENSE OPS
           </span>
                 </div>
 
                 {/* Algorithm Control Hub */}
-                <div className="sar-command-controls flex items-center gap-2 text-xs">
+                <div className="flex max-w-full flex-wrap items-center gap-2 text-xs">
                     <button
                         type="button"
                         onClick={() => {
@@ -144,10 +144,10 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                                 }).catch(() => null);
                             }
                         }}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shadow-xs cursor-pointer ${
+                        className={`shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shadow-xs cursor-pointer ${
                             isGenerated
-                                ? 'bg-[#ab2523] hover:bg-[#8f1c1a] text-white'
-                                : 'bg-[#007f3e] hover:bg-[#006632] text-white'
+                                ? 'bg-primary hover:bg-primary-hover text-white'
+                                : 'bg-success hover:bg-emerald-800 text-white'
                         }`}
                     >
                         <Route size={14}/>
@@ -157,8 +157,8 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                     <button
                         type="button"
                         onClick={() => setShowFlightPath(!showFlightPath)}
-                        className={`px-2.5 py-1.5 rounded-lg font-bold transition border cursor-pointer ${
-                            showFlightPath ? 'bg-[#ecfdf5] text-[#007f3e] border-[#a7f3d0]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                        className={`shrink-0 whitespace-nowrap px-2.5 py-1.5 rounded-lg font-bold transition border cursor-pointer ${
+                            showFlightPath ? 'bg-emerald-50 text-success border-emerald-200' : 'bg-card text-slate-600 border-border hover:bg-slate-100'
                         }`}
                     >
                         {t('opsShared.sar.map.trail', {state: showFlightPath ? t('opsShared.sar.map.on') : t('opsShared.sar.map.off')})}
@@ -169,7 +169,7 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                     <button
                         type="button"
                         onClick={() => setZoom(prev => Math.min(prev + 0.2, 1.8))}
-                        className="p-1.5 bg-white hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 transition cursor-pointer"
+                        className="shrink-0 whitespace-nowrap p-1.5 bg-card hover:bg-slate-100 text-slate-700 rounded-lg border border-border transition cursor-pointer"
                         title={t('opsShared.sar.map.zoomIn')}
                         aria-label={t('opsShared.sar.map.zoomIn')}
                     >
@@ -178,7 +178,7 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                     <button
                         type="button"
                         onClick={() => setZoom(prev => Math.max(prev - 0.2, 0.8))}
-                        className="p-1.5 bg-white hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 transition cursor-pointer"
+                        className="shrink-0 whitespace-nowrap p-1.5 bg-card hover:bg-slate-100 text-slate-700 rounded-lg border border-border transition cursor-pointer"
                         title={t('opsShared.sar.map.zoomOut')}
                         aria-label={t('opsShared.sar.map.zoomOut')}
                     >
@@ -187,7 +187,7 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                     <button
                         type="button"
                         onClick={() => setZoom(1)}
-                        className="p-1.5 bg-white hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 transition cursor-pointer"
+                        className="shrink-0 whitespace-nowrap p-1.5 bg-card hover:bg-slate-100 text-slate-700 rounded-lg border border-border transition cursor-pointer"
                         title={t('opsShared.sar.map.resetZoom')}
                         aria-label={t('opsShared.sar.map.resetZoom')}
                     >
@@ -198,27 +198,27 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
 
             {/* Algorithm Telemetry Status Bar (Geofence + Battery RTH) */}
             <div
-                className="bg-white border-b border-slate-200 px-4 py-2 flex flex-wrap items-center justify-between text-xs gap-3">
+                className="bg-card border-b border-border px-4 py-2 flex flex-wrap items-center justify-between text-xs gap-3">
                 {/* Geofence Status */}
                 <div className="flex items-center gap-2">
-                    <span className="text-slate-500 font-mono text-[11px] font-bold">{t('opsShared.sar.map.geofenceLabel')}</span>
+                    <span className="text-slate-500 text-[11px] font-bold">{t('opsShared.sar.map.geofenceLabel')}</span>
                     {isUavInsideGeofence ? (
                         <span
-                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#ecfdf5] text-[#007f3e] border border-[#a7f3d0]">
+                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-success border border-emerald-200">
               <CheckCircle2 size={12}/> {t('opsShared.sar.map.insideCorridor')}
             </span>
                     ) : (
                         <span
-                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#fdf2f2] text-[#ab2523] border border-[#fecaca] animate-pulse">
+                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-50 text-primary border border-red-200 animate-pulse">
               <ShieldAlert size={12}/> {t('opsShared.sar.map.geofenceViolation')}
             </span>
                     )}
                 </div>
 
                 {/* Battery & RTH Feasibility */}
-                <div className="flex items-center gap-3 font-mono text-[11px]">
+                <div className="flex items-center gap-3 tabular-nums text-[11px]">
                     <div className="flex items-center gap-1.5 text-slate-700">
-                        <BatteryCharging size={15} className="text-[#007f3e]"/>
+                        <BatteryCharging size={15} className="text-success"/>
                         <span>{t('opsShared.sar.map.battery')} <strong className="text-slate-900">{uavBattery}%</strong></span>
                     </div>
                     <span className="text-slate-300">|</span>
@@ -233,8 +233,8 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                     </div>
                     <span className={`px-2 py-0.5 rounded font-bold ${
                         rthFeasibility.recommendedAction === 'CONTINUE_MISSION'
-                            ? 'bg-[#ecfdf5] text-[#007f3e]'
-                            : 'bg-[#fdf2f2] text-[#ab2523] animate-ping'
+                            ? 'bg-emerald-50 text-success'
+                            : 'bg-red-50 text-primary animate-ping'
                     }`}>
             {rthFeasibility.recommendedAction === 'CONTINUE_MISSION' ? t('opsShared.sar.map.safeContinue') : t('opsShared.sar.map.rthNow')}
           </span>
@@ -242,7 +242,7 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
             </div>
 
             {/* Interactive Tactical Canvas */}
-            <div className="relative flex-1 bg-[#f0f7ff] min-h-[380px] overflow-hidden select-none">
+            <div className="relative flex-1 bg-sky-50 min-h-[380px] overflow-hidden select-none">
                 <div
                     className="w-full h-full flex items-center justify-center transition-transform duration-300"
                     style={{transform: `scale(${zoom})`}}
@@ -254,37 +254,37 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                     >
                         <defs>
                             <pattern id="tacGrid" width="50" height="50" patternUnits="userSpaceOnUse">
-                                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#dbeafe" strokeWidth="0.8"/>
+                                <path d="M 50 0 L 0 0 0 50" fill="none" className="stroke-blue-100" strokeWidth="0.8"/>
                             </pattern>
 
                             <radialGradient id="radarPulse" cx="50%" cy="50%" r="50%">
-                                <stop offset="0%" stopColor="#007f3e" stopOpacity="0.35"/>
-                                <stop offset="70%" stopColor="#007f3e" stopOpacity="0.08"/>
-                                <stop offset="100%" stopColor="#007f3e" stopOpacity="0"/>
+                                <stop offset="0%" stopColor="var(--success)" stopOpacity="0.35"/>
+                                <stop offset="70%" stopColor="var(--success)" stopOpacity="0.08"/>
+                                <stop offset="100%" stopColor="var(--success)" stopOpacity="0"/>
                             </radialGradient>
                         </defs>
 
                         {/* Base tactical grid */}
-                        <rect width="1000" height="600" fill="#f0f7ff"/>
+                        <rect width="1000" height="600" className="fill-sky-50"/>
                         <rect width="1000" height="600" fill="url(#tacGrid)"/>
 
                         {/* Coastline */}
                         <path
                             d="M 50,0 Q 120,200 160,350 T 200,600"
                             fill="none"
-                            stroke="#334155"
+                            className="stroke-slate-700"
                             strokeWidth="3"
                         />
-                        <text x="70" y="260" fill="#64748b" fontSize="11" fontFamily="monospace" letterSpacing="2">
+                        <text x="70" y="260" className="fill-slate-500 font-sans" fontSize="11" letterSpacing="2">
                             {t('opsShared.sar.map.coastline')}
                         </text>
 
                         {/* Station Marker */}
                         <g transform="translate(180, 480)">
-                            <rect x="-14" y="-14" width="28" height="28" rx="4" fill="#0f172a" stroke="#007f3e"
+                            <rect x="-14" y="-14" width="28" height="28" rx="4" className="fill-slate-900 stroke-success"
                                   strokeWidth="2"/>
-                            <circle cx="0" cy="0" r="4" fill="#007f3e"/>
-                            <text x="20" y="4" fill="#a7f3d0" fontSize="11" fontWeight="bold" fontFamily="sans-serif">
+                            <circle cx="0" cy="0" r="4" className="fill-success"/>
+                            <text x="20" y="4" className="fill-emerald-200 font-sans" fontSize="11" fontWeight="bold">
                                 {t('opsShared.sar.map.homeStation')}
                             </text>
                         </g>
@@ -292,13 +292,12 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                         {/* Search Area Polygon (Geofence) */}
                         <polygon
                             points={searchPolygonSvg}
-                            fill="#007f3e"
+                            className="fill-success stroke-success"
                             fillOpacity="0.12"
-                            stroke="#007f3e"
                             strokeWidth="2.5"
                             strokeDasharray="6 4"
                         />
-                        <text x="500" y="115" fill="#a7f3d0" fontSize="11" fontWeight="bold" fontFamily="monospace"
+                        <text x="500" y="115" className="fill-emerald-200 font-sans" fontSize="11" fontWeight="bold"
                               textAnchor="middle">
                             {t('opsShared.sar.map.searchArea')}
                         </text>
@@ -311,19 +310,18 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                                     y="-40"
                                     width="120"
                                     height="80"
-                                    fill={sec.status === 'CURRENT' ? '#064e3b' : '#0f172a'}
+                                    className={sec.status === 'CURRENT' ? 'fill-emerald-950 stroke-success' : 'fill-slate-900 stroke-slate-700'}
                                     fillOpacity={sec.status === 'CURRENT' ? '0.4' : '0.2'}
-                                    stroke={sec.status === 'CURRENT' ? '#007f3e' : '#334155'}
                                     strokeWidth="1"
                                     rx="4"
                                 />
-                                <text x="0" y="-15" fill="#94a3b8" fontSize="13" fontWeight="bold"
-                                      fontFamily="monospace" textAnchor="middle">
+                                <text x="0" y="-15" className="fill-slate-400 font-sans" fontSize="13" fontWeight="bold"
+                                      textAnchor="middle">
                                     SECTOR {sec.id}
                                 </text>
                                 <text x="0" y="8"
-                                      fill={sec.status === 'DONE' ? '#007f3e' : sec.status === 'CURRENT' ? '#38bdf8' : '#64748b'}
-                                      fontSize="10" fontFamily="sans-serif" textAnchor="middle">
+                                      className={`font-sans ${sec.status === 'DONE' ? 'fill-success' : sec.status === 'CURRENT' ? 'fill-sky-400' : 'fill-slate-500'}`}
+                                      fontSize="10" textAnchor="middle">
                                     {sec.label}
                                 </text>
                             </g>
@@ -335,17 +333,16 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                                 <polyline
                                     points={svgWaypoints.map(p => `${p.x},${p.y}`).join(' ')}
                                     fill="none"
-                                    stroke={isGenerated ? '#ab2523' : '#38bdf8'}
+                                    className={isGenerated ? 'stroke-primary' : 'stroke-sky-400'}
                                     strokeWidth={isGenerated ? '2.5' : '2'}
                                     strokeDasharray={isGenerated ? 'none' : '4 3'}
                                 />
                                 {svgWaypoints.map((p, i) => (
                                     <g key={i} transform={`translate(${p.x}, ${p.y})`}>
                                         <circle cx="0" cy="0" r={isGenerated ? '5' : '3'}
-                                                fill={isGenerated ? '#ab2523' : '#38bdf8'}/>
+                                                className={isGenerated ? 'fill-primary' : 'fill-sky-400'}/>
                                         {isGenerated && i > 0 && (
-                                            <text x="7" y="3" fill="#fecaca" fontSize="9" fontWeight="bold"
-                                                  fontFamily="monospace">
+                                            <text x="7" y="3" className="fill-red-200 font-sans" fontSize="9" fontWeight="bold">
                                                 WP{i}
                                             </text>
                                         )}
@@ -356,13 +353,13 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
 
                         {/* Last Known Position (LKP) Pin & Drift Radius */}
                         <g transform={`translate(${lkpPosition.x}, ${lkpPosition.y})`}>
-                            <circle cx="0" cy="0" r="50" fill="#ab2523" fillOpacity="0.12" stroke="#ab2523"
+                            <circle cx="0" cy="0" r="50" className="fill-primary stroke-primary" fillOpacity="0.12"
                                     strokeWidth="1.5" strokeDasharray="3 3"/>
-                            <circle cx="0" cy="0" r="8" fill="#ab2523" className="animate-ping" opacity="0.7"/>
-                            <circle cx="0" cy="0" r="5" fill="#8f1c1a"/>
-                            <rect x="12" y="-12" width="175" height="24" rx="4" fill="#450a0a" stroke="#ab2523"
+                            <circle cx="0" cy="0" r="8" className="fill-primary animate-ping" opacity="0.7"/>
+                            <circle cx="0" cy="0" r="5" className="fill-primary-hover"/>
+                            <rect x="12" y="-12" width="175" height="24" rx="4" className="fill-red-950 stroke-primary"
                                   strokeWidth="1"/>
-                            <text x="18" y="4" fill="#fecaca" fontSize="10" fontWeight="bold" fontFamily="sans-serif">
+                            <text x="18" y="4" className="fill-red-200 font-sans" fontSize="10" fontWeight="bold">
                                 🚩 {lkpPosition.label}
                             </text>
                         </g>
@@ -379,7 +376,7 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                                         label: pin.label,
                                         confidence: 0.94,
                                         box: {top: 40, left: 45, width: 10, height: 15},
-                                        color: pin.type === 'person' ? '#007f3e' : '#f59e0b',
+                                        color: pin.type === 'person' ? 'var(--success)' : 'var(--warning)',
                                         timestamp: '14:23:05',
                                         gpsEstimate: '20.7284° N, 107.0512° E',
                                         verified: true,
@@ -387,14 +384,13 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                                     if (onSelectCandidate) onSelectCandidate(candidate);
                                 }}
                             >
-                                <circle cx="0" cy="0" r="14" fill={pin.type === 'person' ? '#007f3e' : '#f59e0b'}
+                                <circle cx="0" cy="0" r="14" className={pin.type === 'person' ? 'fill-success' : 'fill-amber-500'}
                                         fillOpacity="0.2"/>
-                                <circle cx="0" cy="0" r="6" fill={pin.type === 'person' ? '#007f3e' : '#f59e0b'}
-                                        stroke="#ffffff" strokeWidth="2"/>
-                                <rect x="10" y="-11" width="128" height="22" rx="6" fill="#ffffff" stroke="#cbd5e1"
+                                <circle cx="0" cy="0" r="6" className={`${pin.type === 'person' ? 'fill-success' : 'fill-amber-500'} stroke-white`}
+                                        strokeWidth="2"/>
+                                <rect x="10" y="-11" width="128" height="22" rx="6" className="fill-white stroke-slate-300"
                                       strokeWidth="1" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.06))"/>
-                                <text x="16" y="4" fill="#0f172a" fontSize="10" fontWeight="bold"
-                                      fontFamily="sans-serif">
+                                <text x="16" y="4" className="fill-slate-900 font-sans" fontSize="10" fontWeight="bold">
                                     {pin.type === 'person' ? '👤' : '🛟'} {pin.label}
                                 </text>
                             </g>
@@ -403,21 +399,20 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
                         {/* Real-time UAV Marker with Heading & Radar Sweep */}
                         <g transform={`translate(${uavPosition.x}, ${uavPosition.y})`}>
                             <circle cx="0" cy="0" r="75" fill="url(#radarPulse)"/>
-                            <circle cx="0" cy="0" r="75" fill="none" stroke="#007f3e" strokeWidth="1.5"
+                            <circle cx="0" cy="0" r="75" fill="none" className="stroke-success" strokeWidth="1.5"
                                     strokeOpacity="0.3"/>
 
                             <g transform={`rotate(${uavPosition.heading})`}>
                                 <polygon
                                     points="0,-16 12,12 0,6 -12,12"
-                                    fill="#ab2523"
-                                    stroke="#ffffff"
+                                    className="fill-primary stroke-white"
                                     strokeWidth="2"
                                 />
                             </g>
 
-                            <rect x="16" y="-12" width="134" height="24" rx="6" fill="#ffffff" stroke="#ab2523"
+                            <rect x="16" y="-12" width="134" height="24" rx="6" className="fill-white stroke-primary"
                                   strokeWidth="1.5" filter="drop-shadow(0 2px 4px rgba(171,37,35,0.15))"/>
-                            <text x="22" y="4" fill="#ab2523" fontSize="10" fontWeight="800" fontFamily="monospace">
+                            <text x="22" y="4" className="fill-primary font-sans" fontSize="10" fontWeight="800">
                                 UAV-01 · HDG 045° (VJU)
                             </text>
                         </g>
@@ -426,30 +421,30 @@ export function SarTacticalMap({selectedCandidate, onSelectCandidate}: SarTactic
             </div>
 
             {/* Structured Tactical Map Footer Bar (Aligned with AiViewfinder bottom panel) */}
-            <div className="px-4 py-3 bg-slate-50/70 border-t border-slate-200 flex flex-col justify-between gap-2.5">
+            <div className="px-4 py-3 bg-slate-50/70 border-t border-border flex flex-col justify-between gap-2.5">
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                     <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5 font-medium text-slate-700">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#ab2523] shrink-0"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></span>
               <span>{t('opsShared.sar.map.legendPath', {state: isGenerated ? t('opsShared.sar.map.legs', {count: svgWaypoints.length}) : t('opsShared.sar.map.notActivated')})}</span>
             </span>
                         <span className="flex items-center gap-1.5 font-medium text-slate-700">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#007f3e] shrink-0"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-success shrink-0"></span>
               <span>{t('opsShared.sar.map.legendGeofence')}</span>
             </span>
                     </div>
                 </div>
 
                 <div
-                    className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/80 text-[11px] font-mono text-slate-600">
+                    className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border/80 text-[11px] tabular-nums text-slate-600">
                     <div className="flex items-center gap-3">
-                        <span>LKP: <strong className="text-[#ab2523]">{lkpGps.lat}°N, {lkpGps.lng}°E</strong></span>
+                        <span>LKP: <strong className="text-primary">{lkpGps.lat}°N, {lkpGps.lng}°E</strong></span>
                         <span className="text-slate-300">|</span>
                         <span>HAVERSINE HOME: <strong
-                            className="text-[#007f3e]">{rthFeasibility.distanceHomeMeters}m</strong></span>
+                            className="text-success">{rthFeasibility.distanceHomeMeters}m</strong></span>
                     </div>
                     <span
-                        className="text-[10px] bg-white px-2.5 py-0.5 rounded-md border border-slate-200 font-bold text-slate-700">
+                        className="text-[10px] bg-card px-2.5 py-0.5 rounded-md border border-border font-bold text-slate-700">
             {t('opsShared.sar.map.scanningTarget')}
           </span>
                 </div>

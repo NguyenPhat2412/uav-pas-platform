@@ -13,7 +13,7 @@ import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {UavModelViewer} from '@/components/visuals/UavModelViewer';
 import {Pagination} from "@/components/data/ResourceState";
 import {UavLifecyclePanel} from "@/features/uavs/components/UavLifecyclePanel";
-import {uavHistoryReason} from "@/features/uavs/workflows";
+import {uavHistoryReason} from "@/features/uavs/utils/workflows";
 import {displayLabel, formatDate} from "@/components/shared/presentation";
 import type {Uav} from "@/types/resources";
 import {RequiredMark} from "@/components/shared/RequiredMark";
@@ -52,8 +52,8 @@ export function UavPanel() {
             accessorFn: (uav: Uav) => `${uav.model} ${uav.serialNumber}`,
             header: t('opsAssets.uav.model'),
             cell: ({row}: { row: { original: Uav } }) => <div><span
-                className="table-primary">{row.original.model}</span><span
-                className="table-secondary">{row.original.serialNumber}</span></div>
+                className="font-semibold text-slate-900">{row.original.model}</span><span
+                className="mt-0.5 block text-xs text-slate-500">{row.original.serialNumber}</span></div>
         },
         {
             accessorKey: 'status',
@@ -83,7 +83,7 @@ export function UavPanel() {
                                                                         onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.uav.closeForm') : t('opsAssets.uav.add')}</Button>
         </div>}
         {openCreate && can('UAV_MANAGE') &&
-            <form className="schema-form rounded-lg border border-slate-200 bg-slate-50 p-4" onSubmit={async event => {
+            <form className="space-y-4 rounded-lg border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 try {
                     await create.mutateAsync(form);
@@ -93,15 +93,15 @@ export function UavPanel() {
                 } catch { /* visible below */
                 }
             }}>
-                <div className="form-grid">
-                    <div className="form-field"><label htmlFor="uav-model">{t('opsAssets.uav.model')}<RequiredMark/></label><Input id="uav-model" required
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="uav-model">{t('opsAssets.uav.model')}<RequiredMark/></label><Input id="uav-model" required
                                                                                                  maxLength={100}
                                                                                                  value={form.model}
                                                                                                  onChange={e => setForm({
                                                                                                      ...form,
                                                                                                      model: e.target.value
                                                                                                  })}/></div>
-                    <div className="form-field"><label htmlFor="uav-serial">{t('opsAssets.uav.serial')}<RequiredMark/></label><Input id="uav-serial"
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="uav-serial">{t('opsAssets.uav.serial')}<RequiredMark/></label><Input id="uav-serial"
                                                                                                     required
                                                                                                     maxLength={100}
                                                                                                     value={form.serialNumber}
@@ -109,7 +109,7 @@ export function UavPanel() {
                                                                                                         ...form,
                                                                                                         serialNumber: e.target.value
                                                                                                     })}/></div>
-                    <div className="form-field"><label htmlFor="uav-maker">{t('opsAssets.uav.manufacturer')}<RequiredMark/></label><Input id="uav-maker"
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="uav-maker">{t('opsAssets.uav.manufacturer')}<RequiredMark/></label><Input id="uav-maker"
                                                                                                       required
                                                                                                       maxLength={120}
                                                                                                       value={form.manufacturer}
@@ -118,7 +118,7 @@ export function UavPanel() {
                                                                                                           manufacturer: e.target.value
                                                                                                       })}/></div>
                 </div>
-                <div className="form-actions"><Button size="sm" type="submit" isLoading={create.isPending}>{t('opsAssets.uav.create')}</Button></div>
+                <div className="mt-6 flex flex-wrap justify-end"><Button size="sm" type="submit" isLoading={create.isPending}>{t('opsAssets.uav.create')}</Button></div>
                 <ErrorNotice error={create.error}/></form>}
         <QueryState query={query}><DataTable label={t('opsAssets.uav.tableLabel')} data={rows} columns={columns} filters={[{
             column: 'status',

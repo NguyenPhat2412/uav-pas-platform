@@ -7,13 +7,13 @@ import {Panel} from "@/components/customer/ui";
 export default function CustomerNotFoundPage() {
     const {t} = useI18n();
     return (
-        <main style={{maxWidth: 580, margin: '64px auto', padding: '0 20px'}}>
+        <main className="mx-auto my-16 max-w-xl px-5">
             <Panel title={t('opsShared.routes.customer.notFoundTitle')}>
-                <p className="muted" style={{marginTop: 0, lineHeight: 1.6}}>
+                <p className="text-sm leading-relaxed text-slate-600">
                     {t('opsShared.routes.customer.notFoundDetail')}
                 </p>
-                <div className="form-actions" style={{marginTop: 16}}>
-                    <Link href="/customer/dashboard" className="button-link">
+                <div className="mt-4">
+                    <Link href="/customer/dashboard" className="text-sm font-bold text-primary hover:underline">
                         {t('opsShared.routes.customer.notFoundBack')}
                     </Link>
                 </div>

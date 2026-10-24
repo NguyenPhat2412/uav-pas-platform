@@ -4,11 +4,11 @@ import {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {useAuth} from '@/contexts/AuthContext';
-import {Alert, Button} from "@/components/admin/ui";
-import {QueryState} from "@/components/admin/data/WorkspaceState";
+import {Alert, Button} from "@/components/ui";
+import {QueryState} from "@/components/data/WorkspaceState";
 import {useAdminInvalidation, useAdminReferenceData} from "@/lib/query/admin";
 import {adminService} from "@/lib/api/admin";
-import {type Override, permissionState, saveChanges} from "@/features/access/permission-model";
+import {type Override, permissionState, saveChanges} from "@/features/access/utils/permission-model";
 import type {Permission, RoleTemplate, User} from "@/types/admin";
 import {Users} from "@/features/users/components/Users";
 import {useI18n} from '@/contexts/I18nContext';
@@ -46,7 +46,8 @@ export function TemplateEditor() {
     const {t} = useI18n();
     const template = templates.data?.find(item => item.role === role) ?? templates.data?.[0];
     return <QueryState query={permissions}><QueryState query={templates}>
-        <div className="space-y-5"><label className="form-field max-w-md">{t('admin.access.roleTemplate')}<select
+        <div className="space-y-5"><label className="flex max-w-md flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.access.roleTemplate')}<select
+            className="min-h-[44px] w-full rounded-[10px] border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground"
             value={template?.role ?? ''} onChange={e => {
             if (window.confirm(t('admin.access.switchTemplateConfirm'))) setRole(e.target.value);
         }}>{templates.data?.map(item => <option key={item.role}
@@ -117,8 +118,8 @@ function Matrix({permissions, template, target, values}: {
                                                                                       isLoading={reload.isPending}
                                                                                       onClick={() => reload.mutate()}>{t('admin.access.reloadActual')}</Button></Alert>}
         {reload.error && <Alert variant="error">{t('admin.access.reloadFailed')}</Alert>}
-        <div className="table-toolbar data-table permission-toolbar"><label className="table-search"><span
-            className="sr-only">{t('admin.access.filterLabel')}</span><input placeholder={t('admin.access.filterPlaceholder')} value={filter}
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-4 shadow-sm"><label className="flex min-h-[44px] min-w-[160px] max-w-[320px] flex-1 items-center gap-2 rounded-[10px] border border-border-input bg-card px-2.5 text-muted focus-within:outline-2 focus-within:outline-primary"><span
+            className="sr-only">{t('admin.access.filterLabel')}</span><input className="min-h-[42px] w-full min-w-0 bg-transparent text-sm text-foreground outline-none" placeholder={t('admin.access.filterPlaceholder')} value={filter}
                                                        onChange={e => setFilter(e.target.value)}/></label><span
             role="status">{t('admin.access.unsavedCount', {count: changes.length})}</span><Button
             disabled={!dirty || mutation.isPending || !!result} isLoading={mutation.isPending}
@@ -132,31 +133,31 @@ function Matrix({permissions, template, target, values}: {
         </details>}
         {modules.map(module => {
             const rows = permissions.filter(p => p.code.startsWith(module + '_') && (p.code + ' ' + permissionLabel(p.code, p.description)).toLowerCase().includes(filter.toLowerCase()));
-            return rows.length > 0 && <section key={module} className="data-table"><h3
-                className="console-panel-header font-semibold">{displayLabel(module)}</h3>
-                <div className="table-scroll" tabIndex={0} aria-label={t('admin.access.moduleTable', {module})}>
-                    <table className="console-table">
+            return rows.length > 0 && <section key={module} className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm"><h3
+                className="flex min-h-[52px] items-center justify-between border-b border-border px-[18px] py-3.5 text-[15px] font-semibold text-foreground">{displayLabel(module)}</h3>
+                <div className="max-h-[640px] overflow-auto" tabIndex={0} aria-label={t('admin.access.moduleTable', {module})}>
+                    <table className="w-full min-w-[560px] border-separate border-spacing-0 text-sm">
                         <thead>
                         <tr>
-                            <th>{t('admin.access.col.permission')}</th>
-                            <th>{t('admin.access.col.fromRole')}</th>
-                            <th>{dirty ? t('admin.access.col.expected') : t('admin.access.col.effective')}</th>
-                            <th>{t('admin.access.col.source')}</th>
-                            <th>{target ? t('admin.access.col.override') : t('admin.access.col.grant')}</th>
+                            <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">{t('admin.access.col.permission')}</th>
+                            <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">{t('admin.access.col.fromRole')}</th>
+                            <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">{dirty ? t('admin.access.col.expected') : t('admin.access.col.effective')}</th>
+                            <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">{t('admin.access.col.source')}</th>
+                            <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">{target ? t('admin.access.col.override') : t('admin.access.col.grant')}</th>
                         </tr>
                         </thead>
-                        <tbody>{rows.map(p => {
+                        <tbody className="divide-y divide-border">{rows.map(p => {
                             const value = p.code in draft ? draft[p.code] : (values[p.code] ?? (target ? null : false));
                             const effective = permissionState(p.code, template?.permissions, target ? value : undefined, !target || target.status === 'ACTIVE', t);
                             const allowed = target ? effective.allowed : value;
-                            return <tr key={p.code}>
-                                <td><strong className="table-primary">{p.code}</strong><span
-                                    className="table-secondary">{permissionLabel(p.code, p.description)}</span></td>
-                                <td>{template ? (template.permissions.includes(p.code) ? t('admin.access.allow') : t('admin.access.deny')) : t('admin.access.undetermined')}</td>
-                                <td>{allowed === null ? t('admin.access.undetermined') : allowed ? t('admin.access.allow') : t('admin.access.deny')}</td>
-                                <td>{target ? effective.source : t('admin.access.source.template')}</td>
-                                <td><select aria-label={target ? t('admin.access.selectOverride', {code: p.code}) : t('admin.access.selectTemplate', {code: p.code})}
-                                            className="permission-select" disabled={mutation.isPending || !!result}
+                            return <tr key={p.code} className="transition-colors hover:bg-background">
+                                <td className="px-4 py-3.5 align-middle text-foreground"><strong className="font-semibold text-foreground">{p.code}</strong><span
+                                    className="mt-0.5 block text-xs text-muted">{permissionLabel(p.code, p.description)}</span></td>
+                                <td className="px-4 py-3.5 align-middle text-foreground">{template ? (template.permissions.includes(p.code) ? t('admin.access.allow') : t('admin.access.deny')) : t('admin.access.undetermined')}</td>
+                                <td className="px-4 py-3.5 align-middle text-foreground">{allowed === null ? t('admin.access.undetermined') : allowed ? t('admin.access.allow') : t('admin.access.deny')}</td>
+                                <td className="px-4 py-3.5 align-middle text-foreground">{target ? effective.source : t('admin.access.source.template')}</td>
+                                <td className="px-4 py-3.5 align-middle text-foreground"><select aria-label={target ? t('admin.access.selectOverride', {code: p.code}) : t('admin.access.selectTemplate', {code: p.code})}
+                                            className="min-h-[44px] rounded-[10px] border border-border-input bg-card px-3 py-2 text-sm text-foreground disabled:opacity-55" disabled={mutation.isPending || !!result}
                                             value={value === null ? 'inherit' : String(value)}
                                             onChange={e => setDraft(d => ({
                                                 ...d,

@@ -12,9 +12,9 @@ const compile = value => `data:text/javascript;base64,${Buffer.from(ts.transpile
 }).outputText).toString('base64')}`;
 const labelsUrl = compile(await source('src/components/shared/presentation.ts'));
 const mediaPolicyUrl = compile(await source('src/lib/api/media-policy.ts'));
-const formsUrl = compile(await source('src/features/missions/workflows.ts'));
+const formsUrl = compile(await source('src/features/missions/utils/workflows.ts'));
 const {failureInput, reservationQuantity, missionEventNote, missionEventNoteLimit} = await import(formsUrl);
-const {missionControls} = await import(compile((await source('src/features/missions/presentation.ts')).replace('@/components/shared/presentation', labelsUrl)));
+const {missionControls} = await import(compile((await source('src/features/missions/utils/presentation.ts')).replace('@/components/shared/presentation', labelsUrl)));
 const apiUrl = compile(`
   export const API_ROUTES = {};
   export const requests = [];
@@ -22,9 +22,9 @@ const apiUrl = compile(`
   export const apiRequest = async () => {};
 `);
 const {requests} = await import(apiUrl);
-const {missionService} = await import(compile((await source('src/features/missions/services/mission.service.ts')).replace('@/lib/api.client', apiUrl).replace('@/features/missions/workflows', formsUrl).replace('@/lib/api/media-policy', mediaPolicyUrl)));
-const uavWorkflowsUrl = compile(await source('src/features/uavs/workflows.ts'));
-const {operationsService} = await import(compile((await source('src/lib/api/resources.ts')).replace('@/lib/api.client', apiUrl).replace('@/features/uavs/workflows', uavWorkflowsUrl)));
+const {missionService} = await import(compile((await source('src/features/missions/services/mission.service.ts')).replace('@/lib/api/media-policy', mediaPolicyUrl).replace('@/lib/api', apiUrl).replace('@/features/missions/utils/workflows', formsUrl)));
+const uavWorkflowsUrl = compile(await source('src/features/uavs/utils/workflows.ts'));
+const {operationsService} = await import(compile((await source('src/lib/api/resources.ts')).replace('@/lib/api', apiUrl).replace('@/features/uavs/utils/workflows', uavWorkflowsUrl)));
 
 test('failure requires assignment, status-update permission, and a permitted nonterminal state', () => {
     const statuses = ['DRAFT', 'PENDING_CONFIRMATION', 'CONFIRMED', 'RESOURCE_RESERVED', 'READY', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'REJECTED', 'FAILED'];

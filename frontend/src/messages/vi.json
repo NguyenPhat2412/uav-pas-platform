@@ -55,7 +55,8 @@
     "overview": "Tổng quan",
     "access": "Người dùng & Phân quyền",
     "system": "Hệ thống",
-    "account": "Tài khoản"
+    "account": "Tài khoản",
+    "fleet": "Đội bay"
   },
   "adminNav": {
     "dashboard": "Tổng quan",
@@ -67,7 +68,11 @@
     "reports": "Báo cáo & Thống kê",
     "webhooks": "Webhooks & Tích hợp",
     "settings": "Cấu hình hệ thống",
-    "auditLogs": "Nhật ký quản trị"
+    "auditLogs": "Nhật ký quản trị",
+    "notifications": "Thông báo",
+    "fleetMap": "Bản đồ đội UAV",
+    "uavs": "Đội UAV",
+    "services": "Danh mục dịch vụ"
   },
   "sidebar": {
     "title": "UAV PAS",

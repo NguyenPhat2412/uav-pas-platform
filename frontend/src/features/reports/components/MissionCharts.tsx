@@ -12,9 +12,9 @@ const MONTHS = 6;
 
 // Categorical slots in fixed order; validated for CVD separation (contrast relief = table view below).
 const outcomes = [
-    {key: 'active', label: 'admin.charts.outcome.active', color: '#2a78d6'},
-    {key: 'completed', label: 'admin.charts.outcome.completed', color: '#1baf7a'},
-    {key: 'stopped', label: 'admin.charts.outcome.stopped', color: '#eb6834'},
+    {key: 'active', label: 'admin.charts.outcome.active', color: 'var(--toast-info-border)'},
+    {key: 'completed', label: 'admin.charts.outcome.completed', color: 'var(--success)'},
+    {key: 'stopped', label: 'admin.charts.outcome.stopped', color: 'var(--warning)'},
 ] as const;
 type Outcome = typeof outcomes[number]['key'];
 
@@ -72,56 +72,56 @@ export function MissionCharts() {
     const typePeak = Math.max(1, ...types.map(item => item.count));
     const truncated = missions.data.totalElements > list.length;
 
-    return <div className="report-charts">
-        <section className="console-panel report-chart" aria-labelledby="monthly-title">
-            <header className="console-panel-header">
-                <h2 id="monthly-title">{t('admin.charts.monthlyTitle')}</h2>
-                <ul className="chart-legend">{outcomes.map(item => <li key={item.key}>
-                    <span style={{background: item.color}} aria-hidden="true"/>{t(item.label)}</li>)}</ul>
+    return <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <section className="min-w-0 rounded-xl border border-border bg-card pb-4 shadow-sm" aria-labelledby="monthly-title">
+            <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-5 py-4">
+                <h2 id="monthly-title" className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.charts.monthlyTitle')}</h2>
+                <ul className="m-0 flex list-none flex-wrap gap-x-3.5 gap-y-1.5 p-0 text-xs text-muted">{outcomes.map(item => <li key={item.key} className="inline-flex items-center gap-1.5">
+                    <span className="inline-block h-2.5 w-2.5 rounded-[3px]" style={{background: item.color}} aria-hidden="true"/>{t(item.label)}</li>)}</ul>
             </header>
-            <div className="chart-columns" role="img"
+            <div className="flex h-[220px] items-stretch gap-3 border-b border-border px-5 pt-3" role="img"
                  aria-label={t('admin.charts.monthlyAria', {months: MONTHS})}>
-                {months.map(month => <div key={month.key} className="chart-column"
+                {months.map(month => <div key={month.key} className="relative flex flex-1 flex-col items-center justify-end gap-1.5 pb-1.5"
                                           onMouseEnter={() => setHover(month.key)}
                                           onMouseLeave={() => setHover(null)}>
-                    {hover === month.key && <div className="chart-tooltip" role="tooltip">
+                    {hover === month.key && <div className="pointer-events-none absolute bottom-[calc(100%-40px)] z-10 grid min-w-[150px] gap-0.5 rounded-lg border border-border bg-card px-2.5 py-2 text-xs text-foreground shadow-lg" role="tooltip">
                         <strong>{t('admin.charts.monthTotal', {month: month.label, total: month.total})}</strong>
-                        {outcomes.map(item => <span key={item.key}><i style={{background: item.color}}/>{t(item.label)}: {month.counts[item.key]}</span>)}
+                        {outcomes.map(item => <span key={item.key} className="flex items-center gap-1.5 text-muted"><i className="inline-block h-2.5 w-2.5 rounded-[3px]" style={{background: item.color}}/>{t(item.label)}: {month.counts[item.key]}</span>)}
                     </div>}
-                    <div className="chart-stack" style={{height: `${(month.total / peak) * 100}%`}}>
+                    <div className="flex min-h-0 w-[min(36px,100%)] flex-col-reverse gap-0.5 overflow-hidden rounded-t" style={{height: `${(month.total / peak) * 100}%`}}>
                         {outcomes.map(item => month.counts[item.key] > 0 &&
-                            <span key={item.key} style={{flexGrow: month.counts[item.key], background: item.color}}/>)}
+                            <span key={item.key} className="min-h-[2px]" style={{flexGrow: month.counts[item.key], background: item.color}}/>)}
                     </div>
-                    <small>{month.label}</small>
+                    <small className="text-[11px] text-muted">{month.label}</small>
                 </div>)}
             </div>
-            <details className="chart-table">
-                <summary>{t('admin.charts.viewTable')}</summary>
-                <table className="console-table">
+            <details className="px-5 pt-3 text-[13px]">
+                <summary className="cursor-pointer text-muted hover:text-foreground">{t('admin.charts.viewTable')}</summary>
+                <table className="mt-2 w-full min-w-[560px] border-separate border-spacing-0 text-sm">
                     <thead>
                     <tr>
-                        <th>{t('admin.charts.month')}</th>
-                        {outcomes.map(item => <th key={item.key}>{t(item.label)}</th>)}
-                        <th>{t('admin.charts.total')}</th>
+                        <th className="border-b border-border bg-slate-50 px-4 py-2.5 text-left text-xs font-semibold text-slate-500">{t('admin.charts.month')}</th>
+                        {outcomes.map(item => <th key={item.key} className="border-b border-border bg-slate-50 px-4 py-2.5 text-left text-xs font-semibold text-slate-500">{t(item.label)}</th>)}
+                        <th className="border-b border-border bg-slate-50 px-4 py-2.5 text-left text-xs font-semibold text-slate-500">{t('admin.charts.total')}</th>
                     </tr>
                     </thead>
-                    <tbody>{months.map(month => <tr key={month.key}>
-                        <td>{month.label}</td>
-                        {outcomes.map(item => <td key={item.key}>{month.counts[item.key]}</td>)}
-                        <td>{month.total}</td>
+                    <tbody className="divide-y divide-border">{months.map(month => <tr key={month.key} className="transition-colors hover:bg-background">
+                        <td className="px-4 py-2.5 text-foreground">{month.label}</td>
+                        {outcomes.map(item => <td key={item.key} className="px-4 py-2.5 text-foreground">{month.counts[item.key]}</td>)}
+                        <td className="px-4 py-2.5 text-foreground">{month.total}</td>
                     </tr>)}</tbody>
                 </table>
             </details>
         </section>
-        <section className="console-panel report-chart" aria-labelledby="type-title">
-            <header className="console-panel-header"><h2 id="type-title">{t('admin.charts.typeTitle')}</h2></header>
-            {types.length ? <ul className="chart-bars">{types.map(item => <li key={item.type}>
-                <span className="chart-bar-label">{displayLabel(item.type)}</span>
-                <span className="chart-bar-track"><span className="chart-bar"
+        <section className="min-w-0 rounded-xl border border-border bg-card pb-4 shadow-sm" aria-labelledby="type-title">
+            <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-5 py-4"><h2 id="type-title" className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.charts.typeTitle')}</h2></header>
+            {types.length ? <ul className="m-0 grid list-none gap-3 px-5 pt-3">{types.map(item => <li key={item.type} className="grid grid-cols-[minmax(90px,140px)_1fr_auto] items-center gap-2.5 text-[13px]">
+                <span className="truncate text-muted">{displayLabel(item.type)}</span>
+                <span className="h-2.5 rounded bg-border"><span className="block h-full min-w-[4px] rounded bg-blue-600"
                                                          style={{width: `${(item.count / typePeak) * 100}%`}}/></span>
                 <strong>{item.count}</strong>
-            </li>)}</ul> : <p className="chart-empty">{t('admin.charts.empty')}</p>}
+            </li>)}</ul> : <p className="m-0 px-5 py-3 text-[13px] text-muted">{t('admin.charts.empty')}</p>}
         </section>
-        {truncated && <p className="text-xs text-slate-500">{t('admin.charts.truncated', {shown: list.length, total: missions.data.totalElements})}</p>}
+        {truncated && <p className="col-span-full m-0 text-xs text-slate-500">{t('admin.charts.truncated', {shown: list.length, total: missions.data.totalElements})}</p>}
     </div>;
 }

@@ -12,6 +12,14 @@ export const createQueryClient = () => new QueryClient({
 
 export const sessionKey = (subject: string, ...parts: unknown[]) => ['session', subject, ...parts] as const;
 
+/** Every Phase 1 cache belongs to the authenticated account. */
+export const queryKeys = {
+    feature: (userId: number | undefined, feature: string) => ['session', userId ?? 'anonymous', feature] as const,
+    list: (userId: number | undefined, feature: string, page = 0) => [...queryKeys.feature(userId, feature), 'list', page] as const,
+    detail: (userId: number | undefined, feature: string, id: number | undefined) => [...queryKeys.feature(userId, feature), 'detail', id] as const,
+    history: (userId: number | undefined, feature: string, id?: number) => [...queryKeys.feature(userId, feature), 'history', id] as const,
+};
+
 export const uavQueryKeys = {
     session: (subject?: number | string) => ['session', String(subject ?? 'anonymous')] as const,
     domain: (subject?: number | string, feature?: string) => ['session', String(subject ?? 'anonymous'), String(feature ?? 'default')] as const,

@@ -1,4 +1,4 @@
-import {API_ROUTES, apiClient} from '@/lib/api.client';
+import {API_ROUTES, apiClient} from '@/lib/api';
 import type {
     AuditLog,
     DashboardSummary,
@@ -87,6 +87,10 @@ export const adminService = {
         status: string;
         message: string
     }>(API_ROUTES.webhooks.test, {eventType: 'WEBHOOK_TEST'}),
+    createWebhook: (data: { name: string; targetUrl: string; secretKey: string; eventsSubscribed: string }) =>
+        apiClient.post<WebhookEndpointItem>(API_ROUTES.webhooks.list, data),
+    toggleWebhook: (id: number, active: boolean) => apiClient.put<void>(`${API_ROUTES.webhooks.detail(String(id))}/toggle?active=${active}`),
+    deleteWebhook: (id: number) => apiClient.delete<void>(API_ROUTES.webhooks.detail(String(id))),
 };
 
 

@@ -1,14 +1,8 @@
 import type {Metadata} from 'next';
-import "@/styles/styles.css";
-import "@/styles/web/globals.css";
-import "@/styles/web/public-pages.css";
-import "@/styles/web/accessibility.css";
-import "@/styles/web/home.css";
-import {PublicFooter} from "@/features/marketing/components/public-footer";
-import {PublicHeader} from "@/features/marketing/components/public-header";
-import {ToastProvider} from "@/contexts/ToastContext";
-
-import {publicUrl as siteUrl} from "@/features/marketing/content/origins";
+import {PublicFooter} from '@/features/marketing/components/public-footer';
+import {PublicHeader} from '@/features/marketing/components/public-header';
+import {ToastProvider} from '@/contexts/ToastContext';
+import {publicUrl as siteUrl} from '@/features/marketing/content/origins';
 
 export const metadata: Metadata = {
     metadataBase: new URL(siteUrl),
@@ -22,34 +16,41 @@ export const metadata: Metadata = {
         locale: 'vi_VN',
         siteName: 'UAV PAS',
         type: 'website',
-        images: ['/og-default.png']
+        images: ['/og-default.png'],
     },
     twitter: {
         card: 'summary_large_image',
         title: 'UAV PAS',
         description: 'Kết nối rõ ràng từ yêu cầu dịch vụ UAV đến điều phối nhiệm vụ.',
-        images: ['/og-default.png']
+        images: ['/og-default.png'],
     },
 };
 
-export default function Layout({children}: { children: React.ReactNode }) {
+export default function PublicLayout({children}: { children: React.ReactNode }) {
     const structuredData = {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         name: 'UAV PAS',
         inLanguage: 'vi',
-        url: siteUrl
+        url: siteUrl,
     };
-    return <html lang="vi">
-    <body>
-    <ToastProvider>
-        <a className="skip-link" href="#main-content">Chuyển đến nội dung chính</a>
-        <PublicHeader/>
-        <main id="main-content" tabIndex={-1}>{children}</main>
-        <PublicFooter/>
-    </ToastProvider>
-    <script type="application/ld+json"
-            dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData).replace(/</g, '\\u003c')}}/>
-    </body>
-    </html>;
+    return (
+        <div className="min-h-screen bg-card text-foreground">
+            <ToastProvider>
+                <a
+                    className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-card focus:px-4 focus:py-2 focus:font-bold focus:text-primary focus:shadow-lg"
+                    href="#main-content"
+                >
+                    Chuyển đến nội dung chính
+                </a>
+                <PublicHeader/>
+                <main id="main-content" tabIndex={-1}>{children}</main>
+                <PublicFooter/>
+            </ToastProvider>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData).replace(/</g, '\\u003c')}}
+            />
+        </div>
+    );
 }

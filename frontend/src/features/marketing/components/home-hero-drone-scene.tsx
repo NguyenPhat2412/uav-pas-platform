@@ -190,18 +190,23 @@ export function HeroDroneScene() {
     }, []);
 
     return (
-        <div className={fallback ? 'home-hero-visual is-fallback' : 'home-hero-visual'}>
-            <div className="home-hero-sun" aria-hidden="true"/>
-            <div className="home-hero-canvas" ref={hostRef} aria-hidden="true"/>
-            <div className="home-ruler home-ruler-x" aria-hidden="true">{gridColumns.map((label) => <span key={label}>{label}</span>)}</div>
-            <div className="home-ruler home-ruler-y" aria-hidden="true">{gridRows.map((label) => <span key={label}>{label}</span>)}</div>
-            <svg className="home-compass" viewBox="-24 -24 48 48" aria-hidden="true">
-                <circle r="20" fill="#fff" stroke="#e4d5d5"/>
-                <path d="M0 -15L5 0H-5z" fill="#ab2523"/>
-                <path d="M0 15L5 0H-5z" fill="#c9cdd4"/>
-                <text y="-24" textAnchor="middle" fontSize="7" fontWeight="700" fill="#ab2523" dy="-1">B</text>
+        <div className="relative min-h-[380px] overflow-hidden rounded-2xl border border-border bg-slate-50">
+            <div className="absolute inset-0" ref={hostRef} aria-hidden="true"/>
+            <div className="pointer-events-none absolute inset-x-4 top-2 flex justify-between tabular-nums text-[10px] text-slate-400" aria-hidden="true">
+                {gridColumns.map((label) => <span key={label}>{label}</span>)}
+            </div>
+            <div className="pointer-events-none absolute inset-y-4 left-2 flex flex-col justify-between tabular-nums text-[10px] text-slate-400" aria-hidden="true">
+                {gridRows.map((label) => <span key={label}>{label}</span>)}
+            </div>
+            <svg className="pointer-events-none absolute right-3 top-3 h-10 w-10" viewBox="-24 -24 48 48" aria-hidden="true">
+                <circle r="20" className="fill-white stroke-rose-200"/>
+                <path d="M0 -15L5 0H-5z" className="fill-primary"/>
+                <path d="M0 15L5 0H-5z" className="fill-slate-300"/>
+                <text y="-24" textAnchor="middle" fontSize="7" fontWeight="700" className="fill-primary" dy="-1">B</text>
             </svg>
-            <p className="home-grid-ref" aria-hidden="true">Lưới tham chiếu A–F · 1–5</p>
+            <p className="pointer-events-none absolute bottom-2 right-3 text-[10px] text-slate-400" aria-hidden="true">
+                Lưới tham chiếu A–F · 1–5
+            </p>
         </div>
     );
 }

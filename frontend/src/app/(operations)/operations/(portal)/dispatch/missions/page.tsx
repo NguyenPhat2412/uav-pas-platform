@@ -1,1 +1,5 @@
-export {default} from '@/features/missions/pages/operations/dispatch-missions';
+import DispatchMissionsPanel from '@/features/missions/components/operations/DispatchMissionsPanel';
+
+export default function OperationsDispatchMissionsRoutePage() {
+    return <DispatchMissionsPanel/>;
+}

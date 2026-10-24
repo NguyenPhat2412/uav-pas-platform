@@ -1,6 +1,6 @@
 'use client';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {apiClient} from '@/lib/api.client';
+import {apiClient} from '@/lib/api';
 import {useCustomerScope} from "@/lib/query/customer";
 import {type CustomerProfile, type ProfileFields, profilePayload} from "@/features/profile/forms/profile-form";
 

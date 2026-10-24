@@ -1,6 +1,10 @@
+import type {PageResponse} from '@/types';
+
+export type {PageResponse};
+
 export type MissionType = 'UAV_RENTAL' | 'AREA_INSPECTION' | 'AERIAL_RECORDING' | 'DATA_COLLECTION' | 'OTHER';
 export type MissionStatus =
-    'DRAFT'
+    | 'DRAFT'
     | 'PENDING_CONFIRMATION'
     | 'CONFIRMED'
     | 'RESOURCE_RESERVED'
@@ -13,18 +17,6 @@ export type MissionStatus =
 export type MissionPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
 export type MediaRole = 'INPUT' | 'FLIGHT_DATA' | 'OUTPUT' | 'DOCUMENT' | 'OTHER';
 export type MediaType = 'IMAGE' | 'VIDEO' | 'DOCUMENT';
-
-export interface PageResponse<T> {
-    content: T[];
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-    first: boolean;
-    last: boolean;
-    hasNext: boolean;
-    hasPrevious: boolean;
-}
 
 export interface Mission {
     id: number;
@@ -73,10 +65,10 @@ export interface MissionEvent {
 export interface MissionMedia {
     id: number;
     missionId: number;
-    mediaRole: MediaRole;
+    mediaRole: MediaRole | string;
     uploadedBy?: string;
     createdAt?: string;
-    media: { id: number; originalName: string; contentType: string; size: number; type: string; };
+    media: { id: number; originalName: string; contentType: string; size: number; type: string };
 }
 
 export interface MissionInput {

@@ -39,6 +39,18 @@
       "webhooks": {
         "title": "Webhooks & integrations",
         "meta": "Event subscriptions and actual delivery results"
+      },
+      "notifications": {
+        "title": "Notifications"
+      },
+      "fleetMap": {
+        "title": "Fleet map"
+      },
+      "services": {
+        "title": "Service catalog"
+      },
+      "profile": {
+        "title": "My profile"
       }
     },
     "page": {
@@ -235,10 +247,30 @@
         "event": "Event",
         "status": "Status",
         "attempts": "Attempts",
-        "time": "Time"
+        "time": "Time",
+        "actions": "Actions"
       },
       "legacyEvent": "Legacy history",
-      "noResponse": "None"
+      "noResponse": "None",
+      "crud": {
+        "add": "Add destination",
+        "colName": "Destination",
+        "colEvents": "Events",
+        "colActive": "Status",
+        "toggleLabel": "Turn {name} on or off",
+        "delete": "Delete {name}",
+        "deleteConfirm": "Delete destination {name}? Pending deliveries will be cancelled.",
+        "title": "Add webhook destination",
+        "name": "Display name",
+        "url": "Receiving URL (HTTPS)",
+        "urlHint": "Only public HTTPS addresses are accepted; internal addresses are rejected.",
+        "secret": "Signing secret",
+        "regenerate": "Regenerate",
+        "secretHint": "Used to sign payloads. Store it on the receiving system; after saving only the last 4 characters are shown.",
+        "events": "Subscribed events",
+        "cancel": "Cancel",
+        "submit": "Save destination"
+      }
     },
     "users": {
       "allAccounts": "All accounts",
@@ -523,6 +555,210 @@
         "PENDING_STALE": "{count} requests have waited over 24 hours for confirmation",
         "INVOICE_OVERDUE": "{count} invoices are past due",
         "WEBHOOK_FAILURES": "{count} webhook deliveries failed in the last 24 hours"
+      },
+      "allNotifications": "View all notifications →"
+    },
+    "account": {
+      "open": "Open account menu for {name}",
+      "menu": "Account",
+      "myAccount": "My account",
+      "operations": "Switch to Operations portal",
+      "settings": "System settings"
+    },
+    "notifications": {
+      "readFilter": "Filter by read status",
+      "filter": {
+        "all": "All",
+        "unread": "Unread",
+        "read": "Read"
+      },
+      "search": "Search title or content",
+      "type": "Notification type",
+      "allTypes": "All types",
+      "types": {
+        "MISSION_ASSIGNED": "Mission assigned",
+        "MISSION_STATUS_CHANGED": "Mission status",
+        "SAR_TARGET_FOUND": "SAR target found",
+        "QUOTA_WARNING": "Quota warning",
+        "PAYMENT": "Payment",
+        "SYSTEM": "System"
+      },
+      "markAll": "Mark all as read",
+      "markRead": "Mark as read",
+      "send": "Send notification",
+      "table": "Notifications table",
+      "col": {
+        "status": "Status",
+        "content": "Content",
+        "type": "Type",
+        "reference": "Related to",
+        "time": "Time",
+        "actions": "Actions"
+      },
+      "read": "Read",
+      "unread": "Unread",
+      "empty": "You don't have any notifications yet.",
+      "noMatch": "No notifications on this page match the filters.",
+      "filterHint": "Status, type and search filters apply to the page you are viewing.",
+      "sendTitle": "Send a notification to a user",
+      "recipient": "Recipient",
+      "recipientSearch": "Type at least 2 characters of a name, email or username",
+      "noRecipient": "No matching user.",
+      "change": "Change",
+      "titleField": "Title",
+      "contentField": "Message",
+      "cancel": "Cancel",
+      "submit": "Send",
+      "sent": "Notification sent to {name}."
+    },
+    "fleetMap": {
+      "all": "All",
+      "refresh": "Refresh",
+      "manage": "Manage UAV fleet",
+      "positionNote": "Positions are derived: assigned or flying UAVs are shown at their mission location, all others at their home station. This is not live GPS.",
+      "listLabel": "UAV list",
+      "search": "Search model, serial, station, mission code",
+      "emptyFilter": "No UAVs match the filters.",
+      "summary": "{located} of {total} UAVs have a position on the map",
+      "atMission": "At mission {code}",
+      "atStation": "At station {name}",
+      "noPosition": "Position unknown (no station)",
+      "mapAria": "Map of {count} located UAVs",
+      "stationTooltip": "Station {name} · {count} UAVs",
+      "station": "Station",
+      "updatedAt": "Updated at {time} · refreshes every minute",
+      "field": {
+        "serial": "Serial number",
+        "manufacturer": "Manufacturer",
+        "status": "Status",
+        "station": "Home station",
+        "position": "Position",
+        "lastMaintenance": "Last maintenance"
+      },
+      "noStation": "No station",
+      "editInOperations": "Edit in Operations portal →",
+      "closeDetail": "Close details",
+      "activeMission": "Current mission",
+      "noActiveMission": "No mission is holding this UAV.",
+      "history": "Status change history",
+      "noHistory": "No status changes yet.",
+      "changedBy": "by {name}"
+    },
+    "invoices": {
+      "tabs": {
+        "label": "Plans and invoices",
+        "plans": "Plans & quotas",
+        "invoices": "Invoices"
+      },
+      "filter": {
+        "ALL": "All",
+        "PENDING": "Unpaid",
+        "OVERDUE": "Overdue",
+        "PAID": "Paid",
+        "FAILED": "Failed",
+        "CANCELLED": "Cancelled"
+      },
+      "status": {
+        "PENDING": "Unpaid",
+        "PAID": "Paid",
+        "FAILED": "Failed",
+        "CANCELLED": "Cancelled"
+      },
+      "overdue": "Overdue",
+      "create": "Issue invoice",
+      "table": "Invoices table",
+      "col": {
+        "code": "Invoice",
+        "customer": "Customer",
+        "item": "Mission / plan",
+        "amount": "Amount",
+        "status": "Status",
+        "due": "Due date",
+        "paid": "Paid on"
+      },
+      "empty": "No invoices yet.",
+      "emptyFilter": "No invoices match the filter.",
+      "created": "Invoice {code} issued.",
+      "createTitle": "Issue a new invoice",
+      "customer": "Customer",
+      "customerSearch": "Type at least 2 characters of a name, email or username",
+      "noCustomer": "No matching customer.",
+      "change": "Change",
+      "amount": "Amount (VND)",
+      "plan": "Plan",
+      "missionId": "Mission ID",
+      "none": "None",
+      "notes": "Notes",
+      "cancel": "Cancel",
+      "submit": "Issue"
+    },
+    "services": {
+      "filter": {
+        "all": "All",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "search": "Search code, name or description",
+      "summary": "{active} of {total} services active",
+      "add": "Add service",
+      "table": "UAV services table",
+      "col": {
+        "service": "Service",
+        "description": "Description",
+        "duration": "Default duration",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "minutes": "{count} min",
+      "toggleLabel": "Turn {name} on or off",
+      "deactivateConfirm": "Deactivate {name}? Customers won't be able to book it; existing missions are unaffected.",
+      "active": "Active",
+      "inactive": "Inactive",
+      "edit": "Edit {name}",
+      "empty": "No services match the filter.",
+      "note": "Inactive services are hidden from the customer catalog. A service's code can't change because existing missions reference it.",
+      "addTitle": "Add UAV service",
+      "editTitle": "Edit service",
+      "code": "Service code",
+      "codeHint": "Uppercase letters, digits and underscores; can't be changed later.",
+      "name": "Service name",
+      "description": "Description",
+      "duration": "Default duration (minutes)",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "profile": {
+      "title": "Account details",
+      "username": "Username",
+      "email": "Email",
+      "role": "Role",
+      "fullName": "Full name",
+      "phone": "Phone number",
+      "save": "Save changes",
+      "saved": "Profile saved. The name in the top bar updates after you reload the page.",
+      "reload": "Load latest version",
+      "password": {
+        "title": "Change password",
+        "current": "Current password",
+        "new": "New password",
+        "confirm": "Confirm new password",
+        "hint": "At least 8 characters. After the change every session, including this one, has to sign in again.",
+        "tooShort": "The new password needs at least 8 characters.",
+        "mismatch": "The new passwords don't match.",
+        "submit": "Change password",
+        "done": "Password changed. Sign in again with your new password.",
+        "signInAgain": "Sign in again"
+      },
+      "errors": {
+        "nameTooLong": "Full name must be at most 100 characters.",
+        "phoneRequired": "Please enter a phone number.",
+        "phoneTooLong": "Phone number must be at most 20 characters.",
+        "phoneTaken": "This phone number is already in use. Please enter another one.",
+        "conflict": "Your profile was changed elsewhere. Your input is kept. Load the latest version before editing further.",
+        "session": "Your session has expired. Please sign in again.",
+        "forbidden": "This account cannot update its profile right now. Please contact an administrator.",
+        "uncertain": "The save could not be confirmed. Your input is kept; check the latest version once your connection is stable.",
+        "other": "Could not save the profile. Check your name and phone number, then try again."
       }
     }
   }

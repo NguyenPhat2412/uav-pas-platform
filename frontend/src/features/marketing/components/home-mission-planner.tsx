@@ -69,15 +69,15 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: Plan, w: number, h: numbe
     if (plan.poi) {
         const [x, y] = at(plan.poi);
         ctx.fillStyle = 'rgba(180,83,9,0.14)'; ctx.beginPath(); ctx.arc(x, y, 26, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#b45309'; ctx.fillRect(x - 9, y - 9, 18, 18);
+        ctx.fillStyle = 'rgb(180,83,9)'; ctx.fillRect(x - 9, y - 9, 18, 18);
     }
     if (plan.towers) {
         ctx.strokeStyle = 'rgba(180,83,9,0.6)'; ctx.lineWidth = 1.5; polyline(plan.towers); ctx.stroke();
-        plan.towers.map(at).forEach(([x, y]) => { ctx.fillStyle = '#b45309'; ctx.beginPath(); ctx.moveTo(x, y - 8); ctx.lineTo(x + 6, y + 6); ctx.lineTo(x - 6, y + 6); ctx.closePath(); ctx.fill(); });
+        plan.towers.map(at).forEach(([x, y]) => { ctx.fillStyle = 'rgb(180,83,9)'; ctx.beginPath(); ctx.moveTo(x, y - 8); ctx.lineTo(x + 6, y + 6); ctx.lineTo(x - 6, y + 6); ctx.closePath(); ctx.fill(); });
     }
     if (plan.site) {
         const [x, y] = at(plan.site);
-        ctx.strokeStyle = '#b45309'; ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgb(180,83,9)'; ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI * 2); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(x - 15, y); ctx.lineTo(x + 15, y); ctx.moveTo(x, y - 15); ctx.lineTo(x, y + 15); ctx.stroke();
     }
@@ -88,7 +88,7 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: Plan, w: number, h: numbe
     for (let i = 1; i < pts.length; i++) lengths.push(lengths[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
     const target = lengths[lengths.length - 1] * progress;
     let head = pts[0];
-    ctx.strokeStyle = '#ab2523'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgb(171,37,35)'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
     ctx.beginPath(); ctx.moveTo(head[0], head[1]);
     for (let i = 1; i < pts.length; i++) {
         if (lengths[i] <= target) { head = pts[i]; ctx.lineTo(head[0], head[1]); continue; }
@@ -99,10 +99,10 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: Plan, w: number, h: numbe
     }
     ctx.stroke();
     const [sx, sy] = at(station);
-    ctx.fillStyle = '#007f3e'; ctx.fillRect(sx - 8, sy - 8, 16, 16);
-    ctx.fillStyle = '#646464'; ctx.font = '600 10px ui-monospace, monospace'; ctx.fillText('TRẠM', sx + 13, sy + 4);
+    ctx.fillStyle = 'rgb(0,127,62)'; ctx.fillRect(sx - 8, sy - 8, 16, 16);
+    ctx.fillStyle = 'rgb(100,100,100)'; ctx.font = '600 10px ui-monospace, monospace'; ctx.fillText('TRẠM', sx + 13, sy + 4);
     ctx.fillStyle = 'rgba(171,37,35,0.18)'; ctx.beginPath(); ctx.arc(head[0], head[1], 12, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#ab2523'; ctx.beginPath(); ctx.arc(head[0], head[1], 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgb(171,37,35)'; ctx.beginPath(); ctx.arc(head[0], head[1], 5, 0, Math.PI * 2); ctx.fill();
 }
 
 export function MissionPlanner() {
@@ -148,32 +148,74 @@ export function MissionPlanner() {
     }, [kind]);
 
     return (
-        <div className="home-missions">
-            <div className="home-mission-side">
-                <div className="home-mission-tabs" role="tablist" aria-label="Dịch vụ">
-                    {missionPatterns.map((item) => (
-                        <button key={item.kind} type="button" role="tab" id={`home-tab-${item.kind}`} className="home-mission-tab"
-                                aria-selected={item.kind === kind} aria-controls="home-mission-map" onClick={() => setKind(item.kind)}>
-                            <span className="home-mission-icon"><MissionIcon kind={item.kind}/></span>
-                            <strong>{item.title}</strong>
-                            <span>{item.text}</span>
-                        </button>
-                    ))}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+            <div className="space-y-6 lg:col-span-5">
+                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-1" role="tablist" aria-label="Dịch vụ">
+                    {missionPatterns.map((item) => {
+                        const selected = item.kind === kind;
+                        return (
+                            <button
+                                key={item.kind}
+                                type="button"
+                                role="tab"
+                                id={`home-tab-${item.kind}`}
+                                className={`flex flex-col items-start gap-1 rounded-2xl border p-4 text-left transition-colors cursor-pointer ${
+                                    selected
+                                        ? 'border-primary bg-uav-red-light/50 text-foreground shadow-xs'
+                                        : 'border-border bg-card text-slate-700 hover:bg-slate-50'
+                                }`}
+                                aria-selected={selected}
+                                aria-controls="home-mission-map"
+                                onClick={() => setKind(item.kind)}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                        <MissionIcon kind={item.kind}/>
+                                    </span>
+                                    <strong className="text-sm font-bold text-foreground">{item.title}</strong>
+                                </div>
+                                <span className="text-xs leading-relaxed text-slate-600">{item.text}</span>
+                            </button>
+                        );
+                    })}
                 </div>
-                <figure className="home-mission-photo">
-                    <div className="home-mission-photo-frame"><Image src={surveyPilot.src} alt={surveyPilot.alt} fill sizes="(max-width: 1040px) 100vw, 40vw"/></div>
-                    <figcaption>{surveyPilot.caption}<a href={surveyPilot.source} target="_blank" rel="noopener noreferrer">Ảnh: {surveyPilot.credit} ↗</a></figcaption>
+                <figure className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
+                    <div className="relative aspect-[16/10] w-full">
+                        <Image src={surveyPilot.src} alt={surveyPilot.alt} fill className="object-cover" sizes="(max-width: 1040px) 100vw, 40vw"/>
+                    </div>
+                    <figcaption className="flex flex-wrap items-center justify-between gap-2 p-3.5 text-xs text-slate-600">
+                        <span>{surveyPilot.caption}</span>
+                        <a className="font-semibold text-slate-500 hover:text-primary" href={surveyPilot.source} target="_blank" rel="noopener noreferrer">
+                            Ảnh: {surveyPilot.credit} ↗
+                        </a>
+                    </figcaption>
                 </figure>
             </div>
-            <div className="home-map" role="tabpanel" id="home-mission-map" aria-labelledby={`home-tab-${kind}`}>
-                <div className="home-map-top"><span>ĐƯỜNG BAY MINH HOẠ · <b>{mission.title.toUpperCase()}</b></span><span>TIẾN ĐỘ {progress}%</span></div>
-                <div className="home-map-canvas"><canvas ref={canvasRef} aria-label={`Sơ đồ đường bay minh hoạ: ${mission.pattern}`}/></div>
-                <dl className="home-map-stats">
-                    <div><dt>Kiểu bay</dt><dd>{mission.pattern}</dd></div>
-                    <div><dt>Phù hợp cho</dt><dd>{mission.fit}</dd></div>
-                    <div><dt>Bạn cần cung cấp</dt><dd>{mission.provide}</dd></div>
+            <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4 lg:col-span-7" role="tabpanel" id="home-mission-map" aria-labelledby={`home-tab-${kind}`}>
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 tabular-nums text-xs text-slate-500">
+                    <span>ĐƯỜNG BAY MINH HOẠ · <b className="text-primary">{mission.title.toUpperCase()}</b></span>
+                    <span className="font-bold text-foreground">TIẾN ĐỘ {progress}%</span>
+                </div>
+                <div className="relative h-64 w-full overflow-hidden rounded-xl border border-slate-100 bg-slate-50/50 sm:h-80">
+                    <canvas ref={canvasRef} className="h-full w-full block" aria-label={`Sơ đồ đường bay minh hoạ: ${mission.pattern}`}/>
+                </div>
+                <dl className="grid grid-cols-1 gap-3 border-t border-slate-100 pt-4 sm:grid-cols-3">
+                    <div className="space-y-0.5">
+                        <dt className="text-xs font-semibold text-slate-400">Kiểu bay</dt>
+                        <dd className="text-sm font-bold text-foreground">{mission.pattern}</dd>
+                    </div>
+                    <div className="space-y-0.5">
+                        <dt className="text-xs font-semibold text-slate-400">Phù hợp cho</dt>
+                        <dd className="text-sm font-bold text-foreground">{mission.fit}</dd>
+                    </div>
+                    <div className="space-y-0.5">
+                        <dt className="text-xs font-semibold text-slate-400">Bạn cần cung cấp</dt>
+                        <dd className="text-sm font-bold text-foreground">{mission.provide}</dd>
+                    </div>
                 </dl>
-                <Link className="home-map-link" href={`/services/${mission.slug}`}>Tìm hiểu dịch vụ {mission.title.toLowerCase()} →</Link>
+                <Link className="inline-flex items-center text-sm font-bold text-primary hover:underline" href={`/services/${mission.slug}`}>
+                    Tìm hiểu dịch vụ {mission.title.toLowerCase()} →
+                </Link>
             </div>
         </div>
     );

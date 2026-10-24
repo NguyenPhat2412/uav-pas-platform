@@ -1,1 +1,5 @@
-export {default} from '@/features/dashboard/pages/customer/dashboard';
+import CustomerDashboardPanel from '@/features/dashboard/components/CustomerDashboardPanel';
+
+export default function CustomerDashboardRoutePage() {
+    return <CustomerDashboardPanel/>;
+}

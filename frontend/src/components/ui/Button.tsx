@@ -53,7 +53,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             <button
                 ref={ref}
                 disabled={disabled || isLoading}
-                className={cn(baseStyles, sizes[size], variants[variant], `portal-button portal-button-${variant}`, className)}
+                className={cn(baseStyles, sizes[size], variants[variant], className)}
                 {...props}
             >
                 {isLoading ? (

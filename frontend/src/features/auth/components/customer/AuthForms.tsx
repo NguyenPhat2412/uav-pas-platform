@@ -7,7 +7,7 @@ import {useState} from 'react';
 import {useAuth} from '@/contexts/AuthContext';
 import {useToast} from '@/contexts/ToastContext';
 import {Button, Field} from "@/components/customer/ui";
-import {portalForRole, portalHome} from "@/features/auth/portal";
+import {portalForRole, portalHome} from "@/features/auth/utils/portal";
 import {ApiError} from "@/lib/api";
 import {useI18n} from '@/contexts/I18nContext';
 
@@ -28,29 +28,50 @@ export function LoginForm() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [busy, setBusy] = useState(false);
-    return <form onSubmit={async e => {
-        e.preventDefault();
-        setBusy(true);
-        setError('');
-        try {
-            const {user} = await login(identity, password);
-            const portal = portalForRole(user.role);
-            success(portal === 'customer' ? t('customerAuth.loginSuccess') : t('customerAuth.loginSuccessPortal', {portal: t(`customerAuth.portal.${portal}`)}), t('customerAuth.welcomeBack'));
-            router.replace(portalHome(portal));
-        } catch (err) {
-            const msg = authErrorMessage(err, t);
-            setError(msg);
-            showError(msg, t('customerAuth.loginFailed'));
-        } finally {
-            setBusy(false);
-        }
-    }}><AuthCredentials identity={identity} password={password} onIdentityChange={setIdentity}
-                        onPasswordChange={setPassword} disabled={busy}/>{error &&
-        <div className="error" role="alert">{error}</div>}<Button type="submit"
-                                                                  disabled={busy}>{busy ? t('customerAuth.signingIn') : t('customerAuth.signIn')}</Button>
-        <div className="auth-links"><span>{t('customerAuth.noAccount')}</span><Link href="/customer/register"
-                                                                         className="button-link">{t('customerAuth.register')}</Link></div>
-    </form>;
+    return (
+        <form
+            className="space-y-5"
+            onSubmit={async e => {
+                e.preventDefault();
+                setBusy(true);
+                setError('');
+                try {
+                    const {user} = await login(identity, password);
+                    const portal = portalForRole(user.role);
+                    success(portal === 'customer' ? t('customerAuth.loginSuccess') : t('customerAuth.loginSuccessPortal', {portal: t(`customerAuth.portal.${portal}`)}), t('customerAuth.welcomeBack'));
+                    router.replace(portalHome(portal));
+                } catch (err) {
+                    const msg = authErrorMessage(err, t);
+                    setError(msg);
+                    showError(msg, t('customerAuth.loginFailed'));
+                } finally {
+                    setBusy(false);
+                }
+            }}
+        >
+            <AuthCredentials
+                identity={identity}
+                password={password}
+                onIdentityChange={setIdentity}
+                onPasswordChange={setPassword}
+                disabled={busy}
+            />
+            {error && (
+                <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-sm font-medium text-danger" role="alert">
+                    {error}
+                </div>
+            )}
+            <Button type="submit" className="w-full" disabled={busy}>
+                {busy ? t('customerAuth.signingIn') : t('customerAuth.signIn')}
+            </Button>
+            <div className="flex items-center justify-center gap-2 pt-2 text-sm text-slate-600">
+                <span>{t('customerAuth.noAccount')}</span>
+                <Link href="/customer/register" className="font-bold text-primary hover:underline">
+                    {t('customerAuth.register')}
+                </Link>
+            </div>
+        </form>
+    );
 }
 
 export function RegisterForm() {
@@ -65,32 +86,43 @@ export function RegisterForm() {
         ...v,
         [key]: e.target.value
     }));
-    return <form onSubmit={async e => {
-        e.preventDefault();
-        setBusy(true);
-        setError('');
-        try {
-            await register(form);
-            success(t('customerAuth.registerSuccess'), t('customerAuth.registerSuccessTitle'));
-            router.replace("/customer/login");
-        } catch (err) {
-            const msg = authErrorMessage(err, t);
-            setError(msg);
-            showError(msg, t('customerAuth.registerFailed'));
-        } finally {
-            setBusy(false);
-        }
-    }}><Field label={t('customerAuth.phone')} type="tel" value={form.phoneNumber} onChange={update('phoneNumber')}
-              autoComplete="tel" required/><Field label={t('customerAuth.username')} value={form.username}
-                                                  onChange={update('username')} autoComplete="username" minLength={3}
-                                                  maxLength={50} required/><Field label="Email" type="email"
-                                                                                  value={form.email}
-                                                                                  onChange={update('email')}
-                                                                                  autoComplete="email"
-                                                                                  required/><PasswordField
-        label={t('customerAuth.password')} value={form.password} onChange={update('password')} autoComplete="new-password" required
-        minLength={8}/>{error && <div className="error" role="alert">{error}</div>}<Button type="submit"
-                                                                                           disabled={busy}>{busy ? t('customerAuth.creating') : t('customerAuth.createAccount')}</Button>
-        <div className="auth-links"><Link href="/customer/login" className="button-link">{t('customerAuth.backToLogin')}</Link></div>
-    </form>;
+    return (
+        <form
+            className="space-y-4"
+            onSubmit={async e => {
+                e.preventDefault();
+                setBusy(true);
+                setError('');
+                try {
+                    await register(form);
+                    success(t('customerAuth.registerSuccess'), t('customerAuth.registerSuccessTitle'));
+                    router.replace("/customer/login");
+                } catch (err) {
+                    const msg = authErrorMessage(err, t);
+                    setError(msg);
+                    showError(msg, t('customerAuth.registerFailed'));
+                } finally {
+                    setBusy(false);
+                }
+            }}
+        >
+            <Field label={t('customerAuth.phone')} type="tel" value={form.phoneNumber} onChange={update('phoneNumber')} autoComplete="tel" required/>
+            <Field label={t('customerAuth.username')} value={form.username} onChange={update('username')} autoComplete="username" minLength={3} maxLength={50} required/>
+            <Field label="Email" type="email" value={form.email} onChange={update('email')} autoComplete="email" required/>
+            <PasswordField label={t('customerAuth.password')} value={form.password} onChange={update('password')} autoComplete="new-password" required minLength={8}/>
+            {error && (
+                <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-sm font-medium text-danger" role="alert">
+                    {error}
+                </div>
+            )}
+            <Button type="submit" className="w-full" disabled={busy}>
+                {busy ? t('customerAuth.creating') : t('customerAuth.createAccount')}
+            </Button>
+            <div className="flex items-center justify-center pt-2 text-sm">
+                <Link href="/customer/login" className="font-bold text-primary hover:underline">
+                    {t('customerAuth.backToLogin')}
+                </Link>
+            </div>
+        </form>
+    );
 }

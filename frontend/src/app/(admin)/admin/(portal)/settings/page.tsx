@@ -1,1 +1,5 @@
-export {default} from '@/features/settings/pages/admin/settings';
+import AdminSettingsPanel from '@/features/settings/components/AdminSettingsPanel';
+
+export default function AdminSettingsRoutePage() {
+    return <AdminSettingsPanel/>;
+}

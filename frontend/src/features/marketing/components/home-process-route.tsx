@@ -36,21 +36,24 @@ export function ProcessRoute({steps}: { steps: { number: string; title: string; 
     }, []);
 
     return (
-        <div className="home-route" ref={rootRef}>
-            <svg className="home-route-line" viewBox="0 0 1000 140" preserveAspectRatio="none" aria-hidden="true">
-                <path ref={baseRef} className="home-route-base" d={ROUTE}/>
-                <path ref={liveRef} className="home-route-live" d={ROUTE}/>
+        <div className="relative space-y-6" ref={rootRef}>
+            <svg className="hidden md:block h-28 w-full overflow-visible" viewBox="0 0 1000 140" preserveAspectRatio="none" aria-hidden="true">
+                <path ref={baseRef} className="fill-none stroke-slate-200 stroke-2" strokeDasharray="4 6" d={ROUTE}/>
+                <path ref={liveRef} className="fill-none stroke-primary stroke-[3]" d={ROUTE}/>
             </svg>
-            <svg ref={droneRef} className="home-route-drone" viewBox="-14 -14 28 28" width="30" height="30" aria-hidden="true">
-                <g fill="#fff" stroke="#ab2523" strokeWidth="1.8"><circle cx="-8" cy="-8" r="4.5"/><circle cx="8" cy="-8" r="4.5"/><circle cx="-8" cy="8" r="4.5"/><circle cx="8" cy="8" r="4.5"/></g>
-                <rect x="-4" y="-4" width="8" height="8" rx="2" fill="#ab2523"/>
+            <svg ref={droneRef} className="hidden md:block pointer-events-none absolute -translate-x-1/2 -translate-y-1/2" viewBox="-14 -14 28 28" width="30" height="30" aria-hidden="true">
+                <g className="fill-white stroke-primary" strokeWidth="1.8">
+                    <circle cx="-8" cy="-8" r="4.5"/><circle cx="8" cy="-8" r="4.5"/>
+                    <circle cx="-8" cy="8" r="4.5"/><circle cx="8" cy="8" r="4.5"/>
+                </g>
+                <rect x="-4" y="-4" width="8" height="8" rx="2" className="fill-primary"/>
             </svg>
-            <ol className="home-steps">
+            <ol className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {steps.map((step) => (
-                    <li className="home-step" key={step.number}>
-                        <span className="home-mono">Chặng {step.number}</span>
-                        <h3>{keepVietnamesePhrases(step.title)}</h3>
-                        <p>{step.text}</p>
+                    <li className="home-step rounded-2xl border border-border bg-slate-50/70 p-5 space-y-2 transition-colors" key={step.number}>
+                        <span className="tabular-nums text-xs font-extrabold uppercase tracking-widest text-primary">Chặng {step.number}</span>
+                        <h3 className="text-base font-bold text-foreground">{keepVietnamesePhrases(step.title)}</h3>
+                        <p className="text-xs leading-relaxed text-slate-600">{step.text}</p>
                     </li>
                 ))}
             </ol>

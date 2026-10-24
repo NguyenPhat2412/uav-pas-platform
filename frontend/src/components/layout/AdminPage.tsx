@@ -2,16 +2,16 @@
 
 import {useEffect} from 'react';
 import {useRouter} from 'next/navigation';
-import {Spinner} from "@/components/admin/ui";
-import {AppShell} from "@/components/admin/layout/AppShell";
-import {PageHeader} from '@/components/layout/PageHeader';
-import {PermissionGate} from "@/components/admin/data/WorkspaceState";
+import {Spinner} from "@/components/ui";
+import {AppShell} from "@/components/layout/AdminAppShell";
+import {PermissionGate} from "@/components/data/WorkspaceState";
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
-import {canUsePortal, portalForRole, portalHome} from '@/features/auth/portal';
+import {canUsePortal, portalForRole, portalHome} from '@/features/auth/utils/portal';
 
-// title and meta may be catalog keys; plain text passes through t() unchanged.
-export function AdminPage({title, meta, permission, activeResource, children}: {
+// title may be a catalog key; plain text passes through t() unchanged. The breadcrumb names the page visually,
+// so the heading is kept for screen readers only and meta is no longer shown.
+export function AdminPage({title, permission, activeResource, children}: {
     title: string;
     meta?: string;
     permission: string;
@@ -29,6 +29,6 @@ export function AdminPage({title, meta, permission, activeResource, children}: {
     }, [isAuthenticated, isAdmin, isLoading, router, user?.role]);
     if (isLoading || !isAuthenticated || !isAdmin) return <div className="flex min-h-screen items-center justify-center"><Spinner
         size="lg" label={t('admin.page.authenticating')}/></div>;
-    return <AppShell activeResource={activeResource}><PageHeader title={t(title)} meta={meta ? t(meta) : meta}/><PermissionGate
+    return <AppShell activeResource={activeResource}><h1 className="sr-only">{t(title)}</h1><PermissionGate
         code={permission}>{children}</PermissionGate></AppShell>;
 }

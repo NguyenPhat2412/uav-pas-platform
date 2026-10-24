@@ -1,1 +1,5 @@
-export {default} from '@/features/notifications/pages/operations/notifications';
+import OperationsNotificationsPanel from '@/features/notifications/components/OperationsNotificationsPanel';
+
+export default function OperationsNotificationsRoutePage() {
+    return <OperationsNotificationsPanel/>;
+}

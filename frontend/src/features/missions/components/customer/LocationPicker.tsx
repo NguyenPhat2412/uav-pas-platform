@@ -37,7 +37,11 @@ export function LocationPicker({latitude, longitude, onChange}: {
                 maxZoom: 19,
                 attribution: '&copy; OpenStreetMap'
             }).addTo(instance);
-            const icon = L.divIcon({className: 'location-pin', iconSize: [22, 22], iconAnchor: [11, 11]});
+            const icon = L.divIcon({
+                className: 'rounded-full border-[3px] border-card bg-primary shadow-md ring-2 ring-primary cursor-grab',
+                iconSize: [22, 22],
+                iconAnchor: [11, 11]
+            });
             place.current = (lat, lng) => {
                 if (marker.current) marker.current.setLatLng([lat, lng]);
                 else {
@@ -85,18 +89,18 @@ export function LocationPicker({latitude, longitude, onChange}: {
         }, {timeout: 10_000});
     };
 
-    return <div className="location-picker form-wide">
-        <div className="location-picker-head">
+    return <div className="col-span-full grid gap-2">
+        <div className="flex items-center justify-between gap-3 text-xs font-semibold text-foreground">
             <span>{t('map.label')}</span>
-            <button type="button" className="button-link" onClick={locate} disabled={locating}>
+            <button type="button" className="inline-flex items-center gap-1.5 font-bold text-primary hover:underline disabled:opacity-55" onClick={locate} disabled={locating}>
                 <Crosshair size={14} aria-hidden="true"/>{locating ? t('map.locating') : t('map.useMyLocation')}
             </button>
         </div>
-        <div ref={container} className="location-picker-map" role="application"
+        <div ref={container} className="z-0 h-60 w-full rounded-lg border border-border-input sm:h-75" role="application"
              aria-label={t('map.ariaLabel')}/>
-        <p className="form-hint">{hasPoint
+        <p className="m-0 text-sm text-muted">{hasPoint
             ? t('map.selected', {lat: latitude, lng: longitude})
             : t('map.hint')}</p>
-        {locateError && <p className="field-error" role="alert">{t(locateError === 'unsupported' ? 'map.unsupported' : 'map.locateFailed')}</p>}
+        {locateError && <p className="m-0 text-sm leading-normal text-danger" role="alert">{t(locateError === 'unsupported' ? 'map.unsupported' : 'map.locateFailed')}</p>}
     </div>;
 }

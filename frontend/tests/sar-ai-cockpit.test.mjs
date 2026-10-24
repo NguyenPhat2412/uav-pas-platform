@@ -7,7 +7,7 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const atRoot = path => `${root}${path}`;
 
 test('SAR AI Cockpit route exists and is configured with OperationsPage', () => {
-    const pagePath = `${root}src/features/sar/pages/operations/sar-cockpit.tsx`;
+    const pagePath = `${root}src/app/(operations)/operations/(portal)/sar-cockpit/page.tsx`;
     assert.equal(existsSync(pagePath), true, 'sar-cockpit route should exist');
 
     const content = readFileSync(pagePath, 'utf8');

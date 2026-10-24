@@ -1,6 +1,9 @@
 package com.uav.platform.modules.mission.service.impl;
 
+import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.mission.dto.request.ServiceOfferingRequest;
+import com.uav.platform.modules.mission.dto.request.ServiceOfferingUpdateRequest;
+import com.uav.platform.modules.mission.entity.ServiceOffering;
 import com.uav.platform.modules.mission.dto.response.ServiceOfferingResponse;
 import com.uav.platform.modules.mission.mapper.ServiceOfferingMapper;
 import com.uav.platform.modules.mission.repository.ServiceOfferingRepository;
@@ -9,6 +12,7 @@ import com.uav.platform.modules.mission.specification.ServiceOfferingSpecificati
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,5 +51,33 @@ public class ServiceOfferingServiceImpl implements ServiceOfferingService {
                                 request.name(),
                                 request.description(),
                                 request.defaultDurationMinutes())));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ServiceOfferingResponse> listAll() {
+        return services.findAll(Sort.by("name")).stream().map(serviceOfferingMapper::toResponse).toList();
+    }
+
+    @Override
+    @Transactional
+    public ServiceOfferingResponse update(Long id, ServiceOfferingUpdateRequest request) {
+        ServiceOffering service = find(id);
+        service.setName(request.name().trim());
+        service.setDescription(request.description() == null || request.description().isBlank() ? null : request.description().trim());
+        service.setDefaultDurationMinutes(request.defaultDurationMinutes());
+        return serviceOfferingMapper.toResponse(services.save(service));
+    }
+
+    @Override
+    @Transactional
+    public ServiceOfferingResponse setActive(Long id, boolean active) {
+        ServiceOffering service = find(id);
+        service.setActive(active);
+        return serviceOfferingMapper.toResponse(services.save(service));
+    }
+
+    private ServiceOffering find(Long id) {
+        return services.findById(id).orElseThrow(() -> SystemException.notFound("Service not found"));
     }
 }

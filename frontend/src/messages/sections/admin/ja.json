@@ -39,6 +39,18 @@
       "webhooks": {
         "title": "Webhookと連携の管理",
         "meta": "イベント購読と実際の配信結果"
+      },
+      "notifications": {
+        "title": "通知"
+      },
+      "fleetMap": {
+        "title": "UAV機体マップ"
+      },
+      "services": {
+        "title": "サービスカタログ"
+      },
+      "profile": {
+        "title": "マイプロフィール"
       }
     },
     "page": {
@@ -235,10 +247,30 @@
         "event": "イベント",
         "status": "状態",
         "attempts": "試行回数",
-        "time": "日時"
+        "time": "日時",
+        "actions": "操作"
       },
       "legacyEvent": "旧履歴",
-      "noResponse": "なし"
+      "noResponse": "なし",
+      "crud": {
+        "add": "送信先を追加",
+        "colName": "送信先",
+        "colEvents": "イベント",
+        "colActive": "状態",
+        "toggleLabel": "{name}のオン・オフ",
+        "delete": "{name}を削除",
+        "deleteConfirm": "送信先{name}を削除しますか？未送信の配信は取り消されます。",
+        "title": "Webhook送信先を追加",
+        "name": "表示名",
+        "url": "受信URL（HTTPS）",
+        "urlHint": "公開されたHTTPSアドレスのみ受け付けます。内部アドレスは拒否されます。",
+        "secret": "署名シークレット",
+        "regenerate": "再生成",
+        "secretHint": "送信内容の署名に使います。受信側に保存してください。保存後は末尾4文字のみ表示されます。",
+        "events": "購読するイベント",
+        "cancel": "キャンセル",
+        "submit": "送信先を保存"
+      }
     },
     "users": {
       "allAccounts": "すべてのアカウント",
@@ -523,6 +555,210 @@
         "PENDING_STALE": "24時間以上確認待ちの依頼が{count}件あります",
         "INVOICE_OVERDUE": "支払期限切れの請求書が{count}件あります",
         "WEBHOOK_FAILURES": "過去24時間にWebhook送信が{count}回失敗しました"
+      },
+      "allNotifications": "すべての通知を見る →"
+    },
+    "account": {
+      "open": "{name}のアカウントメニューを開く",
+      "menu": "アカウント",
+      "myAccount": "マイアカウント",
+      "operations": "運用ポータルへ切り替え",
+      "settings": "システム設定"
+    },
+    "notifications": {
+      "readFilter": "既読状態で絞り込み",
+      "filter": {
+        "all": "すべて",
+        "unread": "未読",
+        "read": "既読"
+      },
+      "search": "タイトルまたは内容を検索",
+      "type": "通知の種類",
+      "allTypes": "すべての種類",
+      "types": {
+        "MISSION_ASSIGNED": "ミッション割り当て",
+        "MISSION_STATUS_CHANGED": "ミッション状況",
+        "SAR_TARGET_FOUND": "SAR目標検出",
+        "QUOTA_WARNING": "枠の警告",
+        "PAYMENT": "支払い",
+        "SYSTEM": "システム"
+      },
+      "markAll": "すべて既読にする",
+      "markRead": "既読にする",
+      "send": "通知を送信",
+      "table": "通知一覧",
+      "col": {
+        "status": "状態",
+        "content": "内容",
+        "type": "種類",
+        "reference": "関連",
+        "time": "日時",
+        "actions": "操作"
+      },
+      "read": "既読",
+      "unread": "未読",
+      "empty": "通知はまだありません。",
+      "noMatch": "このページに条件に一致する通知はありません。",
+      "filterHint": "状態・種類・検索の絞り込みは表示中のページに適用されます。",
+      "sendTitle": "ユーザーに通知を送信",
+      "recipient": "宛先",
+      "recipientSearch": "名前・メール・ユーザー名を2文字以上入力",
+      "noRecipient": "該当するユーザーがいません。",
+      "change": "変更",
+      "titleField": "タイトル",
+      "contentField": "内容",
+      "cancel": "キャンセル",
+      "submit": "送信",
+      "sent": "{name}に通知を送信しました。"
+    },
+    "fleetMap": {
+      "all": "すべて",
+      "refresh": "更新",
+      "manage": "UAV機体を管理",
+      "positionNote": "位置は推定値です。割り当て済み・飛行中のUAVはミッション地点、それ以外は所属拠点に表示されます。リアルタイムGPSではありません。",
+      "listLabel": "UAV一覧",
+      "search": "機種・シリアル・拠点・ミッションコードを検索",
+      "emptyFilter": "条件に一致するUAVはありません。",
+      "summary": "{total}機中{located}機を地図に表示",
+      "atMission": "ミッション{code}の地点",
+      "atStation": "拠点{name}",
+      "noPosition": "位置不明（拠点未設定）",
+      "mapAria": "位置が分かる{count}機のUAVの地図",
+      "stationTooltip": "拠点{name} · {count}機",
+      "station": "拠点",
+      "updatedAt": "{time}に更新 · 1分ごとに自動更新",
+      "field": {
+        "serial": "シリアル番号",
+        "manufacturer": "メーカー",
+        "status": "状態",
+        "station": "所属拠点",
+        "position": "位置",
+        "lastMaintenance": "最終保守"
+      },
+      "noStation": "拠点なし",
+      "editInOperations": "運用ポータルで編集 →",
+      "closeDetail": "詳細を閉じる",
+      "activeMission": "現在のミッション",
+      "noActiveMission": "このUAVを使用中のミッションはありません。",
+      "history": "状態変更履歴",
+      "noHistory": "状態変更はまだありません。",
+      "changedBy": "{name}による変更"
+    },
+    "invoices": {
+      "tabs": {
+        "label": "プランと請求書",
+        "plans": "プランと枠",
+        "invoices": "請求書"
+      },
+      "filter": {
+        "ALL": "すべて",
+        "PENDING": "未払い",
+        "OVERDUE": "期限超過",
+        "PAID": "支払済み",
+        "FAILED": "失敗",
+        "CANCELLED": "取消"
+      },
+      "status": {
+        "PENDING": "未払い",
+        "PAID": "支払済み",
+        "FAILED": "失敗",
+        "CANCELLED": "取消"
+      },
+      "overdue": "期限超過",
+      "create": "請求書を発行",
+      "table": "請求書一覧",
+      "col": {
+        "code": "請求書番号",
+        "customer": "顧客",
+        "item": "ミッション / プラン",
+        "amount": "金額",
+        "status": "状態",
+        "due": "支払期限",
+        "paid": "支払日"
+      },
+      "empty": "請求書はまだありません。",
+      "emptyFilter": "条件に一致する請求書はありません。",
+      "created": "請求書{code}を発行しました。",
+      "createTitle": "新しい請求書を発行",
+      "customer": "顧客",
+      "customerSearch": "名前・メール・ユーザー名を2文字以上入力",
+      "noCustomer": "該当する顧客がいません。",
+      "change": "変更",
+      "amount": "金額（VND）",
+      "plan": "プラン",
+      "missionId": "ミッションID",
+      "none": "なし",
+      "notes": "備考",
+      "cancel": "キャンセル",
+      "submit": "発行"
+    },
+    "services": {
+      "filter": {
+        "all": "すべて",
+        "active": "公開中",
+        "inactive": "停止中"
+      },
+      "search": "コード・名前・説明を検索",
+      "summary": "{total}件中{active}件が公開中",
+      "add": "サービスを追加",
+      "table": "UAVサービス一覧",
+      "col": {
+        "service": "サービス",
+        "description": "説明",
+        "duration": "標準所要時間",
+        "status": "状態",
+        "actions": "操作"
+      },
+      "minutes": "{count}分",
+      "toggleLabel": "{name}のオン・オフ",
+      "deactivateConfirm": "{name}を停止しますか？顧客は予約できなくなりますが、既存のミッションは影響を受けません。",
+      "active": "公開中",
+      "inactive": "停止中",
+      "edit": "{name}を編集",
+      "empty": "条件に一致するサービスはありません。",
+      "note": "停止中のサービスは顧客のカタログに表示されません。既存のミッションが参照するため、サービスコードは変更できません。",
+      "addTitle": "UAVサービスを追加",
+      "editTitle": "サービスを編集",
+      "code": "サービスコード",
+      "codeHint": "英大文字・数字・アンダースコアのみ。作成後は変更できません。",
+      "name": "サービス名",
+      "description": "説明",
+      "duration": "標準所要時間（分）",
+      "cancel": "キャンセル",
+      "save": "保存"
+    },
+    "profile": {
+      "title": "アカウント情報",
+      "username": "ユーザー名",
+      "email": "メール",
+      "role": "ロール",
+      "fullName": "氏名",
+      "phone": "電話番号",
+      "save": "変更を保存",
+      "saved": "プロフィールを保存しました。上部バーの名前はページを再読み込みすると更新されます。",
+      "reload": "最新版を読み込む",
+      "password": {
+        "title": "パスワード変更",
+        "current": "現在のパスワード",
+        "new": "新しいパスワード",
+        "confirm": "新しいパスワード（確認）",
+        "hint": "8文字以上。変更後は、このセッションを含むすべてのセッションで再ログインが必要です。",
+        "tooShort": "新しいパスワードは8文字以上にしてください。",
+        "mismatch": "新しいパスワードが一致しません。",
+        "submit": "パスワードを変更",
+        "done": "パスワードを変更しました。新しいパスワードで再ログインしてください。",
+        "signInAgain": "再ログイン"
+      },
+      "errors": {
+        "nameTooLong": "氏名は100文字以内で入力してください。",
+        "phoneRequired": "電話番号を入力してください。",
+        "phoneTooLong": "電話番号は20文字以内で入力してください。",
+        "phoneTaken": "この電話番号は既に使用されています。別の番号を入力してください。",
+        "conflict": "プロフィールが別の場所で変更されました。入力内容は保持されています。編集を続ける前に最新版を読み込んでください。",
+        "session": "セッションの有効期限が切れました。再度ログインしてください。",
+        "forbidden": "このアカウントは現在プロフィールを更新できません。管理者にお問い合わせください。",
+        "uncertain": "保存結果を確認できませんでした。入力内容は保持されています。接続が安定したら最新版を確認してください。",
+        "other": "プロフィールを保存できませんでした。氏名と電話番号を確認して再度お試しください。"
       }
     }
   }

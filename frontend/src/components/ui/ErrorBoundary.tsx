@@ -21,13 +21,13 @@ function ErrorFallback({title, message, onReset}: { title?: string; message?: st
         <div
             className="rounded-2xl border border-red-200 bg-red-50/60 p-6 text-center text-slate-800 shadow-sm flex flex-col items-center justify-center min-h-[220px]">
             <div
-                className="w-12 h-12 rounded-full bg-[#fdf2f2] border border-[#fecaca] text-[#ab2523] flex items-center justify-center mb-3">
+                className="w-12 h-12 rounded-full bg-uav-red-light border border-red-200 text-primary flex items-center justify-center mb-3">
                 <AlertTriangle size={24}/>
             </div>
             <h4 className="text-sm font-bold text-slate-900 mb-1">
                 {title || t('opsShared.errorBoundary.title')}
             </h4>
-            <p className="text-xs text-slate-500 max-w-md mb-4 font-mono">
+            <p className="text-xs text-slate-500 max-w-md mb-4">
                 {message || t('opsShared.errorBoundary.detail')}
             </p>
             <button
