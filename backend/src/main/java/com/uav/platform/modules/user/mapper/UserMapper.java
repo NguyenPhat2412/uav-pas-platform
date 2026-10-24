@@ -12,5 +12,6 @@ import org.mapstruct.MappingConstants;
 public interface UserMapper {
 
     @Mapping(target = "role", defaultValue = "ROLE_PILOT")
+    @Mapping(target = "locked", source = "manualLocked")
     UserResponse toResponse(AppUser user);
 }

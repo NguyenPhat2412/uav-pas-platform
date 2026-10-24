@@ -1,0 +1,184 @@
+{
+  "opsShared": {
+    "sar": {
+      "page": {
+        "title": "AI作戦・捜索救助（SARコックピット）",
+        "meta": "YOLOv8s AIカメラ映像、多角形作戦マップ、UAVテレメトリ、KV260ボードの状態を監視"
+      },
+      "cockpit": {
+        "dispatchAlert": "座標送信をシミュレーションしました（{gps}）。実際の救助隊には送信されていません。",
+        "dispatchStore": "救助座標配信のシミュレーションを実行しました。",
+        "rthAlert": "ST-01へのRTHをシミュレーションしました。実機UAVには指令を送信していません。",
+        "rthStore": "自動RTHシミュレーション。",
+        "simulationTitle": "シミュレーションモード。",
+        "simulationBody": "以下のUAV・AIカメラ・ボードのデータは実機に接続されていません。操作は画面のデモのみです。",
+        "urgent": "緊急優先（URGENT）",
+        "inProgress": "作戦中（IN_PROGRESS）",
+        "missionCode": "ミッションID：{code}",
+        "missionTitle": "行方不明漁船の捜索救助 - ハイフォン・ランハ湾",
+        "station": "指揮基地：",
+        "stationName": "カットバー基地（ST-01）",
+        "pilot": "担当パイロット：",
+        "flightTime": "飛行時間：",
+        "dispatchButton": "救助座標の送信をシミュレーション",
+        "rthButton": "基地へのRTHをシミュレーション",
+        "cameraError": "AIカメラ映像を読み込めません",
+        "mapError": "SAR作戦マップを読み込めません",
+        "hudError": "テレメトリHUDの表示エラー",
+        "kv260Error": "KV260ボードの表示エラー"
+      },
+      "hud": {
+        "title": "UAV飛行データ（テレメトリHUD）",
+        "rtkFix": "RTK FIX（高精度）",
+        "altitude": "高度（AGL）",
+        "speed": "飛行速度",
+        "battery": "6Sバッテリー",
+        "remainingMinutes": "（{minutes}分）",
+        "distanceHome": "ホームまでの距離",
+        "satellites": "衛星（GPS+Galileo）",
+        "wind": "風：",
+        "windDirection": "（北東）",
+        "heading": "機首方位：",
+        "inControl": "UAV制御圏内"
+      },
+      "kv260": {
+        "title": "KV260組み込みAIボード（エッジデバイス）",
+        "dpuLoad": "DPU NPU負荷",
+        "aiSpeed": "AI処理速度",
+        "latency": "遅延：{ms} ms",
+        "socTemp": "SoC温度",
+        "tempSafe": "安全（<75°C）",
+        "memory": "LPDDR4メモリ",
+        "model": "AIモデル：",
+        "mode": "処理モード："
+      },
+      "viewfinder": {
+        "labels": {
+          "personVictim": "Person（要救助者）",
+          "lifebuoy": "Lifebuoy（救命浮輪）",
+          "personSuspected": "Person（未確認）"
+        },
+        "rgb": "RGBカラー",
+        "thermal": "サーマル",
+        "snapshotSaved": "目標の証拠を撮影・保存しました！",
+        "confidence": "信頼度しきい値：",
+        "snapshot": "撮影",
+        "streamTitle": "リアルタイム検出目標（検出ストリーム）",
+        "inView": "視野内の目標 {count} 件",
+        "verified": "確認済み",
+        "verify": "確認"
+      },
+      "map": {
+        "lkpLabel": "LKP：漁船 TB-9284",
+        "pins": {
+          "victim": "要救助者 #1（94%）",
+          "lifebuoy": "救命浮輪（91%）",
+          "suspected": "未確認 #2（82%）"
+        },
+        "sectors": {
+          "done": "100% 走査済み",
+          "inProgress": "走査中...",
+          "current": "UAV現在地",
+          "pending": "走査待ち"
+        },
+        "title": "SAR救助作戦マップ（タクティカルグリッド）",
+        "cancelPath": "計算済み飛行経路を取り消す",
+        "generatePath": "飛行経路を自動生成（IAMSAR）",
+        "trail": "飛行軌跡（{state}）",
+        "on": "オン",
+        "off": "オフ",
+        "zoomIn": "拡大",
+        "zoomOut": "縮小",
+        "resetZoom": "リセット",
+        "geofenceLabel": "ジオフェンス（レイキャスティング）：",
+        "insideCorridor": "安全回廊内",
+        "geofenceViolation": "ジオフェンス違反！",
+        "battery": "バッテリー：",
+        "rthMinutes": "（約{minutes}分）",
+        "minRthBattery": "RTH最低バッテリー：",
+        "safeContinue": "継続可能",
+        "rthNow": "直ちにRTHが必要",
+        "coastline": "海岸線（COASTLINE）",
+        "homeStation": "管制基地 #ST-01（HOME）",
+        "searchArea": "捜索救助エリア（ジオフェンス境界）",
+        "legendPath": "IAMSAR拡大方形飛行経路（{state}）",
+        "legs": "{count} 区間",
+        "notActivated": "未起動",
+        "legendGeofence": "ジオフェンス境界（レイキャスティング）",
+        "scanningTarget": "SECTOR B2 · 目標走査中"
+      }
+    },
+    "state": {
+      "empty": "データがありません",
+      "loadingData": "データを読み込み中",
+      "forbiddenAction": "この操作を行う権限がありません。",
+      "errors": {
+        "equipmentReleaseRequired": "この機材はミッション用に確保されています。在庫のずれを防ぐため、ミッションを開いて機材を返却してください。",
+        "inventoryNotAvailable": "機材が稼働していないか、利用可能な数量が不足しています。",
+        "equipmentReserved": "機材は確保中です。基地を変更する前に確保を解除してください。",
+        "missionMediaLocked": "ミッションは終了しました。ファイルは閲覧・ダウンロードのみ可能で、追加・編集・削除はできません。"
+      },
+      "retry": "再試行",
+      "recheckPermissions": "権限を再確認",
+      "noAccessTitle": "アクセス権がありません",
+      "noAccessDetail": "このアカウントにはこの項目を閲覧する権限がありません。必要な場合は管理者に連絡してください。",
+      "noMatchingData": "該当するデータがありません",
+      "noMatchingDetail": "フィルターを変更するか、権限があればデータを追加してください。",
+      "dataTable": "データテーブル",
+      "previousPage": "前のページ",
+      "nextPage": "次のページ",
+      "closeDetail": "詳細を閉じる",
+      "paginationSummary": "{total} 件 · {page}/{pages} ページ",
+      "close": "閉じる",
+      "detailTabs": "詳細",
+      "authenticating": "認証中",
+      "back": "戻る"
+    },
+    "errorBoundary": {
+      "title": "このエリアを表示できません",
+      "detail": "データの描画中にエラーが発生しました。",
+      "reset": "ウィジェットを復元"
+    },
+    "query": {
+      "serverError": "サーバーで処理エラーが発生しました。",
+      "serverErrorTitle": "サーバーエラー（500）",
+      "networkError": "サーバーに接続できません。ネットワークを確認してください。",
+      "networkErrorTitle": "ネットワーク接続なし",
+      "mutationFailed": "操作に失敗しました。",
+      "mutationErrorTitle": "操作エラー"
+    },
+    "auth": {
+      "toastTitle": "UAV運用",
+      "redirectingPortal": "ログインしました！{portal}ポータルへ移動しています...",
+      "welcome": "ログインしました！運用センターへようこそ。",
+      "loginFailedTitle": "ログイン失敗",
+      "noAccount": "運用アカウントをお持ちでない場合は、管理者に連絡してアクセス権を付与してもらってください。",
+      "invalidPassword": "無効なパスワード",
+      "registerSuccess": "アカウントを登録しました！ログインしてください。",
+      "registerSuccessTitle": "登録完了",
+      "registerFailed": "登録に失敗しました",
+      "loginHeroTitle": "計画からミッション完了まで。",
+      "loginHeroDescription": "指揮、リソース、ミッションの進捗を一つのワークスペースに統合します。"
+    },
+    "routes": {
+      "operations": {
+        "errorTitle": "運用エリアの表示が中断されました",
+        "errorDetail": "作戦データの読み込み中に例外が発生しました。再読み込みするか概要ページに戻ってください。",
+        "reload": "再読み込み",
+        "backOverview": "概要へ戻る",
+        "notFoundTitle": "運用モジュールが見つかりません",
+        "notFoundDetail": "リクエストされたパスまたはリソースは存在しないか、移動されました。",
+        "notFoundBack": "運用概要へ戻る"
+      },
+      "customer": {
+        "errorTitle": "ページを表示できません",
+        "errorDetail": "データの読み込み中に例外が発生しました。再試行するか概要ページに戻ってください。",
+        "retry": "再試行",
+        "backOverview": "概要へ戻る →",
+        "notFoundTitle": "404 · ページが見つかりません",
+        "notFoundDetail": "お探しのページまたはサービス記録は存在しないか、URLが変更されました。",
+        "notFoundBack": "← 概要へ戻る"
+      }
+    }
+  }
+}

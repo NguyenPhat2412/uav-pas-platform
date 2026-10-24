@@ -6,6 +6,7 @@ import com.uav.platform.modules.user.dto.request.RoleUpdateRequest;
 import com.uav.platform.modules.user.dto.request.UserQueryRequest;
 import com.uav.platform.modules.user.dto.response.UserResponse;
 import com.uav.platform.modules.user.enums.UserRole;
+import com.uav.platform.modules.user.enums.UserStatus;
 import com.uav.platform.modules.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,10 +52,12 @@ public class UserController {
                     @RequestParam(required = false)
                     String keyword,
             @Parameter(description = "Filter by specific user role") @RequestParam(required = false)
-                    UserRole role) {
+                    UserRole role,
+            @Parameter(description = "Filter by account status") @RequestParam(required = false)
+                    UserStatus status) {
         PageResponse<UserResponse> response =
                 userService.getUsers(
-                        new UserQueryRequest(page, size, sortBy, direction, keyword, role));
+                        new UserQueryRequest(page, size, sortBy, direction, keyword, role, status));
         return ResponseEntity.ok(response);
     }
 

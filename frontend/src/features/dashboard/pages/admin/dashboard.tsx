@@ -1,1 +1,11 @@
-import { AdminPage } from '@/components/layout/AdminPage'; import { Dashboard } from "@/features/dashboard/components/AdminDashboard"; export default function Page(){return <AdminPage title="Tổng quan Quản trị Hệ thống" meta="Trung tâm kiểm soát UAV cứu hộ, phân bổ trạm tác chiến và tích hợp webhook ngoại vi VJU" permission="DASHBOARD_READ" activeResource="dashboard"><Dashboard/></AdminPage>;}
+import {AdminPage} from '@/components/layout/AdminPage';
+import {Dashboard} from "@/features/dashboard/components/AdminDashboard";
+import {AdminAnalytics} from "@/features/dashboard/components/AdminAnalytics";
+
+export default function Page() {
+    return <AdminPage title="admin.pages.dashboard.title"
+                      meta="admin.pages.dashboard.meta"
+                      permission="DASHBOARD_READ" activeResource="dashboard">
+        <div className="space-y-8"><AdminAnalytics/><Dashboard/></div>
+    </AdminPage>;
+}

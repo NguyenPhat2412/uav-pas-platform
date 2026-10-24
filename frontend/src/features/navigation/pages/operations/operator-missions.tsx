@@ -1,3 +1,5 @@
-import { redirect } from 'next/navigation';
+import {redirect} from 'next/navigation';
 
-export default function LegacyAssignedAlias() { redirect("/operations/assigned-missions"); }
+export default function LegacyAssignedAlias() {
+    redirect("/operations/assigned-missions");
+}

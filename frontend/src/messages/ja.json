@@ -21,6 +21,54 @@
     "fullName": "氏名",
     "actions": "操作"
   },
+  "shell": {
+    "skipToContent": "本文へスキップ",
+    "expandSidebar": "サイドバーを展開",
+    "collapseSidebar": "サイドバーを折りたたむ",
+    "openNavigation": "メニューを開く",
+    "closeNavigation": "メニューを閉じる",
+    "operationsTitle": "運用 · VJU",
+    "adminTitle": "管理 · VJU",
+    "customerTitle": "顧客 · VJU",
+    "operationsSection": "運用管理",
+    "adminSection": "システム管理",
+    "customerSection": "顧客ポータル",
+    "authenticating": "認証中...",
+    "notifications": "通知",
+    "vjuUniversity": "日越大学",
+    "dutyOfficer": "VJU 当直幹部"
+  },
+  "operationsNav": {
+    "overview": "概要",
+    "sar": "AI & SAR 作戦管制",
+    "dispatchMissions": "ミッション指揮",
+    "assignedMissions": "担当ミッション",
+    "stations": "基地局",
+    "uavs": "UAV機隊",
+    "maintenance": "整備・修理",
+    "inventory": "機材庫",
+    "media": "メディア",
+    "notifications": "通知",
+    "audit": "監査ログ"
+  },
+  "adminNavGroups": {
+    "overview": "概要",
+    "access": "ユーザーと権限",
+    "system": "システム",
+    "account": "アカウント"
+  },
+  "adminNav": {
+    "dashboard": "概要",
+    "users": "ユーザー",
+    "accessControl": "アクセス権限",
+    "roleTemplates": "ロールテンプレート",
+    "permissions": "権限一覧",
+    "billing": "プラン・クォータ",
+    "reports": "レポート・統計",
+    "webhooks": "Webhook・連携",
+    "settings": "システム設定",
+    "auditLogs": "管理者監査ログ"
+  },
   "sidebar": {
     "title": "UAV PAS",
     "subtitle": "作戦指揮管制システム",
@@ -173,5 +221,48 @@
     "notFound": "リクエストされたデータが見つかりません",
     "serverError": "内部サーバーエラーが発生しました。しばらくしてから再度お試しください。",
     "unknown": "予期せぬエラーが発生しました"
+  },
+  "missionShared": {
+    "latestUpdates": "最新の更新",
+    "eventCount": "{count}件のイベント",
+    "noUpdates": "更新はまだありません。",
+    "performedBy": "実施者：{actor}",
+    "collapseHistory": "履歴を折りたたむ",
+    "showAllEvents": "全{count}件のイベントを表示",
+    "requestedDate": "希望日",
+    "requestedCoordinates": "希望座標",
+    "coordinatesValue": "緯度：{lat}・経度：{lng}",
+    "notEntered": "未入力",
+    "requestNotes": "依頼メモ"
+  },
+  "planCard": {
+    "featured": "おすすめプラン",
+    "current": "現在のプラン",
+    "inactive": "停止中",
+    "monthlyHours": "飛行時間／月",
+    "hours": "{hours} 時間",
+    "concurrentUavs": "同時UAV",
+    "yes": "あり",
+    "no": "なし"
+  },
+  "notificationsShared": {
+    "markReadError": "既読状態を更新できませんでした。再度お試しください。",
+    "loadError": "通知を読み込めませんでした。再度お試しください。"
+  },
+  "authShared": {
+    "identity": "ユーザー名またはメールアドレス",
+    "password": "パスワード",
+    "home": "UAV PAS — ホーム",
+    "university": "日越大学",
+    "backHome": "ホームへ戻る",
+    "eyebrow": "UAVミッション調整プラットフォーム",
+    "photoAlt": "マサチューセッツ州プラム島でUAVを操作し飛行を監視する調査チーム。",
+    "formLabel": "アカウントフォーム",
+    "footer": "UAV PAS · 日越大学",
+    "hidePassword": "パスワードを隠す",
+    "showPassword": "パスワードを表示",
+    "loggedOutSecure": "安全にログアウトしました。",
+    "loggedOut": "ログアウトしました。",
+    "logoutTitle": "ログアウト"
   }
 }

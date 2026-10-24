@@ -13,7 +13,7 @@
       "credit": "U.S. Geological Survey",
       "license": "Public Domain",
       "published": "2026-07-21",
-      "role": "Trang chủ, dịch vụ thuê UAV và ghi hình",
+      "role": "Trang chủ, dịch vụ ghi hình, Liên hệ",
       "crop": {
         "left": 0,
         "top": 1350,
@@ -38,7 +38,7 @@
       "credit": "U.S. Geological Survey",
       "license": "Public Domain",
       "published": "2025-06-14",
-      "role": "Dịch vụ khảo sát và thu thập dữ liệu",
+      "role": "Trang chủ, dịch vụ thu thập dữ liệu",
       "sha256": "21a4bdbdf56460e54f38d9be20ac0c0cae24aaa22d323820a583a72a2ed1ee75",
       "originalDimensions": {
         "width": 3840,
@@ -118,6 +118,177 @@
         "height": 1600
       },
       "originalFile": "originals/aan-nizal-drone-controller.jpg"
+    },
+    {
+      "id": "batut-labruguiere-1889",
+      "title": "Ảnh chụp từ diều, Labruguière 1889",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Labrugui%C3%A8re_photographed_by_Arthur_Batut%27s_kite_in_1889.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Labrugui%C3%A8re_photographed_by_Arthur_Batut%27s_kite_in_1889.jpg?width=960",
+      "credit": "Arthur Batut / Wikimedia Commons",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-23",
+      "role": "Trang chủ, mốc 1888 của dòng thời gian",
+      "sha256": "36de56062b6a708cde3a5c087b09e692d479bd6c871200c817d03af22e11a739",
+      "originalDimensions": {
+        "width": 960,
+        "height": 707
+      },
+      "webFile": "frontend/public/images/history/batut-labruguiere-1889.jpg",
+      "webBytes": 292470,
+      "webDimensions": {
+        "width": 960,
+        "height": 707
+      },
+      "note": "Bản thu nhỏ 960 px do Wikimedia Commons cung cấp; ảnh chụp năm 1889."
+    },
+    {
+      "id": "lawrence-san-francisco-1906",
+      "title": "San Francisco sau động đất 1906",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:San_Francisco_in_ruin_edit2.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/San_Francisco_in_ruin_edit2.jpg?width=960",
+      "credit": "George R. Lawrence / Library of Congress",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-23",
+      "role": "Trang chủ, mốc 1906 của dòng thời gian",
+      "sha256": "5d47a2d97cf5274f7bca415f84602172586522cf6d873a217307ffe4038c3946",
+      "originalDimensions": {
+        "width": 960,
+        "height": 377
+      },
+      "webFile": "frontend/public/images/history/lawrence-san-francisco-1906.jpg",
+      "webBytes": 106583,
+      "webDimensions": {
+        "width": 960,
+        "height": 377
+      },
+      "note": "Bản thu nhỏ 960 px do Wikimedia Commons cung cấp."
+    },
+    {
+      "id": "usgs-woods-hole-pilots",
+      "title": "Đội điều khiển UAV tại Sandy Neck, Cape Cod",
+      "sourcePage": "https://www.usgs.gov/media/images/uas-pilots-field",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/IMG_3756.jpg",
+      "credit": "Woods Hole Coastal and Marine Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-23",
+      "role": "Trang chủ (lưới ảnh con người), trang Quy trình thực hiện",
+      "sha256": "6672e4f6fdf089e9290e5538faa00b5add9a6e300dddafbf5b5f97b18aad8659",
+      "originalDimensions": {
+        "width": 2177,
+        "height": 2567
+      },
+      "webFile": "frontend/public/images/people/usgs-woods-hole-pilots.jpg",
+      "webBytes": 675953,
+      "webDimensions": {
+        "width": 1357,
+        "height": 1600
+      }
+    },
+    {
+      "id": "usgs-victoria-scholl-mapping",
+      "title": "Người điều khiển bay lập bản đồ di tích Abó",
+      "sourcePage": "https://www.usgs.gov/media/images/uncrewed-aircraft-system-uas-remote-pilot-victoria-scholl",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/2025_NM_SAPU_Victoria_Scholl_flies_Freefly_Astro.JPG",
+      "credit": "Geosciences and Environmental Change Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-23",
+      "role": "Trang chủ (dịch vụ), dịch vụ và giải pháp khảo sát khu vực",
+      "sha256": "ad20d2aa514b8a564854ef0d3dafe24ffd3bf3f75142a461fbcc11daae1ccd96",
+      "originalDimensions": {
+        "width": 8640,
+        "height": 5760
+      },
+      "webFile": "frontend/public/images/people/usgs-victoria-scholl-mapping.jpg",
+      "webBytes": 224848,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1066
+      }
+    },
+    {
+      "id": "usgs-matt-burgess-drone-view",
+      "title": "Drone chụp người điều khiển khi hạ cánh gần Moab",
+      "sourcePage": "https://www.usgs.gov/media/images/drones-eye-view-a-usgs-remote-pilot-during-a-biocrust-mission-near-moab-ut",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/NUSO-MOABBiocrust-MattBurgess.jpg",
+      "credit": "Matt Burgess / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-23",
+      "role": "Trang chủ, dải ảnh \"Góc nhìn từ UAV\"",
+      "sha256": "eb02e8991f3c426df9998482d2c07541695a1c2c5f19d8148eadc7a1db20a04b",
+      "originalDimensions": {
+        "width": 1930,
+        "height": 1086
+      },
+      "webFile": "frontend/public/images/people/usgs-matt-burgess-drone-view.jpg",
+      "webBytes": 351583,
+      "webDimensions": {
+        "width": 1600,
+        "height": 900
+      }
+    },
+    {
+      "id": "usgs-dauphin-island-landing",
+      "title": "Hạ cánh UAV trên đảo Dauphin, Alabama",
+      "sourcePage": "https://www.usgs.gov/media/images/usgs-pilot-landing-unmanned-aerial-system-dauphin-island-al",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/emily_dauphin.jpg",
+      "credit": "Woods Hole Coastal and Marine Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-23",
+      "role": "Dịch vụ và giải pháp thuê UAV",
+      "sha256": "0da1ba81448c658fb5a96a4c1af4a78845be716623a605e49a2443ca489befa7",
+      "originalDimensions": {
+        "width": 4032,
+        "height": 1592
+      },
+      "webFile": "frontend/public/images/people/usgs-dauphin-island-landing.jpg",
+      "webBytes": 328722,
+      "webDimensions": {
+        "width": 1600,
+        "height": 631
+      }
+    },
+    {
+      "id": "usgs-everglades-tracking-test",
+      "title": "Thử nghiệm thiết bị định vị gắn trên UAV, Everglades",
+      "sourcePage": "https://www.usgs.gov/media/images/usgs-researchers-test-new-uas-technology-locating-invasive-pythons-everglades",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/thumbnail_FORT_UAS_Field_South_Florida_%285%29.png",
+      "credit": "USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-23",
+      "role": "Trang Giải pháp và giải pháp phát hiện có AI hỗ trợ",
+      "sha256": "cfebd30625d70ad05c6cf1bb24a10426b90c628f9e984d88c96cda58a2269780",
+      "originalDimensions": {
+        "width": 1920,
+        "height": 1440
+      },
+      "webFile": "frontend/public/images/people/usgs-everglades-tracking-test.jpg",
+      "webBytes": 350741,
+      "webDimensions": {
+        "width": 1600,
+        "height": 850
+      },
+      "note": "Cắt bỏ phần dưới ảnh có băng rôn logo USGS để không hàm ý USGS bảo trợ UAV PAS."
+    },
+    {
+      "id": "usgs-kilauea-preflight-check",
+      "title": "Kiểm tra UAV trước chuyến bay tại Kīlauea, 2018",
+      "sourcePage": "https://www.usgs.gov/media/images/routine-inspection-a-uas-system-prior-a-flight",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/image1-1415.jpg",
+      "credit": "Hawaiian Volcano Observatory / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-23",
+      "role": "Giải pháp hỗ trợ tìm kiếm cứu nạn",
+      "sha256": "4baaff1fb23c0a5cfa817b737b9e14b51aa47437ab73e1121ec5fac7c84a74b4",
+      "originalDimensions": {
+        "width": 3264,
+        "height": 1836
+      },
+      "webFile": "frontend/public/images/people/usgs-kilauea-preflight-check.jpg",
+      "webBytes": 295055,
+      "webDimensions": {
+        "width": 1600,
+        "height": 900
+      }
     }
   ]
 }

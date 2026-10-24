@@ -1,0 +1,529 @@
+{
+  "admin": {
+    "pages": {
+      "dashboard": {
+        "title": "System overview",
+        "meta": "Users, UAV fleet, pending requests and recent admin activity"
+      },
+      "users": {
+        "title": "Users",
+        "meta": "Accounts and access status"
+      },
+      "userDetail": {
+        "title": "User details",
+        "meta": "Account information, role and effective permissions"
+      },
+      "access": {
+        "title": "Access control",
+        "accountsMeta": "Manage role permissions and per-account adjustments.",
+        "registryMeta": "Look up supported access permissions.",
+        "templatesMeta": "Set default permissions for each role.",
+        "matrixMeta": "Compare each role's default permissions in one table."
+      },
+      "auditLogs": {
+        "title": "Admin audit log",
+        "meta": "Look up activity and changes in the system."
+      },
+      "billing": {
+        "title": "Plans & usage quotas",
+        "meta": "Manage pricing policies, flight-hour quotas and AI entitlements for customers"
+      },
+      "reports": {
+        "title": "System reports & analytics",
+        "meta": "Fleet performance, SAR operations, completion rates and CSV export"
+      },
+      "settings": {
+        "title": "System settings",
+        "meta": "Manage flight safety parameters, YOLOv8s AI detection and KV260 edge hardware"
+      },
+      "webhooks": {
+        "title": "Webhooks & integrations",
+        "meta": "Event subscriptions and actual delivery results"
+      }
+    },
+    "page": {
+      "authenticating": "Authenticating"
+    },
+    "workspace": {
+      "noData": "No data yet",
+      "loadingData": "Loading data",
+      "forbiddenAction": "You do not have permission to perform this action.",
+      "retry": "Retry",
+      "recheckPermissions": "Check permissions again",
+      "noAccessTitle": "No access",
+      "noAccessDetail": "Your account has not been granted access to this section. Contact an administrator if you need access."
+    },
+    "dashboard": {
+      "cards": {
+        "users": "Users",
+        "stations": "Stations",
+        "readyUavs": "Ready UAVs",
+        "totalUavs": "Total: {total} UAVs",
+        "auditEvents": "Audit events"
+      },
+      "shortcuts": {
+        "users": "Users",
+        "usersDetail": "Look up accounts and access status",
+        "access": "Access control",
+        "accessDetail": "Manage access per account",
+        "billing": "Plans and quotas",
+        "billingDetail": "Track service plans and flight hours",
+        "settings": "System settings",
+        "settingsDetail": "Operating parameters and automation"
+      },
+      "pending": {
+        "title": "Requests awaiting confirmation",
+        "openDispatch": "Open dispatch →",
+        "emptyTitle": "No requests awaiting confirmation",
+        "emptyDetail": "New customer requests will appear here."
+      },
+      "audit": {
+        "title": "Recent admin activity",
+        "viewAll": "View full log →",
+        "emptyTitle": "No admin activity yet",
+        "emptyDetail": "Admin actions will appear here."
+      },
+      "fleet": {
+        "noneReady": "No UAVs ready",
+        "inMaintenance": "{count} UAVs in maintenance",
+        "readyDetail": "{available}/{total} UAVs ready for missions. Check the maintenance schedule before assigning.",
+        "viewMaintenance": "View maintenance"
+      },
+      "quickAccess": "Quick access",
+      "status": {
+        "title": "System status",
+        "api": "API server",
+        "operational": "Operational",
+        "checking": "Checking",
+        "realtime": "Real-time monitoring",
+        "noData": "No data yet",
+        "fleet": "UAV fleet",
+        "fleetReady": "{available}/{total} ready",
+        "manageIntegrations": "Manage integrations"
+      }
+    },
+    "auditTable": {
+      "time": "Time",
+      "actor": "Actor",
+      "action": "Action",
+      "entity": "Entity",
+      "id": "ID",
+      "details": "Details",
+      "system": "System"
+    },
+    "access": {
+      "source": {
+        "inactive": "Account inactive",
+        "allowOverride": "Allowed (override)",
+        "denyOverride": "Denied (override)",
+        "noTemplate": "No role data",
+        "template": "From role"
+      },
+      "saveFailed": "Could not save",
+      "leaveConfirm": "Leave the permission editor? Unsaved changes will be discarded.",
+      "chooseOtherUser": "Choose another user",
+      "needUserRead": "You need permission to view users to find and select an account.",
+      "roleTemplate": "Role template",
+      "switchTemplateConfirm": "Switch role template? Unsaved changes will be discarded.",
+      "noTemplates": "No role templates yet. Creating new templates here is not supported yet.",
+      "saveConfirmUser": "Save {count} permission changes for {name}? Each permission is saved separately; changing admin permissions may affect the current session.",
+      "saveConfirmTemplate": "Save {count} permission changes to {name}? Each permission is saved separately; changing admin permissions may affect the current session.",
+      "effectiveMatrix": "Effective permission matrix",
+      "rolePermissions": "Role permissions",
+      "overrideHint": "Account-specific allow or deny overrides take precedence over role permissions. Choose “From role” to remove an override. Changing the role template keeps these overrides.",
+      "inactiveWarning": "This account is {status}, so these permissions cannot be used yet.",
+      "saved": "Saved: {codes}.",
+      "none": "none",
+      "failedItem": "Failed {code}: {message}",
+      "noUndo": "Saved permissions are not rolled back. Reload actual permissions to continue editing.",
+      "reloadActual": "Reload actual permissions",
+      "reloadFailed": "Could not reload permissions. Please try again.",
+      "filterLabel": "Filter permissions",
+      "filterPlaceholder": "Search permission code",
+      "unsavedCount": "{count} unsaved changes",
+      "reviewAndSave": "Review and save",
+      "discardChanges": "Discard changes",
+      "reviewChanges": "Review changes",
+      "fromRole": "From role",
+      "allow": "Allow",
+      "deny": "Deny",
+      "undetermined": "Undetermined",
+      "moduleTable": "{module} permissions",
+      "col": {
+        "permission": "Permission",
+        "fromRole": "From role",
+        "expected": "Expected effect",
+        "effective": "Effective",
+        "source": "Source",
+        "override": "Override",
+        "grant": "Grant"
+      },
+      "selectOverride": "{code} override",
+      "selectTemplate": "{code} role template",
+      "auditLink": "View history in the audit log (requires AUDIT_READ)",
+      "registry": {
+        "search": "Search permissions",
+        "placeholder": "Permission code or description",
+        "count": "{count} permissions",
+        "table": "Permission registry",
+        "colAccess": "Access permission",
+        "colGroup": "Feature group",
+        "colSupport": "Support",
+        "labelPermission": "Permission",
+        "labelGroup": "Group",
+        "supported": "Supported",
+        "emptyTitle": "No permissions found",
+        "emptyDetail": "Try a permission code or another part of the description."
+      },
+      "tabs": {
+        "nav": "Access control",
+        "accounts": "By account",
+        "accountsHint": "Grant or block individual permissions for a user",
+        "templates": "Role templates",
+        "templatesHint": "Default permissions applied to each role",
+        "registry": "Permission registry",
+        "registryHint": "Look up every permission code the system supports",
+        "matrix": "Permission matrix",
+        "matrixHint": "Compare permissions across roles"
+      },
+      "matrix": {
+        "search": "Search permissions",
+        "onlyDiff": "Only show differences",
+        "count": "{count} permissions",
+        "table": "Permission matrix by role",
+        "permission": "Permission",
+        "grantedCount": "{count} granted",
+        "yes": "Granted",
+        "no": "Not granted",
+        "empty": "No permissions match the filter."
+      }
+    },
+    "webhooks": {
+      "status": {
+        "QUEUED": "Queued",
+        "DELIVERED": "Received HTTP 2xx",
+        "FAILED": "Delivery failed",
+        "RETRYING": "Waiting to retry",
+        "CANCELLED": "Cancelled — destination removed",
+        "UNCONFIGURED": "Not configured",
+        "LEGACY_UNVERIFIED": "Unverified history",
+        "unknown": "Unknown"
+      },
+      "loadError": "Could not load webhook data. Check your access and try again.",
+      "testError": "The webhook test request was not recorded. No delivery has been confirmed.",
+      "heading": "Webhooks & integrations",
+      "intro": "An HTTP result confirms the receiver accepted the request; it does not confirm rescue handling or UAV control.",
+      "refresh": "Refresh",
+      "recording": "Recording…",
+      "testEvent": "Send WEBHOOK_TEST event",
+      "runtime": {
+        "unconfigured": "Outbound webhook delivery is not configured. Receiving addresses must be configured and approved separately; enabling a subscription alone does not allow delivery.",
+        "queued": "Delivery is configured. Only individually approved addresses receive events.",
+        "unknown": "Delivery configuration could not be determined."
+      },
+      "loading": "Loading data…",
+      "subscriptions": "Event subscriptions",
+      "noSubscriptions": "No webhook subscriptions yet.",
+      "subscriptionOn": "Subscription enabled",
+      "subscriptionOff": "Subscription disabled",
+      "events": "Events: {events}",
+      "deliveryLog": "Delivery log · {count} most recent records",
+      "noDeliveries": "No delivery log yet.",
+      "logTable": "Webhook log",
+      "col": {
+        "destination": "Destination",
+        "event": "Event",
+        "status": "Status",
+        "attempts": "Attempts",
+        "time": "Time"
+      },
+      "legacyEvent": "Legacy history",
+      "noResponse": "None"
+    },
+    "users": {
+      "allAccounts": "All accounts",
+      "filterByStatus": "Filter by status",
+      "all": "All",
+      "search": "Search users",
+      "searchPlaceholder": "Username, email or full name",
+      "searchButton": "Search",
+      "role": "Role",
+      "allRoles": "All roles",
+      "table": "Users table",
+      "col": {
+        "user": "User",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "created": "Created",
+        "actions": "Actions"
+      },
+      "select": "Select",
+      "details": "Details",
+      "emptyTitle": "No users found",
+      "emptyDetail": "Try removing filters or changing the search keyword.",
+      "invalidId": "Invalid user ID.",
+      "back": "← Users",
+      "field": {
+        "username": "Username",
+        "fullName": "Full name",
+        "email": "Email",
+        "phone": "Phone",
+        "role": "Role",
+        "status": "Status",
+        "created": "Created"
+      },
+      "saved": "Saved. Account data has been reloaded.",
+      "manageAccount": "Account management",
+      "changeRoleConfirm": "Change {name} to the {role} role? Individual overrides are kept.",
+      "saveRole": "Save role",
+      "lockConfirm": "Lock account {name}?",
+      "lock": "Lock account",
+      "unlockConfirm": "Unlock access for {name}? Profile status and role are kept.",
+      "unlock": "Unlock",
+      "lockHint": "Access lock and profile status are separate settings. Use “Unlock” to remove an access lock; it does not change profile status or role.",
+      "export": "Export CSV",
+      "lockedBadge": "Locked",
+      "create": {
+        "open": "Add user",
+        "title": "Add a new user",
+        "password": "Password",
+        "confirm": "Confirm password",
+        "hint": "At least 8 characters. Share the password through a secure channel and ask the user to change it after first sign-in.",
+        "mismatch": "The passwords don't match.",
+        "cancel": "Cancel",
+        "submit": "Create account",
+        "done": "Account {name} created."
+      },
+      "bulk": {
+        "region": "Bulk actions",
+        "selected": "{count} accounts selected",
+        "lock": "Lock",
+        "unlock": "Unlock",
+        "clear": "Clear selection",
+        "selectPage": "Select all on this page",
+        "selectRow": "Select {name}",
+        "lockConfirm": "Lock access for the {count} selected accounts?",
+        "unlockConfirm": "Unlock access for the {count} selected accounts?",
+        "done": "{count} accounts updated.",
+        "skippedSelf": "Your own account was skipped."
+      },
+      "reset": {
+        "title": "Reset password",
+        "newPassword": "New password",
+        "submit": "Reset password",
+        "hint": "All of the user's current sessions will be signed out.",
+        "confirm": "Set a new password for {name} and sign out all their sessions?",
+        "done": "Password reset."
+      },
+      "activity": {
+        "title": "Activity history",
+        "account": "Changes to this account",
+        "actor": "Performed by this user",
+        "empty": "No activity yet."
+      }
+    },
+    "audit": {
+      "searchLabel": "Search this page",
+      "searchPlaceholder": "Actor, action or entity ID",
+      "pageCount": "{shown} / {total} records on this page",
+      "table": "Admin audit log",
+      "noMatchTitle": "No results on this page",
+      "noMatchDetail": "Try another keyword or go to the next page.",
+      "emptyTitle": "No activity log yet",
+      "filtersLabel": "Log filters",
+      "filter": {
+        "actor": "Performed by",
+        "actorPlaceholder": "Username",
+        "action": "Action",
+        "entity": "Object",
+        "all": "All",
+        "from": "From",
+        "to": "To",
+        "apply": "Filter",
+        "reset": "Clear filters"
+      },
+      "heatmapTitle": "Admin activity density",
+      "heatmapRange": "Last 30 days",
+      "heatmapAria": "Admin actions by weekday and hour of day, last 30 days",
+      "heatmapCell": "{day}, {hour}:00 — {count} actions",
+      "weekdays": "Mon,Tue,Wed,Thu,Fri,Sat,Sun"
+    },
+    "billing": {
+      "loading": "Loading plan data…",
+      "loadError": "Could not load data: {message}",
+      "unknownError": "Unknown error",
+      "quotaUpdated": "Quota updated successfully.",
+      "plansHeading": "Service plans",
+      "quotasHeading": "Customer quotas",
+      "quotasIntro": "Control flight-hour allocation, concurrent mission limits and service plan changes",
+      "searchCustomer": "Search customers",
+      "searchPlaceholder": "Search customers...",
+      "dataTable": "Data table",
+      "col": {
+        "customer": "Customer",
+        "plan": "Service plan",
+        "monthlyLimit": "Monthly limit",
+        "flown": "Flown",
+        "usage": "Usage",
+        "concurrent": "Concurrent missions",
+        "actions": "Actions"
+      },
+      "noQuotas": "No quotas assigned yet.",
+      "hours": "{hours}h",
+      "edit": "Edit",
+      "drawerTitle": "Adjust customer quota",
+      "customer": "Customer:",
+      "servicePlan": "Service plan",
+      "planOption": "{name} ({code} - {hours} hours)",
+      "saveFailed": "Save failed: {message}",
+      "limitLabel": "Custom flight-hour limit (hours)",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "saveChanges": "Save changes"
+    },
+    "reports": {
+      "exportError": "Could not export the CSV report. Please try again.",
+      "loadError": "Could not load the report. There is no data to show or export as CSV.",
+      "loading": "Loading report…",
+      "heading": "Overall fleet activity & operations report",
+      "intro": "Mission data is scoped to your access. Hours are planned durations across all statuses; verified detections do not prove rescue outcomes.",
+      "exporting": "Exporting CSV…",
+      "exportCsv": "Export CSV report",
+      "plannedHours": "Scheduled planned hours",
+      "hoursValue": "{hours}h",
+      "plannedHoursNote": "Includes draft, cancelled and completed missions",
+      "completedMissions": "Completed missions",
+      "successRate": "Success rate:",
+      "sarOperations": "SAR operations",
+      "verifiedDetections": "Verified person detections:",
+      "detectionsCount": "{count} detections",
+      "uavStatus": "UAV status",
+      "uavActive": "Ready / assigned / in use",
+      "uavMaintenance": "{count} UAVs in maintenance",
+      "footer": "Total stations: {count}. The report does not yet include actual flight time, rescue outcomes or hardware performance."
+    },
+    "charts": {
+      "outcome": {
+        "active": "In progress",
+        "completed": "Completed",
+        "stopped": "Failed / cancelled"
+      },
+      "monthLabel": "{month}/{year}",
+      "loading": "Loading mission charts…",
+      "loadError": "Could not load chart data.",
+      "monthlyTitle": "Missions by month",
+      "monthlyAria": "Missions over the last {months} months, by outcome",
+      "monthTotal": "{month}: {total} missions",
+      "viewTable": "View as table",
+      "month": "Month",
+      "total": "Total",
+      "typeTitle": "Mission type distribution",
+      "empty": "No missions to report yet.",
+      "truncated": "Charts are based on the {shown} most recent missions out of {total}."
+    },
+    "settings": {
+      "loadError": "Could not load settings. There is no data to edit.",
+      "saved": "Saved the changes confirmed by the server.",
+      "noChanges": "No changes to save.",
+      "partialSave": "Not all changes were saved. Items confirmed by the server remain in effect. {detail}",
+      "checkAndRetry": "Please check the data and try again.",
+      "heading": "Operations and AI parameters",
+      "intro": "Change flight safety thresholds, YOLOv8s inference parameters on KV260 hardware and automation",
+      "saving": "Saving…",
+      "saveAll": "Save all changes",
+      "loading": "Loading settings…",
+      "invoiceNote": "Automatic invoicing is off by default. Enter only an approved price before enabling it; no default price or payment gateway is configured.",
+      "safetyGroup": "Flight safety and area limits",
+      "enforced": "Enforced",
+      "off": "Off",
+      "aiGroup": "AI detection and KV260 edge processing",
+      "preferEdge": "Prefer processing on KV260",
+      "preferServer": "Prefer processing on the server",
+      "opsGroup": "Operations and billing"
+    },
+    "login": {
+      "notAdmin": "This account does not have admin access. Redirecting to the {portal} portal...",
+      "notAdminTitle": "No admin access",
+      "success": "Admin sign-in successful! Redirecting...",
+      "successTitle": "System administration",
+      "failed": "Sign-in failed.",
+      "failedTitle": "Sign-in failed",
+      "heading": "Admin sign-in",
+      "subheading": "UAV PAS · Administration",
+      "submit": "Sign in",
+      "layoutTitle": "One system. Consistent administration.",
+      "layoutDescription": "Manage accounts, permissions and activity so teams can coordinate clearly."
+    },
+    "error": {
+      "title": "This page cannot be displayed",
+      "detail": "Please try again. Unsaved data may need to be re-entered.",
+      "retry": "Try again",
+      "toDashboard": "Back to dashboard"
+    },
+    "notFound": {
+      "title": "Admin page not found",
+      "detail": "The admin module or configuration resource you requested does not exist.",
+      "back": "Back to admin dashboard"
+    },
+    "loading": "Loading administration…",
+    "analytics": {
+      "title": "Analytics",
+      "range": "Time range",
+      "days": "{count} days",
+      "vsPrevious": "vs previous period",
+      "points": " pts",
+      "kpi": {
+        "completed": "Missions completed",
+        "successRate": "Success rate",
+        "flightHours": "Flight hours",
+        "revenue": "Revenue collected",
+        "newUsers": "New users"
+      },
+      "hours": "{value} h",
+      "dailyTitle": "Missions per day",
+      "dailyAria": "Completed and failed missions per day from {from} to {to}",
+      "completed": "Completed",
+      "failed": "Failed / cancelled",
+      "statusTitle": "Mission status",
+      "status": {
+        "waiting": "Awaiting confirmation",
+        "scheduled": "Scheduled",
+        "active": "In progress",
+        "completed": "Completed",
+        "stopped": "Failed / cancelled",
+        "draft": "Draft"
+      },
+      "stationTitle": "Flight hours by station",
+      "noFlights": "No completed flights in this period.",
+      "fleetTitle": "UAV fleet",
+      "fleetTotal": "{count} UAVs in total",
+      "revenueTitle": "Revenue, last 6 months",
+      "paid": "Collected",
+      "outstanding": "Outstanding",
+      "quotaTitle": "Flight-hour quotas running out",
+      "quotaUsage": "{used}/{limit} h",
+      "quotaEmpty": "No customer has used more than 80% of their quota.",
+      "manage": "Manage →",
+      "mapTitle": "Mission locations",
+      "mapAria": "Map of {count} mission locations",
+      "mapEmpty": "No missions with coordinates in this period.",
+      "webhookTitle": "Webhooks by endpoint",
+      "webhookRate": "{rate}% delivered · {total} attempts",
+      "webhookEmpty": "No webhook deliveries in this period.",
+      "alertsTitle": "Alerts to handle",
+      "alertsCount": "{count} alerts",
+      "alertsNone": "No alerts",
+      "alertsEmpty": "All clear. Nothing needs attention.",
+      "resolve": "Resolve",
+      "alertCodes": {
+        "NO_AVAILABLE_UAV": "No UAV is available for new missions",
+        "MAINTENANCE_OVERDUE": "{count} maintenance schedules are overdue",
+        "MAINTENANCE_DUE_SOON": "{count} UAVs are due for maintenance within 7 days",
+        "PENDING_STALE": "{count} requests have waited over 24 hours for confirmation",
+        "INVOICE_OVERDUE": "{count} invoices are past due",
+        "WEBHOOK_FAILURES": "{count} webhook deliveries failed in the last 24 hours"
+      }
+    }
+  }
+}

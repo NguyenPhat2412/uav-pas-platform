@@ -1,0 +1,473 @@
+{
+  "opsAssets": {
+    "uavWorkflow": {
+      "reasonRequired": "Enter a reason or UAV inspection result.",
+      "reasonTooLong": "Content must not exceed 255 characters.",
+      "created": "UAV created",
+      "repairStarted": "Repair order #{id} started",
+      "repairCompleted": "Repair order #{id} completed",
+      "stationTransfer": "Station transfer: {from} → #{to}",
+      "unassigned": "Unassigned"
+    },
+    "pages": {
+      "uavs": {
+        "title": "UAV fleet",
+        "meta": "Track the fleet and open each UAV's reference model"
+      },
+      "stations": {
+        "title": "UAV stations",
+        "meta": "Station status, location and operating history"
+      },
+      "inventory": {
+        "title": "Equipment inventory",
+        "meta": "Track stock, receipts and issues, reservations and equipment transfers"
+      },
+      "media": {
+        "title": "Files and documents",
+        "meta": "Manage files, images and documents for operations."
+      },
+      "maintenance": {
+        "title": "Maintenance and repair",
+        "meta": "Recurring schedules, repair orders and material costs for the UAV fleet"
+      },
+      "audit": {
+        "title": "Activity log",
+        "meta": "Look up who did what, when, and what changed in the system."
+      }
+    },
+    "uav": {
+      "model": "UAV model",
+      "serial": "Serial number",
+      "manufacturer": "Manufacturer",
+      "status": "Status",
+      "station": "Station",
+      "actions": "Actions",
+      "unassigned": "Unassigned",
+      "openDetail": "Open details",
+      "completeMaintenance": "Complete maintenance",
+      "maintenance": "Maintenance",
+      "closeForm": "Close form",
+      "add": "Add UAV",
+      "create": "Create UAV",
+      "tableLabel": "UAV fleet table",
+      "detailTitle": "UAV details",
+      "visualCheck": "Visual inspection",
+      "close3d": "Close 3D model",
+      "view3d": "View 3D model",
+      "modelOnDemand": "The illustrative model loads only when you open it.",
+      "tabs": {
+        "overview": "Overview",
+        "maintenance": "Maintenance",
+        "assignment": "Dispatch",
+        "activity": "Activity",
+        "media": "Files"
+      },
+      "overviewNote": "The illustrative model is for viewing only; managed attributes come from the UAV API.",
+      "openMaintenance": "Open maintenance schedules and repair orders",
+      "noManagePermission": "You do not have permission to update UAVs.",
+      "mediaNote": "UAV files are managed in the Files area.",
+      "newStatus": "New",
+      "noHistory": "No status history yet."
+    },
+    "audit": {
+      "time": "Time",
+      "actor": "Performed by",
+      "action": "Action",
+      "entity": "Object",
+      "details": "Details",
+      "tableLabel": "Activity log"
+    },
+    "shared": {
+      "status": "Status",
+      "actions": "Actions",
+      "openDetail": "Open details",
+      "closeForm": "Close form",
+      "overview": "Overview",
+      "activity": "Activity",
+      "notUpdated": "Not updated"
+    },
+    "station": {
+      "code": "Station code",
+      "name": "Station name",
+      "address": "Address",
+      "create": "Create station",
+      "tableLabel": "UAV station table",
+      "detailTitle": "Station details",
+      "tabs": {
+        "uavs": "UAVs",
+        "inventory": "Inventory"
+      },
+      "coordinates": "Coordinates",
+      "uavsNote": "UAVs assigned to this station are shown in the UAV fleet area.",
+      "inventoryNote": "Equipment at this station is shown in the Equipment inventory area.",
+      "activityNote": "Station activity is shown in the Activity log."
+    },
+    "equipment": {
+      "equipment": "Equipment",
+      "notSerialized": "Not serialized",
+      "type": "Type",
+      "station": "Station",
+      "unassigned": "Unassigned",
+      "onHand": "On hand",
+      "available": "Available",
+      "reserved": "Reserved",
+      "create": "Create equipment",
+      "name": "Equipment name",
+      "serial": "Serial",
+      "storageStation": "Storage station (optional)",
+      "noStation": "No station",
+      "movementRecorded": "Stock movement recorded.",
+      "movementTitle": "Quantity movement",
+      "selectEquipment": "Select equipment",
+      "action": "Action",
+      "actions": {
+        "stockIn": "Stock in",
+        "stockOut": "Stock out",
+        "reserve": "Reserve",
+        "release": "Release",
+        "transfer": "Transfer"
+      },
+      "quantity": "Quantity",
+      "note": "Note",
+      "targetStation": "Destination station",
+      "selectTargetStation": "Select destination station",
+      "record": "Record",
+      "tableLabel": "Equipment inventory table",
+      "history": "Inventory history",
+      "historyCaption": "Stock movement history",
+      "time": "Time",
+      "handledBy": "Handled by",
+      "noHistory": "No stock movements yet."
+    },
+    "mediaPolicy": {
+      "policy": "JPEG/PNG/WebP/PDF: up to 100 MB; MP4/WebM: up to 1 GB.",
+      "retention": "Unconfirmed files expire after 24 hours. Confirmed files and handover results are kept.",
+      "invalidFile": "{policy} The file must not be empty and must use an allowed format."
+    },
+    "media": {
+      "reuploadMismatch": "The re-uploaded file must have the same size and format as registered.",
+      "stage": {
+        "registering": "Registering file…",
+        "uploading": "Uploading content #{id}…",
+        "confirming": "Confirming content…",
+        "uploaded": "File uploaded and confirmed.",
+        "failed": "Upload not completed. Check the error below; a registration within 24 hours can be confirmed again or deleted. If the content is wrong, delete it and register a new file.",
+        "confirmed": "File confirmed. You can now view or download it.",
+        "deletedIncomplete": "Incomplete file deleted."
+      },
+      "uploadFile": "File to upload",
+      "linkResource": "Link to resource",
+      "ownFile": "My own file",
+      "resourceId": "Resource ID",
+      "uploadAndConfirm": "Upload and confirm",
+      "search": "Search files",
+      "searchPlaceholder": "File name…",
+      "typeFilter": "Filter by file type",
+      "allTypes": "All types",
+      "col": {
+        "name": "File name",
+        "typeSize": "Type / size",
+        "status": "Status",
+        "uploadedBy": "Uploaded by",
+        "actions": "Actions"
+      },
+      "confirmed": "Confirmed",
+      "pending": "Awaiting confirmation",
+      "viewDownload": "View / download",
+      "confirm": "Confirm",
+      "reupload": "Re-upload",
+      "reuploadLabel": "Re-upload {name}",
+      "delete": "Delete",
+      "deleteTitle": "Delete file",
+      "attachedToMission": "A file attached to a mission cannot be deleted.",
+      "deleteNote": "Files attached to missions are kept. Other files are removed from the library; the system deletes the stored content after the upload link expires.",
+      "confirmDelete": "Confirm deletion",
+      "previewTitle": "View file: {name}",
+      "useDownload": "Use the download link to view this format.",
+      "openDownload": "Open / download file",
+      "linkValidity": "The link is valid for 15 minutes."
+    },
+    "uavLifecycle": {
+      "errors": {
+        "UAV_HAS_IN_PROGRESS_REPAIR_ORDER": "This UAV has a repair order in progress. Open maintenance schedules and repair orders to complete or cancel it before changing status or station.",
+        "UAV_HAS_ACTIVE_MISSION": "This UAV is held for a mission. Replace or remove it from the mission before maintenance or transfer.",
+        "UAV_NOT_AVAILABLE": "The UAV is no longer available. The latest status has been reloaded.",
+        "UAV_INVALID_STATUS": "This action cannot change the UAV status. Check the latest information.",
+        "UAV_STATUS_CHANGED": "The UAV status was changed elsewhere. Review it before continuing.",
+        "UAV_ALREADY_IN_MAINTENANCE": "The UAV was already put into maintenance elsewhere. Check the latest history.",
+        "UAV_STATUS_REASON_REQUIRED": "Enter a reason or UAV inspection result.",
+        "UAV_STATUS_REASON_TOO_LONG": "Content must not exceed 255 characters.",
+        "UAV_STATUS_REQUIRES_MISSION_WORKFLOW": "The UAV is in use for a mission. Handle it from the mission first.",
+        "UAV_NOT_AVAILABLE_FOR_STATION_TRANSFER": "A station transfer is only possible when the UAV is available.",
+        "STATION_NOT_ACTIVE": "The station is inactive. Choose another station.",
+        "forbidden": "You no longer have permission to update UAVs.",
+        "conflict": "The UAV or station has changed. Check the latest information before retrying.",
+        "unknown": "The result could not be confirmed. Check the status before retrying.",
+        "staleReload": "The latest status could not be loaded. Reload before continuing.",
+        "staleRetry": "The latest status could not be loaded. Please try again."
+      },
+      "updating": "Updating UAV…",
+      "reloadStatus": "Reload UAV status",
+      "busyNote": "The UAV is assigned or in use. Replace or remove it from the mission before maintenance or a station transfer. It cannot be redispatched while the mission is in flight.",
+      "maintenanceNote": "UAVs under maintenance are not assigned to missions. Complete maintenance only after confirming the UAV is fit to operate.",
+      "enterMaintenance": "Start maintenance",
+      "recoverLegacy": "Recover UAV without a mission",
+      "completeMaintenance": "Complete maintenance",
+      "form": {
+        "maintenance": "Confirm UAV maintenance",
+        "recover": "Confirm UAV recovery",
+        "complete": "Confirm UAV maintenance completion"
+      },
+      "success": {
+        "maintenance": "UAV put into maintenance.",
+        "recover": "UAV restored to available after confirming no mission holds it.",
+        "complete": "Maintenance completed. The UAV is available for assignment.",
+        "station": "Station updated. The UAV remains available for assignment."
+      },
+      "heading": {
+        "maintenance": "Put UAV into maintenance",
+        "recover": "Confirm the UAV is not on a mission",
+        "complete": "Confirm the UAV is fit to operate"
+      },
+      "desc": {
+        "maintenance": "The UAV will stop receiving new missions.",
+        "recover": "Only for legacy data stuck in the assigned state. The system checks and refuses if the UAV still belongs to an active mission; it cannot be used to release a mission's UAV.",
+        "complete": "The UAV will become available. The inspection result is saved in the history."
+      },
+      "label": {
+        "maintenance": "Maintenance reason",
+        "recover": "UAV recovery reason",
+        "complete": "Post-maintenance inspection result"
+      },
+      "maxChars": "Up to {max} characters.",
+      "back": "Back",
+      "submit": {
+        "maintenance": "Confirm maintenance",
+        "recover": "Confirm UAV recovery",
+        "complete": "Confirm maintenance completion"
+      },
+      "needStationRead": "You need station read permission to choose a dispatch station.",
+      "transferForm": "Transfer UAV to station",
+      "transferNote": "Only available UAVs not on an active mission can be transferred. Assigning a station does not hold the UAV for a mission.",
+      "targetStation": "Destination station",
+      "selectStation": "Select new station",
+      "confirmStation": "Confirm station assignment",
+      "mustBeAvailable": "The UAV must be available before a station transfer."
+    },
+    "maintenance": {
+      "validation": {
+        "textRequired": "{label} is required and must not exceed {max} characters.",
+        "textTooLong": "{label} must not exceed {max} characters.",
+        "invalidDate": "Choose a valid date.",
+        "interval": "The interval must be a whole number from 1 to 3,650 days.",
+        "tooManyMaterials": "Each order can record up to 100 material lines.",
+        "materialQuantity": "Material line {line}: quantity must be greater than 0, at most 10,000, with up to 3 decimal places.",
+        "materialPrice": "Material line {line}: unit price must be a whole VND amount from 0 to 1,000,000,000.",
+        "invalidUav": "Choose a valid UAV.",
+        "label": {
+          "scheduleTitle": "Schedule name",
+          "orderTitle": "Order name",
+          "description": "Description",
+          "technician": "Technician",
+          "materialName": "Material name on line {line}",
+          "materialUnit": "Unit on line {line}",
+          "inspection": "Inspection result",
+          "cancelReason": "Cancellation reason"
+        }
+      },
+      "due": {
+        "UPCOMING": "Upcoming",
+        "DUE": "Due today",
+        "OVERDUE": "Overdue",
+        "PAUSED": "Paused"
+      },
+      "orderStatus": {
+        "OPEN": "Opened",
+        "IN_PROGRESS": "In repair",
+        "COMPLETED": "Completed",
+        "CANCELLED": "Cancelled"
+      },
+      "undetermined": "Undetermined",
+      "none": "None",
+      "errors": {
+        "MAINTENANCE_VERSION_CHANGED": "Someone else changed this information. The latest data has been reloaded; review it before continuing.",
+        "MAINTENANCE_ACTIVE_ORDER_EXISTS": "This UAV already has an open or in-repair order. Handle the existing order first.",
+        "MAINTENANCE_UAV_HAS_ACTIVE_ORDER": "This UAV already has an open or in-repair order. Handle the existing order first.",
+        "MAINTENANCE_SCHEDULE_HAS_ACTIVE_ORDER": "This schedule has an unclosed order. Complete or cancel it before editing the schedule.",
+        "MAINTENANCE_ORDER_INVALID_STATUS": "The order status no longer allows this action. Check the latest data.",
+        "MAINTENANCE_ORDER_INVALID_STATE": "The order status no longer allows this action. Check the latest data.",
+        "MAINTENANCE_UAV_STATE_CHANGED": "The UAV status has changed. Check the UAV and its missions before continuing the repair.",
+        "MAINTENANCE_SCHEDULE_UAV_MISMATCH": "The UAV does not belong to the selected maintenance schedule. Close the form and choose the schedule again.",
+        "MAINTENANCE_ORDER_TERMINAL": "The order is closed; its information and costs cannot be changed.",
+        "UAV_HAS_ACTIVE_MISSION": "The UAV is held for a mission. Remove or replace it in the mission before starting the repair.",
+        "UAV_NOT_AVAILABLE": "The UAV is no longer available to start the repair.",
+        "MAINTENANCE_UAV_BUSY": "The UAV is assigned or in flight. The order can wait, but the repair cannot start yet.",
+        "MAINTENANCE_SCHEDULE_PAUSED": "The schedule is paused. Reactivate it before creating an order from it.",
+        "forbidden": "You do not have permission to manage maintenance, or your permissions just changed.",
+        "notFound": "Data not found. Reload the list.",
+        "conflict": "This action is not possible in the current state. Check open orders, maintenance schedules and the UAV's missions.",
+        "badRequest": "Invalid information. Check the dates, content and quantity and unit price limits.",
+        "unconfirmed": "The result could not be confirmed. Reload the data before retrying to avoid a duplicate action.",
+        "generic": "The request could not be processed. Please try again.",
+        "staleReload": "The latest data could not be loaded. Reload before continuing.",
+        "staleRetry": "The latest data could not be loaded. Please try again."
+      },
+      "saving": "Saving and checking the latest status…",
+      "reloadData": "Reload maintenance data",
+      "fields": {
+        "uav": "UAV for the order or schedule",
+        "selectUav": "Select UAV",
+        "uavNumber": "UAV #{id}",
+        "uavId": "UAV ID",
+        "uavIdHint": "Enter the assigned UAV ID. This account cannot view the UAV fleet list.",
+        "scheduleTitle": "Maintenance schedule name",
+        "interval": "Interval (days)",
+        "nextDue": "Next due date",
+        "orderTitle": "Repair order name",
+        "plannedDate": "Planned repair date",
+        "technician": "Repair technician",
+        "description": "Condition and work description"
+      },
+      "materials": {
+        "form": "Record material costs",
+        "invalid": "Invalid materials.",
+        "notePrefix": "Costs are recorded on the order only and ",
+        "noteStrong": "do not deduct equipment inventory",
+        "noteSuffix": ". Quantities allow up to 3 decimal places; unit prices are whole VND. Each line is rounded to the dong, then the system sums the total.",
+        "empty": "No material lines yet. The order can be saved with zero material cost.",
+        "line": "Material {line}",
+        "name": "Material name {line}",
+        "unit": "Material unit {line}",
+        "unitPlaceholder": "Piece, set, litre…",
+        "quantity": "Material quantity {line}",
+        "unitPrice": "Unit price (VND) {line}",
+        "remove": "Remove material {line}",
+        "add": "Add material line",
+        "savedTotal": "Saved total: ",
+        "savedTotalNote": ". Current changes are recalculated only after a successful save.",
+        "discard": "Discard material changes",
+        "save": "Save materials and costs"
+      },
+      "invalidInput": "Invalid information.",
+      "back": "Back",
+      "schedule": {
+        "editTitle": "Edit maintenance schedule",
+        "createTitle": "Create recurring maintenance schedule",
+        "saved": "Maintenance schedule saved.",
+        "conflict": "This form holds outdated content. Close it and reopen the schedule from the list to edit the latest data.",
+        "note": "Schedules track due dates. The system does not put UAVs into maintenance or send reminders automatically. The next cycle is counted from the completion date of the linked order, in Vietnam time.",
+        "saveChanges": "Save schedule changes",
+        "create": "Create maintenance schedule"
+      },
+      "orderCreate": {
+        "fromSchedule": "Create order from maintenance schedule",
+        "title": "Create repair order",
+        "created": "Repair order created.",
+        "note": "Each UAV can have only one unclosed order. Creating an order for planning does not change the UAV status; the system checks missions holding the UAV only when the repair starts.",
+        "linked": "Linked to schedule #{id}: ",
+        "submit": "Create repair order"
+      },
+      "order": {
+        "editForm": "Edit repair order",
+        "discard": "Discard order changes",
+        "saveInfo": "Save order details",
+        "confirm": {
+          "start": "Confirm repair start",
+          "complete": "Confirm order completion",
+          "cancel": "Confirm order cancellation"
+        },
+        "mustInspect": "Confirm the UAV has been inspected before completing.",
+        "desc": {
+          "start": "Start only when the UAV no longer belongs to an active mission. The UAV will move to maintenance and cannot take missions.",
+          "complete": "The technician's confirmation is recorded on the order; it is not a technical certification. The UAV will become available and the linked schedule is recalculated from today.",
+          "cancelStarted": "The order has started: after cancelling, the UAV stays in maintenance. Recorded material costs are kept. Create a new order or inspect the UAV before returning it to service.",
+          "cancelOpen": "Cancelling an order that has not started does not change the UAV status. Recorded costs are kept and the schedule due date is unchanged."
+        },
+        "inspectionResult": "Post-repair inspection result",
+        "cancelReason": "Repair order cancellation reason",
+        "inspectedConfirm": "I confirm the UAV has been inspected and may return to service.",
+        "backToOrder": "Back to order",
+        "title": "Repair order #{id}",
+        "reload": "Reload order",
+        "scheduled": "Recurring schedule #{id}",
+        "adHoc": "Ad-hoc repair order",
+        "plannedDate": "Planned date",
+        "technician": "Technician",
+        "createdAt": "Created on",
+        "startedAt": "Repair started",
+        "notStarted": "Not started",
+        "completedAt": "Completed on",
+        "notCompleted": "Not completed",
+        "cancelledAt": "Cancelled on",
+        "notCancelled": "Not cancelled",
+        "inspection": "Inspection result",
+        "cancelReasonShort": "Cancellation reason",
+        "materialsSection": "Recorded material costs",
+        "materialsTitle": "Materials and costs",
+        "materialsNote": "Material costs are recorded on the order and do not deduct equipment inventory. The system calculates the total from saved lines.",
+        "noMaterials": "No materials recorded.",
+        "editInfo": "Edit order details",
+        "editMaterials": "Record materials and costs",
+        "start": "Start repair",
+        "complete": "Complete repair order",
+        "cancel": "Cancel repair order",
+        "closedNote": "The order is closed. Its information and costs are kept for reference and cannot be edited.",
+        "success": {
+          "updated": "Order details updated.",
+          "materials": "Materials saved. The total cost has been recalculated.",
+          "start": "Repair started. The UAV is under maintenance.",
+          "complete": "Order completed and the UAV is available again.",
+          "cancel": "Order cancelled. Recorded costs are kept."
+        }
+      },
+      "workspace": {
+        "intro": "Track recurring schedules, repair work and material costs for each UAV. Due dates are on-screen reminders only; they do not ground UAVs or send notifications automatically.",
+        "tabs": {
+          "schedules": "Recurring schedules",
+          "orders": "Repair orders"
+        },
+        "filterUav": "Filter by UAV",
+        "allUavs": "All UAVs",
+        "filterDue": "Filter by due status",
+        "allSchedules": "All schedules",
+        "filterStatus": "Filter by order status",
+        "allStatuses": "All statuses",
+        "createSchedule": "Create recurring schedule",
+        "createOrder": "Create repair order",
+        "uavsError": "The UAV list for selection could not be loaded. Existing schedules and orders are still shown below.",
+        "reloadUavs": "Reload UAV list",
+        "reloadList": "Reload maintenance list",
+        "countSchedules": "{count} maintenance schedules match the filters",
+        "countOrders": "{count} repair orders match the filters",
+        "updating": " · Updating…",
+        "scheduleList": "Maintenance schedule list",
+        "scheduleNumber": "Schedule #{id}",
+        "interval": "Interval",
+        "intervalDays": "{days} days",
+        "nextDue": "Next due",
+        "lastCompleted": "Last completed",
+        "editSchedule": "Edit schedule",
+        "pauseSchedule": "Pause schedule",
+        "activateSchedule": "Activate schedule",
+        "orderFromSchedule": "Create order from schedule",
+        "noSchedules": "No matching schedules",
+        "noSchedulesDetail": "Create a recurring schedule for a UAV or change the filters.",
+        "orderList": "Repair order list",
+        "orderNumber": "Order #{id}",
+        "planned": "Planned {date}",
+        "openOrder": "Open repair order",
+        "noOrders": "No matching orders",
+        "noOrdersDetail": "Create an ad-hoc order or create one from a recurring schedule.",
+        "pauseTitle": "Pause maintenance schedule",
+        "activateTitle": "Activate maintenance schedule",
+        "pauseNote": "Pausing keeps the schedule's history without tracking its due date. The schedule cannot change while a linked order is still open.",
+        "activateNote": "The schedule resumes tracking from the saved due date. You can adjust the date after activating.",
+        "keep": "Keep schedule as is",
+        "paused": "Schedule paused.",
+        "activated": "Schedule activated.",
+        "confirmPause": "Confirm pause",
+        "confirmActivate": "Confirm activation"
+      }
+    }
+  }
+}

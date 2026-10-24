@@ -1,1 +1,1 @@
-export { default } from '@/features/users/pages/admin/users-[id]';
+export {default} from '@/features/users/pages/admin/users-[id]';

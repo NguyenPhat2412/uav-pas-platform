@@ -1,10 +1,15 @@
-import { PortalAuthLayout } from "@/components/shared";
-import { RegisterForm } from "@/features/auth/components/customer/AuthForms";
+'use client';
+import {PortalAuthLayout} from "@/components/shared";
+import {RegisterForm} from "@/features/auth/components/customer/AuthForms";
+import {useI18n} from '@/contexts/I18nContext';
 
 export default function RegisterPage() {
-  return <PortalAuthLayout title="Bắt đầu hành trình nhiệm vụ của bạn." description="Tạo tài khoản để lựa chọn dịch vụ UAV, gửi yêu cầu và kết nối với đội ngũ vận hành." homeUrl={"/"}>
-    <h2>Tạo tài khoản</h2>
-    <p>Đăng ký để bắt đầu đặt dịch vụ UAV.</p>
-    <RegisterForm />
-  </PortalAuthLayout>;
+    const {t} = useI18n();
+    return <PortalAuthLayout title={t('customerAuth.registerTitle')}
+                             description={t('customerAuth.registerDescription')}
+                             homeUrl={"/"}>
+        <h2>{t('customerAuth.registerHeading')}</h2>
+        <p>{t('customerAuth.registerIntro')}</p>
+        <RegisterForm/>
+    </PortalAuthLayout>;
 }

@@ -1,1 +1,7 @@
-import { AdminPage } from '@/components/layout/AdminPage'; import { Registry } from "@/features/access/components/Registry"; export default function Page(){return <AdminPage title="Danh mục quyền" meta="Tra cứu các quyền truy cập được hỗ trợ." permission="PERMISSION_MANAGE" activeResource="permissions"><Registry/></AdminPage>;}
+import {AdminPage} from '@/components/layout/AdminPage';
+import {AccessHub} from "@/features/access/components/AccessHub";
+
+export default function Page() {
+    return <AdminPage title="admin.pages.access.title" meta="admin.pages.access.registryMeta"
+                      permission="PERMISSION_MANAGE" activeResource="access-control"><AccessHub tab="registry"/></AdminPage>;
+}

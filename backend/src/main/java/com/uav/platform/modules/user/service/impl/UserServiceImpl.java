@@ -102,7 +102,8 @@ public class UserServiceImpl implements UserService {
 
         Specification<AppUser> spec =
                 Specification.where(UserSpecifications.hasKeyword(keyword))
-                        .and(UserSpecifications.hasRole(role));
+                        .and(UserSpecifications.hasRole(role))
+                        .and(UserSpecifications.hasStatus(request.status()));
         Page<AppUser> userPage = userRepository.findAll(spec, pageable);
 
         return PageResponse.from(userPage, userMapper::toResponse);

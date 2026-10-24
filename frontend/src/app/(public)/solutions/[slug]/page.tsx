@@ -1,1 +1,1 @@
-export { default, generateStaticParams, generateMetadata } from '@/features/marketing/pages/web/solutions-[slug]';
+export {default, generateStaticParams, generateMetadata} from '@/features/marketing/pages/web/solutions-[slug]';

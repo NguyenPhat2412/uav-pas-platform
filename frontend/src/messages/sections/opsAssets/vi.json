@@ -1,0 +1,473 @@
+{
+  "opsAssets": {
+    "uavWorkflow": {
+      "reasonRequired": "Vui lòng nhập lý do hoặc kết quả kiểm tra UAV.",
+      "reasonTooLong": "Nội dung không được vượt quá 255 ký tự.",
+      "created": "Tạo UAV",
+      "repairStarted": "Bắt đầu phiếu sửa chữa #{id}",
+      "repairCompleted": "Hoàn tất phiếu sửa chữa #{id}",
+      "stationTransfer": "Điều chuyển trạm: {from} → #{to}",
+      "unassigned": "Chưa gán"
+    },
+    "pages": {
+      "uavs": {
+        "title": "Đội UAV",
+        "meta": "Theo dõi đội bay và mở mô hình tham chiếu của từng UAV"
+      },
+      "stations": {
+        "title": "Trạm UAV",
+        "meta": "Trạng thái, vị trí và lịch sử vận hành của các trạm"
+      },
+      "inventory": {
+        "title": "Kho thiết bị",
+        "meta": "Theo dõi tồn kho, nhập xuất, giữ chỗ và điều chuyển thiết bị"
+      },
+      "media": {
+        "title": "Tệp và tài liệu",
+        "meta": "Quản lý tệp, hình ảnh và tài liệu phục vụ vận hành."
+      },
+      "maintenance": {
+        "title": "Bảo trì và sửa chữa",
+        "meta": "Lịch định kỳ, phiếu sửa chữa và chi phí vật tư của đội UAV"
+      },
+      "audit": {
+        "title": "Nhật ký hoạt động",
+        "meta": "Tra cứu người thực hiện, thời gian và thay đổi trong hệ thống."
+      }
+    },
+    "uav": {
+      "model": "Mẫu UAV",
+      "serial": "Số serial",
+      "manufacturer": "Nhà sản xuất",
+      "status": "Trạng thái",
+      "station": "Trạm",
+      "actions": "Thao tác",
+      "unassigned": "Chưa gán",
+      "openDetail": "Mở chi tiết",
+      "completeMaintenance": "Hoàn tất bảo trì",
+      "maintenance": "Bảo trì",
+      "closeForm": "Đóng form",
+      "add": "Thêm UAV",
+      "create": "Tạo UAV",
+      "tableLabel": "Bảng đội UAV",
+      "detailTitle": "Chi tiết UAV",
+      "visualCheck": "Kiểm tra trực quan",
+      "close3d": "Đóng mô hình 3D",
+      "view3d": "Xem mô hình 3D",
+      "modelOnDemand": "Mô hình minh họa chỉ tải khi bạn chủ động mở.",
+      "tabs": {
+        "overview": "Tổng quan",
+        "maintenance": "Bảo trì",
+        "assignment": "Điều phối",
+        "activity": "Hoạt động",
+        "media": "Tệp"
+      },
+      "overviewNote": "Mô hình minh họa chỉ hỗ trợ quan sát; thuộc tính quản trị lấy từ UAV API.",
+      "openMaintenance": "Mở lịch bảo trì và phiếu sửa chữa",
+      "noManagePermission": "Bạn không có quyền cập nhật UAV.",
+      "mediaNote": "Tệp của UAV được quản lý trong khu vực Tệp.",
+      "newStatus": "Mới",
+      "noHistory": "Chưa có lịch sử trạng thái."
+    },
+    "audit": {
+      "time": "Thời gian",
+      "actor": "Người thực hiện",
+      "action": "Hành động",
+      "entity": "Đối tượng",
+      "details": "Chi tiết",
+      "tableLabel": "Nhật ký hoạt động"
+    },
+    "shared": {
+      "status": "Trạng thái",
+      "actions": "Thao tác",
+      "openDetail": "Mở chi tiết",
+      "closeForm": "Đóng form",
+      "overview": "Tổng quan",
+      "activity": "Hoạt động",
+      "notUpdated": "Chưa cập nhật"
+    },
+    "station": {
+      "code": "Mã trạm",
+      "name": "Tên trạm",
+      "address": "Địa chỉ",
+      "create": "Tạo trạm",
+      "tableLabel": "Bảng trạm UAV",
+      "detailTitle": "Chi tiết trạm",
+      "tabs": {
+        "uavs": "UAV",
+        "inventory": "Kho"
+      },
+      "coordinates": "Tọa độ",
+      "uavsNote": "UAV được gán cho trạm hiển thị trong domain Đội UAV.",
+      "inventoryNote": "Thiết bị tại trạm hiển thị trong domain Kho thiết bị.",
+      "activityNote": "Hoạt động của trạm hiển thị trong Nhật ký hoạt động."
+    },
+    "equipment": {
+      "equipment": "Thiết bị",
+      "notSerialized": "Không serial hóa",
+      "type": "Loại",
+      "station": "Trạm",
+      "unassigned": "Chưa gán",
+      "onHand": "Tồn",
+      "available": "Khả dụng",
+      "reserved": "Giữ chỗ",
+      "create": "Tạo thiết bị",
+      "name": "Tên thiết bị",
+      "serial": "Serial",
+      "storageStation": "Trạm lưu thiết bị (tùy chọn)",
+      "noStation": "Chưa gán trạm",
+      "movementRecorded": "Đã ghi nhận biến động kho.",
+      "movementTitle": "Biến động số lượng",
+      "selectEquipment": "Chọn thiết bị",
+      "action": "Thao tác",
+      "actions": {
+        "stockIn": "Nhập kho",
+        "stockOut": "Xuất kho",
+        "reserve": "Giữ chỗ",
+        "release": "Giải phóng",
+        "transfer": "Điều chuyển"
+      },
+      "quantity": "Số lượng",
+      "note": "Ghi chú",
+      "targetStation": "Trạm đích",
+      "selectTargetStation": "Chọn trạm đích",
+      "record": "Ghi nhận",
+      "tableLabel": "Bảng kho thiết bị",
+      "history": "Lịch sử kho",
+      "historyCaption": "Lịch sử biến động kho",
+      "time": "Thời gian",
+      "handledBy": "Người xử lý",
+      "noHistory": "Chưa có biến động kho."
+    },
+    "mediaPolicy": {
+      "policy": "JPEG/PNG/WebP/PDF: tối đa 100 MB; MP4/WebM: tối đa 1 GB.",
+      "retention": "Tệp chưa xác nhận hết hạn sau 24 giờ. Tệp đã xác nhận và kết quả bàn giao được giữ lại.",
+      "invalidFile": "{policy} Tệp phải có nội dung và đúng định dạng cho phép."
+    },
+    "media": {
+      "reuploadMismatch": "Tệp tải lại phải có cùng kích thước và định dạng đã đăng ký.",
+      "stage": {
+        "registering": "Đang đăng ký tệp…",
+        "uploading": "Đang tải nội dung #{id}…",
+        "confirming": "Đang xác nhận nội dung…",
+        "uploaded": "Đã tải và xác nhận tệp.",
+        "failed": "Tải tệp chưa hoàn tất. Kiểm tra lỗi bên dưới; bản đăng ký còn trong 24 giờ có thể xác nhận lại hoặc xóa. Nếu nội dung sai, hãy xóa và đăng ký tệp mới.",
+        "confirmed": "Đã xác nhận tệp. Bạn có thể xem hoặc tải xuống.",
+        "deletedIncomplete": "Đã xóa tệp chưa hoàn tất."
+      },
+      "uploadFile": "Tệp tải lên",
+      "linkResource": "Liên kết tài nguyên",
+      "ownFile": "Tệp riêng của tôi",
+      "resourceId": "Mã tài nguyên",
+      "uploadAndConfirm": "Tải lên và xác nhận",
+      "search": "Tìm tệp",
+      "searchPlaceholder": "Tên tệp…",
+      "typeFilter": "Lọc loại tệp",
+      "allTypes": "Tất cả loại",
+      "col": {
+        "name": "Tên tệp",
+        "typeSize": "Loại / dung lượng",
+        "status": "Trạng thái",
+        "uploadedBy": "Người tải",
+        "actions": "Thao tác"
+      },
+      "confirmed": "Đã xác nhận",
+      "pending": "Chờ xác nhận",
+      "viewDownload": "Xem / tải xuống",
+      "confirm": "Xác nhận",
+      "reupload": "Tải lại",
+      "reuploadLabel": "Tải lại {name}",
+      "delete": "Xóa",
+      "deleteTitle": "Xóa tệp",
+      "attachedToMission": "Không thể xóa tệp đang gắn với nhiệm vụ.",
+      "deleteNote": "Tệp đang gắn với nhiệm vụ được giữ lại. Tệp khác được gỡ khỏi thư viện; hệ thống tiếp tục xóa nội dung trong kho sau khi liên kết tải lên hết hiệu lực.",
+      "confirmDelete": "Xác nhận xóa",
+      "previewTitle": "Xem tệp: {name}",
+      "useDownload": "Dùng liên kết tải xuống để xem định dạng này.",
+      "openDownload": "Mở / tải xuống tệp",
+      "linkValidity": "Liên kết có hiệu lực trong 15 phút."
+    },
+    "uavLifecycle": {
+      "errors": {
+        "UAV_HAS_IN_PROGRESS_REPAIR_ORDER": "UAV đang có phiếu sửa chữa đã bắt đầu. Hãy mở lịch bảo trì và phiếu sửa chữa để hoàn tất hoặc hủy phiếu trước khi cập nhật trạng thái hay trạm.",
+        "UAV_HAS_ACTIVE_MISSION": "UAV đang được giữ cho một nhiệm vụ. Hãy đổi hoặc gỡ UAV trong nhiệm vụ trước khi bảo trì hay điều chuyển.",
+        "UAV_NOT_AVAILABLE": "UAV không còn sẵn có. Trạng thái mới nhất đã được tải lại.",
+        "UAV_INVALID_STATUS": "Không thể chuyển trạng thái UAV theo thao tác này. Hãy kiểm tra thông tin mới nhất.",
+        "UAV_STATUS_CHANGED": "Trạng thái UAV đã thay đổi ở nơi khác. Hãy kiểm tra lại trước khi thao tác.",
+        "UAV_ALREADY_IN_MAINTENANCE": "UAV đã được đưa vào bảo trì ở nơi khác. Hãy kiểm tra lịch sử mới nhất.",
+        "UAV_STATUS_REASON_REQUIRED": "Vui lòng nhập lý do hoặc kết quả kiểm tra UAV.",
+        "UAV_STATUS_REASON_TOO_LONG": "Nội dung không được vượt quá 255 ký tự.",
+        "UAV_STATUS_REQUIRES_MISSION_WORKFLOW": "UAV đang được sử dụng cho nhiệm vụ. Hãy xử lý tại nhiệm vụ trước.",
+        "UAV_NOT_AVAILABLE_FOR_STATION_TRANSFER": "Chỉ có thể điều chuyển trạm khi UAV sẵn có.",
+        "STATION_NOT_ACTIVE": "Trạm đã ngừng hoạt động. Hãy chọn trạm khác.",
+        "forbidden": "Bạn không còn quyền cập nhật UAV.",
+        "conflict": "UAV hoặc trạm đã thay đổi. Hãy kiểm tra thông tin mới nhất trước khi thử lại.",
+        "unknown": "Chưa xác nhận được kết quả thao tác. Hãy kiểm tra trạng thái trước khi thử lại.",
+        "staleReload": "Chưa tải được trạng thái mới nhất. Hãy tải lại trước khi tiếp tục.",
+        "staleRetry": "Chưa tải được trạng thái mới nhất. Vui lòng thử lại."
+      },
+      "updating": "Đang cập nhật UAV…",
+      "reloadStatus": "Tải lại trạng thái UAV",
+      "busyNote": "UAV đang được phân công hoặc đang sử dụng. Cần đổi hoặc gỡ UAV trong nhiệm vụ trước khi bảo trì hay điều chuyển trạm. Không thể điều phối lại khi nhiệm vụ đang bay.",
+      "maintenanceNote": "UAV đang bảo trì không được bố trí vào nhiệm vụ. Chỉ hoàn tất bảo trì sau khi đã kiểm tra đủ điều kiện hoạt động.",
+      "enterMaintenance": "Đưa vào bảo trì",
+      "recoverLegacy": "Khôi phục UAV không có nhiệm vụ",
+      "completeMaintenance": "Hoàn tất bảo trì",
+      "form": {
+        "maintenance": "Xác nhận bảo trì UAV",
+        "recover": "Xác nhận khôi phục UAV",
+        "complete": "Xác nhận hoàn tất bảo trì UAV"
+      },
+      "success": {
+        "maintenance": "Đã đưa UAV vào bảo trì.",
+        "recover": "Đã khôi phục UAV sẵn có sau khi kiểm tra không còn nhiệm vụ đang giữ.",
+        "complete": "Đã hoàn tất bảo trì. UAV sẵn có để phân công.",
+        "station": "Đã cập nhật trạm. UAV vẫn sẵn có để phân công."
+      },
+      "heading": {
+        "maintenance": "Đưa UAV vào bảo trì",
+        "recover": "Xác nhận UAV không thuộc nhiệm vụ",
+        "complete": "Xác nhận UAV đủ điều kiện hoạt động"
+      },
+      "desc": {
+        "maintenance": "UAV sẽ tạm ngừng nhận nhiệm vụ mới.",
+        "recover": "Chỉ dùng cho dữ liệu cũ bị giữ trạng thái phân công. Hệ thống kiểm tra và từ chối nếu UAV vẫn thuộc một nhiệm vụ đang hoạt động; không thể dùng để giải phóng UAV của nhiệm vụ.",
+        "complete": "UAV sẽ chuyển sang sẵn có. Kết quả kiểm tra được lưu trong lịch sử."
+      },
+      "label": {
+        "maintenance": "Lý do bảo trì",
+        "recover": "Lý do khôi phục UAV",
+        "complete": "Kết quả kiểm tra sau bảo trì"
+      },
+      "maxChars": "Tối đa {max} ký tự.",
+      "back": "Quay lại",
+      "submit": {
+        "maintenance": "Xác nhận bảo trì",
+        "recover": "Xác nhận khôi phục UAV",
+        "complete": "Xác nhận hoàn tất bảo trì"
+      },
+      "needStationRead": "Bạn cần quyền đọc trạm để chọn trạm điều phối.",
+      "transferForm": "Điều chuyển UAV đến trạm",
+      "transferNote": "Chỉ điều chuyển UAV sẵn có, không thuộc nhiệm vụ đang hoạt động. Gán trạm không giữ UAV cho một nhiệm vụ.",
+      "targetStation": "Trạm điều chuyển",
+      "selectStation": "Chọn trạm mới",
+      "confirmStation": "Xác nhận gán trạm",
+      "mustBeAvailable": "UAV phải ở trạng thái sẵn có trước khi điều chuyển trạm."
+    },
+    "maintenance": {
+      "validation": {
+        "textRequired": "{label} cần có nội dung và không được vượt quá {max} ký tự.",
+        "textTooLong": "{label} không được vượt quá {max} ký tự.",
+        "invalidDate": "Vui lòng chọn ngày hợp lệ.",
+        "interval": "Chu kỳ phải là số nguyên từ 1 đến 3.650 ngày.",
+        "tooManyMaterials": "Mỗi phiếu được ghi tối đa 100 dòng vật tư.",
+        "materialQuantity": "Vật tư dòng {line}: số lượng phải lớn hơn 0, tối đa 10.000 và có tối đa 3 chữ số thập phân.",
+        "materialPrice": "Vật tư dòng {line}: đơn giá là số nguyên VND từ 0 đến 1.000.000.000.",
+        "invalidUav": "Vui lòng chọn UAV hợp lệ.",
+        "label": {
+          "scheduleTitle": "Tên lịch",
+          "orderTitle": "Tên phiếu",
+          "description": "Mô tả",
+          "technician": "Người phụ trách",
+          "materialName": "Tên vật tư dòng {line}",
+          "materialUnit": "Đơn vị dòng {line}",
+          "inspection": "Kết quả kiểm tra",
+          "cancelReason": "Lý do hủy"
+        }
+      },
+      "due": {
+        "UPCOMING": "Sắp tới",
+        "DUE": "Đến hạn hôm nay",
+        "OVERDUE": "Quá hạn",
+        "PAUSED": "Tạm dừng"
+      },
+      "orderStatus": {
+        "OPEN": "Đã lập phiếu",
+        "IN_PROGRESS": "Đang sửa chữa",
+        "COMPLETED": "Đã hoàn tất",
+        "CANCELLED": "Đã hủy"
+      },
+      "undetermined": "Chưa xác định",
+      "none": "Chưa có",
+      "errors": {
+        "MAINTENANCE_VERSION_CHANGED": "Thông tin đã được người khác thay đổi. Dữ liệu mới nhất đã được tải lại; hãy kiểm tra trước khi thao tác tiếp.",
+        "MAINTENANCE_ACTIVE_ORDER_EXISTS": "UAV đã có phiếu đang mở hoặc đang sửa chữa. Hãy xử lý phiếu hiện có trước.",
+        "MAINTENANCE_UAV_HAS_ACTIVE_ORDER": "UAV đã có phiếu đang mở hoặc đang sửa chữa. Hãy xử lý phiếu hiện có trước.",
+        "MAINTENANCE_SCHEDULE_HAS_ACTIVE_ORDER": "Lịch đang có phiếu chưa đóng. Hãy hoàn tất hoặc hủy phiếu trước khi sửa lịch.",
+        "MAINTENANCE_ORDER_INVALID_STATUS": "Trạng thái phiếu không còn phù hợp với thao tác này. Hãy kiểm tra dữ liệu mới nhất.",
+        "MAINTENANCE_ORDER_INVALID_STATE": "Trạng thái phiếu không còn phù hợp với thao tác này. Hãy kiểm tra dữ liệu mới nhất.",
+        "MAINTENANCE_UAV_STATE_CHANGED": "Trạng thái UAV đã thay đổi. Cần kiểm tra UAV và nhiệm vụ trước khi tiếp tục sửa chữa.",
+        "MAINTENANCE_SCHEDULE_UAV_MISMATCH": "UAV không thuộc lịch bảo trì đã chọn. Hãy đóng biểu mẫu và chọn lại lịch.",
+        "MAINTENANCE_ORDER_TERMINAL": "Phiếu đã đóng, không thể thay đổi thông tin hoặc chi phí.",
+        "UAV_HAS_ACTIVE_MISSION": "UAV đang được giữ cho nhiệm vụ. Cần gỡ hoặc thay UAV trong nhiệm vụ trước khi bắt đầu sửa chữa.",
+        "UAV_NOT_AVAILABLE": "UAV không còn sẵn có để bắt đầu sửa chữa.",
+        "MAINTENANCE_UAV_BUSY": "UAV đang được phân công hoặc đang bay. Phiếu có thể chờ, nhưng chưa thể bắt đầu sửa chữa.",
+        "MAINTENANCE_SCHEDULE_PAUSED": "Lịch đang tạm dừng. Hãy kích hoạt lại lịch trước khi lập phiếu theo lịch.",
+        "forbidden": "Bạn không có quyền quản lý bảo trì hoặc quyền vừa thay đổi.",
+        "notFound": "Không tìm thấy dữ liệu. Hãy tải lại danh sách.",
+        "conflict": "Không thể thao tác ở trạng thái hiện tại. Hãy kiểm tra phiếu đang mở, lịch bảo trì và nhiệm vụ của UAV.",
+        "badRequest": "Thông tin chưa hợp lệ. Kiểm tra ngày, nội dung và giới hạn số lượng, đơn giá.",
+        "unconfirmed": "Chưa xác nhận được kết quả. Hãy tải lại dữ liệu trước khi thử lại để tránh thao tác trùng.",
+        "generic": "Không thể xử lý yêu cầu. Vui lòng thử lại.",
+        "staleReload": "Chưa tải được dữ liệu mới nhất. Tải lại trước khi tiếp tục.",
+        "staleRetry": "Chưa tải được dữ liệu mới nhất. Vui lòng thử lại."
+      },
+      "saving": "Đang lưu và kiểm tra trạng thái mới nhất…",
+      "reloadData": "Tải lại dữ liệu bảo trì",
+      "fields": {
+        "uav": "UAV của phiếu hoặc lịch",
+        "selectUav": "Chọn UAV",
+        "uavNumber": "UAV #{id}",
+        "uavId": "Mã UAV",
+        "uavIdHint": "Nhập mã UAV đã được cấp. Tài khoản chưa có quyền xem danh sách đội UAV.",
+        "scheduleTitle": "Tên lịch bảo trì",
+        "interval": "Chu kỳ (ngày)",
+        "nextDue": "Ngày đến hạn tiếp theo",
+        "orderTitle": "Tên phiếu sửa chữa",
+        "plannedDate": "Ngày dự kiến sửa chữa",
+        "technician": "Người phụ trách sửa chữa",
+        "description": "Mô tả tình trạng và công việc"
+      },
+      "materials": {
+        "form": "Ghi nhận chi phí vật tư",
+        "invalid": "Vật tư chưa hợp lệ.",
+        "notePrefix": "Chi phí chỉ ghi nhận trong phiếu, ",
+        "noteStrong": "không trừ kho thiết bị",
+        "noteSuffix": ". Số lượng tối đa 3 chữ số thập phân; đơn giá là số nguyên VND. Mỗi dòng được làm tròn đến đồng, sau đó cộng tổng trên hệ thống.",
+        "empty": "Chưa có dòng vật tư. Có thể lưu phiếu với chi phí vật tư bằng 0.",
+        "line": "Vật tư {line}",
+        "name": "Tên vật tư {line}",
+        "unit": "Đơn vị vật tư {line}",
+        "unitPlaceholder": "Chiếc, bộ, lít…",
+        "quantity": "Số lượng vật tư {line}",
+        "unitPrice": "Đơn giá VND vật tư {line}",
+        "remove": "Xóa vật tư {line}",
+        "add": "Thêm dòng vật tư",
+        "savedTotal": "Tổng đã lưu: ",
+        "savedTotalNote": ". Các thay đổi hiện tại chỉ được tính lại sau khi lưu thành công.",
+        "discard": "Bỏ thay đổi vật tư",
+        "save": "Lưu vật tư và chi phí"
+      },
+      "invalidInput": "Thông tin chưa hợp lệ.",
+      "back": "Quay lại",
+      "schedule": {
+        "editTitle": "Chỉnh sửa lịch bảo trì",
+        "createTitle": "Tạo lịch bảo trì định kỳ",
+        "saved": "Đã lưu lịch bảo trì.",
+        "conflict": "Biểu mẫu đang giữ nội dung cũ. Đóng biểu mẫu rồi mở lại lịch trong danh sách để sửa dữ liệu mới nhất.",
+        "note": "Lịch giúp theo dõi ngày đến hạn. Hệ thống không tự đưa UAV vào bảo trì hoặc gửi nhắc lịch. Chu kỳ tiếp theo được tính từ ngày hoàn tất phiếu gắn với lịch, theo giờ Việt Nam.",
+        "saveChanges": "Lưu thay đổi lịch",
+        "create": "Tạo lịch bảo trì"
+      },
+      "orderCreate": {
+        "fromSchedule": "Lập phiếu theo lịch bảo trì",
+        "title": "Lập phiếu sửa chữa",
+        "created": "Đã lập phiếu sửa chữa.",
+        "note": "Mỗi UAV chỉ có một phiếu chưa đóng. Lập phiếu để lên kế hoạch chưa làm thay đổi trạng thái UAV; khi bắt đầu sửa chữa, hệ thống mới kiểm tra nhiệm vụ đang giữ UAV.",
+        "linked": "Gắn với lịch #{id}: ",
+        "submit": "Tạo phiếu sửa chữa"
+      },
+      "order": {
+        "editForm": "Chỉnh sửa phiếu sửa chữa",
+        "discard": "Bỏ thay đổi phiếu",
+        "saveInfo": "Lưu thông tin phiếu",
+        "confirm": {
+          "start": "Xác nhận bắt đầu sửa chữa",
+          "complete": "Xác nhận hoàn tất phiếu",
+          "cancel": "Xác nhận hủy phiếu"
+        },
+        "mustInspect": "Cần xác nhận đã kiểm tra UAV trước khi hoàn tất.",
+        "desc": {
+          "start": "Chỉ bắt đầu khi UAV không còn thuộc nhiệm vụ đang hoạt động. UAV sẽ chuyển sang bảo trì và không thể nhận nhiệm vụ.",
+          "complete": "Xác nhận của người phụ trách được ghi lại trong phiếu; đây không phải chứng nhận kỹ thuật. UAV sẽ chuyển sang sẵn có và lịch liên kết được tính lại từ hôm nay.",
+          "cancelStarted": "Phiếu đã bắt đầu: sau khi hủy, UAV vẫn ở trạng thái bảo trì. Chi phí vật tư đã ghi vẫn được giữ. Cần lập phiếu mới hoặc kiểm tra UAV trước khi đưa trở lại hoạt động.",
+          "cancelOpen": "Hủy phiếu chưa bắt đầu không thay đổi trạng thái UAV. Chi phí đã ghi vẫn được giữ, ngày đến hạn của lịch không thay đổi."
+        },
+        "inspectionResult": "Kết quả kiểm tra sau sửa chữa",
+        "cancelReason": "Lý do hủy phiếu sửa chữa",
+        "inspectedConfirm": "Tôi xác nhận đã kiểm tra UAV và cho phép đưa trở lại hoạt động.",
+        "backToOrder": "Quay lại phiếu",
+        "title": "Phiếu sửa chữa #{id}",
+        "reload": "Tải lại phiếu",
+        "scheduled": "Lịch định kỳ #{id}",
+        "adHoc": "Phiếu sửa chữa đột xuất",
+        "plannedDate": "Ngày dự kiến",
+        "technician": "Người phụ trách",
+        "createdAt": "Ngày lập",
+        "startedAt": "Bắt đầu sửa chữa",
+        "notStarted": "Chưa bắt đầu",
+        "completedAt": "Ngày hoàn tất",
+        "notCompleted": "Chưa hoàn tất",
+        "cancelledAt": "Ngày hủy",
+        "notCancelled": "Chưa hủy",
+        "inspection": "Kết quả kiểm tra",
+        "cancelReasonShort": "Lý do hủy",
+        "materialsSection": "Chi phí vật tư đã ghi",
+        "materialsTitle": "Vật tư và chi phí",
+        "materialsNote": "Chi phí vật tư ghi trong phiếu, không trừ kho thiết bị. Tổng do hệ thống tính từ các dòng đã lưu.",
+        "noMaterials": "Chưa ghi nhận vật tư.",
+        "editInfo": "Sửa thông tin phiếu",
+        "editMaterials": "Ghi vật tư và chi phí",
+        "start": "Bắt đầu sửa chữa",
+        "complete": "Hoàn tất phiếu sửa chữa",
+        "cancel": "Hủy phiếu sửa chữa",
+        "closedNote": "Phiếu đã đóng. Thông tin và chi phí được giữ để tra cứu, không thể chỉnh sửa.",
+        "success": {
+          "updated": "Đã cập nhật thông tin phiếu.",
+          "materials": "Đã lưu vật tư. Tổng chi phí đã được tính lại.",
+          "start": "Đã bắt đầu sửa chữa. UAV đang bảo trì.",
+          "complete": "Đã hoàn tất phiếu và đưa UAV trở lại sẵn có.",
+          "cancel": "Đã hủy phiếu. Chi phí đã ghi được giữ nguyên."
+        }
+      },
+      "workspace": {
+        "intro": "Theo dõi lịch định kỳ, công việc sửa chữa và chi phí vật tư của từng UAV. Ngày đến hạn chỉ là nhắc việc trên màn hình; chưa tự động dừng UAV hoặc gửi thông báo.",
+        "tabs": {
+          "schedules": "Lịch định kỳ",
+          "orders": "Phiếu sửa chữa"
+        },
+        "filterUav": "Lọc theo UAV",
+        "allUavs": "Tất cả UAV",
+        "filterDue": "Lọc hạn bảo trì",
+        "allSchedules": "Tất cả lịch",
+        "filterStatus": "Lọc trạng thái phiếu",
+        "allStatuses": "Tất cả trạng thái",
+        "createSchedule": "Tạo lịch định kỳ",
+        "createOrder": "Lập phiếu sửa chữa",
+        "uavsError": "Chưa tải được danh sách UAV để lựa chọn. Các lịch và phiếu hiện có vẫn hiển thị bên dưới.",
+        "reloadUavs": "Tải lại danh sách UAV",
+        "reloadList": "Tải lại danh sách bảo trì",
+        "countSchedules": "{count} lịch bảo trì phù hợp bộ lọc",
+        "countOrders": "{count} phiếu sửa chữa phù hợp bộ lọc",
+        "updating": " · Đang cập nhật…",
+        "scheduleList": "Danh sách lịch bảo trì",
+        "scheduleNumber": "Lịch #{id}",
+        "interval": "Chu kỳ",
+        "intervalDays": "{days} ngày",
+        "nextDue": "Đến hạn tiếp theo",
+        "lastCompleted": "Lần hoàn tất gần nhất",
+        "editSchedule": "Chỉnh sửa lịch",
+        "pauseSchedule": "Tạm dừng lịch",
+        "activateSchedule": "Kích hoạt lịch",
+        "orderFromSchedule": "Lập phiếu theo lịch",
+        "noSchedules": "Chưa có lịch phù hợp",
+        "noSchedulesDetail": "Tạo lịch định kỳ cho UAV hoặc thay đổi bộ lọc.",
+        "orderList": "Danh sách phiếu sửa chữa",
+        "orderNumber": "Phiếu #{id}",
+        "planned": "Dự kiến {date}",
+        "openOrder": "Mở phiếu sửa chữa",
+        "noOrders": "Chưa có phiếu phù hợp",
+        "noOrdersDetail": "Lập phiếu đột xuất hoặc tạo phiếu từ một lịch định kỳ.",
+        "pauseTitle": "Tạm dừng lịch bảo trì",
+        "activateTitle": "Kích hoạt lịch bảo trì",
+        "pauseNote": "Tạm dừng giúp giữ lịch sử của lịch mà không tiếp tục theo dõi hạn bảo trì. Không thể thay đổi lịch khi còn phiếu liên kết chưa đóng.",
+        "activateNote": "Lịch sẽ tiếp tục theo dõi từ ngày đến hạn đã lưu. Bạn có thể chỉnh lại ngày sau khi kích hoạt.",
+        "keep": "Giữ nguyên lịch",
+        "paused": "Đã tạm dừng lịch.",
+        "activated": "Đã kích hoạt lịch.",
+        "confirmPause": "Xác nhận tạm dừng lịch",
+        "confirmActivate": "Xác nhận kích hoạt lịch"
+      }
+    }
+  }
+}

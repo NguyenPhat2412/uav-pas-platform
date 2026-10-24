@@ -1,1 +1,1 @@
-export { default } from '@/features/navigation/pages/operations';
+export {default} from '@/features/navigation/pages/operations';

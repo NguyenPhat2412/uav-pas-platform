@@ -1,0 +1,376 @@
+{
+  "opsMissions": {
+    "errors": {
+      "noteTooLong": "Content must not exceed 500 characters.",
+      "reloadBeforeAccept": "Reload the mission before accepting it.",
+      "completionRequired": "Enter a result note and the equipment condition on return.",
+      "failureReasonRequired": "Enter the reason the mission could not be completed.",
+      "reasonTooLong": "The reason must not exceed 500 characters.",
+      "notesTooLong": "Notes must not exceed 2,000 characters.",
+      "quantityInvalid": "Equipment quantity must be a whole number greater than 0.",
+      "quantityExceeded": "The requested quantity exceeds the available equipment.",
+      "uavRedispatchReasonRequired": "Enter a reason for reassigning the UAV.",
+      "currentUavUnknown": "The current UAV could not be determined. Reload the mission.",
+      "replacementUavRequired": "Choose a different UAV as the replacement.",
+      "redispatchReasonRequired": "Enter a reason for reassigning.",
+      "reloadBeforeRedispatch": "Reload resources before reassigning.",
+      "replacementInvalid": "The replacement resource is invalid."
+    },
+    "apiErrors": {
+      "MISSION_ACCEPTANCE_REQUIRED": "The operator must accept the current assignment before it can be marked ready or started.",
+      "MISSION_ACCEPTANCE_STALE": "The assignment has changed or was already accepted. Review the latest resources before confirming.",
+      "MISSION_HANDOVER_NOTES_REQUIRED": "A result note and the equipment condition on return are required.",
+      "MISSION_HANDOVER_RESULT_REQUIRED": "At least one Deliverable or Report file must be uploaded and attached successfully.",
+      "MISSION_MEDIA_LOCKED": "The mission has ended. Files can only be viewed and downloaded.",
+      "MISSION_DISPATCH_STALE": "The assignment was changed on another screen. Data has been reloaded; check it before trying again.",
+      "MISSION_RESERVATION_STALE": "The reservation was changed or released. Check the latest list.",
+      "MISSION_STATION_RESOURCES_CONFLICT": "Resources belong to different stations. Remove the UAV and release equipment from the old station before changing stations.",
+      "MISSION_RESERVATION_BALANCE_CONFLICT": "Reserved inventory does not match the missions. Nothing was released to avoid taking another mission's share.",
+      "MISSION_DISPATCH_REQUIRED": "Resources are already assigned. Use reassignment instead.",
+      "OPERATOR_NOT_AVAILABLE": "The operator must have the right role, be active and not locked.",
+      "MISSION_RESOURCE_UNCHANGED": "Resource and quantity are unchanged.",
+      "MISSION_UAV_ASSIGNMENT_STALE": "The mission UAV was changed elsewhere. Information has been reloaded; check the current UAV before continuing.",
+      "MISSION_INVALID_STATUS": "The mission status has changed. Information has been reloaded; please check it before continuing.",
+      "MISSION_RESOURCE_MISSING": "Not enough valid resources. Check the station, UAV, operator and equipment.",
+      "UAV_NOT_AVAILABLE": "This UAV is not currently available.",
+      "UAV_TIME_CONFLICT": "The UAV is already scheduled in this time slot.",
+      "OPERATOR_TIME_CONFLICT": "The operator is already scheduled in this time slot.",
+      "INVENTORY_NOT_AVAILABLE": "Not enough equipment is available."
+    },
+    "detail": {
+      "confirm": {
+        "reject": {
+          "title": "Reject request",
+          "submit": "Confirm rejection"
+        },
+        "conflict": {
+          "title": "Report an issue",
+          "submit": "Confirm issue report"
+        },
+        "complete": {
+          "title": "Complete mission",
+          "submit": "Confirm completion"
+        },
+        "cancel": {
+          "title": "Cancel mission",
+          "submit": "Confirm cancellation"
+        },
+        "fail": {
+          "title": "Record mission as failed",
+          "submit": "Confirm failure"
+        }
+      },
+      "sections": {
+        "timeline": "history",
+        "media": "files",
+        "stations": "stations",
+        "uavs": "UAVs",
+        "equipment": "equipment",
+        "operators": "operators"
+      },
+      "errors": {
+        "loadFailed": "Unable to load the mission, or you do not have access.",
+        "forbidden": "You no longer have permission for this action or are not the assigned operator.",
+        "actionUnconfirmed": "The result of the action could not be confirmed. Check the reloaded status before trying again.",
+        "reloadStale": "The latest status could not be loaded. Reload the status before continuing to avoid repeating the action.",
+        "uploadUnconfirmed": "The file attachment could not be confirmed. Check the reloaded list before trying again.",
+        "downloadFailed": "Unable to download the file right now. Please try again.",
+        "reloadFailed": "Unable to reload the status. Check your connection and try again.",
+        "reloadMissionFailed": "Unable to reload the mission."
+      },
+      "loading": "Loading mission",
+      "resources": {
+        "station": "Station",
+        "uav": "UAV",
+        "operator": "Operator",
+        "equipment": "Equipment",
+        "stationPlaceholder": "Select station",
+        "uavPlaceholder": "Select UAV",
+        "operatorPlaceholder": "Select operator",
+        "equipmentPlaceholder": "Select equipment",
+        "assignStation": "Assign station",
+        "assignUav": "Assign UAV",
+        "assignOperator": "Assign operator",
+        "reserveEquipment": "Reserve equipment",
+        "assign": "Assign",
+        "reserve": "Reserve",
+        "equipmentOption": "{name} · {count} left",
+        "quantity": "Quantity to reserve",
+        "available": "Available: {count}",
+        "selectEquipmentFirst": "Select equipment to enter the quantity to reserve.",
+        "title": "Resource allocation"
+      },
+      "facts": {
+        "type": "Mission type",
+        "start": "Planned start",
+        "end": "Planned end",
+        "priority": "Priority"
+      },
+      "actions": {
+        "submit": "Submit for confirmation",
+        "confirm": "Confirm",
+        "ready": "Ready",
+        "accept": "Accept mission",
+        "start": "Start",
+        "complete": "Complete",
+        "fail": "Record failure",
+        "conflict": "Report issue",
+        "reject": "Reject",
+        "cancel": "Cancel mission",
+        "processing": "Processing…"
+      },
+      "awaitingAcceptance": {
+        "title": "Awaiting operator acceptance",
+        "body": "The assignee must review the resources and accept the mission before it is ready. Each resource change requires acceptance again."
+      },
+      "complete": {
+        "evidenceCount": "{count} deliverable/report file(s) attached. At least 1 file is required to complete.",
+        "evidenceUnknown": "Result files could not be checked. Reload the list or ask someone with file access.",
+        "evidenceOptional": "This mission type does not require result files.",
+        "goToMedia": "Go to files and results",
+        "warning": "Completing releases resources and locks file updates. Check the results before confirming."
+      },
+      "cancelWarning": "A cancelled mission cannot be resumed. Resources are released according to the process.",
+      "failWarning": "This ends the mission and releases held resources. The mission cannot be resumed; the reason is saved in the history.",
+      "note": {
+        "result": "Result note",
+        "failureReason": "Failure reason",
+        "reason": "Reason / issue",
+        "maxLength": "Up to {count} characters.",
+        "incident": "Incident notes (optional)",
+        "equipmentCondition": "Equipment condition on return",
+        "equipmentConditionHint": "This note does not change the equipment's damaged or maintenance status."
+      },
+      "reloadStatus": "Reload status",
+      "sectionsFailed": "Could not load: {sections}.",
+      "retry": "Retry",
+      "nav": {
+        "label": "Mission sections",
+        "resources": "Resources",
+        "media": "Files and results",
+        "timeline": "History"
+      },
+      "uav": {
+        "title": "Reassign UAV",
+        "description": "Replace or remove the UAV only before the mission starts. The station, operator and reserved equipment are kept. The operator's acceptance is reset; the mission must be reviewed before continuing.",
+        "replace": "Replace UAV",
+        "unassign": "Remove UAV from mission",
+        "replaceForm": "Replace mission UAV",
+        "unassignForm": "Remove mission UAV",
+        "confirmReplace": "Confirm UAV replacement",
+        "confirmUnassign": "Confirm UAV removal",
+        "current": "Current UAV: {uav}.",
+        "replaceHint": "The old UAV is released only when the replacement is valid. If the mission is ready, it returns to resource allocation for review.",
+        "unassignHint": "The mission returns to confirmed. Assign another UAV before it can be ready.",
+        "replacement": "Replacement UAV",
+        "replacementPlaceholder": "Select replacement UAV",
+        "noReplacement": "No available UAV matches the station. Check the UAV fleet or finish maintenance first.",
+        "reason": "Reason for reassignment",
+        "reasonHint": "Up to {count} characters. The reason is saved in the mission history.",
+        "keep": "Keep UAV"
+      },
+      "assigned": {
+        "title": "Assigned resources",
+        "stationFallback": "Station #{id}",
+        "uavFallback": "UAV #{id}",
+        "operatorFallback": "Operator #{id}",
+        "unassigned": "Not assigned",
+        "you": "You",
+        "accepted": "Mission acceptance confirmed.",
+        "notAccepted": "Mission not yet accepted.",
+        "conflict": "Issue: {note}"
+      },
+      "outcome": {
+        "title": "Outcome",
+        "failureReason": "Failure reason",
+        "none": "Nothing recorded",
+        "incident": "Incident notes",
+        "billing": "Mission invoice",
+        "billingPending": "Awaiting invoicing",
+        "billingError": "Invoice could not be issued; the system will retry",
+        "billingIssued": "Invoice issued",
+        "billingNone": "Automatic invoicing not required",
+        "result": "Result note",
+        "equipmentCondition": "Equipment condition on return"
+      },
+      "media": {
+        "title": "Files and results",
+        "count": "{count} files",
+        "role": "File role",
+        "roleOutput": "Deliverable",
+        "roleDocument": "Report / handover document",
+        "roleFlightData": "Flight data (not a deliverable)",
+        "uploading": "Uploading file…",
+        "upload": "Upload result file",
+        "uploadHint": "A file counts toward handover once it is uploaded, confirmed and attached to the mission. Flight data does not replace result/report files.",
+        "noPermission": "You do not have permission to view files.",
+        "downloading": "Downloading…",
+        "download": "Download",
+        "empty": "No files attached yet.",
+        "locked": "The mission has ended. Files are kept for reference."
+      },
+      "timeline": {
+        "title": "Mission history",
+        "noPermission": "You do not have permission to view the history."
+      },
+      "backToList": "Mission list",
+      "backAction": "Back"
+    },
+    "redispatch": {
+      "kind": {
+        "operator": "operator",
+        "station": "station",
+        "equipment": "equipment"
+      },
+      "title": "Reassign operator, station and equipment",
+      "description": "Changes before flight need a reason and a resource re-check. A ready mission returns to allocation; the operator must review the new assignment.",
+      "changeOperator": "Change or remove operator",
+      "changeStation": "Change or remove station",
+      "reserved": "Reserved equipment",
+      "reservationLine": "Reservation #{id} · Quantity: {quantity}",
+      "changeReservationLabel": "Change or release reservation {id}",
+      "changeReservation": "Change / release",
+      "noReservations": "No equipment reserved. Reserve at least one valid item before marking ready.",
+      "released": "Released reservations ({count})",
+      "releasedLine": "{name} · {quantity} · Reservation #{id} released",
+      "equipmentOption": "{name} · {count} available",
+      "equipmentOptionHeld": "{name} · {count} available + {held} reserved",
+      "formTitle": "Reassign {kind}",
+      "stationHint": "Before changing station, remove the UAV and release equipment from the other station. Removing the station requires removing the UAV and releasing all equipment. The operator is kept.",
+      "equipmentHint": "Reservation #{id} holds {quantity}. Select the same equipment to change the quantity; the system releases the old reservation and creates the new one in a single step. Leave the selection empty to release this reservation entirely.",
+      "replacementEquipment": "Replacement equipment",
+      "replacementOperator": "Replacement operator",
+      "replacementStation": "Replacement station",
+      "releaseReservation": "Release this reservation",
+      "removeCurrent": {
+        "operator": "Remove current operator",
+        "station": "Remove current station"
+      },
+      "schedule": {
+        "checking": "Checking schedule…",
+        "available": "No schedule conflict. The system checks again on confirmation.",
+        "conflict": "The operator is unavailable or already scheduled. Choose someone else.",
+        "error": "The schedule could not be checked.",
+        "retry": "Check schedule again"
+      },
+      "newQuantity": "New quantity",
+      "maxQuantity": "Maximum reservable: {count}. This is the new total for the reservation being changed.",
+      "reason": "Reason for resource change",
+      "reasonHint": "Up to {count} characters. Saved in the mission history.",
+      "stale": "The data has changed. Close and reopen the form to use the latest assignment.",
+      "keep": "Keep resources",
+      "confirmChange": "Confirm resource change",
+      "confirmRelease": "Confirm equipment release",
+      "confirmRemove": "Confirm resource removal"
+    },
+    "overview": {
+      "quick": {
+        "stations": "Stations",
+        "dispatch": "Mission dispatch",
+        "uavs": "UAV fleet",
+        "media": "Result files"
+      },
+      "authenticating": "Authenticating",
+      "title": "Operations overview",
+      "openDispatch": "Open dispatch",
+      "partialError": "Some metrics could not be loaded. Other modules remain available.",
+      "summary": {
+        "label": "Summary of all permitted data",
+        "users": "Users",
+        "stations": "Stations",
+        "availableUavs": "Available UAVs",
+        "equipment": "Equipment",
+        "auditEvents": "Audit events"
+      },
+      "missions": {
+        "title": "Mission overview",
+        "subtitle": "Current workflow status",
+        "openList": "Open list",
+        "total": "Total missions",
+        "inProgress": "In progress",
+        "completed": "Completed",
+        "failed": "Failed",
+        "pending": "Awaiting confirmation:",
+        "ready": "Ready:"
+      },
+      "fleet": {
+        "title": "UAV fleet status",
+        "subtitle": "Select an aircraft to monitor on the 3D HUD",
+        "viewAll": "View all",
+        "asset": "Asset",
+        "status": "Status",
+        "station": "Station",
+        "manufacturer": "Manufacturer",
+        "actions": "Actions",
+        "empty": "No UAVs yet, or you do not have permission to view them.",
+        "unassigned": "Unassigned",
+        "details": "Details"
+      },
+      "hud": {
+        "noUav": "No UAV selected",
+        "noStation": "No station assigned",
+        "frame": "UAV MONITORING FRAME",
+        "noTelemetry": "No live telemetry connection",
+        "battery": "Battery:",
+        "altitude": "Altitude:",
+        "openSar": "Open AI & SAR cockpit",
+        "openFleet": "Open UAV fleet board"
+      },
+      "stations": {
+        "title": "Station activity",
+        "subtitle": "Current station list",
+        "manage": "Manage stations",
+        "station": "Station",
+        "status": "Status",
+        "address": "Address",
+        "coordinates": "Coordinates"
+      },
+      "quickActions": {
+        "title": "Quick actions",
+        "subtitle": "Quick access"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "center": "Notification center",
+      "subtitle": "Track flight events, SAR emergency alerts, equipment status and dispatch messages",
+      "markAll": "Mark all as read ({count})",
+      "searchLabel": "Search notifications",
+      "searchPlaceholder": "Search notification content...",
+      "filter": {
+        "ALL": "All",
+        "ALERT": "Emergency",
+        "WARNING": "Warning",
+        "INFO": "Info",
+        "SUCCESS": "Completed"
+      },
+      "loading": "Loading notifications…",
+      "retry": "Retry",
+      "emptyTitle": "No matching notifications",
+      "emptyHint": "New notifications will appear here automatically when events occur.",
+      "bell": {
+        "newCount": "{count} new",
+        "readAll": "Read all",
+        "empty": "No notifications",
+        "viewAll": "View all notifications"
+      }
+    },
+    "list": {
+      "myMissions": "My missions",
+      "search": "Search missions",
+      "searchPlaceholder": "Code or title",
+      "refresh": "Refresh",
+      "create": "Create mission",
+      "empty": "No missions yet."
+    },
+    "assigned": {
+      "title": "Assigned missions",
+      "meta": "Track the schedule and carry out your assigned missions."
+    },
+    "dispatch": {
+      "title": "Mission dispatch",
+      "meta": "Confirm, allocate resources and track mission progress",
+      "listTitle": "Operations missions"
+    }
+  }
+}

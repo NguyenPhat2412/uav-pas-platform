@@ -1,0 +1,184 @@
+{
+  "opsShared": {
+    "sar": {
+      "page": {
+        "title": "Tác chiến AI & Tìm kiếm cứu nạn (SAR Cockpit)",
+        "meta": "Giám sát trực quan luồng camera AI YOLOv8s, bản đồ tác chiến đa giác, telemetry UAV và trạng thái bo mạch KV260"
+      },
+      "cockpit": {
+        "dispatchAlert": "Mô phỏng gửi tọa độ ({gps}). Chưa gửi tới đội cứu nạn thực tế.",
+        "dispatchStore": "Đã chạy mô phỏng phân phối tọa độ cứu hộ.",
+        "rthAlert": "Mô phỏng RTH về trạm ST-01. Chưa truyền lệnh tới UAV thực tế.",
+        "rthStore": "Mô phỏng RTH tự động.",
+        "simulationTitle": "Chế độ mô phỏng.",
+        "simulationBody": "Dữ liệu UAV, camera AI và bo mạch dưới đây chưa được kết nối thiết bị thực tế. Các thao tác chỉ minh họa giao diện.",
+        "urgent": "ƯU TIÊN KHẨN CẤP (URGENT)",
+        "inProgress": "ĐANG TÁC CHIẾN (IN_PROGRESS)",
+        "missionCode": "MÃ NHIỆM VỤ: {code}",
+        "missionTitle": "Tìm kiếm cứu nạn tàu cá mất tích - Khu vực vịnh Lan Hạ, Hải Phòng",
+        "station": "Trạm điều phối:",
+        "stationName": "Trạm Cát Bà (ST-01)",
+        "pilot": "Phi công phụ trách:",
+        "flightTime": "Thời gian bay:",
+        "dispatchButton": "Mô phỏng gửi tọa độ cứu nạn",
+        "rthButton": "Mô phỏng RTH về trạm",
+        "cameraError": "Không thể tải luồng Camera AI",
+        "mapError": "Không thể tải Bản đồ Tác chiến SAR",
+        "hudError": "Lỗi hiển thị Telemetry HUD",
+        "kv260Error": "Lỗi hiển thị Bo mạch KV260"
+      },
+      "hud": {
+        "title": "Thông số bay UAV (Telemetry HUD)",
+        "rtkFix": "RTK FIX (ĐỘ CHÍNH XÁC CAO)",
+        "altitude": "Độ cao (AGL)",
+        "speed": "Vận tốc bay",
+        "battery": "Mức Pin 6S",
+        "remainingMinutes": "({minutes}p)",
+        "distanceHome": "Khoảng cách Home",
+        "satellites": "Vệ tinh (GPS+Galileo)",
+        "wind": "Gió:",
+        "windDirection": "(Đông Bắc)",
+        "heading": "Hướng mũi:",
+        "inControl": "UAV TRONG TẦM KIỂM SOÁT"
+      },
+      "kv260": {
+        "title": "Bo mạch nhúng AI KV260 (Edge Device)",
+        "dpuLoad": "Tải DPU NPU",
+        "aiSpeed": "Tốc độ AI",
+        "latency": "Độ trễ: {ms} ms",
+        "socTemp": "Nhiệt độ SoC",
+        "tempSafe": "An toàn (<75°C)",
+        "memory": "Bộ nhớ LPDDR4",
+        "model": "Mô hình AI:",
+        "mode": "Chế độ điều phối:"
+      },
+      "viewfinder": {
+        "labels": {
+          "personVictim": "Person (Nạn nhân)",
+          "lifebuoy": "Lifebuoy (Phao cứu sinh)",
+          "personSuspected": "Person (Nghi vấn)"
+        },
+        "rgb": "RGB Màu",
+        "thermal": "Tầm Nhiệt",
+        "snapshotSaved": "Đã chụp và lưu bằng chứng mục tiêu!",
+        "confidence": "Ngưỡng tin cậy:",
+        "snapshot": "Chụp ảnh",
+        "streamTitle": "Mục tiêu phát hiện thời gian thực (Detections Stream)",
+        "inView": "{count} mục tiêu trong tầm nhìn",
+        "verified": "Đã xác nhận",
+        "verify": "Xác nhận"
+      },
+      "map": {
+        "lkpLabel": "LKP: Tàu đánh cá TB-9284",
+        "pins": {
+          "victim": "Nạn nhân #1 (94%)",
+          "lifebuoy": "Phao cứu sinh (91%)",
+          "suspected": "Nghi vấn #2 (82%)"
+        },
+        "sectors": {
+          "done": "100% Đã quét",
+          "inProgress": "Đang quét...",
+          "current": "UAV tại đây",
+          "pending": "Chờ quét"
+        },
+        "title": "Bản đồ Tác chiến Cứu nạn SAR (Tactical Grid)",
+        "cancelPath": "Hủy đường bay toán học",
+        "generatePath": "Tự động sinh đường bay (IAMSAR)",
+        "trail": "Vệt bay ({state})",
+        "on": "Bật",
+        "off": "Tắt",
+        "zoomIn": "Phóng to",
+        "zoomOut": "Thu nhỏ",
+        "resetZoom": "Đặt lại",
+        "geofenceLabel": "ĐỊA HÀNG RÀO (RAY-CASTING):",
+        "insideCorridor": "TRONG HÀNH LANG AN TOÀN",
+        "geofenceViolation": "VI PHẠM GEOFENCE!",
+        "battery": "PIN:",
+        "rthMinutes": "(~{minutes}p)",
+        "minRthBattery": "PIN TỐI THIỂU RTH:",
+        "safeContinue": "AN TOÀN TIẾP TỤC",
+        "rthNow": "YÊU CẦU RTH NGAY",
+        "coastline": "ĐƯỜNG BỜ BIỂN (COASTLINE)",
+        "homeStation": "TRẠM ĐIỀU HÀNH #ST-01 (HOME)",
+        "searchArea": "VÙNG TÌM KIẾM CỨU NẠN (GEOFENCE BOUNDARY)",
+        "legendPath": "Đường bay IAMSAR Expanding Square ({state})",
+        "legs": "{count} chặng",
+        "notActivated": "Chưa kích hoạt",
+        "legendGeofence": "Ranh giới Geofence (Thuật toán Ray-Casting)",
+        "scanningTarget": "SECTOR B2 · ĐANG QUÉT MỤC TIÊU"
+      }
+    },
+    "state": {
+      "empty": "Chưa có dữ liệu",
+      "loadingData": "Đang tải dữ liệu",
+      "forbiddenAction": "Bạn không có quyền thực hiện thao tác này.",
+      "errors": {
+        "equipmentReleaseRequired": "Thiết bị này đang được giữ cho nhiệm vụ. Hãy mở nhiệm vụ và dùng chức năng hoàn trả thiết bị để tránh sai lệch kho.",
+        "inventoryNotAvailable": "Thiết bị không hoạt động hoặc không đủ số lượng khả dụng.",
+        "equipmentReserved": "Thiết bị đang được giữ. Hãy hoàn trả các khoản giữ trước khi đổi trạm.",
+        "missionMediaLocked": "Nhiệm vụ đã kết thúc. Tệp chỉ được xem hoặc tải xuống; không thể thêm, sửa hoặc xóa."
+      },
+      "retry": "Thử lại",
+      "recheckPermissions": "Kiểm tra lại quyền",
+      "noAccessTitle": "Không có quyền truy cập",
+      "noAccessDetail": "Tài khoản của bạn chưa được cấp quyền xem mục này. Liên hệ quản trị viên nếu bạn cần truy cập.",
+      "noMatchingData": "Chưa có dữ liệu phù hợp",
+      "noMatchingDetail": "Thử thay đổi bộ lọc hoặc thêm dữ liệu khi bạn có quyền.",
+      "dataTable": "Bảng dữ liệu",
+      "previousPage": "Trang trước",
+      "nextPage": "Trang sau",
+      "closeDetail": "Đóng chi tiết",
+      "paginationSummary": "{total} bản ghi · Trang {page}/{pages}",
+      "close": "Đóng",
+      "detailTabs": "Chi tiết",
+      "authenticating": "Đang xác thực",
+      "back": "Quay lại"
+    },
+    "errorBoundary": {
+      "title": "Không thể hiển thị khu vực này",
+      "detail": "Đã xảy ra lỗi kết xuất dữ liệu.",
+      "reset": "Khôi phục Widget"
+    },
+    "query": {
+      "serverError": "Máy chủ gặp sự cố xử lý.",
+      "serverErrorTitle": "Lỗi máy chủ (500)",
+      "networkError": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng.",
+      "networkErrorTitle": "Mất kết nối mạng",
+      "mutationFailed": "Thao tác không thành công.",
+      "mutationErrorTitle": "Lỗi thao tác"
+    },
+    "auth": {
+      "toastTitle": "Vận hành UAV",
+      "redirectingPortal": "Đăng nhập thành công! Đang chuyển tới cổng {portal}...",
+      "welcome": "Đăng nhập thành công! Chào mừng đến với trung tâm vận hành.",
+      "loginFailedTitle": "Đăng nhập thất bại",
+      "noAccount": "Chưa có tài khoản vận hành? Liên hệ quản trị viên để được cấp quyền truy cập.",
+      "invalidPassword": "Mật khẩu không hợp lệ",
+      "registerSuccess": "Đăng ký tài khoản thành công! Vui lòng đăng nhập.",
+      "registerSuccessTitle": "Đăng ký thành công",
+      "registerFailed": "Đăng ký thất bại",
+      "loginHeroTitle": "Từ kế hoạch đến nhiệm vụ hoàn tất.",
+      "loginHeroDescription": "Kết nối điều phối, nguồn lực và tiến độ nhiệm vụ trong một không gian làm việc thống nhất."
+    },
+    "routes": {
+      "operations": {
+        "errorTitle": "Gián đoạn hiển thị khu vực điều hành",
+        "errorDetail": "Đã xảy ra ngoại lệ trong quá trình tải dữ liệu tác chiến. Vui lòng thử tải lại hoặc quay về trang tổng quan.",
+        "reload": "Thử tải lại",
+        "backOverview": "Về Tổng quan",
+        "notFoundTitle": "Không tìm thấy phân hệ điều hành",
+        "notFoundDetail": "Đường dẫn hoặc tài nguyên tác chiến bạn yêu cầu không tồn tại hoặc đã được di chuyển.",
+        "notFoundBack": "Quay về Tổng quan Điều hành"
+      },
+      "customer": {
+        "errorTitle": "Không thể hiển thị trang",
+        "errorDetail": "Đã xảy ra ngoại lệ trong quá trình tải dữ liệu từ hệ thống. Vui lòng thử lại hoặc quay về trang tổng quan.",
+        "retry": "Thử lại",
+        "backOverview": "Về Tổng quan →",
+        "notFoundTitle": "404 · Không tìm thấy trang yêu cầu",
+        "notFoundDetail": "Trang hoặc hồ sơ dịch vụ bạn đang tìm kiếm không tồn tại hoặc đã thay đổi đường dẫn.",
+        "notFoundBack": "← Quay về tổng quan"
+      }
+    }
+  }
+}

@@ -1,14 +1,150 @@
 export type MissionType = 'UAV_RENTAL' | 'AREA_INSPECTION' | 'AERIAL_RECORDING' | 'DATA_COLLECTION' | 'OTHER';
-export type MissionStatus = 'DRAFT' | 'PENDING_CONFIRMATION' | 'CONFIRMED' | 'RESOURCE_RESERVED' | 'READY' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'REJECTED' | 'FAILED';
+export type MissionStatus =
+    'DRAFT'
+    | 'PENDING_CONFIRMATION'
+    | 'CONFIRMED'
+    | 'RESOURCE_RESERVED'
+    | 'READY'
+    | 'IN_PROGRESS'
+    | 'COMPLETED'
+    | 'CANCELLED'
+    | 'REJECTED'
+    | 'FAILED';
 export type MissionPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
-export interface PageResponse<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; first: boolean; last: boolean; hasNext: boolean; hasPrevious: boolean; }
-export interface UavService { id: number; code: string; name: string; description?: string; active: boolean; defaultDurationMinutes: number; }
-export interface Mission { id: number; version: number; code: string; customerId?: number; serviceId?: number; missionType: MissionType; title: string; description?: string; requestedDate: string; startTime: string; expectedEndTime: string; locationName: string; latitude?: number; longitude?: number; priority: MissionPriority; status: MissionStatus; billingStatus?: string; completionNote?: string; equipmentCondition?: string; failureReason?: string; failureNotes?: string; notes?: string; createdAt?: string; updatedAt?: string; }
-export interface MissionEvent { id: number; eventType: string; actor?: string; oldStatus?: MissionStatus; newStatus?: MissionStatus; description?: string; metadata?: string; createdAt?: string; }
-export interface MissionMedia { id: number; missionId: number; mediaRole: string; uploadedBy?: string; createdAt?: string; media: { id: number; originalName: string; contentType: string; size: number; type: string; }; }
-export interface MissionInput { missionType: MissionType; title: string; description?: string; requestedDate: string; startTime: string; expectedEndTime: string; locationName: string; latitude?: number; longitude?: number; serviceId?: number; priority?: MissionPriority; notes?: string; }
-export interface MissionAvailability { available: boolean; stationAvailable: boolean; uavAvailable: boolean; operatorAvailable: boolean; message: string; }
+
+export interface PageResponse<T> {
+    content: T[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    first: boolean;
+    last: boolean;
+    hasNext: boolean;
+    hasPrevious: boolean;
+}
+
+export interface UavService {
+    id: number;
+    code: string;
+    name: string;
+    description?: string;
+    active: boolean;
+    defaultDurationMinutes: number;
+}
+
+export interface Mission {
+    id: number;
+    version: number;
+    code: string;
+    customerId?: number;
+    serviceId?: number;
+    missionType: MissionType;
+    title: string;
+    description?: string;
+    requestedDate: string;
+    startTime: string;
+    expectedEndTime: string;
+    locationName: string;
+    latitude?: number;
+    longitude?: number;
+    priority: MissionPriority;
+    status: MissionStatus;
+    billingStatus?: string;
+    completionNote?: string;
+    equipmentCondition?: string;
+    failureReason?: string;
+    failureNotes?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface MissionEvent {
+    id: number;
+    eventType: string;
+    actor?: string;
+    oldStatus?: MissionStatus;
+    newStatus?: MissionStatus;
+    description?: string;
+    metadata?: string;
+    createdAt?: string;
+}
+
+export interface MissionMedia {
+    id: number;
+    missionId: number;
+    mediaRole: string;
+    uploadedBy?: string;
+    createdAt?: string;
+    media: { id: number; originalName: string; contentType: string; size: number; type: string; };
+}
+
+export interface MissionInput {
+    missionType: MissionType;
+    title: string;
+    description?: string;
+    requestedDate: string;
+    startTime: string;
+    expectedEndTime: string;
+    locationName: string;
+    latitude?: number;
+    longitude?: number;
+    serviceId?: number;
+    priority?: MissionPriority;
+    notes?: string;
+}
+
+export interface MissionAvailability {
+    available: boolean;
+    stationAvailable: boolean;
+    uavAvailable: boolean;
+    operatorAvailable: boolean;
+    message: string;
+}
+
 export type InvoiceStatus = 'PENDING' | 'PAID' | 'FAILED' | 'CANCELLED';
-export interface ServicePlan { id: number; code: string; name: string; price: number; billingCycle: string; maxMonthlyFlightHours: number; maxConcurrentUavs: number; allowSarAi: boolean; description?: string; active: boolean; }
-export interface UserQuota { id: number; userId: number; planCode: string; planName: string; flightHoursUsed: number; flightHoursLimit: number; flightHoursRemaining: number; concurrentUavsUsed: number; concurrentUavsLimit: number; cycleStart: string; cycleEnd: string; }
-export interface Invoice { id: number; code: string; userId: number; username: string; missionId?: number; missionTitle?: string; planId?: number; planName?: string; amount: number; status: InvoiceStatus; dueDate: string; paidAt?: string; notes?: string; createdAt: string; }
+
+export interface ServicePlan {
+    id: number;
+    code: string;
+    name: string;
+    price: number;
+    billingCycle: string;
+    maxMonthlyFlightHours: number;
+    maxConcurrentUavs: number;
+    allowSarAi: boolean;
+    description?: string;
+    active: boolean;
+}
+
+export interface UserQuota {
+    id: number;
+    userId: number;
+    planCode: string;
+    planName: string;
+    flightHoursUsed: number;
+    flightHoursLimit: number;
+    flightHoursRemaining: number;
+    concurrentUavsUsed: number;
+    concurrentUavsLimit: number;
+    cycleStart: string;
+    cycleEnd: string;
+}
+
+export interface Invoice {
+    id: number;
+    code: string;
+    userId: number;
+    username: string;
+    missionId?: number;
+    missionTitle?: string;
+    planId?: number;
+    planName?: string;
+    amount: number;
+    status: InvoiceStatus;
+    dueDate: string;
+    paidAt?: string;
+    notes?: string;
+    createdAt: string;
+}

@@ -1,0 +1,184 @@
+{
+  "opsShared": {
+    "sar": {
+      "page": {
+        "title": "AI operations & search and rescue (SAR Cockpit)",
+        "meta": "Monitor the YOLOv8s AI camera feed, polygon tactical map, UAV telemetry and KV260 board status"
+      },
+      "cockpit": {
+        "dispatchAlert": "Simulated sending coordinates ({gps}). Nothing was sent to a real rescue team.",
+        "dispatchStore": "Rescue coordinate dispatch simulation completed.",
+        "rthAlert": "Simulated RTH to station ST-01. No command was sent to a real UAV.",
+        "rthStore": "Automatic RTH simulation.",
+        "simulationTitle": "Simulation mode.",
+        "simulationBody": "The UAV, AI camera and board data below are not connected to real devices. Actions only demonstrate the interface.",
+        "urgent": "URGENT PRIORITY",
+        "inProgress": "IN OPERATION (IN_PROGRESS)",
+        "missionCode": "MISSION ID: {code}",
+        "missionTitle": "Search and rescue for a missing fishing boat - Lan Ha Bay, Hai Phong",
+        "station": "Coordinating station:",
+        "stationName": "Cat Ba Station (ST-01)",
+        "pilot": "Pilot in charge:",
+        "flightTime": "Flight time:",
+        "dispatchButton": "Simulate sending rescue coordinates",
+        "rthButton": "Simulate RTH to station",
+        "cameraError": "Unable to load the AI camera feed",
+        "mapError": "Unable to load the SAR tactical map",
+        "hudError": "Telemetry HUD failed to render",
+        "kv260Error": "KV260 board panel failed to render"
+      },
+      "hud": {
+        "title": "UAV flight data (Telemetry HUD)",
+        "rtkFix": "RTK FIX (HIGH PRECISION)",
+        "altitude": "Altitude (AGL)",
+        "speed": "Airspeed",
+        "battery": "6S battery",
+        "remainingMinutes": "({minutes} min)",
+        "distanceHome": "Distance to home",
+        "satellites": "satellites (GPS+Galileo)",
+        "wind": "Wind:",
+        "windDirection": "(Northeast)",
+        "heading": "Heading:",
+        "inControl": "UAV UNDER CONTROL"
+      },
+      "kv260": {
+        "title": "KV260 embedded AI board (Edge Device)",
+        "dpuLoad": "DPU NPU load",
+        "aiSpeed": "AI throughput",
+        "latency": "Latency: {ms} ms",
+        "socTemp": "SoC temperature",
+        "tempSafe": "Safe (<75°C)",
+        "memory": "LPDDR4 memory",
+        "model": "AI model:",
+        "mode": "Processing mode:"
+      },
+      "viewfinder": {
+        "labels": {
+          "personVictim": "Person (victim)",
+          "lifebuoy": "Lifebuoy",
+          "personSuspected": "Person (unconfirmed)"
+        },
+        "rgb": "RGB color",
+        "thermal": "Thermal",
+        "snapshotSaved": "Target evidence captured and saved!",
+        "confidence": "Confidence threshold:",
+        "snapshot": "Capture",
+        "streamTitle": "Real-time detections (Detections Stream)",
+        "inView": "{count} targets in view",
+        "verified": "Confirmed",
+        "verify": "Confirm"
+      },
+      "map": {
+        "lkpLabel": "LKP: Fishing boat TB-9284",
+        "pins": {
+          "victim": "Victim #1 (94%)",
+          "lifebuoy": "Lifebuoy (91%)",
+          "suspected": "Unconfirmed #2 (82%)"
+        },
+        "sectors": {
+          "done": "100% scanned",
+          "inProgress": "Scanning...",
+          "current": "UAV here",
+          "pending": "Awaiting scan"
+        },
+        "title": "SAR rescue tactical map (Tactical Grid)",
+        "cancelPath": "Cancel computed flight path",
+        "generatePath": "Auto-generate flight path (IAMSAR)",
+        "trail": "Flight trail ({state})",
+        "on": "On",
+        "off": "Off",
+        "zoomIn": "Zoom in",
+        "zoomOut": "Zoom out",
+        "resetZoom": "Reset",
+        "geofenceLabel": "GEOFENCE (RAY-CASTING):",
+        "insideCorridor": "INSIDE SAFE CORRIDOR",
+        "geofenceViolation": "GEOFENCE VIOLATION!",
+        "battery": "BATTERY:",
+        "rthMinutes": "(~{minutes} min)",
+        "minRthBattery": "MIN RTH BATTERY:",
+        "safeContinue": "SAFE TO CONTINUE",
+        "rthNow": "RTH REQUIRED NOW",
+        "coastline": "COASTLINE",
+        "homeStation": "CONTROL STATION #ST-01 (HOME)",
+        "searchArea": "SEARCH AND RESCUE AREA (GEOFENCE BOUNDARY)",
+        "legendPath": "IAMSAR Expanding Square flight path ({state})",
+        "legs": "{count} legs",
+        "notActivated": "Not activated",
+        "legendGeofence": "Geofence boundary (Ray-Casting algorithm)",
+        "scanningTarget": "SECTOR B2 · SCANNING FOR TARGETS"
+      }
+    },
+    "state": {
+      "empty": "No data yet",
+      "loadingData": "Loading data",
+      "forbiddenAction": "You do not have permission to perform this action.",
+      "errors": {
+        "equipmentReleaseRequired": "This equipment is reserved for a mission. Open the mission and release the equipment to keep inventory accurate.",
+        "inventoryNotAvailable": "The equipment is inactive or not enough units are available.",
+        "equipmentReserved": "The equipment is reserved. Release the reservations before changing station.",
+        "missionMediaLocked": "The mission has ended. Files can only be viewed or downloaded; they cannot be added, edited or deleted."
+      },
+      "retry": "Retry",
+      "recheckPermissions": "Check permissions again",
+      "noAccessTitle": "Access denied",
+      "noAccessDetail": "Your account has not been granted permission to view this section. Contact an administrator if you need access.",
+      "noMatchingData": "No matching data",
+      "noMatchingDetail": "Try changing the filters, or add data if you have permission.",
+      "dataTable": "Data table",
+      "previousPage": "Previous",
+      "nextPage": "Next",
+      "closeDetail": "Close details",
+      "paginationSummary": "{total} records · Page {page}/{pages}",
+      "close": "Close",
+      "detailTabs": "Details",
+      "authenticating": "Authenticating",
+      "back": "Back"
+    },
+    "errorBoundary": {
+      "title": "This section could not be displayed",
+      "detail": "An error occurred while rendering data.",
+      "reset": "Restore widget"
+    },
+    "query": {
+      "serverError": "The server failed to process the request.",
+      "serverErrorTitle": "Server error (500)",
+      "networkError": "Unable to reach the server. Please check your network.",
+      "networkErrorTitle": "Network disconnected",
+      "mutationFailed": "The action did not succeed.",
+      "mutationErrorTitle": "Action failed"
+    },
+    "auth": {
+      "toastTitle": "UAV operations",
+      "redirectingPortal": "Signed in! Redirecting to the {portal} portal...",
+      "welcome": "Signed in! Welcome to the operations center.",
+      "loginFailedTitle": "Sign-in failed",
+      "noAccount": "No operations account? Contact an administrator to be granted access.",
+      "invalidPassword": "Invalid password",
+      "registerSuccess": "Account created! Please sign in.",
+      "registerSuccessTitle": "Registration successful",
+      "registerFailed": "Registration failed",
+      "loginHeroTitle": "From plan to mission complete.",
+      "loginHeroDescription": "Bring dispatch, resources and mission progress together in one unified workspace."
+    },
+    "routes": {
+      "operations": {
+        "errorTitle": "The operations area was interrupted",
+        "errorDetail": "An exception occurred while loading operations data. Please reload or return to the overview.",
+        "reload": "Reload",
+        "backOverview": "Back to overview",
+        "notFoundTitle": "Operations module not found",
+        "notFoundDetail": "The operations path or resource you requested does not exist or has been moved.",
+        "notFoundBack": "Back to operations overview"
+      },
+      "customer": {
+        "errorTitle": "This page cannot be displayed",
+        "errorDetail": "An exception occurred while loading data. Please try again or return to the overview.",
+        "retry": "Try again",
+        "backOverview": "Back to overview →",
+        "notFoundTitle": "404 · Page not found",
+        "notFoundDetail": "The page or service record you are looking for does not exist or has moved.",
+        "notFoundBack": "← Back to overview"
+      }
+    }
+  }
+}

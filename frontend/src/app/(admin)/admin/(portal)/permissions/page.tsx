@@ -1,1 +1,1 @@
-export { default } from '@/features/access/pages/admin/permissions';
+export {default} from '@/features/access/pages/admin/permissions';

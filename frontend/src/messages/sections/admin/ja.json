@@ -1,0 +1,529 @@
+{
+  "admin": {
+    "pages": {
+      "dashboard": {
+        "title": "システム概要",
+        "meta": "ユーザー、UAV機体、保留中のリクエスト、最近の管理操作"
+      },
+      "users": {
+        "title": "ユーザー",
+        "meta": "アカウントとアクセス状況"
+      },
+      "userDetail": {
+        "title": "ユーザー詳細",
+        "meta": "アカウント情報、ロール、有効な権限"
+      },
+      "access": {
+        "title": "権限管理",
+        "accountsMeta": "ロール別の権限とアカウントごとの調整を管理します。",
+        "registryMeta": "サポートされているアクセス権限を参照します。",
+        "templatesMeta": "ロールごとの既定の権限を設定します。",
+        "matrixMeta": "各ロールの既定権限を1つの表で比較します。"
+      },
+      "auditLogs": {
+        "title": "管理監査ログ",
+        "meta": "システム内の操作と変更を参照します。"
+      },
+      "billing": {
+        "title": "料金プランと利用上限",
+        "meta": "顧客向けの料金ポリシー、飛行時間クォータ、AI特典を管理します"
+      },
+      "reports": {
+        "title": "システムレポートと統計",
+        "meta": "機体の稼働実績、SAR作戦、完了率、CSVエクスポート"
+      },
+      "settings": {
+        "title": "システム設定",
+        "meta": "飛行安全パラメータ、YOLOv8s AI検出、KV260エッジハードウェアを管理します"
+      },
+      "webhooks": {
+        "title": "Webhookと連携の管理",
+        "meta": "イベント購読と実際の配信結果"
+      }
+    },
+    "page": {
+      "authenticating": "認証中"
+    },
+    "workspace": {
+      "noData": "データがありません",
+      "loadingData": "データを読み込み中",
+      "forbiddenAction": "この操作を行う権限がありません。",
+      "retry": "再試行",
+      "recheckPermissions": "権限を再確認",
+      "noAccessTitle": "アクセス権がありません",
+      "noAccessDetail": "このアカウントにはこの項目を表示する権限がありません。アクセスが必要な場合は管理者に連絡してください。"
+    },
+    "dashboard": {
+      "cards": {
+        "users": "ユーザー",
+        "stations": "ステーション",
+        "readyUavs": "待機中のUAV",
+        "totalUavs": "合計: {total} 機",
+        "auditEvents": "監査イベント"
+      },
+      "shortcuts": {
+        "users": "ユーザー",
+        "usersDetail": "アカウントとアクセス状況を確認",
+        "access": "権限管理",
+        "accessDetail": "アカウントごとのアクセスを管理",
+        "billing": "料金プランと上限",
+        "billingDetail": "サービスプランと飛行時間を確認",
+        "settings": "システム設定",
+        "settingsDetail": "運用パラメータと自動化"
+      },
+      "pending": {
+        "title": "確認待ちのリクエスト",
+        "openDispatch": "配車を開く →",
+        "emptyTitle": "確認待ちのリクエストはありません",
+        "emptyDetail": "顧客からの新しいリクエストがここに表示されます。"
+      },
+      "audit": {
+        "title": "最近の管理操作",
+        "viewAll": "すべてのログを表示 →",
+        "emptyTitle": "管理操作はまだありません",
+        "emptyDetail": "管理操作がここに表示されます。"
+      },
+      "fleet": {
+        "noneReady": "待機中のUAVがありません",
+        "inMaintenance": "{count} 機が整備中",
+        "readyDetail": "{available}/{total} 機が任務に対応可能です。割り当て前に整備スケジュールを確認してください。",
+        "viewMaintenance": "整備を表示"
+      },
+      "quickAccess": "クイックアクセス",
+      "status": {
+        "title": "システム状態",
+        "api": "APIサーバー",
+        "operational": "稼働中",
+        "checking": "確認中",
+        "realtime": "リアルタイム監視",
+        "noData": "データなし",
+        "fleet": "UAV機体",
+        "fleetReady": "{available}/{total} 待機中",
+        "manageIntegrations": "連携を管理"
+      }
+    },
+    "auditTable": {
+      "time": "日時",
+      "actor": "実行者",
+      "action": "操作",
+      "entity": "対象",
+      "id": "ID",
+      "details": "内容",
+      "system": "システム"
+    },
+    "access": {
+      "source": {
+        "inactive": "アカウント無効",
+        "allowOverride": "個別に許可",
+        "denyOverride": "個別に拒否",
+        "noTemplate": "ロールデータなし",
+        "template": "ロールに従う"
+      },
+      "saveFailed": "保存できません",
+      "leaveConfirm": "権限エディターを離れますか？未保存の変更は破棄されます。",
+      "chooseOtherUser": "別のユーザーを選択",
+      "needUserRead": "アカウントを検索・選択するにはユーザー閲覧権限が必要です。",
+      "roleTemplate": "ロールテンプレート",
+      "switchTemplateConfirm": "ロールテンプレートを切り替えますか？未保存の変更は破棄されます。",
+      "noTemplates": "ロールテンプレートがありません。ここでの新規作成はまだサポートされていません。",
+      "saveConfirmUser": "{name} の権限変更 {count} 件を保存しますか？各権限は個別に保存されます。管理権限の変更は現在のセッションに影響する場合があります。",
+      "saveConfirmTemplate": "{name} の権限変更 {count} 件を保存しますか？各権限は個別に保存されます。管理権限の変更は現在のセッションに影響する場合があります。",
+      "effectiveMatrix": "有効な権限マトリクス",
+      "rolePermissions": "ロール別の権限",
+      "overrideHint": "アカウント個別の許可・拒否はロールの権限より優先されます。個別設定を解除するには「ロールに従う」を選択します。ロールテンプレートを変更しても個別設定は保持されます。",
+      "inactiveWarning": "このアカウントは{status}のため、これらの権限はまだ使用できません。",
+      "saved": "保存済み: {codes}。",
+      "none": "なし",
+      "failedItem": "失敗 {code}: {message}",
+      "noUndo": "保存済みの権限は元に戻りません。編集を続けるには実際の権限を再読み込みしてください。",
+      "reloadActual": "実際の権限を再読み込み",
+      "reloadFailed": "権限を再読み込みできませんでした。もう一度お試しください。",
+      "filterLabel": "権限を絞り込み",
+      "filterPlaceholder": "権限コードを検索",
+      "unsavedCount": "未保存の変更 {count} 件",
+      "reviewAndSave": "確認して保存",
+      "discardChanges": "変更を破棄",
+      "reviewChanges": "変更を確認",
+      "fromRole": "ロールに従う",
+      "allow": "許可",
+      "deny": "拒否",
+      "undetermined": "未確定",
+      "moduleTable": "{module} の権限",
+      "col": {
+        "permission": "権限",
+        "fromRole": "ロール",
+        "expected": "適用予定",
+        "effective": "有効",
+        "source": "ソース",
+        "override": "個別設定",
+        "grant": "付与"
+      },
+      "selectOverride": "{code} 個別設定",
+      "selectTemplate": "{code} ロールテンプレート",
+      "auditLink": "監査ログで履歴を表示（AUDIT_READ が必要）",
+      "registry": {
+        "search": "権限を検索",
+        "placeholder": "権限コードまたは説明",
+        "count": "{count} 件の権限",
+        "table": "権限一覧",
+        "colAccess": "アクセス権限",
+        "colGroup": "機能グループ",
+        "colSupport": "サポート",
+        "labelPermission": "権限",
+        "labelGroup": "グループ",
+        "supported": "サポート中",
+        "emptyTitle": "権限が見つかりません",
+        "emptyDetail": "権限コードや説明の別の部分で検索してください。"
+      },
+      "tabs": {
+        "nav": "権限管理",
+        "accounts": "アカウント別",
+        "accountsHint": "ユーザーに個別の権限を付与またはブロック",
+        "templates": "ロールテンプレート",
+        "templatesHint": "各ロールに適用される既定の権限",
+        "registry": "権限一覧",
+        "registryHint": "システムがサポートするすべての権限コードを参照",
+        "matrix": "権限マトリクス",
+        "matrixHint": "ロール間の権限を比較"
+      },
+      "matrix": {
+        "search": "権限を検索",
+        "onlyDiff": "差分のみ表示",
+        "count": "{count}件の権限",
+        "table": "ロール別権限マトリクス",
+        "permission": "権限",
+        "grantedCount": "{count}件付与",
+        "yes": "付与",
+        "no": "未付与",
+        "empty": "条件に一致する権限はありません。"
+      }
+    },
+    "webhooks": {
+      "status": {
+        "QUEUED": "キュー登録済み",
+        "DELIVERED": "HTTP 2xx を受信",
+        "FAILED": "送信失敗",
+        "RETRYING": "再送待ち",
+        "CANCELLED": "キャンセル — 送信先は削除済み",
+        "UNCONFIGURED": "未設定",
+        "LEGACY_UNVERIFIED": "未検証の履歴",
+        "unknown": "不明"
+      },
+      "loadError": "Webhook データを読み込めませんでした。アクセス権を確認して再試行してください。",
+      "testError": "Webhook テストリクエストを記録できませんでした。送信は確認されていません。",
+      "heading": "Webhook と連携",
+      "intro": "HTTP の結果は受信側がリクエストを受け付けたことを示すだけで、救助対応や UAV 制御を確認するものではありません。",
+      "refresh": "更新",
+      "recording": "記録中…",
+      "testEvent": "WEBHOOK_TEST イベントを送信",
+      "runtime": {
+        "unconfigured": "外部への Webhook 送信は未設定です。受信先アドレスは個別に設定・承認する必要があり、購読を有効にするだけでは送信できません。",
+        "queued": "送信は設定済みです。個別に承認されたアドレスのみに送信されます。",
+        "unknown": "送信設定を確認できませんでした。"
+      },
+      "loading": "データを読み込み中…",
+      "subscriptions": "イベント購読",
+      "noSubscriptions": "Webhook の購読はまだありません。",
+      "subscriptionOn": "購読は有効",
+      "subscriptionOff": "購読は無効",
+      "events": "イベント: {events}",
+      "deliveryLog": "配信ログ · 直近 {count} 件",
+      "noDeliveries": "配信ログはまだありません。",
+      "logTable": "Webhook ログ",
+      "col": {
+        "destination": "送信先",
+        "event": "イベント",
+        "status": "状態",
+        "attempts": "試行回数",
+        "time": "日時"
+      },
+      "legacyEvent": "旧履歴",
+      "noResponse": "なし"
+    },
+    "users": {
+      "allAccounts": "すべてのアカウント",
+      "filterByStatus": "状態で絞り込み",
+      "all": "すべて",
+      "search": "ユーザーを検索",
+      "searchPlaceholder": "ユーザー名、メール、氏名",
+      "searchButton": "検索",
+      "role": "ロール",
+      "allRoles": "すべてのロール",
+      "table": "ユーザー一覧",
+      "col": {
+        "user": "ユーザー",
+        "email": "メール",
+        "role": "ロール",
+        "status": "状態",
+        "created": "作成日",
+        "actions": "操作"
+      },
+      "select": "選択",
+      "details": "詳細",
+      "emptyTitle": "ユーザーが見つかりません",
+      "emptyDetail": "フィルターを減らすか、検索キーワードを変更してください。",
+      "invalidId": "ユーザー ID が無効です。",
+      "back": "← ユーザー",
+      "field": {
+        "username": "ユーザー名",
+        "fullName": "氏名",
+        "email": "メール",
+        "phone": "電話番号",
+        "role": "ロール",
+        "status": "状態",
+        "created": "作成日"
+      },
+      "saved": "保存しました。アカウントデータを再読み込みしました。",
+      "manageAccount": "アカウント管理",
+      "changeRoleConfirm": "{name} のロールを {role} に変更しますか？個別の権限設定は保持されます。",
+      "saveRole": "ロールを保存",
+      "lockConfirm": "アカウント {name} をロックしますか？",
+      "lock": "アカウントをロック",
+      "unlockConfirm": "{name} のアクセスロックを解除しますか？プロフィールの状態とロールは保持されます。",
+      "unlock": "ロック解除",
+      "lockHint": "アクセスロックとプロフィールの状態は別々の設定です。「ロック解除」でアクセスロックを解除しても、プロフィールの状態やロールは変わりません。",
+      "export": "CSV出力",
+      "lockedBadge": "ロック中",
+      "create": {
+        "open": "ユーザーを追加",
+        "title": "新しいユーザーを追加",
+        "password": "パスワード",
+        "confirm": "パスワード（確認）",
+        "hint": "8文字以上。パスワードは安全な方法で伝え、初回ログイン後に変更するよう依頼してください。",
+        "mismatch": "パスワードが一致しません。",
+        "cancel": "キャンセル",
+        "submit": "アカウントを作成",
+        "done": "アカウント{name}を作成しました。"
+      },
+      "bulk": {
+        "region": "一括操作",
+        "selected": "{count}件を選択中",
+        "lock": "ロック",
+        "unlock": "ロック解除",
+        "clear": "選択を解除",
+        "selectPage": "このページをすべて選択",
+        "selectRow": "{name}を選択",
+        "lockConfirm": "選択した{count}件のアカウントをロックしますか？",
+        "unlockConfirm": "選択した{count}件のアカウントのロックを解除しますか？",
+        "done": "{count}件のアカウントを更新しました。",
+        "skippedSelf": "ご自身のアカウントは除外しました。"
+      },
+      "reset": {
+        "title": "パスワードの再設定",
+        "newPassword": "新しいパスワード",
+        "submit": "パスワードを再設定",
+        "hint": "このユーザーの現在のセッションはすべてログアウトされます。",
+        "confirm": "{name}に新しいパスワードを設定し、すべてのセッションをログアウトしますか？",
+        "done": "パスワードを再設定しました。"
+      },
+      "activity": {
+        "title": "操作履歴",
+        "account": "このアカウントへの変更",
+        "actor": "このユーザーが行った操作",
+        "empty": "操作履歴はまだありません。"
+      }
+    },
+    "audit": {
+      "searchLabel": "このページ内を検索",
+      "searchPlaceholder": "実行者、操作、対象 ID",
+      "pageCount": "このページの記録 {shown} / {total} 件",
+      "table": "管理監査ログ",
+      "noMatchTitle": "このページに結果はありません",
+      "noMatchDetail": "別のキーワードを試すか、次のページに移動してください。",
+      "emptyTitle": "操作ログはまだありません",
+      "filtersLabel": "ログの絞り込み",
+      "filter": {
+        "actor": "実行者",
+        "actorPlaceholder": "ユーザー名",
+        "action": "操作",
+        "entity": "対象",
+        "all": "すべて",
+        "from": "開始日",
+        "to": "終了日",
+        "apply": "絞り込む",
+        "reset": "条件をクリア"
+      },
+      "heatmapTitle": "管理操作の密度",
+      "heatmapRange": "直近30日",
+      "heatmapAria": "直近30日の曜日・時間帯別の管理操作数",
+      "heatmapCell": "{day} {hour}時台: {count}件",
+      "weekdays": "月,火,水,木,金,土,日"
+    },
+    "billing": {
+      "loading": "料金プランデータを読み込み中…",
+      "loadError": "データを読み込めませんでした: {message}",
+      "unknownError": "不明なエラー",
+      "quotaUpdated": "上限を更新しました。",
+      "plansHeading": "サービスプラン",
+      "quotasHeading": "顧客の利用上限",
+      "quotasIntro": "飛行時間の割り当て、同時任務の上限、サービスプランの変更を管理します",
+      "searchCustomer": "顧客を検索",
+      "searchPlaceholder": "顧客を検索...",
+      "dataTable": "データ表",
+      "col": {
+        "customer": "顧客",
+        "plan": "サービスプラン",
+        "monthlyLimit": "月間上限",
+        "flown": "飛行済み",
+        "usage": "使用率",
+        "concurrent": "同時任務",
+        "actions": "操作"
+      },
+      "noQuotas": "割り当てられた上限はまだありません。",
+      "hours": "{hours}時間",
+      "edit": "編集",
+      "drawerTitle": "顧客の利用上限を調整",
+      "customer": "顧客:",
+      "servicePlan": "サービスプラン",
+      "planOption": "{name}（{code} - {hours} 時間）",
+      "saveFailed": "保存に失敗しました: {message}",
+      "limitLabel": "個別の飛行時間上限（時間）",
+      "cancel": "キャンセル",
+      "saving": "保存中…",
+      "saveChanges": "変更を保存"
+    },
+    "reports": {
+      "exportError": "CSV レポートをエクスポートできませんでした。もう一度お試しください。",
+      "loadError": "レポートを読み込めませんでした。表示または CSV 出力できるデータがありません。",
+      "loading": "レポートを読み込み中…",
+      "heading": "機体の活動・運用総合レポート",
+      "intro": "任務データはアクセス権に応じた範囲です。時間はすべての状態の予定時間であり、検証済みの検出は救助結果を証明するものではありません。",
+      "exporting": "CSV を出力中…",
+      "exportCsv": "CSV レポートを出力",
+      "plannedHours": "予定飛行時間",
+      "hoursValue": "{hours}時間",
+      "plannedHoursNote": "下書き・キャンセル・完了済みの任務を含む",
+      "completedMissions": "完了した任務",
+      "successRate": "成功率:",
+      "sarOperations": "SAR 作戦",
+      "verifiedDetections": "検証済みの人物検出:",
+      "detectionsCount": "{count} 件の検出",
+      "uavStatus": "UAV の状態",
+      "uavActive": "待機 / 割当済み / 使用中",
+      "uavMaintenance": "{count} 機が整備中",
+      "footer": "ステーション総数: {count}。実際の飛行時間、救助結果、ハードウェア性能のデータはまだ含まれていません。"
+    },
+    "charts": {
+      "outcome": {
+        "active": "処理中",
+        "completed": "完了",
+        "stopped": "失敗 / キャンセル"
+      },
+      "monthLabel": "{year}/{month}月",
+      "loading": "任務チャートを読み込み中…",
+      "loadError": "チャートデータを読み込めませんでした。",
+      "monthlyTitle": "月別の任務",
+      "monthlyAria": "直近 {months} か月の任務数（結果別）",
+      "monthTotal": "{month}: {total} 件の任務",
+      "viewTable": "表で表示",
+      "month": "月",
+      "total": "合計",
+      "typeTitle": "任務タイプの内訳",
+      "empty": "集計する任務はまだありません。",
+      "truncated": "チャートは全 {total} 件のうち直近 {shown} 件の任務に基づいています。"
+    },
+    "settings": {
+      "loadError": "設定を読み込めませんでした。編集できるデータがありません。",
+      "saved": "サーバーで確認された変更を保存しました。",
+      "noChanges": "保存する変更はありません。",
+      "partialSave": "すべての変更を保存できませんでした。サーバーで確認された項目は有効なままです。{detail}",
+      "checkAndRetry": "データを確認してもう一度お試しください。",
+      "heading": "運用と AI のパラメータ",
+      "intro": "飛行安全のしきい値、KV260 ハードウェア上の YOLOv8s 推論パラメータ、自動化を変更します",
+      "saving": "保存中…",
+      "saveAll": "すべての変更を保存",
+      "loading": "設定を読み込み中…",
+      "invoiceNote": "自動請求は既定でオフです。有効にする前に承認済みの価格のみを入力してください。既定の価格や決済ゲートウェイは設定されていません。",
+      "safetyGroup": "飛行安全とエリア制限",
+      "enforced": "必須",
+      "off": "オフ",
+      "aiGroup": "AI 検出と KV260 エッジ処理",
+      "preferEdge": "KV260 での処理を優先",
+      "preferServer": "サーバーでの処理を優先",
+      "opsGroup": "運用と請求"
+    },
+    "login": {
+      "notAdmin": "このアカウントには管理権限がありません。{portal} ポータルへ移動しています...",
+      "notAdminTitle": "管理権限がありません",
+      "success": "管理者としてサインインしました。移動しています...",
+      "successTitle": "システム管理",
+      "failed": "サインインに失敗しました。",
+      "failedTitle": "サインイン失敗",
+      "heading": "管理者サインイン",
+      "subheading": "UAV PAS · 管理",
+      "submit": "サインイン",
+      "layoutTitle": "ひとつのシステムで、一貫した管理を。",
+      "layoutDescription": "アカウント、権限、操作履歴を管理し、チームの連携を明確にします。"
+    },
+    "error": {
+      "title": "ページを表示できません",
+      "detail": "もう一度お試しください。未保存のデータは再入力が必要な場合があります。",
+      "retry": "再試行",
+      "toDashboard": "ダッシュボードへ戻る"
+    },
+    "notFound": {
+      "title": "管理ページが見つかりません",
+      "detail": "リクエストされた管理モジュールまたは設定リソースは存在しません。",
+      "back": "管理ダッシュボードへ戻る"
+    },
+    "loading": "管理画面を読み込み中…",
+    "analytics": {
+      "title": "分析",
+      "range": "期間",
+      "days": "{count}日間",
+      "vsPrevious": "前期間比",
+      "points": "pt",
+      "kpi": {
+        "completed": "完了ミッション",
+        "successRate": "成功率",
+        "flightHours": "飛行時間",
+        "revenue": "回収済み売上",
+        "newUsers": "新規ユーザー"
+      },
+      "hours": "{value}時間",
+      "dailyTitle": "日別ミッション",
+      "dailyAria": "{from}から{to}までの日別の完了・失敗ミッション数",
+      "completed": "完了",
+      "failed": "失敗・取消",
+      "statusTitle": "ミッション状況",
+      "status": {
+        "waiting": "確認待ち",
+        "scheduled": "予定済み",
+        "active": "実行中",
+        "completed": "完了",
+        "stopped": "失敗・取消",
+        "draft": "下書き"
+      },
+      "stationTitle": "拠点別飛行時間",
+      "noFlights": "この期間に完了した飛行はありません。",
+      "fleetTitle": "UAV機体",
+      "fleetTotal": "合計{count}機",
+      "revenueTitle": "直近6か月の売上",
+      "paid": "回収済み",
+      "outstanding": "未回収",
+      "quotaTitle": "飛行時間枠の残りが少ない顧客",
+      "quotaUsage": "{used}/{limit}時間",
+      "quotaEmpty": "枠の80%を超えた顧客はいません。",
+      "manage": "管理 →",
+      "mapTitle": "ミッション地点",
+      "mapAria": "{count}件のミッション地点の地図",
+      "mapEmpty": "この期間に座標付きのミッションはありません。",
+      "webhookTitle": "エンドポイント別Webhook",
+      "webhookRate": "成功率{rate}% · {total}回",
+      "webhookEmpty": "この期間のWebhook送信はありません。",
+      "alertsTitle": "対応が必要なアラート",
+      "alertsCount": "アラート{count}件",
+      "alertsNone": "アラートなし",
+      "alertsEmpty": "問題はありません。対応が必要なアラートはありません。",
+      "resolve": "対応する",
+      "alertCodes": {
+        "NO_AVAILABLE_UAV": "新しいミッションに使えるUAVがありません",
+        "MAINTENANCE_OVERDUE": "期限切れの保守予定が{count}件あります",
+        "MAINTENANCE_DUE_SOON": "7日以内に保守期限を迎えるUAVが{count}機あります",
+        "PENDING_STALE": "24時間以上確認待ちの依頼が{count}件あります",
+        "INVOICE_OVERDUE": "支払期限切れの請求書が{count}件あります",
+        "WEBHOOK_FAILURES": "過去24時間にWebhook送信が{count}回失敗しました"
+      }
+    }
+  }
+}

@@ -1,129 +1,707 @@
 /* Shared controls, tables and touch targets. Imported after structural styles. */
-.uav-portal .portal-language{min-height:44px;max-width:150px;padding:8px 28px 8px 12px;border:1px solid var(--input-border);border-radius:var(--uav-radius-control);background:var(--card);color:var(--ink);font-size:14px}
-.uav-portal .portal-auth-field{display:grid;gap:8px;min-width:0}
-.uav-portal .portal-auth-field input{width:100%;min-width:0;padding:10px 12px;border:1px solid var(--input-border);border-radius:var(--uav-radius-control);background:var(--card);color:var(--ink);font-size:16px}
-.uav-portal .portal-password{position:relative}
-.uav-portal .portal-password input{padding-right:68px}
-.uav-portal .portal-password button{position:absolute;top:1px;right:1px;min-width:60px;height:44px;padding:8px;border:0;border-radius:var(--uav-radius-control);background:transparent;color:var(--primary);font-size:13px;font-weight:700;cursor:pointer}
-.uav-portal :is(.button,.portal-button){gap:8px;font-size:14px;padding-inline:16px;white-space:nowrap;flex-shrink:0;text-align:center}
-.uav-portal :is(.button-danger,.portal-button-danger){background:#b42332;color:#fff;border:1px solid #b42332}
-.uav-portal :is(.button-danger,.portal-button-danger):hover:not(:disabled){background:#8f1926}
-.uav-portal :is(.table-toolbar,.portal-filter-bar){display:flex;flex-wrap:wrap;align-items:end;gap:12px;padding:20px 24px;background:var(--card)}
-.uav-portal .portal-filter-bar{border:1px solid var(--border);border-radius:var(--uav-radius-panel)}
-.uav-portal .portal-filter-bar>label{flex:1;min-width:180px}
-.uav-portal :is(.empty,.empty-state){padding:36px 24px;text-align:center;color:var(--muted);font-size:14px;line-height:1.6}
-.uav-portal .console-table td{overflow-wrap:normal;font-size:14px;vertical-align:middle}
-.uav-portal .console-table th{font-size:12px;text-transform:none}
-.uav-portal :is(.table-scroll,.table-wrap){max-width:100%;overscroll-behavior-inline:contain}
-.uav-portal .portal-row-action{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--uav-radius-control);font-weight:600;color:var(--primary);white-space:nowrap}
-.uav-portal :is(.users-table,.portal-responsive-table) .console-table{min-width:920px}
-.uav-portal :is(.users-table,.portal-responsive-table) :is(.table-primary,.table-secondary){max-width:none;white-space:normal;overflow-wrap:anywhere}
-.uav-portal :is(.users-table,.portal-responsive-table) td:nth-child(2){min-width:230px;overflow-wrap:anywhere}
-.uav-portal .portal-input[type=file]{padding:0;height:auto;min-height:46px}
-.uav-portal input[type=file]::file-selector-button{min-height:44px;margin-right:12px;padding:8px 12px;background:var(--blue-soft);color:var(--primary);border:0;border-right:1px solid var(--border);font:inherit;cursor:pointer}
-.uav-portal .vju-billing-header{align-items:flex-start;border:0;padding-bottom:0}
-.uav-portal .vju-billing-title{display:block}
-.uav-portal .vju-billing-title>svg{display:none}
-.uav-portal .vju-billing-subtitle{font-size:14px;margin-top:10px}
-.uav-portal .vju-modal-close{min-width:44px;min-height:44px;justify-content:center}
-.uav-portal :is(.table-pagination,.pagination){gap:12px;padding:16px 24px;font-size:14px}
-@media(max-width:700px){
- .uav-portal :is(.portal-language,.portal-input,.form-field input,.form-field select,.table-filter select,.table-search input){font-size:16px}
- .uav-portal .portal-language{max-width:128px}
- .uav-portal :is(.table-toolbar,.portal-filter-bar){padding:16px;align-items:stretch}
- .uav-portal :is(.table-toolbar,.portal-filter-bar)>:is(label,.table-search,.table-filter){flex:1 1 100%;max-width:none;min-width:0}
- .uav-portal :is(.users-table,.portal-responsive-table) .console-table{min-width:0}
- .uav-portal :is(.users-table,.portal-responsive-table) thead{display:none}
- .uav-portal :is(.users-table,.portal-responsive-table) :is(tbody,tr,td){display:block}
- .uav-portal :is(.users-table,.portal-responsive-table) tr{padding:16px;border-bottom:1px solid var(--border)}
- .uav-portal :is(.users-table,.portal-responsive-table) .console-table td{display:grid;grid-template-columns:90px minmax(0,1fr);gap:4px 12px;min-width:0;padding:7px 0;border:0;overflow-wrap:anywhere}
- .uav-portal :is(.users-table,.portal-responsive-table) td::before{content:attr(data-label);color:var(--muted);font-size:12px;grid-column:1}
- .uav-portal :is(.users-table,.portal-responsive-table) td>*{grid-column:2;min-width:0}
- .uav-portal :is(.users-table,.portal-responsive-table) .table-secondary{margin:0}
- .uav-portal :is(.users-table,.portal-responsive-table) .portal-row-action{width:fit-content}
- .uav-portal :is(.table-pagination,.pagination){padding:16px;flex-wrap:wrap}
+.uav-portal .portal-language {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid var(--input-border);
+    border-radius: var(--uav-radius-control);
+    background: var(--card)
+}
+
+.uav-portal .portal-language button {
+    display: grid;
+    place-items: center;
+    min-width: 38px;
+    min-height: 36px;
+    padding: 0 6px;
+    border: 0;
+    border-radius: calc(var(--uav-radius-control) - 3px);
+    background: transparent;
+    cursor: pointer;
+    opacity: .55;
+    transition: opacity .15s ease, background-color .15s ease
+}
+
+.uav-portal .portal-language button:hover {
+    opacity: .9
+}
+
+.uav-portal .portal-language button[aria-pressed=true] {
+    background: var(--uav-color-primary-light);
+    box-shadow: inset 0 0 0 1px var(--uav-color-primary);
+    opacity: 1
+}
+
+.uav-portal .portal-language .locale-flag {
+    display: block;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 12%)
+}
+
+.uav-portal .portal-auth-field {
+    display: grid;
+    gap: 8px;
+    min-width: 0
+}
+
+.uav-portal .portal-auth-field input {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--input-border);
+    border-radius: var(--uav-radius-control);
+    background: var(--card);
+    color: var(--ink);
+    font-size: 16px
+}
+
+.uav-portal .portal-password {
+    position: relative
+}
+
+.uav-portal .portal-password input {
+    padding-right: 68px
+}
+
+.uav-portal .portal-password button {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    min-width: 60px;
+    height: 44px;
+    padding: 8px;
+    border: 0;
+    border-radius: var(--uav-radius-control);
+    background: transparent;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer
+}
+
+.uav-portal :is(.button,.portal-button) {
+    gap: 8px;
+    font-size: 14px;
+    padding-inline: 16px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-align: center
+}
+
+.uav-portal :is(.button-danger,.portal-button-danger) {
+    background: #b42332;
+    color: #fff;
+    border: 1px solid #b42332
+}
+
+.uav-portal :is(.button-danger,.portal-button-danger):hover:not(:disabled) {
+    background: #8f1926
+}
+
+.uav-portal :is(.table-toolbar,.portal-filter-bar) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+    padding: 20px 24px;
+    background: var(--card)
+}
+
+.uav-portal .portal-filter-bar {
+    border: 1px solid var(--border);
+    border-radius: var(--uav-radius-panel)
+}
+
+.uav-portal .portal-filter-bar > label {
+    flex: 1;
+    min-width: 180px
+}
+
+.uav-portal :is(.empty,.empty-state) {
+    padding: 36px 24px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6
+}
+
+.uav-portal .console-table td {
+    overflow-wrap: normal;
+    font-size: 14px;
+    vertical-align: middle
+}
+
+.uav-portal .console-table th {
+    font-size: 12px;
+    text-transform: none
+}
+
+.uav-portal :is(.table-scroll,.table-wrap) {
+    max-width: 100%;
+    overscroll-behavior-inline: contain
+}
+
+.uav-portal .portal-row-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--uav-radius-control);
+    font-weight: 600;
+    color: var(--primary);
+    white-space: nowrap
+}
+
+.uav-portal :is(.users-table,.portal-responsive-table) .console-table {
+    min-width: 920px
+}
+
+.uav-portal :is(.users-table,.portal-responsive-table) :is(.table-primary,.table-secondary) {
+    max-width: none;
+    white-space: normal;
+    overflow-wrap: anywhere
+}
+
+.uav-portal :is(.users-table,.portal-responsive-table) td:nth-child(2) {
+    min-width: 230px;
+    overflow-wrap: anywhere
+}
+
+.uav-portal .portal-input[type=file] {
+    padding: 0;
+    height: auto;
+    min-height: 46px
+}
+
+.uav-portal input[type=file]::file-selector-button {
+    min-height: 44px;
+    margin-right: 12px;
+    padding: 8px 12px;
+    background: var(--blue-soft);
+    color: var(--primary);
+    border: 0;
+    border-right: 1px solid var(--border);
+    font: inherit;
+    cursor: pointer
+}
+
+.uav-portal .vju-billing-header {
+    align-items: flex-start;
+    border: 0;
+    padding-bottom: 0
+}
+
+.uav-portal .vju-billing-title {
+    display: block
+}
+
+.uav-portal .vju-billing-title > svg {
+    display: none
+}
+
+.uav-portal .vju-billing-subtitle {
+    font-size: 14px;
+    margin-top: 10px
+}
+
+.uav-portal .vju-modal-close {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center
+}
+
+.uav-portal :is(.table-pagination,.pagination) {
+    gap: 12px;
+    padding: 16px 24px;
+    font-size: 14px
+}
+
+@media (max-width: 700px) {
+    .uav-portal :is(.portal-language,.portal-input,.form-field input,.form-field select,.table-filter select,.table-search input) {
+        font-size: 16px
+    }
+
+
+    .uav-portal :is(.table-toolbar,.portal-filter-bar) {
+        padding: 16px;
+        align-items: stretch
+    }
+
+    .uav-portal :is(.table-toolbar,.portal-filter-bar) > :is(label,.table-search,.table-filter) {
+        flex: 1 1 100%;
+        max-width: none;
+        min-width: 0
+    }
+
+    .uav-portal :is(.users-table,.portal-responsive-table) .console-table {
+        min-width: 0
+    }
+
+    .uav-portal :is(.users-table,.portal-responsive-table) thead {
+        display: none
+    }
+
+    .uav-portal :is(.users-table,.portal-responsive-table) :is(tbody,tr,td) {
+        display: block
+    }
+
+    .uav-portal :is(.users-table,.portal-responsive-table) tr {
+        padding: 16px;
+        border-bottom: 1px solid var(--border)
+    }
+
+    .uav-portal :is(.users-table,.portal-responsive-table) .console-table td {
+        display: grid;
+        grid-template-columns:90px minmax(0, 1fr);
+        gap: 4px 12px;
+        min-width: 0;
+        padding: 7px 0;
+        border: 0;
+        overflow-wrap: anywhere
+    }
+
+    .uav-portal :is(.users-table,.portal-responsive-table) td::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 12px;
+        grid-column: 1
+    }
+
+    .uav-portal :is(.users-table,.portal-responsive-table) td > * {
+        grid-column: 2;
+        min-width: 0
+    }
+
+    .uav-portal :is(.users-table,.portal-responsive-table) .table-secondary {
+        margin: 0
+    }
+
+    .uav-portal :is(.users-table,.portal-responsive-table) .portal-row-action {
+        width: fit-content
+    }
+
+    .uav-portal :is(.table-pagination,.pagination) {
+        padding: 16px;
+        flex-wrap: wrap
+    }
 }
 
 /* Customer navigation follows the same single header and mobile drawer model. */
-.uav-portal .customer-shell .sidebar{width:248px;flex:none;display:flex;flex-direction:column;padding:24px 16px;position:sticky;top:0;overflow-y:auto}
-.uav-portal .customer-shell .sidebar-collapsed{width:88px}
-.uav-portal .customer-shell .sidebar-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:20px}
-.uav-portal .customer-shell .sidebar-collapsed .sidebar-heading{flex-direction:column}
-.uav-portal .customer-shell .brand{padding:0;min-width:0}
-.uav-portal .customer-shell .brand img{object-fit:contain}
-.uav-portal .customer-shell .brand b{letter-spacing:.04em}
-.uav-portal .customer-shell .brand small{font-size:11px}
-.uav-portal .customer-shell .sidebar-section-label{padding:0 10px 12px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.08em}
-.uav-portal .customer-shell .sidebar nav{flex:1;display:flex;flex-direction:column;gap:4px}
-.uav-portal .customer-shell .sidebar nav a{padding:10px 12px;font-size:14px}
-.uav-portal .customer-shell .sidebar-collapsed nav a{justify-content:center}
-.uav-portal .customer-shell .sidebar-footer{margin-top:24px;padding-top:16px;border-top:1px solid var(--border)}
-.uav-portal .customer-shell .logout{display:flex;align-items:center;gap:10px;position:static;width:100%;min-height:44px;padding:10px 12px;border:0;background:transparent;color:var(--muted);font:inherit;cursor:pointer}
-.uav-portal .customer-shell .sidebar-collapsed .logout{justify-content:center}
-.uav-portal .customer-shell .icon-button{display:inline-flex;flex-shrink:0;align-items:center;justify-content:center;width:44px;min-width:44px;height:44px;border:1px solid var(--border);border-radius:var(--uav-radius-control);background:var(--card);cursor:pointer}
-.uav-portal .customer-shell :is(.rail-close,.customer-menu){display:none}
-.uav-portal .customer-shell .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 32px;gap:16px;height:auto}
-.uav-portal .customer-shell .topbar-breadcrumb{min-width:0;font-size:13px}
-.uav-portal .customer-shell .topbar-breadcrumb strong{color:var(--primary)}
-.uav-portal .customer-shell .topbar-account{display:flex;align-items:center;gap:12px}
-.uav-portal .customer-shell .account{max-width:none;display:flex;align-items:center;gap:10px;text-align:left;min-height:44px}
-.uav-portal .customer-avatar{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:50%;background:var(--blue-soft);color:var(--primary);font-weight:700}
-.uav-portal .customer-shell .account :is(strong,small){display:block;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.uav-portal .customer-shell .account small{font-size:12px;color:var(--muted)}
-@media(max-width:1100px){.uav-portal .customer-shell .topbar-breadcrumb>span{display:none}}
-@media(max-width:900px){
- .uav-portal .customer-shell{display:block}
- .uav-portal .customer-shell .sidebar{position:fixed;inset:0 auto 0 0;width:min(300px,85vw)!important;height:100dvh;z-index:70;padding:24px 16px!important;transform:translateX(-100%);visibility:hidden}
- .uav-portal .customer-shell .sidebar-open{transform:translateX(0);visibility:visible}
- .uav-portal .customer-shell .sidebar-heading{margin-bottom:20px!important}
- .uav-portal .customer-shell .sidebar nav{position:static;border:0;padding:0;overflow:visible;background:none;gap:4px}
- .uav-portal .customer-shell .sidebar nav a{flex-direction:row!important;justify-content:flex-start;gap:12px!important;padding:10px 12px!important;min-height:44px;font-size:14px;text-align:left}
- .uav-portal .customer-shell .sidebar-section-label{display:block!important}
- .uav-portal .customer-shell .sidebar-footer{margin-top:24px!important;padding-top:16px!important;border-top:1px solid var(--border)!important}
- .uav-portal .customer-shell .collapse-toggle{display:none}
- .uav-portal .customer-shell :is(.rail-close,.customer-menu){display:inline-flex}
- .uav-portal .customer-shell .rail-close{position:absolute;top:20px;right:12px}
- .uav-portal .customer-shell .topbar{min-height:74px;padding:12px 16px;gap:8px}
- .uav-portal .customer-shell .topbar-breadcrumb{display:none}
- .uav-portal .customer-shell .topbar-account{margin-left:auto;gap:8px}
- .uav-portal .customer-shell .account>div{display:none}
- .uav-portal .customer-shell .customer-main{padding-bottom:40px}
- .uav-portal .customer-nav-scrim{position:fixed;inset:0;z-index:60;border:0;background:rgb(15 23 42 / 45%)}
+.uav-portal .customer-shell .sidebar {
+    width: 248px;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    position: sticky;
+    top: 0;
+    overflow-y: auto
 }
-.uav-portal .customer-main button{min-height:44px}
-.uav-portal .portal-filter-bar>.portal-input-field{flex:1;min-width:180px}
-.uav-portal .portal-filter-bar>select{min-height:44px;align-self:end}
-.uav-portal .portal-management :is(.portal-card>h3,.portal-card>div>h3){font-size:17px}
-@media(max-width:700px){.uav-portal .portal-filter-bar>.portal-input-field{flex-basis:100%;min-width:0}}
 
-.uav-portal .table-filter select{width:100%}
-@media(max-width:600px){.uav-portal .account-summary>div:has(>strong){display:none}.uav-portal .app-topbar .account-summary{margin-left:auto}.uav-portal .portal-filter-bar>select{width:100%}}
+.uav-portal .customer-shell .sidebar-collapsed {
+    width: 88px
+}
+
+.uav-portal .customer-shell .sidebar-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 20px
+}
+
+.uav-portal .customer-shell .sidebar-collapsed .sidebar-heading {
+    flex-direction: column
+}
+
+.uav-portal .customer-shell .brand {
+    padding: 0;
+    min-width: 0
+}
+
+.uav-portal .customer-shell .brand img {
+    object-fit: contain
+}
+
+.uav-portal .customer-shell .brand b {
+    letter-spacing: .04em
+}
+
+.uav-portal .customer-shell .brand small {
+    font-size: 11px
+}
+
+.uav-portal .customer-shell .sidebar-section-label {
+    padding: 0 10px 12px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em
+}
+
+.uav-portal .customer-shell .sidebar nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px
+}
+
+.uav-portal .customer-shell .sidebar nav a {
+    padding: 10px 12px;
+    font-size: 14px
+}
+
+.uav-portal .customer-shell .sidebar-collapsed nav a {
+    justify-content: center
+}
+
+.uav-portal .customer-shell .sidebar-footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border)
+}
+
+.uav-portal .customer-shell .logout {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: static;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    cursor: pointer
+}
+
+.uav-portal .customer-shell .sidebar-collapsed .logout {
+    justify-content: center
+}
+
+.uav-portal .customer-shell .icon-button {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    border: 1px solid var(--border);
+    border-radius: var(--uav-radius-control);
+    background: var(--card);
+    cursor: pointer
+}
+
+.uav-portal .customer-shell :is(.rail-close,.customer-menu) {
+    display: none
+}
+
+.uav-portal .customer-shell .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 32px;
+    gap: 16px;
+    height: auto
+}
+
+.uav-portal .customer-shell .topbar-breadcrumb {
+    min-width: 0;
+    font-size: 13px
+}
+
+.uav-portal .customer-shell .topbar-breadcrumb strong {
+    color: var(--primary)
+}
+
+.uav-portal .customer-shell .topbar-account {
+    display: flex;
+    align-items: center;
+    gap: 12px
+}
+
+.uav-portal .customer-shell .account {
+    max-width: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+    min-height: 44px
+}
+
+.uav-portal .customer-avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--blue-soft);
+    color: var(--primary);
+    font-weight: 700
+}
+
+.uav-portal .customer-shell .account :is(strong,small) {
+    display: block;
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.uav-portal .customer-shell .account small {
+    font-size: 12px;
+    color: var(--muted)
+}
+
+@media (max-width: 1100px) {
+    .uav-portal .customer-shell .topbar-breadcrumb > span {
+        display: none
+    }
+}
+
+@media (max-width: 900px) {
+    .uav-portal .customer-shell {
+        display: block
+    }
+
+    .uav-portal .customer-shell .sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: min(300px, 85vw) !important;
+        height: 100dvh;
+        z-index: 70;
+        padding: 24px 16px !important;
+        transform: translateX(-100%);
+        visibility: hidden
+    }
+
+    .uav-portal .customer-shell .sidebar-open {
+        transform: translateX(0);
+        visibility: visible
+    }
+
+    .uav-portal .customer-shell .sidebar-heading {
+        margin-bottom: 20px !important
+    }
+
+    .uav-portal .customer-shell .sidebar nav {
+        position: static;
+        border: 0;
+        padding: 0;
+        overflow: visible;
+        background: none;
+        gap: 4px
+    }
+
+    .uav-portal .customer-shell .sidebar nav a {
+        flex-direction: row !important;
+        justify-content: flex-start;
+        gap: 12px !important;
+        padding: 10px 12px !important;
+        min-height: 44px;
+        font-size: 14px;
+        text-align: left
+    }
+
+    .uav-portal .customer-shell .sidebar-section-label {
+        display: block !important
+    }
+
+    .uav-portal .customer-shell .sidebar-footer {
+        margin-top: 24px !important;
+        padding-top: 16px !important;
+        border-top: 1px solid var(--border) !important
+    }
+
+    .uav-portal .customer-shell .collapse-toggle {
+        display: none
+    }
+
+    .uav-portal .customer-shell :is(.rail-close,.customer-menu) {
+        display: inline-flex
+    }
+
+    .uav-portal .customer-shell .rail-close {
+        position: absolute;
+        top: 20px;
+        right: 12px
+    }
+
+    .uav-portal .customer-shell .topbar {
+        min-height: 74px;
+        padding: 12px 16px;
+        gap: 8px
+    }
+
+    .uav-portal .customer-shell .topbar-breadcrumb {
+        display: none
+    }
+
+    .uav-portal .customer-shell .topbar-account {
+        margin-left: auto;
+        gap: 8px
+    }
+
+    .uav-portal .customer-shell .account > div {
+        display: none
+    }
+
+    .uav-portal .customer-shell .customer-main {
+        padding-bottom: 40px
+    }
+
+    .uav-portal .customer-nav-scrim {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        border: 0;
+        background: rgb(15 23 42 / 45%)
+    }
+}
+
+.uav-portal .customer-main button {
+    min-height: 44px
+}
+
+.uav-portal .portal-filter-bar > .portal-input-field {
+    flex: 1;
+    min-width: 180px
+}
+
+.uav-portal .portal-filter-bar > select {
+    min-height: 44px;
+    align-self: end
+}
+
+.uav-portal .portal-management :is(.portal-card>h3,.portal-card>div>h3) {
+    font-size: 17px
+}
+
+@media (max-width: 700px) {
+    .uav-portal .portal-filter-bar > .portal-input-field {
+        flex-basis: 100%;
+        min-width: 0
+    }
+}
+
+.uav-portal .table-filter select {
+    width: 100%
+}
+
+@media (max-width: 600px) {
+    .uav-portal .account-summary > div:has(>strong) {
+        display: none
+    }
+
+    .uav-portal .app-topbar .account-summary {
+        margin-left: auto
+    }
+
+    .uav-portal .portal-filter-bar > select {
+        width: 100%
+    }
+}
+
 /* Shared rail width and control rhythm across portal layouts. */
-@media(min-width:901px){
- .uav-portal .app-rail{width:248px;flex-basis:248px;padding:24px 16px}
- .uav-portal .app-rail-collapsed,.uav-portal .customer-shell .sidebar.sidebar-collapsed{width:88px!important;flex:0 0 88px!important;padding:24px 12px!important}
+@media (min-width: 901px) {
+    .uav-portal .app-rail {
+        width: 248px;
+        flex-basis: 248px;
+        padding: 24px 16px
+    }
+
+    .uav-portal .app-rail-collapsed, .uav-portal .customer-shell .sidebar.sidebar-collapsed {
+        width: 88px !important;
+        flex: 0 0 88px !important;
+        padding: 24px 12px !important
+    }
 }
-.uav-portal .app-nav-link{font-size:14px;padding:10px 12px}
-.uav-portal .customer-shell .sidebar{flex-shrink:0}
-.uav-portal :is(.field input,.field select){height:44px;padding:8px 12px;font-size:14px;font-weight:400}
-.uav-portal .customer-main input[aria-label="Tìm nhiệm vụ"]{max-width:none;padding:8px 12px}
-.uav-portal .users-table td:nth-child(5){white-space:nowrap}
-@media(max-width:900px){
- .uav-portal .app-rail-open{width:min(300px,85vw);padding:24px 16px max(24px,env(safe-area-inset-bottom))}
- .uav-portal .app-rail .rail-close{top:20px;right:12px}
+
+.uav-portal .app-nav-link {
+    font-size: 14px;
+    padding: 10px 12px
 }
-@media(max-width:700px){.uav-portal :is(.field input,.field select){font-size:16px}}
+
+.uav-portal .customer-shell .sidebar {
+    flex-shrink: 0
+}
+
+.uav-portal :is(.field input,.field select) {
+    height: 44px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 400
+}
+
+.uav-portal .customer-main input.mission-search {
+    max-width: none;
+    padding: 8px 12px
+}
+
+.uav-portal .users-table td:nth-child(5) {
+    white-space: nowrap
+}
+
+@media (max-width: 900px) {
+    .uav-portal .app-rail-open {
+        width: min(300px, 85vw);
+        padding: 24px 16px max(24px, env(safe-area-inset-bottom))
+    }
+
+    .uav-portal .app-rail .rail-close {
+        top: 20px;
+        right: 12px
+    }
+}
+
+@media (max-width: 700px) {
+    .uav-portal :is(.field input,.field select) {
+        font-size: 16px
+    }
+}
 
 /* Keep interface labels intact; their containers may wrap as complete items. */
-.uav-portal :is(.app-nav-link,.sidebar nav a,.workspace-tabs button,.mission-status,.status-badge,.status) { white-space:nowrap; flex-shrink:0; }
-.uav-portal :is(.page-header,.page-heading,.panel-header,.console-panel-header,.section-heading,.form-actions,.table-pagination) { flex-wrap:wrap; }
-.uav-portal :is(.page-header,.page-heading,.section-heading) > div:first-child { min-width:0; }
-.uav-portal :is(h1,h2,h3) { word-break:normal; overflow-wrap:break-word; text-wrap:balance; }
+.uav-portal :is(.app-nav-link,.sidebar nav a,.workspace-tabs button,.mission-status,.status-badge,.status) {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.uav-portal :is(.page-header,.page-heading,.panel-header,.console-panel-header,.section-heading,.form-actions,.table-pagination) {
+    flex-wrap: wrap;
+}
+
+.uav-portal :is(.page-header,.page-heading,.section-heading) > div:first-child {
+    min-width: 0;
+}
+
+.uav-portal :is(h1,h2,h3) {
+    word-break: normal;
+    overflow-wrap: break-word;
+    text-wrap: balance;
+}
 
 /* A long account identifier in the flex greeting must not widen the page. */
-.uav-portal .customer-main .page-heading h1 { overflow-wrap:anywhere; }
-.uav-portal .sar-command-controls { flex-wrap:wrap; max-width:100%; }
-.uav-portal .sar-command-controls button { white-space:nowrap; flex-shrink:0; }
+.uav-portal .customer-main .page-heading h1 {
+    overflow-wrap: anywhere;
+}
+
+.uav-portal .sar-command-controls {
+    flex-wrap: wrap;
+    max-width: 100%;
+}
+
+.uav-portal .sar-command-controls button {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
 
 /* Grid cards must fit the mobile track before their headings/actions wrap. */
-.uav-portal .customer-main .grid > * { min-width:0; }
+.uav-portal .customer-main .grid > * {
+    min-width: 0;
+}

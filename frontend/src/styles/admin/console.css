@@ -1,0 +1,1204 @@
+/* Admin console refinements. Scoped to .admin-console so Operations and Customer shells are unaffected.
+   Import after portal.css and consistency.css. */
+
+/* ---- Rail ---- */
+.uav-portal .admin-console .app-rail {
+    width: 248px;
+    flex-basis: 248px;
+    padding: 18px 12px 14px;
+}
+
+.uav-portal .admin-console .app-rail-top {
+    padding: 0 4px 14px;
+    margin-bottom: 6px !important;
+    border-bottom: 1px solid var(--uav-color-border);
+}
+
+.uav-portal .admin-console .admin-nav {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 8px;
+}
+
+.uav-portal .admin-console .app-rail-label {
+    padding: 0 10px 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+.uav-portal .admin-console .admin-nav-divider {
+    margin: 0 10px 6px;
+    border: 0;
+    border-top: 1px solid var(--uav-color-border);
+}
+
+.uav-portal .admin-console .app-nav-link {
+    min-height: 38px;
+    margin-bottom: 2px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    color: #475569;
+    transition: background-color .15s ease, color .15s ease;
+}
+
+.uav-portal .admin-console .app-nav-link svg {
+    color: #94a3b8;
+    transition: color .15s ease;
+}
+
+.uav-portal .admin-console .app-nav-link:hover {
+    background: #f4f5f7;
+    color: var(--uav-color-text);
+}
+
+.uav-portal .admin-console .app-nav-link:hover svg {
+    color: var(--uav-color-text);
+}
+
+.uav-portal .admin-console :is(.app-nav-link-active, .app-nav-link[aria-current=page]) {
+    background: var(--uav-color-primary-light);
+    color: var(--uav-color-primary);
+    box-shadow: none;
+    font-weight: 600;
+}
+
+.uav-portal .admin-console :is(.app-nav-link-active, .app-nav-link[aria-current=page]) svg {
+    color: var(--uav-color-primary);
+}
+
+.uav-portal .admin-console .rail-footer {
+    padding-top: 12px;
+}
+
+.uav-portal .admin-console .rail-footer p {
+    padding: 8px 6px 0;
+    color: #94a3b8;
+}
+
+.uav-portal .admin-console .admin-rail-account {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border: 1px solid var(--uav-color-border);
+    border-radius: 10px;
+    background: #fafafa;
+}
+
+.uav-portal .admin-console .admin-rail-account > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.uav-portal .admin-console .admin-rail-account strong {
+    font-size: 13px;
+    color: var(--uav-color-text);
+}
+
+.uav-portal .admin-console .admin-rail-account small {
+    font-size: 11px;
+    color: var(--uav-color-text-secondary);
+}
+
+.uav-portal .admin-console .admin-rail-account .avatar-chip {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    background: var(--uav-color-primary-light);
+    color: var(--uav-color-primary);
+    font-size: 13px;
+}
+
+.uav-portal .admin-console .admin-rail-account-collapsed {
+    flex-direction: column;
+    padding: 6px 0;
+    border: 0;
+    background: transparent;
+}
+
+.uav-portal .admin-console .admin-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.uav-portal .admin-console .admin-logout:hover {
+    background: #fee2e2;
+    color: var(--uav-color-danger, #b91c1c);
+}
+
+/* ---- Topbar ---- */
+.uav-portal .admin-console .app-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    min-height: 60px;
+    padding: 10px 32px;
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: saturate(1.4) blur(8px);
+}
+
+.uav-portal .admin-console .topbar-location {
+    gap: 8px;
+    align-items: center;
+    font-size: 13px;
+    text-transform: none;
+}
+
+.uav-portal .admin-console .topbar-location span {
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.uav-portal .admin-console .admin-env-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 10px;
+    border: 1px solid var(--uav-color-border);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    white-space: nowrap;
+}
+
+.uav-portal .admin-console .admin-env-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #16a34a;
+    box-shadow: 0 0 0 3px #dcfce7;
+}
+
+/* ---- Page ---- */
+.uav-portal .admin-console .app-main {
+    width: 100%;
+    max-width: 1480px;
+    padding: 28px 32px 48px;
+}
+
+.uav-portal .admin-console .page-header {
+    margin-bottom: 20px;
+}
+
+.uav-portal .admin-console .page-header h1 {
+    font-size: clamp(22px, 2vw, 28px);
+    line-height: 1.2;
+    letter-spacing: -.02em;
+}
+
+.uav-portal .admin-console .page-header p {
+    margin-top: 4px;
+    font-size: 13.5px;
+}
+
+/* ---- Surfaces ---- */
+.uav-portal .admin-console :is(.console-panel, .kpi-card, .data-table) {
+    border-radius: 12px;
+    border-color: var(--uav-color-border);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+}
+
+.uav-portal .admin-console .console-panel-header {
+    padding: 14px 18px;
+}
+
+.uav-portal .admin-console .console-panel-header h2 {
+    font-size: 15px;
+}
+
+.uav-portal .admin-console .console-panel-header a {
+    font-size: 13px;
+}
+
+.uav-portal .admin-console .kpi-grid {
+    gap: 16px;
+}
+
+.uav-portal .admin-console .kpi-card {
+    padding: 18px;
+    align-items: center;
+}
+
+.uav-portal .admin-console .kpi-card strong {
+    font-size: 26px;
+    line-height: 1.15;
+}
+
+.uav-portal .admin-console .console-table thead th {
+    background: #f8fafc;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.uav-portal .admin-console .console-table tbody tr {
+    transition: background-color .12s ease;
+}
+
+.uav-portal .admin-console .console-table tbody tr:hover {
+    background: #fafbfc;
+}
+
+/* ---- Dashboard ---- */
+.uav-portal .admin-console .admin-dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 20px;
+    align-items: start;
+}
+
+.uav-portal .admin-console :is(.admin-dashboard-main, .admin-dashboard-side) {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+.uav-portal .admin-console .admin-inline-empty {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 18px;
+    font-size: 13px;
+    color: var(--uav-color-text-secondary);
+}
+
+.uav-portal .admin-console .admin-inline-empty strong {
+    color: var(--uav-color-text);
+    font-size: 13.5px;
+}
+
+.uav-portal .admin-console .admin-shortcut {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+}
+
+.uav-portal .admin-console .admin-shortcut > span:nth-child(2) {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.uav-portal .admin-console .admin-shortcut > svg {
+    color: #cbd5e1;
+}
+
+.uav-portal .admin-console .admin-shortcut:hover > svg {
+    color: var(--uav-color-primary);
+}
+
+.uav-portal .admin-console .admin-shortcut-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-radius: 8px;
+    background: var(--uav-color-primary-light);
+    color: var(--uav-color-primary);
+}
+
+.uav-portal .admin-console .admin-status-list {
+    margin: 0;
+    padding: 6px 18px 14px;
+    list-style: none;
+}
+
+.uav-portal .admin-console .admin-status-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    font-size: 13px;
+    border-bottom: 1px dashed var(--uav-color-border);
+}
+
+.uav-portal .admin-console .admin-status-list li:last-child {
+    border-bottom: 0;
+}
+
+.uav-portal .admin-console .admin-status-list li > span:nth-child(2) {
+    flex: 1;
+    color: var(--uav-color-text);
+}
+
+.uav-portal .admin-console .admin-status-list small {
+    color: var(--uav-color-text-secondary);
+    font-size: 12px;
+}
+
+.uav-portal .admin-console .admin-dot {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 8px;
+    border-radius: 50%;
+    background: #cbd5e1;
+}
+
+.uav-portal .admin-console .admin-dot-ok {
+    background: #16a34a;
+}
+
+.uav-portal .admin-console .admin-dot-warn {
+    background: #d97706;
+}
+
+.uav-portal .admin-console .admin-dot-muted {
+    background: #cbd5e1;
+}
+
+@media (max-width: 1180px) {
+    .uav-portal .admin-console .admin-dashboard-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .uav-portal .admin-console .app-topbar {
+        padding: 10px 16px;
+    }
+
+    .uav-portal .admin-console .app-main {
+        padding: 20px 16px 40px;
+    }
+
+    .uav-portal .admin-console .admin-env-chip {
+        display: none;
+    }
+}
+
+/* ---- Users ---- */
+.uav-portal .admin-console .user-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.uav-portal .admin-console .user-stat {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px 14px 20px;
+    border: 1px solid var(--uav-color-border);
+    border-radius: 12px;
+    background: #fff;
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.uav-portal .admin-console .user-stat::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--stat-color);
+}
+
+.uav-portal .admin-console .user-stat span {
+    font-size: 12.5px;
+    color: var(--uav-color-text-secondary);
+}
+
+.uav-portal .admin-console .user-stat strong {
+    font-size: 24px;
+    line-height: 1.15;
+    color: var(--uav-color-text);
+}
+
+.uav-portal .admin-console .user-stat:hover {
+    border-color: #cbd5e1;
+}
+
+.uav-portal .admin-console .user-stat-active {
+    border-color: var(--stat-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--stat-color) 14%, transparent);
+}
+
+.uav-portal .admin-console .user-stat-slate { --stat-color: #64748b; }
+.uav-portal .admin-console .user-stat-green { --stat-color: #16a34a; }
+.uav-portal .admin-console .user-stat-amber { --stat-color: #d97706; }
+.uav-portal .admin-console .user-stat-red { --stat-color: #dc2626; }
+
+.uav-portal .admin-console .user-status-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 10px 16px 0;
+    border-bottom: 1px solid var(--uav-color-border);
+    overflow-x: auto;
+}
+
+.uav-portal .admin-console .user-status-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px 10px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--uav-color-text-secondary);
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.uav-portal .admin-console .user-status-tab span {
+    min-width: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    font-size: 11.5px;
+    line-height: 18px;
+    text-align: center;
+}
+
+.uav-portal .admin-console .user-status-tab:hover {
+    color: var(--uav-color-text);
+}
+
+.uav-portal .admin-console .user-status-tab-active {
+    color: var(--uav-color-primary);
+    border-bottom-color: var(--uav-color-primary);
+    font-weight: 600;
+}
+
+.uav-portal .admin-console .user-status-tab-active span {
+    background: var(--uav-color-primary-light);
+    color: var(--uav-color-primary);
+}
+
+.uav-portal .admin-console .user-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.uav-portal .admin-console .user-cell > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.uav-portal .admin-console .user-avatar {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.uav-portal .admin-console .user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.uav-portal .admin-console .role-chip {
+    display: inline-flex;
+    padding: 2px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.uav-portal .admin-console .role-chip-role_admin { background: #fde8e8; color: #9b1c1c; }
+.uav-portal .admin-console .role-chip-role_commander { background: #ede9fe; color: #5b21b6; }
+.uav-portal .admin-console .role-chip-role_operator { background: #e0f2fe; color: #075985; }
+.uav-portal .admin-console .role-chip-role_pilot { background: #ecfdf5; color: #065f46; }
+
+/* ---- Access hub ---- */
+.uav-portal .admin-console .access-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.uav-portal .admin-console .access-tab {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--uav-color-border);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--uav-color-text);
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.uav-portal .admin-console .access-tab > span:last-child {
+    display: flex;
+    flex-direction: column;
+}
+
+.uav-portal .admin-console .access-tab strong {
+    font-size: 14px;
+}
+
+.uav-portal .admin-console .access-tab small {
+    font-size: 12px;
+    color: var(--uav-color-text-secondary);
+}
+
+.uav-portal .admin-console .access-tab-icon {
+    display: inline-flex;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.uav-portal .admin-console .access-tab:hover {
+    border-color: #cbd5e1;
+}
+
+.uav-portal .admin-console .access-tab-active {
+    border-color: var(--uav-color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--uav-color-primary) 12%, transparent);
+}
+
+.uav-portal .admin-console .access-tab-active .access-tab-icon {
+    background: var(--uav-color-primary-light);
+    color: var(--uav-color-primary);
+}
+
+@media (max-width: 900px) {
+    .uav-portal .admin-console .user-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .uav-portal .admin-console .access-tabs {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .uav-portal .admin-console .access-tab small {
+        display: none;
+    }
+}
+
+/* ---- Analytics ---- */
+.uav-portal .admin-console .access-tabs {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.uav-portal .admin-console .analytics-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.uav-portal .admin-console .analytics-toolbar h2 {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.uav-portal .admin-console .segmented {
+    display: inline-flex;
+    padding: 3px;
+    border: 1px solid var(--uav-color-border);
+    border-radius: 9px;
+    background: #fff;
+}
+
+.uav-portal .admin-console .segmented button {
+    padding: 5px 12px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--uav-color-text-secondary);
+    cursor: pointer;
+}
+
+.uav-portal .admin-console .segmented .segmented-active {
+    background: var(--uav-color-primary-light);
+    color: var(--uav-color-primary);
+    font-weight: 600;
+}
+
+.uav-portal .admin-console .analytics-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px;
+}
+
+.uav-portal .admin-console .analytics-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 18px;
+    border: 1px solid var(--uav-color-border);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.uav-portal .admin-console .analytics-kpi > span {
+    font-size: 12.5px;
+    color: var(--uav-color-text-secondary);
+}
+
+.uav-portal .admin-console .analytics-kpi > strong {
+    font-size: 24px;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+}
+
+.uav-portal .admin-console .kpi-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.uav-portal .admin-console .kpi-delta span {
+    font-weight: 400;
+    color: var(--uav-color-text-secondary);
+}
+
+.uav-portal .admin-console .kpi-delta-good { color: #15803d; }
+.uav-portal .admin-console .kpi-delta-bad { color: #b91c1c; }
+.uav-portal .admin-console .kpi-delta-flat { color: var(--uav-color-text-secondary); font-weight: 400; }
+
+.uav-portal .admin-console .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
+.uav-portal .admin-console .analytics-wide {
+    grid-column: 1 / -1;
+}
+
+.uav-portal .admin-console .chart-empty {
+    margin: 0;
+    font-size: 13px;
+    color: var(--uav-color-text-secondary);
+}
+
+.uav-portal .admin-console .trend-chart {
+    position: relative;
+}
+
+.uav-portal .admin-console .trend-chart svg {
+    display: block;
+    width: 100%;
+    height: 220px;
+    overflow: visible;
+}
+
+.uav-portal .admin-console .chart-grid {
+    stroke: #e5e7eb;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+}
+
+.uav-portal .admin-console .chart-tick {
+    font-size: 10px;
+    fill: #8a94a6;
+}
+
+.uav-portal .admin-console .chart-crosshair {
+    stroke: #94a3b8;
+    stroke-dasharray: 3 3;
+    vector-effect: non-scaling-stroke;
+}
+
+.uav-portal .admin-console .chart-dot {
+    stroke: #fff;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+}
+
+.uav-portal .admin-console .trend-tooltip {
+    top: 4px;
+    bottom: auto;
+    transform: translateX(-50%);
+}
+
+.uav-portal .admin-console .chart-legend .chart-legend-dashed {
+    height: 0;
+    width: 14px;
+    border-top: 2px dashed;
+    border-radius: 0;
+}
+
+.uav-portal .admin-console .segment-bar {
+    display: flex;
+    gap: 2px;
+    height: 14px;
+    border-radius: 5px;
+    overflow: hidden;
+    background: #f1f5f9;
+}
+
+.uav-portal .admin-console .segment-bar .segment-empty {
+    flex: 1;
+}
+
+.uav-portal .admin-console .segment-list {
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.uav-portal .admin-console .segment-list li {
+    display: grid;
+    grid-template-columns: 12px 1fr auto 40px;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px dashed var(--uav-color-border);
+}
+
+.uav-portal .admin-console .segment-list li:last-child {
+    border-bottom: 0;
+}
+
+.uav-portal .admin-console .segment-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+}
+
+.uav-portal .admin-console .segment-label {
+    color: var(--uav-color-text-secondary);
+}
+
+.uav-portal .admin-console .segment-list small {
+    text-align: right;
+    color: #94a3b8;
+}
+
+.uav-portal .admin-console .column-chart {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    height: 200px;
+}
+
+.uav-portal .admin-console .column-group {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.uav-portal .admin-console .column-bars {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 3px;
+    border-bottom: 1px solid #cbd5e1;
+}
+
+.uav-portal .admin-console .column-bars span {
+    width: min(18px, 40%);
+    min-height: 1px;
+    border-radius: 4px 4px 0 0;
+}
+
+.uav-portal .admin-console .column-group small {
+    text-align: center;
+    font-size: 11px;
+    color: #8a94a6;
+}
+
+.uav-portal .admin-console .column-group .chart-tooltip {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.uav-portal .admin-console .meter-list {
+    margin: 0;
+    padding: 10px 18px 16px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.uav-portal .admin-console .meter-list li > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+
+.uav-portal .admin-console .meter-list li > div span {
+    color: var(--uav-color-text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.uav-portal .admin-console .meter-track {
+    display: flex;
+    gap: 2px;
+    height: 7px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #eef2f6;
+}
+
+.uav-portal .admin-console .meter-track > span {
+    border-radius: 4px;
+}
+
+.uav-portal .admin-console .meter-split > span {
+    border-radius: 0;
+}
+
+.uav-portal .admin-console .mission-map {
+    height: 340px;
+    border-top: 1px solid var(--uav-color-border);
+    border-radius: 0 0 12px 12px;
+    z-index: 0;
+}
+
+.uav-portal .admin-console .heatmap {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow-x: auto;
+}
+
+.uav-portal .admin-console :is(.heatmap-row, .heatmap-hours) {
+    display: grid;
+    grid-template-columns: 32px repeat(24, minmax(14px, 1fr));
+    gap: 3px;
+    align-items: center;
+    min-width: 440px;
+}
+
+.uav-portal .admin-console .heatmap small {
+    font-size: 10.5px;
+    color: #8a94a6;
+}
+
+.uav-portal .admin-console .heatmap-row > span {
+    height: 18px;
+    border-radius: 3px;
+    background: #f1f5f9;
+}
+
+.uav-portal .admin-console .alert-list {
+    margin: 0;
+    padding: 6px 12px 12px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.uav-portal .admin-console .alert-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid;
+    border-radius: 9px;
+    font-size: 13.5px;
+}
+
+.uav-portal .admin-console .alert-item > span {
+    flex: 1;
+}
+
+.uav-portal .admin-console .alert-item a {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.uav-portal .admin-console .alert-danger { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+.uav-portal .admin-console .alert-warning { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+.uav-portal .admin-console .alert-info { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+
+.uav-portal .admin-console .admin-bell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--uav-color-border);
+    border-radius: 9px;
+    color: #64748b;
+}
+
+.uav-portal .admin-console .admin-bell span {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #d97706;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+}
+
+.uav-portal .admin-console .admin-bell-urgent span {
+    background: #dc2626;
+}
+
+.uav-portal .admin-console .admin-bell:hover {
+    color: var(--uav-color-primary);
+    border-color: var(--uav-color-primary);
+}
+
+/* ---- Users: bulk actions, dialog, activity ---- */
+.uav-portal .admin-console .toolbar-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.uav-portal .admin-console .bulk-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 0 16px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: var(--uav-color-primary-light);
+    font-size: 13px;
+}
+
+.uav-portal .admin-console .bulk-clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: var(--uav-color-text-secondary);
+    font-size: 12.5px;
+    cursor: pointer;
+}
+
+.uav-portal .admin-console .select-col {
+    width: 40px;
+    text-align: center;
+}
+
+.uav-portal .admin-console .row-selected {
+    background: #fff7f7;
+}
+
+.uav-portal .admin-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgb(15 23 42 / 45%);
+}
+
+.uav-portal .admin-dialog {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: min(640px, 100%);
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    padding: 20px 22px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 20px 50px rgb(15 23 42 / 25%);
+}
+
+.uav-portal .admin-dialog header,
+.uav-portal .admin-dialog footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.uav-portal .admin-dialog footer {
+    justify-content: flex-end;
+}
+
+.uav-portal .admin-dialog h2 {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.uav-portal .admin-dialog-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 14px;
+}
+
+.uav-portal .admin-dialog-grid .form-field input,
+.uav-portal .admin-dialog-grid .form-field select {
+    width: 100%;
+}
+
+.uav-portal .admin-console .activity-list {
+    margin: 0;
+    padding: 4px 18px 8px;
+    list-style: none;
+}
+
+.uav-portal .admin-console .activity-list li {
+    display: grid;
+    grid-template-columns: 130px auto minmax(0, 1fr) minmax(0, 1.4fr);
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    font-size: 13px;
+    border-bottom: 1px solid var(--uav-color-border);
+}
+
+.uav-portal .admin-console .activity-list time {
+    color: var(--uav-color-text-secondary);
+    font-size: 12px;
+}
+
+/* ---- Audit filters, role matrix ---- */
+.uav-portal .admin-console .audit-filters {
+    display: grid;
+    grid-template-columns: minmax(150px, 1.2fr) repeat(2, minmax(130px, 1fr)) repeat(2, minmax(130px, 0.9fr)) auto;
+    align-items: end;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--uav-color-border);
+}
+
+.uav-portal .admin-console .audit-filters label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--uav-color-text-secondary);
+}
+
+.uav-portal .admin-console .audit-filters :is(input, select) {
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--uav-color-input-border, #d4d9e1);
+    border-radius: 8px;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--uav-color-text);
+}
+
+.uav-portal .admin-console .audit-filter-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.uav-portal .admin-console .role-matrix th small {
+    display: block;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.uav-portal .admin-console .role-matrix-group th {
+    background: #fafafa;
+    text-align: left;
+    font-size: 11.5px;
+    color: var(--uav-color-primary);
+}
+
+.uav-portal .admin-console .matrix-yes {
+    display: inline-block;
+    color: #15803d;
+}
+
+.uav-portal .admin-console .matrix-no {
+    display: inline-block;
+    color: #cbd5e1;
+}
+
+@media (max-width: 1100px) {
+    .uav-portal .admin-console .analytics-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .uav-portal .admin-console .audit-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .uav-portal .admin-dialog-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .uav-portal .admin-console .activity-list li {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .uav-portal .admin-console .audit-filters {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .uav-portal .admin-console .toolbar-actions {
+        margin-left: 0;
+        width: 100%;
+    }
+}

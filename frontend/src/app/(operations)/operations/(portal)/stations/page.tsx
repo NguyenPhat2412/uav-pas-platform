@@ -1,1 +1,1 @@
-export { default } from '@/features/stations/pages/operations/stations';
+export {default} from '@/features/stations/pages/operations/stations';

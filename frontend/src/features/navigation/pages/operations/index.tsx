@@ -1,3 +1,5 @@
-import { redirect } from 'next/navigation';
+import {redirect} from 'next/navigation';
 
-export default function Page() { redirect("/operations/overview"); }
+export default function Page() {
+    redirect("/operations/overview");
+}

@@ -1,0 +1,376 @@
+{
+  "opsMissions": {
+    "errors": {
+      "noteTooLong": "内容は500文字以内で入力してください。",
+      "reloadBeforeAccept": "受諾する前にミッションを再読み込みしてください。",
+      "completionRequired": "結果メモと返却時の機材状態を入力してください。",
+      "failureReasonRequired": "ミッションを完了できなかった理由を入力してください。",
+      "reasonTooLong": "理由は500文字以内で入力してください。",
+      "notesTooLong": "メモは2,000文字以内で入力してください。",
+      "quantityInvalid": "機材の数量は0より大きい整数で入力してください。",
+      "quantityExceeded": "要求数量が利用可能な機材数を超えています。",
+      "uavRedispatchReasonRequired": "UAVを再割り当てする理由を入力してください。",
+      "currentUavUnknown": "現在のUAVを特定できません。ミッションを再読み込みしてください。",
+      "replacementUavRequired": "交換用に別のUAVを選択してください。",
+      "redispatchReasonRequired": "再割り当ての理由を入力してください。",
+      "reloadBeforeRedispatch": "再割り当ての前にリソースを再読み込みしてください。",
+      "replacementInvalid": "交換用リソースが無効です。"
+    },
+    "apiErrors": {
+      "MISSION_ACCEPTANCE_REQUIRED": "準備完了または開始の前に、オペレーターが現在の割り当てを受諾する必要があります。",
+      "MISSION_ACCEPTANCE_STALE": "割り当てが変更されたか、すでに受諾されています。確認する前に最新のリソースを確認してください。",
+      "MISSION_HANDOVER_NOTES_REQUIRED": "結果メモと返却時の機材状態が必要です。",
+      "MISSION_HANDOVER_RESULT_REQUIRED": "納品物またはレポートのファイルを少なくとも1件アップロードして添付する必要があります。",
+      "MISSION_MEDIA_LOCKED": "ミッションは終了しました。ファイルは閲覧とダウンロードのみ可能です。",
+      "MISSION_DISPATCH_STALE": "別の画面で割り当てが変更されました。データを再読み込みしたので、確認してから再試行してください。",
+      "MISSION_RESERVATION_STALE": "予約が変更または返却されました。最新の一覧を確認してください。",
+      "MISSION_STATION_RESOURCES_CONFLICT": "リソースが同じステーションに属していません。ステーションを変更する前に、旧ステーションのUAVを外し機材を返却してください。",
+      "MISSION_RESERVATION_BALANCE_CONFLICT": "在庫の予約数がミッションと一致しません。他のミッションの分を誤って返却しないよう、返却は行われていません。",
+      "MISSION_DISPATCH_REQUIRED": "リソースはすでに割り当てられています。再割り当て機能を使用してください。",
+      "OPERATOR_NOT_AVAILABLE": "オペレーターは適切なロールを持ち、有効でロックされていない必要があります。",
+      "MISSION_RESOURCE_UNCHANGED": "リソースと数量に変更はありません。",
+      "MISSION_UAV_ASSIGNMENT_STALE": "ミッションのUAVが別の場所で変更されました。情報を再読み込みしたので、操作前に現在のUAVを確認してください。",
+      "MISSION_INVALID_STATUS": "ミッションのステータスが変更されました。情報を再読み込みしたので、操作前に確認してください。",
+      "MISSION_RESOURCE_MISSING": "有効なリソースが不足しています。ステーション、UAV、オペレーター、機材を確認してください。",
+      "UAV_NOT_AVAILABLE": "このUAVは現在利用できません。",
+      "UAV_TIME_CONFLICT": "このUAVはこの時間帯にすでに予定があります。",
+      "OPERATOR_TIME_CONFLICT": "このオペレーターはこの時間帯にすでに予定があります。",
+      "INVENTORY_NOT_AVAILABLE": "機材の数量が不足しています。"
+    },
+    "detail": {
+      "confirm": {
+        "reject": {
+          "title": "依頼を却下",
+          "submit": "却下を確定"
+        },
+        "conflict": {
+          "title": "問題を報告",
+          "submit": "問題の報告を確定"
+        },
+        "complete": {
+          "title": "ミッションを完了",
+          "submit": "完了を確定"
+        },
+        "cancel": {
+          "title": "ミッションをキャンセル",
+          "submit": "キャンセルを確定"
+        },
+        "fail": {
+          "title": "ミッション失敗を記録",
+          "submit": "失敗を確定"
+        }
+      },
+      "sections": {
+        "timeline": "履歴",
+        "media": "ファイル",
+        "stations": "ステーション",
+        "uavs": "UAV",
+        "equipment": "機材",
+        "operators": "オペレーター"
+      },
+      "errors": {
+        "loadFailed": "ミッションを読み込めないか、アクセス権限がありません。",
+        "forbidden": "この操作の権限がないか、割り当てられたオペレーターではありません。",
+        "actionUnconfirmed": "操作結果を確認できませんでした。再読み込みされたステータスを確認してから再試行してください。",
+        "reloadStale": "最新のステータスを読み込めませんでした。操作の重複を避けるため、続行する前にステータスを再読み込みしてください。",
+        "uploadUnconfirmed": "ファイルの添付を確認できませんでした。再読み込みされた一覧を確認してから再試行してください。",
+        "downloadFailed": "現在ファイルをダウンロードできません。もう一度お試しください。",
+        "reloadFailed": "ステータスを再読み込みできません。接続を確認して再試行してください。",
+        "reloadMissionFailed": "ミッションを再読み込みできません。"
+      },
+      "loading": "ミッションを読み込み中",
+      "resources": {
+        "station": "ステーション",
+        "uav": "UAV",
+        "operator": "オペレーター",
+        "equipment": "機材",
+        "stationPlaceholder": "ステーションを選択",
+        "uavPlaceholder": "UAVを選択",
+        "operatorPlaceholder": "オペレーターを選択",
+        "equipmentPlaceholder": "機材を選択",
+        "assignStation": "ステーションを割り当て",
+        "assignUav": "UAVを割り当て",
+        "assignOperator": "オペレーターを割り当て",
+        "reserveEquipment": "機材を確保",
+        "assign": "割り当て",
+        "reserve": "確保",
+        "equipmentOption": "{name} · 残り{count}",
+        "quantity": "確保数量",
+        "available": "利用可能: {count}",
+        "selectEquipmentFirst": "確保する数量を入力するには機材を選択してください。",
+        "title": "リソース配置"
+      },
+      "facts": {
+        "type": "ミッション種別",
+        "start": "開始予定",
+        "end": "終了予定",
+        "priority": "優先度"
+      },
+      "actions": {
+        "submit": "確認に送信",
+        "confirm": "確認",
+        "ready": "準備完了",
+        "accept": "ミッションを受諾",
+        "start": "開始",
+        "complete": "完了",
+        "fail": "失敗を記録",
+        "conflict": "問題を報告",
+        "reject": "却下",
+        "cancel": "ミッションをキャンセル",
+        "processing": "処理中…"
+      },
+      "awaitingAcceptance": {
+        "title": "オペレーターの受諾待ち",
+        "body": "担当者は準備完了の前にリソースを確認してミッションを受諾する必要があります。リソースを変更するたびに再度受諾が必要です。"
+      },
+      "complete": {
+        "evidenceCount": "納品物/レポートファイルが{count}件あります。完了には1件以上必要です。",
+        "evidenceUnknown": "結果ファイルを確認できませんでした。一覧を再読み込みするか、ファイル閲覧権限のある人に依頼してください。",
+        "evidenceOptional": "このミッション種別では結果ファイルは必須ではありません。",
+        "goToMedia": "ファイルと結果へ移動",
+        "warning": "完了するとリソースが返却され、ファイルの更新がロックされます。確認前に結果をチェックしてください。"
+      },
+      "cancelWarning": "キャンセルしたミッションは再開できません。リソースは手順に従って返却されます。",
+      "failWarning": "この操作でミッションが終了し、確保中のリソースが解放されます。ミッションは再開できず、理由は履歴に保存されます。",
+      "note": {
+        "result": "結果メモ",
+        "failureReason": "失敗理由",
+        "reason": "理由 / 問題",
+        "maxLength": "最大{count}文字。",
+        "incident": "インシデントメモ(任意)",
+        "equipmentCondition": "返却時の機材状態",
+        "equipmentConditionHint": "この記録は機材の故障・メンテナンス状態を自動的には変更しません。"
+      },
+      "reloadStatus": "ステータスを再読み込み",
+      "sectionsFailed": "読み込めませんでした: {sections}。",
+      "retry": "再試行",
+      "nav": {
+        "label": "ミッションのセクション",
+        "resources": "リソース",
+        "media": "ファイルと結果",
+        "timeline": "履歴"
+      },
+      "uav": {
+        "title": "UAVの再割り当て",
+        "description": "UAVの交換・解除はミッション開始前のみ可能です。ステーション、オペレーター、確保中の機材は維持されます。オペレーターの受諾状態はリセットされるため、続行前にミッションを確認する必要があります。",
+        "replace": "UAVを交換",
+        "unassign": "ミッションからUAVを解除",
+        "replaceForm": "ミッションのUAVを交換",
+        "unassignForm": "ミッションのUAVを解除",
+        "confirmReplace": "UAVの交換を確定",
+        "confirmUnassign": "UAVの解除を確定",
+        "current": "現在のUAV: {uav}。",
+        "replaceHint": "旧UAVは交換用UAVが有効な場合にのみ解放されます。準備完了の場合、ミッションはリソース配置に戻り再確認されます。",
+        "unassignHint": "ミッションは確認済みに戻ります。準備完了の前に別のUAVを割り当ててください。",
+        "replacement": "交換用UAV",
+        "replacementPlaceholder": "交換用UAVを選択",
+        "noReplacement": "ステーションに合う利用可能なUAVがありません。UAVの保有状況を確認するか、先にメンテナンスを完了してください。",
+        "reason": "再割り当ての理由",
+        "reasonHint": "最大{count}文字。理由はミッション履歴に保存されます。",
+        "keep": "UAVを維持"
+      },
+      "assigned": {
+        "title": "割り当て済みリソース",
+        "stationFallback": "ステーション #{id}",
+        "uavFallback": "UAV #{id}",
+        "operatorFallback": "オペレーター #{id}",
+        "unassigned": "未割り当て",
+        "you": "あなた",
+        "accepted": "ミッションの受諾を確認済みです。",
+        "notAccepted": "ミッションはまだ受諾されていません。",
+        "conflict": "問題: {note}"
+      },
+      "outcome": {
+        "title": "実施結果",
+        "failureReason": "失敗理由",
+        "none": "記録なし",
+        "incident": "インシデントメモ",
+        "billing": "ミッション請求書",
+        "billingPending": "請求書発行待ち",
+        "billingError": "請求書を発行できませんでした。システムが再試行します",
+        "billingIssued": "請求書発行済み",
+        "billingNone": "自動請求は不要",
+        "result": "結果メモ",
+        "equipmentCondition": "返却時の機材状態"
+      },
+      "media": {
+        "title": "ファイルと結果",
+        "count": "{count}件のファイル",
+        "role": "ファイルの役割",
+        "roleOutput": "納品物",
+        "roleDocument": "レポート / 引き渡し資料",
+        "roleFlightData": "飛行データ(納品物ではありません)",
+        "uploading": "ファイルをアップロード中…",
+        "upload": "結果ファイルをアップロード",
+        "uploadHint": "ファイルはアップロード、確認、ミッションへの添付が完了すると引き渡し対象になります。飛行データは結果/レポートファイルの代わりにはなりません。",
+        "noPermission": "ファイルを閲覧する権限がありません。",
+        "downloading": "ダウンロード中…",
+        "download": "ダウンロード",
+        "empty": "添付ファイルはまだありません。",
+        "locked": "ミッションは終了しました。ファイルは参照用に保管されます。"
+      },
+      "timeline": {
+        "title": "ミッション履歴",
+        "noPermission": "履歴を閲覧する権限がありません。"
+      },
+      "backToList": "ミッション一覧",
+      "backAction": "戻る"
+    },
+    "redispatch": {
+      "kind": {
+        "operator": "オペレーター",
+        "station": "ステーション",
+        "equipment": "機材"
+      },
+      "title": "オペレーター・ステーション・機材の再割り当て",
+      "description": "飛行前の変更には理由とリソースの再確認が必要です。準備完了のミッションは配置に戻り、オペレーターは新しい割り当てを確認する必要があります。",
+      "changeOperator": "オペレーターを変更または解除",
+      "changeStation": "ステーションを変更または解除",
+      "reserved": "確保中の機材",
+      "reservationLine": "予約 #{id} · 数量: {quantity}",
+      "changeReservationLabel": "予約 {id} を変更または返却",
+      "changeReservation": "変更 / 返却",
+      "noReservations": "機材が確保されていません。準備完了の前に有効な機材を少なくとも1件確保してください。",
+      "released": "返却済みの予約({count})",
+      "releasedLine": "{name} · {quantity} · 予約 #{id} 返却済み",
+      "equipmentOption": "{name} · 利用可能 {count}",
+      "equipmentOptionHeld": "{name} · 利用可能 {count} + 確保中 {held}",
+      "formTitle": "{kind}の再割り当て",
+      "stationHint": "ステーションを変更する前に、別ステーションのUAVを外し機材を返却してください。ステーションの解除にはUAVの解除とすべての機材の返却が必要です。オペレーターは維持されます。",
+      "equipmentHint": "予約 #{id} は{quantity}を確保中です。数量を変更するには同じ機材を選択してください。システムは旧予約の返却と新予約の確保を一度に処理します。選択を空にするとこの予約全体を返却します。",
+      "replacementEquipment": "交換用機材",
+      "replacementOperator": "交換用オペレーター",
+      "replacementStation": "交換用ステーション",
+      "releaseReservation": "この予約を返却",
+      "removeCurrent": {
+        "operator": "現在のオペレーターを解除",
+        "station": "現在のステーションを解除"
+      },
+      "schedule": {
+        "checking": "スケジュールを確認中…",
+        "available": "予定の重複はありません。確定時に再度確認されます。",
+        "conflict": "オペレーターが利用できないか、予定が重複しています。別の人を選択してください。",
+        "error": "スケジュールを確認できませんでした。",
+        "retry": "スケジュールを再確認"
+      },
+      "newQuantity": "新しい数量",
+      "maxQuantity": "確保可能な最大数: {count}。これは変更中の予約の新しい合計数量です。",
+      "reason": "リソース変更の理由",
+      "reasonHint": "最大{count}文字。ミッション履歴に保存されます。",
+      "stale": "データが変更されました。最新の割り当てを使うにはフォームを閉じて開き直してください。",
+      "keep": "リソースを維持",
+      "confirmChange": "リソース変更を確定",
+      "confirmRelease": "機材の返却を確定",
+      "confirmRemove": "リソースの解除を確定"
+    },
+    "overview": {
+      "quick": {
+        "stations": "ステーション",
+        "dispatch": "ミッション配車",
+        "uavs": "UAV機体",
+        "media": "結果ファイル"
+      },
+      "authenticating": "認証中",
+      "title": "運用概要",
+      "openDispatch": "配車を開く",
+      "partialError": "一部の指標を読み込めませんでした。他のモジュールは引き続き利用できます。",
+      "summary": {
+        "label": "アクセス可能な全データの概要",
+        "users": "ユーザー",
+        "stations": "ステーション",
+        "availableUavs": "利用可能なUAV",
+        "equipment": "機材",
+        "auditEvents": "監査イベント"
+      },
+      "missions": {
+        "title": "ミッション概要",
+        "subtitle": "現在のワークフロー状況",
+        "openList": "一覧を開く",
+        "total": "ミッション総数",
+        "inProgress": "進行中",
+        "completed": "完了",
+        "failed": "失敗",
+        "pending": "確認待ち:",
+        "ready": "準備完了:"
+      },
+      "fleet": {
+        "title": "UAV機体の状況",
+        "subtitle": "3D HUDで監視する機体を選択",
+        "viewAll": "すべて表示",
+        "asset": "機体",
+        "status": "ステータス",
+        "station": "ステーション",
+        "manufacturer": "メーカー",
+        "actions": "操作",
+        "empty": "UAVがないか、閲覧権限がありません。",
+        "unassigned": "未割り当て",
+        "details": "詳細"
+      },
+      "hud": {
+        "noUav": "UAV未選択",
+        "noStation": "ステーション未割り当て",
+        "frame": "UAV監視フレーム",
+        "noTelemetry": "ライブテレメトリ接続なし",
+        "battery": "バッテリー:",
+        "altitude": "高度:",
+        "openSar": "AI & SARコックピットを開く",
+        "openFleet": "UAV機体ボードを開く"
+      },
+      "stations": {
+        "title": "ステーションの稼働状況",
+        "subtitle": "現在のステーション一覧",
+        "manage": "ステーション管理",
+        "station": "ステーション",
+        "status": "ステータス",
+        "address": "住所",
+        "coordinates": "座標"
+      },
+      "quickActions": {
+        "title": "クイック操作",
+        "subtitle": "クイックアクセス"
+      }
+    },
+    "notifications": {
+      "title": "通知",
+      "center": "通知センター",
+      "subtitle": "飛行イベント、SAR緊急アラート、機材ステータス、配車メッセージを確認",
+      "markAll": "すべて既読にする({count})",
+      "searchLabel": "通知を検索",
+      "searchPlaceholder": "通知の内容を検索...",
+      "filter": {
+        "ALL": "すべて",
+        "ALERT": "緊急",
+        "WARNING": "警告",
+        "INFO": "情報",
+        "SUCCESS": "完了"
+      },
+      "loading": "通知を読み込み中…",
+      "retry": "再試行",
+      "emptyTitle": "該当する通知はありません",
+      "emptyHint": "イベントが発生すると、新しい通知がここに自動的に表示されます。",
+      "bell": {
+        "newCount": "新着{count}件",
+        "readAll": "すべて既読",
+        "empty": "通知はありません",
+        "viewAll": "すべての通知を表示"
+      }
+    },
+    "list": {
+      "myMissions": "マイミッション",
+      "search": "ミッションを検索",
+      "searchPlaceholder": "コードまたはタイトル",
+      "refresh": "更新",
+      "create": "ミッションを作成",
+      "empty": "ミッションはまだありません。"
+    },
+    "assigned": {
+      "title": "割り当てられたミッション",
+      "meta": "割り当てられたミッションのスケジュールを確認し実施します。"
+    },
+    "dispatch": {
+      "title": "ミッション配車",
+      "meta": "ミッションの確認、リソース配分、進捗管理",
+      "listTitle": "運用ミッション"
+    }
+  }
+}

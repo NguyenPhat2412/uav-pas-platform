@@ -1,1 +1,1 @@
-export { default, metadata } from '@/features/marketing/pages/web/register';
+export {default, metadata} from '@/features/marketing/pages/web/register';

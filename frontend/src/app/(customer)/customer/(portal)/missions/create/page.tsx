@@ -1,1 +1,1 @@
-export { default } from '@/features/missions/pages/customer/missions-create';
+export {default} from '@/features/missions/pages/customer/missions-create';

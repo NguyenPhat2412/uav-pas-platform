@@ -9,3 +9,4 @@ export * from "@/components/ui/LanguageSwitcher";
 export * from "@/components/ui/StatusBadge";
 export * from "@/components/ui/KpiCard";
 export * from "@/components/ui/ErrorBoundary";
+export * from "@/components/ui/Toast";

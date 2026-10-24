@@ -1,47 +1,181 @@
 'use client';
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui';
-import { Drawer, Metadata } from '@/components/data/Drawer';
-import { LoadingRows } from '@/components/data/WorkspaceState';
-import { useAuth } from '@/contexts/AuthContext';
-import { formatDate } from "@/components/shared/presentation";
-import { maintenanceService as service } from "@/features/maintenance/service";
-import { ActionFeedback, Feedback, maintenanceError, useMaintenanceAction } from "@/features/maintenance/Feedback";
-import { fieldClass, OrderFieldsForm } from "@/features/maintenance/Fields";
-import { MaterialEditor } from "@/features/maintenance/MaterialEditor";
-import { calendarDate, closingNote, formatVnd, orderControls, orderInput, orderLabels } from "@/features/maintenance/workflows";
-import type { OrderFields, RepairOrder } from "@/features/maintenance/types";
+import {useState} from 'react';
+import {useQuery} from '@tanstack/react-query';
+import {Button} from '@/components/ui';
+import {Drawer, Metadata} from '@/components/data/Drawer';
+import {LoadingRows} from '@/components/data/WorkspaceState';
+import {useAuth} from '@/contexts/AuthContext';
+import {formatDate} from "@/components/shared/presentation";
+import {maintenanceService as service} from "@/features/maintenance/service";
+import {ActionFeedback, Feedback, maintenanceError, useMaintenanceAction} from "@/features/maintenance/Feedback";
+import {fieldClass, OrderFieldsForm} from "@/features/maintenance/Fields";
+import {MaterialEditor} from "@/features/maintenance/MaterialEditor";
+import {
+    calendarDate,
+    closingNote,
+    formatVnd,
+    orderControls,
+    orderInput
+} from "@/features/maintenance/workflows";
+import type {OrderFields, RepairOrder} from "@/features/maintenance/types";
+import {RequiredMark} from "@/components/shared/RequiredMark";
+import {useI18n} from '@/contexts/I18nContext';
 
 type Mode = 'view' | 'edit' | 'materials' | 'start' | 'complete' | 'cancel';
-function EditOrder({ order, disabled, onSave, onCancel }: { order: RepairOrder; disabled: boolean; onSave: (fields: OrderFields) => void; onCancel: () => void }) {
-  const [fields, setFields] = useState({ title: order.title, description: order.description || '', plannedDate: order.plannedDate, technicianName: order.technicianName });
-  const [error, setError] = useState('');
-  return <form className="schema-form space-y-4" aria-label="Chỉnh sửa phiếu sửa chữa" onSubmit={event => { event.preventDefault(); try { orderInput(fields); setError(''); onSave(fields); } catch (failure) { setError(maintenanceError(failure)); } }}><Feedback error={error} /><OrderFieldsForm value={fields} onChange={setFields} disabled={disabled} /><div className="flex flex-wrap gap-3"><Button type="button" variant="outline" disabled={disabled} onClick={onCancel}>Bỏ thay đổi phiếu</Button><Button type="submit" disabled={disabled}>Lưu thông tin phiếu</Button></div></form>;
-}
-function OrderConfirmation({ order, mode, disabled, onConfirm, onCancel }: { order: RepairOrder; mode: 'start' | 'complete' | 'cancel'; disabled: boolean; onConfirm: (note: string) => void; onCancel: () => void }) {
-  const [note, setNote] = useState(''), [passed, setPassed] = useState(false), [error, setError] = useState('');
-  const label = mode === 'start' ? 'Xác nhận bắt đầu sửa chữa' : mode === 'complete' ? 'Xác nhận hoàn tất phiếu' : 'Xác nhận hủy phiếu';
-  return <form className="schema-form space-y-4 rounded-lg border border-slate-300 bg-slate-50 p-4" aria-label={label} onSubmit={event => {
-    event.preventDefault(); try { if (mode !== 'start') closingNote(note, mode); if (mode === 'complete' && !passed) throw new Error('Cần xác nhận đã kiểm tra UAV trước khi hoàn tất.'); setError(''); onConfirm(note); } catch (failure) { setError(maintenanceError(failure)); }
-  }}><h3 className="font-semibold">{label}</h3><Feedback error={error} /><p className="text-sm text-slate-600">{mode === 'start' ? 'Chỉ bắt đầu khi UAV không còn thuộc nhiệm vụ đang hoạt động. UAV sẽ chuyển sang bảo trì và không thể nhận nhiệm vụ.' : mode === 'complete' ? 'Xác nhận của người phụ trách được ghi lại trong phiếu; đây không phải chứng nhận kỹ thuật. UAV sẽ chuyển sang sẵn có và lịch liên kết được tính lại từ hôm nay.' : order.status === 'IN_PROGRESS' ? 'Phiếu đã bắt đầu: sau khi hủy, UAV vẫn ở trạng thái bảo trì. Chi phí vật tư đã ghi vẫn được giữ. Cần lập phiếu mới hoặc kiểm tra UAV trước khi đưa trở lại hoạt động.' : 'Hủy phiếu chưa bắt đầu không thay đổi trạng thái UAV. Chi phí đã ghi vẫn được giữ, ngày đến hạn của lịch không thay đổi.'}</p>{mode !== 'start' && <label className="form-field"><span>{mode === 'complete' ? 'Kết quả kiểm tra sau sửa chữa' : 'Lý do hủy phiếu sửa chữa'}</span><textarea autoFocus required maxLength={1000} rows={4} className={fieldClass} value={note} disabled={disabled} onChange={event => setNote(event.target.value)} /></label>}{mode === 'complete' && <label className="flex items-start gap-3 text-sm"><input className="mt-1 h-5 w-5 shrink-0" type="checkbox" required checked={passed} disabled={disabled} onChange={event => setPassed(event.target.checked)} /><span>Tôi xác nhận đã kiểm tra UAV và cho phép đưa trở lại hoạt động.</span></label>}<div className="flex flex-wrap gap-3"><Button type="button" variant="outline" disabled={disabled} onClick={onCancel}>Quay lại phiếu</Button><Button type="submit" disabled={disabled || (mode !== 'start' && !note.trim()) || (mode === 'complete' && !passed)}>{label}</Button></div></form>;
+
+function EditOrder({order, disabled, onSave, onCancel}: {
+    order: RepairOrder;
+    disabled: boolean;
+    onSave: (fields: OrderFields) => void;
+    onCancel: () => void
+}) {
+    const [fields, setFields] = useState({
+        title: order.title,
+        description: order.description || '',
+        plannedDate: order.plannedDate,
+        technicianName: order.technicianName
+    });
+    const [error, setError] = useState('');
+    const {t} = useI18n();
+    return <form className="schema-form space-y-4" aria-label={t('opsAssets.maintenance.order.editForm')} onSubmit={event => {
+        event.preventDefault();
+        try {
+            orderInput(fields, t);
+            setError('');
+            onSave(fields);
+        } catch (failure) {
+            setError(maintenanceError(failure, t));
+        }
+    }}><Feedback error={error}/><OrderFieldsForm value={fields} onChange={setFields} disabled={disabled}/>
+        <div className="flex flex-wrap gap-3"><Button type="button" variant="outline" disabled={disabled}
+                                                      onClick={onCancel}>{t('opsAssets.maintenance.order.discard')}</Button><Button type="submit"
+                                                                                                           disabled={disabled}>{t('opsAssets.maintenance.order.saveInfo')}</Button></div>
+    </form>;
 }
 
-export function OrderDetail({ id, onClose, refreshLists }: { id: number; onClose: () => void; refreshLists: () => Promise<boolean> }) {
-  const { user, can } = useAuth();
-  const query = useQuery({ queryKey: ['maintenance', user?.id, 'order', id], queryFn: ({ signal }) => service.order(id, signal), enabled: can('UAV_MANAGE'), retry: false, refetchOnWindowFocus: false });
-  const [mode, setMode] = useState<Mode>('view');
-  const action = useMaintenanceAction(async () => { const [detail, lists] = await Promise.all([query.refetch(), refreshLists()]); return !detail.isError && lists; });
-  const order = query.data;
-  const controls = order ? orderControls(order.status, can('UAV_MANAGE')) : null;
-  const blocked = action.blocked || query.isFetching || !!query.error;
-  const submit = (request: () => Promise<unknown>, message: string) => void action.run(async () => { try { return await request(); } finally { setMode('view'); } }, message);
-  return <Drawer title={`Phiếu sửa chữa #${id}`} wide onClose={() => { if (!action.busy) onClose(); }}><div className="space-y-5"><ActionFeedback action={action} />{query.isPending && <LoadingRows />}{query.error && <><Feedback error={maintenanceError(query.error)} /><Button type="button" variant="outline" disabled={action.busy} onClick={() => void query.refetch()}>Tải lại phiếu</Button></>}{order && <><header className="space-y-2"><span data-order-status={order.status} className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{orderLabels[order.status]}</span><h3 className="break-words text-xl font-semibold">{order.title}</h3><p className="text-sm text-slate-600">{order.uavSerialNumber} · {order.scheduleId ? `Lịch định kỳ #${order.scheduleId}` : 'Phiếu sửa chữa đột xuất'}</p></header><Metadata items={[
-    ['Ngày dự kiến', calendarDate(order.plannedDate)], ['Người phụ trách', order.technicianName], ['Ngày lập', formatDate(order.createdAt)], ['Bắt đầu sửa chữa', order.startedAt ? formatDate(order.startedAt) : 'Chưa bắt đầu'], ['Ngày hoàn tất', order.completedAt ? formatDate(order.completedAt) : 'Chưa hoàn tất'], ['Ngày hủy', order.cancelledAt ? formatDate(order.cancelledAt) : 'Chưa hủy'],
-  ]} />{order.description && <p className="whitespace-pre-wrap break-words text-sm text-slate-700">{order.description}</p>}{order.inspectionNotes && <div className="rounded-lg bg-emerald-50 p-4"><strong>Kết quả kiểm tra</strong><p className="mt-2 whitespace-pre-wrap break-words text-sm">{order.inspectionNotes}</p></div>}{order.cancelReason && <div className="rounded-lg bg-amber-50 p-4"><strong>Lý do hủy</strong><p className="mt-2 whitespace-pre-wrap break-words text-sm">{order.cancelReason}</p></div>}
-    {mode === 'view' && <><section aria-label="Chi phí vật tư đã ghi" className="space-y-3"><div className="flex flex-wrap items-center justify-between gap-3"><h3 className="font-semibold">Vật tư và chi phí</h3><strong data-testid="material-total" className="text-xl">{formatVnd(order.totalMaterialCost)}</strong></div><p className="text-sm text-slate-600">Chi phí vật tư ghi trong phiếu, không trừ kho thiết bị. Tổng do hệ thống tính từ các dòng đã lưu.</p>{order.materials.length ? <ul className="space-y-2">{order.materials.map(item => <li key={item.id} className="rounded-lg border border-slate-200 p-3"><div className="flex flex-wrap items-start justify-between gap-2"><strong className="break-words">{item.name}</strong><strong>{formatVnd(item.lineTotal)}</strong></div><p className="mt-1 break-words text-sm text-slate-600">{item.quantity} {item.unit} × {formatVnd(item.unitPrice)}</p></li>)}</ul> : <p className="rounded-lg bg-slate-50 p-4 text-sm text-slate-600">Chưa ghi nhận vật tư.</p>}</section><div className="flex flex-wrap gap-3">{controls?.edit && <><Button type="button" variant="outline" disabled={blocked} onClick={() => setMode('edit')}>Sửa thông tin phiếu</Button><Button type="button" variant="outline" disabled={blocked} onClick={() => setMode('materials')}>Ghi vật tư và chi phí</Button></>}{controls?.start && <Button type="button" disabled={blocked} onClick={() => setMode('start')}>Bắt đầu sửa chữa</Button>}{controls?.complete && <Button type="button" disabled={blocked} onClick={() => setMode('complete')}>Hoàn tất phiếu sửa chữa</Button>}{controls?.cancel && <Button type="button" variant="outline" disabled={blocked} onClick={() => setMode('cancel')}>Hủy phiếu sửa chữa</Button>}</div>{!controls?.edit && <p className="rounded-lg bg-slate-100 p-4 text-sm">Phiếu đã đóng. Thông tin và chi phí được giữ để tra cứu, không thể chỉnh sửa.</p>}</>}
-    {mode === 'edit' && controls?.edit && <EditOrder key={order.version} order={order} disabled={blocked} onCancel={() => setMode('view')} onSave={fields => submit(() => service.updateOrder(order, fields), 'Đã cập nhật thông tin phiếu.')} />}
-    {mode === 'materials' && controls?.edit && <MaterialEditor key={order.version} order={order} disabled={blocked} onCancel={() => setMode('view')} onSave={items => submit(() => service.materials(order, items), 'Đã lưu vật tư. Tổng chi phí đã được tính lại.')} />}
-    {(['start', 'complete', 'cancel'] as Mode[]).includes(mode) && <OrderConfirmation key={`${mode}-${order.version}`} order={order} mode={mode as 'start' | 'complete' | 'cancel'} disabled={blocked} onCancel={() => setMode('view')} onConfirm={note => submit(() => mode === 'start' ? service.start(order) : mode === 'complete' ? service.complete(order, note) : service.cancel(order, note), mode === 'start' ? 'Đã bắt đầu sửa chữa. UAV đang bảo trì.' : mode === 'complete' ? 'Đã hoàn tất phiếu và đưa UAV trở lại sẵn có.' : 'Đã hủy phiếu. Chi phí đã ghi được giữ nguyên.')} />}
-  </>}</div></Drawer>;
+function OrderConfirmation({order, mode, disabled, onConfirm, onCancel}: {
+    order: RepairOrder;
+    mode: 'start' | 'complete' | 'cancel';
+    disabled: boolean;
+    onConfirm: (note: string) => void;
+    onCancel: () => void
+}) {
+    const [note, setNote] = useState(''), [passed, setPassed] = useState(false), [error, setError] = useState('');
+    const {t} = useI18n();
+    const label = t(`opsAssets.maintenance.order.confirm.${mode}`);
+    return <form className="schema-form space-y-4 rounded-lg border border-slate-300 bg-slate-50 p-4" aria-label={label}
+                 onSubmit={event => {
+                     event.preventDefault();
+                     try {
+                         if (mode !== 'start') closingNote(note, mode, t);
+                         if (mode === 'complete' && !passed) throw new Error(t('opsAssets.maintenance.order.mustInspect'));
+                         setError('');
+                         onConfirm(note);
+                     } catch (failure) {
+                         setError(maintenanceError(failure, t));
+                     }
+                 }}><h3 className="font-semibold">{label}</h3><Feedback error={error}/><p
+        className="text-sm text-slate-600">{t(mode === 'start' ? 'opsAssets.maintenance.order.desc.start' : mode === 'complete' ? 'opsAssets.maintenance.order.desc.complete' : order.status === 'IN_PROGRESS' ? 'opsAssets.maintenance.order.desc.cancelStarted' : 'opsAssets.maintenance.order.desc.cancelOpen')}</p>{mode !== 'start' &&
+        <label
+            className="form-field"><span>{mode === 'complete' ? t('opsAssets.maintenance.order.inspectionResult') : t('opsAssets.maintenance.order.cancelReason')}<RequiredMark/></span><textarea
+            autoFocus required maxLength={1000} rows={4} className={fieldClass} value={note} disabled={disabled}
+            onChange={event => setNote(event.target.value)}/></label>}{mode === 'complete' &&
+        <label className="flex items-start gap-3 text-sm"><input className="mt-1 h-5 w-5 shrink-0" type="checkbox"
+                                                                 required checked={passed} disabled={disabled}
+                                                                 onChange={event => setPassed(event.target.checked)}/><span>{t('opsAssets.maintenance.order.inspectedConfirm')}<RequiredMark/></span></label>}
+        <div className="flex flex-wrap gap-3"><Button type="button" variant="outline" disabled={disabled}
+                                                      onClick={onCancel}>{t('opsAssets.maintenance.order.backToOrder')}</Button><Button type="submit"
+                                                                                                        disabled={disabled || (mode !== 'start' && !note.trim()) || (mode === 'complete' && !passed)}>{label}</Button>
+        </div>
+    </form>;
+}
+
+export function OrderDetail({id, onClose, refreshLists}: {
+    id: number;
+    onClose: () => void;
+    refreshLists: () => Promise<boolean>
+}) {
+    const {user, can} = useAuth();
+    const {t, locale} = useI18n();
+    const vnd = (value: string) => formatVnd(value, t, locale);
+    const query = useQuery({
+        queryKey: ['maintenance', user?.id, 'order', id],
+        queryFn: ({signal}) => service.order(id, signal),
+        enabled: can('UAV_MANAGE'),
+        retry: false,
+        refetchOnWindowFocus: false
+    });
+    const [mode, setMode] = useState<Mode>('view');
+    const action = useMaintenanceAction(async () => {
+        const [detail, lists] = await Promise.all([query.refetch(), refreshLists()]);
+        return !detail.isError && lists;
+    });
+    const order = query.data;
+    const controls = order ? orderControls(order.status, can('UAV_MANAGE')) : null;
+    const blocked = action.blocked || query.isFetching || !!query.error;
+    const submit = (request: () => Promise<unknown>, successKey: string) => void action.run(async () => {
+        try {
+            return await request();
+        } finally {
+            setMode('view');
+        }
+    }, successKey);
+    return <Drawer title={t('opsAssets.maintenance.order.title', {id})} wide onClose={() => {
+        if (!action.busy) onClose();
+    }}>
+        <div className="space-y-5"><ActionFeedback action={action}/>{query.isPending &&
+            <LoadingRows/>}{query.error && <><Feedback error={maintenanceError(query.error, t)}/><Button type="button"
+                                                                                                      variant="outline"
+                                                                                                      disabled={action.busy}
+                                                                                                      onClick={() => void query.refetch()}>{t('opsAssets.maintenance.order.reload')}</Button></>}{order && <>
+            <header className="space-y-2"><span data-order-status={order.status}
+                                                className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{t(`opsAssets.maintenance.orderStatus.${order.status}`)}</span>
+                <h3 className="break-words text-xl font-semibold">{order.title}</h3><p
+                    className="text-sm text-slate-600">{order.uavSerialNumber} · {order.scheduleId ? t('opsAssets.maintenance.order.scheduled', {id: order.scheduleId}) : t('opsAssets.maintenance.order.adHoc')}</p>
+            </header>
+            <Metadata items={[
+                [t('opsAssets.maintenance.order.plannedDate'), calendarDate(order.plannedDate, t, locale)], [t('opsAssets.maintenance.order.technician'), order.technicianName], [t('opsAssets.maintenance.order.createdAt'), formatDate(order.createdAt)], [t('opsAssets.maintenance.order.startedAt'), order.startedAt ? formatDate(order.startedAt) : t('opsAssets.maintenance.order.notStarted')], [t('opsAssets.maintenance.order.completedAt'), order.completedAt ? formatDate(order.completedAt) : t('opsAssets.maintenance.order.notCompleted')], [t('opsAssets.maintenance.order.cancelledAt'), order.cancelledAt ? formatDate(order.cancelledAt) : t('opsAssets.maintenance.order.notCancelled')],
+            ]}/>{order.description &&
+            <p className="whitespace-pre-wrap break-words text-sm text-slate-700">{order.description}</p>}{order.inspectionNotes &&
+            <div className="rounded-lg bg-emerald-50 p-4"><strong>{t('opsAssets.maintenance.order.inspection')}</strong><p
+                className="mt-2 whitespace-pre-wrap break-words text-sm">{order.inspectionNotes}</p>
+            </div>}{order.cancelReason && <div className="rounded-lg bg-amber-50 p-4"><strong>{t('opsAssets.maintenance.order.cancelReasonShort')}</strong><p
+            className="mt-2 whitespace-pre-wrap break-words text-sm">{order.cancelReason}</p></div>}
+            {mode === 'view' && <>
+                <section aria-label={t('opsAssets.maintenance.order.materialsSection')} className="space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-3"><h3 className="font-semibold">{t('opsAssets.maintenance.order.materialsTitle')}</h3><strong data-testid="material-total"
+                                                  className="text-xl">{vnd(order.totalMaterialCost)}</strong>
+                    </div>
+                    <p className="text-sm text-slate-600">{t('opsAssets.maintenance.order.materialsNote')}</p>{order.materials.length ?
+                    <ul className="space-y-2">{order.materials.map(item => <li key={item.id}
+                                                                               className="rounded-lg border border-slate-200 p-3">
+                        <div className="flex flex-wrap items-start justify-between gap-2"><strong
+                            className="break-words">{item.name}</strong><strong>{vnd(item.lineTotal)}</strong>
+                        </div>
+                        <p className="mt-1 break-words text-sm text-slate-600">{item.quantity} {item.unit} × {vnd(item.unitPrice)}</p>
+                    </li>)}</ul> :
+                    <p className="rounded-lg bg-slate-50 p-4 text-sm text-slate-600">{t('opsAssets.maintenance.order.noMaterials')}</p>}
+                </section>
+                <div className="flex flex-wrap gap-3">{controls?.edit && <><Button type="button" variant="outline"
+                                                                                   disabled={blocked}
+                                                                                   onClick={() => setMode('edit')}>{t('opsAssets.maintenance.order.editInfo')}</Button><Button type="button" variant="outline" disabled={blocked}
+                                                    onClick={() => setMode('materials')}>{t('opsAssets.maintenance.order.editMaterials')}</Button></>}{controls?.start &&
+                    <Button type="button" disabled={blocked} onClick={() => setMode('start')}>{t('opsAssets.maintenance.order.start')}</Button>}{controls?.complete &&
+                    <Button type="button" disabled={blocked} onClick={() => setMode('complete')}>{t('opsAssets.maintenance.order.complete')}</Button>}{controls?.cancel &&
+                    <Button type="button" variant="outline" disabled={blocked} onClick={() => setMode('cancel')}>{t('opsAssets.maintenance.order.cancel')}</Button>}</div>
+                {!controls?.edit &&
+                    <p className="rounded-lg bg-slate-100 p-4 text-sm">{t('opsAssets.maintenance.order.closedNote')}</p>}</>}
+            {mode === 'edit' && controls?.edit &&
+                <EditOrder key={order.version} order={order} disabled={blocked} onCancel={() => setMode('view')}
+                           onSave={fields => submit(() => service.updateOrder(order, fields), 'opsAssets.maintenance.order.success.updated')}/>}
+            {mode === 'materials' && controls?.edit &&
+                <MaterialEditor key={order.version} order={order} disabled={blocked} onCancel={() => setMode('view')}
+                                onSave={items => submit(() => service.materials(order, items), 'opsAssets.maintenance.order.success.materials')}/>}
+            {(['start', 'complete', 'cancel'] as Mode[]).includes(mode) &&
+                <OrderConfirmation key={`${mode}-${order.version}`} order={order}
+                                   mode={mode as 'start' | 'complete' | 'cancel'} disabled={blocked}
+                                   onCancel={() => setMode('view')}
+                                   onConfirm={note => submit(() => mode === 'start' ? service.start(order) : mode === 'complete' ? service.complete(order, note) : service.cancel(order, note), `opsAssets.maintenance.order.success.${mode}`)}/>}
+        </>}</div>
+    </Drawer>;
 }

@@ -1,1 +1,1 @@
-export { default } from '@/features/navigation/pages/operations/operator-missions';
+export {default} from '@/features/navigation/pages/operations/operator-missions';

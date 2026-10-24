@@ -1,6 +1,7 @@
 package com.uav.platform.modules.audit.service;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.modules.audit.dto.request.AuditLogQueryRequest;
 import com.uav.platform.modules.audit.dto.response.AuditLogResponse;
 import com.uav.platform.modules.audit.enums.AuditAction;
 
@@ -16,4 +17,6 @@ public interface AuditLogService {
             String details);
 
     PageResponse<AuditLogResponse> findAll(Pageable pageable);
+
+    PageResponse<AuditLogResponse> findAll(AuditLogQueryRequest query, Pageable pageable);
 }

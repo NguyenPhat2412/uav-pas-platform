@@ -1,1 +1,1 @@
-export { default } from '@/features/webhooks/pages/admin/webhooks';
+export {default} from '@/features/webhooks/pages/admin/webhooks';

@@ -1,0 +1,529 @@
+{
+  "admin": {
+    "pages": {
+      "dashboard": {
+        "title": "Tổng quan hệ thống",
+        "meta": "Người dùng, đội UAV, yêu cầu chờ xử lý và hoạt động quản trị gần đây"
+      },
+      "users": {
+        "title": "Người dùng",
+        "meta": "Tài khoản và trạng thái truy cập"
+      },
+      "userDetail": {
+        "title": "Chi tiết người dùng",
+        "meta": "Thông tin tài khoản, vai trò và quyền hiệu lực"
+      },
+      "access": {
+        "title": "Phân quyền",
+        "accountsMeta": "Quản lý quyền theo vai trò và điều chỉnh cho từng tài khoản.",
+        "registryMeta": "Tra cứu các quyền truy cập được hỗ trợ.",
+        "templatesMeta": "Thiết lập quyền mặc định cho từng vai trò.",
+        "matrixMeta": "So sánh quyền mặc định của từng vai trò trên một bảng."
+      },
+      "auditLogs": {
+        "title": "Nhật ký quản trị",
+        "meta": "Tra cứu hoạt động và thay đổi trong hệ thống."
+      },
+      "billing": {
+        "title": "Gói cước & Hạn mức sử dụng",
+        "meta": "Quản lý chính sách định giá, quota giờ bay và đặc quyền AI cho khách hàng"
+      },
+      "reports": {
+        "title": "Báo cáo & Thống kê Hệ thống",
+        "meta": "Báo cáo hiệu suất đội bay, chiến dịch SAR, tỷ lệ hoàn thành và xuất dữ liệu CSV"
+      },
+      "settings": {
+        "title": "Cấu hình hệ thống",
+        "meta": "Quản lý tham số bay an toàn, nhận diện AI YOLOv8s và phần cứng biên KV260"
+      },
+      "webhooks": {
+        "title": "Quản lý Webhooks & Tích hợp",
+        "meta": "Đăng ký nhận sự kiện và theo dõi kết quả phân phối thực tế"
+      }
+    },
+    "page": {
+      "authenticating": "Đang xác thực"
+    },
+    "workspace": {
+      "noData": "Chưa có dữ liệu",
+      "loadingData": "Đang tải dữ liệu",
+      "forbiddenAction": "Bạn không có quyền thực hiện thao tác này.",
+      "retry": "Thử lại",
+      "recheckPermissions": "Kiểm tra lại quyền",
+      "noAccessTitle": "Không có quyền truy cập",
+      "noAccessDetail": "Tài khoản của bạn chưa được cấp quyền xem mục này. Liên hệ quản trị viên nếu bạn cần truy cập."
+    },
+    "dashboard": {
+      "cards": {
+        "users": "Người dùng",
+        "stations": "Trạm",
+        "readyUavs": "UAV sẵn sàng",
+        "totalUavs": "Tổng số: {total} UAV",
+        "auditEvents": "Sự kiện nhật ký"
+      },
+      "shortcuts": {
+        "users": "Người dùng",
+        "usersDetail": "Tra cứu tài khoản và trạng thái truy cập",
+        "access": "Phân quyền",
+        "accessDetail": "Quản lý quyền truy cập theo tài khoản",
+        "billing": "Gói cước và hạn mức",
+        "billingDetail": "Theo dõi gói dịch vụ và giờ bay",
+        "settings": "Cấu hình hệ thống",
+        "settingsDetail": "Tham số vận hành và tự động hóa"
+      },
+      "pending": {
+        "title": "Yêu cầu chờ xác nhận",
+        "openDispatch": "Mở điều phối →",
+        "emptyTitle": "Không có yêu cầu chờ xác nhận",
+        "emptyDetail": "Yêu cầu mới từ khách hàng sẽ xuất hiện tại đây."
+      },
+      "audit": {
+        "title": "Hoạt động quản trị gần đây",
+        "viewAll": "Xem toàn bộ nhật ký →",
+        "emptyTitle": "Chưa có hoạt động quản trị",
+        "emptyDetail": "Các thao tác quản trị sẽ xuất hiện tại đây."
+      },
+      "fleet": {
+        "noneReady": "Không còn UAV sẵn sàng",
+        "inMaintenance": "{count} UAV đang bảo trì",
+        "readyDetail": "{available}/{total} UAV sẵn sàng nhận nhiệm vụ. Kiểm tra lịch bảo trì trước khi phân công.",
+        "viewMaintenance": "Xem bảo trì"
+      },
+      "quickAccess": "Truy cập nhanh",
+      "status": {
+        "title": "Trạng thái hệ thống",
+        "api": "Máy chủ API",
+        "operational": "Hoạt động",
+        "checking": "Đang kiểm tra",
+        "realtime": "Giám sát thời gian thực",
+        "noData": "Chưa có dữ liệu",
+        "fleet": "Đội UAV",
+        "fleetReady": "{available}/{total} sẵn sàng",
+        "manageIntegrations": "Quản lý kết nối"
+      }
+    },
+    "auditTable": {
+      "time": "Thời gian",
+      "actor": "Người thực hiện",
+      "action": "Thao tác",
+      "entity": "Đối tượng",
+      "id": "Mã",
+      "details": "Nội dung",
+      "system": "Hệ thống"
+    },
+    "access": {
+      "source": {
+        "inactive": "Tài khoản không hoạt động",
+        "allowOverride": "Cho phép riêng",
+        "denyOverride": "Từ chối riêng",
+        "noTemplate": "Chưa có dữ liệu vai trò",
+        "template": "Theo vai trò"
+      },
+      "saveFailed": "Không thể lưu",
+      "leaveConfirm": "Rời trình sửa quyền? Thay đổi chưa lưu sẽ bị bỏ.",
+      "chooseOtherUser": "Chọn người dùng khác",
+      "needUserRead": "Bạn cần quyền xem người dùng để tìm và chọn tài khoản.",
+      "roleTemplate": "Mẫu vai trò",
+      "switchTemplateConfirm": "Chuyển mẫu vai trò? Thay đổi chưa lưu sẽ bị bỏ.",
+      "noTemplates": "Chưa có mẫu vai trò. Hiện chưa hỗ trợ tạo mẫu mới tại đây.",
+      "saveConfirmUser": "Lưu {count} thay đổi quyền cho {name}? Mỗi quyền được lưu riêng; thay đổi quyền quản trị có thể ảnh hưởng phiên hiện tại.",
+      "saveConfirmTemplate": "Lưu {count} thay đổi quyền của {name}? Mỗi quyền được lưu riêng; thay đổi quyền quản trị có thể ảnh hưởng phiên hiện tại.",
+      "effectiveMatrix": "Ma trận quyền hiệu lực",
+      "rolePermissions": "Quyền theo vai trò",
+      "overrideHint": "Quyền cho phép hoặc từ chối riêng của tài khoản được ưu tiên hơn quyền theo vai trò. Chọn “Theo vai trò” để bỏ điều chỉnh riêng. Thay đổi mẫu vai trò vẫn giữ các điều chỉnh này.",
+      "inactiveWarning": "Tài khoản {status} nên chưa thể sử dụng các quyền này.",
+      "saved": "Đã lưu: {codes}.",
+      "none": "không có",
+      "failedItem": "Thất bại {code}: {message}",
+      "noUndo": "Không hoàn tác các quyền đã lưu. Tải lại quyền thực tế để tiếp tục chỉnh sửa.",
+      "reloadActual": "Tải lại quyền thực tế",
+      "reloadFailed": "Không tải lại được quyền. Vui lòng thử lại.",
+      "filterLabel": "Lọc quyền",
+      "filterPlaceholder": "Tìm mã quyền",
+      "unsavedCount": "{count} thay đổi chưa lưu",
+      "reviewAndSave": "Xem lại và lưu",
+      "discardChanges": "Hủy thay đổi",
+      "reviewChanges": "Xem lại thay đổi",
+      "fromRole": "Theo vai trò",
+      "allow": "Cho phép",
+      "deny": "Từ chối",
+      "undetermined": "Chưa xác định",
+      "moduleTable": "Quyền {module}",
+      "col": {
+        "permission": "Quyền",
+        "fromRole": "Theo vai trò",
+        "expected": "Hiệu lực dự kiến",
+        "effective": "Hiệu lực",
+        "source": "Nguồn",
+        "override": "Quyền riêng",
+        "grant": "Cấp quyền"
+      },
+      "selectOverride": "{code} quyền riêng",
+      "selectTemplate": "{code} theo vai trò",
+      "auditLink": "Xem lịch sử trong nhật ký (cần AUDIT_READ)",
+      "registry": {
+        "search": "Tìm quyền",
+        "placeholder": "Mã quyền hoặc mô tả",
+        "count": "{count} quyền",
+        "table": "Danh mục quyền",
+        "colAccess": "Quyền truy cập",
+        "colGroup": "Nhóm chức năng",
+        "colSupport": "Hỗ trợ",
+        "labelPermission": "Quyền",
+        "labelGroup": "Nhóm",
+        "supported": "Đang hỗ trợ",
+        "emptyTitle": "Không tìm thấy quyền",
+        "emptyDetail": "Thử tìm bằng mã quyền hoặc một phần mô tả khác."
+      },
+      "tabs": {
+        "nav": "Phân quyền",
+        "accounts": "Theo tài khoản",
+        "accountsHint": "Cấp hoặc chặn quyền riêng cho một người dùng",
+        "templates": "Mẫu vai trò",
+        "templatesHint": "Quyền mặc định áp dụng cho mỗi vai trò",
+        "registry": "Danh mục quyền",
+        "registryHint": "Tra cứu mọi mã quyền hệ thống hỗ trợ",
+        "matrix": "Ma trận quyền",
+        "matrixHint": "So sánh quyền giữa các vai trò"
+      },
+      "matrix": {
+        "search": "Tìm quyền",
+        "onlyDiff": "Chỉ hiện quyền khác nhau",
+        "count": "{count} quyền",
+        "table": "Ma trận quyền theo vai trò",
+        "permission": "Quyền",
+        "grantedCount": "{count} quyền",
+        "yes": "Được cấp",
+        "no": "Không cấp",
+        "empty": "Không có quyền nào khớp bộ lọc."
+      }
+    },
+    "webhooks": {
+      "status": {
+        "QUEUED": "Đã xếp hàng",
+        "DELIVERED": "Đã nhận HTTP 2xx",
+        "FAILED": "Gửi thất bại",
+        "RETRYING": "Đang chờ gửi lại",
+        "CANCELLED": "Đã hủy — đích nhận đã xóa",
+        "UNCONFIGURED": "Chưa cấu hình",
+        "LEGACY_UNVERIFIED": "Lịch sử chưa xác minh",
+        "unknown": "Chưa xác định"
+      },
+      "loadError": "Không tải được dữ liệu webhook. Kiểm tra quyền truy cập và thử lại.",
+      "testError": "Không ghi nhận được yêu cầu thử webhook. Chưa có xác nhận gửi.",
+      "heading": "Webhook & tích hợp",
+      "intro": "Kết quả HTTP xác nhận bên nhận tiếp nhận yêu cầu; chưa xác nhận xử lý cứu hộ hay điều khiển UAV.",
+      "refresh": "Làm mới",
+      "recording": "Đang ghi nhận…",
+      "testEvent": "Thử sự kiện WEBHOOK_TEST",
+      "runtime": {
+        "unconfigured": "Chưa cấu hình gửi webhook ra ngoài. Cần cấu hình và duyệt riêng địa chỉ nhận; kích hoạt đăng ký chưa đủ để cho phép gửi.",
+        "queued": "Luồng gửi đã được cấu hình. Chỉ địa chỉ được duyệt riêng mới được gửi.",
+        "unknown": "Chưa xác định được cấu hình gửi."
+      },
+      "loading": "Đang tải dữ liệu…",
+      "subscriptions": "Đăng ký nhận sự kiện",
+      "noSubscriptions": "Chưa có đăng ký webhook.",
+      "subscriptionOn": "Đăng ký đang bật",
+      "subscriptionOff": "Đăng ký đang tắt",
+      "events": "Sự kiện: {events}",
+      "deliveryLog": "Nhật ký phân phối · {count} bản ghi gần nhất",
+      "noDeliveries": "Chưa có nhật ký phân phối.",
+      "logTable": "Nhật ký webhook",
+      "col": {
+        "destination": "Đích nhận",
+        "event": "Sự kiện",
+        "status": "Trạng thái",
+        "attempts": "Số lần thử",
+        "time": "Thời gian"
+      },
+      "legacyEvent": "Lịch sử cũ",
+      "noResponse": "Chưa có"
+    },
+    "users": {
+      "allAccounts": "Tất cả tài khoản",
+      "filterByStatus": "Lọc theo trạng thái",
+      "all": "Tất cả",
+      "search": "Tìm người dùng",
+      "searchPlaceholder": "Tên, email hoặc họ tên",
+      "searchButton": "Tìm kiếm",
+      "role": "Vai trò",
+      "allRoles": "Tất cả vai trò",
+      "table": "Bảng người dùng",
+      "col": {
+        "user": "Người dùng",
+        "email": "Email",
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "created": "Ngày tạo",
+        "actions": "Thao tác"
+      },
+      "select": "Chọn",
+      "details": "Chi tiết",
+      "emptyTitle": "Không tìm thấy người dùng",
+      "emptyDetail": "Thử bỏ bớt bộ lọc hoặc đổi từ khóa tìm kiếm.",
+      "invalidId": "Mã người dùng không hợp lệ.",
+      "back": "← Người dùng",
+      "field": {
+        "username": "Tên đăng nhập",
+        "fullName": "Họ tên",
+        "email": "Email",
+        "phone": "Điện thoại",
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "created": "Ngày tạo"
+      },
+      "saved": "Đã lưu. Dữ liệu tài khoản được tải lại.",
+      "manageAccount": "Quản lý tài khoản",
+      "changeRoleConfirm": "Đổi vai trò {name} thành {role}? Quyền riêng vẫn giữ nguyên.",
+      "saveRole": "Lưu vai trò",
+      "lockConfirm": "Khóa tài khoản {name}?",
+      "lock": "Khóa tài khoản",
+      "unlockConfirm": "Mở khóa truy cập cho {name}? Trạng thái hồ sơ và vai trò được giữ nguyên.",
+      "unlock": "Mở khóa",
+      "lockHint": "Khóa truy cập và trạng thái hồ sơ là hai thiết lập riêng. Dùng “Mở khóa” để gỡ khóa truy cập; thao tác này không thay đổi trạng thái hồ sơ hoặc vai trò.",
+      "export": "Xuất CSV",
+      "lockedBadge": "Đã khóa",
+      "create": {
+        "open": "Thêm người dùng",
+        "title": "Thêm người dùng mới",
+        "password": "Mật khẩu",
+        "confirm": "Nhập lại mật khẩu",
+        "hint": "Mật khẩu tối thiểu 8 ký tự. Gửi mật khẩu cho người dùng qua kênh an toàn và đề nghị họ đổi sau lần đăng nhập đầu.",
+        "mismatch": "Hai mật khẩu chưa khớp.",
+        "cancel": "Hủy",
+        "submit": "Tạo tài khoản",
+        "done": "Đã tạo tài khoản {name}."
+      },
+      "bulk": {
+        "region": "Thao tác hàng loạt",
+        "selected": "Đã chọn {count} tài khoản",
+        "lock": "Khóa",
+        "unlock": "Mở khóa",
+        "clear": "Bỏ chọn",
+        "selectPage": "Chọn tất cả trên trang",
+        "selectRow": "Chọn {name}",
+        "lockConfirm": "Khóa truy cập {count} tài khoản đã chọn?",
+        "unlockConfirm": "Mở khóa truy cập {count} tài khoản đã chọn?",
+        "done": "Đã cập nhật {count} tài khoản.",
+        "skippedSelf": "Tài khoản của bạn được bỏ qua."
+      },
+      "reset": {
+        "title": "Đặt lại mật khẩu",
+        "newPassword": "Mật khẩu mới",
+        "submit": "Đặt lại mật khẩu",
+        "hint": "Mọi phiên đăng nhập hiện tại của người dùng sẽ bị đăng xuất.",
+        "confirm": "Đặt mật khẩu mới cho {name} và đăng xuất mọi phiên của họ?",
+        "done": "Đã đặt lại mật khẩu."
+      },
+      "activity": {
+        "title": "Lịch sử hoạt động",
+        "account": "Thay đổi trên tài khoản",
+        "actor": "Do người này thực hiện",
+        "empty": "Chưa có hoạt động nào."
+      }
+    },
+    "audit": {
+      "searchLabel": "Tìm trong trang hiện tại",
+      "searchPlaceholder": "Người thực hiện, thao tác hoặc mã đối tượng",
+      "pageCount": "{shown} / {total} bản ghi trên trang",
+      "table": "Nhật ký quản trị",
+      "noMatchTitle": "Không có kết quả trên trang này",
+      "noMatchDetail": "Thử từ khóa khác hoặc chuyển sang trang tiếp theo.",
+      "emptyTitle": "Chưa có nhật ký hoạt động",
+      "filtersLabel": "Bộ lọc nhật ký",
+      "filter": {
+        "actor": "Người thực hiện",
+        "actorPlaceholder": "Tên đăng nhập",
+        "action": "Thao tác",
+        "entity": "Đối tượng",
+        "all": "Tất cả",
+        "from": "Từ ngày",
+        "to": "Đến ngày",
+        "apply": "Lọc",
+        "reset": "Xóa lọc"
+      },
+      "heatmapTitle": "Mật độ thao tác quản trị",
+      "heatmapRange": "30 ngày gần nhất",
+      "heatmapAria": "Số thao tác quản trị theo ngày trong tuần và giờ trong ngày, 30 ngày gần nhất",
+      "heatmapCell": "{day}, {hour} giờ: {count} thao tác",
+      "weekdays": "T2,T3,T4,T5,T6,T7,CN"
+    },
+    "billing": {
+      "loading": "Đang tải dữ liệu gói cước…",
+      "loadError": "Không tải được dữ liệu: {message}",
+      "unknownError": "Lỗi không xác định",
+      "quotaUpdated": "Đã cập nhật hạn mức thành công.",
+      "plansHeading": "Các gói dịch vụ",
+      "quotasHeading": "Hạn mức khách hàng",
+      "quotasIntro": "Kiểm soát phân bổ giờ bay, giới hạn nhiệm vụ đồng thời và điều chỉnh gói dịch vụ",
+      "searchCustomer": "Tìm khách hàng",
+      "searchPlaceholder": "Tìm khách hàng...",
+      "dataTable": "Bảng dữ liệu",
+      "col": {
+        "customer": "Khách Hàng",
+        "plan": "Gói Dịch Vụ",
+        "monthlyLimit": "Hạn Mức Tháng",
+        "flown": "Đã Bay",
+        "usage": "Tỷ Lệ Dùng",
+        "concurrent": "Nhiệm Vụ Đồng Thời",
+        "actions": "Hành Động"
+      },
+      "noQuotas": "Chưa có hạn mức nào được cấp.",
+      "hours": "{hours}h",
+      "edit": "Chỉnh sửa",
+      "drawerTitle": "Điều chỉnh hạn mức khách hàng",
+      "customer": "Khách hàng:",
+      "servicePlan": "Gói dịch vụ",
+      "planOption": "{name} ({code} - {hours} giờ)",
+      "saveFailed": "Lưu thất bại: {message}",
+      "limitLabel": "Hạn mức giờ bay cấp riêng (giờ)",
+      "cancel": "Hủy bỏ",
+      "saving": "Đang lưu…",
+      "saveChanges": "Lưu thay đổi"
+    },
+    "reports": {
+      "exportError": "Không xuất được báo cáo CSV. Vui lòng thử lại.",
+      "loadError": "Không tải được báo cáo. Chưa có dữ liệu để hiển thị hoặc xuất CSV.",
+      "loading": "Đang tải báo cáo…",
+      "heading": "Báo cáo Tổng thể Hoạt động & Vận hành Đội Bay",
+      "intro": "Dữ liệu nhiệm vụ theo quyền truy cập. Giờ là thời lượng dự kiến của mọi trạng thái; phát hiện đã xác minh không chứng minh kết quả cứu hộ.",
+      "exporting": "Đang xuất CSV…",
+      "exportCsv": "Xuất Báo Cáo CSV",
+      "plannedHours": "Giờ dự kiến theo lịch",
+      "hoursValue": "{hours}h",
+      "plannedHoursNote": "Bao gồm nhiệm vụ nháp, hủy và hoàn thành",
+      "completedMissions": "Nhiệm vụ hoàn thành",
+      "successRate": "Tỷ lệ thành công:",
+      "sarOperations": "Chiến dịch SAR",
+      "verifiedDetections": "Phát hiện người đã xác minh:",
+      "detectionsCount": "{count} phát hiện",
+      "uavStatus": "Tình trạng UAV",
+      "uavActive": "Sẵn sàng / đã giao / đang dùng",
+      "uavMaintenance": "{count} UAV đang bảo trì",
+      "footer": "Tổng số trạm: {count}. Báo cáo chưa có số liệu thời gian bay thực tế, kết quả cứu hộ hoặc hiệu năng phần cứng."
+    },
+    "charts": {
+      "outcome": {
+        "active": "Đang xử lý",
+        "completed": "Hoàn thành",
+        "stopped": "Thất bại / hủy"
+      },
+      "monthLabel": "T{month}/{year}",
+      "loading": "Đang tải biểu đồ nhiệm vụ…",
+      "loadError": "Không tải được dữ liệu biểu đồ.",
+      "monthlyTitle": "Nhiệm vụ theo tháng",
+      "monthlyAria": "Số nhiệm vụ {months} tháng gần nhất, chia theo kết quả",
+      "monthTotal": "{month}: {total} nhiệm vụ",
+      "viewTable": "Xem dạng bảng",
+      "month": "Tháng",
+      "total": "Tổng",
+      "typeTitle": "Phân bố loại nhiệm vụ",
+      "empty": "Chưa có nhiệm vụ để thống kê.",
+      "truncated": "Biểu đồ dựa trên {shown} nhiệm vụ gần nhất trong tổng số {total}."
+    },
+    "settings": {
+      "loadError": "Không tải được cấu hình. Chưa có dữ liệu để chỉnh sửa.",
+      "saved": "Đã lưu các thay đổi được máy chủ xác nhận.",
+      "noChanges": "Không có thay đổi cần lưu.",
+      "partialSave": "Chưa lưu được tất cả thay đổi. Các mục đã được máy chủ xác nhận vẫn có hiệu lực. {detail}",
+      "checkAndRetry": "Vui lòng kiểm tra dữ liệu và thử lại.",
+      "heading": "Tham số vận hành và AI",
+      "intro": "Thay đổi ngưỡng an toàn bay, tham số suy luận YOLOv8s trên phần cứng KV260 và cơ chế tự động hóa",
+      "saving": "Đang lưu…",
+      "saveAll": "Lưu tất cả thay đổi",
+      "loading": "Đang tải cấu hình…",
+      "invoiceNote": "Tự động lập hóa đơn mặc định tắt. Chỉ nhập giá đã được phê duyệt trước khi bật; chưa có giá mặc định hoặc cổng thanh toán được cấu hình.",
+      "safetyGroup": "An toàn bay và giới hạn khu vực",
+      "enforced": "Bắt buộc",
+      "off": "Tắt",
+      "aiGroup": "Nhận diện AI và xử lý biên KV260",
+      "preferEdge": "Ưu tiên xử lý trên KV260",
+      "preferServer": "Ưu tiên xử lý trên máy chủ",
+      "opsGroup": "Vận hành và thanh toán"
+    },
+    "login": {
+      "notAdmin": "Tài khoản này không có quyền quản trị. Đang chuyển tới cổng {portal}...",
+      "notAdminTitle": "Không có quyền quản trị",
+      "success": "Đăng nhập quản trị thành công! Đang chuyển hướng...",
+      "successTitle": "Quản trị hệ thống",
+      "failed": "Đăng nhập thất bại.",
+      "failedTitle": "Đăng nhập thất bại",
+      "heading": "Đăng nhập quản trị",
+      "subheading": "UAV PAS · Quản trị",
+      "submit": "Đăng nhập",
+      "layoutTitle": "Một hệ thống. Quản trị nhất quán.",
+      "layoutDescription": "Quản lý tài khoản, phân quyền và theo dõi hoạt động để các đội ngũ phối hợp rõ ràng."
+    },
+    "error": {
+      "title": "Không thể hiển thị trang",
+      "detail": "Vui lòng thử lại. Dữ liệu chưa lưu có thể cần nhập lại.",
+      "retry": "Thử lại",
+      "toDashboard": "Về Dashboard"
+    },
+    "notFound": {
+      "title": "Không tìm thấy trang quản trị",
+      "detail": "Phân hệ quản trị hoặc tài nguyên cấu hình bạn yêu cầu không tồn tại.",
+      "back": "Quay về Bảng điều khiển Admin"
+    },
+    "loading": "Đang tải quản trị…",
+    "analytics": {
+      "title": "Thống kê & phân tích",
+      "range": "Khoảng thời gian",
+      "days": "{count} ngày",
+      "vsPrevious": "so với kỳ trước",
+      "points": " điểm",
+      "kpi": {
+        "completed": "Nhiệm vụ hoàn thành",
+        "successRate": "Tỷ lệ thành công",
+        "flightHours": "Giờ bay",
+        "revenue": "Doanh thu đã thu",
+        "newUsers": "Người dùng mới"
+      },
+      "hours": "{value} giờ",
+      "dailyTitle": "Nhiệm vụ theo ngày",
+      "dailyAria": "Số nhiệm vụ hoàn thành và thất bại mỗi ngày từ {from} đến {to}",
+      "completed": "Hoàn thành",
+      "failed": "Thất bại / hủy",
+      "statusTitle": "Trạng thái nhiệm vụ",
+      "status": {
+        "waiting": "Chờ xác nhận",
+        "scheduled": "Đã lên lịch",
+        "active": "Đang thực hiện",
+        "completed": "Hoàn thành",
+        "stopped": "Thất bại / hủy",
+        "draft": "Bản nháp"
+      },
+      "stationTitle": "Giờ bay theo trạm",
+      "noFlights": "Chưa có chuyến bay hoàn thành trong khoảng này.",
+      "fleetTitle": "Đội UAV",
+      "fleetTotal": "Tổng {count} UAV",
+      "revenueTitle": "Doanh thu 6 tháng",
+      "paid": "Đã thu",
+      "outstanding": "Chưa thu",
+      "quotaTitle": "Sắp hết hạn mức giờ bay",
+      "quotaUsage": "{used}/{limit} giờ",
+      "quotaEmpty": "Không có khách hàng nào dùng quá 80% hạn mức.",
+      "manage": "Quản lý →",
+      "mapTitle": "Vị trí nhiệm vụ",
+      "mapAria": "Bản đồ {count} vị trí nhiệm vụ",
+      "mapEmpty": "Chưa có nhiệm vụ có tọa độ trong khoảng này.",
+      "webhookTitle": "Webhook theo endpoint",
+      "webhookRate": "{rate}% thành công · {total} lần",
+      "webhookEmpty": "Chưa có lần gửi webhook nào trong khoảng này.",
+      "alertsTitle": "Cảnh báo cần xử lý",
+      "alertsCount": "{count} cảnh báo",
+      "alertsNone": "Không có cảnh báo",
+      "alertsEmpty": "Mọi thứ đang ổn. Không có cảnh báo nào cần xử lý.",
+      "resolve": "Xử lý",
+      "alertCodes": {
+        "NO_AVAILABLE_UAV": "Không còn UAV sẵn sàng nhận nhiệm vụ",
+        "MAINTENANCE_OVERDUE": "{count} lịch bảo trì đã quá hạn",
+        "MAINTENANCE_DUE_SOON": "{count} UAV đến hạn bảo trì trong 7 ngày",
+        "PENDING_STALE": "{count} yêu cầu chờ xác nhận quá 24 giờ",
+        "INVOICE_OVERDUE": "{count} hóa đơn quá hạn thanh toán",
+        "WEBHOOK_FAILURES": "{count} lần gửi webhook thất bại trong 24 giờ"
+      }
+    }
+  }
+}

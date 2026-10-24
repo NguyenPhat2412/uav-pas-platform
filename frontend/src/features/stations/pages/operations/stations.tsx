@@ -1,4 +1,10 @@
 'use client';
-import { StationPanel } from "@/features/stations/components/StationPanel";
-import { OperationsPage } from '@/components/layout/OperationsPage';
-export default function StationsPage() { return <OperationsPage title="Trạm UAV" meta="Trạng thái, vị trí và lịch sử vận hành của các trạm" permission="STATION_READ" activeResource="stations"><StationPanel /></OperationsPage>; }
+import {StationPanel} from "@/features/stations/components/StationPanel";
+import {OperationsPage} from '@/components/layout/OperationsPage';
+import {useI18n} from '@/contexts/I18nContext';
+
+export default function StationsPage() {
+    const {t} = useI18n();
+    return <OperationsPage title={t('opsAssets.pages.stations.title')} meta={t('opsAssets.pages.stations.meta')}
+                           permission="STATION_READ" activeResource="stations"><StationPanel/></OperationsPage>;
+}

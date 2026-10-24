@@ -1,1 +1,1 @@
-export { default } from '@/features/profile/pages/customer/profile';
+export {default} from '@/features/profile/pages/customer/profile';

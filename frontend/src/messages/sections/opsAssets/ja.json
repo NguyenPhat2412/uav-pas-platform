@@ -1,0 +1,473 @@
+{
+  "opsAssets": {
+    "uavWorkflow": {
+      "reasonRequired": "理由またはUAV点検結果を入力してください。",
+      "reasonTooLong": "内容は255文字以内で入力してください。",
+      "created": "UAV登録",
+      "repairStarted": "修理票 #{id} を開始",
+      "repairCompleted": "修理票 #{id} を完了",
+      "stationTransfer": "ステーション移動: {from} → #{to}",
+      "unassigned": "未割当"
+    },
+    "pages": {
+      "uavs": {
+        "title": "UAV機体",
+        "meta": "機体の状況を確認し、各UAVの参照モデルを表示します"
+      },
+      "stations": {
+        "title": "UAVステーション",
+        "meta": "ステーションの状態・位置・運用履歴"
+      },
+      "inventory": {
+        "title": "機材在庫",
+        "meta": "在庫・入出庫・予約・機材移動を管理します"
+      },
+      "media": {
+        "title": "ファイルと資料",
+        "meta": "運用に使うファイル・画像・資料を管理します。"
+      },
+      "maintenance": {
+        "title": "メンテナンスと修理",
+        "meta": "UAV機体の定期計画・修理票・部材費用"
+      },
+      "audit": {
+        "title": "操作ログ",
+        "meta": "システム内の実行者・日時・変更内容を確認します。"
+      }
+    },
+    "uav": {
+      "model": "UAVモデル",
+      "serial": "シリアル番号",
+      "manufacturer": "メーカー",
+      "status": "ステータス",
+      "station": "ステーション",
+      "actions": "操作",
+      "unassigned": "未割当",
+      "openDetail": "詳細を開く",
+      "completeMaintenance": "メンテナンス完了",
+      "maintenance": "メンテナンス",
+      "closeForm": "フォームを閉じる",
+      "add": "UAVを追加",
+      "create": "UAVを作成",
+      "tableLabel": "UAV機体一覧",
+      "detailTitle": "UAV詳細",
+      "visualCheck": "外観確認",
+      "close3d": "3Dモデルを閉じる",
+      "view3d": "3Dモデルを表示",
+      "modelOnDemand": "参考モデルは開いたときにのみ読み込まれます。",
+      "tabs": {
+        "overview": "概要",
+        "maintenance": "メンテナンス",
+        "assignment": "配備",
+        "activity": "履歴",
+        "media": "ファイル"
+      },
+      "overviewNote": "参考モデルは表示用です。管理属性はUAV APIから取得されます。",
+      "openMaintenance": "メンテナンス計画と修理票を開く",
+      "noManagePermission": "UAVを更新する権限がありません。",
+      "mediaNote": "UAVのファイルは「ファイル」で管理されます。",
+      "newStatus": "新規",
+      "noHistory": "ステータス履歴はまだありません。"
+    },
+    "audit": {
+      "time": "日時",
+      "actor": "実行者",
+      "action": "操作",
+      "entity": "対象",
+      "details": "詳細",
+      "tableLabel": "操作ログ"
+    },
+    "shared": {
+      "status": "ステータス",
+      "actions": "操作",
+      "openDetail": "詳細を開く",
+      "closeForm": "フォームを閉じる",
+      "overview": "概要",
+      "activity": "履歴",
+      "notUpdated": "未更新"
+    },
+    "station": {
+      "code": "ステーションコード",
+      "name": "ステーション名",
+      "address": "住所",
+      "create": "ステーションを作成",
+      "tableLabel": "UAVステーション一覧",
+      "detailTitle": "ステーション詳細",
+      "tabs": {
+        "uavs": "UAV",
+        "inventory": "在庫"
+      },
+      "coordinates": "座標",
+      "uavsNote": "このステーションに割り当てられたUAVは「UAV機体」に表示されます。",
+      "inventoryNote": "このステーションの機材は「機材在庫」に表示されます。",
+      "activityNote": "ステーションの履歴は「操作ログ」に表示されます。"
+    },
+    "equipment": {
+      "equipment": "機材",
+      "notSerialized": "シリアル管理なし",
+      "type": "種類",
+      "station": "ステーション",
+      "unassigned": "未割当",
+      "onHand": "在庫",
+      "available": "利用可能",
+      "reserved": "予約済み",
+      "create": "機材を作成",
+      "name": "機材名",
+      "serial": "シリアル",
+      "storageStation": "保管ステーション(任意)",
+      "noStation": "ステーション未割当",
+      "movementRecorded": "在庫変動を記録しました。",
+      "movementTitle": "数量の変動",
+      "selectEquipment": "機材を選択",
+      "action": "操作",
+      "actions": {
+        "stockIn": "入庫",
+        "stockOut": "出庫",
+        "reserve": "予約",
+        "release": "解放",
+        "transfer": "移動"
+      },
+      "quantity": "数量",
+      "note": "メモ",
+      "targetStation": "移動先ステーション",
+      "selectTargetStation": "移動先ステーションを選択",
+      "record": "記録",
+      "tableLabel": "機材在庫一覧",
+      "history": "在庫履歴",
+      "historyCaption": "在庫変動履歴",
+      "time": "日時",
+      "handledBy": "担当者",
+      "noHistory": "在庫変動はまだありません。"
+    },
+    "mediaPolicy": {
+      "policy": "JPEG/PNG/WebP/PDF: 最大100 MB、MP4/WebM: 最大1 GB。",
+      "retention": "未確認のファイルは24時間後に失効します。確認済みのファイルと引き渡し結果は保持されます。",
+      "invalidFile": "{policy} ファイルは空でなく、許可された形式である必要があります。"
+    },
+    "media": {
+      "reuploadMismatch": "再アップロードするファイルは登録時と同じサイズと形式である必要があります。",
+      "stage": {
+        "registering": "ファイルを登録中…",
+        "uploading": "コンテンツ #{id} をアップロード中…",
+        "confirming": "コンテンツを確認中…",
+        "uploaded": "ファイルをアップロードし確認しました。",
+        "failed": "アップロードが完了していません。下のエラーを確認してください。24時間以内の登録は再確認または削除できます。内容が誤っている場合は削除して新しいファイルを登録してください。",
+        "confirmed": "ファイルを確認しました。表示またはダウンロードできます。",
+        "deletedIncomplete": "未完了のファイルを削除しました。"
+      },
+      "uploadFile": "アップロードするファイル",
+      "linkResource": "リソースへの紐付け",
+      "ownFile": "自分のファイル",
+      "resourceId": "リソースID",
+      "uploadAndConfirm": "アップロードして確認",
+      "search": "ファイルを検索",
+      "searchPlaceholder": "ファイル名…",
+      "typeFilter": "ファイル種類で絞り込み",
+      "allTypes": "すべての種類",
+      "col": {
+        "name": "ファイル名",
+        "typeSize": "種類 / サイズ",
+        "status": "ステータス",
+        "uploadedBy": "アップロード者",
+        "actions": "操作"
+      },
+      "confirmed": "確認済み",
+      "pending": "確認待ち",
+      "viewDownload": "表示 / ダウンロード",
+      "confirm": "確認",
+      "reupload": "再アップロード",
+      "reuploadLabel": "{name} を再アップロード",
+      "delete": "削除",
+      "deleteTitle": "ファイルを削除",
+      "attachedToMission": "ミッションに紐付いたファイルは削除できません。",
+      "deleteNote": "ミッションに紐付いたファイルは保持されます。その他のファイルはライブラリから外され、アップロードリンクの失効後にストレージ上の内容が削除されます。",
+      "confirmDelete": "削除を確定",
+      "previewTitle": "ファイル表示: {name}",
+      "useDownload": "この形式はダウンロードリンクから表示してください。",
+      "openDownload": "ファイルを開く / ダウンロード",
+      "linkValidity": "リンクの有効期限は15分です。"
+    },
+    "uavLifecycle": {
+      "errors": {
+        "UAV_HAS_IN_PROGRESS_REPAIR_ORDER": "このUAVには進行中の修理票があります。ステータスやステーションを変更する前に、メンテナンス計画と修理票を開いて完了または取消してください。",
+        "UAV_HAS_ACTIVE_MISSION": "このUAVはミッションに確保されています。メンテナンスや移動の前に、ミッションでUAVを交換または解除してください。",
+        "UAV_NOT_AVAILABLE": "このUAVは利用できなくなりました。最新のステータスを再読み込みしました。",
+        "UAV_INVALID_STATUS": "この操作ではUAVのステータスを変更できません。最新情報を確認してください。",
+        "UAV_STATUS_CHANGED": "UAVのステータスが別の場所で変更されました。操作前に確認してください。",
+        "UAV_ALREADY_IN_MAINTENANCE": "このUAVは別の場所でメンテナンスに入れられています。最新の履歴を確認してください。",
+        "UAV_STATUS_REASON_REQUIRED": "理由またはUAV点検結果を入力してください。",
+        "UAV_STATUS_REASON_TOO_LONG": "内容は255文字以内で入力してください。",
+        "UAV_STATUS_REQUIRES_MISSION_WORKFLOW": "このUAVはミッションで使用中です。先にミッション側で対応してください。",
+        "UAV_NOT_AVAILABLE_FOR_STATION_TRANSFER": "ステーション移動はUAVが利用可能な場合のみ行えます。",
+        "STATION_NOT_ACTIVE": "このステーションは停止中です。別のステーションを選択してください。",
+        "forbidden": "UAVを更新する権限がなくなりました。",
+        "conflict": "UAVまたはステーションが変更されました。再試行する前に最新情報を確認してください。",
+        "unknown": "操作結果を確認できませんでした。再試行する前にステータスを確認してください。",
+        "staleReload": "最新のステータスを読み込めませんでした。続行する前に再読み込みしてください。",
+        "staleRetry": "最新のステータスを読み込めませんでした。もう一度お試しください。"
+      },
+      "updating": "UAVを更新中…",
+      "reloadStatus": "UAVステータスを再読み込み",
+      "busyNote": "このUAVは割当済みまたは使用中です。メンテナンスやステーション移動の前に、ミッションでUAVを交換または解除してください。飛行中のミッションでは再配備できません。",
+      "maintenanceNote": "メンテナンス中のUAVはミッションに割り当てられません。運用可能であることを確認してからメンテナンスを完了してください。",
+      "enterMaintenance": "メンテナンスに入れる",
+      "recoverLegacy": "ミッションのないUAVを復旧",
+      "completeMaintenance": "メンテナンス完了",
+      "form": {
+        "maintenance": "UAVメンテナンスの確認",
+        "recover": "UAV復旧の確認",
+        "complete": "UAVメンテナンス完了の確認"
+      },
+      "success": {
+        "maintenance": "UAVをメンテナンスに入れました。",
+        "recover": "ミッションに確保されていないことを確認し、UAVを利用可能に戻しました。",
+        "complete": "メンテナンスが完了しました。UAVは割り当て可能です。",
+        "station": "ステーションを更新しました。UAVは引き続き割り当て可能です。"
+      },
+      "heading": {
+        "maintenance": "UAVをメンテナンスに入れる",
+        "recover": "UAVがミッションに属していないことを確認",
+        "complete": "UAVが運用可能であることを確認"
+      },
+      "desc": {
+        "maintenance": "UAVは新しいミッションを受け付けなくなります。",
+        "recover": "割当状態のまま残った旧データ専用です。UAVが稼働中のミッションに属している場合は拒否されます。ミッションのUAVを解放する目的には使用できません。",
+        "complete": "UAVは利用可能になります。点検結果は履歴に保存されます。"
+      },
+      "label": {
+        "maintenance": "メンテナンス理由",
+        "recover": "UAV復旧理由",
+        "complete": "メンテナンス後の点検結果"
+      },
+      "maxChars": "最大{max}文字。",
+      "back": "戻る",
+      "submit": {
+        "maintenance": "メンテナンスを確定",
+        "recover": "UAV復旧を確定",
+        "complete": "メンテナンス完了を確定"
+      },
+      "needStationRead": "配備先ステーションを選ぶにはステーション閲覧権限が必要です。",
+      "transferForm": "UAVをステーションへ移動",
+      "transferNote": "稼働中のミッションに属さない利用可能なUAVのみ移動できます。ステーションの割当はUAVをミッションに確保しません。",
+      "targetStation": "移動先ステーション",
+      "selectStation": "新しいステーションを選択",
+      "confirmStation": "ステーション割当を確定",
+      "mustBeAvailable": "ステーション移動の前にUAVを利用可能な状態にする必要があります。"
+    },
+    "maintenance": {
+      "validation": {
+        "textRequired": "{label}は必須で、{max}文字以内で入力してください。",
+        "textTooLong": "{label}は{max}文字以内で入力してください。",
+        "invalidDate": "有効な日付を選択してください。",
+        "interval": "周期は1〜3,650日の整数で入力してください。",
+        "tooManyMaterials": "1つの修理票に記録できる部材は最大100行です。",
+        "materialQuantity": "部材 {line} 行目: 数量は0より大きく10,000以下、小数点以下3桁までで入力してください。",
+        "materialPrice": "部材 {line} 行目: 単価は0〜1,000,000,000の整数(VND)で入力してください。",
+        "invalidUav": "有効なUAVを選択してください。",
+        "label": {
+          "scheduleTitle": "計画名",
+          "orderTitle": "修理票名",
+          "description": "説明",
+          "technician": "担当者",
+          "materialName": "{line} 行目の部材名",
+          "materialUnit": "{line} 行目の単位",
+          "inspection": "点検結果",
+          "cancelReason": "取消理由"
+        }
+      },
+      "due": {
+        "UPCOMING": "予定",
+        "DUE": "本日期限",
+        "OVERDUE": "期限超過",
+        "PAUSED": "一時停止"
+      },
+      "orderStatus": {
+        "OPEN": "起票済み",
+        "IN_PROGRESS": "修理中",
+        "COMPLETED": "完了",
+        "CANCELLED": "取消済み"
+      },
+      "undetermined": "未確定",
+      "none": "なし",
+      "errors": {
+        "MAINTENANCE_VERSION_CHANGED": "他のユーザーが情報を変更しました。最新データを再読み込みしたので、続行前に確認してください。",
+        "MAINTENANCE_ACTIVE_ORDER_EXISTS": "このUAVには起票済みまたは修理中の修理票があります。先に既存の修理票を処理してください。",
+        "MAINTENANCE_UAV_HAS_ACTIVE_ORDER": "このUAVには起票済みまたは修理中の修理票があります。先に既存の修理票を処理してください。",
+        "MAINTENANCE_SCHEDULE_HAS_ACTIVE_ORDER": "この計画には未完了の修理票があります。計画を編集する前に完了または取消してください。",
+        "MAINTENANCE_ORDER_INVALID_STATUS": "修理票のステータスがこの操作に対応していません。最新データを確認してください。",
+        "MAINTENANCE_ORDER_INVALID_STATE": "修理票のステータスがこの操作に対応していません。最新データを確認してください。",
+        "MAINTENANCE_UAV_STATE_CHANGED": "UAVのステータスが変更されました。修理を続ける前にUAVとミッションを確認してください。",
+        "MAINTENANCE_SCHEDULE_UAV_MISMATCH": "このUAVは選択したメンテナンス計画に属していません。フォームを閉じて計画を選び直してください。",
+        "MAINTENANCE_ORDER_TERMINAL": "この修理票はクローズ済みのため、情報や費用は変更できません。",
+        "UAV_HAS_ACTIVE_MISSION": "このUAVはミッションに確保されています。修理を開始する前にミッションでUAVを解除または交換してください。",
+        "UAV_NOT_AVAILABLE": "このUAVは修理を開始できる状態ではありません。",
+        "MAINTENANCE_UAV_BUSY": "このUAVは割当済みまたは飛行中です。修理票は待機できますが、まだ修理を開始できません。",
+        "MAINTENANCE_SCHEDULE_PAUSED": "この計画は一時停止中です。計画から修理票を作成する前に再開してください。",
+        "forbidden": "メンテナンスを管理する権限がないか、権限が変更されました。",
+        "notFound": "データが見つかりません。一覧を再読み込みしてください。",
+        "conflict": "現在の状態では操作できません。未完了の修理票、メンテナンス計画、UAVのミッションを確認してください。",
+        "badRequest": "入力内容が無効です。日付、内容、数量と単価の上限を確認してください。",
+        "unconfirmed": "結果を確認できませんでした。重複操作を避けるため、再試行の前にデータを再読み込みしてください。",
+        "generic": "リクエストを処理できませんでした。もう一度お試しください。",
+        "staleReload": "最新データを読み込めませんでした。続行する前に再読み込みしてください。",
+        "staleRetry": "最新データを読み込めませんでした。もう一度お試しください。"
+      },
+      "saving": "保存して最新の状態を確認中…",
+      "reloadData": "メンテナンスデータを再読み込み",
+      "fields": {
+        "uav": "修理票・計画の対象UAV",
+        "selectUav": "UAVを選択",
+        "uavNumber": "UAV #{id}",
+        "uavId": "UAV ID",
+        "uavIdHint": "割り当てられたUAV IDを入力してください。このアカウントにはUAV一覧の閲覧権限がありません。",
+        "scheduleTitle": "メンテナンス計画名",
+        "interval": "周期(日)",
+        "nextDue": "次回期限日",
+        "orderTitle": "修理票名",
+        "plannedDate": "修理予定日",
+        "technician": "修理担当者",
+        "description": "状態と作業内容"
+      },
+      "materials": {
+        "form": "部材費用の記録",
+        "invalid": "部材の内容が無効です。",
+        "notePrefix": "費用は修理票にのみ記録され、",
+        "noteStrong": "機材在庫からは差し引かれません",
+        "noteSuffix": "。数量は小数点以下3桁まで、単価はVNDの整数です。各行はドン単位に丸められ、システムで合計されます。",
+        "empty": "部材行はまだありません。部材費0で保存できます。",
+        "line": "部材 {line}",
+        "name": "部材名 {line}",
+        "unit": "部材の単位 {line}",
+        "unitPlaceholder": "個、セット、リットル…",
+        "quantity": "部材の数量 {line}",
+        "unitPrice": "部材単価(VND) {line}",
+        "remove": "部材 {line} を削除",
+        "add": "部材行を追加",
+        "savedTotal": "保存済み合計: ",
+        "savedTotalNote": "。現在の変更は保存に成功した後に再計算されます。",
+        "discard": "部材の変更を破棄",
+        "save": "部材と費用を保存"
+      },
+      "invalidInput": "入力内容が無効です。",
+      "back": "戻る",
+      "schedule": {
+        "editTitle": "メンテナンス計画を編集",
+        "createTitle": "定期メンテナンス計画を作成",
+        "saved": "メンテナンス計画を保存しました。",
+        "conflict": "このフォームの内容は古くなっています。フォームを閉じ、一覧から計画を開き直して最新データを編集してください。",
+        "note": "計画は期限日の管理に使います。システムが自動でUAVをメンテナンスに入れたり通知を送ったりすることはありません。次の周期は、計画に紐付いた修理票の完了日(ベトナム時間)から計算されます。",
+        "saveChanges": "計画の変更を保存",
+        "create": "メンテナンス計画を作成"
+      },
+      "orderCreate": {
+        "fromSchedule": "メンテナンス計画から修理票を作成",
+        "title": "修理票を作成",
+        "created": "修理票を作成しました。",
+        "note": "各UAVで未完了の修理票は1件のみです。計画のための起票ではUAVのステータスは変わりません。修理開始時に、UAVを確保しているミッションが確認されます。",
+        "linked": "計画 #{id} に紐付け: ",
+        "submit": "修理票を作成"
+      },
+      "order": {
+        "editForm": "修理票を編集",
+        "discard": "修理票の変更を破棄",
+        "saveInfo": "修理票の情報を保存",
+        "confirm": {
+          "start": "修理開始を確定",
+          "complete": "修理票の完了を確定",
+          "cancel": "修理票の取消を確定"
+        },
+        "mustInspect": "完了する前にUAVの点検済みを確認してください。",
+        "desc": {
+          "start": "UAVが稼働中のミッションに属していない場合のみ開始してください。UAVはメンテナンス状態になり、ミッションを受け付けなくなります。",
+          "complete": "担当者の確認は修理票に記録されますが、技術的な認証ではありません。UAVは利用可能になり、紐付いた計画は本日から再計算されます。",
+          "cancelStarted": "修理票は開始済みです。取消後もUAVはメンテナンス状態のままです。記録済みの部材費用は保持されます。運用に戻す前に新しい修理票を作成するかUAVを点検してください。",
+          "cancelOpen": "未開始の修理票を取り消してもUAVのステータスは変わりません。記録済みの費用は保持され、計画の期限日も変わりません。"
+        },
+        "inspectionResult": "修理後の点検結果",
+        "cancelReason": "修理票の取消理由",
+        "inspectedConfirm": "UAVを点検し、運用に戻すことを承認します。",
+        "backToOrder": "修理票に戻る",
+        "title": "修理票 #{id}",
+        "reload": "修理票を再読み込み",
+        "scheduled": "定期計画 #{id}",
+        "adHoc": "臨時修理票",
+        "plannedDate": "予定日",
+        "technician": "担当者",
+        "createdAt": "起票日",
+        "startedAt": "修理開始",
+        "notStarted": "未開始",
+        "completedAt": "完了日",
+        "notCompleted": "未完了",
+        "cancelledAt": "取消日",
+        "notCancelled": "未取消",
+        "inspection": "点検結果",
+        "cancelReasonShort": "取消理由",
+        "materialsSection": "記録済みの部材費用",
+        "materialsTitle": "部材と費用",
+        "materialsNote": "部材費用は修理票に記録され、機材在庫からは差し引かれません。合計は保存済みの行からシステムが計算します。",
+        "noMaterials": "部材はまだ記録されていません。",
+        "editInfo": "修理票の情報を編集",
+        "editMaterials": "部材と費用を記録",
+        "start": "修理を開始",
+        "complete": "修理票を完了",
+        "cancel": "修理票を取消",
+        "closedNote": "この修理票はクローズ済みです。情報と費用は参照用に保持され、編集できません。",
+        "success": {
+          "updated": "修理票の情報を更新しました。",
+          "materials": "部材を保存しました。合計費用を再計算しました。",
+          "start": "修理を開始しました。UAVはメンテナンス中です。",
+          "complete": "修理票を完了し、UAVを利用可能に戻しました。",
+          "cancel": "修理票を取り消しました。記録済みの費用は保持されます。"
+        }
+      },
+      "workspace": {
+        "intro": "各UAVの定期計画、修理作業、部材費用を管理します。期限日は画面上の目安のみで、UAVの自動停止や通知は行いません。",
+        "tabs": {
+          "schedules": "定期計画",
+          "orders": "修理票"
+        },
+        "filterUav": "UAVで絞り込み",
+        "allUavs": "すべてのUAV",
+        "filterDue": "期限で絞り込み",
+        "allSchedules": "すべての計画",
+        "filterStatus": "修理票ステータスで絞り込み",
+        "allStatuses": "すべてのステータス",
+        "createSchedule": "定期計画を作成",
+        "createOrder": "修理票を作成",
+        "uavsError": "選択用のUAV一覧を読み込めませんでした。既存の計画と修理票は下に表示されています。",
+        "reloadUavs": "UAV一覧を再読み込み",
+        "reloadList": "メンテナンス一覧を再読み込み",
+        "countSchedules": "条件に一致するメンテナンス計画: {count}件",
+        "countOrders": "条件に一致する修理票: {count}件",
+        "updating": " · 更新中…",
+        "scheduleList": "メンテナンス計画一覧",
+        "scheduleNumber": "計画 #{id}",
+        "interval": "周期",
+        "intervalDays": "{days}日",
+        "nextDue": "次回期限",
+        "lastCompleted": "前回完了",
+        "editSchedule": "計画を編集",
+        "pauseSchedule": "計画を一時停止",
+        "activateSchedule": "計画を再開",
+        "orderFromSchedule": "計画から修理票を作成",
+        "noSchedules": "該当する計画はありません",
+        "noSchedulesDetail": "UAVの定期計画を作成するか、絞り込み条件を変更してください。",
+        "orderList": "修理票一覧",
+        "orderNumber": "修理票 #{id}",
+        "planned": "予定 {date}",
+        "openOrder": "修理票を開く",
+        "noOrders": "該当する修理票はありません",
+        "noOrdersDetail": "臨時の修理票を作成するか、定期計画から作成してください。",
+        "pauseTitle": "メンテナンス計画を一時停止",
+        "activateTitle": "メンテナンス計画を再開",
+        "pauseNote": "一時停止すると、期限の追跡を止めつつ計画の履歴を保持します。紐付いた修理票が未完了の間は計画を変更できません。",
+        "activateNote": "計画は保存済みの期限日から追跡を再開します。再開後に日付を調整できます。",
+        "keep": "計画をそのままにする",
+        "paused": "計画を一時停止しました。",
+        "activated": "計画を再開しました。",
+        "confirmPause": "一時停止を確定",
+        "confirmActivate": "再開を確定"
+      }
+    }
+  }
+}

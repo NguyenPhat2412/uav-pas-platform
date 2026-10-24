@@ -14,7 +14,21 @@ public record UserResponse(
         String avatarUrl,
         UserRole role,
         UserStatus status,
-        LocalDateTime createdAt) {
+        LocalDateTime createdAt,
+        boolean locked) {
+    public UserResponse(
+            Long id,
+            String username,
+            String email,
+            String phoneNumber,
+            String fullName,
+            String avatarUrl,
+            UserRole role,
+            UserStatus status,
+            LocalDateTime createdAt) {
+        this(id, username, email, phoneNumber, fullName, avatarUrl, role, status, createdAt, false);
+    }
+
     public UserResponse(
             Long id,
             String username,
@@ -22,6 +36,6 @@ public record UserResponse(
             String phoneNumber,
             UserStatus status,
             LocalDateTime createdAt) {
-        this(id, username, email, phoneNumber, null, null, UserRole.ROLE_PILOT, status, createdAt);
+        this(id, username, email, phoneNumber, null, null, UserRole.ROLE_PILOT, status, createdAt, false);
     }
 }
