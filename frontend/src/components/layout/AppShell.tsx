@@ -3,8 +3,6 @@ import React, {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {
-    ChevronLeft,
-    ChevronRight,
     LogOut,
     Menu,
     PanelLeftClose,
@@ -121,15 +119,6 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                     open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
                 )}
             >
-                <button
-                    type="button"
-                    onClick={toggleCollapsed}
-                    aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
-                    title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
-                    className="hidden lg:inline-flex absolute -right-3 top-12 z-50 h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-xs hover:border-primary/40 hover:bg-uav-red-light hover:text-primary transition-all cursor-pointer"
-                >
-                    {railCollapsed ? <ChevronRight size={13}/> : <ChevronLeft size={13}/>}
-                </button>
                 <div className={cn("mb-2 flex items-center border-b border-slate-100 pb-2", railCollapsed ? "flex-col justify-center gap-1.5" : "justify-between gap-1.5")}>
                     <Link
                         href="/operations/overview"
@@ -208,19 +197,6 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                 <div className="mt-auto border-t border-slate-100 pt-2 space-y-0.5">
                     <button
                         type="button"
-                        onClick={toggleCollapsed}
-                        title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
-                        aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
-                        className={cn(
-                            "hidden lg:flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[12.5px] font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer",
-                            railCollapsed && "mx-auto h-8 w-8 justify-center px-0 py-0"
-                        )}
-                    >
-                        {railCollapsed ? <PanelLeftOpen size={15} className="shrink-0"/> : <PanelLeftClose size={15} className="shrink-0"/>}
-                        {!railCollapsed && <span className="truncate">{t('shell.collapseSidebar')}</span>}
-                    </button>
-                    <button
-                        type="button"
                         onClick={() => void logout()}
                         aria-label={t('common.logout')}
                         title={railCollapsed ? t('common.logout') : undefined}
@@ -253,15 +229,6 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                             onClick={() => setOpen(true)}
                         >
                             <Menu size={18}/>
-                        </button>
-                        <button
-                            type="button"
-                            onClick={toggleCollapsed}
-                            aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
-                            title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
-                            className="hidden lg:inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-slate-50/70 text-slate-600 hover:border-primary/30 hover:bg-uav-red-light hover:text-primary transition-colors cursor-pointer"
-                        >
-                            {railCollapsed ? <PanelLeftOpen size={15}/> : <PanelLeftClose size={15}/>}
                         </button>
                         <div className="flex flex-wrap items-center gap-1.5 text-[13px] text-slate-500 truncate">
                             <span>UAV PAS</span>
