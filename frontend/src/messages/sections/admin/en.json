@@ -916,7 +916,7 @@
       "apiKeyHint": "The key is AES-GCM encrypted on the server and never sent back to the browser.",
       "disconnect": "Disconnect (delete key)",
       "disconnectConfirm": "Delete the stored API key and turn the assistant off?",
-      "enable": "Enable the AI assistant for administrators",
+      "enable": "Enable the AI assistant in every portal (customer, operations, admin)",
       "modes": "Two AI modes",
       "modeName": "Mode {n} name",
       "modeModel": "Mode {n} model",
@@ -942,7 +942,11 @@
       "openNewTab": "Open in new tab",
       "assistantSettings": "Assistant settings",
       "frameTitle": "UAV Assistant console",
-      "openConsole": "Open UAV Assistant"
+      "openConsole": "Open UAV Assistant",
+      "tab": {
+        "console": "Console",
+        "chats": "Conversations"
+      }
     },
     "assistant": {
       "title": "UAV PAS Assistant",
@@ -981,7 +985,61 @@
         "createMission": "How does a customer create a flight request with an area?",
         "maintenance": "How do maintenance schedules and repair orders work?",
         "sarRth": "What do the rescue-coordinates and RTH buttons do?"
+      },
+      "offBodyUser": "The assistant isn't available yet. Please check back later or contact support.",
+      "helloBodyOperations": "Ask me about assigned missions, pre-flight checks, telemetry, search & rescue or maintenance.",
+      "helloBodyCustomer": "Ask me how to request a flight, track missions, pay invoices or check your plan quota.",
+      "privacy": "Chats are stored so administrators can improve support. Never send passwords or payment details.",
+      "faqOperations": {
+        "assigned": "Where do I see missions assigned to me?",
+        "preflight": "What should I check before take-off?",
+        "telemetry": "How do I read the UAV telemetry readings?",
+        "sarRth": "What do the rescue-coordinate and RTH buttons do?",
+        "maintenance": "How do I report that a UAV needs maintenance or repair?",
+        "report": "How do I complete a mission and submit results?"
+      },
+      "faqCustomer": {
+        "createMission": "How do I request a flight and draw the flight area?",
+        "statuses": "What do the flight request statuses mean?",
+        "payment": "How do I pay by VietQR bank transfer?",
+        "quota": "How is my service plan quota counted?",
+        "results": "Where can I see photos and results after a flight?",
+        "cancel": "Can I cancel or reschedule a flight request?"
       }
+    },
+    "assistantChats": {
+      "intro": "Assistant chats from all three portals, newest first.",
+      "filters": "Conversation filters",
+      "search": "Search",
+      "searchPlaceholder": "Username, full name or first question",
+      "portal": "Portal",
+      "allPortals": "All",
+      "portals": {
+        "CUSTOMER": "Customer",
+        "OPERATIONS": "Operations",
+        "ADMIN": "Admin"
+      },
+      "apply": "Filter",
+      "table": "Conversation list",
+      "col": {
+        "user": "User",
+        "portal": "Portal",
+        "title": "First question",
+        "messages": "Messages",
+        "tokens": "Tokens",
+        "updated": "Updated"
+      },
+      "empty": "No conversations yet",
+      "emptyDetail": "Conversations appear here once users chat with the UAV PAS assistant.",
+      "noMatch": "No conversations match the filters",
+      "detailTitle": "Conversation details",
+      "started": "Started {at}",
+      "transcript": "Transcript",
+      "latency": "{ms} ms",
+      "delete": "Delete conversation",
+      "deleteConfirm": "Permanently delete this conversation? The action is recorded in the audit log.",
+      "deleted": "Conversation deleted",
+      "deleteFailed": "Could not delete the conversation"
     }
   }
 }

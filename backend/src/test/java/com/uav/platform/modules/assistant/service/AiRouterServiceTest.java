@@ -182,4 +182,36 @@ class AiRouterServiceTest {
         assertTrue(e.getMessage().contains("Too many"));
         verify(http, times(20)).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void chatRecordsTheTurnAndTellsTheModelWhoIsAsking() throws Exception {
+        row.setApiKeyCipher(cipher.encrypt("sk-test-0001"));
+        row.setMode1Model("cc/claude-haiku");
+        row.setEnabled(true);
+        AssistantConversationService store = mock(AssistantConversationService.class);
+        when(store.begin(any(), eq("CUSTOMER"), isNull(), eq("Làm sao thanh toán?")))
+                .thenReturn(new com.uav.platform.modules.assistant.dto.record.ChatThread(77L, "CUSTOMER"));
+        var setter = AiRouterServiceImpl.class.getDeclaredMethod("setConversations", AssistantConversationService.class);
+        setter.setAccessible(true);
+        setter.invoke(service, store);
+        HttpResponse<String> ok = mock(HttpResponse.class);
+        when(ok.statusCode()).thenReturn(200);
+        when(ok.body()).thenReturn("{\"choices\":[{\"message\":{\"content\":\"Chuyển khoản VietQR\"}}],\"usage\":{\"prompt_tokens\":5,\"completion_tokens\":2}}");
+        when(http.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn((HttpResponse<Object>) (HttpResponse<?>) ok);
+        var res = service.chat(new AssistantChatRequest(1, List.of(new AssistantMessageRequest("user", "Làm sao thanh toán?")), null, "CUSTOMER"), admin);
+        assertEquals(77L, res.conversationId());
+        verify(store).recordReply(eq(77L), argThat(a -> a.reply().equals("Chuyển khoản VietQR")));
+        var sent = org.mockito.ArgumentCaptor.forClass(HttpRequest.class);
+        verify(http).send(sent.capture(), any());
+        var body = new java.io.ByteArrayOutputStream();
+        var sub = new java.util.concurrent.Flow.Subscriber<java.nio.ByteBuffer>() {
+            public void onSubscribe(java.util.concurrent.Flow.Subscription s) { s.request(Long.MAX_VALUE); }
+            public void onNext(java.nio.ByteBuffer b) { byte[] a = new byte[b.remaining()]; b.get(a); body.writeBytes(a); }
+            public void onError(Throwable t) {}
+            public void onComplete() {}
+        };
+        sent.getValue().bodyPublisher().orElseThrow().subscribe(sub);
+        assertTrue(body.toString(java.nio.charset.StandardCharsets.UTF_8).contains("KHÁCH HÀNG"), "customer audience note sent");
+    }
 }

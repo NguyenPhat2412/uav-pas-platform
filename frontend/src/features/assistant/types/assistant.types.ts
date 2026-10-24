@@ -58,4 +58,39 @@ export interface AssistantReply {
     latencyMs: number;
     promptTokens: number | null;
     completionTokens: number | null;
+    /** Stored conversation this turn belongs to; send it back to continue the same thread. */
+    conversationId: number | null;
+}
+
+/** Which portal a chat was started from; it decides the assistant's audience and the admin filter. */
+export type AssistantPortal = 'CUSTOMER' | 'OPERATIONS' | 'ADMIN';
+
+export interface AssistantConversation {
+    id: number;
+    userId: number;
+    username: string;
+    fullName: string | null;
+    portal: AssistantPortal;
+    title: string;
+    messageCount: number;
+    totalTokens: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface AssistantStoredMessage {
+    id: number;
+    role: 'user' | 'assistant';
+    content: string;
+    mode: number | null;
+    model: string | null;
+    promptTokens: number | null;
+    completionTokens: number | null;
+    latencyMs: number | null;
+    createdAt: string;
+}
+
+export interface AssistantConversationDetail {
+    conversation: AssistantConversation;
+    messages: AssistantStoredMessage[];
 }

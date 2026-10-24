@@ -1,6 +1,7 @@
 'use client';
 import {useSidebarShortcut} from '@/components/layout/useSidebarShortcut';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
+import {AssistantWidget} from '@/features/assistant/components/AssistantWidget';
 import Link from 'next/link';
 import {useEffect, useRef, useState} from 'react';
 import {usePathname, useRouter} from 'next/navigation';
@@ -245,6 +246,7 @@ export function AppShell({children}: { children: React.ReactNode }) {
                 <main id="content" className="w-full flex-1 outline-none" tabIndex={-1}>
                     {children}
                 </main>
+                <AssistantWidget portal="CUSTOMER"/>
             </div>
         </div>
     );

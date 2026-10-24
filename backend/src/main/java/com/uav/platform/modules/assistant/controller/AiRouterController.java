@@ -44,13 +44,13 @@ public class AiRouterController {
     }
 
     @GetMapping("/assistant")
-    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AssistantInfoResponse> info() {
         return ResponseEntity.ok(service.info());
     }
 
     @PostMapping("/assistant/chat")
-    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AssistantChatResponse> chat(
             @Valid @RequestBody AssistantChatRequest request, Authentication auth) {
         return ResponseEntity.ok(service.chat(request, auth));

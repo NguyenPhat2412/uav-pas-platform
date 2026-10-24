@@ -69,6 +69,8 @@ export const API_ROUTES = {
     assistant: {
         info: '/api/v1/assistant',
         chat: '/api/v1/assistant/chat',
+        conversations: '/api/v1/admin/assistant/conversations',
+        conversation: (id: number) => `/api/v1/admin/assistant/conversations/${id}`,
     },
     uavServices: {
         list: '/api/v1/uav-services',

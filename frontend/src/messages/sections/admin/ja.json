@@ -916,7 +916,7 @@
       "apiKeyHint": "キーはサーバーでAES-GCM暗号化され、ブラウザには返されません。",
       "disconnect": "切断(キーを削除)",
       "disconnectConfirm": "保存済みのAPIキーを削除し、アシスタントを無効にしますか?",
-      "enable": "管理者向けAIアシスタントを有効にする",
+      "enable": "すべてのポータル（顧客・運用・管理）で AI アシスタントを有効にする",
       "modes": "2つのAIモード",
       "modeName": "モード{n}の名前",
       "modeModel": "モード{n}のモデル",
@@ -942,7 +942,11 @@
       "openNewTab": "新しいタブで開く",
       "assistantSettings": "アシスタント設定",
       "frameTitle": "UAVアシスタントコンソール",
-      "openConsole": "UAVアシスタントを開く"
+      "openConsole": "UAVアシスタントを開く",
+      "tab": {
+        "console": "コンソール",
+        "chats": "会話"
+      }
     },
     "assistant": {
       "title": "UAV PASアシスタント",
@@ -981,7 +985,61 @@
         "createMission": "顧客は飛行区域付きの依頼をどう作成しますか?",
         "maintenance": "定期整備計画と修理作業票の仕組みは?",
         "sarRth": "救助座標送信とRTH要求ボタンは何をしますか?"
+      },
+      "offBodyUser": "アシスタントはまだ利用できません。後でもう一度お試しいただくか、サポートにお問い合わせください。",
+      "helloBodyOperations": "割り当てられたミッション、飛行前点検、テレメトリ、捜索救助、整備についてお尋ねください。",
+      "helloBodyCustomer": "飛行依頼の作成、ミッションの追跡、支払い、プランの上限についてお尋ねください。",
+      "privacy": "サポート品質向上のため、会話は管理者が確認できるよう保存されます。パスワードや支払い情報は送信しないでください。",
+      "faqOperations": {
+        "assigned": "自分に割り当てられたミッションはどこで見られますか？",
+        "preflight": "離陸前に何を点検すべきですか？",
+        "telemetry": "UAV のテレメトリ値はどう読めばよいですか？",
+        "sarRth": "救助座標送信と RTH ボタンは何をしますか？",
+        "maintenance": "UAV の整備・修理が必要なときはどう報告しますか？",
+        "report": "ミッションを完了して結果を提出するには？"
+      },
+      "faqCustomer": {
+        "createMission": "飛行依頼を作成し飛行エリアを描くには？",
+        "statuses": "飛行依頼のステータスの意味は？",
+        "payment": "VietQR 振込での支払い方法は？",
+        "quota": "サービスプランの上限はどう数えられますか？",
+        "results": "飛行後の写真や結果はどこで見られますか？",
+        "cancel": "飛行依頼をキャンセル・日程変更できますか？"
       }
+    },
+    "assistantChats": {
+      "intro": "3 つのポータルからのアシスタント会話（新しい順）。",
+      "filters": "会話フィルター",
+      "search": "検索",
+      "searchPlaceholder": "ユーザー名、氏名、最初の質問",
+      "portal": "ポータル",
+      "allPortals": "すべて",
+      "portals": {
+        "CUSTOMER": "顧客",
+        "OPERATIONS": "運用",
+        "ADMIN": "管理"
+      },
+      "apply": "絞り込み",
+      "table": "会話一覧",
+      "col": {
+        "user": "ユーザー",
+        "portal": "ポータル",
+        "title": "最初の質問",
+        "messages": "メッセージ",
+        "tokens": "トークン",
+        "updated": "更新"
+      },
+      "empty": "まだ会話はありません",
+      "emptyDetail": "ユーザーが UAV PAS アシスタントとチャットすると、ここに表示されます。",
+      "noMatch": "条件に一致する会話はありません",
+      "detailTitle": "会話の詳細",
+      "started": "開始 {at}",
+      "transcript": "会話内容",
+      "latency": "{ms} ms",
+      "delete": "会話を削除",
+      "deleteConfirm": "この会話を完全に削除しますか？操作は監査ログに記録されます。",
+      "deleted": "会話を削除しました",
+      "deleteFailed": "会話を削除できませんでした"
     }
   }
 }

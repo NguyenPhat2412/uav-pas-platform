@@ -916,7 +916,7 @@
       "apiKeyHint": "Key được mã hóa AES-GCM trên máy chủ và không bao giờ gửi lại trình duyệt.",
       "disconnect": "Ngắt kết nối (xóa key)",
       "disconnectConfirm": "Xóa API key đã lưu và tắt trợ lý AI?",
-      "enable": "Bật trợ lý AI cho quản trị viên",
+      "enable": "Bật trợ lý AI cho mọi cổng (khách hàng, vận hành, quản trị)",
       "modes": "Hai phương thức AI",
       "modeName": "Tên phương thức {n}",
       "modeModel": "Model phương thức {n}",
@@ -942,7 +942,11 @@
       "openNewTab": "Mở trong tab mới",
       "assistantSettings": "Cài đặt trợ lý",
       "frameTitle": "Bảng điều khiển Trợ lý UAV",
-      "openConsole": "Mở Trợ lý UAV"
+      "openConsole": "Mở Trợ lý UAV",
+      "tab": {
+        "console": "Bảng điều khiển",
+        "chats": "Hội thoại"
+      }
     },
     "assistant": {
       "title": "Trợ lý UAV PAS",
@@ -981,7 +985,61 @@
         "createMission": "Khách hàng tạo yêu cầu bay với vùng bay như thế nào?",
         "maintenance": "Lịch bảo trì định kỳ và phiếu sửa chữa hoạt động ra sao?",
         "sarRth": "Nút gửi tọa độ cứu nạn và yêu cầu RTH làm gì?"
+      },
+      "offBodyUser": "Trợ lý chưa sẵn sàng. Vui lòng quay lại sau hoặc liên hệ bộ phận hỗ trợ.",
+      "helloBodyOperations": "Hỏi tôi về nhiệm vụ được giao, kiểm tra trước bay, telemetry, cứu nạn hay bảo trì.",
+      "helloBodyCustomer": "Hỏi tôi về cách tạo yêu cầu bay, theo dõi nhiệm vụ, thanh toán hay hạn mức dịch vụ.",
+      "privacy": "Cuộc trò chuyện được lưu để quản trị viên cải thiện chất lượng hỗ trợ. Không gửi mật khẩu hay thông tin thanh toán.",
+      "faqOperations": {
+        "assigned": "Xem các nhiệm vụ được giao cho tôi ở đâu?",
+        "preflight": "Cần kiểm tra gì trước khi cất cánh?",
+        "telemetry": "Đọc các chỉ số telemetry của UAV như thế nào?",
+        "sarRth": "Nút gửi tọa độ cứu nạn và yêu cầu RTH làm gì?",
+        "maintenance": "Báo UAV cần bảo trì hoặc sửa chữa thế nào?",
+        "report": "Hoàn tất nhiệm vụ và gửi kết quả ra sao?"
+      },
+      "faqCustomer": {
+        "createMission": "Làm sao tạo yêu cầu bay và vẽ vùng bay?",
+        "statuses": "Các trạng thái của yêu cầu bay nghĩa là gì?",
+        "payment": "Thanh toán chuyển khoản VietQR như thế nào?",
+        "quota": "Hạn mức gói dịch vụ của tôi được tính ra sao?",
+        "results": "Xem ảnh và kết quả sau khi bay ở đâu?",
+        "cancel": "Tôi có thể hủy hoặc đổi lịch yêu cầu bay không?"
       }
+    },
+    "assistantChats": {
+      "intro": "Các cuộc trò chuyện với trợ lý từ cả ba cổng, mới nhất trước.",
+      "filters": "Bộ lọc hội thoại",
+      "search": "Tìm kiếm",
+      "searchPlaceholder": "Tên người dùng, họ tên hoặc nội dung câu hỏi đầu",
+      "portal": "Cổng",
+      "allPortals": "Tất cả",
+      "portals": {
+        "CUSTOMER": "Khách hàng",
+        "OPERATIONS": "Vận hành",
+        "ADMIN": "Quản trị"
+      },
+      "apply": "Lọc",
+      "table": "Danh sách hội thoại",
+      "col": {
+        "user": "Người dùng",
+        "portal": "Cổng",
+        "title": "Câu hỏi đầu",
+        "messages": "Tin nhắn",
+        "tokens": "Token",
+        "updated": "Cập nhật"
+      },
+      "empty": "Chưa có cuộc trò chuyện nào",
+      "emptyDetail": "Hội thoại xuất hiện ở đây khi người dùng chat với Trợ lý UAV PAS.",
+      "noMatch": "Không có hội thoại khớp bộ lọc",
+      "detailTitle": "Chi tiết hội thoại",
+      "started": "Bắt đầu lúc {at}",
+      "transcript": "Nội dung hội thoại",
+      "latency": "{ms} ms",
+      "delete": "Xóa hội thoại",
+      "deleteConfirm": "Xóa vĩnh viễn hội thoại này? Thao tác được ghi vào nhật ký kiểm toán.",
+      "deleted": "Đã xóa hội thoại",
+      "deleteFailed": "Không xóa được hội thoại"
     }
   }
 }

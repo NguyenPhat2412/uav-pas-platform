@@ -1,6 +1,7 @@
 'use client';
 import {useSidebarShortcut} from '@/components/layout/useSidebarShortcut';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
+import {AssistantWidget} from '@/features/assistant/components/AssistantWidget';
 import React, {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
@@ -238,6 +239,7 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                 <main id="workspace" className="w-full flex-1 space-y-6 outline-none" tabIndex={-1}>
                     {children}
                 </main>
+                <AssistantWidget portal="OPERATIONS"/>
             </div>
         </div>
     );
