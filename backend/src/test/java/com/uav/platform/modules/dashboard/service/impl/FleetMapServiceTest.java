@@ -48,7 +48,8 @@ class FleetMapServiceTest {
     void flyingUavIsPlacedAtItsMissionAndIdleUavAtItsStation() {
         Station home = station();
         Uav flying = uav(1, UavStatus.IN_USE, home);
-        UavPin atMission = FleetMapServiceImpl.pin(flying, mission(flying, MissionStatus.IN_PROGRESS, null));
+        UavPin atMission =
+                FleetMapServiceImpl.pin(flying, mission(flying, MissionStatus.IN_PROGRESS, null));
         assertEquals("MISSION", atMission.positionSource());
         assertEquals(21.5, atMission.latitude());
 
@@ -64,7 +65,10 @@ class FleetMapServiceTest {
     @Test
     void availableUavWithAScheduledMissionStaysAtItsStation() {
         Uav idle = uav(4, UavStatus.AVAILABLE, station());
-        UavPin pin = FleetMapServiceImpl.pin(idle, mission(idle, MissionStatus.CONFIRMED, LocalDateTime.now().plusDays(1)));
+        UavPin pin =
+                FleetMapServiceImpl.pin(
+                        idle,
+                        mission(idle, MissionStatus.CONFIRMED, LocalDateTime.now().plusDays(1)));
         assertEquals("STATION", pin.positionSource());
         assertNotNull(pin.activeMission());
     }
@@ -72,8 +76,10 @@ class FleetMapServiceTest {
     @Test
     void inProgressMissionWinsOverEarlierScheduledOnes() {
         Uav u = uav(5, UavStatus.IN_USE, station());
-        Mission scheduled = mission(u, MissionStatus.CONFIRMED, LocalDateTime.of(2026, 10, 1, 8, 0));
+        Mission scheduled =
+                mission(u, MissionStatus.CONFIRMED, LocalDateTime.of(2026, 10, 1, 8, 0));
         Mission flying = mission(u, MissionStatus.IN_PROGRESS, LocalDateTime.of(2026, 10, 2, 8, 0));
-        assertSame(flying, FleetMapServiceImpl.activeMissionByUav(List.of(scheduled, flying)).get(5L));
+        assertSame(
+                flying, FleetMapServiceImpl.activeMissionByUav(List.of(scheduled, flying)).get(5L));
     }
 }

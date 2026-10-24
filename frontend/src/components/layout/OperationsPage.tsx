@@ -18,7 +18,7 @@ export function OperationsPage({permission, activeResource, children}: {
     const {t} = useI18n();
     const router = useRouter();
     useEffect(() => {
-        if (!isLoading && !isAuthenticated) router.replace("/operations/login");
+        if (!isLoading && !isAuthenticated) router.replace("/?auth=login&next=/operations/overview");
     }, [isAuthenticated, isLoading, router]);
 
     if (isLoading || !isAuthenticated) return <div className="flex min-h-screen items-center justify-center"><Spinner

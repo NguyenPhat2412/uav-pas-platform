@@ -13,5 +13,6 @@ public interface UserMapper {
 
     @Mapping(target = "role", defaultValue = "ROLE_PILOT")
     @Mapping(target = "locked", source = "manualLocked")
+    @Mapping(target = "twoFactorMethod", defaultValue = "EMAIL")
     UserResponse toResponse(AppUser user);
 }

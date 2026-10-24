@@ -34,31 +34,41 @@ class TelemetryServiceTest {
     @InjectMocks TelemetryServiceImpl service;
 
     private static TelemetryReportRequest sample(LocalDateTime at, Long missionId) {
-        return new TelemetryReportRequest(at, 21.0285, 105.8542, 80.0, 12.5, 270.0, 76, "FIXED", 18, missionId);
+        return new TelemetryReportRequest(
+                at, 21.0285, 105.8542, 80.0, 12.5, 270.0, 76, "FIXED", 18, missionId);
     }
 
     @Test
     void ingestStoresSampleAndReportsFresh() {
         when(uavs.existsById(1L)).thenReturn(true);
         when(telemetry.save(any())).thenAnswer(i -> i.getArgument(0));
-        TelemetryResponse r = service.ingest(1L, sample(LocalDateTime.now().minusSeconds(5), null), "gcs-01");
+        TelemetryResponse r =
+                service.ingest(1L, sample(LocalDateTime.now().minusSeconds(5), null), "gcs-01");
         assertEquals(21.0285, r.latitude(), 1e-7);
         assertEquals("FIXED", r.rtkStatus());
         assertFalse(r.stale());
-        verify(telemetry).save(argThat(t -> "gcs-01".equals(t.getReportedBy()) && t.getReceivedAt() != null));
+        verify(telemetry)
+                .save(
+                        argThat(
+                                t ->
+                                        "gcs-01".equals(t.getReportedBy())
+                                                && t.getReceivedAt() != null));
     }
 
     @Test
     void ingestRejectsFutureTimestampAndForeignMission() {
         when(uavs.existsById(1L)).thenReturn(true);
-        assertThrows(SystemException.class,
+        assertThrows(
+                SystemException.class,
                 () -> service.ingest(1L, sample(LocalDateTime.now().plusMinutes(10), null), "gcs"));
         Uav other = new Uav("M", "SN-2", "A");
         other.setId(2L);
         Mission mission = mock(Mission.class);
         when(mission.getUav()).thenReturn(other);
         when(missions.findById(9L)).thenReturn(Optional.of(mission));
-        assertThrows(SystemException.class, () -> service.ingest(1L, sample(LocalDateTime.now(), 9L), "gcs"));
+        assertThrows(
+                SystemException.class,
+                () -> service.ingest(1L, sample(LocalDateTime.now(), 9L), "gcs"));
         verify(telemetry, never()).save(any());
     }
 

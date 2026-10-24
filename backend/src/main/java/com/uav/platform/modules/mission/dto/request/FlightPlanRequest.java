@@ -19,6 +19,7 @@ public record FlightPlanRequest(
         @NotNull Double targetGsdCm,
         @NotNull @Min(60) @Max(90) Integer forwardOverlap,
         @NotNull @Min(50) @Max(85) Integer sideOverlap,
-        @NotNull @Size(min = 1, max = 4) List<@Pattern(regexp = "RGB_4K|THERMAL|LIDAR|MULTISPECTRAL") String> sensors,
+        @NotNull @Size(min = 1, max = 4)
+                List<@Pattern(regexp = "RGB_4K|THERMAL|LIDAR|MULTISPECTRAL") String> sensors,
         @Size(max = 1000) String obstacles,
         boolean permitSupport) {}

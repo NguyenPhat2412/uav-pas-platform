@@ -29,10 +29,31 @@ public record MissionCreateRequest(
         @jakarta.validation.Valid FlightPlanRequest flightPlan) {
 
     public MissionCreateRequest(
-            MissionType missionType, String title, String description, LocalDate requestedDate,
-            LocalDateTime startTime, LocalDateTime expectedEndTime, String locationName, BigDecimal latitude,
-            BigDecimal longitude, Long serviceId, MissionPriority priority, String notes) {
-        this(missionType, title, description, requestedDate, startTime, expectedEndTime, locationName, latitude,
-                longitude, serviceId, priority, notes, null);
+            MissionType missionType,
+            String title,
+            String description,
+            LocalDate requestedDate,
+            LocalDateTime startTime,
+            LocalDateTime expectedEndTime,
+            String locationName,
+            BigDecimal latitude,
+            BigDecimal longitude,
+            Long serviceId,
+            MissionPriority priority,
+            String notes) {
+        this(
+                missionType,
+                title,
+                description,
+                requestedDate,
+                startTime,
+                expectedEndTime,
+                locationName,
+                latitude,
+                longitude,
+                serviceId,
+                priority,
+                notes,
+                null);
     }
 }

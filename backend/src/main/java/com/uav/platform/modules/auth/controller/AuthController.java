@@ -3,11 +3,9 @@ package com.uav.platform.modules.auth.controller;
 import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.common.constant.RestEndpoint;
 import com.uav.platform.common.dto.response.MessageResponse;
-import com.uav.platform.modules.auth.dto.request.LoginRequest;
-import com.uav.platform.modules.auth.dto.request.LogoutRequest;
-import com.uav.platform.modules.auth.dto.request.RefreshTokenRequest;
-import com.uav.platform.modules.auth.dto.request.RegisterRequest;
-import com.uav.platform.modules.auth.dto.response.AuthResponse;
+import com.uav.platform.modules.auth.dto.request.*;
+import com.uav.platform.modules.auth.dto.response.*;
+import com.uav.platform.modules.auth.service.AuthOtpService;
 import com.uav.platform.modules.auth.service.AuthService;
 import com.uav.platform.modules.user.dto.response.UserResponse;
 import com.uav.platform.security.AuthCookieHelper;
@@ -18,8 +16,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,15 +24,29 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(RestEndpoint.AUTH)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Tag(name = CoreConstants.AUTH_TAG_NAME, description = CoreConstants.AUTH_TAG_DESCRIPTION)
 public class AuthController {
 
     private final AuthService authService;
     private final AuthCookieHelper authCookieHelper;
+    private final AuthOtpService authOtpService;
 
     public AuthController(AuthService authService) {
-        this(authService, null);
+        this(authService, null, null);
+    }
+
+    public AuthController(AuthService authService, AuthCookieHelper authCookieHelper) {
+        this(authService, authCookieHelper, null);
+    }
+
+    @Autowired
+    public AuthController(
+            AuthService authService,
+            @Autowired(required = false) AuthCookieHelper authCookieHelper,
+            @Autowired(required = false) AuthOtpService authOtpService) {
+        this.authService = authService;
+        this.authCookieHelper = authCookieHelper;
+        this.authOtpService = authOtpService;
     }
 
     @Operation(summary = CoreConstants.AUTH_OP_REGISTER_SUMMARY)
@@ -45,10 +55,89 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
     }
 
+    @Operation(summary = "Register account and send 6-digit Email OTP verification code")
+    @PostMapping(RestEndpoint.REGISTER_OTP)
+    public ResponseEntity<OtpChallengeResponse> registerWithOtp(
+            @Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(authOtpService.requestRegisterOtp(request));
+    }
+
+    @Operation(summary = "Verify 6-digit Email OTP and issue JWT session")
+    @PostMapping(RestEndpoint.VERIFY_EMAIL)
+    public ResponseEntity<AuthResponse> verifyEmail(@Valid @RequestBody VerifyOtpRequest request) {
+        return AuthCookieHelper.okWithCookies(
+                authCookieHelper, authOtpService.verifyEmailOtp(request));
+    }
+
     @Operation(summary = CoreConstants.AUTH_OP_LOGIN_SUMMARY)
     @PostMapping(RestEndpoint.LOGIN)
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return AuthCookieHelper.okWithCookies(authCookieHelper, authService.login(request));
+    }
+
+    @Operation(summary = "Verify 2FA code (Email OTP or TOTP Authenticator) and issue JWT session")
+    @PostMapping(RestEndpoint.VERIFY_2FA)
+    public ResponseEntity<AuthResponse> verify2fa(@Valid @RequestBody VerifyOtpRequest request) {
+        return AuthCookieHelper.okWithCookies(
+                authCookieHelper, authOtpService.verifyLogin2fa(request));
+    }
+
+    @Operation(summary = "Resend 6-digit Email OTP for active challenge")
+    @PostMapping(RestEndpoint.RESEND_OTP)
+    public ResponseEntity<OtpChallengeResponse> resendOtp(@RequestBody ResendOtpRequest request) {
+        return ResponseEntity.ok(authOtpService.resendOtp(request));
+    }
+
+    @Operation(summary = "Request 6-digit Email OTP for password reset")
+    @PostMapping(RestEndpoint.FORGOT_PASSWORD)
+    public ResponseEntity<OtpChallengeResponse> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request) {
+        return ResponseEntity.ok(authOtpService.forgotPassword(request));
+    }
+
+    @Operation(summary = "Reset password using 6-digit Email OTP")
+    @PostMapping(RestEndpoint.RESET_PASSWORD)
+    public ResponseEntity<MessageResponse> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request) {
+        return ResponseEntity.ok(authOtpService.resetPassword(request));
+    }
+
+    @Operation(summary = "Get current user 2FA configuration status")
+    @GetMapping(RestEndpoint.TWO_FACTOR_STATUS)
+    public ResponseEntity<TwoFactorStatusResponse> get2faStatus(Authentication authentication) {
+        return ResponseEntity.ok(
+                authOtpService.get2faStatus(
+                        AuthCookieHelper.requireAuthenticatedUsername(authentication)));
+    }
+
+    @Operation(summary = "Initialize 2FA setup (EMAIL OTP or TOTP QR secret)")
+    @PostMapping(RestEndpoint.TWO_FACTOR_SETUP)
+    public ResponseEntity<TwoFactorSetupResponse> setup2fa(
+            Authentication authentication,
+            @RequestBody(required = false) TwoFactorSetupRequest request) {
+        return ResponseEntity.ok(
+                authOtpService.setup2fa(
+                        AuthCookieHelper.requireAuthenticatedUsername(authentication), request));
+    }
+
+    @Operation(summary = "Verify code and enable 2FA on current account")
+    @PostMapping(RestEndpoint.TWO_FACTOR_ENABLE)
+    public ResponseEntity<TwoFactorStatusResponse> enable2fa(
+            Authentication authentication, @Valid @RequestBody TwoFactorVerifyRequest request) {
+        return ResponseEntity.ok(
+                authOtpService.enable2fa(
+                        AuthCookieHelper.requireAuthenticatedUsername(authentication), request));
+    }
+
+    @Operation(summary = "Disable 2FA on current account")
+    @PostMapping(RestEndpoint.TWO_FACTOR_DISABLE)
+    public ResponseEntity<TwoFactorStatusResponse> disable2fa(
+            Authentication authentication,
+            @RequestBody(required = false) TwoFactorDisableRequest request) {
+        return ResponseEntity.ok(
+                authOtpService.disable2fa(
+                        AuthCookieHelper.requireAuthenticatedUsername(authentication), request));
     }
 
     @Operation(summary = "Refresh access token using refresh token")

@@ -50,7 +50,9 @@ public class BankTransferServiceImpl implements BankTransferService {
 
     @Override
     public boolean configured() {
-        return bankBin.matches("\\d{6}") && accountNumber.matches("[0-9A-Za-z]{4,19}") && !accountName.isEmpty();
+        return bankBin.matches("\\d{6}")
+                && accountNumber.matches("[0-9A-Za-z]{4,19}")
+                && !accountName.isEmpty();
     }
 
     @Override
@@ -62,16 +64,30 @@ public class BankTransferServiceImpl implements BankTransferService {
     @Transactional(readOnly = true)
     public BankTransferInstructionsResponse instructions(Long invoiceId, Authentication auth) {
         InvoiceResponse invoice = billing.getInvoice(invoiceId, auth);
-        if (!configured()) throw SystemException.serviceUnavailable("Payment gateway is not configured", "PAYMENT_UNAVAILABLE");
+        if (!configured())
+            throw SystemException.serviceUnavailable(
+                    "Payment gateway is not configured", "PAYMENT_UNAVAILABLE");
         BigDecimal total = invoice.amount();
         BigDecimal[] split = splitVat(total, vatRate);
         String content = transferContent(invoice.code());
         return new BankTransferInstructionsResponse(
-                invoice.id(), invoice.code(), invoice.status().name(), bankBin, bankName, accountNumber, accountName,
-                content, VietQrOperations.build(bankBin, accountNumber, total, content),
-                split[0], vatRate, split[1], total,
+                invoice.id(),
+                invoice.code(),
+                invoice.status().name(),
+                bankBin,
+                bankName,
+                accountNumber,
+                accountName,
+                content,
+                VietQrOperations.build(bankBin, accountNumber, total, content),
+                split[0],
+                vatRate,
+                split[1],
+                total,
                 invoice.missionTitle() != null ? invoice.missionTitle() : invoice.planName(),
-                flightHours(invoice), invoice.dueDate(), invoice.createdAt());
+                flightHours(invoice),
+                invoice.dueDate(),
+                invoice.createdAt());
     }
 
     /** "UAV INV" plus the invoice code without separators, matching what VietQR keeps in the memo. */
@@ -82,18 +98,24 @@ public class BankTransferServiceImpl implements BankTransferService {
     /** Amounts are VAT inclusive: subtotal = total / (1 + rate), rounded to whole dong; VAT is the remainder. */
     static BigDecimal[] splitVat(BigDecimal total, BigDecimal rate) {
         BigDecimal subtotal = total.divide(BigDecimal.ONE.add(rate), 0, RoundingMode.HALF_UP);
-        return new BigDecimal[]{subtotal, total.subtract(subtotal)};
+        return new BigDecimal[] {subtotal, total.subtract(subtotal)};
     }
 
     private Double flightHours(InvoiceResponse invoice) {
         if (invoice.missionId() != null) {
             return missions.findById(invoice.missionId())
                     .filter(m -> m.getStartTime() != null && m.getExpectedEndTime() != null)
-                    .map(m -> Duration.between(m.getStartTime(), m.getExpectedEndTime()).toMinutes() / 60.0)
+                    .map(
+                            m ->
+                                    Duration.between(m.getStartTime(), m.getExpectedEndTime())
+                                                    .toMinutes()
+                                            / 60.0)
                     .orElse(null);
         }
         if (invoice.planId() != null) {
-            return plans.findById(invoice.planId()).map(p -> p.getMaxMonthlyFlightHours()).orElse(null);
+            return plans.findById(invoice.planId())
+                    .map(p -> p.getMaxMonthlyFlightHours())
+                    .orElse(null);
         }
         return null;
     }

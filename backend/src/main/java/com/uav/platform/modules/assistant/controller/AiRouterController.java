@@ -32,7 +32,8 @@ public class AiRouterController {
 
     @PutMapping("/admin/ai-router")
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
-    public ResponseEntity<AiRouterSettingsResponse> update(@Valid @RequestBody AiRouterSettingsRequest request, Authentication auth) {
+    public ResponseEntity<AiRouterSettingsResponse> update(
+            @Valid @RequestBody AiRouterSettingsRequest request, Authentication auth) {
         return ResponseEntity.ok(service.update(request, auth));
     }
 
@@ -50,7 +51,8 @@ public class AiRouterController {
 
     @PostMapping("/assistant/chat")
     @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
-    public ResponseEntity<AssistantChatResponse> chat(@Valid @RequestBody AssistantChatRequest request, Authentication auth) {
+    public ResponseEntity<AssistantChatResponse> chat(
+            @Valid @RequestBody AssistantChatRequest request, Authentication auth) {
         return ResponseEntity.ok(service.chat(request, auth));
     }
 }

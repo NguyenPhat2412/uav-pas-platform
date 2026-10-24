@@ -42,16 +42,28 @@ public record CustomerAnalyticsResponse(
 
     public record ServiceUsage(String name, long count) {}
 
-    public record MissionPoint(Long id, String code, double latitude, double longitude, String status) {}
+    public record MissionPoint(
+            Long id, String code, double latitude, double longitude, String status) {}
 
     /** successRate is completed / (completed + failed + cancelled + rejected), in percent. */
-    public record Outcomes(long completed, long failed, long cancelled, long rejected, double successRate,
-                           List<Reason> reasons) {}
+    public record Outcomes(
+            long completed,
+            long failed,
+            long cancelled,
+            long rejected,
+            double successRate,
+            List<Reason> reasons) {}
 
     public record Reason(String reason, long count) {}
 
     /** Averages in hours over the customer's missions that reached each milestone; null when none did. */
     public record Turnaround(Double submitToConfirm, Double submitToComplete, long sampleSize) {}
 
-    public record Upcoming(Long id, String code, String title, LocalDateTime startTime, String status, String location) {}
+    public record Upcoming(
+            Long id,
+            String code,
+            String title,
+            LocalDateTime startTime,
+            String status,
+            String location) {}
 }

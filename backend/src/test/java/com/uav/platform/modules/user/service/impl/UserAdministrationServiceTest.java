@@ -24,8 +24,14 @@ class UserAdministrationServiceTest {
     private final UserService userService = mock(UserService.class);
     private final PasswordEncoder encoder = mock(PasswordEncoder.class);
     private final RefreshTokenRepository tokens = mock(RefreshTokenRepository.class);
-    private final UserAdministrationServiceImpl service = new UserAdministrationServiceImpl(
-            users, userService, encoder, mock(AuditLogService.class), tokens, mock(UserMapper.class));
+    private final UserAdministrationServiceImpl service =
+            new UserAdministrationServiceImpl(
+                    users,
+                    userService,
+                    encoder,
+                    mock(AuditLogService.class),
+                    tokens,
+                    mock(UserMapper.class));
 
     private AppUser user(String username) {
         AppUser user = new AppUser();
@@ -39,10 +45,13 @@ class UserAdministrationServiceTest {
         when(users.findById(2L)).thenReturn(Optional.of(user("pilot")));
         when(users.findById(3L)).thenReturn(Optional.empty());
 
-        BulkActionResponse result = service.bulkLock(new BulkLockRequest(List.of(1L, 2L, 2L, 3L), true), "admin");
+        BulkActionResponse result =
+                service.bulkLock(new BulkLockRequest(List.of(1L, 2L, 2L, 3L), true), "admin");
 
         assertEquals(List.of(2L), result.processed());
-        assertEquals(List.of("SELF", "NOT_FOUND"), result.skipped().stream().map(BulkActionResponse.Skipped::reason).toList());
+        assertEquals(
+                List.of("SELF", "NOT_FOUND"),
+                result.skipped().stream().map(BulkActionResponse.Skipped::reason).toList());
         verify(userService).lockUser(2L, "admin");
         verify(userService, never()).lockUser(1L, "admin");
     }

@@ -258,7 +258,7 @@ export function PageGuard({children, permission = 'MISSION_VIEW'}: {
     const {isAuthenticated, isLoading, permissionsReady, permissionError, refreshPermissions, can} = useAuth();
     const {t} = useI18n();
     useEffect(() => {
-        if (!isLoading && !isAuthenticated) router.replace("/customer/login");
+        if (!isLoading && !isAuthenticated) router.replace("/?auth=login&next=/customer/dashboard");
     }, [router, isLoading, isAuthenticated]);
     if (isLoading || !isAuthenticated) {
         return (

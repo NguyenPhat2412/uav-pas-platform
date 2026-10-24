@@ -13,8 +13,6 @@ import com.uav.platform.modules.webhook.repository.WebhookDeliveryLogRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -29,16 +27,26 @@ class SystemHealthServiceTest {
 
     @Test
     void databaseDownMeansDownOtherProblemsOnlyDegrade() {
-        assertEquals("DOWN", SystemHealthServiceImpl.overall(List.of(c("database", "DOWN"), c("storage", "UP"))));
-        assertEquals("DEGRADED", SystemHealthServiceImpl.overall(List.of(c("database", "UP"), c("storage", "DOWN"))));
-        assertEquals("UP", SystemHealthServiceImpl.overall(List.of(c("database", "UP"), c("storage", "UNKNOWN"))));
+        assertEquals(
+                "DOWN",
+                SystemHealthServiceImpl.overall(
+                        List.of(c("database", "DOWN"), c("storage", "UP"))));
+        assertEquals(
+                "DEGRADED",
+                SystemHealthServiceImpl.overall(
+                        List.of(c("database", "UP"), c("storage", "DOWN"))));
+        assertEquals(
+                "UP",
+                SystemHealthServiceImpl.overall(
+                        List.of(c("database", "UP"), c("storage", "UNKNOWN"))));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     void failingChecksAreReportedWithoutLeakingDetails() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
-        when(dataSource.getConnection()).thenThrow(new SQLException("jdbc:postgresql://secret-host:5432 refused"));
+        when(dataSource.getConnection())
+                .thenThrow(new SQLException("jdbc:postgresql://secret-host:5432 refused"));
         ObjectStorageService storage = mock(ObjectStorageService.class);
         when(storage.provider()).thenReturn("minio");
         when(storage.bucketReachable()).thenReturn(true);
@@ -46,10 +54,15 @@ class SystemHealthServiceTest {
         when(deliveries.count(any(Specification.class))).thenReturn(0L);
         FinancialOutboxRepository outbox = mock(FinancialOutboxRepository.class);
         when(outbox.count(any(Specification.class))).thenReturn(0L);
-        com.uav.platform.modules.billing.service.BankTransferService bank = mock(com.uav.platform.modules.billing.service.BankTransferService.class);
-        when(bank.status()).thenReturn(new com.uav.platform.modules.billing.dto.response.BankTransferStatusResponse(false, null));
+        com.uav.platform.modules.billing.service.BankTransferService bank =
+                mock(com.uav.platform.modules.billing.service.BankTransferService.class);
+        when(bank.status())
+                .thenReturn(
+                        new com.uav.platform.modules.billing.dto.response
+                                .BankTransferStatusResponse(false, null));
 
-        SystemHealthResponse health = new SystemHealthServiceImpl(dataSource, storage, deliveries, outbox, bank).check();
+        SystemHealthResponse health =
+                new SystemHealthServiceImpl(dataSource, storage, deliveries, outbox, bank).check();
 
         assertEquals("DOWN", health.status());
         Component db = health.components().get(0);

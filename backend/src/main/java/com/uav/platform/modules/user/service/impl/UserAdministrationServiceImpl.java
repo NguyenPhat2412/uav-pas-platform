@@ -35,7 +35,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserAdministrationServiceImpl implements UserAdministrationService {
-    private static final DateTimeFormatter CSV_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final DateTimeFormatter CSV_DATE =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private static final int EXPORT_LIMIT = 5000;
 
     private final UserRepository userRepository;
@@ -57,12 +58,28 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
             throw SystemException.conflict(CoreConstants.EMAIL_ALREADY_EXISTS);
         if (userRepository.existsByPhoneNumber(phone))
             throw SystemException.conflict(CoreConstants.PHONE_ALREADY_EXISTS);
-        String fullName = request.fullName() == null || request.fullName().isBlank() ? null : request.fullName().trim();
-        AppUser user = UserAccountServiceImpl.createUser(
-                username, email, passwordEncoder.encode(request.password()), phone,
-                null, fullName, null, request.role(), UserStatus.ACTIVE);
+        String fullName =
+                request.fullName() == null || request.fullName().isBlank()
+                        ? null
+                        : request.fullName().trim();
+        AppUser user =
+                UserAccountServiceImpl.createUser(
+                        username,
+                        email,
+                        passwordEncoder.encode(request.password()),
+                        phone,
+                        null,
+                        fullName,
+                        null,
+                        request.role(),
+                        UserStatus.ACTIVE);
         AppUser saved = userRepository.save(user);
-        auditLogService.record(null, actor, AuditAction.CREATE, "USER", saved.getId().toString(),
+        auditLogService.record(
+                null,
+                actor,
+                AuditAction.CREATE,
+                "USER",
+                saved.getId().toString(),
                 "role=" + request.role());
         return userMapper.toResponse(saved);
     }
@@ -70,14 +87,17 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
     @Override
     @Transactional
     public void resetPassword(Long id, PasswordResetRequest request, String actor) {
-        AppUser user = userRepository.findById(id)
-                .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
+        AppUser user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
         user.setFailedAttempts(0);
         userRepository.save(user);
         // Existing sessions must not outlive a credential reset.
         refreshTokens.deleteByUser(user);
-        auditLogService.record(null, actor, AuditAction.UPDATE, "USER", id.toString(), "PASSWORD_RESET");
+        auditLogService.record(
+                null, actor, AuditAction.UPDATE, "USER", id.toString(), "PASSWORD_RESET");
     }
 
     @Override
@@ -102,22 +122,38 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
     @Override
     @Transactional(readOnly = true)
     public String exportCsv(String keyword, UserRole role, UserStatus status) {
-        Specification<AppUser> spec = Specification.where(UserSpecifications.hasKeyword(keyword))
-                .and(UserSpecifications.hasRole(role))
-                .and(UserSpecifications.hasStatus(status));
-        StringBuilder csv = new StringBuilder("﻿id,username,full_name,email,phone,role,status,locked,created_at\n");
+        Specification<AppUser> spec =
+                Specification.where(UserSpecifications.hasKeyword(keyword))
+                        .and(UserSpecifications.hasRole(role))
+                        .and(UserSpecifications.hasStatus(status));
+        StringBuilder csv =
+                new StringBuilder(
+                        "﻿id,username,full_name,email,phone,role,status,locked,created_at\n");
         userRepository.findAll(spec, Sort.by(Sort.Direction.DESC, "createdAt")).stream()
                 .limit(EXPORT_LIMIT)
-                .forEach(u -> csv.append(u.getId()).append(',')
-                        .append(cell(u.getUsername())).append(',')
-                        .append(cell(u.getFullName())).append(',')
-                        .append(cell(u.getEmail())).append(',')
-                        .append(cell(u.getPhoneNumber())).append(',')
-                        .append(u.getRole()).append(',')
-                        .append(u.getStatus()).append(',')
-                        .append(u.isManualLocked()).append(',')
-                        .append(u.getCreatedAt() == null ? "" : CSV_DATE.format(u.getCreatedAt()))
-                        .append('\n'));
+                .forEach(
+                        u ->
+                                csv.append(u.getId())
+                                        .append(',')
+                                        .append(cell(u.getUsername()))
+                                        .append(',')
+                                        .append(cell(u.getFullName()))
+                                        .append(',')
+                                        .append(cell(u.getEmail()))
+                                        .append(',')
+                                        .append(cell(u.getPhoneNumber()))
+                                        .append(',')
+                                        .append(u.getRole())
+                                        .append(',')
+                                        .append(u.getStatus())
+                                        .append(',')
+                                        .append(u.isManualLocked())
+                                        .append(',')
+                                        .append(
+                                                u.getCreatedAt() == null
+                                                        ? ""
+                                                        : CSV_DATE.format(u.getCreatedAt()))
+                                        .append('\n'));
         return csv.toString();
     }
 

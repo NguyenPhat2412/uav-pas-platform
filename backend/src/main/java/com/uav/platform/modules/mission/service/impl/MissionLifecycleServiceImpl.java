@@ -441,7 +441,8 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     }
 
     /** Stores the validated plan and moves the mission's map point to the centre of its flight area. */
-    private static void applyFlightPlan(Mission mission, com.uav.platform.modules.mission.dto.request.FlightPlanRequest plan) {
+    private static void applyFlightPlan(
+            Mission mission, com.uav.platform.modules.mission.dto.request.FlightPlanRequest plan) {
         if (plan == null) return;
         var resolved = FlightPlanOperations.resolve(plan);
         mission.setFlightPlan(FlightPlanOperations.write(resolved));

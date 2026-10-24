@@ -24,11 +24,16 @@ public class BillingProfileController {
 
     @GetMapping
     public ResponseEntity<BillingProfileResponse> get(Authentication authentication) {
-        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(profiles.get(authentication.getName()));
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .body(profiles.get(authentication.getName()));
     }
 
     @PutMapping
-    public ResponseEntity<BillingProfileResponse> update(@Valid @RequestBody BillingProfileRequest request, Authentication authentication) {
-        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(profiles.update(authentication.getName(), request));
+    public ResponseEntity<BillingProfileResponse> update(
+            @Valid @RequestBody BillingProfileRequest request, Authentication authentication) {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .body(profiles.update(authentication.getName(), request));
     }
 }

@@ -65,7 +65,8 @@ public class BillingController {
             @RequestParam(defaultValue = "false") boolean overdue,
             Authentication auth) {
         return ResponseEntity.ok(
-                billingService.listInvoices(auth, Pageables.desc(page, size, "createdAt"), status, overdue));
+                billingService.listInvoices(
+                        auth, Pageables.desc(page, size, "createdAt"), status, overdue));
     }
 
     @GetMapping("/invoices/{id}")

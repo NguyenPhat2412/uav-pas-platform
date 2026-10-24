@@ -53,7 +53,9 @@ public class AiController {
     @PostMapping("/tasks/{id}/results")
     @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
     public ResponseEntity<AiTaskResponse> submitResults(
-            @PathVariable Long id, @Valid @RequestBody AiTaskResultRequest request, Authentication auth) {
+            @PathVariable Long id,
+            @Valid @RequestBody AiTaskResultRequest request,
+            Authentication auth) {
         return ResponseEntity.ok(aiService.submitResults(id, request, auth));
     }
 

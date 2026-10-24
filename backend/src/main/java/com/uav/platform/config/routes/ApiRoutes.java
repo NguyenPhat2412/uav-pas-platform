@@ -20,14 +20,30 @@ public final class ApiRoutes {
 
         public static final String BASE = API_V1_PREFIX + "/auth";
         public static final String REGISTER = "/register";
+        public static final String REGISTER_OTP = "/register-otp";
+        public static final String VERIFY_EMAIL = "/verify-email";
         public static final String LOGIN = "/login";
+        public static final String VERIFY_2FA = "/verify-2fa";
+        public static final String RESEND_OTP = "/resend-otp";
+        public static final String FORGOT_PASSWORD = "/forgot-password";
+        public static final String RESET_PASSWORD = "/reset-password";
+        public static final String TWO_FACTOR_STATUS = "/2fa/status";
+        public static final String TWO_FACTOR_SETUP = "/2fa/setup";
+        public static final String TWO_FACTOR_ENABLE = "/2fa/enable";
+        public static final String TWO_FACTOR_DISABLE = "/2fa/disable";
         public static final String ME = "/me";
         public static final String REFRESH = "/refresh";
         public static final String LOGOUT = "/logout";
 
         // Full URL paths
         public static final String FULL_REGISTER = BASE + REGISTER;
+        public static final String FULL_REGISTER_OTP = BASE + REGISTER_OTP;
+        public static final String FULL_VERIFY_EMAIL = BASE + VERIFY_EMAIL;
         public static final String FULL_LOGIN = BASE + LOGIN;
+        public static final String FULL_VERIFY_2FA = BASE + VERIFY_2FA;
+        public static final String FULL_RESEND_OTP = BASE + RESEND_OTP;
+        public static final String FULL_FORGOT_PASSWORD = BASE + FORGOT_PASSWORD;
+        public static final String FULL_RESET_PASSWORD = BASE + RESET_PASSWORD;
         public static final String FULL_ME = BASE + ME;
         public static final String FULL_REFRESH = BASE + REFRESH;
         public static final String FULL_LOGOUT = BASE + LOGOUT;
@@ -296,6 +312,14 @@ public final class ApiRoutes {
      * Danh sách route Auth công khai (cho phép truy cập trước khi đăng nhập)
      */
     public static final String[] PUBLIC_AUTH_WHITELIST = {
-        Auth.FULL_LOGIN, Auth.FULL_REGISTER, Auth.FULL_REFRESH
+        Auth.FULL_LOGIN,
+        Auth.FULL_REGISTER,
+        Auth.FULL_REGISTER_OTP,
+        Auth.FULL_VERIFY_EMAIL,
+        Auth.FULL_VERIFY_2FA,
+        Auth.FULL_RESEND_OTP,
+        Auth.FULL_FORGOT_PASSWORD,
+        Auth.FULL_RESET_PASSWORD,
+        Auth.FULL_REFRESH
     };
 }

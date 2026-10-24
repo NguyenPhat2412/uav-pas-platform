@@ -16,6 +16,9 @@ public interface MissionMapper {
     @Mapping(target = "stationId", source = "station.id")
     @Mapping(target = "uavId", source = "uav.id")
     @Mapping(target = "operatorId", source = "operator.id")
-    @Mapping(target = "flightPlan", expression = "java(com.uav.platform.modules.mission.service.impl.FlightPlanOperations.read(mission.getFlightPlan()))")
+    @Mapping(
+            target = "flightPlan",
+            expression =
+                    "java(com.uav.platform.modules.mission.service.impl.FlightPlanOperations.read(mission.getFlightPlan()))")
     MissionResponse toResponse(Mission mission);
 }

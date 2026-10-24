@@ -170,12 +170,20 @@ public class SarServiceImpl implements SarService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SarCockpitMissionResponse> listForCockpit(boolean includeClosed, Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated() || permissionService == null)
-            throw new org.springframework.security.access.AccessDeniedException("Authentication required");
-        boolean all = permissionService.has(authentication, "MISSION_VIEW_ALL")
-                || permissionService.has(authentication, "USER_MANAGE");
-        Specification<SarMission> spec = all ? Specification.unrestricted() : SarSpecifications.visibleTo(authentication.getName());
+    public List<SarCockpitMissionResponse> listForCockpit(
+            boolean includeClosed, Authentication authentication) {
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || permissionService == null)
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Authentication required");
+        boolean all =
+                permissionService.has(authentication, "MISSION_VIEW_ALL")
+                        || permissionService.has(authentication, "USER_MANAGE");
+        Specification<SarMission> spec =
+                all
+                        ? Specification.unrestricted()
+                        : SarSpecifications.visibleTo(authentication.getName());
         return sarRepository.findAll(spec, Sort.by(Sort.Direction.DESC, "updatedAt")).stream()
                 .filter(sar -> includeClosed || sar.getSarStatus() != SarStatus.RESCUED)
                 .map(SarServiceImpl::toCockpit)
@@ -185,24 +193,36 @@ public class SarServiceImpl implements SarService {
     static SarCockpitMissionResponse toCockpit(SarMission sar) {
         Mission m = sar.getMission();
         var uav = m.getUav();
-        Station station = m.getStation() != null ? m.getStation() : uav != null ? uav.getStation() : null;
+        Station station =
+                m.getStation() != null ? m.getStation() : uav != null ? uav.getStation() : null;
         return new SarCockpitMissionResponse(
-                sar.getId(), m.getId(), m.getCode(), m.getTitle(),
+                sar.getId(),
+                m.getId(),
+                m.getCode(),
+                m.getTitle(),
                 m.getStatus() != null ? m.getStatus().name() : null,
                 m.getPriority() != null ? m.getPriority().name() : null,
-                sar.getSarStatus(), sar.getLkpLatitude(), sar.getLkpLongitude(), sar.getDriftRadiusMeters(),
-                sar.getSearchAreaPolygon(), sar.getVictimCountEstimated(), sar.getEmergencyContact(),
-                uav != null ? uav.getId() : null, uav != null ? uav.getModel() : null,
+                sar.getSarStatus(),
+                sar.getLkpLatitude(),
+                sar.getLkpLongitude(),
+                sar.getDriftRadiusMeters(),
+                sar.getSearchAreaPolygon(),
+                sar.getVictimCountEstimated(),
+                sar.getEmergencyContact(),
+                uav != null ? uav.getId() : null,
+                uav != null ? uav.getModel() : null,
                 uav != null ? uav.getSerialNumber() : null,
                 m.getOperator() != null ? m.getOperator().getFullName() : null,
                 station != null ? station.getName() : null,
                 station != null ? station.getLatitude() : null,
                 station != null ? station.getLongitude() : null,
-                m.getStartTime(), sar.getUpdatedAt());
+                m.getStartTime(),
+                sar.getUpdatedAt());
     }
 
     @Override
-    public RescueDispatchResponse requestReturnToHome(Long missionId, Authentication authentication) {
+    public RescueDispatchResponse requestReturnToHome(
+            Long missionId, Authentication authentication) {
         Mission mission = requiredMission(missionId, authentication);
         if (mission.getUav() == null) throw SystemException.badRequest("SAR_NO_UAV_ASSIGNED");
         Map<String, Object> data = new HashMap<>();
@@ -212,14 +232,24 @@ public class SarServiceImpl implements SarService {
         data.put("uavSerialNumber", mission.getUav().getSerialNumber());
         data.put("requestedBy", authentication.getName());
         data.put("requestedAt", LocalDateTime.now().toString());
-        String outcome = webhookService != null ? webhookService.dispatchEvent("SAR_RTH_REQUESTED", data) : "UNCONFIGURED";
-        sarRepository.findByMissionId(missionId).ifPresent(sar -> {
-            if (sar.getSarStatus() == SarStatus.SEARCHING) {
-                sar.setSarStatus(SarStatus.SUSPENDED);
-                sarRepository.save(sar);
-            }
-        });
-        return new RescueDispatchResponse(outcome, false, "SAR_RTH_REQUESTED", mission.getId(),
+        String outcome =
+                webhookService != null
+                        ? webhookService.dispatchEvent("SAR_RTH_REQUESTED", data)
+                        : "UNCONFIGURED";
+        sarRepository
+                .findByMissionId(missionId)
+                .ifPresent(
+                        sar -> {
+                            if (sar.getSarStatus() == SarStatus.SEARCHING) {
+                                sar.setSarStatus(SarStatus.SUSPENDED);
+                                sarRepository.save(sar);
+                            }
+                        });
+        return new RescueDispatchResponse(
+                outcome,
+                false,
+                "SAR_RTH_REQUESTED",
+                mission.getId(),
                 LocalDateTime.now().toString(),
                 "QUEUED".equals(outcome)
                         ? "RTH request queued for the ground-station integration; awaiting UAV confirmation."

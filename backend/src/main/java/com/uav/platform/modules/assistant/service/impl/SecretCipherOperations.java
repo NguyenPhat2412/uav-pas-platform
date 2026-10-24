@@ -20,9 +20,14 @@ public final class SecretCipherOperations {
 
     /** The key material is hashed to 256 bits so any non-empty secret string works. */
     public SecretCipherOperations(String keyMaterial) {
-        if (keyMaterial == null || keyMaterial.isBlank()) throw new IllegalStateException("Secret key material is required");
+        if (keyMaterial == null || keyMaterial.isBlank())
+            throw new IllegalStateException("Secret key material is required");
         try {
-            byte[] digest = MessageDigest.getInstance("SHA-256").digest(("uav-pas/ai-router/" + keyMaterial).getBytes(StandardCharsets.UTF_8));
+            byte[] digest =
+                    MessageDigest.getInstance("SHA-256")
+                            .digest(
+                                    ("uav-pas/ai-router/" + keyMaterial)
+                                            .getBytes(StandardCharsets.UTF_8));
             this.key = new SecretKeySpec(digest, "AES");
         } catch (GeneralSecurityException e) {
             throw new IllegalStateException(e);
@@ -50,7 +55,8 @@ public final class SecretCipherOperations {
             byte[] in = Base64.getDecoder().decode(encoded);
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.DECRYPT_MODE, key, new GCMParameterSpec(TAG_BITS, in, 0, IV_BYTES));
-            return new String(cipher.doFinal(in, IV_BYTES, in.length - IV_BYTES), StandardCharsets.UTF_8);
+            return new String(
+                    cipher.doFinal(in, IV_BYTES, in.length - IV_BYTES), StandardCharsets.UTF_8);
         } catch (GeneralSecurityException | IllegalArgumentException e) {
             throw new IllegalStateException("Decryption failed", e);
         }

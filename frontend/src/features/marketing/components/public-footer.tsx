@@ -29,8 +29,8 @@ export function PublicFooter() {
                 </div>
                 <div className="flex flex-col gap-2">
                     <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Tiếp tục</h2>
-                    <a className="hover:text-primary transition-colors" href={`${customerUrl}/login`}>Đăng nhập</a>
-                    <a className="hover:text-primary transition-colors" href={`${customerUrl}/register`}>Tạo tài khoản</a>
+                    <Link className="hover:text-primary transition-colors" href="/?auth=login">Đăng nhập</Link>
+                    <Link className="hover:text-primary transition-colors" href="/?auth=register">Tạo tài khoản</Link>
                     <Link className="hover:text-primary transition-colors" href="/contact">Liên hệ</Link>
                 </div>
                 <div className="flex flex-col gap-2">

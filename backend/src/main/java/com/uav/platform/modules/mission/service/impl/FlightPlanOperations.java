@@ -23,8 +23,10 @@ public final class FlightPlanOperations {
     private FlightPlanOperations() {}
 
     public static FlightPlanResponse resolve(FlightPlanRequest plan) {
-        if (!ALTITUDES.contains(plan.altitudeAglMeters())) throw SystemException.badRequest("FLIGHT_ALTITUDE_INVALID");
-        if (!GSD.contains(plan.targetGsdCm())) throw SystemException.badRequest("FLIGHT_GSD_INVALID");
+        if (!ALTITUDES.contains(plan.altitudeAglMeters()))
+            throw SystemException.badRequest("FLIGHT_ALTITUDE_INVALID");
+        if (!GSD.contains(plan.targetGsdCm()))
+            throw SystemException.badRequest("FLIGHT_GSD_INVALID");
         List<List<Double>> vertices = plan.vertices() == null ? List.of() : plan.vertices();
         vertices.forEach(FlightPlanOperations::checkCoordinate);
         double[] center;
@@ -32,7 +34,8 @@ public final class FlightPlanOperations {
         Integer radius = null;
         switch (plan.areaType()) {
             case "POLYGON" -> {
-                if (vertices.size() < 3) throw SystemException.badRequest("FLIGHT_POLYGON_TOO_SMALL");
+                if (vertices.size() < 3)
+                    throw SystemException.badRequest("FLIGHT_POLYGON_TOO_SMALL");
                 center = centroid(vertices);
                 double[][] xy = project(vertices, center);
                 area = Math.abs(shoelace(xy));
@@ -40,22 +43,39 @@ public final class FlightPlanOperations {
                 if (area < 1) throw SystemException.badRequest("FLIGHT_POLYGON_TOO_SMALL");
             }
             case "CIRCLE" -> {
-                if (vertices.size() != 1 || plan.radiusMeters() == null) throw SystemException.badRequest("FLIGHT_CIRCLE_INVALID");
+                if (vertices.size() != 1 || plan.radiusMeters() == null)
+                    throw SystemException.badRequest("FLIGHT_CIRCLE_INVALID");
                 radius = plan.radiusMeters();
-                center = new double[]{vertices.get(0).get(0), vertices.get(0).get(1)};
+                center = new double[] {vertices.get(0).get(0), vertices.get(0).get(1)};
                 area = Math.PI * radius * radius;
                 perimeter = 2 * Math.PI * radius;
             }
             default -> {
-                if (plan.takeoffLatitude() == null || plan.takeoffLongitude() == null) throw SystemException.badRequest("FLIGHT_TAKEOFF_REQUIRED");
-                center = new double[]{plan.takeoffLatitude(), plan.takeoffLongitude()};
+                if (plan.takeoffLatitude() == null || plan.takeoffLongitude() == null)
+                    throw SystemException.badRequest("FLIGHT_TAKEOFF_REQUIRED");
+                center = new double[] {plan.takeoffLatitude(), plan.takeoffLongitude()};
                 vertices = List.of();
             }
         }
-        return new FlightPlanResponse(plan.areaType(), vertices, radius, plan.takeoffLatitude(), plan.takeoffLongitude(),
-                round(center[0], 7), round(center[1], 7), area == null ? null : round(area, 1), perimeter == null ? null : round(perimeter, 1),
-                plan.altitudeAglMeters(), plan.targetGsdCm(), plan.forwardOverlap(), plan.sideOverlap(), List.copyOf(plan.sensors()),
-                plan.obstacles() == null || plan.obstacles().isBlank() ? null : plan.obstacles().trim(), plan.permitSupport());
+        return new FlightPlanResponse(
+                plan.areaType(),
+                vertices,
+                radius,
+                plan.takeoffLatitude(),
+                plan.takeoffLongitude(),
+                round(center[0], 7),
+                round(center[1], 7),
+                area == null ? null : round(area, 1),
+                perimeter == null ? null : round(perimeter, 1),
+                plan.altitudeAglMeters(),
+                plan.targetGsdCm(),
+                plan.forwardOverlap(),
+                plan.sideOverlap(),
+                List.copyOf(plan.sensors()),
+                plan.obstacles() == null || plan.obstacles().isBlank()
+                        ? null
+                        : plan.obstacles().trim(),
+                plan.permitSupport());
     }
 
     public static String write(FlightPlanResponse plan) {
@@ -87,7 +107,7 @@ public final class FlightPlanOperations {
             lat += p.get(0);
             lng += p.get(1);
         }
-        return new double[]{lat / vertices.size(), lng / vertices.size()};
+        return new double[] {lat / vertices.size(), lng / vertices.size()};
     }
 
     /** Metres east (x) and north (y) of the reference point. */

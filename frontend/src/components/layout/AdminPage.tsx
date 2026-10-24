@@ -22,7 +22,7 @@ export function AdminPage({title, permission, activeResource, children}: {
     const isAdmin = canUsePortal(user?.role, 'admin');
     useEffect(() => {
         if (isLoading) return;
-        if (!isAuthenticated) router.replace("/admin/login");
+        if (!isAuthenticated) router.replace("/?auth=login&next=/admin/dashboard");
         else if (!isAdmin) router.replace(portalHome(portalForRole(user?.role)));
     }, [isAuthenticated, isAdmin, isLoading, router, user?.role]);
     if (isLoading || !isAuthenticated || !isAdmin) return <div className="flex min-h-screen items-center justify-center"><Spinner

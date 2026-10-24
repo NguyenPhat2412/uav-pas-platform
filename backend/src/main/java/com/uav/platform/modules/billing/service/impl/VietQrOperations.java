@@ -13,12 +13,19 @@ public final class VietQrOperations {
 
     private VietQrOperations() {}
 
-    public static String build(String bankBin, String accountNumber, BigDecimal amount, String memo) {
+    public static String build(
+            String bankBin, String accountNumber, BigDecimal amount, String memo) {
         String beneficiary = tlv("00", bankBin) + tlv("01", accountNumber);
         String merchant = tlv("00", "A000000727") + tlv("01", beneficiary) + tlv("02", "QRIBFTTA");
-        String body = tlv("00", "01") + tlv("01", "12") + tlv("38", merchant) + tlv("53", "704")
-                + tlv("54", amount.setScale(0, RoundingMode.HALF_UP).toPlainString()) + tlv("58", "VN")
-                + tlv("62", tlv("08", sanitizeMemo(memo))) + "6304";
+        String body =
+                tlv("00", "01")
+                        + tlv("01", "12")
+                        + tlv("38", merchant)
+                        + tlv("53", "704")
+                        + tlv("54", amount.setScale(0, RoundingMode.HALF_UP).toPlainString())
+                        + tlv("58", "VN")
+                        + tlv("62", tlv("08", sanitizeMemo(memo)))
+                        + "6304";
         return body + crc16(body);
     }
 

@@ -11,14 +11,14 @@ import com.uav.platform.modules.role.repository.RoleTemplatePermissionRepository
 import com.uav.platform.modules.role.repository.RoleTemplateRepository;
 import com.uav.platform.modules.user.enums.UserRole;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import java.lang.reflect.Method;
 import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * The fleet map lists every UAV with the active mission it serves, across all customers. Customers
@@ -47,7 +47,8 @@ class FleetMapAccessTest {
                         mock(PermissionRepository.class),
                         mock(RoleTemplateRepository.class),
                         mock(RoleTemplatePermissionRepository.class));
-        Method method = PermissionDataInitializer.class.getDeclaredMethod("defaults", UserRole.class);
+        Method method =
+                PermissionDataInitializer.class.getDeclaredMethod("defaults", UserRole.class);
         method.setAccessible(true);
         return (EnumSet<PermissionCode>) method.invoke(initializer, role);
     }

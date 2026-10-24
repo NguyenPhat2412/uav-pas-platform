@@ -28,7 +28,8 @@ class SarCockpitTest {
     final MissionRepository missions = mock(MissionRepository.class);
     final WebhookService hooks = mock(WebhookService.class);
     final PermissionService permissions = mock(PermissionService.class);
-    final SarServiceImpl service = new SarServiceImpl(sars, missions, mock(NotificationService.class), hooks, permissions);
+    final SarServiceImpl service =
+            new SarServiceImpl(sars, missions, mock(NotificationService.class), hooks, permissions);
     final UsernamePasswordAuthenticationToken auth =
             new UsernamePasswordAuthenticationToken("pilot", "", List.of(() -> "ROLE_X"));
 

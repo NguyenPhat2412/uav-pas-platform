@@ -21,7 +21,8 @@ public interface BillingService {
     PageResponse<InvoiceResponse> listInvoices(Authentication auth, Pageable pageable);
 
     /** status narrows to one state; overdue keeps only PENDING invoices whose due date has passed. */
-    PageResponse<InvoiceResponse> listInvoices(Authentication auth, Pageable pageable, InvoiceStatus status, boolean overdue);
+    PageResponse<InvoiceResponse> listInvoices(
+            Authentication auth, Pageable pageable, InvoiceStatus status, boolean overdue);
 
     InvoiceResponse getInvoice(Long id, Authentication auth);
 

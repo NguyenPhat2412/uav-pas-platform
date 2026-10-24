@@ -50,7 +50,8 @@ public class ServiceOfferingController {
 
     @PatchMapping("/{id}/active")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_CONFIRM')")
-    public ResponseEntity<ServiceOfferingResponse> setActive(@PathVariable Long id, @RequestParam boolean active) {
+    public ResponseEntity<ServiceOfferingResponse> setActive(
+            @PathVariable Long id, @RequestParam boolean active) {
         return ResponseEntity.ok(services.setActive(id, active));
     }
 }

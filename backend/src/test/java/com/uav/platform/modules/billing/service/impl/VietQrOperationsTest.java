@@ -15,7 +15,12 @@ class VietQrOperationsTest {
 
     @Test
     void payloadCarriesAccountAmountAndMemoAndEndsWithItsOwnCrc() {
-        String payload = VietQrOperations.build("970436", "0123456789", new BigDecimal("500000.00"), "UAV INV INV20261022B2CFF6");
+        String payload =
+                VietQrOperations.build(
+                        "970436",
+                        "0123456789",
+                        new BigDecimal("500000.00"),
+                        "UAV INV INV20261022B2CFF6");
         assertTrue(payload.startsWith("000201010212"));
         assertTrue(payload.contains("0010A000000727"));
         assertTrue(payload.contains("0006970436" + "01100123456789"));
@@ -28,13 +33,16 @@ class VietQrOperationsTest {
 
     @Test
     void transferContentDropsSeparatorsAndFitsTheMemoLimit() {
-        assertEquals("UAV INV INV20261022B2CFF6", BankTransferServiceImpl.transferContent("INV-20261022-B2CFF6"));
+        assertEquals(
+                "UAV INV INV20261022B2CFF6",
+                BankTransferServiceImpl.transferContent("INV-20261022-B2CFF6"));
         assertTrue(VietQrOperations.sanitizeMemo("x".repeat(40)).length() <= 25);
     }
 
     @Test
     void vatInclusiveAmountsSplitWithoutLosingADong() {
-        BigDecimal[] split = BankTransferServiceImpl.splitVat(new BigDecimal("500000"), new BigDecimal("0.10"));
+        BigDecimal[] split =
+                BankTransferServiceImpl.splitVat(new BigDecimal("500000"), new BigDecimal("0.10"));
         assertEquals(new BigDecimal("454545"), split[0]);
         assertEquals(0, new BigDecimal("500000").compareTo(split[0].add(split[1])));
     }

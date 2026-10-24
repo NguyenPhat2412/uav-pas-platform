@@ -70,24 +70,36 @@ public class AuditLogServiceImpl implements AuditLogService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<AuditLogResponse> findAll(AuditLogQueryRequest query, Pageable pageable) {
-        return PageResponse.from(repository.findAll(filter(query), pageable), auditLogMapper::toResponse);
+        return PageResponse.from(
+                repository.findAll(filter(query), pageable), auditLogMapper::toResponse);
     }
 
     static Specification<AuditLog> filter(AuditLogQueryRequest query) {
         return (root, criteria, cb) -> {
-            java.util.List<jakarta.persistence.criteria.Predicate> where = new java.util.ArrayList<>();
+            java.util.List<jakarta.persistence.criteria.Predicate> where =
+                    new java.util.ArrayList<>();
             if (query.actor() != null && !query.actor().isBlank())
-                where.add(cb.like(cb.lower(root.get("actorUsername")),
-                        "%" + query.actor().trim().toLowerCase(java.util.Locale.ROOT) + "%"));
+                where.add(
+                        cb.like(
+                                cb.lower(root.get("actorUsername")),
+                                "%"
+                                        + query.actor().trim().toLowerCase(java.util.Locale.ROOT)
+                                        + "%"));
             if (query.action() != null) where.add(cb.equal(root.get("action"), query.action()));
             if (query.entityType() != null && !query.entityType().isBlank())
-                where.add(cb.equal(cb.upper(root.get("entityType")), query.entityType().trim().toUpperCase(java.util.Locale.ROOT)));
+                where.add(
+                        cb.equal(
+                                cb.upper(root.get("entityType")),
+                                query.entityType().trim().toUpperCase(java.util.Locale.ROOT)));
             if (query.entityId() != null && !query.entityId().isBlank())
                 where.add(cb.equal(root.get("entityId"), query.entityId().trim()));
             if (query.from() != null)
-                where.add(cb.greaterThanOrEqualTo(root.get("createdAt"), query.from().atStartOfDay()));
+                where.add(
+                        cb.greaterThanOrEqualTo(
+                                root.get("createdAt"), query.from().atStartOfDay()));
             if (query.to() != null)
-                where.add(cb.lessThan(root.get("createdAt"), query.to().plusDays(1).atStartOfDay()));
+                where.add(
+                        cb.lessThan(root.get("createdAt"), query.to().plusDays(1).atStartOfDay()));
             return cb.and(where.toArray(jakarta.persistence.criteria.Predicate[]::new));
         };
     }

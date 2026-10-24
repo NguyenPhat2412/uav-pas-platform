@@ -70,13 +70,20 @@ public class AvatarServiceImpl implements AvatarService {
         // confirm() checks storage contents and that the caller uploaded this unlinked asset.
         MediaAssetResponse asset = media.confirm(mediaId, username);
         if (asset.linkedEntityType() != null && !asset.linkedEntityType().isBlank())
-            throw SystemException.badRequest("Ảnh đại diện phải là tệp tải lên riêng.", "AVATAR_INVALID");
+            throw SystemException.badRequest(
+                    "Ảnh đại diện phải là tệp tải lên riêng.", "AVATAR_INVALID");
         validate(asset.contentType(), asset.size());
         Long previous = versionOf(user.getAvatarUrl());
         user.setAvatarUrl(path(user.getId(), mediaId));
         users.save(user);
         if (previous != null && !previous.equals(mediaId)) retire(previous, username);
-        audit.record(user.getId(), username, AuditAction.UPDATE, "USER_PROFILE", user.getId().toString(), "AVATAR_UPDATED");
+        audit.record(
+                user.getId(),
+                username,
+                AuditAction.UPDATE,
+                "USER_PROFILE",
+                user.getId().toString(),
+                "AVATAR_UPDATED");
         return new AvatarResponse(user.getAvatarUrl());
     }
 
@@ -88,20 +95,34 @@ public class AvatarServiceImpl implements AvatarService {
         user.setAvatarUrl(null);
         users.save(user);
         if (previous != null) retire(previous, username);
-        audit.record(user.getId(), username, AuditAction.UPDATE, "USER_PROFILE", user.getId().toString(), "AVATAR_REMOVED");
+        audit.record(
+                user.getId(),
+                username,
+                AuditAction.UPDATE,
+                "USER_PROFILE",
+                user.getId().toString(),
+                "AVATAR_REMOVED");
     }
 
     @Override
     @Transactional(readOnly = true)
     public String signedUrl(Long userId, Authentication viewer) {
-        AppUser user = users.findById(userId).orElseThrow(() -> SystemException.notFound("Avatar not found"));
+        AppUser user =
+                users.findById(userId)
+                        .orElseThrow(() -> SystemException.notFound("Avatar not found"));
         boolean self = viewer != null && user.getUsername().equals(viewer.getName());
-        if (!self && !permissions.has(viewer, "USER_READ")) throw SystemException.notFound("Avatar not found");
+        if (!self && !permissions.has(viewer, "USER_READ"))
+            throw SystemException.notFound("Avatar not found");
         Long mediaId = versionOf(user.getAvatarUrl());
         if (mediaId == null) throw SystemException.notFound("Avatar not found");
-        var asset = assets.findById(mediaId)
-                .filter(a -> a.isConfirmed() && !a.isDeleted() && user.getUsername().equals(a.getUploadedBy()))
-                .orElseThrow(() -> SystemException.notFound("Avatar not found"));
+        var asset =
+                assets.findById(mediaId)
+                        .filter(
+                                a ->
+                                        a.isConfirmed()
+                                                && !a.isDeleted()
+                                                && user.getUsername().equals(a.getUploadedBy()))
+                        .orElseThrow(() -> SystemException.notFound("Avatar not found"));
         return storage.createSignedDownloadUrl(asset.getObjectKey());
     }
 
@@ -117,14 +138,16 @@ public class AvatarServiceImpl implements AvatarService {
 
     private static void validate(String contentType, long size) {
         if (!TYPES.contains(contentType) || size < 1 || size > MAX_BYTES)
-            throw SystemException.badRequest("Ảnh đại diện phải là JPEG, PNG hoặc WebP, tối đa 5 MB.", "AVATAR_INVALID");
+            throw SystemException.badRequest(
+                    "Ảnh đại diện phải là JPEG, PNG hoặc WebP, tối đa 5 MB.", "AVATAR_INVALID");
     }
 
     private void retire(Long mediaId, String username) {
         try {
             media.delete(mediaId, username);
         } catch (RuntimeException ignored) {
-            // A stale picture left in storage is harmless; never fail the avatar change because of it.
+            // A stale picture left in storage is harmless; never fail the avatar change because of
+            // it.
         }
     }
 

@@ -411,12 +411,21 @@ class BillingServiceTest {
         Authentication auth = authentication("owner");
         Pageable pageable = PageRequest.of(0, 10);
         stubUser(auth, owner);
-        when(invoiceRepository.findAll(org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<Invoice>>any(), org.mockito.ArgumentMatchers.eq(pageable)))
+        when(invoiceRepository.findAll(
+                        org.mockito.ArgumentMatchers
+                                .<org.springframework.data.jpa.domain.Specification<Invoice>>any(),
+                        org.mockito.ArgumentMatchers.eq(pageable)))
                 .thenReturn(new PageImpl<>(List.of(invoice(owner)), pageable, 1));
 
-        assertEquals(1, service.listInvoices(auth, pageable, InvoiceStatus.PENDING, true).content().size());
+        assertEquals(
+                1,
+                service.listInvoices(auth, pageable, InvoiceStatus.PENDING, true).content().size());
 
-        verify(invoiceRepository).findAll(org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<Invoice>>any(), org.mockito.ArgumentMatchers.eq(pageable));
+        verify(invoiceRepository)
+                .findAll(
+                        org.mockito.ArgumentMatchers
+                                .<org.springframework.data.jpa.domain.Specification<Invoice>>any(),
+                        org.mockito.ArgumentMatchers.eq(pageable));
         verify(invoiceRepository, never()).findByUserIdOrderByCreatedAtDesc(1L, pageable);
     }
 
@@ -452,13 +461,22 @@ class BillingServiceTest {
         ServicePlan pro = pricedPlan(2L, "PRO", "15000000");
         when(planRepository.findByCode("PRO")).thenReturn(Optional.of(pro));
         when(invoiceRepository.findByUserId(1L)).thenReturn(List.of());
-        when(invoiceRepository.save(org.mockito.ArgumentMatchers.any())).thenAnswer(inv -> inv.getArgument(0));
+        when(invoiceRepository.save(org.mockito.ArgumentMatchers.any()))
+                .thenAnswer(inv -> inv.getArgument(0));
 
         var issued = service.subscribe("PRO", auth);
         assertEquals(0, new BigDecimal("15000000").compareTo(issued.amount()));
         assertEquals(InvoiceStatus.PENDING, issued.status());
 
-        Invoice open = new Invoice("INV-OPEN", owner, null, pro, pro.getPrice(), LocalDateTime.now().plusDays(7), null);
+        Invoice open =
+                new Invoice(
+                        "INV-OPEN",
+                        owner,
+                        null,
+                        pro,
+                        pro.getPrice(),
+                        LocalDateTime.now().plusDays(7),
+                        null);
         when(invoiceRepository.findByUserId(1L)).thenReturn(List.of(open));
         assertEquals("INV-OPEN", service.subscribe("PRO", auth).code());
     }
@@ -469,17 +487,28 @@ class BillingServiceTest {
         Authentication auth = authentication("manager");
         stubUser(auth, manager);
         when(permissions.has(auth, "USER_MANAGE")).thenReturn(true);
-        org.springframework.jdbc.core.JdbcTemplate jdbc = org.mockito.Mockito.mock(org.springframework.jdbc.core.JdbcTemplate.class);
+        org.springframework.jdbc.core.JdbcTemplate jdbc =
+                org.mockito.Mockito.mock(org.springframework.jdbc.core.JdbcTemplate.class);
         org.springframework.test.util.ReflectionTestUtils.setField(service, "billingJdbc", jdbc);
         Invoice pending = invoice(user(1L, "owner"));
         when(invoiceRepository.findById(10L)).thenReturn(Optional.of(pending));
         when(paymentRepository.findByTransactionCode("FT26297ABC")).thenReturn(Optional.empty());
 
-        assertEquals(InvoiceStatus.PAID, service.confirmBankTransfer(10L, " FT26297ABC ", auth).status());
-        verify(paymentRepository).save(org.mockito.ArgumentMatchers.argThat(t ->
-                "FT26297ABC".equals(t.getTransactionCode()) && "BANK_TRANSFER_MANUAL".equals(t.getGatewayName())));
+        assertEquals(
+                InvoiceStatus.PAID,
+                service.confirmBankTransfer(10L, " FT26297ABC ", auth).status());
+        verify(paymentRepository)
+                .save(
+                        org.mockito.ArgumentMatchers.argThat(
+                                t ->
+                                        "FT26297ABC".equals(t.getTransactionCode())
+                                                && "BANK_TRANSFER_MANUAL"
+                                                        .equals(t.getGatewayName())));
 
-        SystemException again = assertThrows(SystemException.class, () -> service.confirmBankTransfer(10L, "FT-OTHER", auth));
+        SystemException again =
+                assertThrows(
+                        SystemException.class,
+                        () -> service.confirmBankTransfer(10L, "FT-OTHER", auth));
         assertEquals("Invoice is not pending payment", again.getMessage());
     }
 }

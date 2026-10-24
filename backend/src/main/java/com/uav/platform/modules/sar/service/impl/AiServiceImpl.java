@@ -196,7 +196,8 @@ public class AiServiceImpl implements AiService {
                         request.processingNode(),
                         request.confidenceThreshold());
 
-        // Inference runs on the KV260 edge board or the cloud worker; it reports back via submitResults.
+        // Inference runs on the KV260 edge board or the cloud worker; it reports back via
+        // submitResults.
         AiTask savedTask = aiTaskRepository.save(task);
         return sarMapper.toAiTaskResponse(savedTask);
     }
@@ -238,9 +239,15 @@ public class AiServiceImpl implements AiService {
     }
 
     @Override
-    public AiTaskResponse submitResults(Long taskId, AiTaskResultRequest request, Authentication authentication) {
-        AiTask task = aiTaskRepository.findById(taskId)
-                .orElseThrow(() -> SystemException.notFound("AI task not found with id: " + taskId));
+    public AiTaskResponse submitResults(
+            Long taskId, AiTaskResultRequest request, Authentication authentication) {
+        AiTask task =
+                aiTaskRepository
+                        .findById(taskId)
+                        .orElseThrow(
+                                () ->
+                                        SystemException.notFound(
+                                                "AI task not found with id: " + taskId));
         if (task.getStatus() == AiTaskStatus.COMPLETED || task.getStatus() == AiTaskStatus.FAILED)
             throw SystemException.conflict("AI_TASK_ALREADY_FINISHED");
         boolean failed = "FAILED".equals(request.status());
@@ -254,21 +261,42 @@ public class AiServiceImpl implements AiService {
         AiTask saved = aiTaskRepository.save(task);
 
         Mission mission = saved.getMission();
-        List<AiDetection> detections = failed || request.detections() == null ? List.of()
-                : request.detections().stream()
-                        .map(d -> new AiDetection(saved, mission, d.label().trim(), d.confidence(), d.boxTop(), d.boxLeft(),
-                                d.boxWidth(), d.boxHeight(), d.latitude(), d.longitude(), d.trackingId()))
-                        .toList();
+        List<AiDetection> detections =
+                failed || request.detections() == null
+                        ? List.of()
+                        : request.detections().stream()
+                                .map(
+                                        d ->
+                                                new AiDetection(
+                                                        saved,
+                                                        mission,
+                                                        d.label().trim(),
+                                                        d.confidence(),
+                                                        d.boxTop(),
+                                                        d.boxLeft(),
+                                                        d.boxWidth(),
+                                                        d.boxHeight(),
+                                                        d.latitude(),
+                                                        d.longitude(),
+                                                        d.trackingId()))
+                                .toList();
         aiDetectionRepository.saveAll(detections);
 
-        if (!detections.isEmpty() && notificationService != null && mission.getCustomer() != null
+        if (!detections.isEmpty()
+                && notificationService != null
+                && mission.getCustomer() != null
                 && mission.getCustomer().getId() != null) {
             try {
-                notificationService.sendNotification(new CreateNotificationRequest(
-                        mission.getCustomer().getId(),
-                        "AI detections - Mission " + mission.getCode(),
-                        detections.size() + " candidate(s) reported by " + saved.getProcessingNode(),
-                        NotificationType.SAR_TARGET_FOUND, "MISSION", mission.getId()));
+                notificationService.sendNotification(
+                        new CreateNotificationRequest(
+                                mission.getCustomer().getId(),
+                                "AI detections - Mission " + mission.getCode(),
+                                detections.size()
+                                        + " candidate(s) reported by "
+                                        + saved.getProcessingNode(),
+                                NotificationType.SAR_TARGET_FOUND,
+                                "MISSION",
+                                mission.getId()));
             } catch (RuntimeException ignored) {
             }
         }

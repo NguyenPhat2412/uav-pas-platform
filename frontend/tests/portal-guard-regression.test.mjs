@@ -192,7 +192,8 @@ for (const [search, storedDemo] of [['', null], ['?demo=true', null], ['', 'true
             children: 'PROTECTED_USER_DATA'
         }));
         assert.equal(rendered.includes('PROTECTED_USER_DATA'), state.visible);
-        assert.deepEqual(h.redirects, state.redirect ? ['/admin/login'] : []);
+        // Anonymous visitors go to the shared sign-in dialog on the home page, then back to the admin dashboard.
+        assert.deepEqual(h.redirects, state.redirect ? ['/?auth=login&next=/admin/dashboard'] : []);
         if (state.visible) assert.ok(h.permissions.includes('USER_READ'));
     });
 

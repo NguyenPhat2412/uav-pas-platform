@@ -36,6 +36,13 @@ public class AuthServiceImpl implements AuthService {
     private final com.uav.platform.modules.auth.service.AuthSessionLock sessionLock;
     private final AuthMapper authMapper;
     private final UserMapper userMapper;
+    private com.uav.platform.modules.auth.service.AuthOtpService authOtpService;
+
+    @Autowired(required = false)
+    public void setAuthOtpService(
+            com.uav.platform.modules.auth.service.AuthOtpService authOtpService) {
+        this.authOtpService = authOtpService;
+    }
 
     public AuthServiceImpl(
             UserRepository userRepository,
@@ -159,6 +166,10 @@ public class AuthServiceImpl implements AuthService {
         if (user.getFailedAttempts() > 0) {
             UserAccountServiceImpl.resetFailedAttempts(user);
             userRepository.save(user);
+        }
+
+        if (authOtpService != null && (!user.isEmailVerified() || user.isTwoFactorEnabled())) {
+            return authOtpService.createLoginChallenge(user, null);
         }
 
         String token =

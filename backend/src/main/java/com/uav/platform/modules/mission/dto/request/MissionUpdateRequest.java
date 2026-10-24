@@ -28,10 +28,29 @@ public record MissionUpdateRequest(
         @jakarta.validation.Valid FlightPlanRequest flightPlan) {
 
     public MissionUpdateRequest(
-            Long expectedVersion, String title, String description, LocalDate requestedDate, LocalDateTime startTime,
-            LocalDateTime expectedEndTime, String locationName, BigDecimal latitude, BigDecimal longitude,
-            MissionPriority priority, String notes) {
-        this(expectedVersion, title, description, requestedDate, startTime, expectedEndTime, locationName, latitude,
-                longitude, priority, notes, null);
+            Long expectedVersion,
+            String title,
+            String description,
+            LocalDate requestedDate,
+            LocalDateTime startTime,
+            LocalDateTime expectedEndTime,
+            String locationName,
+            BigDecimal latitude,
+            BigDecimal longitude,
+            MissionPriority priority,
+            String notes) {
+        this(
+                expectedVersion,
+                title,
+                description,
+                requestedDate,
+                startTime,
+                expectedEndTime,
+                locationName,
+                latitude,
+                longitude,
+                priority,
+                notes,
+                null);
     }
 }

@@ -30,8 +30,9 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
     @Override
     @Transactional
     public void change(String username, PasswordChangeRequest request) {
-        AppUser user = users.findByUsername(username)
-                .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
+        AppUser user =
+                users.findByUsername(username)
+                        .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
         if (!encoder.matches(request.currentPassword(), user.getPasswordHash()))
             throw SystemException.badRequest(WRONG_CURRENT);
         if (encoder.matches(request.newPassword(), user.getPasswordHash()))
@@ -41,6 +42,12 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
         users.save(user);
         // Every session, this one included, must sign in again with the new password.
         refreshTokens.deleteByUser(user);
-        audit.record(user.getId(), username, AuditAction.UPDATE, "USER", user.getId().toString(), "PASSWORD_CHANGED");
+        audit.record(
+                user.getId(),
+                username,
+                AuditAction.UPDATE,
+                "USER",
+                user.getId().toString(),
+                "PASSWORD_CHANGED");
     }
 }

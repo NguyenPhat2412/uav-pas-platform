@@ -46,7 +46,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
-    private static final Set<MissionStatus> FAILED = EnumSet.of(MissionStatus.FAILED, MissionStatus.CANCELLED, MissionStatus.REJECTED);
+    private static final Set<MissionStatus> FAILED =
+            EnumSet.of(MissionStatus.FAILED, MissionStatus.CANCELLED, MissionStatus.REJECTED);
     private static final int MAP_POINT_LIMIT = 500;
 
     private final MissionRepository missions;
@@ -75,47 +76,105 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
         boolean auditVisible = can(authentication, "AUDIT_READ");
         boolean webhooksVisible = can(authentication, "USER_MANAGE");
 
-        List<Mission> window = missionsVisible ? missions.findAll(createdOrFinishedBetween(prevStart, end)) : List.of();
+        List<Mission> window =
+                missionsVisible
+                        ? missions.findAll(createdOrFinishedBetween(prevStart, end))
+                        : List.of();
         List<Mission> current = window.stream().filter(finishedOrCreatedIn(start, end)).toList();
-        List<Mission> previous = window.stream().filter(finishedOrCreatedIn(prevStart, start)).toList();
-        List<Invoice> paid = billingVisible ? invoices.findAll(paidBetween(prevStart, end)) : List.of();
+        List<Mission> previous =
+                window.stream().filter(finishedOrCreatedIn(prevStart, start)).toList();
+        List<Invoice> paid =
+                billingVisible ? invoices.findAll(paidBetween(prevStart, end)) : List.of();
 
-        Kpis currentKpis = kpis(current, paid, start, end, usersVisible ? users.count(createdBetween(start, end)) : 0);
-        Kpis previousKpis = kpis(previous, paid, prevStart, start, usersVisible ? users.count(createdBetween(prevStart, start)) : 0);
+        Kpis currentKpis =
+                kpis(
+                        current,
+                        paid,
+                        start,
+                        end,
+                        usersVisible ? users.count(createdBetween(start, end)) : 0);
+        Kpis previousKpis =
+                kpis(
+                        previous,
+                        paid,
+                        prevStart,
+                        start,
+                        usersVisible ? users.count(createdBetween(prevStart, start)) : 0);
 
         Map<String, Long> fleet = new LinkedHashMap<>();
         if (uavsVisible) {
-            Map<UavStatus, Long> counts = uavs.findAll().stream()
-                    .collect(Collectors.groupingBy(Uav::getStatus, () -> new EnumMap<>(UavStatus.class), Collectors.counting()));
-            for (UavStatus status : UavStatus.values()) fleet.put(status.name(), counts.getOrDefault(status, 0L));
+            Map<UavStatus, Long> counts =
+                    uavs.findAll().stream()
+                            .collect(
+                                    Collectors.groupingBy(
+                                            Uav::getStatus,
+                                            () -> new EnumMap<>(UavStatus.class),
+                                            Collectors.counting()));
+            for (UavStatus status : UavStatus.values())
+                fleet.put(status.name(), counts.getOrDefault(status, 0L));
         }
 
-        List<MaintenanceSchedule> activeSchedules = uavsVisible
-                ? schedules.findAll().stream().filter(MaintenanceSchedule::isActive).toList() : List.of();
-        List<WebhookDeliveryLog> deliveries = webhooksVisible ? webhookLogs.findAll(attemptedBetween(start, end)) : List.of();
+        List<MaintenanceSchedule> activeSchedules =
+                uavsVisible
+                        ? schedules.findAll().stream()
+                                .filter(MaintenanceSchedule::isActive)
+                                .toList()
+                        : List.of();
+        List<WebhookDeliveryLog> deliveries =
+                webhooksVisible ? webhookLogs.findAll(attemptedBetween(start, end)) : List.of();
 
         return new AdminAnalyticsResponse(
-                from, to, currentKpis, previousKpis,
+                from,
+                to,
+                currentKpis,
+                previousKpis,
                 daily(current, from, to),
-                statusBreakdown(missionsVisible ? missions.findAll(createdBetweenMission(start, end)) : List.of()),
+                statusBreakdown(
+                        missionsVisible
+                                ? missions.findAll(createdBetweenMission(start, end))
+                                : List.of()),
                 flightHoursByStation(current),
                 fleet,
                 locations(current),
                 billingVisible ? revenueByMonth() : List.of(),
-                auditVisible ? auditHeatmap(audit.findAll(auditBetween(start, end))) : new long[7][24],
+                auditVisible
+                        ? auditHeatmap(audit.findAll(auditBetween(start, end)))
+                        : new long[7][24],
                 webhookStats(deliveries),
                 billingVisible ? quotaWarnings() : List.of(),
-                alerts(missionsVisible, uavsVisible, billingVisible, fleet, activeSchedules, deliveries));
+                alerts(
+                        missionsVisible,
+                        uavsVisible,
+                        billingVisible,
+                        fleet,
+                        activeSchedules,
+                        deliveries));
     }
 
-    private Kpis kpis(List<Mission> list, List<Invoice> paid, LocalDateTime start, LocalDateTime end, long newUsers) {
-        long completed = list.stream().filter(m -> m.getStatus() == MissionStatus.COMPLETED).count();
+    private Kpis kpis(
+            List<Mission> list,
+            List<Invoice> paid,
+            LocalDateTime start,
+            LocalDateTime end,
+            long newUsers) {
+        long completed =
+                list.stream().filter(m -> m.getStatus() == MissionStatus.COMPLETED).count();
         long failed = list.stream().filter(m -> FAILED.contains(m.getStatus())).count();
-        double hours = list.stream().filter(m -> m.getStatus() == MissionStatus.COMPLETED).mapToDouble(this::hours).sum();
-        double rate = completed + failed == 0 ? 0 : Math.round(completed * 1000.0 / (completed + failed)) / 10.0;
-        BigDecimal revenue = paid.stream()
-                .filter(i -> !i.getPaidAt().isBefore(start) && i.getPaidAt().isBefore(end))
-                .map(Invoice::getAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+        double hours =
+                list.stream()
+                        .filter(m -> m.getStatus() == MissionStatus.COMPLETED)
+                        .mapToDouble(this::hours)
+                        .sum();
+        double rate =
+                completed + failed == 0
+                        ? 0
+                        : Math.round(completed * 1000.0 / (completed + failed)) / 10.0;
+        BigDecimal revenue =
+                paid.stream()
+                        .filter(i -> !i.getPaidAt().isBefore(start) && i.getPaidAt().isBefore(end))
+                        .map(Invoice::getAmount)
+                        .filter(Objects::nonNull)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
         return new Kpis(completed, failed, round(hours), rate, revenue, newUsers);
     }
 
@@ -127,12 +186,15 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
                 long[] slot = byDay.get(m.getCompletedAt().toLocalDate());
                 if (slot != null) slot[0]++;
             } else if (FAILED.contains(m.getStatus())) {
-                LocalDateTime at = m.getCancelledAt() != null ? m.getCancelledAt() : m.getUpdatedAt();
+                LocalDateTime at =
+                        m.getCancelledAt() != null ? m.getCancelledAt() : m.getUpdatedAt();
                 long[] slot = at == null ? null : byDay.get(at.toLocalDate());
                 if (slot != null) slot[1]++;
             }
         }
-        return byDay.entrySet().stream().map(e -> new DailyPoint(e.getKey(), e.getValue()[0], e.getValue()[1])).toList();
+        return byDay.entrySet().stream()
+                .map(e -> new DailyPoint(e.getKey(), e.getValue()[0], e.getValue()[1]))
+                .toList();
     }
 
     private Map<String, Long> statusBreakdown(List<Mission> list) {
@@ -143,35 +205,53 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
     }
 
     private List<NamedValue> flightHoursByStation(List<Mission> list) {
-        return list.stream().filter(m -> m.getStatus() == MissionStatus.COMPLETED)
-                .collect(Collectors.groupingBy(m -> m.getStation() == null ? "—" : m.getStation().getName(),
-                        Collectors.summingDouble(this::hours)))
-                .entrySet().stream().map(e -> new NamedValue(e.getKey(), round(e.getValue())))
-                .sorted(Comparator.comparingDouble(NamedValue::value).reversed()).toList();
+        return list.stream()
+                .filter(m -> m.getStatus() == MissionStatus.COMPLETED)
+                .collect(
+                        Collectors.groupingBy(
+                                m -> m.getStation() == null ? "—" : m.getStation().getName(),
+                                Collectors.summingDouble(this::hours)))
+                .entrySet()
+                .stream()
+                .map(e -> new NamedValue(e.getKey(), round(e.getValue())))
+                .sorted(Comparator.comparingDouble(NamedValue::value).reversed())
+                .toList();
     }
 
     private List<MissionPoint> locations(List<Mission> list) {
-        return list.stream().filter(m -> m.getLatitude() != null && m.getLongitude() != null).limit(MAP_POINT_LIMIT)
-                .map(m -> new MissionPoint(m.getCode(), m.getLatitude().doubleValue(), m.getLongitude().doubleValue(), m.getStatus().name()))
+        return list.stream()
+                .filter(m -> m.getLatitude() != null && m.getLongitude() != null)
+                .limit(MAP_POINT_LIMIT)
+                .map(
+                        m ->
+                                new MissionPoint(
+                                        m.getCode(),
+                                        m.getLatitude().doubleValue(),
+                                        m.getLongitude().doubleValue(),
+                                        m.getStatus().name()))
                 .toList();
     }
 
     private List<MonthValue> revenueByMonth() {
         YearMonth first = YearMonth.now().minusMonths(5);
         Map<YearMonth, BigDecimal[]> months = new TreeMap<>();
-        for (int i = 0; i < 6; i++) months.put(first.plusMonths(i), new BigDecimal[]{BigDecimal.ZERO, BigDecimal.ZERO});
+        for (int i = 0; i < 6; i++)
+            months.put(first.plusMonths(i), new BigDecimal[] {BigDecimal.ZERO, BigDecimal.ZERO});
         LocalDateTime since = first.atDay(1).atStartOfDay();
         for (Invoice invoice : invoices.findAll(createdOrPaidSince(since))) {
             BigDecimal amount = invoice.getAmount() == null ? BigDecimal.ZERO : invoice.getAmount();
             if (invoice.getStatus() == InvoiceStatus.PAID && invoice.getPaidAt() != null) {
                 BigDecimal[] slot = months.get(YearMonth.from(invoice.getPaidAt()));
                 if (slot != null) slot[0] = slot[0].add(amount);
-            } else if (invoice.getStatus() == InvoiceStatus.PENDING && invoice.getCreatedAt() != null) {
+            } else if (invoice.getStatus() == InvoiceStatus.PENDING
+                    && invoice.getCreatedAt() != null) {
                 BigDecimal[] slot = months.get(YearMonth.from(invoice.getCreatedAt()));
                 if (slot != null) slot[1] = slot[1].add(amount);
             }
         }
-        return months.entrySet().stream().map(e -> new MonthValue(e.getKey().toString(), e.getValue()[0], e.getValue()[1])).toList();
+        return months.entrySet().stream()
+                .map(e -> new MonthValue(e.getKey().toString(), e.getValue()[0], e.getValue()[1]))
+                .toList();
     }
 
     /** Rows are ISO weekdays Monday..Sunday, columns are hours 0..23. */
@@ -191,62 +271,151 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
             long[] slot = byName.computeIfAbsent(name, k -> new long[2]);
             slot[Boolean.TRUE.equals(log.getIsSuccess()) ? 0 : 1]++;
         }
-        return byName.entrySet().stream().map(e -> new WebhookStat(e.getKey(), e.getValue()[0], e.getValue()[1])).toList();
+        return byName.entrySet().stream()
+                .map(e -> new WebhookStat(e.getKey(), e.getValue()[0], e.getValue()[1]))
+                .toList();
     }
 
     private List<QuotaWarning> quotaWarnings() {
         return quotas.findAll().stream()
-                .filter(q -> q.getFlightHoursLimit() != null && q.getFlightHoursLimit() > 0 && q.getFlightHoursUsed() != null
-                        && q.getFlightHoursUsed() / q.getFlightHoursLimit() >= 0.8)
-                .sorted(Comparator.comparingDouble(q -> -(q.getFlightHoursUsed() / q.getFlightHoursLimit())))
+                .filter(
+                        q ->
+                                q.getFlightHoursLimit() != null
+                                        && q.getFlightHoursLimit() > 0
+                                        && q.getFlightHoursUsed() != null
+                                        && q.getFlightHoursUsed() / q.getFlightHoursLimit() >= 0.8)
+                .sorted(
+                        Comparator.comparingDouble(
+                                q -> -(q.getFlightHoursUsed() / q.getFlightHoursLimit())))
                 .limit(10)
-                .map(q -> {
-                    AppUser user = q.getUser();
-                    return new QuotaWarning(user == null ? null : user.getId(), user == null ? "—" : user.getUsername(),
-                            round(q.getFlightHoursUsed()), round(q.getFlightHoursLimit()));
-                }).toList();
+                .map(
+                        q -> {
+                            AppUser user = q.getUser();
+                            return new QuotaWarning(
+                                    user == null ? null : user.getId(),
+                                    user == null ? "—" : user.getUsername(),
+                                    round(q.getFlightHoursUsed()),
+                                    round(q.getFlightHoursLimit()));
+                        })
+                .toList();
     }
 
-    private List<Alert> alerts(boolean missionsVisible, boolean uavsVisible, boolean billingVisible,
-                               Map<String, Long> fleet, List<MaintenanceSchedule> activeSchedules,
-                               List<WebhookDeliveryLog> deliveries) {
+    private List<Alert> alerts(
+            boolean missionsVisible,
+            boolean uavsVisible,
+            boolean billingVisible,
+            Map<String, Long> fleet,
+            List<MaintenanceSchedule> activeSchedules,
+            List<WebhookDeliveryLog> deliveries) {
         List<Alert> alerts = new ArrayList<>();
         LocalDate today = LocalDate.now();
         if (uavsVisible) {
             long total = fleet.values().stream().mapToLong(Long::longValue).sum();
             if (total > 0 && fleet.getOrDefault(UavStatus.AVAILABLE.name(), 0L) == 0)
-                alerts.add(new Alert("danger", "NO_AVAILABLE_UAV", "Không còn UAV sẵn sàng nhận nhiệm vụ", "/operations/uavs", 0));
-            long overdue = activeSchedules.stream().filter(s -> s.getNextDueDate() != null && s.getNextDueDate().isBefore(today)).count();
+                alerts.add(
+                        new Alert(
+                                "danger",
+                                "NO_AVAILABLE_UAV",
+                                "Không còn UAV sẵn sàng nhận nhiệm vụ",
+                                "/operations/uavs",
+                                0));
+            long overdue =
+                    activeSchedules.stream()
+                            .filter(
+                                    s ->
+                                            s.getNextDueDate() != null
+                                                    && s.getNextDueDate().isBefore(today))
+                            .count();
             if (overdue > 0)
-                alerts.add(new Alert("danger", "MAINTENANCE_OVERDUE", overdue + " lịch bảo trì đã quá hạn", "/operations/maintenance", overdue));
-            long dueSoon = activeSchedules.stream().filter(s -> s.getNextDueDate() != null
-                    && !s.getNextDueDate().isBefore(today) && !s.getNextDueDate().isAfter(today.plusDays(7))).count();
+                alerts.add(
+                        new Alert(
+                                "danger",
+                                "MAINTENANCE_OVERDUE",
+                                overdue + " lịch bảo trì đã quá hạn",
+                                "/operations/maintenance",
+                                overdue));
+            long dueSoon =
+                    activeSchedules.stream()
+                            .filter(
+                                    s ->
+                                            s.getNextDueDate() != null
+                                                    && !s.getNextDueDate().isBefore(today)
+                                                    && !s.getNextDueDate()
+                                                            .isAfter(today.plusDays(7)))
+                            .count();
             if (dueSoon > 0)
-                alerts.add(new Alert("warning", "MAINTENANCE_DUE_SOON", dueSoon + " UAV đến hạn bảo trì trong 7 ngày", "/operations/maintenance", dueSoon));
+                alerts.add(
+                        new Alert(
+                                "warning",
+                                "MAINTENANCE_DUE_SOON",
+                                dueSoon + " UAV đến hạn bảo trì trong 7 ngày",
+                                "/operations/maintenance",
+                                dueSoon));
         }
         if (missionsVisible) {
             LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
-            long stale = missions.count(Specification.<Mission>where((r, q, cb) -> cb.equal(r.get("status"), MissionStatus.PENDING_CONFIRMATION))
-                    .and((r, q, cb) -> cb.lessThan(r.get("createdAt"), cutoff)));
+            long stale =
+                    missions.count(
+                            Specification.<Mission>where(
+                                            (r, q, cb) ->
+                                                    cb.equal(
+                                                            r.get("status"),
+                                                            MissionStatus.PENDING_CONFIRMATION))
+                                    .and((r, q, cb) -> cb.lessThan(r.get("createdAt"), cutoff)));
             if (stale > 0)
-                alerts.add(new Alert("warning", "PENDING_STALE", stale + " yêu cầu chờ xác nhận quá 24 giờ", "/operations/dispatch/missions", stale));
+                alerts.add(
+                        new Alert(
+                                "warning",
+                                "PENDING_STALE",
+                                stale + " yêu cầu chờ xác nhận quá 24 giờ",
+                                "/operations/dispatch/missions",
+                                stale));
         }
         if (billingVisible) {
-            long overdueInvoices = invoices.count(Specification.<Invoice>where((r, q, cb) -> cb.equal(r.get("status"), InvoiceStatus.PENDING))
-                    .and((r, q, cb) -> cb.lessThan(r.get("dueDate"), LocalDateTime.now())));
+            long overdueInvoices =
+                    invoices.count(
+                            Specification.<Invoice>where(
+                                            (r, q, cb) ->
+                                                    cb.equal(
+                                                            r.get("status"), InvoiceStatus.PENDING))
+                                    .and(
+                                            (r, q, cb) ->
+                                                    cb.lessThan(
+                                                            r.get("dueDate"),
+                                                            LocalDateTime.now())));
             if (overdueInvoices > 0)
-                alerts.add(new Alert("warning", "INVOICE_OVERDUE", overdueInvoices + " hóa đơn quá hạn thanh toán", "/admin/billing", overdueInvoices));
+                alerts.add(
+                        new Alert(
+                                "warning",
+                                "INVOICE_OVERDUE",
+                                overdueInvoices + " hóa đơn quá hạn thanh toán",
+                                "/admin/billing",
+                                overdueInvoices));
         }
         LocalDateTime dayAgo = LocalDateTime.now().minusHours(24);
-        long recentFailures = deliveries.stream().filter(d -> !Boolean.TRUE.equals(d.getIsSuccess())
-                && d.getAttemptedAt() != null && d.getAttemptedAt().isAfter(dayAgo)).count();
+        long recentFailures =
+                deliveries.stream()
+                        .filter(
+                                d ->
+                                        !Boolean.TRUE.equals(d.getIsSuccess())
+                                                && d.getAttemptedAt() != null
+                                                && d.getAttemptedAt().isAfter(dayAgo))
+                        .count();
         if (recentFailures >= 3)
-            alerts.add(new Alert("warning", "WEBHOOK_FAILURES", recentFailures + " lần gửi webhook thất bại trong 24 giờ", "/admin/webhooks", recentFailures));
+            alerts.add(
+                    new Alert(
+                            "warning",
+                            "WEBHOOK_FAILURES",
+                            recentFailures + " lần gửi webhook thất bại trong 24 giờ",
+                            "/admin/webhooks",
+                            recentFailures));
         return alerts;
     }
 
     private double hours(Mission m) {
-        if (m.getStartTime() == null || m.getCompletedAt() == null || m.getCompletedAt().isBefore(m.getStartTime())) return 0;
+        if (m.getStartTime() == null
+                || m.getCompletedAt() == null
+                || m.getCompletedAt().isBefore(m.getStartTime())) return 0;
         return Duration.between(m.getStartTime(), m.getCompletedAt()).toMinutes() / 60.0;
     }
 
@@ -260,41 +429,72 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
 
     private static Predicate<Mission> finishedOrCreatedIn(LocalDateTime start, LocalDateTime end) {
         return m -> {
-            LocalDateTime at = m.getCompletedAt() != null ? m.getCompletedAt()
-                    : m.getCancelledAt() != null ? m.getCancelledAt()
-                    : FAILED.contains(m.getStatus()) ? m.getUpdatedAt() : m.getCreatedAt();
+            LocalDateTime at =
+                    m.getCompletedAt() != null
+                            ? m.getCompletedAt()
+                            : m.getCancelledAt() != null
+                                    ? m.getCancelledAt()
+                                    : FAILED.contains(m.getStatus())
+                                            ? m.getUpdatedAt()
+                                            : m.getCreatedAt();
             return at != null && !at.isBefore(start) && at.isBefore(end);
         };
     }
 
-    private static Specification<Mission> createdOrFinishedBetween(LocalDateTime start, LocalDateTime end) {
-        return (r, q, cb) -> cb.or(
-                cb.and(cb.greaterThanOrEqualTo(r.get("createdAt"), start), cb.lessThan(r.get("createdAt"), end)),
-                cb.and(cb.greaterThanOrEqualTo(r.get("updatedAt"), start), cb.lessThan(r.get("updatedAt"), end)));
+    private static Specification<Mission> createdOrFinishedBetween(
+            LocalDateTime start, LocalDateTime end) {
+        return (r, q, cb) ->
+                cb.or(
+                        cb.and(
+                                cb.greaterThanOrEqualTo(r.get("createdAt"), start),
+                                cb.lessThan(r.get("createdAt"), end)),
+                        cb.and(
+                                cb.greaterThanOrEqualTo(r.get("updatedAt"), start),
+                                cb.lessThan(r.get("updatedAt"), end)));
     }
 
-    private static Specification<Mission> createdBetweenMission(LocalDateTime start, LocalDateTime end) {
-        return (r, q, cb) -> cb.and(cb.greaterThanOrEqualTo(r.get("createdAt"), start), cb.lessThan(r.get("createdAt"), end));
+    private static Specification<Mission> createdBetweenMission(
+            LocalDateTime start, LocalDateTime end) {
+        return (r, q, cb) ->
+                cb.and(
+                        cb.greaterThanOrEqualTo(r.get("createdAt"), start),
+                        cb.lessThan(r.get("createdAt"), end));
     }
 
     private static Specification<AppUser> createdBetween(LocalDateTime start, LocalDateTime end) {
-        return (r, q, cb) -> cb.and(cb.greaterThanOrEqualTo(r.get("createdAt"), start), cb.lessThan(r.get("createdAt"), end));
+        return (r, q, cb) ->
+                cb.and(
+                        cb.greaterThanOrEqualTo(r.get("createdAt"), start),
+                        cb.lessThan(r.get("createdAt"), end));
     }
 
     private static Specification<Invoice> paidBetween(LocalDateTime start, LocalDateTime end) {
-        return (r, q, cb) -> cb.and(cb.equal(r.get("status"), InvoiceStatus.PAID),
-                cb.greaterThanOrEqualTo(r.get("paidAt"), start), cb.lessThan(r.get("paidAt"), end));
+        return (r, q, cb) ->
+                cb.and(
+                        cb.equal(r.get("status"), InvoiceStatus.PAID),
+                        cb.greaterThanOrEqualTo(r.get("paidAt"), start),
+                        cb.lessThan(r.get("paidAt"), end));
     }
 
     private static Specification<Invoice> createdOrPaidSince(LocalDateTime since) {
-        return (r, q, cb) -> cb.or(cb.greaterThanOrEqualTo(r.get("createdAt"), since), cb.greaterThanOrEqualTo(r.get("paidAt"), since));
+        return (r, q, cb) ->
+                cb.or(
+                        cb.greaterThanOrEqualTo(r.get("createdAt"), since),
+                        cb.greaterThanOrEqualTo(r.get("paidAt"), since));
     }
 
     private static Specification<AuditLog> auditBetween(LocalDateTime start, LocalDateTime end) {
-        return (r, q, cb) -> cb.and(cb.greaterThanOrEqualTo(r.get("createdAt"), start), cb.lessThan(r.get("createdAt"), end));
+        return (r, q, cb) ->
+                cb.and(
+                        cb.greaterThanOrEqualTo(r.get("createdAt"), start),
+                        cb.lessThan(r.get("createdAt"), end));
     }
 
-    private static Specification<WebhookDeliveryLog> attemptedBetween(LocalDateTime start, LocalDateTime end) {
-        return (r, q, cb) -> cb.and(cb.greaterThanOrEqualTo(r.get("attemptedAt"), start), cb.lessThan(r.get("attemptedAt"), end));
+    private static Specification<WebhookDeliveryLog> attemptedBetween(
+            LocalDateTime start, LocalDateTime end) {
+        return (r, q, cb) ->
+                cb.and(
+                        cb.greaterThanOrEqualTo(r.get("attemptedAt"), start),
+                        cb.lessThan(r.get("attemptedAt"), end));
     }
 }

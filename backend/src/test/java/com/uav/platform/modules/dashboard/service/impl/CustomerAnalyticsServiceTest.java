@@ -34,7 +34,10 @@ class CustomerAnalyticsServiceTest {
     void quotaProjectsDaysLeftFromTheCurrentUsageRate() {
         LocalDate today = LocalDate.of(2026, 10, 21);
         // 10 h used over 20 days = 0.5 h/day; 10 h remaining -> 20 days.
-        Quota q = CustomerAnalyticsServiceImpl.quota(quota(10, 20, LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31)), today);
+        Quota q =
+                CustomerAnalyticsServiceImpl.quota(
+                        quota(10, 20, LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31)),
+                        today);
 
         assertEquals(20.0, q.projectedDaysToLimit());
         assertEquals(10, q.daysLeftInCycle());
@@ -43,8 +46,21 @@ class CustomerAnalyticsServiceTest {
     @Test
     void quotaHasNoProjectionWithoutUsageAndZeroWhenExhausted() {
         LocalDate today = LocalDate.of(2026, 10, 21);
-        assertNull(CustomerAnalyticsServiceImpl.quota(quota(0, 20, LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31)), today).projectedDaysToLimit());
-        assertEquals(0.0, CustomerAnalyticsServiceImpl.quota(quota(25, 20, LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31)), today).projectedDaysToLimit());
+        assertNull(
+                CustomerAnalyticsServiceImpl.quota(
+                                quota(0, 20, LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31)),
+                                today)
+                        .projectedDaysToLimit());
+        assertEquals(
+                0.0,
+                CustomerAnalyticsServiceImpl.quota(
+                                quota(
+                                        25,
+                                        20,
+                                        LocalDate.of(2026, 10, 1),
+                                        LocalDate.of(2026, 10, 31)),
+                                today)
+                        .projectedDaysToLimit());
     }
 
     private Mission mission(MissionStatus status, String reason) {
@@ -56,12 +72,20 @@ class CustomerAnalyticsServiceTest {
 
     @Test
     void outcomesCountEveryFinishedStateAndGroupReasons() {
-        Outcomes o = CustomerAnalyticsServiceImpl.outcomes(List.of(
-                mission(MissionStatus.COMPLETED, null), mission(MissionStatus.COMPLETED, null), mission(MissionStatus.COMPLETED, null),
-                mission(MissionStatus.FAILED, "WEATHER"), mission(MissionStatus.CANCELLED, null), mission(MissionStatus.DRAFT, null)));
+        Outcomes o =
+                CustomerAnalyticsServiceImpl.outcomes(
+                        List.of(
+                                mission(MissionStatus.COMPLETED, null),
+                                mission(MissionStatus.COMPLETED, null),
+                                mission(MissionStatus.COMPLETED, null),
+                                mission(MissionStatus.FAILED, "WEATHER"),
+                                mission(MissionStatus.CANCELLED, null),
+                                mission(MissionStatus.DRAFT, null)));
 
         assertEquals(60.0, o.successRate());
-        assertEquals(List.of("WEATHER", "CANCELLED"), o.reasons().stream().map(r -> r.reason()).sorted().toList().reversed());
+        assertEquals(
+                List.of("WEATHER", "CANCELLED"),
+                o.reasons().stream().map(r -> r.reason()).sorted().toList().reversed());
     }
 
     private MissionEvent event(MissionEventType type, MissionStatus next, LocalDateTime at) {
@@ -73,13 +97,39 @@ class CustomerAnalyticsServiceTest {
     @Test
     void turnaroundMeasuresFromFirstSubmission() {
         LocalDateTime t0 = LocalDateTime.of(2026, 10, 1, 8, 0);
-        Turnaround t = CustomerAnalyticsServiceImpl.turnaround(Map.of(
-                1L, List.of(event(MissionEventType.SUBMITTED, MissionStatus.PENDING_CONFIRMATION, t0),
-                        event(MissionEventType.STATUS_CHANGED, MissionStatus.CONFIRMED, t0.plusHours(2)),
-                        event(MissionEventType.COMPLETED, MissionStatus.COMPLETED, t0.plusHours(30))),
-                2L, List.of(event(MissionEventType.SUBMITTED, MissionStatus.PENDING_CONFIRMATION, t0),
-                        event(MissionEventType.STATUS_CHANGED, MissionStatus.CONFIRMED, t0.plusHours(4))),
-                3L, List.of(event(MissionEventType.CREATED, MissionStatus.DRAFT, t0))));
+        Turnaround t =
+                CustomerAnalyticsServiceImpl.turnaround(
+                        Map.of(
+                                1L,
+                                        List.of(
+                                                event(
+                                                        MissionEventType.SUBMITTED,
+                                                        MissionStatus.PENDING_CONFIRMATION,
+                                                        t0),
+                                                event(
+                                                        MissionEventType.STATUS_CHANGED,
+                                                        MissionStatus.CONFIRMED,
+                                                        t0.plusHours(2)),
+                                                event(
+                                                        MissionEventType.COMPLETED,
+                                                        MissionStatus.COMPLETED,
+                                                        t0.plusHours(30))),
+                                2L,
+                                        List.of(
+                                                event(
+                                                        MissionEventType.SUBMITTED,
+                                                        MissionStatus.PENDING_CONFIRMATION,
+                                                        t0),
+                                                event(
+                                                        MissionEventType.STATUS_CHANGED,
+                                                        MissionStatus.CONFIRMED,
+                                                        t0.plusHours(4))),
+                                3L,
+                                        List.of(
+                                                event(
+                                                        MissionEventType.CREATED,
+                                                        MissionStatus.DRAFT,
+                                                        t0))));
 
         assertEquals(3.0, t.submitToConfirm());
         assertEquals(30.0, t.submitToComplete());

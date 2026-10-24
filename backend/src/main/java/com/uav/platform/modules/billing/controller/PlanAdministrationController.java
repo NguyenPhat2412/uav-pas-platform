@@ -31,14 +31,18 @@ public class PlanAdministrationController {
 
     @PostMapping
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
-    public ResponseEntity<ServicePlanResponse> create(@Valid @RequestBody ServicePlanRequest request, Authentication auth) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(plans.create(request, auth.getName()));
+    public ResponseEntity<ServicePlanResponse> create(
+            @Valid @RequestBody ServicePlanRequest request, Authentication auth) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(plans.create(request, auth.getName()));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<ServicePlanResponse> update(
-            @PathVariable Long id, @Valid @RequestBody ServicePlanUpdateRequest request, Authentication auth) {
+            @PathVariable Long id,
+            @Valid @RequestBody ServicePlanUpdateRequest request,
+            Authentication auth) {
         return ResponseEntity.ok(plans.update(id, request, auth.getName()));
     }
 

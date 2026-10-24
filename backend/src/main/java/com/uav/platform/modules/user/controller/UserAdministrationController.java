@@ -29,7 +29,9 @@ import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping(RestEndpoint.USERS)
-@Tag(name = "User administration", description = "Provisioning, password reset, bulk locking and export")
+@Tag(
+        name = "User administration",
+        description = "Provisioning, password reset, bulk locking and export")
 @RequiredArgsConstructor
 public class UserAdministrationController {
     private final UserAdministrationService service;
@@ -39,14 +41,17 @@ public class UserAdministrationController {
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<UserResponse> create(
             @Valid @RequestBody AdminCreateUserRequest request, Authentication authentication) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request, authentication.getName()));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.create(request, authentication.getName()));
     }
 
     @Operation(summary = "Set a new password and revoke the user's sessions")
     @PostMapping(RestEndpoint.USER_ID + "/reset-password")
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<Void> resetPassword(
-            @PathVariable Long id, @Valid @RequestBody PasswordResetRequest request, Authentication authentication) {
+            @PathVariable Long id,
+            @Valid @RequestBody PasswordResetRequest request,
+            Authentication authentication) {
         service.resetPassword(id, request, authentication.getName());
         return ResponseEntity.noContent().build();
     }

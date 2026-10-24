@@ -59,8 +59,20 @@ class AvatarServiceImplTest {
     }
 
     private static MediaAssetResponse asset(Long id, String type, long size, String linkedType) {
-        return new MediaAssetResponse(id, "me.png", "image/key-" + id, type, size, MediaType.IMAGE, linkedType,
-                linkedType == null ? null : "1", "alice", "s3", true, LocalDateTime.now(), LocalDateTime.now());
+        return new MediaAssetResponse(
+                id,
+                "me.png",
+                "image/key-" + id,
+                type,
+                size,
+                MediaType.IMAGE,
+                linkedType,
+                linkedType == null ? null : "1",
+                "alice",
+                "s3",
+                true,
+                LocalDateTime.now(),
+                LocalDateTime.now());
     }
 
     private static Authentication as(String username) {
@@ -71,22 +83,41 @@ class AvatarServiceImplTest {
     @DisplayName("upload URL: registers an unlinked image owned by the caller")
     void uploadUrlRegistersUnlinkedImage() {
         when(media.register(any(), eq("alice"))).thenReturn(asset(11L, "image/png", 1000, null));
-        when(media.uploadUrl(11L)).thenReturn(new SignedMediaUrlResponse(11L, "https://put", "upload", 900));
+        when(media.uploadUrl(11L))
+                .thenReturn(new SignedMediaUrlResponse(11L, "https://put", "upload", 900));
 
-        var signed = service.uploadUrl("alice", new AvatarUploadRequest("me.png", "image/png", 1000));
+        var signed =
+                service.uploadUrl("alice", new AvatarUploadRequest("me.png", "image/png", 1000));
 
         assertThat(signed.url()).isEqualTo("https://put");
-        verify(media).register(eq(new MediaUploadRequest("me.png", "image/png", 1000, MediaType.IMAGE, null, null)), eq("alice"));
+        verify(media)
+                .register(
+                        eq(
+                                new MediaUploadRequest(
+                                        "me.png", "image/png", 1000, MediaType.IMAGE, null, null)),
+                        eq("alice"));
     }
 
     @Test
     @DisplayName("upload URL: rejects non-image types and files over 5 MB before touching storage")
     void uploadUrlRejectsWrongTypeOrSize() {
-        assertThatThrownBy(() -> service.uploadUrl("alice", new AvatarUploadRequest("a.gif", "image/gif", 1000)))
+        assertThatThrownBy(
+                        () ->
+                                service.uploadUrl(
+                                        "alice",
+                                        new AvatarUploadRequest("a.gif", "image/gif", 1000)))
                 .isInstanceOf(SystemException.class);
-        assertThatThrownBy(() -> service.uploadUrl("alice", new AvatarUploadRequest("a.pdf", "application/pdf", 1000)))
+        assertThatThrownBy(
+                        () ->
+                                service.uploadUrl(
+                                        "alice",
+                                        new AvatarUploadRequest("a.pdf", "application/pdf", 1000)))
                 .isInstanceOf(SystemException.class);
-        assertThatThrownBy(() -> service.uploadUrl("alice", new AvatarUploadRequest("a.png", "image/png", 5_000_001)))
+        assertThatThrownBy(
+                        () ->
+                                service.uploadUrl(
+                                        "alice",
+                                        new AvatarUploadRequest("a.png", "image/png", 5_000_001)))
                 .isInstanceOf(SystemException.class);
         verify(media, never()).register(any(), anyString());
     }
@@ -128,8 +159,17 @@ class AvatarServiceImplTest {
     @DisplayName("image: the owner and USER_READ holders get a signed URL; others get not-found")
     void imageVisibility() {
         alice.setAvatarUrl("/api/v1/users/7/avatar?v=11");
-        MediaAsset stored = new MediaAsset("me.png", "image/key-11", "image/png", 1000, MediaType.IMAGE,
-                null, null, "alice", "s3");
+        MediaAsset stored =
+                new MediaAsset(
+                        "me.png",
+                        "image/key-11",
+                        "image/png",
+                        1000,
+                        MediaType.IMAGE,
+                        null,
+                        null,
+                        "alice",
+                        "s3");
         MediaAssetOperations.confirm(stored);
         when(assets.findById(11L)).thenReturn(Optional.of(stored));
         when(storage.createSignedDownloadUrl("image/key-11")).thenReturn("https://get");
@@ -142,19 +182,30 @@ class AvatarServiceImplTest {
 
         Authentication stranger = as("mallory");
         when(permissions.has(stranger, "USER_READ")).thenReturn(false);
-        assertThatThrownBy(() -> service.signedUrl(7L, stranger)).isInstanceOf(SystemException.class);
+        assertThatThrownBy(() -> service.signedUrl(7L, stranger))
+                .isInstanceOf(SystemException.class);
     }
 
     @Test
     @DisplayName("image: an asset uploaded by someone else is never served as this user's avatar")
     void imageRequiresOwnUpload() {
         alice.setAvatarUrl("/api/v1/users/7/avatar?v=11");
-        MediaAsset foreign = new MediaAsset("x.png", "image/key-x", "image/png", 1000, MediaType.IMAGE,
-                null, null, "mallory", "s3");
+        MediaAsset foreign =
+                new MediaAsset(
+                        "x.png",
+                        "image/key-x",
+                        "image/png",
+                        1000,
+                        MediaType.IMAGE,
+                        null,
+                        null,
+                        "mallory",
+                        "s3");
         MediaAssetOperations.confirm(foreign);
         when(assets.findById(11L)).thenReturn(Optional.of(foreign));
 
-        assertThatThrownBy(() -> service.signedUrl(7L, as("alice"))).isInstanceOf(SystemException.class);
+        assertThatThrownBy(() -> service.signedUrl(7L, as("alice")))
+                .isInstanceOf(SystemException.class);
         verify(storage, never()).createSignedDownloadUrl(anyString());
     }
 }

@@ -24,6 +24,7 @@ import java.util.List;
 public class PlanAdministrationServiceImpl implements PlanAdministrationService {
     /** Assigned to every new customer quota (see QuotaServiceImpl), so it must stay active. */
     static final String DEFAULT_PLAN = "BASIC";
+
     static final String PLAN_EXISTS = "Service plan code already exists";
     static final String DEFAULT_PLAN_REQUIRED = "The default BASIC plan cannot be deactivated";
 
@@ -40,14 +41,28 @@ public class PlanAdministrationServiceImpl implements PlanAdministrationService 
     @Override
     @Transactional
     public ServicePlanResponse create(ServicePlanRequest request, String actor) {
-        if (plans.findByCode(request.code()).isPresent()) throw SystemException.conflict(PLAN_EXISTS);
+        if (plans.findByCode(request.code()).isPresent())
+            throw SystemException.conflict(PLAN_EXISTS);
         ServicePlan plan = new ServicePlan();
         plan.setCode(request.code());
-        apply(plan, request.name(), request.price(), request.billingCycle(), request.maxMonthlyFlightHours(),
-                request.maxConcurrentUavs(), request.allowSarAi(), request.description());
+        apply(
+                plan,
+                request.name(),
+                request.price(),
+                request.billingCycle(),
+                request.maxMonthlyFlightHours(),
+                request.maxConcurrentUavs(),
+                request.allowSarAi(),
+                request.description());
         plan.setActive(true);
         ServicePlan saved = plans.save(plan);
-        audit.record(null, actor, AuditAction.CREATE, "SERVICE_PLAN", saved.getCode(), "price=" + saved.getPrice());
+        audit.record(
+                null,
+                actor,
+                AuditAction.CREATE,
+                "SERVICE_PLAN",
+                saved.getCode(),
+                "price=" + saved.getPrice());
         return mapper.toPlanResponse(saved);
     }
 
@@ -55,10 +70,23 @@ public class PlanAdministrationServiceImpl implements PlanAdministrationService 
     @Transactional
     public ServicePlanResponse update(Long id, ServicePlanUpdateRequest request, String actor) {
         ServicePlan plan = find(id);
-        apply(plan, request.name(), request.price(), request.billingCycle(), request.maxMonthlyFlightHours(),
-                request.maxConcurrentUavs(), request.allowSarAi(), request.description());
+        apply(
+                plan,
+                request.name(),
+                request.price(),
+                request.billingCycle(),
+                request.maxMonthlyFlightHours(),
+                request.maxConcurrentUavs(),
+                request.allowSarAi(),
+                request.description());
         ServicePlan saved = plans.save(plan);
-        audit.record(null, actor, AuditAction.UPDATE, "SERVICE_PLAN", saved.getCode(), "price=" + saved.getPrice());
+        audit.record(
+                null,
+                actor,
+                AuditAction.UPDATE,
+                "SERVICE_PLAN",
+                saved.getCode(),
+                "price=" + saved.getPrice());
         return mapper.toPlanResponse(saved);
     }
 
@@ -66,25 +94,41 @@ public class PlanAdministrationServiceImpl implements PlanAdministrationService 
     @Transactional
     public ServicePlanResponse setActive(Long id, boolean active, String actor) {
         ServicePlan plan = find(id);
-        if (!active && DEFAULT_PLAN.equals(plan.getCode())) throw SystemException.badRequest(DEFAULT_PLAN_REQUIRED);
+        if (!active && DEFAULT_PLAN.equals(plan.getCode()))
+            throw SystemException.badRequest(DEFAULT_PLAN_REQUIRED);
         plan.setActive(active);
         ServicePlan saved = plans.save(plan);
-        audit.record(null, actor, AuditAction.STATUS_CHANGE, "SERVICE_PLAN", saved.getCode(), active ? "ACTIVATED" : "DEACTIVATED");
+        audit.record(
+                null,
+                actor,
+                AuditAction.STATUS_CHANGE,
+                "SERVICE_PLAN",
+                saved.getCode(),
+                active ? "ACTIVATED" : "DEACTIVATED");
         return mapper.toPlanResponse(saved);
     }
 
-    private static void apply(ServicePlan plan, String name, java.math.BigDecimal price, String cycle, Double hours,
-                              Integer uavs, Boolean sarAi, String description) {
+    private static void apply(
+            ServicePlan plan,
+            String name,
+            java.math.BigDecimal price,
+            String cycle,
+            Double hours,
+            Integer uavs,
+            Boolean sarAi,
+            String description) {
         plan.setName(name.trim());
         plan.setPrice(price);
         plan.setBillingCycle(cycle);
         plan.setMaxMonthlyFlightHours(hours);
         plan.setMaxConcurrentUavs(uavs);
         plan.setAllowSarAi(sarAi);
-        plan.setDescription(description == null || description.isBlank() ? null : description.trim());
+        plan.setDescription(
+                description == null || description.isBlank() ? null : description.trim());
     }
 
     private ServicePlan find(Long id) {
-        return plans.findById(id).orElseThrow(() -> SystemException.notFound("Service plan not found"));
+        return plans.findById(id)
+                .orElseThrow(() -> SystemException.notFound("Service plan not found"));
     }
 }

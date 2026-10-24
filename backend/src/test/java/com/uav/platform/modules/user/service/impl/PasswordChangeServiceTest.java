@@ -21,7 +21,8 @@ class PasswordChangeServiceTest {
     private final UserRepository users = mock(UserRepository.class);
     private final RefreshTokenRepository tokens = mock(RefreshTokenRepository.class);
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(4);
-    private final PasswordChangeServiceImpl service = new PasswordChangeServiceImpl(users, encoder, tokens, mock(AuditLogService.class));
+    private final PasswordChangeServiceImpl service =
+            new PasswordChangeServiceImpl(users, encoder, tokens, mock(AuditLogService.class));
     private AppUser admin;
 
     @BeforeEach
@@ -35,16 +36,27 @@ class PasswordChangeServiceTest {
 
     @Test
     void rejectsAWrongCurrentPassword() {
-        SystemException error = assertThrows(SystemException.class,
-                () -> service.change("admin", new PasswordChangeRequest("nope", "Brand-New-Pass-2")));
+        SystemException error =
+                assertThrows(
+                        SystemException.class,
+                        () ->
+                                service.change(
+                                        "admin",
+                                        new PasswordChangeRequest("nope", "Brand-New-Pass-2")));
         assertEquals(PasswordChangeServiceImpl.WRONG_CURRENT, error.getMessage());
         verify(users, never()).save(any());
     }
 
     @Test
     void rejectsReusingTheCurrentPassword() {
-        SystemException error = assertThrows(SystemException.class,
-                () -> service.change("admin", new PasswordChangeRequest("Current-Pass-1", "Current-Pass-1")));
+        SystemException error =
+                assertThrows(
+                        SystemException.class,
+                        () ->
+                                service.change(
+                                        "admin",
+                                        new PasswordChangeRequest(
+                                                "Current-Pass-1", "Current-Pass-1")));
         assertEquals(PasswordChangeServiceImpl.SAME_AS_CURRENT, error.getMessage());
     }
 

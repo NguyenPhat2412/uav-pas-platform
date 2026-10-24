@@ -30,7 +30,9 @@ class ServiceOfferingManagementTest {
     @Test
     void updateKeepsTheCodeAndTrimsFields() {
         existing();
-        ServiceOfferingResponse r = service.update(5L, new ServiceOfferingUpdateRequest("  Khảo sát địa hình ", "  ", 90));
+        ServiceOfferingResponse r =
+                service.update(
+                        5L, new ServiceOfferingUpdateRequest("  Khảo sát địa hình ", "  ", 90));
         assertEquals("SURVEY", r.code());
         assertEquals("Khảo sát địa hình", r.name());
         assertNull(r.description());
@@ -40,12 +42,24 @@ class ServiceOfferingManagementTest {
     @Test
     void specsAreStoredAndSensorsDeduplicated() {
         existing();
-        ServiceOfferingResponse r = service.update(5L, new ServiceOfferingUpdateRequest("Khảo sát", null, 60,
-                java.util.List.of("RGB_4K", "LIDAR", "RGB_4K"), 1.5, 200.0, 10.0, 48, 72));
+        ServiceOfferingResponse r =
+                service.update(
+                        5L,
+                        new ServiceOfferingUpdateRequest(
+                                "Khảo sát",
+                                null,
+                                60,
+                                java.util.List.of("RGB_4K", "LIDAR", "RGB_4K"),
+                                1.5,
+                                200.0,
+                                10.0,
+                                48,
+                                72));
         assertEquals(java.util.List.of("RGB_4K", "LIDAR"), r.sensors());
         assertEquals(1.5, r.bestGsdCm());
         assertEquals(72, r.deliveryHours());
-        ServiceOfferingResponse cleared = service.update(5L, new ServiceOfferingUpdateRequest("Khảo sát", null, 60));
+        ServiceOfferingResponse cleared =
+                service.update(5L, new ServiceOfferingUpdateRequest("Khảo sát", null, 60));
         assertTrue(cleared.sensors().isEmpty());
         assertNull(cleared.onSiteHours());
     }

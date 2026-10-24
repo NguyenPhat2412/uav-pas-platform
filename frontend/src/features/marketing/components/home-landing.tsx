@@ -58,17 +58,17 @@ export default function Page() {
                             {keepVietnamesePhrases(' rõ ràng.')}
                         </h1>
                         <div className="flex flex-wrap items-center gap-3.5 pt-2">
-                            <a
-                                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary-hover transition-colors shadow-lg"
-                                href={`${customerUrl}/register`}
+                            <Link
+                                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary-hover transition-colors shadow-lg"
+                                href="/?auth=register"
                             >
                                 Bắt đầu yêu cầu <span aria-hidden="true">→</span>
-                            </a>
+                            </Link>
                             <Link
-                                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-bold text-white backdrop-blur-md hover:bg-white/20 transition-colors"
-                                href="/how-it-works"
+                                className="inline-flex min-h-11 items-center justify-center rounded-control border border-white/30 bg-white/10 px-6 py-3 text-sm font-bold text-white backdrop-blur-md hover:bg-white/20 transition-colors"
+                                href="/?auth=login"
                             >
-                                Tìm hiểu quy trình
+                                Đăng nhập ngay
                             </Link>
                         </div>
                     </div>
@@ -226,12 +226,12 @@ export default function Page() {
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-4">
-                        <a
-                            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-primary hover:bg-slate-100 transition-colors shadow-md"
-                            href={`${customerUrl}/register`}
+                        <Link
+                            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-white px-6 py-3 text-sm font-bold text-primary hover:bg-slate-100 transition-colors shadow-md"
+                            href="/?auth=register"
                         >
                             Tạo tài khoản
-                        </a>
+                        </Link>
                         <Link className="text-sm font-bold text-white underline underline-offset-4 hover:text-rose-100" href="/services">
                             Xem tất cả dịch vụ
                         </Link>

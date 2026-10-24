@@ -39,9 +39,12 @@ public class TelemetryServiceImpl implements TelemetryService {
     public TelemetryResponse ingest(Long uavId, TelemetryReportRequest r, String reporter) {
         if (!uavs.existsById(uavId)) throw SystemException.notFound("UAV not found");
         LocalDateTime now = LocalDateTime.now();
-        if (r.recordedAt().isAfter(now.plus(CLOCK_SKEW))) throw SystemException.badRequest("TELEMETRY_TIMESTAMP_IN_FUTURE");
+        if (r.recordedAt().isAfter(now.plus(CLOCK_SKEW)))
+            throw SystemException.badRequest("TELEMETRY_TIMESTAMP_IN_FUTURE");
         if (r.missionId() != null) {
-            Mission mission = missions.findById(r.missionId()).orElseThrow(() -> SystemException.notFound("Mission not found"));
+            Mission mission =
+                    missions.findById(r.missionId())
+                            .orElseThrow(() -> SystemException.notFound("Mission not found"));
             if (mission.getUav() == null || !uavId.equals(mission.getUav().getId()))
                 throw SystemException.badRequest("TELEMETRY_MISSION_UAV_MISMATCH");
         }
@@ -85,8 +88,19 @@ public class TelemetryServiceImpl implements TelemetryService {
 
     static TelemetryResponse toResponse(UavTelemetry t, LocalDateTime now) {
         long age = Math.max(0, Duration.between(t.getRecordedAt(), now).getSeconds());
-        return new TelemetryResponse(t.getUavId(), t.getMissionId(), t.getRecordedAt(), t.getLatitude().doubleValue(),
-                t.getLongitude().doubleValue(), t.getAltitudeAglMeters(), t.getGroundSpeedMs(), t.getHeadingDeg(),
-                t.getBatteryPct(), t.getRtkStatus(), t.getSatellites(), age, age > FRESH_SECONDS);
+        return new TelemetryResponse(
+                t.getUavId(),
+                t.getMissionId(),
+                t.getRecordedAt(),
+                t.getLatitude().doubleValue(),
+                t.getLongitude().doubleValue(),
+                t.getAltitudeAglMeters(),
+                t.getGroundSpeedMs(),
+                t.getHeadingDeg(),
+                t.getBatteryPct(),
+                t.getRtkStatus(),
+                t.getSatellites(),
+                age,
+                age > FRESH_SECONDS);
     }
 }

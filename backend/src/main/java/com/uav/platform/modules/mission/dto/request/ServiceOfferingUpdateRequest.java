@@ -20,7 +20,8 @@ public record ServiceOfferingUpdateRequest(
         @Min(1) @Max(720) Integer onSiteHours,
         @Min(1) @Max(2160) Integer deliveryHours) {
 
-    public ServiceOfferingUpdateRequest(String name, String description, int defaultDurationMinutes) {
+    public ServiceOfferingUpdateRequest(
+            String name, String description, int defaultDurationMinutes) {
         this(name, description, defaultDurationMinutes, null, null, null, null, null, null);
     }
 }

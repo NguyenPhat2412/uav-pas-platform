@@ -49,7 +49,8 @@ public class SarController {
     @PostMapping("/missions/{missionId}/return-to-home")
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
-    public ResponseEntity<RescueDispatchResponse> returnToHome(@PathVariable Long missionId, Authentication auth) {
+    public ResponseEntity<RescueDispatchResponse> returnToHome(
+            @PathVariable Long missionId, Authentication auth) {
         return ResponseEntity.ok(sarService.requestReturnToHome(missionId, auth));
     }
 

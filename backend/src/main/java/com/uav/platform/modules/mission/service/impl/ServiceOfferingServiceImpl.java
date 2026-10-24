@@ -3,8 +3,8 @@ package com.uav.platform.modules.mission.service.impl;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.mission.dto.request.ServiceOfferingRequest;
 import com.uav.platform.modules.mission.dto.request.ServiceOfferingUpdateRequest;
-import com.uav.platform.modules.mission.entity.ServiceOffering;
 import com.uav.platform.modules.mission.dto.response.ServiceOfferingResponse;
+import com.uav.platform.modules.mission.entity.ServiceOffering;
 import com.uav.platform.modules.mission.mapper.ServiceOfferingMapper;
 import com.uav.platform.modules.mission.repository.ServiceOfferingRepository;
 import com.uav.platform.modules.mission.service.ServiceOfferingService;
@@ -56,7 +56,9 @@ public class ServiceOfferingServiceImpl implements ServiceOfferingService {
     @Override
     @Transactional(readOnly = true)
     public List<ServiceOfferingResponse> listAll() {
-        return services.findAll(Sort.by("name")).stream().map(serviceOfferingMapper::toResponse).toList();
+        return services.findAll(Sort.by("name")).stream()
+                .map(serviceOfferingMapper::toResponse)
+                .toList();
     }
 
     @Override
@@ -64,10 +66,15 @@ public class ServiceOfferingServiceImpl implements ServiceOfferingService {
     public ServiceOfferingResponse update(Long id, ServiceOfferingUpdateRequest request) {
         ServiceOffering service = find(id);
         service.setName(request.name().trim());
-        service.setDescription(request.description() == null || request.description().isBlank() ? null : request.description().trim());
+        service.setDescription(
+                request.description() == null || request.description().isBlank()
+                        ? null
+                        : request.description().trim());
         service.setDefaultDurationMinutes(request.defaultDurationMinutes());
-        service.setSensors(request.sensors() == null || request.sensors().isEmpty() ? null
-                : String.join(",", new java.util.LinkedHashSet<>(request.sensors())));
+        service.setSensors(
+                request.sensors() == null || request.sensors().isEmpty()
+                        ? null
+                        : String.join(",", new java.util.LinkedHashSet<>(request.sensors())));
         service.setBestGsdCm(request.bestGsdCm());
         service.setMaxAreaHectares(request.maxAreaHectares());
         service.setMaxWindMs(request.maxWindMs());
@@ -85,6 +92,7 @@ public class ServiceOfferingServiceImpl implements ServiceOfferingService {
     }
 
     private ServiceOffering find(Long id) {
-        return services.findById(id).orElseThrow(() -> SystemException.notFound("Service not found"));
+        return services.findById(id)
+                .orElseThrow(() -> SystemException.notFound("Service not found"));
     }
 }

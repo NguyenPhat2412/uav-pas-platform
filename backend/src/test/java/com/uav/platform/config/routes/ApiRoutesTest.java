@@ -74,12 +74,22 @@ class ApiRoutesTest {
                 ApiRoutes.SWAGGER_WHITELIST);
 
         assertNotNull(ApiRoutes.PUBLIC_AUTH_WHITELIST);
-        assertEquals(3, ApiRoutes.PUBLIC_AUTH_WHITELIST.length);
+        // Sign-in, registration and the OTP/2FA challenge steps run before a session exists.
         assertArrayEquals(
                 new String[] {
-                    "/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/refresh"
+                    "/api/v1/auth/login",
+                    "/api/v1/auth/register",
+                    "/api/v1/auth/register-otp",
+                    "/api/v1/auth/verify-email",
+                    "/api/v1/auth/verify-2fa",
+                    "/api/v1/auth/resend-otp",
+                    "/api/v1/auth/forgot-password",
+                    "/api/v1/auth/reset-password",
+                    "/api/v1/auth/refresh"
                 },
                 ApiRoutes.PUBLIC_AUTH_WHITELIST);
+        // Enabling or disabling 2FA always needs a signed-in user.
+        for (String route : ApiRoutes.PUBLIC_AUTH_WHITELIST) assertFalse(route.contains("2fa/setup") || route.contains("2fa/disable"));
     }
 
     @Test

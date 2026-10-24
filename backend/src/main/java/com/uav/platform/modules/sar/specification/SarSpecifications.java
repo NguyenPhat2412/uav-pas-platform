@@ -22,7 +22,9 @@ public final class SarSpecifications {
             var mission = root.join("mission");
             var operator = mission.join("operator", jakarta.persistence.criteria.JoinType.LEFT);
             var customer = mission.join("customer", jakarta.persistence.criteria.JoinType.LEFT);
-            return cb.or(cb.equal(operator.get("username"), username), cb.equal(customer.get("username"), username));
+            return cb.or(
+                    cb.equal(operator.get("username"), username),
+                    cb.equal(customer.get("username"), username));
         };
     }
 

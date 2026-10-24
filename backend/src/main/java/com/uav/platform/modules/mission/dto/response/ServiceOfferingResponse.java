@@ -18,7 +18,25 @@ public record ServiceOfferingResponse(
         Integer onSiteHours,
         Integer deliveryHours) {
 
-    public ServiceOfferingResponse(Long id, String code, String name, String description, boolean active, int defaultDurationMinutes) {
-        this(id, code, name, description, active, defaultDurationMinutes, List.of(), null, null, null, null, null);
+    public ServiceOfferingResponse(
+            Long id,
+            String code,
+            String name,
+            String description,
+            boolean active,
+            int defaultDurationMinutes) {
+        this(
+                id,
+                code,
+                name,
+                description,
+                active,
+                defaultDurationMinutes,
+                List.of(),
+                null,
+                null,
+                null,
+                null,
+                null);
     }
 }

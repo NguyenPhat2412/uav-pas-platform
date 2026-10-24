@@ -17,8 +17,7 @@ import java.time.LocalDateTime;
 public class AiRouterSettings {
     public static final short SINGLETON_ID = 1;
 
-    @Id
-    private Short id;
+    @Id private Short id;
 
     @Column(name = "base_url", nullable = false, length = 255)
     private String baseUrl;
@@ -47,8 +46,7 @@ public class AiRouterSettings {
     @Column(nullable = false)
     private boolean enabled;
 
-    @Version
-    private long version;
+    @Version private long version;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;

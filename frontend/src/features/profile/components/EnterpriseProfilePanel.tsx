@@ -8,6 +8,7 @@ import {useCustomerScope} from '@/lib/query/customer';
 import {profileService} from '@/features/profile/services/profile.service';
 import type {BillingProfileFields} from '@/features/profile/types/profile.interface';
 import {EnterpriseAccessCard} from '@/features/profile/components/EnterpriseAccessCard';
+import {TwoFactorSettingsCard} from '@/features/profile/components/TwoFactorSettingsCard';
 
 const fieldKeys: (keyof BillingProfileFields)[] = ['organizationName', 'taxCode', 'billingAddress', 'emergencyContactName', 'emergencyContactPhone'];
 const limits: Record<keyof BillingProfileFields, number> = {organizationName: 200, taxCode: 14, billingAddress: 500, emergencyContactName: 120, emergencyContactPhone: 20};
@@ -90,5 +91,6 @@ export function EnterpriseProfilePanel() {
             </div>
         </section>
         <EnterpriseAccessCard/>
+        <TwoFactorSettingsCard/>
     </>;
 }

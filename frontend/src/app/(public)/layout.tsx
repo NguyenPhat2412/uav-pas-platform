@@ -1,7 +1,9 @@
 import type {Metadata} from 'next';
+import {Suspense} from 'react';
 import {PublicFooter} from '@/features/marketing/components/public-footer';
 import {PublicHeader} from '@/features/marketing/components/public-header';
-import {ToastProvider} from '@/contexts/ToastContext';
+import {PortalProviders} from '@/providers/PortalProviders';
+import {AuthModalPopup} from '@/features/auth/components/AuthModalPopup';
 import {publicUrl as siteUrl} from '@/features/marketing/content/origins';
 
 export const metadata: Metadata = {
@@ -36,9 +38,9 @@ export default function PublicLayout({children}: { children: React.ReactNode }) 
     };
     return (
         <div className="min-h-screen bg-card text-foreground">
-            <ToastProvider>
+            <PortalProviders area="customer">
                 <a
-                    className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-card focus:px-4 focus:py-2 focus:font-bold focus:text-primary focus:shadow-lg"
+                    className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-control focus:bg-card focus:px-4 focus:py-2 focus:font-bold focus:text-primary focus:shadow-lg"
                     href="#main-content"
                 >
                     Chuyển đến nội dung chính
@@ -46,7 +48,10 @@ export default function PublicLayout({children}: { children: React.ReactNode }) 
                 <PublicHeader/>
                 <main id="main-content" tabIndex={-1}>{children}</main>
                 <PublicFooter/>
-            </ToastProvider>
+                <Suspense fallback={null}>
+                    <AuthModalPopup/>
+                </Suspense>
+            </PortalProviders>
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData).replace(/</g, '\\u003c')}}

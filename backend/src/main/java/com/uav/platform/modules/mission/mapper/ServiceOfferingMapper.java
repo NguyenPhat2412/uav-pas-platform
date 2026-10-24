@@ -13,10 +13,17 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ServiceOfferingMapper {
 
-    @Mapping(target = "sensors", expression = "java(ServiceOfferingMapper.sensors(service.getSensors()))")
+    @Mapping(
+            target = "sensors",
+            expression = "java(ServiceOfferingMapper.sensors(service.getSensors()))")
     ServiceOfferingResponse toResponse(ServiceOffering service);
 
     static List<String> sensors(String stored) {
-        return stored == null || stored.isBlank() ? List.of() : Arrays.stream(stored.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+        return stored == null || stored.isBlank()
+                ? List.of()
+                : Arrays.stream(stored.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .toList();
     }
 }

@@ -18,7 +18,8 @@ public interface AiService {
     List<AiTaskResponse> listTasks(Long missionId, Authentication authentication);
 
     /** Records what the inference node found; only a PENDING/PROCESSING task accepts results. */
-    AiTaskResponse submitResults(Long taskId, AiTaskResultRequest request, Authentication authentication);
+    AiTaskResponse submitResults(
+            Long taskId, AiTaskResultRequest request, Authentication authentication);
 
     AiDetectionResponse verifyDetection(
             Long detectionId, VerifyDetectionRequest request, Authentication authentication);

@@ -12,5 +12,10 @@ import org.mapstruct.MappingConstants;
 public interface AuthMapper {
 
     @Mapping(target = "tokenType", constant = "Bearer")
+    @Mapping(target = "mfaRequired", constant = "false")
+    @Mapping(target = "mfaMethod", ignore = true)
+    @Mapping(target = "challengeToken", ignore = true)
+    @Mapping(target = "maskedEmail", ignore = true)
+    @Mapping(target = "devOtpPreview", ignore = true)
     AuthResponse toResponse(String accessToken, String refreshToken, UserResponse user);
 }

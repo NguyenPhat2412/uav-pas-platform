@@ -9,8 +9,6 @@ import com.uav.platform.modules.audit.service.AuditLogService;
 
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDate;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/v1/audit-logs")
@@ -34,11 +34,15 @@ public class AuditLogController {
             @RequestParam(required = false) AuditAction action,
             @RequestParam(required = false) String entityType,
             @RequestParam(required = false) String entityId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        AuditLogQueryRequest query = new AuditLogQueryRequest(actor, action, entityType, entityId, from, to);
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                    LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                    LocalDate to) {
+        AuditLogQueryRequest query =
+                new AuditLogQueryRequest(actor, action, entityType, entityId, from, to);
         if (query.equals(AuditLogQueryRequest.none())) return list(page, size);
-        return ResponseEntity.ok(auditLogService.findAll(query, Pageables.desc(page, size, "createdAt")));
+        return ResponseEntity.ok(
+                auditLogService.findAll(query, Pageables.desc(page, size, "createdAt")));
     }
 
     /** Unfiltered listing; also the path taken when no filter parameter is supplied. */

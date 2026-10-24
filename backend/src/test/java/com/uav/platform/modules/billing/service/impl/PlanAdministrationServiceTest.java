@@ -21,7 +21,10 @@ import java.util.Optional;
 class PlanAdministrationServiceTest {
     private final ServicePlanRepository repository = mock(ServicePlanRepository.class);
     private final PlanAdministrationServiceImpl service =
-            new PlanAdministrationServiceImpl(repository, Mappers.getMapper(BillingMapper.class), mock(AuditLogService.class));
+            new PlanAdministrationServiceImpl(
+                    repository,
+                    Mappers.getMapper(BillingMapper.class),
+                    mock(AuditLogService.class));
 
     private ServicePlan plan(String code) {
         ServicePlan p = new ServicePlan();
@@ -36,15 +39,33 @@ class PlanAdministrationServiceTest {
     @Test
     void createRejectsADuplicateCode() {
         when(repository.findByCode("PRO")).thenReturn(Optional.of(new ServicePlan()));
-        SystemException e = assertThrows(SystemException.class, () -> service.create(
-                new ServicePlanRequest("PRO", "Pro", BigDecimal.TEN, "MONTHLY", 40.0, 2, true, null), "admin"));
+        SystemException e =
+                assertThrows(
+                        SystemException.class,
+                        () ->
+                                service.create(
+                                        new ServicePlanRequest(
+                                                "PRO",
+                                                "Pro",
+                                                BigDecimal.TEN,
+                                                "MONTHLY",
+                                                40.0,
+                                                2,
+                                                true,
+                                                null),
+                                        "admin"));
         assertEquals(PlanAdministrationServiceImpl.PLAN_EXISTS, e.getMessage());
     }
 
     @Test
     void updateAppliesEveryTermButKeepsTheCode() {
         plan("PRO");
-        var r = service.update(1L, new ServicePlanUpdateRequest(" Pro+ ", new BigDecimal("990000"), "YEARLY", 60.0, 3, true, " "), "admin");
+        var r =
+                service.update(
+                        1L,
+                        new ServicePlanUpdateRequest(
+                                " Pro+ ", new BigDecimal("990000"), "YEARLY", 60.0, 3, true, " "),
+                        "admin");
         assertEquals("PRO", r.code());
         assertEquals("Pro+", r.name());
         assertEquals("YEARLY", r.billingCycle());
@@ -56,7 +77,8 @@ class PlanAdministrationServiceTest {
     @Test
     void theDefaultPlanCannotBeDeactivatedButOthersCan() {
         plan("BASIC");
-        SystemException e = assertThrows(SystemException.class, () -> service.setActive(1L, false, "admin"));
+        SystemException e =
+                assertThrows(SystemException.class, () -> service.setActive(1L, false, "admin"));
         assertEquals(PlanAdministrationServiceImpl.DEFAULT_PLAN_REQUIRED, e.getMessage());
 
         plan("PRO");

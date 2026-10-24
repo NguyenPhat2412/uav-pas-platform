@@ -29,7 +29,8 @@ public class PasswordChangeController {
 
     @Operation(summary = "Change the signed-in user's password; all sessions must sign in again")
     @PostMapping
-    public ResponseEntity<Void> change(@Valid @RequestBody PasswordChangeRequest request, Authentication authentication) {
+    public ResponseEntity<Void> change(
+            @Valid @RequestBody PasswordChangeRequest request, Authentication authentication) {
         passwords.change(authentication.getName(), request);
         return ResponseEntity.noContent().build();
     }

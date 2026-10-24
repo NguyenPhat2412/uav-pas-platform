@@ -29,14 +29,20 @@ public class TelemetryController {
     @PostMapping("/uavs/{id}/telemetry")
     @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
     public ResponseEntity<TelemetryResponse> report(
-            @PathVariable Long id, @Valid @RequestBody TelemetryReportRequest request, Authentication auth) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(telemetry.ingest(id, request, auth.getName()));
+            @PathVariable Long id,
+            @Valid @RequestBody TelemetryReportRequest request,
+            Authentication auth) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(telemetry.ingest(id, request, auth.getName()));
     }
 
     @GetMapping("/uavs/{id}/telemetry/latest")
     @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
     public ResponseEntity<TelemetryResponse> latest(@PathVariable Long id) {
-        return telemetry.latest(id).map(ResponseEntity::ok).orElse(ResponseEntity.noContent().build());
+        return telemetry
+                .latest(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
     }
 
     @GetMapping("/uavs/telemetry/latest")
@@ -48,7 +54,11 @@ public class TelemetryController {
     /** For anyone who may see the mission (its customer included): the assigned UAV's latest sample. */
     @GetMapping("/missions/{id}/telemetry/latest")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
-    public ResponseEntity<TelemetryResponse> forMission(@PathVariable Long id, Authentication auth) {
-        return telemetry.latestForMission(id, auth).map(ResponseEntity::ok).orElse(ResponseEntity.noContent().build());
+    public ResponseEntity<TelemetryResponse> forMission(
+            @PathVariable Long id, Authentication auth) {
+        return telemetry
+                .latestForMission(id, auth)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
     }
 }

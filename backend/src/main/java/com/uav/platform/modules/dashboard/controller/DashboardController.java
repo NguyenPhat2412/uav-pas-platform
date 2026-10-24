@@ -4,8 +4,8 @@ import com.uav.platform.modules.dashboard.dto.response.AdminAnalyticsResponse;
 import com.uav.platform.modules.dashboard.dto.response.CustomerAnalyticsResponse;
 import com.uav.platform.modules.dashboard.dto.response.DashboardResponse;
 import com.uav.platform.modules.dashboard.dto.response.FleetMapResponse;
-import com.uav.platform.modules.dashboard.dto.response.SystemHealthResponse;
 import com.uav.platform.modules.dashboard.dto.response.MissionDashboardResponse;
+import com.uav.platform.modules.dashboard.dto.response.SystemHealthResponse;
 import com.uav.platform.modules.dashboard.service.AdminAnalyticsService;
 import com.uav.platform.modules.dashboard.service.CustomerAnalyticsService;
 import com.uav.platform.modules.dashboard.service.DashboardService;
@@ -54,7 +54,8 @@ public class DashboardController {
     /** The caller's own missions, invoices and quota; no other customer's data is reachable here. */
     @GetMapping("/customer-analytics")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
-    public ResponseEntity<CustomerAnalyticsResponse> customerAnalytics(Authentication authentication) {
+    public ResponseEntity<CustomerAnalyticsResponse> customerAnalytics(
+            Authentication authentication) {
         return ResponseEntity.ok(customerAnalytics.analytics(authentication));
     }
 

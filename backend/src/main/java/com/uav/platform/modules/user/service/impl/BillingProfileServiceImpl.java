@@ -26,7 +26,8 @@ public class BillingProfileServiceImpl implements BillingProfileService {
     @Override
     @Transactional(readOnly = true)
     public BillingProfileResponse get(String username) {
-        return profiles.findById(user(username).getId()).map(BillingProfileServiceImpl::toResponse)
+        return profiles.findById(user(username).getId())
+                .map(BillingProfileServiceImpl::toResponse)
                 .orElse(new BillingProfileResponse(null, null, null, null, null, 0, null));
     }
 
@@ -36,7 +37,8 @@ public class BillingProfileServiceImpl implements BillingProfileService {
         Long userId = user(username).getId();
         CustomerBillingProfile profile = profiles.findById(userId).orElse(null);
         long current = profile == null ? 0 : profile.getVersion();
-        if (request.expectedVersion() != current) throw SystemException.conflict("BILLING_PROFILE_STALE");
+        if (request.expectedVersion() != current)
+            throw SystemException.conflict("BILLING_PROFILE_STALE");
         if (profile == null) profile = new CustomerBillingProfile(userId);
         profile.setOrganizationName(clean(request.organizationName()));
         profile.setTaxCode(clean(request.taxCode()));
@@ -48,7 +50,8 @@ public class BillingProfileServiceImpl implements BillingProfileService {
     }
 
     private AppUser user(String username) {
-        return users.findByUsername(username).orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
+        return users.findByUsername(username)
+                .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
     }
 
     static String clean(String value) {
@@ -56,7 +59,13 @@ public class BillingProfileServiceImpl implements BillingProfileService {
     }
 
     private static BillingProfileResponse toResponse(CustomerBillingProfile p) {
-        return new BillingProfileResponse(p.getOrganizationName(), p.getTaxCode(), p.getBillingAddress(),
-                p.getEmergencyContactName(), p.getEmergencyContactPhone(), p.getVersion(), p.getUpdatedAt());
+        return new BillingProfileResponse(
+                p.getOrganizationName(),
+                p.getTaxCode(),
+                p.getBillingAddress(),
+                p.getEmergencyContactName(),
+                p.getEmergencyContactPhone(),
+                p.getVersion(),
+                p.getUpdatedAt());
     }
 }

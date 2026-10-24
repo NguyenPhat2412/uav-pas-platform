@@ -63,6 +63,21 @@ public class AppUser extends BaseEntity {
     @Column(name = "manual_locked", nullable = false, columnDefinition = "boolean default false")
     private boolean manualLocked = false;
 
+    @Column(name = "email_verified", nullable = false, columnDefinition = "boolean default true")
+    private boolean emailVerified = true;
+
+    @Column(
+            name = "two_factor_enabled",
+            nullable = false,
+            columnDefinition = "boolean default false")
+    private boolean twoFactorEnabled = false;
+
+    @Column(name = "two_factor_method", nullable = false, length = 20)
+    private String twoFactorMethod = "EMAIL";
+
+    @Column(name = "totp_secret", length = 128)
+    private String totpSecret;
+
     public AppUser(
             String username,
             String email,

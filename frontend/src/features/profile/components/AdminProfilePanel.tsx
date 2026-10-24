@@ -12,6 +12,7 @@ import {profileError, validateProfile} from '@/features/profile/forms/profile-fo
 import {profileService} from '@/features/profile/services/profile.service';
 import type {ProfileErrors, ProfileFields} from '@/features/profile/types/profile.interface';
 import {PasswordChangeCard} from '@/features/profile/components/PasswordChangeCard';
+import {TwoFactorSettingsCard} from '@/features/profile/components/TwoFactorSettingsCard';
 
 /** The admin's own account: editable name and phone, read-only identity, and a self-service password change. */
 export function AdminProfilePanel() {
@@ -85,5 +86,8 @@ export function AdminProfilePanel() {
             </form>}</QueryState>
         </section>
         <PasswordChangeCard/>
+        <div className="lg:col-span-2">
+            <TwoFactorSettingsCard/>
+        </div>
     </div>;
 }

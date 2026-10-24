@@ -7,9 +7,11 @@ if [[ -f .env ]]; then
     # A read loop (not `source <(...)`, which is a no-op in macOS bash 3.2) and no eval, so values keep any characters.
     while IFS= read -r line; do
         export "$line"
-    done < <(grep -E '^(APP_STORAGE_[A-Z_]+|APP_JWT_SECRET|SPRING_DATASOURCE_USERNAME|SPRING_DATASOURCE_PASSWORD)=' .env)
+    done < <(grep -E '^(APP_STORAGE_[A-Z_]+|APP_JWT_SECRET|SPRING_DATASOURCE_USERNAME|SPRING_DATASOURCE_PASSWORD|SMTP_[A-Z_]+|APP_MAIL_[A-Z_]+)=' .env)
 fi
 # Browser uploads go straight to storage, so the bucket must allow the frontend origin (see .env).
-export APP_STORAGE_CORS_ORIGIN="${LOCAL_CORS_ORIGIN:-http://localhost:3101}"
+# Without SMTP, show OTP codes in the API response and log so sign-up/2FA can be tested on this machine.
+export APP_AUTH_OTP_DEV_PREVIEW="${APP_AUTH_OTP_DEV_PREVIEW:-true}"
+export APP_STORAGE_CORS_ORIGIN="${LOCAL_CORS_ORIGIN:-http://localhost:3100}"
 # DevTools restarts break when another build rewrites target/classes mid-run; restart manually instead.
 exec ./mvnw -q -Dmaven.test.skip=true spring-boot:run -Dspring-boot.run.jvmArguments="-Dspring.devtools.restart.enabled=false"

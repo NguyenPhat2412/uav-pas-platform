@@ -23,6 +23,7 @@ interface AuthContextType {
     refreshUser: () => Promise<void>;
     login: (usernameOrEmail: string, password: string) => Promise<AuthResponse>;
     register: (data: RegisterRequest) => Promise<UserResponse>;
+    completeAuth: (response: AuthResponse) => AuthResponse;
     logout: () => Promise<void>;
 }
 
@@ -114,19 +115,25 @@ export function AuthProvider({children}: { children: ReactNode }) {
         permissionSignature.current = signature;
     }, [permissionQuery.data, client]);
 
-    const authenticate = useCallback(async (action: () => Promise<AuthResponse>) => {
-        setIsLoading(true);
-        try {
-            const response = await action();
+    const completeAuth = useCallback((response: AuthResponse) => {
+        if (!response.mfaRequired && response.user) {
             identity.current = response.user.id;
             setUser(response.user);
             setToken('cookie');
             setAuthSession(response);
-            return response;
+        }
+        return response;
+    }, []);
+
+    const authenticate = useCallback(async (action: () => Promise<AuthResponse>) => {
+        setIsLoading(true);
+        try {
+            const response = await action();
+            return completeAuth(response);
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [completeAuth]);
     const login = useCallback((usernameOrEmail: string, password: string) => authenticate(() => authService.login({
         usernameOrEmail,
         password
@@ -161,7 +168,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
         user, token, isLoading, isAuthenticated: !!user,
         permissions, permissionsReady: permissionQuery.isSuccess, permissionError: permissionQuery.error,
         can: code => permissions.includes(code), refreshPermissions: permissionQuery.refetch, refreshUser,
-        login, register, logout
+        login, register, completeAuth, logout
     }}>{children}</AuthContext.Provider>;
 }
 

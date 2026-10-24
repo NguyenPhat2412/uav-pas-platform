@@ -19,7 +19,8 @@ public interface SarService {
     SarMissionResponse registerSar(SarMissionRequest request, Authentication authentication);
 
     /** SAR missions visible to the caller, most recently updated first; RESCUED ones only when asked. */
-    List<SarCockpitMissionResponse> listForCockpit(boolean includeClosed, Authentication authentication);
+    List<SarCockpitMissionResponse> listForCockpit(
+            boolean includeClosed, Authentication authentication);
 
     /** Asks the ground-station integration (webhook SAR_RTH_REQUESTED) to recall the assigned UAV. */
     RescueDispatchResponse requestReturnToHome(Long missionId, Authentication authentication);

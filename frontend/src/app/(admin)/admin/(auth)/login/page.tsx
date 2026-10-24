@@ -1,13 +1,6 @@
-'use client';
-import {PortalAuthLayout} from "@/components/shared";
-import {LoginForm} from "@/features/auth/components/admin/LoginForm";
-import {useI18n} from '@/contexts/I18nContext';
+import {redirect} from 'next/navigation';
+import {authEntryUrl} from '@/features/auth/utils/auth-entry';
 
 export default function Page() {
-    const {t} = useI18n();
-    return <PortalAuthLayout title={t('admin.login.layoutTitle')}
-                             description={t('admin.login.layoutDescription')}
-                             homeUrl={"/"}>
-        <LoginForm/>
-    </PortalAuthLayout>;
+    redirect(authEntryUrl('login', '/admin/dashboard'));
 }

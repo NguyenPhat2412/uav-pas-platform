@@ -19,8 +19,10 @@ import java.util.Optional;
 
 class BillingProfileServiceTest {
     private final UserRepository users = mock(UserRepository.class);
-    private final CustomerBillingProfileRepository profiles = mock(CustomerBillingProfileRepository.class);
-    private final BillingProfileServiceImpl service = new BillingProfileServiceImpl(users, profiles);
+    private final CustomerBillingProfileRepository profiles =
+            mock(CustomerBillingProfileRepository.class);
+    private final BillingProfileServiceImpl service =
+            new BillingProfileServiceImpl(users, profiles);
 
     @BeforeEach
     void setUp() {
@@ -39,7 +41,10 @@ class BillingProfileServiceTest {
     @Test
     void firstSaveCreatesTheRowAndBlankFieldsBecomeNull() {
         when(profiles.findById(7L)).thenReturn(Optional.empty());
-        var saved = service.update("pilot", new BillingProfileRequest(0L, " VJU ", "0101234567-001", " ", null, null));
+        var saved =
+                service.update(
+                        "pilot",
+                        new BillingProfileRequest(0L, " VJU ", "0101234567-001", " ", null, null));
         assertEquals("VJU", saved.organizationName());
         assertEquals("0101234567-001", saved.taxCode());
         assertNull(saved.billingAddress());
@@ -50,7 +55,15 @@ class BillingProfileServiceTest {
         CustomerBillingProfile existing = new CustomerBillingProfile(7L);
         existing.setVersion(3);
         when(profiles.findById(7L)).thenReturn(Optional.of(existing));
-        assertEquals("BILLING_PROFILE_STALE", assertThrows(SystemException.class,
-                () -> service.update("pilot", new BillingProfileRequest(2L, "VJU", null, null, null, null))).getMessage());
+        assertEquals(
+                "BILLING_PROFILE_STALE",
+                assertThrows(
+                                SystemException.class,
+                                () ->
+                                        service.update(
+                                                "pilot",
+                                                new BillingProfileRequest(
+                                                        2L, "VJU", null, null, null, null)))
+                        .getMessage());
     }
 }
