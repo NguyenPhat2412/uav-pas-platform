@@ -70,14 +70,14 @@ export const services = [
 
 export const solutions = [
     {
-        slug: 'uav-rental',
-        title: 'Thuê UAV',
+        slug: 'managed-uav-operations',
+        title: 'Vận hành UAV theo yêu cầu',
         text: 'Bắt đầu yêu cầu về thiết bị UAV và người điều khiển.',
         status: 'AVAILABLE' as Readiness
     },
     {
-        slug: 'aerial-inspection',
-        title: 'Khảo sát khu vực',
+        slug: 'infrastructure-inspection',
+        title: 'Khảo sát công trình và khu vực',
         text: 'Chuyển nhu cầu kiểm tra thành yêu cầu nhiệm vụ để đội vận hành xem xét.',
         status: 'AVAILABLE' as Readiness
     },
@@ -94,6 +94,11 @@ export const solutions = [
         status: 'PLANNED' as Readiness
     },
 ];
+
+export const legacySolutionSlugAliases: Record<string, string> = {
+    'uav-rental': 'managed-uav-operations',
+    'aerial-inspection': 'infrastructure-inspection',
+};
 
 export const steps = [
     {number: '01', title: 'Tìm hiểu dịch vụ', text: 'Chọn dịch vụ hoặc giải pháp phù hợp với mục tiêu nhiệm vụ.'},

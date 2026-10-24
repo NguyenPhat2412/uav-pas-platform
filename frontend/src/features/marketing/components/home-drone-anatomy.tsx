@@ -32,14 +32,14 @@ export function DroneAnatomy() {
                     ))}
                     <rect x="150" y="140" width="100" height="120" rx="26" className="fill-white stroke-slate-700" strokeWidth="2"/>
                     <rect x="168" y="196" width="64" height="40" rx="6" className="fill-slate-100 stroke-slate-400"/>
-                    <path d="M176 216h40" className="stroke-success" strokeWidth="3" strokeLinecap="round"/>
+                    <path d="M176 216h40" className="stroke-primary" strokeWidth="3" strokeLinecap="round"/>
                     <rect x="178" y="164" width="44" height="22" rx="4" className="fill-slate-100 stroke-slate-400"/>
                     <circle cx="200" cy="152" r="9" className="fill-white stroke-slate-700" strokeWidth="1.5"/>
                     <circle cx="200" cy="272" r="13" className="fill-slate-800"/>
                     <circle cx="200" cy="272" r="5" className="fill-primary"/>
                     <path d="M160 254l-10 16M240 254l10 16" className="stroke-slate-700" strokeWidth="2" strokeLinecap="round"/>
                     <circle cx="96" cy="96" r="4" className="fill-primary"/><circle cx="304" cy="96" r="4" className="fill-primary"/>
-                    <circle cx="96" cy="304" r="4" className="fill-success"/><circle cx="304" cy="304" r="4" className="fill-success"/>
+                    <circle cx="96" cy="304" r="4" className="fill-uav-blue"/><circle cx="304" cy="304" r="4" className="fill-uav-blue"/>
                     <text x="200" y="22" className="fill-slate-400 font-sans" fontSize="10" textAnchor="middle" letterSpacing="2">MŨI · HƯỚNG BAY</text>
                 </svg>
                 <svg className="pointer-events-none absolute inset-0 h-full w-full stroke-primary fill-primary" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" key={selected.id}>

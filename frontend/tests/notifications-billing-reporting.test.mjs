@@ -70,8 +70,10 @@ test('Customer Portal has Billing & Quotas and Notifications pages', () => {
     assert.equal(existsSync(notifPath), true, 'Customer notifications page must exist');
 
     const billingContent = readFileSync(billingPath, 'utf8');
-    assert.match(billingContent, /billingPage\.gatewayNotice/);
-    assert.match(customerVi.billingPage.gatewayNotice, /Cổng thanh toán chưa được cấu hình/);
+    assert.match(billingContent, /bankTransferService/, 'payments go through the VietQR bank-transfer API');
+    assert.match(billingContent, /payment\.awaitingTransferHint/);
+    assert.equal(customerVi.billingPage.gatewayNotice, undefined, 'no "gateway not configured" copy');
+    assert.doesNotMatch(customerVi.billingPage.subtitle, /chưa được cấu hình/);
     assert.match(billingContent, /flightHoursUsed/);
     assert.match(billingContent, /flightHoursLimit/);
     assert.match(billingContent, /my-quota/);
@@ -141,7 +143,7 @@ test('Centralized API_ROUTES registry in @/lib/api and Service-Layer delegation'
     const customerBillingContent = readFileSync(`${root}src/features/billing/components/CustomerBillingPanel.tsx`, 'utf8');
     assert.doesNotMatch(customerBillingContent, /fetch\(['"`]\/api\/v1\//);
     assert.doesNotMatch(customerBillingContent, /simulatePaymentIpn|Xác nhận thủ công|101869876543/);
-    assert.match(customerBillingContent, /billingPage\.gatewayNotice/);
+    assert.doesNotMatch(customerBillingContent, /billingPage\.(gatewayNotice|upgradeUnavailable)/);
 
     const adminReportsContent = readFileSync(`${root}src/features/reports/components/AdminReportsPanel.tsx`, 'utf8');
     assert.match(adminReportsContent, /adminService\.operationsReport/);

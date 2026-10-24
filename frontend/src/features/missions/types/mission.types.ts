@@ -1,3 +1,4 @@
+import type {FlightPlan, FlightPlanInput} from '@/features/missions/types/flight-plan.types';
 import type {PageResponse} from '@/types';
 
 export type {PageResponse};
@@ -45,6 +46,7 @@ export interface Mission {
     createdAt?: string;
     updatedAt?: string;
     billingStatus?: string;
+    flightPlan?: FlightPlan | null;
     completionNote?: string;
     equipmentCondition?: string;
     failureReason?: string;
@@ -84,6 +86,7 @@ export interface MissionInput {
     serviceId?: number;
     priority?: MissionPriority;
     notes?: string;
+    flightPlan?: FlightPlanInput;
 }
 
 export interface MissionDashboard {
@@ -103,6 +106,13 @@ export interface UavService {
     description?: string;
     active: boolean;
     defaultDurationMinutes: number;
+    /** Technical sheet; null where operations have not committed to a value. */
+    sensors?: string[];
+    bestGsdCm?: number | null;
+    maxAreaHectares?: number | null;
+    maxWindMs?: number | null;
+    onSiteHours?: number | null;
+    deliveryHours?: number | null;
 }
 
 export interface SignedMediaUrl {

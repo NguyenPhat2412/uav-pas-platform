@@ -1,4 +1,5 @@
 'use client';
+import type {ReactNode} from 'react';
 import {useQuery} from '@tanstack/react-query';
 import {MapPin, UserCheck} from 'lucide-react';
 import {UavIcon} from '@/components/shared/UavIcon';
@@ -22,48 +23,46 @@ export function MissionResources({mission}: { mission: Mission }) {
         queryFn: ({signal}) => operationsService.station(mission.stationId!, signal),
         enabled: mission.stationId != null && permissionsReady && can('STATION_READ'),
     });
-    const pending = t('resources.notAssigned');
-    const operatorState = mission.operatorId == null ? pending
-        : mission.operatorAccepted ? t('resources.operatorAccepted') : t('resources.operatorAssigned');
+    const pending = <strong className="text-sm font-semibold text-muted">{t('resources.notAssigned')}</strong>;
+    const state = (query: { isError: boolean }) =>
+        <strong className="text-sm font-semibold text-muted">{query.isError ? t('resources.unavailable') : t('common.loading')}</strong>;
+    const operatorState = mission.operatorAccepted ? t('resources.operatorAccepted') : t('resources.operatorAssigned');
 
-    return <section className="mission-panel" aria-labelledby="resources-title">
-        <header><h2 id="resources-title">{t('resources.title')}</h2></header>
-        <div className="mission-panel-body">
-            <ul className="resource-cards">
-                <li>
-                    <span className="resource-icon" aria-hidden="true"><UavIcon size={20}/></span>
-                    <div>
-                        <small>{t('resources.uav')}</small>
-                        {mission.uavId == null ? <strong>{pending}</strong>
-                            : uav.data ? <>
-                                    <strong>{uav.data.model}</strong>
-                                    <span>{uav.data.manufacturer} · {uav.data.serialNumber}</span>
-                                    <span>{displayLabel(uav.data.status)}</span>
-                                </>
-                                : <strong>{uav.isError ? t('resources.unavailable') : t('common.loading')}</strong>}
-                    </div>
-                </li>
-                <li>
-                    <span className="resource-icon" aria-hidden="true"><MapPin size={20}/></span>
-                    <div>
-                        <small>{t('resources.station')}</small>
-                        {mission.stationId == null ? <strong>{pending}</strong>
-                            : station.data ? <>
-                                    <strong>{station.data.name}</strong>
-                                    {station.data.address && <span>{station.data.address}</span>}
-                                </>
-                                : <strong>{station.isError ? t('resources.unavailable') : t('common.loading')}</strong>}
-                    </div>
-                </li>
-                <li>
-                    <span className="resource-icon" aria-hidden="true"><UserCheck size={20}/></span>
-                    <div>
-                        <small>{t('resources.operator')}</small>
-                        <strong>{operatorState}</strong>
-                        {mission.operatorId != null && <span>{t('resources.operatorPrivacy')}</span>}
-                    </div>
-                </li>
-            </ul>
-        </div>
+    return <section className="min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+                    aria-labelledby="resources-title">
+        <header className="flex items-center justify-between gap-3 border-b border-border px-5 py-4 md:px-6 md:py-5">
+            <h2 id="resources-title" className="m-0 text-lg font-bold text-foreground">{t('resources.title')}</h2>
+        </header>
+        <ul className="m-0 grid list-none gap-3 p-5 md:p-6">
+            <Resource icon={<UavIcon size={20}/>} label={t('resources.uav')}>
+                {mission.uavId == null ? pending : uav.data ? <>
+                    <strong className="text-sm font-semibold text-foreground">{uav.data.model}</strong>
+                    <span className="text-xs text-muted">{uav.data.manufacturer} · {uav.data.serialNumber}</span>
+                    <span className="text-xs text-muted">{displayLabel(uav.data.status)}</span>
+                </> : state(uav)}
+            </Resource>
+            <Resource icon={<MapPin size={20}/>} label={t('resources.station')}>
+                {mission.stationId == null ? pending : station.data ? <>
+                    <strong className="text-sm font-semibold text-foreground">{station.data.name}</strong>
+                    {station.data.address && <span className="text-xs text-muted">{station.data.address}</span>}
+                </> : state(station)}
+            </Resource>
+            <Resource icon={<UserCheck size={20}/>} label={t('resources.operator')}>
+                {mission.operatorId == null ? pending : <>
+                    <strong className="text-sm font-semibold text-foreground">{operatorState}</strong>
+                    <span className="text-xs text-muted">{t('resources.operatorPrivacy')}</span>
+                </>}
+            </Resource>
+        </ul>
     </section>;
+}
+
+function Resource({icon, label, children}: { icon: ReactNode; label: string; children: ReactNode }) {
+    return <li className="flex items-start gap-3 rounded-xl border border-border p-3 md:p-4">
+        <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary" aria-hidden="true">{icon}</span>
+        <div className="grid min-w-0 gap-0.5 break-words">
+            <small className="text-xs text-muted">{label}</small>
+            {children}
+        </div>
+    </li>;
 }

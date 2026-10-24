@@ -15,8 +15,9 @@ const mediaPolicyUrl = compile(await source('src/lib/api/media-policy.ts'));
 const formsUrl = compile(await source('src/features/missions/utils/workflows.ts'));
 const {failureInput, reservationQuantity, missionEventNote, missionEventNoteLimit} = await import(formsUrl);
 const {missionControls} = await import(compile((await source('src/features/missions/utils/presentation.ts')).replace('@/components/shared/presentation', labelsUrl)));
+const routesUrl = compile(await source('src/lib/api/routes.ts'));
 const apiUrl = compile(`
-  export const API_ROUTES = {};
+  export {API_ROUTES} from "${routesUrl}";
   export const requests = [];
   export const apiClient = Object.fromEntries(['get','post','put','patch','delete'].map(method => [method, async (path, body) => { requests.push({method,path,body}); return {id:42,status:'FAILED'}; }]));
   export const apiRequest = async () => {};

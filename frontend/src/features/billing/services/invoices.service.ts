@@ -1,18 +1,9 @@
-import {API_ROUTES, apiClient} from '@/lib/api';
-import type {Invoice, InvoiceStatus, PageResponse} from '@/types';
+import {apiClient} from '@/lib/api';
+import {API_ROUTES} from '@/lib/api/routes';
+import type {Invoice, PageResponse} from '@/types';
+import type {CreateInvoiceInput, InvoiceFilters} from '@/features/billing/types/billing.interface';
 
-export interface InvoiceFilters {
-    status?: InvoiceStatus;
-    overdue?: boolean;
-}
-
-export interface CreateInvoiceInput {
-    userId: number;
-    amount: number;
-    missionId?: number;
-    planId?: number;
-    notes?: string;
-}
+export type {CreateInvoiceInput, InvoiceFilters};
 
 export const invoicesService = {
     /** Managers receive every customer's invoices; the backend scopes others to their own. */

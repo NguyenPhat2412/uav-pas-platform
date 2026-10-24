@@ -18,14 +18,14 @@ export const Alert: React.FC<AlertProps> = ({
                                             }) => {
     const defaultIcons = {
         info: <Info size={18} className="shrink-0 text-primary-container"/>,
-        success: <CheckCircle2 size={18} className="shrink-0 text-emerald-600"/>,
+        success: <CheckCircle2 size={18} className="shrink-0 text-uav-blue"/>,
         warning: <AlertTriangle size={18} className="shrink-0 text-amber-600"/>,
         error: <AlertCircle size={18} className="shrink-0 text-error"/>,
     };
 
     const variants = {
         info: 'bg-primary-fixed/30 border-primary/20 text-on-surface',
-        success: 'bg-emerald-50 border-emerald-200 text-emerald-950',
+        success: 'bg-uav-blue-light border-blue-200 text-slate-900',
         warning: 'bg-amber-50 border-amber-200 text-amber-950',
         error: 'bg-error-container/40 border-error/30 text-on-error-container',
     };

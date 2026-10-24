@@ -154,7 +154,7 @@ export function EquipmentPanel() {
                         {stations.data?.filter(station => station.status === 'ACTIVE').map(station => <option
                             key={station.id} value={station.id}>{station.code}</option>)}</select></div>}
                 <div className="mt-4 flex items-center gap-3"><Button size="sm" type="submit" isLoading={move.isPending}
-                                                                      disabled={movement.action === 'transfer' && (!can('STATION_READ') || stations.isPending || !!stations.error)}>{t('opsAssets.equipment.record')}</Button>{success && <span role="status" className="text-sm text-emerald-700">{t(success)}</span>}
+                                                                      disabled={movement.action === 'transfer' && (!can('STATION_READ') || stations.isPending || !!stations.error)}>{t('opsAssets.equipment.record')}</Button>{success && <span role="status" className="text-sm text-uav-blue">{t(success)}</span>}
                 </div>
                 <ErrorNotice error={move.error}/></form>}
         <QueryState query={collection}><DataTable label={t('opsAssets.equipment.tableLabel')} data={rows} columns={columns} filters={[{

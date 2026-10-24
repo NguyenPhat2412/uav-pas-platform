@@ -63,8 +63,8 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: Plan, w: number, h: numbe
     }
     if (plan.area) {
         polyline(plan.area); ctx.closePath();
-        ctx.fillStyle = 'rgba(0,127,62,0.07)'; ctx.fill();
-        ctx.setLineDash([5, 5]); ctx.strokeStyle = 'rgba(0,127,62,0.7)'; ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(0,74,198,0.08)'; ctx.fill();
+        ctx.setLineDash([5, 5]); ctx.strokeStyle = 'rgba(0,74,198,0.7)'; ctx.stroke(); ctx.setLineDash([]);
     }
     if (plan.poi) {
         const [x, y] = at(plan.poi);
@@ -99,7 +99,7 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: Plan, w: number, h: numbe
     }
     ctx.stroke();
     const [sx, sy] = at(station);
-    ctx.fillStyle = 'rgb(0,127,62)'; ctx.fillRect(sx - 8, sy - 8, 16, 16);
+    ctx.fillStyle = 'rgb(0,74,198)'; ctx.fillRect(sx - 8, sy - 8, 16, 16);
     ctx.fillStyle = 'rgb(100,100,100)'; ctx.font = '600 10px ui-monospace, monospace'; ctx.fillText('TRẠM', sx + 13, sy + 4);
     ctx.fillStyle = 'rgba(171,37,35,0.18)'; ctx.beginPath(); ctx.arc(head[0], head[1], 12, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = 'rgb(171,37,35)'; ctx.beginPath(); ctx.arc(head[0], head[1], 5, 0, Math.PI * 2); ctx.fill();

@@ -46,8 +46,10 @@ class SystemHealthServiceTest {
         when(deliveries.count(any(Specification.class))).thenReturn(0L);
         FinancialOutboxRepository outbox = mock(FinancialOutboxRepository.class);
         when(outbox.count(any(Specification.class))).thenReturn(0L);
+        com.uav.platform.modules.billing.service.BankTransferService bank = mock(com.uav.platform.modules.billing.service.BankTransferService.class);
+        when(bank.status()).thenReturn(new com.uav.platform.modules.billing.dto.response.BankTransferStatusResponse(false, null));
 
-        SystemHealthResponse health = new SystemHealthServiceImpl(dataSource, storage, deliveries, outbox).check();
+        SystemHealthResponse health = new SystemHealthServiceImpl(dataSource, storage, deliveries, outbox, bank).check();
 
         assertEquals("DOWN", health.status());
         Component db = health.components().get(0);

@@ -8,6 +8,7 @@ import {useAuth} from '@/contexts/AuthContext';
 import {useMissions} from "@/lib/query/customer";
 import {missionListFilters, missionPageRange, missionStatuses, missionTypes} from "@/features/missions/forms/mission-form";
 import type {MissionStatus, MissionType} from "@/types/customer";
+import {toMissionSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
 
 export default function MissionsPage() {
@@ -78,7 +79,7 @@ function Missions() {
                                 </tr>
                                 </thead>
                                 <tbody className="block sm:table-row-group">{page.content.map(mission => <tr key={mission.id} className="group block border-b border-border py-3 last:border-b-0 hover:bg-background/60 sm:table-row sm:py-0">
-                                    <td data-label={t('missions.code')} className="block border-0 py-1.5 align-middle text-sm text-foreground before:inline-block before:min-w-[90px] before:text-xs before:text-muted before:content-[attr(data-label)] sm:table-cell sm:border-b sm:border-border sm:px-3.5 sm:py-3.5 sm:before:hidden group-last:sm:border-b-0"><Link href={`/customer/missions/${mission.id}`}
+                                    <td data-label={t('missions.code')} className="block border-0 py-1.5 align-middle text-sm text-foreground before:inline-block before:min-w-[90px] before:text-xs before:text-muted before:content-[attr(data-label)] sm:table-cell sm:border-b sm:border-border sm:px-3.5 sm:py-3.5 sm:before:hidden group-last:sm:border-b-0"><Link href={`/customer/missions/${toMissionSlug(mission)}`}
                                                               className="font-bold text-primary hover:underline">{mission.code}</Link></td>
                                     <td data-label={t('missions.titleColumn')} className="block border-0 py-1.5 align-middle text-sm text-foreground before:inline-block before:min-w-[90px] before:text-xs before:text-muted before:content-[attr(data-label)] sm:table-cell sm:border-b sm:border-border sm:px-3.5 sm:py-3.5 sm:before:hidden group-last:sm:border-b-0">{mission.title}</td>
                                     <td data-label={t('missions.time')} className="block border-0 py-1.5 align-middle text-sm text-foreground before:inline-block before:min-w-[90px] before:text-xs before:text-muted before:content-[attr(data-label)] sm:table-cell sm:border-b sm:border-border sm:px-3.5 sm:py-3.5 sm:before:hidden group-last:sm:border-b-0">{formatDate(mission.startTime)}</td>

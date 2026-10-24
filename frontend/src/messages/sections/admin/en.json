@@ -106,14 +106,21 @@
       },
       "quickAccess": "Quick access",
       "status": {
-        "title": "System status",
+        "title": "System monitoring",
         "api": "API server",
         "operational": "Operational",
         "checking": "Checking",
-        "realtime": "Real-time monitoring",
-        "noData": "No data yet",
+        "unreachable": "Unreachable",
+        "realtime": "UAV telemetry",
+        "liveFeed": "{live}/{total} UAVs reporting · latest {seconds} s ago",
+        "noLiveFeed": "No UAV is reporting telemetry",
+        "lowBattery": "Low-battery UAVs (≤25%)",
         "fleet": "UAV fleet",
-        "fleetReady": "{available}/{total} ready",
+        "fleetDetail": "{available}/{total} available · {maintenance} in maintenance",
+        "sar": "SAR missions",
+        "sarOpen": "{open} open · {located} with target located",
+        "sarNone": "No open missions",
+        "openHealth": "System health",
         "manageIntegrations": "Manage integrations"
       }
     },
@@ -468,7 +475,7 @@
       "saving": "Saving…",
       "saveAll": "Save all changes",
       "loading": "Loading settings…",
-      "invoiceNote": "Automatic invoicing is off by default. Enter only an approved price before enabling it; no default price or payment gateway is configured.",
+      "invoiceNote": "Automatic invoicing is off by default. Enter approved prices only before enabling it; invoices are paid by VietQR bank transfer and confirmed on the Invoices page.",
       "safetyGroup": "Flight safety and area limits",
       "enforced": "Enforced",
       "off": "Off",
@@ -618,13 +625,14 @@
       "all": "All",
       "refresh": "Refresh",
       "manage": "Manage UAV fleet",
-      "positionNote": "Positions are derived: assigned or flying UAVs are shown at their mission location, all others at their home station. This is not live GPS.",
+      "positionNote": "UAVs that reported telemetry in the last 2 minutes are shown at their live GPS fix; others at their current mission location or home station.",
       "listLabel": "UAV list",
       "search": "Search model, serial, station, mission code",
       "emptyFilter": "No UAVs match the filters.",
       "summary": "{located} of {total} UAVs have a position on the map",
       "atMission": "At mission {code}",
       "atStation": "At station {name}",
+      "liveGps": "Live GPS position",
       "noPosition": "Position unknown (no station)",
       "mapAria": "Map of {count} located UAVs",
       "stationTooltip": "Station {name} · {count} UAVs",
@@ -677,7 +685,8 @@
         "amount": "Amount",
         "status": "Status",
         "due": "Due date",
-        "paid": "Paid on"
+        "paid": "Paid on",
+        "actions": "Actions"
       },
       "empty": "No invoices yet.",
       "emptyFilter": "No invoices match the filter.",
@@ -693,7 +702,11 @@
       "none": "None",
       "notes": "Notes",
       "cancel": "Cancel",
-      "submit": "Issue"
+      "submit": "Issue",
+      "confirm": "Confirm payment received",
+      "confirmPrompt": "Confirm {amount} received for invoice {code}.\nEnter the bank statement transaction reference:",
+      "confirmed": "Payment for invoice {code} confirmed.",
+      "confirmFailed": "Couldn't confirm the payment."
     },
     "services": {
       "filter": {
@@ -728,7 +741,26 @@
       "description": "Description",
       "duration": "Default duration (minutes)",
       "cancel": "Cancel",
-      "save": "Save"
+      "save": "Save",
+      "spec": {
+        "title": "Technical sheet (shown to customers)",
+        "hint": "Enter only values operations commit to. Leave blank and customers see “Contact dispatch”.",
+        "notCommitted": "Not committed",
+        "gsd": "Best GSD (cm/px)",
+        "area": "Max area (ha)",
+        "wind": "Max wind (m/s)",
+        "onSite": "On site within (hours)",
+        "delivery": "Data delivery within (hours)",
+        "sensor": {
+          "RGB_4K": "RGB 4K",
+          "THERMAL": "Thermal",
+          "LIDAR": "LiDAR",
+          "MULTISPECTRAL": "Multispectral"
+        }
+      },
+      "savedToast": "Service {name} saved.",
+      "createdToast": "Service {name} added.",
+      "saveFailed": "Could not save the service."
     },
     "profile": {
       "title": "Account details",
@@ -821,7 +853,8 @@
         "database": "Database",
         "storage": "Media storage",
         "webhooks": "Webhook queue",
-        "financialOutbox": "Financial event queue"
+        "financialOutbox": "Financial event queue",
+        "payments": "Bank-transfer payments"
       },
       "status": {
         "UP": "Up",

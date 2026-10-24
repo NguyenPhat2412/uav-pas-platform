@@ -129,7 +129,8 @@ try {
             const service = services.find(s => s.code === code && s.active);
             assert.ok(service, code);
             await p.goto(origin('customer') + '/services');
-            await p.locator(`a[href="/customer/missions/create?serviceId=${service.id}"]`).click();
+            const serviceSlug = `${service.code.toLowerCase().replaceAll('_', '-')}-${service.id}`;
+            await p.locator(`a[href="/customer/missions/create?service=${serviceSlug}"], a[href="/customer/missions/create?serviceId=${service.id}"]`).first().click();
             await waitForCatalogue(service.id);
             assert.equal(await p.locator('#mission-missionType').inputValue(), code, code + ' card link');
             // Reload removes the query cache, reproducing an asynchronous catalogue response.

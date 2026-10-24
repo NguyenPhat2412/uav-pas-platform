@@ -33,6 +33,7 @@ import {operationsService} from "@/lib/api/resources";
 import type {Equipment, Operator, Station, Uav} from "@/types/resources";
 import {AppShell} from '@/components/layout/AppShell';
 import {RequiredMark} from "@/components/shared/RequiredMark";
+import {parseEntityId} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
 
 type Confirmation = 'reject' | 'conflict' | 'complete' | 'cancel' | 'fail';
@@ -56,6 +57,7 @@ export default function MissionDetailPage() {
 }
 
 function MissionDetail({id}: { id: string }) {
+    const missionId = parseEntityId(id);
     const router = useRouter();
     const {user, isAuthenticated, isLoading, can, permissionsReady} = useAuth();
     const {t} = useI18n();
@@ -101,7 +103,7 @@ function MissionDetail({id}: { id: string }) {
         const isCurrent = () => generation === loadGeneration.current;
         let result: Mission;
         try {
-            const snapshot = await missionService.dispatchResources(Number(id));
+            const snapshot = await missionService.dispatchResources(missionId);
             result = snapshot.mission;
             if (isCurrent()) setDispatch(snapshot);
         } catch (err) {
@@ -122,18 +124,18 @@ function MissionDetail({id}: { id: string }) {
             }
         };
         await Promise.all([
-            section(readTimeline, 'timeline', () => missionService.timeline(Number(id)), setEvents),
-            section(readMedia, 'media', () => missionService.media(Number(id)), setMedia),
+            section(readTimeline, 'timeline', () => missionService.timeline(missionId), setEvents),
+            section(readMedia, 'media', () => missionService.media(missionId), setMedia),
             section(readStations, 'stations', () => collectPages(page => operationsService.listStations(page)), setStations),
             section(readUavs, 'uavs', () => collectPages(page => operationsService.listUavs(page)), setUavs),
             section(readEquipment, 'equipment', () => collectPages(page => operationsService.listEquipment(page)), setEquipment),
             section(readOperators, 'operators', () => collectPages(page => operationsService.listOperators(page)), setOperators),
         ]);
         if (isCurrent()) setSectionErrors(failures);
-    }, [id, readTimeline, readMedia, readStations, readUavs, readEquipment, readOperators]);
+    }, [missionId, readTimeline, readMedia, readStations, readUavs, readEquipment, readOperators]);
     useEffect(() => {
         if (!isLoading && !isAuthenticated) router.replace("/operations/login");
-        else if (isAuthenticated && permissionsReady && id) {
+        else if (isAuthenticated && permissionsReady && Number.isSafeInteger(missionId) && missionId > 0) {
             const timer = window.setTimeout(() => {
                 void load().catch(() => setError({key: 'opsMissions.detail.errors.loadFailed'}));
             }, 0);
@@ -142,14 +144,14 @@ function MissionDetail({id}: { id: string }) {
                 loadGeneration.current += 1;
             };
         }
-    }, [id, isAuthenticated, isLoading, permissionsReady, load, router]);
+    }, [missionId, isAuthenticated, isLoading, permissionsReady, load, router]);
     useEffect(() => {
         if (!error || busy || uploading || !focusMutationError.current || !mutationError.current) return;
         focusMutationError.current = false;
         mutationError.current.focus({preventScroll: true});
         mutationError.current.scrollIntoView({block: 'center', behavior: 'instant'});
     }, [error, busy, uploading]);
-    if (isLoading || !isAuthenticated || !permissionsReady || !mission || mission.id !== Number(id)) return <div
+    if (isLoading || !isAuthenticated || !permissionsReady || !mission || mission.id !== missionId) return <div
         className="flex min-h-screen items-center justify-center">{error ?
         <p role="alert" className="text-danger">{errorText}</p> : <Spinner size="lg" label={t('opsMissions.detail.loading')}/>}</div>;
     const controls = missionControls(mission, user?.id, can);
@@ -194,10 +196,10 @@ function MissionDetail({id}: { id: string }) {
         try {
             // Validate here with the translator so a rejected file reports in the portal language.
             validateMediaFile(file, t);
-            const signed = await missionService.requestMediaUpload(Number(id), file);
+            const signed = await missionService.requestMediaUpload(missionId, file);
             await missionService.uploadFile(signed.url, file);
-            await missionService.confirmMedia(Number(id), signed.mediaId);
-            await missionService.attachMedia(Number(id), signed.mediaId, mediaRole);
+            await missionService.confirmMedia(missionId, signed.mediaId);
+            await missionService.attachMedia(missionId, signed.mediaId, mediaRole);
             await load();
         } catch (err) {
             focusMutationError.current = true;

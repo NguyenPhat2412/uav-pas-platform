@@ -13,11 +13,13 @@ import {Metadata} from '@/components/data/Drawer';
 import {Pagination} from "@/components/data/Pagination";
 import {PermissionEditor} from "@/features/access/components/PermissionEditor";
 import {cn} from '@/lib/utils';
+import {toUserSlug} from '@/lib/url-slugs';
 import {useI18n} from '@/contexts/I18nContext';
+import {avatarSrc} from '@/components/shared/Avatar';
 
 const statusToneStyles: Record<UserStatus | 'ALL', { bar: string; active: string }> = {
     ALL: {bar: 'before:bg-slate-500', active: 'border-slate-500 ring-3 ring-slate-500/15'},
-    ACTIVE: {bar: 'before:bg-emerald-600', active: 'border-emerald-600 ring-3 ring-emerald-600/15'},
+    ACTIVE: {bar: 'before:bg-uav-blue', active: 'border-uav-blue ring-3 ring-uav-blue/15'},
     INACTIVE: {bar: 'before:bg-amber-600', active: 'border-amber-600 ring-3 ring-amber-600/15'},
     SUSPENDED: {bar: 'before:bg-red-600', active: 'border-red-600 ring-3 ring-red-600/15'},
 };
@@ -26,7 +28,7 @@ const roleChipStyles: Record<string, string> = {
     ROLE_ADMIN: 'bg-red-100 text-red-800',
     ROLE_COMMANDER: 'bg-violet-100 text-violet-800',
     ROLE_OPERATOR: 'bg-sky-100 text-sky-800',
-    ROLE_PILOT: 'bg-emerald-50 text-emerald-800',
+    ROLE_PILOT: 'bg-uav-blue-light text-uav-blue',
 };
 
 /** Stable avatar tint per account so the same person keeps the same colour across pages. */
@@ -42,7 +44,7 @@ export function UserAvatar({user, size = 36}: { user: Pick<User, 'username' | 'f
     const hue = avatarHue(user.username);
     return <span className="inline-flex flex-none items-center justify-center overflow-hidden rounded-full text-[13px] font-bold" aria-hidden="true"
                  style={{width: size, height: size, background: `hsl(${hue} 70% 94%)`, color: `hsl(${hue} 55% 32%)`}}>
-        {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="h-full w-full object-cover"/> : initials}</span>;
+        {user.avatarUrl ? <img src={avatarSrc(user.avatarUrl)} alt="" className="h-full w-full object-cover"/> : initials}</span>;
 }
 
 export function Users({onSelect}: { onSelect?: (user: User) => void }) {
@@ -178,7 +180,7 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
                             <td data-label={t('admin.users.col.created')} className="px-4 py-3.5 align-middle text-foreground">{formatDate(u.createdAt)}</td>
                             <td data-label={t('admin.users.col.actions')} className="px-4 py-3.5 align-middle text-foreground">{onSelect ?
                                 <Button size="sm" variant="outline" onClick={() => onSelect(u)}>{t('admin.users.select')}</Button> :
-                                <Link className="text-xs font-semibold text-primary hover:underline" href={`/admin/users/${u.id}`}>{t('admin.users.details')}</Link>}</td>
+                                <Link className="text-xs font-semibold text-primary hover:underline" href={`/admin/users/${toUserSlug(u)}`}>{t('admin.users.details')}</Link>}</td>
                         </tr>)}</tbody>
                     </table>
                 </div> : <EmptyState title={t('admin.users.emptyTitle')}

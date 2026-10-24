@@ -1,131 +1,79 @@
 'use client';
 
-import React, {useState} from 'react';
-import {Activity, Cpu, Flame, HardDrive, Zap} from 'lucide-react';
+import React from 'react';
+import {Activity, Cpu, Flame, Timer, Zap} from 'lucide-react';
+import type {AiTask} from '@/features/sar/types/sar.types';
 import {useI18n} from '@/contexts/I18nContext';
+import {cn} from '@/lib/utils';
 
-export function Kv260EdgeStatusCard() {
-    const {t} = useI18n();
-    const [processingMode, setProcessingMode] = useState<'edge' | 'cloud'>('edge');
+/** SoC thermal guidance for the Kria KV260: throttling starts near 85 °C. */
+const TEMP_WARN_C = 75;
 
-    // KV260 telemetry metrics
-    const dpuUtilization = 68; // %
-    const inferenceFps = 28.6; // FPS
-    const latencyMs = 35; // ms
-    const temperature = 54.2; // °C
-    const ramUsage = '1.8 / 4.0 GB';
-    const modelName = 'YOLOv8s-Int8 (Vitis-AI DPU B4096)';
+const statusTone: Record<string, string> = {
+    COMPLETED: 'bg-uav-blue-light text-uav-blue border-blue-200',
+    PROCESSING: 'bg-uav-blue-light text-uav-blue border-blue-200',
+    PENDING: 'bg-slate-100 text-slate-700 border-slate-200',
+    FAILED: 'bg-uav-red-light text-primary border-rose-200',
+};
 
-    return (
-        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm text-slate-900">
-            {/* Header */}
-            <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-4">
-                <div className="flex items-center gap-2">
-                    <Cpu size={18} className="text-success"/>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
-                        {t('opsShared.sar.kv260.title')}
-                    </h3>
-                </div>
-                <div className="flex items-center gap-2">
-          <span
-              className="flex items-center gap-1.5 text-[10px] bg-emerald-50 text-success px-2.5 py-0.5 rounded-full tabular-nums font-bold border border-emerald-200">
-            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
-            ONLINE (KRIA KV260)
-          </span>
-                </div>
+/** Inference node metrics as reported with the mission's latest AI task. */
+export function Kv260EdgeStatusCard({task, loading}: { task: AiTask | null; loading: boolean }) {
+    const {t, formatNumber, formatDate} = useI18n();
+    const edge = task?.processingNode !== 'CLOUD_GPU';
+    const num = (v: number | null | undefined) => v == null ? '—' : formatNumber(Math.round(v * 10) / 10);
+    const hot = task?.socTemperature != null && task.socTemperature >= TEMP_WARN_C;
+
+    return <div className="rounded-2xl border border-border bg-card p-5 text-slate-900 shadow-sm">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3.5">
+            <div className="flex min-w-0 items-center gap-2">
+                <Cpu size={18} className="shrink-0 text-uav-blue" aria-hidden="true"/>
+                <h3 className="m-0 truncate text-xs font-bold uppercase tracking-wider text-slate-900">
+                    {t(edge ? 'opsShared.sar.kv260.title' : 'opsShared.sar.kv260.cloudTitle')}</h3>
             </div>
-
-            {/* Metrics Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {/* DPU Utilization */}
-                <div className="bg-slate-50/80 p-3.5 rounded-xl border border-border">
-                    <div className="flex items-center justify-between">
-                        <span className="text-[10px] uppercase font-bold text-slate-500 block tracking-wider">{t('opsShared.sar.kv260.dpuLoad')}</span>
-                        <Activity size={15} className="text-success"/>
-                    </div>
-                    <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-2xl tabular-nums font-extrabold text-success">{dpuUtilization}%</span>
-                    </div>
-                    <div className="w-full bg-slate-200 h-1.5 rounded-full mt-2 overflow-hidden">
-                        <div className="bg-success h-full rounded-full" style={{width: `${dpuUtilization}%`}}></div>
-                    </div>
-                </div>
-
-                {/* Inference FPS */}
-                <div className="bg-slate-50/80 p-3.5 rounded-xl border border-border">
-                    <div className="flex items-center justify-between">
-                        <span
-                            className="text-[10px] uppercase font-bold text-slate-500 block tracking-wider">{t('opsShared.sar.kv260.aiSpeed')}</span>
-                        <Zap size={15} className="text-amber-500"/>
-                    </div>
-                    <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-2xl tabular-nums font-extrabold text-amber-600">{inferenceFps}</span>
-                        <span className="text-xs font-semibold text-slate-500">FPS</span>
-                    </div>
-                    <span className="text-[10px] text-slate-500 tabular-nums block mt-1">{t('opsShared.sar.kv260.latency', {ms: latencyMs})}</span>
-                </div>
-
-                {/* Chip Temperature */}
-                <div className="bg-slate-50/80 p-3.5 rounded-xl border border-border">
-                    <div className="flex items-center justify-between">
-                        <span className="text-[10px] uppercase font-bold text-slate-500 block tracking-wider">{t('opsShared.sar.kv260.socTemp')}</span>
-                        <Flame size={15} className="text-primary"/>
-                    </div>
-                    <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-2xl tabular-nums font-extrabold text-slate-900">{temperature}°C</span>
-                    </div>
-                    <span
-                        className="text-[10px] text-success font-semibold tabular-nums block mt-1">{t('opsShared.sar.kv260.tempSafe')}</span>
-                </div>
-
-                {/* RAM / System */}
-                <div className="bg-slate-50/80 p-3.5 rounded-xl border border-border">
-                    <div className="flex items-center justify-between">
-                        <span className="text-[10px] uppercase font-bold text-slate-500 block tracking-wider">{t('opsShared.sar.kv260.memory')}</span>
-                        <HardDrive size={15} className="text-slate-500"/>
-                    </div>
-                    <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-lg tabular-nums font-extrabold text-slate-900">{ramUsage}</span>
-                    </div>
-                    <span className="text-[10px] text-slate-500 tabular-nums block mt-1">Vitis-AI 3.0 Runtime</span>
-                </div>
-            </div>
-
-            {/* Model & Orchestration Controls */}
-            <div
-                className="mt-4 pt-3.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-2">
-                    <span className="text-slate-500 font-medium">{t('opsShared.sar.kv260.model')}</span>
-                    <span
-                        className="tabular-nums text-success bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200 font-bold">
-            {modelName}
-          </span>
-                </div>
-
-                {/* Processing Mode Switcher */}
-                <div
-                    className="flex max-w-full flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl border border-border">
-                    <span className="text-[11px] text-slate-500 px-1.5 font-medium">{t('opsShared.sar.kv260.mode')}</span>
-                    <button
-                        type="button"
-                        onClick={() => setProcessingMode('edge')}
-                        className={`shrink-0 whitespace-nowrap px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
-                            processingMode === 'edge' ? 'bg-success text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                        }`}
-                    >
-                        ⚡ Edge KV260
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setProcessingMode('cloud')}
-                        className={`shrink-0 whitespace-nowrap px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
-                            processingMode === 'cloud' ? 'bg-primary text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                        }`}
-                    >
-                        ☁️ Cloud Fallback
-                    </button>
-                </div>
-            </div>
+            {task && <span className={cn('rounded-full border px-2.5 py-0.5 text-[10px] font-bold', statusTone[task.status])}>
+                {t(`opsShared.sar.kv260.status.${task.status}`)}</span>}
         </div>
-    );
+
+        {loading ? <p className="m-0 py-6 text-center text-sm text-slate-500">{t('opsShared.sar.kv260.loading')}</p>
+            : !task ? <p className="m-0 py-6 text-center text-sm text-slate-500">{t('opsShared.sar.kv260.noTask')}</p>
+                : <>
+                    {task.status === 'FAILED' && task.errorMessage && <p role="alert" className="mb-3 mt-0 border-l-4 border-l-primary bg-uav-red-light px-3 py-2 text-xs text-primary">{task.errorMessage}</p>}
+                    {(task.status === 'PENDING' || task.status === 'PROCESSING') && <p role="status" className="mb-3 mt-0 border-l-4 border-l-uav-blue bg-uav-blue-light px-3 py-2 text-xs text-uav-blue">
+                        {t('opsShared.sar.kv260.awaiting')}</p>}
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        <Metric label={t('opsShared.sar.kv260.dpuLoad')} icon={<Activity size={15} aria-hidden="true"/>}
+                                value={task.dpuUtilization == null ? '—' : `${num(task.dpuUtilization)}%`} bar={task.dpuUtilization}/>
+                        <Metric label={t('opsShared.sar.kv260.aiSpeed')} icon={<Zap size={15} aria-hidden="true"/>} value={num(task.fps)} unit="FPS"/>
+                        <Metric label={t('opsShared.sar.kv260.inference')} icon={<Timer size={15} aria-hidden="true"/>}
+                                value={task.inferenceTimeMs == null ? '—' : formatNumber(task.inferenceTimeMs)} unit="ms"/>
+                        <Metric label={t('opsShared.sar.kv260.socTemp')} icon={<Flame size={15} aria-hidden="true"/>}
+                                value={task.socTemperature == null ? '—' : `${num(task.socTemperature)}°C`} tone={hot ? 'text-primary' : undefined}
+                                hint={task.socTemperature == null ? undefined : t(hot ? 'opsShared.sar.kv260.tempHot' : 'opsShared.sar.kv260.tempSafe', {limit: TEMP_WARN_C})}/>
+                    </div>
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3.5 text-xs">
+                        <span className="text-slate-500">{t('opsShared.sar.kv260.model')} <strong className="text-slate-800">{t(`opsShared.sar.taskType.${task.taskType}`)}</strong>
+                            {task.confidenceThreshold != null && <> · {t('opsShared.sar.kv260.threshold', {pct: Math.round(task.confidenceThreshold * 100)})}</>}</span>
+                        <span className="tabular-nums text-slate-500">{t('opsShared.sar.kv260.node')} <strong className="text-slate-800">{t(`opsShared.sar.node.${task.processingNode}`)}</strong>
+                            {' · '}{formatDate(task.completedAt ?? task.createdAt, {dateStyle: 'short', timeStyle: 'short'})}</span>
+                    </div>
+                </>}
+    </div>;
+}
+
+function Metric({label, value, unit, icon, bar, tone, hint}: {
+    label: string; value: string; unit?: string; icon: React.ReactNode; bar?: number | null; tone?: string; hint?: string;
+}) {
+    return <div className="rounded-xl border border-border bg-slate-50/80 p-3.5">
+        <div className="flex items-center justify-between gap-2">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</span>
+            <span className="text-slate-400">{icon}</span>
+        </div>
+        <div className="mt-1 flex items-baseline gap-1">
+            <span className={cn('text-2xl font-extrabold tabular-nums', tone ?? 'text-slate-900')}>{value}</span>
+            {unit && value !== '—' && <span className="text-xs font-semibold text-slate-500">{unit}</span>}
+        </div>
+        {bar != null && <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+            <div className="h-full rounded-full bg-uav-blue" style={{width: `${Math.min(100, Math.max(0, bar))}%`}}/></div>}
+        {hint && <span className="mt-1 block text-[10px] text-slate-500">{hint}</span>}
+    </div>;
 }

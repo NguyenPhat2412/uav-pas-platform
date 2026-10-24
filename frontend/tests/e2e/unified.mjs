@@ -10,7 +10,7 @@ const browser = await chromium.launch({headless: true, ...(process.env.PLAYWRIGH
 const checks = [], pageErrors = [], serverErrors = [], consoleIssues = [], businessWrites = [];
 const publicRoutes = ['/', '/about', '/services', '/solutions', '/how-it-works', '/pricing', '/contact', '/faq', '/privacy', '/terms',
     ...['uav-rental', 'aerial-inspection', 'aerial-recording', 'data-collection'].map(slug => '/services/' + slug),
-    ...['uav-rental', 'aerial-inspection', 'ai-detection', 'search-and-rescue'].map(slug => '/solutions/' + slug)];
+    ...['managed-uav-operations', 'infrastructure-inspection', 'ai-detection', 'search-and-rescue'].map(slug => '/solutions/' + slug)];
 const portalRoutes = {
     admin: ['dashboard', 'users', 'access-control', 'role-templates', 'permissions', 'audit-logs', 'billing', 'reports', 'settings', 'webhooks'],
     operations: ['overview', 'stations', 'uavs', 'inventory', 'media', 'audit', 'dispatch/missions', 'assigned-missions', 'maintenance', 'notifications', 'sar-cockpit'],

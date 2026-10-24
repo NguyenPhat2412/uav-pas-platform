@@ -137,7 +137,7 @@ export function OrderDetail({id, onClose, refreshLists}: {
                 [t('opsAssets.maintenance.order.plannedDate'), calendarDate(order.plannedDate, t, locale)], [t('opsAssets.maintenance.order.technician'), order.technicianName], [t('opsAssets.maintenance.order.createdAt'), formatDate(order.createdAt)], [t('opsAssets.maintenance.order.startedAt'), order.startedAt ? formatDate(order.startedAt) : t('opsAssets.maintenance.order.notStarted')], [t('opsAssets.maintenance.order.completedAt'), order.completedAt ? formatDate(order.completedAt) : t('opsAssets.maintenance.order.notCompleted')], [t('opsAssets.maintenance.order.cancelledAt'), order.cancelledAt ? formatDate(order.cancelledAt) : t('opsAssets.maintenance.order.notCancelled')],
             ]}/>{order.description &&
             <p className="whitespace-pre-wrap break-words text-sm text-slate-700">{order.description}</p>}{order.inspectionNotes &&
-            <div className="rounded-lg bg-emerald-50 p-4"><strong>{t('opsAssets.maintenance.order.inspection')}</strong><p
+            <div className="rounded-lg bg-uav-blue-light border border-blue-200 p-4"><strong>{t('opsAssets.maintenance.order.inspection')}</strong><p
                 className="mt-2 whitespace-pre-wrap break-words text-sm">{order.inspectionNotes}</p>
             </div>}{order.cancelReason && <div className="rounded-lg bg-amber-50 p-4"><strong>{t('opsAssets.maintenance.order.cancelReasonShort')}</strong><p
             className="mt-2 whitespace-pre-wrap break-words text-sm">{order.cancelReason}</p></div>}

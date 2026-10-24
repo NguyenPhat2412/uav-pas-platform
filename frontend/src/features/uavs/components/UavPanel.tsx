@@ -1,5 +1,5 @@
 'use client';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {Plus} from 'lucide-react';
 import {Button, Input, StatusBadge} from '@/components/ui';
@@ -17,7 +17,10 @@ import {uavHistoryReason} from "@/features/uavs/utils/workflows";
 import {displayLabel, formatDate} from "@/components/shared/presentation";
 import type {Uav} from "@/types/resources";
 import {RequiredMark} from "@/components/shared/RequiredMark";
+import {resolveUavIdFromParam, toUavSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
+
+const validUavTabs = new Set(['overview', 'maintenance', 'assignment', 'activity', 'media']);
 
 export function UavPanel() {
     const {can} = useAuth();
@@ -34,6 +37,36 @@ export function UavPanel() {
     const [form, setForm] = useState({model: '', serialNumber: '', manufacturer: ''});
     const create = useOperationMutation(operationsService.createUav, ['uavs', 'dashboard', 'audit']);
     const [lifecycleBusy, setLifecycleBusy] = useState(false);
+    const rows = query.data || [];
+
+    const syncUavUrl = (uavId?: number, nextTab = 'overview') => {
+        if (typeof window === 'undefined') return;
+        if (!uavId) {
+            window.history.replaceState(null, '', window.location.pathname);
+            return;
+        }
+        const matched = rows.find(item => item.id === uavId) ?? (detail.data?.id === uavId ? detail.data : undefined);
+        const slug = matched ? toUavSlug(matched) : String(uavId);
+        const search = new URLSearchParams();
+        search.set('uav', slug);
+        if (nextTab && nextTab !== 'overview') search.set('tab', nextTab);
+        window.history.replaceState(null, '', `${window.location.pathname}?${search.toString()}`);
+    };
+
+    useEffect(() => {
+        if (typeof window === 'undefined' || selected !== undefined) return;
+        const params = new URLSearchParams(window.location.search);
+        const resolved = resolveUavIdFromParam(params.get('uav'), params.get('uavId'), rows);
+        if (resolved) {
+            const id = Number(resolved);
+            if (Number.isSafeInteger(id) && id > 0) {
+                setSelected(id);
+                const requestedTab = params.get('tab');
+                if (requestedTab && validUavTabs.has(requestedTab)) setTab(requestedTab);
+            }
+        }
+    }, [rows, selected]);
+
     const refreshUav = async () => {
         const results = await Promise.all([query.refetch(), detail.refetch(), history.refetch(), ...(can('STATION_READ') ? [stations.refetch()] : [])]);
         return results.every(result => !result.isError);
@@ -44,8 +77,8 @@ export function UavPanel() {
         setHistoryPage(0);
         setTab(nextTab);
         setShow3d(false);
+        syncUavUrl(id, nextTab);
     };
-    const rows = query.data || [];
     const columns = [
         {
             id: 'model',
@@ -126,7 +159,10 @@ export function UavPanel() {
             options: options(rows.map(row => row.status))
         }, {column: 'stationName', label: t('opsAssets.uav.station'), options: options(rows.map(row => row.stationName))}]}/></QueryState>
         {selected && <Drawer title={t('opsAssets.uav.detailTitle')} onClose={() => {
-            if (!lifecycleBusy) setSelected(undefined);
+            if (!lifecycleBusy) {
+                setSelected(undefined);
+                syncUavUrl(undefined);
+            }
         }} wide><QueryState query={detail}>{detail.data && <>
             <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(260px,.8fr)]">
                 <div className="space-y-3">
@@ -146,10 +182,13 @@ export function UavPanel() {
                 id: 'assignment',
                 label: t('opsAssets.uav.tabs.assignment')
             }, {id: 'activity', label: t('opsAssets.uav.tabs.activity')}, {id: 'media', label: t('opsAssets.uav.tabs.media')}]} value={tab} onChange={value => {
-                if (!lifecycleBusy) setTab(value);
+                if (!lifecycleBusy) {
+                    setTab(value);
+                    syncUavUrl(selected, value);
+                }
             }}/>{tab === 'overview' &&
             <p className="text-sm text-slate-600">{t('opsAssets.uav.overviewNote')}</p>}{(tab === 'maintenance' || tab === 'assignment') && (can('UAV_MANAGE') ? <><Link
-                href={`/operations/maintenance?uavId=${selected}`}
+                href={`/operations/maintenance?uav=${toUavSlug(detail.data)}`}
                 className="mb-4 inline-flex min-h-11 items-center rounded-lg border border-slate-300 px-4 text-sm font-semibold text-slate-800">{t('opsAssets.uav.openMaintenance')}</Link><UavLifecyclePanel key={`${selected}-${tab}`} uav={detail.data}
                                                                         mode={tab}
                                                                         stations={stations.error ? [] : stations.data || []}

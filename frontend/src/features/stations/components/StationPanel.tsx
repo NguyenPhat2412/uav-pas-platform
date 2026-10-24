@@ -1,5 +1,5 @@
 'use client';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Plus} from 'lucide-react';
 import {Button, Input, StatusBadge} from '@/components/ui';
 import {useAuth} from '@/contexts/AuthContext';
@@ -12,7 +12,10 @@ import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {SectionHeading} from '@/components/layout/PageHeader';
 import type {Station} from "@/types/resources";
 import {RequiredMark} from "@/components/shared/RequiredMark";
+import {resolveStationIdFromParam, toStationSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
+
+const validStationTabs = new Set(['overview', 'uavs', 'inventory', 'activity']);
 
 export function StationPanel() {
     const {can} = useAuth();
@@ -25,6 +28,31 @@ export function StationPanel() {
     const [form, setForm] = useState({code: '', name: '', address: ''});
     const create = useOperationMutation(operationsService.createStation, ['stations', 'dashboard', 'audit']);
     const rows = query.data || [];
+
+    const syncStationUrl = (stationId?: number, nextTab = 'overview') => {
+        if (typeof window === 'undefined') return;
+        if (!stationId) {
+            window.history.replaceState(null, '', window.location.pathname);
+            return;
+        }
+        const matched = rows.find(item => item.id === stationId) ?? (detail.data?.id === stationId ? detail.data : undefined);
+        const slug = matched ? toStationSlug(matched) : String(stationId);
+        const search = new URLSearchParams();
+        search.set('station', slug);
+        if (nextTab && nextTab !== 'overview') search.set('tab', nextTab);
+        window.history.replaceState(null, '', `${window.location.pathname}?${search.toString()}`);
+    };
+
+    useEffect(() => {
+        if (typeof window === 'undefined' || selected !== undefined) return;
+        const params = new URLSearchParams(window.location.search);
+        const resolved = resolveStationIdFromParam(params.get('station') || params.get('stationId'), rows);
+        if (resolved) {
+            setSelected(resolved);
+            const requestedTab = params.get('tab');
+            if (requestedTab && validStationTabs.has(requestedTab)) setTab(requestedTab);
+        }
+    }, [rows, selected]);
     const columns = [
         {
             accessorKey: 'code',
@@ -50,6 +78,7 @@ export function StationPanel() {
             cell: ({row}: { row: { original: Station } }) => <Button size="sm" variant="outline" onClick={() => {
                 setSelected(row.original.id);
                 setTab('overview');
+                syncStationUrl(row.original.id, 'overview');
             }}>{t('opsAssets.shared.openDetail')}</Button>
         },
     ];
@@ -96,13 +125,19 @@ export function StationPanel() {
             label: t('opsAssets.shared.status'),
             options: options(rows.map(row => row.status))
         }]}/></QueryState>
-        {selected && <Drawer title={t('opsAssets.station.detailTitle')} onClose={() => setSelected(undefined)} wide><QueryState
+        {selected && <Drawer title={t('opsAssets.station.detailTitle')} onClose={() => {
+            setSelected(undefined);
+            syncStationUrl(undefined);
+        }} wide><QueryState
             query={detail}>{detail.data && <><SectionHeading title={detail.data.name}
                                                              meta={detail.data.code + ' · ' + detail.data.status}/><Tabs
             items={[{id: 'overview', label: t('opsAssets.shared.overview')}, {id: 'uavs', label: t('opsAssets.station.tabs.uavs')}, {
                 id: 'inventory',
                 label: t('opsAssets.station.tabs.inventory')
-            }, {id: 'activity', label: t('opsAssets.shared.activity')}]} value={tab} onChange={setTab}/>{tab === 'overview' && <Metadata
+            }, {id: 'activity', label: t('opsAssets.shared.activity')}]} value={tab} onChange={next => {
+                setTab(next);
+                syncStationUrl(selected, next);
+            }}/>{tab === 'overview' && <Metadata
             items={[[t('opsAssets.station.code'), detail.data.code], [t('opsAssets.station.address'), detail.data.address || t('opsAssets.shared.notUpdated')], [t('opsAssets.shared.status'),
                 <StatusBadge key="detail-status"
                              status={detail.data.status}/>], [t('opsAssets.station.coordinates'), detail.data.latitude && detail.data.longitude ? String(detail.data.latitude) + ', ' + String(detail.data.longitude) : t('opsAssets.shared.notUpdated')]]}/>}{tab === 'uavs' &&

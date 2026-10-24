@@ -7,9 +7,11 @@ import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {RequiredMark} from '@/components/shared/RequiredMark';
+import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
 import {serviceOfferingsService} from '@/features/catalog/services/service-offerings.service';
-import type {ServiceOffering} from '@/features/catalog/types/service-offering.types';
+import {serviceSensors, type ServiceOffering} from '@/features/catalog/types/service-offering.types';
+import {toast} from '@/contexts/ToastContext';
 
 export function AdminServicesPanel() {
     const {user} = useAuth();
@@ -66,19 +68,16 @@ export function AdminServicesPanel() {
                         <td className="px-4 py-3 text-slate-600">{s.description || '—'}</td>
                         <td className="px-4 py-3 tabular-nums">{t('admin.services.minutes', {count: s.defaultDurationMinutes})}</td>
                         <td className="px-4 py-3">
-                            <button type="button" role="switch" aria-checked={s.active} disabled={toggle.isPending}
-                                    aria-label={t('admin.services.toggleLabel', {name: s.name})}
-                                    onClick={() => {
-                                        if (s.active && !window.confirm(t('admin.services.deactivateConfirm', {name: s.name}))) return;
-                                        toggle.mutate({id: s.id, active: !s.active});
-                                    }}
-                                    className="inline-flex items-center gap-2 disabled:opacity-50">
-                                <span className={cn('relative h-5 w-9 transition-colors', s.active ? 'bg-emerald-600' : 'bg-slate-300')}>
-                                    <span className={cn('absolute top-0.5 h-4 w-4 bg-white transition-all', s.active ? 'left-[18px]' : 'left-0.5')}/>
-                                </span>
-                                <span className={cn('text-xs font-semibold', s.active ? 'text-emerald-700' : 'text-slate-500')}>
-                                    {t(s.active ? 'admin.services.active' : 'admin.services.inactive')}</span>
-                            </button>
+                            <Switch
+                                checked={s.active}
+                                disabled={toggle.isPending}
+                                aria-label={t('admin.services.toggleLabel', {name: s.name})}
+                                label={t(s.active ? 'admin.services.active' : 'admin.services.inactive')}
+                                onCheckedChange={(nextActive) => {
+                                    if (!nextActive && !window.confirm(t('admin.services.deactivateConfirm', {name: s.name}))) return;
+                                    toggle.mutate({id: s.id, active: nextActive});
+                                }}
+                            />
                         </td>
                         <td className="px-4 py-3 text-right">
                             <button type="button" onClick={() => setEditing(s)} aria-label={t('admin.services.edit', {name: s.name})}
@@ -102,19 +101,39 @@ function ServiceDialog({service, onClose, onSaved}: { service: ServiceOffering |
     const [name, setName] = useState(service?.name ?? '');
     const [description, setDescription] = useState(service?.description ?? '');
     const [minutes, setMinutes] = useState(String(service?.defaultDurationMinutes ?? 60));
+    const [sensors, setSensors] = useState<string[]>(service?.sensors ?? []);
+    const [spec, setSpec] = useState({
+        bestGsdCm: service?.bestGsdCm?.toString() ?? '', maxAreaHectares: service?.maxAreaHectares?.toString() ?? '',
+        maxWindMs: service?.maxWindMs?.toString() ?? '', onSiteHours: service?.onSiteHours?.toString() ?? '',
+        deliveryHours: service?.deliveryHours?.toString() ?? '',
+    });
+    const optional = (v: string) => v.trim() === '' ? null : Number(v);
     const save = useMutation({
-        mutationFn: () => {
+        mutationFn: async () => {
             const body = {name: name.trim(), description: description.trim() || undefined, defaultDurationMinutes: Number(minutes)};
-            return service ? serviceOfferingsService.update(service.id, body)
-                : serviceOfferingsService.create({...body, code: code.trim().toUpperCase()});
+            const specs = {
+                sensors, bestGsdCm: optional(spec.bestGsdCm), maxAreaHectares: optional(spec.maxAreaHectares), maxWindMs: optional(spec.maxWindMs),
+                onSiteHours: optional(spec.onSiteHours), deliveryHours: optional(spec.deliveryHours),
+            };
+            if (service) return serviceOfferingsService.update(service.id, {...body, ...specs});
+            // Creation takes the identity only; the technical sheet is stored with a follow-up update.
+            const created = await serviceOfferingsService.create({...body, code: code.trim().toUpperCase()});
+            return serviceOfferingsService.update(created.id, {...body, ...specs});
         },
     });
+    const specField = (key: keyof typeof spec, label: string, min: number, max: number, step: number) =>
+        <label className="text-[13px] font-semibold text-slate-600">{label}
+            <input type="number" min={min} max={max} step={step} value={spec[key]} placeholder={t('admin.services.spec.notCommitted')}
+                   onChange={e => setSpec(prev => ({...prev, [key]: e.target.value}))} className={cn(field, 'tabular-nums')}/></label>;
     const submit = async (e: FormEvent) => {
         e.preventDefault();
         try {
             await save.mutateAsync();
+            toast.success(t(service ? 'admin.services.savedToast' : 'admin.services.createdToast', {name: name.trim()}));
             onSaved();
-        } catch {/* Shown below. */
+        } catch (error) {
+            // Details stay in the inline notice below.
+            toast.error(error instanceof Error ? error.message : t('admin.services.saveFailed'));
         }
     };
     const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none';
@@ -138,6 +157,22 @@ function ServiceDialog({service, onClose, onSaved}: { service: ServiceOffering |
                 <textarea rows={3} maxLength={500} value={description} onChange={e => setDescription(e.target.value)} className={field}/></label>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.services.duration')}<RequiredMark/>
                 <input required type="number" min={1} max={1440} value={minutes} onChange={e => setMinutes(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
+            <fieldset className="grid gap-3 border border-slate-200 p-4">
+                <legend className="px-1 text-[13px] font-bold text-slate-700">{t('admin.services.spec.title')}</legend>
+                <p className="m-0 text-xs text-slate-500">{t('admin.services.spec.hint')}</p>
+                <div className="flex flex-wrap gap-x-4 gap-y-2 text-[13px] text-slate-700">{serviceSensors.map(s =>
+                    <label key={s} className="inline-flex items-center gap-2">
+                        <input type="checkbox" checked={sensors.includes(s)} className="accent-primary"
+                               onChange={e => setSensors(prev => e.target.checked ? [...prev, s] : prev.filter(x => x !== s))}/>
+                        {t(`admin.services.spec.sensor.${s}`)}</label>)}</div>
+                <div className="grid grid-cols-2 gap-3">
+                    {specField('bestGsdCm', t('admin.services.spec.gsd'), 0.1, 100, 0.1)}
+                    {specField('maxAreaHectares', t('admin.services.spec.area'), 0.1, 100000, 0.1)}
+                    {specField('maxWindMs', t('admin.services.spec.wind'), 1, 40, 0.5)}
+                    {specField('onSiteHours', t('admin.services.spec.onSite'), 1, 720, 1)}
+                    {specField('deliveryHours', t('admin.services.spec.delivery'), 1, 2160, 1)}
+                </div>
+            </fieldset>
             <ErrorNotice error={save.error}/>
             <footer className="flex justify-end gap-2">
                 <button type="button" onClick={onClose} className="h-9 border border-slate-200 px-4 text-[13px] font-medium text-slate-600 hover:bg-slate-50">

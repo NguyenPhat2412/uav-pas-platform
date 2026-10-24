@@ -44,7 +44,7 @@ export function RoleMatrix() {
                             {roles.map(r => {
                                 const has = granted.get(r.role)?.has(p.code);
                                 return <td key={r.role} className="px-4 py-3.5 text-center align-middle text-foreground">
-                                    {has ? <Check size={16} className="inline-block text-emerald-700" aria-label={t('admin.access.matrix.yes')}/> :
+                                    {has ? <Check size={16} className="inline-block text-primary" aria-label={t('admin.access.matrix.yes')}/> :
                                         <Minus size={16} className="inline-block text-slate-300" aria-label={t('admin.access.matrix.no')}/>}
                                 </td>;
                             })}

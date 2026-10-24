@@ -38,6 +38,12 @@
     "vjuUniversity": "Vietnam Japan University",
     "dutyOfficer": "Duty Officer VJU"
   },
+  "operationsNavGroups": {
+    "command": "Command & Control",
+    "missions": "Mission Dispatch",
+    "assets": "Stations & Fleet",
+    "monitoring": "Monitoring & Logs"
+  },
   "operationsNav": {
     "overview": "Overview",
     "sar": "AI & SAR Operations",
@@ -63,6 +69,7 @@
     "users": "Users",
     "accessControl": "Access control",
     "roleTemplates": "Role Templates",
+    "roleMatrix": "Role Matrix",
     "permissions": "Permissions",
     "billing": "Plans & Quotas",
     "reports": "Reports & Analytics",

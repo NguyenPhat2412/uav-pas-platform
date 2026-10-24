@@ -3,54 +3,30 @@ import React, {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {
-    Activity,
-    Bell,
-    Boxes,
     ChevronLeft,
     ChevronRight,
-    ClipboardList,
-    Crosshair,
-    FileKey2,
-    LayoutDashboard,
     LogOut,
-    MapPinned,
     Menu,
-    PlaneTakeoff,
-    Wrench,
+    PanelLeftClose,
+    PanelLeftOpen,
     X
 } from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
-import {Button} from '@/components/ui';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
 import {NotificationBell} from '@/components/notifications/NotificationBell';
 import {useI18n} from '@/contexts/I18nContext';
 import {displayLabel} from "@/components/shared/presentation";
+import {
+    OPERATIONS_SIDEBAR_GROUPS,
+    OPERATIONS_SIDEBAR_ROUTES,
+    resolveSidebarActiveItem,
+} from '@/components/layout/sidebar-routes';
 import {cn} from '@/lib/utils';
-import {activeDestination} from "@/components/shared/navigation";
 
-const nav = [
-    {href: "/operations/overview", key: 'overview', icon: LayoutDashboard, permission: 'DASHBOARD_READ'},
-    {href: "/operations/sar-cockpit", key: 'sar', icon: Crosshair, permission: 'MISSION_VIEW'},
-    {
-        href: "/operations/dispatch/missions",
-        key: 'dispatchMissions',
-        icon: Activity,
-        permission: 'MISSION_VIEW_ALL'
-    },
-    {
-        href: "/operations/assigned-missions",
-        key: 'assignedMissions',
-        icon: ClipboardList,
-        permission: 'MISSION_VIEW'
-    },
-    {href: "/operations/stations", key: 'stations', icon: MapPinned, permission: 'STATION_READ'},
-    {href: "/operations/uavs", key: 'uavs', icon: PlaneTakeoff, permission: 'UAV_READ'},
-    {href: "/operations/maintenance", key: 'maintenance', icon: Wrench, permission: 'UAV_MANAGE'},
-    {href: "/operations/inventory", key: 'inventory', icon: Boxes, permission: 'INVENTORY_READ'},
-    {href: "/operations/media", key: 'media', icon: FileKey2, permission: 'MEDIA_READ'},
-    {href: "/operations/notifications", key: 'notifications', icon: Bell},
-    {href: "/operations/audit", key: 'audit', icon: Activity, permission: 'AUDIT_READ'},
-];
+// Cấu hình routes của Sidebar Điều hành (bao gồm /sar-cockpit [key: 'sar'], /notifications, v.v.)
+// được tách riêng và quản lý tập trung tại `@/components/layout/sidebar-routes.ts`.
+const nav = OPERATIONS_SIDEBAR_ROUTES;
+const navGroups = OPERATIONS_SIDEBAR_GROUPS;
 
 export function AppShell({children, activeResource}: { children: React.ReactNode; activeResource?: string }) {
     const pathname = usePathname();
@@ -124,7 +100,7 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
     const name = user?.fullName || user?.username || t('shell.dutyOfficer');
     const roleLabel = displayLabel(user?.role);
     const visibleNav = nav.filter(item => !item.permission || (permissionsReady && can(item.permission)));
-    const activeNav = activeDestination(visibleNav, pathname, activeResource);
+    const activeNav = resolveSidebarActiveItem(visibleNav, pathname, activeResource);
     const getNavLabel = (item: typeof nav[0]) => t(`operationsNav.${item.key}`);
     const railCollapsed = collapsed && !open;
 
@@ -140,93 +116,122 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                 ref={rail}
                 id="portal-navigation"
                 className={cn(
-                    'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-card p-3.5 transition-all duration-200 lg:sticky lg:top-0 lg:h-screen',
-                    railCollapsed ? 'w-[74px]' : 'w-64',
+                    'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-all duration-200 lg:sticky lg:top-0 lg:h-screen',
+                    railCollapsed ? 'w-[60px]' : 'w-[220px]',
                     open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
                 )}
             >
-                <div className={cn("flex items-center mb-4", railCollapsed ? "flex-col justify-center gap-2" : "justify-between")}>
+                <button
+                    type="button"
+                    onClick={toggleCollapsed}
+                    aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                    title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                    className="hidden lg:inline-flex absolute -right-3 top-12 z-50 h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-xs hover:border-primary/40 hover:bg-uav-red-light hover:text-primary transition-all cursor-pointer"
+                >
+                    {railCollapsed ? <ChevronRight size={13}/> : <ChevronLeft size={13}/>}
+                </button>
+                <div className={cn("mb-2 flex items-center border-b border-slate-100 pb-2", railCollapsed ? "flex-col justify-center gap-1.5" : "justify-between gap-1.5")}>
                     <Link
                         href="/operations/overview"
-                        className={cn('flex items-center gap-2.5 p-0', railCollapsed && 'justify-center')}
+                        className={cn('flex items-center gap-2 p-0 min-w-0', railCollapsed && 'justify-center')}
                         onClick={() => setOpen(false)}
                         title={`UAV PAS · ${t('shell.operationsTitle')}`}
                     >
-                        <span className="flex items-center justify-center bg-white p-0.5 rounded-xl border border-rose-100 shadow-xs overflow-hidden shrink-0">
-                            <img src="/vju-logo.svg" alt={t('shell.vjuUniversity')} width={32} height={32} className="w-[32px] h-[32px] object-contain"/>
+                        <span className="flex items-center justify-center bg-white p-0.5 rounded-lg border border-rose-100 shadow-xs overflow-hidden shrink-0">
+                            <img src="/vju-logo.svg" alt={t('shell.vjuUniversity')} width={26} height={26} className="w-[26px] h-[26px] object-contain"/>
                         </span>
                         {!railCollapsed && (
-                            <span className="flex flex-col leading-tight">
-                                <strong className="text-[15px] font-bold text-slate-800">UAV PAS</strong>
-                                <small className="text-[11px] text-slate-500 font-medium">{t('shell.operationsTitle')}</small>
+                            <span className="flex flex-col leading-tight truncate">
+                                <strong className="text-[13.5px] font-bold text-slate-800 truncate">UAV PAS</strong>
+                                <small className="text-[10.5px] text-slate-500 font-medium truncate">{t('shell.operationsTitle')}</small>
                             </span>
                         )}
                     </Link>
                     <button
                         type="button"
-                        className="hidden lg:inline-flex items-center justify-center w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                        className="hidden lg:inline-flex items-center justify-center w-7 h-7 shrink-0 rounded-lg border border-slate-200/80 bg-slate-50/80 text-slate-500 hover:border-primary/30 hover:bg-uav-red-light hover:text-primary transition-colors cursor-pointer"
                         onClick={toggleCollapsed}
                         aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
                         title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
                     >
-                        {railCollapsed ? <ChevronRight size={15}/> : <ChevronLeft size={15}/>}
+                        {railCollapsed ? <PanelLeftOpen size={14}/> : <PanelLeftClose size={14}/>}
                     </button>
                 </div>
                 <button
                     type="button"
-                    className="rail-close lg:hidden mb-3 inline-flex h-9 w-9 items-center justify-center self-end rounded-lg border border-border text-slate-600 hover:bg-slate-100"
+                    className="rail-close lg:hidden mb-2 inline-flex h-8 w-8 items-center justify-center self-end rounded-lg border border-border text-slate-600 hover:bg-slate-100"
                     aria-label={t('shell.closeNavigation')}
                     onClick={() => setOpen(false)}
                 >
-                    <X size={18}/>
+                    <X size={16}/>
                 </button>
-                {!railCollapsed && (
-                    <div className="mb-2 px-2.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                        {t('shell.operationsSection')}
-                    </div>
-                )}
-                <nav aria-label={t('shell.operationsSection')} className="flex flex-1 flex-col gap-1 overflow-y-auto">
-                    {visibleNav.map((item) => {
-                        const {href, icon: Icon} = item;
-                        const label = getNavLabel(item);
-                        const active = href === activeNav?.href;
+                <nav aria-label={t('shell.operationsSection')} className="flex flex-1 flex-col gap-2.5 overflow-y-auto">
+                    {navGroups.map((group, idx) => {
+                        const items = visibleNav.filter(item => item.group === group);
+                        if (!items.length) return null;
                         return (
-                            <Link
-                                key={href}
-                                href={href}
-                                onClick={() => setOpen(false)}
-                                aria-current={active ? 'page' : undefined}
-                                aria-label={label}
-                                title={railCollapsed ? label : undefined}
-                                className={cn(
-                                    'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors',
-                                    active ? 'bg-uav-red-light text-primary' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-                                    railCollapsed && 'justify-center px-0'
+                            <div key={group} className="space-y-0.5">
+                                {railCollapsed ? (
+                                    idx > 0 ? <hr className="my-1.5 border-slate-100"/> : null
+                                ) : (
+                                    <div className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none">
+                                        {t(`operationsNavGroups.${group}`)}
+                                    </div>
                                 )}
-                            >
-                                <Icon size={18} className="shrink-0"/>
-                                {!railCollapsed && <span className="truncate">{label}</span>}
-                            </Link>
+                                {items.map((item) => {
+                                    const {href, icon: Icon} = item;
+                                    const label = getNavLabel(item);
+                                    const active = href === activeNav?.href;
+                                    return (
+                                        <Link
+                                            key={href}
+                                            href={href}
+                                            onClick={() => setOpen(false)}
+                                            aria-current={active ? 'page' : undefined}
+                                            aria-label={label}
+                                            title={railCollapsed ? label : undefined}
+                                            className={cn(
+                                                'flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] leading-5 transition-colors',
+                                                active ? 'bg-uav-red-light font-semibold text-primary' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                                                railCollapsed && 'mx-auto h-8 w-8 justify-center px-0 py-0'
+                                            )}
+                                        >
+                                            <Icon size={16} className="shrink-0"/>
+                                            {!railCollapsed && <span className="truncate">{label}</span>}
+                                        </Link>
+                                    );
+                                })}
+                            </div>
                         );
                     })}
                 </nav>
-                <div className="mt-auto border-t border-slate-100 pt-3 space-y-2">
-                    {!railCollapsed && (
-                        <p className="px-2 text-[11px] font-medium text-slate-400">
-                            UAV PAS <span className="block text-[10px]">{t('shell.vjuUniversity')}</span>
-                        </p>
-                    )}
-                    <Button
-                        variant="ghost"
-                        size="sm"
+                <div className="mt-auto border-t border-slate-100 pt-2 space-y-0.5">
+                    <button
+                        type="button"
+                        onClick={toggleCollapsed}
+                        title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                        aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                        className={cn(
+                            "hidden lg:flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[12.5px] font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer",
+                            railCollapsed && "mx-auto h-8 w-8 justify-center px-0 py-0"
+                        )}
+                    >
+                        {railCollapsed ? <PanelLeftOpen size={15} className="shrink-0"/> : <PanelLeftClose size={15} className="shrink-0"/>}
+                        {!railCollapsed && <span className="truncate">{t('shell.collapseSidebar')}</span>}
+                    </button>
+                    <button
+                        type="button"
                         onClick={() => void logout()}
-                        leftIcon={railCollapsed ? undefined : <LogOut size={16}/>}
                         aria-label={t('common.logout')}
                         title={railCollapsed ? t('common.logout') : undefined}
-                        className={cn("w-full text-slate-500 hover:bg-slate-100 hover:text-slate-900", railCollapsed ? "justify-center px-0" : "justify-start")}
+                        className={cn(
+                            "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-slate-600 hover:bg-red-50 hover:text-danger transition-colors cursor-pointer",
+                            railCollapsed && "mx-auto h-8 w-8 justify-center px-0 py-0"
+                        )}
                     >
-                        {railCollapsed ? <LogOut size={16}/> : t('common.logout')}
-                    </Button>
+                        <LogOut size={16} className="shrink-0"/>
+                        {!railCollapsed && <span className="truncate">{t('common.logout')}</span>}
+                    </button>
                 </div>
             </aside>
             {open && (
@@ -237,19 +242,28 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                 />
             )}
             <div className="flex min-w-0 flex-1 flex-col" inert={open}>
-                <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-4 border-b border-border bg-card/90 px-4 sm:px-6 backdrop-blur-md">
-                    <div className="flex items-center gap-3 min-w-0">
+                <header className="sticky top-0 z-20 flex min-h-13 items-center justify-between gap-4 border-b border-border bg-card/90 px-4 sm:px-6 backdrop-blur-md">
+                    <div className="flex items-center gap-2.5 min-w-0">
                         <button
                             ref={menuButton}
                             aria-controls="portal-navigation"
-                            className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border text-slate-700 hover:bg-slate-100"
+                            className="lg:hidden inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-slate-700 hover:bg-slate-100"
                             aria-label={t('shell.openNavigation')}
                             aria-expanded={open}
                             onClick={() => setOpen(true)}
                         >
-                            <Menu size={20}/>
+                            <Menu size={18}/>
                         </button>
-                        <div className="flex flex-wrap items-center gap-1.5 text-sm text-slate-500 truncate">
+                        <button
+                            type="button"
+                            onClick={toggleCollapsed}
+                            aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                            title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                            className="hidden lg:inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-slate-50/70 text-slate-600 hover:border-primary/30 hover:bg-uav-red-light hover:text-primary transition-colors cursor-pointer"
+                        >
+                            {railCollapsed ? <PanelLeftOpen size={15}/> : <PanelLeftClose size={15}/>}
+                        </button>
+                        <div className="flex flex-wrap items-center gap-1.5 text-[13px] text-slate-500 truncate">
                             <span>UAV PAS</span>
                             <span>/</span>
                             <span>{t('shell.operationsSection')}</span>

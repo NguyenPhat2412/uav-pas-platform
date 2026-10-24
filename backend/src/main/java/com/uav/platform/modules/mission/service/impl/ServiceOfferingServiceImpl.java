@@ -66,6 +66,13 @@ public class ServiceOfferingServiceImpl implements ServiceOfferingService {
         service.setName(request.name().trim());
         service.setDescription(request.description() == null || request.description().isBlank() ? null : request.description().trim());
         service.setDefaultDurationMinutes(request.defaultDurationMinutes());
+        service.setSensors(request.sensors() == null || request.sensors().isEmpty() ? null
+                : String.join(",", new java.util.LinkedHashSet<>(request.sensors())));
+        service.setBestGsdCm(request.bestGsdCm());
+        service.setMaxAreaHectares(request.maxAreaHectares());
+        service.setMaxWindMs(request.maxWindMs());
+        service.setOnSiteHours(request.onSiteHours());
+        service.setDeliveryHours(request.deliveryHours());
         return serviceOfferingMapper.toResponse(services.save(service));
     }
 

@@ -77,10 +77,10 @@ export function Panel({title, children, action, className = ''}: {
 }
 
 const statusStyles: Record<string, string> = {
-    COMPLETED: 'bg-emerald-50 text-success border-emerald-200',
-    READY: 'bg-emerald-50 text-success border-emerald-200',
-    AVAILABLE: 'bg-emerald-50 text-success border-emerald-200',
-    ACTIVE: 'bg-emerald-50 text-success border-emerald-200',
+    COMPLETED: 'bg-uav-blue-light text-uav-blue border-blue-200',
+    READY: 'bg-uav-blue-light text-uav-blue border-blue-200',
+    AVAILABLE: 'bg-uav-blue-light text-uav-blue border-blue-200',
+    ACTIVE: 'bg-uav-blue-light text-uav-blue border-blue-200',
     IN_PROGRESS: 'bg-sky-50 text-sky-700 border-sky-200',
     PENDING_CONFIRMATION: 'bg-amber-50 text-warning border-amber-200',
     RESERVED: 'bg-amber-50 text-warning border-amber-200',

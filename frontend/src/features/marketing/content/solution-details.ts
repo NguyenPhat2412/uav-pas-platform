@@ -1,4 +1,14 @@
 export const solutionDetails: Record<string, { useCase: string; workflow: string; limitation: string }> = {
+    'managed-uav-operations': {
+        useCase: 'Chuẩn bị nhiệm vụ cần thiết bị UAV, người điều khiển và khoảng thời gian hoạt động cụ thể.',
+        workflow: 'Gửi bản nháp với địa điểm và thời gian. Đội vận hành xem xét yêu cầu trước khi phân bổ nguồn lực và xác nhận khả năng triển khai.',
+        limitation: 'Phần mềm hỗ trợ loại yêu cầu này. Thiết bị sẵn có và quyền bay cần được xác nhận riêng.',
+    },
+    'infrastructure-inspection': {
+        useCase: 'Cung cấp góc nhìn từ trên cao về khu vực hoặc công trình cụ thể để xem xét, không cam kết kết quả kiểm tra tự động.',
+        workflow: 'Mô tả phạm vi kiểm tra, gửi nhiệm vụ để xem xét và theo dõi hình ảnh khi đội vận hành chia sẻ.',
+        limitation: 'Việc ghi hình không thay thế kiểm tra chuyên môn, đánh giá kỹ thuật hay giấy phép cần thiết.',
+    },
     'uav-rental': {
         useCase: 'Chuẩn bị nhiệm vụ cần thiết bị UAV, người điều khiển và khoảng thời gian hoạt động cụ thể.',
         workflow: 'Gửi bản nháp với địa điểm và thời gian. Đội vận hành xem xét yêu cầu trước khi phân bổ nguồn lực và xác nhận khả năng triển khai.',

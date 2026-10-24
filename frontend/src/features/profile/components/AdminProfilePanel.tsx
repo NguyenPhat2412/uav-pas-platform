@@ -2,36 +2,27 @@
 
 import {useEffect, useState, type FormEvent} from 'react';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {KeyRound, LogOut, Save, UserRound} from 'lucide-react';
+import {Save, UserRound} from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {displayLabel} from '@/components/shared/presentation';
-import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
+import {QueryState} from '@/components/data/WorkspaceState';
 import {RequiredMark} from '@/components/shared/RequiredMark';
-import {apiClient} from '@/lib/api';
-import {cn} from '@/lib/utils';
-import {
-    type CustomerProfile,
-    type ProfileErrors,
-    type ProfileFields,
-    profileError,
-    profilePayload,
-    validateProfile
-} from '@/features/profile/forms/profile-form';
-
-const profileEndpoint = '/api/v1/users/profile';
+import {profileError, validateProfile} from '@/features/profile/forms/profile-form';
+import {profileService} from '@/features/profile/services/profile.service';
+import type {ProfileErrors, ProfileFields} from '@/features/profile/types/profile.interface';
+import {PasswordChangeCard} from '@/features/profile/components/PasswordChangeCard';
 
 /** The admin's own account: editable name and phone, read-only identity, and a self-service password change. */
 export function AdminProfilePanel() {
     const {user, refreshUser} = useAuth();
     const {t} = useI18n();
-    // The shared profile helpers look up profile.errors.*; admin keeps those strings under admin.profile.errors.
     const tp = (key: string, params?: Record<string, string | number>) => t(key.replace(/^profile\./, 'admin.profile.'), params);
     const client = useQueryClient();
     const key = ['session', user?.id, 'admin-profile'];
     const profile = useQuery({
         queryKey: key, enabled: !!user, retry: false,
-        queryFn: ({signal}) => apiClient.get<CustomerProfile>(profileEndpoint, {signal}),
+        queryFn: ({signal}) => profileService.get(signal),
     });
     const [fields, setFields] = useState<ProfileFields>({fullName: '', phoneNumber: ''});
     const [errors, setErrors] = useState<ProfileErrors>({});
@@ -41,7 +32,7 @@ export function AdminProfilePanel() {
     }, [profile.data]);
     const save = useMutation({
         retry: false,
-        mutationFn: () => apiClient.patch<CustomerProfile>(profileEndpoint, profilePayload(fields, profile.data!.revision)),
+        mutationFn: () => profileService.update(fields, profile.data!.revision),
         onSuccess: data => client.setQueryData(key, data),
     });
     const submit = async (e: FormEvent) => {
@@ -54,7 +45,8 @@ export function AdminProfilePanel() {
             await save.mutateAsync();
             setSaved(true);
             void refreshUser();
-        } catch {/* Shown below. */
+        } catch {
+            /* Shown below. */
         }
     };
     const saveError = save.error ? profileError(save.error, tp) : null;
@@ -85,69 +77,13 @@ export function AdminProfilePanel() {
                 {saveError && <p role="alert" className="border-l-[3px] border-l-red-600 bg-red-50 px-3 py-2 text-[13px] text-red-800">{saveError.message}
                     {saveError.kind === 'conflict' && <button type="button" onClick={() => void profile.refetch()}
                                                               className="ml-2 font-semibold underline">{t('admin.profile.reload')}</button>}</p>}
-                {saved && <p role="status" className="border-l-[3px] border-l-emerald-600 bg-emerald-50 px-3 py-2 text-[13px] text-emerald-800">
+                {saved && <p role="status" className="border-l-[3px] border-l-uav-blue bg-uav-blue-light px-3 py-2 text-[13px] text-uav-blue">
                     {t('admin.profile.saved')}</p>}
                 <button type="submit" disabled={save.isPending}
                         className="inline-flex h-9 items-center gap-1.5 bg-primary px-4 text-[13px] font-semibold text-primary-foreground disabled:opacity-50">
                     <Save size={15} aria-hidden="true"/>{t('admin.profile.save')}</button>
             </form>}</QueryState>
         </section>
-        <PasswordCard/>
+        <PasswordChangeCard/>
     </div>;
-}
-
-function PasswordCard() {
-    const {logout} = useAuth();
-    const {t} = useI18n();
-    const [current, setCurrent] = useState('');
-    const [next, setNext] = useState('');
-    const [confirm, setConfirm] = useState('');
-    const [error, setError] = useState('');
-    const [done, setDone] = useState(false);
-    const change = useMutation({
-        mutationFn: () => apiClient.post<void>(`${profileEndpoint}/password`, {currentPassword: current, newPassword: next}),
-    });
-    const submit = async (e: FormEvent) => {
-        e.preventDefault();
-        if (next.length < 8) return setError(t('admin.profile.password.tooShort'));
-        if (next !== confirm) return setError(t('admin.profile.password.mismatch'));
-        setError('');
-        try {
-            await change.mutateAsync();
-            setCurrent('');
-            setNext('');
-            setConfirm('');
-            setDone(true);
-        } catch {/* Shown below. */
-        }
-    };
-    const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none';
-    return <section className="border border-slate-200 bg-white" aria-labelledby="password-title">
-        <header className="flex items-center gap-2 border-b border-slate-100 px-5 py-3.5">
-            <KeyRound size={17} className="text-primary" aria-hidden="true"/>
-            <h2 id="password-title" className="text-[15px] font-bold text-slate-900">{t('admin.profile.password.title')}</h2>
-        </header>
-        {done ? <div className="space-y-3 p-5">
-            <p role="status" className="border-l-[3px] border-l-emerald-600 bg-emerald-50 px-3 py-2 text-[13px] text-emerald-800">
-                {t('admin.profile.password.done')}</p>
-            <button type="button" onClick={() => void logout()}
-                    className="inline-flex h-9 items-center gap-1.5 bg-primary px-4 text-[13px] font-semibold text-primary-foreground">
-                <LogOut size={15} aria-hidden="true"/>{t('admin.profile.password.signInAgain')}</button>
-        </div> : <form className="space-y-4 p-5" onSubmit={e => void submit(e)} noValidate>
-            <label className="block text-[13px] font-semibold text-slate-600">{t('admin.profile.password.current')}<RequiredMark/>
-                <input type="password" required autoComplete="current-password" value={current} onChange={e => setCurrent(e.target.value)} className={field}/></label>
-            <label className="block text-[13px] font-semibold text-slate-600">{t('admin.profile.password.new')}<RequiredMark/>
-                <input type="password" required minLength={8} maxLength={100} autoComplete="new-password" value={next}
-                       onChange={e => setNext(e.target.value)} className={field}/></label>
-            <label className="block text-[13px] font-semibold text-slate-600">{t('admin.profile.password.confirm')}<RequiredMark/>
-                <input type="password" required minLength={8} maxLength={100} autoComplete="new-password" value={confirm}
-                       onChange={e => setConfirm(e.target.value)} className={field}/></label>
-            <p className="text-xs text-slate-500">{t('admin.profile.password.hint')}</p>
-            {error && <p role="alert" className="border-l-[3px] border-l-red-600 bg-red-50 px-3 py-2 text-[13px] text-red-800">{error}</p>}
-            <ErrorNotice error={change.error}/>
-            <button type="submit" disabled={change.isPending || !current || !next || !confirm}
-                    className={cn('inline-flex h-9 items-center gap-1.5 bg-primary px-4 text-[13px] font-semibold text-primary-foreground disabled:opacity-50')}>
-                <KeyRound size={15} aria-hidden="true"/>{t('admin.profile.password.submit')}</button>
-        </form>}
-    </section>;
 }

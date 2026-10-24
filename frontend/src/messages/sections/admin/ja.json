@@ -106,14 +106,21 @@
       },
       "quickAccess": "クイックアクセス",
       "status": {
-        "title": "システム状態",
+        "title": "システム監視",
         "api": "APIサーバー",
         "operational": "稼働中",
         "checking": "確認中",
-        "realtime": "リアルタイム監視",
-        "noData": "データなし",
+        "unreachable": "接続できません",
+        "realtime": "UAVテレメトリ",
+        "liveFeed": "{live}/{total} 機が送信中 · 最新 {seconds} 秒前",
+        "noLiveFeed": "テレメトリを送信中のUAVはありません",
+        "lowBattery": "低バッテリーUAV(≤25%)",
         "fleet": "UAV機体",
-        "fleetReady": "{available}/{total} 待機中",
+        "fleetDetail": "待機 {available}/{total} · 整備中 {maintenance}",
+        "sar": "SAR任務",
+        "sarOpen": "進行中 {open} · 目標特定 {located}",
+        "sarNone": "進行中の任務はありません",
+        "openHealth": "システムヘルス",
         "manageIntegrations": "連携を管理"
       }
     },
@@ -468,7 +475,7 @@
       "saving": "保存中…",
       "saveAll": "すべての変更を保存",
       "loading": "設定を読み込み中…",
-      "invoiceNote": "自動請求は既定でオフです。有効にする前に承認済みの価格のみを入力してください。既定の価格や決済ゲートウェイは設定されていません。",
+      "invoiceNote": "自動請求は既定で無効です。有効化する前に承認済みの価格のみ入力してください。請求書はVietQR銀行振込で支払われ、請求書ページで入金確認します。",
       "safetyGroup": "飛行安全とエリア制限",
       "enforced": "必須",
       "off": "オフ",
@@ -618,13 +625,14 @@
       "all": "すべて",
       "refresh": "更新",
       "manage": "UAV機体を管理",
-      "positionNote": "位置は推定値です。割り当て済み・飛行中のUAVはミッション地点、それ以外は所属拠点に表示されます。リアルタイムGPSではありません。",
+      "positionNote": "直近2分以内にテレメトリを送信したUAVは実際のGPS位置に、その他は実施中の任務地点または拠点に表示されます。",
       "listLabel": "UAV一覧",
       "search": "機種・シリアル・拠点・ミッションコードを検索",
       "emptyFilter": "条件に一致するUAVはありません。",
       "summary": "{total}機中{located}機を地図に表示",
       "atMission": "ミッション{code}の地点",
       "atStation": "拠点{name}",
+      "liveGps": "リアルタイムGPS位置",
       "noPosition": "位置不明（拠点未設定）",
       "mapAria": "位置が分かる{count}機のUAVの地図",
       "stationTooltip": "拠点{name} · {count}機",
@@ -677,7 +685,8 @@
         "amount": "金額",
         "status": "状態",
         "due": "支払期限",
-        "paid": "支払日"
+        "paid": "支払日",
+        "actions": "操作"
       },
       "empty": "請求書はまだありません。",
       "emptyFilter": "条件に一致する請求書はありません。",
@@ -693,7 +702,11 @@
       "none": "なし",
       "notes": "備考",
       "cancel": "キャンセル",
-      "submit": "発行"
+      "submit": "発行",
+      "confirm": "入金を確認",
+      "confirmPrompt": "請求書{code}の{amount}の入金を確認します。\n銀行明細の取引番号を入力してください:",
+      "confirmed": "請求書{code}の入金を確認しました。",
+      "confirmFailed": "入金を確認できませんでした。"
     },
     "services": {
       "filter": {
@@ -728,7 +741,26 @@
       "description": "説明",
       "duration": "標準所要時間（分）",
       "cancel": "キャンセル",
-      "save": "保存"
+      "save": "保存",
+      "spec": {
+        "title": "技術仕様(お客様に表示)",
+        "hint": "運用チームが確約する値のみ入力してください。空欄の場合は「配車担当へお問い合わせ」と表示されます。",
+        "notCommitted": "未確約",
+        "gsd": "最高GSD(cm/px)",
+        "area": "最大面積(ha)",
+        "wind": "最大風速(m/s)",
+        "onSite": "現地到着(時間)",
+        "delivery": "データ納品(時間)",
+        "sensor": {
+          "RGB_4K": "RGB 4K",
+          "THERMAL": "サーマル",
+          "LIDAR": "LiDAR",
+          "MULTISPECTRAL": "マルチスペクトル"
+        }
+      },
+      "savedToast": "サービス {name} を保存しました。",
+      "createdToast": "サービス {name} を追加しました。",
+      "saveFailed": "サービスを保存できませんでした。"
     },
     "profile": {
       "title": "アカウント情報",
@@ -821,7 +853,8 @@
         "database": "データベース",
         "storage": "メディアストレージ",
         "webhooks": "Webhookキュー",
-        "financialOutbox": "財務イベントキュー"
+        "financialOutbox": "財務イベントキュー",
+        "payments": "銀行振込決済"
       },
       "status": {
         "UP": "正常",

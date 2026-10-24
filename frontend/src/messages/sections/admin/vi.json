@@ -106,14 +106,21 @@
       },
       "quickAccess": "Truy cập nhanh",
       "status": {
-        "title": "Trạng thái hệ thống",
+        "title": "Giám sát hệ thống",
         "api": "Máy chủ API",
         "operational": "Hoạt động",
         "checking": "Đang kiểm tra",
-        "realtime": "Giám sát thời gian thực",
-        "noData": "Chưa có dữ liệu",
+        "unreachable": "Không truy cập được",
+        "realtime": "Telemetry UAV",
+        "liveFeed": "{live}/{total} UAV đang gửi · gói mới nhất {seconds} giây trước",
+        "noLiveFeed": "Không có UAV nào đang gửi telemetry",
+        "lowBattery": "UAV pin yếu (≤25%)",
         "fleet": "Đội UAV",
-        "fleetReady": "{available}/{total} sẵn sàng",
+        "fleetDetail": "{available}/{total} sẵn sàng · {maintenance} bảo trì",
+        "sar": "Nhiệm vụ SAR",
+        "sarOpen": "{open} đang mở · {located} đã định vị mục tiêu",
+        "sarNone": "Không có nhiệm vụ đang mở",
+        "openHealth": "Sức khỏe hệ thống",
         "manageIntegrations": "Quản lý kết nối"
       }
     },
@@ -468,7 +475,7 @@
       "saving": "Đang lưu…",
       "saveAll": "Lưu tất cả thay đổi",
       "loading": "Đang tải cấu hình…",
-      "invoiceNote": "Tự động lập hóa đơn mặc định tắt. Chỉ nhập giá đã được phê duyệt trước khi bật; chưa có giá mặc định hoặc cổng thanh toán được cấu hình.",
+      "invoiceNote": "Tự động lập hóa đơn mặc định tắt. Chỉ nhập giá đã được phê duyệt trước khi bật; hóa đơn được thanh toán bằng chuyển khoản VietQR và xác nhận tại trang Hóa đơn.",
       "safetyGroup": "An toàn bay và giới hạn khu vực",
       "enforced": "Bắt buộc",
       "off": "Tắt",
@@ -618,13 +625,14 @@
       "all": "Tất cả",
       "refresh": "Làm mới",
       "manage": "Quản lý đội UAV",
-      "positionNote": "Vị trí được suy ra: UAV đã phân công hoặc đang bay hiển thị tại vị trí nhiệm vụ, các UAV khác tại trạm đóng. Đây chưa phải GPS thời gian thực.",
+      "positionNote": "UAV có telemetry trong 2 phút gần nhất hiển thị theo GPS thực tế; các UAV khác hiển thị tại vị trí nhiệm vụ đang thực hiện hoặc trạm đóng.",
       "listLabel": "Danh sách UAV",
       "search": "Tìm model, số seri, trạm, mã nhiệm vụ",
       "emptyFilter": "Không có UAV nào khớp bộ lọc.",
       "summary": "{located}/{total} UAV có vị trí trên bản đồ",
       "atMission": "Tại nhiệm vụ {code}",
       "atStation": "Tại trạm {name}",
+      "liveGps": "Vị trí GPS trực tiếp",
       "noPosition": "Chưa xác định vị trí (chưa gắn trạm)",
       "mapAria": "Bản đồ {count} UAV có vị trí",
       "stationTooltip": "Trạm {name} · {count} UAV",
@@ -677,7 +685,8 @@
         "amount": "Số tiền",
         "status": "Trạng thái",
         "due": "Hạn thanh toán",
-        "paid": "Ngày thanh toán"
+        "paid": "Ngày thanh toán",
+        "actions": "Thao tác"
       },
       "empty": "Chưa có hóa đơn nào.",
       "emptyFilter": "Không có hóa đơn nào khớp bộ lọc.",
@@ -693,7 +702,11 @@
       "none": "Không chọn",
       "notes": "Ghi chú",
       "cancel": "Hủy",
-      "submit": "Phát hành"
+      "submit": "Phát hành",
+      "confirm": "Xác nhận đã nhận tiền",
+      "confirmPrompt": "Xác nhận đã nhận {amount} cho hóa đơn {code}.\nNhập mã giao dịch trên sao kê ngân hàng:",
+      "confirmed": "Đã xác nhận thanh toán hóa đơn {code}.",
+      "confirmFailed": "Không xác nhận được thanh toán."
     },
     "services": {
       "filter": {
@@ -728,7 +741,26 @@
       "description": "Mô tả",
       "duration": "Thời lượng mặc định (phút)",
       "cancel": "Hủy",
-      "save": "Lưu"
+      "save": "Lưu",
+      "spec": {
+        "title": "Thông số kỹ thuật (hiển thị cho khách hàng)",
+        "hint": "Chỉ nhập giá trị đội vận hành cam kết. Để trống, khách hàng sẽ thấy “Liên hệ điều phối”.",
+        "notCommitted": "Chưa cam kết",
+        "gsd": "GSD tốt nhất (cm/px)",
+        "area": "Diện tích tối đa (ha)",
+        "wind": "Gió tối đa (m/s)",
+        "onSite": "Có mặt tại hiện trường (giờ)",
+        "delivery": "Bàn giao dữ liệu (giờ)",
+        "sensor": {
+          "RGB_4K": "RGB 4K",
+          "THERMAL": "Nhiệt",
+          "LIDAR": "LiDAR",
+          "MULTISPECTRAL": "Đa phổ"
+        }
+      },
+      "savedToast": "Đã lưu dịch vụ {name}.",
+      "createdToast": "Đã thêm dịch vụ {name}.",
+      "saveFailed": "Không lưu được dịch vụ."
     },
     "profile": {
       "title": "Thông tin tài khoản",
@@ -821,7 +853,8 @@
         "database": "Cơ sở dữ liệu",
         "storage": "Lưu trữ media",
         "webhooks": "Hàng đợi webhook",
-        "financialOutbox": "Hàng đợi sự kiện tài chính"
+        "financialOutbox": "Hàng đợi sự kiện tài chính",
+        "payments": "Thanh toán chuyển khoản"
       },
       "status": {
         "UP": "Hoạt động",

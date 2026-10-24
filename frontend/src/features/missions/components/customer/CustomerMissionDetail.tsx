@@ -13,7 +13,14 @@ import {customerService} from "@/lib/api/customer";
 import {canEditMission} from "@/features/missions/forms/mission-form";
 import {MissionProgress} from "@/features/missions/components/customer/MissionProgress";
 import {MediaPreview} from "@/features/missions/components/customer/MediaPreview";
+import {MissionFiles} from "@/features/missions/components/customer/MissionFiles";
+import {MissionResources} from "@/features/missions/components/customer/MissionResources";
+import {SiteWeather} from "@/features/missions/components/customer/SiteWeather";
+import {MissionMonitoring} from "@/features/missions/components/customer/MissionMonitoring";
+import {parseEntityId, toMissionSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
+
+type MissionTab = 'monitoring' | 'weather' | 'delivery' | 'history';
 
 export default function MissionDetailPage() {
     return <PageGuard><MissionDetail/></PageGuard>;
@@ -21,7 +28,8 @@ export default function MissionDetailPage() {
 
 function MissionDetail() {
     const {id} = useParams<{ id: string }>();
-    const q = useMissionDetail(Number(id));
+    const missionId = parseEntityId(id);
+    const q = useMissionDetail(missionId);
     const services = useServices();
     const actions = useMissionActions();
     const {can, user} = useAuth();
@@ -29,11 +37,16 @@ function MissionDetail() {
     const [mediaError, setMediaError] = useState(false);
     const [downloading, setDownloading] = useState<number | null>(null);
     const [confirmCancel, setConfirmCancel] = useState(false);
+    const [chosenTab, setTab] = useState<MissionTab | null>(null);
     const mission = q.detail.data;
     const actionError = actions.submit.error || actions.cancel.error;
     if (q.detail.isLoading) return <div className="grid min-h-[70vh] place-items-center text-sm text-muted" role="status">{t('missionDetail.loading')}</div>;
     if (q.detail.isError || !mission || mission.customerId !== user?.id) return <div className="flex flex-wrap items-center gap-3 rounded-lg bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline"
                                                                                      role="alert">{t('missionDetail.loadError')} <Button variant="secondary" onClick={() => void q.detail.refetch()}>{t('common.retry')}</Button> <Link href="/customer/missions">{t('missionDetail.backToList')}</Link></div>;
+    const finished = ['COMPLETED', 'CANCELLED', 'REJECTED', 'FAILED'].includes(mission.status);
+    const tabs: MissionTab[] = finished ? ['monitoring', 'delivery', 'history'] : ['monitoring', 'weather', 'delivery', 'history'];
+    // Finished missions open on their results; everything else on the live view.
+    const tab: MissionTab = chosenTab && tabs.includes(chosenTab) ? chosenTab : mission.status === 'COMPLETED' ? 'delivery' : 'monitoring';
     const canSubmit = canEditMission(mission, user?.id, can('MISSION_UPDATE'));
     const canCancel = ['DRAFT', 'PENDING_CONFIRMATION'].includes(mission.status) && can('MISSION_CANCEL');
     const download = async (mediaId: number) => {
@@ -86,7 +99,7 @@ function MissionDetail() {
             <div className="flex flex-col items-stretch justify-between gap-4 border-t border-border bg-background px-5 py-4 md:flex-row md:items-center md:px-7"><p className="m-0 max-w-[70ch] text-sm text-muted">{missionHint(mission.status)}</p>{(canSubmit || canCancel) &&
                 <div className="flex w-full flex-wrap items-center gap-2.5 md:w-auto">
                     {canSubmit && !actions.submit.isPending && !actions.cancel.isPending &&
-                        <Link className="inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-border bg-card px-4 text-sm font-bold text-foreground transition-colors hover:bg-background" href={`/customer/missions/${mission.id}/edit`}>{t('missionDetail.editDraft')}</Link>}
+                        <Link className="inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-border bg-card px-4 text-sm font-bold text-foreground transition-colors hover:bg-background" href={`/customer/missions/${toMissionSlug(mission)}/edit`}>{t('missionDetail.editDraft')}</Link>}
                     {canSubmit &&
                         <Button disabled={actions.submit.isPending || actions.cancel.isPending} onClick={() => {
                             actions.cancel.reset();
@@ -110,7 +123,28 @@ function MissionDetail() {
             </div>}
         {actionError && <div className={errorBoxClass}
                              role="alert">{actionError.message === 'MISSION_INVALID_STATUS' ? t('missionDetail.statusChanged') : t('missionDetail.actionFailed')}</div>}
-        {mission.status === 'COMPLETED' && <section className={panelClass} aria-labelledby="handover-title">
+        <MissionResources mission={mission}/>
+        <section className={panelClass} aria-label={t('missionTabs.label')}>
+            <div role="tablist" aria-label={t('missionTabs.label')} className="flex gap-1 overflow-x-auto border-b border-border px-3 md:px-5">
+                {tabs.map(key => <button key={key} type="button" role="tab" id={`mission-tab-${key}`} aria-controls={`mission-panel-${key}`}
+                                           aria-selected={tab === key} tabIndex={tab === key ? 0 : -1} onClick={() => setTab(key)}
+                                           onKeyDown={e => {
+                                               const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+                                               if (!step) return;
+                                               const next = tabs[(tabs.indexOf(key) + step + tabs.length) % tabs.length];
+                                               setTab(next);
+                                               document.getElementById(`mission-tab-${next}`)?.focus();
+                                           }}
+                                           className={`-mb-px inline-flex min-h-12 shrink-0 items-center gap-2 border-b-2 px-3 text-sm font-semibold transition-colors ${tab === key ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-foreground'}`}>
+                    {t(`missionTabs.${key}`)}
+                    {key === 'delivery' && (q.media.data?.length ?? 0) > 0 && <span className="rounded-full bg-background px-2 py-0.5 text-xs text-muted">{q.media.data!.length}</span>}
+                </button>)}
+            </div>
+            <div role="tabpanel" id={`mission-panel-${tab}`} aria-labelledby={`mission-tab-${tab}`} className={panelBodyClass}>
+                {tab === 'monitoring' && <MissionMonitoring mission={mission}/>}
+                {tab === 'weather' && <SiteWeather mission={mission}/>}
+                {tab === 'delivery' && <div className="grid gap-5">
+        {mission.status === 'COMPLETED' && <section className="min-w-0 overflow-hidden rounded-xl border border-border" aria-labelledby="handover-title">
             <header className={panelHeaderClass}><h2 id="handover-title" className={panelTitleClass}>{t('missionDetail.handover')}</h2></header>
             <div className={panelBodyClass}>
                 <dl className="m-0 grid gap-4 [&_dt]:text-xs [&_dt]:text-muted [&_dd]:m-0 [&_dd]:mt-1 [&_dd]:break-words [&_dd]:text-sm [&_dd]:font-semibold [&_dd]:text-foreground">
@@ -129,17 +163,14 @@ function MissionDetail() {
                 </dl>
                 <p className="m-0 mt-4 text-sm leading-relaxed text-muted">{t('missionDetail.completedNote')}</p></div>
         </section>}
-        {mission.status === 'FAILED' && <section className={panelClass}>
+        {mission.status === 'FAILED' && <section className="min-w-0 overflow-hidden rounded-xl border border-border">
             <header className={panelHeaderClass}><h2 className={panelTitleClass}>{t('missionDetail.outcome')}</h2></header>
             <div className={panelBodyClass}>
                 <p className="m-0 text-sm text-foreground">{mission.failureReason || t('missionDetail.failedDefault')}</p>{mission.failureNotes &&
                 <p className="m-0 mt-2 text-sm leading-relaxed text-muted">{mission.failureNotes}</p>}</div>
         </section>}
-        <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:gap-6">
-            <section className={panelClass} aria-labelledby="files-title">
-                <header className={panelHeaderClass}><h2 id="files-title" className={panelTitleClass}>{t('missionDetail.files')}</h2><span
-                    className="rounded-lg bg-background px-2.5 py-1 text-xs font-semibold text-muted">{t('missionDetail.fileCount', {count: q.media.data?.length ?? 0})}</span></header>
-                <div className={`${panelBodyClass} grid gap-3`}>
+                    <div className="grid gap-3">
+                    <h2 id="files-title" className="m-0 text-base font-bold text-foreground">{t('missionDetail.files')} <span className="ml-1 text-xs font-semibold text-muted">{t('missionDetail.fileCount', {count: q.media.data?.length ?? 0})}</span></h2>
                     <p className={mutedClass}>{t('missionDetail.filesIntro')}</p>
                     {mediaError && <div className={errorBoxClass} role="alert">{t('missionDetail.downloadError')}</div>}
                     {!can('MISSION_MEDIA_VIEW') ?
@@ -148,29 +179,20 @@ function MissionDetail() {
                                 <div className={errorBoxClass} role="alert">{t('missionDetail.filesError')} <button className="font-bold underline"
                                     onClick={() => void q.media.refetch()}>{t('common.retry')}</button>
                                 </div> : q.media.data?.length ?
-                                    <><MediaPreview items={q.media.data}/><ul className="m-0 grid list-none gap-3 p-0">{q.media.data.map(item => <li className="mission-file flex items-center justify-between gap-3 rounded-xl border border-border p-3 md:gap-4 md:p-4"
-                                                                                                key={item.id}>
-                                        <div className="grid min-w-0 gap-1.5"><span
-                                            className="break-words text-sm font-semibold text-foreground">{item.media.originalName}</span><span
-                                            className="text-xs text-muted">{displayLabel(item.mediaRole)} · {Math.max(1, Math.ceil(item.media.size / 1000))} KB</span>
-                                        </div>
-                                        <Button variant="secondary" disabled={downloading !== null}
-                                                onClick={() => void download(item.media.id)}>{downloading === item.media.id ? t('missionDetail.downloading') : t('missionDetail.download')}</Button>
-                                    </li>)}</ul></> :
+                                    <><MediaPreview items={q.media.data}/><MissionFiles items={q.media.data} downloading={downloading}
+                                                                                           onDownload={mediaId => void download(mediaId)}/></> :
                                     <div className="px-2 py-6 text-center text-sm text-muted">{t('missionDetail.noFiles')}</div>}
-                </div>
-            </section>
-            <section className={panelClass} aria-labelledby="history-title">
-                <header className={panelHeaderClass}><h2 id="history-title" className={panelTitleClass}>{t('missionDetail.history')}</h2></header>
-                <div className={panelBodyClass}>
+                    </div>
+                </div>}
+                {tab === 'history' && <>
                     {!can('MISSION_TIMELINE_VIEW') ?
                         <p className={mutedClass}>{t('missionDetail.noHistoryPermission')}</p> : q.timeline.isLoading ?
                             <p role="status" className={mutedClass}>{t('missionDetail.loadingHistory')}</p> : q.timeline.isError ?
                                 <div className={errorBoxClass} role="alert">{t('missionDetail.historyError')} <button className="font-bold underline"
                                     onClick={() => void q.timeline.refetch()}>{t('common.retry')}</button></div> :
                                 <MissionTimeline events={q.timeline.data ?? []}/>}
-                </div>
-            </section>
-        </div>
+                </>}
+            </div>
+        </section>
     </div>;
 }

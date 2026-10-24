@@ -1,6 +1,7 @@
 package com.uav.platform.modules.sar.controller;
 
 import com.uav.platform.modules.sar.dto.request.AiTaskDispatchRequest;
+import com.uav.platform.modules.sar.dto.request.AiTaskResultRequest;
 import com.uav.platform.modules.sar.dto.request.VerifyDetectionRequest;
 import com.uav.platform.modules.sar.dto.response.AiDetectionResponse;
 import com.uav.platform.modules.sar.dto.response.AiTaskResponse;
@@ -46,6 +47,14 @@ public class AiController {
     public ResponseEntity<List<AiTaskResponse>> listTasks(
             @PathVariable Long missionId, Authentication auth) {
         return ResponseEntity.ok(aiService.listTasks(missionId, auth));
+    }
+
+    /** Called by the KV260 edge board / cloud inference worker (gateway service account). */
+    @PostMapping("/tasks/{id}/results")
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
+    public ResponseEntity<AiTaskResponse> submitResults(
+            @PathVariable Long id, @Valid @RequestBody AiTaskResultRequest request, Authentication auth) {
+        return ResponseEntity.ok(aiService.submitResults(id, request, auth));
     }
 
     @PatchMapping("/detections/{id}/verify")

@@ -1,4 +1,5 @@
 import type {Mission, MissionInput, MissionStatus, MissionType, PageResponse} from "@/types/customer";
+import type {FlightPlan, FlightPlanInput} from "@/features/missions/types/flight-plan.types";
 
 export const missionTypes: MissionType[] = ['UAV_RENTAL', 'AREA_INSPECTION', 'AERIAL_RECORDING', 'DATA_COLLECTION', 'OTHER'];
 export const missionStatuses: MissionStatus[] = ['DRAFT', 'PENDING_CONFIRMATION', 'CONFIRMED', 'RESOURCE_RESERVED', 'READY', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'REJECTED', 'FAILED'];
@@ -10,6 +11,10 @@ export type Translate = (key: string, params?: Record<string, string | number>) 
 // Without a translator the Vietnamese default is returned, which keeps these helpers usable outside React.
 function message(t: Translate | undefined, key: string, fallback: string, params?: Record<string, string | number>): string {
     return t ? t(`missions.errors.${key}`, params) : fallback;
+}
+
+function plannerMessage(t: Translate | undefined, key: string, fallback: string): string {
+    return t ? t(`planner.errors.${key}`) : fallback;
 }
 
 export function localDateToday(now = new Date()): string {
@@ -47,11 +52,20 @@ export function validateMissionForm(form: MissionInput, today = localDateToday()
     else if (!errors.startTime && comparableDateTime(form.expectedEndTime) <= comparableDateTime(form.startTime)) errors.expectedEndTime = message(t, 'endBeforeStart', 'Thời gian kết thúc phải sau thời gian bắt đầu.');
     if (!missionTypes.includes(form.missionType)) errors.missionType = message(t, 'typeInvalid', 'Chọn loại nhiệm vụ hợp lệ.');
     if (form.priority && !['LOW', 'NORMAL', 'HIGH', 'URGENT'].includes(form.priority)) errors.priority = message(t, 'priorityInvalid', 'Chọn mức ưu tiên hợp lệ.');
+    if (form.flightPlan && !flightPlanComplete(form.flightPlan)) errors.latitude = plannerMessage(t, 'flightAreaIncomplete', 'Hoàn tất vùng bay trên bản đồ (điểm cất cánh, đa giác ≥ 3 đỉnh hoặc vùng tròn).');
+    if (form.flightPlan && !form.flightPlan.sensors.length) errors.notes = plannerMessage(t, 'sensorRequired', 'Chọn ít nhất một cảm biến.');
     for (const [key, maximum] of [['latitude', 90], ['longitude', 180]] as const) {
         const value = form[key];
         if (value != null && (!Number.isFinite(value) || Math.abs(value) > maximum)) errors[key] = message(t, 'coordinateRange', `Nhập giá trị từ -${maximum} đến ${maximum}.`, {max: maximum});
     }
     return errors;
+}
+
+/** Whether a flight plan describes a usable area for its type. Kept here so this module stays import-free. */
+export function flightPlanComplete(plan: FlightPlanInput): boolean {
+    if (plan.areaType === 'POLYGON') return plan.vertices.length >= 3;
+    if (plan.areaType === 'CIRCLE') return plan.vertices.length === 1 && !!plan.radiusMeters;
+    return plan.takeoffLatitude != null && plan.takeoffLongitude != null;
 }
 
 // Service codes are a separate catalogue; only known enum values may suggest a type.
@@ -71,6 +85,8 @@ export function missionUpdatePayload(form: MissionInput): MissionUpdateInput {
         longitude: form.longitude,
         priority: form.priority ?? 'NORMAL',
         notes: form.notes ?? '',
+        // Omitted entirely when no plan was drawn, so plain requests keep their original shape.
+        ...(form.flightPlan ? {flightPlan: form.flightPlan} : {}),
     };
 }
 
@@ -84,7 +100,21 @@ export function missionDraftUpdatePayload(form: MissionInput, expectedVersion: n
 }
 
 export function missionFormFromDetail(mission: Mission): MissionInput {
-    return {...missionUpdatePayload(mission), missionType: mission.missionType, serviceId: mission.serviceId};
+    const {flightPlan, ...rest} = mission;
+    return {
+        ...missionUpdatePayload(rest), missionType: mission.missionType, serviceId: mission.serviceId,
+        ...(flightPlan ? {flightPlan: toFlightPlanInput(flightPlan)} : {}),
+    };
+}
+
+/** Drops the server-computed geometry; it is recomputed on every save. */
+function toFlightPlanInput(plan: FlightPlan): FlightPlanInput {
+    return {
+        areaType: plan.areaType, vertices: plan.vertices ?? [], radiusMeters: plan.radiusMeters ?? undefined,
+        takeoffLatitude: plan.takeoffLatitude ?? undefined, takeoffLongitude: plan.takeoffLongitude ?? undefined,
+        altitudeAglMeters: plan.altitudeAglMeters, targetGsdCm: plan.targetGsdCm, forwardOverlap: plan.forwardOverlap,
+        sideOverlap: plan.sideOverlap, sensors: plan.sensors ?? [], obstacles: plan.obstacles ?? undefined, permitSupport: plan.permitSupport,
+    };
 }
 
 export function canEditMission(mission: Mission, userId: number | undefined, canUpdate: boolean): boolean {

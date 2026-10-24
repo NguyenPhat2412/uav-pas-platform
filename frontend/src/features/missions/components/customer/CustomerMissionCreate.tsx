@@ -23,6 +23,7 @@ import {
 } from "@/features/missions/forms/mission-form";
 import type {MissionInput, MissionType} from "@/types/customer";
 import {RequiredMark} from "@/components/shared/RequiredMark";
+import {resolveServiceIdFromParam, toServiceSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
 
 const initial: MissionInput = {
@@ -49,7 +50,7 @@ function CreateMission() {
     const {t, formatDate} = useI18n();
     const [formValues, setForm] = useState<MissionInput>({
         ...initial,
-        serviceId: params.has('serviceId') ? Number(params.get('serviceId')) || -1 : undefined
+        serviceId: resolveServiceIdFromParam(params.get('service'), params.get('serviceId'))
     });
     const [missionTypeOverride, setMissionTypeOverride] = useState<MissionType | null>(null);
     const [step, setStep] = useState<1 | 2>(1);
@@ -58,10 +59,14 @@ function CreateMission() {
     const [availability, setAvailability] = useState<'' | 'ok' | 'conflict' | 'draft'>('');
     const [checking, setChecking] = useState(false);
     const activeServices = (services.data ?? []).filter(service => service.active);
-    const selectedService = activeServices.find(service => service.id === formValues.serviceId);
+    const resolvedServiceId = formValues.serviceId === -1 && params.get('service')
+        ? resolveServiceIdFromParam(params.get('service'), null, activeServices)
+        : formValues.serviceId;
+    const selectedService = activeServices.find(service => service.id === resolvedServiceId);
     // Resolve a linked service after its catalogue arrives; keep an explicit type choice.
     const form: MissionInput = {
         ...formValues,
+        serviceId: resolvedServiceId,
         missionType: missionTypeOverride ?? missionTypeForService(selectedService?.code, formValues.missionType)
     };
     const validate = () => {
@@ -144,6 +149,12 @@ function CreateMission() {
                                                                                                 serviceId: event.target.value ? Number(event.target.value) : undefined,
                                                                                                 missionType: missionTypeForService(service?.code, form.missionType)
                                                                                             }));
+                                                                                            if (typeof window !== 'undefined') {
+                                                                                                const nextUrl = service
+                                                                                                    ? `${window.location.pathname}?service=${toServiceSlug(service)}`
+                                                                                                    : window.location.pathname;
+                                                                                                window.history.replaceState(null, '', nextUrl);
+                                                                                            }
                                                                                         }}>
                             <option value="">{t('missionCreate.noService')}</option>
                             {form.serviceId != null && !selectedService && <option

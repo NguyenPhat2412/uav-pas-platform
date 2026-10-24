@@ -2,8 +2,8 @@ export type UavStatus = 'AVAILABLE' | 'ASSIGNED' | 'IN_USE' | 'MAINTENANCE' | 'I
 
 export const uavStatuses: UavStatus[] = ['AVAILABLE', 'ASSIGNED', 'IN_USE', 'MAINTENANCE', 'INACTIVE'];
 
-/** MISSION: placed at the current mission; STATION: at its home station; NONE: no known coordinates. */
-export type PositionSource = 'MISSION' | 'STATION' | 'NONE';
+/** TELEMETRY: fresh device GPS fix; MISSION: at the current mission; STATION: at its home station; NONE: no known coordinates. */
+export type PositionSource = 'TELEMETRY' | 'MISSION' | 'STATION' | 'NONE';
 
 export interface FleetUav {
     id: number;

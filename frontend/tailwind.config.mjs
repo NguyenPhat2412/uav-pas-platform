@@ -106,11 +106,6 @@ const config = {
                         hover: "var(--uav-color-primary-hover)",
                         light: "var(--uav-color-primary-light)",
                     },
-                    green: {
-                        DEFAULT: "var(--uav-color-secondary)",
-                        hover: "var(--uav-color-secondary-hover)",
-                        light: "var(--uav-color-secondary-light)",
-                    },
                     blue: {
                         DEFAULT: "var(--uav-color-blue)",
                         hover: "var(--uav-color-blue-hover)",

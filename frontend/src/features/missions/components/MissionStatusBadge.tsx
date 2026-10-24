@@ -2,7 +2,7 @@ import {displayLabel} from "@/components/shared/presentation";
 import type {MissionStatus} from "@/features/missions/types/mission.types";
 
 const statusStyles: Partial<Record<MissionStatus, string>> = {
-    COMPLETED: 'border-emerald-200 bg-emerald-50 text-success',
+    COMPLETED: 'border-blue-200 bg-uav-blue-light text-uav-blue',
     IN_PROGRESS: 'border-primary/30 bg-uav-red-light text-primary',
     READY: 'border-primary/30 bg-uav-red-light text-primary',
     PENDING_CONFIRMATION: 'border-amber-200 bg-amber-50 text-warning',

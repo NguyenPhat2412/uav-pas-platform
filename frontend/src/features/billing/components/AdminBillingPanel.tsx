@@ -85,8 +85,8 @@ function AdminBillingContent() {
 
             {updateQuota.isSuccess && (
                 <div
-                    className="bg-emerald-50 border border-emerald-300 text-emerald-800 px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm">
-                    <CheckCircle2 size={16} className="text-success"/>
+                    className="bg-uav-blue-light border border-blue-200 text-uav-blue px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm">
+                    <CheckCircle2 size={16} className="text-uav-blue"/>
                     <span>{t('admin.billing.quotaUpdated')}</span>
                 </div>
             )}

@@ -11,12 +11,15 @@ import opsAssetsJa from './opsAssets/ja.json';
 import opsSharedVi from './opsShared/vi.json';
 import opsSharedEn from './opsShared/en.json';
 import opsSharedJa from './opsShared/ja.json';
+import customerProVi from './customerPro/vi.json';
+import customerProEn from './customerPro/en.json';
+import customerProJa from './customerPro/ja.json';
 
 type MessageRecord = Record<string, unknown>;
 
 // Each section owns one top-level namespace, so portal features can be translated independently.
 export const sectionMessages: Record<SupportedLocale, MessageRecord> = {
-    vi: {...adminVi, ...opsMissionsVi, ...opsAssetsVi, ...opsSharedVi},
-    en: {...adminEn, ...opsMissionsEn, ...opsAssetsEn, ...opsSharedEn},
-    ja: {...adminJa, ...opsMissionsJa, ...opsAssetsJa, ...opsSharedJa},
+    vi: {...adminVi, ...opsMissionsVi, ...opsAssetsVi, ...opsSharedVi, ...customerProVi},
+    en: {...adminEn, ...opsMissionsEn, ...opsAssetsEn, ...opsSharedEn, ...customerProEn},
+    ja: {...adminJa, ...opsMissionsJa, ...opsAssetsJa, ...opsSharedJa, ...customerProJa},
 };

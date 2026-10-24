@@ -1,26 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import {activeDestination} from "@/components/shared/navigation";
 import {usePathname} from 'next/navigation';
 import {useEffect, useRef, useState} from 'react';
 import {
-    Activity,
-    BarChart3,
     ChevronLeft,
     ChevronRight,
-    CreditCard,
-    LayoutDashboard,
     Menu,
-    Radio,
-    ScrollText,
-    Settings,
-    Inbox,
-    Map as MapIcon,
-    Plane,
-    Package,
-    ShieldCheck,
-    Users,
+    PanelLeftClose,
+    PanelLeftOpen,
     X
 } from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
@@ -28,24 +16,17 @@ import {useI18n} from '@/contexts/I18nContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
 import {AdminAccountMenu} from '@/components/layout/AdminAccountMenu';
 import {AdminAlertsPopover} from '@/components/layout/AdminAlertsPopover';
+import {
+    ADMIN_SIDEBAR_GROUPS,
+    ADMIN_SIDEBAR_ROUTES,
+    resolveSidebarActiveItem,
+} from '@/components/layout/sidebar-routes';
 import {cn} from '@/lib/utils';
 
-const nav = [
-    {href: "/admin/dashboard", key: 'dashboard', group: 'overview', icon: LayoutDashboard, permission: 'DASHBOARD_READ'},
-    {href: "/admin/reports", key: 'reports', group: 'overview', icon: BarChart3, permission: 'DASHBOARD_READ'},
-    {href: "/admin/notifications", key: 'notifications', group: 'overview', icon: Inbox, permission: 'DASHBOARD_READ'},
-    {href: "/admin/fleet-map", key: 'fleetMap', group: 'fleet', icon: MapIcon, permission: 'MISSION_VIEW_ALL'},
-    {href: "/operations/uavs", key: 'uavs', group: 'fleet', icon: Plane, permission: 'UAV_READ'},
-    {href: "/admin/users", key: 'users', group: 'access', icon: Users, permission: 'USER_READ'},
-    {href: "/admin/access-control", key: 'accessControl', group: 'access', icon: ShieldCheck, permission: 'PERMISSION_MANAGE', aliases: ['/admin/role-templates', '/admin/role-matrix', '/admin/permissions']},
-    {href: "/admin/services", key: 'services', group: 'system', icon: Package, permission: 'MISSION_CONFIRM'},
-    {href: "/admin/billing", key: 'billing', group: 'system', icon: CreditCard, permission: 'PERMISSION_MANAGE'},
-    {href: "/admin/webhooks", key: 'webhooks', group: 'system', icon: Radio, permission: 'USER_MANAGE'},
-    {href: "/admin/settings", key: 'settings', group: 'system', icon: Settings, permission: 'PERMISSION_MANAGE'},
-    {href: "/admin/system-health", key: 'systemHealth', group: 'system', icon: Activity, permission: 'PERMISSION_MANAGE'},
-    {href: "/admin/audit-logs", key: 'auditLogs', group: 'system', icon: ScrollText, permission: 'AUDIT_READ'},
-];
-const navGroups = ['overview', 'fleet', 'access', 'system'] as const;
+// Cấu hình routes của Sidebar Admin (bao gồm /reports, /billing, /settings, /access-control/*)
+// được tách riêng và quản lý tập trung tại `@/components/layout/sidebar-routes.ts`.
+const nav = ADMIN_SIDEBAR_ROUTES;
+const navGroups = ADMIN_SIDEBAR_GROUPS;
 
 /** pageTitle names pages that have no sidebar entry (e.g. the profile) in the breadcrumb. */
 export function AppShell({children, activeResource, pageTitle}: { children: React.ReactNode; activeResource?: string; pageTitle?: string }) {
@@ -118,9 +99,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
     };
 
     const visibleNav = nav.filter(item => !item.permission || (permissionsReady && can(item.permission)));
-    // Tabs merged into another destination keep their own URLs; resolve them to the owning menu item.
-    const ownerPath = visibleNav.find(item => 'aliases' in item && item.aliases?.some(alias => pathname.startsWith(alias)))?.href;
-    const activeNav = activeDestination(visibleNav, ownerPath ?? pathname, activeResource);
+    const activeNav = resolveSidebarActiveItem(visibleNav, pathname, activeResource);
     const getNavLabel = (item: typeof nav[0]) => t(`adminNav.${item.key}`);
     const railCollapsed = collapsed && !open;
 
@@ -136,56 +115,65 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                 ref={rail}
                 id="portal-navigation"
                 className={cn(
-                    'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-card p-3.5 transition-all duration-200 lg:sticky lg:top-0 lg:h-screen',
-                    railCollapsed ? 'w-[74px]' : 'w-64',
+                    'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-all duration-200 lg:sticky lg:top-0 lg:h-screen',
+                    railCollapsed ? 'w-[60px]' : 'w-[220px]',
                     open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
                 )}
             >
-                <div className={cn("flex items-center mb-4", railCollapsed ? "flex-col justify-center gap-2" : "justify-between")}>
+                <button
+                    type="button"
+                    onClick={toggleCollapsed}
+                    aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                    title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                    className="hidden lg:inline-flex absolute -right-3 top-12 z-50 h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-xs hover:border-primary/40 hover:bg-uav-red-light hover:text-primary transition-all cursor-pointer"
+                >
+                    {railCollapsed ? <ChevronRight size={13}/> : <ChevronLeft size={13}/>}
+                </button>
+                <div className={cn("mb-2 flex items-center border-b border-slate-100 pb-2", railCollapsed ? "flex-col justify-center gap-1.5" : "justify-between gap-1.5")}>
                     <Link
                         href="/admin/dashboard"
-                        className={cn('flex items-center gap-2.5 p-0', railCollapsed && 'justify-center')}
+                        className={cn('flex items-center gap-2 p-0 min-w-0', railCollapsed && 'justify-center')}
                         onClick={() => setOpen(false)}
                         title={`UAV PAS · ${t('shell.adminTitle')}`}
                     >
-                        <span className="flex items-center justify-center bg-white p-0.5 rounded-xl border border-rose-100 shadow-xs overflow-hidden shrink-0">
-                            <img src="/vju-logo.svg" alt={t('shell.vjuUniversity')} width={32} height={32} className="w-[32px] h-[32px] object-contain"/>
+                        <span className="flex items-center justify-center bg-white p-0.5 rounded-lg border border-rose-100 shadow-xs overflow-hidden shrink-0">
+                            <img src="/vju-logo.svg" alt={t('shell.vjuUniversity')} width={26} height={26} className="w-[26px] h-[26px] object-contain"/>
                         </span>
                         {!railCollapsed && (
-                            <span className="flex flex-col leading-tight">
-                                <strong className="text-[15px] font-bold text-slate-800">UAV PAS</strong>
-                                <small className="text-[11px] text-slate-500 font-medium">{t('shell.adminTitle')}</small>
+                            <span className="flex flex-col leading-tight truncate">
+                                <strong className="text-[13.5px] font-bold text-slate-800 truncate">UAV PAS</strong>
+                                <small className="text-[10.5px] text-slate-500 font-medium truncate">{t('shell.adminTitle')}</small>
                             </span>
                         )}
                     </Link>
                     <button
                         type="button"
-                        className="hidden lg:inline-flex items-center justify-center w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                        className="hidden lg:inline-flex items-center justify-center w-7 h-7 shrink-0 rounded-lg border border-slate-200/80 bg-slate-50/80 text-slate-500 hover:border-primary/30 hover:bg-uav-red-light hover:text-primary transition-colors cursor-pointer"
                         onClick={toggleCollapsed}
                         aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
                         title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
                     >
-                        {railCollapsed ? <ChevronRight size={15}/> : <ChevronLeft size={15}/>}
+                        {railCollapsed ? <PanelLeftOpen size={14}/> : <PanelLeftClose size={14}/>}
                     </button>
                 </div>
                 <button
                     type="button"
-                    className="rail-close lg:hidden mb-3 inline-flex h-9 w-9 items-center justify-center self-end rounded-lg border border-border text-slate-600 hover:bg-slate-100"
+                    className="rail-close lg:hidden mb-2 inline-flex h-8 w-8 items-center justify-center self-end rounded-lg border border-border text-slate-600 hover:bg-slate-100"
                     aria-label={t('shell.closeNavigation')}
                     onClick={() => setOpen(false)}
                 >
-                    <X size={18}/>
+                    <X size={16}/>
                 </button>
-                <nav aria-label={t('shell.adminSection')} className="flex flex-1 flex-col gap-4 overflow-y-auto">
-                    {navGroups.map(group => {
+                <nav aria-label={t('shell.adminSection')} className="flex flex-1 flex-col gap-2.5 overflow-y-auto">
+                    {navGroups.map((group, idx) => {
                         const items = visibleNav.filter(item => item.group === group);
                         if (!items.length) return null;
                         return (
-                            <div key={group} className="space-y-1">
+                            <div key={group} className="space-y-0.5">
                                 {railCollapsed ? (
-                                    <hr className="my-2 border-slate-100"/>
+                                    idx > 0 ? <hr className="my-1.5 border-slate-100"/> : null
                                 ) : (
-                                    <div className="mb-1.5 px-2.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                    <div className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none">
                                         {t(`adminNavGroups.${group}`)}
                                     </div>
                                 )}
@@ -202,12 +190,12 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                                             aria-label={label}
                                             title={railCollapsed ? label : undefined}
                                             className={cn(
-                                                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors',
-                                                active ? 'bg-uav-red-light text-primary' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-                                                railCollapsed && 'justify-center px-0'
+                                                'flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] leading-5 transition-colors',
+                                                active ? 'bg-uav-red-light font-semibold text-primary' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                                                railCollapsed && 'mx-auto h-8 w-8 justify-center px-0 py-0'
                                             )}
                                         >
-                                            <Icon size={18} className="shrink-0"/>
+                                            <Icon size={16} className="shrink-0"/>
                                             {!railCollapsed && <span className="truncate">{label}</span>}
                                         </Link>
                                     );
@@ -216,6 +204,21 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                         );
                     })}
                 </nav>
+                <div className="mt-auto border-t border-slate-100 pt-2">
+                    <button
+                        type="button"
+                        onClick={toggleCollapsed}
+                        title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                        aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                        className={cn(
+                            "hidden lg:flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[12.5px] font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer",
+                            railCollapsed && "mx-auto h-8 w-8 justify-center px-0 py-0"
+                        )}
+                    >
+                        {railCollapsed ? <PanelLeftOpen size={15} className="shrink-0"/> : <PanelLeftClose size={15} className="shrink-0"/>}
+                        {!railCollapsed && <span className="truncate">{t('shell.collapseSidebar')}</span>}
+                    </button>
+                </div>
             </aside>
             {open && (
                 <button
@@ -225,19 +228,28 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                 />
             )}
             <div className="flex min-w-0 flex-1 flex-col" inert={open}>
-                <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-4 border-b border-border bg-card/90 px-4 sm:px-6 backdrop-blur-md">
-                    <div className="flex items-center gap-3 min-w-0">
+                <header className="sticky top-0 z-20 flex min-h-13 items-center justify-between gap-4 border-b border-border bg-card/90 px-4 sm:px-6 backdrop-blur-md">
+                    <div className="flex items-center gap-2.5 min-w-0">
                         <button
                             ref={menuButton}
                             aria-controls="portal-navigation"
-                            className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border text-slate-700 hover:bg-slate-100"
+                            className="lg:hidden inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-slate-700 hover:bg-slate-100"
                             aria-label={t('shell.openNavigation')}
                             aria-expanded={open}
                             onClick={() => setOpen(true)}
                         >
-                            <Menu size={20}/>
+                            <Menu size={18}/>
                         </button>
-                        <div className="flex flex-wrap items-center gap-1.5 text-sm text-slate-500 truncate">
+                        <button
+                            type="button"
+                            onClick={toggleCollapsed}
+                            aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                            title={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                            className="hidden lg:inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-slate-50/70 text-slate-600 hover:border-primary/30 hover:bg-uav-red-light hover:text-primary transition-colors cursor-pointer"
+                        >
+                            {railCollapsed ? <PanelLeftOpen size={15}/> : <PanelLeftClose size={15}/>}
+                        </button>
+                        <div className="flex flex-wrap items-center gap-1.5 text-[13px] text-slate-500 truncate">
                             <span>UAV PAS</span>
                             <span>/</span>
                             <span>{t('shell.adminSection')}</span>

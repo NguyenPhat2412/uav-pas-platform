@@ -33,4 +33,13 @@ public interface BillingService {
 
     PaymentIpnResponse processPaymentIpn(
             PaymentIpnRequest request, String signatureHeader, Authentication auth);
+
+    /** Settles a PENDING invoice after an admin has matched the transfer on the bank statement. */
+    InvoiceResponse confirmBankTransfer(Long id, String bankReference, Authentication auth);
+
+    /**
+     * Starts a plan change for the caller: returns the plan invoice to pay (reusing an open one), or null when the
+     * plan is free and was applied immediately.
+     */
+    InvoiceResponse subscribe(String planCode, Authentication auth);
 }

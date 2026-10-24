@@ -16,15 +16,15 @@ import {fieldClass} from "@/features/maintenance/components/Fields";
 import {ScheduleForm} from "@/features/maintenance/components/ScheduleForm";
 import {OrderCreate} from "@/features/maintenance/components/OrderCreate";
 import {OrderDetail} from "@/features/maintenance/components/OrderDetail";
+import {resolveUavIdFromParam, toUavSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
 
 export function MaintenanceWorkspace() {
     const {user, can} = useAuth();
     const {t, locale} = useI18n();
     const params = useSearchParams();
-    const initialUav = params.get('uavId') || '';
     const [tab, setTab] = useState('schedules');
-    const [uavId, setUavId] = useState(/^\d+$/.test(initialUav) && Number(initialUav) > 0 ? initialUav : '');
+    const [uavId, setUavId] = useState(() => resolveUavIdFromParam(params.get('uav'), params.get('uavId')));
     const [dueStatus, setDueStatus] = useState(''), [status, setStatus] = useState('');
     const [schedulePage, setSchedulePage] = useState(0), [orderPage, setOrderPage] = useState(0);
     const [scheduleForm, setScheduleForm] = useState<MaintenanceSchedule | 'new' | null>(null);
@@ -70,9 +70,17 @@ export function MaintenanceWorkspace() {
             <label className="flex min-w-[180px] flex-1 flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{t('opsAssets.maintenance.workspace.filterUav')}</span><select aria-label={t('opsAssets.maintenance.workspace.filterUav')}
                                                                            className={fieldClass} value={uavId}
                                                                            onChange={event => {
-                                                                               setUavId(event.target.value);
+                                                                               const nextUavId = event.target.value;
+                                                                               setUavId(nextUavId);
                                                                                setSchedulePage(0);
                                                                                setOrderPage(0);
+                                                                               if (typeof window !== 'undefined') {
+                                                                                   const matched = uavs.data?.find(item => String(item.id) === nextUavId);
+                                                                                   const nextUrl = nextUavId
+                                                                                       ? `${window.location.pathname}?uav=${matched ? toUavSlug(matched) : nextUavId}`
+                                                                                       : window.location.pathname;
+                                                                                   window.history.replaceState(null, '', nextUrl);
+                                                                               }
                                                                            }}>
                 <option value="">{t('opsAssets.maintenance.workspace.allUavs')}</option>
                 {uavs.data?.map(uav => <option key={uav.id}

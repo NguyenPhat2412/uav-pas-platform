@@ -9,12 +9,11 @@ import {useI18n} from '@/contexts/I18nContext';
 
 export type AccessTab = 'accounts' | 'templates' | 'matrix' | 'registry';
 
-// Each tab keeps its original URL so existing links and bookmarks still land on the right view.
 const tabs = [
     {id: 'accounts', href: '/admin/access-control', label: 'admin.access.tabs.accounts', hint: 'admin.access.tabs.accountsHint', icon: UserCog},
-    {id: 'templates', href: '/admin/role-templates', label: 'admin.access.tabs.templates', hint: 'admin.access.tabs.templatesHint', icon: KeyRound},
-    {id: 'matrix', href: '/admin/role-matrix', label: 'admin.access.tabs.matrix', hint: 'admin.access.tabs.matrixHint', icon: Grid3x3},
-    {id: 'registry', href: '/admin/permissions', label: 'admin.access.tabs.registry', hint: 'admin.access.tabs.registryHint', icon: FileKey2},
+    {id: 'templates', href: '/admin/access-control/role-templates', label: 'admin.access.tabs.templates', hint: 'admin.access.tabs.templatesHint', icon: KeyRound},
+    {id: 'matrix', href: '/admin/access-control/role-matrix', label: 'admin.access.tabs.matrix', hint: 'admin.access.tabs.matrixHint', icon: Grid3x3},
+    {id: 'registry', href: '/admin/access-control/permissions', label: 'admin.access.tabs.registry', hint: 'admin.access.tabs.registryHint', icon: FileKey2},
 ] as const;
 
 export function AccessHub({tab}: { tab: AccessTab }) {

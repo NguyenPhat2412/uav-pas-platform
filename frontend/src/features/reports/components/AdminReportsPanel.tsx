@@ -76,7 +76,7 @@ function AdminReportsContent() {
                     type="button"
                     onClick={handleExportCsv}
                     disabled={isExporting}
-                    className="flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full bg-uav-green px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:-translate-y-px hover:bg-uav-green-hover disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:-translate-y-px hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     <FileSpreadsheet size={16}/>
                     {isExporting ? t('admin.reports.exporting') : t('admin.reports.exportCsv')}
@@ -94,7 +94,7 @@ function AdminReportsContent() {
                         <Clock size={16} className="text-primary"/>
                     </div>
                     <div className="tabular-nums text-2xl font-black text-slate-900">{t('admin.reports.hoursValue', {hours: formatNumber(metrics.totalFlightHours)})}</div>
-                    <div className="mt-1 flex items-center gap-1 text-[11px] font-medium text-uav-green">
+                    <div className="mt-1 flex items-center gap-1 text-[11px] font-medium text-uav-blue">
                         <TrendingUp size={12}/> {t('admin.reports.plannedHoursNote')}
                     </div>
                 </div>
@@ -102,7 +102,7 @@ function AdminReportsContent() {
                 <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
                     <div className="mb-2 flex items-center justify-between text-slate-500">
                         <span className="text-xs font-bold uppercase tracking-wider">{t('admin.reports.completedMissions')}</span>
-                        <CheckCircle2 size={16} className="text-uav-green"/>
+                        <CheckCircle2 size={16} className="text-uav-blue"/>
                     </div>
                     <div className="tabular-nums text-2xl font-black text-slate-900">
                         {metrics.completedMissions} <span
@@ -110,7 +110,7 @@ function AdminReportsContent() {
                     </div>
                     <div className="mt-1 text-[11px] text-slate-500">
                         {t('admin.reports.successRate')} <strong
-                        className="tabular-nums text-uav-green">{formatNumber(metrics.missionSuccessRate / 100, {style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1})}</strong>
+                        className="tabular-nums text-uav-blue">{formatNumber(metrics.missionSuccessRate / 100, {style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1})}</strong>
                     </div>
                 </div>
 
@@ -133,7 +133,7 @@ function AdminReportsContent() {
                         <PlaneTakeoff size={16} className="text-primary"/>
                     </div>
                     <div className="tabular-nums text-2xl font-black text-slate-900">
-                        {metrics.activeUavCount} <span className="text-xs font-semibold text-uav-green">{t('admin.reports.uavActive')}</span>
+                        {metrics.activeUavCount} <span className="text-xs font-semibold text-uav-blue">{t('admin.reports.uavActive')}</span>
                     </div>
                     <div className="mt-1 flex items-center gap-1 text-[11px] text-amber-600">
                         <Wrench size={12}/> {t('admin.reports.uavMaintenance', {count: metrics.maintenanceUavCount})}

@@ -5,6 +5,7 @@ import {Panel, Status} from "@/components/customer/ui";
 import {useAuth} from '@/contexts/AuthContext';
 import {CustomerAnalytics} from "@/features/dashboard/components/CustomerAnalytics";
 import {useMissions, useServices} from "@/lib/query/customer";
+import {toMissionSlug} from "@/lib/url-slugs";
 import {Activity, Boxes, Plane} from 'lucide-react';
 import {useI18n} from '@/contexts/I18nContext';
 
@@ -58,15 +59,15 @@ function Dashboard() {
                     </div>
                 </Panel>
 
-                <Panel className="h-full border-l-4 border-l-uav-green">
+                <Panel className="h-full border-l-4 border-l-uav-blue">
                     <div className="flex items-start gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-uav-green">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-uav-blue-light text-uav-blue">
                             <Plane size={18}/>
                         </span>
                         <div>
                             <span className="block text-[13px] font-semibold text-muted">{t('dashboard.inProgress')}</span>
-                            <div className="mt-2 text-[28px] font-extrabold leading-none tabular-nums tracking-tight text-uav-green">{inProgressMissions}</div>
-                            <small className="mt-2 block text-xs font-medium text-uav-green">{t('dashboard.inProgressHint')}</small>
+                            <div className="mt-2 text-[28px] font-extrabold leading-none tabular-nums tracking-tight text-uav-blue">{inProgressMissions}</div>
+                            <small className="mt-2 block text-xs font-medium text-uav-blue">{t('dashboard.inProgressHint')}</small>
                         </div>
                     </div>
                 </Panel>
@@ -111,7 +112,7 @@ function Dashboard() {
                             {rows.slice(0, 5).map(m => (
                                 <tr key={m.id} className="transition-colors hover:bg-background">
                                     <td className="px-3.5 py-3 align-middle">
-                                        <Link className="tabular-nums font-bold text-slate-900 hover:text-primary" href={`/customer/missions/${m.id}`}>
+                                        <Link className="tabular-nums font-bold text-slate-900 hover:text-primary" href={`/customer/missions/${toMissionSlug(m)}`}>
                                             {m.code}
                                         </Link>
                                         <div className="mt-0.5 text-xs text-muted">{m.title}</div>

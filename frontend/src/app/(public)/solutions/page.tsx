@@ -26,7 +26,7 @@ export default function SolutionsPage() {
                             <span
                                 className={`inline-flex self-start rounded-full border px-2.5 py-0.5 text-xs font-bold ${
                                     isAvailable
-                                        ? 'border-emerald-200 bg-emerald-50 text-success'
+                                        ? 'border-rose-200 bg-uav-red-light text-primary'
                                         : 'border-amber-200 bg-amber-50 text-warning'
                                 }`}
                             >

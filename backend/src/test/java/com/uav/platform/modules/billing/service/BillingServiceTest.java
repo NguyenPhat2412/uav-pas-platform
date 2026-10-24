@@ -433,4 +433,53 @@ class BillingServiceTest {
 
         verify(invoiceRepository).findByUserIdOrderByCreatedAtDesc(1L, pageable);
     }
+
+    private ServicePlan pricedPlan(long id, String code, String price) {
+        ServicePlan plan = new ServicePlan();
+        org.springframework.test.util.ReflectionTestUtils.setField(plan, "id", id);
+        plan.setCode(code);
+        plan.setActive(true);
+        plan.setPrice(new BigDecimal(price));
+        plan.setMaxMonthlyFlightHours(80.0);
+        return plan;
+    }
+
+    @Test
+    void subscribeIssuesAPlanInvoiceAndReusesAnOpenOne() {
+        AppUser owner = user(1L, "owner");
+        Authentication auth = authentication("owner");
+        stubUser(auth, owner);
+        ServicePlan pro = pricedPlan(2L, "PRO", "15000000");
+        when(planRepository.findByCode("PRO")).thenReturn(Optional.of(pro));
+        when(invoiceRepository.findByUserId(1L)).thenReturn(List.of());
+        when(invoiceRepository.save(org.mockito.ArgumentMatchers.any())).thenAnswer(inv -> inv.getArgument(0));
+
+        var issued = service.subscribe("PRO", auth);
+        assertEquals(0, new BigDecimal("15000000").compareTo(issued.amount()));
+        assertEquals(InvoiceStatus.PENDING, issued.status());
+
+        Invoice open = new Invoice("INV-OPEN", owner, null, pro, pro.getPrice(), LocalDateTime.now().plusDays(7), null);
+        when(invoiceRepository.findByUserId(1L)).thenReturn(List.of(open));
+        assertEquals("INV-OPEN", service.subscribe("PRO", auth).code());
+    }
+
+    @Test
+    void managerConfirmsABankTransferOnce() {
+        AppUser manager = user(3L, "manager");
+        Authentication auth = authentication("manager");
+        stubUser(auth, manager);
+        when(permissions.has(auth, "USER_MANAGE")).thenReturn(true);
+        org.springframework.jdbc.core.JdbcTemplate jdbc = org.mockito.Mockito.mock(org.springframework.jdbc.core.JdbcTemplate.class);
+        org.springframework.test.util.ReflectionTestUtils.setField(service, "billingJdbc", jdbc);
+        Invoice pending = invoice(user(1L, "owner"));
+        when(invoiceRepository.findById(10L)).thenReturn(Optional.of(pending));
+        when(paymentRepository.findByTransactionCode("FT26297ABC")).thenReturn(Optional.empty());
+
+        assertEquals(InvoiceStatus.PAID, service.confirmBankTransfer(10L, " FT26297ABC ", auth).status());
+        verify(paymentRepository).save(org.mockito.ArgumentMatchers.argThat(t ->
+                "FT26297ABC".equals(t.getTransactionCode()) && "BANK_TRANSFER_MANUAL".equals(t.getGatewayName())));
+
+        SystemException again = assertThrows(SystemException.class, () -> service.confirmBankTransfer(10L, "FT-OTHER", auth));
+        assertEquals("Invoice is not pending payment", again.getMessage());
+    }
 }

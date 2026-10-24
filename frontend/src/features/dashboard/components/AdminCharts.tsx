@@ -1,14 +1,14 @@
 'use client';
 
 import {useState} from 'react';
-import {ArrowDownRight, ArrowUpRight, Minus} from 'lucide-react';
+import {Minus, TrendingDown, TrendingUp} from 'lucide-react';
 import {cn} from '@/lib/utils';
 
 // Fixed categorical order (never cycled) so a series keeps its colour across every admin chart.
 export const seriesColors = {
     blue: 'var(--toast-info-border)',
     orange: 'var(--warning)',
-    aqua: 'var(--success)',
+    aqua: 'var(--primary)',
     yellow: 'var(--toast-warning-border)',
     violet: 'var(--brand-zalo)',
     red: 'var(--danger)',
@@ -160,8 +160,8 @@ export function Delta({current, previous, higherIsBetter = true, suffix = '', la
     if (Math.abs(diff) < 1e-9) return <small className="inline-flex items-center gap-[3px] text-xs font-normal text-muted"><Minus size={13} aria-hidden="true"/>{label}</small>;
     const good = diff > 0 === higherIsBetter;
     const pct = previous ? `${Math.round(Math.abs(diff) / Math.abs(previous) * 100)}%` : `${Math.round(Math.abs(diff) * 10) / 10}${suffix}`;
-    return <small className={cn('inline-flex items-center gap-[3px] text-xs font-semibold', good ? 'text-emerald-700' : 'text-red-700')}>
-        {diff > 0 ? <ArrowUpRight size={13} aria-hidden="true"/> : <ArrowDownRight size={13} aria-hidden="true"/>}
+    return <small className={cn('inline-flex items-center gap-[3px] text-xs font-semibold', good ? 'text-uav-blue' : 'text-red-700')}>
+        {diff > 0 ? <TrendingUp size={13} aria-hidden="true"/> : <TrendingDown size={13} aria-hidden="true"/>}
         {pct} <span className="font-normal text-muted">{label}</span>
     </small>;
 }

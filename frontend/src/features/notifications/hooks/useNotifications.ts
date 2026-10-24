@@ -1,17 +1,12 @@
 "use client";
 
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {API_ROUTES, apiClient} from "@/lib/api";
 import {useAuth} from "@/contexts/AuthContext";
 import {useI18n} from '@/contexts/I18nContext';
+import {apiClient, API_ROUTES} from '@/lib/api';
+import type {NotificationItem, NotificationResponse} from '@/features/notifications/types/notification.interface';
 
-type NotificationResponse = {
-    id: number; title: string; content: string; type: string; isRead: boolean; createdAt: string;
-};
-export type NotificationItem = {
-    id: string; title: string; message: string; type: 'INFO' | 'WARNING' | 'ALERT' | 'SUCCESS';
-    isRead: boolean; createdAt: string;
-};
+export type {NotificationItem};
 
 export function toNotificationItem(item: NotificationResponse): NotificationItem {
     return {
@@ -28,9 +23,7 @@ export function useNotifications() {
     const list = useQuery({
         queryKey: [...key, 'recent'], enabled: !!user, retry: false,
         queryFn: async ({signal}) => {
-            const response = await apiClient.get<{
-                content: NotificationResponse[]
-            }>(`${API_ROUTES.notifications.list}?size=50`, {signal});
+            const response = await apiClient.get<{ content: NotificationResponse[] }>(`${API_ROUTES.notifications.list}?page=0&size=50`, {signal});
             return response.content.map(toNotificationItem);
         },
     });

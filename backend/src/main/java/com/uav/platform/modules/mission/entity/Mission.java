@@ -67,6 +67,10 @@ public class Mission extends BaseEntity {
     @Column(precision = 10, scale = 7)
     private BigDecimal longitude;
 
+    /** JSON of FlightPlanResponse: flight area, altitude, GSD, overlap, sensors and site safety notes. */
+    @Column(name = "flight_plan", columnDefinition = "TEXT")
+    private String flightPlan;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "station_id")
     private Station station;

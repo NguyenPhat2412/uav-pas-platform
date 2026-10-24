@@ -21,7 +21,7 @@ const typeTone: Record<NotificationType, string> = {
     MISSION_STATUS_CHANGED: 'bg-sky-50 text-sky-700 ring-sky-200',
     SAR_TARGET_FOUND: 'bg-red-50 text-red-700 ring-red-200',
     QUOTA_WARNING: 'bg-amber-50 text-amber-800 ring-amber-200',
-    PAYMENT: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+    PAYMENT: 'bg-uav-blue-light text-uav-blue ring-blue-200',
     SYSTEM: 'bg-slate-100 text-slate-700 ring-slate-200',
 };
 

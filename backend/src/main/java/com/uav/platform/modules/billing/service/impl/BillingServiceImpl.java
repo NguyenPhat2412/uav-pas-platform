@@ -383,6 +383,12 @@ public class BillingServiceImpl implements BillingService {
                         ? request.transactionCode()
                         : "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
+        completePayment(invoice, transactionCode, paidAmount, "VIETQR_NAPAS_247", request.toString());
+        return paymentResult(invoice, transactionCode);
+    }
+
+    /** Shared by the provider IPN and admin confirmation so both settle an invoice identically. */
+    private void completePayment(Invoice invoice, String transactionCode, BigDecimal amount, String gateway, String raw) {
         invoice.setStatus(InvoiceStatus.PAID);
         invoice.setPaidAt(LocalDateTime.now());
         invoiceRepository.save(invoice);
@@ -397,16 +403,63 @@ public class BillingServiceImpl implements BillingService {
         }
 
         PaymentTransaction txn =
-                PaymentTransactionOperations.create(
-                        invoice, invoice.getUser(), transactionCode, paidAmount);
-        txn.setGatewayName("VIETQR_NAPAS_247");
-        txn.setStatus(request.status() != null ? request.status() : "SUCCESS");
+                PaymentTransactionOperations.create(invoice, invoice.getUser(), transactionCode, amount);
+        txn.setGatewayName(gateway);
+        txn.setStatus("SUCCESS");
         txn.setCompletedAt(LocalDateTime.now());
-        txn.setRawIpnCallback(request.toString());
+        txn.setRawIpnCallback(raw);
         paymentRepository.save(txn);
         financialEvents.recordPaymentCompleted(invoice);
+    }
 
-        return paymentResult(invoice, transactionCode);
+    @Override
+    @Transactional
+    public InvoiceResponse confirmBankTransfer(Long id, String bankReference, Authentication auth) {
+        AppUser actor = getCurrentUser(auth);
+        if (!permissions.has(auth, "USER_MANAGE")) {
+            throw SystemException.forbidden("Permission denied", "PERMISSION_DENIED");
+        }
+        billingJdbc.queryForObject("SELECT id FROM billing_payment_guard WHERE id=1 FOR UPDATE", Long.class);
+        Invoice invoice = invoiceRepository.findById(id).orElseThrow(() -> SystemException.notFound("Invoice not found"));
+        if (invoice.getStatus() != InvoiceStatus.PENDING) {
+            throw SystemException.conflict("Invoice is not pending payment");
+        }
+        String reference = bankReference.trim();
+        if (paymentRepository.findByTransactionCode(reference).isPresent()) {
+            throw SystemException.conflict("Payment transaction code already used with different payload");
+        }
+        completePayment(invoice, reference, invoice.getAmount(), "BANK_TRANSFER_MANUAL",
+                "confirmedBy=" + actor.getUsername());
+        return billingMapper.toInvoiceResponse(invoice);
+    }
+
+    @Override
+    @Transactional
+    public InvoiceResponse subscribe(String planCode, Authentication auth) {
+        AppUser user = getCurrentUser(auth);
+        ServicePlan plan = planRepository.findByCode(planCode)
+                .orElseThrow(() -> SystemException.notFound("Service plan not found"));
+        if (!Boolean.TRUE.equals(plan.getActive())) {
+            throw SystemException.badRequest("Service plan is inactive");
+        }
+        // One open plan invoice at a time: re-selecting a plan returns the invoice already waiting for payment.
+        Invoice open = invoiceRepository.findByUserId(user.getId()).stream()
+                .filter(i -> i.getStatus() == InvoiceStatus.PENDING && i.getMission() == null && i.getPlan() != null)
+                .filter(i -> i.getPlan().getId().equals(plan.getId()))
+                .findFirst().orElse(null);
+        if (open != null) return billingMapper.toInvoiceResponse(open);
+        if (plan.getPrice() == null || plan.getPrice().signum() <= 0) {
+            quotaService.updateQuota(user.getId(),
+                    new com.uav.platform.modules.billing.dto.request.UpdateQuotaRequest(plan.getCode(), plan.getMaxMonthlyFlightHours()));
+            return null;
+        }
+        String code = "INV-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "-"
+                + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        Invoice invoice = new Invoice(code, user, null, plan, plan.getPrice(), LocalDateTime.now().plusDays(7),
+                "PLAN_SUBSCRIPTION:" + plan.getCode());
+        Invoice saved = invoiceRepository.save(invoice);
+        financialEvents.recordInvoiceIssued(saved);
+        return billingMapper.toInvoiceResponse(saved);
     }
 
     private PaymentIpnResponse paymentResult(Invoice invoice, String transactionCode) {

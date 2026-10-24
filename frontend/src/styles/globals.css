@@ -7,14 +7,13 @@
     --uav-color-primary: #ab2523;
     --uav-color-primary-hover: #8f1c1a;
     --uav-color-primary-light: #fdf2f2;
-    --uav-color-secondary: #007f3e;
-    --uav-color-secondary-hover: #006632;
-    --uav-color-secondary-light: #ecfdf5;
+    --uav-color-secondary: #646464;
+    --uav-color-secondary-hover: #475569;
+    --uav-color-secondary-light: #f1f5f9;
     --uav-color-blue: #004ac6;
     --uav-color-blue-hover: #003799;
     --uav-color-blue-light: #eff4ff;
     --uav-color-vju-red: #ab2523;
-    --uav-color-vju-green: #007f3e;
     --uav-color-surface: #ffffff;
     --uav-color-canvas: #faf6f6;
     --uav-color-text: #202020;
@@ -25,8 +24,8 @@
     --uav-color-danger: #b42318;
     --uav-color-danger-hover: #912018;
     --uav-color-danger-light: #fef3f2;
-    --uav-color-success: #007f3e;
-    --uav-color-success-light: #ecfdf5;
+    --uav-color-success: #004ac6;
+    --uav-color-success-light: #eff4ff;
     --uav-color-warning: #b54708;
     --uav-color-warning-light: #fffaeb;
     --uav-font-sans: Arial, Helvetica, sans-serif;
@@ -57,7 +56,7 @@
     --danger: #dc2626;
     --danger-hover: #8b0000;
     --danger-foreground: #ffffff;
-    --success: #007f3e;
+    --success: #004ac6;
     --warning: #f59e0b;
     --surface-variant: #f1f3f5;
     --surface-dim: #f3f4f6;
@@ -65,11 +64,11 @@
     --outline: #9ca3af;
 
     /* Toast Semantic Variables */
-    --toast-success-border: #007f3e;
-    --toast-success-bg: #ecfdf5;
-    --toast-success-text: #065f46;
-    --toast-success-icon: #007f3e;
-    --toast-success-progress: #007f3e;
+    --toast-success-border: #004ac6;
+    --toast-success-bg: #eff4ff;
+    --toast-success-text: #1e40af;
+    --toast-success-icon: #004ac6;
+    --toast-success-progress: #004ac6;
     --toast-error-border: #ab2523;
     --toast-error-bg: #fdf2f2;
     --toast-error-text: #991b1b;
@@ -100,15 +99,15 @@
     --primary: #3b82f6;
     --primary-hover: #60a5fa;
     --primary-foreground: #ffffff;
-    --secondary: #10b981;
-    --secondary-hover: #059669;
+    --secondary: #94a3b8;
+    --secondary-hover: #64748b;
     --secondary-foreground: #ffffff;
     --brand-zalo: #0068ff;
     --brand-zalo-hover: #0054d1;
     --danger: #ef4444;
     --danger-hover: #dc2626;
     --danger-foreground: #ffffff;
-    --success: #10b981;
+    --success: #3b82f6;
     --warning: #f59e0b;
 }
 

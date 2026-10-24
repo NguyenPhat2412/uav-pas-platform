@@ -10,7 +10,7 @@ import {systemHealthService} from '@/features/settings/services/system-health.se
 import type {HealthStatus, SystemHealth} from '@/features/settings/types/system-health.types';
 
 const tone: Record<HealthStatus, { stripe: string; text: string; icon: typeof CheckCircle2 }> = {
-    UP: {stripe: 'border-l-emerald-600', text: 'text-emerald-700', icon: CheckCircle2},
+    UP: {stripe: 'border-l-uav-blue', text: 'text-uav-blue', icon: CheckCircle2},
     DEGRADED: {stripe: 'border-l-amber-500', text: 'text-amber-700', icon: AlertTriangle},
     DOWN: {stripe: 'border-l-red-600', text: 'text-red-700', icon: XCircle},
     UNKNOWN: {stripe: 'border-l-slate-400', text: 'text-slate-500', icon: CircleHelp},
@@ -91,7 +91,7 @@ function Body({data, refreshing, onRefresh, checkedAt}: { data: SystemHealth; re
             <div className="grid gap-px bg-slate-100 sm:grid-cols-2 lg:grid-cols-4">
                 <Stat label={t('admin.health.uptime')} value={uptime}/>
                 <Stat label={t('admin.health.heap')} value={`${data.runtime.heapUsedMb} / ${data.runtime.heapMaxMb} MB`}>
-                    <span className="mt-2 block h-1.5 bg-slate-100"><span className={cn('block h-1.5', heapPct >= 85 ? 'bg-red-600' : heapPct >= 70 ? 'bg-amber-500' : 'bg-emerald-600')}
+                    <span className="mt-2 block h-1.5 bg-slate-100"><span className={cn('block h-1.5', heapPct >= 85 ? 'bg-red-600' : heapPct >= 70 ? 'bg-amber-500' : 'bg-uav-blue')}
                                                                    style={{width: `${heapPct}%`}}/></span>
                 </Stat>
                 <Stat label={t('admin.health.load')} value={data.runtime.systemLoad >= 0 ? `${data.runtime.systemLoad} / ${data.runtime.processors} CPU` : '—'}/>

@@ -85,7 +85,7 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                                 <span
                                     className={cn(
                                         'text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full ml-auto shrink-0',
-                                        item.type === 'success' && 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+                                        item.type === 'success' && 'bg-uav-blue-light text-uav-blue border border-blue-200',
                                         item.type === 'error' && 'bg-red-50 text-red-700 border border-red-200',
                                         item.type === 'warning' && 'bg-amber-50 text-amber-700 border border-amber-200',
                                         item.type === 'info' && 'bg-blue-50 text-blue-700 border border-blue-200'

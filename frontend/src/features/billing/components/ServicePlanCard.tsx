@@ -4,9 +4,12 @@ import {displayLabel, planName} from '@/components/shared/presentation';
 import type {ServicePlan} from '@/types/customer';
 import {useI18n} from '@/contexts/I18nContext';
 
-export function ServicePlanCards({plans, currentPlanCode}: {
+/** onSelect enables the subscribe button; pendingCode marks the plan whose request is in flight. */
+export function ServicePlanCards({plans, currentPlanCode, onSelect, pendingCode}: {
     plans: ServicePlan[];
     currentPlanCode?: string;
+    onSelect?: (plan: ServicePlan) => void;
+    pendingCode?: string | null;
 }) {
     const {t, formatCurrency} = useI18n();
     return <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-5">
@@ -35,7 +38,7 @@ export function ServicePlanCards({plans, currentPlanCode}: {
                             </span>
                         )}
                         {current && (
-                            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold leading-snug bg-emerald-50 text-emerald-800">
+                            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold leading-snug bg-uav-blue-light text-uav-blue">
                                 <BadgeCheck size={13} aria-hidden="true"/>{t('planCard.current')}
                             </span>
                         )}
@@ -85,6 +88,13 @@ export function ServicePlanCards({plans, currentPlanCode}: {
                         </dd>
                     </div>
                 </dl>
+                {onSelect && <button type="button" disabled={current || !plan.active || !!pendingCode}
+                                     onClick={() => onSelect(plan)}
+                                     className={`h-10 text-sm font-bold transition-colors disabled:cursor-not-allowed ${
+                                         current ? 'border border-blue-200 bg-uav-blue-light text-uav-blue'
+                                             : 'bg-primary text-primary-foreground hover:bg-primary-hover disabled:opacity-60'}`}>
+                    {current ? t('planCard.current') : pendingCode === plan.code ? t('plans.subscribing') : t('plans.subscribe')}
+                </button>}
             </article>;
         })}
     </div>;

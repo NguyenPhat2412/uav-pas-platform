@@ -1,9 +1,9 @@
 import type {ReactNode} from 'react';
 import {cn} from '@/lib/utils';
 
-const iconTones: Record<'blue' | 'green' | 'amber' | 'slate', string> = {
-    blue: 'bg-sky-50 text-sky-600 border-sky-200',
-    green: 'bg-emerald-50 text-success border-emerald-200',
+const iconTones: Record<'blue' | 'red' | 'amber' | 'slate', string> = {
+    blue: 'bg-uav-blue-light text-uav-blue border-blue-200',
+    red: 'bg-uav-red-light text-primary border-rose-200',
     amber: 'bg-amber-50 text-warning border-amber-200',
     slate: 'bg-slate-100 text-slate-700 border-slate-200',
 };
@@ -13,7 +13,7 @@ export function KpiCard({label, value, meta, icon, tone = 'blue'}: {
     value?: number | string;
     meta?: string;
     icon: ReactNode;
-    tone?: 'blue' | 'green' | 'amber' | 'slate'
+    tone?: 'blue' | 'red' | 'amber' | 'slate'
 }) {
     return (
         <article className="flex items-start gap-3.5 rounded-2xl border border-border bg-card p-5 shadow-xs">

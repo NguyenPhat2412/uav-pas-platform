@@ -16,6 +16,16 @@ public final class SarSpecifications {
                 missionId == null ? null : cb.equal(root.get("mission").get("id"), missionId);
     }
 
+    /** SAR missions where the user is the assigned operator or the requesting customer. */
+    public static Specification<SarMission> visibleTo(String username) {
+        return (root, query, cb) -> {
+            var mission = root.join("mission");
+            var operator = mission.join("operator", jakarta.persistence.criteria.JoinType.LEFT);
+            var customer = mission.join("customer", jakarta.persistence.criteria.JoinType.LEFT);
+            return cb.or(cb.equal(operator.get("username"), username), cb.equal(customer.get("username"), username));
+        };
+    }
+
     public static Specification<SarMission> hasSarStatus(SarStatus status) {
         return (root, query, cb) -> status == null ? null : cb.equal(root.get("sarStatus"), status);
     }

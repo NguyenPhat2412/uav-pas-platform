@@ -12,7 +12,9 @@ import com.uav.platform.modules.station.entity.Station;
 import com.uav.platform.modules.station.repository.StationRepository;
 import com.uav.platform.modules.uav.entity.Uav;
 import com.uav.platform.modules.uav.enums.UavStatus;
+import com.uav.platform.modules.uav.dto.response.TelemetryResponse;
 import com.uav.platform.modules.uav.repository.UavRepository;
+import com.uav.platform.modules.uav.service.TelemetryService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,18 +36,21 @@ public class FleetMapServiceImpl implements FleetMapService {
     private final UavRepository uavs;
     private final StationRepository stations;
     private final MissionRepository missions;
+    private final TelemetryService telemetry;
 
     @Override
     @Transactional(readOnly = true)
     public FleetMapResponse fleetMap() {
         List<Uav> fleet = uavs.findAll();
+        Map<Long, TelemetryResponse> live = telemetry.latestForFleet().stream()
+                .filter(t -> !t.stale()).collect(Collectors.toMap(TelemetryResponse::uavId, t -> t));
         Map<Long, Mission> active = activeMissionByUav(missions.findAll(
                 (Specification<Mission>) (r, q, cb) -> cb.and(cb.isNotNull(r.get("uav")), r.get("status").in(HOLDING))));
         Map<Long, Long> perStation = fleet.stream().filter(u -> u.getStation() != null)
                 .collect(Collectors.groupingBy(u -> u.getStation().getId(), Collectors.counting()));
         List<UavPin> pins = fleet.stream()
                 .sorted(Comparator.comparing(Uav::getId))
-                .map(u -> pin(u, active.get(u.getId())))
+                .map(u -> withTelemetry(pin(u, active.get(u.getId())), live.get(u.getId())))
                 .toList();
         List<StationPin> stationPins = stations.findAll().stream()
                 .sorted(Comparator.comparing(Station::getId))
@@ -65,6 +70,13 @@ public class FleetMapServiceImpl implements FleetMapService {
             result.merge(m.getUav().getId(), m, (a, b) -> priority.compare(a, b) <= 0 ? a : b);
         }
         return result;
+    }
+
+    /** A fresh telemetry fix (within the freshness window) beats any derived position. */
+    static UavPin withTelemetry(UavPin pin, TelemetryResponse fix) {
+        if (fix == null) return pin;
+        return new UavPin(pin.id(), pin.model(), pin.serialNumber(), pin.manufacturer(), pin.status(), pin.stationId(),
+                pin.stationName(), pin.lastMaintenanceAt(), "TELEMETRY", fix.latitude(), fix.longitude(), pin.activeMission());
     }
 
     static UavPin pin(Uav u, Mission mission) {

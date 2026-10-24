@@ -72,6 +72,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                         request.priority(),
                         request.notes());
         mission.setCode(nextCode(request.requestedDate().getYear()));
+        applyFlightPlan(mission, request.flightPlan());
         if (request.serviceId() != null) {
             ServiceOffering service =
                     services.findById(request.serviceId())
@@ -121,6 +122,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 request.longitude(),
                 request.priority(),
                 request.notes());
+        if (request.flightPlan() != null) applyFlightPlan(mission, request.flightPlan());
         events.save(
                 new MissionEvent(
                         mission,
@@ -436,5 +438,14 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     @Override
     public String nextCode(int year) {
         return String.format(java.util.Locale.ROOT, "MSN-%d-%06d", year, missions.nextCodeValue());
+    }
+
+    /** Stores the validated plan and moves the mission's map point to the centre of its flight area. */
+    private static void applyFlightPlan(Mission mission, com.uav.platform.modules.mission.dto.request.FlightPlanRequest plan) {
+        if (plan == null) return;
+        var resolved = FlightPlanOperations.resolve(plan);
+        mission.setFlightPlan(FlightPlanOperations.write(resolved));
+        mission.setLatitude(java.math.BigDecimal.valueOf(resolved.centerLatitude()));
+        mission.setLongitude(java.math.BigDecimal.valueOf(resolved.centerLongitude()));
     }
 }

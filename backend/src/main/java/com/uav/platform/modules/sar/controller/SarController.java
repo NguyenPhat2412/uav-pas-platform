@@ -6,6 +6,7 @@ import com.uav.platform.modules.sar.dto.request.SarMissionRequest;
 import com.uav.platform.modules.sar.dto.request.TelemetryEvaluateRequest;
 import com.uav.platform.modules.sar.dto.response.FlightPlanResponse;
 import com.uav.platform.modules.sar.dto.response.RescueDispatchResponse;
+import com.uav.platform.modules.sar.dto.response.SarCockpitMissionResponse;
 import com.uav.platform.modules.sar.dto.response.SarMissionResponse;
 import com.uav.platform.modules.sar.dto.response.TelemetryEvaluateResponse;
 import com.uav.platform.modules.sar.enums.SarStatus;
@@ -20,6 +21,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/sar")
 @RequiredArgsConstructor
@@ -33,6 +36,21 @@ public class SarController {
     public ResponseEntity<SarMissionResponse> registerSar(
             @Valid @RequestBody SarMissionRequest request, Authentication auth) {
         return ResponseEntity.status(201).body(sarService.registerSar(request, auth));
+    }
+
+    @GetMapping("/missions")
+    @PreAuthorize(
+            "@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
+    public ResponseEntity<List<SarCockpitMissionResponse>> list(
+            @RequestParam(defaultValue = "false") boolean includeClosed, Authentication auth) {
+        return ResponseEntity.ok(sarService.listForCockpit(includeClosed, auth));
+    }
+
+    @PostMapping("/missions/{missionId}/return-to-home")
+    @PreAuthorize(
+            "@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
+    public ResponseEntity<RescueDispatchResponse> returnToHome(@PathVariable Long missionId, Authentication auth) {
+        return ResponseEntity.ok(sarService.requestReturnToHome(missionId, auth));
     }
 
     @GetMapping("/missions/{missionId}")

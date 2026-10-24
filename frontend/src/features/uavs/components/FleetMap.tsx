@@ -8,7 +8,7 @@ import type {FleetStation, FleetUav} from '@/features/uavs/types/fleet-map.types
 const FALLBACK: [number, number] = [21.0285, 105.8048];
 
 export const uavStatusColor: Record<string, string> = {
-    AVAILABLE: '#16a34a', ASSIGNED: '#6250d6', IN_USE: '#2a78d6', MAINTENANCE: '#d97706', INACTIVE: '#94a3b8',
+    AVAILABLE: '#004ac6', ASSIGNED: '#ab2523', IN_USE: '#2a78d6', MAINTENANCE: '#d97706', INACTIVE: '#94a3b8',
 };
 
 /**

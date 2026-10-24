@@ -8,6 +8,7 @@ import {KpiCard} from "@/components/ui";
 import {EmptyState, QueryState} from "@/components/data/WorkspaceState";
 import {adminService} from "@/lib/api/admin";
 import {useI18n} from '@/contexts/I18nContext';
+import {AdminMonitoringCard} from '@/features/dashboard/components/AdminMonitoringCard';
 
 export function Dashboard() {
     const {user, can, permissionsReady} = useAuth();
@@ -28,10 +29,9 @@ export function Dashboard() {
         enabled: permissionsReady && can('MISSION_VIEW_ALL')
     });
     const fleet = summary.data;
-    const fleetAlert = fleet && fleet.totalUavs > 0 && (fleet.maintenanceUavs > 0 || fleet.availableUavs === 0);
     const cards = summary.data ? [
         {label: t('admin.dashboard.cards.users'), value: summary.data.totalUsers, icon: <Users size={18}/>, tone: 'blue' as const},
-        {label: t('admin.dashboard.cards.stations'), value: summary.data.totalStations, icon: <MapPin size={18}/>, tone: 'green' as const},
+        {label: t('admin.dashboard.cards.stations'), value: summary.data.totalStations, icon: <MapPin size={18}/>, tone: 'red' as const},
         {
             label: t('admin.dashboard.cards.readyUavs'),
             value: summary.data.availableUavs ?? '—',
@@ -141,19 +141,8 @@ export function Dashboard() {
                         <ChevronRight size={16} aria-hidden="true" className="text-slate-300 transition-colors group-hover:text-primary"/>
                     </Link>)}</div>
                 </section>}
-                <section className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
-                    <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.dashboard.status.title')}</h2></header>
-                    <ul className="m-0 list-none px-[18px] pb-3.5 pt-1.5">
-                        <li className="flex items-center gap-2.5 border-b border-dashed border-border py-2.5 text-[13px] last:border-b-0"><span className={`h-2 w-2 shrink-0 rounded-full ${summary.data ? 'bg-emerald-600' : 'bg-slate-300'}`} aria-hidden="true"/>
-                            <span className="flex-1 text-foreground">{t('admin.dashboard.status.api')}</span><small className="text-xs text-muted">{summary.data ? t('admin.dashboard.status.operational') : t('admin.dashboard.status.checking')}</small></li>
-                        <li className="flex items-center gap-2.5 border-b border-dashed border-border py-2.5 text-[13px] last:border-b-0"><span className="h-2 w-2 shrink-0 rounded-full bg-slate-300" aria-hidden="true"/>
-                            <span className="flex-1 text-foreground">{t('admin.dashboard.status.realtime')}</span><small className="text-xs text-muted">{t('admin.dashboard.status.noData')}</small></li>
-                        <li className="flex items-center gap-2.5 border-b border-dashed border-border py-2.5 text-[13px] last:border-b-0"><span className={`h-2 w-2 shrink-0 rounded-full ${fleetAlert ? 'bg-amber-600' : 'bg-emerald-600'}`} aria-hidden="true"/>
-                            <span className="flex-1 text-foreground">{t('admin.dashboard.status.fleet')}</span><small className="text-xs text-muted">{fleet ? t('admin.dashboard.status.fleetReady', {available: fleet.availableUavs ?? 0, total: fleet.totalUavs ?? 0}) : '—'}</small></li>
-                    </ul>
-                    {can('PERMISSION_MANAGE') && <div className="px-6 pb-6 pt-0">
-                        <Link href="/admin/webhooks" className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-border bg-card px-4 font-bold text-foreground transition hover:-translate-y-px hover:bg-background">{t('admin.dashboard.status.manageIntegrations')}</Link></div>}
-                </section>
+                <AdminMonitoringCard summaryLoaded={!!summary.data}
+                                     fleet={fleet ? {totalUavs: fleet.totalUavs ?? 0, availableUavs: fleet.availableUavs ?? 0, maintenanceUavs: fleet.maintenanceUavs ?? 0} : null}/>
             </aside>
         </div>
     </div>;

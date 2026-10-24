@@ -70,7 +70,7 @@ export function UavModelViewer({serial = 'UAV', status = 'UNKNOWN', compact = fa
             >
                 <div className="absolute inset-6 rounded-2xl border border-rose-400/50 bg-slate-800 shadow-lg flex items-center justify-center">
                     <span className="h-3 w-3 rounded-full bg-primary ring-2 ring-rose-300"/>
-                    <span className="absolute left-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"/>
+                    <span className="absolute left-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-uav-blue animate-pulse"/>
                     <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse"/>
                 </div>
                 <div className="absolute left-0 top-0 h-8 w-8 rounded-full border border-sky-400/40 bg-sky-500/10 animate-spin"/>

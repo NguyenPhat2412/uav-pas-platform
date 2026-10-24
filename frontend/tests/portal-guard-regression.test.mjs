@@ -52,7 +52,7 @@ function harness(auth, search, storedDemo) {
         },
         'react/jsx-runtime': {jsx: element, jsxs: element, Fragment: 'fragment'},
         'next/navigation': {useRouter: () => ({replace: path => redirects.push(path)})},
-        'lucide-react': Object.fromEntries(['Database', 'ShieldAlert', 'ArrowUpRight', 'Users', 'MapPin', 'Plane', 'History'].map(name => [name, () => null])),
+        'lucide-react': Object.fromEntries(['Database', 'ShieldAlert', 'ArrowUpRight', 'Users', 'MapPin', 'Plane', 'History', 'ChevronRight', 'CreditCard', 'Settings', 'ShieldCheck'].map(name => [name, () => null])),
         'next/link': {default: ({children}) => children},
         '@/components/shared/presentation': {
             displayLabel: value => value,
@@ -96,10 +96,12 @@ function harness(auth, search, storedDemo) {
         },
         './services/admin.service': {adminService: {}},
         '../services/admin.service': {adminService: {}},
+        '@/features/dashboard/components/AdminMonitoringCard': {AdminMonitoringCard: () => null},
     };
     modules['@/components/ui'] = modules['@/components/ui'];
     modules['@/components/layout/AdminAppShell'] = modules['@/components/layout/AppShell'];
     modules['@/lib/api/admin'] = {adminService: {}};
+    modules['@/features/dashboard/components/AdminMonitoringCard'] = {AdminMonitoringCard: () => null};
 
     function load(path) {
         const compiled = ts.transpileModule(source(path), {

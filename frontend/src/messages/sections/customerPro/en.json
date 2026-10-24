@@ -1,0 +1,190 @@
+{
+  "payment": {
+    "title": "VietQR bank transfer",
+    "close": "Close",
+    "loading": "Preparing payment details…",
+    "loadError": "Couldn't load payment details.",
+    "qrError": "Couldn't draw the QR code. You can still transfer using the details shown.",
+    "qrAlt": "VietQR code to pay invoice {code}",
+    "scanHint": "Open your banking app and scan the QR code. Amount and reference are filled in for you.",
+    "alreadyPaid": "This invoice has already been paid.",
+    "bank": "Beneficiary bank",
+    "accountName": "Account holder",
+    "accountNumber": "Account number",
+    "amount": "Amount",
+    "content": "Transfer reference",
+    "copy": "Copy {label}",
+    "copied": "{label} copied.",
+    "copyFailed": "Your browser blocked copying. Select and copy it manually.",
+    "contentWarning": "Use the exact transfer reference so we can match your payment and activate the service.",
+    "breakdown": "Invoice breakdown",
+    "invoice": "Invoice number",
+    "item": "Service",
+    "flightHours": "Planned flight time",
+    "hours": "{count} h",
+    "serviceFee": "Service fee (excl. VAT)",
+    "vat": "VAT ({rate}%)",
+    "total": "Total due",
+    "dates": "Issued {issued} · Due {due}",
+    "confirmation": "The invoice turns “Paid” once the dispatch centre confirms the funds arrived.",
+    "print": "Print / Save PDF",
+    "printTitle": "UAV PAS service invoice",
+    "issuedOn": "Issued",
+    "dueOn": "Due",
+    "awaitingTransfer": "Awaiting payment",
+    "awaitingTransferHint": "This invoice is awaiting payment. Accounting will send transfer instructions; the status updates as soon as receipt is confirmed."
+  },
+  "plans": {
+    "subscribe": "Choose this plan",
+    "subscribing": "Issuing invoice…",
+    "changePlan": "Change plan →",
+    "subscribeConfirm": "Subscribe to {name} for {price}? An invoice will be issued; the plan applies as soon as payment is confirmed.",
+    "invoiceIssued": "Invoice {code} issued. Pay it to activate the plan.",
+    "appliedFree": "The free plan has been applied to your account.",
+    "subscribeFailed": "Couldn't start the subscription. Try again."
+  },
+  "planner": {
+    "label": "Flight area planner",
+    "takeoffHere": "Set takeoff at my location",
+    "toolLabel": "Drawing tool",
+    "tool": {
+      "takeoff": "Takeoff / landing point",
+      "polygon": "Draw polygon",
+      "circle": "Radius area"
+    },
+    "undo": "Remove last vertex",
+    "clearArea": "Clear flight area",
+    "basemap": "Base map",
+    "basemaps": {
+      "streets": "Streets (OSM)",
+      "satellite": "Satellite",
+      "terrain": "Terrain"
+    },
+    "radius": "Operating radius",
+    "ariaLabel": "Flight area planner. Click to set the takeoff point or add area vertices.",
+    "area": "Flight area",
+    "perimeter": "Perimeter",
+    "center": "Centre",
+    "takeoff": "Takeoff / landing (H)",
+    "hint": {
+      "takeoff": "Click the map to set the UAV's takeoff/landing zone (LZ).",
+      "POLYGON": "Click the corners of the survey area in order; at least 3 are needed.",
+      "CIRCLE": "Click to choose the centre, then drag the slider to set a radius of 100–2,000 m."
+    },
+    "errors": {
+      "flightAreaIncomplete": "Finish the flight area on the map: set a takeoff point, draw a polygon with at least 3 vertices, or place a circle.",
+      "sensorRequired": "Choose at least one payload or sensor."
+    }
+  },
+  "flightSpec": {
+    "title": "Flight parameters",
+    "altitude": "Flight altitude (AGL)",
+    "altitudeHint": "Height above ground; civil UAV rules cap it at 120 m.",
+    "gsd": "Ground sampling distance (GSD)",
+    "gsdOption": {
+      "1_5": "1.5 cm/px — high detail (inspection, mapping)",
+      "3_0": "3.0 cm/px — standard survey",
+      "5_0": "5.0 cm/px — wide-area coverage"
+    },
+    "forwardOverlap": "Forward overlap",
+    "sideOverlap": "Side overlap",
+    "sensors": "Required payload and sensors",
+    "sensor": {
+      "RGB_4K": {
+        "name": "RGB 4K optical camera",
+        "detail": "Orthophotos, 3D models, construction monitoring"
+      },
+      "THERMAL": {
+        "name": "Thermal infrared camera",
+        "detail": "Search and rescue, solar panel inspection, hot spots"
+      },
+      "LIDAR": {
+        "name": "3D LiDAR scanning",
+        "detail": "Terrain under canopy, LAS point clouds"
+      },
+      "MULTISPECTRAL": {
+        "name": "Multispectral sensor",
+        "detail": "NDVI vegetation indices, precision agriculture"
+      }
+    },
+    "obstacles": "Obstacles and site safety",
+    "obstaclesPlaceholder": "e.g. high-voltage line to the north, 40 m BTS tower, tall trees along the river…",
+    "permit": "Request flight permit support",
+    "permitDetail": "The dispatch centre will prepare the flight permit application to the Operations Department for this area."
+  },
+  "enterprise": {
+    "title": "Enterprise identity and invoicing",
+    "edit": "Update",
+    "loading": "Loading enterprise profile…",
+    "loadError": "Couldn't load the enterprise profile.",
+    "field": {
+      "organizationName": "Organisation name",
+      "taxCode": "Tax code",
+      "billingAddress": "VAT invoice address",
+      "emergencyContactName": "On-site emergency contact",
+      "emergencyContactPhone": "Emergency phone"
+    },
+    "taxCodeHint": "10 digits, or 10 digits plus a branch suffix (e.g. 0101234567-001).",
+    "taxCodeInvalid": "The tax code must be 10 digits, or in the form 0101234567-001.",
+    "phoneInvalid": "Use digits, spaces, dots or dashes only (8–20 characters).",
+    "empty": "Not provided",
+    "invoiceNote": "Printed on VAT invoices and used to reach you while the flight team is on site.",
+    "cancel": "Cancel",
+    "save": "Save enterprise profile",
+    "saving": "Saving…",
+    "saved": "Enterprise profile saved.",
+    "saveFailed": "Couldn't save the enterprise profile.",
+    "conflict": "The enterprise profile was just changed elsewhere. The latest version is loaded; review it and save again.",
+    "accessTitle": "Plan and account permissions",
+    "role": "Role",
+    "plan": "Current plan",
+    "hours": "Flight hours used / limit",
+    "permissions": "Permissions held ({count})"
+  },
+  "missionTabs": {
+    "label": "Mission information",
+    "monitoring": "Flight monitoring",
+    "weather": "Weather",
+    "delivery": "Data delivery",
+    "history": "History"
+  },
+  "missionMonitor": {
+    "live": "In flight · live data",
+    "phase": {
+      "live": "Waiting for flight data",
+      "planned": "Flight plan",
+      "ended": "Flight ended"
+    },
+    "updated": "Updated {at}",
+    "noUav": "No UAV is assigned yet. Its position appears once operations assign one.",
+    "beforeFlight": "The UAV position appears live once the mission is ready for takeoff.",
+    "loading": "Loading flight data…",
+    "loadError": "Could not load flight data. Please try again later.",
+    "waiting": "The UAV has not reported a position for this mission yet.",
+    "noTrack": "No position data was recorded for this flight.",
+    "stale": "Last signal {seconds} s ago; operations are monitoring the link.",
+    "altitude": "Altitude",
+    "planned": "Planned {value}",
+    "speed": "Speed",
+    "battery": "Battery",
+    "toArea": "From area centre",
+    "gnss": "Positioning",
+    "satellites": "{count} satellites",
+    "age": "Last signal",
+    "seconds": "{count} s ago",
+    "planTitle": "Registered flight specs",
+    "area": "Flight area",
+    "overlap": "Forward / side overlap",
+    "sensors": "Sensors",
+    "areaType": {
+      "POINT": "Point",
+      "POLYGON": "Polygon",
+      "CIRCLE": "Circle"
+    },
+    "flightArea": "Flight area",
+    "takeoff": "Takeoff point",
+    "uav": "UAV",
+    "noLocation": "This mission has no map location yet.",
+    "mapAria": "Monitoring map for mission {code}"
+  }
+}

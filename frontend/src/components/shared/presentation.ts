@@ -40,6 +40,7 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         OPERATOR_ACCEPTED: 'Mission accepted', OPERATOR_CONFLICT: 'Issue reported',
         MAINTENANCE_SCHEDULE: 'Maintenance schedule', REPAIR_ORDER: 'Repair order', MONTHLY: 'month', YEARLY: 'year',
         CREATED: 'Created', UPDATED: 'Updated', PAUSED: 'Paused', STARTED: 'Repair started',
+        AVATAR_UPDATED: 'Profile picture updated', AVATAR_REMOVED: 'Profile picture removed',
     },
     ja: {
         DRAFT: '下書き', PENDING_CONFIRMATION: '確認待ち', CONFIRMED: '確認済み', RESOURCE_RESERVED: 'リソース手配済み',
@@ -66,6 +67,7 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         UAV_REPLACED: 'UAV交換', UAV_UNASSIGNED: 'UAVをミッションから解除', OPERATOR_ACCEPTED: 'ミッション受諾',
         OPERATOR_CONFLICT: '問題の報告', MAINTENANCE_SCHEDULE: 'メンテナンス計画', REPAIR_ORDER: '修理票', MONTHLY: 'か月',
         YEARLY: '年', CREATED: '作成済み', UPDATED: '更新済み', PAUSED: '一時停止', STARTED: '修理開始',
+        AVATAR_UPDATED: 'プロフィール画像を更新', AVATAR_REMOVED: 'プロフィール画像を削除',
     },
 };
 
@@ -173,6 +175,8 @@ const labels: Record<string, string> = {
     UPDATED: 'Đã cập nhật',
     PAUSED: 'Tạm dừng',
     STARTED: 'Đã bắt đầu sửa chữa',
+    AVATAR_UPDATED: 'Cập nhật ảnh đại diện',
+    AVATAR_REMOVED: 'Xóa ảnh đại diện',
 };
 
 export function displayLabel(value?: string | null): string {

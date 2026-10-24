@@ -7,6 +7,7 @@ import {useI18n} from '@/contexts/I18nContext';
 import {planName} from '@/components/shared/presentation';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {RequiredMark} from '@/components/shared/RequiredMark';
+import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
 import {plansService} from '@/features/billing/services/plans.service';
 import type {ServicePlan} from '@/types';
@@ -61,23 +62,20 @@ export function AdminPlansManager() {
                         <td className="px-4 py-3 text-right tabular-nums">{t('admin.plans.hours', {count: p.maxMonthlyFlightHours})}</td>
                         <td className="px-4 py-3 text-right tabular-nums">{p.maxConcurrentUavs}</td>
                         <td className="px-4 py-3 text-center">{p.allowSarAi
-                            ? <Check size={16} className="inline text-emerald-600" aria-label={t('admin.plans.yes')}/>
+                            ? <Check size={16} className="inline text-primary" aria-label={t('admin.plans.yes')}/>
                             : <Minus size={16} className="inline text-slate-300" aria-label={t('admin.plans.no')}/>}</td>
                         <td className="px-4 py-3">
-                            <button type="button" role="switch" aria-checked={p.active} disabled={toggle.isPending || locked}
-                                    title={locked ? t('admin.plans.defaultLocked') : undefined}
-                                    aria-label={t('admin.plans.toggleLabel', {name: planName(p.name)})}
-                                    onClick={() => {
-                                        if (p.active && !window.confirm(t('admin.plans.deactivateConfirm', {name: planName(p.name)}))) return;
-                                        toggle.mutate({id: p.id, active: !p.active});
-                                    }}
-                                    className="inline-flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-60">
-                                <span className={cn('relative h-5 w-9 transition-colors', p.active ? 'bg-emerald-600' : 'bg-slate-300')}>
-                                    <span className={cn('absolute top-0.5 h-4 w-4 bg-white transition-all', p.active ? 'left-[18px]' : 'left-0.5')}/>
-                                </span>
-                                <span className={cn('text-xs font-semibold', p.active ? 'text-emerald-700' : 'text-slate-500')}>
-                                    {t(p.active ? 'admin.plans.active' : 'admin.plans.inactive')}</span>
-                            </button>
+                            <Switch
+                                checked={p.active}
+                                disabled={toggle.isPending || locked}
+                                title={locked ? t('admin.plans.defaultLocked') : undefined}
+                                aria-label={t('admin.plans.toggleLabel', {name: planName(p.name)})}
+                                label={t(p.active ? 'admin.plans.active' : 'admin.plans.inactive')}
+                                onCheckedChange={(nextActive) => {
+                                    if (!nextActive && !window.confirm(t('admin.plans.deactivateConfirm', {name: planName(p.name)}))) return;
+                                    toggle.mutate({id: p.id, active: nextActive});
+                                }}
+                            />
                             {locked && <span className="mt-1 block text-[11px] text-slate-400">{t('admin.plans.defaultLocked')}</span>}
                         </td>
                         <td className="px-4 py-3 text-right">

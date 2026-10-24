@@ -88,7 +88,7 @@ export function AdminAlertsPopover() {
                 >
                     <header className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
                         <h2 id="admin-alerts-title" className="text-sm font-bold text-slate-900">{t('admin.analytics.alertsTitle')}</h2>
-                        <span className={cn('text-xs font-semibold', alerts.length ? 'text-amber-700' : 'text-emerald-700')}>{label}</span>
+                        <span className={cn('text-xs font-semibold', alerts.length ? 'text-amber-700' : 'text-uav-blue')}>{label}</span>
                     </header>
                     {alerts.length ? (
                         <ul className="m-0 max-h-[60vh] list-none divide-y divide-slate-100 overflow-y-auto p-0">

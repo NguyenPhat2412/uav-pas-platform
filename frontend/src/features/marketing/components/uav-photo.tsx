@@ -69,6 +69,8 @@ export const serviceScenes: Record<string, UavScene> = {
 };
 
 export const solutionScenes: Record<string, UavScene> = {
+    'managed-uav-operations': 'landing',
+    'infrastructure-inspection': 'mapping',
     'uav-rental': 'landing',
     'aerial-inspection': 'mapping',
     'ai-detection': 'tracking',

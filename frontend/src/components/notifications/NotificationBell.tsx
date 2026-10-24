@@ -67,7 +67,7 @@ export function NotificationBell() {
                             <button
                                 type="button"
                                 onClick={markAllAsRead} disabled={busy || loading}
-                                className="text-xs text-success hover:text-uav-green-dark flex items-center gap-1 font-bold cursor-pointer"
+                                className="text-xs text-primary hover:text-primary-hover flex items-center gap-1 font-bold cursor-pointer"
                             >
                                 <CheckCheck size={14}/> {t('opsMissions.notifications.bell.readAll')}
                             </button>

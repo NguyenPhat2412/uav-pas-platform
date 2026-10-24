@@ -171,7 +171,7 @@ function Quota({quota}: { quota: NonNullable<Analytics['quota']> }) {
         <p className="mt-1.5 text-[13px] text-muted">{quota.cycleEnd ? t('dashboard.analytics.cycleLeft', {count: quota.daysLeftInCycle, date: formatDate(quota.cycleEnd, {dateStyle: 'short'})}) : null}</p>
         {quota.projectedDaysToLimit === 0 ? <p className="mt-1.5 text-[13px] font-semibold text-amber-700">{t('dashboard.analytics.quotaExhausted')}</p> :
             runsOutFirst ? <p className="mt-1.5 text-[13px] font-semibold text-amber-700">{t('dashboard.analytics.quotaRunsOut', {count: Math.ceil(quota.projectedDaysToLimit!)})}</p> :
-                quota.projectedDaysToLimit != null ? <p className="mt-1.5 text-[13px] text-emerald-700">{t('dashboard.analytics.quotaEnough')}</p> : null}
+                quota.projectedDaysToLimit != null ? <p className="mt-1.5 text-[13px] text-uav-blue">{t('dashboard.analytics.quotaEnough')}</p> : null}
     </div>;
 }
 

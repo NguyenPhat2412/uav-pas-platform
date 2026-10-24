@@ -3,6 +3,8 @@ import {displayLabel} from "@/components/shared/presentation";
 import type {ChangeEvent} from 'react';
 import type {MissionInput} from "@/types/customer";
 import {LocationPicker} from "@/features/missions/components/customer/LocationPicker";
+import {FlightSpecFields} from "@/features/missions/components/customer/FlightSpecFields";
+import {defaultFlightPlan} from "@/features/missions/types/flight-plan.types";
 import {localDateToday, type MissionFormErrors, missionLimits} from "@/features/missions/forms/mission-form";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/contexts/I18nContext';
@@ -57,18 +59,14 @@ export function MissionFields({form, onChange, errors = {}}: {
                                                                  onChange={set('priority')}>{['LOW', 'NORMAL', 'HIGH', 'URGENT'].map(priority =>
             <option key={priority} value={priority}>{displayLabel(priority)}</option>)}</select>{error('priority')}
         </label>
-        <LocationPicker latitude={form.latitude} longitude={form.longitude}
-                        onChange={(latitude, longitude) => onChange({...form, latitude, longitude})}/>
-        <label className={fieldClass}><span>{t('missionForm.latitude')}</span><input className={inputClass} {...attributes('latitude')} type="number" min={-90}
-                                                                     max={90} step="0.0000001"
-                                                                     value={form.latitude ?? ''}
-                                                                     onChange={set('latitude')}/>{error('latitude')}
-        </label>
-        <label className={fieldClass}><span>{t('missionForm.longitude')}</span><input className={inputClass} {...attributes('longitude')} type="number"
-                                                                       min={-180} max={180} step="0.0000001"
-                                                                       value={form.longitude ?? ''}
-                                                                       onChange={set('longitude')}/>{error('longitude')}
-        </label>
+        <LocationPicker plan={form.flightPlan} fallbackLatitude={form.latitude} fallbackLongitude={form.longitude}
+                        onChange={(flightPlan, center) => onChange({
+                            ...form, flightPlan,
+                            latitude: center ? Math.round(center[0] * 1e6) / 1e6 : undefined,
+                            longitude: center ? Math.round(center[1] * 1e6) / 1e6 : undefined,
+                        })}/>
+        {error('latitude')}
+        <FlightSpecFields plan={form.flightPlan ?? defaultFlightPlan()} onChange={flightPlan => onChange({...form, flightPlan})}/>
         <label className={`${fieldClass} col-span-full`}><span>{t('missionForm.description')}</span><textarea className={textareaClass} {...attributes('description')}
                                                                        value={form.description ?? ''}
                                                                        onChange={set('description')}

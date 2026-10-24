@@ -39,7 +39,8 @@ export function AdminFleetMapPanel() {
     const located = visible.filter(u => u.positionSource !== 'NONE');
     const unlocated = visible.filter(u => u.positionSource === 'NONE');
 
-    const where = (u: FleetUav) => u.positionSource === 'MISSION'
+    const where = (u: FleetUav) => u.positionSource === 'TELEMETRY' ? t('admin.fleetMap.liveGps')
+        : u.positionSource === 'MISSION'
         ? t('admin.fleetMap.atMission', {code: u.activeMission?.code ?? ''})
         : u.positionSource === 'STATION' ? t('admin.fleetMap.atStation', {name: u.stationName ?? ''}) : t('admin.fleetMap.noPosition');
     const labels = useMemo(() => ({
@@ -88,7 +89,7 @@ export function AdminFleetMapPanel() {
                                     <strong className="block truncate text-[13px] text-slate-900">{u.model}</strong>
                                     <small className="block truncate font-mono text-[11px] text-slate-500">{u.serialNumber}</small>
                                     <small className={cn('mt-0.5 flex items-center gap-1 text-[11.5px]', u.positionSource === 'NONE' ? 'text-amber-700' : 'text-slate-500')}>
-                                        {u.positionSource === 'MISSION' ? <Navigation size={11} aria-hidden="true"/> : <MapPin size={11} aria-hidden="true"/>}
+                                        {u.positionSource === 'MISSION' || u.positionSource === 'TELEMETRY' ? <Navigation size={11} aria-hidden="true"/> : <MapPin size={11} aria-hidden="true"/>}
                                         <span className="truncate">{where(u)}</span>
                                     </small>
                                 </span>

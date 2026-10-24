@@ -38,6 +38,19 @@ class ServiceOfferingManagementTest {
     }
 
     @Test
+    void specsAreStoredAndSensorsDeduplicated() {
+        existing();
+        ServiceOfferingResponse r = service.update(5L, new ServiceOfferingUpdateRequest("Khảo sát", null, 60,
+                java.util.List.of("RGB_4K", "LIDAR", "RGB_4K"), 1.5, 200.0, 10.0, 48, 72));
+        assertEquals(java.util.List.of("RGB_4K", "LIDAR"), r.sensors());
+        assertEquals(1.5, r.bestGsdCm());
+        assertEquals(72, r.deliveryHours());
+        ServiceOfferingResponse cleared = service.update(5L, new ServiceOfferingUpdateRequest("Khảo sát", null, 60));
+        assertTrue(cleared.sensors().isEmpty());
+        assertNull(cleared.onSiteHours());
+    }
+
+    @Test
     void togglingActiveFlipsTheFlag() {
         existing();
         assertFalse(service.setActive(5L, false).active());

@@ -87,8 +87,8 @@ function AdminSettingsContent() {
             {/* Success Notification */}
             {successMsg && (
                 <div
-                    className="flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-xs font-semibold text-emerald-800 shadow-sm">
-                    <CheckCircle2 size={16} className="shrink-0 text-emerald-600"/>
+                    className="flex items-center gap-2 rounded-xl border border-blue-200 bg-uav-blue-light px-4 py-3 text-xs font-semibold text-uav-blue shadow-sm">
+                    <CheckCircle2 size={16} className="shrink-0 text-uav-blue"/>
                     <span>{successMsg}</span>
                 </div>
             )}
@@ -96,7 +96,7 @@ function AdminSettingsContent() {
             {/* Group 1: Safety & Flight Limits */}
             <div className="space-y-4 rounded-xl border border-border bg-card p-6 shadow-sm">
                 <h3 className="flex items-center gap-2 border-b border-slate-100 pb-3 text-sm font-bold text-slate-900">
-                    <ShieldCheck size={18} className="text-emerald-600"/> {t('admin.settings.safetyGroup')}
+                    <ShieldCheck size={18} className="text-primary"/> {t('admin.settings.safetyGroup')}
                 </h3>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

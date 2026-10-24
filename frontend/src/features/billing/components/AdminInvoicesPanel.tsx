@@ -11,6 +11,8 @@ import {RequiredMark} from '@/components/shared/RequiredMark';
 import {adminService} from '@/lib/api/admin';
 import {cn} from '@/lib/utils';
 import {invoicesService, type InvoiceFilters} from '@/features/billing/services/invoices.service';
+import {bankTransferService} from '@/features/billing/services/bank-transfer.service';
+import {toast} from '@/contexts/ToastContext';
 import type {Invoice, InvoiceStatus} from '@/types';
 
 type FilterKey = 'ALL' | InvoiceStatus | 'OVERDUE';
@@ -18,7 +20,7 @@ const filters: FilterKey[] = ['ALL', 'PENDING', 'OVERDUE', 'PAID', 'FAILED', 'CA
 
 const statusTone: Record<InvoiceStatus, string> = {
     PENDING: 'bg-amber-50 text-amber-800 ring-amber-200',
-    PAID: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+    PAID: 'bg-uav-blue-light text-uav-blue ring-blue-200',
     FAILED: 'bg-red-50 text-red-700 ring-red-200',
     CANCELLED: 'bg-slate-100 text-slate-600 ring-slate-200',
 };
@@ -32,6 +34,19 @@ export function AdminInvoicesPanel() {
     const [page, setPage] = useState(0);
     const [creating, setCreating] = useState(false);
     const [notice, setNotice] = useState('');
+    const client = useQueryClient();
+    const confirm = useMutation({
+        mutationFn: ({id, reference}: { id: number; reference: string }) => bankTransferService.confirm(id, reference),
+        onSuccess: inv => {
+            toast.success(t('admin.invoices.confirmed', {code: inv.code}));
+            void client.invalidateQueries({queryKey: ['admin', 'billing']});
+        },
+        onError: error => toast.error(error instanceof Error ? error.message : t('admin.invoices.confirmFailed')),
+    });
+    const askConfirm = (inv: Invoice) => {
+        const reference = window.prompt(t('admin.invoices.confirmPrompt', {code: inv.code, amount: formatCurrency(inv.amount)}));
+        if (reference && reference.trim()) confirm.mutate({id: inv.id, reference: reference.trim()});
+    };
     const query = useQuery({
         queryKey: ['admin', 'billing', 'invoices', filter, page],
         queryFn: ({signal}) => invoicesService.page(page, toFilters(filter), signal),
@@ -58,7 +73,7 @@ export function AdminInvoicesPanel() {
             </button>
         </div>
 
-        {notice && <p role="status" className="border-l-[3px] border-l-emerald-600 bg-emerald-50 px-3 py-2 text-[13px] text-emerald-800">{notice}</p>}
+        {notice && <p role="status" className="border-l-[3px] border-l-uav-blue bg-uav-blue-light px-3 py-2 text-[13px] text-uav-blue">{notice}</p>}
 
         <section className="border border-slate-200 bg-white">
             <QueryState query={query}>{query.data && <>
@@ -73,6 +88,7 @@ export function AdminInvoicesPanel() {
                             <th className="px-4 py-3">{t('admin.invoices.col.status')}</th>
                             <th className="px-4 py-3">{t('admin.invoices.col.due')}</th>
                             <th className="px-4 py-3">{t('admin.invoices.col.paid')}</th>
+                            <th className="px-4 py-3 text-right">{t('admin.invoices.col.actions')}</th>
                         </tr>
                         </thead>
                         <tbody>{query.data.content.map(inv => <tr key={inv.id} className="border-t border-slate-100 align-top hover:bg-slate-50/70">
@@ -89,6 +105,10 @@ export function AdminInvoicesPanel() {
                             </td>
                             <td className={cn('whitespace-nowrap px-4 py-3', isOverdue(inv) ? 'font-semibold text-red-700' : 'text-slate-500')}>{date(inv.dueDate)}</td>
                             <td className="whitespace-nowrap px-4 py-3 text-slate-500">{date(inv.paidAt)}</td>
+                            <td className="px-4 py-3 text-right">{inv.status === 'PENDING' &&
+                                <button type="button" disabled={confirm.isPending} onClick={() => askConfirm(inv)}
+                                        className="whitespace-nowrap px-2 py-1 text-xs font-semibold text-primary hover:bg-[#fdf2f2] disabled:opacity-50">
+                                    {t('admin.invoices.confirm')}</button>}</td>
                         </tr>)}</tbody>
                     </table>
                 </div> : <p className="px-6 py-12 text-center text-[13px] text-slate-500">{t(filter === 'ALL' ? 'admin.invoices.empty' : 'admin.invoices.emptyFilter')}</p>}

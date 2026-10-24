@@ -6,12 +6,13 @@ import {KeyRound, Plus, Trash2, X} from 'lucide-react';
 import {useI18n} from '@/contexts/I18nContext';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
 import {RequiredMark} from '@/components/shared/RequiredMark';
+import {Switch} from '@/components/ui/Switch';
 import {adminService} from '@/lib/api/admin';
 import {cn} from '@/lib/utils';
 import type {WebhookEndpointItem} from '@/types/admin';
 
 /** Event types the backend actually dispatches; a subscription matches when its list contains the type. */
-const webhookEvents = ['SAR_EMERGENCY_TRIGGERED', 'GEOFENCE_BREACH', 'BATTERY_CRITICAL_RTH', 'INVOICE_ISSUED', 'PAYMENT_COMPLETED', 'WEBHOOK_TEST'];
+const webhookEvents = ['SAR_EMERGENCY_TRIGGERED', 'GEOFENCE_BREACH', 'BATTERY_CRITICAL_RTH', 'SAR_RTH_REQUESTED', 'INVOICE_ISSUED', 'PAYMENT_COMPLETED', 'WEBHOOK_TEST'];
 
 function newSecret() {
     const bytes = crypto.getRandomValues(new Uint8Array(24));
@@ -59,16 +60,13 @@ export function WebhookSubscriptions({items, onChanged}: { items: WebhookEndpoin
                                 <span key={e} className="bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] text-slate-700">{e}</span>)}
                         </div></td>
                         <td className="px-4 py-3">
-                            <button type="button" role="switch" aria-checked={item.isActive} disabled={busy}
-                                    aria-label={t('admin.webhooks.crud.toggleLabel', {name: item.name})}
-                                    onClick={() => toggle.mutate({id: item.id, active: !item.isActive})}
-                                    className="inline-flex items-center gap-2 disabled:opacity-50">
-                                <span className={cn('relative h-5 w-9 transition-colors', item.isActive ? 'bg-emerald-600' : 'bg-slate-300')}>
-                                    <span className={cn('absolute top-0.5 h-4 w-4 bg-white transition-all', item.isActive ? 'left-[18px]' : 'left-0.5')}/>
-                                </span>
-                                <span className={cn('text-xs font-semibold', item.isActive ? 'text-emerald-700' : 'text-slate-500')}>
-                                    {item.isActive ? t('admin.webhooks.subscriptionOn') : t('admin.webhooks.subscriptionOff')}</span>
-                            </button>
+                            <Switch
+                                checked={item.isActive}
+                                disabled={busy}
+                                aria-label={t('admin.webhooks.crud.toggleLabel', {name: item.name})}
+                                label={item.isActive ? t('admin.webhooks.subscriptionOn') : t('admin.webhooks.subscriptionOff')}
+                                onCheckedChange={(nextActive) => toggle.mutate({id: item.id, active: nextActive})}
+                            />
                         </td>
                         <td className="px-4 py-3 text-right">
                             <button type="button" disabled={busy} aria-label={t('admin.webhooks.crud.delete', {name: item.name})}

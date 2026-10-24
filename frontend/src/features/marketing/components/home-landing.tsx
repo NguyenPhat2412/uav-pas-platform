@@ -81,7 +81,7 @@ export default function Page() {
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                         {available.map((item) => (
                             <article key={item.title} className="rounded-2xl border border-border bg-slate-50/60 p-6 space-y-2.5">
-                                <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-success">
+                                <span className="inline-flex items-center rounded-full border border-rose-200 bg-uav-red-light px-2.5 py-0.5 text-xs font-bold text-primary">
                                     {readinessLabels[item.status]}
                                 </span>
                                 <h3 className="text-lg font-bold text-foreground">{keepVietnamesePhrases(item.title)}</h3>
@@ -146,7 +146,7 @@ export default function Page() {
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        {pilotFromAbove.caption} · Ảnh: {pilotFromAbove.credit} ↗
+                        {pilotFromAbove.caption} · Ảnh: {pilotFromAbove.credit}
                     </a>
                 </div>
             </section>
@@ -205,7 +205,7 @@ export default function Page() {
                                 <figcaption className="flex flex-wrap items-center justify-between gap-2 p-4 text-xs text-slate-600">
                                     <span>{photo.caption}</span>
                                     <a className="font-semibold text-slate-500 hover:text-primary" href={photo.source} target="_blank" rel="noopener noreferrer">
-                                        Ảnh: {photo.credit} ↗
+                                        Ảnh: {photo.credit}
                                     </a>
                                 </figcaption>
                             </figure>
@@ -230,7 +230,7 @@ export default function Page() {
                             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-primary hover:bg-slate-100 transition-colors shadow-md"
                             href={`${customerUrl}/register`}
                         >
-                            Tạo tài khoản <span aria-hidden="true">↗</span>
+                            Tạo tài khoản
                         </a>
                         <Link className="text-sm font-bold text-white underline underline-offset-4 hover:text-rose-100" href="/services">
                             Xem tất cả dịch vụ

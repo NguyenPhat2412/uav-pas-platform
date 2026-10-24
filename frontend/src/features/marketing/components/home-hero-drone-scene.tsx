@@ -101,7 +101,7 @@ export function HeroDroneScene() {
                 prop.add(disc);
                 drone.add(prop);
                 props.push({group: prop, dir: index % 2 ? 1 : -1});
-                const led = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 8), new THREE.MeshBasicMaterial({color: dz > 0 ? 0xe0322c : 0x00a052}));
+                const led = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 8), new THREE.MeshBasicMaterial({color: dz > 0 ? 0xe0322c : 0x004ac6}));
                 led.position.set(dx * 1.8, -0.04, dz * 1.8);
                 drone.add(led);
             });

@@ -2,9 +2,9 @@ import {displayLabel} from "@/components/shared/presentation";
 import {cn} from '@/lib/utils';
 
 const tones: Record<string, { badge: string; dot: string }> = {
-    AVAILABLE: {badge: 'bg-emerald-50 text-success border-emerald-200', dot: 'bg-success'},
-    ACTIVE: {badge: 'bg-emerald-50 text-success border-emerald-200', dot: 'bg-success'},
-    ONLINE: {badge: 'bg-emerald-50 text-success border-emerald-200', dot: 'bg-success'},
+    AVAILABLE: {badge: 'bg-uav-blue-light text-uav-blue border-blue-200', dot: 'bg-uav-blue'},
+    ACTIVE: {badge: 'bg-uav-blue-light text-uav-blue border-blue-200', dot: 'bg-uav-blue'},
+    ONLINE: {badge: 'bg-uav-blue-light text-uav-blue border-blue-200', dot: 'bg-uav-blue'},
     IN_PROGRESS: {badge: 'bg-sky-50 text-sky-700 border-sky-200', dot: 'bg-sky-600'},
     READY: {badge: 'bg-sky-50 text-sky-700 border-sky-200', dot: 'bg-sky-600'},
     RESERVED: {badge: 'bg-amber-50 text-warning border-amber-200', dot: 'bg-warning'},

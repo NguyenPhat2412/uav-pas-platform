@@ -22,7 +22,7 @@ export default function ServicesPage() {
                     >
                         <UavPhoto scene={serviceScenes[item.slug]} compact className="mb-0"/>
                         <div className="flex flex-1 flex-col gap-2.5 p-6">
-                            <span className="inline-flex self-start rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-success">
+                            <span className="inline-flex self-start rounded-full border border-rose-200 bg-uav-red-light px-2.5 py-0.5 text-xs font-bold text-primary">
                                 Đã hỗ trợ gửi yêu cầu
                             </span>
                             <h2 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">{item.title}</h2>

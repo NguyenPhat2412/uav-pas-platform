@@ -1,6 +1,7 @@
 'use client';
 
 import {useEffect, useState} from 'react';
+import {useQuery} from '@tanstack/react-query';
 import Link from 'next/link';
 import {
     Activity,
@@ -24,6 +25,8 @@ import {missionService} from '@/features/missions/services/mission.service';
 import type {DashboardSummary} from '@/features/dashboard/types/dashboard.types';
 import type {MissionDashboard} from '@/features/missions/types/mission.types';
 import {useCollection} from "@/hooks/useCollections";
+import {TELEMETRY_POLL_MS, telemetryService} from '@/features/uavs/services/telemetry.service';
+import {toStationSlug, toUavSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
 
 const quickActions = [
@@ -45,7 +48,14 @@ export default function HomePage() {
     const uavsQuery = useCollection('uavs');
     const stationsQuery = useCollection('stations');
     const [error, setError] = useState(false);
-    const [selectedUavId, setSelectedUavId] = useState<number>(1);
+    const [selectedUavId, setSelectedUavId] = useState<number | null>(null);
+    const canReadUavs = can('UAV_READ');
+    const fleetTelemetry = useQuery({
+        queryKey: ['telemetry', 'fleet'],
+        queryFn: ({signal}) => telemetryService.fleet(signal),
+        enabled: isAuthenticated && permissionsReady && canReadUavs,
+        refetchInterval: TELEMETRY_POLL_MS,
+    });
     useEffect(() => {
         if (!isLoading && !isAuthenticated) router.replace("/operations/login");
     }, [isAuthenticated, isLoading, router]);
@@ -69,8 +79,13 @@ export default function HomePage() {
         className="flex min-h-screen items-center justify-center bg-background"><Spinner size="lg"
                                                                                         label={t('opsMissions.overview.authenticating')}/></div>;
 
-    const uavList = (uavsQuery.data ?? []).slice(0, 6);
+    const fleet = uavsQuery.data ?? [];
+    const uavList = fleet.slice(0, 6);
     const activeUav = uavList.find(u => u.id === selectedUavId) ?? uavList[0];
+    const fixes = fleetTelemetry.data ?? [];
+    const live = fixes.filter(f => !f.stale);
+    const activeFix = activeUav ? fixes.find(f => f.uavId === activeUav.id) ?? null : null;
+    const statusCount = (status: string) => fleet.filter(u => u.status === status).length;
 
     return <AppShell activeResource="overview">
         <div className="w-full">
@@ -99,7 +114,7 @@ export default function HomePage() {
                             <MissionMetric label={t('opsMissions.overview.missions.inProgress')} value={count(missions?.inProgressMissions)}
                                            icon={<RadioTower size={15}/>} tone="blue"/>
                             <MissionMetric label={t('opsMissions.overview.missions.completed')} value={count(missions?.completedMissions)}
-                                           icon={<ShieldCheck size={15}/>} tone="green"/>
+                                           icon={<ShieldCheck size={15}/>} tone="blue"/>
                             <MissionMetric label={t('opsMissions.overview.missions.failed')} value={count(missions?.failedMissions)}
                                            icon={<Activity size={15}/>} tone="red"/>
                         </div>
@@ -138,7 +153,7 @@ export default function HomePage() {
                                     <td className="px-4 py-3.5 align-middle text-foreground"><StatusBadge status={uav.status}/></td>
                                     <td className="px-4 py-3.5 align-middle text-foreground">{uav.stationName || t('opsMissions.overview.fleet.unassigned')}</td>
                                     <td className="px-4 py-3.5 align-middle text-foreground">{uav.manufacturer}</td>
-                                    <td className="px-4 py-3.5 align-middle text-foreground"><Link href="/operations/uavs"
+                                    <td className="px-4 py-3.5 align-middle text-foreground"><Link href={`/operations/uavs?uav=${toUavSlug(uav)}`}
                                               className="text-xs font-semibold text-primary hover:underline">{t('opsMissions.overview.fleet.details')}</Link></td>
                                 </tr>)}</tbody>
                             </table>
@@ -157,32 +172,27 @@ export default function HomePage() {
                         </div>
                         <StatusBadge status={activeUav?.status ?? 'UNKNOWN'}/>
                     </div>
-                    <div
-                        className="relative flex min-h-[260px] items-center justify-center overflow-hidden rounded-lg border border-slate-700 bg-slate-900">
-                        <div
-                            className="pointer-events-none absolute flex h-[240px] w-[240px] items-center justify-center rounded-full border border-primary/30">
-                            <div className="h-[165px] w-[165px] rounded-full border border-dashed border-primary/25"/>
-                        </div>
-                        <div className="z-10 p-4 text-center">
-                            <div
-                                className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/40 bg-primary/20 shadow-lg shadow-primary/30">
-                                <PlaneTakeoff size={34} className="text-white"/>
-                            </div>
-                            <span
-                                className="block text-xs font-extrabold tracking-wider text-white">{t('opsMissions.overview.hud.frame')}</span>
-                            <span className="mt-0.5 block text-[11px] text-slate-400">{t('opsMissions.overview.hud.noTelemetry')}</span>
-                        </div>
-                        <span className="absolute left-2.5 top-2 tabular-nums text-[10px] font-bold text-primary">┌ HUD-01</span>
-                        <span className="absolute right-2.5 top-2 tabular-nums text-[10px] font-bold text-primary">┐ D-RTK</span>
-                        <span className="absolute bottom-2 left-2.5 tabular-nums text-[10px] font-bold text-primary">└ 5.8G</span>
-                        <span className="absolute bottom-2 right-2.5 tabular-nums text-[10px] font-bold text-primary">┘ 360°</span>
+                    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-slate-100">
+                        <HudValue label={t('opsMissions.overview.hud.battery')} value={activeFix?.batteryPct != null ? `${activeFix.batteryPct}%` : '—'}
+                                  tone={activeFix?.batteryPct != null && activeFix.batteryPct <= 25 ? 'text-primary' : undefined}/>
+                        <HudValue label={t('opsMissions.overview.hud.altitude')} value={activeFix?.altitudeAglMeters != null ? `${formatNumber(Math.round(activeFix.altitudeAglMeters))} m` : '—'}/>
+                        <HudValue label={t('opsMissions.overview.hud.speed')} value={activeFix?.groundSpeedMs != null ? `${formatNumber(Math.round(activeFix.groundSpeedMs * 10) / 10)} m/s` : '—'}/>
+                        <HudValue label="RTK" value={activeFix?.rtkStatus ?? '—'}/>
                     </div>
-                    <div
-                        className="mt-3 flex items-center justify-between border-t border-slate-200 pt-3 text-xs font-semibold">
-                        <span className="text-slate-500">{t('opsMissions.overview.hud.battery')} <strong className="text-emerald-600">—</strong></span>
-                        <span className="text-slate-500">{t('opsMissions.overview.hud.altitude')} <strong className="text-slate-900">—</strong></span>
-                        <span className="text-slate-500">RTK: <strong className="text-emerald-600">—</strong></span>
-                    </div>
+                    <p className={`mb-0 mt-2 text-[11px] ${!activeFix ? 'text-slate-500' : activeFix.stale ? 'text-amber-700' : 'text-uav-blue'}`}>
+                        {!activeUav ? t('opsMissions.overview.hud.noUav')
+                            : !activeFix ? t('opsMissions.overview.hud.noTelemetry')
+                                : t(activeFix.stale ? 'opsMissions.overview.hud.staleFix' : 'opsMissions.overview.hud.liveFix',
+                                    {seconds: formatNumber(activeFix.ageSeconds), lat: activeFix.latitude.toFixed(5), lng: activeFix.longitude.toFixed(5)})}
+                    </p>
+                    <dl className="m-0 mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-slate-200 pt-3 text-xs sm:grid-cols-3">
+                        <FleetCount label={t('opsMissions.overview.hud.liveCount')} value={canReadUavs ? `${formatNumber(live.length)}/${formatNumber(fleet.length)}` : '—'}/>
+                        <FleetCount label={t('opsMissions.overview.hud.available')} value={count(statusCount('AVAILABLE'))}/>
+                        <FleetCount label={t('opsMissions.overview.hud.flying')} value={count(statusCount('IN_USE'))}/>
+                        <FleetCount label={t('opsMissions.overview.hud.assigned')} value={count(statusCount('ASSIGNED'))}/>
+                        <FleetCount label={t('opsMissions.overview.hud.maintenance')} value={count(statusCount('MAINTENANCE'))}/>
+                        <FleetCount label={t('opsMissions.overview.hud.lowBattery')} value={count(live.filter(f => f.batteryPct != null && f.batteryPct <= 25).length)}/>
+                    </dl>
                     <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 text-xs">
                         <Link href="/operations/sar-cockpit" className="font-semibold text-primary hover:underline">{t('opsMissions.overview.hud.openSar')}</Link>
                         <Link href="/operations/uavs"
@@ -207,7 +217,7 @@ export default function HomePage() {
                             </tr>
                             </thead>
                             <tbody className="divide-y divide-border">{(stationsQuery.data ?? []).slice(0, 6).map(station => <tr key={station.id} className="transition-colors hover:bg-background">
-                                <td className="px-4 py-3.5 align-middle font-semibold text-foreground">{station.code}<span
+                                <td className="px-4 py-3.5 align-middle font-semibold text-foreground"><Link href={`/operations/stations?station=${toStationSlug(station)}`} className="hover:text-primary hover:underline">{station.code}</Link><span
                                     className="mt-0.5 block font-normal text-xs text-muted">{station.name}</span></td>
                                 <td className="px-4 py-3.5 align-middle text-foreground"><StatusBadge status={station.status}/></td>
                                 <td className="px-4 py-3.5 align-middle text-foreground">{station.address || '—'}</td>
@@ -231,13 +241,27 @@ export default function HomePage() {
     </AppShell>;
 }
 
+function HudValue({label, value, tone}: { label: string; value: string; tone?: string }) {
+    return <div className="bg-white p-3">
+        <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</span>
+        <strong className={`mt-0.5 block text-lg tabular-nums ${tone ?? 'text-slate-900'}`}>{value}</strong>
+    </div>;
+}
+
+function FleetCount({label, value}: { label: string; value: string }) {
+    return <div className="min-w-0">
+        <dt className="truncate text-slate-500">{label}</dt>
+        <dd className="m-0 font-bold tabular-nums text-slate-900">{value}</dd>
+    </div>;
+}
+
 function MissionMetric({label, value, icon, tone = 'slate'}: {
     label: string;
     value: string;
     icon: React.ReactNode;
-    tone?: 'slate' | 'blue' | 'green' | 'red'
+    tone?: 'slate' | 'blue' | 'red'
 }) {
-    const colors = {slate: 'text-slate-500', blue: 'text-blue-600', green: 'text-emerald-600', red: 'text-rose-600'};
+    const colors = {slate: 'text-slate-500', blue: 'text-uav-blue', red: 'text-rose-600'};
     return <div className="bg-white p-4">
         <div className={`mb-2 flex items-center gap-2 text-xs font-semibold ${colors[tone]}`}>{icon}{label}</div>
         <strong className="text-2xl tracking-tight text-slate-900">{value}</strong></div>;

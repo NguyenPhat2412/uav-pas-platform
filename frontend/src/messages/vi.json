@@ -38,6 +38,12 @@
     "vjuUniversity": "Đại học Việt Nhật",
     "dutyOfficer": "Trực ban VJU"
   },
+  "operationsNavGroups": {
+    "command": "Chỉ huy & Tác chiến",
+    "missions": "Điều phối nhiệm vụ",
+    "assets": "Trạm & Đội bay",
+    "monitoring": "Giám sát & Nhật ký"
+  },
   "operationsNav": {
     "overview": "Tổng quan",
     "sar": "Tác chiến AI & SAR",
@@ -63,6 +69,7 @@
     "users": "Người dùng",
     "accessControl": "Phân quyền",
     "roleTemplates": "Mẫu vai trò",
+    "roleMatrix": "Ma trận phân quyền",
     "permissions": "Danh mục quyền",
     "billing": "Gói cước & Hạn mức",
     "reports": "Báo cáo & Thống kê",

@@ -1,0 +1,190 @@
+{
+  "payment": {
+    "title": "VietQR銀行振込",
+    "close": "閉じる",
+    "loading": "支払い情報を準備しています…",
+    "loadError": "支払い情報を取得できませんでした。",
+    "qrError": "QRコードを生成できませんでした。表示された情報で振込できます。",
+    "qrAlt": "請求書{code}の支払い用VietQRコード",
+    "scanHint": "銀行アプリでQRコードを読み取ってください。金額と振込内容は自動入力されます。",
+    "alreadyPaid": "この請求書は支払済みです。",
+    "bank": "受取銀行",
+    "accountName": "口座名義",
+    "accountNumber": "口座番号",
+    "amount": "金額",
+    "content": "振込内容",
+    "copy": "{label}をコピー",
+    "copied": "{label}をコピーしました。",
+    "copyFailed": "ブラウザがコピーを許可しませんでした。手動でコピーしてください。",
+    "contentWarning": "照合とサービス有効化のため、振込内容は正確に入力してください。",
+    "breakdown": "請求明細",
+    "invoice": "請求書番号",
+    "item": "サービス",
+    "flightHours": "予定飛行時間",
+    "hours": "{count}時間",
+    "serviceFee": "サービス料（税抜）",
+    "vat": "付加価値税（{rate}%）",
+    "total": "お支払い合計",
+    "dates": "発行日 {issued} · 支払期限 {due}",
+    "confirmation": "運用センターが入金を確認すると「支払済み」になります。",
+    "print": "印刷 / PDF保存",
+    "printTitle": "UAV PAS サービス請求書",
+    "issuedOn": "発行日",
+    "dueOn": "支払期限",
+    "awaitingTransfer": "支払い待ち",
+    "awaitingTransferHint": "この請求書は支払い待ちです。経理部から振込案内が届き、入金確認後すぐにステータスが更新されます。"
+  },
+  "plans": {
+    "subscribe": "このプランを選ぶ",
+    "subscribing": "請求書を発行中…",
+    "changePlan": "プランを変更 →",
+    "subscribeConfirm": "{name}（{price}）に申し込みますか？請求書が発行され、入金確認後にプランが適用されます。",
+    "invoiceIssued": "請求書{code}を発行しました。お支払い後にプランが有効になります。",
+    "appliedFree": "無料プランをアカウントに適用しました。",
+    "subscribeFailed": "プランの申し込みに失敗しました。もう一度お試しください。"
+  },
+  "planner": {
+    "label": "飛行エリア計画マップ",
+    "takeoffHere": "現在地を離陸地点にする",
+    "toolLabel": "描画ツール",
+    "tool": {
+      "takeoff": "離着陸地点",
+      "polygon": "多角形を描く",
+      "circle": "半径エリア"
+    },
+    "undo": "最後の頂点を削除",
+    "clearArea": "飛行エリアを消去",
+    "basemap": "背景地図",
+    "basemaps": {
+      "streets": "道路地図 (OSM)",
+      "satellite": "衛星写真",
+      "terrain": "地形図"
+    },
+    "radius": "活動半径",
+    "ariaLabel": "飛行エリア計画マップ。クリックして離陸地点の設定やエリア頂点の追加を行います。",
+    "area": "飛行エリア面積",
+    "perimeter": "周長",
+    "center": "中心座標",
+    "takeoff": "離着陸地点 (H)",
+    "hint": {
+      "takeoff": "地図をクリックしてUAVの離着陸地点（LZ）を設定します。",
+      "POLYGON": "調査エリアの角を順にクリックします（3点以上）。",
+      "CIRCLE": "クリックで中心を選び、スライダーで半径（100〜2,000 m）を調整します。"
+    },
+    "errors": {
+      "flightAreaIncomplete": "地図上で飛行エリアを完成させてください（離陸地点、3点以上の多角形、または円）。",
+      "sensorRequired": "ペイロード／センサーを1つ以上選択してください。"
+    }
+  },
+  "flightSpec": {
+    "title": "飛行パラメータ",
+    "altitude": "飛行高度（AGL）",
+    "altitudeHint": "地上からの高さ。民間UAVの規定で最大120 mです。",
+    "gsd": "地上解像度（GSD）",
+    "gsdOption": {
+      "1_5": "1.5 cm/px — 高精細（点検・図化）",
+      "3_0": "3.0 cm/px — 標準測量",
+      "5_0": "5.0 cm/px — 広域撮影"
+    },
+    "forwardOverlap": "前方ラップ率",
+    "sideOverlap": "サイドラップ率",
+    "sensors": "必要なペイロードとセンサー",
+    "sensor": {
+      "RGB_4K": {
+        "name": "RGB 4K光学カメラ",
+        "detail": "オルソ画像、3Dモデル、工事監視"
+      },
+      "THERMAL": {
+        "name": "赤外線サーマルカメラ",
+        "detail": "捜索救助、太陽光パネル点検、ホットスポット"
+      },
+      "LIDAR": {
+        "name": "3D LiDARスキャン",
+        "detail": "樹冠下の地形、LAS点群"
+      },
+      "MULTISPECTRAL": {
+        "name": "マルチスペクトルセンサー",
+        "detail": "NDVI植生指数、精密農業"
+      }
+    },
+    "obstacles": "障害物と現場の安全",
+    "obstaclesPlaceholder": "例：北側の高圧線、高さ40 mの基地局、川沿いの高木…",
+    "permit": "飛行許可申請のサポートを依頼",
+    "permitDetail": "運用センターがこのエリアの飛行許可申請書類を作成・提出します。"
+  },
+  "enterprise": {
+    "title": "法人情報と請求書発行",
+    "edit": "更新",
+    "loading": "法人情報を読み込み中…",
+    "loadError": "法人情報を読み込めませんでした。",
+    "field": {
+      "organizationName": "組織・機関名",
+      "taxCode": "税番号（MST）",
+      "billingAddress": "VAT請求書の送付先住所",
+      "emergencyContactName": "現場の緊急連絡先",
+      "emergencyContactPhone": "緊急連絡先電話番号"
+    },
+    "taxCodeHint": "10桁、または10桁＋支店コード（例 0101234567-001）。",
+    "taxCodeInvalid": "税番号は10桁、または 0101234567-001 の形式で入力してください。",
+    "phoneInvalid": "数字・空白・ピリオド・ハイフンのみ（8〜20文字）。",
+    "empty": "未登録",
+    "invoiceNote": "VAT請求書に記載され、飛行チームが現場にいる間の連絡に使われます。",
+    "cancel": "キャンセル",
+    "save": "法人情報を保存",
+    "saving": "保存中…",
+    "saved": "法人情報を保存しました。",
+    "saveFailed": "法人情報を保存できませんでした。",
+    "conflict": "法人情報が別の場所で更新されました。最新版を読み込んだので、確認して再度保存してください。",
+    "accessTitle": "サービスプランとアカウント権限",
+    "role": "ロール",
+    "plan": "現在のプラン",
+    "hours": "使用飛行時間 / 上限",
+    "permissions": "保有権限（{count}件）"
+  },
+  "missionTabs": {
+    "label": "任務情報",
+    "monitoring": "飛行監視",
+    "weather": "天気",
+    "delivery": "データ納品",
+    "history": "履歴"
+  },
+  "missionMonitor": {
+    "live": "飛行中 · ライブデータ",
+    "phase": {
+      "live": "飛行データ待ち",
+      "planned": "飛行計画",
+      "ended": "飛行終了"
+    },
+    "updated": "{at} 更新",
+    "noUav": "UAVはまだ割り当てられていません。割り当て後に位置が表示されます。",
+    "beforeFlight": "離陸準備が整うとUAVの位置がライブ表示されます。",
+    "loading": "飛行データを読み込み中…",
+    "loadError": "飛行データを読み込めませんでした。後でもう一度お試しください。",
+    "waiting": "この任務のUAV位置はまだ送信されていません。",
+    "noTrack": "この飛行の位置データは記録されていません。",
+    "stale": "最終信号は {seconds} 秒前です。運用チームが通信を監視しています。",
+    "altitude": "高度",
+    "planned": "計画 {value}",
+    "speed": "速度",
+    "battery": "バッテリー",
+    "toArea": "区域中心まで",
+    "gnss": "測位",
+    "satellites": "衛星 {count} 基",
+    "age": "最終信号",
+    "seconds": "{count} 秒前",
+    "planTitle": "登録済みの飛行仕様",
+    "area": "飛行区域",
+    "overlap": "縦 / 横オーバーラップ",
+    "sensors": "センサー",
+    "areaType": {
+      "POINT": "地点",
+      "POLYGON": "多角形",
+      "CIRCLE": "円"
+    },
+    "flightArea": "飛行区域",
+    "takeoff": "離陸地点",
+    "uav": "UAV",
+    "noLocation": "この任務には地図上の位置がありません。",
+    "mapAria": "任務 {code} の監視マップ"
+  }
+}

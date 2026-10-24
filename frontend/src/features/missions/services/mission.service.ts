@@ -98,11 +98,4 @@ export const missionService = {
     timeline: (id: number) => apiClient.get<MissionEvent[]>(`${base}/${id}/timeline`),
     dashboard: () => apiClient.get<MissionDashboard>('/api/v1/dashboard/missions'),
     availability: (startTime: string, endTime: string) => apiClient.get<MissionAvailability>(`${base}/availability?startTime=${encodeURIComponent(startTime)}&endTime=${encodeURIComponent(endTime)}`),
-    sarGridGenerate: (payload: unknown) => apiClient.post(API_ROUTES.sar.gridGenerate, payload),
-    sarDetections: (missionId?: string) => apiClient.get(API_ROUTES.sar.detections(missionId)),
-    verifySarDetection: (detectionId: string, verified: boolean) => apiClient.patch(API_ROUTES.sar.verifyDetection(detectionId, verified)),
-    sendSarCommand: (uavId: string, payload: unknown) => apiClient.post(API_ROUTES.sar.command(uavId), payload),
-    aiModels: () => apiClient.get(API_ROUTES.ai.models),
-    activateAiModel: (modelId: string) => apiClient.post(API_ROUTES.ai.activateModel(modelId)),
-    aiInfer: (payload: unknown) => apiClient.post(API_ROUTES.ai.infer, payload),
 };

@@ -21,7 +21,7 @@ export default function CustomerNotificationsPage() {
             case 'WARNING':
                 return {className: 'bg-amber-50 border-amber-200 text-amber-700', label: t('notificationsPage.warning')};
             case 'SUCCESS':
-                return {className: 'bg-emerald-50 border-emerald-200 text-success', label: t('notificationsPage.done')};
+                return {className: 'bg-uav-blue-light border-blue-200 text-uav-blue', label: t('notificationsPage.done')};
             default:
                 return {className: 'bg-slate-100 border-slate-300 text-slate-700', label: t('notificationsPage.system')};
         }

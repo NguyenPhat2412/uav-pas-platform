@@ -9,13 +9,13 @@ import com.uav.platform.modules.notification.dto.request.CreateNotificationReque
 import com.uav.platform.modules.notification.enums.NotificationType;
 import com.uav.platform.modules.notification.service.NotificationService;
 import com.uav.platform.modules.sar.dto.request.AiTaskDispatchRequest;
+import com.uav.platform.modules.sar.dto.request.AiTaskResultRequest;
 import com.uav.platform.modules.sar.dto.request.VerifyDetectionRequest;
 import com.uav.platform.modules.sar.dto.response.AiDetectionResponse;
 import com.uav.platform.modules.sar.dto.response.AiTaskResponse;
 import com.uav.platform.modules.sar.entity.AiDetection;
 import com.uav.platform.modules.sar.entity.AiTask;
 import com.uav.platform.modules.sar.enums.AiTaskStatus;
-import com.uav.platform.modules.sar.enums.ProcessingNode;
 import com.uav.platform.modules.sar.enums.SarStatus;
 import com.uav.platform.modules.sar.mapper.SarMapper;
 import com.uav.platform.modules.sar.repository.AiDetectionRepository;
@@ -196,69 +196,8 @@ public class AiServiceImpl implements AiService {
                         request.processingNode(),
                         request.confidenceThreshold());
 
-        // Execute inference simulation (YOLOv8s-Int8 on KV260 Edge or Cloud GPU)
-        boolean isEdge = task.getProcessingNode() == ProcessingNode.KV260_EDGE;
-        task.setStatus(AiTaskStatus.COMPLETED);
-        task.setInferenceTimeMs(isEdge ? 35 : 18);
-        task.setFps(isEdge ? 28.6 : 55.4);
-        task.setDpuUtilization(isEdge ? 68.0 : null);
-        task.setSocTemperature(isEdge ? 54.2 : null);
-        task.setCompletedAt(LocalDateTime.now());
-
+        // Inference runs on the KV260 edge board or the cloud worker; it reports back via submitResults.
         AiTask savedTask = aiTaskRepository.save(task);
-
-        // Generate and persist detection candidates for this mission
-        double baseLat =
-                mission.getLatitude() != null ? mission.getLatitude().doubleValue() : 20.7284;
-        double baseLng =
-                mission.getLongitude() != null ? mission.getLongitude().doubleValue() : 107.0512;
-
-        AiDetection det1 =
-                new AiDetection(
-                        savedTask,
-                        mission,
-                        "Person (Nạn nhân)",
-                        0.94,
-                        38.0,
-                        42.0,
-                        9.0,
-                        16.0,
-                        baseLat,
-                        baseLng,
-                        "TRK-101");
-        AiDetection det2 =
-                new AiDetection(
-                        savedTask,
-                        mission,
-                        "Lifebuoy (Phao cứu sinh)",
-                        0.91,
-                        48.0,
-                        54.0,
-                        8.0,
-                        9.0,
-                        baseLat + 0.0002,
-                        baseLng + 0.0005,
-                        "TRK-102");
-
-        aiDetectionRepository.saveAll(List.of(det1, det2));
-
-        if (notificationService != null
-                && mission.getCustomer() != null
-                && mission.getCustomer().getId() != null) {
-            try {
-                notificationService.sendNotification(
-                        new CreateNotificationRequest(
-                                mission.getCustomer().getId(),
-                                "KV260 Edge AI Completed - Mission " + mission.getCode(),
-                                "Detected 2 high-confidence SAR candidates on "
-                                        + savedTask.getProcessingNode(),
-                                NotificationType.SAR_TARGET_FOUND,
-                                "MISSION",
-                                mission.getId()));
-            } catch (RuntimeException ignored) {
-            }
-        }
-
         return sarMapper.toAiTaskResponse(savedTask);
     }
 
@@ -296,6 +235,44 @@ public class AiServiceImpl implements AiService {
         return aiTaskRepository.findByMissionIdOrderByCreatedAtDesc(missionId).stream()
                 .map(sarMapper::toAiTaskResponse)
                 .toList();
+    }
+
+    @Override
+    public AiTaskResponse submitResults(Long taskId, AiTaskResultRequest request, Authentication authentication) {
+        AiTask task = aiTaskRepository.findById(taskId)
+                .orElseThrow(() -> SystemException.notFound("AI task not found with id: " + taskId));
+        if (task.getStatus() == AiTaskStatus.COMPLETED || task.getStatus() == AiTaskStatus.FAILED)
+            throw SystemException.conflict("AI_TASK_ALREADY_FINISHED");
+        boolean failed = "FAILED".equals(request.status());
+        task.setStatus(failed ? AiTaskStatus.FAILED : AiTaskStatus.COMPLETED);
+        task.setInferenceTimeMs(request.inferenceTimeMs());
+        task.setFps(request.fps());
+        task.setDpuUtilization(request.dpuUtilization());
+        task.setSocTemperature(request.socTemperature());
+        task.setErrorMessage(failed ? request.errorMessage() : null);
+        task.setCompletedAt(LocalDateTime.now());
+        AiTask saved = aiTaskRepository.save(task);
+
+        Mission mission = saved.getMission();
+        List<AiDetection> detections = failed || request.detections() == null ? List.of()
+                : request.detections().stream()
+                        .map(d -> new AiDetection(saved, mission, d.label().trim(), d.confidence(), d.boxTop(), d.boxLeft(),
+                                d.boxWidth(), d.boxHeight(), d.latitude(), d.longitude(), d.trackingId()))
+                        .toList();
+        aiDetectionRepository.saveAll(detections);
+
+        if (!detections.isEmpty() && notificationService != null && mission.getCustomer() != null
+                && mission.getCustomer().getId() != null) {
+            try {
+                notificationService.sendNotification(new CreateNotificationRequest(
+                        mission.getCustomer().getId(),
+                        "AI detections - Mission " + mission.getCode(),
+                        detections.size() + " candidate(s) reported by " + saved.getProcessingNode(),
+                        NotificationType.SAR_TARGET_FOUND, "MISSION", mission.getId()));
+            } catch (RuntimeException ignored) {
+            }
+        }
+        return sarMapper.toAiTaskResponse(saved);
     }
 
     @Override
@@ -348,23 +325,15 @@ public class AiServiceImpl implements AiService {
                 }
             }
             if (webhookService != null) {
-                webhookService.broadcastEvent(
-                        "SAR_EMERGENCY_TRIGGERED",
-                        Map.of(
-                                "detectionId", saved.getId() != null ? saved.getId() : detectionId,
-                                "missionId", mission.getId() != null ? mission.getId() : 0L,
-                                "label", saved.getLabel() != null ? saved.getLabel() : "Person",
-                                "confidence",
-                                        saved.getConfidence() != null
-                                                ? saved.getConfidence()
-                                                : 0.94,
-                                "latitude",
-                                        saved.getLatitude() != null ? saved.getLatitude() : 20.7284,
-                                "longitude",
-                                        saved.getLongitude() != null
-                                                ? saved.getLongitude()
-                                                : 107.0512,
-                                "verifiedBy", verifier));
+                Map<String, Object> data = new java.util.HashMap<>();
+                data.put("detectionId", saved.getId());
+                data.put("missionId", mission.getId());
+                data.put("label", saved.getLabel());
+                data.put("confidence", saved.getConfidence());
+                if (saved.getLatitude() != null) data.put("latitude", saved.getLatitude());
+                if (saved.getLongitude() != null) data.put("longitude", saved.getLongitude());
+                data.put("verifiedBy", verifier);
+                webhookService.broadcastEvent("SAR_EMERGENCY_TRIGGERED", data);
             }
         }
 

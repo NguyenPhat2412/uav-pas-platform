@@ -12,6 +12,9 @@ import {
 } from "@/features/profile/forms/profile-form";
 import {useCustomerProfile, useUpdateCustomerProfile} from "@/features/profile/hooks/profile-query";
 import {useI18n} from '@/contexts/I18nContext';
+import {toast} from '@/contexts/ToastContext';
+import {EnterpriseProfilePanel} from '@/features/profile/components/EnterpriseProfilePanel';
+import {AvatarEditor} from '@/features/profile/components/AvatarEditor';
 
 export function CustomerProfilePage() {
     const {user} = useAuth();
@@ -92,9 +95,11 @@ function Profile() {
             await update.mutateAsync(draft);
             setDraft(null);
             setSuccess(t('profile.saved'));
+            toast.success(t('profile.saved'));
         } catch (error) {
             const next = profileError(error, t);
             setFailure(next);
+            toast.error(next.message);
             if (next.kind === 'phone') setErrors({phoneNumber: next.message});
             requestAnimationFrame(() => message.current?.focus());
         }
@@ -110,10 +115,11 @@ function Profile() {
             </div>
         </div>
         <div className="grid gap-5 sm:gap-6 max-w-[960px]">
+            <AvatarEditor name={profile?.fullName || user?.fullName || user?.username || ''}/>
             <Panel title={t('profile.personalInfo')} action={!draft && profile ?
                 <Button variant="secondary" onClick={() => edit(profile)}>{t('profile.edit')}</Button> : undefined}>
                 {success && (
-                    <div className="bg-emerald-50 text-emerald-800 rounded-lg px-3.5 py-3 mb-5 text-sm font-medium" role="status">
+                    <div className="bg-uav-blue-light text-uav-blue rounded-lg px-3.5 py-3 mb-5 text-sm font-medium border border-blue-200" role="status">
                         {success}
                     </div>
                 )}
@@ -251,6 +257,7 @@ function Profile() {
                 </dl>
                 <p className="mt-6 mb-0 text-sm text-slate-500">{t('profile.readonlyNote')}</p>
             </Panel>
+            <EnterpriseProfilePanel/>
         </div>
     </>;
 }

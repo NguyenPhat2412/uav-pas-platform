@@ -38,6 +38,12 @@
     "vjuUniversity": "日越大学",
     "dutyOfficer": "VJU 当直幹部"
   },
+  "operationsNavGroups": {
+    "command": "作戦指揮・管制",
+    "missions": "ミッション管理",
+    "assets": "基地局・機体管理",
+    "monitoring": "監視・ログ"
+  },
   "operationsNav": {
     "overview": "概要",
     "sar": "AI & SAR 作戦管制",
@@ -63,6 +69,7 @@
     "users": "ユーザー",
     "accessControl": "アクセス権限",
     "roleTemplates": "ロールテンプレート",
+    "roleMatrix": "ロールマトリックス",
     "permissions": "権限一覧",
     "billing": "プラン・クォータ",
     "reports": "レポート・統計",

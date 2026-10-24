@@ -2,20 +2,40 @@
 
 import {UavIcon} from '@/components/shared/UavIcon';
 import React, {useState} from 'react';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {BankTransferDialog} from '@/features/billing/components/BankTransferDialog';
+import {bankTransferService} from '@/features/billing/services/bank-transfer.service';
+import {toast} from '@/contexts/ToastContext';
+import {useCustomerScope} from '@/lib/query/customer';
 import {displayLabel, planName} from "@/components/shared/presentation";
-import {AlertCircle, CheckCircle, Clock, CreditCard, FileText, Radar, X} from 'lucide-react';
+import {AlertCircle, CheckCircle, Clock, CreditCard, FileText, Radar} from 'lucide-react';
 import {PageGuard} from "@/components/customer/layout";
 import {useBilling} from "@/lib/query/customer";
 import {ServicePlanCards} from '@/features/billing/components/ServicePlanCard';
 import type {Invoice} from "@/types/customer";
 import {useI18n} from '@/contexts/I18nContext';
 
-// Endpoints: /api/v1/billing/my-quota, /api/v1/billing/my-invoices
-// Provider integration is unavailable until explicitly configured.
+// Plan changes create a plan invoice; paying it (VietQR / NAPAS 247) applies the plan to the quota.
 
 export default function CustomerBillingPage() {
     const {quota: quotaQuery, invoices: invoicesQuery, plans: plansQuery} = useBilling();
     const [payingInvoice, setPayingInvoice] = useState<Invoice | null>(null);
+    const {key} = useCustomerScope();
+    const client = useQueryClient();
+    const transfer = useQuery({queryKey: [...key, 'billing', 'bank-transfer'], queryFn: ({signal}) => bankTransferService.status(signal)});
+    const subscribe = useMutation({
+        mutationFn: (code: string) => bankTransferService.subscribe(code),
+        onSuccess: async invoice => {
+            await client.invalidateQueries({queryKey: [...key, 'billing']});
+            if (!invoice) {
+                toast.success(t('plans.appliedFree'));
+            } else {
+                toast.success(t('plans.invoiceIssued', {code: invoice.code}));
+                if (transfer.data?.enabled) setPayingInvoice(invoice);
+            }
+        },
+        onError: error => toast.error(error instanceof Error ? error.message : t('plans.subscribeFailed')),
+    });
     const {t, formatDate: formatLocalDate, formatCurrency} = useI18n();
     const formatDate = (value?: string) => value ? formatLocalDate(value, {dateStyle: 'short'}) : '—';
     const quota = quotaQuery.data;
@@ -64,7 +84,7 @@ export default function CustomerBillingPage() {
 
                 {/* Quota & Plan Overview Cards */}
                 {quota && (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div data-testid="my-quota" className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                         {/* Card 1: Current Plan */}
                         <div className="bg-gradient-to-br from-primary-hover to-primary text-primary-foreground rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden min-h-[220px]">
                             <div className="absolute -top-2.5 -right-2.5 opacity-15 pointer-events-none text-white">
@@ -132,7 +152,7 @@ export default function CustomerBillingPage() {
                                         <span className="flex items-center gap-1.5 text-slate-700">
                                             <Radar size={15} aria-hidden="true"/> {t('billingPage.sarAi')}
                                         </span>
-                                        <span className="bg-emerald-50 text-success text-[11px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1 border border-emerald-200">
+                                        <span className="bg-uav-blue-light text-uav-blue text-[11px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1 border border-blue-200">
                                             {currentPlan ? t(currentPlan.allowSarAi ? 'billingPage.yes' : 'billingPage.no') : '—'}
                                         </span>
                                     </li>
@@ -155,7 +175,7 @@ export default function CustomerBillingPage() {
                                 </ul>
                             </div>
 
-                            <p className="m-0 text-xs text-slate-500 leading-relaxed">{t('billingPage.upgradeUnavailable')}</p>
+                            <a href="#available-plans-title" className="text-xs font-bold text-primary hover:underline">{t('plans.changePlan')}</a>
                         </div>
                     </div>
                 )}
@@ -175,13 +195,16 @@ export default function CustomerBillingPage() {
                                     {t('common.retry')}
                                 </button>
                             </p>
-                        ) : <ServicePlanCards plans={plansList} currentPlanCode={quota?.planCode}/>}
+                        ) : <ServicePlanCards plans={plansList} currentPlanCode={quota?.planCode} pendingCode={subscribe.isPending ? subscribe.variables : null}
+                                              onSelect={plan => {
+                                                  if (window.confirm(t('plans.subscribeConfirm', {name: planName(plan.name), price: formatCurrency(plan.price)}))) subscribe.mutate(plan.code);
+                                              }}/>}
                     {plansQuery.isSuccess && plansList.length === 0 && (
                         <p className="text-[13px] text-slate-500">{t('billingPage.noPlans')}</p>
                     )}
                 </section>
                 {/* Invoices Table */}
-                <div className="bg-card border border-border rounded-2xl shadow-xs overflow-hidden">
+                <div data-testid="my-invoices" className="bg-card border border-border rounded-2xl shadow-xs overflow-hidden">
                     <div className="px-6 py-4 border-b border-border flex justify-between items-center gap-3 flex-wrap">
                         <h2 className="m-0 text-base font-extrabold text-slate-900 flex items-center gap-2">
                             <FileText size={20} className="text-slate-500"/> {t('billingPage.invoiceHistory')}
@@ -217,7 +240,7 @@ export default function CustomerBillingPage() {
                                     <td className="px-5 py-4 text-slate-700 text-xs">
                                         <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold border ${
                                             inv.status === 'PAID'
-                                                ? 'bg-emerald-50 text-success border-emerald-200'
+                                                ? 'bg-uav-blue-light text-uav-blue border-blue-200'
                                                 : 'bg-amber-50 text-amber-700 border-amber-200'
                                         }`}>
                                             {inv.status === 'PAID' ? <CheckCircle size={12}/> : <Clock size={12}/>}
@@ -225,7 +248,7 @@ export default function CustomerBillingPage() {
                                         </span>
                                     </td>
                                     <td className="px-5 py-4 text-right">
-                                        {inv.status === 'PENDING' ? (
+                                        {inv.status === 'PENDING' && transfer.data?.enabled ? (
                                             <button
                                                 type="button"
                                                 onClick={() => setPayingInvoice(inv)}
@@ -233,6 +256,8 @@ export default function CustomerBillingPage() {
                                             >
                                                 {t('billingPage.viewPayment')}
                                             </button>
+                                        ) : inv.status === 'PENDING' ? (
+                                            <span className="text-xs text-slate-500" title={t('payment.awaitingTransferHint')}>{t('payment.awaitingTransfer')}</span>
                                         ) : (
                                             <span className="text-xs text-slate-400">
                                                 {formatDate(inv.paidAt)}
@@ -251,29 +276,10 @@ export default function CustomerBillingPage() {
                     )}
                 </div>
 
-                {payingInvoice && (
-                    <div className="fixed inset-0 z-50 bg-slate-900/65 backdrop-blur-xs flex items-center justify-center p-4">
-                        <div className="bg-card rounded-[18px] max-w-[440px] w-full p-6 shadow-2xl border border-border space-y-3 text-sm text-card-foreground" role="dialog" aria-modal="true"
-                             aria-labelledby="payment-title">
-                            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-                                <h3 id="payment-title" className="m-0 font-extrabold text-slate-900 text-[17px] flex items-center gap-2">
-                                    {t('billingPage.paymentInfo')}
-                                </h3>
-                                <button
-                                    type="button"
-                                    aria-label={t('billingPage.closePayment')}
-                                    onClick={() => setPayingInvoice(null)}
-                                    className="border-0 bg-transparent cursor-pointer text-slate-400 hover:bg-slate-100 hover:text-slate-600 p-1 flex items-center rounded-md transition-colors"
-                                >
-                                    <X size={18}/>
-                                </button>
-                            </div>
-                            <p className="m-0">{t('billingPage.invoiceAmount', {code: payingInvoice.code, amount: formatCurrency(payingInvoice.amount)})}</p>
-                            <p role="status" className="m-0 text-slate-600">{t('billingPage.gatewayNotice')}</p>
-                            <p className="m-0 text-slate-500 text-xs">{t('billingPage.hoursNotice')}</p>
-                        </div>
-                    </div>
-                )}
+                {payingInvoice && <BankTransferDialog invoiceId={payingInvoice.id} onClose={() => {
+                    setPayingInvoice(null);
+                    void client.invalidateQueries({queryKey: [...key, 'billing']});
+                }}/>}
             </div>
         </PageGuard>
     );

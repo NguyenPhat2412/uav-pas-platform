@@ -6,6 +6,7 @@ import {Button, Card, CardContent, CardHeader, CardTitle, Input, Spinner} from '
 import {displayLabel} from "@/components/shared/presentation";
 import {Mission} from "@/features/missions/types/mission.types";
 import {MissionStatusBadge} from "@/features/missions/components/MissionStatusBadge";
+import {toMissionSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
 
 export function MissionList({
@@ -42,7 +43,7 @@ export function MissionList({
                 <p className="p-6 text-danger">{error}</p> : missions.length === 0 ?
                     <p className="p-8 text-center text-muted">{t('opsMissions.list.empty')}</p> :
                     <div className="divide-y divide-border">{missions.map((mission) => <Link key={mission.id}
-                                                                                                href={`/operations/missions/${mission.id}`}
+                                                                                                href={`/operations/missions/${toMissionSlug(mission)}`}
                                                                                                 className="block p-5 transition-colors hover:bg-background">
                         <div className="flex flex-wrap items-center justify-between gap-3">
                             <div><p className="text-xs font-semibold text-primary">{mission.code}</p><h3

@@ -1,5 +1,6 @@
 package com.uav.platform.modules.dashboard.service.impl;
 
+import com.uav.platform.modules.billing.service.BankTransferService;
 import com.uav.platform.modules.dashboard.dto.record.HealthCheckResult;
 import com.uav.platform.modules.dashboard.dto.response.SystemHealthResponse;
 import com.uav.platform.modules.dashboard.dto.response.SystemHealthResponse.Component;
@@ -35,11 +36,12 @@ public class SystemHealthServiceImpl implements SystemHealthService {
     private final ObjectStorageService storage;
     private final WebhookDeliveryLogRepository deliveries;
     private final FinancialOutboxRepository outbox;
+    private final BankTransferService bankTransfer;
 
     @Override
     public SystemHealthResponse check() {
         LocalDateTime now = LocalDateTime.now();
-        List<Component> components = List.of(database(), storage(), webhooks(now), outbox(now));
+        List<Component> components = List.of(database(), storage(), webhooks(now), outbox(now), payments());
         return new SystemHealthResponse(overall(components), now, components, runtime());
     }
 
@@ -102,6 +104,17 @@ public class SystemHealthServiceImpl implements SystemHealthService {
             details.put("lagging", lagging);
             details.put("failed", failed);
             return new HealthCheckResult(lagging > 0 || failed > 0 ? "DEGRADED" : "UP", details);
+        });
+    }
+
+    /** Bank transfer is optional; without a receiving account customers simply cannot pay by VietQR. */
+    private Component payments() {
+        return timed("payments", () -> {
+            Map<String, Object> details = new LinkedHashMap<>();
+            var status = bankTransfer.status();
+            details.put("bankTransfer", status.enabled() ? "ENABLED" : "NOT_CONFIGURED");
+            if (status.bankName() != null && !status.bankName().isBlank()) details.put("bank", status.bankName());
+            return new HealthCheckResult(status.enabled() ? "UP" : "DEGRADED", details);
         });
     }
 

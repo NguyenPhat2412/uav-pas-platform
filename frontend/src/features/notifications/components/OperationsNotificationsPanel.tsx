@@ -41,7 +41,7 @@ export default function NotificationsPage() {
                         <button
                             type="button"
                             onClick={markAllRead} disabled={busy || loading}
-                            className="flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-success border border-emerald-200 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
+                            className="flex items-center gap-2 px-4 py-2 bg-uav-blue-light hover:bg-blue-100 text-uav-blue border border-blue-200 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
                         >
                             <CheckCheck size={16}/> {t('opsMissions.notifications.markAll', {count: unreadCount})}
                         </button>
@@ -134,7 +134,7 @@ export default function NotificationsPage() {
                                     )}
                                     {item.type === 'SUCCESS' && (
                                         <div
-                                            className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-success">
+                                            className="w-9 h-9 rounded-xl bg-uav-blue-light border border-blue-200 flex items-center justify-center text-uav-blue">
                                             <CheckCircle2 size={20}/>
                                         </div>
                                     )}

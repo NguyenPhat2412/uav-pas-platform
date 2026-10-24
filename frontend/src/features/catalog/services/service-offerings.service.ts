@@ -1,12 +1,13 @@
 import {apiClient} from '@/lib/api';
-import type {ServiceOffering, ServiceOfferingInput} from '@/features/catalog/types/service-offering.types';
-
-const base = '/api/v1/uav-services';
+import {API_ROUTES} from '@/lib/api/routes';
+import type {ServiceOffering, ServiceOfferingInput, ServiceOfferingUpdate} from '@/features/catalog/types/service-offering.types';
 
 export const serviceOfferingsService = {
     /** Includes deactivated services; the customer catalog only ever sees active ones. */
-    all: (signal?: AbortSignal) => apiClient.get<ServiceOffering[]>(`${base}/all`, {signal}),
-    create: (input: ServiceOfferingInput) => apiClient.post<ServiceOffering>(base, input),
-    update: (id: number, input: Omit<ServiceOfferingInput, 'code'>) => apiClient.put<ServiceOffering>(`${base}/${id}`, input),
-    setActive: (id: number, active: boolean) => apiClient.patch<ServiceOffering>(`${base}/${id}/active?active=${active}`),
+    all: (signal?: AbortSignal) => apiClient.get<ServiceOffering[]>(API_ROUTES.uavServices.all, {signal}),
+    create: (input: ServiceOfferingInput) => apiClient.post<ServiceOffering>(API_ROUTES.uavServices.list, input),
+    update: (id: number, input: ServiceOfferingUpdate) =>
+        apiClient.put<ServiceOffering>(API_ROUTES.uavServices.detail(id), input),
+    setActive: (id: number, active: boolean) =>
+        apiClient.patch<ServiceOffering>(API_ROUTES.uavServices.setActive(id, active)),
 };
