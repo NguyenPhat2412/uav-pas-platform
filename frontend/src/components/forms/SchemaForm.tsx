@@ -51,7 +51,7 @@ export function SchemaForm({schema, fields, defaults, onSubmit, busy, error, sub
                         const fieldId = `${id}-${field.name}`;
                         const fieldError = errors[field.name];
                         const inputClass =
-                            'w-full min-h-11 rounded-none border border-border-input bg-card px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20 aria-[invalid=true]:border-danger';
+                            'w-full min-h-11 rounded-control border border-border-input bg-card px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20 aria-[invalid=true]:border-danger';
                         return (
                             <div
                                 className={field.type === 'textarea' ? 'flex flex-col gap-1.5 sm:col-span-2' : 'flex flex-col gap-1.5'}

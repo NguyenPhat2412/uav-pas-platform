@@ -66,7 +66,7 @@ export function LoginForm() {
                 disabled={busy}
             />
             {error && (
-                <div className="rounded-none border border-red-200 bg-red-50 p-3.5 text-sm font-medium text-danger" role="alert">
+                <div className="rounded-panel border border-red-200 bg-red-50 p-3.5 text-sm font-medium text-danger" role="alert">
                     {error}
                 </div>
             )}

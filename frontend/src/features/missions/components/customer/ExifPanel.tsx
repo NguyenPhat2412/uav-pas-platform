@@ -44,7 +44,7 @@ export function ExifPanel({url, cacheKey}: { url: string; cacheKey: number }) {
     const mapLink = data?.latitude != null && data?.longitude != null
         ? `https://www.openstreetmap.org/?mlat=${data.latitude}&mlon=${data.longitude}#map=17/${data.latitude}/${data.longitude}` : undefined;
 
-    return <aside className="w-full max-w-sm rounded-none bg-black/50 p-4 text-sm" aria-label={t('exif.title')}
+    return <aside className="w-full max-w-sm rounded-panel bg-black/50 p-4 text-sm" aria-label={t('exif.title')}
                   onClick={event => event.stopPropagation()}>
         <h3 className="m-0 mb-3 text-sm font-bold">{t('exif.title')}</h3>
         {exif.isPending ? <p className="m-0 text-white/70" role="status">{t('common.loading')}</p>

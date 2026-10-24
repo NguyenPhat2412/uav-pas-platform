@@ -19,9 +19,9 @@ function ErrorFallback({title, message, onReset}: { title?: string; message?: st
     const {t} = useI18n();
     return (
         <div
-            className="rounded-none border border-l-4 border-red-200 border-l-primary bg-red-50/60 p-6 text-center text-slate-800 flex flex-col items-center justify-center min-h-[220px]">
+            className="rounded-panel border border-l-4 border-red-200 border-l-primary bg-red-50/60 p-6 text-center text-slate-800 flex flex-col items-center justify-center min-h-[220px]">
             <div
-                className="w-12 h-12 rounded-none bg-uav-red-light border border-red-200 text-primary flex items-center justify-center mb-3">
+                className="w-12 h-12 rounded-panel bg-uav-red-light border border-red-200 text-primary flex items-center justify-center mb-3">
                 <AlertTriangle size={24}/>
             </div>
             <h4 className="text-sm font-bold text-slate-900 mb-1">
@@ -33,7 +33,7 @@ function ErrorFallback({title, message, onReset}: { title?: string; message?: st
             <button
                 type="button"
                 onClick={onReset}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-none border border-slate-200 transition cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-control border border-slate-200 transition cursor-pointer"
             >
                 <RotateCcw size={13}/> {t('opsShared.errorBoundary.reset')}
             </button>

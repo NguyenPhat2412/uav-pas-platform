@@ -216,7 +216,7 @@ export function AppShell({children}: { children: React.ReactNode }) {
                         <button
                             ref={menuButton}
                             type="button"
-                            className="lg:hidden inline-flex h-8 w-8 items-center justify-center rounded-none border border-border text-slate-700 hover:bg-slate-100"
+                            className="lg:hidden inline-flex h-8 w-8 items-center justify-center rounded-control border border-border text-slate-700 hover:bg-slate-100"
                             aria-label={t('shell.openNavigation')}
                             aria-controls="customer-navigation"
                             aria-expanded={open}

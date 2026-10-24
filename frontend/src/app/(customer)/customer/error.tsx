@@ -17,7 +17,7 @@ export default function CustomerErrorPage({
             <Panel
                 title={t('opsShared.routes.customer.errorTitle')}
                 action={
-                    <span className="rounded-none border border-red-200 bg-uav-red-light px-2.5 py-1 text-[11px] font-bold text-primary">
+                    <span className="rounded-panel border border-red-200 bg-uav-red-light px-2.5 py-1 text-[11px] font-bold text-primary">
                         {error?.code || (error?.status ? `HTTP_${error.status}` : 'CLIENT_EXCEPTION')}
                     </span>
                 }

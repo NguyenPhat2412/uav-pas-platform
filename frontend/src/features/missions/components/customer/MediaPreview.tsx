@@ -30,7 +30,7 @@ export function MediaPreview({items}: { items: MissionMedia[] }) {
         <ul className="m-0 mb-4 grid list-none grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2.5 p-0" aria-label={t('media.previewLabel')}>{images.map((item, index) => {
             const url = urls[index]?.data?.url;
             return <li key={item.id}>
-                <button type="button" className="grid aspect-4/3 w-full cursor-zoom-in place-items-center overflow-hidden rounded-none border border-border bg-background p-0 text-xs text-muted disabled:cursor-default" onClick={() => setOpen(item.media.id)} disabled={!url}
+                <button type="button" className="grid aspect-4/3 w-full cursor-zoom-in place-items-center overflow-hidden rounded-control border border-border bg-background p-0 text-xs text-muted disabled:cursor-default" onClick={() => setOpen(item.media.id)} disabled={!url}
                         aria-label={t('media.viewImage', {name: item.media.originalName})}>
                     {url ? <img src={url} alt={item.media.originalName} loading="lazy" className="h-full w-full object-cover"/> :
                         <span>{urls[index]?.isError ? t('media.loadFailed') : t('media.loading')}</span>}
@@ -40,12 +40,12 @@ export function MediaPreview({items}: { items: MissionMedia[] }) {
         {active != null && active >= 0 && urls[active]?.data?.url &&
             <div className="fixed inset-0 z-100 flex flex-col items-center justify-center gap-3 bg-black/80 px-4 pt-12 pb-6 text-white" role="dialog" aria-modal="true" aria-label={images[active].media.originalName}
                  onClick={() => setOpen(null)} onKeyDown={event => event.key === 'Escape' && setOpen(null)}>
-                <button type="button" className="absolute top-3 right-3 inline-flex size-11 items-center justify-center rounded-none border border-white/20 bg-white/15 text-white hover:bg-white/25" aria-label={t('common.close')} autoFocus
+                <button type="button" className="absolute top-3 right-3 inline-flex size-11 items-center justify-center rounded-control border border-white/20 bg-white/15 text-white hover:bg-white/25" aria-label={t('common.close')} autoFocus
                         onClick={() => setOpen(null)}><X size={20}/></button>
                 <div className="flex max-h-[calc(100vh-80px)] w-full max-w-6xl flex-col items-center gap-4 overflow-y-auto md:flex-row md:items-start md:justify-center">
                     <div className="flex min-w-0 flex-col items-center gap-3">
                         <img src={urls[active].data!.url} alt={images[active].media.originalName}
-                             className="max-h-[calc(100vh-140px)] max-w-full rounded-none object-contain"
+                             className="max-h-[calc(100vh-140px)] max-w-full rounded-panel object-contain"
                              onClick={event => event.stopPropagation()}/>
                         <p className="m-0 text-sm">{images[active].media.originalName}</p>
                     </div>

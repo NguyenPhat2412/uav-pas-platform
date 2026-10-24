@@ -74,12 +74,12 @@ export function DataTable<T extends { id: number }>({
     const namedColumns = table.getAllLeafColumns().filter(column => column.getCanHide());
     const headers = useMemo(() => new Map(columns.map(column => [column.id || ('accessorKey' in column ? String(column.accessorKey) : ''), typeof column.header === 'string' ? column.header : ''])), [columns]);
     return (
-        <section className="rounded-none border border-border bg-card overflow-hidden" aria-label={label}>
+        <section className="rounded-panel border border-border bg-card overflow-hidden" aria-label={label}>
             <div className="flex flex-wrap items-center gap-2.5 border-b border-border bg-slate-50/60 p-3.5">
                 <label className="relative flex min-w-[200px] flex-1 items-center">
                     <Search size={16} className="pointer-events-none absolute left-3 text-slate-400"/>
                     <input
-                        className="h-9 w-full rounded-none border border-border-input bg-card pl-9 pr-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20"
+                        className="h-9 w-full rounded-control border border-border-input bg-card pl-9 pr-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20"
                         aria-label={searchLabel || `${t('console.table.search')} ${label}`}
                         placeholder={`${t('console.table.search')}…`}
                         value={search}
@@ -93,7 +93,7 @@ export function DataTable<T extends { id: number }>({
                     <label key={filter.column} className="inline-flex items-center">
                         <span className="sr-only">{filter.label}</span>
                         <select
-                            className="h-9 rounded-none border border-border-input bg-card px-3 text-xs font-semibold text-slate-700 outline-none focus:border-primary"
+                            className="h-9 rounded-control border border-border-input bg-card px-3 text-xs font-semibold text-slate-700 outline-none focus:border-primary"
                             aria-label={filter.label}
                             value={String(table.getColumn(filter.column)?.getFilterValue() || '')}
                             onChange={event => {
@@ -108,7 +108,7 @@ export function DataTable<T extends { id: number }>({
                 ))}
                 <button
                     type="button"
-                    className="inline-flex h-9 items-center rounded-none border border-border-input bg-card px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                    className="inline-flex h-9 items-center rounded-control border border-border-input bg-card px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
                     aria-pressed={density === 'compact'}
                     onClick={() => setDensity(value => value === 'standard' ? 'compact' : 'standard')}
                 >
@@ -116,17 +116,17 @@ export function DataTable<T extends { id: number }>({
                 </button>
                 <details className="relative">
                     <summary
-                        className="inline-flex h-9 list-none items-center gap-1.5 rounded-none border border-border-input bg-card px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                        className="inline-flex h-9 list-none items-center gap-1.5 rounded-control border border-border-input bg-card px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
                         aria-label={t('console.table.columns')}
                     >
                         <SlidersHorizontal size={15}/> {t('console.table.columns')}
                     </summary>
-                    <div className="absolute right-0 z-30 mt-1.5 w-48 space-y-1.5 rounded-none border border-border bg-card p-3 shadow-lg">
+                    <div className="absolute right-0 z-30 mt-1.5 w-48 space-y-1.5 rounded-overlay border border-border bg-card p-3 shadow-lg">
                         {namedColumns.map(column => (
                             <label key={column.id} className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    className="rounded-none border-border-input text-primary focus:ring-ring"
+                                    className="rounded-control border-border-input text-primary focus:ring-ring"
                                     checked={column.getIsVisible()}
                                     onChange={column.getToggleVisibilityHandler()}
                                 />
@@ -224,7 +224,7 @@ export function DataTable<T extends { id: number }>({
                     <label className="inline-flex items-center gap-1.5">
                         {t('console.table.showing')}
                         <select
-                            className="h-8 rounded-none border border-border-input bg-card px-2 text-xs font-semibold text-slate-700"
+                            className="h-8 rounded-control border border-border-input bg-card px-2 text-xs font-semibold text-slate-700"
                             aria-label={t('console.table.rowsPerPage')}
                             value={pagination.pageSize}
                             onChange={event => table.setPageSize(Number(event.target.value))}

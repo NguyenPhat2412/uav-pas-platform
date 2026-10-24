@@ -61,17 +61,17 @@ export function TrendChart({labels, series, ariaLabel, format = String}: {
                                          className="stroke-white stroke-2 [vector-effect:non-scaling-stroke]"/>)}
             </g>}
         </svg>
-        {hover !== null && <div className="pointer-events-none absolute top-1 z-10 grid min-w-[150px] -translate-x-1/2 gap-0.5 rounded-none border border-border bg-card px-2.5 py-2 text-xs text-foreground shadow-lg" role="tooltip"
+        {hover !== null && <div className="pointer-events-none absolute top-1 z-10 grid min-w-[150px] -translate-x-1/2 gap-0.5 rounded-overlay border border-border bg-card px-2.5 py-2 text-xs text-foreground shadow-lg" role="tooltip"
                                 style={{left: `${(x(hover) / W) * 100}%`}}>
             <strong>{labels[hover]}</strong>
-            {series.map(s => <span key={s.key} className="flex items-center gap-1.5 text-muted"><i className="inline-block h-2.5 w-2.5 rounded-none" style={{background: s.color}}/>{s.label}: {format(s.values[hover] ?? 0)}</span>)}
+            {series.map(s => <span key={s.key} className="flex items-center gap-1.5 text-muted"><i className="inline-block h-2.5 w-2.5 rounded-panel" style={{background: s.color}}/>{s.label}: {format(s.values[hover] ?? 0)}</span>)}
         </div>}
     </div>;
 }
 
 export function Legend({items}: { items: { label: string; color: string; dashed?: boolean }[] }) {
     return <ul className="m-0 flex list-none flex-wrap gap-x-3.5 gap-y-1.5 p-0 text-xs text-muted">{items.map(item => <li key={item.label} className="inline-flex items-center gap-1.5">
-        <span className={cn('inline-block', item.dashed ? 'h-0 w-3.5 rounded-none border-t-2 border-dashed' : 'h-2.5 w-2.5 rounded-none')} style={{background: item.dashed ? undefined : item.color, borderColor: item.color}}
+        <span className={cn('inline-block', item.dashed ? 'h-0 w-3.5 rounded-panel border-t-2 border-dashed' : 'h-2.5 w-2.5 rounded-panel')} style={{background: item.dashed ? undefined : item.color, borderColor: item.color}}
               aria-hidden="true"/>{item.label}</li>)}</ul>;
 }
 
@@ -79,13 +79,13 @@ export function Legend({items}: { items: { label: string; color: string; dashed?
 export function SegmentBar({items, ariaLabel}: { items: { label: string; value: number; color: string }[]; ariaLabel: string }) {
     const total = items.reduce((sum, item) => sum + item.value, 0);
     return <div className="w-full">
-        <div className="flex h-3.5 gap-0.5 overflow-hidden rounded-none bg-slate-100" role="img" aria-label={ariaLabel}>
+        <div className="flex h-3.5 gap-0.5 overflow-hidden rounded-panel bg-slate-100" role="img" aria-label={ariaLabel}>
             {total > 0 ? items.filter(i => i.value > 0).map(item =>
                 <span key={item.label} style={{flexGrow: item.value, background: item.color}} title={`${item.label}: ${item.value}`}/>) :
                 <span className="flex-1"/>}
         </div>
         <ul className="m-0 mt-3.5 list-none p-0">{items.map(item => <li key={item.label} className="grid grid-cols-[12px_1fr_auto_40px] items-center gap-2.5 border-b border-dashed border-border py-1.5 text-[13px] last:border-b-0">
-            <span className="h-2.5 w-2.5 rounded-none" style={{background: item.color}} aria-hidden="true"/>
+            <span className="h-2.5 w-2.5 rounded-panel" style={{background: item.color}} aria-hidden="true"/>
             <span className="text-muted">{item.label}</span>
             <strong>{item.value}</strong>
             <small className="text-right text-slate-400">{total ? Math.round(item.value / total * 100) : 0}%</small>
@@ -102,7 +102,7 @@ export function BarList({items, format = String, color = seriesColors.blue}: {
     const peak = Math.max(1, ...items.map(i => i.value));
     return <ul className="m-0 grid list-none gap-3 p-0">{items.map(item => <li key={item.label} className="grid grid-cols-[minmax(90px,140px)_1fr_auto] items-center gap-2.5 text-[13px]">
         <span className="truncate text-muted" title={item.label}>{item.label}</span>
-        <span className="h-2.5 rounded-none bg-border"><span className="block h-full min-w-[4px] rounded-none" style={{width: `${(item.value / peak) * 100}%`, background: color}}/></span>
+        <span className="h-2.5 rounded-full bg-border"><span className="block h-full min-w-[4px] rounded-full" style={{width: `${(item.value / peak) * 100}%`, background: color}}/></span>
         <strong>{format(item.value)}</strong>
     </li>)}</ul>;
 }
@@ -119,8 +119,8 @@ export function ColumnChart({groups, series, ariaLabel, format = String}: {
     return <div className="flex h-[200px] items-stretch gap-2.5" role="img" aria-label={ariaLabel}>
         {groups.map((group, gi) => <div key={group.label} className="relative flex min-w-0 flex-1 flex-col gap-1.5"
                                         onMouseEnter={() => setHover(gi)} onMouseLeave={() => setHover(null)}>
-            {hover === gi && <div className="pointer-events-none absolute bottom-full left-1/2 z-10 grid min-w-[150px] -translate-x-1/2 gap-0.5 rounded-none border border-border bg-card px-2.5 py-2 text-xs text-foreground shadow-lg" role="tooltip"><strong>{group.label}</strong>
-                {series.map((s, si) => <span key={s.label} className="flex items-center gap-1.5 text-muted"><i className="inline-block h-2.5 w-2.5 rounded-none" style={{background: s.color}}/>{s.label}: {format(group.values[si] ?? 0)}</span>)}
+            {hover === gi && <div className="pointer-events-none absolute bottom-full left-1/2 z-10 grid min-w-[150px] -translate-x-1/2 gap-0.5 rounded-overlay border border-border bg-card px-2.5 py-2 text-xs text-foreground shadow-lg" role="tooltip"><strong>{group.label}</strong>
+                {series.map((s, si) => <span key={s.label} className="flex items-center gap-1.5 text-muted"><i className="inline-block h-2.5 w-2.5 rounded-panel" style={{background: s.color}}/>{s.label}: {format(group.values[si] ?? 0)}</span>)}
             </div>}
             <div className="flex flex-1 items-end justify-center gap-[3px] border-b border-slate-300">{series.map((s, si) =>
                 <span key={s.label} className="min-h-[1px] w-[min(18px,40%)] rounded-t-none" style={{height: `${((group.values[si] ?? 0) / peak) * 100}%`, background: s.color}}/>)}</div>
@@ -142,7 +142,7 @@ export function Heatmap({grid, rowLabels, ariaLabel, cellTitle}: {
             <small key={h} className="text-[10.5px] text-slate-400">{h % 3 === 0 ? h : ''}</small>)}</div>
         {grid.map((row, r) => <div key={rowLabels[r]} className="grid min-w-[440px] grid-cols-[32px_repeat(24,minmax(14px,1fr))] items-center gap-[3px]">
             <small className="text-[10.5px] text-slate-400">{rowLabels[r]}</small>
-            {row.map((value, h) => <span key={h} className="h-[18px] rounded-none bg-slate-100" title={cellTitle(r, h, value)}
+            {row.map((value, h) => <span key={h} className="h-[18px] rounded-panel bg-slate-100" title={cellTitle(r, h, value)}
                                          style={{background: value ? `rgba(42, 120, 214, ${0.12 + 0.88 * value / peak})` : undefined}}/>)}
         </div>)}
     </div>;

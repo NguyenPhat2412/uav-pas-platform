@@ -91,11 +91,11 @@ export default function HomePage() {
         <div className="w-full">
             <div className="mb-4 flex justify-end">
                 <Link href="/operations/dispatch/missions"
-                      className="inline-flex min-h-9 items-center gap-1.5 rounded-none bg-primary px-3.5 text-[13px] font-bold text-primary-foreground transition hover:bg-primary-hover">
+                      className="inline-flex min-h-9 items-center gap-1.5 rounded-control bg-primary px-3.5 text-[13px] font-bold text-primary-foreground transition hover:bg-primary-hover">
                     <Plus size={15} aria-hidden="true"/>{t('opsMissions.overview.openDispatch')}</Link>
             </div>
             {(error || uavsQuery.isError || stationsQuery.isError) && <div
-                className="mb-4 rounded-none border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{t('opsMissions.overview.partialError')}</div>}
+                className="mb-4 rounded-panel border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{t('opsMissions.overview.partialError')}</div>}
             {canReadSummary &&
                 <section className="mb-5 flex min-h-[48px] flex-wrap items-center gap-[22px] border-y border-border py-2 text-[13px] text-muted" aria-label={t('opsMissions.overview.summary.label')}>
                     <span className="inline-flex items-center gap-[7px]"><Users
@@ -106,7 +106,7 @@ export default function HomePage() {
                     size={15}/> {t('opsMissions.overview.summary.auditEvents')} <strong className="tabular-nums text-foreground">{count(summary?.totalAuditEvents)}</strong></span></section>}
             <section className="grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 [&>*]:border-0">
                 <div className="min-w-0 divide-y divide-slate-200 bg-white [&>*]:border-0">
-                    {canReadMissions && <div className="min-w-0 rounded-none border border-border bg-card">
+                    {canReadMissions && <div className="min-w-0 rounded-panel border border-border bg-card">
                         <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-5">
                             <div><h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.missions.title')}</h2><span className="text-xs text-muted">{t('opsMissions.overview.missions.subtitle')}</span></div>
                             <Link href="/operations/dispatch/missions"
@@ -129,7 +129,7 @@ export default function HomePage() {
                             className="text-slate-800">{count(missions?.readyMissions)}</strong></span><Link
                             href="/operations/dispatch/missions" className="font-semibold text-primary hover:underline">{t('opsMissions.overview.openDispatch')}</Link></div>
                     </div>}
-                    <div className="min-w-0 rounded-none border border-border bg-card">
+                    <div className="min-w-0 rounded-panel border border-border bg-card">
                         <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-5">
                             <div><h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.fleet.title')}</h2><span className="text-xs text-muted">{t('opsMissions.overview.fleet.subtitle')}</span></div>
                             <Link href="/operations/uavs"
@@ -163,7 +163,7 @@ export default function HomePage() {
                         </div>
                     </div>
                 </div>
-                <div className="flex min-w-0 flex-col justify-between rounded-none border border-border bg-card p-4">
+                <div className="flex min-w-0 flex-col justify-between rounded-panel border border-border bg-card p-4">
                     <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-3">
                         <div className="flex items-center gap-2">
                             <Crosshair size={16} className="text-primary"/>
@@ -175,7 +175,7 @@ export default function HomePage() {
                         </div>
                         <StatusBadge status={activeUav?.status ?? 'UNKNOWN'}/>
                     </div>
-                    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-none border border-border bg-slate-100">
+                    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-panel border border-border bg-slate-100">
                         <HudValue label={t('opsMissions.overview.hud.battery')} value={activeFix?.batteryPct != null ? `${activeFix.batteryPct}%` : '—'}
                                   tone={activeFix?.batteryPct != null && activeFix.batteryPct <= 25 ? 'text-primary' : undefined}/>
                         <HudValue label={t('opsMissions.overview.hud.altitude')} value={activeFix?.altitudeAglMeters != null ? `${formatNumber(Math.round(activeFix.altitudeAglMeters))} m` : '—'}/>
@@ -204,7 +204,7 @@ export default function HomePage() {
                 </div>
             </section>
             <section className="-mt-px grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 [&>*]:border-0">
-                <div className="min-w-0 rounded-none border border-border bg-card">
+                <div className="min-w-0 rounded-panel border border-border bg-card">
                     <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-5">
                         <div><h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.stations.title')}</h2><span className="text-xs text-muted">{t('opsMissions.overview.stations.subtitle')}</span></div>
                         <Link href="/operations/stations"
@@ -229,13 +229,13 @@ export default function HomePage() {
                         </table>
                     </div>
                 </div>
-                <div className="min-w-0 rounded-none border border-border bg-card">
+                <div className="min-w-0 rounded-panel border border-border bg-card">
                     <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-5">
                         <div><h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.quickActions.title')}</h2><span className="text-xs text-muted">{t('opsMissions.overview.quickActions.subtitle')}</span></div>
                     </div>
                     <div className="grid grid-cols-2 gap-2 p-3 md:grid-cols-4">{quickActions.map(({icon: Icon, labelKey, href}) => <Link
                         key={href} href={href}
-                        className="group flex min-h-[76px] flex-col justify-between rounded-none border border-slate-200 p-3 transition hover:border-primary/40 hover:bg-primary/5"><span
+                        className="group flex min-h-[76px] flex-col justify-between rounded-control border border-slate-200 p-3 transition hover:border-primary/40 hover:bg-primary/5"><span
                         className="text-slate-400 group-hover:text-primary"><Icon size={17}/></span><span
                         className="text-xs font-semibold text-slate-700">{t(labelKey)}</span></Link>)}</div>
                 </div>

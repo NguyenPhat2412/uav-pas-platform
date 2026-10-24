@@ -116,7 +116,7 @@ export function UavPanel() {
                                                                         onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.uav.closeForm') : t('opsAssets.uav.add')}</Button>
         </div>}
         {openCreate && can('UAV_MANAGE') &&
-            <form className="space-y-4 rounded-none border border-border bg-slate-50 p-4" onSubmit={async event => {
+            <form className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 try {
                     await create.mutateAsync(form);
@@ -172,7 +172,7 @@ export function UavPanel() {
                                                                                                         onClick={() => setShow3d(value => !value)}>{show3d ? t('opsAssets.uav.close3d') : t('opsAssets.uav.view3d')}</Button>
                     </div>
                     {show3d ? <UavModelViewer serial={detail.data.serialNumber} status={detail.data.status}/> : <div
-                        className="flex min-h-[180px] items-center justify-center rounded-none border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">{t('opsAssets.uav.modelOnDemand')}</div>}</div>
+                        className="flex min-h-[180px] items-center justify-center rounded-panel border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">{t('opsAssets.uav.modelOnDemand')}</div>}</div>
                 <Metadata
                     items={[[t('opsAssets.uav.model'), detail.data.model], [t('opsAssets.uav.serial'), detail.data.serialNumber], [t('opsAssets.uav.manufacturer'), detail.data.manufacturer], [t('opsAssets.uav.status'),
                         <StatusBadge key="detail-status"
@@ -189,7 +189,7 @@ export function UavPanel() {
             }}/>{tab === 'overview' &&
             <p className="text-sm text-slate-600">{t('opsAssets.uav.overviewNote')}</p>}{(tab === 'maintenance' || tab === 'assignment') && (can('UAV_MANAGE') ? <><Link
                 href={`/operations/maintenance?uav=${toUavSlug(detail.data)}`}
-                className="mb-4 inline-flex min-h-11 items-center rounded-none border border-slate-300 px-4 text-sm font-semibold text-slate-800">{t('opsAssets.uav.openMaintenance')}</Link><UavLifecyclePanel key={`${selected}-${tab}`} uav={detail.data}
+                className="mb-4 inline-flex min-h-11 items-center rounded-control border border-slate-300 px-4 text-sm font-semibold text-slate-800">{t('opsAssets.uav.openMaintenance')}</Link><UavLifecyclePanel key={`${selected}-${tab}`} uav={detail.data}
                                                                         mode={tab}
                                                                         stations={stations.error ? [] : stations.data || []}
                                                                         canReadStations={can('STATION_READ')}

@@ -54,13 +54,13 @@ export default function CustomerBillingPage() {
             <div className="flex flex-col gap-6">
 
                 {isLoading && (
-                    <div className="bg-card border border-border rounded-none p-8 text-center text-slate-500">
+                    <div className="bg-card border border-border rounded-panel p-8 text-center text-slate-500">
                         {t('billingPage.loading')}
                     </div>
                 )}
 
                 {queryError && !isLoading && (
-                    <div className="bg-rose-50 border border-rose-200 rounded-none p-5 flex gap-3 text-rose-700">
+                    <div className="bg-rose-50 border border-rose-200 rounded-panel p-5 flex gap-3 text-rose-700">
                         <AlertCircle size={20} className="shrink-0 mt-0.5"/>
                         <div>
                             <p className="m-0 font-bold">{t('billingPage.loadError')}</p>
@@ -117,9 +117,9 @@ export default function CustomerBillingPage() {
                                 </div>
 
                                 {/* Progress bar */}
-                                <div className="w-full h-2 bg-slate-200 rounded-none overflow-hidden mt-3">
+                                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden mt-3">
                                     <div
-                                        className={`h-full rounded-none transition-[width] duration-300 ${usagePercent > 80 ? 'bg-primary' : 'bg-success'}`}
+                                        className={`h-full rounded-full transition-[width] duration-300 ${usagePercent > 80 ? 'bg-primary' : 'bg-success'}`}
                                         style={{width: `${usagePercent}%`}}
                                     />
                                 </div>
@@ -141,7 +141,7 @@ export default function CustomerBillingPage() {
                                         <span className="flex items-center gap-1.5 text-slate-700">
                                             <Radar size={15} aria-hidden="true"/> {t('billingPage.sarAi')}
                                         </span>
-                                        <span className="bg-uav-blue-light text-uav-blue text-[11px] font-bold px-2.5 py-1 rounded-none inline-flex items-center gap-1 border border-blue-200">
+                                        <span className="bg-uav-blue-light text-uav-blue text-[11px] font-bold px-2.5 py-1 rounded-badge inline-flex items-center gap-1 border border-blue-200">
                                             {currentPlan ? t(currentPlan.allowSarAi ? 'billingPage.yes' : 'billingPage.no') : '—'}
                                         </span>
                                     </li>
@@ -193,7 +193,7 @@ export default function CustomerBillingPage() {
                     )}
                 </section>
                 {/* Invoices Table */}
-                <div data-testid="my-invoices" className="bg-card border border-border rounded-none overflow-hidden">
+                <div data-testid="my-invoices" className="bg-card border border-border rounded-panel overflow-hidden">
                     <div className="px-6 py-4 border-b border-border flex justify-between items-center gap-3 flex-wrap">
                         <h2 className="m-0 text-base font-extrabold text-slate-900 flex items-center gap-2">
                             <FileText size={20} className="text-slate-500"/> {t('billingPage.invoiceHistory')}
@@ -227,7 +227,7 @@ export default function CustomerBillingPage() {
                                         {formatCurrency(inv.amount)}
                                     </td>
                                     <td className="px-5 py-4 text-slate-700 text-xs">
-                                        <span className={`inline-flex items-center gap-1 rounded-none px-2.5 py-1 text-[11px] font-bold border ${
+                                        <span className={`inline-flex items-center gap-1 rounded-badge px-2.5 py-1 text-[11px] font-bold border ${
                                             inv.status === 'PAID'
                                                 ? 'bg-uav-blue-light text-uav-blue border-blue-200'
                                                 : 'bg-amber-50 text-amber-700 border-amber-200'
@@ -241,7 +241,7 @@ export default function CustomerBillingPage() {
                                             <button
                                                 type="button"
                                                 onClick={() => setPayingInvoice(inv)}
-                                                className="bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-bold px-3.5 py-1.5 rounded-none border-0 cursor-pointer transition-colors"
+                                                className="bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-bold px-3.5 py-1.5 rounded-control border-0 cursor-pointer transition-colors"
                                             >
                                                 {t('billingPage.viewPayment')}
                                             </button>

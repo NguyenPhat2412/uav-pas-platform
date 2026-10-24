@@ -86,7 +86,7 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
     const formStale = !!form && form.version !== snapshot.version;
     const submitDisabled = disabled || formStale || !reason.trim() || !validReplacement || unchanged ||
         (form?.kind === 'equipment' && !!replacement && !validQuantity) || (form?.kind === 'operator' && !!replacement && schedule !== 'available');
-    return <section className="min-w-0 overflow-hidden rounded-none border border-border bg-card" aria-labelledby="resource-redispatch-title">
+    return <section className="min-w-0 overflow-hidden rounded-panel border border-border bg-card" aria-labelledby="resource-redispatch-title">
         <header className="flex items-center justify-between gap-3 border-b border-border px-6 py-5"><h2 id="resource-redispatch-title" className="m-0 text-lg font-bold text-foreground">{t('opsMissions.redispatch.title')}</h2></header>
         <div className="grid gap-4 p-6">
             <p className="m-0 text-sm leading-relaxed text-muted">{t('opsMissions.redispatch.description')}</p>
@@ -99,7 +99,7 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
             <h3 className="m-0 font-semibold text-foreground">{t('opsMissions.redispatch.reserved')}</h3>
             {snapshot.reservations.some(r => !r.released) ?
                 <ul className="m-0 grid list-none gap-3 p-0">{snapshot.reservations.filter(r => !r.released).map(r => <li key={r.id}
-                                                                                                        className="flex flex-wrap items-center justify-between gap-3 rounded-none border border-border p-3">
+                                                                                                        className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-border p-3">
                     <div className="min-w-0 break-words"><strong>{r.equipmentName}</strong><p
                         className="m-0 text-sm leading-relaxed text-muted">{t('opsMissions.redispatch.reservationLine', {id: r.id, quantity: r.quantity})}</p></div>
                     {allowed.equipment &&
@@ -113,7 +113,7 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
                                                                                                             className="text-sm leading-relaxed text-muted">{t('opsMissions.redispatch.releasedLine', {name: r.equipmentName, quantity: r.quantity, id: r.id})}</li>)}</ul>
             </details>}
             {form && allowed[form.kind] &&
-                <form className="mt-5 grid gap-3 rounded-none border border-border bg-background p-5" aria-label={t('opsMissions.redispatch.formTitle', {kind: t(`opsMissions.redispatch.kind.${form.kind}`)})}
+                <form className="mt-5 grid gap-3 rounded-panel border border-border bg-background p-5" aria-label={t('opsMissions.redispatch.formTitle', {kind: t(`opsMissions.redispatch.kind.${form.kind}`)})}
                       onSubmit={async event => {
                           event.preventDefault();
                           if (submitDisabled) return;
@@ -129,7 +129,7 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
                         <p className="m-0 text-sm leading-relaxed text-muted">{t('opsMissions.redispatch.equipmentHint', {id: form.reservationId ?? '', quantity: form.oldQuantity ?? 0})}</p>}
                     <label className="grid gap-1.5 text-sm font-semibold text-foreground">{form.kind === 'equipment' ? t('opsMissions.redispatch.replacementEquipment') : form.kind === 'operator' ? t('opsMissions.redispatch.replacementOperator') : t('opsMissions.redispatch.replacementStation')}<select
                         autoFocus
-                        className="mt-1 min-h-11 w-full min-w-0 rounded-none border border-border-input bg-card px-3 text-sm font-normal text-foreground"
+                        className="mt-1 min-h-11 w-full min-w-0 rounded-control border border-border-input bg-card px-3 text-sm font-normal text-foreground"
                         disabled={disabled} value={replacement} onChange={e => selectReplacement(e.target.value)}>
                         <option
                             value="">{form.kind === 'equipment' ? t('opsMissions.redispatch.releaseReservation') : t(`opsMissions.redispatch.removeCurrent.${form.kind}`)}</option>
@@ -142,12 +142,12 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
                             setRetry(v => v + 1);
                         }}>{t('opsMissions.redispatch.schedule.retry')}</Button>}</div>}
                     {form.kind === 'equipment' && !!replacement && <label className="grid gap-1.5 text-sm font-semibold text-foreground">{t('opsMissions.redispatch.newQuantity')}<input
-                        className="mt-1 min-h-11 w-full rounded-none border border-border-input bg-card px-3 text-sm font-normal text-foreground" type="number" min={1}
+                        className="mt-1 min-h-11 w-full rounded-control border border-border-input bg-card px-3 text-sm font-normal text-foreground" type="number" min={1}
                         max={available} step={1} inputMode="numeric" disabled={disabled} value={quantity}
                         onChange={e => setQuantity(e.target.value)}/><span
                         className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.redispatch.maxQuantity', {count: available})}</span></label>}
                     <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{t('opsMissions.redispatch.reason')}<RequiredMark/></span><textarea required disabled={disabled}
-                                                              className="min-h-22 w-full min-w-0 rounded-none border border-border-input bg-card p-2.5 text-sm font-normal text-foreground"
+                                                              className="min-h-22 w-full min-w-0 rounded-control border border-border-input bg-card p-2.5 text-sm font-normal text-foreground"
                                                               maxLength={missionEventNoteLimit} value={reason}
                                                               onChange={e => setReason(e.target.value)}/><span
                         className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.redispatch.reasonHint', {count: missionEventNoteLimit})}</span></label>

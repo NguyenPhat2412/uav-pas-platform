@@ -21,7 +21,7 @@ export function MissionProgress({status}: { status: MissionStatus }) {
     const {t} = useI18n();
     const halt = stopped[status];
     const current = halt?.index ?? steps.findIndex(step => (step.statuses as readonly string[]).includes(status));
-    return <ol className="m-0 flex list-none flex-col gap-3 rounded-none border border-border bg-card px-5 py-4.5 sm:flex-row sm:gap-0" aria-label={t('progress.label')}>
+    return <ol className="m-0 flex list-none flex-col gap-3 rounded-panel border border-border bg-card px-5 py-4.5 sm:flex-row sm:gap-0" aria-label={t('progress.label')}>
         {steps.map((step, index) => {
             const isHalt = halt && index === current;
             const state = isHalt ? 'stopped' : index < current || status === 'COMPLETED' ? 'done' : index === current ? 'current' : 'upcoming';
@@ -40,7 +40,7 @@ export function MissionProgress({status}: { status: MissionStatus }) {
             return <li key={step.label}
                        className={`relative flex min-w-0 flex-1 flex-row items-center gap-2 text-left sm:flex-col sm:text-center ${index > 0 ? `sm:before:absolute sm:before:top-3.5 sm:before:right-[calc(50%+18px)] sm:before:left-[calc(-50%+18px)] sm:before:h-0.5 sm:before:content-[''] ${state === 'upcoming' ? 'sm:before:bg-border' : 'sm:before:bg-success'}` : ''}`}
                        aria-current={state === 'current' || state === 'stopped' ? 'step' : undefined}>
-                <span className={`grid size-7 shrink-0 place-items-center rounded-none border-2 text-xs font-bold ${dotClass}`} aria-hidden="true">
+                <span className={`grid size-7 shrink-0 place-items-center rounded-panel border-2 text-xs font-bold ${dotClass}`} aria-hidden="true">
                     {state === 'done' ? <Check size={14}/> : state === 'stopped' ? <X size={14}/> : index + 1}
                 </span>
                 <span className={labelClass}>{t(isHalt ? halt.label : step.label)}</span>

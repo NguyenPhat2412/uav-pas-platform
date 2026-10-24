@@ -30,16 +30,16 @@ function Dashboard() {
     return (
         <>
             {(missions.isError || services.isError) &&
-                <div role="alert" className="mb-4 rounded-none bg-danger/10 px-3.5 py-3 text-[13px] text-danger">{t('dashboard.loadError')}</div>}
+                <div role="alert" className="mb-4 rounded-panel bg-danger/10 px-3.5 py-3 text-[13px] text-danger">{t('dashboard.loadError')}</div>}
             <div className="mb-4 flex flex-wrap items-center justify-end gap-5">
-                <Link href="/customer/missions/create" className="inline-flex min-h-[44px] items-center justify-center rounded-none bg-primary px-4 text-[13px] font-bold text-primary-foreground transition hover:bg-primary-hover">{t('dashboard.bookService')}</Link>
+                <Link href="/customer/missions/create" className="inline-flex min-h-[44px] items-center justify-center rounded-control bg-primary px-4 text-[13px] font-bold text-primary-foreground transition hover:bg-primary-hover">{t('dashboard.bookService')}</Link>
             </div>
 
             {/* Frame 1: KPI Grid */}
             <div className="grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 md:grid-cols-3">
                 <Panel className="h-full border-0 border-t-2 border-t-primary">
                     <div className="flex items-start gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none bg-uav-red-light text-primary">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-panel bg-uav-red-light text-primary">
                             <Activity size={18}/>
                         </span>
                         <div>
@@ -52,7 +52,7 @@ function Dashboard() {
 
                 <Panel className="h-full border-0 border-t-2 border-t-uav-blue">
                     <div className="flex items-start gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none bg-uav-blue-light text-uav-blue">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-panel bg-uav-blue-light text-uav-blue">
                             <Plane size={18}/>
                         </span>
                         <div>
@@ -65,7 +65,7 @@ function Dashboard() {
 
                 <Panel className="h-full border-0 border-t-2 border-t-amber-500">
                     <div className="flex items-start gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none bg-amber-50 text-amber-600">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-panel bg-amber-50 text-amber-600">
                             <Boxes size={18}/>
                         </span>
                         <div>

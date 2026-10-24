@@ -31,10 +31,10 @@ export function AuditLogs() {
         setPage(0);
     };
     const weekdays = t('admin.audit.weekdays').split(',');
-    const filterInputClass = "h-9 rounded-none border border-border-input bg-card px-2.5 text-[13px] font-normal text-foreground";
+    const filterInputClass = "h-9 rounded-control border border-border-input bg-card px-2.5 text-[13px] font-normal text-foreground";
 
     return <div className="space-y-5">
-        {can('DASHBOARD_READ') && analytics.data && <section className="min-w-0 rounded-none border border-border bg-card">
+        {can('DASHBOARD_READ') && analytics.data && <section className="min-w-0 rounded-panel border border-border bg-card">
             <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.audit.heatmapTitle')}</h2>
                 <span className="text-xs text-slate-500">{t('admin.audit.heatmapRange')}</span></header>
             <div className="p-6">
@@ -42,7 +42,7 @@ export function AuditLogs() {
                          cellTitle={(row, hour, value) => t('admin.audit.heatmapCell', {day: weekdays[row], hour, count: value})}/>
             </div>
         </section>}
-        <div className="min-w-0 overflow-hidden rounded-none border border-border bg-card">
+        <div className="min-w-0 overflow-hidden rounded-panel border border-border bg-card">
             <form className="grid grid-cols-1 items-end gap-2.5 border-b border-border px-4 py-3.5 sm:grid-cols-2 lg:grid-cols-[minmax(150px,1.2fr)_repeat(2,minmax(130px,1fr))_repeat(2,minmax(130px,0.9fr))_auto]" onSubmit={apply} aria-label={t('admin.audit.filtersLabel')}>
                 <label className="flex flex-col gap-1 text-xs font-semibold text-muted">{t('admin.audit.filter.actor')}<input className={filterInputClass} type="search" value={draft.actor} onChange={set('actor')}
                                                             placeholder={t('admin.audit.filter.actorPlaceholder')}/></label>
@@ -82,7 +82,7 @@ export function AuditLogs() {
                             </td>
                             <td data-label={t('admin.auditTable.actor')} className="px-4 py-3.5 align-top text-foreground"><span
                                 className="font-semibold text-foreground">{log.actorUsername || t('admin.auditTable.system')}</span></td>
-                            <td data-label={t('admin.auditTable.action')} className="px-4 py-3.5 align-top text-foreground"><span className="inline-block whitespace-nowrap rounded-none bg-uav-red-light px-2 py-1 text-xs font-medium text-primary">{displayLabel(log.action)}</span></td>
+                            <td data-label={t('admin.auditTable.action')} className="px-4 py-3.5 align-top text-foreground"><span className="inline-block whitespace-nowrap rounded-badge bg-uav-red-light px-2 py-1 text-xs font-medium text-primary">{displayLabel(log.action)}</span></td>
                             <td data-label={t('admin.auditTable.entity')} className="px-4 py-3.5 align-top text-foreground">{displayLabel(log.entityType)}</td>
                             <td data-label={t('admin.auditTable.id')} className="px-4 py-3.5 align-top text-foreground">{log.entityId}</td>
                             <td data-label={t('admin.auditTable.details')} className="max-w-[320px] px-4 py-3.5 align-top text-[13px] text-foreground">{auditDetail(log.details)}</td>

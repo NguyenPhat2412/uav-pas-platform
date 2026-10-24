@@ -93,7 +93,7 @@ export function AdminAssistant() {
 
     return <>
         {open && <section role="dialog" aria-label={t('admin.assistant.title')}
-                          className="fixed bottom-24 right-5 z-50 flex h-[560px] max-h-[calc(100dvh-8rem)] w-[380px] max-w-[calc(100vw-2.5rem)] flex-col border border-slate-200 bg-white shadow-2xl"
+                          className="fixed bottom-24 right-5 z-50 flex h-[560px] max-h-[calc(100dvh-8rem)] w-[380px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-overlay border border-slate-200 bg-white shadow-2xl"
                           onKeyDown={e => e.key === 'Escape' && setOpen(false)}>
             <header className="flex items-center gap-3 border-b border-slate-200 bg-slate-50/70 px-3.5 py-2.5">
                 <SuperheroLogo size={34}/>
@@ -139,7 +139,7 @@ export function AdminAssistant() {
                     </div>
                     : messages.map((m, i) => <div key={i} className={cn('flex', m.role === 'user' ? 'justify-end' : 'justify-start gap-2')}>
                         {m.role === 'assistant' && <span className="mt-0.5 shrink-0"><SuperheroLogo size={22}/></span>}
-                        <p className={cn('m-0 max-w-[85%] whitespace-pre-wrap break-words border px-3 py-2 text-[13px] leading-relaxed',
+                        <p className={cn('m-0 max-w-[85%] whitespace-pre-wrap break-words rounded-control border px-3 py-2 text-[13px] leading-relaxed',
                             m.role === 'user' ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-200 bg-white text-slate-800')}>{m.content}</p>
                     </div>)}
                 {send.isPending && <div className="flex items-center gap-2 text-xs text-slate-500" role="status">
@@ -149,17 +149,17 @@ export function AdminAssistant() {
             <form onSubmit={submit} className="flex items-end gap-2 border-t border-slate-200 p-2.5">
                 <textarea ref={input} rows={2} maxLength={4000} value={draft} onChange={e => setDraft(e.target.value)} onKeyDown={onKey}
                           disabled={!info.data?.enabled} aria-label={t('admin.assistant.input')} placeholder={t('admin.assistant.placeholder')}
-                          className="min-h-[44px] flex-1 resize-none rounded-none border border-slate-300 px-2.5 py-2 text-[13px] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-slate-100"/>
+                          className="min-h-[44px] flex-1 resize-none rounded-control border border-slate-300 px-2.5 py-2 text-[13px] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-slate-100"/>
                 <button type="submit" disabled={!draft.trim() || !activeMode || send.isPending || !info.data?.enabled}
                         aria-label={t('admin.assistant.send')}
-                        className="inline-flex h-11 w-11 shrink-0 items-center justify-center bg-primary text-primary-foreground hover:bg-primary-hover disabled:opacity-50">
+                        className="rounded-control inline-flex h-11 w-11 shrink-0 items-center justify-center bg-primary text-primary-foreground hover:bg-primary-hover disabled:opacity-50">
                     <SendHorizontal size={18}/></button>
             </form>
         </section>}
 
         <button type="button" onClick={() => setOpen(v => !v)} aria-expanded={open}
                 aria-label={open ? t('admin.assistant.close') : t('admin.assistant.open')} title={t('admin.assistant.title')}
-                className={cn('fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center border bg-white shadow-xl transition-colors',
+                className={cn('fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full border-2 bg-white shadow-xl transition-colors',
                     open ? 'border-primary' : 'border-slate-200 hover:border-primary')}>
             <SuperheroLogo size={42} title={t('admin.assistant.title')}/>
         </button>

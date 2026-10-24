@@ -12,7 +12,7 @@ export function MissionTimeline({events, showActor = false}: { events: TimelineE
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-2 text-xs font-semibold text-slate-500">
                 <p>{t('missionShared.latestUpdates')}</p>
-                <span className="rounded-none bg-slate-100 px-2.5 py-0.5 font-bold text-slate-700">
+                <span className="rounded-panel bg-slate-100 px-2.5 py-0.5 font-bold text-slate-700">
                     {t('missionShared.eventCount', {count: events.length})}
                 </span>
             </div>

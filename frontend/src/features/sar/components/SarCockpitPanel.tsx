@@ -38,9 +38,9 @@ export function SarCockpitPanel() {
     const mission = missions.find(m => m.missionId === chosenId) ?? missions[0] ?? null;
 
     if (missionsQuery.isPending) return <div className="flex min-h-[320px] items-center justify-center"><Spinner label={t('opsShared.sar.cockpit.loading')}/></div>;
-    if (missionsQuery.isError) return <p role="alert" className="m-0 rounded-none border border-l-4 border-rose-200 border-l-primary bg-uav-red-light p-4 text-sm text-primary">
+    if (missionsQuery.isError) return <p role="alert" className="m-0 rounded-panel border border-l-4 border-rose-200 border-l-primary bg-uav-red-light p-4 text-sm text-primary">
         {t('opsShared.sar.cockpit.loadError')}</p>;
-    if (!mission) return <div className="rounded-none border border-border bg-card p-8 text-center">
+    if (!mission) return <div className="rounded-panel border border-border bg-card p-8 text-center">
         <LifeBuoy size={28} className="mx-auto text-slate-400" aria-hidden="true"/>
         <h2 className="mt-3 text-base font-bold text-slate-900">{t('opsShared.sar.cockpit.emptyTitle')}</h2>
         <p className="mx-auto mt-1 max-w-md text-sm text-slate-500">{t('opsShared.sar.cockpit.emptyBody')}</p>
@@ -122,18 +122,18 @@ function MissionCockpit({mission, missions, onChoose, canOperate}: {
     };
 
     return <div className="space-y-5">
-        <div className="flex flex-col gap-4 rounded-none border border-l-4 border-border border-l-primary bg-card p-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-4 rounded-panel border border-l-4 border-border border-l-primary bg-card p-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
                 <div className="mb-1.5 flex flex-wrap items-center gap-2">
                     {(mission.priority === 'HIGH' || mission.priority === 'URGENT') &&
-                        <span className="flex items-center gap-1.5 rounded-none border border-rose-200 bg-uav-red-light px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary">
+                        <span className="flex items-center gap-1.5 rounded-badge border border-rose-200 bg-uav-red-light px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary">
                             <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true"/>{t('opsShared.sar.cockpit.urgent')}</span>}
-                    <span className={cn('rounded-none border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider', sarStatusTone[mission.sarStatus])}>
+                    <span className={cn('rounded-badge border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider', sarStatusTone[mission.sarStatus])}>
                         {t(`opsShared.sar.status.${mission.sarStatus}`)}</span>
                     {missions.length > 1 ? <label className="flex items-center gap-1.5 text-xs text-slate-500">
                         <span className="sr-only">{t('opsShared.sar.cockpit.chooseMission')}</span>
                         <select value={mission.missionId} onChange={e => onChoose(Number(e.target.value))}
-                                className="h-7 rounded-none border border-border bg-card px-2 text-xs font-semibold tabular-nums text-slate-800">
+                                className="h-7 rounded-control border border-border bg-card px-2 text-xs font-semibold tabular-nums text-slate-800">
                             {missions.map(m => <option key={m.missionId} value={m.missionId}>{m.missionCode} · {m.missionTitle}</option>)}
                         </select>
                     </label> : <span className="text-xs font-semibold tabular-nums text-slate-500">{mission.missionCode}</span>}
@@ -150,11 +150,11 @@ function MissionCockpit({mission, missions, onChoose, canOperate}: {
             {canOperate && <div className="flex flex-wrap items-center gap-2.5">
                 <button type="button" onClick={onDispatch} disabled={dispatch.isPending}
                         title={targetReady ? undefined : t('opsShared.sar.cockpit.selectTarget')}
-                        className={cn('flex min-h-11 items-center gap-2 rounded-none px-4 py-2.5 text-xs font-bold text-white transition disabled:opacity-60',
+                        className={cn('flex min-h-11 items-center gap-2 rounded-control px-4 py-2.5 text-xs font-bold text-white transition disabled:opacity-60',
                             targetReady ? 'bg-uav-blue hover:bg-uav-blue-hover' : 'bg-slate-400')}>
                     <Send size={15} aria-hidden="true"/>{t('opsShared.sar.cockpit.dispatchButton')}</button>
                 <button type="button" onClick={onRth} disabled={rth.isPending || mission.uavId == null}
-                        className="flex min-h-11 items-center gap-2 rounded-none bg-primary px-4 py-2.5 text-xs font-bold text-white transition hover:bg-primary-hover disabled:opacity-60">
+                        className="flex min-h-11 items-center gap-2 rounded-control bg-primary px-4 py-2.5 text-xs font-bold text-white transition hover:bg-primary-hover disabled:opacity-60">
                     <RotateCcw size={15} aria-hidden="true"/>{t('opsShared.sar.cockpit.rthButton')}</button>
             </div>}
         </div>

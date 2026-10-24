@@ -74,7 +74,7 @@ export function MediaPanel() {
     };
     return <div className="space-y-5">
         {can('MEDIA_MANAGE') &&
-            <form className="space-y-3 rounded-none border border-border bg-slate-50 p-4"
+            <form className="space-y-3 rounded-panel border border-border bg-slate-50 p-4"
                   onSubmit={event => {
                       event.preventDefault();
                       if (file) void runUpload(file);
@@ -101,7 +101,7 @@ export function MediaPanel() {
             </form>}
         <ErrorNotice error={upload.error || confirm.error || open.error}/>
         <QueryState query={query}>
-            <div className="flex flex-wrap items-end gap-3 rounded-none border border-border bg-card p-4 sm:px-6 sm:py-5"><Input label={t('opsAssets.media.search')} aria-label={t('opsAssets.media.search')} placeholder={t('opsAssets.media.searchPlaceholder')}
+            <div className="flex flex-wrap items-end gap-3 rounded-panel border border-border bg-card p-4 sm:px-6 sm:py-5"><Input label={t('opsAssets.media.search')} aria-label={t('opsAssets.media.search')} placeholder={t('opsAssets.media.searchPlaceholder')}
                                                       value={search} onChange={event => setSearch(event.target.value)}/><select
                 aria-label={t('opsAssets.media.typeFilter')} className={selectClass} value={typeFilter}
                 onChange={event => setTypeFilter(event.target.value)}>
@@ -123,7 +123,7 @@ export function MediaPanel() {
                                }}>{t('opsAssets.media.viewDownload')}</Button>}{can('MEDIA_MANAGE') && <>{!asset.confirmed && <><Button
                                size="sm" variant="outline" disabled={confirm.isPending || upload.isPending}
                                onClick={() => void confirmAsset(asset.id)}>{t('opsAssets.media.confirm')}</Button><label
-                               className="relative cursor-pointer rounded-none border border-slate-300 px-3 py-2 text-xs font-semibold">{t('opsAssets.media.reupload')}<input aria-label={t('opsAssets.media.reuploadLabel', {name: asset.originalName})} type="file" accept={MEDIA_ACCEPT}
+                               className="relative cursor-pointer rounded-control border border-slate-300 px-3 py-2 text-xs font-semibold">{t('opsAssets.media.reupload')}<input aria-label={t('opsAssets.media.reuploadLabel', {name: asset.originalName})} type="file" accept={MEDIA_ACCEPT}
                                          className="sr-only" disabled={upload.isPending} onChange={event => {
                                    const chosen = event.target.files?.[0];
                                    if (chosen) void runUpload(chosen, asset);
@@ -154,11 +154,11 @@ export function MediaPanel() {
                 /* Signed image URLs expire and cannot use Next image optimization. */
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={preview.url} alt={preview.asset.originalName}
-                     className="max-h-96 max-w-full rounded-none object-contain"/>
+                     className="max-h-96 max-w-full rounded-panel object-contain"/>
                 : ['video/mp4', 'video/webm'].includes(preview.asset.contentType) ?
                     <video controls src={preview.url} className="max-h-96 w-full"/>
                     : <p className="text-sm text-secondary">{t('opsAssets.media.useDownload')}</p>}
-            <a className="inline-flex rounded-none bg-primary px-4 py-2 text-sm font-semibold text-white"
+            <a className="inline-flex rounded-control bg-primary px-4 py-2 text-sm font-semibold text-white"
                href={preview.url} target="_blank" rel="noopener noreferrer">{t('opsAssets.media.openDownload')}</a><p
             className="text-xs text-secondary">{t('opsAssets.media.linkValidity')}</p>
         </Detail>}

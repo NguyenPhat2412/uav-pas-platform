@@ -25,14 +25,14 @@ export function UavTelemetryHud({mission, telemetry, loading}: { mission: SarCoc
     const num = (v: number | null | undefined, digits = 1) => v == null ? '—' : formatNumber(Math.round(v * 10 ** digits) / 10 ** digits);
     const battery = telemetry?.batteryPct ?? null;
 
-    return <div className="rounded-none border border-border bg-card p-5 text-slate-900">
+    return <div className="rounded-panel border border-border bg-card p-5 text-slate-900">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3.5">
             <div className="flex min-w-0 items-center gap-2">
                 <Gauge size={18} className="shrink-0 text-primary" aria-hidden="true"/>
                 <h3 className="m-0 truncate text-xs font-bold uppercase tracking-wider text-slate-900">{t('opsShared.sar.hud.title')}</h3>
             </div>
             <div className="flex items-center gap-2">
-                {telemetry?.rtkStatus && <span className={cn('rounded-none border px-2.5 py-0.5 text-[10px] font-bold tabular-nums', rtkTone[telemetry.rtkStatus])}>
+                {telemetry?.rtkStatus && <span className={cn('rounded-panel border px-2.5 py-0.5 text-[10px] font-bold tabular-nums', rtkTone[telemetry.rtkStatus])}>
                     {t(`opsShared.sar.hud.rtk.${telemetry.rtkStatus}`)}</span>}
                 <span className="text-xs font-semibold tabular-nums text-slate-500">{mission.uavModel ?? ''} {mission.uavSerialNumber ?? ''}</span>
             </div>

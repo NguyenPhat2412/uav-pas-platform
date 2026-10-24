@@ -31,7 +31,7 @@ function Missions() {
     const page = query.data;
     const range = page ? missionPageRange(page) : undefined;
     const fieldClass = 'grid min-w-0 flex-1 gap-1.5 text-xs font-bold text-foreground sm:min-w-[140px]';
-    const controlClass = 'min-h-10 w-full rounded-none border border-slate-300 bg-white px-3 py-2 text-base font-normal text-foreground sm:text-sm';
+    const controlClass = 'min-h-10 w-full rounded-control border border-slate-300 bg-white px-3 py-2 text-base font-normal text-foreground sm:text-sm';
     return <>
         <Panel>
             <div className="-mx-4 -mt-4 mb-4 flex flex-col items-stretch gap-3 border-b border-slate-200 bg-slate-50/70 p-3.5 sm:flex-row sm:flex-wrap sm:items-end">
@@ -57,9 +57,9 @@ function Missions() {
                         setFilters(missionListFilters('', ''));
                         setMissionType('');
                     }}>{t('missions.clearFilters')}</Button>}
-                {can('MISSION_CREATE') && <div className="sm:ml-auto"><Link className="inline-flex min-h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-none bg-primary px-4 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover" href="/customer/missions/create">{t('missions.create')}</Link></div>}
+                {can('MISSION_CREATE') && <div className="sm:ml-auto"><Link className="inline-flex min-h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-control bg-primary px-4 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover" href="/customer/missions/create">{t('missions.create')}</Link></div>}
             </div>
-            {query.isError ? <div className="flex flex-wrap items-center gap-3 rounded-none bg-red-50 px-3.5 py-3 text-xs text-danger" role="alert">{t('missions.loadError')} <Button variant="secondary"
+            {query.isError ? <div className="flex flex-wrap items-center gap-3 rounded-panel bg-red-50 px-3.5 py-3 text-xs text-danger" role="alert">{t('missions.loadError')} <Button variant="secondary"
                                                                                                  onClick={() => void query.refetch()}>{t('common.retry')}</Button></div>
                 : query.isLoading ? <div className="px-6 py-9 text-center text-sm leading-relaxed text-muted" role="status">{t('missions.loading')}</div>
                     : <>

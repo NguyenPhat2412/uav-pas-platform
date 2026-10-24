@@ -23,14 +23,14 @@ export function Kv260EdgeStatusCard({task, loading}: { task: AiTask | null; load
     const num = (v: number | null | undefined) => v == null ? '—' : formatNumber(Math.round(v * 10) / 10);
     const hot = task?.socTemperature != null && task.socTemperature >= TEMP_WARN_C;
 
-    return <div className="rounded-none border border-border bg-card p-5 text-slate-900">
+    return <div className="rounded-panel border border-border bg-card p-5 text-slate-900">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3.5">
             <div className="flex min-w-0 items-center gap-2">
                 <Cpu size={18} className="shrink-0 text-uav-blue" aria-hidden="true"/>
                 <h3 className="m-0 truncate text-xs font-bold uppercase tracking-wider text-slate-900">
                     {t(edge ? 'opsShared.sar.kv260.title' : 'opsShared.sar.kv260.cloudTitle')}</h3>
             </div>
-            {task && <span className={cn('rounded-none border px-2.5 py-0.5 text-[10px] font-bold', statusTone[task.status])}>
+            {task && <span className={cn('rounded-panel border px-2.5 py-0.5 text-[10px] font-bold', statusTone[task.status])}>
                 {t(`opsShared.sar.kv260.status.${task.status}`)}</span>}
         </div>
 
@@ -72,8 +72,8 @@ function Metric({label, value, unit, icon, bar, tone, hint}: {
             <span className={cn('text-2xl font-extrabold tabular-nums', tone ?? 'text-slate-900')}>{value}</span>
             {unit && value !== '—' && <span className="text-xs font-semibold text-slate-500">{unit}</span>}
         </div>
-        {bar != null && <div className="mt-2 h-1.5 w-full overflow-hidden rounded-none bg-slate-200">
-            <div className="h-full rounded-none bg-uav-blue" style={{width: `${Math.min(100, Math.max(0, bar))}%`}}/></div>}
+        {bar != null && <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+            <div className="h-full rounded-full bg-uav-blue" style={{width: `${Math.min(100, Math.max(0, bar))}%`}}/></div>}
         {hint && <span className="mt-1 block text-[10px] text-slate-500">{hint}</span>}
     </div>;
 }

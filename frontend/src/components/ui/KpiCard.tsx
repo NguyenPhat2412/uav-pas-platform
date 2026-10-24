@@ -29,7 +29,7 @@ export function KpiCard({label, value, meta, icon, tone = 'blue'}: {
 }) {
     return (
         <article className={cn('flex items-start gap-3.5 border-t-2 bg-white p-4', accents[tone])}>
-            {icon && <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-none border', iconTones[tone])}>
+            {icon && <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-panel border', iconTones[tone])}>
                 {icon}
             </div>}
             <div className="min-w-0 flex-1">

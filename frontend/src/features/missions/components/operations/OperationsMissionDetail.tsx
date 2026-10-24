@@ -304,16 +304,16 @@ function MissionDetail({id}: { id: string }) {
             run: () => missionService.reserveEquipment(mission.id, Number(resourceIds.equipment), reservationQuantity(quantity, selectedEquipment?.availableQuantity ?? 0, t))
         },
     ];
-    const panelClass = 'min-w-0 overflow-hidden rounded-none border border-border bg-card';
+    const panelClass = 'min-w-0 overflow-hidden rounded-panel border border-border bg-card';
     const panelHeaderClass = 'flex items-center justify-between gap-3 border-b border-border px-5 py-4 md:px-6 md:py-5';
     const panelTitleClass = 'm-0 text-lg font-bold text-foreground';
     const panelBodyClass = 'p-5 md:p-6';
     const mutedClass = 'm-0 text-sm leading-relaxed text-muted';
-    const noteCardClass = 'grid gap-3 rounded-none border border-border bg-background p-4 md:p-5';
+    const noteCardClass = 'grid gap-3 rounded-panel border border-border bg-background p-4 md:p-5';
     const actionsClass = 'flex flex-wrap items-center gap-2.5';
-    const selectClass = 'min-h-11 w-full min-w-0 rounded-none border border-border-input bg-card px-3 text-sm font-normal text-foreground';
-    const textareaClass = 'min-h-22 w-full min-w-0 rounded-none border border-border-input bg-card p-2.5 text-sm font-normal text-foreground';
-    const navPillClass = 'inline-flex min-h-11 items-center rounded-none border border-border bg-card px-4 py-2 text-xs font-semibold text-muted transition-colors hover:bg-uav-red-light hover:text-primary';
+    const selectClass = 'min-h-11 w-full min-w-0 rounded-control border border-border-input bg-card px-3 text-sm font-normal text-foreground';
+    const textareaClass = 'min-h-22 w-full min-w-0 rounded-control border border-border-input bg-card p-2.5 text-sm font-normal text-foreground';
+    const navPillClass = 'inline-flex min-h-11 items-center rounded-control border border-border bg-card px-4 py-2 text-xs font-semibold text-muted transition-colors hover:bg-uav-red-light hover:text-primary';
     return <AppShell>
         <div className="grid gap-4 leading-normal text-foreground md:gap-6 [&_[id]]:scroll-mt-6">
             <Link href={can('MISSION_VIEW_ALL') ? "/operations/dispatch/missions" : "/operations/assigned-missions"}
@@ -423,7 +423,7 @@ function MissionDetail({id}: { id: string }) {
                 <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2 md:p-6">{resources.filter(r => controls[r.key]).map(r =>
                     <div key={r.key} className="grid gap-2">
                         <label className="grid gap-2 text-xs font-semibold text-foreground">{r.label}<span className="flex gap-2"><select disabled={disabled}
-                                                                                         className="min-h-11 min-w-0 flex-1 rounded-none border border-border-input bg-card px-3 text-sm font-normal text-foreground"
+                                                                                         className="min-h-11 min-w-0 flex-1 rounded-control border border-border-input bg-card px-3 text-sm font-normal text-foreground"
                                                                                          aria-label={r.label}
                                                                                          value={resourceIds[r.key]}
                                                                                          onChange={e => {
@@ -440,7 +440,7 @@ function MissionDetail({id}: { id: string }) {
                             aria-label={r.submitLabel}
                             onClick={() => void action(r.run)}>{r.key === 'equipment' ? t('opsMissions.detail.resources.reserve') : t('opsMissions.detail.resources.assign')}</Button></span></label>
                         {r.key === 'equipment' &&
-                            <label className="grid gap-2 text-xs font-semibold text-foreground">{t('opsMissions.detail.resources.quantity')}<input className="min-h-11 rounded-none border border-border-input bg-card px-3 text-sm font-normal text-foreground"
+                            <label className="grid gap-2 text-xs font-semibold text-foreground">{t('opsMissions.detail.resources.quantity')}<input className="min-h-11 rounded-control border border-border-input bg-card px-3 text-sm font-normal text-foreground"
                                                       type="number" aria-label={t('opsMissions.detail.resources.quantity')} inputMode="numeric"
                                                       min={1} max={selectedEquipment?.availableQuantity} step={1}
                                                       disabled={disabled || !selectedEquipment} value={quantity}
@@ -529,7 +529,7 @@ function MissionDetail({id}: { id: string }) {
                             </div>
                         </section>}
                     <section className={panelClass} id="media">
-                        <header className={panelHeaderClass}><h2 className={panelTitleClass}>{t('opsMissions.detail.media.title')}</h2><span className="rounded-none bg-background px-2.5 py-1 text-xs font-semibold text-muted">{t('opsMissions.detail.media.count', {count: media.length})}</span>
+                        <header className={panelHeaderClass}><h2 className={panelTitleClass}>{t('opsMissions.detail.media.title')}</h2><span className="rounded-panel bg-background px-2.5 py-1 text-xs font-semibold text-muted">{t('opsMissions.detail.media.count', {count: media.length})}</span>
                         </header>
                         <div className={panelBodyClass}>
                             {controls.upload && <><label className="grid gap-1.5 text-sm font-semibold text-foreground">{t('opsMissions.detail.media.role')}<select
@@ -539,7 +539,7 @@ function MissionDetail({id}: { id: string }) {
                                 <option value="OUTPUT">{t('opsMissions.detail.media.roleOutput')}</option>
                                 <option value="DOCUMENT">{t('opsMissions.detail.media.roleDocument')}</option>
                                 <option value="FLIGHT_DATA">{t('opsMissions.detail.media.roleFlightData')}</option>
-                            </select></label><label className="mb-4 flex min-h-13 cursor-pointer items-center justify-center rounded-none border border-dashed border-border-input p-3 text-sm font-semibold text-primary focus-within:outline-3 focus-within:outline-offset-3 focus-within:outline-primary aria-disabled:cursor-wait aria-disabled:opacity-60" aria-disabled={disabled}><input
+                            </select></label><label className="mb-4 flex min-h-13 cursor-pointer items-center justify-center rounded-control border border-dashed border-border-input p-3 text-sm font-semibold text-primary focus-within:outline-3 focus-within:outline-offset-3 focus-within:outline-primary aria-disabled:cursor-wait aria-disabled:opacity-60" aria-disabled={disabled}><input
                                 type="file" accept={MEDIA_ACCEPT} className="sr-only" disabled={disabled}
                                 onChange={e => {
                                     const file = e.target.files?.[0];
@@ -549,7 +549,7 @@ function MissionDetail({id}: { id: string }) {
                                 className="m-0 mb-4 text-sm leading-relaxed text-muted">{mediaUploadPolicy(t)} {mediaUploadRetention(t)} {t('opsMissions.detail.media.uploadHint')}</p></>}
                             {!readMedia ?
                                 <p className={mutedClass}>{t('opsMissions.detail.media.noPermission')}</p> : media.length ?
-                                    <ul className="m-0 grid list-none gap-3 p-0">{media.map(item => <li className="mission-file flex items-center justify-between gap-3 rounded-none border border-border p-3 md:gap-4 md:p-4"
+                                    <ul className="m-0 grid list-none gap-3 p-0">{media.map(item => <li className="mission-file flex items-center justify-between gap-3 rounded-panel border border-border p-3 md:gap-4 md:p-4"
                                                                                          key={item.id}>
                                         <div className="grid min-w-0 gap-1.5"><span
                                             className="break-words text-sm font-semibold text-foreground">{item.media.originalName}</span><span

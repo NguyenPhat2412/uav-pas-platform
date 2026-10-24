@@ -58,7 +58,7 @@ export function AdminAlertsPopover() {
                 ref={trigger}
                 type="button"
                 className={cn(
-                    'relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-none border transition-colors',
+                    'relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-control border transition-colors',
                     urgent
                         ? 'border-red-200 bg-red-50 text-danger hover:bg-red-100'
                         : alerts.length > 0
@@ -74,7 +74,7 @@ export function AdminAlertsPopover() {
             >
                 <Bell size={17} aria-hidden="true"/>
                 {alerts.length > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-none bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+                    <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
                         {alerts.length}
                     </span>
                 )}
@@ -84,7 +84,7 @@ export function AdminAlertsPopover() {
                     id="admin-alerts-popover"
                     role="dialog"
                     aria-labelledby="admin-alerts-title"
-                    className="absolute right-0 z-50 mt-2 w-[min(380px,calc(100vw-32px))] border border-border bg-card shadow-xl"
+                    className="absolute right-0 z-50 mt-2 w-[min(380px,calc(100vw-32px))] overflow-hidden rounded-overlay border border-border bg-card shadow-xl"
                 >
                     <header className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
                         <h2 id="admin-alerts-title" className="text-sm font-bold text-slate-900">{t('admin.analytics.alertsTitle')}</h2>

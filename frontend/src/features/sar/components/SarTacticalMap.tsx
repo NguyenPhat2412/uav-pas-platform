@@ -147,16 +147,16 @@ export function SarTacticalMap({mission, detections, telemetry, selectedId, onSe
         }).bindTooltip(mission.uavSerialNumber ?? 'UAV').addTo(group);
     }, [ready, telemetry, mission.uavSerialNumber]);
 
-    return <div className="flex h-full flex-col overflow-hidden rounded-none border border-border bg-card">
+    return <div className="flex h-full flex-col overflow-hidden rounded-panel border border-border bg-card">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-slate-50 px-4 py-2.5">
             <h3 className="m-0 text-xs font-bold uppercase tracking-wider text-slate-900">{t('opsShared.sar.map.title')}</h3>
             <div className="flex flex-wrap items-center gap-2 text-xs">
                 <button type="button" onClick={() => plan ? setPlan(null) : generate.mutate()} disabled={generate.isPending}
-                        className={cn('flex items-center gap-1.5 rounded-none px-3 py-1.5 font-bold text-white transition disabled:opacity-60',
+                        className={cn('flex items-center gap-1.5 rounded-control px-3 py-1.5 font-bold text-white transition disabled:opacity-60',
                             plan ? 'bg-primary hover:bg-primary-hover' : 'bg-uav-blue hover:bg-uav-blue-hover')}>
                     <Route size={14} aria-hidden="true"/>{plan ? t('opsShared.sar.map.clearPlan') : t('opsShared.sar.map.generatePlan')}</button>
                 <button type="button" onClick={() => setBasemap(b => b === 'streets' ? 'satellite' : 'streets')}
-                        className="flex items-center gap-1.5 rounded-none border border-border bg-card px-2.5 py-1.5 font-bold text-slate-700 hover:bg-slate-100">
+                        className="flex items-center gap-1.5 rounded-control border border-border bg-card px-2.5 py-1.5 font-bold text-slate-700 hover:bg-slate-100">
                     <Layers size={14} aria-hidden="true"/>{t(`opsShared.sar.map.basemap.${basemap === 'streets' ? 'satellite' : 'streets'}`)}</button>
             </div>
         </div>

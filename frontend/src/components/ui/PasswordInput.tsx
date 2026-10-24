@@ -40,7 +40,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
                         ref={ref}
                         type={showPassword ? 'text' : 'password'}
                         className={cn(
-                            'w-full h-12 pl-4 pr-12 rounded-none bg-card text-body-lg font-body-lg text-on-surface placeholder:text-outline transition-colors duration-150 outline-none focus:outline-2 focus:outline-ring border border-border-input',
+                            'w-full h-12 pl-4 pr-12 rounded-control bg-card text-body-lg font-body-lg text-on-surface placeholder:text-outline transition-colors duration-150 outline-none focus:outline-2 focus:outline-ring border border-border-input',
                             leftIcon && 'pl-11',
                             error && 'border-danger focus:outline-danger',
                             className

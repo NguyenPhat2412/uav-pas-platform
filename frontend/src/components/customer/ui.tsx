@@ -18,7 +18,7 @@ export function Button({variant = 'primary', className = '', ...props}: ButtonHT
     return (
         <SharedButton
             className={cn(
-                'inline-flex min-h-10 items-center justify-center gap-2 rounded-none px-4 py-2 text-sm font-bold transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1',
+                'inline-flex min-h-10 items-center justify-center gap-2 rounded-control px-4 py-2 text-sm font-bold transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1',
                 buttonVariants[variant],
                 className
             )}
@@ -33,7 +33,7 @@ export function Field({label, className = '', ...props}: InputHTMLAttributes<HTM
             <span>{label}{props.required && <RequiredMark/>}</span>
             <input
                 className={cn(
-                    'w-full min-h-10 rounded-none border border-slate-300 bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-1 focus:ring-primary disabled:bg-slate-100 disabled:text-slate-500',
+                    'w-full min-h-10 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-1 focus:ring-primary disabled:bg-slate-100 disabled:text-slate-500',
                     className
                 )}
                 {...props}
@@ -48,7 +48,7 @@ export function TextField({label, className = '', ...props}: TextareaHTMLAttribu
             <span>{label}{props.required && <RequiredMark/>}</span>
             <textarea
                 className={cn(
-                    'w-full min-h-24 rounded-none border border-slate-300 bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-1 focus:ring-primary disabled:bg-slate-100 disabled:text-slate-500',
+                    'w-full min-h-24 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-1 focus:ring-primary disabled:bg-slate-100 disabled:text-slate-500',
                     className
                 )}
                 {...props}
@@ -64,7 +64,7 @@ export function Panel({title, children, action, className = ''}: {
     className?: string
 }) {
     return (
-        <section className={cn('rounded-none border border-slate-200 bg-white', className)}>
+        <section className={cn('rounded-panel border border-slate-200 bg-white', className)}>
             {title && (
                 <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
                     <h2 className="text-sm font-bold uppercase tracking-wide text-slate-800">{keepVietnamesePhrases(title)}</h2>
@@ -94,7 +94,7 @@ export function Status({value}: { value: string }) {
         <span
             data-status={value}
             className={cn(
-                'inline-flex items-center gap-1.5 rounded-none border px-2 py-0.5 text-[11px] font-bold uppercase leading-4 tracking-wider',
+                'inline-flex items-center gap-1.5 rounded-badge border px-2 py-0.5 text-[11px] font-bold uppercase leading-4 tracking-wider',
                 statusStyles[normalized] || 'bg-slate-100 text-slate-700 border-slate-200'
             )}
         >

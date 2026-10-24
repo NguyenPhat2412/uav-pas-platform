@@ -14,7 +14,7 @@ import type {AiRouterSettings, AiRouterStatus} from '@/features/assistant/types/
 import {SuperheroLogo} from '@/features/assistant/components/SuperheroLogo';
 import {cn} from '@/lib/utils';
 
-const field = 'mt-1 w-full rounded-none border border-slate-300 bg-white px-3 py-2 text-[13px] font-normal text-slate-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
+const field = 'mt-1 w-full rounded-control border border-slate-300 bg-white px-3 py-2 text-[13px] font-normal text-slate-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
 /** Error codes from the gateway are open-ended (HTTP_502, …); unknown ones fall back to a generic line carrying the code. */
 function useErrorText() {
     const {t} = useI18n();
@@ -55,10 +55,10 @@ function StatusStrip({status, loading, settings, onRefresh}: {
                 <Router size={16} className="text-primary" aria-hidden="true"/>{t('admin.aiRouter.statusTitle')}</h2>
             <div className="flex flex-wrap items-center gap-2">
                 {dashboard && <a href={dashboard} target="_blank" rel="noopener noreferrer"
-                                 className="inline-flex h-8 items-center border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                                 className="rounded-control inline-flex h-8 items-center border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50">
                     {t('admin.aiRouter.openDashboard')}</a>}
                 <button type="button" onClick={onRefresh} disabled={loading}
-                        className="inline-flex h-8 items-center gap-1.5 border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60">
+                        className="rounded-control inline-flex h-8 items-center gap-1.5 border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60">
                     <RefreshCw size={13} className={cn(loading && 'animate-spin')} aria-hidden="true"/>{t('admin.aiRouter.recheck')}</button>
             </div>
         </header>
@@ -135,7 +135,7 @@ function SettingsForm({settings, models}: { settings: AiRouterSettings; models: 
                            placeholder={settings.apiKeyConfigured ? t('admin.aiRouter.apiKeyStored', {hint: settings.apiKeyHint ?? '••••'}) : t('admin.aiRouter.apiKeyPlaceholder')}/>
                     <span className="mt-1 block text-xs font-normal normal-case tracking-normal text-slate-500">{t('admin.aiRouter.apiKeyHint')}</span></label>
                 {settings.apiKeyConfigured && <button type="button" onClick={disconnect} disabled={save.isPending}
-                                                      className="inline-flex h-8 items-center gap-1.5 border border-rose-200 bg-white px-3 text-xs font-semibold text-primary hover:bg-uav-red-light disabled:opacity-60">
+                                                      className="rounded-control inline-flex h-8 items-center gap-1.5 border border-rose-200 bg-white px-3 text-xs font-semibold text-primary hover:bg-uav-red-light disabled:opacity-60">
                     <Unplug size={13} aria-hidden="true"/>{t('admin.aiRouter.disconnect')}</button>}
                 <label className="flex items-center gap-2.5 border-t border-slate-200 pt-4 text-[13px] font-semibold text-slate-800">
                     <input type="checkbox" checked={enabled} onChange={e => setEnabled(e.target.checked)} className="h-4 w-4 accent-primary"/>
@@ -163,7 +163,7 @@ function SettingsForm({settings, models}: { settings: AiRouterSettings; models: 
         <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-slate-50/70 px-4 py-3">
             <span className="text-xs text-slate-500">{t('admin.aiRouter.securityNote')}</span>
             <button type="submit" disabled={save.isPending}
-                    className="inline-flex h-9 items-center gap-1.5 bg-primary px-4 text-[13px] font-bold text-primary-foreground hover:bg-primary-hover disabled:opacity-60">
+                    className="rounded-control inline-flex h-9 items-center gap-1.5 bg-primary px-4 text-[13px] font-bold text-primary-foreground hover:bg-primary-hover disabled:opacity-60">
                 <Save size={15} aria-hidden="true"/>{save.isPending ? t('admin.aiRouter.saving') : t('admin.aiRouter.save')}</button>
         </footer>
     </form>;

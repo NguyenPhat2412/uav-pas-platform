@@ -111,13 +111,13 @@ function Profile() {
             <Panel title={t('profile.personalInfo')} action={!draft && profile ?
                 <Button variant="secondary" onClick={() => edit(profile)}>{t('profile.edit')}</Button> : undefined}>
                 {success && (
-                    <div className="bg-uav-blue-light text-uav-blue rounded-none px-3.5 py-3 mb-5 text-sm font-medium border border-blue-200" role="status">
+                    <div className="bg-uav-blue-light text-uav-blue rounded-panel px-3.5 py-3 mb-5 text-sm font-medium border border-blue-200" role="status">
                         {success}
                     </div>
                 )}
                 {!profile && !query.isError && <p role="status" className="text-sm text-slate-500">{t('profile.loading')}</p>}
                 {query.isError && (
-                    <div className="px-3.5 py-3 mb-4 rounded-none bg-rose-50 text-danger text-[13px] flex items-center justify-between gap-3 flex-wrap" role="alert">
+                    <div className="px-3.5 py-3 mb-4 rounded-panel bg-rose-50 text-danger text-[13px] flex items-center justify-between gap-3 flex-wrap" role="alert">
                         <span>{t('profile.loadError')}</span>
                         <Button variant="secondary" onClick={() => void query.refetch()} disabled={query.isFetching}>
                             {t('common.retry')}
@@ -128,7 +128,7 @@ function Profile() {
                     <form onSubmit={save} noValidate aria-label={t('profile.editLabel')}>
                         {failure && (
                             <div
-                                className="px-3.5 py-3 mb-5 rounded-none bg-rose-50 text-danger text-[13px]"
+                                className="px-3.5 py-3 mb-5 rounded-panel bg-rose-50 text-danger text-[13px]"
                                 role="alert"
                                 tabIndex={-1}
                                 ref={message}
@@ -137,7 +137,7 @@ function Profile() {
                             </div>
                         )}
                         {profile && profile.revision !== draft.revision && !failure && (
-                            <p className="px-3.5 py-3 mb-4 rounded-none bg-amber-50 text-amber-800 text-[13px]" role="status">
+                            <p className="px-3.5 py-3 mb-4 rounded-panel bg-amber-50 text-amber-800 text-[13px]" role="status">
                                 {t('profile.newerVersion')}
                             </p>
                         )}
@@ -159,7 +159,7 @@ function Profile() {
                                             fullName: e.target.value
                                         }
                                     })}
-                                    className={`w-full border rounded-none px-3 py-2.5 bg-card text-card-foreground text-base font-normal focus:outline-none focus:border-primary ${
+                                    className={`w-full border rounded-control px-3 py-2.5 bg-card text-card-foreground text-base font-normal focus:outline-none focus:border-primary ${
                                         errors.fullName ? 'border-danger' : 'border-border-input'
                                     }`}
                                 />

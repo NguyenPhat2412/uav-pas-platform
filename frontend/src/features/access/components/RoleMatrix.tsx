@@ -19,9 +19,9 @@ export function RoleMatrix() {
         .filter(p => !onlyDiff || new Set(roles.map(r => granted.get(r.role)?.has(p.code))).size > 1);
     const groups = [...new Set(rows.map(p => p.code.split('_')[0]))];
     return <QueryState query={permissions}><QueryState query={templates}>
-        <div className="min-w-0 overflow-hidden rounded-none border border-border bg-card">
+        <div className="min-w-0 overflow-hidden rounded-panel border border-border bg-card">
             <div className="flex flex-wrap items-center gap-2 border-b border-border p-4">
-                <label className="flex min-h-[44px] min-w-[160px] max-w-[320px] flex-1 items-center gap-2 rounded-none border border-border-input bg-card px-2.5 text-muted focus-within:outline-2 focus-within:outline-primary"><span className="sr-only">{t('admin.access.matrix.search')}</span>
+                <label className="flex min-h-[44px] min-w-[160px] max-w-[320px] flex-1 items-center gap-2 rounded-panel border border-border-input bg-card px-2.5 text-muted focus-within:outline-2 focus-within:outline-primary"><span className="sr-only">{t('admin.access.matrix.search')}</span>
                     <input className="min-h-[42px] w-full min-w-0 bg-transparent text-sm text-foreground outline-none" placeholder={t('admin.access.matrix.search')} value={filter} onChange={e => setFilter(e.target.value)}/></label>
                 <label className="inline-flex items-center gap-2 text-sm"><input type="checkbox" checked={onlyDiff}
                                                                                  onChange={e => setOnlyDiff(e.target.checked)}/>{t('admin.access.matrix.onlyDiff')}</label>

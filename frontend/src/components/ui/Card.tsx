@@ -9,11 +9,11 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
     ({className, variant = 'default', children, ...props}, ref) => {
         const variants = {
             default:
-                'bg-card text-card-foreground border border-slate-200 rounded-none overflow-hidden',
+                'bg-card text-card-foreground border border-slate-200 rounded-panel overflow-hidden',
             surface:
-                'bg-surface-container-low border border-outline-variant/40 rounded-none overflow-hidden',
+                'bg-surface-container-low border border-outline-variant/40 rounded-panel overflow-hidden',
             glass:
-                'bg-card/80 backdrop-blur-md border border-border/30 rounded-none overflow-hidden',
+                'bg-card/80 backdrop-blur-md border border-border/30 rounded-panel overflow-hidden',
         };
 
         return (

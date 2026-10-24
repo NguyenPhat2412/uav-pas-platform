@@ -32,7 +32,7 @@ export default function NotificationsPage() {
     return (
         <OperationsPage permission={null} activeResource="notifications">
             <div className="space-y-4">
-                <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-3.5 lg:flex-row lg:items-center">
+                <div className="flex flex-col gap-3 rounded-panel border border-border bg-card p-3.5 lg:flex-row lg:items-center">
                     <label className="relative flex min-w-[200px] flex-1 items-center">
                         <Search size={16} className="pointer-events-none absolute left-3 text-slate-400" aria-hidden="true"/>
                         <input
@@ -41,7 +41,7 @@ export default function NotificationsPage() {
                             placeholder={t('opsMissions.notifications.searchPlaceholder')}
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            className="h-9 w-full rounded-none border border-border bg-card pl-9 pr-3 text-[13px] text-slate-900 placeholder-slate-400 focus:border-primary focus:outline-none"
+                            className="h-9 w-full rounded-control border border-border bg-card pl-9 pr-3 text-[13px] text-slate-900 placeholder-slate-400 focus:border-primary focus:outline-none"
                         />
                     </label>
                     <div className="flex items-center gap-1.5 overflow-x-auto" role="group" aria-label={t('opsMissions.notifications.col.type')}>
@@ -51,7 +51,7 @@ export default function NotificationsPage() {
                                 type="button"
                                 onClick={() => setFilterType(id)}
                                 aria-pressed={filterType === id}
-                                className={`h-9 whitespace-nowrap rounded-none px-3 text-xs font-bold transition cursor-pointer ${
+                                className={`h-9 whitespace-nowrap rounded-control px-3 text-xs font-bold transition cursor-pointer ${
                                     filterType === id
                                         ? 'bg-primary text-primary-foreground'
                                         : 'border border-border bg-card text-slate-600 hover:bg-slate-50 hover:text-slate-900'
@@ -65,7 +65,7 @@ export default function NotificationsPage() {
                         <button
                             type="button"
                             onClick={markAllRead} disabled={busy || loading}
-                            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-none border border-blue-200 bg-uav-blue-light px-3.5 text-xs font-bold text-uav-blue transition hover:bg-blue-100 disabled:opacity-60 cursor-pointer"
+                            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-control border border-blue-200 bg-uav-blue-light px-3.5 text-xs font-bold text-uav-blue transition hover:bg-blue-100 disabled:opacity-60 cursor-pointer"
                         >
                             <CheckCheck size={16} aria-hidden="true"/> {t('opsMissions.notifications.markAll', {count: unreadCount})}
                         </button>
@@ -73,7 +73,7 @@ export default function NotificationsPage() {
                 </div>
 
                 {error && (
-                    <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-none bg-rose-50 px-3.5 py-3 text-[13px] text-danger">
+                    <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-panel bg-rose-50 px-3.5 py-3 text-[13px] text-danger">
                         <span>{error}</span>
                         <button type="button" onClick={reload} className="cursor-pointer border-0 bg-transparent p-0 font-bold text-primary hover:underline">
                             {t('opsMissions.notifications.retry')}
@@ -81,7 +81,7 @@ export default function NotificationsPage() {
                     </div>
                 )}
 
-                <div className="overflow-x-auto rounded-none border border-border bg-card" tabIndex={0} aria-label={t('opsMissions.notifications.title')}>
+                <div className="overflow-x-auto rounded-panel border border-border bg-card" tabIndex={0} aria-label={t('opsMissions.notifications.title')}>
                     <table className="w-full min-w-[820px] border-separate border-spacing-0 text-sm">
                         <thead>
                         <tr>
@@ -102,7 +102,7 @@ export default function NotificationsPage() {
                                 const Icon = tone.icon;
                                 return <tr key={item.id} className={item.isRead ? 'transition-colors hover:bg-slate-50/70' : 'bg-uav-red-light/40 transition-colors hover:bg-uav-red-light/70'}>
                                     <td className="whitespace-nowrap px-4 py-3 align-top">
-                                        <span className={`inline-flex items-center gap-1.5 rounded-none border px-2.5 py-0.5 text-xs font-semibold ${tone.badge}`}>
+                                        <span className={`inline-flex items-center gap-1.5 rounded-badge border px-2.5 py-0.5 text-xs font-semibold ${tone.badge}`}>
                                             <Icon size={13} aria-hidden="true"/>{t(`opsMissions.notifications.filter.${item.type}`)}</span>
                                     </td>
                                     <td className={`px-4 py-3 align-top ${item.isRead ? 'font-medium text-slate-700' : 'font-bold text-slate-900'}`}>{item.title}</td>
@@ -113,7 +113,7 @@ export default function NotificationsPage() {
                                     <td className="whitespace-nowrap px-4 py-3 align-top">
                                         {item.isRead ? <span className="text-xs text-slate-400">{t('opsMissions.notifications.read')}</span>
                                             : <button type="button" disabled={busy} onClick={() => markOneRead(item.id)}
-                                                      className="inline-flex items-center gap-1.5 rounded-none border border-border bg-card px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-uav-red-light disabled:opacity-60 cursor-pointer">
+                                                      className="inline-flex items-center gap-1.5 rounded-control border border-border bg-card px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-uav-red-light disabled:opacity-60 cursor-pointer">
                                                 <span className="h-2 w-2 rounded-full bg-primary" aria-hidden="true"/>{t('opsMissions.notifications.markOne')}</button>}
                                     </td>
                                 </tr>;

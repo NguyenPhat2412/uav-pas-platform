@@ -161,6 +161,11 @@ const config = {
                 "pulse-ring": "pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
             },
             borderRadius: {
+                // Shape scale: tune the whole UI here. Frames stay sharp; things you press are softly rounded.
+                panel: "0px",
+                control: "4px",
+                badge: "2px",
+                overlay: "6px",
                 DEFAULT: "0.25rem",
                 lg: "0.5rem",
                 xl: "0.75rem",

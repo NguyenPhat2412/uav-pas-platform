@@ -42,7 +42,7 @@ export function UserAvatar({user, size = 36}: { user: Pick<User, 'username' | 'f
     const name = user.fullName || user.username;
     const initials = name.split(/\s+/).filter(Boolean).slice(-2).map(part => part[0]).join('').toUpperCase();
     const hue = avatarHue(user.username);
-    return <span className="inline-flex flex-none items-center justify-center overflow-hidden rounded-none text-[13px] font-bold" aria-hidden="true"
+    return <span className="inline-flex flex-none items-center justify-center overflow-hidden rounded-full text-[13px] font-bold" aria-hidden="true"
                  style={{width: size, height: size, background: `hsl(${hue} 70% 94%)`, color: `hsl(${hue} 55% 32%)`}}>
         {user.avatarUrl ? <img src={avatarSrc(user.avatarUrl)} alt="" className="h-full w-full object-cover"/> : initials}</span>;
 }
@@ -98,7 +98,7 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
             const key = item ?? 'ALL';
             return <button key={key} type="button" aria-pressed={status === item}
                            className={cn(
-                               'relative flex cursor-pointer flex-col gap-1 overflow-hidden rounded-none border bg-card py-3.5 pl-5 pr-4 text-left transition before:absolute before:inset-y-0 before:left-0 before:w-1',
+                               'relative flex cursor-pointer flex-col gap-1 overflow-hidden rounded-control border bg-card py-3.5 pl-5 pr-4 text-left transition before:absolute before:inset-y-0 before:left-0 before:w-1',
                                statusToneStyles[key].bar,
                                status === item ? statusToneStyles[key].active : 'border-border hover:border-slate-300'
                            )}
@@ -107,7 +107,7 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
                 <strong className="text-2xl leading-tight text-foreground">{counts[key] ?? '—'}</strong>
             </button>;
         })}</div>}
-        <div className="min-w-0 overflow-hidden rounded-none border border-border bg-card">
+        <div className="min-w-0 overflow-hidden rounded-panel border border-border bg-card">
             <div className="flex gap-1 overflow-x-auto border-b border-border px-4 pt-2.5" role="tablist" aria-label={t('admin.users.filterByStatus')}>{userStatuses.map(item => {
                 const key = item ?? 'ALL';
                 return <button key={key} type="button" role="tab" aria-selected={status === item}
@@ -117,7 +117,7 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
                                )}
                                onClick={() => chooseStatus(item)}>
                     {item ? displayLabel(item) : t('admin.users.all')}<span className={cn(
-                        'min-w-[20px] rounded-none px-1.5 text-center text-[11.5px] leading-[18px]',
+                        'min-w-[20px] rounded-panel px-1.5 text-center text-[11.5px] leading-[18px]',
                         status === item ? 'bg-uav-red-light text-primary' : 'bg-slate-100 text-muted'
                     )}>{counts[key] ?? '—'}</span></button>;
             })}</div>
@@ -125,11 +125,11 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
                 e.preventDefault();
                 setKeyword(search.trim());
                 setPage(0);
-            }}><label className="flex min-h-[44px] min-w-[160px] max-w-[320px] flex-1 items-center gap-2 rounded-none border border-border-input bg-card px-2.5 text-muted focus-within:outline-2 focus-within:outline-primary"><span className="sr-only">{t('admin.users.search')}</span><input
+            }}><label className="flex min-h-[44px] min-w-[160px] max-w-[320px] flex-1 items-center gap-2 rounded-panel border border-border-input bg-card px-2.5 text-muted focus-within:outline-2 focus-within:outline-primary"><span className="sr-only">{t('admin.users.search')}</span><input
                 className="min-h-[42px] w-full min-w-0 bg-transparent text-sm text-foreground outline-none"
                 placeholder={t('admin.users.searchPlaceholder')} value={search}
                 onChange={e => setSearch(e.target.value)}/></label><Button type="submit" size="sm" variant="outline">{t('admin.users.searchButton')}</Button><label className="inline-flex items-center"><span className="sr-only">{t('admin.users.role')}</span><select
-                className="min-h-[44px] max-w-[200px] rounded-none border border-border-input bg-card px-2.5 text-sm text-foreground"
+                className="min-h-[44px] max-w-[200px] rounded-control border border-border-input bg-card px-2.5 text-sm text-foreground"
                 value={role ?? ''} onChange={e => {
                 setRole((e.target.value || undefined) as UserRole | undefined);
                 setPage(0);
@@ -142,7 +142,7 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
                     {manage && <Button type="button" size="sm" leftIcon={<UserPlus size={15}/>}
                                        onClick={() => setCreating(true)}>{t('admin.users.create.open')}</Button>}
                 </div>}</form>
-            {manage && selected.size > 0 && <div className="mx-4 mt-3 flex flex-wrap items-center gap-2.5 rounded-none bg-uav-red-light px-3.5 py-2.5 text-[13px]" role="region" aria-label={t('admin.users.bulk.region')}>
+            {manage && selected.size > 0 && <div className="mx-4 mt-3 flex flex-wrap items-center gap-2.5 rounded-panel bg-uav-red-light px-3.5 py-2.5 text-[13px]" role="region" aria-label={t('admin.users.bulk.region')}>
                 <strong>{t('admin.users.bulk.selected', {count: selected.size})}</strong>
                 <Button size="sm" variant="danger" leftIcon={<Lock size={14}/>} disabled={mutations.bulkLock.isPending}
                         onClick={() => void bulk(true)}>{t('admin.users.bulk.lock')}</Button>
@@ -174,9 +174,9 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
                                 </div>
                             </td>
                             <td data-label={t('admin.users.col.email')} className="px-4 py-3.5 align-middle text-foreground">{u.email}</td>
-                            <td data-label={t('admin.users.col.role')} className="px-4 py-3.5 align-middle text-foreground"><span className={cn('inline-flex whitespace-nowrap rounded-none px-2.5 py-0.5 text-xs font-semibold', roleChipStyles[u.role] ?? 'bg-slate-100 text-slate-600')}>{displayLabel(u.role)}</span></td>
+                            <td data-label={t('admin.users.col.role')} className="px-4 py-3.5 align-middle text-foreground"><span className={cn('inline-flex whitespace-nowrap rounded-badge px-2.5 py-0.5 text-xs font-semibold', roleChipStyles[u.role] ?? 'bg-slate-100 text-slate-600')}>{displayLabel(u.role)}</span></td>
                             <td data-label={t('admin.users.col.status')} className="px-4 py-3.5 align-middle text-foreground"><div className="flex flex-wrap gap-1.5"><StatusBadge status={u.status}/>
-                                {u.locked && <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-none border border-red-200 bg-red-50 px-2 py-[3px] text-xs font-semibold text-red-700"><Lock size={11} aria-hidden="true"/>{t('admin.users.lockedBadge')}</span>}</div></td>
+                                {u.locked && <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-panel border border-red-200 bg-red-50 px-2 py-[3px] text-xs font-semibold text-red-700"><Lock size={11} aria-hidden="true"/>{t('admin.users.lockedBadge')}</span>}</div></td>
                             <td data-label={t('admin.users.col.created')} className="px-4 py-3.5 align-middle text-foreground">{formatDate(u.createdAt)}</td>
                             <td data-label={t('admin.users.col.actions')} className="px-4 py-3.5 align-middle text-foreground">{onSelect ?
                                 <Button size="sm" variant="outline" onClick={() => onSelect(u)}>{t('admin.users.select')}</Button> :
@@ -215,12 +215,12 @@ function CreateUserDialog({onClose, onCreated}: { onClose: () => void; onCreated
         } catch {/* The mutation error is shown in the dialog. */
         }
     };
-    const inputClass = "min-h-[44px] w-full rounded-none border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground";
+    const inputClass = "min-h-[44px] w-full rounded-control border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground";
     return <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-900/45 p-4" role="presentation" onMouseDown={e => e.target === e.currentTarget && onClose()}>
-        <form className="flex max-h-[calc(100dvh-32px)] w-[min(640px,100%)] flex-col gap-3.5 overflow-y-auto rounded-none bg-card px-[22px] py-5 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="create-user-title"
+        <form className="flex max-h-[calc(100dvh-32px)] w-[min(640px,100%)] flex-col gap-3.5 overflow-y-auto rounded-overlay bg-card px-[22px] py-5 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="create-user-title"
               onSubmit={e => void submit(e)} onKeyDown={e => e.key === 'Escape' && onClose()}>
             <header className="flex items-center justify-between gap-2.5"><h2 id="create-user-title" className="text-[17px] font-bold text-foreground">{t('admin.users.create.title')}</h2>
-                <button type="button" className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-none border border-border bg-card text-muted transition-colors hover:border-primary hover:bg-uav-red-light hover:text-primary" aria-label={t('admin.users.create.cancel')} onClick={onClose}><X size={18}/></button></header>
+                <button type="button" className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-control border border-border bg-card text-muted transition-colors hover:border-primary hover:bg-uav-red-light hover:text-primary" aria-label={t('admin.users.create.cancel')} onClick={onClose}><X size={18}/></button></header>
             <div className="grid grid-cols-1 gap-x-3.5 gap-y-3 sm:grid-cols-2">
                 <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.field.username')}<input className={inputClass} required minLength={3} maxLength={50} autoFocus
                                                                                       value={form.username} onChange={set('username')} autoComplete="off"/></label>
@@ -251,7 +251,7 @@ export function UserDetail({id}: { id: number }) {
     if (!Number.isSafeInteger(id) || id <= 0) return <Alert variant="error">{t('admin.users.invalidId')}</Alert>;
     return <QueryState query={query}>{query.data &&
         <div className="space-y-6"><Link href="/admin/users" className="text-primary underline">{t('admin.users.back')}</Link>
-            <section className="min-w-0 rounded-none border border-border bg-card p-5"><Metadata
+            <section className="min-w-0 rounded-panel border border-border bg-card p-5"><Metadata
                 items={[[t('admin.users.field.username'), query.data.username], [t('admin.users.field.fullName'), query.data.fullName], [t('admin.users.field.email'), query.data.email], [t('admin.users.field.phone'), query.data.phoneNumber], [t('admin.users.field.role'), displayLabel(query.data.role)], [t('admin.users.field.status'),
                     <StatusBadge key="status"
                                  status={query.data.status}/>], [t('admin.users.field.created'), formatDate(query.data.createdAt)]]}/>
@@ -278,8 +278,8 @@ function AccountActions({user}: { user: User }) {
         } catch {/* Mutation errors remain visible. */
         }
     };
-    return <section className="min-w-0 space-y-4 rounded-none border border-border bg-card p-5"><h2 className="font-semibold">{t('admin.users.manageAccount')}</h2>
-        <div className="flex flex-wrap items-end gap-3"><label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.role')}<select className="min-h-[44px] w-full rounded-none border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground disabled:opacity-55" value={role}
+    return <section className="min-w-0 space-y-4 rounded-panel border border-border bg-card p-5"><h2 className="font-semibold">{t('admin.users.manageAccount')}</h2>
+        <div className="flex flex-wrap items-end gap-3"><label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.role')}<select className="min-h-[44px] w-full rounded-control border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground disabled:opacity-55" value={role}
                                                                                                      onChange={e => setRole(e.target.value as UserRole)}
                                                                                                      disabled={pending}>{roles.map(r =>
             <option key={r} value={r}>{displayLabel(r)}</option>)}</select></label><Button variant="outline"
@@ -311,10 +311,10 @@ function PasswordReset({user}: { user: User }) {
         } catch {/* The mutation error is shown below. */
         }
     };
-    return <section className="min-w-0 space-y-3 rounded-none border border-border bg-card p-5">
+    return <section className="min-w-0 space-y-3 rounded-panel border border-border bg-card p-5">
         <h2 className="font-semibold">{t('admin.users.reset.title')}</h2>
         <form className="flex flex-wrap items-end gap-3" onSubmit={e => void submit(e)}>
-            <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.reset.newPassword')}<input className="min-h-[44px] w-full rounded-none border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground" type="password" required minLength={8} maxLength={100}
+            <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.reset.newPassword')}<input className="min-h-[44px] w-full rounded-control border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground" type="password" required minLength={8} maxLength={100}
                                                                                     autoComplete="new-password" value={password}
                                                                                     onChange={e => setPassword(e.target.value)}/></label>
             <Button type="submit" variant="outline" disabled={resetPassword.isPending}>{t('admin.users.reset.submit')}</Button>
@@ -331,11 +331,11 @@ function UserActivity({user}: { user: User }) {
     const [page, setPage] = useState(0);
     const filters = mode === 'account' ? {entityType: 'USER', entityId: String(user.id)} : {actor: user.username};
     const query = useAdminAudit(page, 10, filters);
-    return <section className="min-w-0 overflow-hidden rounded-none border border-border bg-card">
+    return <section className="min-w-0 overflow-hidden rounded-panel border border-border bg-card">
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.users.activity.title')}</h2>
-            <div className="inline-flex rounded-none border border-border bg-card p-[3px]" role="group" aria-label={t('admin.users.activity.title')}>
+            <div className="inline-flex rounded-panel border border-border bg-card p-[3px]" role="group" aria-label={t('admin.users.activity.title')}>
                 {(['account', 'actor'] as const).map(m => <button key={m} type="button" aria-pressed={mode === m}
-                                                                className={cn('cursor-pointer rounded-none border-0 px-3 py-[5px] text-[12.5px] font-medium text-muted transition-colors', mode === m ? 'bg-uav-red-light font-semibold text-primary' : 'bg-transparent hover:text-foreground')}
+                                                                className={cn('cursor-pointer rounded-control border-0 px-3 py-[5px] text-[12.5px] font-medium text-muted transition-colors', mode === m ? 'bg-uav-red-light font-semibold text-primary' : 'bg-transparent hover:text-foreground')}
                                                                 onClick={() => {
                                                                     setMode(m);
                                                                     setPage(0);
@@ -345,7 +345,7 @@ function UserActivity({user}: { user: User }) {
         <QueryState query={query}>{query.data?.content.length ? <>
             <ul className="m-0 list-none px-[18px] pb-2 pt-1">{query.data.content.map(log => <li key={log.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border py-2.5 text-[13px] last:border-b-0 sm:grid-cols-[130px_auto_minmax(0,1fr)_minmax(0,1.4fr)]">
                 <time dateTime={log.createdAt} className="text-xs text-muted">{formatDate(log.createdAt)}</time>
-                <span className="inline-block w-fit whitespace-nowrap rounded-none bg-uav-red-light px-2 py-1 text-xs font-medium text-primary">{displayLabel(log.action)}</span>
+                <span className="inline-block w-fit whitespace-nowrap rounded-badge bg-uav-red-light px-2 py-1 text-xs font-medium text-primary">{displayLabel(log.action)}</span>
                 <span>{mode === 'actor' ? `${displayLabel(log.entityType)} · ${log.entityId}` : (log.actorUsername || t('admin.auditTable.system'))}</span>
                 <span className="max-w-[320px] text-[13px] text-foreground">{auditDetail(log.details)}</span>
             </li>)}</ul>

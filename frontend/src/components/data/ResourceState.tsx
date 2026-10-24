@@ -28,13 +28,13 @@ export function DataTable({headers, rows}: { headers: string[]; rows: ReactNode[
     const {t} = useI18n();
     if (!rows.length) {
         return (
-            <div className="rounded-none border border-border bg-card p-6">
+            <div className="rounded-panel border border-border bg-card p-6">
                 <EmptyState title={t('opsShared.state.noMatchingData')} detail={t('opsShared.state.noMatchingDetail')}/>
             </div>
         );
     }
     return (
-        <div className="overflow-x-auto rounded-none border border-border bg-card" tabIndex={0} aria-label={t('opsShared.state.dataTable')}>
+        <div className="overflow-x-auto rounded-panel border border-border bg-card" tabIndex={0} aria-label={t('opsShared.state.dataTable')}>
             <table className="w-full min-w-[680px] border-collapse text-left text-sm">
                 <thead className="sticky top-0 z-10 border-b border-border bg-slate-50/90 text-xs font-bold uppercase tracking-wider text-slate-500">
                     <tr>{headers.map(h => <th key={h} className="px-4 py-3">{h}</th>)}</tr>
@@ -69,10 +69,10 @@ export function Pagination({page, pages, onPage}: { page: number; pages?: number
 
 export function Detail({title, onClose, children}: { title: string; onClose: () => void; children: ReactNode }) {
     const {t} = useI18n();
-    return <section aria-label={title} className="space-y-4 rounded-none border border-blue-200 bg-blue-50/30 p-5">
+    return <section aria-label={title} className="space-y-4 rounded-panel border border-blue-200 bg-blue-50/30 p-5">
         <div className="flex items-center justify-between gap-4"><h2 className="text-lg font-semibold">{title}</h2>
             <Button size="sm" variant="outline" onClick={onClose}>{t('opsShared.state.closeDetail')}</Button></div>
         {children}</section>;
 }
 
-export const selectClass = 'h-11 min-w-0 rounded-none border border-slate-300 bg-white px-3 text-sm';
+export const selectClass = 'h-11 min-w-0 rounded-control border border-slate-300 bg-white px-3 text-sm';

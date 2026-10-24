@@ -70,7 +70,7 @@ export function AuthSidebar({className}: AuthSidebarProps) {
             <div className="relative z-10 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div
-                        className="w-11 h-11 rounded-none bg-white p-1 flex items-center justify-center border border-white/20 shrink-0">
+                        className="w-11 h-11 rounded-panel bg-white p-1 flex items-center justify-center border border-white/20 shrink-0">
                         <img src="/vju-logo.svg" alt="VJU Logo" width={36} height={36}
                              className="w-9 h-9 object-contain"/>
                     </div>

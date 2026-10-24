@@ -14,6 +14,6 @@ const statusStyles: Partial<Record<MissionStatus, string>> = {
 
 export function MissionStatusBadge({status}: { status: MissionStatus }) {
     return <span
-        className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-none border px-3 py-1.5 text-xs font-bold before:size-1.5 before:rounded-full before:bg-current ${statusStyles[status] ?? 'border-border bg-background text-muted'}`}
+        className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-panel border px-3 py-1.5 text-xs font-bold before:size-1.5 before:rounded-full before:bg-current ${statusStyles[status] ?? 'border-border bg-background text-muted'}`}
         data-status={status}>{displayLabel(status)}</span>;
 }

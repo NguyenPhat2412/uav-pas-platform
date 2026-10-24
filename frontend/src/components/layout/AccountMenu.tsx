@@ -56,7 +56,7 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
                 ref={trigger}
                 type="button"
                 className={cn(
-                    'flex items-center gap-2.5 rounded-none border border-border bg-card px-2.5 py-1.5 text-left transition-colors hover:bg-slate-50 cursor-pointer',
+                    'flex items-center gap-2.5 rounded-control border border-border bg-card px-2.5 py-1.5 text-left transition-colors hover:bg-slate-50 cursor-pointer',
                     open && 'border-primary/40 bg-slate-50'
                 )}
                 aria-haspopup="menu"
@@ -65,7 +65,7 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
                 aria-label={t('admin.account.open', {name})}
                 onClick={() => setOpen(value => !value)}
             >
-                <span className="flex h-7 w-7 items-center justify-center rounded-none bg-primary text-xs font-bold text-primary-foreground shrink-0" aria-hidden="true">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shrink-0" aria-hidden="true">
                     {initial}
                 </span>
                 <span className="hidden sm:flex flex-col leading-tight min-w-0">
@@ -77,18 +77,18 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
             {open && (
                 <div
                     id="account-menu"
-                    className="absolute right-0 mt-2 w-64 rounded-none border border-border bg-card p-2 shadow-xl z-50"
+                    className="absolute right-0 mt-2 w-64 rounded-overlay border border-border bg-card p-2 shadow-xl z-50"
                     role="menu"
                     aria-label={t('admin.account.menu')}
                 >
                     <div className="flex items-start gap-3 border-b border-slate-100 px-3 py-2.5 mb-1">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-none bg-primary text-sm font-bold text-primary-foreground shrink-0" aria-hidden="true">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground shrink-0" aria-hidden="true">
                             {initial}
                         </span>
                         <div className="min-w-0 flex-1">
                             <strong className="block truncate text-sm font-bold text-slate-900">{name}</strong>
                             <small className="block truncate text-xs text-slate-500">{user?.email}</small>
-                            <span className="mt-1 inline-block rounded-none bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-700">
+                            <span className="mt-1 inline-block rounded-badge bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-700">
                                 {displayLabel(user?.role)}
                             </span>
                         </div>
@@ -98,7 +98,7 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
                             role="menuitem"
                             href="/admin/profile"
                             onClick={close}
-                            className="flex items-center gap-2.5 rounded-none px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                            className="flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                         >
                             <UserRound size={16} aria-hidden="true"/>
                             {t('admin.account.myAccount')}
@@ -109,7 +109,7 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
                             role="menuitem"
                             href="/operations"
                             onClick={close}
-                            className="flex items-center gap-2.5 rounded-none px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                            className="flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                         >
                             <Radar size={16} aria-hidden="true"/>
                             {t('admin.account.operations')}
@@ -120,7 +120,7 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
                             role="menuitem"
                             href="/admin/dashboard"
                             onClick={close}
-                            className="flex items-center gap-2.5 rounded-none px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                            className="flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                         >
                             <ShieldCheck size={16} aria-hidden="true"/>
                             {t('admin.account.admin')}
@@ -131,7 +131,7 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
                             role="menuitem"
                             href="/admin/settings"
                             onClick={close}
-                            className="flex items-center gap-2.5 rounded-none px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                            className="flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                         >
                             <Settings size={16} aria-hidden="true"/>
                             {t('admin.account.settings')}
@@ -141,7 +141,7 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
                     <button
                         type="button"
                         role="menuitem"
-                        className="flex w-full items-center gap-2.5 rounded-none px-3 py-2 text-sm font-semibold text-danger hover:bg-red-50 transition-colors cursor-pointer"
+                        className="flex w-full items-center gap-2.5 rounded-control px-3 py-2 text-sm font-semibold text-danger hover:bg-red-50 transition-colors cursor-pointer"
                         onClick={() => {
                             close();
                             void logout();

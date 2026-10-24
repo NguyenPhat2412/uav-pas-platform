@@ -44,9 +44,9 @@ export function MissionFiles({items, downloading, onDownload}: {
         <ul className="m-0 grid list-none gap-2 p-0">{group.files.map(item => {
             const type = kind(item.media.contentType);
             const Icon = type.icon;
-            return <li key={item.id} className="mission-file flex items-center justify-between gap-3 rounded-none border border-border p-3">
+            return <li key={item.id} className="mission-file flex items-center justify-between gap-3 rounded-panel border border-border p-3">
                 <div className="flex min-w-0 items-center gap-3">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-none bg-background text-muted" aria-hidden="true"><Icon size={18}/></span>
+                    <span className="grid size-9 shrink-0 place-items-center rounded-panel bg-background text-muted" aria-hidden="true"><Icon size={18}/></span>
                     <div className="grid min-w-0 gap-0.5">
                         <span className="break-words text-sm font-semibold text-foreground">{item.media.originalName}</span>
                         <span className="text-xs text-muted">{t(`files.kinds.${type.key}`)} · {size(item.media.size)}

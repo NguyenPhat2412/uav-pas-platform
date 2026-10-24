@@ -31,7 +31,7 @@ export function CustomerAnalytics() {
     return <section className="flex flex-col gap-4" aria-labelledby="customer-analytics-title">
         <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="customer-analytics-title" className="text-[17px] font-bold text-foreground">{t('dashboard.analytics.title')}</h2></div>
         {query.isPending ? <p className="m-0 px-5 py-3 text-[13px] text-muted" role="status">{t('dashboard.analytics.loading')}</p> :
-            query.isError ? <div role="alert" className="rounded-none bg-danger/10 px-3.5 py-3 text-[13px] text-danger">{t('dashboard.analytics.loadError')}</div> :
+            query.isError ? <div role="alert" className="rounded-panel bg-danger/10 px-3.5 py-3 text-[13px] text-danger">{t('dashboard.analytics.loadError')}</div> :
                 <Body data={query.data}/>}
     </section>;
 }
@@ -49,7 +49,7 @@ function Body({data}: { data: Analytics }) {
         : t('dashboard.analytics.hours', {value: formatNumber(hours)});
 
     return <div className="space-y-5">
-        {data.pendingInvoices.count > 0 && <div className="flex items-center gap-2.5 rounded-none border border-amber-200 bg-amber-50 px-3 py-2.5 text-[13.5px] text-amber-800" role="status">
+        {data.pendingInvoices.count > 0 && <div className="flex items-center gap-2.5 rounded-panel border border-amber-200 bg-amber-50 px-3 py-2.5 text-[13.5px] text-amber-800" role="status">
             <AlertTriangle size={17} aria-hidden="true"/>
             <span className="flex-1">{t('dashboard.analytics.pendingInvoices', {count: data.pendingInvoices.count, amount: formatCurrency(data.pendingInvoices.amount)})}
                 {data.pendingInvoices.nextDue && ` · ${t('dashboard.analytics.nextDue', {date: formatDate(data.pendingInvoices.nextDue, {dateStyle: 'short'})})}`}</span>
@@ -143,8 +143,8 @@ function Body({data}: { data: Analytics }) {
 
             <Panel title={t('dashboard.analytics.turnaroundTitle')} className="h-full">
                 {data.turnaround.sampleSize ? <div className="grid grid-cols-2 gap-3">
-                    <div className="flex flex-col gap-1 rounded-none bg-slate-50 px-3.5 py-3"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.toConfirm')}</span><strong className="text-xl font-bold text-foreground">{duration(data.turnaround.submitToConfirm)}</strong></div>
-                    <div className="flex flex-col gap-1 rounded-none bg-slate-50 px-3.5 py-3"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.toComplete')}</span><strong className="text-xl font-bold text-foreground">{duration(data.turnaround.submitToComplete)}</strong></div>
+                    <div className="flex flex-col gap-1 rounded-panel bg-slate-50 px-3.5 py-3"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.toConfirm')}</span><strong className="text-xl font-bold text-foreground">{duration(data.turnaround.submitToConfirm)}</strong></div>
+                    <div className="flex flex-col gap-1 rounded-panel bg-slate-50 px-3.5 py-3"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.toComplete')}</span><strong className="text-xl font-bold text-foreground">{duration(data.turnaround.submitToComplete)}</strong></div>
                     <small className="col-span-full text-xs text-muted">{t('dashboard.analytics.turnaroundHint', {count: data.turnaround.sampleSize})}</small>
                 </div> : <p className="m-0 text-[13px] text-muted">{t('dashboard.analytics.noTurnaround')}</p>}
             </Panel>
@@ -166,7 +166,7 @@ function Quota({quota}: { quota: NonNullable<Analytics['quota']> }) {
     return <div>
         <div className="mb-1.5 flex justify-between text-[13.5px]"><span>{quota.planName ? planName(quota.planName) : t('dashboard.noPlan')}</span>
             <strong>{Math.round(ratio * 100)}%</strong></div>
-        <span className="flex h-2.5 gap-0.5 overflow-hidden rounded-none bg-slate-100"><span className="rounded-none" style={{width: `${ratio * 100}%`, background: tone}}/></span>
+        <span className="flex h-2.5 gap-0.5 overflow-hidden rounded-full bg-slate-100"><span className="rounded-panel" style={{width: `${ratio * 100}%`, background: tone}}/></span>
         <p className="mt-1.5 text-[13px] text-muted">{t('dashboard.analytics.quotaUsed', {used: formatNumber(quota.used), limit: formatNumber(quota.limit)})}</p>
         <p className="mt-1.5 text-[13px] text-muted">{quota.cycleEnd ? t('dashboard.analytics.cycleLeft', {count: quota.daysLeftInCycle, date: formatDate(quota.cycleEnd, {dateStyle: 'short'})}) : null}</p>
         {quota.projectedDaysToLimit === 0 ? <p className="mt-1.5 text-[13px] font-semibold text-amber-700">{t('dashboard.analytics.quotaExhausted')}</p> :
@@ -179,6 +179,6 @@ function EmptyHint() {
     const {t} = useI18n();
     return <div className="flex flex-col items-start gap-3">
         <p className="m-0 text-[13px] text-muted">{t('dashboard.analytics.noMissions')}</p>
-        <Link href="/customer/missions/create" className="inline-flex min-h-[44px] items-center justify-center rounded-none border border-border bg-card px-4 text-[13px] font-bold text-foreground transition hover:bg-background">{t('dashboard.bookService')}</Link>
+        <Link href="/customer/missions/create" className="inline-flex min-h-[44px] items-center justify-center rounded-control border border-border bg-card px-4 text-[13px] font-bold text-foreground transition hover:bg-background">{t('dashboard.bookService')}</Link>
     </div>;
 }

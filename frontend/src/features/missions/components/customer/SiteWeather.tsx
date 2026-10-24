@@ -29,12 +29,12 @@ export function SiteWeather({mission}: { mission: Mission }) {
     const number = (value: number | undefined, digits = 1) => value == null ? '—' : formatNumber(value, {maximumFractionDigits: digits});
     const data = weather.data;
 
-    return <section className="min-w-0 overflow-hidden rounded-none border border-border bg-card"
+    return <section className="min-w-0 overflow-hidden rounded-panel border border-border bg-card"
                     aria-labelledby="weather-title">
         <header className="flex items-center justify-between gap-3 border-b border-border px-5 py-4 md:px-6 md:py-5">
             <h2 id="weather-title" className="m-0 inline-flex items-center gap-2 text-lg font-bold text-foreground">
                 <CloudSun size={20} aria-hidden="true"/>{t('weather.title')}</h2>
-            <span className="rounded-none bg-background px-2.5 py-1 text-xs font-semibold text-muted">{t('weather.reference')}</span>
+            <span className="rounded-panel bg-background px-2.5 py-1 text-xs font-semibold text-muted">{t('weather.reference')}</span>
         </header>
         <div className="grid gap-3 p-5 md:p-6">
             {!hasPoint ? <p className="m-0 text-sm text-muted">{t('weather.noLocation')}</p>
@@ -67,7 +67,7 @@ export function SiteWeather({mission}: { mission: Mission }) {
 }
 
 function Metric({icon, label, value}: { icon: ReactNode; label: string; value: string }) {
-    return <div className="grid gap-1 rounded-none border border-border p-3">
+    return <div className="grid gap-1 rounded-panel border border-border p-3">
         <dt className="inline-flex items-center gap-1.5 text-xs text-muted"><span aria-hidden="true">{icon}</span>{label}</dt>
         <dd className="m-0 text-sm font-semibold tabular-nums text-foreground">{value}</dd>
     </div>;

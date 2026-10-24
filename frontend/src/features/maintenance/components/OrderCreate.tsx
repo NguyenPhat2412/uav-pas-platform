@@ -46,7 +46,7 @@ export function OrderCreate({schedule, uavId: initialUavId, uavs, canRead, onClo
             }, 'opsAssets.maintenance.orderCreate.created', () => {
                 if (created) onCreated(created);
             });
-        }}><ActionFeedback action={action}/><p className="text-sm text-slate-600">{t('opsAssets.maintenance.orderCreate.note')}</p>{schedule && <p className="rounded-none bg-slate-100 p-3 text-sm">{t('opsAssets.maintenance.orderCreate.linked', {id: schedule.id})}<strong>{schedule.title}</strong></p>}<UavField value={uavId} onChange={setUavId}
+        }}><ActionFeedback action={action}/><p className="text-sm text-slate-600">{t('opsAssets.maintenance.orderCreate.note')}</p>{schedule && <p className="rounded-panel bg-slate-100 p-3 text-sm">{t('opsAssets.maintenance.orderCreate.linked', {id: schedule.id})}<strong>{schedule.title}</strong></p>}<UavField value={uavId} onChange={setUavId}
                                                                             uavs={uavs} canRead={canRead}
                                                                             disabled={action.blocked}
                                                                             locked={!!schedule}/><OrderFieldsForm

@@ -31,11 +31,11 @@ export default function CustomerNotificationsPage() {
         <PageGuard permission={null}>
             <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
                 <div className="flex flex-wrap items-center gap-2.5">
-                    <div className="inline-flex bg-slate-100 p-1 rounded-none border border-border">
+                    <div className="inline-flex bg-slate-100 p-1 rounded-panel border border-border">
                         <button
                             type="button"
                             onClick={() => setFilter('ALL')}
-                            className={`border-0 font-bold text-xs px-3 py-1.5 rounded-none cursor-pointer transition-all ${
+                            className={`border-0 font-bold text-xs px-3 py-1.5 rounded-control cursor-pointer transition-all ${
                                 filter === 'ALL'
                                     ? 'bg-card text-slate-900'
                                     : 'bg-transparent text-slate-500 hover:text-slate-700'
@@ -46,7 +46,7 @@ export default function CustomerNotificationsPage() {
                         <button
                             type="button"
                             onClick={() => setFilter('UNREAD')}
-                            className={`border-0 font-bold text-xs px-3 py-1.5 rounded-none cursor-pointer transition-all ${
+                            className={`border-0 font-bold text-xs px-3 py-1.5 rounded-control cursor-pointer transition-all ${
                                 filter === 'UNREAD'
                                     ? 'bg-card text-primary'
                                     : 'bg-transparent text-slate-500 hover:text-slate-700'
@@ -67,7 +67,7 @@ export default function CustomerNotificationsPage() {
 
             {loading && <p role="status" className="text-sm text-slate-500 mb-4">{t('notificationsPage.loading')}</p>}
             {error && (
-                <div role="alert" className="px-3.5 py-3 mb-4 rounded-none bg-rose-50 text-danger text-[13px] flex items-center justify-between gap-3 flex-wrap">
+                <div role="alert" className="px-3.5 py-3 mb-4 rounded-panel bg-rose-50 text-danger text-[13px] flex items-center justify-between gap-3 flex-wrap">
                     <span>{error}</span>
                     <button
                         type="button"
@@ -103,14 +103,14 @@ export default function CustomerNotificationsPage() {
                                         }
                                     }}
                                     onClick={() => !busy && !item.isRead && markOneRead(item.id)}
-                                    className={`flex items-start gap-3.5 px-[18px] py-4 rounded-none border transition-all duration-150 ${
+                                    className={`flex items-start gap-3.5 px-[18px] py-4 rounded-panel border transition-all duration-150 ${
                                         !item.isRead
                                             ? 'border-primary/30 bg-gradient-to-r from-primary/5 to-card cursor-pointer'
                                             : 'border-border bg-card cursor-default'
                                     }`}
                                 >
                                     <div
-                                        className={`w-[38px] h-[38px] rounded-none border flex items-center justify-center shrink-0 mt-0.5 ${badge.className}`}
+                                        className={`w-[38px] h-[38px] rounded-panel border flex items-center justify-center shrink-0 mt-0.5 ${badge.className}`}
                                     >
                                         {item.type === 'ALERT' && <ShieldAlert size={19}/>}
                                         {item.type === 'WARNING' && <AlertCircle size={19}/>}
@@ -121,7 +121,7 @@ export default function CustomerNotificationsPage() {
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between gap-3 flex-wrap">
                                             <div className="flex items-center gap-2">
-                                                <span className={`text-[11px] font-bold px-2 py-0.5 rounded-none border ${badge.className}`}>
+                                                <span className={`text-[11px] font-bold px-2 py-0.5 rounded-panel border ${badge.className}`}>
                                                     {badge.label}
                                                 </span>
                                                 <strong className={`text-sm font-bold ${!item.isRead ? 'text-slate-900' : 'text-slate-700'}`}>

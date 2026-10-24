@@ -53,14 +53,14 @@ export function MissionMonitoring({mission}: { mission: Mission }) {
 
     return <div className="grid gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className={cn('inline-flex items-center gap-2 rounded-none border px-3 py-1 text-xs font-bold',
+            <span className={cn('inline-flex items-center gap-2 rounded-panel border px-3 py-1 text-xs font-bold',
                 live && ownFix && !ownFix.stale ? 'border-blue-200 bg-uav-blue-light text-uav-blue' : 'border-border bg-background text-muted')}>
                 <span className={cn('h-2 w-2 rounded-full', live && ownFix && !ownFix.stale ? 'animate-pulse bg-uav-blue' : 'bg-slate-300')} aria-hidden="true"/>
                 {live && ownFix && !ownFix.stale ? t('missionMonitor.live') : t(`missionMonitor.phase.${live ? 'live' : mission.status === 'COMPLETED' || mission.status === 'FAILED' ? 'ended' : 'planned'}`)}
             </span>
             {ownFix && <span className="text-xs text-muted">{t('missionMonitor.updated', {at: formatDate(ownFix.recordedAt, {timeStyle: 'medium'})})}</span>}
         </div>
-        {notice && <p role="status" className="m-0 rounded-none border-l-4 border-l-uav-amber bg-uav-amber-light px-3.5 py-2.5 text-sm text-amber-900">{notice}</p>}
+        {notice && <p role="status" className="m-0 rounded-panel border-l-4 border-l-uav-amber bg-uav-amber-light px-3.5 py-2.5 text-sm text-amber-900">{notice}</p>}
 
         <FlightMap mission={mission} fix={ownFix} center={center}/>
 
@@ -77,7 +77,7 @@ export function MissionMonitoring({mission}: { mission: Mission }) {
                   tone={ownFix.stale ? 'text-amber-700' : undefined}/>
         </dl>}
 
-        {plan && <div className="rounded-none border border-border bg-background p-4">
+        {plan && <div className="rounded-panel border border-border bg-background p-4">
             <h3 className="m-0 mb-2 text-sm font-bold text-foreground">{t('missionMonitor.planTitle')}</h3>
             <dl className="m-0 grid grid-cols-2 gap-x-4 gap-y-2 text-sm md:grid-cols-4 [&_dt]:text-xs [&_dt]:text-muted [&_dd]:m-0 [&_dd]:font-semibold [&_dd]:text-foreground">
                 <div><dt>{t('missionMonitor.area')}</dt><dd>{plan.areaSquareMeters ? `${formatNumber(Math.round(plan.areaSquareMeters / 100) / 100)} ha` : t(`missionMonitor.areaType.${plan.areaType}`)}</dd></div>
@@ -156,13 +156,13 @@ function FlightMap({mission, fix, center}: { mission: Mission; fix: UavTelemetry
             .bindTooltip(t('missionMonitor.uav')).addTo(group);
     }, [ready, fix, t]);
 
-    if (!center) return <p className="m-0 rounded-none border border-dashed border-border px-4 py-8 text-center text-sm text-muted">{t('missionMonitor.noLocation')}</p>;
-    return <div ref={container} className="relative z-0 h-[340px] overflow-hidden rounded-none border border-border" role="application"
+    if (!center) return <p className="m-0 rounded-panel border border-dashed border-border px-4 py-8 text-center text-sm text-muted">{t('missionMonitor.noLocation')}</p>;
+    return <div ref={container} className="relative z-0 h-[340px] overflow-hidden rounded-panel border border-border" role="application"
                 aria-label={t('missionMonitor.mapAria', {code: mission.code})}/>;
 }
 
 function Stat({icon, label, value, hint, tone}: { icon: React.ReactNode; label: string; value: string; hint?: string; tone?: string }) {
-    return <div className="rounded-none border border-border bg-background p-3.5">
+    return <div className="rounded-panel border border-border bg-background p-3.5">
         <dt className="flex items-center gap-1.5 text-xs text-muted"><span className="text-slate-400" aria-hidden="true">{icon}</span>{label}</dt>
         <dd className={cn('m-0 mt-1 text-xl font-extrabold tabular-nums', tone ?? 'text-foreground')}>{value}</dd>
         {hint && <dd className="m-0 mt-0.5 text-xs text-muted">{hint}</dd>}

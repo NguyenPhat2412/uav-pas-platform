@@ -24,24 +24,24 @@ export function ServicePlanCards({plans, currentPlanCode, onSelect, pendingCode}
                 }`}
             >
                 <div className="flex items-start justify-between gap-3">
-                    <span className={`inline-flex items-center justify-center shrink-0 w-12 h-12 rounded-none ${
+                    <span className={`inline-flex items-center justify-center shrink-0 w-12 h-12 rounded-panel ${
                         featured ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'
                     }`}>
                         <UavIcon size={26} aria-hidden="true"/>
                     </span>
                     <div className="flex flex-col items-end gap-1.5">
                         {featured && (
-                            <span className="inline-flex items-center gap-1.5 rounded-none px-2.5 py-1 text-[11px] font-bold leading-snug bg-primary text-primary-foreground">
+                            <span className="inline-flex items-center gap-1.5 rounded-badge px-2.5 py-1 text-[11px] font-bold leading-snug bg-primary text-primary-foreground">
                                 <Sparkles size={13} aria-hidden="true"/>{t('planCard.featured')}
                             </span>
                         )}
                         {current && (
-                            <span className="inline-flex items-center gap-1.5 rounded-none px-2.5 py-1 text-[11px] font-bold leading-snug bg-uav-blue-light text-uav-blue">
+                            <span className="inline-flex items-center gap-1.5 rounded-badge px-2.5 py-1 text-[11px] font-bold leading-snug bg-uav-blue-light text-uav-blue">
                                 <BadgeCheck size={13} aria-hidden="true"/>{t('planCard.current')}
                             </span>
                         )}
                         {!plan.active && (
-                            <span className="inline-flex items-center gap-1.5 rounded-none px-2.5 py-1 text-[11px] font-bold leading-snug bg-slate-100 text-slate-600">
+                            <span className="inline-flex items-center gap-1.5 rounded-badge px-2.5 py-1 text-[11px] font-bold leading-snug bg-slate-100 text-slate-600">
                                 {t('planCard.inactive')}
                             </span>
                         )}

@@ -49,7 +49,7 @@ export function RegisterForm() {
             <Field label="Email" type="email" value={form.email} onChange={update('email')} autoComplete="email" required/>
             <PasswordField label={t('customerAuth.password')} value={form.password} onChange={update('password')} autoComplete="new-password" required minLength={8}/>
             {error && (
-                <div className="rounded-none border border-red-200 bg-red-50 p-3.5 text-sm font-medium text-danger" role="alert">
+                <div className="rounded-panel border border-red-200 bg-red-50 p-3.5 text-sm font-medium text-danger" role="alert">
                     {error}
                 </div>
             )}
