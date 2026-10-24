@@ -1,10 +1,6 @@
 {
   "opsShared": {
     "sar": {
-      "page": {
-        "title": "AI作戦・捜索救助(SARコックピット)",
-        "meta": "SAR任務のAI検出、戦術マップ、UAVテレメトリ、推論ボードの状態を監視"
-      },
       "status": {
         "SEARCHING": "捜索中",
         "SUSPENDED": "中断",

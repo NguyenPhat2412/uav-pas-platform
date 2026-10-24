@@ -2,15 +2,18 @@
 
 import Link from 'next/link';
 import {useEffect, useRef, useState} from 'react';
-import {ChevronDown, LogOut, Radar, Settings, UserRound} from 'lucide-react';
+import {ChevronDown, LogOut, Radar, Settings, ShieldCheck, UserRound} from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {displayLabel} from '@/components/shared/presentation';
 import {canUsePortal} from '@/features/auth/utils/portal';
 import {cn} from '@/lib/utils';
 
-/** Top-bar account button; everything account-related lives in its menu so the sidebar holds navigation only. */
-export function AdminAccountMenu() {
+/**
+ * Top-bar account button shared by the admin and operations shells; everything account-related lives in its
+ * menu so the sidebar holds navigation only.
+ */
+export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
     const {user, logout, can} = useAuth();
     const {t} = useI18n();
     const [open, setOpen] = useState(false);
@@ -58,7 +61,7 @@ export function AdminAccountMenu() {
                 )}
                 aria-haspopup="menu"
                 aria-expanded={open}
-                aria-controls="admin-account-menu"
+                aria-controls="account-menu"
                 aria-label={t('admin.account.open', {name})}
                 onClick={() => setOpen(value => !value)}
             >
@@ -73,7 +76,7 @@ export function AdminAccountMenu() {
             </button>
             {open && (
                 <div
-                    id="admin-account-menu"
+                    id="account-menu"
                     className="absolute right-0 mt-2 w-64 rounded-2xl border border-border bg-card p-2 shadow-xl z-50"
                     role="menu"
                     aria-label={t('admin.account.menu')}
@@ -90,7 +93,7 @@ export function AdminAccountMenu() {
                             </span>
                         </div>
                     </div>
-                    {user && (
+                    {user && portal === 'admin' && (
                         <Link
                             role="menuitem"
                             href="/admin/profile"
@@ -101,7 +104,7 @@ export function AdminAccountMenu() {
                             {t('admin.account.myAccount')}
                         </Link>
                     )}
-                    {canUsePortal(user?.role, 'operations') && (
+                    {portal === 'admin' && canUsePortal(user?.role, 'operations') && (
                         <Link
                             role="menuitem"
                             href="/operations"
@@ -112,7 +115,18 @@ export function AdminAccountMenu() {
                             {t('admin.account.operations')}
                         </Link>
                     )}
-                    {can('PERMISSION_MANAGE') && (
+                    {portal === 'operations' && canUsePortal(user?.role, 'admin') && (
+                        <Link
+                            role="menuitem"
+                            href="/admin/dashboard"
+                            onClick={close}
+                            className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        >
+                            <ShieldCheck size={16} aria-hidden="true"/>
+                            {t('admin.account.admin')}
+                        </Link>
+                    )}
+                    {portal === 'admin' && can('PERMISSION_MANAGE') && (
                         <Link
                             role="menuitem"
                             href="/admin/settings"

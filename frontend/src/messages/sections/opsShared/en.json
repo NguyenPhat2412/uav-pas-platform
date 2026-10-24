@@ -1,10 +1,6 @@
 {
   "opsShared": {
     "sar": {
-      "page": {
-        "title": "AI Operations & Search and Rescue (SAR Cockpit)",
-        "meta": "Monitor AI detections, the tactical map, UAV telemetry and inference board status for SAR missions"
-      },
       "status": {
         "SEARCHING": "Searching",
         "SUSPENDED": "Suspended",

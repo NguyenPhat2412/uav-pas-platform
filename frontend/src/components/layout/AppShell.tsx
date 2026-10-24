@@ -3,7 +3,6 @@ import React, {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {
-    LogOut,
     Menu,
     PanelLeftClose,
     PanelLeftOpen,
@@ -12,8 +11,8 @@ import {
 import {useAuth} from '@/contexts/AuthContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
 import {NotificationBell} from '@/components/notifications/NotificationBell';
+import {AccountMenu} from '@/components/layout/AccountMenu';
 import {useI18n} from '@/contexts/I18nContext';
-import {displayLabel} from "@/components/shared/presentation";
 import {
     OPERATIONS_SIDEBAR_GROUPS,
     OPERATIONS_SIDEBAR_ROUTES,
@@ -28,7 +27,7 @@ const navGroups = OPERATIONS_SIDEBAR_GROUPS;
 
 export function AppShell({children, activeResource}: { children: React.ReactNode; activeResource?: string }) {
     const pathname = usePathname();
-    const {user, logout, can, permissionsReady} = useAuth();
+    const {can, permissionsReady} = useAuth();
     const {t} = useI18n();
     const [open, setOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
@@ -95,8 +94,6 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
         });
     };
 
-    const name = user?.fullName || user?.username || t('shell.dutyOfficer');
-    const roleLabel = displayLabel(user?.role);
     const visibleNav = nav.filter(item => !item.permission || (permissionsReady && can(item.permission)));
     const activeNav = resolveSidebarActiveItem(visibleNav, pathname, activeResource);
     const getNavLabel = (item: typeof nav[0]) => t(`operationsNav.${item.key}`);
@@ -194,21 +191,6 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                         );
                     })}
                 </nav>
-                <div className="mt-auto border-t border-slate-100 pt-2 space-y-0.5">
-                    <button
-                        type="button"
-                        onClick={() => void logout()}
-                        aria-label={t('common.logout')}
-                        title={railCollapsed ? t('common.logout') : undefined}
-                        className={cn(
-                            "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-slate-600 hover:bg-red-50 hover:text-danger transition-colors cursor-pointer",
-                            railCollapsed && "mx-auto h-8 w-8 justify-center px-0 py-0"
-                        )}
-                    >
-                        <LogOut size={16} className="shrink-0"/>
-                        {!railCollapsed && <span className="truncate">{t('common.logout')}</span>}
-                    </button>
-                </div>
             </aside>
             {open && (
                 <button
@@ -243,18 +225,12 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <LanguageSwitcher variant="compact"/>
                         <NotificationBell/>
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shrink-0">
-                            {name.slice(0, 1).toUpperCase()}
-                        </span>
-                        <div className="hidden sm:flex flex-col leading-tight">
-                            <strong className="text-sm font-semibold text-slate-800">{name}</strong>
-                            <small className="text-[11px] font-medium text-slate-500">{roleLabel}</small>
-                        </div>
+                        <LanguageSwitcher variant="compact"/>
+                        <AccountMenu portal="operations"/>
                     </div>
                 </header>
-                <main id="workspace" className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6 lg:p-8 space-y-6 outline-none" tabIndex={-1}>
+                <main id="workspace" className="w-full flex-1 p-4 sm:p-6 lg:p-8 space-y-6 outline-none" tabIndex={-1}>
                     {children}
                 </main>
             </div>

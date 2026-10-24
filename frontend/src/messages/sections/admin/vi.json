@@ -558,7 +558,8 @@
       "menu": "Tài khoản",
       "myAccount": "Tài khoản của tôi",
       "operations": "Chuyển sang cổng Điều phối",
-      "settings": "Cấu hình hệ thống"
+      "settings": "Cấu hình hệ thống",
+      "admin": "Chuyển sang cổng Quản trị"
     },
     "notifications": {
       "readFilter": "Lọc theo trạng thái đọc",

@@ -271,7 +271,6 @@
         "media": "Tệp kết quả"
       },
       "authenticating": "Đang xác thực",
-      "title": "Tổng quan vận hành",
       "openDispatch": "Mở điều phối",
       "partialError": "Không tải được toàn bộ số liệu. Các module còn lại vẫn khả dụng.",
       "summary": {
@@ -341,7 +340,6 @@
     "notifications": {
       "title": "Thông báo",
       "center": "Trung tâm thông báo",
-      "subtitle": "Theo dõi sự kiện bay, cảnh báo khẩn cấp SAR, trạng thái thiết bị và tin nhắn điều phối",
       "markAll": "Đánh dấu đã đọc tất cả ({count})",
       "searchLabel": "Tìm thông báo",
       "searchPlaceholder": "Tìm kiếm nội dung thông báo...",
@@ -361,23 +359,34 @@
         "readAll": "Đọc tất cả",
         "empty": "Không có thông báo nào",
         "viewAll": "Xem tất cả thông báo"
-      }
+      },
+      "col": {
+        "type": "Loại",
+        "title": "Tiêu đề",
+        "message": "Nội dung",
+        "time": "Thời gian",
+        "status": "Trạng thái"
+      },
+      "read": "Đã đọc",
+      "markOne": "Đánh dấu đã đọc"
     },
     "list": {
-      "myMissions": "Nhiệm vụ của tôi",
       "search": "Tìm nhiệm vụ",
-      "searchPlaceholder": "Mã hoặc tiêu đề",
       "refresh": "Làm mới",
-      "create": "Tạo nhiệm vụ",
-      "empty": "Chưa có nhiệm vụ."
+      "col": {
+        "code": "Mã",
+        "title": "Nhiệm vụ",
+        "customer": "Khách hàng",
+        "start": "Bắt đầu",
+        "location": "Địa điểm",
+        "type": "Loại",
+        "status": "Trạng thái"
+      }
     },
     "assigned": {
-      "title": "Nhiệm vụ được giao",
-      "meta": "Theo dõi lịch và thực hiện các nhiệm vụ được phân công."
+      "title": "Nhiệm vụ được giao"
     },
     "dispatch": {
-      "title": "Điều phối nhiệm vụ",
-      "meta": "Xác nhận, phân bổ tài nguyên và theo dõi tiến độ nhiệm vụ",
       "listTitle": "Nhiệm vụ vận hành"
     }
   }

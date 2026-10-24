@@ -1,6 +1,7 @@
 import type {LucideIcon} from 'lucide-react';
 import {
     Activity,
+    CirclePlus,
     BarChart3,
     Bell,
     Boxes,
@@ -315,6 +316,14 @@ export const CUSTOMER_SIDEBAR_ROUTES: SidebarRouteItem<CustomerNavGroup>[] = [
         icon: Activity,
         permission: 'MISSION_VIEW',
         badge: 'activeMissions',
+    },
+    {
+        href: '/customer/missions/create',
+        key: 'createRequest',
+        defaultLabel: 'Tạo yêu cầu',
+        group: 'operations',
+        icon: CirclePlus,
+        permission: 'MISSION_CREATE',
     },
     {
         href: '/customer/services',

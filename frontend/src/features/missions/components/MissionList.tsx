@@ -1,60 +1,71 @@
 'use client';
 
 import Link from 'next/link';
-import {CalendarClock, MapPin, Plus, RefreshCw} from 'lucide-react';
-import {Button, Card, CardContent, CardHeader, CardTitle, Input, Spinner} from '@/components/ui';
+import {RefreshCw} from 'lucide-react';
+import {Button, Spinner} from '@/components/ui';
+import {DataTable, options, type TableColumn} from '@/components/data/DataTable';
 import {displayLabel} from "@/components/shared/presentation";
 import {Mission} from "@/features/missions/types/mission.types";
 import {MissionStatusBadge} from "@/features/missions/components/MissionStatusBadge";
 import {toMissionSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
 
-export function MissionList({
-                                missions,
-                                loading,
-                                error,
-                                search,
-                                setSearch,
-                                onRefresh,
-                                title,
-                                allowCreate = true
-                            }: {
+/** Full-width mission table for the operations portal; search, sort, filters and paging run on the loaded list. */
+export function MissionList({missions, loading, error, onRefresh, label, showCustomer = false}: {
     missions: Mission[];
     loading: boolean;
     error: string | null;
-    search: string;
-    setSearch: (value: string) => void;
     onRefresh: () => void;
-    title?: string;
-    allowCreate?: boolean
+    label: string;
+    showCustomer?: boolean;
 }) {
     const {t, formatDate} = useI18n();
-    return <Card className="overflow-hidden">
-        <CardHeader
-            className="flex-row flex-wrap items-center justify-between gap-4 border-b border-border"><CardTitle>{title ?? t('opsMissions.list.myMissions')}</CardTitle>
-            <div className="flex max-w-xl flex-1 flex-wrap items-center gap-2.5 [&>*:first-child]:min-w-[180px] [&>*:first-child]:flex-1"><Input aria-label={t('opsMissions.list.search')} placeholder={t('opsMissions.list.searchPlaceholder')}
-                                                       value={search}
-                                                       onChange={(event) => setSearch(event.target.value)}/><Button
-                size="sm" variant="outline" onClick={onRefresh} leftIcon={<RefreshCw size={15}/>}>{t('opsMissions.list.refresh')}</Button>{allowCreate &&
-                <Link href="/operations/missions/create"><Button size="sm" leftIcon={<Plus size={15}/>}>{t('opsMissions.list.create')}</Button></Link>}</div>
-        </CardHeader>
-        <CardContent className="p-0">{loading ?
-            <div className="flex min-h-48 items-center justify-center"><Spinner size="lg"/></div> : error ?
-                <p className="p-6 text-danger">{error}</p> : missions.length === 0 ?
-                    <p className="p-8 text-center text-muted">{t('opsMissions.list.empty')}</p> :
-                    <div className="divide-y divide-border">{missions.map((mission) => <Link key={mission.id}
-                                                                                                href={`/operations/missions/${toMissionSlug(mission)}`}
-                                                                                                className="block p-5 transition-colors hover:bg-background">
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                            <div><p className="text-xs font-semibold text-primary">{mission.code}</p><h3
-                                className="break-words text-lg font-semibold text-foreground">{mission.title}</h3></div>
-                            <MissionStatusBadge status={mission.status}/></div>
-                        <div className="mt-3 flex flex-wrap gap-4 text-sm text-muted"><span
-                            className="inline-flex items-center gap-1"><CalendarClock
-                            size={15}/>{formatDate(mission.startTime, {dateStyle: 'short', timeStyle: 'medium'})}</span><span
-                            className="inline-flex items-center gap-1"><MapPin
-                            size={15}/>{mission.locationName}</span><span>{displayLabel(mission.missionType)}</span>
-                        </div>
-                    </Link>)}</div>}</CardContent>
-    </Card>;
+    const columns: TableColumn<Mission>[] = [
+        {
+            accessorKey: 'code',
+            header: t('opsMissions.list.col.code'),
+            cell: ({row}) => <Link href={`/operations/missions/${toMissionSlug(row.original)}`}
+                                   className="whitespace-nowrap font-semibold text-primary hover:underline">{row.original.code}</Link>,
+        },
+        {
+            accessorKey: 'title',
+            header: t('opsMissions.list.col.title'),
+            cell: ({row}) => <Link href={`/operations/missions/${toMissionSlug(row.original)}`}
+                                   className="font-semibold text-slate-900 hover:text-primary">{row.original.title}</Link>,
+        },
+        ...(showCustomer ? [{
+            accessorKey: 'customerName',
+            header: t('opsMissions.list.col.customer'),
+            cell: ({row}: { row: { original: Mission } }) => row.original.customerName || '—',
+        }] : []),
+        {
+            accessorKey: 'startTime',
+            header: t('opsMissions.list.col.start'),
+            cell: ({row}) => <span className="whitespace-nowrap tabular-nums">{formatDate(row.original.startTime, {dateStyle: 'short', timeStyle: 'short'})}</span>,
+        },
+        {accessorKey: 'locationName', header: t('opsMissions.list.col.location')},
+        {
+            accessorKey: 'missionType',
+            header: t('opsMissions.list.col.type'),
+            cell: ({row}) => displayLabel(row.original.missionType),
+            filterFn: 'equalsString',
+        },
+        {
+            accessorKey: 'status',
+            header: t('opsMissions.list.col.status'),
+            cell: ({row}) => <MissionStatusBadge status={row.original.status}/>,
+            filterFn: 'equalsString',
+        },
+    ];
+    if (loading) return <div className="flex min-h-48 items-center justify-center rounded-2xl border border-border bg-card"><Spinner size="lg"/></div>;
+    if (error) return <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-danger">
+        <span>{error}</span>
+        <Button size="sm" variant="outline" onClick={onRefresh} leftIcon={<RefreshCw size={15}/>}>{t('opsMissions.list.refresh')}</Button>
+    </div>;
+    return <DataTable label={label} data={missions} columns={columns} searchLabel={t('opsMissions.list.search')}
+                      filters={[
+                          {column: 'status', label: t('opsMissions.list.col.status'), options: options(missions.map(m => m.status))},
+                          {column: 'missionType', label: t('opsMissions.list.col.type'), options: options(missions.map(m => m.missionType))},
+                      ]}
+                      actions={<Button size="sm" variant="outline" onClick={onRefresh} leftIcon={<RefreshCw size={15}/>}>{t('opsMissions.list.refresh')}</Button>}/>;
 }

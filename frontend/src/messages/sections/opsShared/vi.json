@@ -1,10 +1,6 @@
 {
   "opsShared": {
     "sar": {
-      "page": {
-        "title": "Tác chiến AI & Tìm kiếm cứu nạn (SAR Cockpit)",
-        "meta": "Theo dõi phát hiện AI, bản đồ tác chiến, telemetry UAV và trạng thái bo mạch suy luận của nhiệm vụ SAR"
-      },
       "status": {
         "SEARCHING": "Đang tìm kiếm",
         "SUSPENDED": "Tạm dừng",

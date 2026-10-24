@@ -6,7 +6,8 @@ import {AlertCircle, Bell, CheckCheck, CheckCircle2, ChevronRight, Info, ShieldA
 import {useNotifications} from "@/features/notifications/hooks/useNotifications";
 import {useI18n} from '@/contexts/I18nContext';
 
-export function NotificationBell() {
+/** Top-bar notifications popover; viewAllHref points at the portal's own notifications page. */
+export function NotificationBell({viewAllHref = '/operations/notifications'}: { viewAllHref?: string }) {
     const {t, formatDate} = useI18n();
     const [isOpen, setIsOpen] = useState(false);
     const {
@@ -36,7 +37,7 @@ export function NotificationBell() {
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer"
+                className="relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-border bg-card text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
                 aria-label={t('opsMissions.notifications.title')} aria-expanded={isOpen}
                 title={t('opsMissions.notifications.center')}
             >
@@ -129,7 +130,7 @@ export function NotificationBell() {
 
                     <div className="border-t border-slate-100 p-2.5 bg-slate-50 text-center">
                         <Link
-                            href="/operations/notifications"
+                            href={viewAllHref}
                             onClick={() => setIsOpen(false)}
                             className="text-xs text-slate-600 hover:text-primary font-bold inline-flex items-center gap-1 py-1 transition"
                         >

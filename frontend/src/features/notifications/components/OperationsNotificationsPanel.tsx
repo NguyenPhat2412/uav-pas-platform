@@ -1,10 +1,17 @@
 'use client';
 
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {AlertCircle, Bell, CheckCheck, CheckCircle2, Clock, Info, Search, ShieldAlert} from 'lucide-react';
 import {useNotifications} from "@/features/notifications/hooks/useNotifications";
 import {OperationsPage} from '@/components/layout/OperationsPage';
 import {useI18n} from '@/contexts/I18nContext';
+
+const typeTone: Record<string, { icon: typeof Info; badge: string }> = {
+    ALERT: {icon: ShieldAlert, badge: 'border-rose-200 bg-rose-50 text-primary'},
+    WARNING: {icon: AlertCircle, badge: 'border-amber-200 bg-amber-50 text-amber-700'},
+    SUCCESS: {icon: CheckCircle2, badge: 'border-blue-200 bg-uav-blue-light text-uav-blue'},
+    INFO: {icon: Info, badge: 'border-sky-200 bg-sky-50 text-sky-700'},
+};
 
 export default function NotificationsPage() {
     const {notifications, unreadCount, loading, busy, error, reload, markAllRead, markOneRead} = useNotifications();
@@ -23,153 +30,96 @@ export default function NotificationsPage() {
 
 
     return (
-        <OperationsPage title={t('opsMissions.notifications.title')} permission={null} activeResource="notifications">
-            <div className="space-y-6">
-                {/* Header */}
-                <div
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-5">
-                    <div>
-                        <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
-                            <Bell className="text-primary"/> {t('opsMissions.notifications.center')}
-                        </h2>
-                        <p className="text-sm text-slate-500 mt-1">
-                            {t('opsMissions.notifications.subtitle')}
-                        </p>
-                    </div>
-
-                    {unreadCount > 0 && (
-                        <button
-                            type="button"
-                            onClick={markAllRead} disabled={busy || loading}
-                            className="flex items-center gap-2 px-4 py-2 bg-uav-blue-light hover:bg-blue-100 text-uav-blue border border-blue-200 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
-                        >
-                            <CheckCheck size={16}/> {t('opsMissions.notifications.markAll', {count: unreadCount})}
-                        </button>
-                    )}
-                </div>
-
-                {/* Filter and search bar */}
-                <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="relative flex-1">
-                        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"/>
+        <OperationsPage permission={null} activeResource="notifications">
+            <div className="space-y-4">
+                <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3.5 shadow-xs lg:flex-row lg:items-center">
+                    <label className="relative flex min-w-[200px] flex-1 items-center">
+                        <Search size={16} className="pointer-events-none absolute left-3 text-slate-400" aria-hidden="true"/>
                         <input
                             type="text"
                             aria-label={t('opsMissions.notifications.searchLabel')}
                             placeholder={t('opsMissions.notifications.searchPlaceholder')}
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            className="w-full bg-card border border-border rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary transition shadow-xs"
+                            className="h-9 w-full rounded-lg border border-border bg-card pl-9 pr-3 text-[13px] text-slate-900 placeholder-slate-400 focus:border-primary focus:outline-none"
                         />
-                    </div>
-
-                    <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                        {['ALL', 'ALERT', 'WARNING', 'INFO', 'SUCCESS'].map(id => ({id, label: t(`opsMissions.notifications.filter.${id}`)})).map(f => (
+                    </label>
+                    <div className="flex items-center gap-1.5 overflow-x-auto" role="group" aria-label={t('opsMissions.notifications.col.type')}>
+                        {['ALL', 'ALERT', 'WARNING', 'INFO', 'SUCCESS'].map(id => (
                             <button
-                                key={f.id}
-                                onClick={() => setFilterType(f.id)}
-                                aria-pressed={filterType === f.id}
-                                className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${
-                                    filterType === f.id
+                                key={id}
+                                type="button"
+                                onClick={() => setFilterType(id)}
+                                aria-pressed={filterType === id}
+                                className={`h-9 whitespace-nowrap rounded-lg px-3 text-xs font-bold transition cursor-pointer ${
+                                    filterType === id
                                         ? 'bg-primary text-primary-foreground shadow-xs'
-                                        : 'bg-card border border-border text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                                        : 'border border-border bg-card text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                 }`}
                             >
-                                {f.label}
+                                {t(`opsMissions.notifications.filter.${id}`)}
                             </button>
                         ))}
                     </div>
-                </div>
-
-                {loading && <p role="status" className="text-sm text-slate-500">{t('opsMissions.notifications.loading')}</p>}
-                {error && (
-                    <div role="alert" className="px-3.5 py-3 rounded-lg bg-rose-50 text-danger text-[13px] flex items-center justify-between gap-3 flex-wrap">
-                        <span>{error}</span>
+                    {unreadCount > 0 && (
                         <button
                             type="button"
-                            onClick={reload}
-                            className="text-primary font-bold hover:underline bg-transparent border-0 p-0 cursor-pointer"
+                            onClick={markAllRead} disabled={busy || loading}
+                            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg border border-blue-200 bg-uav-blue-light px-3.5 text-xs font-bold text-uav-blue transition hover:bg-blue-100 disabled:opacity-60 cursor-pointer"
                         >
+                            <CheckCheck size={16} aria-hidden="true"/> {t('opsMissions.notifications.markAll', {count: unreadCount})}
+                        </button>
+                    )}
+                </div>
+
+                {error && (
+                    <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-rose-50 px-3.5 py-3 text-[13px] text-danger">
+                        <span>{error}</span>
+                        <button type="button" onClick={reload} className="cursor-pointer border-0 bg-transparent p-0 font-bold text-primary hover:underline">
                             {t('opsMissions.notifications.retry')}
                         </button>
                     </div>
                 )}
-                {/* List */}
-                <div className="space-y-3">
-                    {!loading && !error && filtered.length === 0 ? (
-                        <div className="text-center py-16 bg-card border border-border rounded-2xl shadow-xs">
-                            <Bell size={36} className="mx-auto text-slate-300 mb-3"/>
-                            <p className="text-slate-600 font-bold">{t('opsMissions.notifications.emptyTitle')}</p>
-                            <p className="text-xs text-slate-400 mt-1">{t('opsMissions.notifications.emptyHint')}</p>
-                        </div>
-                    ) : (
-                        filtered.map(item => (
-                            <div
-                                key={item.id}
-                                role="button" tabIndex={busy ? -1 : 0} aria-disabled={busy || item.isRead}
-                                onKeyDown={event => {
-                                    if ((event.key === 'Enter' || event.key === ' ') && !busy && !item.isRead) {
-                                        event.preventDefault();
-                                        markOneRead(item.id);
-                                    }
-                                }}
-                                onClick={() => !busy && !item.isRead && markOneRead(item.id)}
-                                className={`p-4 rounded-2xl border transition cursor-pointer flex gap-4 ${
-                                    !item.isRead
-                                        ? 'bg-card border-rose-200 border-l-4 border-l-primary shadow-xs'
-                                        : 'bg-card border-border hover:bg-slate-50/70'
-                                }`}
-                            >
-                                <div className="mt-1 shrink-0">
-                                    {item.type === 'ALERT' && (
-                                        <div
-                                            className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-primary">
-                                            <ShieldAlert size={20}/>
-                                        </div>
-                                    )}
-                                    {item.type === 'WARNING' && (
-                                        <div
-                                            className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">
-                                            <AlertCircle size={20}/>
-                                        </div>
-                                    )}
-                                    {item.type === 'SUCCESS' && (
-                                        <div
-                                            className="w-9 h-9 rounded-xl bg-uav-blue-light border border-blue-200 flex items-center justify-center text-uav-blue">
-                                            <CheckCircle2 size={20}/>
-                                        </div>
-                                    )}
-                                    {item.type === 'INFO' && (
-                                        <div
-                                            className="w-9 h-9 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600">
-                                            <Info size={20}/>
-                                        </div>
-                                    )}
-                                </div>
 
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                                        <h3 className={`text-sm font-bold ${!item.isRead ? 'text-slate-900' : 'text-slate-700'}`}>
-                                            {item.title}
-                                        </h3>
-                                        <div className="flex items-center gap-2 text-xs text-slate-400">
-                                            <Clock size={12}/>
-                                            <span>{formatDate(item.createdAt, {dateStyle: 'short', timeStyle: 'medium'})}</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                                        {item.message}
-                                    </p>
-                                </div>
-
-                                {!item.isRead && (
-                                    <div className="self-center shrink-0">
-                                        <span
-                                            className="w-2.5 h-2.5 rounded-full bg-primary block ring-4 ring-rose-100"/>
-                                    </div>
-                                )}
-                            </div>
-                        ))
-                    )}
+                <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-xs" tabIndex={0} aria-label={t('opsMissions.notifications.title')}>
+                    <table className="w-full min-w-[820px] border-separate border-spacing-0 text-sm">
+                        <thead>
+                        <tr>
+                            {(['type', 'title', 'message', 'time', 'status'] as const).map(col =>
+                                <th key={col} className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">
+                                    {t(`opsMissions.notifications.col.${col}`)}</th>)}
+                        </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                        {loading ? <tr><td colSpan={5} className="px-4 py-10 text-center text-sm text-slate-500" role="status">{t('opsMissions.notifications.loading')}</td></tr>
+                            : !error && filtered.length === 0 ? <tr><td colSpan={5} className="px-4 py-12 text-center">
+                                <Bell size={30} className="mx-auto mb-2 text-slate-300" aria-hidden="true"/>
+                                <p className="m-0 font-bold text-slate-600">{t('opsMissions.notifications.emptyTitle')}</p>
+                                <p className="m-0 mt-1 text-xs text-slate-400">{t('opsMissions.notifications.emptyHint')}</p>
+                            </td></tr>
+                            : filtered.map(item => {
+                                const tone = typeTone[item.type] ?? typeTone.INFO;
+                                const Icon = tone.icon;
+                                return <tr key={item.id} className={item.isRead ? 'transition-colors hover:bg-slate-50/70' : 'bg-uav-red-light/40 transition-colors hover:bg-uav-red-light/70'}>
+                                    <td className="whitespace-nowrap px-4 py-3 align-top">
+                                        <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${tone.badge}`}>
+                                            <Icon size={13} aria-hidden="true"/>{t(`opsMissions.notifications.filter.${item.type}`)}</span>
+                                    </td>
+                                    <td className={`px-4 py-3 align-top ${item.isRead ? 'font-medium text-slate-700' : 'font-bold text-slate-900'}`}>{item.title}</td>
+                                    <td className="max-w-[520px] px-4 py-3 align-top text-[13px] leading-relaxed text-slate-600">{item.message}</td>
+                                    <td className="whitespace-nowrap px-4 py-3 align-top text-xs tabular-nums text-slate-500">
+                                        <span className="inline-flex items-center gap-1.5"><Clock size={12} aria-hidden="true"/>{formatDate(item.createdAt, {dateStyle: 'short', timeStyle: 'medium'})}</span>
+                                    </td>
+                                    <td className="whitespace-nowrap px-4 py-3 align-top">
+                                        {item.isRead ? <span className="text-xs text-slate-400">{t('opsMissions.notifications.read')}</span>
+                                            : <button type="button" disabled={busy} onClick={() => markOneRead(item.id)}
+                                                      className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-uav-red-light disabled:opacity-60 cursor-pointer">
+                                                <span className="h-2 w-2 rounded-full bg-primary" aria-hidden="true"/>{t('opsMissions.notifications.markOne')}</button>}
+                                    </td>
+                                </tr>;
+                            })}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </OperationsPage>

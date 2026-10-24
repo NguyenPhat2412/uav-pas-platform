@@ -558,7 +558,8 @@
       "menu": "Account",
       "myAccount": "My account",
       "operations": "Switch to Operations portal",
-      "settings": "System settings"
+      "settings": "System settings",
+      "admin": "Switch to the admin portal"
     },
     "notifications": {
       "readFilter": "Filter by read status",

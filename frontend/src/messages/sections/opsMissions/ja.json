@@ -271,7 +271,6 @@
         "media": "結果ファイル"
       },
       "authenticating": "認証中",
-      "title": "運用概要",
       "openDispatch": "配車を開く",
       "partialError": "一部の指標を読み込めませんでした。他のモジュールは引き続き利用できます。",
       "summary": {
@@ -341,7 +340,6 @@
     "notifications": {
       "title": "通知",
       "center": "通知センター",
-      "subtitle": "飛行イベント、SAR緊急アラート、機材ステータス、配車メッセージを確認",
       "markAll": "すべて既読にする({count})",
       "searchLabel": "通知を検索",
       "searchPlaceholder": "通知の内容を検索...",
@@ -361,23 +359,34 @@
         "readAll": "すべて既読",
         "empty": "通知はありません",
         "viewAll": "すべての通知を表示"
-      }
+      },
+      "col": {
+        "type": "種別",
+        "title": "件名",
+        "message": "内容",
+        "time": "日時",
+        "status": "状態"
+      },
+      "read": "既読",
+      "markOne": "既読にする"
     },
     "list": {
-      "myMissions": "マイミッション",
       "search": "ミッションを検索",
-      "searchPlaceholder": "コードまたはタイトル",
       "refresh": "更新",
-      "create": "ミッションを作成",
-      "empty": "ミッションはまだありません。"
+      "col": {
+        "code": "コード",
+        "title": "任務",
+        "customer": "顧客",
+        "start": "開始",
+        "location": "場所",
+        "type": "種別",
+        "status": "ステータス"
+      }
     },
     "assigned": {
-      "title": "割り当てられたミッション",
-      "meta": "割り当てられたミッションのスケジュールを確認し実施します。"
+      "title": "割り当てられたミッション"
     },
     "dispatch": {
-      "title": "ミッション配車",
-      "meta": "ミッションの確認、リソース配分、進捗管理",
       "listTitle": "運用ミッション"
     }
   }

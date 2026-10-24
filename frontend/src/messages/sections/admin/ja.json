@@ -558,7 +558,8 @@
       "menu": "アカウント",
       "myAccount": "マイアカウント",
       "operations": "運用ポータルへ切り替え",
-      "settings": "システム設定"
+      "settings": "システム設定",
+      "admin": "管理ポータルへ切り替え"
     },
     "notifications": {
       "readFilter": "既読状態で絞り込み",

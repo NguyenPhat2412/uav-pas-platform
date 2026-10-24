@@ -4,14 +4,12 @@ import {useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 import {Spinner} from '@/components/ui';
 import {AppShell} from '@/components/layout/AppShell';
-import {PageHeader} from '@/components/layout/PageHeader';
 import {PermissionGate} from '@/components/data/WorkspaceState';
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 
-export function OperationsPage({title, meta, permission, activeResource, children}: {
-    title: string;
-    meta?: string;
+/** Operations route wrapper: auth redirect, shell and permission gate. Pages carry no title block; the breadcrumb names them. */
+export function OperationsPage({permission, activeResource, children}: {
     permission: string | null;
     activeResource: string;
     children: React.ReactNode
@@ -25,6 +23,6 @@ export function OperationsPage({title, meta, permission, activeResource, childre
 
     if (isLoading || !isAuthenticated) return <div className="flex min-h-screen items-center justify-center"><Spinner
         size="lg" label={t('opsShared.state.authenticating')}/></div>;
-    return <AppShell activeResource={activeResource}><PageHeader title={title} meta={meta}/>{permission ?
+    return <AppShell activeResource={activeResource}>{permission ?
         <PermissionGate code={permission}>{children}</PermissionGate> : children}</AppShell>;
 }

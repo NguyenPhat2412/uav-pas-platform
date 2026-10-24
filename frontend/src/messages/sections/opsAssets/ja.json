@@ -9,32 +9,6 @@
       "stationTransfer": "ステーション移動: {from} → #{to}",
       "unassigned": "未割当"
     },
-    "pages": {
-      "uavs": {
-        "title": "UAV機体",
-        "meta": "機体の状況を確認し、各UAVの参照モデルを表示します"
-      },
-      "stations": {
-        "title": "UAVステーション",
-        "meta": "ステーションの状態・位置・運用履歴"
-      },
-      "inventory": {
-        "title": "機材在庫",
-        "meta": "在庫・入出庫・予約・機材移動を管理します"
-      },
-      "media": {
-        "title": "ファイルと資料",
-        "meta": "運用に使うファイル・画像・資料を管理します。"
-      },
-      "maintenance": {
-        "title": "メンテナンスと修理",
-        "meta": "UAV機体の定期計画・修理票・部材費用"
-      },
-      "audit": {
-        "title": "操作ログ",
-        "meta": "システム内の実行者・日時・変更内容を確認します。"
-      }
-    },
     "uav": {
       "model": "UAVモデル",
       "serial": "シリアル番号",
@@ -421,7 +395,6 @@
         }
       },
       "workspace": {
-        "intro": "各UAVの定期計画、修理作業、部材費用を管理します。期限日は画面上の目安のみで、UAVの自動停止や通知は行いません。",
         "tabs": {
           "schedules": "定期計画",
           "orders": "修理票"
@@ -466,7 +439,17 @@
         "paused": "計画を一時停止しました。",
         "activated": "計画を再開しました。",
         "confirmPause": "一時停止を確定",
-        "confirmActivate": "再開を確定"
+        "confirmActivate": "再開を確定",
+        "col": {
+          "schedule": "計画",
+          "order": "作業票",
+          "planned": "予定日",
+          "technician": "技術者",
+          "cost": "資材費",
+          "status": "ステータス",
+          "actions": "操作",
+          "paused": "一時停止中"
+        }
       }
     }
   }

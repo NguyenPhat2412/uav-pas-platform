@@ -9,32 +9,6 @@
       "stationTransfer": "Station transfer: {from} → #{to}",
       "unassigned": "Unassigned"
     },
-    "pages": {
-      "uavs": {
-        "title": "UAV fleet",
-        "meta": "Track the fleet and open each UAV's reference model"
-      },
-      "stations": {
-        "title": "UAV stations",
-        "meta": "Station status, location and operating history"
-      },
-      "inventory": {
-        "title": "Equipment inventory",
-        "meta": "Track stock, receipts and issues, reservations and equipment transfers"
-      },
-      "media": {
-        "title": "Files and documents",
-        "meta": "Manage files, images and documents for operations."
-      },
-      "maintenance": {
-        "title": "Maintenance and repair",
-        "meta": "Recurring schedules, repair orders and material costs for the UAV fleet"
-      },
-      "audit": {
-        "title": "Activity log",
-        "meta": "Look up who did what, when, and what changed in the system."
-      }
-    },
     "uav": {
       "model": "UAV model",
       "serial": "Serial number",
@@ -421,7 +395,6 @@
         }
       },
       "workspace": {
-        "intro": "Track recurring schedules, repair work and material costs for each UAV. Due dates are on-screen reminders only; they do not ground UAVs or send notifications automatically.",
         "tabs": {
           "schedules": "Recurring schedules",
           "orders": "Repair orders"
@@ -466,7 +439,17 @@
         "paused": "Schedule paused.",
         "activated": "Schedule activated.",
         "confirmPause": "Confirm pause",
-        "confirmActivate": "Confirm activation"
+        "confirmActivate": "Confirm activation",
+        "col": {
+          "schedule": "Schedule",
+          "order": "Order",
+          "planned": "Planned",
+          "technician": "Technician",
+          "cost": "Material cost",
+          "status": "Status",
+          "actions": "Actions",
+          "paused": "Paused"
+        }
       }
     }
   }

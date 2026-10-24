@@ -12,7 +12,7 @@ import {
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
-import {AdminAccountMenu} from '@/components/layout/AdminAccountMenu';
+import {AccountMenu} from '@/components/layout/AccountMenu';
 import {AdminAlertsPopover} from '@/components/layout/AdminAlertsPopover';
 import {
     ADMIN_SIDEBAR_GROUPS,
@@ -193,8 +193,6 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                         );
                     })}
                 </nav>
-                <div className="mt-auto border-t border-slate-100 pt-2">
-                </div>
             </aside>
             {open && (
                 <button
@@ -231,7 +229,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                     <div className="flex items-center gap-3">
                         <AdminAlertsPopover/>
                         <LanguageSwitcher variant="compact"/>
-                        <AdminAccountMenu/>
+                        <AccountMenu portal="admin"/>
                     </div>
                 </header>
                 <main id="workspace" className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6 lg:p-8 space-y-6 outline-none" tabIndex={-1}>

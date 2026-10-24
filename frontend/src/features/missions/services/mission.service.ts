@@ -1,5 +1,5 @@
 import {validateMediaFile} from "@/lib/api/media-policy";
-import {API_ROUTES, apiClient, apiRequest} from '@/lib/api';
+import {apiClient, apiRequest} from '@/lib/api';
 import {
     acceptanceInput,
     completionInput,

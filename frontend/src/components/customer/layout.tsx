@@ -3,11 +3,9 @@ import Link from 'next/link';
 import {useEffect, useRef, useState} from 'react';
 import {usePathname, useRouter} from 'next/navigation';
 import {
-    Bell,
     Menu,
     PanelLeftClose,
     PanelLeftOpen,
-    Plus,
     X
 } from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
@@ -16,6 +14,7 @@ import {LanguageSwitcher} from "@/components/ui/LanguageSwitcher";
 import {DispatchHotline} from "@/components/customer/DispatchHotline";
 import {useSidebarCounts} from "@/components/customer/useSidebarCounts";
 import {CustomerAccountMenu} from "@/components/customer/CustomerAccountMenu";
+import {NotificationBell} from "@/components/notifications/NotificationBell";
 import {
     CUSTOMER_SIDEBAR_GROUPS,
     CUSTOMER_SIDEBAR_ROUTES,
@@ -156,29 +155,17 @@ export function AppShell({children}: { children: React.ReactNode }) {
                         <X size={16}/>
                     </button>
                 </div>
-                {permissionsReady && can('MISSION_CREATE') && (
-                    <Link
-                        href="/customer/missions/create"
-                        onClick={() => setOpen(false)}
-                        title={railCollapsed ? t('nav.createRequest') : undefined}
-                        aria-label={t('nav.createRequest')}
-                        className={`mb-3 flex items-center justify-center gap-2 rounded-lg bg-primary text-[13px] font-bold text-primary-foreground shadow-sm transition hover:bg-primary-hover ${
-                            railCollapsed ? 'mx-auto h-9 w-9' : 'min-h-9 px-3'
-                        }`}
-                    >
-                        <Plus size={16} className="shrink-0" aria-hidden="true"/>
-                        {!railCollapsed && <span className="truncate">{t('nav.createRequest')}</span>}
-                    </Link>
-                )}
-                <nav aria-label={t('shell.customerSection')} className="flex flex-1 flex-col gap-3 overflow-y-auto">
-                    {navGroups.map(group => {
+                <nav aria-label={t('shell.customerSection')} className="flex flex-1 flex-col gap-2.5 overflow-y-auto">
+                    {navGroups.map((group, idx) => {
                         const items = visibleNav.filter(item => item.group === group);
                         if (!items.length) return null;
                         return (
                             <div key={group} role="group" aria-labelledby={railCollapsed ? undefined : `nav-group-${group}`}
                                  aria-label={railCollapsed ? t(`nav.groups.${group}`) : undefined}
-                                 className={`flex flex-col gap-0.5 ${railCollapsed ? 'border-t border-slate-100 pt-2 first:border-t-0 first:pt-0' : ''}`}>
-                                {!railCollapsed && (
+                                 className="space-y-0.5">
+                                {railCollapsed ? (
+                                    idx > 0 ? <hr className="my-1.5 border-slate-100"/> : null
+                                ) : (
                                     <div id={`nav-group-${group}`} className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none">
                                         {t(`nav.groups.${group}`)}
                                     </div>
@@ -214,9 +201,6 @@ export function AppShell({children}: { children: React.ReactNode }) {
                         );
                     })}
                 </nav>
-                <div className="mt-auto border-t border-slate-100 pt-2 space-y-0.5">
-                    <DispatchHotline variant="sidebar" collapsed={railCollapsed}/>
-                </div>
             </aside>
             {open && (
                 <button
@@ -246,16 +230,10 @@ export function AppShell({children}: { children: React.ReactNode }) {
                             </strong>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-3">
                         <DispatchHotline variant="topbar"/>
-                        <LanguageSwitcher/>
-                        <Link
-                            href="/customer/notifications"
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
-                            aria-label={t('shell.notifications')}
-                        >
-                            <Bell size={18}/>
-                        </Link>
+                        <NotificationBell viewAllHref="/customer/notifications"/>
+                        <LanguageSwitcher variant="compact"/>
                         <CustomerAccountMenu name={name}/>
                     </div>
                 </header>

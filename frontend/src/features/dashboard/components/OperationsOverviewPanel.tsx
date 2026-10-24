@@ -13,11 +13,11 @@ import {
     RadioTower,
     Settings2,
     ShieldCheck,
+    Plus,
     Users
 } from 'lucide-react';
 import {useRouter} from 'next/navigation';
 import {AppShell} from '@/components/layout/AppShell';
-import {PageHeader} from '@/components/layout/PageHeader';
 import {Spinner, StatusBadge} from '@/components/ui';
 import {useAuth} from '@/contexts/AuthContext';
 import {dashboardService} from '@/features/dashboard/services/dashboard.service';
@@ -89,8 +89,11 @@ export default function HomePage() {
 
     return <AppShell activeResource="overview">
         <div className="w-full">
-            <PageHeader title={t('opsMissions.overview.title')}
-                        action={{label: t('opsMissions.overview.openDispatch'), href: "/operations/dispatch/missions"}}/>
+            <div className="mb-4 flex justify-end">
+                <Link href="/operations/dispatch/missions"
+                      className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-primary px-3.5 text-[13px] font-bold text-primary-foreground shadow-xs transition hover:bg-primary-hover">
+                    <Plus size={15} aria-hidden="true"/>{t('opsMissions.overview.openDispatch')}</Link>
+            </div>
             {(error || uavsQuery.isError || stationsQuery.isError) && <div
                 className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{t('opsMissions.overview.partialError')}</div>}
             {canReadSummary &&
@@ -101,7 +104,7 @@ export default function HomePage() {
                     size={15}/> {t('opsMissions.overview.summary.availableUavs')} <strong className="tabular-nums text-foreground">{count(summary?.availableUavs)}</strong></span><span className="inline-flex items-center gap-[7px]"><Boxes
                     size={15}/> {t('opsMissions.overview.summary.equipment')} <strong className="tabular-nums text-foreground">{count(summary?.totalEquipmentUnits)}</strong></span><span className="inline-flex items-center gap-[7px]"><Activity
                     size={15}/> {t('opsMissions.overview.summary.auditEvents')} <strong className="tabular-nums text-foreground">{count(summary?.totalAuditEvents)}</strong></span></section>}
-            <section className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(370px,.75fr)]">
+            <section className="grid grid-cols-1 gap-5">
                 <div className="min-w-0 space-y-5">
                     {canReadMissions && <div className="min-w-0 rounded-[18px] border border-border bg-card shadow-sm">
                         <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-5">
@@ -200,7 +203,7 @@ export default function HomePage() {
                     </div>
                 </div>
             </section>
-            <section className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(300px,.8fr)]">
+            <section className="mt-5 grid grid-cols-1 gap-5">
                 <div className="min-w-0 rounded-[18px] border border-border bg-card shadow-sm">
                     <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-5">
                         <div><h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.stations.title')}</h2><span className="text-xs text-muted">{t('opsMissions.overview.stations.subtitle')}</span></div>
@@ -230,7 +233,7 @@ export default function HomePage() {
                     <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-5">
                         <div><h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.quickActions.title')}</h2><span className="text-xs text-muted">{t('opsMissions.overview.quickActions.subtitle')}</span></div>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 p-3">{quickActions.map(({icon: Icon, labelKey, href}) => <Link
+                    <div className="grid grid-cols-2 gap-2 p-3 md:grid-cols-4">{quickActions.map(({icon: Icon, labelKey, href}) => <Link
                         key={href} href={href}
                         className="group flex min-h-[76px] flex-col justify-between rounded-lg border border-slate-200 p-3 transition hover:border-primary/40 hover:bg-primary/5"><span
                         className="text-slate-400 group-hover:text-primary"><Icon size={17}/></span><span

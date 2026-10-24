@@ -271,7 +271,6 @@
         "media": "Result files"
       },
       "authenticating": "Authenticating",
-      "title": "Operations overview",
       "openDispatch": "Open dispatch",
       "partialError": "Some metrics could not be loaded. Other modules remain available.",
       "summary": {
@@ -341,7 +340,6 @@
     "notifications": {
       "title": "Notifications",
       "center": "Notification center",
-      "subtitle": "Track flight events, SAR emergency alerts, equipment status and dispatch messages",
       "markAll": "Mark all as read ({count})",
       "searchLabel": "Search notifications",
       "searchPlaceholder": "Search notification content...",
@@ -361,23 +359,34 @@
         "readAll": "Read all",
         "empty": "No notifications",
         "viewAll": "View all notifications"
-      }
+      },
+      "col": {
+        "type": "Type",
+        "title": "Title",
+        "message": "Message",
+        "time": "Time",
+        "status": "Status"
+      },
+      "read": "Read",
+      "markOne": "Mark as read"
     },
     "list": {
-      "myMissions": "My missions",
       "search": "Search missions",
-      "searchPlaceholder": "Code or title",
       "refresh": "Refresh",
-      "create": "Create mission",
-      "empty": "No missions yet."
+      "col": {
+        "code": "Code",
+        "title": "Mission",
+        "customer": "Customer",
+        "start": "Start",
+        "location": "Location",
+        "type": "Type",
+        "status": "Status"
+      }
     },
     "assigned": {
-      "title": "Assigned missions",
-      "meta": "Track the schedule and carry out your assigned missions."
+      "title": "Assigned missions"
     },
     "dispatch": {
-      "title": "Mission dispatch",
-      "meta": "Confirm, allocate resources and track mission progress",
       "listTitle": "Operations missions"
     }
   }

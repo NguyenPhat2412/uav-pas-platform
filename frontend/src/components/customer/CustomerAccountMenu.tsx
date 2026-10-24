@@ -6,6 +6,7 @@ import {ChevronDown, CreditCard, LogOut, UserRound} from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {Avatar} from '@/components/shared/Avatar';
+import {displayLabel} from '@/components/shared/presentation';
 import {cn} from '@/lib/utils';
 
 /** Top-bar account button; its menu holds the account page, billing and sign-out. */
@@ -51,8 +52,8 @@ export function CustomerAccountMenu({name}: { name: string }) {
                 ref={trigger}
                 type="button"
                 className={cn(
-                    'flex items-center gap-2 rounded-xl border border-border bg-slate-50/70 px-2 py-1.5 text-left transition-colors hover:bg-slate-100 cursor-pointer',
-                    open && 'border-primary/40 bg-slate-100'
+                    'flex items-center gap-2.5 rounded-xl border border-border bg-card px-2.5 py-1.5 text-left transition-colors hover:bg-slate-50 cursor-pointer',
+                    open && 'border-primary/40 bg-slate-50'
                 )}
                 aria-haspopup="menu"
                 aria-expanded={open}
@@ -61,7 +62,10 @@ export function CustomerAccountMenu({name}: { name: string }) {
                 onClick={() => setOpen(value => !value)}
             >
                 <Avatar name={name} avatarUrl={user?.avatarUrl}/>
-                <strong className="hidden max-w-[150px] truncate text-sm font-semibold text-slate-800 sm:block">{name}</strong>
+                <span className="hidden min-w-0 flex-col leading-tight sm:flex">
+                    <strong className="max-w-[150px] truncate text-xs font-bold text-slate-900">{name}</strong>
+                    <small className="truncate text-[11px] font-medium text-slate-500">{displayLabel(user?.role)}</small>
+                </span>
                 <ChevronDown size={15} className={cn('text-slate-400 transition-transform', open && 'rotate-180')} aria-hidden="true"/>
             </button>
             {open && (

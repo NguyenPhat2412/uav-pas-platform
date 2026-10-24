@@ -9,32 +9,6 @@
       "stationTransfer": "Điều chuyển trạm: {from} → #{to}",
       "unassigned": "Chưa gán"
     },
-    "pages": {
-      "uavs": {
-        "title": "Đội UAV",
-        "meta": "Theo dõi đội bay và mở mô hình tham chiếu của từng UAV"
-      },
-      "stations": {
-        "title": "Trạm UAV",
-        "meta": "Trạng thái, vị trí và lịch sử vận hành của các trạm"
-      },
-      "inventory": {
-        "title": "Kho thiết bị",
-        "meta": "Theo dõi tồn kho, nhập xuất, giữ chỗ và điều chuyển thiết bị"
-      },
-      "media": {
-        "title": "Tệp và tài liệu",
-        "meta": "Quản lý tệp, hình ảnh và tài liệu phục vụ vận hành."
-      },
-      "maintenance": {
-        "title": "Bảo trì và sửa chữa",
-        "meta": "Lịch định kỳ, phiếu sửa chữa và chi phí vật tư của đội UAV"
-      },
-      "audit": {
-        "title": "Nhật ký hoạt động",
-        "meta": "Tra cứu người thực hiện, thời gian và thay đổi trong hệ thống."
-      }
-    },
     "uav": {
       "model": "Mẫu UAV",
       "serial": "Số serial",
@@ -421,7 +395,6 @@
         }
       },
       "workspace": {
-        "intro": "Theo dõi lịch định kỳ, công việc sửa chữa và chi phí vật tư của từng UAV. Ngày đến hạn chỉ là nhắc việc trên màn hình; chưa tự động dừng UAV hoặc gửi thông báo.",
         "tabs": {
           "schedules": "Lịch định kỳ",
           "orders": "Phiếu sửa chữa"
@@ -466,7 +439,17 @@
         "paused": "Đã tạm dừng lịch.",
         "activated": "Đã kích hoạt lịch.",
         "confirmPause": "Xác nhận tạm dừng lịch",
-        "confirmActivate": "Xác nhận kích hoạt lịch"
+        "confirmActivate": "Xác nhận kích hoạt lịch",
+        "col": {
+          "schedule": "Lịch",
+          "order": "Phiếu",
+          "planned": "Ngày dự kiến",
+          "technician": "Kỹ thuật viên",
+          "cost": "Chi phí vật tư",
+          "status": "Trạng thái",
+          "actions": "Thao tác",
+          "paused": "Tạm dừng"
+        }
       }
     }
   }
