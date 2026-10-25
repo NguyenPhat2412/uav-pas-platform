@@ -145,3 +145,11 @@
         @apply cursor-pointer disabled:cursor-not-allowed;
     }
 }
+
+/* Assistant chat panel grows out of the launcher's corner. */
+@keyframes assistant-pop {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.94);
+    }
+}

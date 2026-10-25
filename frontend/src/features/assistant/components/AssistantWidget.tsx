@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {type FormEvent, type KeyboardEvent, type PointerEvent, useEffect, useRef, useState} from 'react';
+import {type FormEvent, type KeyboardEvent, type PointerEvent, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {Eraser, SendHorizontal, X} from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
@@ -28,6 +28,9 @@ type Corner = 'tl' | 'tr' | 'bl' | 'br';
 const CORNER_KEY = 'uav_assistant_corner';
 /** Pointer travel (px) before a press counts as a drag rather than a click. */
 const DRAG_THRESHOLD = 6;
+/** Glide into the corner with a slight overshoot, like a magnet catching the button. */
+const SETTLE = 'transform 460ms cubic-bezier(0.22, 1.25, 0.36, 1)';
+const PANEL_ORIGIN: Record<Corner, string> = {tl: 'origin-top-left', tr: 'origin-top-right', bl: 'origin-bottom-left', br: 'origin-bottom-right'};
 // Top corners sit below the portal header so the launcher never covers the account menu.
 const LAUNCHER_AT: Record<Corner, string> = {
     tl: 'top-[4.5rem] left-5', tr: 'top-[4.5rem] right-5', bl: 'bottom-5 left-5', br: 'bottom-5 right-5',
@@ -77,8 +80,11 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
     const [mode, setMode] = useState<1 | 2 | null>(null);
     const [draft, setDraft] = useState('');
     const [corner, setCorner] = useState<Corner>('br');
-    const [dragAt, setDragAt] = useState<{x: number; y: number} | null>(null);
-    const drag = useRef<{startX: number; startY: number; dx: number; dy: number; moved: boolean} | null>(null);
+    const [dragging, setDragging] = useState(false);
+    const [settles, setSettles] = useState(0);
+    const launcher = useRef<HTMLButtonElement>(null);
+    const drag = useRef<{startX: number; startY: number; box: DOMRect; x: number; y: number; moved: boolean; frame: number} | null>(null);
+    const dropFrom = useRef<DOMRect | null>(null);
     const justDragged = useRef(false);
     const list = useRef<HTMLDivElement>(null);
     const input = useRef<HTMLTextAreaElement>(null);
@@ -105,6 +111,24 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
             // Storage unavailable: stay bottom-right.
         }
     }, []);
+    // FLIP: after a drop the button already sits in its new corner; start it where it was released and let it glide home.
+    useLayoutEffect(() => {
+        const el = launcher.current;
+        const from = dropFrom.current;
+        dropFrom.current = null;
+        if (!el || !from) return;
+        el.style.transition = 'none';
+        el.style.transform = '';
+        const to = el.getBoundingClientRect();
+        el.style.transform = `translate(${from.left - to.left}px, ${from.top - to.top}px)`;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            el.style.transform = '';
+            return;
+        }
+        void el.offsetWidth;
+        el.style.transition = SETTLE;
+        el.style.transform = '';
+    }, [settles]);
     useEffect(() => {
         try {
             sessionStorage.setItem(storageKey, JSON.stringify(messages.slice(-40)));
@@ -112,7 +136,7 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
             // Storage unavailable: the conversation simply is not kept.
         }
         list.current?.scrollTo({top: list.current.scrollHeight});
-    }, [messages, storageKey]);
+    }, [messages, storageKey, corner]);
     useEffect(() => {
         try {
             if (conversationId) sessionStorage.setItem(threadKey, String(conversationId));
@@ -143,29 +167,42 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
     const onPointerDown = (event: PointerEvent<HTMLButtonElement>) => {
         if (event.button !== 0) return;
         justDragged.current = false;
-        const box = event.currentTarget.getBoundingClientRect();
-        drag.current = {startX: event.clientX, startY: event.clientY, dx: event.clientX - box.left, dy: event.clientY - box.top, moved: false};
-        event.currentTarget.setPointerCapture(event.pointerId);
+        const el = event.currentTarget;
+        el.style.transition = 'none';
+        el.style.transform = '';
+        drag.current = {startX: event.clientX, startY: event.clientY, box: el.getBoundingClientRect(), x: 0, y: 0, moved: false, frame: 0};
+        el.setPointerCapture(event.pointerId);
     };
     const onPointerMove = (event: PointerEvent<HTMLButtonElement>) => {
         const d = drag.current;
         if (!d) return;
-        if (!d.moved && Math.hypot(event.clientX - d.startX, event.clientY - d.startY) < DRAG_THRESHOLD) return;
-        d.moved = true;
-        const size = event.currentTarget.offsetWidth;
-        setDragAt({
-            x: Math.min(Math.max(0, event.clientX - d.dx), window.innerWidth - size),
-            y: Math.min(Math.max(0, event.clientY - d.dy), window.innerHeight - size),
+        if (!d.moved) {
+            if (Math.hypot(event.clientX - d.startX, event.clientY - d.startY) < DRAG_THRESHOLD) return;
+            d.moved = true;
+            setDragging(true);
+        }
+        // Keep the whole button on screen, then paint at most once per frame without re-rendering React.
+        d.x = Math.min(Math.max(-d.box.left, event.clientX - d.startX), window.innerWidth - d.box.right);
+        d.y = Math.min(Math.max(-d.box.top, event.clientY - d.startY), window.innerHeight - d.box.bottom);
+        const el = event.currentTarget;
+        if (!d.frame) d.frame = requestAnimationFrame(() => {
+            d.frame = 0;
+            el.style.transform = `translate(${d.x}px, ${d.y}px)`;
         });
     };
-    const onPointerUp = (event: PointerEvent<HTMLButtonElement>) => {
+    const endDrag = (el: HTMLButtonElement) => {
         const d = drag.current;
         drag.current = null;
+        if (d?.frame) cancelAnimationFrame(d.frame);
         if (!d?.moved) return;
         justDragged.current = true;
-        const next: Corner = `${event.clientY < window.innerHeight / 2 ? 't' : 'b'}${event.clientX < window.innerWidth / 2 ? 'l' : 'r'}`;
+        el.style.transform = `translate(${d.x}px, ${d.y}px)`;
+        const at = el.getBoundingClientRect();
+        const next: Corner = `${at.top + at.height / 2 < window.innerHeight / 2 ? 't' : 'b'}${at.left + at.width / 2 < window.innerWidth / 2 ? 'l' : 'r'}`;
+        dropFrom.current = at;
         setCorner(next);
-        setDragAt(null);
+        setDragging(false);
+        setSettles(n => n + 1);
         try {
             localStorage.setItem(CORNER_KEY, next);
         } catch {
@@ -205,8 +242,10 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
     };
 
     return <>
-        {open && <section role="dialog" aria-label={t('admin.assistant.title')}
-                          className={cn('fixed z-50 flex h-[560px] max-h-[calc(100dvh-10rem)]', PANEL_AT[corner],
+        {open && <section key={corner} role="dialog" aria-label={t('admin.assistant.title')}
+                          className={cn('fixed z-50 flex h-[560px] max-h-[calc(100dvh-10rem)] animate-[assistant-pop_220ms_cubic-bezier(0.2,0.9,0.3,1.15)] motion-reduce:animate-none',
+                              PANEL_AT[corner], PANEL_ORIGIN[corner], 'transition-opacity duration-150',
+                              dragging && 'pointer-events-none opacity-0',
                               ' w-[380px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-overlay border border-slate-200 bg-white shadow-2xl')}
                           onKeyDown={e => e.key === 'Escape' && setOpen(false)}>
             <header className="flex items-center gap-3 border-b border-slate-200 bg-slate-50/70 px-3.5 py-2.5">
@@ -282,16 +321,16 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
         </section>}
 
         <button type="button" onClick={toggle} aria-expanded={open}
-                onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
-                onPointerCancel={() => {
-                    drag.current = null;
-                    setDragAt(null);
+                ref={launcher} onPointerDown={onPointerDown} onPointerMove={onPointerMove}
+                onPointerUp={e => endDrag(e.currentTarget)} onPointerCancel={e => endDrag(e.currentTarget)}
+                onTransitionEnd={e => {
+                    if (e.propertyName === 'transform') e.currentTarget.style.transition = '';
                 }}
-                style={dragAt ? {left: dragAt.x, top: dragAt.y, right: 'auto', bottom: 'auto'} : undefined}
                 aria-label={open ? t('admin.assistant.close') : t('admin.assistant.open')} title={t('admin.assistant.title')}
-                className={cn('fixed z-50 flex h-14 w-14 touch-none select-none items-center justify-center rounded-full border-2 bg-white shadow-xl transition-colors',
-                    LAUNCHER_AT[corner], dragAt ? 'cursor-grabbing border-primary' : 'cursor-grab',
-                    !dragAt && (open ? 'border-primary' : 'border-slate-200 hover:border-primary'))}>
+                className={cn('fixed z-50 flex h-14 w-14 touch-none select-none items-center justify-center rounded-full border-2 bg-white will-change-transform',
+                    'transition-[scale,box-shadow,border-color] duration-200 ease-out motion-reduce:transition-none',
+                    LAUNCHER_AT[corner], dragging ? 'scale-110 cursor-grabbing border-primary shadow-2xl' : 'cursor-grab shadow-xl hover:scale-105 active:scale-95',
+                    !dragging && (open ? 'border-primary' : 'border-slate-200 hover:border-primary'))}>
             <SuperheroLogo size={42} title={t('admin.assistant.title')}/>
         </button>
     </>;
