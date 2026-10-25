@@ -99,7 +99,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         permission: 'UAV_READ',
     },
     {
-        href: '/operations/uavs',
+        href: '/admin/uavs',
         key: 'uavs',
         group: 'fleet',
         icon: Plane,

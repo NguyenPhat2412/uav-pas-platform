@@ -633,7 +633,7 @@
         "lastMaintenance": "Last maintenance"
       },
       "noStation": "No station",
-      "editInOperations": "Edit in Operations portal →",
+      "editInOperations": "Edit in UAV fleet →",
       "closeDetail": "Close details",
       "activeMission": "Current mission",
       "noActiveMission": "No mission is holding this UAV.",

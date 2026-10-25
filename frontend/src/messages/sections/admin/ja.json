@@ -633,7 +633,7 @@
         "lastMaintenance": "最終保守"
       },
       "noStation": "拠点なし",
-      "editInOperations": "運用ポータルで編集 →",
+      "editInOperations": "UAV フリートで編集 →",
       "closeDetail": "詳細を閉じる",
       "activeMission": "現在のミッション",
       "noActiveMission": "このUAVを使用中のミッションはありません。",

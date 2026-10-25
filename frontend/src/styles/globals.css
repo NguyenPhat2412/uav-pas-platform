@@ -128,8 +128,9 @@
         @apply font-sans;
     }
 
+    /* Leaflet panes and controls use z-index 400–1000; keep them inside the map so floating UI stays on top. */
     .leaflet-container {
-        @apply font-sans;
+        @apply font-sans isolate;
     }
 
     h1, h2, h3, h4 {

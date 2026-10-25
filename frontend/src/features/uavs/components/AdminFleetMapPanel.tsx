@@ -59,7 +59,7 @@ export function AdminFleetMapPanel() {
                         className="inline-flex h-9 items-center gap-1.5 border border-slate-200 bg-white px-3 text-[13px] font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50">
                     <RefreshCw size={14} className={cn(query.isFetching && 'animate-spin')} aria-hidden="true"/>{t('admin.fleetMap.refresh')}
                 </button>
-                <Link href="/operations/uavs"
+                <Link href="/admin/uavs"
                       className="inline-flex h-9 items-center gap-1.5 bg-primary px-3 text-[13px] font-semibold text-primary-foreground hover:opacity-90">
                     {t('admin.fleetMap.manage')}<ExternalLink size={14} aria-hidden="true"/>
                 </Link>
@@ -101,7 +101,7 @@ export function AdminFleetMapPanel() {
                         {t('admin.fleetMap.summary', {located: located.length, total: visible.length})}
                     </footer>
                 </section>
-                <section className="relative min-h-[420px] border border-slate-200 bg-white lg:h-[560px]">
+                <section className="relative isolate min-h-[420px] border border-slate-200 bg-white lg:h-[560px]">
                     <FleetMap uavs={visible} stations={query.data.stations} selectedId={selectedId} onSelect={setSelectedId} labels={labels}/>
                     <ul className="absolute bottom-3 left-3 z-[400] m-0 flex list-none flex-wrap gap-x-3 gap-y-1 border border-slate-200 bg-white/95 px-3 py-2 text-[11px] text-slate-600">
                         {uavStatuses.map(s => <li key={s} className="flex items-center gap-1.5">
@@ -150,7 +150,7 @@ function UavDetail({uav, where, onClose, formatDate}: {
         <header className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
             <h2 id="fleet-uav-title" className="text-[15px] font-bold text-slate-900">{uav.model}</h2>
             <div className="flex items-center gap-2">
-                <Link href="/operations/uavs" className="text-xs font-semibold text-primary hover:underline">{t('admin.fleetMap.editInOperations')}</Link>
+                <Link href="/admin/uavs" className="text-xs font-semibold text-primary hover:underline">{t('admin.fleetMap.editInOperations')}</Link>
                 <button type="button" onClick={onClose} aria-label={t('admin.fleetMap.closeDetail')}
                         className="p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"><X size={16}/></button>
             </div>
