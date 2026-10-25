@@ -1,6 +1,7 @@
 package com.uav.platform.modules.assistant.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record AssistantMessageResponse(
         Long id,
@@ -11,4 +12,5 @@ public record AssistantMessageResponse(
         Integer promptTokens,
         Integer completionTokens,
         Integer latencyMs,
-        LocalDateTime createdAt) {}
+        LocalDateTime createdAt,
+        List<AssistantAttachmentResponse> attachments) {}

@@ -51,6 +51,47 @@ export interface AssistantMessage {
     content: string;
 }
 
+/** IMAGE is a photo; VIDEO_FRAME is one still sampled from a video in the browser. */
+export type AttachmentKind = 'IMAGE' | 'VIDEO_FRAME';
+
+/** What the chat endpoint receives: the compressed image as base64, without the data: prefix. */
+export interface AssistantAttachmentInput {
+    kind: AttachmentKind;
+    name: string | null;
+    data: string;
+}
+
+/** An image shown in the chat; thumb is the small copy kept across reloads, src the full one when still in memory. */
+export interface ChatImage {
+    kind: AttachmentKind;
+    name: string | null;
+    src: string;
+    thumb: string;
+}
+
+/** An attachment picked in the composer and not sent yet. */
+export interface PendingAttachment extends ChatImage {
+    id: string;
+    data: string;
+}
+
+/** A message in the widget: at is when it was sent (ms), used to group bubbles like a messenger. */
+export interface ChatMessage extends AssistantMessage {
+    at?: number;
+    images?: ChatImage[];
+    /** Small grey line under the bubble, e.g. model and latency in the admin transcript. */
+    note?: string;
+}
+
+/** Consecutive messages of one sender within the grouping window, drawn under one avatar. */
+export interface ChatGroup {
+    role: 'user' | 'assistant';
+    at: number | undefined;
+    /** True when a time divider goes above this group (first group, or a long gap before it). */
+    divider: boolean;
+    messages: ChatMessage[];
+}
+
 export interface AssistantReply {
     reply: string;
     mode: number;
@@ -88,9 +129,30 @@ export interface AssistantStoredMessage {
     completionTokens: number | null;
     latencyMs: number | null;
     createdAt: string;
+    attachments: AssistantStoredAttachment[];
+}
+
+export interface AssistantStoredAttachment {
+    id: number;
+    kind: AttachmentKind;
+    mimeType: string;
+    name: string | null;
+    sizeBytes: number;
+    dataUrl: string;
 }
 
 export interface AssistantConversationDetail {
     conversation: AssistantConversation;
     messages: AssistantStoredMessage[];
 }
+
+export type RouterConsoleTab = 'console' | 'chats';
+export type AssistantCorner = 'tl' | 'tr' | 'bl' | 'br';
+
+export interface ConversationFilter {
+    portal: AssistantPortal | '';
+    q: string;
+    page: number;
+    size: number;
+}
+

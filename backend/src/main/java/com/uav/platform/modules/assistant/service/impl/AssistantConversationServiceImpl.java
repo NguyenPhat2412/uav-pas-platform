@@ -2,13 +2,17 @@ package com.uav.platform.modules.assistant.service.impl;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.assistant.dto.record.ChatImage;
 import com.uav.platform.modules.assistant.dto.record.ChatThread;
+import com.uav.platform.modules.assistant.dto.response.AssistantAttachmentResponse;
 import com.uav.platform.modules.assistant.dto.response.AssistantChatResponse;
 import com.uav.platform.modules.assistant.dto.response.AssistantConversationDetailResponse;
 import com.uav.platform.modules.assistant.dto.response.AssistantConversationResponse;
 import com.uav.platform.modules.assistant.dto.response.AssistantMessageResponse;
+import com.uav.platform.modules.assistant.entity.AssistantAttachment;
 import com.uav.platform.modules.assistant.entity.AssistantConversation;
 import com.uav.platform.modules.assistant.entity.AssistantMessage;
+import com.uav.platform.modules.assistant.repository.AssistantAttachmentRepository;
 import com.uav.platform.modules.assistant.repository.AssistantConversationRepository;
 import com.uav.platform.modules.assistant.repository.AssistantMessageRepository;
 import com.uav.platform.modules.assistant.service.AssistantConversationService;
@@ -29,7 +33,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +46,7 @@ public class AssistantConversationServiceImpl implements AssistantConversationSe
     private final AssistantMessageRepository messages;
     private final UserRepository users;
     private final AuditLogService audit;
+    private final AssistantAttachmentRepository attachments;
 
     /** Portals a role may chat from; mirrors the frontend portal guards. */
     static Set<String> portalsFor(UserRole role) {
@@ -56,7 +63,7 @@ public class AssistantConversationServiceImpl implements AssistantConversationSe
 
     @Override
     @Transactional
-    public ChatThread begin(Authentication auth, String requestedPortal, Long conversationId, String question) {
+    public ChatThread begin(Authentication auth, String requestedPortal, Long conversationId, String question, List<ChatImage> images) {
         AppUser user = users.findByUsername(auth.getName())
                 .orElseThrow(() -> SystemException.unauthorized("Unknown user"));
         LocalDateTime now = LocalDateTime.now();
@@ -86,7 +93,18 @@ public class AssistantConversationServiceImpl implements AssistantConversationSe
         message.setRole("user");
         message.setContent(question);
         message.setCreatedAt(now);
-        messages.save(message);
+        message = messages.save(message);
+        for (ChatImage image : images == null ? List.<ChatImage>of() : images) {
+            AssistantAttachment a = new AssistantAttachment();
+            a.setMessageId(message.getId());
+            a.setKind(image.kind());
+            a.setMimeType(image.mimeType());
+            a.setName(image.name() == null ? null : image.name().substring(0, Math.min(160, image.name().length())));
+            a.setSizeBytes(image.data().length);
+            a.setData(image.data());
+            a.setCreatedAt(now);
+            attachments.save(a);
+        }
         return new ChatThread(thread.getId(), thread.getPortal());
     }
 
@@ -128,10 +146,16 @@ public class AssistantConversationServiceImpl implements AssistantConversationSe
     public AssistantConversationDetailResponse detail(Long id) {
         AssistantConversation thread = conversations.findById(id)
                 .orElseThrow(() -> SystemException.notFound("Conversation not found", "ASSISTANT_CONVERSATION_NOT_FOUND"));
-        List<AssistantMessageResponse> turns = messages.findByConversationIdOrderByIdAsc(id).stream()
+        List<AssistantMessage> stored = messages.findByConversationIdOrderByIdAsc(id);
+        Map<Long, List<AssistantAttachmentResponse>> files = stored.isEmpty() ? Map.of()
+                : attachments.findByMessageIdInOrderByIdAsc(stored.stream().map(AssistantMessage::getId).toList()).stream()
+                .collect(Collectors.groupingBy(AssistantAttachment::getMessageId, Collectors.mapping(a -> new AssistantAttachmentResponse(
+                        a.getId(), a.getKind(), a.getMimeType(), a.getName(), a.getSizeBytes(),
+                        AssistantAttachmentOperations.dataUrl(a.getMimeType(), a.getData())), Collectors.toList())));
+        List<AssistantMessageResponse> turns = stored.stream()
                 .map(m -> new AssistantMessageResponse(m.getId(), m.getRole(), m.getContent(),
                         m.getMode() == null ? null : m.getMode().intValue(), m.getModel(), m.getPromptTokens(),
-                        m.getCompletionTokens(), m.getLatencyMs(), m.getCreatedAt()))
+                        m.getCompletionTokens(), m.getLatencyMs(), m.getCreatedAt(), files.getOrDefault(m.getId(), List.of())))
                 .toList();
         return new AssistantConversationDetailResponse(toResponse(thread), turns);
     }

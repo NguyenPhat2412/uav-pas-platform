@@ -964,7 +964,7 @@
       "helloBody": "Hỏi tôi về vận hành UAV, nhiệm vụ, hóa đơn hay cấu hình hệ thống.",
       "thinking": "Đang suy nghĩ…",
       "input": "Tin nhắn cho trợ lý",
-      "placeholder": "Nhập câu hỏi… (Enter để gửi, Shift+Enter xuống dòng)",
+      "placeholder": "Nhập câu hỏi…",
       "send": "Gửi",
       "failed": "Trợ lý không trả lời được ({code}).",
       "error": {
@@ -975,7 +975,10 @@
         "AI_ROUTER_UNREACHABLE": "Không kết nối được tới trợ lý AI.",
         "AI_ROUTER_RATE_LIMIT": "Bạn gửi quá nhanh — chờ một chút rồi thử lại.",
         "AI_ROUTER_MODE_UNSET": "Phương thức này chưa có model.",
-        "AI_ROUTER_EMPTY": "Model không trả về nội dung."
+        "AI_ROUTER_EMPTY": "Model không trả về nội dung.",
+        "ASSISTANT_ATTACHMENT_TOO_MANY": "Tối đa 8 ảnh cho mỗi tin nhắn.",
+        "ASSISTANT_ATTACHMENT_TOO_LARGE": "Ảnh quá lớn, hãy chọn ảnh nhỏ hơn.",
+        "ASSISTANT_ATTACHMENT_INVALID": "Chỉ hỗ trợ ảnh JPEG, PNG hoặc WebP."
       },
       "faqTitle": "Câu hỏi thường gặp",
       "faq": {
@@ -989,7 +992,6 @@
       "offBodyUser": "Trợ lý chưa sẵn sàng. Vui lòng quay lại sau hoặc liên hệ bộ phận hỗ trợ.",
       "helloBodyOperations": "Hỏi tôi về nhiệm vụ được giao, kiểm tra trước bay, telemetry, cứu nạn hay bảo trì.",
       "helloBodyCustomer": "Hỏi tôi về cách tạo yêu cầu bay, theo dõi nhiệm vụ, thanh toán hay hạn mức dịch vụ.",
-      "privacy": "Cuộc trò chuyện được lưu để quản trị viên cải thiện chất lượng hỗ trợ. Không gửi mật khẩu hay thông tin thanh toán.",
       "faqOperations": {
         "assigned": "Xem các nhiệm vụ được giao cho tôi ở đâu?",
         "preflight": "Cần kiểm tra gì trước khi cất cánh?",
@@ -1005,7 +1007,23 @@
         "quota": "Hạn mức gói dịch vụ của tôi được tính ra sao?",
         "results": "Xem ảnh và kết quả sau khi bay ở đâu?",
         "cancel": "Tôi có thể hủy hoặc đổi lịch yêu cầu bay không?"
-      }
+      },
+      "attach": "Đính kèm ảnh hoặc video",
+      "attachments": "Tệp đính kèm",
+      "removeAttachment": "Bỏ {name}",
+      "attachmentOnly": "Hãy xem ảnh/video tôi gửi kèm.",
+      "attachedEarlier": "[đã gửi kèm {count} ảnh]",
+      "keySend": "gửi",
+      "keyNewline": "xuống dòng",
+      "expand": "Phóng to khung chat",
+      "collapse": "Thu nhỏ khung chat",
+      "dropHere": "Thả ảnh hoặc video vào đây",
+      "reading": "Đang xử lý…",
+      "attachLimit": "Tối đa {max} ảnh cho mỗi tin nhắn (mỗi video tính 4 khung hình).",
+      "attachUnreadable": "Không đọc được tệp {name}.",
+      "viewImage": "Xem ảnh",
+      "prevImage": "Ảnh trước",
+      "nextImage": "Ảnh sau"
     },
     "assistantChats": {
       "intro": "Các cuộc trò chuyện với trợ lý từ cả ba cổng, mới nhất trước.",

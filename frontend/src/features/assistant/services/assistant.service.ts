@@ -4,13 +4,17 @@ import type {
     AiRouterSettings,
     AiRouterSettingsInput,
     AiRouterStatus,
+    AssistantAttachmentInput,
     AssistantConversation,
     AssistantConversationDetail,
     AssistantInfo,
     AssistantMessage,
     AssistantPortal,
     AssistantReply,
+    ConversationFilter,
 } from '@/features/assistant/types/assistant.types';
+
+export type {ConversationFilter};
 import type {PageResponse} from '@/types';
 
 export const assistantService = {
@@ -18,8 +22,15 @@ export const assistantService = {
     save: (input: AiRouterSettingsInput) => apiClient.put<AiRouterSettings>(API_ROUTES.aiRouter.settings, input),
     status: (signal?: AbortSignal) => apiClient.get<AiRouterStatus>(API_ROUTES.aiRouter.status, {signal}),
     info: (signal?: AbortSignal) => apiClient.get<AssistantInfo>(API_ROUTES.assistant.info, {signal}),
-    chat: (mode: number, messages: AssistantMessage[], portal: AssistantPortal, conversationId: number | null) =>
-        apiClient.post<AssistantReply>(API_ROUTES.assistant.chat, {mode, messages, portal, conversationId}),
+    chat: (mode: number, messages: AssistantMessage[], portal: AssistantPortal, conversationId: number | null,
+           attachments: AssistantAttachmentInput[] = []) =>
+        apiClient.post<AssistantReply>(API_ROUTES.assistant.chat, {
+            mode,
+            messages: messages.map(({role, content}) => ({role, content})),
+            portal,
+            conversationId,
+            attachments: attachments.length ? attachments : undefined,
+        }),
     conversations: (filter: ConversationFilter, signal?: AbortSignal) => {
         const params = new URLSearchParams({page: String(filter.page), size: String(filter.size)});
         if (filter.portal) params.set('portal', filter.portal);
@@ -30,13 +41,6 @@ export const assistantService = {
         apiClient.get<AssistantConversationDetail>(API_ROUTES.assistant.conversation(id), {signal}),
     deleteConversation: (id: number) => apiClient.delete<void>(API_ROUTES.assistant.conversation(id)),
 };
-
-export interface ConversationFilter {
-    portal: AssistantPortal | '';
-    q: string;
-    page: number;
-    size: number;
-}
 
 export const assistantKeys = {
     settings: ['ai-router', 'settings'] as const,

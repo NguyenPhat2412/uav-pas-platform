@@ -964,7 +964,7 @@
       "helloBody": "Ask me about UAV operations, missions, invoices or system settings.",
       "thinking": "Thinking…",
       "input": "Message to the assistant",
-      "placeholder": "Type a question… (Enter to send, Shift+Enter for a new line)",
+      "placeholder": "Ask a question…",
       "send": "Send",
       "failed": "The assistant could not answer ({code}).",
       "error": {
@@ -975,7 +975,10 @@
         "AI_ROUTER_UNREACHABLE": "Cannot reach the AI assistant.",
         "AI_ROUTER_RATE_LIMIT": "You are sending too fast — wait a moment.",
         "AI_ROUTER_MODE_UNSET": "This mode has no model.",
-        "AI_ROUTER_EMPTY": "The model returned no content."
+        "AI_ROUTER_EMPTY": "The model returned no content.",
+        "ASSISTANT_ATTACHMENT_TOO_MANY": "Up to 8 images per message.",
+        "ASSISTANT_ATTACHMENT_TOO_LARGE": "An image is too large; pick a smaller one.",
+        "ASSISTANT_ATTACHMENT_INVALID": "Only JPEG, PNG or WebP images are supported."
       },
       "faqTitle": "Frequently asked",
       "faq": {
@@ -989,7 +992,6 @@
       "offBodyUser": "The assistant isn't available yet. Please check back later or contact support.",
       "helloBodyOperations": "Ask me about assigned missions, pre-flight checks, telemetry, search & rescue or maintenance.",
       "helloBodyCustomer": "Ask me how to request a flight, track missions, pay invoices or check your plan quota.",
-      "privacy": "Chats are stored so administrators can improve support. Never send passwords or payment details.",
       "faqOperations": {
         "assigned": "Where do I see missions assigned to me?",
         "preflight": "What should I check before take-off?",
@@ -1005,7 +1007,23 @@
         "quota": "How is my service plan quota counted?",
         "results": "Where can I see photos and results after a flight?",
         "cancel": "Can I cancel or reschedule a flight request?"
-      }
+      },
+      "attach": "Attach images or video",
+      "attachments": "Attachments",
+      "removeAttachment": "Remove {name}",
+      "attachmentOnly": "Please look at the attached images/video.",
+      "attachedEarlier": "[{count} image(s) attached]",
+      "keySend": "send",
+      "keyNewline": "new line",
+      "expand": "Enlarge chat",
+      "collapse": "Shrink chat",
+      "dropHere": "Drop images or video here",
+      "reading": "Processing…",
+      "attachLimit": "Up to {max} images per message (a video counts as 4 frames).",
+      "attachUnreadable": "Couldn't read {name}.",
+      "viewImage": "View image",
+      "prevImage": "Previous image",
+      "nextImage": "Next image"
     },
     "assistantChats": {
       "intro": "Assistant chats from all three portals, newest first.",

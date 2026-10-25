@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.assistant.dto.request.AiRouterSettingsRequest;
 import com.uav.platform.modules.assistant.dto.request.AssistantChatRequest;
+import com.uav.platform.modules.assistant.dto.record.ChatImage;
 import com.uav.platform.modules.assistant.dto.record.ChatThread;
 import com.uav.platform.modules.assistant.dto.request.AssistantMessageRequest;
 import com.uav.platform.modules.assistant.dto.response.*;
@@ -287,8 +288,9 @@ public class AiRouterServiceImpl implements AiRouterService {
         throttle(auth.getName());
         AssistantMessageRequest last = r.messages().get(r.messages().size() - 1);
         if (!"user".equals(last.role())) throw SystemException.badRequest("The last message must be the user's", "ASSISTANT_LAST_NOT_USER");
+        List<ChatImage> images = AssistantAttachmentOperations.validate(r.attachments());
         ChatThread thread = conversations == null ? null
-                : conversations.begin(auth, r.portal(), r.conversationId(), last.content());
+                : conversations.begin(auth, r.portal(), r.conversationId(), last.content(), images);
 
         ObjectNode body = json.createObjectNode();
         body.put("model", model);
@@ -302,8 +304,18 @@ public class AiRouterServiceImpl implements AiRouterService {
                                 .filter(part -> part != null && !part.isBlank())
                                 .toList());
         if (!system.isEmpty()) messages.addObject().put("role", "system").put("content", system);
-        for (AssistantMessageRequest m : r.messages())
-            messages.addObject().put("role", m.role()).put("content", m.content());
+        for (AssistantMessageRequest m : r.messages()) {
+            if (m != last || images.isEmpty()) {
+                messages.addObject().put("role", m.role()).put("content", m.content());
+                continue;
+            }
+            // OpenAI-style multimodal turn: the question text followed by each image as a data URL.
+            ArrayNode parts = messages.addObject().put("role", m.role()).putArray("content");
+            parts.addObject().put("type", "text").put("text", m.content());
+            for (ChatImage image : images)
+                parts.addObject().put("type", "image_url").putObject("image_url")
+                        .put("url", AssistantAttachmentOperations.dataUrl(image.mimeType(), image.data()));
+        }
 
         long started = System.nanoTime();
         try {

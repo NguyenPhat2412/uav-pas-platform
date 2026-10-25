@@ -9,9 +9,8 @@ import {QueryState} from '@/components/data/WorkspaceState';
 import {useI18n} from '@/contexts/I18nContext';
 import {assistantKeys, assistantService} from '@/features/assistant/services/assistant.service';
 import {AssistantConversations} from '@/features/assistant/components/AssistantConversations';
+import type {RouterConsoleTab} from '@/features/assistant/types/assistant.types';
 import {cn} from '@/lib/utils';
-
-type Tab = 'console' | 'chats';
 
 /** The gateway's console address: the configured API base without its /v1 suffix. */
 export function consoleUrl(baseUrl: string) {
@@ -27,13 +26,13 @@ export default function AdminRouterConsole() {
 /** Console and stored chats share the page; #chats deep-links to the second tab. */
 function AssistantTabs() {
     const {t} = useI18n();
-    const [tab, setTab] = useState<Tab>('console');
+    const [tab, setTab] = useState<RouterConsoleTab>('console');
     useEffect(() => {
         // Read once after hydration: the server render has no hash.
         // eslint-disable-next-line react-hooks/set-state-in-effect
         if (window.location.hash === '#chats') setTab('chats');
     }, []);
-    const select = (next: Tab) => {
+    const select = (next: RouterConsoleTab) => {
         setTab(next);
         history.replaceState(null, '', next === 'chats' ? '#chats' : window.location.pathname);
     };

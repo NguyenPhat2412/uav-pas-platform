@@ -8,6 +8,9 @@ import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.assistant.dto.response.AssistantChatResponse;
 import com.uav.platform.modules.assistant.entity.AssistantConversation;
 import com.uav.platform.modules.assistant.entity.AssistantMessage;
+import com.uav.platform.modules.assistant.dto.record.ChatImage;
+import com.uav.platform.modules.assistant.entity.AssistantAttachment;
+import com.uav.platform.modules.assistant.repository.AssistantAttachmentRepository;
 import com.uav.platform.modules.assistant.repository.AssistantConversationRepository;
 import com.uav.platform.modules.assistant.repository.AssistantMessageRepository;
 import com.uav.platform.modules.assistant.service.impl.AssistantConversationServiceImpl;
@@ -28,7 +31,8 @@ class AssistantConversationServiceTest {
     final AssistantMessageRepository messages = mock(AssistantMessageRepository.class);
     final UserRepository users = mock(UserRepository.class);
     final AuditLogService audit = mock(AuditLogService.class);
-    final AssistantConversationServiceImpl service = new AssistantConversationServiceImpl(conversations, messages, users, audit);
+    final AssistantAttachmentRepository files = mock(AssistantAttachmentRepository.class);
+    final AssistantConversationServiceImpl service = new AssistantConversationServiceImpl(conversations, messages, users, audit, files);
 
     private UsernamePasswordAuthenticationToken as(String username, long id, UserRole role) {
         AppUser u = mock(AppUser.class);
@@ -42,12 +46,17 @@ class AssistantConversationServiceTest {
             if (c.getId() == null) c.setId(42L);
             return c;
         });
+        when(messages.save(any())).thenAnswer(i -> {
+            AssistantMessage m = i.getArgument(0);
+            if (m.getId() == null) m.setId(500L);
+            return m;
+        });
         return new UsernamePasswordAuthenticationToken(username, "", List.of());
     }
 
     @Test
     void customerCannotFileAChatUnderAnotherPortalAndLongTitlesAreCut() {
-        var thread = service.begin(as("cus", 7, UserRole.ROLE_PILOT), "ADMIN", null, "x".repeat(200));
+        var thread = service.begin(as("cus", 7, UserRole.ROLE_PILOT), "ADMIN", null, "x".repeat(200), List.of());
         assertEquals("CUSTOMER", thread.portal());
         ArgumentCaptor<AssistantConversation> saved = ArgumentCaptor.forClass(AssistantConversation.class);
         verify(conversations).save(saved.capture());
@@ -59,12 +68,12 @@ class AssistantConversationServiceTest {
     @Test
     void adminMayChatFromOperationsButNotContinueSomeoneElsesThread() {
         var auth = as("boss", 1, UserRole.ROLE_ADMIN);
-        assertEquals("OPERATIONS", service.begin(auth, "OPERATIONS", null, "hi").portal());
+        assertEquals("OPERATIONS", service.begin(auth, "OPERATIONS", null, "hi", List.of()).portal());
         AssistantConversation foreign = new AssistantConversation();
         foreign.setId(9L);
         foreign.setUserId(2L);
         when(conversations.findById(9L)).thenReturn(Optional.of(foreign));
-        SystemException e = assertThrows(SystemException.class, () -> service.begin(auth, "ADMIN", 9L, "hi"));
+        SystemException e = assertThrows(SystemException.class, () -> service.begin(auth, "ADMIN", 9L, "hi", List.of()));
         assertTrue(e.getMessage().contains("not found"));
     }
 
@@ -84,5 +93,14 @@ class AssistantConversationServiceTest {
         service.delete(5L, new UsernamePasswordAuthenticationToken("admin", "", List.of()));
         verify(conversations).delete(c);
         verify(audit).record(isNull(), eq("admin"), any(), eq("ASSISTANT_CONVERSATION"), eq("5"), contains("messages=2"));
+    }
+
+    @Test
+    void imagesAreStoredAgainstTheQuestion() {
+        byte[] png = {(byte) 0x89, 'P', 'N', 'G', 1, 2, 3, 4};
+        service.begin(as("cus", 7, UserRole.ROLE_PILOT), "CUSTOMER", null, "Ảnh này là gì?",
+                List.of(new ChatImage("VIDEO_FRAME", "image/png", "clip.mp4 @ 00:03", png)));
+        verify(files).save(argThat((AssistantAttachment a) -> a.getMessageId() == 500L && "VIDEO_FRAME".equals(a.getKind())
+                && a.getSizeBytes() == 8 && "image/png".equals(a.getMimeType())));
     }
 }

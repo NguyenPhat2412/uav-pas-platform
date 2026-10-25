@@ -190,7 +190,7 @@ class AiRouterServiceTest {
         row.setMode1Model("cc/claude-haiku");
         row.setEnabled(true);
         AssistantConversationService store = mock(AssistantConversationService.class);
-        when(store.begin(any(), eq("CUSTOMER"), isNull(), eq("Làm sao thanh toán?")))
+        when(store.begin(any(), eq("CUSTOMER"), isNull(), eq("Làm sao thanh toán?"), any()))
                 .thenReturn(new com.uav.platform.modules.assistant.dto.record.ChatThread(77L, "CUSTOMER"));
         var setter = AiRouterServiceImpl.class.getDeclaredMethod("setConversations", AssistantConversationService.class);
         setter.setAccessible(true);

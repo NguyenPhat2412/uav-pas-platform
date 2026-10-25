@@ -11,7 +11,7 @@ import {useI18n} from '@/contexts/I18nContext';
 import {toast} from '@/contexts/ToastContext';
 import {assistantKeys, assistantService, type ConversationFilter} from '@/features/assistant/services/assistant.service';
 import type {AssistantConversation, AssistantPortal} from '@/features/assistant/types/assistant.types';
-import {SuperheroLogo} from '@/features/assistant/components/SuperheroLogo';
+import {ChatMessages} from '@/features/assistant/components/ChatMessages';
 import {cn} from '@/lib/utils';
 
 const PORTALS: AssistantPortal[] = ['CUSTOMER', 'OPERATIONS', 'ADMIN'];
@@ -124,20 +124,15 @@ function ConversationDrawer({id, onClose}: { id: number; onClose: () => void }) 
                 <Fact label={t('admin.assistantChats.col.tokens')} value={formatNumber(c.totalTokens)}/>
             </dl>
             <p className="m-0 text-xs text-slate-500">{t('admin.assistantChats.started', {at: formatDate(c.createdAt, {dateStyle: 'medium', timeStyle: 'short'})})}</p>
-            <ol className="m-0 list-none space-y-3 p-0" aria-label={t('admin.assistantChats.transcript')}>
-                {detail.data.messages.map(m => <li key={m.id} className={cn('flex', m.role === 'user' ? 'justify-end' : 'justify-start gap-2')}>
-                    {m.role === 'assistant' && <span className="mt-0.5 shrink-0"><SuperheroLogo size={22}/></span>}
-                    <div className="max-w-[85%]">
-                        <p className={cn('m-0 whitespace-pre-wrap break-words rounded-control border px-3 py-2 text-[13px] leading-relaxed',
-                            m.role === 'user' ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-200 bg-white text-slate-800')}>{m.content}</p>
-                        <p className={cn('m-0 mt-1 text-[10.5px] tabular-nums text-slate-500', m.role === 'user' && 'text-right')}>
-                            {formatDate(m.createdAt, {timeStyle: 'short'})}
-                            {m.model && <> · <span className="font-mono">{m.model}</span></>}
-                            {m.latencyMs != null && <> · {t('admin.assistantChats.latency', {ms: m.latencyMs})}</>}
-                        </p>
-                    </div>
-                </li>)}
-            </ol>
+            <section className="space-y-2.5 rounded-control bg-slate-50/60 p-3" aria-label={t('admin.assistantChats.transcript')}>
+                <ChatMessages messages={detail.data.messages.map(m => ({
+                    role: m.role,
+                    content: m.content,
+                    at: Date.parse(m.createdAt),
+                    images: m.attachments.map(a => ({kind: a.kind, name: a.name, src: a.dataUrl, thumb: a.dataUrl})),
+                    note: [m.model, m.latencyMs != null ? t('admin.assistantChats.latency', {ms: m.latencyMs}) : null].filter(Boolean).join(' · ') || undefined,
+                }))}/>
+            </section>
             <div className="flex justify-end border-t border-border pt-4">
                 <Button type="button" variant="outline" size="sm" disabled={remove.isPending}
                         onClick={() => window.confirm(t('admin.assistantChats.deleteConfirm')) && remove.mutate()}>
