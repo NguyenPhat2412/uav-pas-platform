@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {type FormEvent, type KeyboardEvent, useEffect, useRef, useState} from 'react';
+import {type FormEvent, type KeyboardEvent, type PointerEvent, useEffect, useRef, useState} from 'react';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {Eraser, SendHorizontal, X} from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
@@ -22,6 +22,23 @@ const FAQ: Record<AssistantPortal, {group: string; keys: readonly string[]}> = {
     CUSTOMER: {group: 'faqCustomer', keys: ['createMission', 'statuses', 'payment', 'quota', 'results', 'cancel']},
 };
 const HELLO_BODY: Record<AssistantPortal, string> = {ADMIN: 'helloBody', OPERATIONS: 'helloBodyOperations', CUSTOMER: 'helloBodyCustomer'};
+
+/** Screen corner the launcher is docked to; dragging it snaps to the nearest one. */
+type Corner = 'tl' | 'tr' | 'bl' | 'br';
+const CORNER_KEY = 'uav_assistant_corner';
+/** Pointer travel (px) before a press counts as a drag rather than a click. */
+const DRAG_THRESHOLD = 6;
+// Top corners sit below the portal header so the launcher never covers the account menu.
+const LAUNCHER_AT: Record<Corner, string> = {
+    tl: 'top-[4.5rem] left-5', tr: 'top-[4.5rem] right-5', bl: 'bottom-5 left-5', br: 'bottom-5 right-5',
+};
+const PANEL_AT: Record<Corner, string> = {
+    tl: 'top-[9.5rem] left-5', tr: 'top-[9.5rem] right-5', bl: 'bottom-24 left-5', br: 'bottom-24 right-5',
+};
+
+function isCorner(value: unknown): value is Corner {
+    return value === 'tl' || value === 'tr' || value === 'bl' || value === 'br';
+}
 
 function loadConversation(key: string): number | null {
     try {
@@ -59,6 +76,10 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
     const [conversationId, setConversationId] = useState<number | null>(() => loadConversation(threadKey));
     const [mode, setMode] = useState<1 | 2 | null>(null);
     const [draft, setDraft] = useState('');
+    const [corner, setCorner] = useState<Corner>('br');
+    const [dragAt, setDragAt] = useState<{x: number; y: number} | null>(null);
+    const drag = useRef<{startX: number; startY: number; dx: number; dy: number; moved: boolean} | null>(null);
+    const justDragged = useRef(false);
     const list = useRef<HTMLDivElement>(null);
     const input = useRef<HTMLTextAreaElement>(null);
 
@@ -74,6 +95,16 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
     useEffect(() => {
         if (open) input.current?.focus();
     }, [open]);
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem(CORNER_KEY);
+            // Read after hydration: the server render always docks bottom-right.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            if (isCorner(saved)) setCorner(saved);
+        } catch {
+            // Storage unavailable: stay bottom-right.
+        }
+    }, []);
     useEffect(() => {
         try {
             sessionStorage.setItem(storageKey, JSON.stringify(messages.slice(-40)));
@@ -109,6 +140,46 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
     if (!allowed) return null;
 
     const faq = FAQ[portal];
+    const onPointerDown = (event: PointerEvent<HTMLButtonElement>) => {
+        if (event.button !== 0) return;
+        justDragged.current = false;
+        const box = event.currentTarget.getBoundingClientRect();
+        drag.current = {startX: event.clientX, startY: event.clientY, dx: event.clientX - box.left, dy: event.clientY - box.top, moved: false};
+        event.currentTarget.setPointerCapture(event.pointerId);
+    };
+    const onPointerMove = (event: PointerEvent<HTMLButtonElement>) => {
+        const d = drag.current;
+        if (!d) return;
+        if (!d.moved && Math.hypot(event.clientX - d.startX, event.clientY - d.startY) < DRAG_THRESHOLD) return;
+        d.moved = true;
+        const size = event.currentTarget.offsetWidth;
+        setDragAt({
+            x: Math.min(Math.max(0, event.clientX - d.dx), window.innerWidth - size),
+            y: Math.min(Math.max(0, event.clientY - d.dy), window.innerHeight - size),
+        });
+    };
+    const onPointerUp = (event: PointerEvent<HTMLButtonElement>) => {
+        const d = drag.current;
+        drag.current = null;
+        if (!d?.moved) return;
+        justDragged.current = true;
+        const next: Corner = `${event.clientY < window.innerHeight / 2 ? 't' : 'b'}${event.clientX < window.innerWidth / 2 ? 'l' : 'r'}`;
+        setCorner(next);
+        setDragAt(null);
+        try {
+            localStorage.setItem(CORNER_KEY, next);
+        } catch {
+            // Storage unavailable: the corner lasts until reload.
+        }
+    };
+    const toggle = () => {
+        // A drag ends with a click event too; only a press that stayed put opens the panel.
+        if (justDragged.current) {
+            justDragged.current = false;
+            return;
+        }
+        setOpen(v => !v);
+    };
     const clear = () => {
         setMessages([]);
         setConversationId(null);
@@ -135,7 +206,8 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
 
     return <>
         {open && <section role="dialog" aria-label={t('admin.assistant.title')}
-                          className="fixed bottom-24 right-5 z-50 flex h-[560px] max-h-[calc(100dvh-8rem)] w-[380px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-overlay border border-slate-200 bg-white shadow-2xl"
+                          className={cn('fixed z-50 flex h-[560px] max-h-[calc(100dvh-10rem)]', PANEL_AT[corner],
+                              ' w-[380px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-overlay border border-slate-200 bg-white shadow-2xl')}
                           onKeyDown={e => e.key === 'Escape' && setOpen(false)}>
             <header className="flex items-center gap-3 border-b border-slate-200 bg-slate-50/70 px-3.5 py-2.5">
                 <SuperheroLogo size={34}/>
@@ -209,10 +281,17 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
             </form>
         </section>}
 
-        <button type="button" onClick={() => setOpen(v => !v)} aria-expanded={open}
+        <button type="button" onClick={toggle} aria-expanded={open}
+                onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
+                onPointerCancel={() => {
+                    drag.current = null;
+                    setDragAt(null);
+                }}
+                style={dragAt ? {left: dragAt.x, top: dragAt.y, right: 'auto', bottom: 'auto'} : undefined}
                 aria-label={open ? t('admin.assistant.close') : t('admin.assistant.open')} title={t('admin.assistant.title')}
-                className={cn('fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full border-2 bg-white shadow-xl transition-colors',
-                    open ? 'border-primary' : 'border-slate-200 hover:border-primary')}>
+                className={cn('fixed z-50 flex h-14 w-14 touch-none select-none items-center justify-center rounded-full border-2 bg-white shadow-xl transition-colors',
+                    LAUNCHER_AT[corner], dragAt ? 'cursor-grabbing border-primary' : 'cursor-grab',
+                    !dragAt && (open ? 'border-primary' : 'border-slate-200 hover:border-primary'))}>
             <SuperheroLogo size={42} title={t('admin.assistant.title')}/>
         </button>
     </>;
