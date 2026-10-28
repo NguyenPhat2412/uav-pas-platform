@@ -63,8 +63,12 @@ public class AppUser extends BaseEntity {
     @Column(name = "manual_locked", nullable = false, columnDefinition = "boolean default false")
     private boolean manualLocked = false;
 
+    /**
+     * New accounts start unverified; each sign-up path proves the address (or, for accounts an
+     * administrator creates, sets it explicitly). Existing rows keep their stored value.
+     */
     @Column(name = "email_verified", nullable = false, columnDefinition = "boolean default true")
-    private boolean emailVerified = true;
+    private boolean emailVerified = false;
 
     @Column(
             name = "two_factor_enabled",
@@ -77,6 +81,14 @@ public class AppUser extends BaseEntity {
 
     @Column(name = "totp_secret", length = 128)
     private String totpSecret;
+
+    /** Authenticator secret from a setup that has not been confirmed with a code yet. */
+    @Column(name = "pending_totp_secret", length = 128)
+    private String pendingTotpSecret;
+
+    /** Last accepted TOTP time step; a code from this step or earlier is a replay. */
+    @Column(name = "totp_last_step")
+    private Long totpLastStep;
 
     public AppUser(
             String username,

@@ -5,10 +5,13 @@ import com.uav.platform.common.constant.RestEndpoint;
 import com.uav.platform.common.dto.response.MessageResponse;
 import com.uav.platform.modules.auth.dto.request.*;
 import com.uav.platform.modules.auth.dto.response.*;
+import com.uav.platform.modules.auth.enums.AuthRateLimitAction;
 import com.uav.platform.modules.auth.service.AuthOtpService;
+import com.uav.platform.modules.auth.service.AuthRateLimitService;
 import com.uav.platform.modules.auth.service.AuthService;
 import com.uav.platform.modules.user.dto.response.UserResponse;
 import com.uav.platform.security.AuthCookieHelper;
+import com.uav.platform.security.ClientIpResolver;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +33,7 @@ public class AuthController {
     private final AuthService authService;
     private final AuthCookieHelper authCookieHelper;
     private final AuthOtpService authOtpService;
+    private AuthRateLimitService rateLimiter;
 
     public AuthController(AuthService authService) {
         this(authService, null, null);
@@ -49,57 +53,81 @@ public class AuthController {
         this.authOtpService = authOtpService;
     }
 
+    @Autowired(required = false)
+    public void setRateLimiter(AuthRateLimitService rateLimiter) {
+        this.rateLimiter = rateLimiter;
+    }
+
+    /** Per-client-IP throttle; the services add the per-account one. */
+    private void limitClient(AuthRateLimitAction action, HttpServletRequest httpRequest) {
+        if (rateLimiter != null)
+            rateLimiter.checkClient(action, ClientIpResolver.resolve(httpRequest));
+    }
+
     @Operation(summary = CoreConstants.AUTH_OP_REGISTER_SUMMARY)
     @PostMapping(RestEndpoint.REGISTER)
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<UserResponse> register(
+            HttpServletRequest httpRequest, @Valid @RequestBody RegisterRequest request) {
+        limitClient(AuthRateLimitAction.OTP_ISSUE, httpRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
     }
 
     @Operation(summary = "Register account and send 6-digit Email OTP verification code")
     @PostMapping(RestEndpoint.REGISTER_OTP)
     public ResponseEntity<OtpChallengeResponse> registerWithOtp(
-            @Valid @RequestBody RegisterRequest request) {
+            HttpServletRequest httpRequest, @Valid @RequestBody RegisterRequest request) {
+        limitClient(AuthRateLimitAction.OTP_ISSUE, httpRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(authOtpService.requestRegisterOtp(request));
     }
 
     @Operation(summary = "Verify 6-digit Email OTP and issue JWT session")
     @PostMapping(RestEndpoint.VERIFY_EMAIL)
-    public ResponseEntity<AuthResponse> verifyEmail(@Valid @RequestBody VerifyOtpRequest request) {
+    public ResponseEntity<AuthResponse> verifyEmail(
+            HttpServletRequest httpRequest, @Valid @RequestBody VerifyOtpRequest request) {
+        limitClient(AuthRateLimitAction.OTP_VERIFY, httpRequest);
         return AuthCookieHelper.okWithCookies(
                 authCookieHelper, authOtpService.verifyEmailOtp(request));
     }
 
     @Operation(summary = CoreConstants.AUTH_OP_LOGIN_SUMMARY)
     @PostMapping(RestEndpoint.LOGIN)
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(
+            HttpServletRequest httpRequest, @Valid @RequestBody LoginRequest request) {
+        limitClient(AuthRateLimitAction.LOGIN, httpRequest);
         return AuthCookieHelper.okWithCookies(authCookieHelper, authService.login(request));
     }
 
     @Operation(summary = "Verify 2FA code (Email OTP or TOTP Authenticator) and issue JWT session")
     @PostMapping(RestEndpoint.VERIFY_2FA)
-    public ResponseEntity<AuthResponse> verify2fa(@Valid @RequestBody VerifyOtpRequest request) {
+    public ResponseEntity<AuthResponse> verify2fa(
+            HttpServletRequest httpRequest, @Valid @RequestBody VerifyOtpRequest request) {
+        limitClient(AuthRateLimitAction.OTP_VERIFY, httpRequest);
         return AuthCookieHelper.okWithCookies(
                 authCookieHelper, authOtpService.verifyLogin2fa(request));
     }
 
     @Operation(summary = "Resend 6-digit Email OTP for active challenge")
     @PostMapping(RestEndpoint.RESEND_OTP)
-    public ResponseEntity<OtpChallengeResponse> resendOtp(@RequestBody ResendOtpRequest request) {
+    public ResponseEntity<OtpChallengeResponse> resendOtp(
+            HttpServletRequest httpRequest, @RequestBody ResendOtpRequest request) {
+        limitClient(AuthRateLimitAction.OTP_ISSUE, httpRequest);
         return ResponseEntity.ok(authOtpService.resendOtp(request));
     }
 
     @Operation(summary = "Request 6-digit Email OTP for password reset")
     @PostMapping(RestEndpoint.FORGOT_PASSWORD)
     public ResponseEntity<OtpChallengeResponse> forgotPassword(
-            @Valid @RequestBody ForgotPasswordRequest request) {
+            HttpServletRequest httpRequest, @Valid @RequestBody ForgotPasswordRequest request) {
+        limitClient(AuthRateLimitAction.OTP_ISSUE, httpRequest);
         return ResponseEntity.ok(authOtpService.forgotPassword(request));
     }
 
     @Operation(summary = "Reset password using 6-digit Email OTP")
     @PostMapping(RestEndpoint.RESET_PASSWORD)
     public ResponseEntity<MessageResponse> resetPassword(
-            @Valid @RequestBody ResetPasswordRequest request) {
+            HttpServletRequest httpRequest, @Valid @RequestBody ResetPasswordRequest request) {
+        limitClient(AuthRateLimitAction.OTP_VERIFY, httpRequest);
         return ResponseEntity.ok(authOtpService.resetPassword(request));
     }
 

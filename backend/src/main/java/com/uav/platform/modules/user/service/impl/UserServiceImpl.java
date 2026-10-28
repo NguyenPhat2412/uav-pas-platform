@@ -5,6 +5,8 @@ import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.audit.enums.AuditAction;
 import com.uav.platform.modules.audit.service.AuditLogService;
+import com.uav.platform.modules.auth.service.SessionTerminationService;
+import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.user.dto.request.RoleUpdateRequest;
 import com.uav.platform.modules.user.dto.request.UserQueryRequest;
 import com.uav.platform.modules.user.dto.response.UserResponse;
@@ -15,6 +17,8 @@ import com.uav.platform.modules.user.repository.UserRepository;
 import com.uav.platform.modules.user.service.UserService;
 import com.uav.platform.modules.user.specification.UserSpecifications;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +49,8 @@ public class UserServiceImpl implements UserService {
     private final AuditLogService auditLogService;
     private final com.uav.platform.security.AccessRecoveryGuard recovery;
     private final UserMapper userMapper;
+    private ObjectProvider<PermissionService> permissions;
+    private SessionTerminationService sessionTermination;
 
     public UserServiceImpl(UserRepository userRepository) {
         this(userRepository, null);
@@ -78,6 +84,24 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.auditLogService = auditLogService;
         this.userMapper = userMapper;
+    }
+
+    @Autowired
+    public void setPermissions(ObjectProvider<PermissionService> permissions) {
+        this.permissions = permissions;
+    }
+
+    @Autowired(required = false)
+    public void setSessionTermination(SessionTerminationService sessionTermination) {
+        this.sessionTermination = sessionTermination;
+    }
+
+    private void requireAdministrator(String actor, String message) {
+        AdminPrivilegeOperations.requireAdministrator(
+                actor,
+                userRepository,
+                permissions != null ? permissions.getIfAvailable() : null,
+                message);
     }
 
     @Override
@@ -131,8 +155,13 @@ public class UserServiceImpl implements UserService {
                 userRepository
                         .findById(id)
                         .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
+        if (AdminPrivilegeOperations.isAdmin(user))
+            requireAdministrator(
+                    actor, "Chỉ quản trị viên hệ thống mới được khóa tài khoản quản trị.");
         UserAccountServiceImpl.lockAccount(user);
         userRepository.save(user);
+        // A lock ends every session now, so nothing issued before it works again after unlock.
+        if (sessionTermination != null) sessionTermination.terminateAll(user, actor);
         if (recovery != null) recovery.finish(before);
         record(actor, AuditAction.STATUS_CHANGE, id, "LOCKED");
     }
@@ -144,6 +173,9 @@ public class UserServiceImpl implements UserService {
                 userRepository
                         .findById(id)
                         .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
+        if (AdminPrivilegeOperations.isAdmin(user))
+            requireAdministrator(
+                    actor, "Chỉ quản trị viên hệ thống mới được mở khóa tài khoản quản trị.");
         UserAccountServiceImpl.unlockAccount(user);
         userRepository.save(user);
         record(actor, AuditAction.STATUS_CHANGE, id, "UNLOCKED");
@@ -158,6 +190,14 @@ public class UserServiceImpl implements UserService {
                         .findById(id)
                         .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
         UserRole previous = user.getRole();
+        // Granting or removing administrator power, or changing one's own role, is an
+        // administrator's decision; USER_MANAGE alone covers ordinary roles of other accounts.
+        if (request.role() == UserRole.ROLE_ADMIN
+                || previous == UserRole.ROLE_ADMIN
+                || (actor != null && actor.equals(user.getUsername())))
+            requireAdministrator(
+                    actor,
+                    "Chỉ quản trị viên hệ thống mới được cấp hoặc thu hồi quyền quản trị, hoặc đổi vai trò của chính mình.");
         UserAccountServiceImpl.setRole(user, request.role());
         userRepository.save(user);
         if (recovery != null) recovery.finish(before);

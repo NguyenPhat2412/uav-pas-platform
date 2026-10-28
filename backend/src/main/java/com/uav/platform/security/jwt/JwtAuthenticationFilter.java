@@ -71,6 +71,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String role = jwtTokenProvider.getRoleFromToken(token);
             if (userRepository != null) {
                 AppUser currentUser = userRepository.findByUsername(username).orElse(null);
+                // Inactive, suspended or administrator-locked accounts lose their sessions; the
+                // temporary failed-password lock only stops new sign-ins at the login endpoint.
                 if (currentUser == null
                         || !UserAccountServiceImpl.isEnabled(currentUser)
                         || !UserAccountServiceImpl.isAccountNonLocked(currentUser)) {

@@ -54,6 +54,11 @@ class Phase1AccessIntegrationTest {
                                 encoder.encode("Secret123!"),
                                 null,
                                 UserStatus.ACTIVE));
+        // New accounts start unverified; these fixtures stand for verified accounts.
+        admin.setEmailVerified(true);
+        pilot.setEmailVerified(true);
+        admin = users.save(admin);
+        pilot = users.save(pilot);
         adminToken = login(admin);
         pilotToken = login(pilot);
         request(

@@ -142,7 +142,12 @@ class RegistrationSafetyTest {
                     code(
                             () ->
                                     RegistrationOperations.normalize(
-                                            req("ops.one", "ops@x.vn", "0901234567", "secret123", staffRole))));
+                                            req(
+                                                    "ops.one",
+                                                    "ops@x.vn",
+                                                    "0901234567",
+                                                    "secret123",
+                                                    staffRole))));
         }
     }
 
@@ -225,7 +230,8 @@ class RegistrationSafetyTest {
     @Test
     void verifiedStaffAccountStaysPendingWithoutASession() {
         AppUser u = pendingUser(UserRole.ROLE_OPERATOR, UserStatus.INACTIVE);
-        when(tokens.findByChallengeToken("old-challenge")).thenReturn(Optional.of(token(u, false)));
+        when(tokens.findByChallengeTokenForUpdate("old-challenge"))
+                .thenReturn(Optional.of(token(u, false)));
         var res =
                 otp.verifyEmailOtp(new VerifyOtpRequest("old-challenge", null, "123456", "EMAIL"));
         assertNull(res.accessToken());

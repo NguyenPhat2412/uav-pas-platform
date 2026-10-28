@@ -8,7 +8,9 @@ import com.uav.platform.modules.auth.dto.request.RefreshTokenRequest;
 import com.uav.platform.modules.auth.dto.request.RegisterRequest;
 import com.uav.platform.modules.auth.dto.response.AuthResponse;
 import com.uav.platform.modules.auth.entity.RefreshToken;
+import com.uav.platform.modules.auth.enums.AuthRateLimitAction;
 import com.uav.platform.modules.auth.mapper.AuthMapper;
+import com.uav.platform.modules.auth.service.AuthRateLimitService;
 import com.uav.platform.modules.auth.service.AuthService;
 import com.uav.platform.modules.auth.service.InvalidatedTokenService;
 import com.uav.platform.modules.auth.service.RefreshTokenService;
@@ -38,11 +40,17 @@ public class AuthServiceImpl implements AuthService {
     private final AuthMapper authMapper;
     private final UserMapper userMapper;
     private com.uav.platform.modules.auth.service.AuthOtpService authOtpService;
+    private AuthRateLimitService rateLimiter;
 
     @Autowired(required = false)
     public void setAuthOtpService(
             com.uav.platform.modules.auth.service.AuthOtpService authOtpService) {
         this.authOtpService = authOtpService;
+    }
+
+    @Autowired(required = false)
+    public void setRateLimiter(AuthRateLimitService rateLimiter) {
+        this.rateLimiter = rateLimiter;
     }
 
     public AuthServiceImpl(
@@ -110,6 +118,8 @@ public class AuthServiceImpl implements AuthService {
                         null,
                         in.role(),
                         in.status());
+        // Not proven yet: the first sign-in asks for the code emailed to this address.
+        newUser.setEmailVerified(false);
 
         AppUser savedUser = userRepository.save(newUser);
         return userMapper.toResponse(savedUser);
@@ -125,6 +135,8 @@ public class AuthServiceImpl implements AuthService {
         String usernameOrEmail =
                 request.usernameOrEmail() != null ? request.usernameOrEmail().trim() : "";
         String password = request.password() != null ? request.password() : "";
+        if (rateLimiter != null)
+            rateLimiter.checkAccount(AuthRateLimitAction.LOGIN, usernameOrEmail);
 
         AppUser user =
                 userRepository
@@ -206,6 +218,11 @@ public class AuthServiceImpl implements AuthService {
         AppUser user = refreshToken.getUser();
         if (user.getStatus() != UserStatus.ACTIVE) {
             throw SystemException.badRequest(CoreConstants.ACCOUNT_INACTIVE);
+        }
+        // A locked account keeps no session, even with a refresh token issued before the lock.
+        if (user.isManualLocked()) {
+            throw SystemException.unauthorized(
+                    "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.", "ACCOUNT_LOCKED");
         }
 
         String newAccessToken =
