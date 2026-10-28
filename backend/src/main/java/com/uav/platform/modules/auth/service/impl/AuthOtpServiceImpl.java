@@ -799,6 +799,11 @@ public class AuthOtpServiceImpl implements AuthOtpService {
      * attempts and expiry behave the same) but its hash is of a random secret no 6-digit code can
      * match, and no email is sent.
      */
+    /** A random value no 6-digit code can match; short enough for BCrypt (max 72 bytes). */
+    static String decoyResetSecret() {
+        return "decoy-" + UUID.randomUUID();
+    }
+
     private IssuedChallenge issueDecoyResetToken(String email) {
         invalidateExistingTokens(email, PURPOSE_PASSWORD_RESET);
         String challengeToken = UUID.randomUUID().toString();
@@ -806,7 +811,8 @@ public class AuthOtpServiceImpl implements AuthOtpService {
         token.setUser(null);
         token.setEmail(email);
         token.setPurpose(PURPOSE_PASSWORD_RESET);
-        token.setCodeHash(passwordEncoder.encode(UUID.randomUUID() + "-" + UUID.randomUUID()));
+        // BCrypt rejects inputs over 72 bytes, so the never-matching secret stays one UUID long.
+        token.setCodeHash(passwordEncoder.encode(decoyResetSecret()));
         token.setChallengeToken(challengeToken);
         token.setAttempts(0);
         token.setExpiresAt(LocalDateTime.now().plusMinutes(otpTtlMinutes));
