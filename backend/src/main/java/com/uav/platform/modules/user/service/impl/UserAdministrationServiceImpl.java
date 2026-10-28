@@ -6,6 +6,8 @@ import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.audit.enums.AuditAction;
 import com.uav.platform.modules.audit.service.AuditLogService;
 import com.uav.platform.modules.auth.repository.RefreshTokenRepository;
+import com.uav.platform.modules.auth.service.SessionTerminationService;
+import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.user.dto.request.AdminCreateUserRequest;
 import com.uav.platform.modules.user.dto.request.BulkLockRequest;
 import com.uav.platform.modules.user.dto.request.PasswordResetRequest;
@@ -22,6 +24,8 @@ import com.uav.platform.modules.user.specification.UserSpecifications;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,10 +50,33 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
     private final AuditLogService auditLogService;
     private final RefreshTokenRepository refreshTokens;
     private final UserMapper userMapper;
+    private ObjectProvider<PermissionService> permissions;
+    private SessionTerminationService sessionTermination;
+
+    @Autowired
+    public void setPermissions(ObjectProvider<PermissionService> permissions) {
+        this.permissions = permissions;
+    }
+
+    @Autowired(required = false)
+    public void setSessionTermination(SessionTerminationService sessionTermination) {
+        this.sessionTermination = sessionTermination;
+    }
+
+    private void requireAdministrator(String actor, String message) {
+        AdminPrivilegeOperations.requireAdministrator(
+                actor,
+                userRepository,
+                permissions != null ? permissions.getIfAvailable() : null,
+                message);
+    }
 
     @Override
     @Transactional
     public UserResponse create(AdminCreateUserRequest request, String actor) {
+        if (request.role() == UserRole.ROLE_ADMIN)
+            requireAdministrator(
+                    actor, "Chỉ quản trị viên hệ thống mới được tạo tài khoản quản trị.");
         String username = request.username().trim();
         String email = request.email().trim();
         // Same phone rule and stored form as self sign-up.
@@ -84,6 +111,8 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
                         null,
                         request.role(),
                         UserStatus.ACTIVE);
+        // The administrator vouches for the address of an account they provision.
+        user.setEmailVerified(true);
         AppUser saved = userRepository.save(user);
         auditLogService.record(
                 null,
@@ -102,11 +131,16 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
                 userRepository
                         .findById(id)
                         .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
+        if (AdminPrivilegeOperations.isAdmin(user))
+            requireAdministrator(
+                    actor,
+                    "Chỉ quản trị viên hệ thống mới được đặt lại mật khẩu tài khoản quản trị.");
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
         user.setFailedAttempts(0);
         userRepository.save(user);
-        // Existing sessions must not outlive a credential reset.
+        // Existing sessions (refresh and access tokens) must not outlive a credential reset.
         refreshTokens.deleteByUser(user);
+        if (sessionTermination != null) sessionTermination.terminateAll(user, actor);
         auditLogService.record(
                 null, actor, AuditAction.UPDATE, "USER", id.toString(), "PASSWORD_RESET");
     }

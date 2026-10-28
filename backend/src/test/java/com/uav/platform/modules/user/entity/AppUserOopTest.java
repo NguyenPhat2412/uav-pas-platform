@@ -79,10 +79,13 @@ class AppUserOopTest {
             assertFalse(UserAccountServiceImpl.isAccountLocked(user));
         }
 
-        // 5th attempt triggers lock
+        // 5th attempt triggers the sign-in lock; existing sessions are not affected by it.
         UserAccountServiceImpl.incrementFailedAttempts(user);
         assertTrue(UserAccountServiceImpl.isAccountLocked(user));
+        assertTrue(UserAccountServiceImpl.isAccountNonLocked(user));
+        UserAccountServiceImpl.lockAccount(user);
         assertFalse(UserAccountServiceImpl.isAccountNonLocked(user));
+        user.setManualLocked(false);
 
         // Reset
         UserAccountServiceImpl.resetFailedAttempts(user);

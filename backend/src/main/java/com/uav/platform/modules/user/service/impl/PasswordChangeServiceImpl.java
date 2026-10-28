@@ -5,6 +5,7 @@ import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.audit.enums.AuditAction;
 import com.uav.platform.modules.audit.service.AuditLogService;
 import com.uav.platform.modules.auth.repository.RefreshTokenRepository;
+import com.uav.platform.modules.auth.service.SessionTerminationService;
 import com.uav.platform.modules.user.dto.request.PasswordChangeRequest;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.repository.UserRepository;
@@ -12,6 +13,7 @@ import com.uav.platform.modules.user.service.PasswordChangeService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,12 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
     private final PasswordEncoder encoder;
     private final RefreshTokenRepository refreshTokens;
     private final AuditLogService audit;
+    private SessionTerminationService sessionTermination;
+
+    @Autowired(required = false)
+    public void setSessionTermination(SessionTerminationService sessionTermination) {
+        this.sessionTermination = sessionTermination;
+    }
 
     @Override
     @Transactional
@@ -44,8 +52,11 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
         user.setPasswordHash(encoder.encode(request.newPassword()));
         user.setFailedAttempts(0);
         users.save(user);
-        // Every session, this one included, must sign in again with the new password.
+        // Every session, this one included, must sign in again with the new password: refresh
+        // tokens are deleted and access tokens issued so far stop authenticating. The client
+        // already signs out after a successful change.
         refreshTokens.deleteByUser(user);
+        if (sessionTermination != null) sessionTermination.terminateAll(user, username);
         audit.record(
                 user.getId(),
                 username,

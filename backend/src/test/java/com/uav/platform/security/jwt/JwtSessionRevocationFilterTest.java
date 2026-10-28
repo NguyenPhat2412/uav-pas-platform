@@ -82,6 +82,37 @@ class JwtSessionRevocationFilterTest {
     }
 
     @Test
+    void failedPasswordLockDoesNotEndAnExistingSession() throws Exception {
+        AppUser user = users.findByUsername("pilot").orElseThrow();
+        for (int i = 0; i < 5; i++)
+            com.uav.platform.modules.user.service.impl.UserAccountServiceImpl
+                    .incrementFailedAttempts(user);
+        assertNotNull(user.getLockTime());
+        String token = provider.generateToken(7L, "pilot", "p@x.vn", "ROLE_PILOT");
+
+        filter.doFilterInternal(requestWith(token), new MockHttpServletResponse(), chain);
+
+        assertEquals("pilot", SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @Test
+    void manualLockSuspensionAndDeactivationEndTheSession() throws Exception {
+        AppUser user = users.findByUsername("pilot").orElseThrow();
+        String token = provider.generateToken(7L, "pilot", "p@x.vn", "ROLE_PILOT");
+
+        user.setManualLocked(true);
+        filter.doFilterInternal(requestWith(token), new MockHttpServletResponse(), chain);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+
+        user.setManualLocked(false);
+        for (UserStatus status : new UserStatus[] {UserStatus.SUSPENDED, UserStatus.INACTIVE}) {
+            user.setStatus(status);
+            filter.doFilterInternal(requestWith(token), new MockHttpServletResponse(), chain);
+            assertNull(SecurityContextHolder.getContext().getAuthentication(), status.name());
+        }
+    }
+
+    @Test
     void filterWithoutRevocationServiceKeepsWorking() throws Exception {
         var plain = new JwtAuthenticationFilter(provider, null, users, null);
         String token = provider.generateToken(7L, "pilot", "p@x.vn", "ROLE_PILOT");

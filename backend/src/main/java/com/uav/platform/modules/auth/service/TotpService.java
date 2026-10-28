@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.OptionalLong;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -52,25 +53,33 @@ public class TotpService {
     }
 
     public boolean verifyCode(String base32Secret, String rawCode) {
+        return matchStep(base32Secret, rawCode).isPresent();
+    }
+
+    /**
+     * The 30-second time step the code belongs to, if it is valid now (one step of clock drift
+     * either way). Callers store the step so the same code cannot be replayed inside the window.
+     */
+    public OptionalLong matchStep(String base32Secret, String rawCode) {
         if (base32Secret == null || base32Secret.isBlank() || rawCode == null) {
-            return false;
+            return OptionalLong.empty();
         }
         String normalizedCode = rawCode.replaceAll("\\s+", "");
         if (!normalizedCode.matches("^\\d{6}$")) {
-            return false;
+            return OptionalLong.empty();
         }
         byte[] key = decodeBase32(base32Secret);
         if (key.length == 0) {
-            return false;
+            return OptionalLong.empty();
         }
         long currentBucket = Instant.now().getEpochSecond() / TIME_STEP_SECONDS;
         for (int offset = -WINDOW_STEPS; offset <= WINDOW_STEPS; offset++) {
             String candidate = generateCodeForCounter(key, currentBucket + offset);
             if (normalizedCode.equals(candidate)) {
-                return true;
+                return OptionalLong.of(currentBucket + offset);
             }
         }
-        return false;
+        return OptionalLong.empty();
     }
 
     public String generateCurrentCode(String base32Secret) {

@@ -68,8 +68,14 @@ public final class UserAccountServiceImpl {
         return user.getStatus() == UserStatus.ACTIVE;
     }
 
+    /**
+     * Whether an existing session (access token, permissions) may keep working: false only for a
+     * suspension or an administrator's lock. The temporary lock after failed passwords blocks new
+     * sign-ins only (see {@link #isAccountLocked}); otherwise anyone could sign a logged-in user
+     * out by typing five wrong passwords for them.
+     */
     public static boolean isAccountNonLocked(AppUser user) {
-        return user.getStatus() != UserStatus.SUSPENDED && !isAccountLocked(user);
+        return user.getStatus() != UserStatus.SUSPENDED && !user.isManualLocked();
     }
 
     public static void incrementFailedAttempts(AppUser user) {

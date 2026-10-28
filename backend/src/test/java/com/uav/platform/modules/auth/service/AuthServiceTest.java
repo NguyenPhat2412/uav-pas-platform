@@ -327,4 +327,47 @@ class AuthServiceTest {
         verifyNoInteractions(passwordEncoder, jwtTokenProvider);
         verify(userRepository, never()).save(any());
     }
+
+    @Test
+    void refresh_RejectsAManuallyLockedAccount() {
+        AppUser user =
+                new AppUser("pilot", "pilot@uav.vn", "hash", "0900000000", UserStatus.ACTIVE);
+        user.setManualLocked(true);
+        var token =
+                new com.uav.platform.modules.auth.entity.RefreshToken(
+                        user, "refresh-1", java.time.Instant.now().plusSeconds(600));
+        RefreshTokenService refresh = mock(RefreshTokenService.class);
+        when(refresh.findByTokenForUpdate("refresh-1")).thenReturn(Optional.of(token));
+        when(refresh.verifyExpiration(token)).thenReturn(token);
+        AuthService service =
+                new AuthServiceImpl(
+                        userRepository,
+                        passwordEncoder,
+                        jwtTokenProvider,
+                        refresh,
+                        null,
+                        sessionLock);
+
+        SystemException error =
+                assertThrows(
+                        SystemException.class,
+                        () ->
+                                service.refreshToken(
+                                        new com.uav.platform.modules.auth.dto.request
+                                                .RefreshTokenRequest("refresh-1")));
+        assertEquals("ACCOUNT_LOCKED", error.getCode());
+        verify(refresh, never()).createRefreshToken(any());
+        verifyNoInteractions(jwtTokenProvider);
+    }
+
+    @Test
+    void register_CreatesAnUnverifiedAccount() {
+        when(passwordEncoder.encode(any())).thenReturn("hashed");
+        when(userRepository.save(any(AppUser.class))).thenAnswer(c -> c.getArgument(0));
+        UserResponse response =
+                authService.register(
+                        new RegisterRequest(
+                                "newpilot", "new@example.com", "P@ssword123", "0987654321"));
+        assertFalse(response.emailVerified());
+    }
 }

@@ -42,4 +42,17 @@ public class AuthOtpToken extends BaseEntity {
 
     @Column(name = "consumed_at")
     private LocalDateTime consumedAt;
+
+    /*
+     * Details from a restarted sign-up of an unverified account. They are applied only after the
+     * code proves the email, so whoever restarts the sign-up cannot rewrite the account first.
+     */
+    @Column(name = "pending_username", length = 50)
+    private String pendingUsername;
+
+    @Column(name = "pending_phone_number", length = 20)
+    private String pendingPhoneNumber;
+
+    @Column(name = "pending_password_hash", length = 255)
+    private String pendingPasswordHash;
 }

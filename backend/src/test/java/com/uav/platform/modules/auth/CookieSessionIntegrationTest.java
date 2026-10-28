@@ -39,13 +39,16 @@ class CookieSessionIntegrationTest {
         var mvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
         String name = "cookie_" + UUID.randomUUID().toString().substring(0, 8),
                 password = UUID.randomUUID().toString();
-        users.save(
+        AppUser account =
                 new AppUser(
                         name,
                         name + "@example.invalid",
                         encoder.encode(password),
                         null,
-                        UserStatus.ACTIVE));
+                        UserStatus.ACTIVE);
+        // New accounts start unverified; this fixture stands for a verified account.
+        account.setEmailVerified(true);
+        users.save(account);
         var login =
                 mvc.perform(
                                 post("/api/v1/auth/login")

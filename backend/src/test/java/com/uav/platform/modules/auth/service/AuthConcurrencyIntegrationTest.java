@@ -46,13 +46,16 @@ class AuthConcurrencyIntegrationTest {
 
     private AppUser newUser() {
         String name = "race_" + UUID.randomUUID().toString().replace("-", "").substring(0, 18);
-        return users.save(
+        AppUser account =
                 new AppUser(
                         name,
                         name + "@example.invalid",
                         passwords.encode(password),
                         null,
-                        UserStatus.ACTIVE));
+                        UserStatus.ACTIVE);
+        // New accounts start unverified; this fixture stands for a verified account.
+        account.setEmailVerified(true);
+        return users.save(account);
     }
 
     @Test
