@@ -52,8 +52,8 @@ export function AuditLogs() {
                 <label className="flex flex-col gap-1 text-xs font-semibold text-muted">{t('admin.audit.filter.entity')}<select className={filterInputClass} value={draft.entityType} onChange={set('entityType')}>
                     <option value="">{t('admin.audit.filter.all')}</option>
                     {entityTypes.map(a => <option key={a} value={a}>{displayLabel(a)}</option>)}</select></label>
-                <label className="flex flex-col gap-1 text-xs font-semibold text-muted">{t('admin.audit.filter.from')}<input className={filterInputClass} type="date" value={draft.from} max={draft.to || undefined} onChange={set('from')}/></label>
-                <label className="flex flex-col gap-1 text-xs font-semibold text-muted">{t('admin.audit.filter.to')}<input className={filterInputClass} type="date" value={draft.to} min={draft.from || undefined} onChange={set('to')}/></label>
+                <label className="flex flex-col gap-1 text-xs font-semibold text-muted">{t('admin.audit.filter.from')}<input className={filterInputClass} type="date" value={draft.from} onChange={set('from')}/></label>
+                <label className="flex flex-col gap-1 text-xs font-semibold text-muted">{t('admin.audit.filter.to')}<input className={filterInputClass} type="date" value={draft.to} onChange={set('to')}/></label>
                 <div className="flex gap-2">
                     <Button type="submit" size="sm">{t('admin.audit.filter.apply')}</Button>
                     {active && <Button type="button" size="sm" variant="outline" onClick={() => {

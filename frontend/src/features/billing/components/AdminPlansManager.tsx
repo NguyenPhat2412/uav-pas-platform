@@ -6,10 +6,10 @@ import {Check, Minus, Pencil, Plus, X} from 'lucide-react';
 import {useI18n} from '@/contexts/I18nContext';
 import {planName} from '@/components/shared/presentation';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
-import {RequiredMark} from '@/components/shared/RequiredMark';
+import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
-import {plansService} from '@/features/billing/services/plans.service';
+import {plansService} from '@/lib/api/services';
 import type {ServicePlan} from '@/types';
 
 /** BASIC is assigned to every new customer, so the backend refuses to deactivate it. */
@@ -129,28 +129,28 @@ function PlanDialog({plan, onClose, onSaved}: { plan: ServicePlan | null; onClos
             </header>
             {plan ? <p className="m-0 text-[13px] text-slate-600">{t('admin.plans.code')}: <span className="font-mono font-semibold">{plan.code}</span></p> :
                 <label className={label}>{t('admin.plans.code')}<RequiredMark/>
-                    <input required autoFocus pattern="[A-Za-z0-9_]{2,40}" maxLength={40} value={code} onChange={e => setCode(e.target.value)}
+                    <input aria-required autoFocus value={code} onChange={e => setCode(e.target.value)}
                            className={cn(field, 'font-mono uppercase')} placeholder="ENTERPRISE"/>
                     <span className="mt-1 block text-xs font-normal text-slate-500">{t('admin.plans.codeHint')}</span></label>}
             <label className={label}>{t('admin.plans.name')}<RequiredMark/>
-                <input required autoFocus={!!plan} maxLength={120} value={name} onChange={e => setName(e.target.value)} className={field}/></label>
+                <input aria-required autoFocus={!!plan} value={name} onChange={e => setName(e.target.value)} className={field}/></label>
             <div className="grid gap-3 sm:grid-cols-2">
                 <label className={label}>{t('admin.plans.price')}<RequiredMark/>
-                    <input required type="number" min={0} step={1000} value={price} onChange={e => setPrice(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
+                    <input aria-required type="number" step={1000} value={price} onChange={e => setPrice(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
                 <label className={label}>{t('admin.plans.cycleLabel')}<RequiredMark/>
                     <select value={cycle} onChange={e => setCycle(e.target.value)} className={field}>
                         <option value="MONTHLY">{t('admin.plans.cycle.MONTHLY')}</option>
                         <option value="YEARLY">{t('admin.plans.cycle.YEARLY')}</option>
                     </select></label>
                 <label className={label}>{t('admin.plans.hoursLabel')}<RequiredMark/>
-                    <input required type="number" min={1} max={10000} step={0.5} value={hours} onChange={e => setHours(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
+                    <input aria-required type="number" step={0.5} value={hours} onChange={e => setHours(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
                 <label className={label}>{t('admin.plans.uavsLabel')}<RequiredMark/>
-                    <input required type="number" min={1} max={100} value={uavs} onChange={e => setUavs(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
+                    <input aria-required type="number" value={uavs} onChange={e => setUavs(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
             </div>
             <label className="flex items-center gap-2 text-[13px] font-semibold text-slate-600">
                 <input type="checkbox" checked={sarAi} onChange={e => setSarAi(e.target.checked)}/>{t('admin.plans.sarAiLabel')}</label>
-            <label className={label}>{t('admin.plans.description')}
-                <textarea rows={3} maxLength={500} value={description} onChange={e => setDescription(e.target.value)} className={field}/></label>
+            <label className={label}>{t('admin.plans.description')}<OptionalMark/>
+                <textarea rows={3} value={description} onChange={e => setDescription(e.target.value)} className={field}/></label>
             {plan && <p className="m-0 text-xs text-slate-500">{t('admin.plans.editNote')}</p>}
             <ErrorNotice error={save.error}/>
             <footer className="flex justify-end gap-2">

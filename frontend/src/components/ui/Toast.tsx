@@ -3,29 +3,9 @@
 import React from 'react';
 import {AlertCircle, AlertTriangle, CheckCircle2, Info, X} from 'lucide-react';
 import {cn} from '@/lib/utils';
+import type {ToastItem, ToastOptions, ToastType, ToastViewportProps} from '@/types/ui';
 
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
-
-export interface ToastItem {
-    id: string;
-    type: ToastType;
-    title?: string;
-    message: string;
-    duration?: number;
-    isExiting?: boolean;
-}
-
-export interface ToastOptions {
-    title?: string;
-    duration?: number;
-}
-
-export interface ToastViewportProps {
-    toasts: ToastItem[];
-    onDismiss: (id: string) => void;
-    onPause: (id: string) => void;
-    onResume: (id: string) => void;
-}
+export type {ToastItem, ToastOptions, ToastType, ToastViewportProps};
 
 export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewportProps) {
     return (

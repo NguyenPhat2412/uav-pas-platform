@@ -8,9 +8,8 @@ import {
     profileError,
     type ProfileErrors,
     type ProfileFields,
-    validateProfile
 } from "@/features/profile/forms/profile-form";
-import {useCustomerProfile, useUpdateCustomerProfile} from "@/features/profile/hooks/profile-query";
+import {useCustomerProfile, useUpdateCustomerProfile} from '@/lib/query/customer';
 import {useI18n} from '@/contexts/I18nContext';
 import {toast} from '@/contexts/ToastContext';
 import {EnterpriseProfilePanel} from '@/features/profile/components/EnterpriseProfilePanel';
@@ -83,14 +82,9 @@ function Profile() {
     async function save(event: FormEvent) {
         event.preventDefault();
         if (!draft || busy || failure?.kind === 'conflict' || failure?.kind === 'uncertain') return;
-        const invalid = validateProfile(draft.fields, t);
-        setErrors(invalid);
+        setErrors({});
         setFailure(null);
         setSuccess('');
-        if (Object.keys(invalid).length) {
-            requestAnimationFrame(() => document.getElementById(invalid.fullName ? 'profile-name' : 'profile-phone')?.focus());
-            return;
-        }
         try {
             await update.mutateAsync(draft);
             setDraft(null);
@@ -98,6 +92,11 @@ function Profile() {
             toast.success(t('profile.saved'));
         } catch (error) {
             const next = profileError(error, t);
+            if (next.fields) {
+                setErrors(next.fields);
+                requestAnimationFrame(() => document.getElementById(next.fields?.fullName ? 'profile-name' : 'profile-phone')?.focus());
+                return;
+            }
             setFailure(next);
             toast.error(next.message);
             if (next.kind === 'phone') setErrors({phoneNumber: next.message});
@@ -106,10 +105,11 @@ function Profile() {
     }
 
     return <>
-        <div className="grid gap-5 sm:gap-6">
-            <AvatarEditor name={profile?.fullName || user?.fullName || user?.username || ''}/>
-            <Panel title={t('profile.personalInfo')} action={!draft && profile ?
-                <Button variant="secondary" onClick={() => edit(profile)}>{t('profile.edit')}</Button> : undefined}>
+        <div className="flex flex-1 flex-col divide-y divide-slate-200 bg-white">
+            <div className="grid grid-cols-1 gap-px bg-slate-200 xl:grid-cols-[minmax(280px,0.95fr)_minmax(0,1.15fr)_minmax(0,1fr)] [&>*]:border-0">
+                <AvatarEditor name={profile?.fullName || user?.fullName || user?.username || ''}/>
+                <Panel title={t('profile.personalInfo')} className="h-full border-0" action={!draft && profile ?
+                    <Button variant="secondary" onClick={() => edit(profile)}>{t('profile.edit')}</Button> : undefined}>
                 {success && (
                     <div className="bg-uav-blue-light text-uav-blue rounded-panel px-3.5 py-3 mb-5 text-sm font-medium border border-blue-200" role="status">
                         {success}
@@ -148,7 +148,6 @@ function Profile() {
                                     id="profile-name"
                                     ref={firstInput}
                                     autoComplete="name"
-                                    maxLength={100}
                                     value={draft.fields.fullName}
                                     aria-invalid={!!errors.fullName}
                                     aria-describedby={errors.fullName ? 'profile-name-error' : 'profile-name-hint'}
@@ -178,7 +177,6 @@ function Profile() {
                                     label={t('profile.phone')}
                                     type="tel"
                                     autoComplete="tel"
-                                    maxLength={20}
                                     required
                                     value={draft.fields.phoneNumber}
                                     aria-invalid={!!errors.phoneNumber}
@@ -231,24 +229,25 @@ function Profile() {
                         </div>
                     </dl>
                 )}
-            </Panel>
-            <Panel title={t('profile.accountInfo')}>
-                <dl className="profile-details grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
-                    <div>
-                        <dt className="text-[13px] text-slate-500">{t('profile.username')}</dt>
-                        <dd className="mt-1 mb-0 font-semibold text-card-foreground break-words">{user?.username}</dd>
-                    </div>
-                    <div>
-                        <dt className="text-[13px] text-slate-500">Email</dt>
-                        <dd className="mt-1 mb-0 font-semibold text-card-foreground break-words">{user?.email}</dd>
-                    </div>
-                    <div>
-                        <dt className="text-[13px] text-slate-500">{t('common.status')}</dt>
-                        <dd className="mt-1 mb-0 font-semibold text-card-foreground break-words">{displayLabel(user?.status)}</dd>
-                    </div>
-                </dl>
-                <p className="mt-6 mb-0 text-sm text-slate-500">{t('profile.readonlyNote')}</p>
-            </Panel>
+                </Panel>
+                <Panel title={t('profile.accountInfo')} className="h-full border-0">
+                    <dl className="profile-details grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
+                        <div>
+                            <dt className="text-[13px] text-slate-500">{t('profile.username')}</dt>
+                            <dd className="mt-1 mb-0 font-semibold text-card-foreground break-words">{user?.username}</dd>
+                        </div>
+                        <div>
+                            <dt className="text-[13px] text-slate-500">Email</dt>
+                            <dd className="mt-1 mb-0 font-semibold text-card-foreground break-words">{user?.email}</dd>
+                        </div>
+                        <div>
+                            <dt className="text-[13px] text-slate-500">{t('common.status')}</dt>
+                            <dd className="mt-1 mb-0 font-semibold text-card-foreground break-words">{displayLabel(user?.status)}</dd>
+                        </div>
+                    </dl>
+                    <p className="mt-6 mb-0 text-sm text-slate-500">{t('profile.readonlyNote')}</p>
+                </Panel>
+            </div>
             <EnterpriseProfilePanel/>
         </div>
     </>;

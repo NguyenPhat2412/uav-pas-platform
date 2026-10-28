@@ -1,5 +1,7 @@
 /** Display labels only. API values and authorization contracts remain unchanged. */
-export type PresentationLocale = 'vi' | 'en' | 'ja';
+import type {PresentationLocale, TimelineEvent} from '@/types';
+
+export type {PresentationLocale, TimelineEvent};
 
 // Set by I18nProvider so these plain helpers follow the portal language without a hook at every call site.
 let activeLocale: PresentationLocale = 'vi';
@@ -23,7 +25,7 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         DATA_COLLECTION: 'Data collection', OTHER: 'Other',
         LOW: 'Low', NORMAL: 'Normal', HIGH: 'High', URGENT: 'Urgent',
         INPUT: 'Input data', OUTPUT: 'Result', FLIGHT_DATA: 'Flight data', DOCUMENT: 'Document', IMAGE: 'Image', VIDEO: 'Video',
-        ROLE_ADMIN: 'Administrator', ROLE_COMMANDER: 'Commander', ROLE_OPERATOR: 'Operator', ROLE_PILOT: 'UAV pilot',
+        ROLE_ADMIN: 'Administrator', ROLE_COMMANDER: 'Commander', ROLE_OPERATOR: 'Operator', ROLE_PILOT: 'Customer',
         ROLE_CUSTOMER: 'Customer', ROLE_USER: 'User',
         ACTIVE: 'Active', INACTIVE: 'Inactive', LOCKED: 'Locked', AVAILABLE: 'Available', ASSIGNED: 'Assigned',
         IN_USE: 'In use', MAINTENANCE: 'Maintenance', SUSPENDED: 'Locked', UNKNOWN: 'Unknown', ONLINE: 'Online',
@@ -50,7 +52,7 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         OTHER: 'その他',
         LOW: '低', NORMAL: '通常', HIGH: '高', URGENT: '緊急',
         INPUT: '入力データ', OUTPUT: '成果物', FLIGHT_DATA: '飛行データ', DOCUMENT: '文書', IMAGE: '画像', VIDEO: '動画',
-        ROLE_ADMIN: '管理者', ROLE_COMMANDER: '指揮担当', ROLE_OPERATOR: 'オペレーター', ROLE_PILOT: 'UAVパイロット',
+        ROLE_ADMIN: '管理者', ROLE_COMMANDER: '指揮担当', ROLE_OPERATOR: 'オペレーター', ROLE_PILOT: '顧客',
         ROLE_CUSTOMER: '顧客', ROLE_USER: 'ユーザー',
         ACTIVE: '稼働中', INACTIVE: '停止中', LOCKED: 'ロック中', AVAILABLE: '利用可能', ASSIGNED: '割り当て済み',
         IN_USE: '使用中', MAINTENANCE: 'メンテナンス', SUSPENDED: 'ロック中', UNKNOWN: '不明', ONLINE: 'オンライン',
@@ -110,7 +112,7 @@ const labels: Record<string, string> = {
     ROLE_ADMIN: 'Quản trị viên',
     ROLE_COMMANDER: 'Điều phối viên',
     ROLE_OPERATOR: 'Người vận hành',
-    ROLE_PILOT: 'Phi công UAV',
+    ROLE_PILOT: 'Khách hàng',
     ROLE_CUSTOMER: 'Khách hàng',
     ROLE_USER: 'Người dùng',
     ACTIVE: 'Đang hoạt động',
@@ -280,16 +282,6 @@ export function missionHint(status: string): string {
         REJECTED: 'Yêu cầu đã bị từ chối. Xem lý do trong lịch sử.',
         FAILED: 'Nhiệm vụ chưa hoàn thành. Xem ghi nhận trong lịch sử.'
     } as Record<string, string>)[status] ?? 'Theo dõi cập nhật của nhiệm vụ tại đây.';
-}
-
-export interface TimelineEvent {
-    id: number;
-    eventType: string;
-    newStatus?: string;
-    oldStatus?: string;
-    description?: string;
-    actor?: string;
-    createdAt?: string
 }
 
 const eventLabels: Record<string, string> = {

@@ -1,18 +1,9 @@
 'use client';
 
-import React, {Component, type ReactNode} from 'react';
+import React, {Component} from 'react';
 import {AlertTriangle, RotateCcw} from 'lucide-react';
 import {useI18n} from '@/contexts/I18nContext';
-
-interface ErrorBoundaryProps {
-    children: ReactNode;
-    fallbackTitle?: string;
-}
-
-interface ErrorBoundaryState {
-    hasError: boolean;
-    error: Error | null;
-}
+import type {ErrorBoundaryProps, ErrorBoundaryState} from '@/types/ui';
 
 // Function component so the fallback can read the active language; only rendered under portal providers.
 function ErrorFallback({title, message, onReset}: { title?: string; message?: string; onReset: () => void }) {

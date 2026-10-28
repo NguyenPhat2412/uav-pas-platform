@@ -23,6 +23,7 @@
     "nav": {
         "dashboard": "Dashboard",
         "services": "UAV Services",
+        "training": "User guide",
         "missions": "My Missions",
         "billing": "Plans & Billing",
         "notifications": "Notifications",
@@ -30,9 +31,10 @@
         "portalTitle": "Customer Portal",
         "createRequest": "New request",
         "groups": {
-            "operations": "Operations",
-            "finance": "Billing",
-            "account": "Account"
+            "overview": "Overview",
+            "missions": "Flight missions",
+            "services": "Services & billing",
+            "support": "Help & account"
         },
         "badges": {
             "activeMissions": "{label}: {count} missions in progress",
@@ -358,7 +360,11 @@
         "useMyLocation": "Use my location",
         "ariaLabel": "Map for choosing the mission location",
         "selected": "Selected {lat}, {lng}. Drag the pin or click elsewhere to change it.",
-        "hint": "Click the map to pin the mission point. You can also type coordinates in the fields below."
+        "hint": "Click the map to pin the mission point. You can also type coordinates in the fields below.",
+        "controls": {
+            "stationRadius": "Station range",
+            "resetView": "Reset view"
+        }
     },
     "billingPage": {
         "status": {

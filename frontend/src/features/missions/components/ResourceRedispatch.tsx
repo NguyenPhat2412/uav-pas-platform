@@ -1,25 +1,15 @@
 'use client';
 import {useEffect, useState} from 'react';
 import {Button} from '@/components/ui';
-import type {Equipment, Operator, Station} from "@/types/resources";
-import type {DispatchResources, Mission} from "@/features/missions/types/mission.types";
-import {missionService} from "@/features/missions/services/mission.service";
-import {missionEventNoteLimit, reservationQuantity} from "@/features/missions/utils/workflows";
+import type {
+    RedispatchFormState as Form,
+    RedispatchKind as Kind,
+    ResourceRedispatchProps as Props,
+} from "@/features/missions/types/mission.types";
+import {missionService} from '@/lib/api/services';
+import {reservationQuantity} from "@/features/missions/utils/workflows";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/contexts/I18nContext';
-
-type Kind = 'operator' | 'station' | 'equipment';
-type Form = { kind: Kind; version: number; reservationId?: number; oldEquipmentId?: number; oldQuantity?: number };
-
-interface Props {
-    snapshot: DispatchResources;
-    stations: Station[];
-    operators: Operator[];
-    equipment: Equipment[];
-    allowed: { operator: boolean; station: boolean; equipment: boolean };
-    disabled: boolean;
-    action: (run: () => Promise<Mission>) => Promise<void>;
-}
 
 export function ResourceRedispatch({snapshot, stations, operators, equipment, allowed, disabled, action}: Props) {
     const {t} = useI18n();
@@ -45,7 +35,7 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
             current = false;
         };
     }, [operatorCandidate, mission.startTime, mission.expectedEndTime, retry]);
-    const open = (kind: Kind, reservationId?: number) => {
+    const open = (kind: Form['kind'], reservationId?: number) => {
         if (disabled || !allowed[kind]) return;
         const reservation = snapshot.reservations.find(r => r.id === reservationId);
         setForm({
@@ -118,7 +108,7 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
                           event.preventDefault();
                           if (submitDisabled) return;
                           await action(() => form.kind === 'equipment'
-                              ? missionService.redispatchEquipment(mission.id, form.version, form.reservationId!, replacement ? Number(replacement) : null, replacement ? reservationQuantity(quantity, available, t) : null, reason)
+                              ? missionService.redispatchEquipment(mission.id, form.version, form.reservationId!, replacement ? Number(replacement) : null, replacement ? reservationQuantity(quantity) : null, reason)
                               : missionService.redispatchResource(mission.id, form.kind, form.version, replacement ? Number(replacement) : null, reason));
                           setForm(null);
                       }}>
@@ -142,15 +132,13 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
                             setRetry(v => v + 1);
                         }}>{t('opsMissions.redispatch.schedule.retry')}</Button>}</div>}
                     {form.kind === 'equipment' && !!replacement && <label className="grid gap-1.5 text-sm font-semibold text-foreground">{t('opsMissions.redispatch.newQuantity')}<input
-                        className="mt-1 min-h-11 w-full rounded-control border border-border-input bg-card px-3 text-sm font-normal text-foreground" type="number" min={1}
-                        max={available} step={1} inputMode="numeric" disabled={disabled} value={quantity}
+                        className="mt-1 min-h-11 w-full rounded-control border border-border-input bg-card px-3 text-sm font-normal text-foreground" type="number" step={1} inputMode="numeric" disabled={disabled} value={quantity}
                         onChange={e => setQuantity(e.target.value)}/><span
                         className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.redispatch.maxQuantity', {count: available})}</span></label>}
-                    <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{t('opsMissions.redispatch.reason')}<RequiredMark/></span><textarea required disabled={disabled}
-                                                              className="min-h-22 w-full min-w-0 rounded-control border border-border-input bg-card p-2.5 text-sm font-normal text-foreground"
-                                                              maxLength={missionEventNoteLimit} value={reason}
+                    <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{t('opsMissions.redispatch.reason')}<RequiredMark/></span><textarea aria-required disabled={disabled}
+                                                              className="min-h-22 w-full min-w-0 rounded-control border border-border-input bg-card p-2.5 text-sm font-normal text-foreground" value={reason}
                                                               onChange={e => setReason(e.target.value)}/><span
-                        className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.redispatch.reasonHint', {count: missionEventNoteLimit})}</span></label>
+                        className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.redispatch.reasonHint', {count: 500})}</span></label>
                     {formStale && <p role="alert" className="m-0 text-sm text-danger">{t('opsMissions.redispatch.stale')}</p>}
                     <div className="flex flex-wrap items-center gap-2.5"><Button type="button" disabled={disabled} variant="outline"
                                                              onClick={() => setForm(null)}>{t('opsMissions.redispatch.keep')}</Button><Button type="submit"

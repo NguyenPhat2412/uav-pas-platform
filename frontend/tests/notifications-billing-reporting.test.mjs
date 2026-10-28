@@ -52,7 +52,7 @@ test('Operations App has NotificationBell and Notifications page', () => {
 
     const bellContent = readFileSync(bellPath, 'utf8');
     assert.match(bellContent, /useNotifications/);
-    const hook = readFileSync(atRoot('src/features/notifications/hooks/useNotifications.ts'), 'utf8');
+    const hook = readFileSync(atRoot('src/lib/query/notifications.ts'), 'utf8');
     assert.match(hook, /API_ROUTES.notifications.unreadCount/);
     assert.match(hook, /NotificationItem/);
 
@@ -103,7 +103,8 @@ test('Admin Portal has Billing Management, Reports & CSV Export, and Settings Co
     assert.match(billingContent, /admin\.pages\.billing\.title/);
     assert.match(adminVi.pages.billing.title, /Gói Cước/i);
     assert.match(billingContent, /User Quotas/i);
-    assert.match(billingContent, /\/api\/v1\/billing/);
+    // The page reaches the billing API through the shared admin service, not a hard-coded path.
+    assert.match(billingContent, /adminService\.billing(Plans|Quotas)/);
 
     const reportsContent = readFileSync(reportsPath, 'utf8');
     assert.match(reportsContent, /admin\.reports\.exportCsv/);
@@ -197,7 +198,7 @@ test('Notifications adapt actual backend DTOs and preserve HTTP and user-cache c
         }])),
     };
     try {
-        const source = readFileSync(atRoot('src/features/notifications/hooks/useNotifications.ts'), 'utf8')
+        const source = readFileSync(atRoot('src/lib/query/notifications.ts'), 'utf8')
             .replace(/^import .*;$/gm, '') + '\n';
         const notificationModule = await import('data:text/javascript;base64,' + Buffer.from(compile('const {useAuth,useI18n,useQuery,useQueryClient,useMutation,apiClient,API_ROUTES}=globalThis.__notificationTest;\n' + source)).toString('base64'));
         const state = notificationModule.useNotifications();

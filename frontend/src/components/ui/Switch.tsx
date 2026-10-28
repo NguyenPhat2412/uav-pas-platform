@@ -2,16 +2,9 @@
 
 import React from 'react';
 import {cn} from '@/lib/utils';
+import type {SwitchProps} from '@/types/ui';
 
-export interface SwitchProps {
-    checked: boolean;
-    onCheckedChange: (checked: boolean) => void;
-    disabled?: boolean;
-    label?: React.ReactNode;
-    title?: string;
-    'aria-label'?: string;
-    className?: string;
-}
+export type {SwitchProps};
 
 export function Switch({
     checked,

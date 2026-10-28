@@ -23,6 +23,7 @@
     "nav": {
         "dashboard": "ダッシュボード",
         "services": "UAVサービス",
+        "training": "利用ガイド",
         "missions": "マイミッション",
         "billing": "プラン・請求",
         "notifications": "通知",
@@ -30,9 +31,10 @@
         "portalTitle": "カスタマーポータル",
         "createRequest": "新規依頼",
         "groups": {
-            "operations": "運用",
-            "finance": "請求",
-            "account": "アカウント"
+            "overview": "概要",
+            "missions": "飛行ミッション",
+            "services": "サービスと請求",
+            "support": "ヘルプとアカウント"
         },
         "badges": {
             "activeMissions": "{label}：処理中のミッション {count} 件",
@@ -358,7 +360,11 @@
         "useMyLocation": "現在地を使用",
         "ariaLabel": "ミッション実施場所を選択する地図",
         "selected": "{lat}, {lng} を選択しました。ピンをドラッグするか別の場所をクリックして変更できます。",
-        "hint": "地図をクリックして実施地点にピンを立てます。下の欄に座標を直接入力することもできます。"
+        "hint": "地図をクリックして実施地点にピンを立てます。下の欄に座標を直接入力することもできます。",
+        "controls": {
+            "stationRadius": "基地局カバー圏",
+            "resetView": "初期表示に戻す"
+        }
     },
     "billingPage": {
         "status": {

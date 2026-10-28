@@ -4,7 +4,7 @@ import {Alert, Button} from '@/components/ui';
 import {ApiError} from '@/lib/api';
 import {useI18n} from '@/contexts/I18nContext';
 
-type Translate = (key: string, params?: Record<string, string | number>) => string;
+import type {Translate} from '@/types';
 
 const errorCodes = new Set([
     'MAINTENANCE_VERSION_CHANGED',

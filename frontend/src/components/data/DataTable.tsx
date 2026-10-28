@@ -2,7 +2,6 @@
 import {displayLabel} from "@/components/shared/presentation";
 import {type ReactNode, useMemo, useState} from 'react';
 import {
-    type ColumnDef,
     type ColumnFiltersState,
     flexRender,
     getCoreRowModel,
@@ -17,14 +16,9 @@ import {ArrowDown, ArrowUp, ChevronsUpDown, Search, SlidersHorizontal} from 'luc
 import {Button} from '@/components/ui';
 import {EmptyState} from "@/components/data/WorkspaceState";
 import {useI18n} from '@/contexts/I18nContext';
+import type {TableColumn, TableFilter} from '@/types/ui';
 
-export type TableColumn<T> = ColumnDef<T, unknown>;
-
-export interface TableFilter {
-    column: string;
-    label: string;
-    options: { value: string; label: string }[];
-}
+export type {TableColumn, TableFilter};
 
 export function DataTable<T extends { id: number }>({
                                                         data,

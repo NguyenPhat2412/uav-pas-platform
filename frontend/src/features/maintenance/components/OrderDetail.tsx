@@ -6,22 +6,18 @@ import {Drawer, Metadata} from '@/components/data/Drawer';
 import {LoadingRows} from '@/components/data/WorkspaceState';
 import {useAuth} from '@/contexts/AuthContext';
 import {formatDate} from "@/components/shared/presentation";
-import {maintenanceService as service} from "@/features/maintenance/services/maintenance.service";
+import {maintenanceService as service} from '@/lib/api/services';
 import {ActionFeedback, Feedback, maintenanceError, useMaintenanceAction} from "@/features/maintenance/components/Feedback";
 import {fieldClass, OrderFieldsForm} from "@/features/maintenance/components/Fields";
 import {MaterialEditor} from "@/features/maintenance/components/MaterialEditor";
 import {
     calendarDate,
-    closingNote,
     formatVnd,
-    orderControls,
-    orderInput
+    orderControls
 } from "@/features/maintenance/utils/workflows";
-import type {OrderFields, RepairOrder} from "@/features/maintenance/types/maintenance.types";
+import type {OrderDetailMode as Mode, OrderFields, RepairOrder} from "@/features/maintenance/types/maintenance.types";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/contexts/I18nContext';
-
-type Mode = 'view' | 'edit' | 'materials' | 'start' | 'complete' | 'cancel';
 
 function EditOrder({order, disabled, onSave, onCancel}: {
     order: RepairOrder;
@@ -39,13 +35,8 @@ function EditOrder({order, disabled, onSave, onCancel}: {
     const {t} = useI18n();
     return <form className="space-y-4" aria-label={t('opsAssets.maintenance.order.editForm')} onSubmit={event => {
         event.preventDefault();
-        try {
-            orderInput(fields, t);
-            setError('');
-            onSave(fields);
-        } catch (failure) {
-            setError(maintenanceError(failure, t));
-        }
+        setError('');
+        onSave(fields);
     }}><Feedback error={error}/><OrderFieldsForm value={fields} onChange={setFields} disabled={disabled}/>
         <div className="flex flex-wrap gap-3"><Button type="button" variant="outline" disabled={disabled}
                                                       onClick={onCancel}>{t('opsAssets.maintenance.order.discard')}</Button><Button type="submit"
@@ -57,7 +48,7 @@ function OrderConfirmation({order, mode, disabled, onConfirm, onCancel}: {
     order: RepairOrder;
     mode: 'start' | 'complete' | 'cancel';
     disabled: boolean;
-    onConfirm: (note: string) => void;
+    onConfirm: (note: string, passed: boolean) => void;
     onCancel: () => void
 }) {
     const [note, setNote] = useState(''), [passed, setPassed] = useState(false), [error, setError] = useState('');
@@ -67,10 +58,8 @@ function OrderConfirmation({order, mode, disabled, onConfirm, onCancel}: {
                  onSubmit={event => {
                      event.preventDefault();
                      try {
-                         if (mode !== 'start') closingNote(note, mode, t);
-                         if (mode === 'complete' && !passed) throw new Error(t('opsAssets.maintenance.order.mustInspect'));
                          setError('');
-                         onConfirm(note);
+                         onConfirm(note, passed);
                      } catch (failure) {
                          setError(maintenanceError(failure, t));
                      }
@@ -78,10 +67,10 @@ function OrderConfirmation({order, mode, disabled, onConfirm, onCancel}: {
         className="text-sm text-slate-600">{t(mode === 'start' ? 'opsAssets.maintenance.order.desc.start' : mode === 'complete' ? 'opsAssets.maintenance.order.desc.complete' : order.status === 'IN_PROGRESS' ? 'opsAssets.maintenance.order.desc.cancelStarted' : 'opsAssets.maintenance.order.desc.cancelOpen')}</p>{mode !== 'start' &&
         <label
             className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{mode === 'complete' ? t('opsAssets.maintenance.order.inspectionResult') : t('opsAssets.maintenance.order.cancelReason')}<RequiredMark/></span><textarea
-            autoFocus required maxLength={1000} rows={4} className={fieldClass} value={note} disabled={disabled}
+            autoFocus aria-required rows={4} className={fieldClass} value={note} disabled={disabled}
             onChange={event => setNote(event.target.value)}/></label>}{mode === 'complete' &&
         <label className="flex items-start gap-3 text-sm"><input className="mt-1 h-5 w-5 shrink-0" type="checkbox"
-                                                                 required checked={passed} disabled={disabled}
+                                                                 aria-required checked={passed} disabled={disabled}
                                                                  onChange={event => setPassed(event.target.checked)}/><span>{t('opsAssets.maintenance.order.inspectedConfirm')}<RequiredMark/></span></label>}
         <div className="flex flex-wrap gap-3"><Button type="button" variant="outline" disabled={disabled}
                                                       onClick={onCancel}>{t('opsAssets.maintenance.order.backToOrder')}</Button><Button type="submit"
@@ -175,7 +164,7 @@ export function OrderDetail({id, onClose, refreshLists}: {
                 <OrderConfirmation key={`${mode}-${order.version}`} order={order}
                                    mode={mode as 'start' | 'complete' | 'cancel'} disabled={blocked}
                                    onCancel={() => setMode('view')}
-                                   onConfirm={note => submit(() => mode === 'start' ? service.start(order) : mode === 'complete' ? service.complete(order, note) : service.cancel(order, note), `opsAssets.maintenance.order.success.${mode}`)}/>}
+                                   onConfirm={(note, passed) => submit(() => mode === 'start' ? service.start(order) : mode === 'complete' ? service.complete(order, note, passed) : service.cancel(order, note), `opsAssets.maintenance.order.success.${mode}`)}/>}
         </>}</div>
     </Drawer>;
 }

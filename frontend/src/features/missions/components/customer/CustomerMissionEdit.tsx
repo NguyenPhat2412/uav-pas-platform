@@ -16,8 +16,8 @@ import {
     canEditMission,
     missionFormError,
     type MissionFormErrors,
-    missionFormFromDetail,
-    validateMissionForm
+    missionFieldErrors,
+    missionFormFromDetail
 } from "@/features/missions/forms/mission-form";
 import type {Mission} from "@/types/customer";
 import {parseEntityId, toMissionSlug} from "@/lib/url-slugs";
@@ -66,17 +66,19 @@ function DraftEditor({mission, reload}: { mission: Mission; reload: () => Promis
     const selectedService = services.data?.find(service => service.id === mission.serviceId);
     const save = async () => {
         setError('');
-        const nextErrors = validateMissionForm(form, undefined, t);
-        setErrors(nextErrors);
-        if (Object.keys(nextErrors).length) {
-            focusMissionErrors();
-            return;
-        }
+        setErrors({});
         if (mustReload) return;
         try {
             await actions.update.mutateAsync({id: mission.id, data: form, expectedVersion});
             router.replace(`/customer/missions/${toMissionSlug(mission)}`);
         } catch (err) {
+            const fields = missionFieldErrors(err);
+            if (fields) {
+                // The server is the only judge of the form; show its verdict next to each field.
+                setErrors(fields);
+                focusMissionErrors();
+                return;
+            }
             setError(missionFormError(err, t));
             if (err && typeof err === 'object' && 'status' in err && err.status === 409) setMustReload(true);
         }
@@ -100,9 +102,11 @@ function DraftEditor({mission, reload}: { mission: Mission; reload: () => Promis
             setReloading(false);
         }
     };
-    return <>
-        <Link href={`/customer/missions/${toMissionSlug(mission)}`} className="inline-flex min-h-11 w-fit items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('missionEdit.back')}</Link>
-        <Panel title={t('missionCreate.requestDetails')}>
+    return <div className="flex flex-1 flex-col bg-white">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/70 px-4 py-2.5">
+            <Link href={`/customer/missions/${toMissionSlug(mission)}`} className="inline-flex min-h-8 w-fit items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('missionEdit.back')}</Link>
+        </div>
+        <Panel title={t('missionCreate.requestDetails')} className="flex-1 border-0">
             <div className="mb-5 rounded-panel bg-amber-50 px-3.5 py-3 text-xs text-warning">
                 <strong>{displayLabel(mission.missionType)}</strong>{mission.serviceId && <> · {selectedService ? serviceName(selectedService) : t('missionEdit.serviceNumber', {id: mission.serviceId})}</>}
                 <p className="m-0 mt-1">{t('missionEdit.fixedService')}</p></div>
@@ -126,5 +130,5 @@ function DraftEditor({mission, reload}: { mission: Mission; reload: () => Promis
                 </fieldset>
             </form>
         </Panel>
-    </>;
+    </div>;
 }

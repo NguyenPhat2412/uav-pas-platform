@@ -1,6 +1,8 @@
 import type {LucideIcon} from 'lucide-react';
 import {
     Activity,
+    Archive,
+    BookOpenCheck,
     CirclePlus,
     BarChart3,
     Bell,
@@ -8,27 +10,54 @@ import {
     ClipboardList,
     CreditCard,
     Crosshair,
+    Database,
+    FileCheck2,
     FileKey2,
+    FileLock2,
+    FileSpreadsheet,
+    Gauge,
+    GraduationCap,
+    HardDrive,
     Inbox,
     KeyRound,
     LayoutDashboard,
     Lock,
+    Mail,
     Map as MapIcon,
     MapPinned,
+    MessagesSquare,
     Package,
-    Plane,
     PlaneTakeoff,
     Radio,
+    ReceiptText,
+    Rocket,
     Router,
     ScrollText,
+    Server,
     Settings,
     ShieldCheck,
+    Siren,
     TableProperties,
     User,
     Users,
     Wrench,
 } from 'lucide-react';
 import {activeDestination} from '@/components/shared/navigation';
+import type {
+    AdminNavGroup,
+    CustomerNavBadge,
+    CustomerNavGroup,
+    OperationsNavGroup,
+    SidebarRouteItem,
+} from '@/types/ui';
+
+export type {
+    AdminNavGroup,
+    CustomerNavBadge,
+    CustomerNavGroup,
+    OperationsNavGroup,
+    SidebarRouteItem,
+};
 
 /**
  * Cấu hình tập trung toàn bộ đường dẫn (routes) hiển thị trên thanh Sidebar của 3 cổng:
@@ -39,35 +68,24 @@ import {activeDestination} from '@/components/shared/navigation';
  * Bạn chỉ cần thêm / sửa / sắp xếp các mục tại file này để quản lý toàn bộ Sidebar.
  */
 
-export type AdminNavGroup = 'overview' | 'fleet' | 'access' | 'system';
-export type OperationsNavGroup = 'command' | 'missions' | 'assets' | 'monitoring';
-export type CustomerNavGroup = 'operations' | 'finance' | 'account';
-export type CustomerNavBadge = 'activeMissions' | 'pendingInvoices' | 'unreadNotifications';
-
-export interface SidebarRouteItem<G extends string = string> {
-    href: string;
-    key: string;
-    group: G;
-    icon: LucideIcon;
-    permission?: string;
-    /** Các URL phụ / đường dẫn cũ sẽ tự động kích hoạt (highlight) mục Sidebar này */
-    aliases?: string[];
-    defaultLabel?: string;
-    badge?: CustomerNavBadge;
-}
-
 // ============================================================================
-// 1. ADMIN PORTAL SIDEBAR ROUTES
+// 1. ADMIN PORTAL SIDEBAR ROUTES (7 Nhóm Chuyên biệt)
 // ============================================================================
+// The admin sidebar lists admin pages only; customer and operations pages are reached through
+// the portal switcher, so each portal keeps its own navigation.
 export const ADMIN_SIDEBAR_GROUPS: readonly AdminNavGroup[] = [
     'overview',
-    'fleet',
+    'commerce',
     'access',
+    'training',
+    'intelligence',
+    'security',
     'system',
+    'infrastructure',
 ] as const;
 
 export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
-    // Nhóm: Tổng quan (overview)
+    // 1. Nhóm: Tổng quan & Phân tích (overview)
     {
         href: '/admin/dashboard',
         key: 'dashboard',
@@ -89,24 +107,61 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         icon: Inbox,
         permission: 'DASHBOARD_READ',
     },
-
-    // Nhóm: Đội bay (fleet)
     {
         href: '/admin/fleet-map',
         key: 'fleetMap',
-        group: 'fleet',
+        defaultLabel: 'Bản đồ đội bay',
+        group: 'overview',
         icon: MapIcon,
-        permission: 'UAV_READ',
-    },
-    {
-        href: '/admin/uavs',
-        key: 'uavs',
-        group: 'fleet',
-        icon: Plane,
-        permission: 'UAV_READ',
+        permission: 'MISSION_VIEW_ALL',
     },
 
-    // Nhóm: Người dùng & Phân quyền (access) — Đã tách riêng từng trang con trên Sidebar
+    // 5. Nhóm: Tài chính & Hạn mức (commerce) — Đã tách riêng 3 trang con chuyên biệt
+    {
+        href: '/admin/services',
+        key: 'services',
+        group: 'commerce',
+        icon: Package,
+        permission: 'MISSION_CONFIRM',
+    },
+    {
+        href: '/admin/billing/plans',
+        key: 'billingPlans',
+        group: 'commerce',
+        icon: CreditCard,
+        permission: 'USER_MANAGE',
+        aliases: ['/admin/billing'],
+    },
+    {
+        href: '/admin/billing/quotas',
+        key: 'billingQuotas',
+        group: 'commerce',
+        icon: Gauge,
+        permission: 'USER_MANAGE',
+    },
+    {
+        href: '/admin/billing/invoices',
+        key: 'billingInvoices',
+        group: 'commerce',
+        icon: FileSpreadsheet,
+        permission: 'USER_MANAGE',
+    },
+    {
+        href: '/admin/billing/transactions',
+        key: 'billingTransactions',
+        group: 'commerce',
+        icon: ReceiptText,
+        permission: 'USER_MANAGE',
+    },
+    {
+        href: '/admin/billing/outbox',
+        key: 'billingOutbox',
+        group: 'commerce',
+        icon: Inbox,
+        permission: 'USER_MANAGE',
+    },
+
+    // 4. Nhóm: Người dùng & Phân quyền (access) — Đã tách riêng 5 trang con chuyên biệt
     {
         href: '/admin/users',
         key: 'users',
@@ -146,48 +201,97 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         aliases: ['/admin/permissions'],
     },
 
-    // Nhóm: Hệ thống (system)
+    // 5. Nhóm: Đào tạo & SOP (training) — mỗi cổng một mục; /admin/training chuyển về mục khách hàng.
     {
-        href: '/admin/services',
-        key: 'services',
-        group: 'system',
-        icon: Package,
-        permission: 'MISSION_CONFIRM',
+        href: '/admin/training/customer',
+        key: 'trainingCustomer',
+        defaultLabel: 'Đào tạo khách hàng',
+        group: 'training',
+        icon: BookOpenCheck,
     },
     {
-        href: '/admin/billing',
-        key: 'billing',
-        group: 'system',
-        icon: CreditCard,
+        href: '/admin/training/operations',
+        key: 'trainingOperations',
+        defaultLabel: 'SOP điều hành',
+        group: 'training',
+        icon: Crosshair,
+    },
+    {
+        href: '/admin/training/admin',
+        key: 'trainingAdmin',
+        defaultLabel: 'Quy chuẩn quản trị',
+        group: 'training',
+        icon: FileCheck2,
+    },
+
+    // 6. Nhóm: Trí tuệ Nhân tạo & Tích hợp (intelligence)
+    {
+        href: '/admin/ai-router',
+        key: 'aiRouter',
+        group: 'intelligence',
+        icon: Router,
+        permission: 'PERMISSION_MANAGE',
+    },
+    {
+        href: '/admin/ai-router/conversations',
+        key: 'aiConversations',
+        group: 'intelligence',
+        icon: MessagesSquare,
         permission: 'PERMISSION_MANAGE',
     },
     {
         href: '/admin/webhooks',
         key: 'webhooks',
-        group: 'system',
+        group: 'intelligence',
         icon: Radio,
         permission: 'USER_MANAGE',
     },
+
+    // 7. Nhóm: Bảo mật (security) — phiên, chính sách đăng nhập, bí mật, khóa thiết bị
     {
-        href: '/admin/ai-router',
-        key: 'aiRouter',
-        group: 'system',
-        icon: Router,
+        href: '/admin/security/sessions',
+        key: 'securitySessions',
+        group: 'security',
+        icon: ShieldCheck,
         permission: 'PERMISSION_MANAGE',
+        aliases: ['/admin/security'],
+    },
+    {
+        href: '/admin/security/policy',
+        key: 'securityPolicy',
+        group: 'security',
+        icon: FileLock2,
+        permission: 'PERMISSION_MANAGE',
+    },
+    {
+        href: '/admin/security/secrets',
+        key: 'securitySecrets',
+        group: 'security',
+        icon: KeyRound,
+        permission: 'PERMISSION_MANAGE',
+    },
+    {
+        href: '/admin/device-keys',
+        key: 'deviceKeys',
+        group: 'security',
+        icon: KeyRound,
+        permission: 'PERMISSION_MANAGE',
+    },
+
+    // 8. Nhóm: Hệ thống & Kiểm toán (system)
+    {
+        href: '/admin/alerts',
+        key: 'alerts',
+        group: 'system',
+        icon: Siren,
+        permission: 'DASHBOARD_READ',
     },
     {
         href: '/admin/settings',
         key: 'settings',
         group: 'system',
         icon: Settings,
-        permission: 'PERMISSION_MANAGE',
-    },
-    {
-        href: '/admin/system-health',
-        key: 'systemHealth',
-        group: 'system',
-        icon: Activity,
-        permission: 'PERMISSION_MANAGE',
+        permission: 'USER_MANAGE',
     },
     {
         href: '/admin/audit-logs',
@@ -195,6 +299,57 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         group: 'system',
         icon: ScrollText,
         permission: 'AUDIT_READ',
+    },
+
+    // 9. Nhóm: Hạ tầng (infrastructure) — chỉ xem; thao tác máy chủ làm qua SSH theo deploy/DEPLOY.md
+    {
+        href: '/admin/infrastructure',
+        key: 'infrastructure',
+        group: 'infrastructure',
+        icon: Server,
+        permission: 'PERMISSION_MANAGE',
+    },
+    {
+        href: '/admin/system-health',
+        key: 'systemHealth',
+        group: 'infrastructure',
+        icon: Activity,
+        permission: 'PERMISSION_MANAGE',
+    },
+    {
+        href: '/admin/infrastructure/deployment',
+        key: 'infrastructureDeployment',
+        group: 'infrastructure',
+        icon: Rocket,
+        permission: 'PERMISSION_MANAGE',
+    },
+    {
+        href: '/admin/infrastructure/backups',
+        key: 'infrastructureBackups',
+        group: 'infrastructure',
+        icon: Archive,
+        permission: 'PERMISSION_MANAGE',
+    },
+    {
+        href: '/admin/infrastructure/storage',
+        key: 'infrastructureStorage',
+        group: 'infrastructure',
+        icon: HardDrive,
+        permission: 'PERMISSION_MANAGE',
+    },
+    {
+        href: '/admin/infrastructure/database',
+        key: 'infrastructureDatabase',
+        group: 'infrastructure',
+        icon: Database,
+        permission: 'PERMISSION_MANAGE',
+    },
+    {
+        href: '/admin/infrastructure/email',
+        key: 'infrastructureEmail',
+        group: 'infrastructure',
+        icon: Mail,
+        permission: 'PERMISSION_MANAGE',
     },
 ];
 
@@ -295,77 +450,95 @@ export const OPERATIONS_SIDEBAR_ROUTES: SidebarRouteItem<OperationsNavGroup>[] =
         icon: Activity,
         permission: 'AUDIT_READ',
     },
+    {
+        href: '/operations/training',
+        key: 'training',
+        defaultLabel: 'Đào tạo & SOP UAV',
+        group: 'monitoring',
+        icon: GraduationCap,
+    },
 ];
 
 // ============================================================================
 // 3. CUSTOMER PORTAL SIDEBAR ROUTES
 // ============================================================================
 export const CUSTOMER_SIDEBAR_GROUPS: readonly CustomerNavGroup[] = [
-    'operations',
-    'finance',
-    'account',
+    'overview',
+    'missions',
+    'services',
+    'support',
 ] as const;
 
+// Grouped by what the customer is doing: checking in, running flights, buying, getting help.
 export const CUSTOMER_SIDEBAR_ROUTES: SidebarRouteItem<CustomerNavGroup>[] = [
-    // Nhóm: Dịch vụ & Nhiệm vụ (operations)
+    // Nhóm: Tổng quan (overview)
     {
         href: '/customer/dashboard',
         key: 'dashboard',
         defaultLabel: 'Tổng quan',
-        group: 'operations',
+        group: 'overview',
         icon: LayoutDashboard,
         permission: 'MISSION_VIEW',
+    },
+    {
+        href: '/customer/notifications',
+        key: 'notifications',
+        defaultLabel: 'Thông báo',
+        group: 'overview',
+        icon: Bell,
+        badge: 'unreadNotifications',
+    },
+
+    // Nhóm: Nhiệm vụ bay (missions)
+    {
+        href: '/customer/missions/create',
+        key: 'createRequest',
+        defaultLabel: 'Tạo yêu cầu',
+        group: 'missions',
+        icon: CirclePlus,
+        permission: 'MISSION_CREATE',
     },
     {
         href: '/customer/missions',
         key: 'missions',
         defaultLabel: 'Nhiệm vụ của tôi',
-        group: 'operations',
+        group: 'missions',
         icon: Activity,
         permission: 'MISSION_VIEW',
         badge: 'activeMissions',
     },
-    {
-        href: '/customer/missions/create',
-        key: 'createRequest',
-        defaultLabel: 'Tạo yêu cầu',
-        group: 'operations',
-        icon: CirclePlus,
-        permission: 'MISSION_CREATE',
-    },
+
+    // Nhóm: Dịch vụ & thanh toán (services)
     {
         href: '/customer/services',
         key: 'services',
         defaultLabel: 'Dịch vụ UAV',
-        group: 'operations',
+        group: 'services',
         icon: Boxes,
         permission: 'MISSION_VIEW',
     },
-
-    // Nhóm: Tài chính (finance)
     {
         href: '/customer/billing',
         key: 'billing',
-        defaultLabel: 'Gói cước & Hóa đơn',
-        group: 'finance',
+        defaultLabel: 'Gói cước & hóa đơn',
+        group: 'services',
         icon: CreditCard,
         badge: 'pendingInvoices',
     },
 
-    // Nhóm: Tài khoản (account)
+    // Nhóm: Hỗ trợ & tài khoản (support)
     {
-        href: '/customer/notifications',
-        key: 'notifications',
-        defaultLabel: 'Thông báo',
-        group: 'account',
-        icon: Bell,
-        badge: 'unreadNotifications',
+        href: '/customer/training',
+        key: 'training',
+        defaultLabel: 'Hướng dẫn sử dụng',
+        group: 'support',
+        icon: GraduationCap,
     },
     {
         href: '/customer/profile',
         key: 'profile',
         defaultLabel: 'Tài khoản',
-        group: 'account',
+        group: 'support',
         icon: User,
     },
 ];
@@ -380,7 +553,10 @@ export function resolveSidebarActiveItem<T extends { href: string; aliases?: str
     pathname: string,
     activeResource?: string,
 ): T | undefined {
-    const ownerPath = visibleItems.find(item =>
+    // An alias only claims a path that no item links to directly, so /admin/billing/quotas stays
+    // with its own entry instead of the plans entry that aliases /admin/billing.
+    const ownsDirectly = visibleItems.some(item => pathname === item.href || pathname.startsWith(`${item.href}/`));
+    const ownerPath = ownsDirectly ? undefined : visibleItems.find(item =>
         item.aliases?.some(alias => pathname === alias || pathname.startsWith(`${alias}/`)),
     )?.href;
     return activeDestination(visibleItems, ownerPath ?? pathname, activeResource);

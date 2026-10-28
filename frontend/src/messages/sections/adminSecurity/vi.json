@@ -1,0 +1,254 @@
+{
+  "adminSecurity": {
+    "pages": {
+      "sessions": "Phiên đăng nhập & 2FA",
+      "policy": "Chính sách đăng nhập",
+      "secrets": "Bí mật & khóa"
+    },
+    "nav": {
+      "label": "Bảo mật",
+      "sessions": "Phiên đăng nhập & 2FA",
+      "policy": "Chính sách đăng nhập",
+      "secrets": "Bí mật & khóa"
+    },
+    "common": {
+      "on": "Bật",
+      "off": "Tắt",
+      "yes": "Có",
+      "no": "Không",
+      "notSet": "Chưa đặt",
+      "minutes": "{count} phút",
+      "hours": "{count} giờ",
+      "days": "{count} ngày"
+    },
+    "severity": {
+      "CRITICAL": "Nghiêm trọng",
+      "WARNING": "Cảnh báo",
+      "INFO": "Thông tin"
+    },
+    "warnings": {
+      "title": "Phát hiện {count} vấn đề cấu hình",
+      "criticalCount": "{count} nghiêm trọng",
+      "codes": {
+        "OTP_DEV_PREVIEW_ENABLED": {
+          "title": "Đang bật xem trước mã OTP (chế độ phát triển)",
+          "fix": "Mã OTP bị trả về trong API và ghi vào log, ai cũng có thể vượt qua xác thực email/2FA. Đặt APP_AUTH_OTP_DEV_PREVIEW=false trên máy chủ rồi khởi động lại backend."
+        },
+        "COOKIE_SAMESITE_NONE_INSECURE": {
+          "title": "Cookie SameSite=None nhưng không bật Secure",
+          "fix": "Trình duyệt sẽ từ chối cookie phiên. Đặt APP_COOKIE_SECURE=true (bắt buộc dùng HTTPS) hoặc đổi APP_COOKIE_SAME_SITE về Lax."
+        },
+        "COOKIE_NOT_SECURE": {
+          "title": "Cookie phiên không bật cờ Secure",
+          "fix": "Cookie đăng nhập có thể bị gửi qua HTTP không mã hóa. Trên máy chủ thật hãy đặt APP_COOKIE_SECURE=true."
+        },
+        "CORS_WILDCARD": {
+          "title": "CORS cho phép mọi nguồn (*)",
+          "fix": "Mọi trang web đều có thể gọi API bằng phiên của người dùng. Liệt kê chính xác tên miền frontend trong APP_CORS_ALLOWED_ORIGINS."
+        },
+        "CORS_LOCALHOST": {
+          "title": "CORS vẫn cho phép localhost",
+          "fix": "Các nguồn localhost chỉ dùng khi phát triển. Xóa chúng khỏi APP_CORS_ALLOWED_ORIGINS trên máy chủ thật."
+        },
+        "CORS_PLAIN_HTTP": {
+          "title": "CORS cho phép nguồn HTTP không mã hóa",
+          "fix": "Chỉ nên cho phép nguồn https:// trong APP_CORS_ALLOWED_ORIGINS."
+        },
+        "MAIL_DISABLED": {
+          "title": "Chưa bật gửi email",
+          "fix": "Email OTP (xác minh tài khoản, 2FA qua email, quên mật khẩu) sẽ không được gửi. Cấu hình SMTP và đặt APP_MAIL_ENABLED=true."
+        },
+        "ACCESS_TOKEN_LONG_LIVED": {
+          "title": "Access token sống lâu hơn 24 giờ",
+          "fix": "Token bị lộ sẽ dùng được lâu. Giảm APP_JWT_EXPIRATION_MS (ví dụ 15–60 phút) vì refresh token đã giữ phiên."
+        },
+        "REFRESH_TOKEN_LONG_LIVED": {
+          "title": "Refresh token sống lâu hơn 30 ngày",
+          "fix": "Cân nhắc giảm app.jwt.refresh-expiration-ms để phiên cũ tự hết hạn sớm hơn."
+        },
+        "NOT_PRODUCTION_PROFILE": {
+          "title": "Chưa nhận diện cấu hình môi trường thật",
+          "fix": "Không có profile prod, không đặt tên miền cookie và không có nguồn CORS https công khai. Nếu đây là máy chủ thật, hãy kiểm tra lại deploy/.env.production."
+        },
+        "SECRET_MISSING": {
+          "title": "Thiếu bí mật bắt buộc",
+          "fix": "Đặt giá trị ngẫu nhiên đủ dài trong deploy/.env.production rồi khởi động lại dịch vụ."
+        },
+        "SECRET_KNOWN_DEFAULT": {
+          "title": "Bí mật đang dùng giá trị mặc định hoặc giá trị mẫu",
+          "fix": "Giá trị này có trong mã nguồn hoặc file mẫu nên coi như đã lộ. Thay bằng giá trị ngẫu nhiên mới ngay."
+        },
+        "SECRET_TOO_SHORT": {
+          "title": "Bí mật ngắn hơn độ dài tối thiểu",
+          "fix": "Tạo giá trị mới dài hơn, ví dụ: openssl rand -base64 48."
+        }
+      }
+    },
+    "sessions": {
+      "revokeAll": {
+        "title": "Đăng xuất tất cả người dùng",
+        "description": "Thu hồi mọi phiên đăng nhập (refresh token và access token) của tất cả tài khoản, trừ tài khoản của bạn. Dùng khi nghi ngờ bị xâm nhập hoặc sau khi đổi khóa.",
+        "action": "Đăng xuất tất cả"
+      },
+      "mechanism": "Thu hồi có hiệu lực ngay: refresh token bị vô hiệu và mọi access token đã cấp trước thời điểm thu hồi bị từ chối. Người dùng chỉ cần đăng nhập lại.",
+      "filters": {
+        "search": "Tìm tài khoản",
+        "searchPlaceholder": "Tên đăng nhập, email hoặc họ tên",
+        "searchButton": "Tìm",
+        "role": "Vai trò",
+        "allRoles": "Tất cả vai trò",
+        "activeOnly": "Chỉ phiên đang hoạt động"
+      },
+      "empty": "Không có tài khoản phù hợp.",
+      "columns": {
+        "user": "Tài khoản",
+        "role": "Vai trò",
+        "session": "Phiên",
+        "twoFactor": "2FA",
+        "lastRevoked": "Thu hồi gần nhất",
+        "actions": "Thao tác"
+      },
+      "you": "Bạn",
+      "state": {
+        "ACTIVE": "Đang hoạt động",
+        "EXPIRED": "Đã hết hạn",
+        "REVOKED": "Đã thu hồi",
+        "NONE": "Chưa có phiên"
+      },
+      "signedIn": "Đăng nhập: {time}",
+      "expires": "Hết hạn: {time}",
+      "twoFactorMethod": {
+        "EMAIL": "Email OTP",
+        "TOTP": "Ứng dụng xác thực"
+      },
+      "twoFactorOff": "Chưa bật",
+      "revokedBy": "{time} bởi {name}",
+      "selfWarning": "Đây là tài khoản của bạn: bạn sẽ bị đăng xuất.",
+      "actions": {
+        "revoke": "Thu hồi phiên",
+        "reset2fa": "Đặt lại 2FA"
+      },
+      "confirm": {
+        "revokeUser": "Thu hồi mọi phiên đăng nhập của {name}? Người này sẽ bị đăng xuất trên mọi thiết bị.",
+        "revokeSelf": "Đây là tài khoản của chính bạn. Thu hồi sẽ đăng xuất bạn ngay trên mọi thiết bị, kể cả phiên hiện tại. Tiếp tục?",
+        "revokeAll": "Đăng xuất TẤT CẢ người dùng khác trên mọi thiết bị? Thao tác này không thể hoàn tác; phiên của bạn được giữ lại.",
+        "reset2fa": "Tắt xác thực 2 lớp của {name} và xóa khóa ứng dụng xác thực? Chỉ làm khi đã xác minh danh tính người dùng (ví dụ mất điện thoại).",
+        "reset2faSelf": "Đây là tài khoản của chính bạn.",
+        "reset2faRevoke": "Đồng thời đăng xuất {name} trên mọi thiết bị? (Khuyến nghị: OK. Chọn Hủy để giữ các phiên hiện có.)"
+      },
+      "done": {
+        "REVOKE_USER_SESSIONS": "Đã thu hồi phiên đăng nhập.",
+        "REVOKE_ALL_SESSIONS": "Đã đăng xuất {count} tài khoản ({tokens} refresh token bị thu hồi).",
+        "RESET_2FA": "Đã đặt lại 2FA. Người dùng có thể đăng nhập bằng mật khẩu và bật lại 2FA.",
+        "selfSignedOut": "Phiên của bạn đã bị thu hồi, bạn sẽ được đưa về trang đăng nhập."
+      },
+      "footnote": "Mỗi tài khoản có tối đa một phiên refresh; đăng nhập trên thiết bị mới sẽ thay phiên cũ. Mọi thao tác đều được ghi vào nhật ký kiểm toán."
+    },
+    "policy": {
+      "readOnlyNote": "Các giá trị chỉ đọc, lấy từ cấu hình máy chủ đang chạy. Muốn thay đổi, sửa deploy/.env.production trên VPS rồi khởi động lại backend.",
+      "allGood": "Không phát hiện vấn đề nào trong cấu hình đăng nhập.",
+      "groups": {
+        "tokens": "Token đăng nhập",
+        "otp": "OTP & 2FA",
+        "cookie": "Cookie phiên",
+        "mail": "Email",
+        "cors": "CORS",
+        "runtime": "Môi trường"
+      },
+      "fields": {
+        "accessToken": "Thời hạn access token",
+        "refreshToken": "Thời hạn refresh token",
+        "otpTtl": "Thời hạn mã OTP",
+        "totpIssuer": "Tên hiển thị trong ứng dụng xác thực",
+        "otpDevPreview": "Xem trước OTP (phát triển)",
+        "cookieSecure": "Cookie Secure",
+        "cookieSameSite": "Cookie SameSite",
+        "cookieDomain": "Tên miền cookie",
+        "mailEnabled": "Gửi email",
+        "corsOrigins": "Nguồn được phép",
+        "profiles": "Profile Spring đang chạy",
+        "productionLike": "Nhận diện môi trường thật"
+      },
+      "defaultProfile": "default"
+    },
+    "secrets": {
+      "notice": {
+        "title": "Không hiển thị và không sửa bí mật trên web",
+        "body": "Trang này chỉ cho biết bí mật đã được đặt, đủ dài và không dùng giá trị mặc định hay chưa; không bao giờ hiển thị giá trị. Bí mật được quản lý trong deploy/.env.production trên VPS."
+      },
+      "allGood": "Tất cả bí mật đều đạt yêu cầu.",
+      "columns": {
+        "secret": "Bí mật",
+        "status": "Trạng thái",
+        "configured": "Đã đặt",
+        "length": "Độ dài",
+        "default": "Giá trị mặc định",
+        "managedIn": "Quản lý tại"
+      },
+      "names": {
+        "app_jwt_secret": "Khóa ký JWT",
+        "app_billing_ipn_secret": "Bí mật IPN thanh toán",
+        "app_ai_router_secret": "Khóa mã hóa AI router",
+        "app_storage_access_key": "Access key lưu trữ",
+        "app_storage_secret_key": "Secret key lưu trữ",
+        "spring_mail_password": "Mật khẩu SMTP",
+        "spring_datasource_password": "Mật khẩu cơ sở dữ liệu"
+      },
+      "notes": {
+        "DERIVED_FROM_JWT_SECRET": "Chưa đặt: đang dẫn xuất từ khóa JWT.",
+        "REQUIRED_WHEN_BILLING_PROVIDER_ENABLED": "Chỉ bắt buộc khi bật cổng thanh toán.",
+        "REQUIRED_WHEN_SMTP_AUTH_ENABLED": "Chỉ bắt buộc khi bật email có xác thực SMTP."
+      },
+      "status": {
+        "OK": "Đạt",
+        "MISSING": "Thiếu",
+        "NOT_REQUIRED": "Không bắt buộc",
+        "TOO_SHORT": "Quá ngắn",
+        "KNOWN_DEFAULT": "Giá trị mặc định"
+      },
+      "required": "Bắt buộc",
+      "optional": "Tùy chọn",
+      "lengthOk": "Đủ (≥ {min})",
+      "lengthShort": "Ngắn hơn {min}",
+      "defaultYes": "Đang dùng mặc định",
+      "defaultNo": "Không",
+      "aiKey": {
+        "title": "Khóa API nhà cung cấp AI",
+        "configured": "Đã cấu hình (lưu mã hóa trong cơ sở dữ liệu).",
+        "configuredAt": "Đã cấu hình, cập nhật lúc {time} bởi {name}.",
+        "missing": "Chưa cấu hình. Trợ lý AI sẽ không hoạt động.",
+        "manage": "Quản lý tại AI Router"
+      },
+      "rotation": {
+        "title": "Hướng dẫn xoay vòng bí mật",
+        "general": "Thực hiện trên VPS: sửa deploy/.env.production, chạy lại docker compose để khởi động lại dịch vụ, rồi kiểm tra trang Sức khỏe hệ thống. Tạo giá trị mới bằng: openssl rand -base64 48.",
+        "items": {
+          "jwt": {
+            "title": "Khóa ký JWT (APP_JWT_SECRET)",
+            "body": "Đổi khóa làm mọi phiên đăng nhập hết hiệu lực, người dùng phải đăng nhập lại. Nếu chưa đặt APP_AI_ROUTER_SECRET, khóa AI đang dẫn xuất từ khóa JWT nên phải nhập lại khóa API AI sau khi đổi."
+          },
+          "billingIpn": {
+            "title": "Bí mật IPN (APP_BILLING_IPN_SECRET)",
+            "body": "Cập nhật đồng thời tại cổng thanh toán và trên máy chủ, nếu không thông báo thanh toán sẽ bị từ chối."
+          },
+          "aiRouter": {
+            "title": "Khóa mã hóa AI router (APP_AI_ROUTER_SECRET)",
+            "body": "Đổi khóa khiến khóa API AI đã lưu không giải mã được; nhập lại khóa API tại trang AI Router sau khi khởi động lại."
+          },
+          "storage": {
+            "title": "Khóa lưu trữ (APP_STORAGE_ACCESS_KEY / APP_STORAGE_SECRET_KEY)",
+            "body": "Tạo cặp khóa mới tại MinIO/R2/S3, cập nhật máy chủ, kiểm tra tải ảnh lên được, sau đó mới xóa cặp khóa cũ."
+          },
+          "mail": {
+            "title": "Mật khẩu SMTP (SMTP_PASSWORD)",
+            "body": "Đổi tại nhà cung cấp email rồi cập nhật máy chủ; thử gửi OTP (quên mật khẩu) để kiểm tra."
+          },
+          "database": {
+            "title": "Mật khẩu cơ sở dữ liệu (POSTGRES_PASSWORD)",
+            "body": "Đổi mật khẩu người dùng trong PostgreSQL (ALTER USER) trước, sau đó cập nhật máy chủ và khởi động lại backend. Biến POSTGRES_PASSWORD chỉ áp dụng khi tạo cơ sở dữ liệu lần đầu."
+          }
+        }
+      }
+    }
+  }
+}

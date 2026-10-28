@@ -1,16 +1,15 @@
-export const uavReasonLimit = 255;
-export type Translate = (key: string, params?: Record<string, string | number>) => string;
+import type {Translate} from '@/types';
+import {translateMessage} from '@/lib/format';
+
+export type {Translate};
 
 // Without a translator the Vietnamese default is returned, which keeps these helpers usable outside React.
-function message(t: Translate | undefined, key: string, fallback: string, params?: Record<string, string | number>): string {
-    return t ? t(`opsAssets.uavWorkflow.${key}`, params) : fallback;
-}
+const message = (t: Translate | undefined, key: string, fallback: string, params?: Record<string, string | number>) =>
+    translateMessage(t, `opsAssets.uavWorkflow.${key}`, fallback, params);
 
-export function uavChangeReason(value: string, t?: Translate) {
-    const reason = value.trim();
-    if (!reason) throw new Error(message(t, 'reasonRequired', 'Vui lòng nhập lý do hoặc kết quả kiểm tra UAV.'));
-    if (reason.length > uavReasonLimit) throw new Error(message(t, 'reasonTooLong', 'Nội dung không được vượt quá 255 ký tự.'));
-    return reason;
+/** The API requires a reason of at most 255 characters and reports it on the reason field. */
+export function uavChangeReason(value: string) {
+    return value.trim();
 }
 
 /** Display affordances only. Active mission references are checked by the API. */

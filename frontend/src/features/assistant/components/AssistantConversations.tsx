@@ -9,7 +9,7 @@ import {EmptyState, QueryState} from '@/components/data/WorkspaceState';
 import {Button} from '@/components/ui';
 import {useI18n} from '@/contexts/I18nContext';
 import {toast} from '@/contexts/ToastContext';
-import {assistantKeys, assistantService, type ConversationFilter} from '@/features/assistant/services/assistant.service';
+import {assistantKeys, assistantService, type ConversationFilter} from '@/lib/api/services';
 import type {AssistantConversation, AssistantPortal} from '@/features/assistant/types/assistant.types';
 import {ChatMessages} from '@/features/assistant/components/ChatMessages';
 import {cn} from '@/lib/utils';

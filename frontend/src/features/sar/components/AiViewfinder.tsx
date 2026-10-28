@@ -4,8 +4,8 @@ import React, {useMemo, useState} from 'react';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {CheckCircle2, Eye, EyeOff, Flame, ImageOff, Sliders} from 'lucide-react';
 import {operationsService} from '@/lib/api/resources';
-import {sarKeys, sarService} from '@/features/sar/services/sar.service';
-import type {AiDetection, AiTask} from '@/features/sar/types/sar.types';
+import {sarKeys, sarService} from '@/lib/api/services';
+import type {AiDetection, AiTask, AiViewfinderProps} from '@/features/sar/types/sar.types';
 import {useI18n} from '@/contexts/I18nContext';
 import {toast} from '@/contexts/ToastContext';
 import {cn} from '@/lib/utils';
@@ -19,19 +19,8 @@ export function detectionTone(d: AiDetection) {
     return {border: 'border-amber-500', badge: 'bg-amber-500', dot: 'bg-amber-500'};
 }
 
-interface AiViewfinderProps {
-    missionId: number;
-    detections: AiDetection[];
-    task: AiTask | null;
-    loading: boolean;
-    failed: boolean;
-    selectedId: number | null;
-    onSelect: (id: number) => void;
-    canVerify: boolean;
-}
-
 /** Detections from the mission's AI tasks drawn over the analysed frame (when the task kept one). */
-export function AiViewfinder({missionId, detections, task, loading, failed, selectedId, onSelect, canVerify}: AiViewfinderProps) {
+export function AiViewfinder({missionId, detections, task, loading, failed, selectedId, onSelect, canVerify}: AiViewfinderProps & { detections: AiDetection[] }) {
     const {t, formatDate} = useI18n();
     const queryClient = useQueryClient();
     const [showBoxes, setShowBoxes] = useState(true);

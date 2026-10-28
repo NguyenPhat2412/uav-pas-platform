@@ -6,7 +6,8 @@ import QRCode from 'qrcode';
 import {Copy, Landmark, Printer, X} from 'lucide-react';
 import {useI18n} from '@/contexts/I18nContext';
 import {toast} from '@/contexts/ToastContext';
-import {bankTransferService, type BankTransferInstructions} from '@/features/billing/services/bank-transfer.service';
+import {bankTransferService, type BankTransferInstructions} from '@/lib/api/services';
+import {formatShortDate} from '@/lib/format';
 
 /** VietQR / NAPAS 247 payment for one invoice. The QR payload and account come from the backend configuration. */
 export function BankTransferDialog({invoiceId, onClose}: { invoiceId: number; onClose: () => void }) {
@@ -54,7 +55,7 @@ function Body({data}: { data: BankTransferInstructions }) {
             toast.error(t('payment.copyFailed'));
         }
     };
-    const date = (value: string | null) => value ? formatDate(value, {dateStyle: 'short'}) : '—';
+    const date = (value: string | null) => formatShortDate(value, formatDate);
     const vatPct = Math.round(data.vatRate * 1000) / 10;
     const paid = data.status !== 'PENDING';
 

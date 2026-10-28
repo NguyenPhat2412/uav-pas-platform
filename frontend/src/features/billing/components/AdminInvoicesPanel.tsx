@@ -7,16 +7,17 @@ import {useI18n} from '@/contexts/I18nContext';
 import {planName} from '@/components/shared/presentation';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
-import {RequiredMark} from '@/components/shared/RequiredMark';
+import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {adminService} from '@/lib/api/admin';
+import {formatShortDate} from '@/lib/format';
 import {cn} from '@/lib/utils';
-import {invoicesService, type InvoiceFilters} from '@/features/billing/services/invoices.service';
-import {bankTransferService} from '@/features/billing/services/bank-transfer.service';
+import {invoicesService, type InvoiceFilters} from '@/lib/api/services';
+import type {InvoiceFilterKey} from '@/features/billing/types/billing.types';
+import {bankTransferService} from '@/lib/api/services';
 import {toast} from '@/contexts/ToastContext';
 import type {Invoice, InvoiceStatus} from '@/types';
 
-type FilterKey = 'ALL' | InvoiceStatus | 'OVERDUE';
-const filters: FilterKey[] = ['ALL', 'PENDING', 'OVERDUE', 'PAID', 'FAILED', 'CANCELLED'];
+const filters: InvoiceFilterKey[] = ['ALL', 'PENDING', 'OVERDUE', 'PAID', 'FAILED', 'CANCELLED'];
 
 const statusTone: Record<InvoiceStatus, string> = {
     PENDING: 'bg-amber-50 text-amber-800 ring-amber-200',
@@ -25,12 +26,12 @@ const statusTone: Record<InvoiceStatus, string> = {
     CANCELLED: 'bg-slate-100 text-slate-600 ring-slate-200',
 };
 
-const toFilters = (key: FilterKey): InvoiceFilters =>
+const toFilters = (key: InvoiceFilterKey): InvoiceFilters =>
     key === 'ALL' ? {} : key === 'OVERDUE' ? {overdue: true} : {status: key};
 
 export function AdminInvoicesPanel() {
     const {t, formatDate, formatCurrency} = useI18n();
-    const [filter, setFilter] = useState<FilterKey>('ALL');
+    const [filter, setFilter] = useState<InvoiceFilterKey>('ALL');
     const [page, setPage] = useState(0);
     const [creating, setCreating] = useState(false);
     const [notice, setNotice] = useState('');
@@ -54,7 +55,7 @@ export function AdminInvoicesPanel() {
     // Captured once per mount so "overdue" stays stable across re-renders.
     const [now] = useState(() => Date.now());
     const isOverdue = (inv: Invoice) => inv.status === 'PENDING' && !!inv.dueDate && new Date(inv.dueDate).getTime() < now;
-    const date = (value?: string) => value ? formatDate(value, {dateStyle: 'short'}) : '—';
+    const date = (value?: string) => formatShortDate(value, formatDate);
 
     return <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -184,19 +185,19 @@ function CreateInvoiceDialog({onClose, onCreated}: { onClose: () => void; onCrea
                 </>}
             </div>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.amount')}<RequiredMark/>
-                <input required type="number" min="1" step="1000" inputMode="numeric" value={amount}
+                <input aria-required type="number" step="1000" inputMode="numeric" value={amount}
                        onChange={e => setAmount(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
             <div className="grid gap-3 sm:grid-cols-2">
-                <label className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.plan')}
+                <label className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.plan')}<OptionalMark/>
                     <select value={planId} onChange={e => setPlanId(e.target.value)} className={field}>
                         <option value="">{t('admin.invoices.none')}</option>
                         {plans.data?.map(p => <option key={p.id} value={p.id}>{planName(p.name)}</option>)}
                     </select></label>
-                <label className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.missionId')}
-                    <input type="number" min="1" value={missionId} onChange={e => setMissionId(e.target.value)} className={field}/></label>
+                <label className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.missionId')}<OptionalMark/>
+                    <input type="number" value={missionId} onChange={e => setMissionId(e.target.value)} className={field}/></label>
             </div>
-            <label className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.notes')}
-                <textarea rows={3} maxLength={500} value={notes} onChange={e => setNotes(e.target.value)} className={field}/></label>
+            <label className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.notes')}<OptionalMark/>
+                <textarea rows={3} value={notes} onChange={e => setNotes(e.target.value)} className={field}/></label>
             <ErrorNotice error={create.error}/>
             <footer className="flex justify-end gap-2">
                 <button type="button" onClick={onClose} className="h-9 border border-slate-200 px-4 text-[13px] font-medium text-slate-600 hover:bg-slate-50">

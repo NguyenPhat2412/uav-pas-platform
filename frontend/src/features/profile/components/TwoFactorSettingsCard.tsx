@@ -6,7 +6,7 @@ import QRCode from 'qrcode';
 import {Copy, Mail, QrCode, ShieldAlert, ShieldCheck, Smartphone} from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
 import {toast} from '@/contexts/ToastContext';
-import {authService} from '@/features/auth/services/auth.service';
+import {authService} from '@/lib/api/services';
 import type {TwoFactorMethod, TwoFactorSetupResponse} from '@/features/auth/types/auth.types';
 import {OtpCodeInput} from '@/features/auth/components/OtpCodeInput';
 
@@ -103,10 +103,6 @@ export function TwoFactorSettingsCard() {
 
     const handleEnableSubmit = (e: FormEvent) => {
         e.preventDefault();
-        if (code.trim().length !== 6) {
-            toast.error('Vui lòng nhập đủ 6 chữ số xác thực.');
-            return;
-        }
         enableMutation.mutate();
     };
 
@@ -303,7 +299,7 @@ export function TwoFactorSettingsCard() {
                                     </button>
                                     <button
                                         type="submit"
-                                        disabled={enableMutation.isPending || code.length !== 6}
+                                        disabled={enableMutation.isPending}
                                         className="h-9 rounded-control bg-primary px-4 text-xs font-bold uppercase tracking-wider text-white hover:bg-primary-hover disabled:opacity-50"
                                     >
                                         {enableMutation.isPending ? 'Đang kích hoạt...' : 'Xác nhận bật 2FA'}

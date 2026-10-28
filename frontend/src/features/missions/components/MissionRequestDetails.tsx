@@ -1,11 +1,5 @@
 import {useI18n} from '@/contexts/I18nContext';
-
-type RequestDetails = {
-    requestedDate: string;
-    latitude?: number | null;
-    longitude?: number | null;
-    notes?: string | null;
-};
+import type {MissionRequestDetailsData as RequestDetails} from '@/features/missions/types/mission.types';
 
 /** The original customer request, shared by the customer and dispatch detail views. */
 export function MissionRequestDetails({mission}: { mission: RequestDetails }) {

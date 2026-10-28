@@ -1,0 +1,127 @@
+{
+  "adminCommerce": {
+    "pages": {
+      "transactions": "Payment transactions & IPN",
+      "outbox": "Financial event outbox"
+    },
+    "common": {
+      "all": "All"
+    },
+    "txStatus": {
+      "SUCCESS": "Succeeded",
+      "PENDING": "Pending",
+      "FAILED": "Failed"
+    },
+    "gateway": {
+      "VIETQR_NAPAS_247": "VietQR NAPAS 247 (IPN)",
+      "VIETQR_NAPAS": "VietQR NAPAS",
+      "BANK_TRANSFER_MANUAL": "Bank transfer – manual confirmation"
+    },
+    "tx": {
+      "filters": "Transaction filters",
+      "keyword": "Search",
+      "keywordPlaceholder": "Transaction code, invoice code, customer, email…",
+      "status": "Status",
+      "gateway": "Payment channel",
+      "from": "From",
+      "to": "To",
+      "invoiceId": "Invoice ID",
+      "apply": "Filter",
+      "reset": "Clear filters",
+      "table": "Payment transactions table",
+      "empty": "No transactions match these filters.",
+      "open": "Open transaction {code}",
+      "col": {
+        "time": "Time",
+        "code": "Transaction code",
+        "invoice": "Invoice",
+        "customer": "Customer",
+        "gateway": "Channel",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "detail": {
+        "title": "Transaction {code}",
+        "transactionCode": "Transaction code / reference",
+        "status": "Status",
+        "gateway": "Payment channel",
+        "amount": "Amount received",
+        "invoice": "Invoice",
+        "invoiceStatus": "Invoice status",
+        "invoiceAmount": "Invoice amount",
+        "customer": "Customer",
+        "email": "Email",
+        "bank": "Receiving bank (BIN · account)",
+        "created": "Recorded at",
+        "completed": "Completed at",
+        "amountMismatch": "The transaction amount differs from the invoice amount — reconcile it.",
+        "raw": "Raw callback data",
+        "rawHint": "Sensitive fields (signatures, tokens, keys) are masked.",
+        "noRaw": "No callback data."
+      }
+    },
+    "outboxStatus": {
+      "PENDING": "Pending",
+      "WAITING_SUBSCRIBERS": "Waiting for webhook targets",
+      "FAILED": "Failed",
+      "LOCAL_COMPLETED": "Processed"
+    },
+    "outbox": {
+      "intro": "Each financial event (invoice issued, payment recorded) creates a customer notification and queues webhooks. The background worker runs every minute; \"Retry\" only puts a failed or stuck event back in the queue right away.",
+      "filterLabel": "Filter by status",
+      "table": "Financial events table",
+      "empty": "No events.",
+      "customer": "Customer (ID)",
+      "notification": "Customer notification",
+      "notificationDone": "Created",
+      "notificationPending": "Not created",
+      "payload": "Event payload",
+      "detailTitle": "Event {type}",
+      "retry": "Retry",
+      "retryConfirm": "Put event {id} back in the queue for immediate reprocessing?",
+      "retried": "Event {id} requeued. The background worker will pick it up within a minute.",
+      "retryHint": "Retrying never duplicates: notifications and webhooks already created are not created again.",
+      "notRetryable": "This event is already processed or waiting for its first run; no retry needed.",
+      "col": {
+        "event": "Event",
+        "invoice": "Invoice",
+        "status": "Status",
+        "attempts": "Attempts",
+        "lastError": "Last error",
+        "nextAttempt": "Next attempt",
+        "created": "Created",
+        "actions": "Actions"
+      }
+    },
+    "webhooks": {
+      "retry": "Resend",
+      "retryConfirm": "Resend {event} to {name}? The delivery is queued with 3 fresh attempts.",
+      "retried": "Resend queued. The outcome appears in the log after the next delivery run.",
+      "rotate": "Rotate signing secret for {name}",
+      "rotateConfirm": "Generate a new signing secret for {name}? The old secret stops working immediately; the receiver must switch to the new secret to verify signatures.",
+      "maskedSecret": "Signing secret (masked)",
+      "createSecretHint": "Copy this secret before creating — once saved, only a masked value is shown.",
+      "secret": {
+        "title": "New webhook signing secret",
+        "intro": "New signing secret for \"{name}\". Use it to verify the HMAC-SHA256 signature header on every webhook.",
+        "label": "New signing secret",
+        "copy": "Copy",
+        "copied": "Copied",
+        "copyFailed": "Could not copy. Select the value and copy it manually.",
+        "warning": "This secret is shown only once. After closing this dialog it cannot be viewed again — if lost, rotate it again.",
+        "done": "I have saved it"
+      }
+    },
+    "profile": {
+      "title": "Billing profile",
+      "readOnly": "Read-only — maintained by the customer",
+      "empty": "The customer has not filled in a billing profile.",
+      "organizationName": "Organization",
+      "taxCode": "Tax code",
+      "billingAddress": "Billing address",
+      "emergencyContactName": "Emergency contact",
+      "emergencyContactPhone": "Emergency contact phone",
+      "updatedAt": "Last updated: {date}"
+    }
+  }
+}

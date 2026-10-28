@@ -2,15 +2,12 @@ import React from 'react';
 import {Loader2} from 'lucide-react';
 import {cn} from '@/lib/utils';
 import {getPresentationLocale} from '@/components/shared/presentation';
+import type {SpinnerProps} from '@/types/ui';
+
+export type {SpinnerProps};
 
 // Plain component (no hooks) so it also works in server-rendered loading states.
 const defaultLabels = {vi: 'Đang tải...', en: 'Loading…', ja: '読み込み中…'} as const;
-
-export interface SpinnerProps {
-    size?: 'sm' | 'md' | 'lg' | number;
-    className?: string;
-    label?: string;
-}
 
 export const Spinner: React.FC<SpinnerProps> = ({size = 'md', className, label}) => {
     const sizeMap = {

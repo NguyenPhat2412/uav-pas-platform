@@ -7,8 +7,12 @@ import type {WebhookDeliveryLogItem, WebhookEndpointItem} from "@/types/admin";
 import {RotateCw, Send} from 'lucide-react';
 import {useI18n} from '@/contexts/I18nContext';
 import {WebhookSubscriptions} from '@/features/webhooks/components/WebhookSubscriptions';
+import {useMutation} from '@tanstack/react-query';
+import {ErrorNotice} from '@/components/data/WorkspaceState';
+import {toast} from '@/contexts/ToastContext';
+import {webhookAdminApi} from '@/features/webhooks/admin-api';
 
-type Translate = (key: string, params?: Record<string, string | number>) => string;
+import type {Translate} from '@/types';
 const knownStatuses = ['QUEUED', 'DELIVERED', 'FAILED', 'RETRYING', 'CANCELLED', 'UNCONFIGURED', 'LEGACY_UNVERIFIED'];
 // Without a translator the Vietnamese label is returned, which keeps this mapper testable outside React.
 const statusLabel = (status: string, t?: Translate) => t
@@ -32,6 +36,14 @@ function WebhooksContent() {
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
     const {t, formatDate} = useI18n();
+    // Manual requeue of a FAILED delivery; the delivery worker sends it on its next run.
+    const retryDelivery = useMutation({
+        mutationFn: (id: number) => webhookAdminApi.retryDelivery(id),
+        onSuccess: () => {
+            toast.success(t('adminCommerce.webhooks.retried'));
+            void refresh();
+        },
+    });
 
     // Errors are stored as catalog keys and rendered through t(), so effects stay locale-independent.
     async function refresh(signal?: AbortSignal) {
@@ -114,6 +126,7 @@ function WebhooksContent() {
         {loading ? <p role="status">{t('admin.webhooks.loading')}</p> : <>
             <WebhookSubscriptions items={webhooks} onChanged={() => void refresh()}/>
             <section className="overflow-hidden rounded-panel border border-border bg-card text-foreground"><h3 className="p-5 font-semibold">{t('admin.webhooks.deliveryLog', {count: logs.length})}</h3>
+                {retryDelivery.error && <div className="px-5 pb-3"><ErrorNotice error={retryDelivery.error}/></div>}
                 {logs.length === 0 ? <p className="p-5">{t('admin.webhooks.noDeliveries')}</p> :
                     <div className="overflow-x-auto" tabIndex={0} aria-label={t('admin.webhooks.logTable')}>
                         <table className="w-full min-w-[760px] border-separate border-spacing-0 text-left text-sm">
@@ -125,6 +138,7 @@ function WebhooksContent() {
                                 <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-500">HTTP</th>
                                 <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-500">{t('admin.webhooks.col.attempts')}</th>
                                 <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-500">{t('admin.webhooks.col.time')}</th>
+                                <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-right text-xs font-semibold text-slate-500">{t('admin.webhooks.col.actions')}</th>
                             </tr>
                             </thead>
                             <tbody className="divide-y divide-border">{logs.map(log => <tr key={log.id} className="transition-colors hover:bg-background">
@@ -136,6 +150,13 @@ function WebhooksContent() {
                                 <td className="px-4 py-3.5 align-middle text-foreground">{log.responseStatusCode ?? t('admin.webhooks.noResponse')}</td>
                                 <td className="px-4 py-3.5 align-middle text-foreground">{log.retryCount}</td>
                                 <td className="px-4 py-3.5 align-middle text-foreground">{formatDate(log.attemptedAt)}</td>
+                                <td className="px-4 py-3.5 text-right align-middle">{log.deliveryStatus === 'FAILED' &&
+                                    <button type="button" disabled={retryDelivery.isPending}
+                                            onClick={() => {
+                                                if (window.confirm(t('adminCommerce.webhooks.retryConfirm', {event: log.eventType, name: log.subscriptionName}))) retryDelivery.mutate(log.id);
+                                            }}
+                                            className="inline-flex items-center gap-1 whitespace-nowrap px-2 py-1 text-xs font-semibold text-primary hover:bg-[#fdf2f2] disabled:opacity-50">
+                                        <RotateCw size={13} aria-hidden="true"/>{t('adminCommerce.webhooks.retry')}</button>}</td>
                             </tr>)}</tbody>
                         </table>
                     </div>}

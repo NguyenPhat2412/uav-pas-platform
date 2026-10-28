@@ -6,7 +6,7 @@ import {toast} from '@/contexts/ToastContext';
 import {ApiError} from '@/lib/api';
 import {useI18n} from '@/contexts/I18nContext';
 
-type Translate = (key: string, params?: Record<string, string | number>) => string;
+import type {Translate} from '@/types';
 // The query client is created once, so its cache callbacks read the active translator from here.
 const translator: { current: Translate } = {current: key => key};
 

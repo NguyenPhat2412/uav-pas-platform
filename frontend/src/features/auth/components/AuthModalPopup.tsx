@@ -4,11 +4,14 @@ import React, {type FormEvent, useCallback, useEffect, useState} from 'react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {
     ArrowLeft,
+    ArrowRight,
+    Briefcase,
     Eye,
     EyeOff,
     KeyRound,
     Lock,
     Mail,
+    Radar,
     RefreshCw,
     ShieldCheck,
     Smartphone,
@@ -17,18 +20,16 @@ import {
 } from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
 import {toast} from '@/contexts/ToastContext';
-import {authService} from '@/features/auth/services/auth.service';
-import type {AuthResponse, TwoFactorMethod} from '@/features/auth/types/auth.types';
-import {canUsePortal, type Portal, portalForRole, portalHome} from '@/features/auth/utils/portal';
+import {ApiError} from '@/lib/api';
+import {authService} from '@/lib/api/services';
+import {RequiredMark} from '@/components/shared/RequiredMark';
+import type {AuthModalView, AuthResponse, TwoFactorMethod} from '@/features/auth/types/auth.types';
+import {availablePortalsForRole, canUsePortal, type Portal, portalForRole, portalHome} from '@/features/auth/utils/portal';
+import {safeNextPath} from '@/features/auth/utils/auth-entry';
 import {OtpCodeInput} from '@/features/auth/components/OtpCodeInput';
+import {cn} from '@/lib/utils';
 
-export type AuthModalView =
-    | 'login'
-    | 'register'
-    | 'verify-email'
-    | 'verify-2fa'
-    | 'forgot-password'
-    | 'reset-password';
+export type {AuthModalView};
 
 export const OPEN_AUTH_MODAL_EVENT = 'uav:open-auth-modal';
 
@@ -41,10 +42,11 @@ export function openAuthModal(view: 'login' | 'register' | 'forgot-password' = '
     );
 }
 
-function resolvePostLoginPath(role: string | undefined, nextParam: string | null): string {
+function resolvePostLoginPath(role: string | undefined, next: string | null): string {
     const defaultPortal = portalForRole(role);
     const fallback = defaultPortal === 'operations' ? '/operations/overview' : portalHome(defaultPortal);
-    if (!nextParam || !nextParam.startsWith('/') || nextParam.startsWith('//')) {
+    const nextParam = safeNextPath(next);
+    if (!nextParam) {
         return fallback;
     }
     const targetPortal: Portal | null = nextParam.startsWith('/admin')
@@ -71,6 +73,8 @@ export function AuthModalPopup() {
     const [nextPath, setNextPath] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    /** Inputs the backend rejected, keyed by request field name (matches each input's name). */
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     // Login state
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
@@ -98,6 +102,7 @@ export function AuthModalPopup() {
     const [forgotEmail, setForgotEmail] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    const [authenticatedPortals, setAuthenticatedPortals] = useState<Portal[]>([]);
 
     useEffect(() => {
         const authQuery = searchParams.get('auth');
@@ -105,6 +110,7 @@ export function AuthModalPopup() {
         if (nextQuery) setNextPath(nextQuery);
         if (authQuery === 'login' || authQuery === 'register' || authQuery === 'forgot') {
             setError(null);
+            setFieldErrors({});
             setView(authQuery === 'forgot' ? 'forgot-password' : authQuery);
             setIsOpen(true);
         }
@@ -114,6 +120,7 @@ export function AuthModalPopup() {
         const handleCustomOpen = (event: Event) => {
             const detail = (event as CustomEvent<{ view: AuthModalView; next?: string }>).detail;
             setError(null);
+            setFieldErrors({});
             setView(detail?.view ?? 'login');
             if (detail?.next) setNextPath(detail.next);
             setIsOpen(true);
@@ -133,6 +140,7 @@ export function AuthModalPopup() {
     const closeModal = useCallback(() => {
         setIsOpen(false);
         setError(null);
+        setFieldErrors({});
         if (searchParams.has('auth') || searchParams.has('next')) {
             const params = new URLSearchParams(searchParams.toString());
             params.delete('auth');
@@ -154,18 +162,38 @@ export function AuthModalPopup() {
     const finishAuthentication = (response: AuthResponse, welcomeMessage: string) => {
         completeAuth(response);
         toast.success(welcomeMessage, 'Xác thực thành công');
+        const portals = availablePortalsForRole(response.user?.role);
+        if (!nextPath && portals.length > 1) {
+            setAuthenticatedPortals(portals);
+            setView('select-portal');
+            return;
+        }
         setIsOpen(false);
         const dest = resolvePostLoginPath(response.user?.role, nextPath);
         router.push(dest);
     };
 
+    /** Shows the backend's verdict: every rejected field is marked, listed, and the first one is focused. */
+    const showFailure = (err: unknown, fallback: string) => {
+        if (err instanceof ApiError && err.fields && Object.keys(err.fields).length) {
+            const fields = err.fields;
+            // List and focus in the order the inputs appear on the form.
+            const onForm = Array.from(document.querySelectorAll<HTMLInputElement>('[role="dialog"] [name]')).map(input => input.name);
+            const order = (name: string) => (onForm.indexOf(name) + 1 || onForm.length + 1);
+            const names = Object.keys(fields).sort((a, b) => order(a) - order(b));
+            setFieldErrors(fields);
+            setError(names.map(name => fields[name]).join('\n'));
+            document.querySelector<HTMLElement>(`[role="dialog"] [name="${names[0]}"]`)?.focus();
+            return;
+        }
+        setError(err instanceof Error ? err.message : fallback);
+    };
+    const invalid = (name: string) => (fieldErrors[name] ? true : undefined);
+
     const handleLoginSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
-        if (!usernameOrEmail.trim() || !loginPassword) {
-            setError('Vui lòng nhập tên đăng nhập/email và mật khẩu.');
-            return;
-        }
+        setFieldErrors({});
         setSubmitting(true);
         try {
             const res = await login(usernameOrEmail.trim(), loginPassword);
@@ -195,7 +223,7 @@ export function AuthModalPopup() {
                 `Xin chào ${res.user?.fullName || res.user?.username || 'bạn'}, đang chuyển vào hệ thống điều hành.`,
             );
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Thông tin đăng nhập không chính xác.');
+            showFailure(err, 'Thông tin đăng nhập không chính xác.');
         } finally {
             setSubmitting(false);
         }
@@ -204,38 +232,16 @@ export function AuthModalPopup() {
     const handleRegisterSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
-        const username = regUsername.trim();
-        const email = regEmail.trim();
-        const phoneNumber = regPhone.trim();
-
-        if (username.length < 3 || username.length > 50) {
-            setError('Tên đăng nhập phải từ 3 đến 50 ký tự.');
-            return;
-        }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setError('Địa chỉ email không hợp lệ.');
-            return;
-        }
-        if (!/^[0-9+\-\s()]{9,15}$/.test(phoneNumber)) {
-            setError('Số điện thoại phải từ 9 đến 15 ký tự số.');
-            return;
-        }
-        if (regPassword.length < 8) {
-            setError('Mật khẩu phải có ít nhất 8 ký tự.');
-            return;
-        }
-        if (regPassword !== regConfirmPassword) {
-            setError('Mật khẩu xác nhận không khớp.');
-            return;
-        }
-
+        setFieldErrors({});
         setSubmitting(true);
         try {
             const challenge = await authService.registerWithOtp({
-                username,
-                email,
-                phoneNumber,
+                username: regUsername,
+                email: regEmail,
+                phoneNumber: regPhone,
                 password: regPassword,
+                confirmPassword: regConfirmPassword,
+                role: 'ROLE_PILOT',
             });
             setChallengeToken(challenge.challengeToken);
             setChallengeEmail(challenge.email);
@@ -246,7 +252,7 @@ export function AuthModalPopup() {
             setView('verify-email');
             toast.info(challenge.message, 'Đã gửi mã OTP xác thực');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Không thể tạo tài khoản. Vui lòng kiểm tra lại thông tin.');
+            showFailure(err, 'Không thể tạo tài khoản. Vui lòng kiểm tra lại thông tin.');
         } finally {
             setSubmitting(false);
         }
@@ -255,10 +261,7 @@ export function AuthModalPopup() {
     const handleVerifyEmailSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
-        if (otpCode.trim().length !== 6) {
-            setError('Vui lòng nhập đủ 6 chữ số OTP.');
-            return;
-        }
+        setFieldErrors({});
         setSubmitting(true);
         try {
             const res = await authService.verifyEmail({
@@ -267,9 +270,15 @@ export function AuthModalPopup() {
                 code: otpCode.trim(),
                 method: 'EMAIL',
             });
+            if (res.mfaMethod === 'PENDING_APPROVAL' && !res.accessToken) {
+                // Staff sign-ups are confirmed by email but opened by an administrator; no session is issued yet.
+                toast.success('Email đã được xác thực. Tài khoản Nhân sự vận hành đang chờ quản trị viên duyệt.', 'Đăng ký thành công');
+                setView('login');
+                return;
+            }
             finishAuthentication(res, 'Xác thực email thành công! Tài khoản của bạn đã sẵn sàng.');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Mã OTP không chính xác hoặc đã hết hạn.');
+            showFailure(err, 'Mã OTP không chính xác hoặc đã hết hạn.');
         } finally {
             setSubmitting(false);
         }
@@ -278,10 +287,7 @@ export function AuthModalPopup() {
     const handleVerify2faSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
-        if (otpCode.trim().length !== 6) {
-            setError('Vui lòng nhập đủ 6 chữ số xác thực.');
-            return;
-        }
+        setFieldErrors({});
         setSubmitting(true);
         try {
             const res = await authService.verify2fa({
@@ -292,7 +298,7 @@ export function AuthModalPopup() {
             });
             finishAuthentication(res, 'Xác thực bảo mật 2 lớp (2FA) thành công.');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Mã xác thực 2FA không chính xác.');
+            showFailure(err, 'Mã xác thực 2FA không chính xác.');
         } finally {
             setSubmitting(false);
         }
@@ -300,6 +306,7 @@ export function AuthModalPopup() {
 
     const handleResendOtp = async (purposeOverride?: 'REGISTER_VERIFY' | 'LOGIN_2FA' | 'PASSWORD_RESET') => {
         setError(null);
+        setFieldErrors({});
         setSubmitting(true);
         try {
             const challenge = await authService.resendOtp({
@@ -317,7 +324,7 @@ export function AuthModalPopup() {
             }
             toast.info(challenge.message, 'Đã gửi lại mã OTP');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Không thể gửi lại mã OTP lúc này.');
+            showFailure(err, 'Không thể gửi lại mã OTP lúc này.');
         } finally {
             setSubmitting(false);
         }
@@ -326,10 +333,7 @@ export function AuthModalPopup() {
     const handleForgotPasswordSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
-        if (!forgotEmail.trim()) {
-            setError('Vui lòng nhập địa chỉ email đã đăng ký.');
-            return;
-        }
+        setFieldErrors({});
         setSubmitting(true);
         try {
             const challenge = await authService.forgotPassword({email: forgotEmail.trim()});
@@ -342,7 +346,7 @@ export function AuthModalPopup() {
             setView('reset-password');
             toast.info(challenge.message, 'Khôi phục mật khẩu');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Không tìm thấy tài khoản với email này.');
+            showFailure(err, 'Không tìm thấy tài khoản với email này.');
         } finally {
             setSubmitting(false);
         }
@@ -351,18 +355,7 @@ export function AuthModalPopup() {
     const handleResetPasswordSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
-        if (otpCode.trim().length !== 6) {
-            setError('Vui lòng nhập đủ 6 chữ số OTP.');
-            return;
-        }
-        if (newPassword.length < 8) {
-            setError('Mật khẩu mới phải có ít nhất 8 ký tự.');
-            return;
-        }
-        if (newPassword !== confirmNewPassword) {
-            setError('Mật khẩu xác nhận không khớp.');
-            return;
-        }
+        setFieldErrors({});
         setSubmitting(true);
         try {
             const res = await authService.resetPassword({
@@ -370,13 +363,14 @@ export function AuthModalPopup() {
                 email: challengeEmail || forgotEmail.trim(),
                 code: otpCode.trim(),
                 newPassword,
+                confirmPassword: confirmNewPassword,
             });
             toast.success(res.message, 'Đặt lại mật khẩu thành công');
             setUsernameOrEmail(challengeEmail || forgotEmail.trim());
             setLoginPassword('');
             setView('login');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Không thể đặt lại mật khẩu.');
+            showFailure(err, 'Không thể đặt lại mật khẩu.');
         } finally {
             setSubmitting(false);
         }
@@ -385,7 +379,7 @@ export function AuthModalPopup() {
     if (!isOpen) return null;
 
     const inputClass =
-        'h-10 w-full rounded-control border border-slate-300 bg-white px-3 text-[13px] font-normal text-slate-900 placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 disabled:opacity-50';
+        'h-10 w-full rounded-control border border-slate-300 bg-white px-3 text-[13px] font-normal text-slate-900 placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 disabled:opacity-50 aria-[invalid=true]:border-primary aria-[invalid=true]:bg-uav-red-light/40';
     const labelClass = 'block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5';
 
     return (
@@ -424,6 +418,7 @@ export function AuthModalPopup() {
                             type="button"
                             onClick={() => {
                                 setError(null);
+                                setFieldErrors({});
                                 setView('login');
                             }}
                             className={`flex items-center justify-center gap-2 py-3 text-xs font-bold uppercase tracking-wider transition-colors ${
@@ -439,6 +434,7 @@ export function AuthModalPopup() {
                             type="button"
                             onClick={() => {
                                 setError(null);
+                                setFieldErrors({});
                                 setView('register');
                             }}
                             className={`flex items-center justify-center gap-2 py-3 text-xs font-bold uppercase tracking-wider transition-colors ${
@@ -457,7 +453,7 @@ export function AuthModalPopup() {
                     {error && (
                         <div
                             role="alert"
-                            className="mb-4 border-l-[3px] border-l-primary bg-uav-red-light px-3.5 py-2.5 text-xs font-semibold text-primary"
+                            className="mb-4 whitespace-pre-line border-l-[3px] border-l-primary bg-uav-red-light px-3.5 py-2.5 text-xs font-semibold text-primary"
                         >
                             {error}
                         </div>
@@ -466,24 +462,23 @@ export function AuthModalPopup() {
                     {/* VIEW 1: LOGIN */}
                     {view === 'login' && (
                         <form onSubmit={(e) => void handleLoginSubmit(e)} className="space-y-4" noValidate>
-                            <div>
+                            <div className="text-center">
                                 <h2 id="auth-modal-title" className="text-lg font-extrabold tracking-tight text-slate-900">
                                     Đăng nhập hệ thống
                                 </h2>
-                                <p className="mt-0.5 text-xs text-slate-500">
-                                    Tự động nhận diện phân quyền Khách hàng, Vận hành bay hoặc Quản trị viên.
-                                </p>
                             </div>
 
                             <div>
                                 <label htmlFor="auth-login-user" className={labelClass}>
-                                    Email hoặc Tên đăng nhập
+                                    Email hoặc Tên đăng nhập<RequiredMark/>
                                 </label>
                                 <input
                                     id="auth-login-user"
+                                    name="usernameOrEmail"
+                                    aria-invalid={invalid('usernameOrEmail')}
                                     type="text"
                                     autoComplete="username"
-                                    required
+                                    aria-required
                                     disabled={submitting}
                                     value={usernameOrEmail}
                                     onChange={(e) => setUsernameOrEmail(e.target.value)}
@@ -495,12 +490,13 @@ export function AuthModalPopup() {
                             <div>
                                 <div className="mb-1.5 flex items-center justify-between">
                                     <label htmlFor="auth-login-password" className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
-                                        Mật khẩu
+                                        Mật khẩu<RequiredMark/>
                                     </label>
                                     <button
                                         type="button"
                                         onClick={() => {
                                             setError(null);
+                                            setFieldErrors({});
                                             setForgotEmail(usernameOrEmail.includes('@') ? usernameOrEmail : '');
                                             setView('forgot-password');
                                         }}
@@ -512,9 +508,11 @@ export function AuthModalPopup() {
                                 <div className="relative">
                                     <input
                                         id="auth-login-password"
+                                        name="password"
+                                        aria-invalid={invalid('password')}
                                         type={showLoginPassword ? 'text' : 'password'}
                                         autoComplete="current-password"
-                                        required
+                                        aria-required
                                         disabled={submitting}
                                         value={loginPassword}
                                         onChange={(e) => setLoginPassword(e.target.value)}
@@ -537,15 +535,15 @@ export function AuthModalPopup() {
                                 disabled={submitting}
                                 className="flex h-10 w-full items-center justify-center gap-2 rounded-control bg-primary px-4 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
                             >
-                                {submitting ? 'Đang xác thực...' : 'Đăng nhập vào cổng điều hành'}
+                                {submitting ? 'Đang xử lý...' : 'Đăng nhập'}
                             </button>
 
-                            <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs text-slate-500">
-                                <span>Hỗ trợ bảo mật Email OTP &amp; 2FA TOTP</span>
+                            <div className="flex items-center justify-center border-t border-slate-100 pt-3 text-xs text-slate-500">
                                 <button
                                     type="button"
                                     onClick={() => {
                                         setError(null);
+                                        setFieldErrors({});
                                         setView('register');
                                     }}
                                     className="font-bold text-primary hover:underline"
@@ -559,25 +557,29 @@ export function AuthModalPopup() {
                     {/* VIEW 2: REGISTER */}
                     {view === 'register' && (
                         <form onSubmit={(e) => void handleRegisterSubmit(e)} className="space-y-3.5" noValidate>
-                            <div>
+                            <div className="text-center">
                                 <h2 id="auth-modal-title" className="text-lg font-extrabold tracking-tight text-slate-900">
                                     Đăng ký tài khoản mới
                                 </h2>
-                                <p className="mt-0.5 text-xs text-slate-500">
-                                    Xác thực qua mã OTP gửi về Email để kích hoạt tài khoản ngay lập tức.
-                                </p>
                             </div>
+
+                            <p className="m-0 rounded-control border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                                Đăng ký dành cho khách hàng và doanh nghiệp đặt dịch vụ. Nhân sự vận hành được quản trị viên cấp tài khoản,{' '}
+                                <a href="/contact" className="font-semibold text-primary hover:underline">vui lòng liên hệ</a>.
+                            </p>
 
                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 <div>
                                     <label htmlFor="auth-reg-username" className={labelClass}>
-                                        Tên đăng nhập
+                                        Tên đăng nhập<RequiredMark/>
                                     </label>
                                     <input
                                         id="auth-reg-username"
+                                        name="username"
+                                        aria-invalid={invalid('username')}
                                         type="text"
                                         autoComplete="username"
-                                        required
+                                        aria-required
                                         disabled={submitting}
                                         value={regUsername}
                                         onChange={(e) => setRegUsername(e.target.value)}
@@ -587,13 +589,15 @@ export function AuthModalPopup() {
                                 </div>
                                 <div>
                                     <label htmlFor="auth-reg-phone" className={labelClass}>
-                                        Số điện thoại
+                                        Số điện thoại<RequiredMark/>
                                     </label>
                                     <input
                                         id="auth-reg-phone"
+                                        name="phoneNumber"
+                                        aria-invalid={invalid('phoneNumber')}
                                         type="tel"
                                         autoComplete="tel"
-                                        required
+                                        aria-required
                                         disabled={submitting}
                                         value={regPhone}
                                         onChange={(e) => setRegPhone(e.target.value)}
@@ -605,13 +609,15 @@ export function AuthModalPopup() {
 
                             <div>
                                 <label htmlFor="auth-reg-email" className={labelClass}>
-                                    Địa chỉ Email (Nhận mã OTP)
+                                    Địa chỉ Email<RequiredMark/>
                                 </label>
                                 <input
                                     id="auth-reg-email"
+                                    name="email"
+                                    aria-invalid={invalid('email')}
                                     type="email"
                                     autoComplete="email"
-                                    required
+                                    aria-required
                                     disabled={submitting}
                                     value={regEmail}
                                     onChange={(e) => setRegEmail(e.target.value)}
@@ -623,14 +629,16 @@ export function AuthModalPopup() {
                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 <div>
                                     <label htmlFor="auth-reg-password" className={labelClass}>
-                                        Mật khẩu (≥ 8 ký tự)
+                                        Mật khẩu (≥ 8 ký tự)<RequiredMark/>
                                     </label>
                                     <div className="relative">
                                         <input
                                             id="auth-reg-password"
+                                            name="password"
+                                            aria-invalid={invalid('password')}
                                             type={showRegPassword ? 'text' : 'password'}
                                             autoComplete="new-password"
-                                            required
+                                            aria-required
                                             disabled={submitting}
                                             value={regPassword}
                                             onChange={(e) => setRegPassword(e.target.value)}
@@ -649,13 +657,15 @@ export function AuthModalPopup() {
                                 </div>
                                 <div>
                                     <label htmlFor="auth-reg-confirm" className={labelClass}>
-                                        Nhập lại mật khẩu
+                                        Nhập lại mật khẩu<RequiredMark/>
                                     </label>
                                     <input
                                         id="auth-reg-confirm"
+                                        name="confirmPassword"
+                                        aria-invalid={invalid('confirmPassword')}
                                         type={showRegPassword ? 'text' : 'password'}
                                         autoComplete="new-password"
-                                        required
+                                        aria-required
                                         disabled={submitting}
                                         value={regConfirmPassword}
                                         onChange={(e) => setRegConfirmPassword(e.target.value)}
@@ -670,8 +680,7 @@ export function AuthModalPopup() {
                                 disabled={submitting}
                                 className="flex h-10 w-full items-center justify-center gap-2 rounded-control bg-primary px-4 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
                             >
-                                <Mail size={15} />
-                                {submitting ? 'Đang gửi mã OTP...' : 'Đăng ký & Nhận mã OTP qua Email'}
+                                {submitting ? 'Đang xử lý...' : 'Đăng ký tài khoản'}
                             </button>
                         </form>
                     )}
@@ -695,6 +704,7 @@ export function AuthModalPopup() {
                                     type="button"
                                     onClick={() => {
                                         setError(null);
+                                        setFieldErrors({});
                                         setView('register');
                                     }}
                                     className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-900"
@@ -723,7 +733,7 @@ export function AuthModalPopup() {
 
                             <button
                                 type="submit"
-                                disabled={submitting || otpCode.length !== 6}
+                                disabled={submitting}
                                 className="flex h-10 w-full items-center justify-center gap-2 rounded-control bg-primary px-4 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
                             >
                                 <ShieldCheck size={16} />
@@ -767,6 +777,7 @@ export function AuthModalPopup() {
                                     type="button"
                                     onClick={() => {
                                         setError(null);
+                                        setFieldErrors({});
                                         setView('login');
                                     }}
                                     className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-900"
@@ -795,7 +806,7 @@ export function AuthModalPopup() {
 
                             <button
                                 type="submit"
-                                disabled={submitting || otpCode.length !== 6}
+                                disabled={submitting}
                                 className="flex h-10 w-full items-center justify-center gap-2 rounded-control bg-primary px-4 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
                             >
                                 <ShieldCheck size={16} />
@@ -833,38 +844,20 @@ export function AuthModalPopup() {
                     {/* VIEW 5: FORGOT PASSWORD */}
                     {view === 'forgot-password' && (
                         <form onSubmit={(e) => void handleForgotPasswordSubmit(e)} className="space-y-4" noValidate>
-                            <div className="flex items-start justify-between gap-3">
-                                <div>
-                                    <span className="inline-flex items-center gap-1.5 rounded-badge bg-amber-50 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-warning">
-                                        <KeyRound size={12} /> Khôi phục mật khẩu
-                                    </span>
-                                    <h2 id="auth-modal-title" className="mt-1.5 text-lg font-extrabold text-slate-900">
-                                        Nhận mã OTP đặt lại mật khẩu
-                                    </h2>
-                                    <p className="mt-0.5 text-xs text-slate-500">
-                                        Nhập địa chỉ email tài khoản để nhận mã xác thực OTP 6 chữ số.
-                                    </p>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setError(null);
-                                        setView('login');
-                                    }}
-                                    className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-900"
-                                >
-                                    <ArrowLeft size={14} /> Đăng nhập
-                                </button>
-                            </div>
+                            <h2 id="auth-modal-title" className="m-0 text-lg font-extrabold text-slate-900">
+                                Nhận mã OTP đặt lại mật khẩu
+                            </h2>
 
                             <div>
                                 <label htmlFor="auth-forgot-email" className={labelClass}>
-                                    Địa chỉ Email đã đăng ký
+                                    Địa chỉ Email đã đăng ký<RequiredMark/>
                                 </label>
                                 <input
                                     id="auth-forgot-email"
+                                    name="email"
+                                    aria-invalid={invalid('email')}
                                     type="email"
-                                    required
+                                    aria-required
                                     disabled={submitting}
                                     value={forgotEmail}
                                     onChange={(e) => setForgotEmail(e.target.value)}
@@ -880,6 +873,17 @@ export function AuthModalPopup() {
                             >
                                 <Mail size={15} />
                                 {submitting ? 'Đang gửi mã OTP...' : 'Gửi mã OTP khôi phục'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setError(null);
+                                    setFieldErrors({});
+                                    setView('login');
+                                }}
+                                className="flex w-full items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900"
+                            >
+                                <ArrowLeft size={14} /> Quay lại đăng nhập
                             </button>
                         </form>
                     )}
@@ -903,6 +907,7 @@ export function AuthModalPopup() {
                                     type="button"
                                     onClick={() => {
                                         setError(null);
+                                        setFieldErrors({});
                                         setView('forgot-password');
                                     }}
                                     className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-900"
@@ -932,12 +937,14 @@ export function AuthModalPopup() {
                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 <div>
                                     <label htmlFor="auth-reset-new" className={labelClass}>
-                                        Mật khẩu mới
+                                        Mật khẩu mới<RequiredMark/>
                                     </label>
                                     <input
                                         id="auth-reset-new"
+                                        name="newPassword"
+                                        aria-invalid={invalid('newPassword')}
                                         type="password"
-                                        required
+                                        aria-required
                                         disabled={submitting}
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
@@ -947,12 +954,14 @@ export function AuthModalPopup() {
                                 </div>
                                 <div>
                                     <label htmlFor="auth-reset-confirm" className={labelClass}>
-                                        Xác nhận mật khẩu
+                                        Xác nhận mật khẩu<RequiredMark/>
                                     </label>
                                     <input
                                         id="auth-reset-confirm"
+                                        name="confirmPassword"
+                                        aria-invalid={invalid('confirmPassword')}
                                         type="password"
-                                        required
+                                        aria-required
                                         disabled={submitting}
                                         value={confirmNewPassword}
                                         onChange={(e) => setConfirmNewPassword(e.target.value)}
@@ -964,12 +973,106 @@ export function AuthModalPopup() {
 
                             <button
                                 type="submit"
-                                disabled={submitting || otpCode.length !== 6}
+                                disabled={submitting}
                                 className="flex h-10 w-full items-center justify-center gap-2 rounded-control bg-primary px-4 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
                             >
                                 {submitting ? 'Đang cập nhật...' : 'Cập nhật mật khẩu mới'}
                             </button>
                         </form>
+                    )}
+
+                    {/* VIEW 7: SELECT PORTAL FOR MULTI-PORTAL ACCOUNT */}
+                    {view === 'select-portal' && (
+                        <div className="space-y-4">
+                            <div className="text-center">
+                                <h2 id="auth-modal-title" className="text-lg font-extrabold tracking-tight text-slate-900">
+                                    Chọn cổng truy cập
+                                </h2>
+                                <p className="mt-1 text-xs text-slate-500">
+                                    Tài khoản của bạn có quyền truy cập nhiều phân hệ. Chọn cổng làm việc để bắt đầu:
+                                </p>
+                            </div>
+
+                            <div className="space-y-2.5">
+                                {authenticatedPortals.includes('admin') && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsOpen(false);
+                                            router.push('/admin/dashboard');
+                                        }}
+                                        className="group flex w-full items-center justify-between gap-3 rounded-control border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-colors hover:border-primary hover:bg-uav-red-light/40 cursor-pointer"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary text-white">
+                                                <ShieldCheck size={18} />
+                                            </span>
+                                            <div>
+                                                <div className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                                                    Cổng Quản trị (Admin)
+                                                </div>
+                                                <div className="mt-0.5 text-[11px] text-slate-500">
+                                                    Người dùng, phân quyền RBAC, tài chính &amp; cấu hình hệ thống
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ArrowRight size={16} className="text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+                                    </button>
+                                )}
+
+                                {authenticatedPortals.includes('operations') && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsOpen(false);
+                                            router.push('/operations/overview');
+                                        }}
+                                        className="group flex w-full items-center justify-between gap-3 rounded-control border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-colors hover:border-uav-blue hover:bg-uav-blue-light/40 cursor-pointer"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-uav-blue text-white">
+                                                <Radar size={18} />
+                                            </span>
+                                            <div>
+                                                <div className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                                                    Cổng Điều hành (Operations)
+                                                </div>
+                                                <div className="mt-0.5 text-[11px] text-slate-500">
+                                                    Điều phối nhiệm vụ bay, đội tàu UAV, trạm &amp; SAR
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ArrowRight size={16} className="text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-uav-blue" />
+                                    </button>
+                                )}
+
+                                {authenticatedPortals.includes('customer') && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsOpen(false);
+                                            router.push('/customer/dashboard');
+                                        }}
+                                        className="group flex w-full items-center justify-between gap-3 rounded-control border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-colors hover:border-primary hover:bg-uav-red-light/40 cursor-pointer"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-slate-300 bg-white text-primary">
+                                                <Briefcase size={18} />
+                                            </span>
+                                            <div>
+                                                <div className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                                                    Cổng Khách hàng (Customer)
+                                                </div>
+                                                <div className="mt-0.5 text-[11px] text-slate-500">
+                                                    Đặt dịch vụ UAV, theo dõi yêu cầu nhiệm vụ &amp; hóa đơn
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ArrowRight size={16} className="text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>

@@ -1,0 +1,254 @@
+{
+  "adminSecurity": {
+    "pages": {
+      "sessions": "Sessions & 2FA",
+      "policy": "Sign-in policy",
+      "secrets": "Secrets & keys"
+    },
+    "nav": {
+      "label": "Security",
+      "sessions": "Sessions & 2FA",
+      "policy": "Sign-in policy",
+      "secrets": "Secrets & keys"
+    },
+    "common": {
+      "on": "On",
+      "off": "Off",
+      "yes": "Yes",
+      "no": "No",
+      "notSet": "Not set",
+      "minutes": "{count} min",
+      "hours": "{count} h",
+      "days": "{count} days"
+    },
+    "severity": {
+      "CRITICAL": "Critical",
+      "WARNING": "Warning",
+      "INFO": "Info"
+    },
+    "warnings": {
+      "title": "{count} configuration findings",
+      "criticalCount": "{count} critical",
+      "codes": {
+        "OTP_DEV_PREVIEW_ENABLED": {
+          "title": "OTP dev preview is on",
+          "fix": "OTP codes are returned by the API and written to logs, so anyone can pass email verification and 2FA. Set APP_AUTH_OTP_DEV_PREVIEW=false on the server and restart the backend."
+        },
+        "COOKIE_SAMESITE_NONE_INSECURE": {
+          "title": "SameSite=None cookie without Secure",
+          "fix": "Browsers will reject the session cookie. Set APP_COOKIE_SECURE=true (requires HTTPS) or change APP_COOKIE_SAME_SITE back to Lax."
+        },
+        "COOKIE_NOT_SECURE": {
+          "title": "Session cookie is not marked Secure",
+          "fix": "The sign-in cookie can travel over unencrypted HTTP. On a real server set APP_COOKIE_SECURE=true."
+        },
+        "CORS_WILDCARD": {
+          "title": "CORS allows any origin (*)",
+          "fix": "Any website could call the API with a user's session. List the exact frontend domains in APP_CORS_ALLOWED_ORIGINS."
+        },
+        "CORS_LOCALHOST": {
+          "title": "CORS still allows localhost",
+          "fix": "Localhost origins are for development only. Remove them from APP_CORS_ALLOWED_ORIGINS on a real server."
+        },
+        "CORS_PLAIN_HTTP": {
+          "title": "CORS allows an unencrypted HTTP origin",
+          "fix": "Allow only https:// origins in APP_CORS_ALLOWED_ORIGINS."
+        },
+        "MAIL_DISABLED": {
+          "title": "Email sending is off",
+          "fix": "OTP emails (account verification, email 2FA, password reset) are not delivered. Configure SMTP and set APP_MAIL_ENABLED=true."
+        },
+        "ACCESS_TOKEN_LONG_LIVED": {
+          "title": "Access tokens live longer than 24 hours",
+          "fix": "A leaked token stays usable for a long time. Lower APP_JWT_EXPIRATION_MS (for example 15–60 minutes); the refresh token keeps users signed in."
+        },
+        "REFRESH_TOKEN_LONG_LIVED": {
+          "title": "Refresh tokens live longer than 30 days",
+          "fix": "Consider lowering app.jwt.refresh-expiration-ms so old sessions expire sooner."
+        },
+        "NOT_PRODUCTION_PROFILE": {
+          "title": "Not recognised as a production deployment",
+          "fix": "No prod profile, no cookie domain and no public https CORS origin. If this is a real server, review deploy/.env.production."
+        },
+        "SECRET_MISSING": {
+          "title": "A required secret is missing",
+          "fix": "Set a long random value in deploy/.env.production and restart the service."
+        },
+        "SECRET_KNOWN_DEFAULT": {
+          "title": "A secret uses a default or example value",
+          "fix": "This value appears in source code or example files, so treat it as leaked. Replace it with a new random value now."
+        },
+        "SECRET_TOO_SHORT": {
+          "title": "A secret is shorter than the minimum",
+          "fix": "Generate a longer value, for example: openssl rand -base64 48."
+        }
+      }
+    },
+    "sessions": {
+      "revokeAll": {
+        "title": "Sign out all users",
+        "description": "Revokes every session (refresh and access tokens) of every account except yours. Use it after a suspected breach or a key change.",
+        "action": "Sign out everyone"
+      },
+      "mechanism": "Revocation is immediate: the refresh token is invalidated and every access token issued before that moment is rejected. Users just sign in again.",
+      "filters": {
+        "search": "Search accounts",
+        "searchPlaceholder": "Username, email or full name",
+        "searchButton": "Search",
+        "role": "Role",
+        "allRoles": "All roles",
+        "activeOnly": "Active sessions only"
+      },
+      "empty": "No matching accounts.",
+      "columns": {
+        "user": "Account",
+        "role": "Role",
+        "session": "Session",
+        "twoFactor": "2FA",
+        "lastRevoked": "Last revoked",
+        "actions": "Actions"
+      },
+      "you": "You",
+      "state": {
+        "ACTIVE": "Active",
+        "EXPIRED": "Expired",
+        "REVOKED": "Revoked",
+        "NONE": "No session"
+      },
+      "signedIn": "Signed in: {time}",
+      "expires": "Expires: {time}",
+      "twoFactorMethod": {
+        "EMAIL": "Email OTP",
+        "TOTP": "Authenticator app"
+      },
+      "twoFactorOff": "Off",
+      "revokedBy": "{time} by {name}",
+      "selfWarning": "This is your account: you will be signed out.",
+      "actions": {
+        "revoke": "Revoke sessions",
+        "reset2fa": "Reset 2FA"
+      },
+      "confirm": {
+        "revokeUser": "Revoke all sessions of {name}? They will be signed out on every device.",
+        "revokeSelf": "This is your own account. Revoking signs you out immediately on every device, including this one. Continue?",
+        "revokeAll": "Sign out ALL other users on every device? This cannot be undone; your own session is kept.",
+        "reset2fa": "Turn off two-factor authentication for {name} and remove their authenticator key? Only do this after verifying the user's identity (for example a lost phone).",
+        "reset2faSelf": "This is your own account.",
+        "reset2faRevoke": "Also sign {name} out on every device? (Recommended: OK. Choose Cancel to keep existing sessions.)"
+      },
+      "done": {
+        "REVOKE_USER_SESSIONS": "Sessions revoked.",
+        "REVOKE_ALL_SESSIONS": "Signed out {count} accounts ({tokens} refresh tokens revoked).",
+        "RESET_2FA": "2FA reset. The user can sign in with their password and turn 2FA on again.",
+        "selfSignedOut": "Your own session was revoked; you will be taken to the sign-in page."
+      },
+      "footnote": "Each account has at most one refresh session; signing in on a new device replaces the old one. Every action is written to the audit log."
+    },
+    "policy": {
+      "readOnlyNote": "Read-only values from the running server configuration. To change them, edit deploy/.env.production on the VPS and restart the backend.",
+      "allGood": "No issues found in the sign-in configuration.",
+      "groups": {
+        "tokens": "Sign-in tokens",
+        "otp": "OTP & 2FA",
+        "cookie": "Session cookie",
+        "mail": "Email",
+        "cors": "CORS",
+        "runtime": "Environment"
+      },
+      "fields": {
+        "accessToken": "Access token lifetime",
+        "refreshToken": "Refresh token lifetime",
+        "otpTtl": "OTP code lifetime",
+        "totpIssuer": "Name shown in authenticator apps",
+        "otpDevPreview": "OTP preview (development)",
+        "cookieSecure": "Cookie Secure",
+        "cookieSameSite": "Cookie SameSite",
+        "cookieDomain": "Cookie domain",
+        "mailEnabled": "Email sending",
+        "corsOrigins": "Allowed origins",
+        "profiles": "Active Spring profiles",
+        "productionLike": "Recognised as production"
+      },
+      "defaultProfile": "default"
+    },
+    "secrets": {
+      "notice": {
+        "title": "Secrets are never shown or edited on the web",
+        "body": "This page only reports whether each secret is set, long enough and not a default; values are never displayed. Secrets are managed in deploy/.env.production on the VPS."
+      },
+      "allGood": "All secrets meet the requirements.",
+      "columns": {
+        "secret": "Secret",
+        "status": "Status",
+        "configured": "Set",
+        "length": "Length",
+        "default": "Default value",
+        "managedIn": "Managed in"
+      },
+      "names": {
+        "app_jwt_secret": "JWT signing key",
+        "app_billing_ipn_secret": "Payment IPN secret",
+        "app_ai_router_secret": "AI router encryption key",
+        "app_storage_access_key": "Storage access key",
+        "app_storage_secret_key": "Storage secret key",
+        "spring_mail_password": "SMTP password",
+        "spring_datasource_password": "Database password"
+      },
+      "notes": {
+        "DERIVED_FROM_JWT_SECRET": "Not set: derived from the JWT signing key.",
+        "REQUIRED_WHEN_BILLING_PROVIDER_ENABLED": "Required only when the payment provider is enabled.",
+        "REQUIRED_WHEN_SMTP_AUTH_ENABLED": "Required only when email with SMTP authentication is enabled."
+      },
+      "status": {
+        "OK": "OK",
+        "MISSING": "Missing",
+        "NOT_REQUIRED": "Not required",
+        "TOO_SHORT": "Too short",
+        "KNOWN_DEFAULT": "Default value"
+      },
+      "required": "Required",
+      "optional": "Optional",
+      "lengthOk": "OK (≥ {min})",
+      "lengthShort": "Shorter than {min}",
+      "defaultYes": "Uses a default",
+      "defaultNo": "No",
+      "aiKey": {
+        "title": "AI provider API key",
+        "configured": "Configured (stored encrypted in the database).",
+        "configuredAt": "Configured, updated {time} by {name}.",
+        "missing": "Not configured. The AI assistant will not work.",
+        "manage": "Manage in AI Router"
+      },
+      "rotation": {
+        "title": "Secret rotation guide",
+        "general": "On the VPS: edit deploy/.env.production, re-run docker compose to restart the services, then check System health. Generate new values with: openssl rand -base64 48.",
+        "items": {
+          "jwt": {
+            "title": "JWT signing key (APP_JWT_SECRET)",
+            "body": "Changing it ends every session and users must sign in again. If APP_AI_ROUTER_SECRET is not set, the AI key is derived from the JWT key, so re-enter the AI API key afterwards."
+          },
+          "billingIpn": {
+            "title": "IPN secret (APP_BILLING_IPN_SECRET)",
+            "body": "Update it at the payment provider and on the server at the same time, otherwise payment notifications are rejected."
+          },
+          "aiRouter": {
+            "title": "AI router encryption key (APP_AI_ROUTER_SECRET)",
+            "body": "Changing it makes the stored AI API key unreadable; re-enter the API key on the AI Router page after restarting."
+          },
+          "storage": {
+            "title": "Storage keys (APP_STORAGE_ACCESS_KEY / APP_STORAGE_SECRET_KEY)",
+            "body": "Create a new key pair in MinIO/R2/S3, update the server, confirm uploads work, then delete the old pair."
+          },
+          "mail": {
+            "title": "SMTP password (SMTP_PASSWORD)",
+            "body": "Change it at the email provider, update the server, then send a password-reset OTP to test."
+          },
+          "database": {
+            "title": "Database password (POSTGRES_PASSWORD)",
+            "body": "Change the user's password in PostgreSQL (ALTER USER) first, then update the server and restart the backend. POSTGRES_PASSWORD only applies when the database is first created."
+          }
+        }
+      }
+    }
+  }
+}

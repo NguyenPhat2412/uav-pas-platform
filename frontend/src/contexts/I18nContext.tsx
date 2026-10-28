@@ -19,8 +19,7 @@ import customerEn from '@/messages/customer/en.json';
 import customerJa from '@/messages/customer/ja.json';
 import {setPresentationLocale} from '@/components/shared/presentation';
 import {sectionMessages} from '@/messages/sections';
-
-type MessageRecord = Record<string, unknown>;
+import type {I18nContextType, MessageRecord} from '@/types';
 
 function deepMerge(target: MessageRecord, source: MessageRecord): MessageRecord {
     const output: MessageRecord = {...target};
@@ -52,20 +51,6 @@ const customerMessagesMap: Record<SupportedLocale, MessageRecord> = {
     en: deepMerge(defaultMessagesMap.en, customerEn as MessageRecord),
     ja: deepMerge(defaultMessagesMap.ja, customerJa as MessageRecord),
 };
-
-interface I18nContextType {
-    locale: SupportedLocale;
-    localeMeta: LocaleMeta;
-    setLocale: (locale: LocaleInput) => void;
-    toggleLocale: () => void;
-    isVietnamese: boolean;
-    isEnglish: boolean;
-    isJapanese: boolean;
-    t: (key: string, params?: Record<string, string | number>) => string;
-    formatNumber: (value: number, options?: Intl.NumberFormatOptions) => string;
-    formatDate: (date: Date | string | number, options?: Intl.DateTimeFormatOptions) => string;
-    formatCurrency: (amount: number, currency?: string) => string;
-}
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 

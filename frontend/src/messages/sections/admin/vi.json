@@ -114,6 +114,18 @@
         "sarNone": "Không có nhiệm vụ đang mở",
         "openHealth": "Sức khỏe hệ thống",
         "manageIntegrations": "Quản lý kết nối"
+      },
+      "home": {
+        "question": "Hôm nay bạn cần làm gì?",
+        "searchPlaceholder": "Tìm trang quản trị",
+        "attention": "{count} cảnh báo cần xử lý",
+        "pending": "Nhiệm vụ chờ duyệt",
+        "pendingEmpty": "Không có nhiệm vụ nào chờ duyệt.",
+        "alerts": "Cảnh báo hệ thống",
+        "alertsEmpty": "Hệ thống đang ổn, không có cảnh báo.",
+        "recent": "Gần đây",
+        "recentEmpty": "Các trang bạn mở sẽ hiện ở đây.",
+        "loading": "Đang tải…"
       }
     },
     "auditTable": {
@@ -838,13 +850,17 @@
         "storage": "Lưu trữ media",
         "webhooks": "Hàng đợi webhook",
         "financialOutbox": "Hàng đợi sự kiện tài chính",
-        "payments": "Thanh toán chuyển khoản"
+        "payments": "Thanh toán chuyển khoản",
+        "mail": "Email hệ thống",
+        "backups": "Sao lưu dữ liệu",
+        "tls": "Chứng chỉ TLS"
       },
       "status": {
         "UP": "Hoạt động",
         "DEGRADED": "Suy giảm",
         "DOWN": "Ngừng",
-        "UNKNOWN": "Không rõ"
+        "UNKNOWN": "Không rõ",
+        "DISABLED": "Đã tắt"
       },
       "latency": "Thời gian phản hồi",
       "detail": {
@@ -1013,8 +1029,6 @@
       "removeAttachment": "Bỏ {name}",
       "attachmentOnly": "Hãy xem ảnh/video tôi gửi kèm.",
       "attachedEarlier": "[đã gửi kèm {count} ảnh]",
-      "keySend": "gửi",
-      "keyNewline": "xuống dòng",
       "expand": "Phóng to khung chat",
       "collapse": "Thu nhỏ khung chat",
       "dropHere": "Thả ảnh hoặc video vào đây",

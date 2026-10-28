@@ -1,6 +1,7 @@
-export type Override = boolean | null;
-export type Change = { code: string; value: Override };
-export type Translate = (key: string, params?: Record<string, string | number>) => string;
+import type {Change, Override} from '@/features/access/types/access.types';
+import type {Translate} from '@/types';
+
+export type {Change, Override, Translate};
 
 // Without a translator the source keeps its original label, so the model stays usable outside React.
 export function permissionState(code: string, template: string[] | undefined, override: Override | undefined, active = true, t?: Translate) {

@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import {auditDetail, displayLabel, formatDate} from "@/components/shared/presentation";
 import {useState, type FormEvent} from 'react';
-import {Download, Lock, LockOpen, UserPlus, X} from 'lucide-react';
+import {Download, Lock, LockOpen, Search, UserPlus, X} from 'lucide-react';
 import {useAdminAudit, useAdminMutations, useAdminUser, useAdminUserCounts, useAdminUsers, userStatuses} from "@/lib/query/admin";
 import {adminService} from "@/lib/api/admin";
 import {roles, type User, type UserRole, type UserStatus} from "@/types/admin";
@@ -12,17 +12,12 @@ import {Alert, Button, StatusBadge} from "@/components/ui";
 import {Metadata} from '@/components/data/Drawer';
 import {Pagination} from "@/components/data/Pagination";
 import {PermissionEditor} from "@/features/access/components/PermissionEditor";
+import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {cn} from '@/lib/utils';
 import {toUserSlug} from '@/lib/url-slugs';
 import {useI18n} from '@/contexts/I18nContext';
 import {avatarSrc} from '@/components/shared/Avatar';
-
-const statusToneStyles: Record<UserStatus | 'ALL', { bar: string; active: string }> = {
-    ALL: {bar: 'before:bg-slate-500', active: 'border-slate-500 ring-3 ring-slate-500/15'},
-    ACTIVE: {bar: 'before:bg-uav-blue', active: 'border-uav-blue ring-3 ring-uav-blue/15'},
-    INACTIVE: {bar: 'before:bg-amber-600', active: 'border-amber-600 ring-3 ring-amber-600/15'},
-    SUSPENDED: {bar: 'before:bg-red-600', active: 'border-red-600 ring-3 ring-red-600/15'},
-};
+import {CustomerBillingProfileCard} from '@/features/billing/components/CustomerBillingProfileCard';
 
 const roleChipStyles: Record<string, string> = {
     ROLE_ADMIN: 'bg-red-100 text-red-800',
@@ -94,19 +89,6 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
         URL.revokeObjectURL(url);
     };
     return <div className="space-y-5">
-        {!onSelect && <div className="grid grid-cols-2 gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 md:grid-cols-4">{userStatuses.map(item => {
-            const key = item ?? 'ALL';
-            return <button key={key} type="button" aria-pressed={status === item}
-                           className={cn(
-                               'relative flex cursor-pointer flex-col gap-1 overflow-hidden rounded-control border bg-card py-3.5 pl-5 pr-4 text-left transition before:absolute before:inset-y-0 before:left-0 before:w-1',
-                               statusToneStyles[key].bar,
-                               status === item ? statusToneStyles[key].active : 'border-border hover:border-slate-300'
-                           )}
-                           onClick={() => chooseStatus(item)}>
-                <span className="text-[12.5px] text-muted">{item ? displayLabel(item) : t('admin.users.allAccounts')}</span>
-                <strong className="text-2xl leading-tight text-foreground">{counts[key] ?? '—'}</strong>
-            </button>;
-        })}</div>}
         <div className="min-w-0 overflow-hidden rounded-panel border border-border bg-card">
             <div className="flex gap-1 overflow-x-auto border-b border-border px-4 pt-2.5" role="tablist" aria-label={t('admin.users.filterByStatus')}>{userStatuses.map(item => {
                 const key = item ?? 'ALL';
@@ -125,10 +107,10 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
                 e.preventDefault();
                 setKeyword(search.trim());
                 setPage(0);
-            }}><label className="flex min-h-[44px] min-w-[160px] max-w-[320px] flex-1 items-center gap-2 rounded-panel border border-border-input bg-card px-2.5 text-muted focus-within:outline-2 focus-within:outline-primary"><span className="sr-only">{t('admin.users.search')}</span><input
+            }}><label className="flex min-h-[44px] min-w-[160px] max-w-[320px] flex-1 items-center gap-2 rounded-panel border border-border-input bg-card px-2.5 text-muted focus-within:outline-2 focus-within:outline-primary"><Search size={16} aria-hidden="true"/><span className="sr-only">{t('admin.users.search')}</span><input
                 className="min-h-[42px] w-full min-w-0 bg-transparent text-sm text-foreground outline-none"
                 placeholder={t('admin.users.searchPlaceholder')} value={search}
-                onChange={e => setSearch(e.target.value)}/></label><Button type="submit" size="sm" variant="outline">{t('admin.users.searchButton')}</Button><label className="inline-flex items-center"><span className="sr-only">{t('admin.users.role')}</span><select
+                onChange={e => setSearch(e.target.value)} enterKeyHint="search"/></label><label className="inline-flex items-center"><span className="sr-only">{t('admin.users.role')}</span><select
                 className="min-h-[44px] max-w-[200px] rounded-control border border-border-input bg-card px-2.5 text-sm text-foreground"
                 value={role ?? ''} onChange={e => {
                 setRole((e.target.value || undefined) as UserRole | undefined);
@@ -175,7 +157,7 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
                             </td>
                             <td data-label={t('admin.users.col.email')} className="px-4 py-3.5 align-middle text-foreground">{u.email}</td>
                             <td data-label={t('admin.users.col.role')} className="px-4 py-3.5 align-middle text-foreground"><span className={cn('inline-flex whitespace-nowrap rounded-badge px-2.5 py-0.5 text-xs font-semibold', roleChipStyles[u.role] ?? 'bg-slate-100 text-slate-600')}>{displayLabel(u.role)}</span></td>
-                            <td data-label={t('admin.users.col.status')} className="px-4 py-3.5 align-middle text-foreground"><div className="flex flex-wrap gap-1.5"><StatusBadge status={u.status}/>
+                            <td data-label={t('admin.users.col.status')} className="px-4 py-3.5 align-middle text-foreground"><div className="flex flex-wrap gap-1.5">{!u.locked && <StatusBadge status={u.status}/>}
                                 {u.locked && <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-panel border border-red-200 bg-red-50 px-2 py-[3px] text-xs font-semibold text-red-700"><Lock size={11} aria-hidden="true"/>{t('admin.users.lockedBadge')}</span>}</div></td>
                             <td data-label={t('admin.users.col.created')} className="px-4 py-3.5 align-middle text-foreground">{formatDate(u.createdAt)}</td>
                             <td data-label={t('admin.users.col.actions')} className="px-4 py-3.5 align-middle text-foreground">{onSelect ?
@@ -204,12 +186,11 @@ function CreateUserDialog({onClose, onCreated}: { onClose: () => void; onCreated
     const set = (field: keyof typeof emptyForm) => (e: { target: { value: string } }) => setForm(f => ({...f, [field]: e.target.value}));
     const submit = async (e: FormEvent) => {
         e.preventDefault();
-        if (form.password !== form.confirm) return setError(t('admin.users.create.mismatch'));
         setError('');
         try {
             const created = await create.mutateAsync({
                 username: form.username.trim(), fullName: form.fullName.trim() || undefined, email: form.email.trim(),
-                phoneNumber: form.phoneNumber.trim(), password: form.password, role: form.role
+                phoneNumber: form.phoneNumber.trim(), password: form.password, confirmPassword: form.confirm, role: form.role
             });
             onCreated(created.username);
         } catch {/* The mutation error is shown in the dialog. */
@@ -222,17 +203,17 @@ function CreateUserDialog({onClose, onCreated}: { onClose: () => void; onCreated
             <header className="flex items-center justify-between gap-2.5"><h2 id="create-user-title" className="text-[17px] font-bold text-foreground">{t('admin.users.create.title')}</h2>
                 <button type="button" className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-control border border-border bg-card text-muted transition-colors hover:border-primary hover:bg-uav-red-light hover:text-primary" aria-label={t('admin.users.create.cancel')} onClick={onClose}><X size={18}/></button></header>
             <div className="grid grid-cols-1 gap-x-3.5 gap-y-3 sm:grid-cols-2">
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.field.username')}<input className={inputClass} required minLength={3} maxLength={50} autoFocus
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.username')}<RequiredMark/></span><input className={inputClass} aria-required autoFocus
                                                                                       value={form.username} onChange={set('username')} autoComplete="off"/></label>
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.field.fullName')}<input className={inputClass} maxLength={120} value={form.fullName} onChange={set('fullName')}/></label>
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.field.email')}<input className={inputClass} required type="email" value={form.email} onChange={set('email')}/></label>
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.field.phone')}<input className={inputClass} required type="tel" value={form.phoneNumber} onChange={set('phoneNumber')}/></label>
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.field.role')}<select className={inputClass} value={form.role} onChange={set('role')}>{roles.map(r =>
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.fullName')}<OptionalMark/></span><input className={inputClass} value={form.fullName} onChange={set('fullName')}/></label>
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.email')}<RequiredMark/></span><input className={inputClass} aria-required type="email" value={form.email} onChange={set('email')}/></label>
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.phone')}<RequiredMark/></span><input className={inputClass} aria-required type="tel" value={form.phoneNumber} onChange={set('phoneNumber')}/></label>
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.role')}<RequiredMark/></span><select className={inputClass} value={form.role} onChange={set('role')}>{roles.map(r =>
                     <option key={r} value={r}>{displayLabel(r)}</option>)}</select></label>
                 <span/>
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.create.password')}<input className={inputClass} required type="password" minLength={8} maxLength={100}
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.create.password')}<RequiredMark/></span><input className={inputClass} aria-required type="password"
                                                                                        autoComplete="new-password" value={form.password} onChange={set('password')}/></label>
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.create.confirm')}<input className={inputClass} required type="password" minLength={8} maxLength={100}
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.create.confirm')}<RequiredMark/></span><input className={inputClass} aria-required type="password"
                                                                                       autoComplete="new-password" value={form.confirm} onChange={set('confirm')}/></label>
             </div>
             <p className="text-xs text-slate-500">{t('admin.users.create.hint')}</p>
@@ -254,8 +235,9 @@ export function UserDetail({id}: { id: number }) {
             <section className="min-w-0 rounded-panel border border-border bg-card p-5"><Metadata
                 items={[[t('admin.users.field.username'), query.data.username], [t('admin.users.field.fullName'), query.data.fullName], [t('admin.users.field.email'), query.data.email], [t('admin.users.field.phone'), query.data.phoneNumber], [t('admin.users.field.role'), displayLabel(query.data.role)], [t('admin.users.field.status'),
                     <StatusBadge key="status"
-                                 status={query.data.status}/>], [t('admin.users.field.created'), formatDate(query.data.createdAt)]]}/>
+                                 status={query.data.locked ? 'LOCKED' : query.data.status}/>], [t('admin.users.field.created'), formatDate(query.data.createdAt)]]}/>
             </section>
+            {can('USER_READ') && <CustomerBillingProfileCard userId={query.data.id}/>}
             {can('USER_MANAGE') && <AccountActions key={`${query.data.id}:${query.data.role}:${query.data.status}`}
                                                    user={query.data}/>}
             {can('USER_MANAGE') && <PasswordReset user={query.data}/>}
@@ -314,7 +296,7 @@ function PasswordReset({user}: { user: User }) {
     return <section className="min-w-0 space-y-3 rounded-panel border border-border bg-card p-5">
         <h2 className="font-semibold">{t('admin.users.reset.title')}</h2>
         <form className="flex flex-wrap items-end gap-3" onSubmit={e => void submit(e)}>
-            <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.reset.newPassword')}<input className="min-h-[44px] w-full rounded-control border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground" type="password" required minLength={8} maxLength={100}
+            <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.reset.newPassword')}<RequiredMark/></span><input className="min-h-[44px] w-full rounded-control border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground" type="password" aria-required
                                                                                     autoComplete="new-password" value={password}
                                                                                     onChange={e => setPassword(e.target.value)}/></label>
             <Button type="submit" variant="outline" disabled={resetPassword.isPending}>{t('admin.users.reset.submit')}</Button>

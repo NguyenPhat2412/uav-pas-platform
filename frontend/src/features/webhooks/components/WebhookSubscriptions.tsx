@@ -2,7 +2,7 @@
 
 import {useState, type FormEvent} from 'react';
 import {useMutation} from '@tanstack/react-query';
-import {KeyRound, Plus, Trash2, X} from 'lucide-react';
+import {Copy, KeyRound, Plus, RefreshCcwDot, Trash2, X} from 'lucide-react';
 import {useI18n} from '@/contexts/I18nContext';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
 import {RequiredMark} from '@/components/shared/RequiredMark';
@@ -10,6 +10,8 @@ import {Switch} from '@/components/ui/Switch';
 import {adminService} from '@/lib/api/admin';
 import {cn} from '@/lib/utils';
 import type {WebhookEndpointItem} from '@/types/admin';
+import {webhookAdminApi} from '@/features/webhooks/admin-api';
+import {WebhookSecretDialog} from '@/features/webhooks/components/WebhookSecretDialog';
 
 /** Event types the backend actually dispatches; a subscription matches when its list contains the type. */
 const webhookEvents = ['SAR_EMERGENCY_TRIGGERED', 'GEOFENCE_BREACH', 'BATTERY_CRITICAL_RTH', 'SAR_RTH_REQUESTED', 'INVOICE_ISSUED', 'PAYMENT_COMPLETED', 'WEBHOOK_TEST'];
@@ -27,7 +29,16 @@ export function WebhookSubscriptions({items, onChanged}: { items: WebhookEndpoin
         onSuccess: onChanged,
     });
     const remove = useMutation({mutationFn: adminService.deleteWebhook, onSuccess: onChanged});
-    const busy = toggle.isPending || remove.isPending;
+    // The rotated secret is held only in component state until the reveal dialog closes.
+    const [revealed, setRevealed] = useState<{ name: string; secret: string } | null>(null);
+    const rotate = useMutation({
+        mutationFn: (item: WebhookEndpointItem) => webhookAdminApi.rotateSecret(item.id),
+        onSuccess: (result, item) => {
+            setRevealed({name: item.name, secret: result.secretKey});
+            onChanged();
+        },
+    });
+    const busy = toggle.isPending || remove.isPending || rotate.isPending;
 
     return <section className="space-y-3">
         <div className="flex items-center justify-between gap-3">
@@ -37,7 +48,7 @@ export function WebhookSubscriptions({items, onChanged}: { items: WebhookEndpoin
                 <Plus size={15} aria-hidden="true"/>{t('admin.webhooks.crud.add')}
             </button>
         </div>
-        <ErrorNotice error={toggle.error || remove.error}/>
+        <ErrorNotice error={toggle.error || remove.error || rotate.error}/>
         {items.length === 0 ? <p className="border border-dashed border-slate-300 px-4 py-8 text-center text-[13px] text-slate-500">
             {t('admin.webhooks.noSubscriptions')}</p> :
             <div className="overflow-x-auto border border-slate-200 bg-white">
@@ -47,13 +58,14 @@ export function WebhookSubscriptions({items, onChanged}: { items: WebhookEndpoin
                         <th className="px-4 py-3">{t('admin.webhooks.crud.colName')}</th>
                         <th className="px-4 py-3">{t('admin.webhooks.crud.colEvents')}</th>
                         <th className="w-32 px-4 py-3">{t('admin.webhooks.crud.colActive')}</th>
-                        <th className="w-24 px-4 py-3 text-right">{t('admin.webhooks.col.actions')}</th>
+                        <th className="w-28 px-4 py-3 text-right">{t('admin.webhooks.col.actions')}</th>
                     </tr>
                     </thead>
                     <tbody>{items.map(item => <tr key={item.id} className="border-t border-slate-100 align-top">
                         <td className="px-4 py-3">
                             <strong className="block text-slate-900">{item.name}</strong>
                             <span className="block break-all font-mono text-xs text-slate-500">{item.targetUrl}</span>
+                            <span className="mt-0.5 block font-mono text-[11px] text-slate-400" title={t('adminCommerce.webhooks.maskedSecret')}>{item.secretKey}</span>
                         </td>
                         <td className="px-4 py-3"><div className="flex flex-wrap gap-1">
                             {item.eventsSubscribed.split(',').map(e => e.trim()).filter(Boolean).map(e =>
@@ -68,7 +80,13 @@ export function WebhookSubscriptions({items, onChanged}: { items: WebhookEndpoin
                                 onCheckedChange={(nextActive) => toggle.mutate({id: item.id, active: nextActive})}
                             />
                         </td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="whitespace-nowrap px-4 py-3 text-right">
+                            <button type="button" disabled={busy} aria-label={t('adminCommerce.webhooks.rotate', {name: item.name})}
+                                    title={t('adminCommerce.webhooks.rotate', {name: item.name})}
+                                    onClick={() => {
+                                        if (window.confirm(t('adminCommerce.webhooks.rotateConfirm', {name: item.name}))) rotate.mutate(item);
+                                    }}
+                                    className="p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-800 disabled:opacity-50"><RefreshCcwDot size={16}/></button>
                             <button type="button" disabled={busy} aria-label={t('admin.webhooks.crud.delete', {name: item.name})}
                                     onClick={() => {
                                         if (window.confirm(t('admin.webhooks.crud.deleteConfirm', {name: item.name}))) remove.mutate(item.id);
@@ -78,6 +96,7 @@ export function WebhookSubscriptions({items, onChanged}: { items: WebhookEndpoin
                     </tr>)}</tbody>
                 </table>
             </div>}
+        {revealed && <WebhookSecretDialog name={revealed.name} secret={revealed.secret} onClose={() => setRevealed(null)}/>}
         {creating && <CreateDialog onClose={() => setCreating(false)} onCreated={() => {
             setCreating(false);
             onChanged();
@@ -111,17 +130,22 @@ function CreateDialog({onClose, onCreated}: { onClose: () => void; onCreated: ()
                 <button type="button" onClick={onClose} aria-label={t('admin.webhooks.crud.cancel')} className="p-1 text-slate-400 hover:bg-slate-100"><X size={18}/></button>
             </header>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.webhooks.crud.name')}<RequiredMark/>
-                <input required autoFocus maxLength={150} value={name} onChange={e => setName(e.target.value)} className={field}/></label>
+                <input aria-required autoFocus value={name} onChange={e => setName(e.target.value)} className={field}/></label>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.webhooks.crud.url')}<RequiredMark/>
-                <input required type="url" pattern="https://.+" maxLength={500} value={url} onChange={e => setUrl(e.target.value)} className={cn(field, 'font-mono')}/>
+                <input aria-required type="url" value={url} onChange={e => setUrl(e.target.value)} className={cn(field, 'font-mono')}/>
                 <span className="mt-1 block text-xs font-normal text-slate-500">{t('admin.webhooks.crud.urlHint')}</span></label>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.webhooks.crud.secret')}<RequiredMark/>
                 <span className="mt-1 flex gap-2">
-                    <input required minLength={16} maxLength={120} value={secret} onChange={e => setSecret(e.target.value)} className={cn(field, 'mt-0 font-mono')}/>
+                    <input aria-required value={secret} onChange={e => setSecret(e.target.value)} className={cn(field, 'mt-0 font-mono')}/>
                     <button type="button" onClick={() => setSecret(newSecret())} title={t('admin.webhooks.crud.regenerate')}
                             className="inline-flex items-center gap-1 border border-slate-200 px-3 text-xs font-medium text-slate-600 hover:bg-slate-50">
                         <KeyRound size={14} aria-hidden="true"/>{t('admin.webhooks.crud.regenerate')}</button>
+                    <button type="button" onClick={() => void navigator.clipboard?.writeText(secret).catch(() => undefined)}
+                            title={t('adminCommerce.webhooks.secret.copy')} aria-label={t('adminCommerce.webhooks.secret.copy')}
+                            className="inline-flex items-center border border-slate-200 px-2.5 text-slate-600 hover:bg-slate-50">
+                        <Copy size={14} aria-hidden="true"/></button>
                 </span>
+                <span className="mt-1 block text-xs font-normal text-amber-700">{t('adminCommerce.webhooks.createSecretHint')}</span>
                 <span className="mt-1 block text-xs font-normal text-slate-500">{t('admin.webhooks.crud.secretHint')}</span></label>
             <fieldset className="text-[13px]">
                 <legend className="font-semibold text-slate-600">{t('admin.webhooks.crud.events')}<RequiredMark/></legend>

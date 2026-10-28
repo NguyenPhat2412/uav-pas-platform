@@ -7,19 +7,12 @@ const source = await fs.readFile(new URL('../src/lib/api/media-policy.ts', impor
 const compiled = ts.transpile(source, {module: ts.ModuleKind.ESNext});
 const policy = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`);
 
-test('all allowed media use exact decimal limits and reject one byte overflow', () => {
-    for (const type of policy.MEDIA_ACCEPT.split(',')) {
-        const max = type.startsWith('video/') ? 1_000_000_000 : 100_000_000;
-        assert.equal(policy.validateMediaFile({type, size: max}), type);
-        assert.equal(policy.validateMediaFile({type, size: 1}), type);
-        for (const size of [max + 1, 0, -1, NaN, Infinity, 1.5]) {
-            assert.throws(() => policy.validateMediaFile({type, size}), /100 MB.*1 GB/);
-        }
-    }
+test('the picker offers exactly the types the API accepts, and the policy text states the limits', () => {
+    assert.deepEqual(policy.MEDIA_ACCEPT.split(','), ['image/jpeg', 'image/png', 'image/webp', 'application/pdf', 'video/mp4', 'video/webm']);
+    assert.match(policy.mediaUploadPolicy(), /100 MB.*1 GB/);
 });
 
-test('unknown, omitted or misleading MIME never falls back to unrestricted binary', () => {
-    for (const type of ['', 'text/plain', 'image/gif', 'application/octet-stream', 'image/png; charset=utf-8']) {
-        assert.throws(() => policy.validateMediaFile({type, size: 1}), /đúng định dạng/);
-    }
+test('type and size are judged by the API (MediaUploadPolicy), not re-checked in the browser', () => {
+    assert.equal(policy.validateMediaFile, undefined);
+    assert.equal(policy.MediaFileError, undefined);
 });

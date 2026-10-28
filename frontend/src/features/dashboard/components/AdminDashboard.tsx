@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import {useQuery} from '@tanstack/react-query';
-import {ChevronRight, CreditCard, History, MapPin, Plane, Settings, ShieldCheck, Users} from 'lucide-react';
+import {History, MapPin, Plane, Users} from 'lucide-react';
 import {auditDetail, displayLabel, formatDate} from "@/components/shared/presentation";
 import {useAuth} from '@/contexts/AuthContext';
 import {KpiCard, MetricStrip} from "@/components/ui";
@@ -23,11 +23,6 @@ export function Dashboard() {
         queryFn: ({signal}) => adminService.audit(0, 5, signal),
         enabled: permissionsReady && can('AUDIT_READ')
     });
-    const pending = useQuery({
-        queryKey: ['session', user?.id, 'admin-pending-missions'],
-        queryFn: ({signal}) => adminService.pendingMissions(signal),
-        enabled: permissionsReady && can('MISSION_VIEW_ALL')
-    });
     const fleet = summary.data;
     const cards = summary.data ? [
         {label: t('admin.dashboard.cards.users'), value: summary.data.totalUsers, icon: <Users size={18}/>, tone: 'blue' as const},
@@ -46,50 +41,6 @@ export function Dashboard() {
             tone: 'slate' as const
         },
     ] : [];
-    const shortcuts = [
-        {
-            href: "/admin/users",
-            label: t('admin.dashboard.shortcuts.users'),
-            detail: t('admin.dashboard.shortcuts.usersDetail'),
-            icon: <Users size={16}/>,
-            permission: 'USER_READ'
-        },
-        {
-            href: "/admin/access-control",
-            label: t('admin.dashboard.shortcuts.access'),
-            detail: t('admin.dashboard.shortcuts.accessDetail'),
-            icon: <ShieldCheck size={16}/>,
-            permission: 'PERMISSION_MANAGE'
-        },
-        {
-            href: "/admin/billing",
-            label: t('admin.dashboard.shortcuts.billing'),
-            detail: t('admin.dashboard.shortcuts.billingDetail'),
-            icon: <CreditCard size={16}/>,
-            permission: 'PERMISSION_MANAGE'
-        },
-        {
-            href: "/admin/settings",
-            label: t('admin.dashboard.shortcuts.settings'),
-            detail: t('admin.dashboard.shortcuts.settingsDetail'),
-            icon: <Settings size={16}/>,
-            permission: 'PERMISSION_MANAGE'
-        },
-    ].filter(item => can(item.permission));
-    const pendingPanel = can('MISSION_VIEW_ALL') && <section className="min-w-0 rounded-panel border border-border bg-card">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.dashboard.pending.title')}</h2>
-            <Link href="/operations/dispatch/missions" className="text-[13px] font-semibold text-primary hover:underline">{t('admin.dashboard.pending.openDispatch')}</Link>
-        </header>
-        <QueryState query={pending}>{pending.data?.content.length ?
-            <ul className="m-0 list-none px-5 pb-3">{pending.data.content.map(mission => <li key={mission.id} className="flex items-center justify-between gap-3 border-t border-border py-3 first:border-t-0">
-                <Link href={`/operations/missions/${mission.id}`} className="flex min-w-0 flex-col text-foreground"><strong>{mission.code}</strong>
-                    <span className="truncate text-muted">{mission.title}</span></Link>
-                <small className="shrink-0 text-muted">{formatDate(mission.startTime)}</small>
-            </li>)}</ul> :
-            <div className="flex flex-col gap-0.5 p-[18px] text-[13px] text-muted"><strong className="text-[13.5px] text-foreground">{t('admin.dashboard.pending.emptyTitle')}</strong>
-                <span>{t('admin.dashboard.pending.emptyDetail')}</span></div>}
-        </QueryState>
-    </section>;
     const auditPanel = can('AUDIT_READ') && <QueryState query={audit}>
         <section className="min-w-0 overflow-hidden rounded-panel border border-border bg-card">
             <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.dashboard.audit.title')}</h2><Link
@@ -128,19 +79,9 @@ export function Dashboard() {
             <MetricStrip>{cards.map(card => <KpiCard key={card.label} {...card} />)}</MetricStrip>}</QueryState>
         <div className="grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 xl:grid-cols-[minmax(0,1fr)_340px]">
             <div className="flex min-w-0 flex-col divide-y divide-slate-200 bg-white [&>*]:border-0">
-                {pendingPanel}
                 {auditPanel}
             </div>
             <aside className="flex min-w-0 flex-col divide-y divide-slate-200 bg-white [&>*]:border-0">
-                {shortcuts.length > 0 && <section className="min-w-0 rounded-panel border border-border bg-card">
-                    <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.dashboard.quickAccess')}</h2></header>
-                    <div className="divide-y divide-border px-[18px] py-1">{shortcuts.map(item => <Link key={item.href} href={item.href}
-                                                                                   className="group flex items-center justify-between gap-3 py-3 text-foreground transition-colors hover:text-primary">
-                        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-panel bg-uav-red-light text-primary" aria-hidden="true">{item.icon}</span>
-                        <span className="flex min-w-0 flex-1 flex-col"><strong>{item.label}</strong><small className="mt-1 block text-xs text-muted">{item.detail}</small></span>
-                        <ChevronRight size={16} aria-hidden="true" className="text-slate-300 transition-colors group-hover:text-primary"/>
-                    </Link>)}</div>
-                </section>}
                 <AdminMonitoringCard summaryLoaded={!!summary.data}
                                      fleet={fleet ? {totalUavs: fleet.totalUavs ?? 0, availableUavs: fleet.availableUavs ?? 0, maintenanceUavs: fleet.maintenanceUavs ?? 0} : null}/>
             </aside>

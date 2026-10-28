@@ -58,7 +58,8 @@
     "basemaps": {
       "streets": "道路地図 (OSM)",
       "satellite": "衛星写真",
-      "terrain": "地形図"
+      "terrain": "地形図",
+      "dark": "ダーク戦術図"
     },
     "radius": "活動半径",
     "ariaLabel": "飛行エリア計画マップ。クリックして離陸地点の設定やエリア頂点の追加を行います。",

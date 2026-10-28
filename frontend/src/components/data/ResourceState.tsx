@@ -1,16 +1,10 @@
 'use client';
 import type {ReactNode} from 'react';
-import {EmptyState} from '@/components/data/WorkspaceState';
-import {Alert, Button, Spinner} from '@/components/ui';
-import {ApiError} from '@/lib/api';
+import {EmptyState, ErrorNotice} from '@/components/data/WorkspaceState';
+import {Button, Spinner} from '@/components/ui';
 import {useI18n} from '@/contexts/I18nContext';
 
-export function ErrorNotice({error}: { error: Error | null }) {
-    const {t} = useI18n();
-    if (!error) return null;
-    return <Alert
-        variant="error">{error instanceof ApiError && error.status === 403 ? t('opsShared.state.forbiddenAction') : error.message === 'MISSION_MEDIA_LOCKED' ? t('opsShared.state.errors.missionMediaLocked') : error.message}</Alert>;
-}
+export {ErrorNotice};
 
 export function ResourceState({query, children}: {
     query: { isPending: boolean; error: Error | null; refetch: () => unknown };

@@ -1,6 +1,7 @@
-export type Permission = string;
+export type AuthPermission = string;
+export type {AuthPermission as Permission};
 export type SessionEvent = 'expired' | 'logout';
-export type Can = (permission: Permission) => boolean;
+export type Can = (permission: AuthPermission) => boolean;
 
 export type TwoFactorMethod = 'EMAIL' | 'TOTP';
 export type OtpPurpose = 'REGISTER_VERIFY' | 'LOGIN_2FA' | 'PASSWORD_RESET' | 'ENABLE_2FA_EMAIL';
@@ -16,6 +17,9 @@ export interface RegisterRequest {
     password: string;
     phoneNumber?: string;
     fullName?: string;
+    role?: string;
+    /** Checked against password by the backend. */
+    confirmPassword?: string;
 }
 
 export interface UserResponse {
@@ -40,7 +44,8 @@ export interface AuthResponse {
     refreshToken?: string;
     user: UserResponse;
     mfaRequired?: boolean;
-    mfaMethod?: 'EMAIL' | 'TOTP' | 'EMAIL_VERIFY';
+    /** PENDING_APPROVAL: email verified, but a staff account still needs an administrator; no tokens are sent. */
+    mfaMethod?: 'EMAIL' | 'TOTP' | 'EMAIL_VERIFY' | 'PENDING_APPROVAL';
     challengeToken?: string;
     maskedEmail?: string;
     devOtpPreview?: string;
@@ -79,6 +84,8 @@ export interface ResetPasswordRequest {
     email?: string;
     code: string;
     newPassword: string;
+    /** Checked against newPassword by the backend. */
+    confirmPassword?: string;
 }
 
 export interface TwoFactorStatusResponse {
@@ -124,3 +131,42 @@ export interface RefreshTokenRequest {
 export interface LogoutRequest {
     refreshToken?: string;
 }
+
+export type AuthModalView =
+    | 'login'
+    | 'register'
+    | 'verify-email'
+    | 'verify-2fa'
+    | 'forgot-password'
+    | 'reset-password'
+    | 'select-portal';
+
+export type AuthEntryMode = 'login' | 'register';
+export type Portal = 'admin' | 'operations' | 'customer';
+
+export interface OtpCodeInputProps {
+    value: string;
+    onChange: (next: string) => void;
+    length?: number;
+    disabled?: boolean;
+    autoFocus?: boolean;
+}
+
+export interface AuthContextType {
+    user: UserResponse | null;
+    token: string | null;
+    isLoading: boolean;
+    isAuthenticated: boolean;
+    permissions: string[];
+    permissionsReady: boolean;
+    permissionError: Error | null;
+    can: (code: string) => boolean;
+    refreshPermissions: () => Promise<unknown>;
+    /** Re-reads the signed-in user, e.g. after the profile name changed; ignored if the session switched meanwhile. */
+    refreshUser: () => Promise<void>;
+    login: (usernameOrEmail: string, password: string) => Promise<AuthResponse>;
+    register: (data: RegisterRequest) => Promise<UserResponse>;
+    completeAuth: (response: AuthResponse) => AuthResponse;
+    logout: () => Promise<void>;
+}
+

@@ -10,9 +10,9 @@ import {useI18n} from '@/contexts/I18nContext';
 import {displayLabel} from '@/components/shared/presentation';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
-import {useUavHistory} from '@/hooks/useOperations';
+import {useUavHistory} from '@/lib/query/operations';
 import {cn} from '@/lib/utils';
-import {fleetMapService} from '@/features/uavs/services/fleet-map.service';
+import {fleetMapService} from '@/lib/api/services';
 import {uavStatuses, type FleetStation, type FleetUav, type UavStatus} from '@/features/uavs/types/fleet-map.types';
 import {uavStatusColor} from '@/features/uavs/components/FleetMap';
 

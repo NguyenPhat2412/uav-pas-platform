@@ -47,3 +47,27 @@ export interface CustomerKpis {
     flightHours: number;
     spend: number;
 }
+
+export type MonitoringTone = 'ok' | 'warn' | 'down' | 'idle';
+
+export interface FleetSummary {
+    totalUavs: number;
+    availableUavs: number;
+    maintenanceUavs: number;
+}
+
+export type ChartSeries = {
+    key: string;
+    label: string;
+    color: string;
+    dashed?: boolean;
+    values: number[];
+};
+
+export type MapPoint = {
+    code: string;
+    latitude: number;
+    longitude: number;
+    color: string;
+    label: string;
+};

@@ -114,6 +114,18 @@
         "sarNone": "進行中の任務はありません",
         "openHealth": "システムヘルス",
         "manageIntegrations": "連携を管理"
+      },
+      "home": {
+        "question": "今日は何をしますか？",
+        "searchPlaceholder": "管理ページを検索",
+        "attention": "対応が必要なアラート {count} 件",
+        "pending": "承認待ちのミッション",
+        "pendingEmpty": "承認待ちのミッションはありません。",
+        "alerts": "システムアラート",
+        "alertsEmpty": "問題はありません。",
+        "recent": "最近",
+        "recentEmpty": "開いたページがここに表示されます。",
+        "loading": "読み込み中…"
       }
     },
     "auditTable": {
@@ -838,13 +850,17 @@
         "storage": "メディアストレージ",
         "webhooks": "Webhookキュー",
         "financialOutbox": "財務イベントキュー",
-        "payments": "銀行振込決済"
+        "payments": "銀行振込決済",
+        "mail": "システムメール",
+        "backups": "データバックアップ",
+        "tls": "TLS証明書"
       },
       "status": {
         "UP": "正常",
         "DEGRADED": "低下",
         "DOWN": "停止",
-        "UNKNOWN": "不明"
+        "UNKNOWN": "不明",
+        "DISABLED": "無効"
       },
       "latency": "応答時間",
       "detail": {
@@ -1013,8 +1029,6 @@
       "removeAttachment": "{name} を削除",
       "attachmentOnly": "添付した画像・動画を見てください。",
       "attachedEarlier": "[画像 {count} 枚を添付]",
-      "keySend": "送信",
-      "keyNewline": "改行",
       "expand": "チャットを拡大",
       "collapse": "チャットを縮小",
       "dropHere": "画像・動画をここにドロップ",

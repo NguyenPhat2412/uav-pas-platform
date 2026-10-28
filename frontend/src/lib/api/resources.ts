@@ -6,27 +6,23 @@ import type {
     Equipment,
     InventoryMovement,
     MediaAsset,
+    MediaInput,
     Operator,
     PageResponse,
+    QuantityInput,
     Station,
     Uav,
     UavHistory
 } from "@/types/resources";
+import type {
+    TrainingDocument,
+    TrainingOverview,
+    TrainingPortalTier,
+    UpdateTrainingProgressPayload,
+    UpsertTrainingDocumentPayload,
+} from "@/features/training/types/training.types";
 
-export interface QuantityInput {
-    quantity: number;
-    note?: string;
-    requestId: string;
-}
-
-export interface MediaInput {
-    originalName: string;
-    contentType: string;
-    size: number;
-    type: string;
-    linkedEntityType?: string;
-    linkedEntityId?: string;
-}
+export type {MediaInput, QuantityInput};
 
 export const operationsService = {
     listStations: (page = 0, size = 100, signal?: AbortSignal) =>
@@ -114,12 +110,32 @@ export const operationsService = {
     deleteMedia: (id: number) => apiClient.delete<void>(API_ROUTES.media.detail(id)),
     listAudit: (page = 0, signal?: AbortSignal) =>
         apiClient.get<PageResponse<AuditLog>>(`${API_ROUTES.auditLogs.list}?page=${page}&size=20`, {signal}),
-    notifications: (page = 0, size = 20, signal?: AbortSignal) =>
-        apiClient.get(`${API_ROUTES.notifications.list}?page=${page}&size=${size}`, {signal}),
-    unreadCount: (signal?: AbortSignal) =>
-        apiClient.get<{ unreadCount: number }>(API_ROUTES.notifications.unreadCount, {signal}),
-    markNotificationRead: (id: string | number) =>
-        apiClient.patch(API_ROUTES.notifications.markRead(id)),
-    markAllNotificationsRead: () =>
-        apiClient.post(API_ROUTES.notifications.markAllRead),
+};
+
+export const trainingService = {
+    getOverview: (
+        params: {portal: TrainingPortalTier; category?: string; search?: string},
+        signal?: AbortSignal,
+    ) => {
+        const query = new URLSearchParams({portal: params.portal});
+        if (params.category && params.category !== 'ALL') {
+            query.set('category', params.category);
+        }
+        if (params.search && params.search.trim()) {
+            query.set('search', params.search.trim());
+        }
+        return apiClient.get<TrainingOverview>(`${API_ROUTES.training.list}?${query.toString()}`, {signal});
+    },
+
+    getByCode: (codeOrSlug: string, signal?: AbortSignal) =>
+        apiClient.get<TrainingDocument>(API_ROUTES.training.byCode(codeOrSlug), {signal}),
+
+    updateProgress: (documentId: number, payload: UpdateTrainingProgressPayload) =>
+        apiClient.put<TrainingDocument>(API_ROUTES.training.progress(documentId), payload),
+
+    createDocument: (payload: UpsertTrainingDocumentPayload) =>
+        apiClient.post<TrainingDocument>(API_ROUTES.training.list, payload),
+
+    updateDocument: (id: number, payload: UpsertTrainingDocumentPayload) =>
+        apiClient.put<TrainingDocument>(API_ROUTES.training.byId(id), payload),
 };

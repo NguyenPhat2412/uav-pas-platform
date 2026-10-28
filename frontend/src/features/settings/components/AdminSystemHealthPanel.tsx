@@ -1,12 +1,12 @@
 'use client';
 
 import {useQuery} from '@tanstack/react-query';
-import {Activity, AlertTriangle, CheckCircle2, CircleHelp, Cpu, Database, HardDrive, RefreshCw, Send, Wallet, XCircle} from 'lucide-react';
+import {Activity, AlertTriangle, Archive, CheckCircle2, CircleHelp, Cpu, Database, HardDrive, Lock, Mail, RefreshCw, Send, Wallet, XCircle} from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {cn} from '@/lib/utils';
-import {systemHealthService} from '@/features/settings/services/system-health.service';
+import {systemHealthService} from '@/lib/api/services';
 import type {HealthStatus, SystemHealth} from '@/features/settings/types/system-health.types';
 
 const tone: Record<HealthStatus, { stripe: string; text: string; icon: typeof CheckCircle2 }> = {
@@ -16,7 +16,20 @@ const tone: Record<HealthStatus, { stripe: string; text: string; icon: typeof Ch
     UNKNOWN: {stripe: 'border-l-slate-400', text: 'text-slate-500', icon: CircleHelp},
 };
 
-const componentIcon: Record<string, typeof Database> = {database: Database, storage: HardDrive, webhooks: Send, financialOutbox: Wallet};
+const componentIcon: Record<string, typeof Database> = {database: Database, storage: HardDrive, webhooks: Send, financialOutbox: Wallet, mail: Mail, backups: Archive, tls: Lock};
+
+/** Labels for components added by the infrastructure package live in the adminInfra namespace; admin.health wins when both exist. */
+function useHealthLabel() {
+    const {t} = useI18n();
+    return (path: string) => {
+        const primary = `admin.health.${path}`;
+        const value = t(primary);
+        if (value !== primary) return value;
+        const fallback = `adminInfra.health.${path}`;
+        const infra = t(fallback);
+        return infra !== fallback ? infra : value;
+    };
+}
 
 export function AdminSystemHealthPanel() {
     const {user} = useAuth();
@@ -35,6 +48,7 @@ export function AdminSystemHealthPanel() {
 
 function Body({data, refreshing, onRefresh, checkedAt}: { data: SystemHealth; refreshing: boolean; onRefresh: () => void; checkedAt: string }) {
     const {t} = useI18n();
+    const label = useHealthLabel();
     const overall = tone[data.status] ?? tone.UNKNOWN;
     const OverallIcon = overall.icon;
     const problems = data.components.filter(c => c.status === 'DOWN' || c.status === 'DEGRADED');
@@ -46,7 +60,7 @@ function Body({data, refreshing, onRefresh, checkedAt}: { data: SystemHealth; re
             <div className="min-w-0 flex-1">
                 <h2 className={cn('m-0 text-lg font-bold', overall.text)}>{t(`admin.health.overall.${data.status}`)}</h2>
                 <p className="m-0 text-[13px] text-slate-600">{problems.length
-                    ? t('admin.health.problems', {list: problems.map(c => t(`admin.health.component.${c.key}`)).join(', ')})
+                    ? t('admin.health.problems', {list: problems.map(c => label(`component.${c.key}`)).join(', ')})
                     : t('admin.health.allGood')}</p>
             </div>
             <div className="flex items-center gap-3 text-xs text-slate-500">
@@ -65,20 +79,20 @@ function Body({data, refreshing, onRefresh, checkedAt}: { data: SystemHealth; re
                 return <section key={c.key} className={cn('border border-l-4 border-slate-200 bg-white', s.stripe)} aria-labelledby={`health-${c.key}`}>
                     <header className="flex items-center gap-2 border-b border-slate-100 px-4 py-3">
                         <Icon size={17} className="text-slate-500" aria-hidden="true"/>
-                        <h3 id={`health-${c.key}`} className="m-0 flex-1 text-[14px] font-bold text-slate-900">{t(`admin.health.component.${c.key}`)}</h3>
+                        <h3 id={`health-${c.key}`} className="m-0 flex-1 text-[14px] font-bold text-slate-900">{label(`component.${c.key}`)}</h3>
                         <span className={cn('inline-flex items-center gap-1 text-xs font-semibold', s.text)}>
-                            <StatusIcon size={14} aria-hidden="true"/>{t(`admin.health.status.${c.status}`)}</span>
+                            <StatusIcon size={14} aria-hidden="true"/>{label(`status.${c.status}`)}</span>
                     </header>
                     <dl className="m-0 grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1.5 px-4 py-3 text-[13px]">
                         {c.latencyMs != null && <><dt className="text-slate-500">{t('admin.health.latency')}</dt>
                             <dd className="m-0 text-right tabular-nums text-slate-900">{c.latencyMs} ms</dd></>}
                         {Object.entries(c.details).map(([key, value]) => <div key={key} className="contents">
-                            <dt className="text-slate-500">{t(`admin.health.detail.${key}`)}</dt>
+                            <dt className="text-slate-500">{label(`detail.${key}`)}</dt>
                             <dd className={cn('m-0 text-right tabular-nums text-slate-900', isWarning(c.key, key, value) && 'font-semibold text-amber-700')}>{String(value)}</dd>
                         </div>)}
                     </dl>
                     {c.status !== 'UP' && <p className="m-0 border-t border-slate-100 px-4 py-2.5 text-xs text-slate-600">
-                        {t(`admin.health.hint.${c.key}.${c.status}`)}</p>}
+                        {label(`hint.${c.key}.${c.status}`)}</p>}
                 </section>;
             })}
         </div>

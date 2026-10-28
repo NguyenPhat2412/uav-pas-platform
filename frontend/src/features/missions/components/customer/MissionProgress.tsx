@@ -21,7 +21,7 @@ export function MissionProgress({status}: { status: MissionStatus }) {
     const {t} = useI18n();
     const halt = stopped[status];
     const current = halt?.index ?? steps.findIndex(step => (step.statuses as readonly string[]).includes(status));
-    return <ol className="m-0 flex list-none flex-col gap-3 rounded-panel border border-border bg-card px-5 py-4.5 sm:flex-row sm:gap-0" aria-label={t('progress.label')}>
+    return <ol className="m-0 flex list-none flex-col gap-3 rounded-panel border-b border-border bg-card px-5 py-4.5 sm:flex-row sm:gap-0" aria-label={t('progress.label')}>
         {steps.map((step, index) => {
             const isHalt = halt && index === current;
             const state = isHalt ? 'stopped' : index < current || status === 'COMPLETED' ? 'done' : index === current ? 'current' : 'upcoming';

@@ -2,6 +2,7 @@
 import {FileText, Film, Image as ImageIcon, Paperclip} from 'lucide-react';
 import {Button} from '@/components/customer/ui';
 import {useI18n} from '@/contexts/I18nContext';
+import {formatFileSize} from '@/lib/format';
 import type {MissionMedia} from '@/types/customer';
 
 // Handover results first, then raw flight data, documents and anything the customer supplied.
@@ -25,9 +26,7 @@ export function MissionFiles({items, downloading, onDownload}: {
     onDownload: (mediaId: number) => void;
 }) {
     const {t, formatNumber, formatDate} = useI18n();
-    const size = (bytes: number) => bytes >= 1e9 ? `${formatNumber(bytes / 1e9, {maximumFractionDigits: 2})} GB`
-        : bytes >= 1e6 ? `${formatNumber(bytes / 1e6, {maximumFractionDigits: 1})} MB`
-            : `${formatNumber(Math.max(1, Math.ceil(bytes / 1000)))} KB`;
+    const size = (bytes: number) => formatFileSize(bytes, formatNumber);
     const known: string[] = GROUPS.flatMap(group => [...group.roles]);
     const groups = GROUPS.map(group => ({
         ...group,

@@ -1,28 +1,17 @@
 'use client';
 import 'leaflet/dist/leaflet.css';
 import {useEffect, useRef, useState} from 'react';
-import type {LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
+import type {Control, LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
 import {Circle as CircleIcon, Crosshair, Hexagon, MapPin, Trash2, Undo2} from 'lucide-react';
 import {useI18n} from '@/contexts/I18nContext';
+import {MAP_BASEMAP_ORDER, MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
 import {defaultFlightPlan, radiusLimits, type FlightPlanInput} from '@/features/missions/types/flight-plan.types';
+import type {PlannerTool} from '@/features/missions/types/mission.types';
+import type {Basemap} from '@/types';
 import {flightGeometry} from '@/features/missions/utils/flight-geometry';
 
-// Hoa Lac Hi-Tech Park (VJU campus) as the default view when nothing is planned yet.
-const DEFAULT_CENTER: [number, number] = [21.0136, 105.5259];
 const round = (value: number) => Math.round(value * 1e6) / 1e6;
-
-type Tool = 'takeoff' | 'POLYGON' | 'CIRCLE';
-type Basemap = 'streets' | 'satellite' | 'terrain';
-
-const basemaps: Record<Basemap, { url: string; attribution: string; maxZoom: number }> = {
-    streets: {url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', attribution: '&copy; OpenStreetMap', maxZoom: 19},
-    satellite: {
-        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        attribution: 'Tiles &copy; Esri', maxZoom: 19
-    },
-    terrain: {url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', attribution: '&copy; OpenTopoMap (CC-BY-SA)', maxZoom: 17},
-};
 
 /**
  * GIS flight area planner: a takeoff/landing zone plus an optional survey polygon or radius circle. Emits the plan
@@ -35,14 +24,15 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
     onChange: (plan: FlightPlanInput, center: [number, number] | null) => void;
 }) {
     const {t, formatNumber} = useI18n();
+    const {config, basemap, setBasemap} = useMapConfig();
     const container = useRef<HTMLDivElement>(null);
     const map = useRef<LeafletMap | null>(null);
     const tiles = useRef<TileLayer | null>(null);
     const overlay = useRef<LayerGroup | null>(null);
+    const scaleControl = useRef<Control.Scale | null>(null);
     const leaflet = useRef<typeof import('leaflet') | null>(null);
     const [ready, setReady] = useState(false);
-    const [tool, setTool] = useState<Tool>(plan?.areaType === 'POLYGON' || plan?.areaType === 'CIRCLE' ? plan.areaType : 'takeoff');
-    const [basemap, setBasemap] = useState<Basemap>('streets');
+    const [tool, setTool] = useState<PlannerTool>(plan?.areaType === 'POLYGON' || plan?.areaType === 'CIRCLE' ? plan.areaType : 'takeoff');
     const [locating, setLocating] = useState(false);
     const [locateError, setLocateError] = useState<'' | 'unsupported' | 'failed'>('');
     const current: FlightPlanInput = plan ?? {
@@ -61,8 +51,8 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
         void import('leaflet').then(L => {
             if (disposed || !container.current || map.current) return;
             leaflet.current = L;
-            const start = geometry.center ?? DEFAULT_CENTER;
-            const instance = L.map(container.current, {scrollWheelZoom: false}).setView(start, geometry.center ? 15 : 12);
+            const start = geometry.center ?? config.defaultCenter;
+            const instance = L.map(container.current, {scrollWheelZoom: false}).setView(start, geometry.center ? 15 : config.defaultZoom);
             overlay.current = L.layerGroup().addTo(instance);
             instance.on('click', event => {
                 const point: [number, number] = [round(event.latlng.lat), round(event.latlng.lng)];
@@ -77,6 +67,7 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
         });
         return () => {
             disposed = true;
+            scaleControl.current = null;
             map.current?.remove();
             map.current = null;
             tiles.current = null;
@@ -89,9 +80,15 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
         const L = leaflet.current;
         if (!ready || !L || !map.current) return;
         tiles.current?.remove();
-        const b = basemaps[basemap];
+        const b = MAP_BASEMAPS[basemap];
         tiles.current = L.tileLayer(b.url, {maxZoom: b.maxZoom, attribution: b.attribution}).addTo(map.current);
     }, [ready, basemap]);
+
+    useEffect(() => {
+        const L = leaflet.current;
+        if (!ready || !L || !map.current) return;
+        syncScaleControl(L, map.current, scaleControl, config.showScaleBar);
+    }, [ready, config.showScaleBar]);
 
     useEffect(() => {
         const L = leaflet.current;
@@ -134,7 +131,7 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
         }, {timeout: 10_000});
     };
 
-    const chooseTool = (next: Tool) => {
+    const chooseTool = (next: PlannerTool) => {
         setTool(next);
         if (next === 'takeoff') return;
         // Switching area shape starts that shape fresh; the takeoff point is kept.
@@ -142,7 +139,7 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
     };
     const clearArea = () => emit({...current, areaType: 'POINT', vertices: [], radiusMeters: undefined});
     const area = geometry.areaSquareMeters;
-    const tools: { id: Tool; icon: typeof MapPin; label: string }[] = [
+    const tools: { id: PlannerTool; icon: typeof MapPin; label: string }[] = [
         {id: 'takeoff', icon: MapPin, label: t('planner.tool.takeoff')},
         {id: 'POLYGON', icon: Hexagon, label: t('planner.tool.polygon')},
         {id: 'CIRCLE', icon: CircleIcon, label: t('planner.tool.circle')},
@@ -172,7 +169,7 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
                     <Trash2 size={14} aria-hidden="true"/>{t('planner.clearArea')}</button>}
             <label className="ml-auto inline-flex items-center gap-2 text-xs font-semibold text-slate-600">{t('planner.basemap')}
                 <select value={basemap} onChange={e => setBasemap(e.target.value as Basemap)} className="h-9 border border-border bg-card px-2 text-xs">
-                    {(Object.keys(basemaps) as Basemap[]).map(b => <option key={b} value={b}>{t(`planner.basemaps.${b}`)}</option>)}
+                    {MAP_BASEMAP_ORDER.map(b => <option key={b} value={b}>{t(`planner.basemaps.${b}`)}</option>)}
                 </select></label>
         </div>
         {tool === 'CIRCLE' && <label className="flex items-center gap-3 text-xs font-semibold text-slate-600">

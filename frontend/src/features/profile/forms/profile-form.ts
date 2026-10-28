@@ -1,20 +1,12 @@
-export type ProfileFields = { fullName: string; phoneNumber: string };
-export type CustomerProfile = { id: number; fullName: string | null; phoneNumber: string | null; revision: string };
-export type ProfileErrors = Partial<Record<keyof ProfileFields, string>>;
-export type Translate = (key: string, params?: Record<string, string | number>) => string;
+import type {CustomerProfile, ProfileErrors, ProfileFields} from '@/features/profile/types/profile.types';
+import type {Translate} from '@/types';
+import {translateMessage} from '@/lib/format';
+
+export type {CustomerProfile, ProfileErrors, ProfileFields, Translate};
 
 // Without a translator the Vietnamese default is returned, which keeps these helpers usable outside React.
-function message(t: Translate | undefined, key: string, fallback: string): string {
-    return t ? t(`profile.errors.${key}`) : fallback;
-}
-
-export function validateProfile(fields: ProfileFields, t?: Translate): ProfileErrors {
-    const errors: ProfileErrors = {};
-    if (fields.fullName.trim().length > 100) errors.fullName = message(t, 'nameTooLong', 'Họ tên không được vượt quá 100 ký tự.');
-    if (!fields.phoneNumber.trim()) errors.phoneNumber = message(t, 'phoneRequired', 'Vui lòng nhập số điện thoại.');
-    else if (fields.phoneNumber.trim().length > 20) errors.phoneNumber = message(t, 'phoneTooLong', 'Số điện thoại không được vượt quá 20 ký tự.');
-    return errors;
-}
+const message = (t: Translate | undefined, key: string, fallback: string) =>
+    translateMessage(t, `profile.errors.${key}`, fallback);
 
 export function profilePayload(fields: ProfileFields, revision: string) {
     if (!/^[a-f0-9]{64}$/.test(revision ?? '')) throw new Error('Vui lòng tải lại phiên bản hồ sơ trước khi lưu.');
@@ -25,7 +17,13 @@ export function profilePayload(fields: ProfileFields, revision: string) {
     };
 }
 
-export function profileError(error: unknown, t?: Translate): { kind: 'phone' | 'conflict' | 'uncertain' | 'other'; message: string } {
+export function profileError(error: unknown, t?: Translate): { kind: 'fields' | 'phone' | 'conflict' | 'uncertain' | 'other'; message: string; fields?: ProfileErrors } {
+    // The backend checks every rule and names the field; show its message next to that input.
+    // Read structurally (not instanceof ApiError) so this module stays import-free for its tests.
+    const fieldMap = (error as { fields?: Record<string, string> } | null)?.fields;
+    if (fieldMap && Object.keys(fieldMap).length) {
+        return {kind: 'fields', message: Object.values(fieldMap)[0], fields: fieldMap as ProfileErrors};
+    }
     const value = error as { status?: number; message?: string; code?: string } | null;
     if (value?.status === 409 && (value.code === 'PHONE_EXISTS' || value.message === 'Phone number already exists in the system')) return {
         kind: 'phone',

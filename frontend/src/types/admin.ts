@@ -1,7 +1,7 @@
-import type {PageResponse, ServicePlan, UserQuota} from '@/types';
+import type {AuditLog, PageResponse, ServicePlan, UserQuota} from '@/types';
 import type {DashboardSummary} from '@/features/dashboard/types/dashboard.types';
 
-export type {PageResponse, ServicePlan, UserQuota, DashboardSummary};
+export type {AuditLog, PageResponse, ServicePlan, UserQuota, DashboardSummary};
 
 export type UserRole = 'ROLE_PILOT' | 'ROLE_COMMANDER' | 'ROLE_OPERATOR' | 'ROLE_ADMIN';
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
@@ -27,6 +27,8 @@ export interface AdminCreateUser {
     phoneNumber: string;
     fullName?: string;
     role: UserRole;
+    /** Checked against password by the backend. */
+    confirmPassword?: string;
 }
 
 export interface BulkActionResult {
@@ -93,17 +95,6 @@ export interface RoleTemplate {
     permissions: PermissionCode[];
 }
 
-export interface AuditLog {
-    id: number;
-    actorUserId: number;
-    actorUsername: string;
-    action: string;
-    entityType: string;
-    entityId: string;
-    details: string;
-    createdAt: string;
-}
-
 export const roles: UserRole[] = ['ROLE_PILOT', 'ROLE_COMMANDER', 'ROLE_OPERATOR', 'ROLE_ADMIN'];
 
 export interface OperationsReportData {
@@ -148,3 +139,6 @@ export interface WebhookDeliveryLogItem {
     isSuccess: boolean;
     retryCount: number;
 }
+
+export type MissionOutcome = 'active' | 'completed' | 'stopped';
+

@@ -4,6 +4,10 @@
  * Tiêu chuẩn kỹ thuật EMVCo QR Code Specification for Payment Systems (Merchant-Presented QR)
  */
 
+import type {VietQrOptions} from '@/features/billing/types/billing.types';
+
+export type {VietQrOptions};
+
 function formatTlv(tag: string, value: string): string {
     const len = value.length.toString().padStart(2, '0');
     return `${tag}${len}${value}`;
@@ -30,13 +34,6 @@ export function calculateCrc16Ccitt(str: string): string {
 
     crc &= 0xffff;
     return crc.toString(16).toUpperCase().padStart(4, '0');
-}
-
-export interface VietQrOptions {
-    bankBin: string; // VD: 970422 (MB Bank), 970415 (VietinBank), 970436 (Vietcombank)
-    accountNumber: string;
-    amount: number;
-    memo: string;
 }
 
 /**

@@ -5,8 +5,8 @@ import type {MissionInput} from "@/types/customer";
 import {LocationPicker} from "@/features/missions/components/customer/LocationPicker";
 import {FlightSpecFields} from "@/features/missions/components/customer/FlightSpecFields";
 import {defaultFlightPlan} from "@/features/missions/types/flight-plan.types";
-import {localDateToday, type MissionFormErrors, missionLimits} from "@/features/missions/forms/mission-form";
-import {RequiredMark} from "@/components/shared/RequiredMark";
+import {type MissionFormErrors} from "@/features/missions/forms/mission-form";
+import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/contexts/I18nContext';
 
 export function MissionFields({form, onChange, errors = {}}: {
@@ -35,25 +35,19 @@ export function MissionFields({form, onChange, errors = {}}: {
     return <>
         <label className={fieldClass}><span>{t('missionForm.title')}<RequiredMark/></span><input className={inputClass} {...attributes('title')}
                                                                                               value={form.title}
-                                                                                              onChange={set('title')}
-                                                                                              required
-                                                                                              maxLength={missionLimits.title}/>{error('title')}
+                                                                                              onChange={set('title')}/>{error('title')}
         </label>
         <label className={fieldClass}><span>{t('missionForm.requestedDate')}<RequiredMark/></span><input className={inputClass} {...attributes('requestedDate')} type="date"
-                                                     value={form.requestedDate} min={localDateToday()}
-                                                     onChange={set('requestedDate')} required/>{error('requestedDate')}
+                                                     value={form.requestedDate}
+                                                     onChange={set('requestedDate')}/>{error('requestedDate')}
         </label>
         <label className={fieldClass}><span>{t('missionForm.start')}<RequiredMark/></span><input className={inputClass} {...attributes('startTime')} type="datetime-local" step="any"
-                                                     value={form.startTime} onChange={set('startTime')}
-                                                     required/>{error('startTime')}</label>
+                                                     value={form.startTime} onChange={set('startTime')}/>{error('startTime')}</label>
         <label className={fieldClass}><span>{t('missionForm.expectedEnd')}<RequiredMark/></span><input className={inputClass} {...attributes('expectedEndTime')} type="datetime-local" step="any"
-                                                     value={form.expectedEndTime} onChange={set('expectedEndTime')}
-                                                     required/>{error('expectedEndTime')}</label>
-        <p className="col-span-full m-0 text-sm text-muted">{t('missionForm.timeHint')}</p>
+                                                     value={form.expectedEndTime} onChange={set('expectedEndTime')}/>{error('expectedEndTime')}</label>
+        <p className="col-span-full m-0 border-l-2 border-primary/40 bg-slate-50 px-3 py-1.5 text-xs text-slate-600">{t('missionForm.timeHint')}</p>
         <label className={fieldClass}><span>{t('missionForm.location')}<RequiredMark/></span><input className={inputClass} {...attributes('locationName')} value={form.locationName}
-                                                     onChange={set('locationName')}
-                                                     maxLength={missionLimits.locationName}
-                                                     required/>{error('locationName')}</label>
+                                                     onChange={set('locationName')}/>{error('locationName')}</label>
         <label className={fieldClass}><span>{t('missionForm.priority')}</span><select className={inputClass} {...attributes('priority')}
                                                                  value={form.priority ?? 'NORMAL'}
                                                                  onChange={set('priority')}>{['LOW', 'NORMAL', 'HIGH', 'URGENT'].map(priority =>
@@ -67,18 +61,16 @@ export function MissionFields({form, onChange, errors = {}}: {
                         })}/>
         {error('latitude')}
         <FlightSpecFields plan={form.flightPlan ?? defaultFlightPlan()} onChange={flightPlan => onChange({...form, flightPlan})}/>
-        <label className={`${fieldClass} col-span-full`}><span>{t('missionForm.description')}</span><textarea className={textareaClass} {...attributes('description')}
+        <label className={fieldClass}><span>{t('missionForm.description')}<OptionalMark/></span><textarea className={textareaClass} {...attributes('description')}
                                                                        value={form.description ?? ''}
                                                                        onChange={set('description')}
-                                                                       maxLength={missionLimits.description}
-                                                                       rows={4}/>{error('description')}<span
-            className="text-sm font-normal text-muted">{t('missionForm.maxChars')}</span></label>
-        <label className={`${fieldClass} col-span-full`}><span>{t('missionForm.notes')}</span><textarea className={textareaClass} {...attributes('notes')}
+                                                                       rows={3}/>{error('description')}<span
+            className="text-xs font-normal text-muted">{t('missionForm.maxChars')}</span></label>
+        <label className={fieldClass}><span>{t('missionForm.notes')}<OptionalMark/></span><textarea className={textareaClass} {...attributes('notes')}
                                                                          value={form.notes ?? ''}
                                                                          onChange={set('notes')}
-                                                                         maxLength={missionLimits.notes}
                                                                          rows={3}/>{error('notes')}<span
-            className="text-sm font-normal text-muted">{t('missionForm.maxChars')}</span></label>
+            className="text-xs font-normal text-muted">{t('missionForm.maxChars')}</span></label>
     </>;
 }
 

@@ -3,25 +3,21 @@
 import 'leaflet/dist/leaflet.css';
 import {useEffect, useRef, useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
-import type {LayerGroup, Map as LeafletMap} from 'leaflet';
+import type {Control, LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
 import {Battery, Gauge, Mountain, Navigation, Radio, Timer} from 'lucide-react';
+import {MapLayerToolbar} from '@/components/shared/MapLayerToolbar';
 import {useI18n} from '@/contexts/I18nContext';
-import {TELEMETRY_POLL_MS, telemetryService} from '@/features/uavs/services/telemetry.service';
+import {TELEMETRY_POLL_MS, telemetryService} from '@/lib/api/services';
+import {calculateHaversineDistance} from '@/features/sar/utils/sarAlgorithms';
 import type {UavTelemetry} from '@/features/uavs/types/telemetry.types';
 import type {Mission} from '@/features/missions/types/mission.types';
+import {formatTelemetryNumber} from '@/lib/format';
+import {MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
 
 const LIVE_STATUSES = ['READY', 'IN_PROGRESS'];
 // Leaflet styles vectors through options, so the theme colours are spelled out here.
 const C = {red: '#ab2523', blue: '#004ac6', muted: '#94a3b8'};
-
-function distanceMeters(a: [number, number], b: [number, number]) {
-    const rad = Math.PI / 180;
-    const dLat = (b[0] - a[0]) * rad;
-    const dLng = (b[1] - a[1]) * rad;
-    const h = Math.sin(dLat / 2) ** 2 + Math.cos(a[0] * rad) * Math.cos(b[0] * rad) * Math.sin(dLng / 2) ** 2;
-    return 2 * 6371000 * Math.asin(Math.sqrt(h));
-}
 
 /** The customer's view of the flight: planned area, the assigned UAV's live position and its reported values. */
 export function MissionMonitoring({mission}: { mission: Mission }) {
@@ -40,8 +36,10 @@ export function MissionMonitoring({mission}: { mission: Mission }) {
     const plan = mission.flightPlan ?? null;
     const center: [number, number] | null = plan ? [plan.centerLatitude, plan.centerLongitude]
         : mission.latitude != null && mission.longitude != null ? [mission.latitude, mission.longitude] : null;
-    const toArea = ownFix && center ? distanceMeters([ownFix.latitude, ownFix.longitude], center) : null;
-    const num = (v: number | null | undefined, digits = 1) => v == null ? '—' : formatNumber(Math.round(v * 10 ** digits) / 10 ** digits);
+    const toArea = ownFix && center
+        ? calculateHaversineDistance({lat: ownFix.latitude, lng: ownFix.longitude}, {lat: center[0], lng: center[1]})
+        : null;
+    const num = (v: number | null | undefined, digits = 1) => formatTelemetryNumber(v, formatNumber, digits);
 
     const notice = mission.uavId == null ? t('missionMonitor.noUav')
         : !live && !['COMPLETED', 'FAILED'].includes(mission.status) ? t('missionMonitor.beforeFlight')
@@ -91,10 +89,13 @@ export function MissionMonitoring({mission}: { mission: Mission }) {
 
 function FlightMap({mission, fix, center}: { mission: Mission; fix: UavTelemetry | null; center: [number, number] | null }) {
     const {t} = useI18n();
+    const {config, basemap, setBasemap} = useMapConfig();
     const container = useRef<HTMLDivElement | null>(null);
     const map = useRef<LeafletMap | null>(null);
+    const tiles = useRef<TileLayer | null>(null);
     const planLayer = useRef<LayerGroup | null>(null);
     const uavLayer = useRef<LayerGroup | null>(null);
+    const scaleControl = useRef<Control.Scale | null>(null);
     const leaflet = useRef<typeof import('leaflet') | null>(null);
     const [ready, setReady] = useState(false);
     const plan = mission.flightPlan ?? null;
@@ -106,19 +107,34 @@ function FlightMap({mission, fix, center}: { mission: Mission; fix: UavTelemetry
             if (disposed || !container.current || map.current) return;
             leaflet.current = L;
             map.current = L.map(container.current, {scrollWheelZoom: false}).setView(center, 15);
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19, attribution: '&copy; OpenStreetMap'}).addTo(map.current);
             planLayer.current = L.layerGroup().addTo(map.current);
             uavLayer.current = L.layerGroup().addTo(map.current);
             setReady(true);
         });
         return () => {
             disposed = true;
+            scaleControl.current = null;
+            tiles.current = null;
             map.current?.remove();
             map.current = null;
         };
         // One map per mission view; layers below follow the data.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [center == null]);
+
+    useEffect(() => {
+        const L = leaflet.current;
+        if (!ready || !L || !map.current) return;
+        tiles.current?.remove();
+        const spec = MAP_BASEMAPS[basemap];
+        tiles.current = L.tileLayer(spec.url, {maxZoom: spec.maxZoom, attribution: spec.attribution}).addTo(map.current);
+    }, [ready, basemap]);
+
+    useEffect(() => {
+        const L = leaflet.current;
+        if (!ready || !L || !map.current) return;
+        syncScaleControl(L, map.current, scaleControl, config.showScaleBar);
+    }, [ready, config.showScaleBar]);
 
     useEffect(() => {
         const L = leaflet.current;
@@ -157,8 +173,17 @@ function FlightMap({mission, fix, center}: { mission: Mission; fix: UavTelemetry
     }, [ready, fix, t]);
 
     if (!center) return <p className="m-0 rounded-panel border border-dashed border-border px-4 py-8 text-center text-sm text-muted">{t('missionMonitor.noLocation')}</p>;
-    return <div ref={container} className="relative z-0 h-[340px] overflow-hidden rounded-panel border border-border" role="application"
-                aria-label={t('missionMonitor.mapAria', {code: mission.code})}/>;
+    return (
+        <div className="relative isolate h-[360px] overflow-hidden rounded-panel border border-border">
+            <MapLayerToolbar
+                variant="overlay"
+                basemap={basemap}
+                onBasemapChange={setBasemap}
+                onResetView={() => map.current?.setView(center, 15)}
+            />
+            <div ref={container} className="z-0 h-full w-full" role="application" aria-label={t('missionMonitor.mapAria', {code: mission.code})}/>
+        </div>
+    );
 }
 
 function Stat({icon, label, value, hint, tone}: { icon: React.ReactNode; label: string; value: string; hint?: string; tone?: string }) {

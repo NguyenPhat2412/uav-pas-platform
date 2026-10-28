@@ -3,15 +3,15 @@ import {useEffect, useState} from 'react';
 import {Plus} from 'lucide-react';
 import {Button, Input, StatusBadge} from '@/components/ui';
 import {useAuth} from '@/contexts/AuthContext';
-import {useOperationMutation, useStation} from "@/hooks/useOperations";
-import {useCollection} from "@/hooks/useCollections";
+import {useOperationMutation, useStation} from '@/lib/query/operations';
+import {useCollection} from '@/lib/query/operations';
 import {operationsService} from "@/lib/api/resources";
 import {DataTable, options} from '@/components/data/DataTable';
 import {Drawer, Metadata, Tabs} from '@/components/data/Drawer';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {SectionHeading} from '@/components/layout/PageHeader';
 import type {Station} from "@/types/resources";
-import {RequiredMark} from "@/components/shared/RequiredMark";
+import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {resolveStationIdFromParam, toStationSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
 
@@ -99,23 +99,21 @@ export function StationPanel() {
             }}>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="station-code">{t('opsAssets.station.code')}<RequiredMark/></label><Input id="station-code"
-                                                                                                    required
-                                                                                                    maxLength={40}
+                                                                                                    aria-required
                                                                                                     value={form.code}
                                                                                                     onChange={e => setForm({
                                                                                                         ...form,
                                                                                                         code: e.target.value
                                                                                                     })}/></div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="station-name">{t('opsAssets.station.name')}<RequiredMark/></label><Input id="station-name"
-                                                                                                     required
-                                                                                                     maxLength={120}
+                                                                                                     aria-required
                                                                                                      value={form.name}
                                                                                                      onChange={e => setForm({
                                                                                                          ...form,
                                                                                                          name: e.target.value
                                                                                                      })}/></div>
-                    <div className="col-span-full flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="station-address">{t('opsAssets.station.address')}</label><Input
-                        id="station-address" maxLength={255} value={form.address}
+                    <div className="col-span-full flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="station-address">{t('opsAssets.station.address')}<OptionalMark/></label><Input
+                        id="station-address" value={form.address}
                         onChange={e => setForm({...form, address: e.target.value})}/></div>
                 </div>
                 <div className="mt-6 flex flex-wrap justify-end"><Button size="sm" type="submit" isLoading={create.isPending}>{t('opsAssets.station.create')}</Button></div>

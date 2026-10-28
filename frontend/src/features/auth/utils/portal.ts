@@ -1,12 +1,13 @@
 import {portalLabel} from '@/components/shared/presentation';
+import type {Portal} from '@/features/auth/types/auth.types';
 
-export type Portal = 'admin' | 'operations' | 'customer';
+export type {Portal};
 
 // ROLE_PILOT is the self-registration default and carries the customer permission set.
 const portalRoles: Record<Portal, readonly string[]> = {
     admin: ['ROLE_ADMIN'],
     operations: ['ROLE_ADMIN', 'ROLE_COMMANDER', 'ROLE_OPERATOR'],
-    customer: ['ROLE_PILOT'],
+    customer: ['ROLE_ADMIN', 'ROLE_COMMANDER', 'ROLE_OPERATOR', 'ROLE_PILOT'],
 };
 
 const portalHomes: Record<Portal, string> = {
@@ -33,6 +34,11 @@ export function resolveLegacyOperationsTab(tab?: string): string {
 
 export function canUsePortal(role: string | null | undefined, portal: Portal): boolean {
     return !!role && portalRoles[portal].includes(role);
+}
+
+export function availablePortalsForRole(role: string | null | undefined): Portal[] {
+    const order: Portal[] = ['admin', 'operations', 'customer'];
+    return order.filter(portal => canUsePortal(role, portal));
 }
 
 export function portalForRole(role: string | null | undefined): Portal {

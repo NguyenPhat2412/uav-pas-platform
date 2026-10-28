@@ -1,20 +1,8 @@
-import React, {HTMLAttributes} from 'react';
+import React from 'react';
 import {cn} from '@/lib/utils';
+import type {BadgeProps} from '@/types/ui';
 
-export interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
-    variant?:
-        | 'default'
-        | 'primary'
-        | 'secondary'
-        | 'success'
-        | 'warning'
-        | 'error'
-        | 'outline'
-        | 'telemetry';
-    size?: 'sm' | 'md';
-    icon?: React.ReactNode;
-    pulse?: boolean;
-}
+export type {BadgeProps};
 
 export const Badge: React.FC<BadgeProps> = ({
                                                 className,

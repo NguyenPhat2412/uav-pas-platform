@@ -7,7 +7,7 @@ import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
 import {RequiredMark} from '@/components/shared/RequiredMark';
-import {profileService} from '@/features/profile/services/profile.service';
+import {profileService} from '@/lib/api/services';
 
 export function PasswordChangeCard() {
     const {logout} = useAuth();
@@ -18,12 +18,10 @@ export function PasswordChangeCard() {
     const [error, setError] = useState('');
     const [done, setDone] = useState(false);
     const change = useMutation({
-        mutationFn: () => profileService.changePassword(current, next),
+        mutationFn: () => profileService.changePassword(current, next, confirm),
     });
     const submit = async (e: FormEvent) => {
         e.preventDefault();
-        if (next.length < 8) return setError(t('admin.profile.password.tooShort'));
-        if (next !== confirm) return setError(t('admin.profile.password.mismatch'));
         setError('');
         try {
             await change.mutateAsync();
@@ -49,12 +47,12 @@ export function PasswordChangeCard() {
                 <LogOut size={15} aria-hidden="true"/>{t('admin.profile.password.signInAgain')}</button>
         </div> : <form className="space-y-4 p-5" onSubmit={e => void submit(e)} noValidate>
             <label className="block text-[13px] font-semibold text-slate-600">{t('admin.profile.password.current')}<RequiredMark/>
-                <input type="password" required autoComplete="current-password" value={current} onChange={e => setCurrent(e.target.value)} className={field}/></label>
+                <input type="password" aria-required autoComplete="current-password" value={current} onChange={e => setCurrent(e.target.value)} className={field}/></label>
             <label className="block text-[13px] font-semibold text-slate-600">{t('admin.profile.password.new')}<RequiredMark/>
-                <input type="password" required minLength={8} maxLength={100} autoComplete="new-password" value={next}
+                <input type="password" aria-required autoComplete="new-password" value={next}
                        onChange={e => setNext(e.target.value)} className={field}/></label>
             <label className="block text-[13px] font-semibold text-slate-600">{t('admin.profile.password.confirm')}<RequiredMark/>
-                <input type="password" required minLength={8} maxLength={100} autoComplete="new-password" value={confirm}
+                <input type="password" aria-required autoComplete="new-password" value={confirm}
                        onChange={e => setConfirm(e.target.value)} className={field}/></label>
             <p className="text-xs text-slate-500">{t('admin.profile.password.hint')}</p>
             {error && <p role="alert" className="border-l-[3px] border-l-red-600 bg-red-50 px-3 py-2 text-[13px] text-red-800">{error}</p>}

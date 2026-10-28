@@ -5,9 +5,8 @@ import {Avatar} from '@/components/shared/Avatar';
 import {Button, Panel} from '@/components/customer/ui';
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
-import {AVATAR_TYPES, avatarFileError, avatarService} from '@/features/profile/services/avatar.service';
-
-type Status = { kind: 'error' | 'success'; key: string } | null;
+import {AVATAR_TYPES, avatarFileError, avatarService} from '@/lib/api/services';
+import type {AvatarUploadStatus as Status} from '@/features/profile/types/profile.types';
 
 /** Upload, replace or remove the signed-in user's avatar; the account refreshes so every avatar updates. */
 export function AvatarEditor({name}: { name: string }) {
@@ -43,9 +42,9 @@ export function AvatarEditor({name}: { name: string }) {
         void run('upload', () => avatarService.upload(file), 'avatar.saved');
     };
 
-    return <Panel title={t('avatar.title')}>
-        <div className="flex flex-wrap items-center gap-5">
-            <Avatar name={name} avatarUrl={user?.avatarUrl} size={88} className="ring-4 ring-primary/10"/>
+    return <Panel title={t('avatar.title')} className="h-full border-0">
+        <div className="flex flex-wrap items-center gap-4">
+            <Avatar name={name} avatarUrl={user?.avatarUrl} size={72} className="ring-4 ring-primary/10"/>
             <div className="grid min-w-0 flex-1 gap-3">
                 <p className="m-0 text-[13px] text-slate-500">{t('avatar.hint')}</p>
                 <div className="flex flex-wrap gap-2.5">

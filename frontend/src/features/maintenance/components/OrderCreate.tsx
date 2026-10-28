@@ -6,8 +6,8 @@ import type {Uav} from "@/types/resources";
 import type {MaintenanceSchedule, RepairOrder} from "@/features/maintenance/types/maintenance.types";
 import {OrderFieldsForm, UavField} from "@/features/maintenance/components/Fields";
 import {ActionFeedback, useMaintenanceAction} from "@/features/maintenance/components/Feedback";
-import {businessToday, orderInput, positiveId} from "@/features/maintenance/utils/workflows";
-import {maintenanceService as service} from "@/features/maintenance/services/maintenance.service";
+import {businessToday, positiveId} from "@/features/maintenance/utils/workflows";
+import {maintenanceService as service} from '@/lib/api/services';
 import {useI18n} from '@/contexts/I18nContext';
 
 export function OrderCreate({schedule, uavId: initialUavId, uavs, canRead, onClose, onCreated, refresh}: {
@@ -33,13 +33,6 @@ export function OrderCreate({schedule, uavId: initialUavId, uavs, canRead, onClo
     }}>
         <form className="space-y-4" onSubmit={event => {
             event.preventDefault();
-            try {
-                positiveId(uavId, t);
-                orderInput(fields, t);
-            } catch (error) {
-                action.setError(error instanceof Error ? error.message : t('opsAssets.maintenance.invalidInput'));
-                return;
-            }
             let created: RepairOrder | undefined;
             void action.run(async () => {
                 created = await service.createOrder(positiveId(uavId), fields, schedule?.id);

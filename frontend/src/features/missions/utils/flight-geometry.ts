@@ -1,13 +1,10 @@
 import type {FlightPlanInput} from '@/features/missions/types/flight-plan.types';
+import type {FlightGeometry} from '@/features/missions/types/mission.types';
+
+export type {FlightGeometry};
 
 const EARTH_RADIUS_M = 6_371_008.8;
 const rad = (deg: number) => deg * Math.PI / 180;
-
-export interface FlightGeometry {
-    center: [number, number] | null;
-    areaSquareMeters: number | null;
-    perimeterMeters: number | null;
-}
 
 /**
  * Same local equirectangular approximation the backend uses, so the planner shows the figures that will be saved.

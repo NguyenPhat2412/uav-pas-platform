@@ -4,24 +4,14 @@
  * Áp dụng theo tiêu chuẩn hướng dẫn IAMSAR (International Aeronautical and Maritime Search and Rescue)
  */
 
-export interface LatLng {
-    lat: number;
-    lng: number;
-}
+import type {
+    GeofenceViolationResult,
+    LatLng,
+    RthCalculation,
+    Waypoint,
+} from '@/features/sar/types/sar.types';
 
-export interface Waypoint extends LatLng {
-    id: string;
-    order: number;
-    altMeters: number;
-    speedMps: number;
-    legDistanceMeters?: number;
-}
-
-export interface GeofenceViolationResult {
-    isInside: boolean;
-    distanceToBoundaryMeters: number;
-    closestPointOnBoundary: LatLng;
-}
+export type {GeofenceViolationResult, LatLng, RthCalculation, Waypoint};
 
 const EARTH_RADIUS_METERS = 6371000; // WGS-84 mean radius
 
@@ -151,14 +141,6 @@ export function isPointInsideGeofence(point: LatLng, polygon: LatLng[]): boolean
  * 4. THUẬT TOÁN DỰ BÁO TIÊU HAO NĂNG LƯỢNG & RTH AN TOÀN (Battery Return-to-Home Predictor)
  * Tính toán xem UAV còn đủ pin để bay trở về trạm xuất phát (Home Station) hay không.
  */
-export interface RthCalculation {
-    distanceHomeMeters: number;
-    flightTimeRequiredSeconds: number;
-    batteryRequiredPercent: number;
-    isSafeToContinue: boolean;
-    recommendedAction: 'CONTINUE_MISSION' | 'WARNING_PREPARE_RTH' | 'CRITICAL_IMMEDIATE_RTH';
-}
-
 export function calculateRthFeasibility(
     currentPos: LatLng,
     homeStation: LatLng,

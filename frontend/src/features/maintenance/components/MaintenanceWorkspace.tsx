@@ -6,9 +6,9 @@ import {Button} from '@/components/ui';
 import {Drawer, Tabs} from '@/components/data/Drawer';
 import {EmptyState, LoadingRows} from '@/components/data/WorkspaceState';
 import {useAuth} from '@/contexts/AuthContext';
-import {useCollection} from "@/hooks/useCollections";
+import {useCollection} from '@/lib/query/operations';
 import {Pagination} from "@/components/data/ResourceState";
-import {maintenanceService as service} from "@/features/maintenance/services/maintenance.service";
+import {maintenanceService as service} from '@/lib/api/services';
 import type {MaintenanceSchedule} from "@/features/maintenance/types/maintenance.types";
 import {ActionFeedback, Feedback, maintenanceError, useMaintenanceAction} from "@/features/maintenance/components/Feedback";
 import {calendarDate, dueLabels, formatVnd, orderLabels, pageAfterRefresh} from "@/features/maintenance/utils/workflows";
@@ -121,7 +121,7 @@ export function MaintenanceWorkspace() {
         {query.error ? <div className="space-y-3"><Feedback error={maintenanceError(query.error, t)}/><Button type="button"
                                                                                                            variant="outline"
                                                                                                            onClick={() => void query.refetch()}>{t('opsAssets.maintenance.workspace.reloadList')}</Button></div> : query.isPending ? <LoadingRows/> : <>
-            <p className="text-sm text-slate-500"
+            <p className="m-0 border-b border-border px-4 py-2 text-xs font-medium text-muted"
                role="status">{t(tab === 'schedules' ? 'opsAssets.maintenance.workspace.countSchedules' : 'opsAssets.maintenance.workspace.countOrders', {count: query.data?.totalElements || 0})}{query.isFetching ? t('opsAssets.maintenance.workspace.updating') : ''}</p>
             {tab === 'schedules' ? <section aria-label={t('opsAssets.maintenance.workspace.scheduleList')} className="space-y-3">
                 {schedules.data?.content.length ? <div className={tableWrap} tabIndex={0} aria-label={t('opsAssets.maintenance.workspace.scheduleList')}>

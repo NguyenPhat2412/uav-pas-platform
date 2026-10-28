@@ -1,6 +1,7 @@
 'use client';
 import {useI18n} from '@/contexts/I18nContext';
 import {cn} from '@/lib/utils';
+import {OptionalMark} from '@/components/shared/RequiredMark';
 import {flightAltitudes, flightGsdOptions, flightSensors, type FlightPlanInput, type FlightSensor} from '@/features/missions/types/flight-plan.types';
 
 /** Professional flight parameters stored with the plan: altitude, GSD, image overlap, payload and site safety. */
@@ -48,8 +49,8 @@ export function FlightSpecFields({plan, onChange}: { plan: FlightPlanInput; onCh
                 </label>)}
             </div>
         </fieldset>
-        <label className={cn(label, 'col-span-full')}><span>{t('flightSpec.obstacles')}</span>
-            <textarea className={cn(input, 'min-h-24 resize-y')} maxLength={1000} rows={3} value={plan.obstacles ?? ''}
+        <label className={cn(label, 'col-span-full')}><span>{t('flightSpec.obstacles')}<OptionalMark/></span>
+            <textarea className={cn(input, 'min-h-24 resize-y')} rows={3} value={plan.obstacles ?? ''}
                       placeholder={t('flightSpec.obstaclesPlaceholder')} onChange={e => set('obstacles', e.target.value)}/></label>
         <label className="col-span-full flex items-start gap-2.5 border border-border-input bg-card p-3 text-sm">
             <input type="checkbox" className="mt-0.5 accent-primary" checked={plan.permitSupport} onChange={e => set('permitSupport', e.target.checked)}/>

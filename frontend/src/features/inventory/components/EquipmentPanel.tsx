@@ -2,15 +2,15 @@
 import {useRef, useState} from 'react';
 import {Button, Input} from '@/components/ui';
 import {useAuth} from '@/contexts/AuthContext';
-import {useInventoryHistory, useOperationMutation} from "@/hooks/useOperations";
-import {useCollection} from "@/hooks/useCollections";
+import {useInventoryHistory, useOperationMutation} from '@/lib/query/operations';
+import {useCollection} from '@/lib/query/operations';
 import {operationsService} from "@/lib/api/resources";
 import {DataTable, options} from '@/components/data/DataTable';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from "@/components/data/ResourceState";
 import {displayLabel, formatDate} from "@/components/shared/presentation";
 import type {Equipment} from "@/types/resources";
-import {RequiredMark} from "@/components/shared/RequiredMark";
+import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/contexts/I18nContext';
 
 export function EquipmentPanel() {
@@ -71,7 +71,7 @@ export function EquipmentPanel() {
             }}>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-name">{t('opsAssets.equipment.name')}<RequiredMark/></label><Input
-                        id="equipment-name" required maxLength={100} value={form.name}
+                        id="equipment-name" aria-required value={form.name}
                         onChange={event => setForm({...form, name: event.target.value})}/></div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-type">{t('opsAssets.equipment.type')}</label><select id="equipment-type"
                                                                                                      className="min-h-11 w-full min-w-0 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm"
@@ -81,12 +81,12 @@ export function EquipmentPanel() {
                                                                                                          type: event.target.value
                                                                                                      })}>{['BATTERY', 'CAMERA', 'KV260', 'SENSOR', 'ACCESSORY'].map(type =>
                         <option key={type}>{type}</option>)}</select></div>
-                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-serial">{t('opsAssets.equipment.serial')}</label><Input
-                        id="equipment-serial" maxLength={100} value={form.serialNumber}
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-serial">{t('opsAssets.equipment.serial')}<OptionalMark/></label><Input
+                        id="equipment-serial" value={form.serialNumber}
                         onChange={event => setForm({...form, serialNumber: event.target.value})}/></div>
                 </div>
                 {can('STATION_READ') &&
-                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-station">{t('opsAssets.equipment.storageStation')}</label><select id="equipment-station"
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-station">{t('opsAssets.equipment.storageStation')}<OptionalMark/></label><select id="equipment-station"
                                              className="min-h-11 w-full min-w-0 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm"
                                              disabled={create.isPending || stations.isPending || !!stations.error}
                                              value={form.stationId}
@@ -121,7 +121,7 @@ export function EquipmentPanel() {
             }}><h3 className="mb-3 text-sm font-semibold text-slate-800">{t('opsAssets.equipment.movementTitle')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-equipment">{t('opsAssets.equipment.equipment')}<RequiredMark/></label><select
-                        id="movement-equipment" className="min-h-11 w-full min-w-0 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm" required value={movement.id}
+                        id="movement-equipment" className="min-h-11 w-full min-w-0 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm" aria-required value={movement.id}
                         onChange={event => setMovement({...movement, id: event.target.value})}>
                         <option value="">{t('opsAssets.equipment.selectEquipment')}</option>
                         {rows.map(item => <option key={item.id} value={item.id}>{item.name} · #{item.id}</option>)}
@@ -135,10 +135,9 @@ export function EquipmentPanel() {
                                 disabled={value === 'transfer' && !can('STATION_READ')}>{label}</option>)}</select>
                     </div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-quantity">{t('opsAssets.equipment.quantity')}<RequiredMark/></label><Input
-                        id="movement-quantity" required type="number" min={1} step={1} value={movement.quantity}
+                        id="movement-quantity" aria-required type="number" step={1} value={movement.quantity}
                         onChange={event => setMovement({...movement, quantity: event.target.value})}/></div>
-                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-note">{t('opsAssets.equipment.note')}</label><Input id="movement-note"
-                                                                                                     maxLength={255}
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-note">{t('opsAssets.equipment.note')}<OptionalMark/></label><Input id="movement-note"
                                                                                                      value={movement.note}
                                                                                                      onChange={event => setMovement({
                                                                                                          ...movement,
@@ -148,7 +147,7 @@ export function EquipmentPanel() {
                 {movement.action === 'transfer' &&
                     <div className="mt-3 flex max-w-sm flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-station">{t('opsAssets.equipment.targetStation')}<RequiredMark/></label><select
                         id="movement-station" className="min-h-11 w-full min-w-0 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm" disabled={stations.isPending || !!stations.error || move.isPending}
-                        required value={movement.stationId}
+                        aria-required value={movement.stationId}
                         onChange={event => setMovement({...movement, stationId: event.target.value})}>
                         <option value="">{t('opsAssets.equipment.selectTargetStation')}</option>
                         {stations.data?.filter(station => station.status === 'ACTIVE').map(station => <option

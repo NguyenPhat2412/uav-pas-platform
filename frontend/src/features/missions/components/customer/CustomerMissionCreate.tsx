@@ -18,8 +18,8 @@ import {
     type MissionFormErrors,
     missionTypeForService,
     missionTypes,
-    missionUpdatePayload,
-    validateMissionForm
+    missionFieldErrors,
+    missionUpdatePayload
 } from "@/features/missions/forms/mission-form";
 import type {MissionInput, MissionType} from "@/types/customer";
 import {RequiredMark} from "@/components/shared/RequiredMark";
@@ -69,21 +69,28 @@ function CreateMission() {
         serviceId: resolvedServiceId,
         missionType: missionTypeOverride ?? missionTypeForService(selectedService?.code, formValues.missionType)
     };
-    const validate = () => {
-        const nextErrors = validateMissionForm(form, undefined, t);
-        if (form.serviceId != null && !selectedService) nextErrors.serviceId = t('missionCreate.serviceUnavailable');
-        setErrors(nextErrors);
-        if (Object.keys(nextErrors).length) {
-            setStep(1);
-            focusMissionErrors();
-            return false;
-        }
+    const payload = () => ({...missionUpdatePayload(form), missionType: form.missionType, serviceId: form.serviceId});
+    /** Puts the backend's field errors on the form and returns to step 1; false when the error was not about fields. */
+    const showFieldErrors = (err: unknown) => {
+        const fields = missionFieldErrors(err);
+        if (!fields) return false;
+        setErrors(fields);
+        setStep(1);
+        focusMissionErrors();
         return true;
     };
     const review = async () => {
         setError('');
-        if (!validate()) return;
+        setErrors({});
         setChecking(true);
+        try {
+            // The server checks every rule; the form itself does not repeat them.
+            await customerService.validateMission(payload());
+        } catch (err) {
+            if (!showFieldErrors(err)) setError(missionFormError(err, t));
+            setChecking(false);
+            return;
+        }
         try {
             if (can('MISSION_VIEW')) {
                 const result = await customerService.availability(form.startTime, form.expectedEndTime);
@@ -100,25 +107,22 @@ function CreateMission() {
     const busy = actions.create.isPending || actions.submit.isPending;
     const submit = async (sendNow: boolean) => {
         setError('');
-        if (!validate()) return;
         try {
-            const mission = await actions.create.mutateAsync({
-                ...missionUpdatePayload(form),
-                missionType: form.missionType,
-                serviceId: form.serviceId
-            });
+            const mission = await actions.create.mutateAsync(payload());
             // A failed send still leaves a saved draft; the detail page offers "Gửi xác nhận" again.
             if (sendNow) await actions.submit.mutateAsync(mission.id).catch(() => undefined);
             router.replace(`/customer/missions/${mission.id}`);
         } catch (err) {
-            setError(missionFormError(err, t));
+            if (!showFieldErrors(err)) setError(missionFormError(err, t));
         }
     };
     const fieldClass = 'grid gap-1.5 text-xs font-bold text-foreground';
     const selectClass = 'min-h-11 w-full rounded-control border border-border-input bg-card px-3 py-2 text-base font-normal text-foreground sm:text-sm aria-[invalid=true]:border-danger';
-    return <>
-        <Link href="/customer/missions" className="inline-flex min-h-11 w-fit items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('missionCreate.back')}</Link>
-        <Panel title={step === 1 ? t('missionCreate.step1') : t('missionCreate.step2')}>
+    return <div className="flex flex-1 flex-col bg-white">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/70 px-4 py-2.5">
+            <Link href="/customer/missions" className="inline-flex min-h-8 w-fit items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('missionCreate.back')}</Link>
+        </div>
+        <Panel title={step === 1 ? t('missionCreate.step1') : t('missionCreate.step2')} className="flex-1 border-0">
             {error &&
                 <div className="mb-5 rounded-panel bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline" role="alert">{error} <Link href="/customer/missions">{t('missionCreate.viewMissions')}</Link></div>}
             {step === 1 ? <form onSubmit={event => {
@@ -160,7 +164,7 @@ function CreateMission() {
                         </select>{errors.serviceId &&
                             <span className="text-sm font-normal leading-normal text-danger" id="mission-serviceId-error">{errors.serviceId}</span>}
                         </label>
-                        <label className={fieldClass}><span>{t('missions.type')}<RequiredMark/></span><select id="mission-missionType" required
+                        <label className={fieldClass}><span>{t('missions.type')}<RequiredMark/></span><select id="mission-missionType" aria-required
                                                                                    className={selectClass}
                                                                                    value={form.missionType}
                                                                                    onChange={event => setMissionTypeOverride(event.target.value as MissionType)}>{missionTypes.map(type =>
@@ -172,7 +176,7 @@ function CreateMission() {
                     </div>
                 </fieldset>
             </form> : <>
-                <dl className="m-0 grid grid-cols-1 gap-4 sm:grid-cols-2 [&_dt]:text-xs [&_dt]:text-muted [&_dd]:m-0 [&_dd]:mt-1 [&_dd]:whitespace-pre-wrap [&_dd]:break-words [&_dd]:text-sm [&_dd]:font-medium [&_dd]:text-foreground">
+                <dl className="m-0 grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:grid-cols-4 [&>div]:bg-white [&>div]:p-3.5 [&_dt]:text-xs [&_dt]:text-muted [&_dd]:m-0 [&_dd]:mt-1 [&_dd]:whitespace-pre-wrap [&_dd]:break-words [&_dd]:text-sm [&_dd]:font-semibold [&_dd]:text-foreground">
                     <div>
                         <dt>{t('missionForm.title')}</dt>
                         <dd>{form.title.trim()}</dd>
@@ -205,10 +209,10 @@ function CreateMission() {
                         <dt>{t('missionCreate.coordinates')}</dt>
                         <dd>{t('missionCreate.coordinatesValue', {lat: form.latitude ?? t('missionCreate.notEntered'), lng: form.longitude ?? t('missionCreate.notEntered')})}</dd>
                     </div>
-                    {form.description && <div className="sm:col-span-2">
+                    {form.description && <div className="sm:col-span-2 lg:col-span-4">
                         <dt>{t('missionForm.description')}</dt>
                         <dd>{form.description}</dd>
-                    </div>}{form.notes && <div className="sm:col-span-2">
+                    </div>}{form.notes && <div className="sm:col-span-2 lg:col-span-4">
                     <dt>{t('missionForm.notes')}</dt>
                     <dd>{form.notes}</dd>
                 </div>}
@@ -223,5 +227,5 @@ function CreateMission() {
                 </div>
             </>}
         </Panel>
-    </>;
+    </div>;
 }

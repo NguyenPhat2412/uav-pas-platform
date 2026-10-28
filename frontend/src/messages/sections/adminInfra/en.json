@@ -1,0 +1,288 @@
+{
+  "adminInfra": {
+    "title": "Infrastructure",
+    "pages": {
+      "overview": "Infrastructure overview",
+      "deployment": "Deployment",
+      "backups": "Backups",
+      "storage": "File storage",
+      "database": "Database",
+      "email": "Email"
+    },
+    "nav": {
+      "overview": "Overview",
+      "deployment": "Deployment",
+      "backups": "Backups",
+      "storage": "Storage",
+      "database": "Database",
+      "email": "Email",
+      "health": "System health"
+    },
+    "common": {
+      "checkedAt": "Checked at {time}",
+      "refresh": "Refresh",
+      "yes": "Yes",
+      "no": "No",
+      "error": "Error",
+      "notConfigured": "Not configured",
+      "durationDays": "{days} d {hours} h",
+      "durationHours": "{hours} h {minutes} min"
+    },
+    "deployment": {
+      "note": "Version, commit and build time are stamped when the image is built (DEPLOY.md section 8). This page is read-only; redeploys are done over SSH.",
+      "banner": "Running version {version}",
+      "bannerDetail": "Commit {commit} · Flyway schema {flyway}",
+      "failedMigrations": "{count} failed migration(s): the backend may not restart. Check the logs now.",
+      "build": "Build",
+      "runtime": "Runtime",
+      "unknownBuildHint": "This image was built without version info. Use the build command in DEPLOY.md section 8 to show the commit and build time.",
+      "version": "Version",
+      "commit": "Commit",
+      "buildTime": "Build time",
+      "profiles": "Spring profiles",
+      "defaultProfile": "default",
+      "java": "Java",
+      "startedAt": "Started at",
+      "uptime": "Uptime",
+      "timeZone": "Server time zone",
+      "publicUrl": "Public URL",
+      "migrations": "Migration history ({count})",
+      "noMigrations": "Flyway history could not be read.",
+      "colVersion": "Version",
+      "colDescription": "Description",
+      "colInstalled": "Applied at",
+      "colDuration": "Duration",
+      "colResult": "Result",
+      "ok": "Success",
+      "failed": "Failed"
+    },
+    "tls": {
+      "title": "HTTPS certificate",
+      "status": {
+        "OK": "Valid",
+        "EXPIRING": "Expiring soon",
+        "EXPIRED": "Expired",
+        "NOT_HTTPS": "Not HTTPS",
+        "NOT_CONFIGURED": "Not configured",
+        "UNREACHABLE": "Unreachable"
+      },
+      "hint": {
+        "OK": "Checked hourly at the public URL. With the Cloudflare proxy on, this is Cloudflare's certificate; check the VPS certbot certificate with `certbot certificates`.",
+        "EXPIRING": "Less than 14 days left. On the VPS run `certbot renew --dry-run` and check the certbot timer (DEPLOY.md 10.3).",
+        "EXPIRED": "The certificate has expired and browsers will block the site. Renew it over SSH with certbot now.",
+        "NOT_HTTPS": "APP_PUBLIC_URL is not https, so there is no certificate to check (normal locally).",
+        "NOT_CONFIGURED": "APP_PUBLIC_URL is not set for the backend.",
+        "UNREACHABLE": "The backend could not complete a TLS handshake with the public URL (DNS, firewall or nginx). Retried in 10 minutes."
+      },
+      "notAfter": "Expires at",
+      "daysLeft": "Days left",
+      "issuer": "Issuer",
+      "trusted": "Trusted",
+      "checkedAt": "Checked at"
+    },
+    "backups": {
+      "note": "Read from the backup folder mounted read-only into the backend. The app cannot create, delete or restore backups.",
+      "status": {
+        "OK": "Backups are current",
+        "STALE": "Backups are overdue",
+        "MISSING": "No backups found",
+        "NOT_CONFIGURED": "Backup folder not configured"
+      },
+      "hint": {
+        "OK": "The latest backup is newer than {hours} hours.",
+        "STALE": "The last successful backup is older than {hours} hours. Check the cron job /etc/cron.daily/uav-pas-backup on the VPS.",
+        "MISSING": "The folder has no *.sql.gz files or is not mounted into the container. See DEPLOY.md sections 9 and 10.4.",
+        "NOT_CONFIGURED": "APP_BACKUP_DIR is not set (normal locally)."
+      },
+      "lastSuccess": "Last success",
+      "hoursAgo": "{hours} h ago",
+      "fileCount": "Copies on the VPS",
+      "totalSize": "Total size",
+      "staleAfter": "Overdue after",
+      "hours": "{hours} h",
+      "files": "Backups on the VPS",
+      "noFiles": "No backup files yet.",
+      "colName": "File",
+      "colSize": "Size",
+      "colModified": "Time",
+      "offsite": "Off-site copy",
+      "offsiteUnknown": "Not visible to the app",
+      "offsiteTarget": "Location",
+      "offsiteHint": "The app has no access to the backup bucket. Check Cloudflare R2 (bucket uavpas-backups) or run `rclone ls r2backup:uavpas-backups/db/` on the VPS.",
+      "restore": "Restore",
+      "restoreHint": "Restores are done over SSH only, first into a scratch database (DEPLOY.md 9.4). There is no restore button here, so a misclick or a hijacked admin account cannot overwrite live data."
+    },
+    "storage": {
+      "note": "Endpoint, bucket name and access keys are never shown. Bucket figures are cached for 10 minutes.",
+      "reachable": {
+        "UP": "{provider} storage is reachable",
+        "DOWN": "{provider} storage is unreachable",
+        "UNKNOWN": "{provider} storage status is unknown"
+      },
+      "usageError": "Could not list the bucket ({error}).",
+      "cleanupWarn": "Some deleted files are overdue for removal from storage or are being retried.",
+      "provider": "Provider: {provider}",
+      "bucket": "Bucket usage",
+      "truncated": "The bucket has too many objects; figures stopped at the scan limit and are lower bounds.",
+      "cacheHint": "Counts every object in the bucket, including unconfirmed uploads.",
+      "objects": "Objects",
+      "totalSize": "Total size",
+      "mediaBytes": "Confirmed files",
+      "mediaBytesHint": "according to the database",
+      "providerLabel": "Provider",
+      "media": "Media file lifecycle",
+      "attention": "Needs attention",
+      "mediaHint": "Deleted files are removed from storage by a background job; overdue means more than 1 hour past schedule.",
+      "confirmed": "Confirmed",
+      "awaitingUpload": "Awaiting upload",
+      "expiredUploads": "Expired uploads",
+      "purged": "Removed from storage",
+      "pendingCleanup": "Pending cleanup",
+      "cleanupOverdue": "Cleanup overdue",
+      "cleanupRetrying": "Cleanup retrying"
+    },
+    "database": {
+      "note": "Figures for the current database, refreshed every 30 seconds. Connection strings and accounts are never shown.",
+      "banner": "PostgreSQL {version}",
+      "bannerDetail": "Size {size} · {used}/{max} connections",
+      "connections": "Connections",
+      "active": "Running queries",
+      "idle": "Idle",
+      "idleInTransaction": "Idle in transaction",
+      "usage": "Used / max",
+      "pool": "Backend connection pool (Hikari)",
+      "poolHint": "Waiting threads mean the pool is exhausted: slow queries or a pool that is too small.",
+      "poolUnavailable": "Pool figures are not available.",
+      "poolActive": "In use / max",
+      "poolIdle": "Idle",
+      "poolTotal": "Total",
+      "poolWaiting": "Waiting threads",
+      "tables": "10 largest tables",
+      "rowsHint": "Row counts are PostgreSQL estimates, refreshed when autovacuum runs.",
+      "colTable": "Table",
+      "colSize": "Size (incl. indexes)",
+      "colRows": "Rows (estimate)"
+    },
+    "email": {
+      "note": "SMTP host, account and password are never shown. Change them in .env.production on the VPS and recreate the backend container.",
+      "connection": {
+        "UP": "Mail server is reachable",
+        "DOWN": "Mail server is unreachable",
+        "DISABLED": "Outbound email is off",
+        "UNKNOWN": "Mail connection status unknown"
+      },
+      "enabledDetail": "OTP codes, two-factor and password reset are sent by email.",
+      "disabledDetail": "APP_MAIL_ENABLED=false: OTP codes are not delivered to users.",
+      "config": "Configuration",
+      "configHint": "Only yes/no is shown for the SMTP host and account.",
+      "enabled": "Email enabled",
+      "hostConfigured": "SMTP host set",
+      "usernameConfigured": "SMTP account set",
+      "port": "Port",
+      "from": "From address",
+      "connectionTitle": "Connection check",
+      "connectionStatus": {
+        "UP": "Reachable",
+        "DOWN": "Failing",
+        "DISABLED": "Off",
+        "UNKNOWN": "Unknown"
+      },
+      "connectionHint": "Only connects and logs in to SMTP; no message is sent. Cached for 5 minutes.",
+      "lastProbe": "Last check",
+      "testTitle": "Send a test email",
+      "testHint": "Goes only to your own address; at most once every {seconds} seconds.",
+      "testRecipient": "Recipient: {email}",
+      "noRecipient": "Your account has no email address.",
+      "sending": "Sending…",
+      "send": "Send test email",
+      "testDisabled": "Enable APP_MAIL_ENABLED on the VPS to send a test.",
+      "testSent": "Sent to {email} at {time}. Check the spam folder too.",
+      "testFailed": "Sending failed ({error}). See the backend logs for details."
+    },
+    "overview": {
+      "intro": "These pages only read the state of the infrastructure. Every change to the server is made over SSH as described in DEPLOY.md.",
+      "deploymentSummary": "{version} · {commit} · HTTPS: {tls}",
+      "cards": {
+        "deployment": "Version, commit, Flyway migrations, HTTPS certificate expiry.",
+        "backups": "Daily pg_dump files on the VPS and the last successful run.",
+        "storage": "Cloudflare R2 usage and the media cleanup queue.",
+        "database": "Connections, pool, size and the largest tables.",
+        "email": "Mail settings, connection check, test email to yourself.",
+        "health": "All components at a glance, refreshed every 30 seconds."
+      },
+      "runbookTitle": "SSH-only tasks",
+      "runbookIntro": "The web app has no Docker or shell access: whoever takes over an admin account still cannot control the server with it.",
+      "runbookFooter": "Full guide: deploy/DEPLOY.md (section 8 updates, 9 backups, 10 monitoring).",
+      "runbook": {
+        "restart": {
+          "title": "Restart / redeploy",
+          "how": "docker compose … up -d --build (DEPLOY.md section 8). Needs root on the VPS."
+        },
+        "logs": {
+          "title": "Container logs",
+          "how": "docker compose … logs --tail 200 backend. Logs can contain personal data, so they are not shown on the web."
+        },
+        "restore": {
+          "title": "Database restore",
+          "how": "Try it on a scratch database first (section 9.4). Overwriting live data cannot be undone."
+        },
+        "certbot": {
+          "title": "Certificate renewal",
+          "how": "certbot renew --dry-run; certbot certificates (section 10.3)."
+        },
+        "secrets": {
+          "title": "Rotate passwords, R2 keys, SMTP",
+          "how": "Edit deploy/.env.production on the VPS and recreate the containers. Secrets never pass through the web UI."
+        },
+        "uptime": {
+          "title": "Downtime alerts",
+          "how": "An external monitor watches /actuator/health (section 10.1); this page cannot alert when it is down itself."
+        }
+      }
+    },
+    "health": {
+      "component": {
+        "mail": "Email",
+        "backups": "Backups",
+        "tls": "HTTPS certificate"
+      },
+      "status": {
+        "DISABLED": "Off"
+      },
+      "detail": {
+        "error": "Error",
+        "checkedAt": "Checked at",
+        "backupState": "State",
+        "files": "Copies",
+        "hoursSinceLast": "Hours since last",
+        "certificate": "Certificate",
+        "daysLeft": "Days left",
+        "trusted": "Trusted",
+        "bankTransfer": "Bank transfer",
+        "bank": "Receiving bank"
+      },
+      "hint": {
+        "mail": {
+          "DOWN": "Cannot connect or log in to SMTP: users will not receive OTP codes. See Infrastructure → Email.",
+          "DISABLED": "Outbound email is off (APP_MAIL_ENABLED=false).",
+          "UNKNOWN": "The mail connection could not be checked."
+        },
+        "backups": {
+          "DEGRADED": "Backups are overdue or missing. See Infrastructure → Backups.",
+          "DOWN": "The backup folder could not be read.",
+          "UNKNOWN": "No backup folder configured (APP_BACKUP_DIR)."
+        },
+        "tls": {
+          "DEGRADED": "The certificate has under 14 days left or is not trusted. Check certbot.",
+          "DOWN": "The HTTPS certificate has expired.",
+          "UNKNOWN": "Certificate not checked (APP_PUBLIC_URL unset, not https, or unreachable)."
+        },
+        "payments": {
+          "DEGRADED": "No receiving bank account is configured. Enter the bank details in System settings, Billing group.",
+          "DOWN": "Payment configuration could not be read.",
+          "UNKNOWN": "Payment configuration has not been checked yet."
+        }
+      }
+    }
+  }
+}

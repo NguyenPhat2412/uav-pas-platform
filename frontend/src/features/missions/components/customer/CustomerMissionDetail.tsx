@@ -19,8 +19,7 @@ import {SiteWeather} from "@/features/missions/components/customer/SiteWeather";
 import {MissionMonitoring} from "@/features/missions/components/customer/MissionMonitoring";
 import {parseEntityId, toMissionSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
-
-type MissionTab = 'monitoring' | 'weather' | 'delivery' | 'history';
+import type {MissionTab} from '@/features/missions/types/mission.types';
 
 export default function MissionDetailPage() {
     return <PageGuard><MissionDetail/></PageGuard>;
@@ -61,45 +60,48 @@ function MissionDetail() {
             setDownloading(null);
         }
     };
-    const panelClass = 'min-w-0 overflow-hidden rounded-panel border border-border bg-card';
-    const panelHeaderClass = 'flex items-center justify-between gap-3 border-b border-border px-5 py-4 md:px-6 md:py-5';
-    const panelTitleClass = 'm-0 text-lg font-bold text-foreground';
-    const panelBodyClass = 'p-5 md:p-6';
+    const panelClass = 'min-w-0 overflow-hidden rounded-panel border-b border-border bg-card';
+    const panelHeaderClass = 'flex items-center justify-between gap-3 border-b border-border bg-slate-50/70 px-4 py-3 md:px-5';
+    const panelTitleClass = 'm-0 text-sm font-bold uppercase tracking-wide text-slate-800';
+    const panelBodyClass = 'p-4 md:p-5';
     const mutedClass = 'm-0 text-sm leading-relaxed text-muted';
     const errorBoxClass = 'flex flex-wrap items-center gap-3 rounded-panel bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline';
-    return <div className="grid gap-0 leading-normal text-foreground [&>*+*]:-mt-px">
-        <Link href="/customer/missions" className="mb-3 inline-flex min-h-10 w-fit items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('missionCreate.back')}</Link>
+    return <div className="flex flex-1 flex-col bg-white leading-normal text-foreground">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/70 px-4 py-2.5 md:px-5">
+            <Link href="/customer/missions" className="inline-flex min-h-8 w-fit items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('missionCreate.back')}</Link>
+            <span className="text-xs font-bold tracking-wider text-slate-500 tabular-nums">{mission.code}</span>
+        </div>
         <section className={panelClass} aria-labelledby="mission-title">
-            <div className="p-5 md:p-7">
+            <div className="p-4 md:p-5">
                 <div className="flex flex-col-reverse items-start justify-between gap-3 md:flex-row md:gap-5">
-                    <div className="min-w-0"><p className="m-0 text-xs font-bold tracking-wider text-primary">{mission.code}</p><h1 id="mission-title" className="my-2 break-words text-2xl font-extrabold leading-tight tracking-tight text-foreground md:text-3xl">{mission.title}</h1><p
+                    <div className="min-w-0"><p className="m-0 text-xs font-bold tracking-wider text-primary">{mission.code}</p><h1 id="mission-title" className="my-1.5 break-words text-xl font-extrabold leading-tight tracking-tight text-foreground md:text-2xl">{mission.title}</h1><p
                         className={mutedClass}>{mission.locationName}</p></div>
                     <Status value={mission.status}/></div>
-                <dl className="m-0 mt-6 grid grid-cols-2 gap-4.5 md:grid-cols-4 md:gap-5 [&_dt]:mb-1.5 [&_dt]:text-xs [&_dt]:text-muted [&_dd]:m-0 [&_dd]:break-words [&_dd]:text-sm [&_dd]:font-semibold [&_dd]:text-foreground">
-                    <div>
-                        <dt>{t('missionCreate.service')}</dt>
-                        <dd>{services.data?.find(s => s.id === mission.serviceId) ? serviceName(services.data.find(s => s.id === mission.serviceId)!) : displayLabel(mission.missionType)}</dd>
-                    </div>
-                    <div>
-                        <dt>{t('missionDetail.plannedStart')}</dt>
-                        <dd>{formatDate(mission.startTime)}</dd>
-                    </div>
-                    <div>
-                        <dt>{t('missionForm.expectedEnd')}</dt>
-                        <dd>{formatDate(mission.expectedEndTime)}</dd>
-                    </div>
-                    <div>
-                        <dt>{t('missionForm.priority')}</dt>
-                        <dd>{displayLabel(mission.priority)}</dd>
-                    </div>
-                </dl>
-                {mission.description && <p className="m-0 mt-5 text-sm leading-relaxed text-muted">{mission.description}</p>}
+                {mission.description && <p className="m-0 mt-3 text-sm leading-relaxed text-muted">{mission.description}</p>}
                 <MissionRequestDetails mission={mission}/>
             </div>
-            <div className="flex flex-col items-stretch justify-between gap-4 border-t border-border bg-background px-5 py-4 md:flex-row md:items-center md:px-7"><p className="m-0 max-w-[70ch] text-sm text-muted">{missionHint(mission.status)}</p>{(canSubmit || canCancel) &&
+            <dl className="m-0 grid grid-cols-2 gap-px border-t border-slate-200 bg-slate-200 md:grid-cols-4 [&>div]:bg-slate-50/50 [&>div]:px-4 [&>div]:py-3 [&_dt]:mb-1 [&_dt]:text-xs [&_dt]:text-muted [&_dd]:m-0 [&_dd]:break-words [&_dd]:text-sm [&_dd]:font-semibold [&_dd]:text-foreground">
+                <div>
+                    <dt>{t('missionCreate.service')}</dt>
+                    <dd>{services.data?.find(s => s.id === mission.serviceId) ? serviceName(services.data.find(s => s.id === mission.serviceId)!) : displayLabel(mission.missionType)}</dd>
+                </div>
+                <div>
+                    <dt>{t('missionDetail.plannedStart')}</dt>
+                    <dd>{formatDate(mission.startTime)}</dd>
+                </div>
+                <div>
+                    <dt>{t('missionForm.expectedEnd')}</dt>
+                    <dd>{formatDate(mission.expectedEndTime)}</dd>
+                </div>
+                <div>
+                    <dt>{t('missionForm.priority')}</dt>
+                    <dd>{displayLabel(mission.priority)}</dd>
+                </div>
+            </dl>
+            <div className="flex flex-col items-stretch justify-between gap-3 border-t border-border bg-white px-4 py-3 md:flex-row md:items-center md:px-5"><p className="m-0 max-w-[70ch] text-xs font-medium text-muted">{missionHint(mission.status)}</p>{(canSubmit || canCancel) &&
                 <div className="flex w-full flex-wrap items-center gap-2.5 md:w-auto">
                     {canSubmit && !actions.submit.isPending && !actions.cancel.isPending &&
-                        <Link className="inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-control border border-border bg-card px-4 text-sm font-bold text-foreground transition-colors hover:bg-background" href={`/customer/missions/${toMissionSlug(mission)}/edit`}>{t('missionDetail.editDraft')}</Link>}
+                        <Link className="inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-control border border-border bg-card px-3.5 text-xs font-bold text-foreground transition-colors hover:bg-slate-50" href={`/customer/missions/${toMissionSlug(mission)}/edit`}>{t('missionDetail.editDraft')}</Link>}
                     {canSubmit &&
                         <Button disabled={actions.submit.isPending || actions.cancel.isPending} onClick={() => {
                             actions.cancel.reset();
@@ -124,8 +126,8 @@ function MissionDetail() {
         {actionError && <div className={errorBoxClass}
                              role="alert">{actionError.message === 'MISSION_INVALID_STATUS' ? t('missionDetail.statusChanged') : t('missionDetail.actionFailed')}</div>}
         <MissionResources mission={mission}/>
-        <section className={panelClass} aria-label={t('missionTabs.label')}>
-            <div role="tablist" aria-label={t('missionTabs.label')} className="flex gap-1 overflow-x-auto border-b border-border px-3 md:px-5">
+        <section className={`${panelClass} flex-1 border-b-0`} aria-label={t('missionTabs.label')}>
+            <div role="tablist" aria-label={t('missionTabs.label')} className="flex gap-1 overflow-x-auto border-b border-border bg-slate-50/50 px-3 md:px-5">
                 {tabs.map(key => <button key={key} type="button" role="tab" id={`mission-tab-${key}`} aria-controls={`mission-panel-${key}`}
                                            aria-selected={tab === key} tabIndex={tab === key ? 0 : -1} onClick={() => setTab(key)}
                                            onKeyDown={e => {

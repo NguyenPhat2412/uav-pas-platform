@@ -1,12 +1,9 @@
-import React, {HTMLAttributes} from 'react';
+import React from 'react';
 import {AlertCircle, AlertTriangle, CheckCircle2, Info} from 'lucide-react';
 import {cn} from '@/lib/utils';
+import type {AlertProps} from '@/types/ui';
 
-export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
-    variant?: 'info' | 'success' | 'warning' | 'error';
-    icon?: React.ReactNode;
-    title?: string;
-}
+export type {AlertProps};
 
 export const Alert: React.FC<AlertProps> = ({
                                                 className,

@@ -2,79 +2,173 @@
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {useQuery} from '@tanstack/react-query';
-import {AlertTriangle, CalendarClock, ChevronRight} from 'lucide-react';
+import {CalendarClock} from 'lucide-react';
 import {Panel, Status} from '@/components/customer/ui';
 import {displayLabel, planName} from '@/components/shared/presentation';
 import {useI18n} from '@/contexts/I18nContext';
 import {useCustomerScope} from '@/lib/query/customer';
-import {dashboardService} from '@/features/dashboard/services/dashboard.service';
+import {dashboardService} from '@/lib/api/services';
 import type {CustomerAnalytics as Analytics} from '@/features/dashboard/types/dashboard.types';
-import {BarList, ColumnChart, Delta, Legend, SegmentBar, seriesColors} from '@/features/dashboard/components/AdminCharts';
+import {BarList, ColumnChart, Legend, SegmentBar, seriesColors} from '@/features/dashboard/components/AdminCharts';
 
 const MissionMap = dynamic(() => import('@/features/dashboard/components/MissionMap').then(m => m.MissionMap), {ssr: false});
 
-const pipelineColors = {waiting: seriesColors.yellow, scheduled: seriesColors.violet, active: seriesColors.aqua, draft: seriesColors.gray} as const;
+export const pipelineColors = {waiting: seriesColors.yellow, scheduled: seriesColors.violet, active: seriesColors.aqua, draft: seriesColors.gray} as const;
 const mapColor = (status: string) => status === 'COMPLETED' ? seriesColors.blue
     : ['FAILED', 'CANCELLED', 'REJECTED'].includes(status) ? seriesColors.red
         : status === 'DRAFT' ? seriesColors.gray : seriesColors.aqua;
 
-export function CustomerAnalytics() {
+export function useCustomerAnalyticsQuery() {
     const {key, can, permissionsReady} = useCustomerScope();
-    const {t} = useI18n();
-    const query = useQuery({
+    return useQuery({
         queryKey: [...key, 'analytics'],
         queryFn: ({signal}) => dashboardService.getCustomerAnalytics(signal),
         enabled: permissionsReady && can('MISSION_VIEW'),
         staleTime: 60_000,
     });
-    if (!can('MISSION_VIEW')) return null;
-    return <section className="flex flex-col gap-4" aria-labelledby="customer-analytics-title">
-        <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="customer-analytics-title" className="text-[17px] font-bold text-foreground">{t('dashboard.analytics.title')}</h2></div>
-        {query.isPending ? <p className="m-0 px-5 py-3 text-[13px] text-muted" role="status">{t('dashboard.analytics.loading')}</p> :
-            query.isError ? <div role="alert" className="rounded-panel bg-danger/10 px-3.5 py-3 text-[13px] text-danger">{t('dashboard.analytics.loadError')}</div> :
-                <Body data={query.data}/>}
-    </section>;
 }
 
-function Body({data}: { data: Analytics }) {
-    const {t, formatCurrency, formatNumber, formatDate} = useI18n();
-    const compact = (value: number) => formatNumber(value, {notation: 'compact', maximumFractionDigits: 1});
-    const month = (iso: string) => `${Number(iso.slice(5))}/${iso.slice(2, 4)}`;
-    const vs = t('dashboard.analytics.vsLastMonth');
-    const hasMissions = data.missionsByMonth.some(m => m.completed + m.stopped > 0) || Object.values(data.pipeline).some(Boolean);
-    const hasSpend = data.spendByMonth.some(m => m.paid + m.outstanding > 0);
-    const finished = data.outcomes.completed + data.outcomes.failed + data.outcomes.cancelled + data.outcomes.rejected;
+/**
+ * Compact combined panel for the right-hand operational column:
+ * Quota + Active Pipeline + Turnaround SLA.
+ */
+export function CustomerOperationalInsights({data, isPending}: { data?: Analytics; isPending: boolean }) {
+    const {t, formatNumber} = useI18n();
     const duration = (hours: number | null) => hours == null ? '—' : hours >= 48
         ? t('dashboard.analytics.days', {value: formatNumber(Math.round(hours / 24 * 10) / 10)})
         : t('dashboard.analytics.hours', {value: formatNumber(hours)});
 
-    return <div className="space-y-5">
-        {data.pendingInvoices.count > 0 && <div className="flex items-center gap-2.5 rounded-panel border border-amber-200 bg-amber-50 px-3 py-2.5 text-[13.5px] text-amber-800" role="status">
-            <AlertTriangle size={17} aria-hidden="true"/>
-            <span className="flex-1">{t('dashboard.analytics.pendingInvoices', {count: data.pendingInvoices.count, amount: formatCurrency(data.pendingInvoices.amount)})}
-                {data.pendingInvoices.nextDue && ` · ${t('dashboard.analytics.nextDue', {date: formatDate(data.pendingInvoices.nextDue, {dateStyle: 'short'})})}`}</span>
-            <Link href="/customer/billing" className="inline-flex items-center gap-0.5 whitespace-nowrap text-[12.5px] font-semibold hover:underline">{t('dashboard.analytics.payNow')}<ChevronRight size={14} aria-hidden="true"/></Link>
-        </div>}
+    return (
+        <div className="flex h-full flex-col divide-y divide-slate-200 bg-white">
+            {/* Sub-block 1: Service Plan Quota */}
+            <Panel
+                title={t('dashboard.analytics.quotaTitle')}
+                className="border-0"
+                action={<Link href="/customer/billing" className="text-xs font-bold text-primary hover:underline">{t('dashboard.analytics.managePlan')}</Link>}
+            >
+                {isPending ? (
+                    <div className="h-20 animate-pulse bg-slate-100"/>
+                ) : data?.quota ? (
+                    <Quota quota={data.quota}/>
+                ) : (
+                    <p className="m-0 text-[13px] text-muted">{t('dashboard.analytics.noQuota')}</p>
+                )}
+            </Panel>
 
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] border-l border-slate-200 bg-white">
-            <article className="flex flex-col gap-1 border-b border-r border-t-2 border-slate-200 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.completed')}</span>
-                <strong className="text-[22px] font-bold leading-tight tabular-nums text-foreground">{data.thisMonth.completedMissions}</strong>
-                <Delta current={data.thisMonth.completedMissions} previous={data.lastMonth.completedMissions} label={vs}/></article>
-            <article className="flex flex-col gap-1 border-b border-r border-t-2 border-slate-200 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.flightHours')}</span>
-                <strong className="text-[22px] font-bold leading-tight tabular-nums text-foreground">{t('dashboard.analytics.hours', {value: formatNumber(data.thisMonth.flightHours)})}</strong>
-                <Delta current={data.thisMonth.flightHours} previous={data.lastMonth.flightHours} label={vs}/></article>
-            <article className="flex flex-col gap-1 border-b border-r border-t-2 border-slate-200 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.spend')}</span>
-                <strong className="text-[22px] font-bold leading-tight tabular-nums text-foreground">{formatCurrency(data.thisMonth.spend)}</strong>
-                <Delta current={data.thisMonth.spend} previous={data.lastMonth.spend} higherIsBetter={false} label={vs}/></article>
-            <article className="flex flex-col gap-1 border-b border-r border-t-2 border-slate-200 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.successRate')}</span>
-                <strong className="text-[22px] font-bold leading-tight tabular-nums text-foreground">{finished ? `${formatNumber(data.outcomes.successRate)}%` : '—'}</strong>
-                <small className="inline-flex items-center gap-[3px] text-xs font-normal text-muted">{t('dashboard.analytics.finishedCount', {count: finished})}</small></article>
-            <article className="flex flex-col gap-1 border-b border-r border-t-2 border-slate-200 border-t-uav-blue bg-white px-[18px] py-4"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.kpi.media')}</span>
-                <strong className="text-[22px] font-bold leading-tight tabular-nums text-foreground">{data.mediaFiles}</strong>
-                <small className="inline-flex items-center gap-[3px] text-xs font-normal text-muted">{t('dashboard.analytics.mediaHint')}</small></article>
+            {/* Sub-block 2: Current Mission Pipeline */}
+            <Panel
+                title={t('dashboard.analytics.pipelineTitle')}
+                className="border-0"
+                action={<Link href="/customer/missions" className="text-xs font-bold text-primary hover:underline">{t('dashboard.analytics.viewMissions')}</Link>}
+            >
+                {isPending || !data ? (
+                    <div className="h-14 animate-pulse bg-slate-100"/>
+                ) : (
+                    <SegmentBar
+                        ariaLabel={t('dashboard.analytics.pipelineTitle')}
+                        items={(Object.keys(pipelineColors) as (keyof typeof pipelineColors)[]).map(k => ({
+                            label: t(`dashboard.analytics.pipeline.${k}`),
+                            value: data.pipeline[k] ?? 0,
+                            color: pipelineColors[k],
+                        }))}
+                    />
+                )}
+            </Panel>
+
+            {/* Sub-block 3: Average Turnaround Time */}
+            <Panel title={t('dashboard.analytics.turnaroundTitle')} className="flex-1 border-0">
+                {isPending || !data ? (
+                    <div className="h-16 animate-pulse bg-slate-100"/>
+                ) : data.turnaround.sampleSize ? (
+                    <div className="grid grid-cols-2 gap-px border border-slate-200 bg-slate-200">
+                        <div className="flex flex-col gap-1 bg-slate-50/70 px-3.5 py-2.5">
+                            <span className="text-[12px] text-muted">{t('dashboard.analytics.toConfirm')}</span>
+                            <strong className="text-lg font-extrabold tabular-nums text-foreground">{duration(data.turnaround.submitToConfirm)}</strong>
+                        </div>
+                        <div className="flex flex-col gap-1 bg-slate-50/70 px-3.5 py-2.5">
+                            <span className="text-[12px] text-muted">{t('dashboard.analytics.toComplete')}</span>
+                            <strong className="text-lg font-extrabold tabular-nums text-foreground">{duration(data.turnaround.submitToComplete)}</strong>
+                        </div>
+                        <small className="col-span-full bg-white px-3.5 py-2 text-xs text-muted">
+                            {t('dashboard.analytics.turnaroundHint', {count: data.turnaround.sampleSize})}
+                        </small>
+                    </div>
+                ) : (
+                    <p className="m-0 text-[13px] text-muted">{t('dashboard.analytics.noTurnaround')}</p>
+                )}
+            </Panel>
         </div>
+    );
+}
 
-        <div className="grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 xl:grid-cols-2 xl:[&>*:last-child:nth-child(odd)]:col-span-full">
+/**
+ * Compact Upcoming Flights strip placed directly below Recent Missions in the left operational column.
+ */
+export function CustomerUpcomingStrip({data, isPending}: { data?: Analytics; isPending: boolean }) {
+    const {t, formatDate} = useI18n();
+    if (isPending || !data) return null;
+    return (
+        <div className="border-t border-slate-200 bg-white">
+            <header className="flex items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-2.5">
+                <h3 className="m-0 text-xs font-bold uppercase tracking-wide text-slate-800">{t('dashboard.analytics.upcomingTitle')}</h3>
+                <span className="text-xs font-semibold tabular-nums text-slate-500">{data.upcoming.length}</span>
+            </header>
+            {data.upcoming.length ? (
+                <ul className="m-0 divide-y divide-slate-200 list-none p-0">
+                    {data.upcoming.map(m => (
+                        <li key={m.id} className="grid grid-cols-[18px_minmax(0,1fr)] items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-slate-50 sm:grid-cols-[18px_minmax(0,1fr)_auto_auto]">
+                            <CalendarClock size={16} aria-hidden="true" className="text-primary"/>
+                            <div className="min-w-0">
+                                <Link href={`/customer/missions/${m.id}`} className="font-bold text-foreground hover:text-primary">{m.code}</Link>
+                                <small className="block truncate text-muted">{m.title}{m.location ? ` · ${m.location}` : ''}</small>
+                            </div>
+                            <time dateTime={m.startTime} className="col-start-2 whitespace-nowrap tabular-nums text-xs text-muted sm:col-auto">
+                                {formatDate(m.startTime, {dateStyle: 'short', timeStyle: 'short'})}
+                            </time>
+                            <Status value={m.status}/>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p className="m-0 px-4 py-3 text-[13px] text-muted">{t('dashboard.analytics.noUpcoming')}</p>
+            )}
+        </div>
+    );
+}
+
+export function CustomerAnalytics() {
+    const {can} = useCustomerScope();
+    const {t} = useI18n();
+    const query = useCustomerAnalyticsQuery();
+    if (!can('MISSION_VIEW')) return null;
+    return <section className="flex flex-col bg-white" aria-labelledby="customer-analytics-title">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-2.5 sm:px-5">
+            <h2 id="customer-analytics-title" className="m-0 text-xs font-bold uppercase tracking-wider text-slate-700">{t('dashboard.analytics.title')}</h2>
+        </div>
+        {query.isPending ? (
+            <div className="grid min-h-[260px] grid-cols-1 gap-px border-b border-slate-200 bg-slate-200 xl:grid-cols-2" role="status" aria-label={t('dashboard.analytics.loading')}>
+                <div className="animate-pulse bg-white p-6"/>
+                <div className="animate-pulse bg-white p-6"/>
+            </div>
+        ) : query.isError ? (
+            <div role="alert" className="border-b border-red-200 bg-danger/10 px-4 py-3 text-[13px] text-danger">{t('dashboard.analytics.loadError')}</div>
+        ) : (
+            <Body data={query.data}/>
+        )}
+    </section>;
+}
+
+function Body({data}: { data: Analytics }) {
+    const {t, formatNumber} = useI18n();
+    const compact = (value: number) => formatNumber(value, {notation: 'compact', maximumFractionDigits: 1});
+    const month = (iso: string) => `${Number(iso.slice(5))}/${iso.slice(2, 4)}`;
+    const hasMissions = data.missionsByMonth.some(m => m.completed + m.stopped > 0) || Object.values(data.pipeline).some(Boolean);
+    const hasSpend = data.spendByMonth.some(m => m.paid + m.outstanding > 0);
+    const finished = data.outcomes.completed + data.outcomes.failed + data.outcomes.cancelled + data.outcomes.rejected;
+
+    return <div className="flex flex-col">
+        {/* Pair 1: Monthly Missions & Monthly Spend (matched height column charts) */}
+        <div className="grid grid-cols-1 gap-px border-b border-slate-200 bg-slate-200 [&>*]:border-0 xl:grid-cols-2">
             <Panel title={t('dashboard.analytics.monthlyTitle')} className="h-full"
                    action={<Legend items={[{label: t('dashboard.analytics.completed'), color: seriesColors.blue},
                        {label: t('dashboard.analytics.stopped'), color: seriesColors.orange}]}/>}>
@@ -83,31 +177,6 @@ function Body({data}: { data: Analytics }) {
                                                 {label: t('dashboard.analytics.stopped'), color: seriesColors.orange}]}
                                             groups={data.missionsByMonth.map(m => ({label: month(m.month), values: [m.completed, m.stopped]}))}/> :
                     <EmptyHint/>}
-            </Panel>
-
-            <Panel title={t('dashboard.analytics.quotaTitle')} className="h-full"
-                   action={<Link href="/customer/billing" className="font-bold text-primary hover:underline">{t('dashboard.analytics.managePlan')}</Link>}>
-                {data.quota ? <Quota quota={data.quota}/> : <p className="m-0 text-[13px] text-muted">{t('dashboard.analytics.noQuota')}</p>}
-            </Panel>
-
-            <Panel title={t('dashboard.analytics.pipelineTitle')} className="h-full"
-                   action={<Link href="/customer/missions" className="font-bold text-primary hover:underline">{t('dashboard.analytics.viewMissions')}</Link>}>
-                <SegmentBar ariaLabel={t('dashboard.analytics.pipelineTitle')}
-                            items={(Object.keys(pipelineColors) as (keyof typeof pipelineColors)[]).map(k => ({
-                                label: t(`dashboard.analytics.pipeline.${k}`), value: data.pipeline[k] ?? 0, color: pipelineColors[k]
-                            }))}/>
-            </Panel>
-
-            <Panel title={t('dashboard.analytics.upcomingTitle')} className="h-full">
-                {data.upcoming.length ? <ul className="m-0 list-none p-0">{data.upcoming.map(m => <li key={m.id} className="grid grid-cols-[18px_minmax(0,1fr)] items-center gap-2.5 border-b border-dashed border-border py-2 text-[13px] last:border-b-0 sm:grid-cols-[18px_minmax(0,1fr)_auto_auto]">
-                    <CalendarClock size={16} aria-hidden="true" className="text-primary"/>
-                    <div className="min-w-0">
-                        <Link href={`/customer/missions/${m.id}`} className="font-semibold text-foreground hover:text-primary">{m.code}</Link>
-                        <small className="block truncate text-muted">{m.title}{m.location ? ` · ${m.location}` : ''}</small>
-                    </div>
-                    <time dateTime={m.startTime} className="col-start-2 whitespace-nowrap text-xs text-muted sm:col-auto">{formatDate(m.startTime, {dateStyle: 'short', timeStyle: 'short'})}</time>
-                    <Status value={m.status}/>
-                </li>)}</ul> : <p className="m-0 text-[13px] text-muted">{t('dashboard.analytics.noUpcoming')}</p>}
             </Panel>
 
             <Panel title={t('dashboard.analytics.spendTitle')} className="h-full"
@@ -120,12 +189,7 @@ function Body({data}: { data: Analytics }) {
                     <p className="m-0 text-[13px] text-muted">{t('dashboard.analytics.noSpend')}</p>}
             </Panel>
 
-            <Panel title={t('dashboard.analytics.servicesTitle')} className="h-full">
-                {data.topServices.length ?
-                    <BarList items={data.topServices.map(s => ({label: s.name, value: s.count}))}/> :
-                    <p className="m-0 text-[13px] text-muted">{t('dashboard.analytics.noServices')}</p>}
-            </Panel>
-
+            {/* Pair 2: Execution Outcomes & Most Used Services */}
             <Panel title={t('dashboard.analytics.outcomesTitle')} className="h-full">
                 {finished ? <div className="space-y-4">
                     <SegmentBar ariaLabel={t('dashboard.analytics.outcomesTitle')} items={[
@@ -141,14 +205,13 @@ function Body({data}: { data: Analytics }) {
                 </div> : <p className="m-0 text-[13px] text-muted">{t('dashboard.analytics.noOutcomes')}</p>}
             </Panel>
 
-            <Panel title={t('dashboard.analytics.turnaroundTitle')} className="h-full">
-                {data.turnaround.sampleSize ? <div className="grid grid-cols-2 gap-3">
-                    <div className="flex flex-col gap-1 rounded-panel bg-slate-50 px-3.5 py-3"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.toConfirm')}</span><strong className="text-xl font-bold text-foreground">{duration(data.turnaround.submitToConfirm)}</strong></div>
-                    <div className="flex flex-col gap-1 rounded-panel bg-slate-50 px-3.5 py-3"><span className="text-[12.5px] text-muted">{t('dashboard.analytics.toComplete')}</span><strong className="text-xl font-bold text-foreground">{duration(data.turnaround.submitToComplete)}</strong></div>
-                    <small className="col-span-full text-xs text-muted">{t('dashboard.analytics.turnaroundHint', {count: data.turnaround.sampleSize})}</small>
-                </div> : <p className="m-0 text-[13px] text-muted">{t('dashboard.analytics.noTurnaround')}</p>}
+            <Panel title={t('dashboard.analytics.servicesTitle')} className="h-full">
+                {data.topServices.length ?
+                    <BarList items={data.topServices.map(s => ({label: s.name, value: s.count}))}/> :
+                    <p className="m-0 text-[13px] text-muted">{t('dashboard.analytics.noServices')}</p>}
             </Panel>
 
+            {/* Full-width Map */}
             <Panel title={t('dashboard.analytics.mapTitle')} className="col-span-full h-full">
                 {data.locations.length ? <MissionMap ariaLabel={t('dashboard.analytics.mapAria', {count: data.locations.length})}
                                                      points={data.locations.map(p => ({...p, color: mapColor(p.status), label: displayLabel(p.status)}))}/> :

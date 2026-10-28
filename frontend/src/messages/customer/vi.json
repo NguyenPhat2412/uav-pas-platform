@@ -23,16 +23,18 @@
     "nav": {
         "dashboard": "Tổng quan",
         "services": "Dịch vụ UAV",
+        "training": "Hướng dẫn sử dụng",
         "missions": "Nhiệm vụ của tôi",
-        "billing": "Gói cước & Hóa đơn",
+        "billing": "Gói cước & hóa đơn",
         "notifications": "Thông báo",
         "profile": "Tài khoản",
         "portalTitle": "Customer Portal",
         "createRequest": "Tạo yêu cầu",
         "groups": {
-            "operations": "Vận hành",
-            "finance": "Tài chính",
-            "account": "Tài khoản"
+            "overview": "Tổng quan",
+            "missions": "Nhiệm vụ bay",
+            "services": "Dịch vụ & thanh toán",
+            "support": "Hỗ trợ & tài khoản"
         },
         "badges": {
             "activeMissions": "{label}: {count} nhiệm vụ đang xử lý",
@@ -358,7 +360,11 @@
         "useMyLocation": "Dùng vị trí của tôi",
         "ariaLabel": "Bản đồ chọn vị trí thực hiện nhiệm vụ",
         "selected": "Đã chọn {lat}, {lng}. Kéo ghim hoặc bấm chỗ khác để đổi.",
-        "hint": "Bấm vào bản đồ để ghim điểm thực hiện. Có thể nhập tọa độ thủ công ở các ô bên dưới."
+        "hint": "Bấm vào bản đồ để ghim điểm thực hiện. Có thể nhập tọa độ thủ công ở các ô bên dưới.",
+        "controls": {
+            "stationRadius": "Vùng phủ trạm",
+            "resetView": "Về tâm"
+        }
     },
     "billingPage": {
         "status": {

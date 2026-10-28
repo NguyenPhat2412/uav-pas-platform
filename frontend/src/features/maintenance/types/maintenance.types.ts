@@ -60,3 +60,6 @@ export interface OrderFields {
     plannedDate: string;
     technicianName: string;
 }
+
+export type OrderDetailMode = 'view' | 'edit' | 'materials' | 'start' | 'complete' | 'cancel';
+

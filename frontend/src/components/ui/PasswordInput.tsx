@@ -1,18 +1,14 @@
-import React, {forwardRef, InputHTMLAttributes, useState} from 'react';
+import React, {forwardRef, useState} from 'react';
 import {Eye, EyeOff} from 'lucide-react';
 import {cn} from '@/lib/utils';
-import {RequiredMark} from "@/components/shared/RequiredMark";
+import {FieldLabelMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/contexts/I18nContext';
+import type {PasswordInputProps} from '@/types/ui';
 
-export interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
-    label?: string;
-    error?: string;
-    helperText?: string;
-    leftIcon?: React.ReactNode;
-}
+export type {PasswordInputProps};
 
 export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
-    ({className, label, error, helperText, id, leftIcon, ...props}, ref) => {
+    ({className, label, error, helperText, id, leftIcon, optional, optionalLabel, ...props}, ref) => {
         const [showPassword, setShowPassword] = useState(false);
         const {t} = useI18n();
 
@@ -24,7 +20,12 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
                             htmlFor={id}
                             className="block font-label-lg text-label-lg font-medium text-on-surface"
                         >
-                            {label}{props.required && <RequiredMark/>}
+                            {label}
+                            <FieldLabelMark
+                                required={props.required}
+                                optional={optional ?? !props.required}
+                                optionalLabel={optionalLabel}
+                            />
                         </label>
                     </div>
                 )}

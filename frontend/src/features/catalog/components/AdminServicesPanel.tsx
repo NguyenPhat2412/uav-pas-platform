@@ -6,10 +6,10 @@ import {Pencil, Plus, Search, X} from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
-import {RequiredMark} from '@/components/shared/RequiredMark';
+import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
-import {serviceOfferingsService} from '@/features/catalog/services/service-offerings.service';
+import {serviceOfferingsService} from '@/lib/api/services';
 import {serviceSensors, type ServiceOffering} from '@/features/catalog/types/service-offering.types';
 import {toast} from '@/contexts/ToastContext';
 
@@ -123,7 +123,7 @@ function ServiceDialog({service, onClose, onSaved}: { service: ServiceOffering |
     });
     const specField = (key: keyof typeof spec, label: string, min: number, max: number, step: number) =>
         <label className="text-[13px] font-semibold text-slate-600">{label}
-            <input type="number" min={min} max={max} step={step} value={spec[key]} placeholder={t('admin.services.spec.notCommitted')}
+            <input type="number" step={step} value={spec[key]} placeholder={t('admin.services.spec.notCommitted')}
                    onChange={e => setSpec(prev => ({...prev, [key]: e.target.value}))} className={cn(field, 'tabular-nums')}/></label>;
     const submit = async (e: FormEvent) => {
         e.preventDefault();
@@ -148,15 +148,15 @@ function ServiceDialog({service, onClose, onSaved}: { service: ServiceOffering |
             </header>
             {service ? <p className="text-[13px] text-slate-600">{t('admin.services.code')}: <span className="font-mono font-semibold">{service.code}</span></p> :
                 <label className="text-[13px] font-semibold text-slate-600">{t('admin.services.code')}<RequiredMark/>
-                    <input required autoFocus maxLength={60} pattern="[A-Za-z0-9_]+" value={code} onChange={e => setCode(e.target.value)}
+                    <input aria-required autoFocus value={code} onChange={e => setCode(e.target.value)}
                            className={cn(field, 'font-mono uppercase')} placeholder="AREA_INSPECTION"/>
                     <span className="mt-1 block text-xs font-normal text-slate-500">{t('admin.services.codeHint')}</span></label>}
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.services.name')}<RequiredMark/>
-                <input required autoFocus={!!service} maxLength={160} value={name} onChange={e => setName(e.target.value)} className={field}/></label>
-            <label className="text-[13px] font-semibold text-slate-600">{t('admin.services.description')}
-                <textarea rows={3} maxLength={500} value={description} onChange={e => setDescription(e.target.value)} className={field}/></label>
+                <input aria-required autoFocus={!!service} value={name} onChange={e => setName(e.target.value)} className={field}/></label>
+            <label className="text-[13px] font-semibold text-slate-600">{t('admin.services.description')}<OptionalMark/>
+                <textarea rows={3} value={description} onChange={e => setDescription(e.target.value)} className={field}/></label>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.services.duration')}<RequiredMark/>
-                <input required type="number" min={1} max={1440} value={minutes} onChange={e => setMinutes(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
+                <input aria-required type="number" value={minutes} onChange={e => setMinutes(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
             <fieldset className="grid gap-3 border border-slate-200 p-4">
                 <legend className="px-1 text-[13px] font-bold text-slate-700">{t('admin.services.spec.title')}</legend>
                 <p className="m-0 text-xs text-slate-500">{t('admin.services.spec.hint')}</p>

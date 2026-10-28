@@ -47,8 +47,10 @@ function harness(auth, search, storedDemo) {
     };
     const modules = {
         react: {
-            useEffect: callback => callback(), useState: () => [true, () => {
-            }]
+            useEffect: callback => callback(), useLayoutEffect: callback => callback(), useState: () => [true, () => {
+            }],
+            // AdminPage renders outside the portal layout here, so it falls back to its own frame.
+            createContext: () => ({Provider: ({children}) => children}), useContext: () => null
         },
         'react/jsx-runtime': {jsx: element, jsxs: element, Fragment: 'fragment'},
         'next/navigation': {useRouter: () => ({replace: path => redirects.push(path)})},
@@ -101,6 +103,8 @@ function harness(auth, search, storedDemo) {
     modules['@/components/ui'] = modules['@/components/ui'];
     modules['@/components/layout/AdminAppShell'] = modules['@/components/layout/AppShell'];
     modules['@/lib/api/admin'] = {adminService: {}};
+    modules['@/lib/api/resources'] = {operationsService: {}};
+    modules['@/lib/api/missions'] = {missionService: {}};
     modules['@/features/dashboard/components/AdminMonitoringCard'] = {AdminMonitoringCard: () => null};
 
     function load(path) {
@@ -224,7 +228,7 @@ for (const [search, storedDemo] of [['', null], ['?demo=true', null], ['', 'true
     for (const [enabled, allowed] of [[false, false], [false, true], [true, false], [true, true]]) {
         test(`operations collection honors MEDIA_READ and caller enable (${enabled}/${allowed}) with ${mode}`, () => {
             const h = harness({isAuthenticated: true, permissionsReady: true, allowed}, search, storedDemo);
-            const {useCollection} = h.load('src/hooks/useCollections.ts');
+            const {useCollection} = h.load('src/lib/query/operations.ts');
             assert.equal(useCollection('media', enabled).enabled, enabled && allowed);
             if (enabled) assert.ok(h.permissions.includes('MEDIA_READ'));
         });

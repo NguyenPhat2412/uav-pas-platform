@@ -7,8 +7,8 @@ import type {Uav} from "@/types/resources";
 import type {MaintenanceSchedule} from "@/features/maintenance/types/maintenance.types";
 import {ScheduleFieldsForm, UavField} from "@/features/maintenance/components/Fields";
 import {ActionFeedback, useMaintenanceAction} from "@/features/maintenance/components/Feedback";
-import {businessToday, positiveId, scheduleInput} from "@/features/maintenance/utils/workflows";
-import {maintenanceService as service} from "@/features/maintenance/services/maintenance.service";
+import {businessToday, positiveId} from "@/features/maintenance/utils/workflows";
+import {maintenanceService as service} from '@/lib/api/services';
 import {useI18n} from '@/contexts/I18nContext';
 
 export function ScheduleForm({schedule, uavId: initialUavId, uavs, canRead, onClose, refresh}: {
@@ -33,13 +33,6 @@ export function ScheduleForm({schedule, uavId: initialUavId, uavs, canRead, onCl
     }}>
         <form className="space-y-4" onSubmit={event => {
             event.preventDefault();
-            try {
-                positiveId(uavId, t);
-                scheduleInput(fields, t);
-            } catch (error) {
-                action.setError(error instanceof Error ? error.message : t('opsAssets.maintenance.invalidInput'));
-                return;
-            }
             if (conflicted) return;
             void action.run(async () => {
                 try {

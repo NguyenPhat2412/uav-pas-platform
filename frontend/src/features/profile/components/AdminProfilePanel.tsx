@@ -7,10 +7,10 @@ import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {displayLabel} from '@/components/shared/presentation';
 import {QueryState} from '@/components/data/WorkspaceState';
-import {RequiredMark} from '@/components/shared/RequiredMark';
-import {profileError, validateProfile} from '@/features/profile/forms/profile-form';
-import {profileService} from '@/features/profile/services/profile.service';
-import type {ProfileErrors, ProfileFields} from '@/features/profile/types/profile.interface';
+import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
+import {profileError} from '@/features/profile/forms/profile-form';
+import {profileService} from '@/lib/api/services';
+import type {ProfileErrors, ProfileFields} from '@/features/profile/types/profile.types';
 import {PasswordChangeCard} from '@/features/profile/components/PasswordChangeCard';
 import {TwoFactorSettingsCard} from '@/features/profile/components/TwoFactorSettingsCard';
 
@@ -39,18 +39,18 @@ export function AdminProfilePanel() {
     const submit = async (e: FormEvent) => {
         e.preventDefault();
         setSaved(false);
-        const found = validateProfile(fields, tp);
-        setErrors(found);
-        if (Object.keys(found).length) return;
+        setErrors({});
         try {
             await save.mutateAsync();
             setSaved(true);
             void refreshUser();
-        } catch {
-            /* Shown below. */
+        } catch (error) {
+            // Field errors go next to their inputs; anything else is shown below the form.
+            const found = profileError(error, tp);
+            if (found.fields) setErrors(found.fields);
         }
     };
-    const saveError = save.error ? profileError(save.error, tp) : null;
+    const saveError = save.error && !profileError(save.error, tp).fields ? profileError(save.error, tp) : null;
     const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none';
 
     return <div className="grid gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 lg:grid-cols-2">
@@ -65,13 +65,13 @@ export function AdminProfilePanel() {
                     <dt className="text-slate-500">{t('admin.profile.email')}</dt><dd className="m-0 break-all text-slate-900">{user?.email}</dd>
                     <dt className="text-slate-500">{t('admin.profile.role')}</dt><dd className="m-0 text-slate-900">{displayLabel(user?.role)}</dd>
                 </dl>
-                <label className="block text-[13px] font-semibold text-slate-600">{t('admin.profile.fullName')}
-                    <input maxLength={100} value={fields.fullName} aria-invalid={!!errors.fullName}
+                <label className="block text-[13px] font-semibold text-slate-600">{t('admin.profile.fullName')}<OptionalMark/>
+                    <input value={fields.fullName} aria-invalid={!!errors.fullName}
                            onChange={e => setFields(f => ({...f, fullName: e.target.value}))} className={field}/>
                     {errors.fullName && <span className="mt-1 block text-xs font-normal text-red-700">{errors.fullName}</span>}
                 </label>
                 <label className="block text-[13px] font-semibold text-slate-600">{t('admin.profile.phone')}<RequiredMark/>
-                    <input type="tel" maxLength={20} value={fields.phoneNumber} aria-invalid={!!errors.phoneNumber}
+                    <input type="tel" value={fields.phoneNumber} aria-invalid={!!errors.phoneNumber}
                            onChange={e => setFields(f => ({...f, phoneNumber: e.target.value}))} className={field}/>
                     {errors.phoneNumber && <span className="mt-1 block text-xs font-normal text-red-700">{errors.phoneNumber}</span>}
                 </label>

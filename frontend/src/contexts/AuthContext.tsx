@@ -3,29 +3,11 @@
 import {clearWelcomeFlags} from '@/lib/welcome-flag';
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
-import type {AuthResponse, RegisterRequest, UserResponse} from "@/features/auth/types/auth.types";
-import {authService} from "@/features/auth/services/auth.service";
+import type {AuthContextType, AuthResponse, RegisterRequest, UserResponse} from "@/features/auth/types/auth.types";
+import {authService} from '@/lib/api/services';
 import {apiClient, PERMISSIONS_EVENT, SESSION_EVENT, setAuthSession} from "@/lib/api";
 import {toast} from '@/contexts/ToastContext';
 import {useI18n} from '@/contexts/I18nContext';
-
-interface AuthContextType {
-    user: UserResponse | null;
-    token: string | null;
-    isLoading: boolean;
-    isAuthenticated: boolean;
-    permissions: string[];
-    permissionsReady: boolean;
-    permissionError: Error | null;
-    can: (code: string) => boolean;
-    refreshPermissions: () => Promise<unknown>;
-    /** Re-reads the signed-in user, e.g. after the profile name changed; ignored if the session switched meanwhile. */
-    refreshUser: () => Promise<void>;
-    login: (usernameOrEmail: string, password: string) => Promise<AuthResponse>;
-    register: (data: RegisterRequest) => Promise<UserResponse>;
-    completeAuth: (response: AuthResponse) => AuthResponse;
-    logout: () => Promise<void>;
-}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

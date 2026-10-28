@@ -12,7 +12,7 @@ export function ServicePlanCards({plans, currentPlanCode, onSelect, pendingCode}
     pendingCode?: string | null;
 }) {
     const {t, formatCurrency} = useI18n();
-    return <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-px border border-slate-200 bg-slate-200">
+    return <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-px bg-slate-200">
         {plans.map(plan => {
             // A visual editorial highlight, independent of the customer's subscribed plan.
             const featured = plan.active && plan.code === 'PRO';

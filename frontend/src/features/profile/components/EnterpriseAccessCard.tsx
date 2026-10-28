@@ -11,12 +11,12 @@ export function EnterpriseAccessCard() {
     const {t} = useI18n();
     const {user, permissions} = useAuth();
     const {quota} = useBilling();
-    return <section className="border border-border bg-card" aria-labelledby="access-title">
-        <header className="border-b border-border px-5 py-4">
-            <h2 id="access-title" className="m-0 flex items-center gap-2 text-base font-bold text-slate-900">
-                <ShieldCheck size={18} className="text-primary" aria-hidden="true"/>{t('enterprise.accessTitle')}</h2>
+    return <section className="flex h-full flex-col bg-card" aria-labelledby="access-title">
+        <header className="border-b border-slate-200 bg-slate-50/70 px-4 py-3">
+            <h2 id="access-title" className="m-0 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-800">
+                <ShieldCheck size={17} className="text-primary" aria-hidden="true"/>{t('enterprise.accessTitle')}</h2>
         </header>
-        <div className="grid gap-5 p-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+        <div className="grid flex-1 gap-5 p-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)] sm:p-5">
             <dl className="m-0 grid gap-3 text-sm">
                 <div><dt className="text-[13px] text-slate-500">{t('enterprise.role')}</dt><dd className="m-0 font-semibold">{displayLabel(user?.role)}</dd></div>
                 <div><dt className="text-[13px] text-slate-500">{t('enterprise.plan')}</dt>

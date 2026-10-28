@@ -1,0 +1,185 @@
+{
+  "adminPlatform": {
+    "nav": {
+      "alerts": "Alert center",
+      "deviceKeys": "Device keys"
+    },
+    "common": {
+      "cancel": "Cancel"
+    },
+    "settings": {
+      "pending": "{count} unsaved changes",
+      "noPending": "No unsaved changes",
+      "fixErrors": "{count} values are invalid. Fix them before saving.",
+      "history": "History",
+      "historyTitle": "Change history: {name}",
+      "historyEmpty": "No changes recorded yet.",
+      "emptyValue": "(empty)",
+      "changedTo": "changed to",
+      "on": "On",
+      "off": "Off",
+      "groups": {
+        "SAFETY": "Safety & flight limits",
+        "OPERATIONS": "Operations & dispatch",
+        "MAP": "Map & GIS configuration",
+        "AI": "AI & KV260 edge processing",
+        "BILLING": "Billing & invoices",
+        "CONTACT": "Public contact details",
+        "OTHER": "Other settings"
+      },
+      "hint": {
+        "INTEGER": "Whole number",
+        "DECIMAL": "Decimal number",
+        "PHONE": "Phone number",
+        "EMAIL": "Email address",
+        "URL": "http(s) link",
+        "between": "from {min} to {max}",
+        "atLeast": "at least {min}",
+        "atMost": "at most {max}",
+        "pattern": "Format: {pattern}",
+        "maxLength": "up to {max} characters",
+        "emptyEnv": "Leave empty to use the environment value",
+        "emptyHidden": "Leave empty to hide",
+        "public": "Shown publicly"
+      },
+      "errors": {
+        "required": "A value is required.",
+        "integer": "Must be a whole number.",
+        "decimal": "Must be a decimal number (use a dot).",
+        "range": "Value is outside the allowed range.",
+        "boolean": "Only true or false.",
+        "choice": "Not one of the allowed choices.",
+        "phone": "Not a valid phone number.",
+        "email": "Not a valid email address.",
+        "url": "The link must start with http:// or https://.",
+        "length": "Length is out of range.",
+        "format": "Invalid format."
+      },
+      "labels": {
+        "billing_bank_bin": "Bank BIN (NAPAS)",
+        "billing_bank_name": "Bank name",
+        "billing_bank_account_number": "Receiving account number",
+        "billing_bank_account_name": "Account holder name",
+        "billing_vat_rate": "VAT rate",
+        "contact_dispatch_hotline": "24/7 dispatch hotline",
+        "contact_email": "Contact email",
+        "contact_address": "Contact address",
+        "map_default_basemap": "Default basemap layer",
+        "map_default_center_lat": "Default map center latitude",
+        "map_default_center_lng": "Default map center longitude",
+        "map_default_zoom": "Default map zoom level",
+        "map_show_scale_bar": "Show distance scale bar",
+        "map_show_station_radius": "Show UAV station coverage radius",
+        "map_station_coverage_radius_m": "Station coverage radius (m)"
+      },
+      "notes": {
+        "billing_vat_rate": "Enter a fraction: 0.10 = 10%",
+        "billing_bank_bin": "Exactly 6 digits",
+        "billing_bank_account_number": "4–19 letters or digits",
+        "map_default_center_lat": "WGS84 latitude (e.g. 21.0136 — Hoa Lac)",
+        "map_default_center_lng": "WGS84 longitude (e.g. 105.5259 — Hoa Lac)",
+        "map_station_coverage_radius_m": "In meters (m)"
+      },
+      "options": {
+        "EDGE_PREFERRED": "Prefer edge",
+        "EDGE_ONLY": "Edge only",
+        "CLOUD_PREFERRED": "Prefer server",
+        "CLOUD_ONLY": "Server only",
+        "VND": "VND (Vietnamese dong)",
+        "streets": "Streets (OpenStreetMap)",
+        "satellite": "Satellite (Esri World Imagery)",
+        "terrain": "Terrain (OpenTopoMap)",
+        "dark": "Tactical Dark (Carto Dark)"
+      }
+    },
+    "deviceKeys": {
+      "title": "Device API keys",
+      "intro": "Ground stations and UAV gateways use device keys to push telemetry. A key can only submit telemetry; it cannot call any other API.",
+      "create": "Create key",
+      "showRevoked": "Show revoked keys",
+      "empty": "No device keys yet.",
+      "columns": {
+        "name": "Name",
+        "key": "Key",
+        "uav": "UAV",
+        "status": "Status",
+        "lastUsed": "Last used",
+        "expires": "Expires",
+        "actions": "Actions"
+      },
+      "createdBy": "Created by {user} · {date}",
+      "anyUav": "Any UAV",
+      "status": {
+        "ACTIVE": "Active",
+        "EXPIRED": "Expired",
+        "REVOKED": "Revoked"
+      },
+      "never": "Never",
+      "noExpiry": "No expiry",
+      "revoke": "Revoke",
+      "revokeTitle": "Revoke device key",
+      "revokeConfirm": "Revoke \"{name}\" ({prefix}…)? Devices using this key are rejected immediately. This can't be undone.",
+      "createTitle": "Create device key",
+      "form": {
+        "name": "Key name",
+        "namePlaceholder": "e.g. Hoa Lac station – gateway 1",
+        "uav": "Bind to UAV",
+        "uavHint": "Bind each key to one UAV. \"Any UAV\" lets the key report telemetry for every UAV.",
+        "expiresAt": "Expires (optional)",
+        "expiresHint": "Leave empty for a key that doesn't expire. Server time."
+      },
+      "createdTitle": "Key created",
+      "onceWarning": "This is the only time the key is shown. Copy it to the device now; only its hash is stored.",
+      "secretLabel": "Device key",
+      "copy": "Copy",
+      "copied": "Copied",
+      "usage": "Send it in the X-Device-Key header when calling POST /api/v1/uavs/{id}/telemetry.",
+      "done": "I've saved the key"
+    },
+    "alerts": {
+      "title": "Alert center",
+      "viewAll": "Open alert center",
+      "severity": {
+        "CRITICAL": "Critical",
+        "WARNING": "Warning",
+        "INFO": "Info"
+      },
+      "sources": {
+        "FLEET": "Fleet",
+        "MAINTENANCE": "Maintenance",
+        "WEBHOOK": "Webhooks",
+        "FINANCE": "Financial events",
+        "BILLING": "Invoices",
+        "SYSTEM": "System",
+        "SECURITY": "Security"
+      },
+      "filters": {
+        "severity": "Severity",
+        "source": "Source",
+        "all": "All"
+      },
+      "generatedAt": "Updated at {time}",
+      "refresh": "Refresh",
+      "none": "Nothing needs attention.",
+      "noneMatching": "No alerts match the filters.",
+      "since": "Since {time}",
+      "open": "Resolve",
+      "messages": {
+        "UAV_BATTERY_LOW": "UAV {serial}: battery {battery}% is below the {threshold}% safety threshold",
+        "UAV_TELEMETRY_STALE": "UAV {serial} is in flight but telemetry has been silent for {minutes} min",
+        "UAV_TELEMETRY_MISSING": "UAV {serial} is in flight but has never reported telemetry",
+        "MAINTENANCE_OVERDUE": "UAV {serial}: \"{title}\" is {days} days overdue",
+        "WEBHOOK_DELIVERIES_FAILED": "{count} webhook deliveries failed in the last 24 hours",
+        "WEBHOOK_DELIVERIES_STUCK": "{count} webhook deliveries are stuck in the queue",
+        "FINANCIAL_OUTBOX_FAILED": "{count} financial events failed to process",
+        "FINANCIAL_OUTBOX_LAGGING": "{count} financial events have waited more than {minutes} min",
+        "INVOICES_OVERDUE": "{count} invoices are past due (oldest {days} days)",
+        "DEVICE_KEY_EXPIRING": "Device key \"{name}\" expires in {hours} h",
+        "HEALTH_COMPONENT_DOWN": "{component} is down",
+        "HEALTH_COMPONENT_DEGRADED": "{component} is degraded",
+        "HEALTH_COMPONENT_UNKNOWN": "{component} status is unknown",
+        "ALERT_SOURCE_UNAVAILABLE": "Couldn't read alert source: {source}"
+      }
+    }
+  }
+}

@@ -1,9 +1,9 @@
 'use client';
-import {useSidebarShortcut} from '@/components/layout/useSidebarShortcut';
+import {useEffect} from 'react';
+import {useSidebarController} from '@/components/layout/useSidebarController';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import {AssistantWidget} from '@/features/assistant/components/AssistantWidget';
 import Link from 'next/link';
-import {useEffect, useRef, useState} from 'react';
 import {usePathname, useRouter} from 'next/navigation';
 import {
     Menu,
@@ -18,12 +18,14 @@ import {DispatchHotline} from "@/components/customer/DispatchHotline";
 import {useSidebarCounts} from "@/components/customer/useSidebarCounts";
 import {CustomerAccountMenu} from "@/components/customer/CustomerAccountMenu";
 import {NotificationBell} from "@/components/notifications/NotificationBell";
+import {PortalSwitcher} from "@/components/layout/PortalSwitcher";
+import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {
     CUSTOMER_SIDEBAR_GROUPS,
     CUSTOMER_SIDEBAR_ROUTES,
     resolveSidebarActiveItem,
 } from '@/components/layout/sidebar-routes';
-import {useCustomerProfile} from "@/features/profile/hooks/profile-query";
+import {useCustomerProfile} from '@/lib/query/customer';
 import {Button} from "@/components/customer/ui";
 
 // Cấu hình routes của Sidebar Khách hàng (bao gồm /billing, /notifications, v.v.)
@@ -36,78 +38,23 @@ export function AppShell({children}: { children: React.ReactNode }) {
     const {user, can, permissionsReady} = useAuth();
     const {t} = useI18n();
     const profile = useCustomerProfile();
-    const [collapsed, setCollapsed] = useState(false);
-    const [open, setOpen] = useState(false);
-    const menuButton = useRef<HTMLButtonElement>(null);
-    const rail = useRef<HTMLElement>(null);
+    const {open, setOpen, railCollapsed, toggleCollapsed, shortcut, menuButton, rail, navList} =
+        useSidebarController('uav_customer_sidebar_collapsed');
+
+    // Opts the customer portal into the shared shape and surface scale (see globals.css).
     useEffect(() => {
-        if (!open) return;
-        const trigger = menuButton.current;
-        const previousOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-        rail.current?.querySelector<HTMLButtonElement>('.rail-close')?.focus();
-        const close = () => {
-            setOpen(false);
-            menuButton.current?.focus();
-        };
-        const keydown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') close();
-            if (event.key !== 'Tab') return;
-            const items = [...(rail.current?.querySelectorAll<HTMLElement>('a,button:not(:disabled)') ?? [])].filter(el => el.getClientRects().length);
-            const first = items[0], last = items[items.length - 1];
-            if (event.shiftKey && document.activeElement === first) {
-                event.preventDefault();
-                last?.focus();
-            } else if (!event.shiftKey && document.activeElement === last) {
-                event.preventDefault();
-                first?.focus();
-            }
-        };
-        const desktop = window.matchMedia('(min-width: 901px)');
-        const resize = () => {
-            if (desktop.matches) setOpen(false);
-        };
-        desktop.addEventListener('change', resize);
-        document.addEventListener('keydown', keydown);
+        const root = document.documentElement;
+        root.dataset.portal = 'customer';
         return () => {
-            document.body.style.overflow = previousOverflow;
-            requestAnimationFrame(() => trigger?.focus());
-            document.removeEventListener('keydown', keydown);
-            desktop.removeEventListener('change', resize);
+            delete root.dataset.portal;
         };
-    }, [open]);
-
-    useEffect(() => {
-        try {
-            const isParamCollapsed = typeof window !== 'undefined' && window.location.search.includes('collapsed=true');
-            const saved = localStorage.getItem('uav_customer_sidebar_collapsed');
-            if (isParamCollapsed) {
-                setCollapsed(true);
-            } else if (saved !== null) {
-                setCollapsed(saved === 'true');
-            }
-        } catch {
-        }
     }, []);
-
-    const toggleCollapsed = () => {
-        setCollapsed(prev => {
-            const next = !prev;
-            try {
-                localStorage.setItem('uav_customer_sidebar_collapsed', String(next));
-            } catch {
-            }
-            return next;
-        });
-    };
-    const shortcut = useSidebarShortcut(toggleCollapsed);
 
     const name = profile.data?.fullName || user?.fullName || user?.username || t('common.appTitle');
     const visibleNav = navItems.filter(item => !item.permission || (permissionsReady && can(item.permission)));
     const counts = useSidebarCounts();
     const badgeText = (value: number) => value > 99 ? '99+' : String(value);
     const activeNav = resolveSidebarActiveItem(visibleNav, pathname);
-    const railCollapsed = collapsed && !open;
 
     return (
         <div className="flex min-h-screen bg-background text-foreground">
@@ -120,8 +67,8 @@ export function AppShell({children}: { children: React.ReactNode }) {
             <aside
                 ref={rail}
                 id="customer-navigation"
-                className={`fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-all duration-200 lg:sticky lg:top-0 lg:h-screen ${
-                    railCollapsed ? 'w-[60px]' : 'w-[220px]'
+                className={`fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-all duration-200 lg:sticky lg:top-0 lg:z-40 lg:h-screen ${
+                    railCollapsed ? 'w-[60px]' : 'w-[min(280px,85vw)] lg:w-[220px]'
                 } ${open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}`}
             >
                 <div className={`mb-2 flex items-center border-b border-slate-100 pb-2 ${railCollapsed ? 'flex-col justify-center gap-1.5' : 'justify-between gap-1.5'}`}>
@@ -160,7 +107,12 @@ export function AppShell({children}: { children: React.ReactNode }) {
                         <X size={16}/>
                     </button>
                 </div>
-                <nav aria-label={t('shell.customerSection')} className="flex flex-1 flex-col gap-2.5 overflow-y-auto">
+                <div className="mb-2 space-y-2 border-b border-slate-100 pb-2.5 md:hidden">
+                    <PortalSwitcher currentPortal="customer" variant="drawer"/>
+                    <HeaderSearch variant="drawer" items={visibleNav.map(item => ({href: item.href, label: t(`nav.${item.key}`) || item.defaultLabel || item.key, group: t(`nav.groups.${item.group}`)}))}/>
+                    <LanguageSwitcher variant="compact" className="sm:hidden"/>
+                </div>
+                <nav ref={navList} aria-label={t('shell.customerSection')} className="flex flex-1 flex-col gap-2.5 overflow-y-auto">
                     {navGroups.map((group, idx) => {
                         const items = visibleNav.filter(item => item.group === group);
                         if (!items.length) return null;
@@ -171,7 +123,7 @@ export function AppShell({children}: { children: React.ReactNode }) {
                                 {railCollapsed ? (
                                     idx > 0 ? <hr className="my-1.5 border-slate-100"/> : null
                                 ) : (
-                                    <div id={`nav-group-${group}`} className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none">
+                                    <div id={`nav-group-${group}`} className="mb-1 px-2 text-[11px] font-semibold text-slate-400 leading-none">
                                         {t(`nav.groups.${group}`)}
                                     </div>
                                 )}
@@ -209,14 +161,14 @@ export function AppShell({children}: { children: React.ReactNode }) {
             </aside>
             {open && (
                 <button
-                    className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-xs lg:hidden"
+                    className="fixed inset-0 z-[55] bg-slate-900/40 backdrop-blur-xs lg:hidden"
                     aria-label={t('shell.closeNavigation')}
                     onClick={() => setOpen(false)}
                 />
             )}
-            <div className="flex min-w-0 flex-1 flex-col" inert={open}>
-                <header className="sticky top-0 z-20 flex min-h-13 items-center justify-between gap-4 border-b border-border bg-card/90 px-4 sm:px-6 backdrop-blur-md">
-                    <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex min-w-0 flex-1 flex-col bg-white" inert={open}>
+                <header className="sticky top-0 z-20 flex min-h-13 items-center justify-between gap-4 border-b border-border bg-card/95 px-4 sm:px-6 backdrop-blur-md">
+                    <div className="flex min-w-0 flex-1 items-center gap-2.5">
                         <button
                             ref={menuButton}
                             type="button"
@@ -228,22 +180,24 @@ export function AppShell({children}: { children: React.ReactNode }) {
                         >
                             <Menu size={18}/>
                         </button>
-                        <div className="truncate text-[13px] text-slate-500">
-                            <span>UAV PAS / {t('shell.customerSection')} / </span>
+                        <div className="min-w-0 truncate whitespace-nowrap text-[13px] text-slate-500">
+                            <span className="hidden xl:inline">UAV PAS / {t('shell.customerSection')} / </span>
                             <strong className="font-semibold text-primary">
                                 {activeNav ? t(`nav.${activeNav.key}`) || activeNav.defaultLabel : t('shell.customerSection')}
                             </strong>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex shrink-0 items-center gap-2 xl:gap-3">
+                        <HeaderSearch items={visibleNav.map(item => ({href: item.href, label: t(`nav.${item.key}`) || item.defaultLabel || item.key, group: t(`nav.groups.${item.group}`)}))}/>
+                        <PortalSwitcher currentPortal="customer"/>
                         <DispatchHotline variant="topbar"/>
                         <NotificationBell viewAllHref="/customer/notifications"/>
-                        <LanguageSwitcher variant="compact"/>
+                        <LanguageSwitcher variant="compact" className="hidden sm:inline-flex"/>
                         <CustomerAccountMenu name={name}/>
                     </div>
                 </header>
                 <WelcomeBack/>
-                <main id="content" className="w-full flex-1 outline-none" tabIndex={-1}>
+                <main id="content" className="flex w-full flex-1 flex-col bg-white outline-none" tabIndex={-1}>
                     {children}
                 </main>
                 <AssistantWidget portal="CUSTOMER"/>
@@ -272,14 +226,14 @@ export function PageGuard({children, permission = 'MISSION_VIEW'}: {
     return (
         <AppShell>
             {permission && permissionError ? (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-danger" role="alert">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-red-200 bg-red-50 p-4 text-sm text-danger" role="alert">
                     <span>{t('common.permissionError')}</span>
                     <Button onClick={() => void refreshPermissions()}>{t('common.retry')}</Button>
                 </div>
             ) : permission && !permissionsReady ? (
                 <div className="py-10 text-center text-sm text-slate-500" role="status">{t('common.checkingPermissions')}</div>
             ) : permission && !can(permission) ? (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-medium text-warning" role="alert">
+                <div className="border-b border-amber-200 bg-amber-50 p-4 text-sm font-medium text-warning" role="alert">
                     {t('common.permissionDenied')}
                 </div>
             ) : (

@@ -1,6 +1,7 @@
 export * from "@/components/ui/Button";
 export * from "@/components/ui/Input";
 export * from "@/components/ui/PasswordInput";
+export * from "@/components/ui/FormField";
 export * from "@/components/ui/Badge";
 export * from "@/components/ui/Alert";
 export * from "@/components/ui/Card";

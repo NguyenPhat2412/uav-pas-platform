@@ -3,46 +3,35 @@
 import 'leaflet/dist/leaflet.css';
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {useMutation} from '@tanstack/react-query';
-import type {LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
-import {Layers, Route, ShieldAlert, ShieldCheck} from 'lucide-react';
-import {parseSearchArea, sarService} from '@/features/sar/services/sar.service';
+import type {Control, LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
+import {Route, ShieldAlert, ShieldCheck} from 'lucide-react';
+import {MapLayerToolbar} from '@/components/shared/MapLayerToolbar';
+import {parseSearchArea, sarService} from '@/lib/api/services';
 import {isPersonLabel} from '@/features/sar/components/AiViewfinder';
 import {calculateHaversineDistance, isPointInsideGeofence} from '@/features/sar/utils/sarAlgorithms';
-import type {AiDetection, SarCockpitMission, SarFlightPlan} from '@/features/sar/types/sar.types';
-import type {UavTelemetry} from '@/features/uavs/types/telemetry.types';
+import type {SarFlightPlan, SarTacticalMapProps} from '@/features/sar/types/sar.types';
 import {useI18n} from '@/contexts/I18nContext';
 import {toast} from '@/contexts/ToastContext';
+import {MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
 
-type Basemap = 'streets' | 'satellite';
-const basemaps: Record<Basemap, { url: string; attribution: string }> = {
-    streets: {url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', attribution: '&copy; OpenStreetMap'},
-    satellite: {url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attribution: 'Tiles &copy; Esri'},
-};
 // Leaflet styles vectors through options, so the theme colours are spelled out here.
 const C = {red: '#ab2523', blue: '#004ac6', amber: '#d97706', slate: '#334155', muted: '#94a3b8'};
 const pin = (bg: string, text: string, size = 24) =>
     `<span style="display:flex;width:${size}px;height:${size}px;align-items:center;justify-content:center;background:${bg};color:#fff;font:700 11px system-ui;border:2px solid #fff;box-shadow:0 1px 4px rgb(0 0 0/.4)">${text}</span>`;
 
-interface SarTacticalMapProps {
-    mission: SarCockpitMission;
-    detections: AiDetection[];
-    telemetry: UavTelemetry | null;
-    selectedId: number | null;
-    onSelect: (id: number) => void;
-}
-
 export function SarTacticalMap({mission, detections, telemetry, selectedId, onSelect}: SarTacticalMapProps) {
     const {t, formatNumber} = useI18n();
+    const {config, basemap, setBasemap} = useMapConfig();
     const container = useRef<HTMLDivElement | null>(null);
     const map = useRef<LeafletMap | null>(null);
     const tiles = useRef<TileLayer | null>(null);
     const overlay = useRef<LayerGroup | null>(null);
     const uavLayer = useRef<LayerGroup | null>(null);
+    const scaleControl = useRef<Control.Scale | null>(null);
     const leaflet = useRef<typeof import('leaflet') | null>(null);
     const onSelectRef = useRef(onSelect);
     const [ready, setReady] = useState(false);
-    const [basemap, setBasemap] = useState<Basemap>('streets');
     const [plan, setPlan] = useState<SarFlightPlan | null>(null);
 
     useEffect(() => {
@@ -78,6 +67,7 @@ export function SarTacticalMap({mission, detections, telemetry, selectedId, onSe
         });
         return () => {
             disposed = true;
+            scaleControl.current = null;
             map.current?.remove();
             map.current = null;
             tiles.current = null;
@@ -90,8 +80,15 @@ export function SarTacticalMap({mission, detections, telemetry, selectedId, onSe
         const L = leaflet.current;
         if (!ready || !L || !map.current) return;
         tiles.current?.remove();
-        tiles.current = L.tileLayer(basemaps[basemap].url, {maxZoom: 19, attribution: basemaps[basemap].attribution}).addTo(map.current);
+        const spec = MAP_BASEMAPS[basemap];
+        tiles.current = L.tileLayer(spec.url, {maxZoom: spec.maxZoom, attribution: spec.attribution}).addTo(map.current);
     }, [ready, basemap]);
+
+    useEffect(() => {
+        const L = leaflet.current;
+        if (!ready || !L || !map.current) return;
+        syncScaleControl(L, map.current, scaleControl, config.showScaleBar);
+    }, [ready, config.showScaleBar]);
 
     useEffect(() => {
         const L = leaflet.current;
@@ -155,9 +152,12 @@ export function SarTacticalMap({mission, detections, telemetry, selectedId, onSe
                         className={cn('flex items-center gap-1.5 rounded-control px-3 py-1.5 font-bold text-white transition disabled:opacity-60',
                             plan ? 'bg-primary hover:bg-primary-hover' : 'bg-uav-blue hover:bg-uav-blue-hover')}>
                     <Route size={14} aria-hidden="true"/>{plan ? t('opsShared.sar.map.clearPlan') : t('opsShared.sar.map.generatePlan')}</button>
-                <button type="button" onClick={() => setBasemap(b => b === 'streets' ? 'satellite' : 'streets')}
-                        className="flex items-center gap-1.5 rounded-control border border-border bg-card px-2.5 py-1.5 font-bold text-slate-700 hover:bg-slate-100">
-                    <Layers size={14} aria-hidden="true"/>{t(`opsShared.sar.map.basemap.${basemap === 'streets' ? 'satellite' : 'streets'}`)}</button>
+                <MapLayerToolbar
+                    variant="inline"
+                    basemap={basemap}
+                    onBasemapChange={setBasemap}
+                    onResetView={() => map.current?.setView(lkp, 15)}
+                />
             </div>
         </div>
         <div ref={container} className="relative z-0 min-h-[380px] flex-1" role="application" aria-label={t('opsShared.sar.map.aria', {code: mission.missionCode})}/>

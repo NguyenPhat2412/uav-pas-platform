@@ -10,10 +10,11 @@ const compile = value => `data:text/javascript;base64,${Buffer.from(ts.transpile
         target: ts.ScriptTarget.ES2022
     }
 }).outputText).toString('base64')}`;
+const formatUrl = compile(await source('src/lib/format.ts'));
 const labelsUrl = compile(await source('src/components/shared/presentation.ts'));
 const mediaPolicyUrl = compile(await source('src/lib/api/media-policy.ts'));
-const formsUrl = compile(await source('src/features/missions/utils/workflows.ts'));
-const {failureInput, reservationQuantity, missionEventNote, missionEventNoteLimit} = await import(formsUrl);
+const formsUrl = compile((await source('src/features/missions/utils/workflows.ts')).replace('@/lib/format', formatUrl));
+const {failureInput, reservationQuantity, missionEventNote} = await import(formsUrl);
 const {missionControls} = await import(compile((await source('src/features/missions/utils/presentation.ts')).replace('@/components/shared/presentation', labelsUrl)));
 const routesUrl = compile(await source('src/lib/api/routes.ts'));
 const apiUrl = compile(`
@@ -23,8 +24,8 @@ const apiUrl = compile(`
   export const apiRequest = async () => {};
 `);
 const {requests} = await import(apiUrl);
-const {missionService} = await import(compile((await source('src/features/missions/services/mission.service.ts')).replace('@/lib/api/media-policy', mediaPolicyUrl).replace('@/lib/api', apiUrl).replace('@/features/missions/utils/workflows', formsUrl)));
-const uavWorkflowsUrl = compile(await source('src/features/uavs/utils/workflows.ts'));
+const {missionService} = await import(compile((await source('src/lib/api/missions.ts')).replace('@/lib/api/media-policy', mediaPolicyUrl).replace('@/lib/api', apiUrl).replace('@/features/missions/utils/workflows', formsUrl)));
+const uavWorkflowsUrl = compile((await source('src/features/uavs/utils/workflows.ts')).replace('@/lib/format', formatUrl));
 const {operationsService} = await import(compile((await source('src/lib/api/resources.ts')).replace('@/lib/api', apiUrl).replace('@/features/uavs/utils/workflows', uavWorkflowsUrl)));
 
 test('failure requires assignment, status-update permission, and a permitted nonterminal state', () => {
@@ -53,23 +54,23 @@ test('failure payload trims surrounding whitespace, preserves authored content, 
         notes: 'Đã hạ cánh an toàn.\nCần kiểm tra pin.'
     });
     assert.deepEqual(failureInput('Lỗi cảm biến', '  '), {failureReason: 'Lỗi cảm biến', notes: undefined});
-    assert.equal(failureInput('x'.repeat(500), 'n'.repeat(2000)).notes.length, 2000);
-    for (const value of ['', ' \n ', 'x'.repeat(501)]) assert.throws(() => failureInput(value));
-    assert.throws(() => failureInput('Lỗi cảm biến', 'n'.repeat(2001)));
+    // Length and required rules are the API's (MissionFailureRequest); nothing is cut or refused here.
+    assert.equal(failureInput('x'.repeat(501)).failureReason.length, 501);
 });
-
-test('invalid failure form cannot reach the API; valid form retains the existing endpoint contract', async () => {
+test('failure form goes to the API as authored, which judges it; endpoint contract is unchanged', async () => {
     requests.length = 0;
-    assert.throws(() => missionService.fail(42, '  ', 'Chi tiết'));
-    assert.equal(requests.length, 0);
     await missionService.fail(42, '  Lỗi cảm biến  ', '  Đã thu hồi thiết bị  ');
+    await missionService.fail(42, '  ', 'Chi tiết');
     assert.deepEqual(requests, [{
         method: 'post',
         path: '/api/v1/missions/42/fail',
         body: {failureReason: 'Lỗi cảm biến', notes: 'Đã thu hồi thiết bị'}
+    }, {
+        method: 'post',
+        path: '/api/v1/missions/42/fail',
+        body: {failureReason: '', notes: 'Chi tiết'}
     }]);
 });
-
 test('completion sends equipment condition without converting it into an inventory action', async () => {
     requests.length = 0;
     await missionService.complete(42, 'Đã bàn giao ảnh', 'Cần kiểm tra pin');
@@ -95,25 +96,18 @@ test('ready and start require current operator acceptance in addition to permiss
     }
 });
 
-test('accept sends the version the operator reviewed and rejects invalid revisions', async () => {
+test('accept sends the version the operator reviewed; the API rejects invalid revisions', async () => {
     requests.length = 0;
     await missionService.accept(42, 8);
     assert.deepEqual(requests, [{method: 'post', path: '/api/v1/missions/42/accept', body: {expectedVersion: 8}}]);
-    for (const v of [-1, NaN, undefined]) assert.throws(() => missionService.accept(42, v));
 });
-
-test('completion cannot manufacture missing handover notes or equipment condition', () => {
-    for (const [note, condition] of [['', 'Intact'], ['Done', ''], ['   ', 'Intact'], ['Done', undefined], ['Done', 'x'.repeat(501)]]) {
-        requests.length = 0;
-        assert.throws(() => missionService.complete(42, note, condition));
-        assert.equal(requests.length, 0);
-    }
+test('completion sends what the operator wrote; missing notes or condition are refused by the API', async () => {
+    requests.length = 0;
+    await missionService.complete(42, '  Done  ', undefined);
+    assert.deepEqual(requests[0].body, {completionNote: 'Done', equipmentCondition: ''});
 });
-
-test('timeline notes accept the persisted 500-character boundary and stop oversized payloads before sending', async () => {
-    assert.equal(missionEventNoteLimit, 500);
+test('timeline notes are trimmed and always reach the API, which enforces the 500-character limit', async () => {
     assert.equal(missionEventNote('  ' + 'x'.repeat(500) + '  ').length, 500);
-    assert.throws(() => missionEventNote('x'.repeat(501)));
     const operations = [
         note => missionService.reject(42, note),
         note => missionService.reportConflict(42, note),
@@ -121,21 +115,17 @@ test('timeline notes accept the persisted 500-character boundary and stop oversi
     ];
     for (const operation of operations) {
         requests.length = 0;
-        assert.throws(() => operation('x'.repeat(501)));
-        assert.equal(requests.length, 0);
-        await operation('x'.repeat(500));
+        await operation('x'.repeat(501));
         assert.equal(requests.length, 1);
     }
 });
-
-test('reservation accepts positive whole quantities up to current availability', async () => {
-    for (const value of ['', '0', '-1', '1.5', 'NaN', 'Infinity', '11']) assert.throws(() => reservationQuantity(value, 10), value);
-    assert.throws(() => reservationQuantity('1', 0));
+test('reservation quantity is converted, not judged: the API checks it against availability', async () => {
+    assert.equal(reservationQuantity('3'), 3);
+    assert.equal(reservationQuantity('11'), 11);
     requests.length = 0;
-    await missionService.reserveEquipment(42, 9, reservationQuantity('3', 10));
+    await missionService.reserveEquipment(42, 9, reservationQuantity('3'));
     assert.deepEqual(requests[0].body, {resourceId: 9, quantity: 3});
 });
-
 test('later operator and history pages keep their server pagination parameters', async () => {
     requests.length = 0;
     await operationsService.listOperators(2);
@@ -164,13 +154,8 @@ test('maintenance and transfer affordances exclude mission-owned and unknown UAV
 
 test('maintenance reason boundaries and encoded stale-state contract are preserved', async () => {
     assert.equal(uavChangeReason('  Đã kiểm tra cánh quạt  '), 'Đã kiểm tra cánh quạt');
-    assert.equal(uavChangeReason('x'.repeat(255)).length, 255);
-    for (const reason of ['', '   ', 'x'.repeat(256)]) {
-        requests.length = 0;
-        assert.throws(() => operationsService.maintenanceUav({id: 8, reason, expectedStatus: 'AVAILABLE'}));
-        assert.throws(() => operationsService.completeUavMaintenance({id: 8, reason, expectedStatus: 'MAINTENANCE'}));
-        assert.equal(requests.length, 0);
-    }
+    // Empty or over-255 reasons are refused by the API on the reason field, not here.
+    assert.equal(uavChangeReason('x'.repeat(256)).length, 256);
     requests.length = 0;
     await operationsService.maintenanceUav({id: 8, reason: ' Cánh & pin? kiểm tra ', expectedStatus: 'AVAILABLE'});
     await operationsService.completeUavMaintenance({id: 8, reason: ' Đạt yêu cầu ', expectedStatus: 'MAINTENANCE'});
@@ -202,19 +187,7 @@ test('redispatch requires existing UAV, preflight state, existing assignment and
     }
 });
 
-test('redispatch validates before API and sends expected-current UAV with authored reason', async () => {
-    for (const run of [
-        () => missionService.replaceUav(42, 8, 8, 'Không đổi'),
-        () => missionService.replaceUav(42, 8, NaN, 'Lỗi pin'),
-        () => missionService.replaceUav(42, 8, 9, ' '),
-        () => missionService.replaceUav(42, 0, 9, 'Lỗi pin'),
-        () => missionService.unassignUav(42, 8, 'x'.repeat(501)),
-        () => missionService.unassignUav(42, -1, 'Lỗi pin'),
-    ]) {
-        requests.length = 0;
-        assert.throws(run);
-        assert.equal(requests.length, 0);
-    }
+test('redispatch sends expected-current UAV with authored reason; the API checks ids and reasons', async () => {
     requests.length = 0;
     await missionService.replaceUav(42, 8, 9, '  Thay pin\nKiểm tra trước khi bay.  ');
     await missionService.unassignUav(42, 9, '  Cần bảo trì  ');
@@ -231,7 +204,6 @@ test('redispatch validates before API and sends expected-current UAV with author
         },
     ]);
 });
-
 test('redispatch timeline shows Vietnamese action and preserves the supplied reason', async () => {
     const {eventTitle, eventNote} = await import(labelsUrl);
     assert.equal(eventTitle({eventType: 'UAV_REPLACED'}), 'Thay UAV');
@@ -269,8 +241,6 @@ test('resource redispatch is preflight only and uses the existing granular permi
 
 test('resource redispatch sends the viewed revision and explicit null for removal', async () => {
     requests.length = 0;
-    for (const args of [[-1, 8, 'Lý do'], [1, 0, 'Lý do'], [1, 8, ' '], [1, 8, 'x'.repeat(501)]]) assert.throws(() => missionService.redispatchResource(42, 'operator', ...args));
-    assert.equal(requests.length, 0);
     await missionService.redispatchResource(42, 'operator', 9, 8, ' Đổi ca ');
     await missionService.redispatchResource(42, 'station', 10, null, ' Gỡ trạm ');
     await missionService.redispatchEquipment(42, 11, 17, 18, 3, ' Đổi thiết bị ');
@@ -302,21 +272,14 @@ test('resource redispatch timeline retains meaningful Vietnamese actions and aut
 });
 
 
-test('mission upload rejects disallowed type and decimal overflow before registering', async () => {
-    for (const file of [{name: 'file.txt', type: 'text/plain', size: 5}, {
-        name: 'large.pdf',
-        type: 'application/pdf',
-        size: 100_000_001
-    }]) {
-        requests.length = 0;
-        await assert.rejects(missionService.requestMediaUpload(42, file), /100 MB/);
-        assert.equal(requests.length, 0);
-    }
+test('mission upload registers the file as described; the API applies the type and size policy', async () => {
     requests.length = 0;
     await missionService.requestMediaUpload(42, {name: 'report.pdf', type: 'application/pdf', size: 100_000_000});
-    assert.deepEqual(requests, [{
+    await missionService.requestMediaUpload(42, {name: 'file.txt', type: 'text/plain', size: 5});
+    assert.deepEqual(requests.map(r => r.body.contentType), ['application/pdf', 'text/plain']);
+    assert.deepEqual(requests[0], {
         method: 'post',
         path: '/api/v1/missions/42/media/upload-url',
         body: {originalName: 'report.pdf', contentType: 'application/pdf', size: 100_000_000, type: 'DOCUMENT'}
-    }]);
+    });
 });

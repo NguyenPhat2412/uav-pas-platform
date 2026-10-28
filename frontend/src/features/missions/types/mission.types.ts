@@ -1,5 +1,6 @@
 import type {FlightPlan, FlightPlanInput} from '@/features/missions/types/flight-plan.types';
 import type {PageResponse} from '@/types';
+import type {Equipment, Operator, Station} from '@/types/resources';
 
 export type {PageResponse};
 
@@ -115,6 +116,18 @@ export interface UavService {
     deliveryHours?: number | null;
 }
 
+/** Keyed by request field name, as returned by the backend; nested flight-plan keys look like flightPlan.vertices. */
+export type MissionFormErrors = Partial<Record<keyof MissionInput, string>> & Record<string, string | undefined>;
+export type MissionUpdateInput = Omit<MissionInput, 'missionType' | 'serviceId'>;
+export type MissionTab = 'monitoring' | 'weather' | 'delivery' | 'history';
+export type PlannerTool = 'takeoff' | 'POLYGON' | 'CIRCLE';
+
+export interface FlightGeometry {
+    center: [number, number] | null;
+    areaSquareMeters: number | null;
+    perimeterMeters: number | null;
+}
+
 export interface SignedMediaUrl {
     mediaId: number;
     url: string;
@@ -147,3 +160,37 @@ export interface DispatchResources {
     operatorId?: number;
     reservations: DispatchReservation[];
 }
+
+export interface MissionRequestDetailsData {
+    requestedDate: string;
+    latitude?: number | null;
+    longitude?: number | null;
+    notes?: string | null;
+}
+
+export type RedispatchKind = 'operator' | 'station' | 'equipment';
+
+export interface RedispatchFormState {
+    kind: RedispatchKind;
+    version: number;
+    reservationId?: number;
+    oldEquipmentId?: number;
+    oldQuantity?: number;
+}
+
+export interface ResourceRedispatchProps {
+    snapshot: DispatchResources;
+    stations: Station[];
+    operators: Operator[];
+    equipment: Equipment[];
+    allowed: { operator: boolean; station: boolean; equipment: boolean };
+    disabled: boolean;
+    action: (run: () => Promise<Mission>) => Promise<void>;
+}
+
+export type ExifMetadata = Record<string, unknown> & { latitude?: number; longitude?: number };
+
+export type MissionConfirmationKind = 'reject' | 'conflict' | 'complete' | 'cancel' | 'fail';
+export type MissionNoticeMessage = { key: string; params?: Record<string, string | number> } | { text: string };
+export type MissionDetailSection = 'timeline' | 'media' | 'stations' | 'uavs' | 'equipment' | 'operators';
+

@@ -33,30 +33,25 @@ export function MaterialEditor({order, disabled, onSave, onCancel}: {
     return <form className="space-y-4" aria-label={t('opsAssets.maintenance.materials.form')} onSubmit={event => {
         event.preventDefault();
         setError('');
-        try {
-            onSave(materialInput(items, t));
-        } catch (failure) {
-            setError(failure instanceof Error ? failure.message : t('opsAssets.maintenance.materials.invalid'));
-        }
+        onSave(materialInput(items));
     }}><Feedback error={error}/><p className="text-sm text-slate-600">{t('opsAssets.maintenance.materials.notePrefix')}<strong>{t('opsAssets.maintenance.materials.noteStrong')}</strong>{t('opsAssets.maintenance.materials.noteSuffix')}</p>{items.length === 0 &&
         <p className="rounded-panel bg-slate-50 p-4 text-sm">{t('opsAssets.maintenance.materials.empty')}</p>}{items.map((item, index) => <fieldset key={index}
                                                          className="space-y-3 rounded-panel border border-border p-4 disabled:opacity-70"
                                                          disabled={disabled}>
         <legend className="px-1 text-sm font-semibold">{t('opsAssets.maintenance.materials.line', {line: index + 1})}</legend>
         <div className="grid gap-3 sm:grid-cols-2"><label
-            className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{t('opsAssets.maintenance.materials.name', {line: index + 1})}<RequiredMark/></span><Input required maxLength={160} value={item.name}
+            className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{t('opsAssets.maintenance.materials.name', {line: index + 1})}<RequiredMark/></span><Input aria-required value={item.name}
                                                                              onChange={event => change(index, 'name', event.target.value)}/></label><label
-            className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{t('opsAssets.maintenance.materials.unit', {line: index + 1})}<RequiredMark/></span><Input required maxLength={30}
+            className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{t('opsAssets.maintenance.materials.unit', {line: index + 1})}<RequiredMark/></span><Input aria-required
                                                                                 placeholder={t('opsAssets.maintenance.materials.unitPlaceholder')}
                                                                                 value={item.unit}
                                                                                 onChange={event => change(index, 'unit', event.target.value)}/></label><label
-            className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{t('opsAssets.maintenance.materials.quantity', {line: index + 1})}<RequiredMark/></span><Input required inputMode="decimal"
-                                                                                  type="number" min="0.001" max="10000"
+            className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{t('opsAssets.maintenance.materials.quantity', {line: index + 1})}<RequiredMark/></span><Input aria-required inputMode="decimal"
+                                                                                  type="number"
                                                                                   step="0.001" value={item.quantity}
                                                                                   onChange={event => change(index, 'quantity', event.target.value)}/></label><label
-            className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{t('opsAssets.maintenance.materials.unitPrice', {line: index + 1})}<RequiredMark/></span><Input required inputMode="numeric"
-                                                                                     type="number" min="0"
-                                                                                     max="1000000000" step="1"
+            className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{t('opsAssets.maintenance.materials.unitPrice', {line: index + 1})}<RequiredMark/></span><Input aria-required inputMode="numeric"
+                                                                                     type="number" step="1"
                                                                                      value={item.unitPrice}
                                                                                      onChange={event => change(index, 'unitPrice', event.target.value)}/></label>
         </div>

@@ -3,7 +3,9 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/contexts/AuthContext';
 import {sessionKey} from "@/lib/query";
 import {customerService} from "@/lib/api/customer";
+import {profileService} from "@/lib/api/services";
 import type {MissionInput, MissionStatus, MissionType} from "@/types/customer";
+import type {ProfileFields} from "@/features/profile/types/profile.types";
 
 
 export function useCustomerScope() {
@@ -107,4 +109,29 @@ export function useBilling() {
     });
     const pay = useMutation({mutationFn: (id: number) => customerService.payInvoice(id), retry: false});
     return {quota, invoices, plans, pay};
+}
+
+export function useCustomerProfile() {
+    const {user, key} = useCustomerScope();
+    return useQuery({
+        queryKey: [...key, 'profile'], enabled: !!user, staleTime: 30_000, retry: false,
+        queryFn: ({signal}) => profileService.get(signal)
+    });
+}
+
+export function useUpdateCustomerProfile() {
+    const {key} = useCustomerScope();
+    const client = useQueryClient();
+    const queryKey = [...key, 'profile'];
+    return useMutation({
+        retry: false,
+        mutationFn: ({fields, revision}: {
+            fields: ProfileFields;
+            revision: string
+        }) => profileService.update(fields, revision),
+        onSuccess: profile => {
+            void client.cancelQueries({queryKey});
+            client.setQueryData(queryKey, profile);
+        }
+    });
 }

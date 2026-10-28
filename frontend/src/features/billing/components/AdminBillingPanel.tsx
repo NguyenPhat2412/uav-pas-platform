@@ -1,38 +1,45 @@
 'use client';
 
 import React, {useState} from 'react';
-import {planName} from "@/components/shared/presentation";
+import {planName} from '@/components/shared/presentation';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {AlertCircle, CheckCircle2, Edit3, Search, Users} from 'lucide-react';
-import {adminService} from "@/lib/api/admin";
+import {
+    AlertCircle,
+    CheckCircle2,
+    Edit3,
+    Search,
+    Users,
+} from 'lucide-react';
+import {adminService} from '@/lib/api/admin';
 import {Drawer} from '@/components/data/Drawer';
-import type {UserQuota} from "@/types/admin";
-import {RequiredMark} from "@/components/shared/RequiredMark";
+import type {UserQuota} from '@/types/admin';
+import {RequiredMark} from '@/components/shared/RequiredMark';
 import {useI18n} from '@/contexts/I18nContext';
 import {AdminInvoicesPanel} from '@/features/billing/components/AdminInvoicesPanel';
 import {AdminPlansManager} from '@/features/billing/components/AdminPlansManager';
-import {cn} from '@/lib/utils';
 
-// API route: /api/v1/billing
-function AdminBillingContent() {
+export function AdminQuotasManagerSection() {
     const queryClient = useQueryClient();
     const {t} = useI18n();
     const plansQuery = useQuery({
         queryKey: ['admin', 'billing', 'plans'],
-        queryFn: ({signal}) => adminService.billingPlans(signal)
+        queryFn: ({signal}) => adminService.billingPlans(signal),
     });
     const quotasQuery = useQuery({
         queryKey: ['admin', 'billing', 'quotas'],
-        queryFn: ({signal}) => adminService.billingQuotas(0, signal)
+        queryFn: ({signal}) => adminService.billingQuotas(0, signal),
     });
     const updateQuota = useMutation({
-        mutationFn: ({userId, planCode, flightHoursLimit}: {
+        mutationFn: ({
+            userId,
+            planCode,
+            flightHoursLimit,
+        }: {
             userId: number;
             planCode: string;
-            flightHoursLimit: number
-        }) =>
-            adminService.updateQuota(userId, {planCode, flightHoursLimit}),
+            flightHoursLimit: number;
+        }) => adminService.updateQuota(userId, {planCode, flightHoursLimit}),
         onSuccess: () => queryClient.invalidateQueries({queryKey: ['admin', 'billing', 'quotas']}),
     });
 
@@ -57,132 +64,208 @@ function AdminBillingContent() {
         if (!editingUser) return;
         updateQuota.mutate(
             {userId: editingUser.userId, planCode: newPlan, flightHoursLimit: newLimit},
-            {onSuccess: () => setEditingUser(null)}
+            {onSuccess: () => setEditingUser(null)},
         );
     };
 
-    const filteredQuotas = quotas.filter(q =>
-        (q.fullName ?? '').toLowerCase().includes(search.toLowerCase()) ||
-        q.username.toLowerCase().includes(search.toLowerCase())
+    const filteredQuotas = quotas.filter(
+        (q) =>
+            (q.fullName ?? '').toLowerCase().includes(search.toLowerCase()) ||
+            q.username.toLowerCase().includes(search.toLowerCase()),
     );
 
+    const totalAllocatedHours = quotas.reduce((sum, q) => sum + (q.flightHoursLimit || 0), 0);
+    const totalUsedHours = quotas.reduce((sum, q) => sum + (q.flightHoursUsed || 0), 0);
+    const highUsageAccounts = quotas.filter(
+        (q) => q.flightHoursLimit > 0 && q.flightHoursUsed / q.flightHoursLimit >= 0.85,
+    ).length;
+
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
+            {/* 4-Card Quota KPI Strip */}
+            <div className="grid grid-cols-1 divide-y divide-border border border-border bg-card sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+                <div className="p-4">
+                    <span className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
+                        TỔNG TÀI KHOẢN ĐƯỢC CẤP QUOTA
+                    </span>
+                    <div className="mt-1 font-mono text-2xl font-bold text-slate-900">
+                        {quotas.length}
+                    </div>
+                    <p className="mt-0.5 text-[11px] text-slate-500">
+                        Đang đồng bộ hạn mức bay theo kỳ cước
+                    </p>
+                </div>
+                <div className="p-4">
+                    <span className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
+                        TỔNG GIỜ BAY ĐÃ CẤP PHÁT
+                    </span>
+                    <div className="mt-1 font-mono text-2xl font-bold text-slate-900">
+                        {totalAllocatedHours.toFixed(1)}h
+                    </div>
+                    <p className="mt-0.5 text-[11px] text-slate-500">
+                        Tổng định mức cam kết SLA toàn hệ thống
+                    </p>
+                </div>
+                <div className="p-4">
+                    <span className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
+                        GIỜ BAY ĐÃ SỬ DỤNG THỰC TẾ
+                    </span>
+                    <div className="mt-1 font-mono text-2xl font-bold text-blue-700">
+                        {totalUsedHours.toFixed(1)}h
+                    </div>
+                    <p className="mt-0.5 text-[11px] text-slate-500">
+                        Tự động khấu trừ khi nhiệm vụ hoàn tất
+                    </p>
+                </div>
+                <div className="p-4">
+                    <span className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
+                        CẢNH BÁO CHẠM NGƯỠNG (&gt;85%)
+                    </span>
+                    <div className="mt-1 font-mono text-2xl font-bold text-amber-700">
+                        {highUsageAccounts}
+                    </div>
+                    <p className="mt-0.5 text-[11px] text-slate-500">
+                        Khách hàng cần nâng cấp hoặc gia hạn Quota
+                    </p>
+                </div>
+            </div>
+
             {isLoading && (
-                <div
-                    className="bg-card border border-border rounded-panel p-6 text-center text-xs text-slate-500">
+                <div className="rounded-panel border border-border bg-card p-6 text-center text-xs text-slate-500">
                     {t('admin.billing.loading')}
                 </div>
             )}
 
             {queryError && !isLoading && (
-                <div
-                    className="bg-rose-50 border border-rose-300 text-rose-700 px-4 py-3 rounded-panel text-xs font-semibold flex items-center gap-2">
-                    <AlertCircle size={16} className="text-rose-500 shrink-0"/>
-                    <span>{t('admin.billing.loadError', {message: queryError instanceof Error ? queryError.message : t('admin.billing.unknownError')})}</span>
+                <div className="flex items-center gap-2 rounded-panel border border-rose-300 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-700">
+                    <AlertCircle size={16} className="shrink-0 text-rose-500" />
+                    <span>
+                        {t('admin.billing.loadError', {
+                            message:
+                                queryError instanceof Error
+                                    ? queryError.message
+                                    : t('admin.billing.unknownError'),
+                        })}
+                    </span>
                 </div>
             )}
 
             {updateQuota.isSuccess && (
-                <div
-                    className="bg-uav-blue-light border border-blue-200 text-uav-blue px-4 py-2.5 rounded-panel text-xs font-semibold flex items-center gap-2">
-                    <CheckCircle2 size={16} className="text-uav-blue"/>
+                <div className="flex items-center gap-2 rounded-panel border border-blue-200 bg-uav-blue-light px-4 py-2.5 text-xs font-semibold text-uav-blue">
+                    <CheckCircle2 size={16} className="text-uav-blue" />
                     <span>{t('admin.billing.quotaUpdated')}</span>
                 </div>
             )}
 
-            <AdminPlansManager/>
-
             {/* User Quotas Management Table */}
-            <div className="bg-card border border-border rounded-panel overflow-hidden">
-                <div
-                    className="p-4 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="overflow-hidden rounded-panel border border-border bg-card">
+                <div className="flex flex-col gap-3 border-b border-border p-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                            <Users size={16} className="text-primary"/> {t('admin.billing.quotasHeading')}
+                        <h3 className="flex items-center gap-2 text-sm font-bold text-slate-900">
+                            <Users size={16} className="text-primary" />{' '}
+                            {t('admin.billing.quotasHeading')}
                         </h3>
-                        <p className="text-xs text-slate-500 mt-0.5">
+                        <p className="mt-0.5 text-xs text-slate-500">
                             {t('admin.billing.quotasIntro')}
                         </p>
                     </div>
 
                     <div className="relative">
-                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
+                        <Search
+                            size={14}
+                            className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
+                        />
                         <input
                             type="text"
                             aria-label={t('admin.billing.searchCustomer')}
                             placeholder={t('admin.billing.searchPlaceholder')}
                             value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            className="bg-slate-50 border border-border rounded-control pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary transition w-60"
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-60 rounded-control border border-border bg-slate-50 py-1.5 pr-3 pl-8 text-xs text-slate-800 placeholder-slate-400 transition focus:border-primary focus:outline-none"
                         />
                     </div>
                 </div>
 
                 <div className="overflow-x-auto" tabIndex={0} aria-label={t('admin.billing.dataTable')}>
                     <table className="w-full border-collapse text-left text-xs">
-                        <thead className="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-border">
-                        <tr>
-                            <th className="px-5 py-3">{t('admin.billing.col.customer')}</th>
-                            <th className="px-5 py-3">{t('admin.billing.col.plan')}</th>
-                            <th className="px-5 py-3">{t('admin.billing.col.monthlyLimit')}</th>
-                            <th className="px-5 py-3">{t('admin.billing.col.flown')}</th>
-                            <th className="px-5 py-3">{t('admin.billing.col.usage')}</th>
-                            <th className="px-5 py-3">{t('admin.billing.col.concurrent')}</th>
-                            <th className="px-5 py-3 text-right">{t('admin.billing.col.actions')}</th>
-                        </tr>
+                        <thead className="border-b border-border bg-slate-50 font-semibold text-slate-600 uppercase">
+                            <tr>
+                                <th className="px-5 py-3">{t('admin.billing.col.customer')}</th>
+                                <th className="px-5 py-3">{t('admin.billing.col.plan')}</th>
+                                <th className="px-5 py-3">{t('admin.billing.col.monthlyLimit')}</th>
+                                <th className="px-5 py-3">{t('admin.billing.col.flown')}</th>
+                                <th className="px-5 py-3">{t('admin.billing.col.usage')}</th>
+                                <th className="px-5 py-3">{t('admin.billing.col.concurrent')}</th>
+                                <th className="px-5 py-3 text-right">
+                                    {t('admin.billing.col.actions')}
+                                </th>
+                            </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                        {filteredQuotas.length === 0 && !isLoading && !queryError && (
-                            <tr>
-                                <td colSpan={7} className="px-5 py-8 text-center text-slate-400">
-                                    {t('admin.billing.noQuotas')}
-                                </td>
-                            </tr>
-                        )}
-                        {filteredQuotas.map(q => {
-                            const ratio = Math.round((q.flightHoursUsed / Math.max(q.flightHoursLimit, 0.01)) * 100);
-                            return (
-                                <tr key={q.userId} className="hover:bg-slate-50/70 transition">
-                                    <td className="px-5 py-3.5">
-                                        <strong
-                                            className="text-slate-900 block font-semibold">{q.fullName ?? q.username}</strong>
-                                        <span className="text-slate-400 tabular-nums text-[11px]">@{q.username}</span>
-                                    </td>
-                                    <td className="px-5 py-3.5">
-                      <span
-                          className="tabular-nums font-bold px-2 py-0.5 rounded-panel text-[11px] bg-blue-50 text-blue-700 border border-border">
-                        {q.planCode}
-                      </span>
-                                    </td>
-                                    <td className="px-5 py-3.5 tabular-nums font-bold text-slate-800">{t('admin.billing.hours', {hours: q.flightHoursLimit})}</td>
-                                    <td className="px-5 py-3.5 tabular-nums text-slate-700">{t('admin.billing.hours', {hours: q.flightHoursUsed})}</td>
-                                    <td className="px-5 py-3.5">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-20 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                                <div
-                                                    className={`h-full ${ratio > 85 ? 'bg-rose-500' : 'bg-blue-600'}`}
-                                                    style={{width: `${Math.min(100, ratio)}%`}}
-                                                />
-                                            </div>
-                                            <span className="tabular-nums text-slate-600 font-semibold">{ratio}%</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-5 py-3.5 tabular-nums text-slate-700">
-                                        {q.concurrentUavsUsed} / {q.concurrentUavsLimit}
-                                    </td>
-                                    <td className="px-5 py-3.5 text-right">
-                                        <button
-                                            type="button"
-                                            onClick={() => handleOpenEdit(q)}
-                                            className="px-2.5 py-1 text-primary hover:bg-primary/5 rounded-control border border-border transition font-medium inline-flex items-center gap-1 cursor-pointer"
-                                        >
-                                            <Edit3 size={12}/> {t('admin.billing.edit')}
-                                        </button>
+                            {filteredQuotas.length === 0 && !isLoading && !queryError && (
+                                <tr>
+                                    <td colSpan={7} className="px-5 py-8 text-center text-slate-400">
+                                        {t('admin.billing.noQuotas')}
                                     </td>
                                 </tr>
-                            );
-                        })}
+                            )}
+                            {filteredQuotas.map((q) => {
+                                const ratio = Math.round(
+                                    (q.flightHoursUsed / Math.max(q.flightHoursLimit, 0.01)) * 100,
+                                );
+                                return (
+                                    <tr key={q.userId} className="transition hover:bg-slate-50/70">
+                                        <td className="px-5 py-3.5">
+                                            <strong className="block font-semibold text-slate-900">
+                                                {q.fullName ?? q.username}
+                                            </strong>
+                                            <span className="text-[11px] text-slate-400 tabular-nums">
+                                                @{q.username}
+                                            </span>
+                                        </td>
+                                        <td className="px-5 py-3.5">
+                                            <span className="rounded-panel border border-border bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700 tabular-nums">
+                                                {q.planCode}
+                                            </span>
+                                        </td>
+                                        <td className="px-5 py-3.5 font-bold text-slate-800 tabular-nums">
+                                            {t('admin.billing.hours', {hours: q.flightHoursLimit})}
+                                        </td>
+                                        <td className="px-5 py-3.5 text-slate-700 tabular-nums">
+                                            {t('admin.billing.hours', {hours: q.flightHoursUsed})}
+                                        </td>
+                                        <td className="px-5 py-3.5">
+                                            <div className="flex items-center gap-2">
+                                                <div className="h-1.5 w-20 overflow-hidden rounded-full bg-slate-100">
+                                                    <div
+                                                        className={`h-full ${
+                                                            ratio > 85
+                                                                ? 'bg-rose-500'
+                                                                : 'bg-blue-600'
+                                                        }`}
+                                                        style={{width: `${Math.min(100, ratio)}%`}}
+                                                    />
+                                                </div>
+                                                <span className="font-semibold text-slate-600 tabular-nums">
+                                                    {ratio}%
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-5 py-3.5 text-slate-700 tabular-nums">
+                                            {q.concurrentUavsUsed} / {q.concurrentUavsLimit}
+                                        </td>
+                                        <td className="px-5 py-3.5 text-right">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleOpenEdit(q)}
+                                                className="inline-flex cursor-pointer items-center gap-1 rounded-control border border-border px-2.5 py-1 font-medium text-primary transition hover:bg-primary/5"
+                                            >
+                                                <Edit3 size={12} /> {t('admin.billing.edit')}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -194,55 +277,79 @@ function AdminBillingContent() {
                     <div className="space-y-4">
                         <div className="space-y-3 text-xs">
                             <div>
-                                <span className="text-slate-500 block mb-1">{t('admin.billing.customer')}</span>
-                                <strong
-                                    className="text-slate-800 text-sm">{editingUser.fullName || editingUser.username}</strong>
+                                <span className="mb-1 block text-slate-500">
+                                    {t('admin.billing.customer')}
+                                </span>
+                                <strong className="text-sm text-slate-800">
+                                    {editingUser.fullName || editingUser.username}
+                                </strong>
                             </div>
 
                             <div>
-                                <label htmlFor="quota-plan" className="text-slate-700 font-semibold block mb-1">{t('admin.billing.servicePlan')}<RequiredMark/></label>
+                                <label
+                                    htmlFor="quota-plan"
+                                    className="mb-1 block font-semibold text-slate-700"
+                                >
+                                    {t('admin.billing.servicePlan')}
+                                    <RequiredMark />
+                                </label>
                                 <select
                                     id="quota-plan"
-                                    required
+                                    aria-required
                                     value={newPlan}
-                                    onChange={e => setNewPlan(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-300 rounded-control p-2 text-xs text-slate-800 focus:outline-none focus:border-primary"
+                                    onChange={(e) => setNewPlan(e.target.value)}
+                                    className="w-full rounded-control border border-slate-300 bg-slate-50 p-2 text-xs text-slate-800 focus:border-primary focus:outline-none"
                                 >
-                                    {plans.map(p => (
-                                        <option key={p.code}
-                                                value={p.code}>{t('admin.billing.planOption', {name: planName(p.name), code: p.code, hours: p.maxMonthlyFlightHours})}</option>
+                                    {plans.map((p) => (
+                                        <option key={p.code} value={p.code}>
+                                            {t('admin.billing.planOption', {
+                                                name: planName(p.name),
+                                                code: p.code,
+                                                hours: p.maxMonthlyFlightHours,
+                                            })}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
 
                             {updateQuota.error && (
-                                <div
-                                    className="bg-rose-50 border border-rose-200 rounded-panel p-2.5 flex items-start gap-2 text-rose-700">
-                                    <AlertCircle size={14} className="shrink-0 mt-0.5"/>
-                                    <span>{t('admin.billing.saveFailed', {message: updateQuota.error instanceof Error ? updateQuota.error.message : t('admin.billing.unknownError')})}</span>
+                                <div className="flex items-start gap-2 rounded-panel border border-rose-200 bg-rose-50 p-2.5 text-rose-700">
+                                    <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                                    <span>
+                                        {t('admin.billing.saveFailed', {
+                                            message:
+                                                updateQuota.error instanceof Error
+                                                    ? updateQuota.error.message
+                                                    : t('admin.billing.unknownError'),
+                                        })}
+                                    </span>
                                 </div>
                             )}
 
                             <div>
-                                <label htmlFor="quota-limit" className="text-slate-700 font-semibold block mb-1">{t('admin.billing.limitLabel')}<RequiredMark/></label>
+                                <label
+                                    htmlFor="quota-limit"
+                                    className="mb-1 block font-semibold text-slate-700"
+                                >
+                                    {t('admin.billing.limitLabel')}
+                                    <RequiredMark />
+                                </label>
                                 <input
                                     id="quota-limit"
-                                    required
+                                    aria-required
                                     type="number"
-                                    min="5"
-                                    max="1000"
                                     value={newLimit}
-                                    onChange={e => setNewLimit(Number(e.target.value))}
-                                    className="w-full bg-slate-50 border border-slate-300 rounded-control p-2 text-xs tabular-nums font-bold text-slate-800 focus:outline-none focus:border-primary"
+                                    onChange={(e) => setNewLimit(Number(e.target.value))}
+                                    className="w-full rounded-control border border-slate-300 bg-slate-50 p-2 text-xs font-bold text-slate-800 tabular-nums focus:border-primary focus:outline-none"
                                 />
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                        <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-2">
                             <button
                                 type="button"
                                 onClick={() => setEditingUser(null)}
-                                className="px-3 py-1.5 text-xs font-medium text-slate-600 border border-border bg-card hover:bg-slate-100 rounded-control transition cursor-pointer"
+                                className="cursor-pointer rounded-control border border-border bg-card px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100"
                             >
                                 {t('admin.billing.cancel')}
                             </button>
@@ -250,9 +357,11 @@ function AdminBillingContent() {
                                 type="button"
                                 disabled={updateQuota.isPending}
                                 onClick={handleSaveQuota}
-                                className="px-3.5 py-1.5 text-xs font-bold text-primary-foreground bg-primary hover:bg-primary-hover rounded-control transition disabled:opacity-50 cursor-pointer"
+                                className="cursor-pointer rounded-control bg-primary px-3.5 py-1.5 text-xs font-bold text-primary-foreground transition hover:bg-primary-hover disabled:opacity-50"
                             >
-                                {updateQuota.isPending ? t('admin.billing.saving') : t('admin.billing.saveChanges')}
+                                {updateQuota.isPending
+                                    ? t('admin.billing.saving')
+                                    : t('admin.billing.saveChanges')}
                             </button>
                         </div>
                     </div>
@@ -262,33 +371,51 @@ function AdminBillingContent() {
     );
 }
 
-function BillingTabs() {
+export function AdminBillingPlansWorkspace() {
     const {t} = useI18n();
-    const [tab, setTab] = useState<'plans' | 'invoices'>('plans');
     return (
-        <div className="space-y-5">
-            <div className="flex border-b border-slate-200" role="tablist" aria-label={t('admin.invoices.tabs.label')}>
-                {(['plans', 'invoices'] as const).map(key => (
-                    <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => setTab(key)}
-                            className={cn('-mb-px border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors',
-                                tab === key ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-900')}>
-                        {t(`admin.invoices.tabs.${key}`)}
-                    </button>
-                ))}
+        <AdminPage
+            title={t('admin.pages.billing.title')}
+            permission="USER_MANAGE"
+            activeResource="/admin/billing/plans"
+        >
+            <div className="space-y-4">
+                <AdminPlansManager />
             </div>
-            {tab === 'plans' ? <AdminBillingContent/> : <AdminInvoicesPanel/>}
-        </div>
+        </AdminPage>
+    );
+}
+
+export function AdminBillingQuotasWorkspace() {
+    const {t} = useI18n();
+    return (
+        <AdminPage
+            title={t('adminNav.billingQuotas')}
+            permission="USER_MANAGE"
+            activeResource="/admin/billing/quotas"
+        >
+            <div className="space-y-4">
+                <AdminQuotasManagerSection />
+            </div>
+        </AdminPage>
+    );
+}
+
+export function AdminBillingInvoicesWorkspace() {
+    const {t} = useI18n();
+    return (
+        <AdminPage
+            title={t('adminNav.billingInvoices')}
+            permission="USER_MANAGE"
+            activeResource="/admin/billing/invoices"
+        >
+            <div className="space-y-4">
+                <AdminInvoicesPanel />
+            </div>
+        </AdminPage>
     );
 }
 
 export default function AdminBillingPage() {
-    return (
-        <AdminPage
-            title="admin.pages.billing.title"
-            permission="PERMISSION_MANAGE"
-            activeResource="billing"
-        >
-            <BillingTabs/>
-        </AdminPage>
-    );
+    return <AdminBillingPlansWorkspace />;
 }

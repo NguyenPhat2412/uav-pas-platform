@@ -1,0 +1,185 @@
+{
+  "adminPlatform": {
+    "nav": {
+      "alerts": "Trung tâm cảnh báo",
+      "deviceKeys": "Khóa thiết bị"
+    },
+    "common": {
+      "cancel": "Hủy"
+    },
+    "settings": {
+      "pending": "{count} thay đổi chưa lưu",
+      "noPending": "Không có thay đổi chưa lưu",
+      "fixErrors": "Còn {count} giá trị không hợp lệ. Vui lòng sửa trước khi lưu.",
+      "history": "Lịch sử",
+      "historyTitle": "Lịch sử thay đổi: {name}",
+      "historyEmpty": "Chưa có thay đổi nào được ghi nhận.",
+      "emptyValue": "(để trống)",
+      "changedTo": "đổi thành",
+      "on": "Bật",
+      "off": "Tắt",
+      "groups": {
+        "SAFETY": "An toàn & giới hạn bay",
+        "OPERATIONS": "Vận hành & điều phối",
+        "MAP": "Bản đồ & hệ thống thông tin địa lý (GIS)",
+        "AI": "AI & xử lý biên KV260",
+        "BILLING": "Thanh toán & hóa đơn",
+        "CONTACT": "Thông tin liên hệ công khai",
+        "OTHER": "Cấu hình khác"
+      },
+      "hint": {
+        "INTEGER": "Số nguyên",
+        "DECIMAL": "Số thập phân",
+        "PHONE": "Số điện thoại",
+        "EMAIL": "Địa chỉ email",
+        "URL": "Đường dẫn http(s)",
+        "between": "từ {min} đến {max}",
+        "atLeast": "tối thiểu {min}",
+        "atMost": "tối đa {max}",
+        "pattern": "Định dạng: {pattern}",
+        "maxLength": "tối đa {max} ký tự",
+        "emptyEnv": "Để trống để dùng biến môi trường",
+        "emptyHidden": "Để trống để ẩn",
+        "public": "Hiển thị công khai"
+      },
+      "errors": {
+        "required": "Bắt buộc nhập giá trị.",
+        "integer": "Phải là số nguyên.",
+        "decimal": "Phải là số thập phân (dấu chấm).",
+        "range": "Giá trị nằm ngoài khoảng cho phép.",
+        "boolean": "Chỉ nhận true hoặc false.",
+        "choice": "Giá trị không nằm trong danh sách.",
+        "phone": "Số điện thoại không hợp lệ.",
+        "email": "Email không hợp lệ.",
+        "url": "Đường dẫn phải bắt đầu bằng http:// hoặc https://.",
+        "length": "Độ dài không hợp lệ.",
+        "format": "Sai định dạng."
+      },
+      "labels": {
+        "billing_bank_bin": "Mã BIN ngân hàng (NAPAS)",
+        "billing_bank_name": "Tên ngân hàng",
+        "billing_bank_account_number": "Số tài khoản nhận",
+        "billing_bank_account_name": "Tên chủ tài khoản",
+        "billing_vat_rate": "Thuế suất VAT",
+        "contact_dispatch_hotline": "Hotline điều phối 24/7",
+        "contact_email": "Email liên hệ",
+        "contact_address": "Địa chỉ liên hệ",
+        "map_default_basemap": "Lớp bản đồ nền mặc định",
+        "map_default_center_lat": "Vĩ độ tâm bản đồ mặc định",
+        "map_default_center_lng": "Kinh độ tâm bản đồ mặc định",
+        "map_default_zoom": "Mức thu phóng (Zoom) mặc định",
+        "map_show_scale_bar": "Hiển thị thước tỷ lệ khoảng cách",
+        "map_show_station_radius": "Hiển thị vòng phủ sóng trạm UAV",
+        "map_station_coverage_radius_m": "Bán kính vùng phủ sóng trạm UAV (m)"
+      },
+      "notes": {
+        "billing_vat_rate": "Nhập dạng phân số: 0.10 = 10%",
+        "billing_bank_bin": "Đúng 6 chữ số",
+        "billing_bank_account_number": "4–19 chữ hoặc số",
+        "map_default_center_lat": "Hệ tọa độ WGS84 (VD: 21.0136 — Hòa Lạc)",
+        "map_default_center_lng": "Hệ tọa độ WGS84 (VD: 105.5259 — Hòa Lạc)",
+        "map_station_coverage_radius_m": "Đơn vị mét (m)"
+      },
+      "options": {
+        "EDGE_PREFERRED": "Ưu tiên xử lý biên",
+        "EDGE_ONLY": "Chỉ xử lý biên",
+        "CLOUD_PREFERRED": "Ưu tiên máy chủ",
+        "CLOUD_ONLY": "Chỉ máy chủ",
+        "VND": "VND (Việt Nam đồng)",
+        "streets": "Đường phố (OpenStreetMap)",
+        "satellite": "Vệ tinh (Esri World Imagery)",
+        "terrain": "Địa hình (OpenTopoMap)",
+        "dark": "Chiến thuật nền tối (Carto Dark)"
+      }
+    },
+    "deviceKeys": {
+      "title": "Khóa API thiết bị",
+      "intro": "Trạm mặt đất và gateway UAV dùng khóa thiết bị để gửi telemetry. Khóa chỉ gửi được telemetry, không truy cập được API khác.",
+      "create": "Tạo khóa",
+      "showRevoked": "Hiện cả khóa đã thu hồi",
+      "empty": "Chưa có khóa thiết bị nào.",
+      "columns": {
+        "name": "Tên",
+        "key": "Khóa",
+        "uav": "UAV",
+        "status": "Trạng thái",
+        "lastUsed": "Dùng lần cuối",
+        "expires": "Hết hạn",
+        "actions": "Thao tác"
+      },
+      "createdBy": "Tạo bởi {user} · {date}",
+      "anyUav": "Mọi UAV",
+      "status": {
+        "ACTIVE": "Đang hoạt động",
+        "EXPIRED": "Đã hết hạn",
+        "REVOKED": "Đã thu hồi"
+      },
+      "never": "Chưa dùng",
+      "noExpiry": "Không hết hạn",
+      "revoke": "Thu hồi",
+      "revokeTitle": "Thu hồi khóa thiết bị",
+      "revokeConfirm": "Thu hồi khóa \"{name}\" ({prefix}…)? Thiết bị đang dùng khóa này sẽ bị từ chối ngay lập tức và không thể khôi phục.",
+      "createTitle": "Tạo khóa thiết bị",
+      "form": {
+        "name": "Tên khóa",
+        "namePlaceholder": "VD: Trạm Hòa Lạc – gateway 1",
+        "uav": "Gắn với UAV",
+        "uavHint": "Nên gắn mỗi khóa với một UAV. \"Mọi UAV\" cho phép gửi telemetry cho bất kỳ UAV nào.",
+        "expiresAt": "Hết hạn (tùy chọn)",
+        "expiresHint": "Để trống nếu khóa không hết hạn. Theo giờ máy chủ."
+      },
+      "createdTitle": "Khóa đã được tạo",
+      "onceWarning": "Đây là lần duy nhất khóa được hiển thị. Hãy sao chép và lưu vào thiết bị ngay; hệ thống chỉ lưu mã băm.",
+      "secretLabel": "Khóa thiết bị",
+      "copy": "Sao chép",
+      "copied": "Đã sao chép",
+      "usage": "Gửi kèm header X-Device-Key khi gọi POST /api/v1/uavs/{id}/telemetry.",
+      "done": "Tôi đã lưu khóa"
+    },
+    "alerts": {
+      "title": "Trung tâm cảnh báo",
+      "viewAll": "Mở trung tâm cảnh báo",
+      "severity": {
+        "CRITICAL": "Nghiêm trọng",
+        "WARNING": "Cảnh báo",
+        "INFO": "Thông tin"
+      },
+      "sources": {
+        "FLEET": "Đội bay",
+        "MAINTENANCE": "Bảo trì",
+        "WEBHOOK": "Webhook",
+        "FINANCE": "Sự kiện tài chính",
+        "BILLING": "Hóa đơn",
+        "SYSTEM": "Hệ thống",
+        "SECURITY": "Bảo mật"
+      },
+      "filters": {
+        "severity": "Mức độ",
+        "source": "Nguồn",
+        "all": "Tất cả"
+      },
+      "generatedAt": "Cập nhật lúc {time}",
+      "refresh": "Làm mới",
+      "none": "Không có vấn đề nào cần xử lý.",
+      "noneMatching": "Không có cảnh báo khớp bộ lọc.",
+      "since": "Từ {time}",
+      "open": "Xử lý",
+      "messages": {
+        "UAV_BATTERY_LOW": "UAV {serial}: pin {battery}% dưới ngưỡng an toàn {threshold}%",
+        "UAV_TELEMETRY_STALE": "UAV {serial} đang bay nhưng mất telemetry {minutes} phút",
+        "UAV_TELEMETRY_MISSING": "UAV {serial} đang bay nhưng chưa từng gửi telemetry",
+        "MAINTENANCE_OVERDUE": "UAV {serial}: \"{title}\" quá hạn bảo trì {days} ngày",
+        "WEBHOOK_DELIVERIES_FAILED": "{count} lần gửi webhook thất bại trong 24 giờ",
+        "WEBHOOK_DELIVERIES_STUCK": "{count} lần gửi webhook bị kẹt trong hàng đợi",
+        "FINANCIAL_OUTBOX_FAILED": "{count} sự kiện tài chính xử lý lỗi",
+        "FINANCIAL_OUTBOX_LAGGING": "{count} sự kiện tài chính chờ quá {minutes} phút",
+        "INVOICES_OVERDUE": "{count} hóa đơn quá hạn thanh toán (lâu nhất {days} ngày)",
+        "DEVICE_KEY_EXPIRING": "Khóa thiết bị \"{name}\" hết hạn trong {hours} giờ",
+        "HEALTH_COMPONENT_DOWN": "{component} đang ngừng hoạt động",
+        "HEALTH_COMPONENT_DEGRADED": "{component} hoạt động không ổn định",
+        "HEALTH_COMPONENT_UNKNOWN": "Không xác định được trạng thái {component}",
+        "ALERT_SOURCE_UNAVAILABLE": "Không đọc được nguồn cảnh báo: {source}"
+      }
+    }
+  }
+}

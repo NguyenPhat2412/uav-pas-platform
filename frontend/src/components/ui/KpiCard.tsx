@@ -1,7 +1,6 @@
 import type {ReactNode} from 'react';
+import type {Tone} from '@/types';
 import {cn} from '@/lib/utils';
-
-type Tone = 'blue' | 'red' | 'amber' | 'slate';
 
 const iconTones: Record<Tone, string> = {
     blue: 'bg-uav-blue-light text-uav-blue border-blue-200',

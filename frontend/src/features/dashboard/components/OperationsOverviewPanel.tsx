@@ -20,12 +20,12 @@ import {useRouter} from 'next/navigation';
 import {AppShell} from '@/components/layout/AppShell';
 import {Spinner, StatusBadge} from '@/components/ui';
 import {useAuth} from '@/contexts/AuthContext';
-import {dashboardService} from '@/features/dashboard/services/dashboard.service';
-import {missionService} from '@/features/missions/services/mission.service';
+import {dashboardService} from '@/lib/api/services';
+import {missionService} from '@/lib/api/services';
 import type {DashboardSummary} from '@/features/dashboard/types/dashboard.types';
 import type {MissionDashboard} from '@/features/missions/types/mission.types';
-import {useCollection} from "@/hooks/useCollections";
-import {TELEMETRY_POLL_MS, telemetryService} from '@/features/uavs/services/telemetry.service';
+import {useCollection} from '@/lib/query/operations';
+import {TELEMETRY_POLL_MS, telemetryService} from '@/lib/api/services';
 import {toStationSlug, toUavSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
 

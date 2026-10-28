@@ -22,14 +22,7 @@ import type {
     WebhookEndpointItem,
 } from "@/types/admin";
 import type {Mission} from "@/types/customer";
-
-const query = (params: Record<string, string | number | undefined>) => {
-    const search = new URLSearchParams();
-    Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== '') search.set(key, String(value));
-    });
-    return search.toString();
-};
+import {buildQueryString as query} from '@/lib/format';
 
 export const adminService = {
     reportMissions: (signal?: AbortSignal) =>

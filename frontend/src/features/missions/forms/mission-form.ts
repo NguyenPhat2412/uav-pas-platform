@@ -1,64 +1,23 @@
 import type {Mission, MissionInput, MissionStatus, MissionType, PageResponse} from "@/types/customer";
 import type {FlightPlan, FlightPlanInput} from "@/features/missions/types/flight-plan.types";
+import type {MissionFormErrors, MissionUpdateInput} from "@/features/missions/types/mission.types";
+import type {Translate} from "@/types";
+import {translateMessage} from "@/lib/format";
+
+export type {MissionFormErrors, MissionUpdateInput, Translate};
 
 export const missionTypes: MissionType[] = ['UAV_RENTAL', 'AREA_INSPECTION', 'AERIAL_RECORDING', 'DATA_COLLECTION', 'OTHER'];
 export const missionStatuses: MissionStatus[] = ['DRAFT', 'PENDING_CONFIRMATION', 'CONFIRMED', 'RESOURCE_RESERVED', 'READY', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'REJECTED', 'FAILED'];
-export const missionLimits = {title: 180, locationName: 255, description: 2000, notes: 2000} as const;
-export type MissionFormErrors = Partial<Record<keyof MissionInput, string>>;
-export type MissionUpdateInput = Omit<MissionInput, 'missionType' | 'serviceId'>;
-export type Translate = (key: string, params?: Record<string, string | number>) => string;
 
 // Without a translator the Vietnamese default is returned, which keeps these helpers usable outside React.
-function message(t: Translate | undefined, key: string, fallback: string, params?: Record<string, string | number>): string {
-    return t ? t(`missions.errors.${key}`, params) : fallback;
-}
+const message = (t: Translate | undefined, key: string, fallback: string, params?: Record<string, string | number>) =>
+    translateMessage(t, `missions.errors.${key}`, fallback, params);
 
-function plannerMessage(t: Translate | undefined, key: string, fallback: string): string {
-    return t ? t(`planner.errors.${key}`) : fallback;
-}
-
-export function localDateToday(now = new Date()): string {
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-}
-
-function validDate(value: string): boolean {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-    const date = new Date(`${value}T00:00:00Z`);
-    return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
-}
-
-function validDateTime(value: string): boolean {
-    const parts = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,6})?)?$/.exec(value);
-    return !!parts && validDate(parts[1]) && Number(parts[2]) < 24 && Number(parts[3]) < 60 && Number(parts[4] ?? 0) < 60;
-}
-
-function comparableDateTime(value: string): string {
-    const [time, fraction = ''] = value.split('.');
-    return `${time.length === 16 ? `${time}:00` : time}.${fraction.padEnd(6, '0')}`;
-}
-
-export function validateMissionForm(form: MissionInput, today = localDateToday(), t?: Translate): MissionFormErrors {
-    const errors: MissionFormErrors = {};
-    if (!form.title.trim()) errors.title = message(t, 'titleRequired', 'Nhập tiêu đề yêu cầu.');
-    else if (form.title.trim().length > missionLimits.title) errors.title = message(t, 'titleTooLong', 'Tiêu đề không được vượt quá 180 ký tự.');
-    if (!form.locationName.trim()) errors.locationName = message(t, 'locationRequired', 'Nhập địa điểm thực hiện.');
-    else if (form.locationName.trim().length > missionLimits.locationName) errors.locationName = message(t, 'locationTooLong', 'Địa điểm không được vượt quá 255 ký tự.');
-    if ((form.description?.length ?? 0) > missionLimits.description) errors.description = message(t, 'descriptionTooLong', 'Mô tả không được vượt quá 2.000 ký tự.');
-    if ((form.notes?.length ?? 0) > missionLimits.notes) errors.notes = message(t, 'notesTooLong', 'Ghi chú không được vượt quá 2.000 ký tự.');
-    if (!validDate(form.requestedDate)) errors.requestedDate = message(t, 'requestedDateInvalid', 'Chọn ngày yêu cầu hợp lệ.');
-    else if (form.requestedDate < today) errors.requestedDate = message(t, 'requestedDatePast', 'Ngày yêu cầu phải từ hôm nay trở đi.');
-    if (!validDateTime(form.startTime)) errors.startTime = message(t, 'startInvalid', 'Chọn ngày và giờ bắt đầu hợp lệ.');
-    if (!validDateTime(form.expectedEndTime)) errors.expectedEndTime = message(t, 'endInvalid', 'Chọn ngày và giờ kết thúc hợp lệ.');
-    else if (!errors.startTime && comparableDateTime(form.expectedEndTime) <= comparableDateTime(form.startTime)) errors.expectedEndTime = message(t, 'endBeforeStart', 'Thời gian kết thúc phải sau thời gian bắt đầu.');
-    if (!missionTypes.includes(form.missionType)) errors.missionType = message(t, 'typeInvalid', 'Chọn loại nhiệm vụ hợp lệ.');
-    if (form.priority && !['LOW', 'NORMAL', 'HIGH', 'URGENT'].includes(form.priority)) errors.priority = message(t, 'priorityInvalid', 'Chọn mức ưu tiên hợp lệ.');
-    if (form.flightPlan && !flightPlanComplete(form.flightPlan)) errors.latitude = plannerMessage(t, 'flightAreaIncomplete', 'Hoàn tất vùng bay trên bản đồ (điểm cất cánh, đa giác ≥ 3 đỉnh hoặc vùng tròn).');
-    if (form.flightPlan && !form.flightPlan.sensors.length) errors.notes = plannerMessage(t, 'sensorRequired', 'Chọn ít nhất một cảm biến.');
-    for (const [key, maximum] of [['latitude', 90], ['longitude', 180]] as const) {
-        const value = form[key];
-        if (value != null && (!Number.isFinite(value) || Math.abs(value) > maximum)) errors[key] = message(t, 'coordinateRange', `Nhập giá trị từ -${maximum} đến ${maximum}.`, {max: maximum});
-    }
-    return errors;
+/** Field errors from the backend (keys are request field names, e.g. title or flightPlan.vertices), or null. */
+export function missionFieldErrors(error: unknown): MissionFormErrors | null {
+    const fields = (error as { fields?: Record<string, string> } | null)?.fields;
+    // Read structurally (not instanceof ApiError) so this module stays import-free for its tests.
+    return fields && Object.keys(fields).length ? fields as MissionFormErrors : null;
 }
 
 /** Whether a flight plan describes a usable area for its type. Kept here so this module stays import-free. */

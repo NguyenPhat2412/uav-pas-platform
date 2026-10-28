@@ -1,0 +1,185 @@
+{
+  "adminPlatform": {
+    "nav": {
+      "alerts": "アラートセンター",
+      "deviceKeys": "デバイスキー"
+    },
+    "common": {
+      "cancel": "キャンセル"
+    },
+    "settings": {
+      "pending": "未保存の変更 {count} 件",
+      "noPending": "未保存の変更はありません",
+      "fixErrors": "{count} 件の値が無効です。保存する前に修正してください。",
+      "history": "履歴",
+      "historyTitle": "変更履歴：{name}",
+      "historyEmpty": "記録された変更はまだありません。",
+      "emptyValue": "（空）",
+      "changedTo": "変更後",
+      "on": "オン",
+      "off": "オフ",
+      "groups": {
+        "SAFETY": "安全・飛行制限",
+        "OPERATIONS": "運用・配車",
+        "MAP": "地図・GIS設定",
+        "AI": "AI・KV260エッジ処理",
+        "BILLING": "請求・請求書",
+        "CONTACT": "公開連絡先",
+        "OTHER": "その他の設定"
+      },
+      "hint": {
+        "INTEGER": "整数",
+        "DECIMAL": "小数",
+        "PHONE": "電話番号",
+        "EMAIL": "メールアドレス",
+        "URL": "http(s) リンク",
+        "between": "{min}〜{max}",
+        "atLeast": "{min} 以上",
+        "atMost": "{max} 以下",
+        "pattern": "形式：{pattern}",
+        "maxLength": "最大 {max} 文字",
+        "emptyEnv": "空欄にすると環境変数の値を使用します",
+        "emptyHidden": "空欄にすると非表示になります",
+        "public": "一般公開されます"
+      },
+      "errors": {
+        "required": "値を入力してください。",
+        "integer": "整数で入力してください。",
+        "decimal": "小数（ピリオド区切り）で入力してください。",
+        "range": "許可された範囲外の値です。",
+        "boolean": "true または false のみ有効です。",
+        "choice": "選択肢にない値です。",
+        "phone": "電話番号が無効です。",
+        "email": "メールアドレスが無効です。",
+        "url": "リンクは http:// または https:// で始めてください。",
+        "length": "文字数が範囲外です。",
+        "format": "形式が正しくありません。"
+      },
+      "labels": {
+        "billing_bank_bin": "銀行BIN（NAPAS）",
+        "billing_bank_name": "銀行名",
+        "billing_bank_account_number": "受取口座番号",
+        "billing_bank_account_name": "口座名義",
+        "billing_vat_rate": "VAT税率",
+        "contact_dispatch_hotline": "24時間配車ホットライン",
+        "contact_email": "連絡先メール",
+        "contact_address": "連絡先住所",
+        "map_default_basemap": "デフォルト背景地図レイヤー",
+        "map_default_center_lat": "デフォルト中心緯度",
+        "map_default_center_lng": "デフォルト中心経度",
+        "map_default_zoom": "デフォルトズームレベル",
+        "map_show_scale_bar": "距離スケールバーを表示",
+        "map_show_station_radius": "UAV基地局カバー圏を表示",
+        "map_station_coverage_radius_m": "UAV基地局カバー半径 (m)"
+      },
+      "notes": {
+        "billing_vat_rate": "小数で入力：0.10 = 10%",
+        "billing_bank_bin": "6桁の数字",
+        "billing_bank_account_number": "英数字4〜19文字",
+        "map_default_center_lat": "WGS84緯度（例：21.0136 — ホアラック）",
+        "map_default_center_lng": "WGS84経度（例：105.5259 — ホアラック）",
+        "map_station_coverage_radius_m": "メートル単位 (m)"
+      },
+      "options": {
+        "EDGE_PREFERRED": "エッジ優先",
+        "EDGE_ONLY": "エッジのみ",
+        "CLOUD_PREFERRED": "サーバー優先",
+        "CLOUD_ONLY": "サーバーのみ",
+        "VND": "VND（ベトナムドン）",
+        "streets": "道路地図 (OpenStreetMap)",
+        "satellite": "衛星写真 (Esri World Imagery)",
+        "terrain": "地形図 (OpenTopoMap)",
+        "dark": "ダーク戦術図 (Carto Dark)"
+      }
+    },
+    "deviceKeys": {
+      "title": "デバイスAPIキー",
+      "intro": "地上局やUAVゲートウェイはデバイスキーでテレメトリを送信します。キーはテレメトリ送信のみ可能で、他のAPIは呼び出せません。",
+      "create": "キーを作成",
+      "showRevoked": "失効したキーも表示",
+      "empty": "デバイスキーはまだありません。",
+      "columns": {
+        "name": "名前",
+        "key": "キー",
+        "uav": "UAV",
+        "status": "状態",
+        "lastUsed": "最終使用",
+        "expires": "有効期限",
+        "actions": "操作"
+      },
+      "createdBy": "{user} が作成 · {date}",
+      "anyUav": "すべてのUAV",
+      "status": {
+        "ACTIVE": "有効",
+        "EXPIRED": "期限切れ",
+        "REVOKED": "失効"
+      },
+      "never": "未使用",
+      "noExpiry": "期限なし",
+      "revoke": "失効させる",
+      "revokeTitle": "デバイスキーを失効",
+      "revokeConfirm": "「{name}」（{prefix}…）を失効させますか？このキーを使うデバイスは直ちに拒否されます。元に戻せません。",
+      "createTitle": "デバイスキーを作成",
+      "form": {
+        "name": "キー名",
+        "namePlaceholder": "例：ホアラック局 – ゲートウェイ1",
+        "uav": "UAVに紐付け",
+        "uavHint": "キーは1機のUAVに紐付けることを推奨します。「すべてのUAV」はどのUAVのテレメトリも送信できます。",
+        "expiresAt": "有効期限（任意）",
+        "expiresHint": "期限なしの場合は空欄。サーバー時刻です。"
+      },
+      "createdTitle": "キーを作成しました",
+      "onceWarning": "キーが表示されるのは今回だけです。今すぐデバイスにコピーしてください。保存されるのはハッシュのみです。",
+      "secretLabel": "デバイスキー",
+      "copy": "コピー",
+      "copied": "コピーしました",
+      "usage": "POST /api/v1/uavs/{id}/telemetry を呼び出す際に X-Device-Key ヘッダーで送信します。",
+      "done": "キーを保存しました"
+    },
+    "alerts": {
+      "title": "アラートセンター",
+      "viewAll": "アラートセンターを開く",
+      "severity": {
+        "CRITICAL": "重大",
+        "WARNING": "警告",
+        "INFO": "情報"
+      },
+      "sources": {
+        "FLEET": "機体",
+        "MAINTENANCE": "保守",
+        "WEBHOOK": "Webhook",
+        "FINANCE": "財務イベント",
+        "BILLING": "請求書",
+        "SYSTEM": "システム",
+        "SECURITY": "セキュリティ"
+      },
+      "filters": {
+        "severity": "重要度",
+        "source": "発生元",
+        "all": "すべて"
+      },
+      "generatedAt": "{time} 更新",
+      "refresh": "更新",
+      "none": "対応が必要な問題はありません。",
+      "noneMatching": "条件に一致するアラートはありません。",
+      "since": "{time} から",
+      "open": "対応する",
+      "messages": {
+        "UAV_BATTERY_LOW": "UAV {serial}：バッテリー {battery}% が安全しきい値 {threshold}% を下回っています",
+        "UAV_TELEMETRY_STALE": "UAV {serial} は飛行中ですが、テレメトリが {minutes} 分途絶えています",
+        "UAV_TELEMETRY_MISSING": "UAV {serial} は飛行中ですが、テレメトリを一度も送信していません",
+        "MAINTENANCE_OVERDUE": "UAV {serial}：「{title}」の保守が {days} 日超過しています",
+        "WEBHOOK_DELIVERIES_FAILED": "過去24時間に Webhook 送信が {count} 件失敗しました",
+        "WEBHOOK_DELIVERIES_STUCK": "Webhook 送信 {count} 件がキューで滞留しています",
+        "FINANCIAL_OUTBOX_FAILED": "財務イベント {count} 件の処理に失敗しました",
+        "FINANCIAL_OUTBOX_LAGGING": "財務イベント {count} 件が {minutes} 分以上待機しています",
+        "INVOICES_OVERDUE": "支払期限を過ぎた請求書が {count} 件あります（最長 {days} 日）",
+        "DEVICE_KEY_EXPIRING": "デバイスキー「{name}」は {hours} 時間後に期限切れになります",
+        "HEALTH_COMPONENT_DOWN": "{component} が停止しています",
+        "HEALTH_COMPONENT_DEGRADED": "{component} が不安定です",
+        "HEALTH_COMPONENT_UNKNOWN": "{component} の状態が不明です",
+        "ALERT_SOURCE_UNAVAILABLE": "アラートの発生元を読み取れません：{source}"
+      }
+    }
+  }
+}

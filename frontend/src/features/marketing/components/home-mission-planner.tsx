@@ -4,10 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {useEffect, useRef, useState} from 'react';
 import {type MissionKind, missionPatterns, surveyPilot} from "@/features/marketing/content/home-content";
+import type {PlannerPlan as Plan, PlannerPoint as Point} from '@/features/marketing/types/marketing.types';
 import {MissionIcon} from "@/features/marketing/components/home-icons";
-
-type Point = [number, number];
-type Plan = { points: Point[]; area?: Point[]; poi?: Point; towers?: Point[]; site?: Point };
 
 const station: Point = [0.1, 0.84];
 
@@ -186,7 +184,7 @@ export function MissionPlanner() {
                     <figcaption className="flex flex-wrap items-center justify-between gap-2 p-3.5 text-xs text-slate-600">
                         <span>{surveyPilot.caption}</span>
                         <a className="font-semibold text-slate-500 hover:text-primary" href={surveyPilot.source} target="_blank" rel="noopener noreferrer">
-                            Ảnh: {surveyPilot.credit} ↗
+                            Ảnh: {surveyPilot.credit}
                         </a>
                     </figcaption>
                 </figure>

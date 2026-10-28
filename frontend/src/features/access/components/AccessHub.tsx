@@ -1,39 +1,14 @@
 'use client';
-import Link from 'next/link';
-import {FileKey2, Grid3x3, KeyRound, UserCog} from 'lucide-react';
 import {AccessControl, TemplateEditor} from "@/features/access/components/PermissionEditor";
 import {Registry} from "@/features/access/components/Registry";
 import {RoleMatrix} from "@/features/access/components/RoleMatrix";
-import {cn} from '@/lib/utils';
-import {useI18n} from '@/contexts/I18nContext';
 
-export type AccessTab = 'accounts' | 'templates' | 'matrix' | 'registry';
+import type {AccessTab} from '@/features/access/types/access.types';
 
-const tabs = [
-    {id: 'accounts', href: '/admin/access-control', label: 'admin.access.tabs.accounts', hint: 'admin.access.tabs.accountsHint', icon: UserCog},
-    {id: 'templates', href: '/admin/access-control/role-templates', label: 'admin.access.tabs.templates', hint: 'admin.access.tabs.templatesHint', icon: KeyRound},
-    {id: 'matrix', href: '/admin/access-control/role-matrix', label: 'admin.access.tabs.matrix', hint: 'admin.access.tabs.matrixHint', icon: Grid3x3},
-    {id: 'registry', href: '/admin/access-control/permissions', label: 'admin.access.tabs.registry', hint: 'admin.access.tabs.registryHint', icon: FileKey2},
-] as const;
+export type {AccessTab};
 
 export function AccessHub({tab}: { tab: AccessTab }) {
-    const {t} = useI18n();
     return <div className="space-y-5">
-        <nav className="grid grid-cols-1 gap-3 md:grid-cols-[repeat(auto-fit,minmax(210px,1fr))]" aria-label={t('admin.access.tabs.nav')}>{tabs.map(item => {
-            const Icon = item.icon;
-            const active = item.id === tab;
-            return <Link key={item.id} href={item.href} aria-current={active ? 'page' : undefined}
-                         className={cn(
-                             'flex items-center gap-3 rounded-control border bg-card px-4 py-3.5 text-foreground transition',
-                             active ? 'border-primary ring-3 ring-primary/12' : 'border-border hover:border-slate-300'
-                         )}>
-                <span className={cn(
-                    'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-panel',
-                    active ? 'bg-uav-red-light text-primary' : 'bg-slate-100 text-slate-500'
-                )} aria-hidden="true"><Icon size={18}/></span>
-                <span className="flex min-w-0 flex-col"><strong className="text-sm">{t(item.label)}</strong><small className="hidden text-xs text-muted md:inline">{t(item.hint)}</small></span>
-            </Link>;
-        })}</nav>
         {tab === 'accounts' && <AccessControl/>}
         {tab === 'templates' && <TemplateEditor/>}
         {tab === 'matrix' && <RoleMatrix/>}

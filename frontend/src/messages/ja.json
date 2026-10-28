@@ -38,7 +38,16 @@
     "vjuUniversity": "日越大学",
     "dutyOfficer": "VJU 当直幹部",
     "welcomeBack": "おかえりなさい！",
-    "welcomeBackMessage": "{name} さん、UAV PAS で良い一日をお過ごしください。"
+    "welcomeBackMessage": "{name} さん、UAV PAS で良い一日をお過ごしください。",
+    "search": {
+      "label": "ページを検索",
+      "placeholder": "ページを検索…",
+      "empty": "該当するページがありません",
+      "recent": "最近",
+      "results": "検索結果",
+      "navigate": "で移動",
+      "select": "で選択"
+    }
   },
   "operationsNavGroups": {
     "command": "作戦指揮・管制",
@@ -57,23 +66,34 @@
     "inventory": "機材庫",
     "media": "メディア",
     "notifications": "通知",
-    "audit": "監査ログ"
+    "audit": "監査ログ",
+    "training": "UAV研修・SOP手順書"
   },
   "adminNavGroups": {
-    "overview": "概要",
+    "overview": "概要・統計",
+    "customer": "顧客・サービス",
+    "operations": "作戦・運用管制",
+    "fleet": "機体・機材",
+    "commerce": "財務・クォータ管理",
     "access": "ユーザーと権限",
-    "system": "システム",
+    "training": "UAV研修・SOPアカデミー",
+    "intelligence": "AI・外部連携",
+    "system": "システム・監査",
     "account": "アカウント",
-    "fleet": "機体"
+    "security": "セキュリティ",
+    "infrastructure": "インフラ"
   },
   "adminNav": {
     "dashboard": "概要",
     "users": "ユーザー",
-    "accessControl": "アクセス権限",
+    "accessControl": "個別アクセス権限",
     "roleTemplates": "ロールテンプレート",
     "roleMatrix": "ロールマトリックス",
     "permissions": "権限一覧",
     "billing": "プラン・クォータ",
+    "billingPlans": "サービスプラン管理",
+    "billingQuotas": "飛行時間クォータ",
+    "billingInvoices": "請求書・決済照合",
     "reports": "レポート・統計",
     "webhooks": "Webhook・連携",
     "settings": "システム設定",
@@ -83,7 +103,25 @@
     "uavs": "UAV機体",
     "services": "サービスカタログ",
     "systemHealth": "システム状態",
-    "aiRouter": "UAVアシスタント"
+    "aiRouter": "AIルーター制御",
+    "aiConversations": "AIチャット監査ログ",
+    "training": "SOP教材管理センター",
+    "trainingCustomer": "顧客ポータル研修",
+    "trainingOperations": "運航・SAR標準手順",
+    "trainingAdmin": "管理・セキュリティ規定",
+    "billingTransactions": "決済・IPN",
+    "billingOutbox": "財務アウトボックス",
+    "securitySessions": "セッションと2FA",
+    "securityPolicy": "ログインポリシー",
+    "securitySecrets": "シークレットと鍵",
+    "deviceKeys": "デバイスAPIキー",
+    "alerts": "アラートセンター",
+    "infrastructure": "インフラ概要",
+    "infrastructureDeployment": "デプロイ",
+    "infrastructureBackups": "バックアップ",
+    "infrastructureStorage": "ファイルストレージ",
+    "infrastructureDatabase": "データベース",
+    "infrastructureEmail": "メール"
   },
   "sidebar": {
     "title": "UAV PAS",
@@ -280,5 +318,42 @@
     "loggedOutSecure": "安全にログアウトしました。",
     "loggedOut": "ログアウトしました。",
     "logoutTitle": "ログアウト"
+  },
+  "publicHeader": {
+    "services": "サービス",
+    "solutions": "ソリューション",
+    "pricing": "料金プラン",
+    "howItWorks": "運用フロー",
+    "about": "プロジェクト概要",
+    "contact": "お問い合わせ",
+    "login": "ログイン",
+    "start": "はじめる",
+    "adminPortal": "管理",
+    "operationsPortal": "運用",
+    "customerPortal": "顧客",
+    "customerPortalUser": "顧客ポータル ({username})"
+  },
+  "publicFooter": {
+    "university": "日越大学（ベトナム国家大学ハノイ校）",
+    "description": "GIS測量サービス、リアルタイムRTKテレメトリ、Kria KV260エッジAI運用を統合するクラウド基盤。",
+    "campusHoaLac": "ホアラックキャンパス：ハノイ市ホアラックハイテクパーク",
+    "campusMyDinh": "ミーディンキャンパス：ハノイ市ナムトゥーリエム区",
+    "exploreHeading": "製品・サービス",
+    "services": "UAV飛行サービス",
+    "solutions": "ソリューション・エッジAI",
+    "pricing": "料金プラン",
+    "howItWorks": "5段階の運用フロー",
+    "portalsHeading": "ポータル・研修",
+    "customerPortal": "顧客ポータル",
+    "operationsPortal": "運用センター",
+    "adminPortal": "管理コンソール",
+    "trainingAcademy": "飛行安全・SOPアカデミー",
+    "supportHeading": "サポート・規約",
+    "about": "プロジェクトについて",
+    "faq": "よくある質問",
+    "contact": "お問い合わせ・手配",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "copyright": "© {year} UAV PAS · 日越大学（VNU）"
   }
 }

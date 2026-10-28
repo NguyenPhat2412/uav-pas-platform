@@ -1,5 +1,5 @@
 'use client';
-import {MEDIA_ACCEPT, MediaFileError, mediaUploadPolicy, mediaUploadRetention, validateMediaFile} from "@/lib/api/media-policy";
+import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention} from "@/lib/api/media-policy";
 import {useCallback, useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {MissionRequestDetails} from '@/features/missions/components/MissionRequestDetails';
@@ -9,22 +9,22 @@ import {MissionTimeline} from "@/components/shared/MissionTimeline";
 import {displayLabel, formatDate, missionHint, terminalStatuses} from "@/components/shared/presentation";
 import {Alert, Button, Spinner} from '@/components/ui';
 import {useAuth} from '@/contexts/AuthContext';
-import {missionService} from '@/features/missions/services/mission.service';
+import {missionService} from '@/lib/api/services';
 import {ResourceRedispatch} from '@/features/missions/components/ResourceRedispatch';
 import type {
     DispatchResources,
     MediaRole,
     Mission,
+    MissionConfirmationKind as Confirmation,
+    MissionDetailSection as Section,
     MissionEvent,
-    MissionMedia
+    MissionMedia,
+    MissionNoticeMessage as Message,
 } from '@/features/missions/types/mission.types';
 import {MissionStatusBadge} from '@/features/missions/components/MissionStatusBadge';
 import {missionControls} from '@/features/missions/utils/presentation';
 import {
     handoverEvidence,
-    missionEventNoteLimit,
-    MissionFormError,
-    missionFormErrorKey,
     reservationQuantity
 } from '@/features/missions/utils/workflows';
 import {collectPages} from '@/lib/api/collection';
@@ -36,9 +36,6 @@ import {RequiredMark} from "@/components/shared/RequiredMark";
 import {parseEntityId} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
 
-type Confirmation = 'reject' | 'conflict' | 'complete' | 'cancel' | 'fail';
-type Message = { key: string; params?: Record<string, string | number> } | { text: string };
-type Section = 'timeline' | 'media' | 'stations' | 'uavs' | 'equipment' | 'operators';
 // Backend error codes with a dedicated explanation under opsMissions.apiErrors.
 const errorCodes = new Set([
     'MISSION_ACCEPTANCE_REQUIRED', 'MISSION_ACCEPTANCE_STALE', 'MISSION_HANDOVER_NOTES_REQUIRED',
@@ -49,7 +46,10 @@ const errorCodes = new Set([
 ]);
 const codeMessage = (err: unknown, fallbackKey: string): Message => {
     const code = err instanceof Error ? err.message : '';
-    return {key: errorCodes.has(code) ? `opsMissions.apiErrors.${code}` : fallbackKey};
+    if (errorCodes.has(code)) return {key: `opsMissions.apiErrors.${code}`};
+    // Rule errors now arrive as readable Vietnamese from the API; show them rather than a generic fallback.
+    if (err instanceof ApiError && code && !/^[A-Z0-9_]+$/.test(code)) return {text: code};
+    return {key: fallbackKey};
 };
 export default function MissionDetailPage() {
     const {id} = useParams<{ id: string }>();
@@ -174,7 +174,7 @@ function MissionDetail({id}: { id: string }) {
         } catch (err) {
             focusMutationError.current = true;
             setRedispatch(null);
-            setError(err instanceof MissionFormError ? err.key ? {key: missionFormErrorKey(err.key), params: err.params} : {text: err.message} : err instanceof ApiError && err.status === 403 ? {key: 'opsMissions.detail.errors.forbidden'} : codeMessage(err, 'opsMissions.detail.errors.actionUnconfirmed'));
+            setError(err instanceof ApiError && err.status === 403 ? {key: 'opsMissions.detail.errors.forbidden'} : codeMessage(err, 'opsMissions.detail.errors.actionUnconfirmed'));
         } finally {
             try {
                 await load();
@@ -194,8 +194,6 @@ function MissionDetail({id}: { id: string }) {
         setUploading(true);
         setError(null);
         try {
-            // Validate here with the translator so a rejected file reports in the portal language.
-            validateMediaFile(file, t);
             const signed = await missionService.requestMediaUpload(missionId, file);
             await missionService.uploadFile(signed.url, file);
             await missionService.confirmMedia(missionId, signed.mediaId);
@@ -203,7 +201,7 @@ function MissionDetail({id}: { id: string }) {
             await load();
         } catch (err) {
             focusMutationError.current = true;
-            setError(err instanceof MediaFileError ? {text: err.message} : codeMessage(err, 'opsMissions.detail.errors.uploadUnconfirmed'));
+            setError(codeMessage(err, 'opsMissions.detail.errors.uploadUnconfirmed'));
             try {
                 await load();
             } catch {
@@ -301,7 +299,7 @@ function MissionDetail({id}: { id: string }) {
                 id: e.id,
                 label: t('opsMissions.detail.resources.equipmentOption', {name: e.name, count: e.availableQuantity})
             })),
-            run: () => missionService.reserveEquipment(mission.id, Number(resourceIds.equipment), reservationQuantity(quantity, selectedEquipment?.availableQuantity ?? 0, t))
+            run: () => missionService.reserveEquipment(mission.id, Number(resourceIds.equipment), reservationQuantity(quantity))
         },
     ];
     const panelClass = 'min-w-0 overflow-hidden rounded-panel border border-border bg-card';
@@ -376,19 +374,18 @@ function MissionDetail({id}: { id: string }) {
                             {confirmation === 'fail' &&
                                 <p className={mutedClass}>{t('opsMissions.detail.failWarning')}</p>}
                             <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{confirmation === 'complete' ? t('opsMissions.detail.note.result') : confirmation === 'fail' ? t('opsMissions.detail.note.failureReason') : t('opsMissions.detail.note.reason')}<RequiredMark/></span>
-                                <textarea autoFocus required disabled={disabled} className={textareaClass} maxLength={missionEventNoteLimit}
+                                <textarea autoFocus aria-required disabled={disabled} className={textareaClass}
                                           value={note} onChange={e => setNote(e.target.value)}/>
-                                <span className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.detail.note.maxLength', {count: missionEventNoteLimit})}</span>
+                                <span className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.detail.note.maxLength', {count: 500})}</span>
                             </label>
                             {confirmation === 'fail' &&
-                                <label className="grid gap-1.5 text-sm font-semibold text-foreground">{t('opsMissions.detail.note.incident')}<textarea disabled={disabled} className={textareaClass} maxLength={2000}
+                                <label className="grid gap-1.5 text-sm font-semibold text-foreground">{t('opsMissions.detail.note.incident')}<textarea disabled={disabled} className={textareaClass}
                                                                          value={extraNote}
                                                                          onChange={e => setExtraNote(e.target.value)}/></label>}
                             {confirmation === 'complete' &&
-                                <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{t('opsMissions.detail.note.equipmentCondition')}<RequiredMark/></span><textarea required disabled={disabled}
+                                <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{t('opsMissions.detail.note.equipmentCondition')}<RequiredMark/></span><textarea aria-required disabled={disabled}
                                                                                  className={textareaClass}
-                                                                                 aria-label={t('opsMissions.detail.note.equipmentCondition')}
-                                                                                 maxLength={500} value={extraNote}
+                                                                                 aria-label={t('opsMissions.detail.note.equipmentCondition')} value={extraNote}
                                                                                  onChange={e => setExtraNote(e.target.value)}/><span
                                     className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.detail.note.equipmentConditionHint')}</span></label>}
                         </>}
@@ -441,8 +438,7 @@ function MissionDetail({id}: { id: string }) {
                             onClick={() => void action(r.run)}>{r.key === 'equipment' ? t('opsMissions.detail.resources.reserve') : t('opsMissions.detail.resources.assign')}</Button></span></label>
                         {r.key === 'equipment' &&
                             <label className="grid gap-2 text-xs font-semibold text-foreground">{t('opsMissions.detail.resources.quantity')}<input className="min-h-11 rounded-control border border-border-input bg-card px-3 text-sm font-normal text-foreground"
-                                                      type="number" aria-label={t('opsMissions.detail.resources.quantity')} inputMode="numeric"
-                                                      min={1} max={selectedEquipment?.availableQuantity} step={1}
+                                                      type="number" aria-label={t('opsMissions.detail.resources.quantity')} inputMode="numeric" step={1}
                                                       disabled={disabled || !selectedEquipment} value={quantity}
                                                       onChange={e => setQuantity(e.target.value)}/><span
                                 className="text-sm font-normal leading-relaxed text-muted">{selectedEquipment ? t('opsMissions.detail.resources.available', {count: selectedEquipment.availableQuantity}) : t('opsMissions.detail.resources.selectEquipmentFirst')}</span></label>}
@@ -467,7 +463,7 @@ function MissionDetail({id}: { id: string }) {
                             <p className={mutedClass}>{t('opsMissions.detail.uav.current', {uav: assignedUav?.serialNumber || `#${redispatch.expectedCurrentUavId}`})} {redispatch.kind === 'replaceUav' ? t('opsMissions.detail.uav.replaceHint') : t('opsMissions.detail.uav.unassignHint')}</p>
                             {redispatch.kind === 'replaceUav' && <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{t('opsMissions.detail.uav.replacement')}<RequiredMark/></span><select
                                 className={`mt-1 ${selectClass}`}
-                                autoFocus required aria-label={t('opsMissions.detail.uav.replacement')} disabled={disabled}
+                                autoFocus aria-required aria-label={t('opsMissions.detail.uav.replacement')} disabled={disabled}
                                 value={replacementUavId} onChange={event => setReplacementUavId(event.target.value)}>
                                 <option value="">{t('opsMissions.detail.uav.replacementPlaceholder')}</option>
                                 {replacementUavs.map(uav => <option key={uav.id}
@@ -475,12 +471,12 @@ function MissionDetail({id}: { id: string }) {
                             </select>{!replacementUavs.length &&
                                 <span className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.detail.uav.noReplacement')}</span>}
                             </label>}
-                            <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{t('opsMissions.detail.uav.reason')}<RequiredMark/></span><textarea autoFocus={redispatch.kind === 'unassignUav'} required
+                            <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{t('opsMissions.detail.uav.reason')}<RequiredMark/></span><textarea autoFocus={redispatch.kind === 'unassignUav'} aria-required
                                                                 className={textareaClass}
-                                                                disabled={disabled} maxLength={missionEventNoteLimit}
+                                                                disabled={disabled}
                                                                 value={redispatchReason}
                                                                 onChange={event => setRedispatchReason(event.target.value)}/><span
-                                className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.detail.uav.reasonHint', {count: missionEventNoteLimit})}</span></label>
+                                className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.detail.uav.reasonHint', {count: 500})}</span></label>
                             <div className={actionsClass}><Button type="button" disabled={disabled} variant="outline"
                                                                      onClick={() => setRedispatch(null)}>{t('opsMissions.detail.uav.keep')}</Button><Button type="submit"
                                                     disabled={disabled || !redispatchReason.trim() || (redispatch.kind === 'replaceUav' && !replacementUavs.some(uav => String(uav.id) === replacementUavId))}>{redispatch.kind === 'replaceUav' ? t('opsMissions.detail.uav.confirmReplace') : t('opsMissions.detail.uav.confirmUnassign')}</Button>

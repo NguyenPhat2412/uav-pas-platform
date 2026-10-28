@@ -1,0 +1,127 @@
+{
+  "adminCommerce": {
+    "pages": {
+      "transactions": "決済トランザクション・IPN",
+      "outbox": "財務イベントアウトボックス"
+    },
+    "common": {
+      "all": "すべて"
+    },
+    "txStatus": {
+      "SUCCESS": "成功",
+      "PENDING": "保留中",
+      "FAILED": "失敗"
+    },
+    "gateway": {
+      "VIETQR_NAPAS_247": "VietQR NAPAS 247（IPN）",
+      "VIETQR_NAPAS": "VietQR NAPAS",
+      "BANK_TRANSFER_MANUAL": "銀行振込（手動確認）"
+    },
+    "tx": {
+      "filters": "トランザクションの絞り込み",
+      "keyword": "検索",
+      "keywordPlaceholder": "取引コード、請求書コード、顧客、メール…",
+      "status": "ステータス",
+      "gateway": "決済チャネル",
+      "from": "開始日",
+      "to": "終了日",
+      "invoiceId": "請求書 ID",
+      "apply": "絞り込む",
+      "reset": "条件をクリア",
+      "table": "決済トランザクション一覧",
+      "empty": "条件に一致するトランザクションはありません。",
+      "open": "トランザクション {code} を開く",
+      "col": {
+        "time": "日時",
+        "code": "取引コード",
+        "invoice": "請求書",
+        "customer": "顧客",
+        "gateway": "チャネル",
+        "amount": "金額",
+        "status": "ステータス"
+      },
+      "detail": {
+        "title": "トランザクション {code}",
+        "transactionCode": "取引コード／参照番号",
+        "status": "ステータス",
+        "gateway": "決済チャネル",
+        "amount": "入金額",
+        "invoice": "請求書",
+        "invoiceStatus": "請求書ステータス",
+        "invoiceAmount": "請求金額",
+        "customer": "顧客",
+        "email": "メール",
+        "bank": "受取銀行（BIN・口座）",
+        "created": "記録日時",
+        "completed": "完了日時",
+        "amountMismatch": "取引金額が請求金額と一致しません。照合してください。",
+        "raw": "コールバック原文",
+        "rawHint": "機密項目（署名・トークン・キー）はマスクされています。",
+        "noRaw": "コールバックデータはありません。"
+      }
+    },
+    "outboxStatus": {
+      "PENDING": "処理待ち",
+      "WAITING_SUBSCRIBERS": "Webhook 送信先待ち",
+      "FAILED": "失敗",
+      "LOCAL_COMPLETED": "処理済み"
+    },
+    "outbox": {
+      "intro": "財務イベント（請求書発行・入金記録）ごとに顧客通知を作成し、Webhook をキューに入れます。バックグラウンド処理は毎分実行されます。「再試行」は失敗または停滞したイベントをすぐにキューへ戻すだけです。",
+      "filterLabel": "ステータスで絞り込み",
+      "table": "財務イベント一覧",
+      "empty": "イベントはありません。",
+      "customer": "顧客（ID）",
+      "notification": "顧客通知",
+      "notificationDone": "作成済み",
+      "notificationPending": "未作成",
+      "payload": "イベント内容",
+      "detailTitle": "イベント {type}",
+      "retry": "再試行",
+      "retryConfirm": "イベント {id} をキューに戻し、すぐに再処理しますか？",
+      "retried": "イベント {id} を再キューしました。1 分以内に処理されます。",
+      "retryHint": "再試行しても重複しません。作成済みの通知や Webhook は再作成されません。",
+      "notRetryable": "このイベントは処理済み、または初回処理待ちのため再試行は不要です。",
+      "col": {
+        "event": "イベント",
+        "invoice": "請求書",
+        "status": "ステータス",
+        "attempts": "試行回数",
+        "lastError": "直近のエラー",
+        "nextAttempt": "次回試行",
+        "created": "作成日時",
+        "actions": "操作"
+      }
+    },
+    "webhooks": {
+      "retry": "再送",
+      "retryConfirm": "{event} を {name} に再送しますか？新たに 3 回の試行枠でキューに入ります。",
+      "retried": "再送をキューに入れました。次回の配信後にログへ結果が表示されます。",
+      "rotate": "{name} の署名シークレットを更新",
+      "rotateConfirm": "{name} の新しい署名シークレットを生成しますか？旧シークレットは直ちに無効になり、受信側は署名検証に新しいシークレットを使う必要があります。",
+      "maskedSecret": "署名シークレット（マスク済み）",
+      "createSecretHint": "作成前にこのシークレットをコピーしてください。保存後はマスク表示のみになります。",
+      "secret": {
+        "title": "新しい Webhook 署名シークレット",
+        "intro": "「{name}」の新しい署名シークレットです。各 Webhook の HMAC-SHA256 署名ヘッダーの検証に使用してください。",
+        "label": "新しい署名シークレット",
+        "copy": "コピー",
+        "copied": "コピーしました",
+        "copyFailed": "コピーできませんでした。値を選択して手動でコピーしてください。",
+        "warning": "このシークレットは一度だけ表示されます。ダイアログを閉じると再表示できません。紛失した場合は再度更新してください。",
+        "done": "保存しました"
+      }
+    },
+    "profile": {
+      "title": "請求プロファイル",
+      "readOnly": "閲覧のみ（顧客が管理）",
+      "empty": "顧客は請求プロファイルを登録していません。",
+      "organizationName": "組織名",
+      "taxCode": "税番号",
+      "billingAddress": "請求先住所",
+      "emergencyContactName": "緊急連絡先",
+      "emergencyContactPhone": "緊急連絡先電話番号",
+      "updatedAt": "最終更新：{date}"
+    }
+  }
+}

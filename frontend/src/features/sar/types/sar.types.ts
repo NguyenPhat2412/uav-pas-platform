@@ -84,6 +84,8 @@ export interface SarWaypoint {
     label: string;
 }
 
+import type {UavTelemetry} from '@/features/uavs/types/telemetry.types';
+
 export interface SarFlightPlan {
     missionId: number;
     patternType: string;
@@ -91,4 +93,50 @@ export interface SarFlightPlan {
     totalDistanceMeters: number;
     estimatedFlightMinutes: number;
     waypoints: SarWaypoint[];
+}
+
+export interface LatLng {
+    lat: number;
+    lng: number;
+}
+
+export interface Waypoint extends LatLng {
+    id: string;
+    order: number;
+    altMeters: number;
+    speedMps: number;
+    legDistanceMeters?: number;
+}
+
+export interface GeofenceViolationResult {
+    isInside: boolean;
+    distanceToBoundaryMeters: number;
+    closestPointOnBoundary: LatLng;
+}
+
+export interface RthCalculation {
+    distanceHomeMeters: number;
+    flightTimeRequiredSeconds: number;
+    batteryRequiredPercent: number;
+    isSafeToContinue: boolean;
+    recommendedAction: 'CONTINUE_MISSION' | 'WARNING_PREPARE_RTH' | 'CRITICAL_IMMEDIATE_RTH';
+}
+
+export interface AiViewfinderProps {
+    missionId: number;
+    detections: AiDetection[];
+    task: AiTask | null;
+    loading: boolean;
+    failed: boolean;
+    selectedId: number | null;
+    onSelect: (id: number) => void;
+    canVerify: boolean;
+}
+
+export interface SarTacticalMapProps {
+    mission: SarCockpitMission;
+    detections: AiDetection[];
+    telemetry: UavTelemetry | null;
+    selectedId: number | null;
+    onSelect: (id: number) => void;
 }

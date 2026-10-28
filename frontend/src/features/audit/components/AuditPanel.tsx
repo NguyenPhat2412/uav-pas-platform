@@ -1,5 +1,5 @@
 'use client';
-import {useCollection} from "@/hooks/useCollections";
+import {useCollection} from '@/lib/query/operations';
 import type {AuditLog} from "@/types/resources";
 import {DataTable, options} from '@/components/data/DataTable';
 import {QueryState} from '@/components/data/WorkspaceState';

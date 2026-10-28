@@ -6,6 +6,7 @@ import {calculateHaversineDistance} from '@/features/sar/utils/sarAlgorithms';
 import type {SarCockpitMission} from '@/features/sar/types/sar.types';
 import type {UavTelemetry} from '@/features/uavs/types/telemetry.types';
 import {useI18n} from '@/contexts/I18nContext';
+import {formatTelemetryNumber} from '@/lib/format';
 import {cn} from '@/lib/utils';
 
 const compass = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
@@ -22,7 +23,7 @@ export function UavTelemetryHud({mission, telemetry, loading}: { mission: SarCoc
     const home = mission.stationLatitude != null && mission.stationLongitude != null
         ? {lat: mission.stationLatitude, lng: mission.stationLongitude} : null;
     const toHome = telemetry && home ? calculateHaversineDistance({lat: telemetry.latitude, lng: telemetry.longitude}, home) : null;
-    const num = (v: number | null | undefined, digits = 1) => v == null ? '—' : formatNumber(Math.round(v * 10 ** digits) / 10 ** digits);
+    const num = (v: number | null | undefined, digits = 1) => formatTelemetryNumber(v, formatNumber, digits);
     const battery = telemetry?.batteryPct ?? null;
 
     return <div className="rounded-panel border border-border bg-card p-5 text-slate-900">
@@ -32,7 +33,7 @@ export function UavTelemetryHud({mission, telemetry, loading}: { mission: SarCoc
                 <h3 className="m-0 truncate text-xs font-bold uppercase tracking-wider text-slate-900">{t('opsShared.sar.hud.title')}</h3>
             </div>
             <div className="flex items-center gap-2">
-                {telemetry?.rtkStatus && <span className={cn('rounded-panel border px-2.5 py-0.5 text-[10px] font-bold tabular-nums', rtkTone[telemetry.rtkStatus])}>
+                {telemetry?.rtkStatus && <span className={cn('rounded-badge border px-2.5 py-0.5 text-[10px] font-bold tabular-nums', rtkTone[telemetry.rtkStatus])}>
                     {t(`opsShared.sar.hud.rtk.${telemetry.rtkStatus}`)}</span>}
                 <span className="text-xs font-semibold tabular-nums text-slate-500">{mission.uavModel ?? ''} {mission.uavSerialNumber ?? ''}</span>
             </div>

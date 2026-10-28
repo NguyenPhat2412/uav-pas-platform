@@ -1,15 +1,9 @@
-import React, {ButtonHTMLAttributes, forwardRef} from 'react';
+import React, {forwardRef} from 'react';
 import {Loader2} from 'lucide-react';
 import {cn} from '@/lib/utils';
+import type {ButtonProps} from '@/types/ui';
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-    size?: 'sm' | 'md' | 'lg';
-    isLoading?: boolean;
-    loadingText?: string;
-    leftIcon?: React.ReactNode;
-    rightIcon?: React.ReactNode;
-}
+export type {ButtonProps};
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     (

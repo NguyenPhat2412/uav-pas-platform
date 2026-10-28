@@ -1,4 +1,7 @@
 import {z} from 'zod';
+import type {PublicEnv} from '@/types';
+
+export type {PublicEnv};
 
 export const publicEnvSchema = z.object({
     NEXT_PUBLIC_API_URL: z.string().url(),
@@ -7,5 +10,4 @@ export const publicEnvSchema = z.object({
     // Staffed 24/7 dispatch number shown to customers; leave unset to hide the call button.
     NEXT_PUBLIC_DISPATCH_HOTLINE: z.string().optional()
 });
-export type PublicEnv = z.infer<typeof publicEnvSchema>;
-export const getPublicEnv = (env: NodeJS.ProcessEnv = process.env) => publicEnvSchema.parse(env);
+export const getPublicEnv = (env: NodeJS.ProcessEnv = process.env): PublicEnv => publicEnvSchema.parse(env);

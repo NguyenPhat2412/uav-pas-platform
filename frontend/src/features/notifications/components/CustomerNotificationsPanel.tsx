@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 import {AlertCircle, CheckCheck, CheckCircle2, Clock, Filter, Info, ShieldAlert} from 'lucide-react';
 import {PageGuard} from "@/components/customer/layout";
 import {Button, Panel} from "@/components/customer/ui";
-import {type NotificationItem, useNotifications} from "@/features/notifications/hooks/useNotifications";
+import {type NotificationItem, useNotifications} from '@/lib/query/notifications';
 import {useI18n} from '@/contexts/I18nContext';
 
 export default function CustomerNotificationsPage() {
@@ -29,45 +29,9 @@ export default function CustomerNotificationsPage() {
 
     return (
         <PageGuard permission={null}>
-            <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
-                <div className="flex flex-wrap items-center gap-2.5">
-                    <div className="inline-flex bg-slate-100 p-1 rounded-panel border border-border">
-                        <button
-                            type="button"
-                            onClick={() => setFilter('ALL')}
-                            className={`border-0 font-bold text-xs px-3 py-1.5 rounded-control cursor-pointer transition-all ${
-                                filter === 'ALL'
-                                    ? 'bg-card text-slate-900'
-                                    : 'bg-transparent text-slate-500 hover:text-slate-700'
-                            }`}
-                        >
-                            {t('notificationsPage.all', {count: notifications.length})}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setFilter('UNREAD')}
-                            className={`border-0 font-bold text-xs px-3 py-1.5 rounded-control cursor-pointer transition-all ${
-                                filter === 'UNREAD'
-                                    ? 'bg-card text-primary'
-                                    : 'bg-transparent text-slate-500 hover:text-slate-700'
-                            }`}
-                        >
-                            {t('notificationsPage.unread', {count: unreadCount})}
-                        </button>
-                    </div>
-                    {unreadCount > 0 && (
-                        <Button type="button" variant="secondary" onClick={markAllRead} disabled={busy || loading}>
-                            <span className="inline-flex items-center gap-1.5">
-                                <CheckCheck size={15}/> {t('notificationsPage.markRead', {count: unreadCount})}
-                            </span>
-                        </Button>
-                    )}
-                </div>
-            </div>
-
-            {loading && <p role="status" className="text-sm text-slate-500 mb-4">{t('notificationsPage.loading')}</p>}
+            {loading && <p role="status" className="m-0 border-b border-slate-200 px-5 py-4 text-sm text-slate-500">{t('notificationsPage.loading')}</p>}
             {error && (
-                <div role="alert" className="px-3.5 py-3 mb-4 rounded-panel bg-rose-50 text-danger text-[13px] flex items-center justify-between gap-3 flex-wrap">
+                <div role="alert" className="border-b border-rose-200 bg-rose-50 px-4 py-3 text-danger text-[13px] flex items-center justify-between gap-3 flex-wrap">
                     <span>{error}</span>
                     <button
                         type="button"
@@ -80,16 +44,50 @@ export default function CustomerNotificationsPage() {
             )}
             <Panel
                 title={t('notificationsPage.recent')}
+                className="flex-1 border-0 [&>div]:p-0"
                 action={
-                    <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
-                        <Filter size={13}/> {t('notificationsPage.clickHint')}
-                    </span>
+                    <div className="flex flex-wrap items-center gap-3">
+                        <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-500">
+                            <Filter size={13}/> {t('notificationsPage.clickHint')}
+                        </span>
+                        <div className="inline-flex bg-slate-100 p-1 rounded-panel border border-border">
+                            <button
+                                type="button"
+                                onClick={() => setFilter('ALL')}
+                                className={`border-0 font-bold text-xs px-3 py-1 rounded-control cursor-pointer transition-all ${
+                                    filter === 'ALL'
+                                        ? 'bg-card text-slate-900'
+                                        : 'bg-transparent text-slate-500 hover:text-slate-700'
+                                }`}
+                            >
+                                {t('notificationsPage.all', {count: notifications.length})}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFilter('UNREAD')}
+                                className={`border-0 font-bold text-xs px-3 py-1 rounded-control cursor-pointer transition-all ${
+                                    filter === 'UNREAD'
+                                        ? 'bg-card text-primary'
+                                        : 'bg-transparent text-slate-500 hover:text-slate-700'
+                                }`}
+                            >
+                                {t('notificationsPage.unread', {count: unreadCount})}
+                            </button>
+                        </div>
+                        {unreadCount > 0 && (
+                            <Button type="button" variant="secondary" onClick={markAllRead} disabled={busy || loading}>
+                                <span className="inline-flex items-center gap-1.5">
+                                    <CheckCheck size={15}/> {t('notificationsPage.markRead', {count: unreadCount})}
+                                </span>
+                            </Button>
+                        )}
+                    </div>
                 }
             >
                 {!loading && !error && visibleItems.length === 0 ? (
                     <div className="p-8 text-center text-slate-500">{t('notificationsPage.empty')}</div>
                 ) : (
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col divide-y divide-slate-200">
                         {visibleItems.map(item => {
                             const badge = getBadgeStyle(item.type);
                             return (
@@ -103,10 +101,10 @@ export default function CustomerNotificationsPage() {
                                         }
                                     }}
                                     onClick={() => !busy && !item.isRead && markOneRead(item.id)}
-                                    className={`flex items-start gap-3.5 px-[18px] py-4 rounded-panel border transition-all duration-150 ${
+                                    className={`flex items-start gap-3.5 px-5 py-4 transition-all duration-150 ${
                                         !item.isRead
-                                            ? 'border-primary/30 bg-gradient-to-r from-primary/5 to-card cursor-pointer'
-                                            : 'border-border bg-card cursor-default'
+                                            ? 'bg-gradient-to-r from-primary/5 to-card cursor-pointer hover:bg-primary/10'
+                                            : 'bg-card cursor-default'
                                     }`}
                                 >
                                     <div

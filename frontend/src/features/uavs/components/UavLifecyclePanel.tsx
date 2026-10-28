@@ -2,10 +2,10 @@
 import {useRef, useState} from 'react';
 import {Alert, Button} from '@/components/ui';
 import {ApiError} from '@/lib/api';
-import {useOperationMutation} from "@/hooks/useOperations";
+import {useOperationMutation} from '@/lib/query/operations';
 import {operationsService} from "@/lib/api/resources";
 import type {Station, Uav} from "@/types/resources";
-import {uavControls, uavReasonLimit} from "@/features/uavs/utils/workflows";
+import {uavControls} from "@/features/uavs/utils/workflows";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/contexts/I18nContext';
 
@@ -124,7 +124,6 @@ export function UavLifecyclePanel({uav, mode, stations, canReadStations, onRefre
                 className="grid gap-4 rounded-panel border border-border bg-slate-50 p-4"
                 onSubmit={event => {
                     event.preventDefault();
-                    if (!reason.trim() || reason.trim().length > uavReasonLimit) return;
                     const input = {id: uav.id, reason, expectedStatus: confirmation.expectedStatus};
                     void run(() => confirmation.action === 'maintenance' ? maintenance.mutateAsync(input) : recover.mutateAsync(input), `opsAssets.uavLifecycle.success.${variant}`);
                 }}>
@@ -133,10 +132,10 @@ export function UavLifecyclePanel({uav, mode, stations, canReadStations, onRefre
                 <div className="flex flex-col gap-1.5"><label
                     className="text-xs font-semibold text-slate-700"
                     htmlFor="uav-change-reason">{text('label')}<RequiredMark/></label><textarea
-                    id="uav-change-reason" autoFocus required disabled={blocked} maxLength={uavReasonLimit}
+                    id="uav-change-reason" autoFocus aria-required disabled={blocked}
                     value={reason} onChange={event => setReason(event.target.value)}
                     className="min-h-24 w-full rounded-control border border-slate-300 bg-white p-3 text-sm"/><span
-                    className="text-xs text-slate-600">{t('opsAssets.uavLifecycle.maxChars', {max: uavReasonLimit})}</span></div>
+                    className="text-xs text-slate-600">{t('opsAssets.uavLifecycle.maxChars', {max: 255})}</span></div>
                 <div className="flex flex-wrap gap-3"><Button type="button" className="min-h-11" disabled={blocked}
                                                               variant="outline" onClick={() => setConfirmation(null)}>{t('opsAssets.uavLifecycle.back')}</Button><Button type="submit" className="min-h-11"
                                         disabled={blocked || !reason.trim()}>{text('submit')}</Button>
@@ -155,7 +154,7 @@ export function UavLifecyclePanel({uav, mode, stations, canReadStations, onRefre
                 }}>
                     <p className="text-sm text-slate-600">{t('opsAssets.uavLifecycle.transferNote')}</p>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="uav-station">{t('opsAssets.uavLifecycle.targetStation')}<RequiredMark/></label><select
-                        id="uav-station" required
+                        id="uav-station" aria-required
                         className="min-h-11 w-full rounded-control border border-slate-300 bg-white px-3 text-sm" disabled={blocked}
                         value={stationId} onChange={event => setStationId(event.target.value)}>
                         <option value="">{t('opsAssets.uavLifecycle.selectStation')}</option>

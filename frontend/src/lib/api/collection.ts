@@ -1,10 +1,7 @@
 import {apiClient} from "@/lib/api";
+import type {CollectionPage} from '@/types';
 
-export interface CollectionPage<T> {
-    content: T[];
-    totalPages: number;
-    totalElements: number;
-}
+export type {CollectionPage};
 
 const MAX_PAGES_TO_COLLECT = 8;
 

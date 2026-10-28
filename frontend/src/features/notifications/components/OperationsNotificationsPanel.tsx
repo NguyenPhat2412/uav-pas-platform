@@ -2,7 +2,7 @@
 
 import {useState} from 'react';
 import {AlertCircle, Bell, CheckCheck, CheckCircle2, Clock, Info, Search, ShieldAlert} from 'lucide-react';
-import {useNotifications} from "@/features/notifications/hooks/useNotifications";
+import {useNotifications} from '@/lib/query/notifications';
 import {OperationsPage} from '@/components/layout/OperationsPage';
 import {useI18n} from '@/contexts/I18nContext';
 

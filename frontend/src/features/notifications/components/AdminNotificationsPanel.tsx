@@ -11,7 +11,8 @@ import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
 import {adminService} from '@/lib/api/admin';
 import {cn} from '@/lib/utils';
-import {notificationsService} from '@/features/notifications/services/notifications.service';
+import {notificationsService} from '@/lib/api/services';
+import {RequiredMark} from '@/components/shared/RequiredMark';
 import {notificationTypes, type NotificationRecord, type NotificationType} from '@/features/notifications/types/notification.types';
 
 const PAGE_SIZE = 20;
@@ -200,7 +201,7 @@ function SendDialog({onClose, onSent}: { onClose: () => void; onSent: (name: str
                 <button type="button" onClick={onClose} aria-label={t('admin.notifications.cancel')}
                         className="rounded-control p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"><X size={18}/></button>
             </header>
-            <div className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.recipient')}
+            <div className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.recipient')}<RequiredMark/>
                 {recipient ? <div className="mt-1 flex items-center justify-between rounded-panel bg-primary/10 px-3 py-2 text-primary">
                     <span>{recipient.name}</span>
                     <button type="button" onClick={() => setRecipient(null)} className="text-xs font-semibold hover:underline">
@@ -219,14 +220,14 @@ function SendDialog({onClose, onSent}: { onClose: () => void; onSent: (name: str
                         <p className="mt-1 text-xs font-normal text-slate-500">{t('admin.notifications.noRecipient')}</p>}
                 </>}
             </div>
-            <label className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.type')}
+            <label className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.type')}<RequiredMark/>
                 <select value={type} onChange={e => setType(e.target.value as NotificationType)} className={field}>
                     {notificationTypes.map(value => <option key={value} value={value}>{t(`admin.notifications.types.${value}`)}</option>)}
                 </select></label>
-            <label className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.titleField')}
-                <input required maxLength={200} value={title} onChange={e => setTitle(e.target.value)} className={field}/></label>
-            <label className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.contentField')}
-                <textarea required rows={4} maxLength={1000} value={content} onChange={e => setContent(e.target.value)} className={field}/></label>
+            <label className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.titleField')}<RequiredMark/>
+                <input aria-required value={title} onChange={e => setTitle(e.target.value)} className={field}/></label>
+            <label className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.contentField')}<RequiredMark/>
+                <textarea aria-required rows={4} value={content} onChange={e => setContent(e.target.value)} className={field}/></label>
             <ErrorNotice error={send.error}/>
             <footer className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={onClose}>{t('admin.notifications.cancel')}</Button>

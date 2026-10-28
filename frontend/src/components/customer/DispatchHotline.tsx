@@ -1,12 +1,13 @@
 'use client';
 import {PhoneCall} from 'lucide-react';
 import {useI18n} from '@/contexts/I18nContext';
+import {useSiteInfo} from '@/features/settings/hooks/useSiteInfo';
 
-// Set at build time; the button stays hidden until a staffed number is configured.
-const HOTLINE = process.env.NEXT_PUBLIC_DISPATCH_HOTLINE?.trim();
-
+// Admin setting contact.dispatch_hotline wins; NEXT_PUBLIC_DISPATCH_HOTLINE is the build-time fallback.
+// The button stays hidden until a staffed number is configured in either place.
 export function DispatchHotline({variant, collapsed = false}: { variant: 'sidebar' | 'topbar'; collapsed?: boolean }) {
     const {t} = useI18n();
+    const HOTLINE = useSiteInfo().dispatchHotline;
     if (!HOTLINE) return null;
     const label = t('hotline.call', {number: HOTLINE});
     const href = `tel:${HOTLINE.replace(/[^\d+]/g, '')}`;

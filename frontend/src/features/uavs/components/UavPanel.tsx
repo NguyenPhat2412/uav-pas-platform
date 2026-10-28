@@ -4,8 +4,8 @@ import Link from 'next/link';
 import {Plus} from 'lucide-react';
 import {Button, Input, StatusBadge} from '@/components/ui';
 import {useAuth} from '@/contexts/AuthContext';
-import {useOperationMutation, useUav, useUavHistory} from "@/hooks/useOperations";
-import {useCollection} from "@/hooks/useCollections";
+import {useOperationMutation, useUav, useUavHistory} from '@/lib/query/operations';
+import {useCollection} from '@/lib/query/operations';
 import {operationsService} from "@/lib/api/resources";
 import {DataTable, options} from '@/components/data/DataTable';
 import {Drawer, Metadata, Tabs} from '@/components/data/Drawer';
@@ -127,24 +127,21 @@ export function UavPanel() {
                 }
             }}>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="uav-model">{t('opsAssets.uav.model')}<RequiredMark/></label><Input id="uav-model" required
-                                                                                                 maxLength={100}
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="uav-model">{t('opsAssets.uav.model')}<RequiredMark/></label><Input id="uav-model" aria-required
                                                                                                  value={form.model}
                                                                                                  onChange={e => setForm({
                                                                                                      ...form,
                                                                                                      model: e.target.value
                                                                                                  })}/></div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="uav-serial">{t('opsAssets.uav.serial')}<RequiredMark/></label><Input id="uav-serial"
-                                                                                                    required
-                                                                                                    maxLength={100}
+                                                                                                    aria-required
                                                                                                     value={form.serialNumber}
                                                                                                     onChange={e => setForm({
                                                                                                         ...form,
                                                                                                         serialNumber: e.target.value
                                                                                                     })}/></div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="uav-maker">{t('opsAssets.uav.manufacturer')}<RequiredMark/></label><Input id="uav-maker"
-                                                                                                      required
-                                                                                                      maxLength={120}
+                                                                                                      aria-required
                                                                                                       value={form.manufacturer}
                                                                                                       onChange={e => setForm({
                                                                                                           ...form,

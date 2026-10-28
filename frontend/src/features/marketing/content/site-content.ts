@@ -1,4 +1,6 @@
-export type Readiness = 'AVAILABLE' | 'IN DEVELOPMENT' | 'PLANNED';
+import type {Readiness} from '@/features/marketing/types/marketing.types';
+
+export type {Readiness};
 
 export const readinessLabels: Record<Readiness, string> = {
     AVAILABLE: 'Đã hỗ trợ',

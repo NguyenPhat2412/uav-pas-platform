@@ -1,12 +1,16 @@
 'use client';
-import {useSidebarShortcut} from '@/components/layout/useSidebarShortcut';
+import {useSidebarController} from '@/components/layout/useSidebarController';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import {AssistantWidget} from '@/features/assistant/components/AssistantWidget';
-import React, {useEffect, useRef, useState} from 'react';
+import React from 'react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {
+    Activity,
+    ClipboardList,
+    LayoutDashboard,
     Menu,
+    Plane,
     PanelLeftClose,
     PanelLeftOpen,
     X
@@ -15,6 +19,8 @@ import {useAuth} from '@/contexts/AuthContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
 import {NotificationBell} from '@/components/notifications/NotificationBell';
 import {AccountMenu} from '@/components/layout/AccountMenu';
+import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
+import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {useI18n} from '@/contexts/I18nContext';
 import {
     OPERATIONS_SIDEBAR_GROUPS,
@@ -22,86 +28,63 @@ import {
     resolveSidebarActiveItem,
 } from '@/components/layout/sidebar-routes';
 import {cn} from '@/lib/utils';
+import type {LucideIcon} from 'lucide-react';
+import {FoldingNavGroup, foldedLinkClass, useFoldedNavGroups} from '@/components/layout/FoldingNavGroup';
 
 // Cấu hình routes của Sidebar Điều hành (bao gồm /sar-cockpit [key: 'sar'], /notifications, v.v.)
 // được tách riêng và quản lý tập trung tại `@/components/layout/sidebar-routes.ts`.
 const nav = OPERATIONS_SIDEBAR_ROUTES;
 const navGroups = OPERATIONS_SIDEBAR_GROUPS;
 
+const GROUP_ICONS: Partial<Record<(typeof OPERATIONS_SIDEBAR_GROUPS)[number], LucideIcon>> = {
+    command: LayoutDashboard,
+    missions: ClipboardList,
+    assets: Plane,
+    monitoring: Activity,
+};
+
+const ShellSlot = React.createContext<((activeResource?: string) => void) | null>(null);
+
+/**
+ * Keeps one operations shell mounted for the whole portal layout, so the sidebar, header and assistant
+ * stay put between pages. Pages still render <AppShell>; inside the host it only reports the active item.
+ */
+export function OperationsShellHost({children}: { children: React.ReactNode }) {
+    const [activeResource, setActiveResource] = React.useState<string>();
+    return <ShellSlot.Provider value={setActiveResource}>
+        <OperationsShell activeResource={activeResource}>{children}</OperationsShell>
+    </ShellSlot.Provider>;
+}
+
 export function AppShell({children, activeResource}: { children: React.ReactNode; activeResource?: string }) {
+    const report = React.useContext(ShellSlot);
+    React.useLayoutEffect(() => {
+        report?.(activeResource);
+    }, [report, activeResource]);
+    if (report) return <>{children}</>;
+    return <OperationsShell activeResource={activeResource}>{children}</OperationsShell>;
+}
+
+function OperationsShell({children, activeResource}: { children: React.ReactNode; activeResource?: string }) {
     const pathname = usePathname();
     const {can, permissionsReady} = useAuth();
     const {t} = useI18n();
-    const [open, setOpen] = useState(false);
-    const [collapsed, setCollapsed] = useState(false);
-    const menuButton = useRef<HTMLButtonElement>(null);
-    const rail = useRef<HTMLElement>(null);
-    useEffect(() => {
-        if (!open) return;
-        const trigger = menuButton.current;
-        const previousOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-        rail.current?.querySelector<HTMLButtonElement>('.rail-close')?.focus();
-        const close = () => {
-            setOpen(false);
-            menuButton.current?.focus();
-        };
-        const keydown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') close();
-            if (event.key !== 'Tab') return;
-            const items = [...(rail.current?.querySelectorAll<HTMLElement>('a,button:not(:disabled)') ?? [])].filter(el => el.getClientRects().length);
-            const first = items[0], last = items[items.length - 1];
-            if (event.shiftKey && document.activeElement === first) {
-                event.preventDefault();
-                last?.focus();
-            } else if (!event.shiftKey && document.activeElement === last) {
-                event.preventDefault();
-                first?.focus();
-            }
-        };
-        const desktop = window.matchMedia('(min-width: 901px)');
-        const resize = () => {
-            if (desktop.matches) setOpen(false);
-        };
-        desktop.addEventListener('change', resize);
-        document.addEventListener('keydown', keydown);
-        return () => {
-            document.body.style.overflow = previousOverflow;
-            requestAnimationFrame(() => trigger?.focus());
-            document.removeEventListener('keydown', keydown);
-            desktop.removeEventListener('change', resize);
-        };
-    }, [open]);
-
-    useEffect(() => {
-        try {
-            const isParamCollapsed = typeof window !== 'undefined' && window.location.search.includes('collapsed=true');
-            const saved = localStorage.getItem('uav_sidebar_collapsed');
-            if (isParamCollapsed) {
-                setCollapsed(true);
-            } else if (saved !== null) {
-                setCollapsed(saved === 'true');
-            }
-        } catch {
-        }
-    }, []);
-
-    const toggleCollapsed = () => {
-        setCollapsed(prev => {
-            const next = !prev;
-            try {
-                localStorage.setItem('uav_sidebar_collapsed', String(next));
-            } catch {
-            }
-            return next;
-        });
-    };
-    const shortcut = useSidebarShortcut(toggleCollapsed);
+    const {open, setOpen, railCollapsed, toggleCollapsed, shortcut, menuButton, rail, navList} =
+        useSidebarController('uav_sidebar_collapsed');
 
     const visibleNav = nav.filter(item => !item.permission || (permissionsReady && can(item.permission)));
     const activeNav = resolveSidebarActiveItem(visibleNav, pathname, activeResource);
+    const {openGroups, toggleGroup} = useFoldedNavGroups('uav_ops_nav_open_groups', activeNav?.group);
     const getNavLabel = (item: typeof nav[0]) => t(`operationsNav.${item.key}`);
-    const railCollapsed = collapsed && !open;
+
+    // Selects the Operations shape scale in globals.css; on <html> so portalled dialogs pick it up too.
+    React.useEffect(() => {
+        const root = document.documentElement;
+        root.dataset.portal = 'operations';
+        return () => {
+            delete root.dataset.portal;
+        };
+    }, []);
 
     return (
         <div className="flex min-h-screen bg-background text-foreground">
@@ -115,8 +98,8 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                 ref={rail}
                 id="portal-navigation"
                 className={cn(
-                    'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-all duration-200 lg:sticky lg:top-0 lg:h-screen',
-                    railCollapsed ? 'w-[60px]' : 'w-[220px]',
+                    'fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-all duration-200 lg:sticky lg:top-0 lg:z-40 lg:h-screen',
+                    railCollapsed ? 'w-[60px]' : 'w-[min(280px,85vw)] lg:w-[220px]',
                     open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
                 )}
             >
@@ -147,66 +130,69 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                     >
                         {railCollapsed ? <PanelLeftOpen size={14}/> : <PanelLeftClose size={14}/>}
                     </button>
+                    {/* The drawer's own close button, in the slot the desktop collapse toggle uses. */}
+                    <button
+                        type="button"
+                        className="rail-close lg:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border text-slate-600 hover:bg-slate-100"
+                        aria-label={t('shell.closeNavigation')}
+                        onClick={() => setOpen(false)}
+                    >
+                        <X size={16}/>
+                    </button>
                 </div>
-                <button
-                    type="button"
-                    className="rail-close lg:hidden mb-2 inline-flex h-8 w-8 items-center justify-center self-end rounded-lg border border-border text-slate-600 hover:bg-slate-100"
-                    aria-label={t('shell.closeNavigation')}
-                    onClick={() => setOpen(false)}
-                >
-                    <X size={16}/>
-                </button>
-                <nav aria-label={t('shell.operationsSection')} className="flex flex-1 flex-col gap-2.5 overflow-y-auto">
+                <div className="mb-2 space-y-2 border-b border-slate-100 pb-2.5 md:hidden">
+                    <PortalSwitcher currentPortal="operations" variant="drawer"/>
+                    <HeaderSearch variant="drawer" items={visibleNav.map(item => ({href: item.href, label: getNavLabel(item), group: t(`operationsNavGroups.${item.group}`)}))}/>
+                    <LanguageSwitcher variant="compact" className="sm:hidden"/>
+                </div>
+                <nav ref={navList} aria-label={t('shell.operationsSection')} className={cn('flex flex-1 flex-col overflow-y-auto', railCollapsed ? 'gap-2.5' : 'gap-0.5')}>
                     {navGroups.map((group, idx) => {
                         const items = visibleNav.filter(item => item.group === group);
                         if (!items.length) return null;
-                        return (
+                        // The collapsed rail shows every page as an icon; groups fold only in the full sidebar.
+                        if (railCollapsed) return (
                             <div key={group} className="space-y-0.5">
-                                {railCollapsed ? (
-                                    idx > 0 ? <hr className="my-1.5 border-slate-100"/> : null
-                                ) : (
-                                    <div className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none">
-                                        {t(`operationsNavGroups.${group}`)}
-                                    </div>
-                                )}
-                                {items.map((item) => {
+                                {idx > 0 && <hr className="my-1.5 border-slate-100"/>}
+                                {items.map(item => {
                                     const {href, icon: Icon} = item;
                                     const label = getNavLabel(item);
                                     const active = href === activeNav?.href;
-                                    return (
-                                        <Link
-                                            key={href}
-                                            href={href}
-                                            onClick={() => setOpen(false)}
-                                            aria-current={active ? 'page' : undefined}
-                                            aria-label={label}
-                                            title={railCollapsed ? label : undefined}
-                                            className={cn(
-                                                'flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] leading-5 transition-colors',
-                                                active ? 'bg-uav-red-light font-semibold text-primary' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-                                                railCollapsed && 'mx-auto h-8 w-8 justify-center px-0 py-0'
-                                            )}
-                                        >
-                                            <Icon size={16} className="shrink-0"/>
-                                            {!railCollapsed && <span className="truncate">{label}</span>}
-                                        </Link>
-                                    );
+                                    return <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined}
+                                                 aria-label={label} title={label}
+                                                 className={cn('mx-auto flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
+                                                     active ? 'bg-uav-red-light text-primary' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')}>
+                                        <Icon size={16} className="shrink-0"/>
+                                    </Link>;
                                 })}
                             </div>
+                        );
+                        return (
+                            <FoldingNavGroup key={group} id={`ops-nav-${group}`} label={t(`operationsNavGroups.${group}`)} icon={GROUP_ICONS[group] ?? LayoutDashboard}
+                                             expanded={!!openGroups[group]} active={items.some(item => item.href === activeNav?.href)}
+                                             onToggle={() => toggleGroup(group)}>
+                                {items.map(item => {
+                                    const active = item.href === activeNav?.href;
+                                    const label = getNavLabel(item);
+                                    return <li key={item.href}>
+                                        <Link href={item.href} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined}
+                                              aria-label={label} className={foldedLinkClass(active)}>{label}</Link>
+                                    </li>;
+                                })}
+                            </FoldingNavGroup>
                         );
                     })}
                 </nav>
             </aside>
             {open && (
                 <button
-                    className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-xs lg:hidden"
+                    className="fixed inset-0 z-[55] bg-slate-900/40 backdrop-blur-xs lg:hidden"
                     aria-label={t('shell.closeNavigation')}
                     onClick={() => setOpen(false)}
                 />
             )}
             <div className="flex min-w-0 flex-1 flex-col" inert={open}>
                 <header className="sticky top-0 z-20 flex min-h-13 items-center justify-between gap-4 border-b border-border bg-card/90 px-4 sm:px-6 backdrop-blur-md">
-                    <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex min-w-0 flex-1 items-center gap-2.5">
                         <button
                             ref={menuButton}
                             aria-controls="portal-navigation"
@@ -217,26 +203,28 @@ export function AppShell({children, activeResource}: { children: React.ReactNode
                         >
                             <Menu size={18}/>
                         </button>
-                        <div className="flex flex-wrap items-center gap-1.5 text-[13px] text-slate-500 truncate">
-                            <span>UAV PAS</span>
-                            <span>/</span>
-                            <span>{t('shell.operationsSection')}</span>
+                        <div className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[13px] text-slate-500">
+                            <span className="hidden xl:inline">UAV PAS</span>
+                            <span className="hidden xl:inline">/</span>
+                            <span className="hidden xl:inline">{t('shell.operationsSection')}</span>
                             {activeNav && (
                                 <>
-                                    <span>/</span>
-                                    <strong className="text-primary font-semibold">{getNavLabel(activeNav)}</strong>
+                                    <span className="hidden xl:inline">/</span>
+                                    <strong className="truncate text-primary font-semibold">{getNavLabel(activeNav)}</strong>
                                 </>
                             )}
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex shrink-0 items-center gap-2 xl:gap-3">
+                        <HeaderSearch items={visibleNav.map(item => ({href: item.href, label: getNavLabel(item), group: t(`operationsNavGroups.${item.group}`)}))}/>
+                        <PortalSwitcher currentPortal="operations"/>
                         <NotificationBell/>
-                        <LanguageSwitcher variant="compact"/>
+                        <LanguageSwitcher variant="compact" className="hidden sm:inline-flex"/>
                         <AccountMenu portal="operations"/>
                     </div>
                 </header>
                 <WelcomeBack/>
-                <main id="workspace" className="w-full flex-1 space-y-6 outline-none" tabIndex={-1}>
+                <main id="workspace" className="flex w-full flex-1 flex-col bg-white outline-none" tabIndex={-1}>
                     {children}
                 </main>
                 <AssistantWidget portal="OPERATIONS"/>

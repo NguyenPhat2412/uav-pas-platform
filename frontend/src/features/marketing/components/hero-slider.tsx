@@ -16,10 +16,6 @@ const SLIDES = [
     src: '/images/hero-slides/uav-hero-3.webp',
     alt: 'UAV Điều phối và bay tuần tra',
   },
-  {
-    src: '/images/hero-slides/uav-hero-4.webp',
-    alt: 'Thiết bị bay trinh sát và cứu hộ',
-  },
 ];
 
 export function HeroSlider() {

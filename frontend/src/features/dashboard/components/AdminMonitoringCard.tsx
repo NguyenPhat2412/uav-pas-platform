@@ -4,21 +4,17 @@ import Link from 'next/link';
 import {useQuery} from '@tanstack/react-query';
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
-import {systemHealthService} from '@/features/settings/services/system-health.service';
-import {TELEMETRY_POLL_MS, telemetryService} from '@/features/uavs/services/telemetry.service';
-import {sarKeys, sarService} from '@/features/sar/services/sar.service';
+import {systemHealthService} from '@/lib/api/services';
+import {TELEMETRY_POLL_MS, telemetryService} from '@/lib/api/services';
+import {sarKeys, sarService} from '@/lib/api/services';
 import type {HealthStatus} from '@/features/settings/types/system-health.types';
+import type {FleetSummary, MonitoringTone} from '@/features/dashboard/types/dashboard.types';
 import {cn} from '@/lib/utils';
 
-type Tone = 'ok' | 'warn' | 'down' | 'idle';
-const dot: Record<Tone, string> = {ok: 'bg-uav-blue', warn: 'bg-amber-500', down: 'bg-primary', idle: 'bg-slate-300'};
-const healthTone: Record<HealthStatus, Tone> = {UP: 'ok', DEGRADED: 'warn', DOWN: 'down', UNKNOWN: 'idle'};
+export type {FleetSummary};
 
-export interface FleetSummary {
-    totalUavs: number;
-    availableUavs: number;
-    maintenanceUavs: number;
-}
+const dot: Record<MonitoringTone, string> = {ok: 'bg-uav-blue', warn: 'bg-amber-500', down: 'bg-primary', idle: 'bg-slate-300'};
+const healthTone: Record<HealthStatus, MonitoringTone> = {UP: 'ok', DEGRADED: 'warn', DOWN: 'down', UNKNOWN: 'idle'};
 
 /** Live platform signals for the admin dashboard: service health, telemetry feed, fleet and open SAR work. */
 export function AdminMonitoringCard({fleet, summaryLoaded}: { fleet: FleetSummary | null; summaryLoaded: boolean }) {
@@ -50,7 +46,7 @@ export function AdminMonitoringCard({fleet, summaryLoaded}: { fleet: FleetSummar
     const sarOpen = sar.data?.length ?? 0;
     const sarLocated = sar.data?.filter(m => m.sarStatus === 'TARGET_LOCATED').length ?? 0;
 
-    const rows: { key: string; label: string; value: string; tone: Tone; href?: string }[] = [];
+    const rows: { key: string; label: string; value: string; tone: MonitoringTone; href?: string }[] = [];
     if (canHealth && health.data) {
         health.data.components.forEach(c => rows.push({
             key: c.key,

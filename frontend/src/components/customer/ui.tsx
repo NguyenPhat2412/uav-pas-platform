@@ -3,7 +3,7 @@ import {keepVietnamesePhrases} from "@/lib/typography";
 import {displayLabel} from "@/components/shared/presentation";
 import {Button as SharedButton} from "@/components/shared";
 import type {ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes} from 'react';
-import {RequiredMark} from "@/components/shared/RequiredMark";
+import {FieldLabelMark} from "@/components/shared/RequiredMark";
 import {cn} from "@/lib/utils";
 
 const buttonVariants: Record<'primary' | 'secondary' | 'danger', string> = {
@@ -30,7 +30,7 @@ export function Button({variant = 'primary', className = '', ...props}: ButtonHT
 export function Field({label, className = '', ...props}: InputHTMLAttributes<HTMLInputElement> & { label: string }) {
     return (
         <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
-            <span>{label}{props.required && <RequiredMark/>}</span>
+            <span>{label}<FieldLabelMark required={props.required} optional={!props.required}/></span>
             <input
                 className={cn(
                     'w-full min-h-10 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-1 focus:ring-primary disabled:bg-slate-100 disabled:text-slate-500',
@@ -45,7 +45,7 @@ export function Field({label, className = '', ...props}: InputHTMLAttributes<HTM
 export function TextField({label, className = '', ...props}: TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }) {
     return (
         <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
-            <span>{label}{props.required && <RequiredMark/>}</span>
+            <span>{label}<FieldLabelMark required={props.required} optional={!props.required}/></span>
             <textarea
                 className={cn(
                     'w-full min-h-24 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-1 focus:ring-primary disabled:bg-slate-100 disabled:text-slate-500',
@@ -64,14 +64,14 @@ export function Panel({title, children, action, className = ''}: {
     className?: string
 }) {
     return (
-        <section className={cn('rounded-panel border border-slate-200 bg-white', className)}>
+        <section className={cn('flex flex-col rounded-panel border border-slate-200 bg-white', className)}>
             {title && (
                 <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
                     <h2 className="text-sm font-bold uppercase tracking-wide text-slate-800">{keepVietnamesePhrases(title)}</h2>
                     {action}
                 </header>
             )}
-            <div className="space-y-4 p-4">{children}</div>
+            <div className="flex-1 space-y-4 p-4">{children}</div>
         </section>
     );
 }

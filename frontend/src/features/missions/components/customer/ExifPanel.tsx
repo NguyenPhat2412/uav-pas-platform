@@ -1,8 +1,7 @@
 'use client';
 import {useQuery} from '@tanstack/react-query';
 import {useI18n} from '@/contexts/I18nContext';
-
-type Exif = Record<string, unknown> & { latitude?: number; longitude?: number };
+import type {ExifMetadata as Exif} from '@/features/missions/types/mission.types';
 
 const num = (value: unknown) => typeof value === 'number' && Number.isFinite(value) ? value
     : typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value)) ? Number(value) : undefined;

@@ -30,6 +30,7 @@ export function LoadingRows() {
 
 // Known server error codes mapped to catalog keys under opsShared.state.errors.
 const resourceErrors: Record<string, string> = {
+    MISSION_MEDIA_LOCKED: 'missionMediaLocked',
     MISSION_EQUIPMENT_RELEASE_REQUIRED: 'equipmentReleaseRequired',
     INVENTORY_NOT_AVAILABLE: 'inventoryNotAvailable',
     'Equipment is reserved; release reservations before changing station': 'equipmentReserved'

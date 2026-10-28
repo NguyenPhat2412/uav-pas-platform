@@ -58,7 +58,8 @@
     "basemaps": {
       "streets": "Đường phố (OSM)",
       "satellite": "Vệ tinh",
-      "terrain": "Địa hình"
+      "terrain": "Địa hình",
+      "dark": "Chiến thuật tối"
     },
     "radius": "Bán kính hoạt động",
     "ariaLabel": "Bản đồ lập vùng bay. Bấm để đặt điểm cất cánh hoặc thêm đỉnh vùng bay.",

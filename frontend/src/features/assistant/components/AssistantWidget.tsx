@@ -14,12 +14,12 @@ import {
     useState,
 } from 'react';
 import {useMutation, useQuery} from '@tanstack/react-query';
-import {ArrowBigUp, CornerDownLeft, Eraser, Film, Maximize2, Minimize2, Paperclip, SendHorizontal, X} from 'lucide-react';
+import {Eraser, Film, Maximize2, Minimize2, Paperclip, SendHorizontal, X} from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
 import {ApiError} from '@/lib/api';
 import {useI18n} from '@/contexts/I18nContext';
 import {toast} from '@/contexts/ToastContext';
-import {assistantKeys, assistantService} from '@/features/assistant/services/assistant.service';
+import {assistantKeys, assistantService} from '@/lib/api/services';
 import type {
     AssistantCorner as Corner,
     AssistantPortal,
@@ -357,7 +357,7 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
                           className={cn('fixed z-50 flex flex-col overflow-hidden rounded-overlay border border-slate-200 bg-white shadow-2xl',
                               'max-w-[calc(100vw-2.5rem)] animate-[assistant-pop_220ms_cubic-bezier(0.2,0.9,0.3,1.15)] motion-reduce:animate-none',
                               'transition-[width,height,opacity] duration-300 ease-out motion-reduce:transition-none',
-                              expanded ? 'h-[calc(100dvh-10rem)] w-[720px]' : 'h-[540px] max-h-[calc(100dvh-10rem)] w-[360px]',
+                              expanded ? 'h-[calc(100dvh-10rem)] w-[720px]' : 'h-[480px] max-h-[calc(100dvh-10rem)] w-[330px]',
                               PANEL_AT[corner], PANEL_ORIGIN[corner], dragging && 'pointer-events-none opacity-0')}
                           onKeyDown={e => e.key === 'Escape' && setOpen(false)}>
             <header className="flex items-center gap-2.5 border-b border-slate-200 px-3 py-2">
@@ -372,7 +372,7 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
                 <HeaderButton label={t('admin.assistant.close')} onClick={() => setOpen(false)}><X size={16}/></HeaderButton>
             </header>
 
-            <div ref={list} className="relative flex-1 space-y-2.5 overflow-y-auto bg-slate-50/60 px-3 py-3" aria-live="polite">
+            <div ref={list} className="relative flex-1 space-y-2.5 overflow-y-auto bg-slate-50/60 px-2.5 py-2.5" aria-live="polite">
                 {info.isPending ? <p className="m-0 text-center text-xs text-slate-500" role="status">{t('admin.assistant.loading')}</p>
                     : !info.data?.enabled ? <div className="m-auto max-w-[280px] py-8 text-center">
                         <SuperheroLogo size={56}/>
@@ -382,14 +382,13 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
                                                            className="mt-3 inline-flex h-8 items-center rounded-control bg-primary px-3 text-xs font-bold text-primary-foreground hover:bg-primary-hover">
                             {t('admin.assistant.openSettings')}</Link>}
                     </div>
-                    : !messages.length ? <div className="pt-4 text-center">
-                        <SuperheroLogo size={52}/>
-                        <p className="mb-0.5 mt-2 text-sm font-semibold text-slate-800">{t('admin.assistant.hello', {name: user?.fullName || user?.username || ''})}</p>
+                    : !messages.length ? <div className="text-center">
+                        <p className="mb-0.5 mt-0 text-sm font-semibold text-slate-800">{t('admin.assistant.hello', {name: user?.fullName || user?.username || ''})}</p>
                         <p className="m-0 text-xs text-slate-500">{t(`admin.assistant.${HELLO_BODY[portal]}`)}</p>
-                        <p className="mb-1.5 mt-4 text-left text-[10.5px] font-bold uppercase tracking-wider text-slate-500">{t('admin.assistant.faqTitle')}</p>
-                        <ul className={cn('m-0 grid list-none gap-1.5 p-0 text-left', expanded && 'sm:grid-cols-2')}>{faq.keys.map(key => <li key={key}>
+                        <p className="mb-1 mt-3 text-left text-[10.5px] font-bold uppercase tracking-wider text-slate-500">{t('admin.assistant.faqTitle')}</p>
+                        <ul className={cn('m-0 grid list-none gap-1 p-0 text-left', expanded && 'sm:grid-cols-2')}>{faq.keys.map(key => <li key={key}>
                             <button type="button" onClick={() => ask(t(`admin.assistant.${faq.group}.${key}`))} disabled={send.isPending}
-                                    className="w-full rounded-control border border-slate-200 bg-white px-2.5 py-1.5 text-left text-[12.5px] text-slate-700 transition-colors hover:border-primary hover:bg-uav-red-light hover:text-primary disabled:opacity-60">
+                                    className="w-full rounded-control border border-slate-200 bg-white px-2.5 py-1 text-left text-[12.5px] leading-5 text-slate-700 transition-colors hover:border-primary hover:bg-uav-red-light hover:text-primary disabled:opacity-60">
                                 {t(`admin.assistant.${faq.group}.${key}`)}</button>
                         </li>)}</ul>
                     </div>
@@ -403,7 +402,7 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
                     {t('admin.assistant.dropHere')}</div>}
             </div>
 
-            <form onSubmit={submit} className="border-t border-slate-200 bg-white p-2">
+            <form onSubmit={submit} className="border-t border-slate-200 bg-white p-1.5">
                 {(pending.length > 0 || reading) && <ul className="m-0 mb-2 flex list-none gap-1.5 overflow-x-auto p-0" aria-label={t('admin.assistant.attachments')}>
                     {pending.map(a => <li key={a.id} className="relative h-14 w-14 shrink-0 overflow-hidden rounded-control border border-slate-200 bg-slate-100">
                         {/* eslint-disable-next-line @next/next/no-img-element -- data URLs need no optimisation */}
@@ -416,10 +415,10 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
                         <span className="animate-pulse">{t('admin.assistant.reading')}</span></li>}
                 </ul>}
                 <div className="rounded-control border border-slate-300 transition-colors focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
-                    <textarea ref={input} rows={1} maxLength={4000} value={draft} onChange={e => setDraft(e.target.value)} onKeyDown={onKey} onPaste={onPaste}
+                    <textarea ref={input} rows={1} value={draft} onChange={e => setDraft(e.target.value)} onKeyDown={onKey} onPaste={onPaste}
                               disabled={!info.data?.enabled} aria-label={t('admin.assistant.input')} placeholder={t('admin.assistant.placeholder')}
                               className="block max-h-[120px] w-full resize-none bg-transparent px-2.5 pb-1 pt-2 text-[13px] leading-5 placeholder:truncate placeholder:text-slate-400 focus:outline-none disabled:cursor-not-allowed"/>
-                    <div className="flex items-center gap-1 px-1.5 pb-1.5">
+                    <div className="flex items-center gap-1 px-1 pb-1">
                         <input ref={picker} type="file" accept="image/*,video/*" multiple hidden
                                onChange={e => {
                                    void attach(Array.from(e.target.files ?? []));
@@ -428,21 +427,16 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
                         <button type="button" onClick={() => picker.current?.click()} disabled={!info.data?.enabled || reading || pending.length >= MAX_ATTACHMENTS}
                                 aria-label={t('admin.assistant.attach')} title={t('admin.assistant.attach')}
                                 className="rounded-control p-1.5 text-slate-500 hover:bg-slate-100 hover:text-primary disabled:opacity-40"><Paperclip size={16}/></button>
-                        {modes.length > 1 && <div role="radiogroup" aria-label={t('admin.assistant.mode')} className="inline-flex rounded-control bg-slate-100 p-0.5">
+                        {modes.length > 1 && <div role="radiogroup" aria-label={t('admin.assistant.mode')} className="inline-flex shrink-0 rounded-control bg-slate-100 p-0.5">
                             {modes.map(m => <button key={m.mode} type="button" role="radio" aria-checked={activeMode?.mode === m.mode} disabled={send.isPending}
                                                     onClick={() => setMode(m.mode)} title={portal === 'ADMIN' ? m.model : undefined}
-                                                    className={cn('rounded-[3px] px-2 py-0.5 text-[11px] font-semibold transition-colors',
+                                                    className={cn('whitespace-nowrap rounded-[3px] px-1.5 py-0 text-[11px] font-semibold leading-5 transition-colors',
                                                         activeMode?.mode === m.mode ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-800')}>
                                 {m.label}</button>)}
                         </div>}
-                        <span className="ml-auto hidden items-center gap-1 text-[10.5px] text-slate-400 min-[340px]:inline-flex" aria-hidden="true">
-                            <Key><CornerDownLeft size={10}/></Key>{t('admin.assistant.keySend')}
-                            <span className="mx-0.5">·</span>
-                            <Key><ArrowBigUp size={10}/></Key><Key><CornerDownLeft size={10}/></Key>{t('admin.assistant.keyNewline')}
-                        </span>
                         <button type="submit" disabled={(!draft.trim() && !pending.length) || !activeMode || send.isPending || reading || !info.data?.enabled}
                                 aria-label={t('admin.assistant.send')} title={t('admin.assistant.send')}
-                                className="ml-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-control bg-primary text-primary-foreground transition-opacity hover:bg-primary-hover disabled:opacity-40">
+                                className="ml-auto inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-control bg-primary text-primary-foreground transition-opacity hover:bg-primary-hover disabled:opacity-40">
                             <SendHorizontal size={14}/></button>
                     </div>
                 </div>
@@ -470,7 +464,3 @@ function HeaderButton({label, onClick, disabled, children}: { label: string; onC
                    className="rounded-control p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 disabled:opacity-40">{children}</button>;
 }
 
-/** A small keycap, so the shortcut hint reads as keys rather than a sentence. */
-function Key({children}: { children: ReactNode }) {
-    return <kbd className="inline-flex h-4 min-w-4 items-center justify-center rounded-badge border border-slate-300 bg-slate-50 px-0.5 text-slate-500 shadow-[0_1px_0_var(--color-slate-300)]">{children}</kbd>;
-}

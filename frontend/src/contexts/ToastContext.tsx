@@ -2,18 +2,9 @@
 
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {type ToastItem, type ToastOptions, type ToastType, ToastViewport} from '@/components/ui/Toast';
+import type {ToastContextType} from '@/types/ui';
 
 export type {ToastItem, ToastOptions, ToastType};
-
-interface ToastContextType {
-    toasts: ToastItem[];
-    show: (type: ToastType, message: string, options?: ToastOptions) => string;
-    dismiss: (id: string) => void;
-    success: (message: string, titleOrOptions?: string | ToastOptions) => string;
-    error: (message: string, titleOrOptions?: string | ToastOptions) => string;
-    warning: (message: string, titleOrOptions?: string | ToastOptions) => string;
-    info: (message: string, titleOrOptions?: string | ToastOptions) => string;
-}
 
 const TOAST_EVENT = 'uav:toast';
 const ToastContext = createContext<ToastContextType | undefined>(undefined);

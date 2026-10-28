@@ -1,17 +1,12 @@
-import React, {forwardRef, InputHTMLAttributes} from 'react';
+import React, {forwardRef} from 'react';
 import {cn} from '@/lib/utils';
-import {RequiredMark} from "@/components/shared/RequiredMark";
+import {FieldLabelMark} from "@/components/shared/RequiredMark";
+import type {InputProps} from '@/types/ui';
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-    label?: string;
-    error?: string;
-    helperText?: string;
-    leftIcon?: React.ReactNode;
-    rightIcon?: React.ReactNode;
-}
+export type {InputProps};
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-    ({className, label, error, helperText, id, leftIcon, rightIcon, ...props}, ref) => {
+    ({className, label, error, helperText, id, leftIcon, rightIcon, optional, optionalLabel, ...props}, ref) => {
         return (
             <div className="flex min-w-0 flex-col w-full">
                 {label && (
@@ -19,7 +14,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                         htmlFor={id}
                         className="block font-label-lg text-label-lg font-medium text-on-surface mb-2"
                     >
-                        {label}{props.required && <RequiredMark/>}
+                        {label}
+                        <FieldLabelMark
+                            required={props.required}
+                            optional={optional ?? !props.required}
+                            optionalLabel={optionalLabel}
+                        />
                     </label>
                 )}
                 <div className="relative min-w-0 w-full flex items-center">

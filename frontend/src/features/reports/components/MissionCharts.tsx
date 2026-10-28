@@ -5,6 +5,7 @@ import {useQuery} from '@tanstack/react-query';
 import {useAuth} from '@/contexts/AuthContext';
 import {displayLabel} from '@/components/shared/presentation';
 import {adminService} from '@/lib/api/admin';
+import type {MissionOutcome as Outcome} from '@/types/admin';
 import type {Mission, MissionStatus} from '@/types/customer';
 import {useI18n} from '@/contexts/I18nContext';
 
@@ -16,7 +17,6 @@ const outcomes = [
     {key: 'completed', label: 'admin.charts.outcome.completed', color: 'var(--success)'},
     {key: 'stopped', label: 'admin.charts.outcome.stopped', color: 'var(--warning)'},
 ] as const;
-type Outcome = typeof outcomes[number]['key'];
 
 function outcomeOf(status: MissionStatus): Outcome {
     if (status === 'COMPLETED') return 'completed';

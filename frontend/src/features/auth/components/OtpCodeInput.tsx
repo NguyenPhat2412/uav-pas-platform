@@ -1,14 +1,7 @@
 'use client';
 
 import React, {useRef} from 'react';
-
-interface OtpCodeInputProps {
-    value: string;
-    onChange: (next: string) => void;
-    length?: number;
-    disabled?: boolean;
-    autoFocus?: boolean;
-}
+import type {OtpCodeInputProps} from '@/features/auth/types/auth.types';
 
 export function OtpCodeInput({
     value,

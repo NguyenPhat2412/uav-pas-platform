@@ -1,11 +1,11 @@
 'use client';
-import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention, validateMediaFile} from "@/lib/api/media-policy";
+import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention} from "@/lib/api/media-policy";
 import {displayLabel} from "@/components/shared/presentation";
 import {useState} from 'react';
 import {Badge, Button, Input} from '@/components/ui';
 import {useAuth} from '@/contexts/AuthContext';
-import {useOperationMutation} from "@/hooks/useOperations";
-import {useCollection} from "@/hooks/useCollections";
+import {useOperationMutation} from '@/lib/query/operations';
+import {useCollection} from '@/lib/query/operations';
 import {operationsService as service} from "@/lib/api/resources";
 import type {MediaAsset} from "@/types/resources";
 import {DataTable, Detail, ErrorNotice, selectClass} from "@/components/data/ResourceState";
@@ -26,7 +26,8 @@ export function MediaPanel() {
     const [preview, setPreview] = useState<{ asset: MediaAsset; url: string }>();
     const [deleting, setDeleting] = useState<number>();
     const upload = useOperationMutation(async ({file, existing}: { file: File; existing?: MediaAsset }) => {
-        const contentType = validateMediaFile(file, t);
+        // The API accepts or rejects the type and size (MediaUploadPolicy) when the upload is registered.
+        const contentType = file.type;
         if (existing && (existing.size !== file.size || existing.contentType !== contentType)) throw new Error(t('opsAssets.media.reuploadMismatch'));
         setIncompleteUploadId(undefined);
         setStage({key: 'opsAssets.media.stage.registering'});
@@ -81,7 +82,7 @@ export function MediaPanel() {
                   }}>
                 <div className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-3"><Input id="media-upload-file"
                                                                                       label={t('opsAssets.media.uploadFile')} type="file"
-                                                                                      accept={MEDIA_ACCEPT} required
+                                                                                      accept={MEDIA_ACCEPT} aria-required
                                                                                       disabled={upload.isPending}
                                                                                       onChange={event => setFile(event.target.files?.[0])}/><label
                     className="flex flex-col gap-1 text-sm">{t('opsAssets.media.linkResource')}<select className={selectClass}
@@ -94,7 +95,7 @@ export function MediaPanel() {
                     {['MISSION', 'STATION', 'UAV', 'EQUIPMENT'].map(type => <option key={type}
                                                                                     value={type}>{displayLabel(type)}</option>)}
                 </select></label>{link.type &&
-                    <Input id="media-resource-id" label={t('opsAssets.media.resourceId')} type="number" required min={1} step={1}
+                    <Input id="media-resource-id" label={t('opsAssets.media.resourceId')} type="number" aria-required step={1}
                            value={link.id} onChange={event => setLink({...link, id: event.target.value})}/>}</div>
                 <Button type="submit" disabled={upload.isPending || !file}>{t('opsAssets.media.uploadAndConfirm')}</Button><p role="status"
                                                                                                           className="text-sm text-secondary">{stage ? t(stage.key, stage.params) : mediaUploadPolicy(t) + ' ' + mediaUploadRetention(t)}</p>

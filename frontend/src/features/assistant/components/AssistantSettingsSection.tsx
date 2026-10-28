@@ -9,9 +9,10 @@ import {QueryState} from '@/components/data/WorkspaceState';
 import {ApiError} from '@/lib/api';
 import {useI18n} from '@/contexts/I18nContext';
 import {toast} from '@/contexts/ToastContext';
-import {assistantKeys, assistantService} from '@/features/assistant/services/assistant.service';
+import {assistantKeys, assistantService} from '@/lib/api/services';
 import type {AiRouterSettings, AiRouterStatus} from '@/features/assistant/types/assistant.types';
 import {SuperheroLogo} from '@/features/assistant/components/SuperheroLogo';
+import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {cn} from '@/lib/utils';
 
 const field = 'mt-1 w-full rounded-control border border-slate-300 bg-white px-3 py-2 text-[13px] font-normal text-slate-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
@@ -121,10 +122,10 @@ function SettingsForm({settings, models}: { settings: AiRouterSettings; models: 
                 <legend className="sr-only">{t('admin.aiRouter.connection')}</legend>
                 <h3 className="m-0 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-800">
                     <KeyRound size={15} className="text-primary" aria-hidden="true"/>{t('admin.aiRouter.connection')}</h3>
-                <label className={label}>{t('admin.aiRouter.baseUrl')}
-                    <input required type="url" pattern="https://.+" value={baseUrl} onChange={e => setBaseUrl(e.target.value)} className={cn(field, 'font-mono')}/>
+                <label className={label}>{t('admin.aiRouter.baseUrl')}<RequiredMark/>
+                    <input aria-required type="url" value={baseUrl} onChange={e => setBaseUrl(e.target.value)} className={cn(field, 'font-mono')}/>
                     <span className="mt-1 block text-xs font-normal normal-case tracking-normal text-slate-500">{t('admin.aiRouter.baseUrlHint')}</span></label>
-                <label className={label}>{t('admin.aiRouter.apiKey')}
+                <label className={label}>{t('admin.aiRouter.apiKey')}<OptionalMark/>
                     <input type="password" autoComplete="off" value={apiKey} onChange={e => setApiKey(e.target.value)} className={cn(field, 'font-mono')}
                            placeholder={settings.apiKeyConfigured ? t('admin.aiRouter.apiKeyStored', {hint: settings.apiKeyHint ?? '••••'}) : t('admin.aiRouter.apiKeyPlaceholder')}/>
                     <span className="mt-1 block text-xs font-normal normal-case tracking-normal text-slate-500">{t('admin.aiRouter.apiKeyHint')}</span></label>
@@ -143,15 +144,15 @@ function SettingsForm({settings, models}: { settings: AiRouterSettings; models: 
                 <datalist id="ai-router-models">{models.map(m => <option key={m} value={m}/>)}</datalist>
                 {([[1, mode1Label, setMode1Label, mode1Model, setMode1Model], [2, mode2Label, setMode2Label, mode2Model, setMode2Model]] as const).map(([n, name, setName, model, setModel]) =>
                     <div key={n} className="grid grid-cols-1 gap-3 border-l-2 border-l-uav-blue pl-3 sm:grid-cols-[160px_minmax(0,1fr)]">
-                        <label className={label}>{t('admin.aiRouter.modeName', {n})}
-                            <input required maxLength={40} value={name} onChange={e => setName(e.target.value)} className={field}/></label>
-                        <label className={label}>{t('admin.aiRouter.modeModel', {n})}
-                            <input list="ai-router-models" maxLength={120} value={model} onChange={e => setModel(e.target.value)} className={cn(field, 'font-mono')}
+                        <label className={label}>{t('admin.aiRouter.modeName', {n})}<RequiredMark/>
+                            <input aria-required value={name} onChange={e => setName(e.target.value)} className={field}/></label>
+                        <label className={label}>{t('admin.aiRouter.modeModel', {n})}<OptionalMark/>
+                            <input list="ai-router-models" value={model} onChange={e => setModel(e.target.value)} className={cn(field, 'font-mono')}
                                    placeholder={models[0] ?? 'cc/claude-sonnet-4-5'}/></label>
                     </div>)}
                 <p className="m-0 text-xs text-slate-500">{models.length ? t('admin.aiRouter.modelsFromRouter', {count: models.length}) : t('admin.aiRouter.modelsManual')}</p>
-                <label className={label}>{t('admin.aiRouter.systemPrompt')}
-                    <textarea rows={5} maxLength={4000} value={systemPrompt} onChange={e => setSystemPrompt(e.target.value)} className={cn(field, 'resize-y leading-relaxed')}/></label>
+                <label className={label}>{t('admin.aiRouter.systemPrompt')}<OptionalMark/>
+                    <textarea rows={5} value={systemPrompt} onChange={e => setSystemPrompt(e.target.value)} className={cn(field, 'resize-y leading-relaxed')}/></label>
             </fieldset>
         </div>
         <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-slate-50/70 px-4 py-3">

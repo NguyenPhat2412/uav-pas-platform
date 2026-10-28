@@ -2,20 +2,11 @@
  * Public, keyless weather sources used as a reference for customers. They never decide flight clearance;
  * the operations team does. Only the mission coordinates are sent to these services.
  */
-export type SiteWeather = {
-    time: string;
-    forecast: boolean;
-    temperature?: number;
-    humidity?: number;
-    windSpeed?: number;
-    windGusts?: number;
-    windDirection?: number;
-    visibility?: number;
-    precipitationProbability?: number;
-};
+import type {SiteWeather, WeatherHourlyKey as HourlyKey} from '@/types';
+
+export type {SiteWeather};
 
 const HOURLY = ['temperature_2m', 'relative_humidity_2m', 'wind_speed_10m', 'wind_gusts_10m', 'wind_direction_10m', 'visibility', 'precipitation_probability'] as const;
-type HourlyKey = typeof HOURLY[number];
 
 /**
  * Picks the forecast hour closest to `at` (a local "YYYY-MM-DDTHH:mm" time as stored on the mission),

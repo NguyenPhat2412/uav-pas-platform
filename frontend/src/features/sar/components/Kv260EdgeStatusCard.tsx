@@ -4,6 +4,7 @@ import React from 'react';
 import {Activity, Cpu, Flame, Timer, Zap} from 'lucide-react';
 import type {AiTask} from '@/features/sar/types/sar.types';
 import {useI18n} from '@/contexts/I18nContext';
+import {formatTelemetryNumber} from '@/lib/format';
 import {cn} from '@/lib/utils';
 
 /** SoC thermal guidance for the Kria KV260: throttling starts near 85 °C. */
@@ -20,7 +21,7 @@ const statusTone: Record<string, string> = {
 export function Kv260EdgeStatusCard({task, loading}: { task: AiTask | null; loading: boolean }) {
     const {t, formatNumber, formatDate} = useI18n();
     const edge = task?.processingNode !== 'CLOUD_GPU';
-    const num = (v: number | null | undefined) => v == null ? '—' : formatNumber(Math.round(v * 10) / 10);
+    const num = (v: number | null | undefined) => formatTelemetryNumber(v, formatNumber, 1);
     const hot = task?.socTemperature != null && task.socTemperature >= TEMP_WARN_C;
 
     return <div className="rounded-panel border border-border bg-card p-5 text-slate-900">
@@ -30,7 +31,7 @@ export function Kv260EdgeStatusCard({task, loading}: { task: AiTask | null; load
                 <h3 className="m-0 truncate text-xs font-bold uppercase tracking-wider text-slate-900">
                     {t(edge ? 'opsShared.sar.kv260.title' : 'opsShared.sar.kv260.cloudTitle')}</h3>
             </div>
-            {task && <span className={cn('rounded-panel border px-2.5 py-0.5 text-[10px] font-bold', statusTone[task.status])}>
+            {task && <span className={cn('rounded-badge border px-2.5 py-0.5 text-[10px] font-bold', statusTone[task.status])}>
                 {t(`opsShared.sar.kv260.status.${task.status}`)}</span>}
         </div>
 

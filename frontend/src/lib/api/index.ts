@@ -1,7 +1,6 @@
-import type { ApiError as ApiErrorShape } from "@/types";
+import type { ApiError as ApiErrorShape, PresentationLocale, RequestOptions } from "@/types";
 export { API_ROUTES, type ApiRoutes } from "@/lib/api/routes";
-
-type PresentationLocale = 'vi' | 'en' | 'ja';
+export type { PresentationLocale, RequestOptions };
 
 function currentLocale(): PresentationLocale {
     if (typeof document !== 'undefined' && document.documentElement?.lang) {
@@ -27,12 +26,6 @@ function dispatchErrorToast(message: string, title: string) {
         window.dispatchEvent(new CustomEvent('uav:toast', { detail: { id, type: 'error', message, title } }));
     }
 }
-
-export type RequestOptions = Omit<RequestInit, 'body' | 'headers'> & {
-    body?: unknown;
-    token?: string;
-    headers?: HeadersInit;
-};
 
 // Backend auth and account errors are English constants; show them in the portal language.
 const apiMessages: Record<PresentationLocale, Record<string, string>> = {
@@ -110,6 +103,8 @@ export class ApiError extends Error {
         message: string,
         public path?: string,
         public code?: string,
+        /** Field name to message when the backend rejected specific inputs. */
+        public fields?: Record<string, string>,
     ) {
         super(message);
         this.name = 'ApiError';
@@ -240,6 +235,8 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
             localizeApiMessage(detail.message) || clientText[currentLocale()].failed(response.status),
             detail.path || endpoint,
             detail.code ?? (detail.message ? apiMessageCodes[detail.message] : undefined),
+            // Field messages may be codes (e.g. FLIGHT_POLYGON_TOO_SMALL); translate them like the main message.
+            detail.fields && Object.fromEntries(Object.entries(detail.fields).map(([name, text]) => [name, localizeApiMessage(text) ?? text])),
         );
     }
     if (response.status === 204) return undefined as T;

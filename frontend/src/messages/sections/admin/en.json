@@ -114,6 +114,18 @@
         "sarNone": "No open missions",
         "openHealth": "System health",
         "manageIntegrations": "Manage integrations"
+      },
+      "home": {
+        "question": "What's on the agenda?",
+        "searchPlaceholder": "Search admin pages",
+        "attention": "{count} alerts need attention",
+        "pending": "Missions awaiting approval",
+        "pendingEmpty": "No missions are waiting for approval.",
+        "alerts": "System alerts",
+        "alertsEmpty": "All clear, no alerts.",
+        "recent": "Recents",
+        "recentEmpty": "Pages you open will show up here.",
+        "loading": "Loading…"
       }
     },
     "auditTable": {
@@ -838,13 +850,17 @@
         "storage": "Media storage",
         "webhooks": "Webhook queue",
         "financialOutbox": "Financial event queue",
-        "payments": "Bank-transfer payments"
+        "payments": "Bank-transfer payments",
+        "mail": "System email",
+        "backups": "Data backups",
+        "tls": "TLS certificate"
       },
       "status": {
         "UP": "Up",
         "DEGRADED": "Degraded",
         "DOWN": "Down",
-        "UNKNOWN": "Unknown"
+        "UNKNOWN": "Unknown",
+        "DISABLED": "Disabled"
       },
       "latency": "Response time",
       "detail": {
@@ -1013,8 +1029,6 @@
       "removeAttachment": "Remove {name}",
       "attachmentOnly": "Please look at the attached images/video.",
       "attachedEarlier": "[{count} image(s) attached]",
-      "keySend": "send",
-      "keyNewline": "new line",
       "expand": "Enlarge chat",
       "collapse": "Shrink chat",
       "dropHere": "Drop images or video here",

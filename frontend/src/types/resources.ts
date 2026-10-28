@@ -1,6 +1,23 @@
-import type {PageResponse} from '@/types';
+import type {AuditLog, PageResponse} from '@/types';
+import type {User} from '@/types/admin';
+import type {Mission} from '@/features/missions/types/mission.types';
 
-export type {PageResponse};
+export type {AuditLog, PageResponse};
+
+export interface QuantityInput {
+    quantity: number;
+    note?: string;
+    requestId: string;
+}
+
+export interface MediaInput {
+    originalName: string;
+    contentType: string;
+    size: number;
+    type: string;
+    linkedEntityType?: string;
+    linkedEntityId?: string;
+}
 
 export interface Station {
     id: number;
@@ -49,16 +66,6 @@ export interface MediaAsset {
     createdAt?: string;
 }
 
-export interface AuditLog {
-    id: number;
-    actorUsername?: string;
-    action: string;
-    entityType: string;
-    entityId?: string;
-    details?: string;
-    createdAt?: string;
-}
-
 export interface Operator {
     id: number;
     username: string;
@@ -89,3 +96,15 @@ export interface InventoryMovement {
     note?: string;
     createdAt?: string;
 }
+
+export interface CollectionModels {
+    stations: Station;
+    uavs: Uav;
+    equipment: Equipment;
+    movements: InventoryMovement;
+    media: MediaAsset;
+    audit: AuditLog;
+    users: User;
+    missions: Mission;
+}
+

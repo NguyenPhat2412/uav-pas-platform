@@ -1,7 +1,7 @@
 'use client';
 
 import {MissionList} from '@/features/missions/components/MissionList';
-import {useMissions} from '@/features/missions/hooks/useMissions';
+import {useMissions} from '@/lib/query/operations';
 import {OperationsPage} from '@/components/layout/OperationsPage';
 import {useI18n} from '@/contexts/I18nContext';
 

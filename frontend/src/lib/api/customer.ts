@@ -25,6 +25,8 @@ export const customerService = {
             page: String(page), ...(search ? {search} : {}), ...(status ? {status} : {}), ...(missionType ? {missionType} : {})
         })}`, {signal}),
     mission: (id: number, signal?: AbortSignal) => apiClient.get<Mission>(API_ROUTES.missions.detail(id), {signal}),
+    /** Runs the server's create rules without saving; rejects with field errors when the request would fail. */
+    validateMission: (data: unknown) => apiClient.post<void>(API_ROUTES.missions.validate, data),
     availability: (startTime: string, endTime: string) =>
         apiClient.get<MissionAvailability>(`${API_ROUTES.missions.availability}?${new URLSearchParams({startTime, endTime})}`),
     create: (data: MissionInput) => apiClient.post<Mission>(API_ROUTES.missions.list, data),

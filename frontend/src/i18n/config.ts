@@ -1,17 +1,10 @@
-export type SupportedLocale = 'vi' | 'en' | 'ja';
-export type LocaleInput = SupportedLocale | 'vn' | 'nv' | 'jp';
+import type {LocaleInput, LocaleMeta, SupportedLocale} from '@/types';
+
+export type {LocaleInput, LocaleMeta, SupportedLocale};
 
 export const defaultLocale: SupportedLocale = 'vi';
 
 export const supportedLocales: SupportedLocale[] = ['vi', 'en', 'ja'];
-
-export interface LocaleMeta {
-    code: SupportedLocale;
-    displayCode: string;
-    name: string;
-    nativeName: string;
-    flag: string;
-}
 
 export const localeMetaMap: Record<SupportedLocale, LocaleMeta> = {
     vi: {

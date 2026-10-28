@@ -13,7 +13,7 @@
       "credit": "U.S. Geological Survey",
       "license": "Public Domain",
       "published": "2026-07-21",
-      "role": "Trang chủ, dịch vụ ghi hình, Liên hệ",
+      "role": "Trang chủ",
       "crop": {
         "left": 0,
         "top": 1350,
@@ -38,7 +38,7 @@
       "credit": "U.S. Geological Survey",
       "license": "Public Domain",
       "published": "2025-06-14",
-      "role": "Trang chủ, dịch vụ thu thập dữ liệu",
+      "role": "Trang chủ",
       "sha256": "21a4bdbdf56460e54f38d9be20ac0c0cae24aaa22d323820a583a72a2ed1ee75",
       "originalDimensions": {
         "width": 3840,
@@ -171,7 +171,7 @@
       "credit": "Woods Hole Coastal and Marine Science Center / USGS",
       "license": "Public Domain",
       "retrievedAt": "2026-10-23",
-      "role": "Trang chủ (lưới ảnh con người), trang Quy trình thực hiện",
+      "role": "Trang chủ",
       "sha256": "6672e4f6fdf089e9290e5538faa00b5add9a6e300dddafbf5b5f97b18aad8659",
       "originalDimensions": {
         "width": 2177,
@@ -192,7 +192,7 @@
       "credit": "Geosciences and Environmental Change Science Center / USGS",
       "license": "Public Domain",
       "retrievedAt": "2026-10-23",
-      "role": "Trang chủ (dịch vụ), dịch vụ và giải pháp khảo sát khu vực",
+      "role": "Trang chủ (dịch vụ)",
       "sha256": "ad20d2aa514b8a564854ef0d3dafe24ffd3bf3f75142a461fbcc11daae1ccd96",
       "originalDimensions": {
         "width": 8640,
@@ -234,7 +234,7 @@
       "credit": "Woods Hole Coastal and Marine Science Center / USGS",
       "license": "Public Domain",
       "retrievedAt": "2026-10-23",
-      "role": "Dịch vụ và giải pháp thuê UAV",
+      "role": "Trang Bảng giá",
       "sha256": "0da1ba81448c658fb5a96a4c1af4a78845be716623a605e49a2443ca489befa7",
       "originalDimensions": {
         "width": 4032,
@@ -255,7 +255,7 @@
       "credit": "USGS",
       "license": "Public Domain",
       "retrievedAt": "2026-10-23",
-      "role": "Trang Giải pháp và giải pháp phát hiện có AI hỗ trợ",
+      "role": "Trang chủ",
       "sha256": "cfebd30625d70ad05c6cf1bb24a10426b90c628f9e984d88c96cda58a2269780",
       "originalDimensions": {
         "width": 1920,
@@ -277,7 +277,7 @@
       "credit": "Hawaiian Volcano Observatory / USGS",
       "license": "Public Domain",
       "retrievedAt": "2026-10-23",
-      "role": "Giải pháp hỗ trợ tìm kiếm cứu nạn",
+      "role": "Banner trang Giải pháp",
       "sha256": "4baaff1fb23c0a5cfa817b737b9e14b51aa47437ab73e1121ec5fac7c84a74b4",
       "originalDimensions": {
         "width": 3264,
@@ -288,6 +288,473 @@
       "webDimensions": {
         "width": 1600,
         "height": 900
+      }
+    },
+    {
+      "id": "uav-rental-fleet",
+      "title": "Chuẩn bị nhiều UAV tại EROS",
+      "sourcePage": "https://www.usgs.gov/media/images/national-uncrewed-systems-office-brings-drones-eros-exercise",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/VictoriaScholl_DroneInspection.JPG",
+      "credit": "EROS Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Dịch vụ thuê UAV",
+      "sha256": "8d72158d80552f28a3b41ad16e894c9ac3e3e006d54611a022f68917af574559",
+      "originalDimensions": {
+        "width": 5728,
+        "height": 3819
+      },
+      "webFile": "frontend/public/images/services/uav-rental-fleet.webp",
+      "webBytes": 153194,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "aerial-inspection-grid",
+      "title": "UAV chụp sát đài tưởng niệm Perry",
+      "sourcePage": "https://www.usgs.gov/media/images/uas-sony-a7r-gremsy-gimbal-manually-flown-supplement-imagery-perry-victory-and",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/2024-05-01%20Perry%20M600%20Sony%20A7%20002.JPG",
+      "credit": "Geosciences and Environmental Change Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Dịch vụ khảo sát khu vực",
+      "sha256": "93ad72f1e0cf5e3e7014773431e0fada3e2793b72e746063c8c2d7986948608c",
+      "originalDimensions": {
+        "width": 4032,
+        "height": 3024
+      },
+      "webFile": "frontend/public/images/services/aerial-inspection-grid.webp",
+      "webBytes": 150030,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "aerial-recording-cinema",
+      "title": "UAV bay lúc hoàng hôn, Tahoe",
+      "sourcePage": "https://www.usgs.gov/media/images/drone-sunset",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/MosquitoDec22-1.jpg",
+      "credit": "National Innovation Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Dịch vụ quay chụp trên không",
+      "sha256": "1a7914ead85da7c21a73c833eddbe08f126c95b362b5a33f7e1073074f823d8b",
+      "originalDimensions": {
+        "width": 6000,
+        "height": 4000
+      },
+      "webFile": "frontend/public/images/services/aerial-recording-cinema.webp",
+      "webBytes": 18994,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "data-collection-corridor",
+      "title": "Bay đa phổ dọc sông Missouri",
+      "sourcePage": "https://www.usgs.gov/media/images/remote-pilots-conducting-a-hyperspectral-uas-flight-over-missouri-river",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/2024-05-11%20MO%20Victoria%20Scholl%20and%20Matt%20Burgess%20during%20hyperspectral%20UAS%20operations.JPG",
+      "credit": "Geosciences and Environmental Change Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Dịch vụ thu thập dữ liệu",
+      "sha256": "21d3559e100da00609bbd59230de0c722179bf9323760354d4551c1c64c15655",
+      "originalDimensions": {
+        "width": 6000,
+        "height": 4000
+      },
+      "webFile": "frontend/public/images/services/data-collection-corridor.webp",
+      "webBytes": 114308,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "managed-ops-command",
+      "title": "Tổ bay tại trạm điều khiển mặt đất",
+      "sourcePage": "https://www.usgs.gov/media/images/usgs-personnel-uas-ground-control-station-discussing-flight-parameters-days-drone",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/uasSDEROSIMG1400.jpeg",
+      "credit": "Geosciences and Environmental Change Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Giải pháp vận hành UAV trọn gói",
+      "sha256": "2f9f623fa8e1cf45f5519e78b8210e5efac70b252ed76d2e9c26e8d17861feb4",
+      "originalDimensions": {
+        "width": 3364,
+        "height": 3024
+      },
+      "webFile": "frontend/public/images/solutions/managed-ops-command.webp",
+      "webBytes": 258162,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "infra-3d-survey",
+      "title": "UAV lập bản đồ đường sạt lở, Blue Ridge",
+      "sourcePage": "https://www.usgs.gov/media/images/assessing-road-damage-caused-hurricane-helene",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/20241107_NC_BlueRidge_BurgessWithLargerDrone.jpg",
+      "credit": "Geosciences and Environmental Change Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Giải pháp khảo sát hạ tầng",
+      "sha256": "79a020a3aab8861daa3ad1da31a35beeefee1ca2dc731f1cb99644ad5dc71a27",
+      "originalDimensions": {
+        "width": 4000,
+        "height": 3000
+      },
+      "webFile": "frontend/public/images/solutions/infra-3d-survey.webp",
+      "webBytes": 470500,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "edge-ai-kv260-tracking",
+      "title": "UAV mang cảm biến đa phổ và lidar",
+      "sourcePage": "https://www.usgs.gov/media/images/drone-hyperspectral-imaging-payload-integrated-lidar-sensor",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/2026_UAS_with_hyperspectral_and_lidar_payload.png",
+      "credit": "Geosciences and Environmental Change Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Giải pháp phát hiện có AI hỗ trợ (ảnh minh hoạ tải cảm biến, không phải KV260)",
+      "sha256": "f0fcf62e14e2a83ad0da2967616794fcf32e678149e511670ec2c47ae32e127b",
+      "originalDimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "webFile": "frontend/public/images/solutions/edge-ai-kv260-tracking.webp",
+      "webBytes": 68224,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "sar-emergency-response",
+      "title": "Chuẩn bị UAV sau bão Helene",
+      "sourcePage": "https://www.usgs.gov/media/images/preparing-assess-road-damage-using-a-drone",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/20241104_NC_BlueRidge_BurgessWithSmallDrone.jpg",
+      "credit": "Geosciences and Environmental Change Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Giải pháp tìm kiếm cứu nạn",
+      "sha256": "0443e34bc1dd8f531d34dbe4876d56c8ed36ad8abdae824e34cc56c263a83f18",
+      "originalDimensions": {
+        "width": 4000,
+        "height": 3000
+      },
+      "webFile": "frontend/public/images/solutions/sar-emergency-response.webp",
+      "webBytes": 604938,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "step-01-select-service",
+      "title": "Tổ bay tại Tanbark Ridge",
+      "sourcePage": "https://www.usgs.gov/media/images/uncrewed-aircraft-pilots-tanbark-ridge-overlook",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/20241107_NC_BlueRidge_JoeAndMatt.jpg",
+      "credit": "Geosciences and Environmental Change Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Quy trình, bước 01",
+      "sha256": "be4db24e4bdbee0f627d9f5fd691b2db6668710c5f86ab6129118b8287b95bd5",
+      "originalDimensions": {
+        "width": 3648,
+        "height": 2736
+      },
+      "webFile": "frontend/public/images/process/step-01-select-service.webp",
+      "webBytes": 184488,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "step-02-gis-planning",
+      "title": "Huấn luyện UAV tại Fort Collins",
+      "sourcePage": "https://www.usgs.gov/media/images/uas-training-fort-collins",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/UAV.png",
+      "credit": "Amy A. Yackel Adams / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Quy trình, bước 02",
+      "sha256": "be7fd18eed53778811abc6641d02a824129ff2e58f37d86e10828a7f4102b4e9",
+      "originalDimensions": {
+        "width": 912,
+        "height": 1215
+      },
+      "webFile": "frontend/public/images/process/step-02-gis-planning.webp",
+      "webBytes": 35452,
+      "webDimensions": {
+        "width": 912,
+        "height": 608
+      },
+      "note": "Ảnh gốc chỉ rộng 912 px nên bản web giữ 912×608, không phóng to."
+    },
+    {
+      "id": "step-03-dispatch-prep",
+      "title": "Kiểm tra trước bay tại Mosquito Ridge",
+      "sourcePage": "https://www.usgs.gov/media/images/preflight-checks-mosquito",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/MosquitoDec22-5.jpg",
+      "credit": "Isaac Anderson / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Quy trình, bước 03",
+      "sha256": "5b5c07be40aa087d35b8b2ac115361924236f72fc2418033b153068f50eee786",
+      "originalDimensions": {
+        "width": 3835,
+        "height": 5752
+      },
+      "webFile": "frontend/public/images/process/step-03-dispatch-prep.webp",
+      "webBytes": 138034,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "step-04-inflight-rtk",
+      "title": "Bay khảo sát sạt lở Mud Creek",
+      "sourcePage": "https://www.usgs.gov/media/images/drone-operations-big-sur-landslide-october-12-2017",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/drone-ops-with-gps12Oct17.jpg",
+      "credit": "Pacific Coastal and Marine Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Quy trình, bước 04",
+      "sha256": "bb18f64562318a4067055a6196c43723d0b5434dc765ae2b5e4a53b3f6ace448",
+      "originalDimensions": {
+        "width": 1818,
+        "height": 1037
+      },
+      "webFile": "frontend/public/images/process/step-04-inflight-rtk.webp",
+      "webBytes": 244274,
+      "webDimensions": {
+        "width": 1556,
+        "height": 1037
+      }
+    },
+    {
+      "id": "step-05-data-handover",
+      "title": "Ảnh trực giao và mô hình độ cao Post Point",
+      "sourcePage": "https://www.usgs.gov/media/images/examples-orthomosaic-imagery-and-digital-surface-model",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/PostPoint_2019-06-06_browse.jpg",
+      "credit": "Pacific Coastal and Marine Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Quy trình, bước 05",
+      "sha256": "5ea1d31aa507074a123753c86bde13a1510de70e9d011071091b67938d559845",
+      "originalDimensions": {
+        "width": 826,
+        "height": 1308
+      },
+      "webFile": "frontend/public/images/process/step-05-data-handover.webp",
+      "webBytes": 39580,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      },
+      "note": "Ảnh gốc dạng dọc được đặt giữa nền trắng tỉ lệ 3:2, không cắt."
+    },
+    {
+      "id": "vju-research-banner",
+      "title": "Nhóm nghiên cứu tại mỏ đá Marsh-Felch",
+      "sourcePage": "https://www.usgs.gov/media/images/group-photo-captured-using-a-drone-standing-overlook-marsh-felch-quarry",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/2024-07-09%20Dronie%20far%20away%20with%20quarry.JPG",
+      "credit": "Geosciences and Environmental Change Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Giới thiệu, banner",
+      "sha256": "4c555eb192c73e4eebfa92d4b44918791e1fca56e5a39122cf8edfc223c33be4",
+      "originalDimensions": {
+        "width": 8192,
+        "height": 6144
+      },
+      "webFile": "frontend/public/images/about/vju-research-banner.webp",
+      "webBytes": 350690,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "command-desk-field",
+      "title": "Trạm điều hành dã chiến, New Mexico",
+      "sourcePage": "https://www.usgs.gov/media/images/drone-gamma-ray-spectrometer",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/Photo_2_Gamma_Ray_Spectrometer_on_Drone_in_New_Mexico.jpg",
+      "credit": "Geosciences and Environmental Change Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Liên hệ",
+      "sha256": "dd1658788e64a5276931d17ba10f3fe134147005327cc937e5a6c6e9d6cc8a0d",
+      "originalDimensions": {
+        "width": 2573,
+        "height": 1806
+      },
+      "webFile": "frontend/public/images/contact/command-desk-field.webp",
+      "webBytes": 208028,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1066
+      }
+    },
+    {
+      "id": "sop-preflight",
+      "title": "Chuẩn bị UAV bên sông Clackamas",
+      "sourcePage": "https://www.usgs.gov/media/images/hydrologist-preps-drone-flight",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/Paul_Drone.png",
+      "credit": "Oregon Water Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Giới thiệu, ô An toàn tiền bay",
+      "sha256": "fa0c0687d8bba9f5b6cea37b12c56bfdef73355f0279e56ec1f497df4679addb",
+      "originalDimensions": {
+        "width": 1096,
+        "height": 771
+      },
+      "webFile": "frontend/public/images/about/sop-preflight.webp",
+      "webBytes": 125634,
+      "webDimensions": {
+        "width": 1096,
+        "height": 731
+      },
+      "note": "Ảnh gốc chỉ rộng 1096 px nên bản web giữ 1096×731, không phóng to."
+    },
+    {
+      "id": "rtk-base-station",
+      "title": "Dựng trạm gốc GNSS, Great Sippewissett Marsh",
+      "sourcePage": "https://www.usgs.gov/media/images/suas-lidar-training-14",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/_7R37420.JPG",
+      "credit": "USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Giới thiệu, ô Trắc địa RTK",
+      "sha256": "ffafb65cdebcbf3c3bcd3ae0739b2944ac289a90ac1e42a2b726ff6ee47ed958",
+      "originalDimensions": {
+        "width": 7952,
+        "height": 5304
+      },
+      "webFile": "frontend/public/images/about/rtk-base-station.webp",
+      "webBytes": 340848,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "sensor-payload",
+      "title": "UAV mang radar xuyên đất trên sông Androscoggin",
+      "sourcePage": "https://www.usgs.gov/media/images/usgs-tests-drone-based-ground-penetrating-radar-bathymetry",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/GPR_20190501.jpg",
+      "credit": "Pennsylvania Water Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Giới thiệu, ô Edge AI (ảnh minh hoạ tải cảm biến, không phải KV260)",
+      "sha256": "521f60f611657b4526750da40bbea0614d8a5fc7179a5fe41d06fdf90ffbf903",
+      "originalDimensions": {
+        "width": 1280,
+        "height": 723
+      },
+      "webFile": "frontend/public/images/about/sensor-payload.webp",
+      "webBytes": 181396,
+      "webDimensions": {
+        "width": 1085,
+        "height": 723
+      },
+      "note": "Ảnh gốc chỉ rộng 1280 px nên bản web giữ 1085×723, không phóng to."
+    },
+    {
+      "id": "pilot-team",
+      "title": "Nhóm người điều khiển UAV tại Kīlauea",
+      "sourcePage": "https://www.usgs.gov/media/images/uas-pilots-kilauea",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/AIM.jpg",
+      "credit": "Woods Hole Coastal and Marine Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Giới thiệu, ô Điều phối",
+      "sha256": "afdc1d6428d087e50402eab9061ea1ed846caedf3fa450f02b461c8867582244",
+      "originalDimensions": {
+        "width": 1500,
+        "height": 1001
+      },
+      "webFile": "frontend/public/images/about/pilot-team.webp",
+      "webBytes": 141950,
+      "webDimensions": {
+        "width": 1500,
+        "height": 1000
+      },
+      "note": "Ảnh gốc chỉ rộng 1500 px nên bản web giữ 1500×1000, không phóng to."
+    },
+    {
+      "id": "portal-customer",
+      "title": "Bay theo dõi bờ biển tại bãi Nauset",
+      "sourcePage": "https://www.usgs.gov/media/images/hurricane-lee-drone-imagery",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/IMG_3488.jpg",
+      "credit": "Mira Anderberg / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Giới thiệu, thẻ Cổng Khách hàng",
+      "sha256": "e71ba85d4b80a9d6774de148b91ae670084c6e32e07736154465296ddd6ea4cf",
+      "originalDimensions": {
+        "width": 4032,
+        "height": 3024
+      },
+      "webFile": "frontend/public/images/about/portal-customer.webp",
+      "webBytes": 287344,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "portal-operations",
+      "title": "Huấn luyện bay UAV tại Maryland",
+      "sourcePage": "https://www.usgs.gov/media/images/ngwos-small-drone-training-maryland",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/ColumbiaDronePracticeTeam.png",
+      "credit": "Maryland-Delaware-D.C. Water Science Center / USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Giới thiệu, thẻ Trung tâm Điều hành",
+      "sha256": "5b69db6cae9d259acaa5c0a4d2d7eee0d8213b2c699630975a273ab2d742e9e0",
+      "originalDimensions": {
+        "width": 6000,
+        "height": 4000
+      },
+      "webFile": "frontend/public/images/about/portal-operations.webp",
+      "webBytes": 82134,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
+      }
+    },
+    {
+      "id": "portal-admin",
+      "title": "Gắn cảm biến vào UAV tại sân bay Grand Junction",
+      "sourcePage": "https://www.usgs.gov/media/images/securing-sensors-uas",
+      "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/20260909_USGS_-_Securing_sensor_onto_UAS_at_GJT.JPG",
+      "credit": "USGS",
+      "license": "Public Domain",
+      "retrievedAt": "2026-10-25",
+      "role": "Giới thiệu, thẻ Cổng Quản trị",
+      "sha256": "c358a48e9b15fecf8cf61500b9a6b16fd9f2b4fff00f2ded46cacbb16611e246",
+      "originalDimensions": {
+        "width": 4032,
+        "height": 3024
+      },
+      "webFile": "frontend/public/images/about/portal-admin.webp",
+      "webBytes": 266674,
+      "webDimensions": {
+        "width": 1600,
+        "height": 1067
       }
     }
   ]

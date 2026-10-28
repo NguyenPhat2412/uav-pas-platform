@@ -2,7 +2,10 @@
 
 import {useState} from 'react';
 import {Minus, TrendingDown, TrendingUp} from 'lucide-react';
+import type {ChartSeries as Series} from '@/features/dashboard/types/dashboard.types';
 import {cn} from '@/lib/utils';
+
+export type {Series};
 
 // Fixed categorical order (never cycled) so a series keeps its colour across every admin chart.
 export const seriesColors = {
@@ -14,8 +17,6 @@ export const seriesColors = {
     red: 'var(--danger)',
     gray: 'var(--muted)',
 } as const;
-
-export type Series = { key: string; label: string; color: string; dashed?: boolean; values: number[] };
 
 const W = 640, H = 200, PAD = {top: 12, right: 12, bottom: 24, left: 32};
 

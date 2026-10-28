@@ -1,32 +1,21 @@
-export type PermissionCode = string;
+import type {Page} from '@/types';
+import type {
+    Permission,
+    PermissionCode,
+    RoleTemplate,
+    User,
+    UserPermission,
+} from '@/types/admin';
 
-export interface User {
-    id: number;
-    username: string;
-    email: string;
-    fullName?: string;
-    role: string;
-    status: string;
-}
+export type {
+    Page,
+    Permission,
+    PermissionCode,
+    RoleTemplate,
+    User,
+    UserPermission,
+};
 
-export interface Permission {
-    code: PermissionCode;
-    description?: string;
-}
-
-export interface UserPermission {
-    code: PermissionCode;
-    granted: boolean;
-}
-
-export interface RoleTemplate {
-    role: string;
-    name: string;
-    permissions: PermissionCode[];
-}
-
-export interface Page<T> {
-    content: T[];
-    totalElements: number;
-    totalPages: number;
-}
+export type AccessTab = 'accounts' | 'templates' | 'matrix' | 'registry';
+export type Override = boolean | null;
+export type Change = { code: string; value: Override };

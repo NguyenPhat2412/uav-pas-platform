@@ -1,0 +1,288 @@
+{
+  "adminInfra": {
+    "title": "インフラ",
+    "pages": {
+      "overview": "インフラ概要",
+      "deployment": "デプロイ",
+      "backups": "バックアップ",
+      "storage": "ファイルストレージ",
+      "database": "データベース",
+      "email": "メール"
+    },
+    "nav": {
+      "overview": "概要",
+      "deployment": "デプロイ",
+      "backups": "バックアップ",
+      "storage": "ストレージ",
+      "database": "データベース",
+      "email": "メール",
+      "health": "システム状態"
+    },
+    "common": {
+      "checkedAt": "{time} に確認",
+      "refresh": "更新",
+      "yes": "はい",
+      "no": "いいえ",
+      "error": "エラー",
+      "notConfigured": "未設定",
+      "durationDays": "{days}日 {hours}時間",
+      "durationHours": "{hours}時間 {minutes}分"
+    },
+    "deployment": {
+      "note": "バージョン、コミット、ビルド日時はイメージのビルド時に埋め込まれます（DEPLOY.md 8章）。このページは閲覧専用で、再デプロイは SSH で行います。",
+      "banner": "稼働中のバージョン {version}",
+      "bannerDetail": "コミット {commit} · Flyway スキーマ {flyway}",
+      "failedMigrations": "失敗したマイグレーションが {count} 件あります。バックエンドが再起動できない可能性があるため、すぐにログを確認してください。",
+      "build": "ビルド",
+      "runtime": "実行環境",
+      "unknownBuildHint": "このイメージはバージョン情報なしでビルドされました。DEPLOY.md 8章のビルドコマンドを使うとコミットとビルド日時が表示されます。",
+      "version": "バージョン",
+      "commit": "コミット",
+      "buildTime": "ビルド日時",
+      "profiles": "Spring プロファイル",
+      "defaultProfile": "デフォルト",
+      "java": "Java",
+      "startedAt": "起動日時",
+      "uptime": "稼働時間",
+      "timeZone": "サーバーのタイムゾーン",
+      "publicUrl": "公開 URL",
+      "migrations": "マイグレーション履歴（{count}）",
+      "noMigrations": "Flyway の履歴を読み取れませんでした。",
+      "colVersion": "バージョン",
+      "colDescription": "説明",
+      "colInstalled": "適用日時",
+      "colDuration": "所要時間",
+      "colResult": "結果",
+      "ok": "成功",
+      "failed": "失敗"
+    },
+    "tls": {
+      "title": "HTTPS 証明書",
+      "status": {
+        "OK": "有効",
+        "EXPIRING": "まもなく期限切れ",
+        "EXPIRED": "期限切れ",
+        "NOT_HTTPS": "HTTPS ではない",
+        "NOT_CONFIGURED": "未設定",
+        "UNREACHABLE": "接続できません"
+      },
+      "hint": {
+        "OK": "公開 URL で1時間ごとに確認します。Cloudflare プロキシが有効な場合は Cloudflare の証明書です。VPS の certbot 証明書は `certbot certificates` で確認してください。",
+        "EXPIRING": "残り14日未満です。VPS で `certbot renew --dry-run` を実行し、certbot タイマーを確認してください（DEPLOY.md 10.3）。",
+        "EXPIRED": "証明書の期限が切れており、ブラウザはサイトをブロックします。SSH から certbot ですぐに更新してください。",
+        "NOT_HTTPS": "APP_PUBLIC_URL が https ではないため、確認する証明書がありません（ローカルでは正常）。",
+        "NOT_CONFIGURED": "バックエンドに APP_PUBLIC_URL が設定されていません。",
+        "UNREACHABLE": "バックエンドから公開 URL への TLS ハンドシェイクができませんでした（DNS、ファイアウォール、nginx）。10分後に再試行します。"
+      },
+      "notAfter": "有効期限",
+      "daysLeft": "残り日数",
+      "issuer": "発行者",
+      "trusted": "信頼済み",
+      "checkedAt": "確認日時"
+    },
+    "backups": {
+      "note": "バックエンドに読み取り専用でマウントしたバックアップフォルダーから読み込みます。アプリはバックアップの作成・削除・復元ができません。",
+      "status": {
+        "OK": "バックアップは最新です",
+        "STALE": "バックアップが遅れています",
+        "MISSING": "バックアップが見つかりません",
+        "NOT_CONFIGURED": "バックアップフォルダー未設定"
+      },
+      "hint": {
+        "OK": "最新のバックアップは {hours} 時間以内です。",
+        "STALE": "最後に成功したバックアップから {hours} 時間を超えています。VPS の cron /etc/cron.daily/uav-pas-backup を確認してください。",
+        "MISSING": "フォルダーに *.sql.gz ファイルがないか、コンテナにマウントされていません。DEPLOY.md 9章と10.4を参照してください。",
+        "NOT_CONFIGURED": "APP_BACKUP_DIR が設定されていません（ローカルでは正常）。"
+      },
+      "lastSuccess": "最終成功",
+      "hoursAgo": "{hours} 時間前",
+      "fileCount": "VPS 上の世代数",
+      "totalSize": "合計サイズ",
+      "staleAfter": "遅延とみなす時間",
+      "hours": "{hours} 時間",
+      "files": "VPS 上のバックアップ",
+      "noFiles": "バックアップファイルはまだありません。",
+      "colName": "ファイル",
+      "colSize": "サイズ",
+      "colModified": "日時",
+      "offsite": "VPS 外のコピー",
+      "offsiteUnknown": "アプリからは確認不可",
+      "offsiteTarget": "保存先",
+      "offsiteHint": "アプリはバックアップ用バケットにアクセスできません。Cloudflare R2（バケット uavpas-backups）を確認するか、VPS で `rclone ls r2backup:uavpas-backups/db/` を実行してください。",
+      "restore": "復元",
+      "restoreHint": "復元は SSH からのみ、まず一時データベースで試します（DEPLOY.md 9.4）。誤操作や乗っ取られた管理者アカウントで本番データが上書きされないよう、ここには復元ボタンがありません。"
+    },
+    "storage": {
+      "note": "エンドポイント、バケット名、アクセスキーは表示しません。バケットの集計は10分間キャッシュされます。",
+      "reachable": {
+        "UP": "{provider} ストレージに接続できます",
+        "DOWN": "{provider} ストレージに接続できません",
+        "UNKNOWN": "{provider} ストレージの状態が不明です"
+      },
+      "usageError": "バケットを一覧できませんでした（{error}）。",
+      "cleanupWarn": "削除済みファイルの一部が、ストレージからの削除予定を過ぎているか再試行中です。",
+      "provider": "プロバイダー: {provider}",
+      "bucket": "バケット使用量",
+      "truncated": "オブジェクトが多すぎるため走査上限で停止しました。数値は下限値です。",
+      "cacheHint": "未確定のアップロードを含め、バケット内の全オブジェクトを数えます。",
+      "objects": "オブジェクト数",
+      "totalSize": "合計サイズ",
+      "mediaBytes": "確定済みファイル",
+      "mediaBytesHint": "データベース上の値",
+      "providerLabel": "プロバイダー",
+      "media": "メディアファイルのライフサイクル",
+      "attention": "要確認",
+      "mediaHint": "削除されたファイルはバックグラウンド処理でストレージから削除されます。予定から1時間を超えると遅延扱いです。",
+      "confirmed": "確定済み",
+      "awaitingUpload": "アップロード待ち",
+      "expiredUploads": "期限切れアップロード",
+      "purged": "ストレージから削除済み",
+      "pendingCleanup": "削除待ち",
+      "cleanupOverdue": "削除遅延",
+      "cleanupRetrying": "削除再試行中"
+    },
+    "database": {
+      "note": "現在のデータベースの数値で、30秒ごとに更新します。接続文字列やアカウントは表示しません。",
+      "banner": "PostgreSQL {version}",
+      "bannerDetail": "サイズ {size} · 接続 {used}/{max}",
+      "connections": "接続",
+      "active": "クエリ実行中",
+      "idle": "アイドル",
+      "idleInTransaction": "トランザクション内でアイドル",
+      "usage": "使用中 / 上限",
+      "pool": "バックエンドの接続プール（Hikari）",
+      "poolHint": "待機スレッドがある場合はプールが枯渇しています。遅いクエリかプールが小さすぎます。",
+      "poolUnavailable": "プールの数値を取得できません。",
+      "poolActive": "使用中 / 上限",
+      "poolIdle": "アイドル",
+      "poolTotal": "合計",
+      "poolWaiting": "待機スレッド",
+      "tables": "サイズ上位10テーブル",
+      "rowsHint": "行数は PostgreSQL の推定値で、autovacuum 実行時に更新されます。",
+      "colTable": "テーブル",
+      "colSize": "サイズ（インデックス含む）",
+      "colRows": "行数（推定）"
+    },
+    "email": {
+      "note": "SMTP ホスト、アカウント、パスワードは表示しません。変更は VPS の .env.production を編集してバックエンドコンテナを再作成します。",
+      "connection": {
+        "UP": "メールサーバーに接続できます",
+        "DOWN": "メールサーバーに接続できません",
+        "DISABLED": "メール送信はオフです",
+        "UNKNOWN": "メール接続の状態が不明です"
+      },
+      "enabledDetail": "OTP、二要素認証、パスワード再設定はメールで送信されます。",
+      "disabledDetail": "APP_MAIL_ENABLED=false のため、OTP はユーザーに届きません。",
+      "config": "設定",
+      "configHint": "SMTP ホストとアカウントは設定の有無のみ表示します。",
+      "enabled": "メール送信",
+      "hostConfigured": "SMTP ホスト設定済み",
+      "usernameConfigured": "SMTP アカウント設定済み",
+      "port": "ポート",
+      "from": "送信元アドレス",
+      "connectionTitle": "接続確認",
+      "connectionStatus": {
+        "UP": "接続可",
+        "DOWN": "失敗",
+        "DISABLED": "オフ",
+        "UNKNOWN": "不明"
+      },
+      "connectionHint": "SMTP への接続とログインのみを行い、メールは送信しません。結果は5分間キャッシュされます。",
+      "lastProbe": "最終確認",
+      "testTitle": "テストメール送信",
+      "testHint": "送信先はご自身のアドレスのみです。{seconds} 秒に1回まで送信できます。",
+      "testRecipient": "宛先: {email}",
+      "noRecipient": "アカウントにメールアドレスがありません。",
+      "sending": "送信中…",
+      "send": "テストメールを送信",
+      "testDisabled": "テスト送信するには VPS で APP_MAIL_ENABLED を有効にしてください。",
+      "testSent": "{time} に {email} へ送信しました。迷惑メールフォルダーも確認してください。",
+      "testFailed": "送信に失敗しました（{error}）。詳細はバックエンドのログを確認してください。"
+    },
+    "overview": {
+      "intro": "以下のページはインフラの状態を読み取るだけです。サーバーへの変更はすべて DEPLOY.md に従い SSH で行います。",
+      "deploymentSummary": "{version} · {commit} · HTTPS: {tls}",
+      "cards": {
+        "deployment": "バージョン、コミット、Flyway マイグレーション、HTTPS 証明書の期限。",
+        "backups": "VPS 上の毎日の pg_dump と最後に成功した実行。",
+        "storage": "Cloudflare R2 の使用量とメディア削除キュー。",
+        "database": "接続、プール、サイズ、大きいテーブル。",
+        "email": "メール設定、接続確認、自分宛てのテストメール。",
+        "health": "全コンポーネントの状態を一覧表示（30秒ごとに更新）。"
+      },
+      "runbookTitle": "SSH でのみ行う作業",
+      "runbookIntro": "Web アプリには Docker やシェルの権限がありません。管理者アカウントが乗っ取られても、サーバーを操作することはできません。",
+      "runbookFooter": "詳細: deploy/DEPLOY.md（8章 更新、9章 バックアップ、10章 監視）。",
+      "runbook": {
+        "restart": {
+          "title": "再起動 / 再デプロイ",
+          "how": "docker compose … up -d --build（DEPLOY.md 8章）。VPS の root 権限が必要です。"
+        },
+        "logs": {
+          "title": "コンテナログ",
+          "how": "docker compose … logs --tail 200 backend。ログには個人情報が含まれる可能性があるため Web には表示しません。"
+        },
+        "restore": {
+          "title": "データベース復元",
+          "how": "まず一時データベースで試します（9.4）。本番データの上書きは元に戻せません。"
+        },
+        "certbot": {
+          "title": "証明書の更新",
+          "how": "certbot renew --dry-run、certbot certificates（10.3）。"
+        },
+        "secrets": {
+          "title": "パスワード・R2 キー・SMTP の変更",
+          "how": "VPS の deploy/.env.production を編集してコンテナを再作成します。秘密情報は Web UI を経由しません。"
+        },
+        "uptime": {
+          "title": "停止時のアラート",
+          "how": "外部の監視サービスが /actuator/health を監視します（10.1）。このページ自体が停止しているときは通知できません。"
+        }
+      }
+    },
+    "health": {
+      "component": {
+        "mail": "メール",
+        "backups": "バックアップ",
+        "tls": "HTTPS 証明書"
+      },
+      "status": {
+        "DISABLED": "オフ"
+      },
+      "detail": {
+        "error": "エラー",
+        "checkedAt": "確認日時",
+        "backupState": "状態",
+        "files": "世代数",
+        "hoursSinceLast": "前回からの時間",
+        "certificate": "証明書",
+        "daysLeft": "残り日数",
+        "trusted": "信頼済み",
+        "bankTransfer": "銀行振込",
+        "bank": "受取銀行"
+      },
+      "hint": {
+        "mail": {
+          "DOWN": "SMTP に接続またはログインできません。ユーザーに OTP が届きません。インフラ → メールを確認してください。",
+          "DISABLED": "メール送信はオフです（APP_MAIL_ENABLED=false）。",
+          "UNKNOWN": "メール接続を確認できませんでした。"
+        },
+        "backups": {
+          "DEGRADED": "バックアップが遅れているか存在しません。インフラ → バックアップを確認してください。",
+          "DOWN": "バックアップフォルダーを読み取れませんでした。",
+          "UNKNOWN": "バックアップフォルダーが未設定です（APP_BACKUP_DIR）。"
+        },
+        "tls": {
+          "DEGRADED": "証明書の残りが14日未満か、信頼されていません。certbot を確認してください。",
+          "DOWN": "HTTPS 証明書の期限が切れています。",
+          "UNKNOWN": "証明書を確認していません（APP_PUBLIC_URL 未設定、https ではない、または接続不可）。"
+        },
+        "payments": {
+          "DEGRADED": "振込先口座が設定されていません。システム設定の「請求」グループで銀行情報を入力してください。",
+          "DOWN": "決済設定を読み込めませんでした。",
+          "UNKNOWN": "決済設定はまだ確認されていません。"
+        }
+      }
+    }
+  }
+}

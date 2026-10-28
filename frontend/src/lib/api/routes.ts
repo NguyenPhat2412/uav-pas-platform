@@ -124,6 +124,7 @@ export const API_ROUTES = {
     missions: {
         list: '/api/v1/missions',
         availability: '/api/v1/missions/availability',
+        validate: '/api/v1/missions/validate',
         detail: (id: string | number) => `/api/v1/missions/${id}`,
         timeline: (id: string | number) => `/api/v1/missions/${id}/timeline`,
         media: (id: string | number) => `/api/v1/missions/${id}/media`,
@@ -202,6 +203,12 @@ export const API_ROUTES = {
         test: '/api/v1/webhooks/test-dispatch',
         status: '/api/v1/webhooks/status',
     },
+    training: {
+        list: '/api/v1/training',
+        byCode: (codeOrSlug: string) => `/api/v1/training/${encodeURIComponent(codeOrSlug)}`,
+        progress: (id: string | number) => `/api/v1/training/${id}/progress`,
+        byId: (id: string | number) => `/api/v1/training/${id}`,
+    },
 } as const;
 
-export type ApiRoutes = typeof API_ROUTES;
+export type {ApiRoutes} from '@/types';

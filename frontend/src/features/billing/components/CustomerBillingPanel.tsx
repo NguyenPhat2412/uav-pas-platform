@@ -4,7 +4,7 @@ import {UavIcon} from '@/components/shared/UavIcon';
 import React, {useState} from 'react';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {BankTransferDialog} from '@/features/billing/components/BankTransferDialog';
-import {bankTransferService} from '@/features/billing/services/bank-transfer.service';
+import {bankTransferService} from '@/lib/api/services';
 import {toast} from '@/contexts/ToastContext';
 import {useCustomerScope} from '@/lib/query/customer';
 import {displayLabel, planName} from "@/components/shared/presentation";
@@ -51,16 +51,16 @@ export default function CustomerBillingPage() {
 
     return (
         <PageGuard permission={null}>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-1 flex-col bg-white">
 
                 {isLoading && (
-                    <div className="bg-card border border-border rounded-panel p-8 text-center text-slate-500">
+                    <div className="border-b border-border bg-card p-8 text-center text-slate-500">
                         {t('billingPage.loading')}
                     </div>
                 )}
 
                 {queryError && !isLoading && (
-                    <div className="bg-rose-50 border border-rose-200 rounded-panel p-5 flex gap-3 text-rose-700">
+                    <div className="flex gap-3 border-b border-rose-200 bg-rose-50 p-5 text-rose-700">
                         <AlertCircle size={20} className="shrink-0 mt-0.5"/>
                         <div>
                             <p className="m-0 font-bold">{t('billingPage.loadError')}</p>
@@ -73,7 +73,7 @@ export default function CustomerBillingPage() {
 
                 {/* Quota & Plan Overview Cards */}
                 {quota && (
-                    <div data-testid="my-quota" className="grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 lg:grid-cols-3">
+                    <div data-testid="my-quota" className="grid grid-cols-1 gap-px border-b border-slate-200 bg-slate-200 lg:grid-cols-3">
                         {/* Card 1: Current Plan */}
                         <div className="relative flex min-h-[200px] flex-col justify-between overflow-hidden border-t-2 border-t-primary bg-white p-5 text-slate-900">
                             <div className="pointer-events-none absolute -right-2.5 -top-2.5 text-primary opacity-[0.07]">
@@ -168,13 +168,15 @@ export default function CustomerBillingPage() {
                         </div>
                     </div>
                 )}
-                <section aria-labelledby="available-plans-title">
-                    <h2 id="available-plans-title" className="m-0 mb-4 text-base font-extrabold text-slate-900 flex items-center gap-2">
-                        <UavIcon size={22} aria-hidden="true" className="text-primary"/>{t('billingPage.plans')}
-                    </h2>
-                    {plansQuery.isLoading ? <p role="status" className="text-sm text-slate-500">{t('billingPage.loadingPlans')}</p>
+                <section aria-labelledby="available-plans-title" className="border-b border-slate-200 bg-white">
+                    <header className="flex items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-5 py-3.5">
+                        <h2 id="available-plans-title" className="m-0 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-800">
+                            <UavIcon size={18} aria-hidden="true" className="text-primary"/>{t('billingPage.plans')}
+                        </h2>
+                    </header>
+                    {plansQuery.isLoading ? <p role="status" className="m-0 p-5 text-sm text-slate-500">{t('billingPage.loadingPlans')}</p>
                         : plansQuery.isError ? (
-                            <p role="alert" className="text-sm text-danger">
+                            <p role="alert" className="m-0 p-5 text-sm text-danger">
                                 {t('billingPage.plansError')}{' '}
                                 <button
                                     type="button"
@@ -189,14 +191,14 @@ export default function CustomerBillingPage() {
                                                   if (window.confirm(t('plans.subscribeConfirm', {name: planName(plan.name), price: formatCurrency(plan.price)}))) subscribe.mutate(plan.code);
                                               }}/>}
                     {plansQuery.isSuccess && plansList.length === 0 && (
-                        <p className="text-[13px] text-slate-500">{t('billingPage.noPlans')}</p>
+                        <p className="m-0 p-5 text-[13px] text-slate-500">{t('billingPage.noPlans')}</p>
                     )}
                 </section>
                 {/* Invoices Table */}
-                <div data-testid="my-invoices" className="bg-card border border-border rounded-panel overflow-hidden">
-                    <div className="px-6 py-4 border-b border-border flex justify-between items-center gap-3 flex-wrap">
-                        <h2 className="m-0 text-base font-extrabold text-slate-900 flex items-center gap-2">
-                            <FileText size={20} className="text-slate-500"/> {t('billingPage.invoiceHistory')}
+                <div data-testid="my-invoices" className="flex-1 overflow-hidden bg-white">
+                    <div className="border-b border-slate-200 bg-slate-50/70 px-5 py-3.5 flex justify-between items-center gap-3 flex-wrap">
+                        <h2 className="m-0 text-sm font-bold uppercase tracking-wide text-slate-800 flex items-center gap-2">
+                            <FileText size={17} className="text-slate-500"/> {t('billingPage.invoiceHistory')}
                         </h2>
                         <span className="text-xs text-slate-500 font-semibold whitespace-nowrap shrink-0">
                             {t('billingPage.recordCount', {count: invoices.length})}

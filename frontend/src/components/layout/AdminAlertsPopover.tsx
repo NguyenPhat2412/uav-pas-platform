@@ -1,12 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import {useEffect, useRef, useState} from 'react';
 import {AlertTriangle, Bell, ChevronRight, CircleAlert, Info} from 'lucide-react';
 import {useI18n} from '@/contexts/I18nContext';
+import {useDropdownMenu} from '@/hooks/useDropdownMenu';
 import {useAdminAnalytics} from '@/lib/query/admin';
 import type {AdminAlert} from '@/types/admin';
 import {cn} from '@/lib/utils';
+import {useQuery} from '@tanstack/react-query';
+import {useAuth} from '@/contexts/AuthContext';
+import {alertCenterApi, alertCenterQueryKey} from '@/features/alerts/api';
+import {useAlertMessage} from '@/features/alerts/useAlertMessage';
+
+const centerLevel = {CRITICAL: 'danger', WARNING: 'warning', INFO: 'info'} as const;
 
 const alertIcon = {danger: CircleAlert, warning: AlertTriangle, info: Info};
 // Flat rows: severity is carried by the left stripe and icon colour, not by a filled card.
@@ -19,38 +25,40 @@ const alertStyles = {
 /** Bell in the admin top bar; operational alerts open in a popover instead of taking space on the dashboard. */
 export function AdminAlertsPopover() {
     const {t} = useI18n();
-    const alerts = useAdminAnalytics(30).data?.alerts ?? [];
+    const analyticsAlerts = useAdminAnalytics(30).data?.alerts ?? [];
+    // Alert center (GET /api/v1/admin/alerts): top critical/warning items join the analytics alerts.
+    const {user, can} = useAuth();
+    const centerMessage = useAlertMessage();
+    const center = useQuery({
+        queryKey: alertCenterQueryKey(user?.id),
+        queryFn: ({signal}) => alertCenterApi.current(signal),
+        enabled: can('DASHBOARD_READ'),
+        refetchInterval: 60_000,
+        retry: false,
+    });
+    const centerItems = (center.data?.items ?? []).filter(item => item.severity !== 'INFO').slice(0, 5);
+    const alerts: (AdminAlert & { text?: string })[] = [
+        ...centerItems.map(item => ({
+            level: centerLevel[item.severity],
+            code: `center:${item.id}`,
+            message: centerMessage(item),
+            text: centerMessage(item),
+            href: item.href,
+            count: 1,
+        } as AdminAlert & { text?: string })),
+        ...analyticsAlerts,
+    ];
     const urgent = alerts.some(alert => alert.level === 'danger');
-    const [open, setOpen] = useState(false);
-    const root = useRef<HTMLDivElement>(null);
-    const trigger = useRef<HTMLButtonElement>(null);
+    const {open, setOpen, close, root, trigger} = useDropdownMenu({arrowNavigation: false});
     const label = alerts.length ? t('admin.analytics.alertsCount', {count: alerts.length}) : t('admin.analytics.alertsNone');
 
-    useEffect(() => {
-        if (!open) return;
-        const outside = (event: PointerEvent) => {
-            if (!root.current?.contains(event.target as Node)) setOpen(false);
-        };
-        const keydown = (event: KeyboardEvent) => {
-            if (event.key !== 'Escape') return;
-            setOpen(false);
-            trigger.current?.focus();
-        };
-        document.addEventListener('pointerdown', outside);
-        document.addEventListener('keydown', keydown);
-        return () => {
-            document.removeEventListener('pointerdown', outside);
-            document.removeEventListener('keydown', keydown);
-        };
-    }, [open]);
-
     // Backend messages are Vietnamese; prefer the localized catalog entry for known alert codes.
-    const message = (alert: AdminAlert) => {
+    const message = (alert: AdminAlert & { text?: string }) => {
+        if (alert.text) return alert.text;
         const key = `admin.analytics.alertCodes.${alert.code}`;
         const text = t(key, {count: alert.count});
         return text === key ? alert.message : text;
     };
-    const close = () => setOpen(false);
 
     return (
         <div ref={root} className="relative">
@@ -109,7 +117,10 @@ export function AdminAlertsPopover() {
                     ) : (
                         <p className="m-0 px-4 py-6 text-center text-[13px] text-slate-500">{t('admin.analytics.alertsEmpty')}</p>
                     )}
-                    <footer className="border-t border-slate-100 px-4 py-2.5">
+                    <footer className="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-2.5">
+                        <Link href="/admin/alerts" onClick={close} className="text-xs font-semibold text-primary hover:underline">
+                            {t('adminPlatform.alerts.viewAll')}
+                        </Link>
                         <Link href="/admin/notifications" onClick={close} className="text-xs font-semibold text-primary hover:underline">
                             {t('admin.analytics.allNotifications')}
                         </Link>
