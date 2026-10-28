@@ -55,7 +55,7 @@ class MigrationDefaultsPostgresTest {
                 false, environment.getProperty("spring.flyway.baseline-on-migrate", Boolean.class));
         assertFalse(context.containsBean("phase1SchemaInitializer"));
         assertEquals(
-                15,
+                MigrationFiles.latestVersion(),
                 db.queryForObject(
                         "SELECT max(version::int) FROM flyway_schema_history WHERE success",
                         Integer.class));

@@ -27,12 +27,22 @@ class OtpPreviewGuardTest {
         when(user.getEmail()).thenReturn("victim@example.com");
         when(users.findByEmail("victim@example.com")).thenReturn(Optional.of(user));
         AuthOtpTokenRepository tokens = mock(AuthOtpTokenRepository.class);
-        when(tokens.findByEmailIgnoreCaseAndPurposeAndConsumedAtIsNull(anyString(), anyString())).thenReturn(List.of());
+        when(tokens.findByEmailIgnoreCaseAndPurposeAndConsumedAtIsNull(anyString(), anyString()))
+                .thenReturn(List.of());
         PasswordEncoder encoder = mock(PasswordEncoder.class);
         when(encoder.encode(anyString())).thenReturn("hash");
         AuthMailService mail = new AuthMailService(null, false, "no-reply@test", devPreview);
-        return new AuthOtpServiceImpl(users, tokens, encoder, mock(JwtTokenProvider.class), null, mail,
-                mock(TotpService.class), mock(AuthMapper.class), mock(UserMapper.class), 10);
+        return new AuthOtpServiceImpl(
+                users,
+                tokens,
+                encoder,
+                mock(JwtTokenProvider.class),
+                null,
+                mail,
+                mock(TotpService.class),
+                mock(AuthMapper.class),
+                mock(UserMapper.class),
+                10);
     }
 
     @Test

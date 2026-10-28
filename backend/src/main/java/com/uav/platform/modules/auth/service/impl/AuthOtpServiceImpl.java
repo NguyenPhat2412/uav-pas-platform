@@ -1,9 +1,10 @@
 package com.uav.platform.modules.auth.service.impl;
 
-import com.uav.platform.modules.auth.dto.record.IssuedChallenge;
 import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.common.dto.response.MessageResponse;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.auth.dto.record.IssuedChallenge;
+import com.uav.platform.modules.auth.dto.record.RegistrationInput;
 import com.uav.platform.modules.auth.dto.request.*;
 import com.uav.platform.modules.auth.dto.response.*;
 import com.uav.platform.modules.auth.entity.AuthOtpToken;
@@ -86,54 +87,62 @@ public class AuthOtpServiceImpl implements AuthOtpService {
 
     @Override
     public OtpChallengeResponse requestRegisterOtp(RegisterRequest request) {
-        if (request == null) {
-            throw SystemException.badRequest(CoreConstants.REGISTRATION_DATA_REQUIRED);
-        }
-
-        String email = request.email() != null ? request.email().trim() : "";
-        String username = request.username() != null ? request.username().trim() : "";
-        String phoneNumber = request.phoneNumber() != null ? request.phoneNumber().trim() : "";
-
-        Optional<AppUser> existingByEmail = userRepository.findByEmail(email);
+        RegistrationInput in = RegistrationOperations.normalize(request);
+        Optional<AppUser> existingByEmail =
+                userRepository.findFirstByEmailIgnoreCaseOrderByIdAsc(in.email());
         AppUser targetUser;
 
         if (existingByEmail.isPresent()) {
+            // An unverified sign-up may be restarted; the new OTP invalidates every earlier one, so
+            // only the person
+            // who reads this email AND holds this latest challenge can finish it.
             AppUser existing = existingByEmail.get();
             if (existing.isEmailVerified()) {
-                throw SystemException.conflict(CoreConstants.EMAIL_ALREADY_EXISTS);
+                throw SystemException.conflict(
+                                RegistrationOperations.TAKEN_EMAIL, "REGISTER_EMAIL_TAKEN")
+                        .at("email");
             }
-            if (!existing.getUsername().equalsIgnoreCase(username)
-                    && userRepository.existsByUsername(username)) {
-                throw SystemException.conflict(CoreConstants.USERNAME_ALREADY_EXISTS);
+            if (!existing.getUsername().equalsIgnoreCase(in.username())
+                    && userRepository.existsByUsernameIgnoreCase(in.username())) {
+                throw SystemException.conflict(
+                                RegistrationOperations.TAKEN_USERNAME, "REGISTER_USERNAME_TAKEN")
+                        .at("username");
             }
-            if ((existing.getPhoneNumber() == null
-                            || !existing.getPhoneNumber().equals(phoneNumber))
-                    && userRepository.existsByPhoneNumber(phoneNumber)) {
-                throw SystemException.conflict(CoreConstants.PHONE_ALREADY_EXISTS);
+            if (!in.phoneNumber().equals(existing.getPhoneNumber())
+                    && userRepository.existsByPhoneNumber(in.phoneNumber())) {
+                throw SystemException.conflict(
+                                RegistrationOperations.TAKEN_PHONE, "REGISTER_PHONE_TAKEN")
+                        .at("phoneNumber");
             }
-            existing.setUsername(username);
-            existing.setPhoneNumber(phoneNumber);
+            existing.setUsername(in.username());
+            existing.setPhoneNumber(in.phoneNumber());
             existing.setPasswordHash(passwordEncoder.encode(request.password()));
+            existing.setRole(in.role());
+            existing.setStatus(in.status());
             existing.setEmailVerified(false);
             targetUser = userRepository.save(existing);
         } else {
-            if (userRepository.existsByUsername(username)) {
-                throw SystemException.conflict(CoreConstants.USERNAME_ALREADY_EXISTS);
+            if (userRepository.existsByUsernameIgnoreCase(in.username())) {
+                throw SystemException.conflict(
+                                RegistrationOperations.TAKEN_USERNAME, "REGISTER_USERNAME_TAKEN")
+                        .at("username");
             }
-            if (userRepository.existsByPhoneNumber(phoneNumber)) {
-                throw SystemException.conflict(CoreConstants.PHONE_ALREADY_EXISTS);
+            if (userRepository.existsByPhoneNumber(in.phoneNumber())) {
+                throw SystemException.conflict(
+                                RegistrationOperations.TAKEN_PHONE, "REGISTER_PHONE_TAKEN")
+                        .at("phoneNumber");
             }
             AppUser newUser =
                     UserAccountServiceImpl.createUser(
-                            username,
-                            email,
+                            in.username(),
+                            in.email(),
                             passwordEncoder.encode(request.password()),
-                            phoneNumber,
+                            in.phoneNumber(),
                             null,
                             null,
                             null,
-                            null,
-                            UserStatus.ACTIVE);
+                            in.role(),
+                            in.status());
             newUser.setEmailVerified(false);
             newUser.setTwoFactorEnabled(false);
             newUser.setTwoFactorMethod(METHOD_EMAIL);
@@ -164,9 +173,20 @@ public class AuthOtpServiceImpl implements AuthOtpService {
         if (request == null || request.code() == null || request.code().isBlank()) {
             throw SystemException.badRequest("Mã OTP là bắt buộc");
         }
+        // Bound to the exact sign-up attempt: an email alone would match whoever restarted the
+        // sign-up last.
+        if (request.challengeToken() == null || request.challengeToken().isBlank()) {
+            throw SystemException.badRequest(
+                    "Phiên đăng ký không hợp lệ. Vui lòng đăng ký lại.",
+                    "REGISTER_CHALLENGE_REQUIRED");
+        }
         AuthOtpToken token =
-                resolveActiveToken(
-                        request.challengeToken(), request.email(), PURPOSE_REGISTER_VERIFY);
+                resolveActiveToken(request.challengeToken(), null, PURPOSE_REGISTER_VERIFY);
+        if (!PURPOSE_REGISTER_VERIFY.equals(token.getPurpose())) {
+            throw SystemException.badRequest(
+                    "Phiên đăng ký không hợp lệ. Vui lòng đăng ký lại.",
+                    "REGISTER_CHALLENGE_REQUIRED");
+        }
         verifyTokenCode(token, request.code());
 
         AppUser user = token.getUser();
@@ -178,8 +198,22 @@ public class AuthOtpServiceImpl implements AuthOtpService {
                                     () -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
         }
         user.setEmailVerified(true);
-        user.setStatus(UserStatus.ACTIVE);
         UserAccountServiceImpl.resetFailedAttempts(user);
+        if (RegistrationOperations.awaitsApproval(user)) {
+            // Email confirmed, but a staff account opens only after an administrator activates it.
+            userRepository.save(user);
+            return new AuthResponse(
+                    null,
+                    null,
+                    null,
+                    userMapper.toResponse(user),
+                    false,
+                    "PENDING_APPROVAL",
+                    null,
+                    null,
+                    null);
+        }
+        user.setStatus(UserStatus.ACTIVE);
         userRepository.save(user);
 
         return issueFullSession(user);
@@ -299,13 +333,30 @@ public class AuthOtpServiceImpl implements AuthOtpService {
                         : PURPOSE_LOGIN_2FA;
 
         if (request.challengeToken() != null && !request.challengeToken().isBlank()) {
-            Optional<AuthOtpToken> prev =
-                    otpTokenRepository.findByChallengeToken(request.challengeToken().trim());
-            if (prev.isPresent()) {
-                user = prev.get().getUser();
-                email = prev.get().getEmail();
-                purpose = prev.get().getPurpose();
+            AuthOtpToken prev =
+                    otpTokenRepository
+                            .findByChallengeToken(request.challengeToken().trim())
+                            .orElseThrow(
+                                    () ->
+                                            SystemException.badRequest(
+                                                    "Phiên xác thực không tồn tại. Vui lòng bắt đầu lại.",
+                                                    "OTP_CHALLENGE_UNKNOWN"));
+            // A used or superseded challenge must not mint a new code: after a sign-up is
+            // restarted, the earlier
+            // challenge would otherwise verify the account with the newer (possibly someone else's)
+            // password.
+            if (consumed(prev)) {
+                throw SystemException.badRequest(
+                        "Phiên xác thực này đã được dùng hoặc đã được thay bằng phiên mới. Vui lòng bắt đầu lại.",
+                        "OTP_CHALLENGE_SUPERSEDED");
             }
+            user = prev.getUser();
+            email = prev.getEmail();
+            purpose = prev.getPurpose();
+        } else if (PURPOSE_REGISTER_VERIFY.equals(purpose)) {
+            throw SystemException.badRequest(
+                    "Phiên đăng ký không hợp lệ. Vui lòng đăng ký lại.",
+                    "REGISTER_CHALLENGE_REQUIRED");
         }
 
         if (user == null && email != null && !email.isBlank()) {
@@ -370,12 +421,11 @@ public class AuthOtpServiceImpl implements AuthOtpService {
     @Override
     @Transactional(noRollbackFor = SystemException.class)
     public MessageResponse resetPassword(ResetPasswordRequest request) {
-        if (request == null
-                || request.code() == null
-                || request.newPassword() == null
-                || request.newPassword().length() < 8) {
+        if (request == null || request.code() == null) {
             throw SystemException.badRequest("Thông tin đặt lại mật khẩu không hợp lệ");
         }
+        RegistrationOperations.checkPassword(
+                request.newPassword(), request.confirmPassword(), "newPassword", "confirmPassword");
         AuthOtpToken token =
                 resolveActiveToken(
                         request.challengeToken(), request.email(), PURPOSE_PASSWORD_RESET);

@@ -22,7 +22,10 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,7 +36,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleSystemException(
             SystemException ex, HttpServletRequest request) {
         log.warn("System exception occurred [{}]: {}", ex.getStatus(), ex.getMessage());
-        return respond(ex.getStatus(), ex.getCode(), ex.getMessage(), request);
+        return respond(
+                ex.getStatus(),
+                ex.getCode(),
+                ex.getMessage(),
+                request,
+                ex.getField() == null ? null : Map.of(ex.getField(), ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -44,7 +52,26 @@ public class GlobalExceptionHandler {
                         .map(err -> err.getField() + ": " + err.getDefaultMessage())
                         .collect(Collectors.joining("; "));
         log.warn("Validation failed: {}", details);
-        return respond(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", details, request);
+        // One message per field so the client can mark each input; an empty field reports
+        // "required" rather than a
+        // size or format rule it also fails.
+        Map<String, String> fields = new LinkedHashMap<>();
+        ex.getBindingResult()
+                .getFieldErrors()
+                .forEach(
+                        err -> {
+                            String text = ValidationMessages.vietnamese(err);
+                            if ("NotBlank".equals(err.getCode()) || "NotNull".equals(err.getCode()))
+                                fields.put(err.getField(), text);
+                            else fields.putIfAbsent(err.getField(), text);
+                        });
+        String message = fields.isEmpty() ? details : fields.values().iterator().next();
+        return respond(
+                HttpStatus.BAD_REQUEST,
+                "VALIDATION_ERROR",
+                message,
+                request,
+                fields.isEmpty() ? null : fields);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -165,13 +192,24 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<ErrorResponse> respond(
             HttpStatus status, String code, String message, HttpServletRequest request) {
+        return respond(status, code, message, request, null);
+    }
+
+    private ResponseEntity<ErrorResponse> respond(
+            HttpStatus status,
+            String code,
+            String message,
+            HttpServletRequest request,
+            Map<String, String> fields) {
         return ResponseEntity.status(status)
                 .body(
-                        ErrorResponse.ofCode(
+                        new ErrorResponse(
+                                LocalDateTime.now(),
                                 status.value(),
                                 status.getReasonPhrase(),
                                 code,
                                 message,
-                                request.getRequestURI()));
+                                request.getRequestURI(),
+                                fields));
     }
 }

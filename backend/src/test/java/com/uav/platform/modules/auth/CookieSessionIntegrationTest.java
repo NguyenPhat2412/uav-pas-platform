@@ -83,7 +83,7 @@ class CookieSessionIntegrationTest {
                                 "fullName",
                                 "Khách kiểm thử",
                                 "phoneNumber",
-                                "09" + System.nanoTime(),
+                                "09" + String.format("%08d", System.nanoTime() % 100_000_000L),
                                 "expectedRevision",
                                 values.get("revision")));
         mvc.perform(

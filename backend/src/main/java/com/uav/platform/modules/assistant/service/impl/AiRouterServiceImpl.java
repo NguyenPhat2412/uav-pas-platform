@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.modules.assistant.dto.request.AiRouterSettingsRequest;
-import com.uav.platform.modules.assistant.dto.request.AssistantChatRequest;
 import com.uav.platform.modules.assistant.dto.record.ChatImage;
 import com.uav.platform.modules.assistant.dto.record.ChatThread;
+import com.uav.platform.modules.assistant.dto.request.AiRouterSettingsRequest;
+import com.uav.platform.modules.assistant.dto.request.AssistantChatRequest;
 import com.uav.platform.modules.assistant.dto.request.AssistantMessageRequest;
 import com.uav.platform.modules.assistant.dto.response.*;
 import com.uav.platform.modules.assistant.entity.AiRouterSettings;
@@ -55,6 +55,7 @@ public class AiRouterServiceImpl implements AiRouterService {
     private final SecretCipherOperations cipher;
     private final HttpClient http;
     private final Map<String, Deque<Long>> recentCalls = new ConcurrentHashMap<>();
+
     /** Chat history store; absent in isolated unit tests, where turns are simply not recorded. */
     private AssistantConversationService conversations;
 
@@ -66,12 +67,15 @@ public class AiRouterServiceImpl implements AiRouterService {
     /** Who is asking shapes what the assistant may explain. */
     static String audienceNote(String portal) {
         return switch (portal == null ? "" : portal) {
-            case "CUSTOMER" -> "Người hỏi là KHÁCH HÀNG đang dùng cổng Khách hàng. Chỉ hướng dẫn các chức năng của cổng Khách hàng "
-                    + "(đặt dịch vụ, theo dõi nhiệm vụ, gói cước, thanh toán, tệp kết quả, hồ sơ). Không mô tả thao tác quản trị hay "
-                    + "điều phối nội bộ, không tiết lộ thông tin của khách hàng khác; nếu cần can thiệp, hướng dẫn liên hệ bộ phận điều phối.";
-            case "OPERATIONS" -> "Người hỏi là NHÂN VIÊN VẬN HÀNH/ĐIỀU PHỐI đang dùng cổng Vận hành. Tập trung vào điều phối nhiệm vụ, "
-                    + "đội UAV, trạm, telemetry, SAR, bảo trì và kho thiết bị; các việc cần quyền quản trị thì chỉ ra người phụ trách.";
-            case "ADMIN" -> "Người hỏi là QUẢN TRỊ VIÊN đang dùng cổng Quản trị; có thể hướng dẫn cả cấu hình, phân quyền và thanh toán.";
+            case "CUSTOMER" ->
+                    "Người hỏi là KHÁCH HÀNG đang dùng cổng Khách hàng. Chỉ hướng dẫn các chức năng của cổng Khách hàng "
+                            + "(đặt dịch vụ, theo dõi nhiệm vụ, gói cước, thanh toán, tệp kết quả, hồ sơ). Không mô tả thao tác quản trị hay "
+                            + "điều phối nội bộ, không tiết lộ thông tin của khách hàng khác; nếu cần can thiệp, hướng dẫn liên hệ bộ phận điều phối.";
+            case "OPERATIONS" ->
+                    "Người hỏi là NHÂN VIÊN VẬN HÀNH/ĐIỀU PHỐI đang dùng cổng Vận hành. Tập trung vào điều phối nhiệm vụ, "
+                            + "đội UAV, trạm, telemetry, SAR, bảo trì và kho thiết bị; các việc cần quyền quản trị thì chỉ ra người phụ trách.";
+            case "ADMIN" ->
+                    "Người hỏi là QUẢN TRỊ VIÊN đang dùng cổng Quản trị; có thể hướng dẫn cả cấu hình, phân quyền và thanh toán.";
             default -> "";
         };
     }
@@ -287,10 +291,15 @@ public class AiRouterServiceImpl implements AiRouterService {
             throw SystemException.badRequest("This mode has no model", "AI_ROUTER_MODE_UNSET");
         throttle(auth.getName());
         AssistantMessageRequest last = r.messages().get(r.messages().size() - 1);
-        if (!"user".equals(last.role())) throw SystemException.badRequest("The last message must be the user's", "ASSISTANT_LAST_NOT_USER");
+        if (!"user".equals(last.role()))
+            throw SystemException.badRequest(
+                    "The last message must be the user's", "ASSISTANT_LAST_NOT_USER");
         List<ChatImage> images = AssistantAttachmentOperations.validate(r.attachments());
-        ChatThread thread = conversations == null ? null
-                : conversations.begin(auth, r.portal(), r.conversationId(), last.content(), images);
+        ChatThread thread =
+                conversations == null
+                        ? null
+                        : conversations.begin(
+                                auth, r.portal(), r.conversationId(), last.content(), images);
 
         ObjectNode body = json.createObjectNode();
         body.put("model", model);
@@ -300,7 +309,10 @@ public class AiRouterServiceImpl implements AiRouterService {
         String system =
                 String.join(
                         "\n\n",
-                        java.util.stream.Stream.of(s.getSystemPrompt(), PLATFORM_GUIDE, audienceNote(thread == null ? r.portal() : thread.portal()))
+                        java.util.stream.Stream.of(
+                                        s.getSystemPrompt(),
+                                        PLATFORM_GUIDE,
+                                        audienceNote(thread == null ? r.portal() : thread.portal()))
                                 .filter(part -> part != null && !part.isBlank())
                                 .toList());
         if (!system.isEmpty()) messages.addObject().put("role", "system").put("content", system);
@@ -313,8 +325,13 @@ public class AiRouterServiceImpl implements AiRouterService {
             ArrayNode parts = messages.addObject().put("role", m.role()).putArray("content");
             parts.addObject().put("type", "text").put("text", m.content());
             for (ChatImage image : images)
-                parts.addObject().put("type", "image_url").putObject("image_url")
-                        .put("url", AssistantAttachmentOperations.dataUrl(image.mimeType(), image.data()));
+                parts.addObject()
+                        .put("type", "image_url")
+                        .putObject("image_url")
+                        .put(
+                                "url",
+                                AssistantAttachmentOperations.dataUrl(
+                                        image.mimeType(), image.data()));
         }
 
         long started = System.nanoTime();
@@ -352,16 +369,19 @@ public class AiRouterServiceImpl implements AiRouterService {
                 throw SystemException.serviceUnavailable(
                         "Gateway returned no answer", "AI_ROUTER_EMPTY");
             JsonNode usage = root.path("usage");
-            AssistantChatResponse answer = new AssistantChatResponse(
-                    reply,
-                    r.mode(),
-                    root.path("model").asText(model),
-                    latency,
-                    usage.hasNonNull("prompt_tokens") ? usage.get("prompt_tokens").asInt() : null,
-                    usage.hasNonNull("completion_tokens")
-                            ? usage.get("completion_tokens").asInt()
-                            : null,
-                    thread == null ? null : thread.conversationId());
+            AssistantChatResponse answer =
+                    new AssistantChatResponse(
+                            reply,
+                            r.mode(),
+                            root.path("model").asText(model),
+                            latency,
+                            usage.hasNonNull("prompt_tokens")
+                                    ? usage.get("prompt_tokens").asInt()
+                                    : null,
+                            usage.hasNonNull("completion_tokens")
+                                    ? usage.get("completion_tokens").asInt()
+                                    : null,
+                            thread == null ? null : thread.conversationId());
             if (thread != null) conversations.recordReply(thread.conversationId(), answer);
             return answer;
         } catch (HttpTimeoutException e) {

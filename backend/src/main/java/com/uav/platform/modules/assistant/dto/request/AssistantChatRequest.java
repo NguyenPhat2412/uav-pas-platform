@@ -21,7 +21,8 @@ public record AssistantChatRequest(
         this(mode, messages, null, null, null);
     }
 
-    public AssistantChatRequest(int mode, List<AssistantMessageRequest> messages, Long conversationId, String portal) {
+    public AssistantChatRequest(
+            int mode, List<AssistantMessageRequest> messages, Long conversationId, String portal) {
         this(mode, messages, conversationId, portal, null);
     }
 }

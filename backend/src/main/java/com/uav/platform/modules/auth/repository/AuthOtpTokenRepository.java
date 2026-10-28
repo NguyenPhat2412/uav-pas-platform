@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AuthOtpTokenRepository extends JpaRepository<AuthOtpToken, Long>, JpaSpecificationExecutor<AuthOtpToken> {
+public interface AuthOtpTokenRepository
+        extends JpaRepository<AuthOtpToken, Long>, JpaSpecificationExecutor<AuthOtpToken> {
 
     Optional<AuthOtpToken> findByChallengeToken(String challengeToken);
 

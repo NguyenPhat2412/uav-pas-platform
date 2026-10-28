@@ -12,6 +12,9 @@ public class SystemException extends RuntimeException {
     private final HttpStatus status;
     private final String code;
 
+    /** Request property the error belongs to, so the client can show it next to that input. */
+    private String field;
+
     public SystemException(String message, HttpStatus status) {
         this(message, status, normalize(message));
     }
@@ -20,6 +23,12 @@ public class SystemException extends RuntimeException {
         super(message);
         this.status = status;
         this.code = code;
+    }
+
+    /** Marks which request field caused this error; returned to the client in ErrorResponse.fields. */
+    public SystemException at(String field) {
+        this.field = field;
+        return this;
     }
 
     public static String normalize(String message) {

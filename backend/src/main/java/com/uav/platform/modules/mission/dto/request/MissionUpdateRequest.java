@@ -3,6 +3,8 @@ package com.uav.platform.modules.mission.dto.request;
 import com.uav.platform.modules.mission.enums.*;
 import com.uav.platform.modules.mission.enums.MissionPriority;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -15,16 +17,26 @@ import java.time.LocalDateTime;
 
 public record MissionUpdateRequest(
         @NotNull @Min(0) Long expectedVersion,
-        @NotBlank String title,
-        String description,
-        @NotNull @FutureOrPresent LocalDate requestedDate,
-        @NotNull LocalDateTime startTime,
-        @NotNull LocalDateTime expectedEndTime,
-        @NotBlank String locationName,
-        BigDecimal latitude,
-        BigDecimal longitude,
+        @NotBlank(message = "Nhập tiêu đề yêu cầu.")
+                @Size(max = 180, message = "Tiêu đề không được vượt quá 180 ký tự.")
+                String title,
+        @Size(max = 2000, message = "Mô tả không được vượt quá 2.000 ký tự.") String description,
+        @NotNull(message = "Chọn ngày yêu cầu hợp lệ.")
+                @FutureOrPresent(message = "Ngày yêu cầu phải từ hôm nay trở đi.")
+                LocalDate requestedDate,
+        @NotNull(message = "Chọn ngày và giờ bắt đầu hợp lệ.") LocalDateTime startTime,
+        @NotNull(message = "Chọn ngày và giờ kết thúc hợp lệ.") LocalDateTime expectedEndTime,
+        @NotBlank(message = "Nhập địa điểm thực hiện.")
+                @Size(max = 255, message = "Địa điểm không được vượt quá 255 ký tự.")
+                String locationName,
+        @DecimalMin(value = "-90", message = "Vĩ độ phải từ -90 đến 90.")
+                @DecimalMax(value = "90", message = "Vĩ độ phải từ -90 đến 90.")
+                BigDecimal latitude,
+        @DecimalMin(value = "-180", message = "Kinh độ phải từ -180 đến 180.")
+                @DecimalMax(value = "180", message = "Kinh độ phải từ -180 đến 180.")
+                BigDecimal longitude,
         MissionPriority priority,
-        @Size(max = 2000) String notes,
+        @Size(max = 2000, message = "Ghi chú không được vượt quá 2.000 ký tự.") String notes,
         @jakarta.validation.Valid FlightPlanRequest flightPlan) {
 
     public MissionUpdateRequest(

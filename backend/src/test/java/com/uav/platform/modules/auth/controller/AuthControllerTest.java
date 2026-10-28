@@ -93,7 +93,35 @@ class AuthControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.fields.email").value("Địa chỉ email không hợp lệ."))
+                .andExpect(jsonPath("$.message").value("Địa chỉ email không hợp lệ."));
+    }
+
+    @Test
+    void register_RuleErrorNamesItsField() throws Exception {
+        when(authService.register(any(RegisterRequest.class)))
+                .thenThrow(
+                        SystemException.badRequest(
+                                        "Mật khẩu xác nhận không khớp.",
+                                        "REGISTER_PASSWORD_MISMATCH")
+                                .at("confirmPassword"));
+        mockMvc.perform(
+                        post(RestEndpoint.AUTH + RestEndpoint.REGISTER)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        objectMapper.writeValueAsString(
+                                                new RegisterRequest(
+                                                        "johndoe",
+                                                        "john@example.com",
+                                                        "P@ssword123",
+                                                        "0987654321"))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("REGISTER_PASSWORD_MISMATCH"))
+                .andExpect(
+                        jsonPath("$.fields.confirmPassword")
+                                .value("Mật khẩu xác nhận không khớp."));
     }
 
     @Test

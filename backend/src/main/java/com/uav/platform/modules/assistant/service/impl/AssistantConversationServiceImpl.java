@@ -51,7 +51,8 @@ public class AssistantConversationServiceImpl implements AssistantConversationSe
     /** Portals a role may chat from; mirrors the frontend portal guards. */
     static Set<String> portalsFor(UserRole role) {
         if (role == UserRole.ROLE_ADMIN) return Set.of("ADMIN", "OPERATIONS", "CUSTOMER");
-        if (role == UserRole.ROLE_COMMANDER || role == UserRole.ROLE_OPERATOR) return Set.of("OPERATIONS");
+        if (role == UserRole.ROLE_COMMANDER || role == UserRole.ROLE_OPERATOR)
+            return Set.of("OPERATIONS");
         return Set.of("CUSTOMER");
     }
 
@@ -63,25 +64,42 @@ public class AssistantConversationServiceImpl implements AssistantConversationSe
 
     @Override
     @Transactional
-    public ChatThread begin(Authentication auth, String requestedPortal, Long conversationId, String question, List<ChatImage> images) {
-        AppUser user = users.findByUsername(auth.getName())
-                .orElseThrow(() -> SystemException.unauthorized("Unknown user"));
+    public ChatThread begin(
+            Authentication auth,
+            String requestedPortal,
+            Long conversationId,
+            String question,
+            List<ChatImage> images) {
+        AppUser user =
+                users.findByUsername(auth.getName())
+                        .orElseThrow(() -> SystemException.unauthorized("Unknown user"));
         LocalDateTime now = LocalDateTime.now();
         AssistantConversation thread;
         if (conversationId != null) {
-            thread = conversations.findById(conversationId)
-                    .filter(c -> c.getUserId().equals(user.getId()))
-                    .orElseThrow(() -> SystemException.notFound("Conversation not found", "ASSISTANT_CONVERSATION_NOT_FOUND"));
+            thread =
+                    conversations
+                            .findById(conversationId)
+                            .filter(c -> c.getUserId().equals(user.getId()))
+                            .orElseThrow(
+                                    () ->
+                                            SystemException.notFound(
+                                                    "Conversation not found",
+                                                    "ASSISTANT_CONVERSATION_NOT_FOUND"));
         } else {
-            String portal = requestedPortal != null && portalsFor(user.getRole()).contains(requestedPortal)
-                    ? requestedPortal : defaultPortal(user.getRole());
+            String portal =
+                    requestedPortal != null && portalsFor(user.getRole()).contains(requestedPortal)
+                            ? requestedPortal
+                            : defaultPortal(user.getRole());
             thread = new AssistantConversation();
             thread.setUserId(user.getId());
             thread.setUsername(user.getUsername());
             thread.setFullName(user.getFullName());
             thread.setPortal(portal);
             String oneLine = question.strip().replaceAll("\\s+", " ");
-            thread.setTitle(oneLine.length() > TITLE_LENGTH ? oneLine.substring(0, TITLE_LENGTH - 1) + "…" : oneLine);
+            thread.setTitle(
+                    oneLine.length() > TITLE_LENGTH
+                            ? oneLine.substring(0, TITLE_LENGTH - 1) + "…"
+                            : oneLine);
             thread.setCreatedAt(now);
         }
         thread.setMessageCount(thread.getMessageCount() + 1);
@@ -99,7 +117,10 @@ public class AssistantConversationServiceImpl implements AssistantConversationSe
             a.setMessageId(message.getId());
             a.setKind(image.kind());
             a.setMimeType(image.mimeType());
-            a.setName(image.name() == null ? null : image.name().substring(0, Math.min(160, image.name().length())));
+            a.setName(
+                    image.name() == null
+                            ? null
+                            : image.name().substring(0, Math.min(160, image.name().length())));
             a.setSizeBytes(image.data().length);
             a.setData(image.data());
             a.setCreatedAt(now);
@@ -126,52 +147,125 @@ public class AssistantConversationServiceImpl implements AssistantConversationSe
         message.setCreatedAt(now);
         messages.save(message);
         thread.setMessageCount(thread.getMessageCount() + 1);
-        thread.setTotalTokens(thread.getTotalTokens()
-                + (reply.promptTokens() == null ? 0 : reply.promptTokens())
-                + (reply.completionTokens() == null ? 0 : reply.completionTokens()));
+        thread.setTotalTokens(
+                thread.getTotalTokens()
+                        + (reply.promptTokens() == null ? 0 : reply.promptTokens())
+                        + (reply.completionTokens() == null ? 0 : reply.completionTokens()));
         thread.setUpdatedAt(now);
         conversations.save(thread);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<AssistantConversationResponse> list(String portal, String query, int page, int size) {
-        var spec = AssistantConversationSpecifications.inPortal(portal).and(AssistantConversationSpecifications.matching(query));
-        var pageable = PageRequest.of(Math.max(0, page), Math.min(100, Math.max(1, size)), Sort.by(Sort.Direction.DESC, "updatedAt"));
-        return PageResponse.from(conversations.findAll(spec, pageable).map(AssistantConversationServiceImpl::toResponse));
+    public PageResponse<AssistantConversationResponse> list(
+            String portal, String query, int page, int size) {
+        var spec =
+                AssistantConversationSpecifications.inPortal(portal)
+                        .and(AssistantConversationSpecifications.matching(query));
+        var pageable =
+                PageRequest.of(
+                        Math.max(0, page),
+                        Math.min(100, Math.max(1, size)),
+                        Sort.by(Sort.Direction.DESC, "updatedAt"));
+        return PageResponse.from(
+                conversations
+                        .findAll(spec, pageable)
+                        .map(AssistantConversationServiceImpl::toResponse));
     }
 
     @Override
     @Transactional(readOnly = true)
     public AssistantConversationDetailResponse detail(Long id) {
-        AssistantConversation thread = conversations.findById(id)
-                .orElseThrow(() -> SystemException.notFound("Conversation not found", "ASSISTANT_CONVERSATION_NOT_FOUND"));
+        AssistantConversation thread =
+                conversations
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        SystemException.notFound(
+                                                "Conversation not found",
+                                                "ASSISTANT_CONVERSATION_NOT_FOUND"));
         List<AssistantMessage> stored = messages.findByConversationIdOrderByIdAsc(id);
-        Map<Long, List<AssistantAttachmentResponse>> files = stored.isEmpty() ? Map.of()
-                : attachments.findByMessageIdInOrderByIdAsc(stored.stream().map(AssistantMessage::getId).toList()).stream()
-                .collect(Collectors.groupingBy(AssistantAttachment::getMessageId, Collectors.mapping(a -> new AssistantAttachmentResponse(
-                        a.getId(), a.getKind(), a.getMimeType(), a.getName(), a.getSizeBytes(),
-                        AssistantAttachmentOperations.dataUrl(a.getMimeType(), a.getData())), Collectors.toList())));
-        List<AssistantMessageResponse> turns = stored.stream()
-                .map(m -> new AssistantMessageResponse(m.getId(), m.getRole(), m.getContent(),
-                        m.getMode() == null ? null : m.getMode().intValue(), m.getModel(), m.getPromptTokens(),
-                        m.getCompletionTokens(), m.getLatencyMs(), m.getCreatedAt(), files.getOrDefault(m.getId(), List.of())))
-                .toList();
+        Map<Long, List<AssistantAttachmentResponse>> files =
+                stored.isEmpty()
+                        ? Map.of()
+                        : attachments
+                                .findByMessageIdInOrderByIdAsc(
+                                        stored.stream().map(AssistantMessage::getId).toList())
+                                .stream()
+                                .collect(
+                                        Collectors.groupingBy(
+                                                AssistantAttachment::getMessageId,
+                                                Collectors.mapping(
+                                                        a ->
+                                                                new AssistantAttachmentResponse(
+                                                                        a.getId(),
+                                                                        a.getKind(),
+                                                                        a.getMimeType(),
+                                                                        a.getName(),
+                                                                        a.getSizeBytes(),
+                                                                        AssistantAttachmentOperations
+                                                                                .dataUrl(
+                                                                                        a
+                                                                                                .getMimeType(),
+                                                                                        a
+                                                                                                .getData())),
+                                                        Collectors.toList())));
+        List<AssistantMessageResponse> turns =
+                stored.stream()
+                        .map(
+                                m ->
+                                        new AssistantMessageResponse(
+                                                m.getId(),
+                                                m.getRole(),
+                                                m.getContent(),
+                                                m.getMode() == null ? null : m.getMode().intValue(),
+                                                m.getModel(),
+                                                m.getPromptTokens(),
+                                                m.getCompletionTokens(),
+                                                m.getLatencyMs(),
+                                                m.getCreatedAt(),
+                                                files.getOrDefault(m.getId(), List.of())))
+                        .toList();
         return new AssistantConversationDetailResponse(toResponse(thread), turns);
     }
 
     @Override
     @Transactional
     public void delete(Long id, Authentication auth) {
-        AssistantConversation thread = conversations.findById(id)
-                .orElseThrow(() -> SystemException.notFound("Conversation not found", "ASSISTANT_CONVERSATION_NOT_FOUND"));
+        AssistantConversation thread =
+                conversations
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        SystemException.notFound(
+                                                "Conversation not found",
+                                                "ASSISTANT_CONVERSATION_NOT_FOUND"));
         conversations.delete(thread);
-        audit.record(null, auth.getName(), AuditAction.DELETE, "ASSISTANT_CONVERSATION", String.valueOf(id),
-                "portal=" + thread.getPortal() + ", user=" + thread.getUsername() + ", messages=" + thread.getMessageCount());
+        audit.record(
+                null,
+                auth.getName(),
+                AuditAction.DELETE,
+                "ASSISTANT_CONVERSATION",
+                String.valueOf(id),
+                "portal="
+                        + thread.getPortal()
+                        + ", user="
+                        + thread.getUsername()
+                        + ", messages="
+                        + thread.getMessageCount());
     }
 
     static AssistantConversationResponse toResponse(AssistantConversation c) {
-        return new AssistantConversationResponse(c.getId(), c.getUserId(), c.getUsername(), c.getFullName(), c.getPortal(),
-                c.getTitle(), c.getMessageCount(), c.getTotalTokens(), c.getCreatedAt(), c.getUpdatedAt());
+        return new AssistantConversationResponse(
+                c.getId(),
+                c.getUserId(),
+                c.getUsername(),
+                c.getFullName(),
+                c.getPortal(),
+                c.getTitle(),
+                c.getMessageCount(),
+                c.getTotalTokens(),
+                c.getCreatedAt(),
+                c.getUpdatedAt());
     }
 }

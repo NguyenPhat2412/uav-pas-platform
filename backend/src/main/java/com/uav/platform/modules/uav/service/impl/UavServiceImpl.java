@@ -221,9 +221,10 @@ public class UavServiceImpl implements UavService {
 
     private String requireReason(String reason) {
         if (reason == null || reason.isBlank())
-            throw SystemException.badRequest("UAV_STATUS_REASON_REQUIRED");
+            throw SystemException.badRequest("UAV_STATUS_REASON_REQUIRED").at("reason");
         String trimmed = reason.trim();
-        if (trimmed.length() > 255) throw SystemException.badRequest("UAV_STATUS_REASON_TOO_LONG");
+        if (trimmed.length() > 255)
+            throw SystemException.badRequest("UAV_STATUS_REASON_TOO_LONG").at("reason");
         return trimmed;
     }
 

@@ -14,4 +14,17 @@ public record AdminCreateUserRequest(
         @NotBlank @Size(min = 8, max = 100) String password,
         @NotBlank String phoneNumber,
         @Size(max = 120) String fullName,
-        @NotNull UserRole role) {}
+        @NotNull UserRole role,
+        /** Optional on the API; when sent it must equal password. */
+        @Size(max = 100) String confirmPassword) {
+
+    public AdminCreateUserRequest(
+            String username,
+            String email,
+            String password,
+            String phoneNumber,
+            String fullName,
+            UserRole role) {
+        this(username, email, password, phoneNumber, fullName, role, null);
+    }
+}

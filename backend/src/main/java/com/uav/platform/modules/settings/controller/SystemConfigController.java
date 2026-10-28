@@ -1,6 +1,7 @@
 package com.uav.platform.modules.settings.controller;
 
 import com.uav.platform.modules.settings.dto.request.UpdateConfigurationRequest;
+import com.uav.platform.modules.settings.dto.response.SystemConfigurationHistoryResponse;
 import com.uav.platform.modules.settings.dto.response.SystemConfigurationResponse;
 import com.uav.platform.modules.settings.service.SystemConfigService;
 
@@ -23,15 +24,22 @@ public class SystemConfigController {
     private final SystemConfigService configService;
 
     @GetMapping
-    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<List<SystemConfigurationResponse>> listSettings() {
         return ResponseEntity.ok(configService.listAll());
     }
 
     @GetMapping("/{key}")
-    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<SystemConfigurationResponse> getSetting(@PathVariable String key) {
         return ResponseEntity.ok(configService.getByKey(key));
+    }
+
+    @GetMapping("/{key}/history")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<List<SystemConfigurationHistoryResponse>> history(
+            @PathVariable String key, @RequestParam(defaultValue = "50") int limit) {
+        return ResponseEntity.ok(configService.history(key, limit));
     }
 
     @PutMapping("/{key}")

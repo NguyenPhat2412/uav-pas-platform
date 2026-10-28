@@ -2,6 +2,7 @@ package com.uav.platform.modules.auth.service.impl;
 
 import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.auth.dto.record.RegistrationInput;
 import com.uav.platform.modules.auth.dto.request.LoginRequest;
 import com.uav.platform.modules.auth.dto.request.RefreshTokenRequest;
 import com.uav.platform.modules.auth.dto.request.RegisterRequest;
@@ -84,39 +85,31 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserResponse register(RegisterRequest request) {
-        if (request == null) {
-            throw SystemException.badRequest(CoreConstants.REGISTRATION_DATA_REQUIRED);
-        }
-
-        String email = request.email() != null ? request.email().trim() : "";
-        String username = request.username() != null ? request.username().trim() : "";
-        String phoneNumber = request.phoneNumber() != null ? request.phoneNumber().trim() : "";
-
-        if (userRepository.existsByEmail(email)) {
-            throw SystemException.conflict(CoreConstants.EMAIL_ALREADY_EXISTS);
-        }
-
-        if (userRepository.existsByUsername(username)) {
-            throw SystemException.conflict(CoreConstants.USERNAME_ALREADY_EXISTS);
-        }
-
-        if (userRepository.existsByPhoneNumber(phoneNumber)) {
-            throw SystemException.conflict(CoreConstants.PHONE_ALREADY_EXISTS);
-        }
-
-        String hashedPassword = passwordEncoder.encode(request.password());
+        RegistrationInput in = RegistrationOperations.normalize(request);
+        if (userRepository.existsByEmailIgnoreCase(in.email()))
+            throw SystemException.conflict(
+                            RegistrationOperations.TAKEN_EMAIL, "REGISTER_EMAIL_TAKEN")
+                    .at("email");
+        if (userRepository.existsByUsernameIgnoreCase(in.username()))
+            throw SystemException.conflict(
+                            RegistrationOperations.TAKEN_USERNAME, "REGISTER_USERNAME_TAKEN")
+                    .at("username");
+        if (userRepository.existsByPhoneNumber(in.phoneNumber()))
+            throw SystemException.conflict(
+                            RegistrationOperations.TAKEN_PHONE, "REGISTER_PHONE_TAKEN")
+                    .at("phoneNumber");
 
         AppUser newUser =
                 UserAccountServiceImpl.createUser(
-                        username,
-                        email,
-                        hashedPassword,
-                        phoneNumber,
+                        in.username(),
+                        in.email(),
+                        passwordEncoder.encode(request.password()),
+                        in.phoneNumber(),
                         null,
                         null,
                         null,
-                        null,
-                        UserStatus.ACTIVE);
+                        in.role(),
+                        in.status());
 
         AppUser savedUser = userRepository.save(newUser);
         return userMapper.toResponse(savedUser);
@@ -136,6 +129,10 @@ public class AuthServiceImpl implements AuthService {
         AppUser user =
                 userRepository
                         .findByEmail(usernameOrEmail)
+                        .or(
+                                () ->
+                                        userRepository.findFirstByEmailIgnoreCaseOrderByIdAsc(
+                                                usernameOrEmail))
                         .or(() -> userRepository.findByUsername(usernameOrEmail))
                         .orElseThrow(
                                 () ->
@@ -159,6 +156,10 @@ public class AuthServiceImpl implements AuthService {
             throw SystemException.unauthorized(CoreConstants.INVALID_CREDENTIALS);
         }
 
+        if (RegistrationOperations.awaitsApproval(user)) {
+            throw SystemException.forbidden(
+                    RegistrationOperations.PENDING_APPROVAL, "ACCOUNT_PENDING_APPROVAL");
+        }
         if (user.getStatus() != UserStatus.ACTIVE) {
             throw SystemException.badRequest(CoreConstants.ACCOUNT_INACTIVE);
         }

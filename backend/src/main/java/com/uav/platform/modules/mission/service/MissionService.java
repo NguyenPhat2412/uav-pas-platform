@@ -14,6 +14,9 @@ import java.util.List;
 public interface MissionService {
     MissionResponse create(MissionCreateRequest request, String actorUsername);
 
+    /** Runs every create rule without saving; throws the same field errors create would. */
+    void validate(MissionCreateRequest request);
+
     MissionResponse get(Long id, Authentication authentication);
 
     PageResponse<MissionResponse> list(

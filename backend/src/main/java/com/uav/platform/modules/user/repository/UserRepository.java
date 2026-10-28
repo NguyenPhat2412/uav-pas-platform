@@ -28,6 +28,12 @@ public interface UserRepository
 
     Optional<AppUser> findByEmail(String email);
 
+    Optional<AppUser> findFirstByEmailIgnoreCaseOrderByIdAsc(String email);
+
+    boolean existsByEmailIgnoreCase(String email);
+
+    boolean existsByUsernameIgnoreCase(String username);
+
     Optional<AppUser> findByUsername(String username);
 
     Optional<AppUser> findByZaloId(String zaloId);

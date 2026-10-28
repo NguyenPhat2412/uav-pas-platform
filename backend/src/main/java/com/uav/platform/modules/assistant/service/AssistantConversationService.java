@@ -14,11 +14,17 @@ import java.util.List;
 /** Stores assistant chats from every portal and lets administrators review and remove them. */
 public interface AssistantConversationService {
     /** Opens or continues the caller's thread and stores their question (and its images) before the model is asked. */
-    ChatThread begin(Authentication auth, String requestedPortal, Long conversationId, String question, List<ChatImage> images);
+    ChatThread begin(
+            Authentication auth,
+            String requestedPortal,
+            Long conversationId,
+            String question,
+            List<ChatImage> images);
 
     void recordReply(Long conversationId, AssistantChatResponse reply);
 
-    PageResponse<AssistantConversationResponse> list(String portal, String query, int page, int size);
+    PageResponse<AssistantConversationResponse> list(
+            String portal, String query, int page, int size);
 
     AssistantConversationDetailResponse detail(Long id);
 

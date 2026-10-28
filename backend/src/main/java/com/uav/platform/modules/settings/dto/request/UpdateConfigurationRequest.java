@@ -1,5 +1,8 @@
 package com.uav.platform.modules.settings.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-public record UpdateConfigurationRequest(@NotBlank String configValue, String description) {}
+/** Empty values are allowed only where the setting's rule permits (env fallback or hidden item). */
+public record UpdateConfigurationRequest(
+        @NotNull @Size(max = 500) String configValue, @Size(max = 255) String description) {}

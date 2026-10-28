@@ -28,4 +28,12 @@ public interface ObjectStorageService {
     default boolean bucketReachable() {
         throw new UnsupportedOperationException("Storage health check not supported");
     }
+
+    /**
+     * Counts objects and bytes in the configured bucket, reading at most maxObjects keys. Read only; used by the
+     * admin infrastructure page. Implementations that cannot list keep this default (reported as UNKNOWN).
+     */
+    default com.uav.platform.modules.media.dto.record.StorageUsage usage(long maxObjects) {
+        throw new UnsupportedOperationException("Storage usage listing not supported");
+    }
 }

@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 public interface AssistantAttachmentRepository
-        extends JpaRepository<AssistantAttachment, Long>, JpaSpecificationExecutor<AssistantAttachment> {
+        extends JpaRepository<AssistantAttachment, Long>,
+                JpaSpecificationExecutor<AssistantAttachment> {
     List<AssistantAttachment> findByMessageIdInOrderByIdAsc(Collection<Long> messageIds);
 }

@@ -1,48 +1,72 @@
 package com.uav.platform.modules.settings.service.impl;
 
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.audit.enums.AuditAction;
+import com.uav.platform.modules.audit.service.AuditLogService;
 import com.uav.platform.modules.settings.dto.request.UpdateConfigurationRequest;
+import com.uav.platform.modules.settings.dto.response.PublicSiteInfoResponse;
+import com.uav.platform.modules.settings.dto.response.SystemConfigurationHistoryResponse;
 import com.uav.platform.modules.settings.dto.response.SystemConfigurationResponse;
 import com.uav.platform.modules.settings.entity.SystemConfiguration;
 import com.uav.platform.modules.settings.mapper.SystemConfigMapper;
+import com.uav.platform.modules.settings.repository.SystemConfigurationHistoryRepository;
 import com.uav.platform.modules.settings.repository.SystemConfigurationRepository;
 import com.uav.platform.modules.settings.service.SystemConfigService;
 
-import lombok.RequiredArgsConstructor;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Transactional
-@RequiredArgsConstructor(onConstructor_ = @org.springframework.beans.factory.annotation.Autowired)
 public class SystemConfigServiceImpl implements SystemConfigService {
 
     private final SystemConfigurationRepository configRepository;
     private final SystemConfigMapper systemConfigMapper;
+    private final SystemConfigurationHistoryRepository historyRepository;
+    private final AuditLogService auditLogService;
 
     public SystemConfigServiceImpl(SystemConfigurationRepository configRepository) {
-        this(configRepository, org.mapstruct.factory.Mappers.getMapper(SystemConfigMapper.class));
+        this(
+                configRepository,
+                org.mapstruct.factory.Mappers.getMapper(SystemConfigMapper.class),
+                null,
+                null);
+    }
+
+    @Autowired
+    public SystemConfigServiceImpl(
+            SystemConfigurationRepository configRepository,
+            SystemConfigMapper systemConfigMapper,
+            @Autowired(required = false) SystemConfigurationHistoryRepository historyRepository,
+            @Autowired(required = false) AuditLogService auditLogService) {
+        this.configRepository = configRepository;
+        this.systemConfigMapper = systemConfigMapper;
+        this.historyRepository = historyRepository;
+        this.auditLogService = auditLogService;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SystemConfigurationResponse> listAll() {
-        return configRepository.findAll().stream().map(systemConfigMapper::toResponse).toList();
+        return configRepository.findAll().stream()
+                .sorted(Comparator.comparing(SystemConfiguration::getConfigKey))
+                .map(systemConfigMapper::toResponse)
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public SystemConfigurationResponse getByKey(String key) {
-        SystemConfiguration cfg =
-                configRepository
-                        .findByConfigKey(key)
-                        .orElseThrow(
-                                () -> SystemException.notFound("Config key not found: " + key));
-        return systemConfigMapper.toResponse(cfg);
+        return systemConfigMapper.toResponse(find(key));
     }
 
     @Override
@@ -52,6 +76,12 @@ public class SystemConfigServiceImpl implements SystemConfigService {
                 .findByConfigKey(key)
                 .map(SystemConfiguration::getConfigValue)
                 .orElse(fallback);
+    }
+
+    private SystemConfiguration find(String key) {
+        return configRepository
+                .findByConfigKey(key)
+                .orElseThrow(() -> SystemException.notFound("Config key not found: " + key));
     }
 
     private void validateRate(String value) {
@@ -72,26 +102,73 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     @Override
     public SystemConfigurationResponse update(
             String key, UpdateConfigurationRequest request, Authentication auth) {
-        SystemConfiguration cfg =
-                configRepository
-                        .findByConfigKey(key)
-                        .orElseThrow(
-                                () -> SystemException.notFound("Config key not found: " + key));
+        SystemConfiguration cfg = find(key);
+        String requested = request.configValue();
 
+        // Dedicated billing rules run first so their established messages are preserved.
         if ("billing.auto_generate_invoice".equals(key)) {
-            if (!java.util.Set.of("true", "false").contains(request.configValue()))
+            if (requested == null || !java.util.Set.of("true", "false").contains(requested.trim()))
                 throw SystemException.badRequest("Billing flag must be true or false");
-            if ("true".equals(request.configValue()))
+            if ("true".equals(requested.trim()))
                 validateRate(valueOrDefault("billing.hourly_rate_vnd", ""));
         }
-        if ("billing.hourly_rate_vnd".equals(key)) validateRate(request.configValue());
-        cfg.setConfigValue(request.configValue());
+        if ("billing.hourly_rate_vnd".equals(key))
+            validateRate(requested == null ? "" : requested.trim());
+
+        String value = SystemConfigurationOperations.validate(cfg, requested);
+        String actor = auth != null ? auth.getName() : "ADMIN";
+        String previous = cfg.getConfigValue();
+        boolean changed = !Objects.equals(previous, value);
+
+        cfg.setConfigValue(value);
         if (request.description() != null) {
             cfg.setDescription(request.description());
         }
-        cfg.setUpdatedBy(auth != null ? auth.getName() : "ADMIN");
-
+        cfg.setUpdatedBy(actor);
         SystemConfiguration saved = configRepository.save(cfg);
+
+        if (changed) {
+            if (historyRepository != null)
+                historyRepository.save(
+                        SystemConfigurationOperations.history(key, previous, value, actor));
+            if (auditLogService != null)
+                auditLogService.record(
+                        null,
+                        actor,
+                        AuditAction.UPDATE,
+                        "SYSTEM_CONFIGURATION",
+                        key,
+                        "SETTING_CHANGED");
+        }
         return systemConfigMapper.toResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SystemConfigurationHistoryResponse> history(String key, int limit) {
+        find(key);
+        if (historyRepository == null) return List.of();
+        int size = Math.max(1, Math.min(limit, 200));
+        return historyRepository
+                .findByConfigKeyOrderByChangedAtDescIdDesc(key, PageRequest.of(0, size))
+                .stream()
+                .map(systemConfigMapper::toHistoryResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PublicSiteInfoResponse publicSiteInfo() {
+        Map<String, String> values = new LinkedHashMap<>();
+        for (SystemConfiguration c :
+                configRepository.findByPublicSettingTrueOrderByConfigKeyAsc()) {
+            if (c.isPublicSetting() && c.getConfigValue() != null && !c.getConfigValue().isBlank())
+                values.put(c.getConfigKey(), c.getConfigValue());
+        }
+        return new PublicSiteInfoResponse(
+                values.get("contact.dispatch_hotline"),
+                values.get("contact.email"),
+                values.get("contact.address"),
+                java.util.Collections.unmodifiableMap(values));
     }
 }

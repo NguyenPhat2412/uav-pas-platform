@@ -67,7 +67,10 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(400, response.getBody().status());
-        assertTrue(response.getBody().message().contains("email: must not be blank"));
+        // The message is the first field's own text; the field name travels in fields for the
+        // client.
+        assertEquals("must not be blank", response.getBody().message());
+        assertEquals("must not be blank", response.getBody().fields().get("email"));
         assertEquals("/api/v1/test", response.getBody().path());
     }
 

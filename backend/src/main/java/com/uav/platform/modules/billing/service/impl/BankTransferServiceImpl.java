@@ -1,15 +1,16 @@
 package com.uav.platform.modules.billing.service.impl;
 
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.billing.dto.record.PaymentAccountSettings;
 import com.uav.platform.modules.billing.dto.response.BankTransferInstructionsResponse;
 import com.uav.platform.modules.billing.dto.response.BankTransferStatusResponse;
 import com.uav.platform.modules.billing.dto.response.InvoiceResponse;
 import com.uav.platform.modules.billing.repository.ServicePlanRepository;
 import com.uav.platform.modules.billing.service.BankTransferService;
 import com.uav.platform.modules.billing.service.BillingService;
+import com.uav.platform.modules.billing.service.PaymentSettingsService;
 import com.uav.platform.modules.mission.repository.MissionRepository;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,63 +24,54 @@ public class BankTransferServiceImpl implements BankTransferService {
     private final BillingService billing;
     private final ServicePlanRepository plans;
     private final MissionRepository missions;
-    private final String bankBin;
-    private final String bankName;
-    private final String accountNumber;
-    private final String accountName;
-    private final BigDecimal vatRate;
+    private final PaymentSettingsService paymentSettings;
 
     public BankTransferServiceImpl(
             BillingService billing,
             ServicePlanRepository plans,
             MissionRepository missions,
-            @Value("${app.billing.bank-bin:}") String bankBin,
-            @Value("${app.billing.bank-name:}") String bankName,
-            @Value("${app.billing.bank-account-number:}") String accountNumber,
-            @Value("${app.billing.bank-account-name:}") String accountName,
-            @Value("${app.billing.vat-rate:0.10}") BigDecimal vatRate) {
+            PaymentSettingsService paymentSettings) {
         this.billing = billing;
         this.plans = plans;
         this.missions = missions;
-        this.bankBin = bankBin.trim();
-        this.bankName = bankName.trim();
-        this.accountNumber = accountNumber.trim();
-        this.accountName = accountName.trim();
-        this.vatRate = vatRate;
+        this.paymentSettings = paymentSettings;
     }
 
     @Override
     public boolean configured() {
-        return bankBin.matches("\\d{6}")
-                && accountNumber.matches("[0-9A-Za-z]{4,19}")
-                && !accountName.isEmpty();
+        return paymentSettings.current().configured();
     }
 
     @Override
     public BankTransferStatusResponse status() {
-        return new BankTransferStatusResponse(configured(), configured() ? bankName : null);
+        PaymentAccountSettings settings = paymentSettings.current();
+        return new BankTransferStatusResponse(
+                settings.configured(), settings.configured() ? settings.bankName() : null);
     }
 
     @Override
     @Transactional(readOnly = true)
     public BankTransferInstructionsResponse instructions(Long invoiceId, Authentication auth) {
         InvoiceResponse invoice = billing.getInvoice(invoiceId, auth);
-        if (!configured())
+        PaymentAccountSettings settings = paymentSettings.current();
+        if (!settings.configured())
             throw SystemException.serviceUnavailable(
                     "Payment gateway is not configured", "PAYMENT_UNAVAILABLE");
         BigDecimal total = invoice.amount();
+        BigDecimal vatRate = settings.vatRate();
         BigDecimal[] split = splitVat(total, vatRate);
         String content = transferContent(invoice.code());
         return new BankTransferInstructionsResponse(
                 invoice.id(),
                 invoice.code(),
                 invoice.status().name(),
-                bankBin,
-                bankName,
-                accountNumber,
-                accountName,
+                settings.bankBin(),
+                settings.bankName(),
+                settings.accountNumber(),
+                settings.accountName(),
                 content,
-                VietQrOperations.build(bankBin, accountNumber, total, content),
+                VietQrOperations.build(
+                        settings.bankBin(), settings.accountNumber(), total, content),
                 split[0],
                 vatRate,
                 split[1],

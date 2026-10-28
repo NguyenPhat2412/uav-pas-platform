@@ -9,7 +9,13 @@ import jakarta.validation.constraints.*;
 public record BillingProfileRequest(
         @NotNull @Min(0) Long expectedVersion,
         @Size(max = 200) String organizationName,
-        @Pattern(regexp = "^$|\\d{10}(-\\d{3})?") String taxCode,
+        @Pattern(
+                        regexp = "^$|\\d{10}(-\\d{3})?",
+                        message = "Mã số thuế gồm 10 chữ số, hoặc 10 chữ số kèm mã chi nhánh -XXX.")
+                String taxCode,
         @Size(max = 500) String billingAddress,
         @Size(max = 120) String emergencyContactName,
-        @Pattern(regexp = "^$|\\+?[0-9 .-]{8,20}") String emergencyContactPhone) {}
+        @Pattern(
+                        regexp = "^$|\\+?[0-9 .-]{8,20}",
+                        message = "Số điện thoại liên hệ khẩn cấp không hợp lệ.")
+                String emergencyContactPhone) {}

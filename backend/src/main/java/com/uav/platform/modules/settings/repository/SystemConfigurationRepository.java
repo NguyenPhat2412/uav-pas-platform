@@ -16,4 +16,6 @@ public interface SystemConfigurationRepository
     Optional<SystemConfiguration> findByConfigKey(String configKey);
 
     List<SystemConfiguration> findByCategory(String category);
+
+    List<SystemConfiguration> findByPublicSettingTrueOrderByConfigKeyAsc();
 }

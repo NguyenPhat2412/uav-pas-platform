@@ -46,6 +46,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     @Override
     public MissionResponse create(MissionCreateRequest request, String actorUsername) {
         AppUser customer = access.user(actorUsername);
+        MissionInputOperations.checkSchedule(request.startTime(), request.expectedEndTime());
         double estimatedHours =
                 billing.calculateDurationHours(request.startTime(), request.expectedEndTime());
         if (quotaService != null && customer.getId() != null) {
@@ -73,13 +74,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                         request.notes());
         mission.setCode(nextCode(request.requestedDate().getYear()));
         applyFlightPlan(mission, request.flightPlan());
-        if (request.serviceId() != null) {
-            ServiceOffering service =
-                    services.findById(request.serviceId())
-                            .orElseThrow(() -> SystemException.notFound("UAV service not found"));
-            if (!service.isActive()) throw SystemException.conflict("UAV service is inactive");
-            mission.setService(service);
-        }
+        if (request.serviceId() != null) mission.setService(activeService(request.serviceId()));
         Mission saved = missions.save(mission);
         events.save(
                 new MissionEvent(
@@ -101,6 +96,28 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public void validate(MissionCreateRequest request) {
+        // Same checks as create, without saving: lets the form review step rely on the server
+        // alone.
+        MissionInputOperations.checkSchedule(request.startTime(), request.expectedEndTime());
+        if (request.flightPlan() != null) FlightPlanOperations.resolve(request.flightPlan());
+        if (request.serviceId() != null) activeService(request.serviceId());
+    }
+
+    private ServiceOffering activeService(Long serviceId) {
+        ServiceOffering service =
+                services.findById(serviceId)
+                        .orElseThrow(
+                                () ->
+                                        SystemException.notFound("UAV service not found")
+                                                .at("serviceId"));
+        if (!service.isActive())
+            throw SystemException.conflict("UAV service is inactive").at("serviceId");
+        return service;
+    }
+
+    @Override
     public MissionResponse updateDraft(
             Long id, MissionUpdateRequest request, Authentication authentication) {
         Mission mission = access.accessibleForUpdate(id, authentication);
@@ -110,6 +127,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         if (mission.getVersion() != request.expectedVersion()) {
             throw SystemException.conflict("MISSION_DRAFT_STALE");
         }
+        MissionInputOperations.checkSchedule(request.startTime(), request.expectedEndTime());
         MissionOperations.updateDraft(
                 mission,
                 request.title(),

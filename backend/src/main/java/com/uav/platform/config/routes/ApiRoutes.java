@@ -283,6 +283,15 @@ public final class ApiRoutes {
         public static final String BASE = API_V1_PREFIX + "/audit-logs";
     }
 
+    public static final class Training {
+        private Training() {}
+
+        public static final String BASE = API_V1_PREFIX + "/training";
+        public static final String BY_CODE = "/{codeOrSlug}";
+        public static final String PROGRESS = "/{id}/progress";
+        public static final String BY_ID = "/{id}";
+    }
+
     /**
      * Nhóm route tài liệu API & Swagger UI
      */

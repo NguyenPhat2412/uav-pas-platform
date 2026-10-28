@@ -96,6 +96,35 @@ public class S3CompatibleStorageService implements ObjectStorageService {
         }
     }
 
+    /** Pages through the bucket listing (1000 keys per call) without reading any object body. */
+    @Override
+    public com.uav.platform.modules.media.dto.record.StorageUsage usage(long maxObjects) {
+        long count = 0;
+        long bytes = 0;
+        String token = null;
+        do {
+            var response =
+                    client.listObjectsV2(
+                            software.amazon.awssdk.services.s3.model.ListObjectsV2Request.builder()
+                                    .bucket(bucket)
+                                    .continuationToken(token)
+                                    .maxKeys(1000)
+                                    .build());
+            for (var object : response.contents()) {
+                count++;
+                if (object.size() != null) bytes += object.size();
+            }
+            token =
+                    Boolean.TRUE.equals(response.isTruncated())
+                            ? response.nextContinuationToken()
+                            : null;
+            if (token != null && count >= maxObjects)
+                return new com.uav.platform.modules.media.dto.record.StorageUsage(
+                        count, bytes, true);
+        } while (token != null);
+        return new com.uav.platform.modules.media.dto.record.StorageUsage(count, bytes, false);
+    }
+
     @PostConstruct
     void initializeBucket() {
         if (!ensureBucket) return;

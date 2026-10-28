@@ -1,5 +1,6 @@
 package com.uav.platform.modules.webhook.specification;
 
+import com.uav.platform.modules.webhook.entity.FinancialOutboxEvent;
 import com.uav.platform.modules.webhook.entity.WebhookDeliveryLog;
 import com.uav.platform.modules.webhook.entity.WebhookSubscription;
 
@@ -23,5 +24,14 @@ public final class WebhookSpecifications {
     public static Specification<WebhookDeliveryLog> isSuccessful(Boolean success) {
         return (root, query, cb) ->
                 success == null ? null : cb.equal(root.get("isSuccess"), success);
+    }
+
+    public static Specification<FinancialOutboxEvent> outboxStatus(String status) {
+        return (root, query, cb) ->
+                status == null || status.isBlank()
+                        ? null
+                        : cb.equal(
+                                root.get("status"),
+                                status.trim().toUpperCase(java.util.Locale.ROOT));
     }
 }

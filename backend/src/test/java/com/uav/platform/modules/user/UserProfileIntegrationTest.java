@@ -105,9 +105,11 @@ class UserProfileIntegrationTest {
     }
 
     String phone() {
+        // A valid Vietnamese mobile number (10 digits), unique enough per test run.
         return "09"
                 + String.format(
-                        "%018d", Math.abs(UUID.randomUUID().getLeastSignificantBits() / 10));
+                        "%08d",
+                        Math.floorMod(UUID.randomUUID().getLeastSignificantBits(), 100_000_000L));
     }
 
     Map<String, Object> protectedFields(AppUser user) {

@@ -1,6 +1,7 @@
 package com.uav.platform.security.jwt;
 
 import com.uav.platform.modules.auth.service.InvalidatedTokenService;
+import com.uav.platform.modules.security.service.SessionRevocationService;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.repository.UserRepository;
 import com.uav.platform.modules.user.service.impl.UserAccountServiceImpl;
@@ -30,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final InvalidatedTokenService invalidatedTokenService;
     private final UserRepository userRepository;
     private final AuthCookieHelper authCookieHelper;
+    private SessionRevocationService sessionRevocationService;
 
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
         this(jwtTokenProvider, null, null, null);
@@ -45,6 +47,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.invalidatedTokenService = invalidatedTokenService;
         this.userRepository = userRepository;
         this.authCookieHelper = authCookieHelper;
+    }
+
+    /** Optional: admin "sign out everywhere" cut-off (see SessionRevocationService). */
+    @Autowired(required = false)
+    public void setSessionRevocationService(SessionRevocationService sessionRevocationService) {
+        this.sessionRevocationService = sessionRevocationService;
     }
 
     @Override
@@ -69,6 +77,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     filterChain.doFilter(request, response);
                     return;
                 }
+                if (sessionRevocationService != null
+                        && sessionRevocationService.isRevoked(
+                                currentUser.getId(), issuedAt(token))) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
                 // Resolve role from current state so role changes invalidate stale authorities.
                 role = currentUser.getRole() != null ? currentUser.getRole().name() : role;
             }
@@ -84,6 +98,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private java.time.Instant issuedAt(String token) {
+        java.util.Date iat = jwtTokenProvider.getClaimsFromToken(token).getIssuedAt();
+        return iat != null ? iat.toInstant() : null;
     }
 
     private String resolveToken(HttpServletRequest request) {

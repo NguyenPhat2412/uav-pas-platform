@@ -62,6 +62,12 @@ class ApiRoutesTest {
         assertEquals("/v3/api-docs/**", ApiRoutes.Docs.API_DOCS);
         assertEquals("/swagger-ui/**", ApiRoutes.Docs.SWAGGER_UI);
         assertEquals("/swagger-ui.html", ApiRoutes.Docs.SWAGGER_HTML);
+
+        // Training
+        assertEquals("/api/v1/training", ApiRoutes.Training.BASE);
+        assertEquals("/{codeOrSlug}", ApiRoutes.Training.BY_CODE);
+        assertEquals("/{id}/progress", ApiRoutes.Training.PROGRESS);
+        assertEquals("/{id}", ApiRoutes.Training.BY_ID);
     }
 
     @Test
@@ -89,7 +95,8 @@ class ApiRoutesTest {
                 },
                 ApiRoutes.PUBLIC_AUTH_WHITELIST);
         // Enabling or disabling 2FA always needs a signed-in user.
-        for (String route : ApiRoutes.PUBLIC_AUTH_WHITELIST) assertFalse(route.contains("2fa/setup") || route.contains("2fa/disable"));
+        for (String route : ApiRoutes.PUBLIC_AUTH_WHITELIST)
+            assertFalse(route.contains("2fa/setup") || route.contains("2fa/disable"));
     }
 
     @Test
@@ -101,7 +108,8 @@ class ApiRoutesTest {
             ApiRoutes.Users.class,
             ApiRoutes.Drones.class,
             ApiRoutes.Missions.class,
-            ApiRoutes.Docs.class
+            ApiRoutes.Docs.class,
+            ApiRoutes.Training.class
         };
 
         for (Class<?> clazz : classes) {

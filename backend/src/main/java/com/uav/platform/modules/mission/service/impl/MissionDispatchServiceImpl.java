@@ -157,7 +157,9 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
         if (request.replacementUavId() == null
                 || request.replacementUavId() <= 0
                 || request.replacementUavId().equals(request.expectedCurrentUavId())) {
-            throw SystemException.badRequest("UAV_REPLACEMENT_MUST_DIFFER");
+            throw SystemException.badRequest(
+                            "Hãy chọn một UAV khác UAV hiện tại.", "UAV_REPLACEMENT_MUST_DIFFER")
+                    .at("replacementUavId");
         }
         // Lock both rows in ID order so concurrent swaps cannot deadlock each other.
         Long firstId = Math.min(request.expectedCurrentUavId(), request.replacementUavId());
@@ -494,10 +496,16 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
                 && (request.replacementId() <= 0
                         || request.quantity() == null
                         || request.quantity() <= 0)) {
-            throw SystemException.badRequest("MISSION_EQUIPMENT_QUANTITY_INVALID");
+            throw SystemException.badRequest(
+                            "Số lượng thiết bị không hợp lệ hoặc vượt quá lượng còn khả dụng.",
+                            "MISSION_EQUIPMENT_QUANTITY_INVALID")
+                    .at("quantity");
         }
         if (request.replacementId() == null && request.quantity() != null)
-            throw SystemException.badRequest("MISSION_EQUIPMENT_QUANTITY_INVALID");
+            throw SystemException.badRequest(
+                            "Số lượng thiết bị không hợp lệ hoặc vượt quá lượng còn khả dụng.",
+                            "MISSION_EQUIPMENT_QUANTITY_INVALID")
+                    .at("quantity");
         Long oldId = previous.getEquipment().getId();
         java.util.stream.Stream.of(oldId, request.replacementId())
                 .filter(java.util.Objects::nonNull)

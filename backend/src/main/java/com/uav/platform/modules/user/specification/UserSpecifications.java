@@ -44,10 +44,17 @@ public final class UserSpecifications {
     }
 
     /**
-     * Exact match on UserStatus.
+     * Match on the status an administrator sees. A manually locked account counts as SUSPENDED
+     * whatever its stored status, so it is never listed as ACTIVE or INACTIVE.
      */
     public static Specification<AppUser> hasStatus(UserStatus status) {
-        return (root, query, cb) -> status == null ? null : cb.equal(root.get("status"), status);
+        return (root, query, cb) -> {
+            if (status == null) return null;
+            var locked = cb.isTrue(root.get("manualLocked"));
+            if (status == UserStatus.SUSPENDED)
+                return cb.or(cb.equal(root.get("status"), status), locked);
+            return cb.and(cb.equal(root.get("status"), status), cb.not(locked));
+        };
     }
 
     /**

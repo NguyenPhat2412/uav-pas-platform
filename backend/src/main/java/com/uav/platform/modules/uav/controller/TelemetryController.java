@@ -25,9 +25,16 @@ import java.util.List;
 public class TelemetryController {
     private final TelemetryService telemetry;
 
-    @Operation(summary = "Report a telemetry sample (ground station / gateway service account)")
+    /**
+     * Devices authenticate with X-Device-Key (scope TELEMETRY_WRITE, bound UAV only); users need
+     * UAV_MANAGE. A device principal is never evaluated as a user.
+     */
+    @Operation(summary = "Report a telemetry sample (device key or gateway service account)")
     @PostMapping("/uavs/{id}/telemetry")
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
+    @PreAuthorize(
+            "@deviceKeyService.isDevice(authentication)"
+                    + " ? @deviceKeyService.canWriteTelemetry(authentication, #id)"
+                    + " : @permissionService.has(authentication, 'UAV_MANAGE')")
     public ResponseEntity<TelemetryResponse> report(
             @PathVariable Long id,
             @Valid @RequestBody TelemetryReportRequest request,

@@ -91,6 +91,14 @@ public class MissionController {
         return ResponseEntity.status(201).body(service.create(request, authentication.getName()));
     }
 
+    /** Validates a mission request without saving it; 204 when it would be accepted, field errors otherwise. */
+    @PostMapping("/validate")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_CREATE')")
+    public ResponseEntity<Void> validate(@Valid @RequestBody MissionCreateRequest request) {
+        service.validate(request);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/{id}")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_UPDATE')")
     public ResponseEntity<MissionResponse> update(

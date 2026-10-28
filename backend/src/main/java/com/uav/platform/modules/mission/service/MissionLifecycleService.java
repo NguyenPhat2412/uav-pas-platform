@@ -14,6 +14,9 @@ import org.springframework.security.core.Authentication;
 public interface MissionLifecycleService {
     MissionResponse create(MissionCreateRequest request, String actorUsername);
 
+    /** Runs every create rule without saving; throws the same field errors create would. */
+    void validate(MissionCreateRequest request);
+
     MissionResponse updateDraft(
             Long id, MissionUpdateRequest request, Authentication authentication);
 

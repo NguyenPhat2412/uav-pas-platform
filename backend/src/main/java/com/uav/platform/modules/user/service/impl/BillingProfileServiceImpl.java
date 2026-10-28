@@ -32,6 +32,16 @@ public class BillingProfileServiceImpl implements BillingProfileService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public BillingProfileResponse getForUser(Long userId) {
+        if (userId == null || !users.existsById(userId))
+            throw SystemException.notFound(CoreConstants.USER_NOT_FOUND);
+        return profiles.findById(userId)
+                .map(BillingProfileServiceImpl::toResponse)
+                .orElse(new BillingProfileResponse(null, null, null, null, null, 0, null));
+    }
+
+    @Override
     @Transactional
     public BillingProfileResponse update(String username, BillingProfileRequest request) {
         Long userId = user(username).getId();

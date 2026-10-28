@@ -70,7 +70,7 @@ class FlightPlanOperationsTest {
                                 () ->
                                         FlightPlanOperations.resolve(
                                                 plan("POINT", List.of(), null, 75, 3.0)))
-                        .getMessage());
+                        .getCode());
         assertEquals(
                 "FLIGHT_POLYGON_TOO_SMALL",
                 assertThrows(
@@ -85,7 +85,7 @@ class FlightPlanOperationsTest {
                                                         null,
                                                         80,
                                                         3.0)))
-                        .getMessage());
+                        .getCode());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.uav.platform.modules.user.service.impl;
 
 import com.uav.platform.common.constant.CoreConstants;
+import com.uav.platform.common.util.PhoneNumbers;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.audit.enums.AuditAction;
 import com.uav.platform.modules.audit.service.AuditLogService;
@@ -66,12 +67,23 @@ public class UserProfileServiceImpl implements UserProfileService {
     public UserProfileResponse update(String username, UserProfileUpdateCommand request) {
         String name = request.fullName() == null ? null : request.fullName().trim();
         if (name != null && name.isEmpty()) name = null;
-        String phone = request.phoneNumber() == null ? "" : request.phoneNumber().trim();
+        String rawPhone = request.phoneNumber() == null ? "" : request.phoneNumber().trim();
         if (name != null && name.length() > 100)
-            throw SystemException.badRequest("Họ tên không được vượt quá 100 ký tự.");
-        if (phone.isEmpty() || phone.length() > 20)
             throw SystemException.badRequest(
-                    "Số điện thoại bắt buộc và không được vượt quá 20 ký tự.");
+                            "Họ tên không được vượt quá 100 ký tự.", "PROFILE_NAME_TOO_LONG")
+                    .at("fullName");
+        if (rawPhone.isEmpty())
+            throw SystemException.badRequest(
+                            "Vui lòng nhập số điện thoại.", "PROFILE_PHONE_REQUIRED")
+                    .at("phoneNumber");
+        // Same rule and stored form as sign-up, so a number cannot be registered twice in different
+        // spellings.
+        String phone = PhoneNumbers.normalizeVietnam(rawPhone);
+        if (phone == null)
+            throw SystemException.badRequest(
+                            "Số điện thoại Việt Nam gồm 10–11 chữ số, bắt đầu bằng 0 hoặc +84.",
+                            "PROFILE_PHONE_INVALID")
+                    .at("phoneNumber");
         if (request.expectedRevision() == null
                 || !request.expectedRevision().matches("[a-f0-9]{64}")) {
             throw SystemException.badRequest(
@@ -89,7 +101,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         if (!Objects.equals(phone, user.getPhoneNumber())) changed.add("phoneNumber");
         if (changed.isEmpty()) return response(user);
         if (users.existsByPhoneNumberAndIdNot(phone, user.getId()))
-            throw SystemException.conflict(CoreConstants.PHONE_ALREADY_EXISTS);
+            throw SystemException.conflict(CoreConstants.PHONE_ALREADY_EXISTS).at("phoneNumber");
         user.setFullName(name);
         user.setPhoneNumber(phone);
         users.saveAndFlush(user);

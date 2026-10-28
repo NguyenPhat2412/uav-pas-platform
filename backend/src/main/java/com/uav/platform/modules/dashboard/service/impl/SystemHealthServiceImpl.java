@@ -5,6 +5,12 @@ import com.uav.platform.modules.dashboard.dto.record.HealthCheckResult;
 import com.uav.platform.modules.dashboard.dto.response.SystemHealthResponse;
 import com.uav.platform.modules.dashboard.dto.response.SystemHealthResponse.Component;
 import com.uav.platform.modules.dashboard.service.SystemHealthService;
+import com.uav.platform.modules.infrastructure.dto.record.MailConnectionCheck;
+import com.uav.platform.modules.infrastructure.dto.record.TlsCertificateInfo;
+import com.uav.platform.modules.infrastructure.dto.response.BackupStatusResponse;
+import com.uav.platform.modules.infrastructure.service.BackupStatusService;
+import com.uav.platform.modules.infrastructure.service.MailDiagnosticsService;
+import com.uav.platform.modules.infrastructure.service.TlsCertificateService;
 import com.uav.platform.modules.media.service.ObjectStorageService;
 import com.uav.platform.modules.webhook.entity.FinancialOutboxEvent;
 import com.uav.platform.modules.webhook.entity.WebhookDeliveryLog;
@@ -38,16 +44,30 @@ public class SystemHealthServiceImpl implements SystemHealthService {
     private final WebhookDeliveryLogRepository deliveries;
     private final FinancialOutboxRepository outbox;
     private final BankTransferService bankTransfer;
+    private final MailDiagnosticsService mail;
+    private final BackupStatusService backups;
+    private final TlsCertificateService tls;
 
     @Override
     public SystemHealthResponse check() {
         LocalDateTime now = LocalDateTime.now();
         List<Component> components =
-                List.of(database(), storage(), webhooks(now), outbox(now), payments());
+                List.of(
+                        database(),
+                        storage(),
+                        webhooks(now),
+                        outbox(now),
+                        payments(),
+                        mail(),
+                        backups(),
+                        tls());
         return new SystemHealthResponse(overall(components), now, components, runtime());
     }
 
-    /** Database down takes the platform down; any other problem only degrades it. */
+    /**
+     * Database down takes the platform down; any other problem only degrades it. UNKNOWN and DISABLED (a feature
+     * switched off on purpose, e.g. mail in development) are neutral.
+     */
     static String overall(List<Component> components) {
         boolean dbDown =
                 components.stream()
@@ -55,7 +75,11 @@ public class SystemHealthServiceImpl implements SystemHealthService {
         if (dbDown) return "DOWN";
         boolean degraded =
                 components.stream()
-                        .anyMatch(c -> !c.status().equals("UP") && !c.status().equals("UNKNOWN"));
+                        .anyMatch(
+                                c ->
+                                        !c.status().equals("UP")
+                                                && !c.status().equals("UNKNOWN")
+                                                && !c.status().equals("DISABLED"));
         return degraded ? "DEGRADED" : "UP";
     }
 
@@ -156,6 +180,64 @@ public class SystemHealthServiceImpl implements SystemHealthService {
                         details.put("bank", status.bankName());
                     return new HealthCheckResult(status.enabled() ? "UP" : "DEGRADED", details);
                 });
+    }
+
+    /** SMTP connect probe only (cached); no message is sent. Host and user never appear in details. */
+    private Component mail() {
+        return timed(
+                "mail",
+                () -> {
+                    MailConnectionCheck check = mail.connection();
+                    Map<String, Object> details = new LinkedHashMap<>();
+                    if (check.errorClass() != null) details.put("error", check.errorClass());
+                    return new HealthCheckResult(check.status(), details);
+                });
+    }
+
+    /** Daily pg_dump freshness from the read-only backup mount; NOT_CONFIGURED is neutral (development). */
+    private Component backups() {
+        return timed(
+                "backups",
+                () -> {
+                    BackupStatusResponse status = backups.status();
+                    Map<String, Object> details = new LinkedHashMap<>();
+                    details.put("backupState", status.status());
+                    details.put("files", status.fileCount());
+                    if (status.hoursSinceLastSuccess() != null)
+                        details.put("hoursSinceLast", status.hoursSinceLastSuccess());
+                    return new HealthCheckResult(backupHealth(status.status()), details);
+                });
+    }
+
+    static String backupHealth(String backupState) {
+        return switch (backupState) {
+            case "OK" -> "UP";
+            case "NOT_CONFIGURED" -> "UNKNOWN";
+            default -> "DEGRADED";
+        };
+    }
+
+    /** Certificate of the public URL: DEGRADED under 14 days, DOWN once expired. */
+    private Component tls() {
+        return timed(
+                "tls",
+                () -> {
+                    TlsCertificateInfo cert = tls.current();
+                    Map<String, Object> details = new LinkedHashMap<>();
+                    details.put("certificate", cert.status());
+                    if (cert.daysLeft() != null) details.put("daysLeft", cert.daysLeft());
+                    if (cert.trusted() != null) details.put("trusted", cert.trusted());
+                    return new HealthCheckResult(tlsHealth(cert), details);
+                });
+    }
+
+    static String tlsHealth(TlsCertificateInfo cert) {
+        return switch (cert.status()) {
+            case "OK" -> Boolean.FALSE.equals(cert.trusted()) ? "DEGRADED" : "UP";
+            case "EXPIRING" -> "DEGRADED";
+            case "EXPIRED" -> "DOWN";
+            default -> "UNKNOWN";
+        };
     }
 
     private static Specification<WebhookDeliveryLog> statusIn(List<String> statuses) {

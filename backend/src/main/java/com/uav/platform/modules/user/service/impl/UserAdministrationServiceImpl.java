@@ -1,6 +1,7 @@
 package com.uav.platform.modules.user.service.impl;
 
 import com.uav.platform.common.constant.CoreConstants;
+import com.uav.platform.common.util.PhoneNumbers;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.audit.enums.AuditAction;
 import com.uav.platform.modules.audit.service.AuditLogService;
@@ -51,13 +52,23 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
     public UserResponse create(AdminCreateUserRequest request, String actor) {
         String username = request.username().trim();
         String email = request.email().trim();
-        String phone = request.phoneNumber().trim();
+        // Same phone rule and stored form as self sign-up.
+        String phone = PhoneNumbers.normalizeVietnam(request.phoneNumber());
+        if (phone == null)
+            throw SystemException.badRequest(
+                            "Số điện thoại Việt Nam gồm 10–11 chữ số, bắt đầu bằng 0 hoặc +84.",
+                            "USER_PHONE_INVALID")
+                    .at("phoneNumber");
+        if (request.confirmPassword() != null
+                && !request.confirmPassword().equals(request.password()))
+            throw SystemException.badRequest("Mật khẩu xác nhận không khớp.", "PASSWORD_MISMATCH")
+                    .at("confirmPassword");
         if (userRepository.existsByUsername(username))
-            throw SystemException.conflict(CoreConstants.USERNAME_ALREADY_EXISTS);
+            throw SystemException.conflict(CoreConstants.USERNAME_ALREADY_EXISTS).at("username");
         if (userRepository.existsByEmail(email))
-            throw SystemException.conflict(CoreConstants.EMAIL_ALREADY_EXISTS);
+            throw SystemException.conflict(CoreConstants.EMAIL_ALREADY_EXISTS).at("email");
         if (userRepository.existsByPhoneNumber(phone))
-            throw SystemException.conflict(CoreConstants.PHONE_ALREADY_EXISTS);
+            throw SystemException.conflict(CoreConstants.PHONE_ALREADY_EXISTS).at("phoneNumber");
         String fullName =
                 request.fullName() == null || request.fullName().isBlank()
                         ? null

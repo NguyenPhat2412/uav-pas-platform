@@ -11,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,6 +34,21 @@ public interface RefreshTokenRepository
     @Modifying
     @Query("DELETE FROM RefreshToken r WHERE r.user = :user")
     int deleteByUser(@Param("user") AppUser user);
+
+    @Query("select r from RefreshToken r where r.user.id in :userIds")
+    List<RefreshToken> findByUserIdIn(@Param("userIds") Collection<Long> userIds);
+
+    @Modifying
+    @Query(
+            "update RefreshToken r set r.revoked = true"
+                    + " where r.user.id = :userId and r.revoked = false")
+    int revokeByUserId(@Param("userId") Long userId);
+
+    @Modifying
+    @Query(
+            "update RefreshToken r set r.revoked = true"
+                    + " where r.user.id <> :excludedUserId and r.revoked = false")
+    int revokeAllExceptUserId(@Param("excludedUserId") Long excludedUserId);
 
     @Modifying
     int deleteByExpiryDateBefore(Instant now);

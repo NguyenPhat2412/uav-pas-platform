@@ -24,9 +24,14 @@ public final class FlightPlanOperations {
 
     public static FlightPlanResponse resolve(FlightPlanRequest plan) {
         if (!ALTITUDES.contains(plan.altitudeAglMeters()))
-            throw SystemException.badRequest("FLIGHT_ALTITUDE_INVALID");
+            throw SystemException.badRequest(
+                            "Độ cao bay chỉ nhận 30, 50, 80, 100 hoặc 120 m.",
+                            "FLIGHT_ALTITUDE_INVALID")
+                    .at("flightPlan.altitudeAglMeters");
         if (!GSD.contains(plan.targetGsdCm()))
-            throw SystemException.badRequest("FLIGHT_GSD_INVALID");
+            throw SystemException.badRequest(
+                            "GSD mục tiêu chỉ nhận 1,5; 3 hoặc 5 cm/px.", "FLIGHT_GSD_INVALID")
+                    .at("flightPlan.targetGsdCm");
         List<List<Double>> vertices = plan.vertices() == null ? List.of() : plan.vertices();
         vertices.forEach(FlightPlanOperations::checkCoordinate);
         double[] center;
@@ -35,16 +40,25 @@ public final class FlightPlanOperations {
         switch (plan.areaType()) {
             case "POLYGON" -> {
                 if (vertices.size() < 3)
-                    throw SystemException.badRequest("FLIGHT_POLYGON_TOO_SMALL");
+                    throw SystemException.badRequest(
+                                    "Vùng bay đa giác cần ít nhất 3 đỉnh và diện tích thực tế.",
+                                    "FLIGHT_POLYGON_TOO_SMALL")
+                            .at("flightPlan.vertices");
                 center = centroid(vertices);
                 double[][] xy = project(vertices, center);
                 area = Math.abs(shoelace(xy));
                 perimeter = ringLength(xy);
-                if (area < 1) throw SystemException.badRequest("FLIGHT_POLYGON_TOO_SMALL");
+                if (area < 1)
+                    throw SystemException.badRequest(
+                                    "Vùng bay đa giác cần ít nhất 3 đỉnh và diện tích thực tế.",
+                                    "FLIGHT_POLYGON_TOO_SMALL")
+                            .at("flightPlan.vertices");
             }
             case "CIRCLE" -> {
                 if (vertices.size() != 1 || plan.radiusMeters() == null)
-                    throw SystemException.badRequest("FLIGHT_CIRCLE_INVALID");
+                    throw SystemException.badRequest(
+                                    "Vùng tròn cần một tâm và bán kính.", "FLIGHT_CIRCLE_INVALID")
+                            .at("flightPlan.radiusMeters");
                 radius = plan.radiusMeters();
                 center = new double[] {vertices.get(0).get(0), vertices.get(0).get(1)};
                 area = Math.PI * radius * radius;
@@ -52,7 +66,9 @@ public final class FlightPlanOperations {
             }
             default -> {
                 if (plan.takeoffLatitude() == null || plan.takeoffLongitude() == null)
-                    throw SystemException.badRequest("FLIGHT_TAKEOFF_REQUIRED");
+                    throw SystemException.badRequest(
+                                    "Chọn điểm cất cánh trên bản đồ.", "FLIGHT_TAKEOFF_REQUIRED")
+                            .at("flightPlan.takeoffLatitude");
                 center = new double[] {plan.takeoffLatitude(), plan.takeoffLongitude()};
                 vertices = List.of();
             }
@@ -98,7 +114,9 @@ public final class FlightPlanOperations {
 
     private static void checkCoordinate(List<Double> point) {
         if (point.size() != 2 || Math.abs(point.get(0)) > 90 || Math.abs(point.get(1)) > 180)
-            throw SystemException.badRequest("FLIGHT_COORDINATE_INVALID");
+            throw SystemException.badRequest(
+                            "Toạ độ vùng bay không hợp lệ.", "FLIGHT_COORDINATE_INVALID")
+                    .at("flightPlan.vertices");
     }
 
     private static double[] centroid(List<List<Double>> vertices) {

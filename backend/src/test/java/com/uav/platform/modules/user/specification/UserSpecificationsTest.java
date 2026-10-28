@@ -91,16 +91,38 @@ class UserSpecificationsTest {
     }
 
     @Test
-    @DisplayName("hasStatus null produces null, non-null builds equal predicate")
+    @DisplayName("hasStatus null produces null; a manually locked account is never ACTIVE")
     void hasStatus_Test() {
         assertThat(UserSpecifications.hasStatus(null).toPredicate(root, query, cb)).isNull();
 
+        Path<Boolean> lockedPath = mock();
+        Predicate lockedPredicate = mock(), notLocked = mock(), combined = mock();
         when(root.<UserStatus>get("status")).thenReturn(statusPath);
+        when(root.<Boolean>get("manualLocked")).thenReturn(lockedPath);
+        when(cb.isTrue(lockedPath)).thenReturn(lockedPredicate);
         when(cb.equal(statusPath, UserStatus.ACTIVE)).thenReturn(predicate);
+        when(cb.not(lockedPredicate)).thenReturn(notLocked);
+        when(cb.and(predicate, notLocked)).thenReturn(combined);
 
         Predicate result =
                 UserSpecifications.hasStatus(UserStatus.ACTIVE).toPredicate(root, query, cb);
-        assertThat(result).isSameAs(predicate);
+        assertThat(result).isSameAs(combined);
+    }
+
+    @Test
+    @DisplayName("hasStatus SUSPENDED also matches manually locked accounts")
+    void hasStatus_SuspendedIncludesManualLocks() {
+        Path<Boolean> lockedPath = mock();
+        Predicate lockedPredicate = mock(), suspended = mock(), combined = mock();
+        when(root.<UserStatus>get("status")).thenReturn(statusPath);
+        when(root.<Boolean>get("manualLocked")).thenReturn(lockedPath);
+        when(cb.isTrue(lockedPath)).thenReturn(lockedPredicate);
+        when(cb.equal(statusPath, UserStatus.SUSPENDED)).thenReturn(suspended);
+        when(cb.or(suspended, lockedPredicate)).thenReturn(combined);
+
+        Predicate result =
+                UserSpecifications.hasStatus(UserStatus.SUSPENDED).toPredicate(root, query, cb);
+        assertThat(result).isSameAs(combined);
     }
 
     @Test

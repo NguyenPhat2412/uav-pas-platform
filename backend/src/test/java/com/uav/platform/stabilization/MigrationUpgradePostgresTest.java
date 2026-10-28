@@ -249,7 +249,7 @@ class MigrationUpgradePostgresTest {
             s.executeUpdate(
                     "INSERT INTO equipment(id,name,type,status,station_id,quantity,available_quantity,reserved_quantity) VALUES (501,'Synthetic battery','BATTERY','ACTIVE',501,7,5,2)");
             migrate(schema, null);
-            assertEquals(15, version(c, schema));
+            assertEquals(MigrationFiles.latestVersion(), version(c, schema));
             assertTrue(hasUniqueIndex(c, schema, "uk_repair_order_active_uav"));
             try (ResultSet r =
                     s.executeQuery(
@@ -286,11 +286,10 @@ class MigrationUpgradePostgresTest {
             createSchema(connection, upgradeSchema);
 
             migrate(freshSchema, null);
-            assertEquals(15, version(connection, freshSchema));
+            assertEquals(MigrationFiles.latestVersion(), version(connection, freshSchema));
             assertTrue(hasColumn(connection, freshSchema, "media_assets", "confirmed"));
             assertTrue(hasColumn(connection, freshSchema, "media_assets", "delete_after"));
             assertTrue(hasColumn(connection, freshSchema, "media_assets", "upload_valid_until"));
-            assertEquals(37, tableCount(connection, freshSchema));
 
             migrate(upgradeSchema, MigrationVersion.fromVersion("1"));
             assertEquals(1, version(connection, upgradeSchema));
@@ -298,7 +297,9 @@ class MigrationUpgradePostgresTest {
             assertEquals(1, countSyntheticUser(connection, upgradeSchema));
 
             migrate(upgradeSchema, null);
-            assertEquals(15, version(connection, upgradeSchema));
+            assertEquals(MigrationFiles.latestVersion(), version(connection, upgradeSchema));
+            assertEquals(
+                    tableCount(connection, freshSchema), tableCount(connection, upgradeSchema));
             assertTrue(hasColumn(connection, upgradeSchema, "media_assets", "deleted"));
             assertTrue(hasUniqueIndex(connection, upgradeSchema, "uk_inventory_request_id"));
             assertTrue(hasUniqueIndex(connection, upgradeSchema, "idx_missions_uav_schedule"));
@@ -329,7 +330,7 @@ class MigrationUpgradePostgresTest {
                 settings = rows.getLong(1);
             }
             migrate(schema, null);
-            assertEquals(15, version(c, schema));
+            assertEquals(MigrationFiles.latestVersion(), version(c, schema));
             assertEquals(1, countSyntheticUser(c, schema));
             try (ResultSet rows =
                     statement.executeQuery(
@@ -342,8 +343,9 @@ class MigrationUpgradePostgresTest {
                     statement.executeQuery(
                             "SELECT count(*),count(created_at) FROM system_configurations")) {
                 rows.next();
-                assertEquals(settings + 1, rows.getLong(1));
-                assertEquals(settings + 1, rows.getLong(2));
+                // Later migrations seed new keys, so only require that none of the old rows went missing.
+                assertTrue(rows.getLong(1) > settings);
+                assertEquals(rows.getLong(1), rows.getLong(2));
             }
             try (ResultSet rows =
                     statement.executeQuery(
@@ -374,8 +376,8 @@ class MigrationUpgradePostgresTest {
             statement.executeUpdate(
                     "INSERT INTO media_assets(original_name,object_key,content_type,size,type,uploaded_by,storage_provider,confirmed,deleted,created_at,updated_at) VALUES ('confirmed.pdf','migration/confirmed','application/pdf',52,'DOCUMENT','synthetic-owner','test',true,false,CURRENT_TIMESTAMP-INTERVAL '2 days',CURRENT_TIMESTAMP),('pending.pdf','migration/pending','application/pdf',52,'DOCUMENT','synthetic-owner','test',false,false,CURRENT_TIMESTAMP-INTERVAL '2 days',CURRENT_TIMESTAMP),('deleted.pdf','migration/deleted','application/pdf',52,'DOCUMENT','synthetic-owner','test',true,true,CURRENT_TIMESTAMP-INTERVAL '2 days',CURRENT_TIMESTAMP)");
             migrate(schema, null);
-            assertEquals(15, version(c, schema));
-            assertEquals(37, tableCount(c, schema));
+            assertEquals(MigrationFiles.latestVersion(), version(c, schema));
+            assertEquals(freshTableCount(), tableCount(c, schema));
             try (ResultSet rows =
                     statement.executeQuery(
                             "SELECT object_key,uploaded_by,confirmed,deleted,upload_valid_until,delete_after,delete_attempts FROM media_assets ORDER BY object_key")) {
@@ -501,6 +503,18 @@ class MigrationUpgradePostgresTest {
                 ResultSet result = statement.executeQuery(sql)) {
             result.next();
             return result.getInt(1);
+        }
+    }
+
+    /** Table count of a schema migrated from scratch: the target every upgrade path must reach. */
+    private static int freshTableCount() throws SQLException {
+        String schema = schema("table_count");
+        try (Connection c = connection()) {
+            createSchema(c, schema);
+            migrate(schema, null);
+            return tableCount(c, schema);
+        } finally {
+            dropSchema(schema);
         }
     }
 

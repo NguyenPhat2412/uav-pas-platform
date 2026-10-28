@@ -4,6 +4,13 @@
 # the host's nginx (deploy/nginx/uav.all1.vn.conf) is the single public entry point.
 name: uav-pas
 
+# Docker's default json-file log driver never rotates; cap each container at 5 x 20 MB.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "5"
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -19,23 +26,36 @@ services:
       timeout: 5s
       retries: 20
     restart: unless-stopped
+    logging: *default-logging
 
   backend:
     build:
       context: ../backend
       dockerfile: Dockerfile
+      # Shown at Admin > Infrastructure > Deployment; set by the build command in DEPLOY.md section 8.
+      args:
+        APP_VERSION: ${APP_VERSION:-unknown}
+        APP_GIT_COMMIT: ${APP_GIT_COMMIT:-unknown}
+        APP_BUILD_TIME: ${APP_BUILD_TIME:-unknown}
     env_file:
       - ./.env.production
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      # Public origin, used for the TLS expiry check at Admin > Infrastructure.
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-${NEXT_PUBLIC_APP_URL}}
+      APP_BACKUP_DIR: /backups
+    volumes:
+      # Daily pg_dump output (DEPLOY.md section 9), read-only: the app can list it, never change it.
+      - ${BACKUP_HOST_DIR:-/opt/uav-pas/backups}:/backups:ro
     ports:
       - "127.0.0.1:${BACKEND_PORT:-18080}:8080"
     depends_on:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    logging: *default-logging
 
   frontend:
     build:
@@ -52,6 +72,7 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    logging: *default-logging
 
 volumes:
   postgres_data:

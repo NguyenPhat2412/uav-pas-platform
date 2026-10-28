@@ -57,7 +57,11 @@ public class AuthMailService {
                     otpCode,
                     ttlMinutes);
         } else {
-            log.info("[UAV-PAS AUTH OTP] Purpose={} | ExpiresIn={}m | mail={}", purposeLabel, ttlMinutes, isMailEnabled());
+            log.info(
+                    "[UAV-PAS AUTH OTP] Purpose={} | ExpiresIn={}m | mail={}",
+                    purposeLabel,
+                    ttlMinutes,
+                    isMailEnabled());
         }
 
         if (!isMailEnabled()) {

@@ -33,10 +33,14 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
         AppUser user =
                 users.findByUsername(username)
                         .orElseThrow(() -> SystemException.notFound(CoreConstants.USER_NOT_FOUND));
+        if (request.confirmPassword() != null
+                && !request.confirmPassword().equals(request.newPassword()))
+            throw SystemException.badRequest("Mật khẩu xác nhận không khớp.", "PASSWORD_MISMATCH")
+                    .at("confirmPassword");
         if (!encoder.matches(request.currentPassword(), user.getPasswordHash()))
-            throw SystemException.badRequest(WRONG_CURRENT);
+            throw SystemException.badRequest(WRONG_CURRENT).at("currentPassword");
         if (encoder.matches(request.newPassword(), user.getPasswordHash()))
-            throw SystemException.badRequest(SAME_AS_CURRENT);
+            throw SystemException.badRequest(SAME_AS_CURRENT).at("newPassword");
         user.setPasswordHash(encoder.encode(request.newPassword()));
         user.setFailedAttempts(0);
         users.save(user);

@@ -1,13 +1,16 @@
 package com.uav.platform.security;
 
 import com.uav.platform.config.routes.ApiRoutes;
+import com.uav.platform.modules.devicekey.service.DeviceKeyService;
 import com.uav.platform.security.jwt.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,7 +30,11 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    /** Unauthenticated read of public settings (contact details) for the marketing site. */
+    public static final String PUBLIC_SITE_INFO = "/api/v1/public/site-info";
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ObjectProvider<DeviceKeyService> deviceKeyService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -94,6 +101,13 @@ public class SecurityConfig {
                                                             || "TRACE".equalsIgnoreCase(method)) {
                                                         return false;
                                                     }
+                                                    // Device-key requests are header-authenticated
+                                                    // and their cookies are ignored, so CSRF does
+                                                    // not apply.
+                                                    if (DeviceKeyAuthenticationFilter
+                                                            .isDeviceRequest(request)) {
+                                                        return false;
+                                                    }
                                                     String header =
                                                             request.getHeader("Authorization");
                                                     return !(StringUtils.hasText(header)
@@ -123,10 +137,16 @@ public class SecurityConfig {
                                         .permitAll()
                                         .requestMatchers(ApiRoutes.Webhook.WILDCARD)
                                         .permitAll()
+                                        .requestMatchers(HttpMethod.GET, PUBLIC_SITE_INFO)
+                                        .permitAll()
                                         .anyRequest()
                                         .authenticated())
                 .addFilterBefore(
-                        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                // Runs first: a device-key request is answered or narrowed before JWT/cookie auth.
+                .addFilterBefore(
+                        new DeviceKeyAuthenticationFilter(deviceKeyService),
+                        JwtAuthenticationFilter.class);
 
         return http.build();
     }

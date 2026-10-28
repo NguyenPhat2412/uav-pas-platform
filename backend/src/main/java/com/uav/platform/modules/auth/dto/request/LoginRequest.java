@@ -3,5 +3,5 @@ package com.uav.platform.modules.auth.dto.request;
 import jakarta.validation.constraints.NotBlank;
 
 public record LoginRequest(
-        @NotBlank(message = "Username or email is required") String usernameOrEmail,
-        @NotBlank(message = "Password is required") String password) {}
+        @NotBlank(message = "Vui lòng nhập tên đăng nhập hoặc email.") String usernameOrEmail,
+        @NotBlank(message = "Vui lòng nhập mật khẩu.") String password) {}

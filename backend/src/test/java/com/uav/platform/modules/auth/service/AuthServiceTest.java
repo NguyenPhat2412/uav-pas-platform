@@ -55,8 +55,8 @@ class AuthServiceTest {
         RegisterRequest request =
                 new RegisterRequest("johndoe", "john@example.com", "P@ssword123", "0987654321");
 
-        when(userRepository.existsByEmail("john@example.com")).thenReturn(false);
-        when(userRepository.existsByUsername("johndoe")).thenReturn(false);
+        when(userRepository.existsByEmailIgnoreCase("john@example.com")).thenReturn(false);
+        when(userRepository.existsByUsernameIgnoreCase("johndoe")).thenReturn(false);
         when(userRepository.existsByPhoneNumber("0987654321")).thenReturn(false);
         when(passwordEncoder.encode("P@ssword123")).thenReturn("hashedPassword");
 
@@ -84,7 +84,7 @@ class AuthServiceTest {
     void register_DuplicateEmail_ThrowsConflict() {
         RegisterRequest request =
                 new RegisterRequest("johndoe", "john@example.com", "P@ssword123", "0987654321");
-        when(userRepository.existsByEmail("john@example.com")).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase("john@example.com")).thenReturn(true);
 
         SystemException ex =
                 assertThrows(SystemException.class, () -> authService.register(request));
@@ -96,8 +96,8 @@ class AuthServiceTest {
     void register_DuplicateUsername_ThrowsConflict() {
         RegisterRequest request =
                 new RegisterRequest("johndoe", "john@example.com", "P@ssword123", "0987654321");
-        when(userRepository.existsByEmail("john@example.com")).thenReturn(false);
-        when(userRepository.existsByUsername("johndoe")).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase("john@example.com")).thenReturn(false);
+        when(userRepository.existsByUsernameIgnoreCase("johndoe")).thenReturn(true);
 
         SystemException ex =
                 assertThrows(SystemException.class, () -> authService.register(request));
@@ -109,8 +109,8 @@ class AuthServiceTest {
     void register_DuplicatePhoneNumber_ThrowsConflict() {
         RegisterRequest request =
                 new RegisterRequest("johndoe", "john@example.com", "P@ssword123", "0987654321");
-        when(userRepository.existsByEmail("john@example.com")).thenReturn(false);
-        when(userRepository.existsByUsername("johndoe")).thenReturn(false);
+        when(userRepository.existsByEmailIgnoreCase("john@example.com")).thenReturn(false);
+        when(userRepository.existsByUsernameIgnoreCase("johndoe")).thenReturn(false);
         when(userRepository.existsByPhoneNumber("0987654321")).thenReturn(true);
 
         SystemException ex =
