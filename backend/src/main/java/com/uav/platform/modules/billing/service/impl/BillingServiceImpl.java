@@ -69,6 +69,10 @@ public class BillingServiceImpl implements BillingService {
     @Autowired private org.springframework.jdbc.core.JdbcTemplate billingJdbc;
     @Autowired private com.uav.platform.modules.billing.service.QuotaService quotaService;
 
+    /** Writes rejected-payment evidence in its own transaction so it survives the rejection. */
+    @Autowired(required = false)
+    private org.springframework.transaction.PlatformTransactionManager transactionManager;
+
     public BillingServiceImpl(
             ServicePlanRepository planRepository,
             InvoiceRepository invoiceRepository,
@@ -292,7 +296,14 @@ public class BillingServiceImpl implements BillingService {
         LocalDateTime dueDate = LocalDateTime.now().plusDays(7);
 
         Invoice invoice =
-                new Invoice(code, user, mission, plan, request.amount(), dueDate, request.notes());
+                new Invoice(
+                        code,
+                        user,
+                        mission,
+                        plan,
+                        wholeDong(request.amount()),
+                        dueDate,
+                        request.notes());
         Invoice saved = invoiceRepository.save(invoice);
         financialEvents.recordInvoiceIssued(saved);
         return billingMapper.toInvoiceResponse(saved);
@@ -369,15 +380,19 @@ public class BillingServiceImpl implements BillingService {
             return paymentResult(invoice, request.transactionCode());
         }
         if (invoice.getStatus() != InvoiceStatus.PENDING) {
+            // Money arrived for an invoice already paid, cancelled or expired: keep the evidence.
+            recordRejectedPayment(invoice, request, "UNMATCHED");
             throw SystemException.conflict("Invoice is not pending payment");
         }
 
+        // VND has no minor unit: the QR shows the whole-đồng amount, so compare against that.
         BigDecimal requiredAmount =
-                invoice.getAmount() != null ? invoice.getAmount() : BigDecimal.ZERO;
+                wholeDong(invoice.getAmount() != null ? invoice.getAmount() : BigDecimal.ZERO);
         BigDecimal paidAmount = request.amount() != null ? request.amount() : BigDecimal.ZERO;
         if (request.amount() == null
                 || paidAmount.signum() <= 0
                 || paidAmount.compareTo(requiredAmount) != 0) {
+            recordRejectedPayment(invoice, request, "MISMATCH");
             throw SystemException.badRequest(
                     "Payment amount must match invoice amount", "INVALID_PAYMENT_AMOUNT");
         }
@@ -392,6 +407,53 @@ public class BillingServiceImpl implements BillingService {
         return paymentResult(invoice, transactionCode);
     }
 
+    /** Invoice amounts are whole Vietnamese đồng; fractions are rounded half-up once, at creation. */
+    static BigDecimal wholeDong(BigDecimal amount) {
+        return amount == null ? null : amount.setScale(0, java.math.RoundingMode.HALF_UP);
+    }
+
+    /**
+     * Persists a verified provider transfer that could not settle its invoice (status MISMATCH for
+     * a wrong amount, UNMATCHED for a late or duplicate transfer) with the raw callback, in a
+     * separate transaction, so admins see it under Billing > Transactions after the IPN is refused.
+     */
+    private void recordRejectedPayment(Invoice invoice, PaymentIpnRequest request, String status) {
+        Runnable write =
+                () -> {
+                    if (paymentRepository
+                            .findByTransactionCode(request.transactionCode())
+                            .isPresent()) return;
+                    PaymentTransaction txn =
+                            PaymentTransactionOperations.create(
+                                    invoice,
+                                    invoice.getUser(),
+                                    request.transactionCode(),
+                                    request.amount() != null ? request.amount() : BigDecimal.ZERO);
+                    txn.setGatewayName("VIETQR_NAPAS_247");
+                    txn.setStatus(status);
+                    txn.setRawIpnCallback(request.toString());
+                    paymentRepository.save(txn);
+                };
+        try {
+            if (transactionManager == null) {
+                write.run();
+                return;
+            }
+            var tx =
+                    new org.springframework.transaction.support.TransactionTemplate(
+                            transactionManager);
+            tx.setPropagationBehavior(
+                    org.springframework.transaction.TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+            tx.executeWithoutResult(ignored -> write.run());
+        } catch (RuntimeException ex) {
+            // Evidence is best effort; the IPN is still refused with its own error below.
+            log.warn(
+                    "Could not record rejected payment: invoiceId={}, status={}",
+                    invoice.getId(),
+                    status);
+        }
+    }
+
     /** Shared by the provider IPN and admin confirmation so both settle an invoice identically. */
     private void completePayment(
             Invoice invoice,
@@ -404,12 +466,8 @@ public class BillingServiceImpl implements BillingService {
         invoiceRepository.save(invoice);
 
         if (invoice.getMission() == null && invoice.getPlan() != null) {
-            // Applying a plan changes limits only; consumed hours and cycle dates are retained.
-            quotaService.updateQuota(
-                    invoice.getUser().getId(),
-                    new com.uav.platform.modules.billing.dto.request.UpdateQuotaRequest(
-                            invoice.getPlan().getCode(),
-                            invoice.getPlan().getMaxMonthlyFlightHours()));
+            // The customer paid for the invoiced plan: apply it even if it was deactivated since.
+            quotaService.applyPaidPlan(invoice.getUser().getId(), invoice.getPlan());
         }
 
         PaymentTransaction txn =
@@ -457,6 +515,8 @@ public class BillingServiceImpl implements BillingService {
     @Transactional
     public InvoiceResponse subscribe(String planCode, Authentication auth) {
         AppUser user = getCurrentUser(auth);
+        // Serialize subscribe calls of one customer so two clicks cannot open two plan invoices.
+        userRepository.findByIdForUpdate(user.getId());
         ServicePlan plan =
                 planRepository
                         .findByCode(planCode)
@@ -495,7 +555,7 @@ public class BillingServiceImpl implements BillingService {
                         user,
                         null,
                         plan,
-                        plan.getPrice(),
+                        wholeDong(plan.getPrice()),
                         LocalDateTime.now().plusDays(7),
                         "PLAN_SUBSCRIPTION:" + plan.getCode());
         Invoice saved = invoiceRepository.save(invoice);

@@ -24,6 +24,9 @@ import java.util.Map;
 
 @Service
 public class FinancialOutboxServiceImpl implements FinancialOutboxService {
+    /** After this many failed local attempts the event is FAILED and waits for an admin retry. */
+    static final int MAX_ATTEMPTS = 8;
+
     private final FinancialOutboxRepository events;
     private final NotificationService notifications;
     private final WebhookEventQueue webhooks;
@@ -115,9 +118,12 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
                                             "INVOICE",
                                             event.getInvoiceId()));
                         event.setNotificationCreated(true);
-                        int targets =
-                                webhooks.queueEvent(event.getId(), event.getEventType(), payload);
-                        event.setStatus(targets > 0 ? "LOCAL_COMPLETED" : "WAITING_SUBSCRIBERS");
+                        webhooks.queueEvent(event.getId(), event.getEventType(), payload);
+                        // Local work (notification + delivery rows for current subscribers) is done
+                        // either way. With no subscriber there is nothing to wait for: re-polling
+                        // forever would only grow the due queue. Destinations added later receive
+                        // new events only; there is no historical backfill.
+                        event.setStatus("LOCAL_COMPLETED");
                         event.setNextAttemptAt(LocalDateTime.now().plusMinutes(1));
                         event.setAttempts(event.getAttempts() + 1);
                         event.setLastError(null);
@@ -129,6 +135,8 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
                         if (event == null || "LOCAL_COMPLETED".equals(event.getStatus())) return;
                         event.setAttempts(event.getAttempts() + 1);
                         event.setLastError("LOCAL_EVENT_PROCESSING_FAILED");
+                        // Stop the worker retrying forever; admins can requeue a FAILED event.
+                        if (event.getAttempts() >= MAX_ATTEMPTS) event.setStatus("FAILED");
                         event.setNextAttemptAt(
                                 LocalDateTime.now().plusMinutes(Math.min(60, event.getAttempts())));
                     });

@@ -75,12 +75,17 @@ public class PinnedWebhookTransport implements WebhookTransport {
     }
 
     @Override
-    public int post(String url, String payload, String signature, String eventType, String eventId)
+    public int post(
+            String url,
+            String payload,
+            java.util.Map<String, String> signatureHeaders,
+            String eventType,
+            String eventId)
             throws Exception {
         URI uri = PublicAddressPolicy.parse(url);
         var request = new HttpPost(uri);
         request.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
-        request.setHeader("X-Signature-SHA256", signature);
+        signatureHeaders.forEach(request::setHeader);
         request.setHeader("X-Event-Type", eventType);
         request.setHeader("X-Event-Id", eventId);
         var config =

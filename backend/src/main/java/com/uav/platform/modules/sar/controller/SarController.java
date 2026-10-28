@@ -42,8 +42,11 @@ public class SarController {
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<List<SarCockpitMissionResponse>> list(
-            @RequestParam(defaultValue = "false") boolean includeClosed, Authentication auth) {
-        return ResponseEntity.ok(sarService.listForCockpit(includeClosed, auth));
+            @RequestParam(defaultValue = "false") boolean includeClosed,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            Authentication auth) {
+        return ResponseEntity.ok(sarService.listForCockpit(includeClosed, page, size, auth));
     }
 
     @PostMapping("/missions/{missionId}/return-to-home")

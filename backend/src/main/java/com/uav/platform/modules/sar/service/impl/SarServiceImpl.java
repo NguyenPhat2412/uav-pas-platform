@@ -2,6 +2,7 @@ package com.uav.platform.modules.sar.service.impl;
 
 import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.mission.entity.Mission;
+import com.uav.platform.modules.mission.enums.MissionStatus;
 import com.uav.platform.modules.mission.repository.MissionRepository;
 import com.uav.platform.modules.notification.dto.request.CreateNotificationRequest;
 import com.uav.platform.modules.notification.enums.NotificationType;
@@ -138,10 +139,24 @@ public class SarServiceImpl implements SarService {
                                                 "Mission not found with id: "
                                                         + request.missionId()));
         requireMissionAccess(mission, authentication, false);
+        requireMissionOpen(mission);
 
+        SarMission existing = sarRepository.findByMissionId(request.missionId()).orElse(null);
+        if (existing != null) {
+            // Editing the search area/LKP of a live search needs the version the editor saw.
+            if (request.expectedVersion() == null) {
+                if (mission.getStatus() != MissionStatus.DRAFT)
+                    throw SystemException.badRequest(
+                            "Cần expectedVersion để sửa vùng tìm kiếm đã đăng ký.",
+                            "SAR_VERSION_REQUIRED");
+            } else if (request.expectedVersion() != existing.getVersion()) {
+                throw SystemException.conflict(
+                        "Thông tin SAR đã được người khác cập nhật; tải lại rồi thử lại.",
+                        "SAR_STALE");
+            }
+        }
         SarMission sar =
-                sarRepository
-                        .findByMissionId(request.missionId())
+                java.util.Optional.ofNullable(existing)
                         .orElseGet(
                                 () ->
                                         SarMissionOperations.create(
@@ -164,14 +179,55 @@ public class SarServiceImpl implements SarService {
             sar.setVictimCountEstimated(request.victimCountEstimated());
         if (request.notes() != null) sar.setNotes(request.notes());
 
-        SarMission saved = sarRepository.save(sar);
+        SarMission saved = sarRepository.saveAndFlush(sar);
         return sarMapper.toSarMissionResponse(saved);
+    }
+
+    /** Mission states in which SAR data and status are frozen. */
+    static final java.util.Set<MissionStatus> CLOSED_MISSION_STATUSES =
+            java.util.EnumSet.of(
+                    MissionStatus.COMPLETED,
+                    MissionStatus.FAILED,
+                    MissionStatus.CANCELLED,
+                    MissionStatus.REJECTED);
+
+    static void requireMissionOpen(Mission mission) {
+        if (mission.getStatus() != null && CLOSED_MISSION_STATUSES.contains(mission.getStatus()))
+            throw SystemException.conflict(
+                    "Nhiệm vụ đã kết thúc; không thể thay đổi thông tin SAR.",
+                    "SAR_MISSION_CLOSED");
+    }
+
+    /**
+     * SAR status machine. SEARCHING <-> SUSPENDED, SEARCHING/SUSPENDED -> TARGET_LOCATED,
+     * TARGET_LOCATED -> SEARCHING (false positive) or RESCUED; RESCUED is final. Searching, locating
+     * and rescuing happen in flight only (mission IN_PROGRESS); suspending is allowed on any open
+     * mission. Re-sending the current status is a no-op.
+     */
+    static void requireSarTransition(SarStatus from, SarStatus to, MissionStatus missionStatus) {
+        java.util.Set<SarStatus> allowed =
+                switch (from == null ? SarStatus.SEARCHING : from) {
+                    case SEARCHING ->
+                            java.util.EnumSet.of(SarStatus.SUSPENDED, SarStatus.TARGET_LOCATED);
+                    case SUSPENDED ->
+                            java.util.EnumSet.of(SarStatus.SEARCHING, SarStatus.TARGET_LOCATED);
+                    case TARGET_LOCATED ->
+                            java.util.EnumSet.of(SarStatus.SEARCHING, SarStatus.RESCUED);
+                    case RESCUED -> java.util.EnumSet.noneOf(SarStatus.class);
+                };
+        if (!allowed.contains(to))
+            throw SystemException.conflict(
+                    "Không thể chuyển trạng thái SAR từ " + from + " sang " + to + ".",
+                    "SAR_STATUS_TRANSITION_INVALID");
+        if (to != SarStatus.SUSPENDED && missionStatus != MissionStatus.IN_PROGRESS)
+            throw SystemException.conflict(
+                    "Chỉ cập nhật tìm kiếm khi nhiệm vụ đang bay.", "SAR_MISSION_NOT_IN_PROGRESS");
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SarCockpitMissionResponse> listForCockpit(
-            boolean includeClosed, Authentication authentication) {
+            boolean includeClosed, int page, int size, Authentication authentication) {
         if (authentication == null
                 || !authentication.isAuthenticated()
                 || permissionService == null)
@@ -184,8 +240,13 @@ public class SarServiceImpl implements SarService {
                 all
                         ? Specification.unrestricted()
                         : SarSpecifications.visibleTo(authentication.getName());
-        return sarRepository.findAll(spec, Sort.by(Sort.Direction.DESC, "updatedAt")).stream()
-                .filter(sar -> includeClosed || sar.getSarStatus() != SarStatus.RESCUED)
+        if (!includeClosed) spec = spec.and(SarSpecifications.notSarStatus(SarStatus.RESCUED));
+        var pageable =
+                org.springframework.data.domain.PageRequest.of(
+                        Math.max(0, page),
+                        Math.max(1, Math.min(200, size)),
+                        Sort.by(Sort.Order.desc("updatedAt"), Sort.Order.desc("id")));
+        return sarRepository.findAll(spec, pageable).stream()
                 .map(SarServiceImpl::toCockpit)
                 .toList();
     }
@@ -283,8 +344,12 @@ public class SarServiceImpl implements SarService {
                                                 "SAR details not found for mission id: "
                                                         + missionId));
         requireMissionAccess(sar.getMission(), authentication, true);
+        if (status == null) throw SystemException.badRequest("SAR_STATUS_REQUIRED");
+        requireMissionOpen(sar.getMission());
+        if (sar.getSarStatus() == status) return sarMapper.toSarMissionResponse(sar);
+        requireSarTransition(sar.getSarStatus(), status, sar.getMission().getStatus());
         sar.setSarStatus(status);
-        SarMission saved = sarRepository.save(sar);
+        SarMission saved = sarRepository.saveAndFlush(sar);
         return sarMapper.toSarMissionResponse(saved);
     }
 

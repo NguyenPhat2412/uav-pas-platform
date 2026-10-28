@@ -93,7 +93,7 @@ class FinancialOutboxPostgresTest {
         hooks.createSubscription(
                 "Fixture",
                 "https://receiver.example.test/events",
-                "fixture-secret",
+                "fixture-secret-0123456789abcdef-0123456789",
                 "INVOICE_ISSUED,PAYMENT_COMPLETED");
         var response =
                 billing.createInvoice(
@@ -164,7 +164,7 @@ class FinancialOutboxPostgresTest {
                         response.id()));
         assertEquals(2, events.count());
         var transport = mock(WebhookTransport.class);
-        when(transport.post(anyString(), anyString(), anyString(), anyString(), anyString()))
+        when(transport.post(anyString(), anyString(), anyMap(), anyString(), anyString()))
                 .thenReturn(503);
         Object original = ReflectionTestUtils.getField(hooks, "transport");
         ReflectionTestUtils.setField(hooks, "transport", transport);
@@ -189,7 +189,7 @@ class FinancialOutboxPostgresTest {
                     .post(
                             anyString(),
                             anyString(),
-                            anyString(),
+                            anyMap(),
                             eq("PAYMENT_COMPLETED"),
                             eq(paymentId));
             assertEquals(
@@ -233,7 +233,8 @@ class FinancialOutboxPostgresTest {
                         auth);
         String id = "INVOICE_ISSUED:" + invoice.id();
         outbox.process(id);
-        assertEquals("WAITING_SUBSCRIBERS", events.findById(id).orElseThrow().getStatus());
+        // No subscriber: local work is done, so the event is not re-polled forever.
+        assertEquals("LOCAL_COMPLETED", events.findById(id).orElseThrow().getStatus());
         assertEquals(
                 1,
                 db.queryForObject(
@@ -245,7 +246,7 @@ class FinancialOutboxPostgresTest {
         hooks.createSubscription(
                 "Fixture",
                 "https://receiver.example.test/events",
-                "fixture-secret",
+                "fixture-secret-0123456789abcdef-0123456789",
                 "INVOICE_ISSUED");
         restarted.process(id);
         assertEquals("LOCAL_COMPLETED", events.findById(id).orElseThrow().getStatus());
@@ -255,11 +256,12 @@ class FinancialOutboxPostgresTest {
                         "SELECT count(*) FROM notifications WHERE reference_id=?",
                         Integer.class,
                         invoice.id()));
+        // A destination created later receives new events only (no historical backfill).
         assertEquals(
-                "UNCONFIGURED",
+                0,
                 db.queryForObject(
-                        "SELECT delivery_status FROM webhook_delivery_logs WHERE event_id=?",
-                        String.class,
+                        "SELECT count(*) FROM webhook_delivery_logs WHERE event_id=?",
+                        Integer.class,
                         id));
     }
 
@@ -319,7 +321,7 @@ class FinancialOutboxPostgresTest {
                 hooks.createSubscription(
                         "Fixture",
                         "https://receiver.example.test/events",
-                        "fixture-secret",
+                        "fixture-secret-0123456789abcdef-0123456789",
                         "INVOICE_ISSUED,PAYMENT_COMPLETED");
         var invoice =
                 billing.createInvoice(
@@ -419,7 +421,10 @@ class FinancialOutboxPostgresTest {
     @Test
     void webhookBatchOfFiveAdvancesPastFailingOldestBacklog() throws Exception {
         hooks.createSubscription(
-                "Fixture", "https://receiver.example.test/events", "fixture-secret", "TEST");
+                "Fixture",
+                "https://receiver.example.test/events",
+                "fixture-secret-0123456789abcdef-0123456789",
+                "TEST");
         for (int i = 0; i < 12; i++) hooks.dispatchEvent("TEST", Map.of("ordinal", i));
         var ordered =
                 db.queryForList("SELECT id FROM webhook_delivery_logs ORDER BY id", Long.class);
@@ -428,18 +433,24 @@ class FinancialOutboxPostgresTest {
                         db.queryForList(
                                 "SELECT event_id FROM webhook_delivery_logs ORDER BY id LIMIT 5",
                                 String.class));
+        // Queued while the destination was not approved, so parked as UNCONFIGURED; approving it
+        // (startup requeue / toggle) releases them as QUEUED.
+        db.update(
+                "UPDATE webhook_delivery_logs SET delivery_status='QUEUED' WHERE delivery_status='UNCONFIGURED'");
         for (int i = 0; i < ordered.size(); i++)
             db.update(
                     "UPDATE webhook_delivery_logs SET next_attempt_at=TIMESTAMP '2020-01-01' + (? * INTERVAL '1 second') WHERE id=?",
                     i,
                     ordered.get(i));
         var transport = mock(WebhookTransport.class);
-        when(transport.post(anyString(), anyString(), anyString(), anyString(), anyString()))
+        when(transport.post(anyString(), anyString(), anyMap(), anyString(), anyString()))
                 .thenAnswer(
                         call -> firstFive.contains(call.getArgument(4, String.class)) ? 503 : 204);
         var fresh = new WebhookServiceImpl(subscriptions, logs, null);
         ReflectionTestUtils.setField(fresh, "transactionManager", manager);
         ReflectionTestUtils.setField(fresh, "transport", transport);
+        // Small batches make the back-off ordering observable with 12 deliveries.
+        ReflectionTestUtils.setField(fresh, "batchSize", 5);
         ReflectionTestUtils.setField(fresh, "enabled", true);
         ReflectionTestUtils.setField(fresh, "approvedUrls", "https://receiver.example.test/events");
         fresh.retryDue();
@@ -467,7 +478,7 @@ class FinancialOutboxPostgresTest {
                         Integer.class));
         var identity = org.mockito.ArgumentCaptor.forClass(String.class);
         verify(transport, times(12))
-                .post(anyString(), anyString(), anyString(), eq("TEST"), identity.capture());
+                .post(anyString(), anyString(), anyMap(), eq("TEST"), identity.capture());
         assertEquals(
                 12,
                 new HashSet<>(identity.getAllValues()).size(),
@@ -492,7 +503,7 @@ class FinancialOutboxPostgresTest {
         hooks.createSubscription(
                 "Fixture",
                 "https://receiver.example.test/events",
-                "fixture-secret",
+                "fixture-secret-0123456789abcdef-0123456789",
                 "INVOICE_ISSUED");
         for (int i = 0; i < 55; i++) {
             var invoice =

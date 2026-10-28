@@ -118,8 +118,13 @@ public class MissionController {
     @PostMapping("/{id}/cancel")
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_CANCEL')")
     public ResponseEntity<MissionResponse> cancel(
-            @PathVariable Long id, Authentication authentication) {
-        return ResponseEntity.ok(service.cancel(id, authentication));
+            @PathVariable Long id,
+            @RequestParam(required = false) String reason,
+            @Valid @RequestBody(required = false) MissionCancelRequest request,
+            Authentication authentication) {
+        // The body is optional: older clients post without one; ?reason= mirrors /reject.
+        String note = request != null && request.reason() != null ? request.reason() : reason;
+        return ResponseEntity.ok(service.cancel(id, note, authentication));
     }
 
     @PostMapping("/{id}/assign-station")
@@ -270,6 +275,19 @@ public class MissionController {
             @Valid @RequestBody MissionFailureRequest request,
             Authentication authentication) {
         return ResponseEntity.ok(service.fail(id, request, authentication));
+    }
+
+    /**
+     * Commander/admin closure of a READY, RESOURCE_RESERVED or IN_PROGRESS mission whose assigned
+     * operator cannot complete or fail it. Requires a reason; releases the UAV and equipment.
+     */
+    @PostMapping("/{id}/force-fail")
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_CONFIRM')")
+    public ResponseEntity<MissionResponse> forceFail(
+            @PathVariable Long id,
+            @Valid @RequestBody MissionForceFailRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(service.forceFail(id, request, authentication));
     }
 
     @GetMapping("/{id}/media")

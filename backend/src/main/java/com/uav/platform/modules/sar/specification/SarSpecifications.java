@@ -28,6 +28,11 @@ public final class SarSpecifications {
         };
     }
 
+    public static Specification<SarMission> notSarStatus(SarStatus status) {
+        return (root, query, cb) ->
+                status == null ? null : cb.notEqual(root.get("sarStatus"), status);
+    }
+
     public static Specification<SarMission> hasSarStatus(SarStatus status) {
         return (root, query, cb) -> status == null ? null : cb.equal(root.get("sarStatus"), status);
     }

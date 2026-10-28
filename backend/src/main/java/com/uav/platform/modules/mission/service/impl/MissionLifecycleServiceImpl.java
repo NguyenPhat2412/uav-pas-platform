@@ -43,21 +43,15 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     private final MissionBillingService billing;
     private final MissionMapper missionMapper;
 
+    /** start() opens this many minutes before the scheduled start time (2 h by default). */
+    @org.springframework.beans.factory.annotation.Value("${app.mission.start-lead-minutes:120}")
+    private long startLeadMinutes = 120;
+
     @Override
     public MissionResponse create(MissionCreateRequest request, String actorUsername) {
         AppUser customer = access.user(actorUsername);
         MissionInputOperations.checkSchedule(request.startTime(), request.expectedEndTime());
-        double estimatedHours =
-                billing.calculateDurationHours(request.startTime(), request.expectedEndTime());
-        if (quotaService != null && customer.getId() != null) {
-            try {
-                quotaService.checkCanCreateMission(customer.getId(), estimatedHours);
-            } catch (SystemException ex) {
-                if (ex.getStatus() == org.springframework.http.HttpStatus.CONFLICT) {
-                    throw ex;
-                }
-            }
-        }
+        checkQuota(customer, request.startTime(), request.expectedEndTime(), null);
         Mission mission =
                 MissionOperations.draft(
                         customer,
@@ -128,6 +122,12 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
             throw SystemException.conflict("MISSION_DRAFT_STALE");
         }
         MissionInputOperations.checkSchedule(request.startTime(), request.expectedEndTime());
+        if (mission.getStatus() == MissionStatus.DRAFT)
+            checkQuota(
+                    mission.getCustomer(),
+                    request.startTime(),
+                    request.expectedEndTime(),
+                    mission.getId());
         MissionOperations.updateDraft(
                 mission,
                 request.title(),
@@ -166,6 +166,16 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     public MissionResponse submit(Long id, Authentication authentication) {
         Mission mission = access.accessibleForUpdate(id, authentication);
         MissionStatus old = mission.getStatus();
+        if (old == MissionStatus.DRAFT) {
+            // The schedule may have aged or other missions may have used the quota since the draft.
+            MissionInputOperations.checkSchedule(
+                    mission.getStartTime(), mission.getExpectedEndTime());
+            checkQuota(
+                    mission.getCustomer(),
+                    mission.getStartTime(),
+                    mission.getExpectedEndTime(),
+                    mission.getId());
+        }
         MissionOperations.transitionTo(mission, MissionStatus.PENDING_CONFIRMATION);
         missionEvents.record(
                 mission,
@@ -184,8 +194,28 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         return missionMapper.toResponse(mission);
     }
 
+    /**
+     * Planned hours of every open mission of the customer, plus hours already used, must fit the
+     * quota. QuotaService locks the customer's quota (user row) so parallel bookings serialize.
+     */
+    private void checkQuota(
+            AppUser customer,
+            java.time.LocalDateTime start,
+            java.time.LocalDateTime end,
+            Long excludeMissionId) {
+        if (quotaService == null || customer == null || customer.getId() == null) return;
+        quotaService.checkCanSchedule(
+                customer.getId(), billing.calculateDurationHours(start, end), excludeMissionId);
+    }
+
     @Override
-    public MissionResponse cancel(Long id, Authentication authentication) {
+    public MissionResponse cancel(Long id, String reason, Authentication authentication) {
+        String note = reason == null || reason.isBlank() ? null : reason.trim();
+        if (note != null && note.length() > 500)
+            throw SystemException.badRequest(
+                            "Lý do hủy không được vượt quá 500 ký tự.",
+                            "MISSION_CANCEL_REASON_TOO_LONG")
+                    .at("reason");
         Mission mission = access.accessibleForUpdate(id, authentication);
         MissionStatus old = mission.getStatus();
         resources.releaseResources(mission, authentication.getName());
@@ -196,7 +226,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 authentication,
                 old,
                 mission.getStatus(),
-                "Mission cancelled");
+                note == null ? "Mission cancelled" : note);
         audit.record(
                 null,
                 authentication.getName(),
@@ -286,6 +316,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         access.requireAssignedOperator(mission, authentication);
         if (mission.getStatus() != MissionStatus.READY)
             throw new IllegalStateException("MISSION_INVALID_STATUS");
+        requireStartWindow(mission, java.time.LocalDateTime.now());
         resources.validatePreflightResources(mission);
         requireAcceptance(mission);
         MissionStatus old = mission.getStatus();
@@ -384,6 +415,61 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 id.toString(),
                 "FAILED");
         return missionMapper.toResponse(mission);
+    }
+
+    @Override
+    public MissionResponse forceFail(
+            Long id, MissionForceFailRequest request, Authentication authentication) {
+        if (request == null
+                || request.reason() == null
+                || request.reason().isBlank()
+                || request.reason().trim().length() > 500)
+            throw SystemException.badRequest(
+                            "Phải nêu lý do (tối đa 500 ký tự) khi buộc kết thúc nhiệm vụ.",
+                            "MISSION_FORCE_FAIL_REASON_REQUIRED")
+                    .at("reason");
+        if (request.notes() != null && request.notes().length() > 2000)
+            throw SystemException.badRequest(
+                            "Ghi chú không được vượt quá 2000 ký tự.", "MISSION_NOTES_TOO_LONG")
+                    .at("notes");
+        Mission mission = access.accessibleForUpdate(id, authentication);
+        MissionStatus old = mission.getStatus();
+        if (old != MissionStatus.IN_PROGRESS
+                && old != MissionStatus.READY
+                && old != MissionStatus.RESOURCE_RESERVED)
+            throw new IllegalStateException("MISSION_INVALID_STATUS");
+        String reason = request.reason().trim();
+        resources.releaseResources(mission, authentication.getName());
+        MissionOperations.fail(mission, reason, request.notes());
+        String note = "[Buộc kết thúc] " + reason;
+        missionEvents.record(
+                mission,
+                MissionEventType.FAILED,
+                authentication,
+                old,
+                mission.getStatus(),
+                note.length() > 500 ? note.substring(0, 500) : note);
+        String operator = mission.getOperator() == null ? "-" : mission.getOperator().getUsername();
+        audit.record(
+                null,
+                authentication.getName(),
+                AuditAction.STATUS_CHANGE,
+                "MISSION",
+                id.toString(),
+                "FORCE_FAILED from " + old + " (operator " + operator + "): " + reason);
+        return missionMapper.toResponse(mission);
+    }
+
+    /** The operator may start from startLeadMinutes before the scheduled start onwards. */
+    protected void requireStartWindow(Mission mission, java.time.LocalDateTime now) {
+        if (mission.getStartTime() != null
+                && now.isBefore(mission.getStartTime().minusMinutes(startLeadMinutes)))
+            throw SystemException.conflict(
+                    String.format(
+                            java.util.Locale.ROOT,
+                            "Chỉ có thể bắt đầu nhiệm vụ từ %d phút trước giờ bắt đầu dự kiến.",
+                            startLeadMinutes),
+                    "MISSION_START_TOO_EARLY");
     }
 
     @Override

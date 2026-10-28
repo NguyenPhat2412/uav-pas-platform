@@ -2,8 +2,10 @@ package com.uav.platform.modules.uav.service.impl;
 
 import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.mission.entity.Mission;
+import com.uav.platform.modules.mission.enums.MissionStatus;
 import com.uav.platform.modules.mission.repository.MissionRepository;
 import com.uav.platform.modules.mission.service.MissionAccessService;
+import com.uav.platform.modules.permission.service.PermissionService;
 import com.uav.platform.modules.uav.dto.request.TelemetryReportRequest;
 import com.uav.platform.modules.uav.dto.response.TelemetryResponse;
 import com.uav.platform.modules.uav.entity.UavTelemetry;
@@ -33,6 +35,7 @@ public class TelemetryServiceImpl implements TelemetryService {
     private final UavRepository uavs;
     private final MissionRepository missions;
     private final MissionAccessService missionAccess;
+    private final PermissionService permissions;
 
     @Override
     @Transactional
@@ -48,9 +51,17 @@ public class TelemetryServiceImpl implements TelemetryService {
             if (mission.getUav() == null || !uavId.equals(mission.getUav().getId()))
                 throw SystemException.badRequest("TELEMETRY_MISSION_UAV_MISMATCH");
         }
+        Long missionId = r.missionId();
+        if (missionId == null)
+            // Untagged samples belong to the flight in progress, so mission views can find them.
+            missionId =
+                    missions.findFirstByUavIdAndStatusOrderByIdDesc(
+                                    uavId, MissionStatus.IN_PROGRESS)
+                            .map(Mission::getId)
+                            .orElse(null);
         UavTelemetry t = new UavTelemetry();
         t.setUavId(uavId);
-        t.setMissionId(r.missionId());
+        t.setMissionId(missionId);
         t.setRecordedAt(r.recordedAt());
         t.setReceivedAt(now);
         t.setLatitude(BigDecimal.valueOf(r.latitude()));
@@ -83,7 +94,24 @@ public class TelemetryServiceImpl implements TelemetryService {
     @Transactional(readOnly = true)
     public Optional<TelemetryResponse> latestForMission(Long missionId, Authentication auth) {
         Mission mission = missionAccess.accessible(missionId, auth);
-        return mission.getUav() == null ? Optional.empty() : latest(mission.getUav().getId());
+        if (mission.getUav() == null) return Optional.empty();
+        // Customers follow the live flight only; staff may review the mission's last position
+        // later.
+        if (!isStaffFor(mission, auth) && mission.getStatus() != MissionStatus.IN_PROGRESS)
+            return Optional.empty();
+        LocalDateTime now = LocalDateTime.now();
+        // Only samples tagged with this mission: the same UAV may be flying another customer's job.
+        return telemetry
+                .findFirstByUavIdAndMissionIdOrderByRecordedAtDesc(
+                        mission.getUav().getId(), mission.getId())
+                .map(t -> toResponse(t, now));
+    }
+
+    private boolean isStaffFor(Mission mission, Authentication auth) {
+        if (auth == null) return false;
+        if (permissions != null && permissions.has(auth, "MISSION_VIEW_ALL")) return true;
+        return mission.getOperator() != null
+                && mission.getOperator().getUsername().equals(auth.getName());
     }
 
     static TelemetryResponse toResponse(UavTelemetry t, LocalDateTime now) {

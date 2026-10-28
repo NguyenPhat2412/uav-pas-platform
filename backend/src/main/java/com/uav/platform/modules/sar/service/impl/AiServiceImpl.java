@@ -241,9 +241,10 @@ public class AiServiceImpl implements AiService {
     @Override
     public AiTaskResponse submitResults(
             Long taskId, AiTaskResultRequest request, Authentication authentication) {
+        // Row lock: a retried edge-node submission waits, then sees the finished task and stops.
         AiTask task =
                 aiTaskRepository
-                        .findById(taskId)
+                        .findByIdForUpdate(taskId)
                         .orElseThrow(
                                 () ->
                                         SystemException.notFound(

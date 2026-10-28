@@ -71,4 +71,85 @@ class WebhookSafetyTest {
         sub.setTargetUrl("https://approved.example.test/events");
         assertEquals("QUEUED", service.dispatchEvent("TEST", Map.of()));
     }
+
+    @Test
+    void signingHeadersCarryTimestampAndPreviousSecretDuringGrace() {
+        var service =
+                new WebhookServiceImpl(
+                        mock(WebhookSubscriptionRepository.class),
+                        mock(WebhookDeliveryLogRepository.class),
+                        null);
+        var sub =
+                new WebhookSubscription(
+                        "Fixture",
+                        "https://receiver.example.test/events",
+                        "new-secret-0123456789abcdef0123456789",
+                        "TEST");
+        var now = java.time.LocalDateTime.of(2026, 10, 28, 12, 0);
+        var headers = service.signatureHeaders(sub, "{}", 1_700_000_000L, now);
+        assertEquals(
+                service.calculateHmacSha256("{}", sub.getSecretKey()),
+                headers.get("X-Signature-SHA256"));
+        assertEquals("1700000000", headers.get("X-Webhook-Timestamp"));
+        assertEquals(
+                "t=1700000000,v1="
+                        + service.calculateHmacSha256("1700000000.{}", sub.getSecretKey()),
+                headers.get("X-Webhook-Signature"));
+        assertFalse(headers.containsKey("X-Signature-SHA256-Previous"));
+
+        sub.setPreviousSecretKey("old-secret-0123456789abcdef0123456789");
+        sub.setPreviousSecretExpiresAt(now.plusHours(1));
+        headers = service.signatureHeaders(sub, "{}", 1_700_000_000L, now);
+        assertTrue(
+                headers.get("X-Webhook-Signature")
+                        .endsWith(
+                                ",v1="
+                                        + service.calculateHmacSha256(
+                                                "1700000000.{}",
+                                                "old-secret-0123456789abcdef0123456789")));
+        assertEquals(
+                service.calculateHmacSha256("{}", "old-secret-0123456789abcdef0123456789"),
+                headers.get("X-Signature-SHA256-Previous"));
+
+        headers = service.signatureHeaders(sub, "{}", 1_700_000_000L, now.plusHours(2));
+        assertFalse(headers.containsKey("X-Signature-SHA256-Previous"), "grace period over");
+    }
+
+    @Test
+    void shortSecretsAreRejectedOnCreate() {
+        var subs = mock(WebhookSubscriptionRepository.class);
+        var service = new WebhookServiceImpl(subs, mock(WebhookDeliveryLogRepository.class), null);
+        var error =
+                assertThrows(
+                        com.uav.platform.error.SystemException.class,
+                        () ->
+                                service.createSubscription(
+                                        "Fixture",
+                                        "https://receiver.example.test/events",
+                                        "short-secret",
+                                        "TEST"));
+        assertEquals("WEBHOOK_SECRET_TOO_SHORT", error.getCode());
+        verify(subs, never()).save(any());
+    }
+
+    @Test
+    void enablingAnApprovedDestinationReleasesParkedDeliveries() {
+        var subs = mock(WebhookSubscriptionRepository.class);
+        var logs = mock(WebhookDeliveryLogRepository.class);
+        var service = new WebhookServiceImpl(subs, logs, null);
+        org.springframework.test.util.ReflectionTestUtils.setField(service, "enabled", true);
+        org.springframework.test.util.ReflectionTestUtils.setField(
+                service, "approvedUrls", "https://approved.example.test/events");
+        var sub =
+                new WebhookSubscription(
+                        "Fixture",
+                        "https://approved.example.test/events",
+                        "fixture-secret-0123456789abcdef0123456789",
+                        "TEST");
+        sub.setId(3L);
+        sub.setIsActive(false);
+        when(subs.findByIdForUpdate(3L)).thenReturn(java.util.Optional.of(sub));
+        service.toggleSubscription(3L, true);
+        verify(logs).requeueUnconfigured(eq(3L), any());
+    }
 }

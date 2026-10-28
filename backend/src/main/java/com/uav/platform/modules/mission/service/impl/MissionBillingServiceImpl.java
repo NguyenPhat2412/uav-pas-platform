@@ -18,11 +18,8 @@ public class MissionBillingServiceImpl implements MissionBillingService {
     @Override
     public double calculateDurationHours(
             java.time.LocalDateTime start, java.time.LocalDateTime end) {
-        if (start == null || end == null || !end.isAfter(start)) {
-            return 1.0;
-        }
-        long minutes = java.time.Duration.between(start, end).toMinutes();
-        return Math.max(0.5, Math.min(24.0, Math.round((minutes / 60.0) * 10.0) / 10.0));
+        return com.uav.platform.modules.billing.service.impl.FlightHoursOperations.plannedHours(
+                start, end);
     }
 
     @Override

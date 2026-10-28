@@ -25,6 +25,13 @@ public interface MissionRepository
     @Query("select m from Mission m where m.id = :id")
     Optional<Mission> findByIdForUpdate(Long id);
 
+    /** Missions of one customer that still hold planned flight hours (not yet closed). */
+    java.util.List<Mission> findByCustomerIdAndStatusNotIn(
+            Long customerId, Collection<MissionStatus> closedStatuses);
+
+    /** The mission a UAV is flying right now, used to tag telemetry sent without a mission id. */
+    Optional<Mission> findFirstByUavIdAndStatusOrderByIdDesc(Long uavId, MissionStatus status);
+
     boolean existsByUavIdAndStatusNotIn(Long uavId, Collection<MissionStatus> terminalStatuses);
 
     boolean existsByUavIdAndIdNotAndStatusNotIn(

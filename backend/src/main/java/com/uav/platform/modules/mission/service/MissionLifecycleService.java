@@ -4,6 +4,7 @@ import com.uav.platform.modules.mission.dto.request.MissionAcceptanceRequest;
 import com.uav.platform.modules.mission.dto.request.MissionCompletionRequest;
 import com.uav.platform.modules.mission.dto.request.MissionCreateRequest;
 import com.uav.platform.modules.mission.dto.request.MissionFailureRequest;
+import com.uav.platform.modules.mission.dto.request.MissionForceFailRequest;
 import com.uav.platform.modules.mission.dto.request.MissionUpdateRequest;
 import com.uav.platform.modules.mission.dto.response.MissionResponse;
 import com.uav.platform.modules.mission.entity.Mission;
@@ -22,7 +23,12 @@ public interface MissionLifecycleService {
 
     MissionResponse submit(Long id, Authentication authentication);
 
-    MissionResponse cancel(Long id, Authentication authentication);
+    default MissionResponse cancel(Long id, Authentication authentication) {
+        return cancel(id, null, authentication);
+    }
+
+    /** reason is optional (at most 500 characters) and recorded in the timeline. */
+    MissionResponse cancel(Long id, String reason, Authentication authentication);
 
     MissionResponse confirm(Long id, Authentication authentication);
 
@@ -36,6 +42,10 @@ public interface MissionLifecycleService {
             Long id, MissionCompletionRequest request, Authentication authentication);
 
     MissionResponse fail(Long id, MissionFailureRequest request, Authentication authentication);
+
+    /** Closes a mission as FAILED without the assigned operator; releases resources like fail. */
+    MissionResponse forceFail(
+            Long id, MissionForceFailRequest request, Authentication authentication);
 
     MissionResponse acceptOperator(
             Long id, MissionAcceptanceRequest request, Authentication authentication);

@@ -108,6 +108,9 @@ public class WebhookAdminServiceImpl implements WebhookAdminService {
                     "Webhook subscription was removed", "WEBHOOK_SUBSCRIPTION_NOT_FOUND");
         String secret = generateSecret();
         LocalDateTime now = LocalDateTime.now();
+        // Receivers get a grace period: deliveries carry a signature with the old secret too.
+        sub.setPreviousSecretKey(sub.getSecretKey());
+        sub.setPreviousSecretExpiresAt(now.plus(WebhookServiceImpl.SECRET_ROTATION_GRACE));
         sub.setSecretKey(secret);
         sub.setUpdatedAt(now);
         subscriptions.save(sub);

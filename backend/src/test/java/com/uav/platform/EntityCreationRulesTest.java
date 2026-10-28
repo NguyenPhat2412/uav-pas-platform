@@ -62,13 +62,13 @@ class EntityCreationRulesTest {
     }
 
     @Test
-    void quotaCopiesPlanLimitsAndUsesSeparateClockReadsForItsCycle() {
+    void quotaCopiesPlanLimitsAndUsesOneClockReadForItsCycle() {
         var user = mock(AppUser.class);
         var plan = ServicePlanOperations.create("TEST", "Test", null, null, 37.5, 4, null, null);
-        // Cross a month boundary so a single shared clock read would produce a different cycle end.
+        // The cycle is exactly one billing period long, measured from a single clock read.
         var firstRead = LocalDateTime.of(2026, 1, 31, 23, 59, 59);
         var secondRead = LocalDateTime.of(2026, 2, 1, 0, 0);
-        var expectedEnd = secondRead.plusMonths(1);
+        var expectedEnd = firstRead.plusMonths(1);
         try (var clock = mockStatic(LocalDateTime.class, CALLS_REAL_METHODS)) {
             clock.when(LocalDateTime::now).thenReturn(firstRead, secondRead);
             clock.clearInvocations();
@@ -83,7 +83,7 @@ class EntityCreationRulesTest {
             assertEquals(4, quota.getConcurrentUavsLimit());
             assertEquals(firstRead, quota.getCycleStart());
             assertEquals(expectedEnd, quota.getCycleEnd());
-            clock.verify(LocalDateTime::now, times(2));
+            clock.verify(LocalDateTime::now, times(1));
         }
     }
 

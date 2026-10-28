@@ -45,4 +45,8 @@ public class UserQuota extends BaseEntity {
 
     @Column(name = "cycle_end")
     private LocalDateTime cycleEnd;
+
+    /** End of the period a paid plan invoice covers; null = no expiry (free or admin-assigned). */
+    @Column(name = "plan_paid_until")
+    private LocalDateTime planPaidUntil;
 }

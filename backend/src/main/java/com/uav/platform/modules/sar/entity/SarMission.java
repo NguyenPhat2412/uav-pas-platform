@@ -48,4 +48,9 @@ public class SarMission extends BaseEntity {
 
     @Column(length = 2000)
     private String notes;
+
+    /** Optimistic version: SAR edits send expectedVersion so a stale form cannot overwrite the area. */
+    @Version
+    @Column(name = "version", nullable = false)
+    private long version;
 }
