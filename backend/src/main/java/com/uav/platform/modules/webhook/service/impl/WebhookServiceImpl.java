@@ -33,6 +33,16 @@ import javax.crypto.spec.SecretKeySpec;
 @Service
 @Transactional
 public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
+    /** After a secret rotation the old secret keeps signing deliveries for this long. */
+    public static final java.time.Duration SECRET_ROTATION_GRACE = java.time.Duration.ofHours(24);
+
+    /** Shortest accepted signing secret (32 characters, about 190 bits for random base64). */
+    public static final int MIN_SECRET_LENGTH = 32;
+
+    /** Deliveries attempted per worker run (was 5; parked UNCONFIGURED rows no longer use slots). */
+    @org.springframework.beans.factory.annotation.Value("${app.webhook.batch-size:25}")
+    private int batchSize = 25;
+
     @Override
     public WebhookDispatchResponse dispatchTest(WebhookTestDispatchRequest request) {
         String eventType =
@@ -123,6 +133,11 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
     public WebhookSubscriptionResponse createSubscription(
             String name, String targetUrl, String secretKey, String eventsSubscribed) {
         validateSafeWebhookUrl(targetUrl);
+        if (secretKey == null || secretKey.trim().length() < MIN_SECRET_LENGTH)
+            throw SystemException.badRequest(
+                            "Khóa ký webhook phải dài ít nhất 32 ký tự.",
+                            "WEBHOOK_SECRET_TOO_SHORT")
+                    .at("secretKey");
         WebhookSubscription sub =
                 new WebhookSubscription(name, targetUrl.trim(), secretKey, eventsSubscribed);
         return webhookMapper.toSubscriptionResponse(subscriptionRepository.save(sub));
@@ -146,6 +161,24 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
         sub.setIsActive(active);
         sub.setUpdatedAt(LocalDateTime.now());
         subscriptionRepository.save(sub);
+        // Deliveries parked while the destination was off are released once it can receive them.
+        if (active && approved(sub.getTargetUrl()))
+            deliveryLogRepository.requeueUnconfigured(id, LocalDateTime.now());
+    }
+
+    /**
+     * Approval comes from configuration (app.webhook.enabled / approved-urls), which only changes
+     * with a restart: on startup, release parked deliveries of every approved active destination.
+     */
+    @org.springframework.context.event.EventListener(
+            org.springframework.boot.context.event.ApplicationReadyEvent.class)
+    public void requeueApprovedDestinations() {
+        if (!enabled) return;
+        LocalDateTime now = LocalDateTime.now();
+        for (var sub : subscriptionRepository.findByIsActiveTrue()) {
+            if (sub.getDeletedAt() == null && approved(sub.getTargetUrl()))
+                deliveryLogRepository.requeueUnconfigured(sub.getId(), now);
+        }
     }
 
     @Override
@@ -220,7 +253,8 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
     public void retryDue() {
         for (Long id :
                 deliveryLogRepository.dueIds(
-                        LocalDateTime.now(), org.springframework.data.domain.PageRequest.of(0, 5)))
+                        LocalDateTime.now(),
+                        org.springframework.data.domain.PageRequest.of(0, Math.max(1, batchSize))))
             processDelivery(id);
     }
 
@@ -250,8 +284,9 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
                     if (sub == null
                             || !Boolean.TRUE.equals(sub.getIsActive())
                             || !approved(sub.getTargetUrl())) {
+                        // Parked: the due query skips UNCONFIGURED until the destination is
+                        // enabled (toggle) or approved (startup), so it cannot starve real work.
                         entry.setDeliveryStatus("UNCONFIGURED");
-                        entry.setNextAttemptAt(LocalDateTime.now().plusMinutes(1));
                         return;
                     }
                     long start = System.nanoTime();
@@ -262,7 +297,11 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
                                 transport.post(
                                         sub.getTargetUrl(),
                                         entry.getPayload(),
-                                        calculateHmacSha256(entry.getPayload(), sub.getSecretKey()),
+                                        signatureHeaders(
+                                                sub,
+                                                entry.getPayload(),
+                                                java.time.Instant.now().getEpochSecond(),
+                                                LocalDateTime.now()),
                                         entry.getEventType(),
                                         entry.getEventId());
                         entry.setResponseStatusCode(code);
@@ -293,6 +332,37 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
         return deliveryLogRepository
                 .findAllByOrderByAttemptedAtDesc(pageable)
                 .map(webhookMapper::toDeliveryLogResponse);
+    }
+
+    /**
+     * Signing headers for one attempt. X-Signature-SHA256 (HMAC of the body) is kept for existing
+     * receivers. New receivers verify X-Webhook-Signature: "t=<unix seconds>,v1=<hex>" where v1 is
+     * HMAC-SHA256 of "<t>.<body>" and can reject stale timestamps (replay). During the grace period
+     * after a rotation a second v1 (old secret) and X-Signature-SHA256-Previous are added.
+     */
+    public java.util.Map<String, String> signatureHeaders(
+            WebhookSubscription sub, String payload, long timestamp, LocalDateTime now) {
+        var headers = new java.util.LinkedHashMap<String, String>();
+        headers.put("X-Signature-SHA256", calculateHmacSha256(payload, sub.getSecretKey()));
+        headers.put("X-Webhook-Timestamp", Long.toString(timestamp));
+        String signed = timestamp + "." + payload;
+        StringBuilder signature =
+                new StringBuilder("t=")
+                        .append(timestamp)
+                        .append(",v1=")
+                        .append(calculateHmacSha256(signed, sub.getSecretKey()));
+        if (sub.getPreviousSecretKey() != null
+                && sub.getPreviousSecretExpiresAt() != null
+                && now.isBefore(sub.getPreviousSecretExpiresAt())) {
+            signature
+                    .append(",v1=")
+                    .append(calculateHmacSha256(signed, sub.getPreviousSecretKey()));
+            headers.put(
+                    "X-Signature-SHA256-Previous",
+                    calculateHmacSha256(payload, sub.getPreviousSecretKey()));
+        }
+        headers.put("X-Webhook-Signature", signature.toString());
+        return headers;
     }
 
     @Override

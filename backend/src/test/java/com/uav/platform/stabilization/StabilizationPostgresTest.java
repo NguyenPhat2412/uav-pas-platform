@@ -240,7 +240,7 @@ class StabilizationPostgresTest {
                 "UPDATE system_configurations SET config_value='true' WHERE config_key='billing.auto_generate_invoice'");
         // An explicit synthetic test price, never a production default.
         db.update(
-                "UPDATE system_configurations SET config_value='123.45' WHERE config_key='billing.hourly_rate_vnd'");
+                "UPDATE system_configurations SET config_value='123' WHERE config_key='billing.hourly_rate_vnd'");
         missionService.complete(
                 m.getId(),
                 new com.uav.platform.modules.mission.dto.request.MissionCompletionRequest(
@@ -279,7 +279,7 @@ class StabilizationPostgresTest {
         assertEquals("ISSUED", billingJobs.findById(job.getId()).orElseThrow().getStatus());
         assertEquals(
                 0,
-                new java.math.BigDecimal("246.90")
+                new java.math.BigDecimal("246")
                         .compareTo(invoices.findAll().getFirst().getAmount()));
         assertEquals(2.0, quotas.getQuotaByUserId(customer.getId()).flightHoursUsed());
         assertThrows(

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -192,6 +193,10 @@ class SecurityAuditHardeningTest {
                                         null));
         assertEquals(HttpStatus.BAD_REQUEST, underpayEx.getStatus());
         assertEquals("INVALID_PAYMENT_AMOUNT", underpayEx.getCode());
+        // The refused transfer is kept as evidence (MISMATCH) without settling the invoice.
+        assertEquals(InvoiceStatus.PENDING, invoice.getStatus());
+        verify(paymentRepository)
+                .save(argThat((PaymentTransaction t) -> "MISMATCH".equals(t.getStatus())));
 
         // 2. Full payment succeeds with valid provider HMAC
         PaymentIpnRequest fullPay =
@@ -212,14 +217,15 @@ class SecurityAuditHardeningTest {
 
         // 3. Exact provider replay returns the same transaction without a second write.
         var captured = ArgumentCaptor.forClass(PaymentTransaction.class);
-        verify(paymentRepository).save(captured.capture());
-        when(paymentRepository.findByTransactionCode("TXN-OK"))
-                .thenReturn(Optional.of(captured.getValue()));
+        verify(paymentRepository, org.mockito.Mockito.times(2)).save(captured.capture());
+        PaymentTransaction settled = captured.getAllValues().get(1);
+        assertEquals("SUCCESS", settled.getStatus());
+        when(paymentRepository.findByTransactionCode("TXN-OK")).thenReturn(Optional.of(settled));
         var replay =
                 billingService.processPaymentIpn(
                         fullPay, billingService.computeIpnSignature(fullPay), null);
         assertEquals(res, replay);
-        verify(paymentRepository, org.mockito.Mockito.times(1)).save(any());
+        verify(paymentRepository, org.mockito.Mockito.times(2)).save(any());
     }
 
     private void configureProvider(BillingServiceImpl service) {

@@ -13,6 +13,10 @@ public interface UavTelemetryRepository
         extends JpaRepository<UavTelemetry, Long>, JpaSpecificationExecutor<UavTelemetry> {
     Optional<UavTelemetry> findFirstByUavIdOrderByRecordedAtDesc(Long uavId);
 
+    /** Newest sample reported for one mission; never another mission flown by the same UAV. */
+    Optional<UavTelemetry> findFirstByUavIdAndMissionIdOrderByRecordedAtDesc(
+            Long uavId, Long missionId);
+
     /** The newest sample of every UAV that has reported at least once. */
     @Query(
             value =

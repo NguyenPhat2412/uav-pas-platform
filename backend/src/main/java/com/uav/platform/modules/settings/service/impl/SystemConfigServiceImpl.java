@@ -87,15 +87,17 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     private void validateRate(String value) {
         try {
             var rate = new java.math.BigDecimal(value);
+            // VND has no minor unit: whole đồng only, so invoices and bank transfers can match.
             // NUMERIC(14,2) must represent the largest supported planned duration (24 hours).
             if (rate.signum() <= 0
-                    || rate.scale() > 2
+                    || rate.stripTrailingZeros().scale() > 0
                     || rate.multiply(java.math.BigDecimal.valueOf(24))
                                     .compareTo(new java.math.BigDecimal("999999999999.99"))
                             > 0) throw new NumberFormatException();
         } catch (NumberFormatException ex) {
             throw SystemException.badRequest(
-                    "Configure an approved positive VND hourly price (up to two decimals) before enabling billing");
+                    "Giá theo giờ phải là số đồng nguyên dương (không có phần lẻ) trước khi bật tính phí.",
+                    "BILLING_HOURLY_RATE_INVALID");
         }
     }
 

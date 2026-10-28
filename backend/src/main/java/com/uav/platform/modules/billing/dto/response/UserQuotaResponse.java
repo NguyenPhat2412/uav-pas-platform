@@ -15,4 +15,5 @@ public record UserQuotaResponse(
         Integer concurrentUavsUsed,
         Integer concurrentUavsLimit,
         LocalDateTime cycleStart,
-        LocalDateTime cycleEnd) {}
+        LocalDateTime cycleEnd,
+        LocalDateTime planPaidUntil) {}

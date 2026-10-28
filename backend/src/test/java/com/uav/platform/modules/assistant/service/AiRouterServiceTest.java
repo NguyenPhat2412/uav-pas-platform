@@ -240,4 +240,46 @@ class AiRouterServiceTest {
                 body.toString(java.nio.charset.StandardCharsets.UTF_8).contains("KHÁCH HÀNG"),
                 "customer audience note sent");
     }
+
+    private AiRouterSettingsRequest at(String baseUrl, String key, boolean enabled) {
+        return new AiRouterSettingsRequest(
+                baseUrl, key, "Nhanh", "cc/m", "Chuyên sâu", null, null, enabled, 0L);
+    }
+
+    @Test
+    void changingGatewayUrlNeverReusesTheStoredKey() {
+        service.update(req("sk-abcdef9876", "cc/claude-sonnet", true), admin);
+        assertNotNull(row.getApiKeyCipher());
+        SystemException reentry =
+                assertThrows(
+                        SystemException.class,
+                        () ->
+                                service.update(
+                                        at("https://other.example.test/v1", null, true), admin));
+        assertEquals("AI_ROUTER_KEY_REENTRY_REQUIRED", reentry.getCode());
+        assertEquals("https://router.example.test/v1", row.getBaseUrl());
+
+        service.update(at("https://other.example.test/v1", null, false), admin);
+        assertNull(row.getApiKeyCipher(), "key is dropped when the host changes");
+        assertEquals("https://other.example.test/v1", row.getBaseUrl());
+
+        service.update(at("https://other.example.test/v1", "sk-new-12345", true), admin);
+        assertEquals("sk-new-12345", cipher.decrypt(row.getApiKeyCipher()));
+    }
+
+    @Test
+    void gatewayMustBeAPublicHost() {
+        for (String url :
+                List.of(
+                        "https://localhost/v1",
+                        "https://127.0.0.1/v1",
+                        "https://10.0.0.5/v1",
+                        "https://router.internal/v1")) {
+            SystemException error =
+                    assertThrows(
+                            SystemException.class,
+                            () -> service.update(at(url, null, false), admin));
+            assertEquals("AI_ROUTER_URL_UNSAFE", error.getCode(), url);
+        }
+    }
 }

@@ -23,6 +23,6 @@ public interface MissionBillingJobRepository
     Optional<MissionBillingJob> findByIdForUpdate(Long id);
 
     @Query(
-            "select j.id from MissionBillingJob j where j.status <> 'ISSUED' and j.nextAttemptAt<=:now order by j.nextAttemptAt, j.id")
+            "select j.id from MissionBillingJob j where j.status not in ('ISSUED','FAILED') and j.nextAttemptAt<=:now order by j.nextAttemptAt, j.id")
     List<Long> dueIds(LocalDateTime now, Pageable pageable);
 }

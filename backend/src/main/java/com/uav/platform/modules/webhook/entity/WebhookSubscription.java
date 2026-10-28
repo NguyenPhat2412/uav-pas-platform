@@ -32,6 +32,13 @@ public class WebhookSubscription {
     @Column(name = "events_subscribed", nullable = false, columnDefinition = "TEXT")
     private String eventsSubscribed;
 
+    /** Secret replaced by the last rotation; deliveries are also signed with it until it expires. */
+    @Column(name = "previous_secret_key", length = 120)
+    private String previousSecretKey;
+
+    @Column(name = "previous_secret_expires_at")
+    private LocalDateTime previousSecretExpiresAt;
+
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 

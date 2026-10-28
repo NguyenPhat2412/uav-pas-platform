@@ -43,7 +43,7 @@ class AiResultsTest {
         AiTask task = new AiTask();
         task.setMission(mock(Mission.class));
         task.setStatus(AiTaskStatus.PENDING);
-        when(tasks.findById(7L)).thenReturn(Optional.of(task));
+        when(tasks.findByIdForUpdate(7L)).thenReturn(Optional.of(task));
         when(tasks.save(any())).thenAnswer(i -> i.getArgument(0));
         return task;
     }

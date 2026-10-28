@@ -16,4 +16,5 @@ public record SarMissionResponse(
         Integer victimCountEstimated,
         String notes,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt) {}
+        LocalDateTime updatedAt,
+        long version) {}

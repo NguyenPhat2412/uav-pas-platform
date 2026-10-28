@@ -168,7 +168,21 @@ public class AiRouterServiceImpl implements AiRouterService {
         if (s.getVersion() != r.expectedVersion())
             throw SystemException.conflict(
                     "Settings changed meanwhile", "AI_ROUTER_SETTINGS_STALE");
+        String baseUrl = stripSlash(r.baseUrl().trim());
+        requirePublicGateway(baseUrl);
         boolean keyChanged = false;
+        boolean baseUrlChanged =
+                s.getBaseUrl() == null || !baseUrl.equals(stripSlash(s.getBaseUrl()));
+        if (baseUrlChanged && r.apiKey() == null && s.getApiKeyCipher() != null) {
+            // A stored key is only ever sent to the host it was entered for.
+            if (r.enabled())
+                throw SystemException.badRequest(
+                        "Đổi địa chỉ gateway thì phải nhập lại API key.",
+                        "AI_ROUTER_KEY_REENTRY_REQUIRED");
+            s.setApiKeyCipher(null);
+            s.setApiKeyHint(null);
+            keyChanged = true;
+        }
         if (r.apiKey() != null) {
             String key = r.apiKey().trim();
             keyChanged = true;
@@ -180,7 +194,7 @@ public class AiRouterServiceImpl implements AiRouterService {
                 s.setApiKeyHint(key.length() > 4 ? key.substring(key.length() - 4) : null);
             }
         }
-        s.setBaseUrl(stripSlash(r.baseUrl().trim()));
+        s.setBaseUrl(baseUrl);
         s.setMode1Label(r.mode1Label().trim());
         s.setMode1Model(trimToNull(r.mode1Model()));
         s.setMode2Label(r.mode2Label().trim());
@@ -392,6 +406,18 @@ public class AiRouterServiceImpl implements AiRouterService {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw SystemException.serviceUnavailable("Interrupted", "AI_ROUTER_UNREACHABLE");
+        }
+    }
+
+    /** Same public-address rules as webhook destinations: no loopback, private or internal hosts. */
+    static void requirePublicGateway(String baseUrl) {
+        try {
+            com.uav.platform.modules.webhook.transport.PublicAddressPolicy.parse(baseUrl);
+        } catch (SystemException ex) {
+            throw SystemException.badRequest(
+                            "Địa chỉ gateway phải là máy chủ HTTPS công khai.",
+                            "AI_ROUTER_URL_UNSAFE")
+                    .at("baseUrl");
         }
     }
 

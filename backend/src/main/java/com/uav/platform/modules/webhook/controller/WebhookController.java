@@ -29,30 +29,26 @@ public class WebhookController {
     private final WebhookService webhookService;
 
     @GetMapping("/status")
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<WebhookStatusResponse> status() {
         return ResponseEntity.ok(new WebhookStatusResponse(webhookService.dispatchStatus()));
     }
 
     @GetMapping("/subscriptions")
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<List<WebhookSubscriptionResponse>> listSubscriptions() {
         return ResponseEntity.ok(webhookService.listSubscriptions());
     }
 
     @PostMapping("/subscriptions")
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<WebhookSubscriptionResponse> createSubscription(
             @Valid @RequestBody WebhookSubscriptionRequest request) {
         return ResponseEntity.ok(webhookService.createSubscription(request));
     }
 
     @PutMapping("/subscriptions/{id}/toggle")
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<Void> toggleSubscription(
             @PathVariable Long id, @RequestParam boolean active) {
         webhookService.toggleSubscription(id, active);
@@ -60,24 +56,21 @@ public class WebhookController {
     }
 
     @DeleteMapping("/subscriptions/{id}")
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<Void> deleteSubscription(@PathVariable Long id) {
         webhookService.deleteSubscription(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/test-dispatch")
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<WebhookDispatchResponse> testDispatch(
             @RequestBody WebhookTestDispatchRequest request) {
         return ResponseEntity.ok(webhookService.dispatchTest(request));
     }
 
     @GetMapping("/logs")
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'USER_MANAGE') or hasAnyAuthority('ROLE_ADMIN', 'ADMIN')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<Page<WebhookDeliveryLogResponse>> listLogs(Pageable pageable) {
         return ResponseEntity.ok(webhookService.listDeliveryLogs(Pageables.from(pageable, 20)));
     }

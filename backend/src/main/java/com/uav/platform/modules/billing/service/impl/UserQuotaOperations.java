@@ -18,8 +18,10 @@ public final class UserQuotaOperations {
         entity.setFlightHoursLimit(plan.getMaxMonthlyFlightHours());
         entity.setConcurrentUavsUsed(0);
         entity.setConcurrentUavsLimit(plan.getMaxConcurrentUavs());
-        entity.setCycleStart(LocalDateTime.now());
-        entity.setCycleEnd(LocalDateTime.now().plusMonths(1));
+        // One clock read: the cycle is exactly one billing period of the plan (month or year).
+        LocalDateTime now = LocalDateTime.now();
+        entity.setCycleStart(now);
+        entity.setCycleEnd(QuotaServiceImpl.advance(now, plan.getBillingCycle()));
         return entity;
     }
 }

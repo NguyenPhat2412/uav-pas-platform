@@ -61,7 +61,12 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     public MissionResponse cancel(Long id, Authentication authentication) {
-        return lifecycle.cancel(id, authentication);
+        return lifecycle.cancel(id, null, authentication);
+    }
+
+    @Override
+    public MissionResponse cancel(Long id, String reason, Authentication authentication) {
+        return lifecycle.cancel(id, reason, authentication);
     }
 
     @Override
@@ -154,6 +159,12 @@ public class MissionServiceImpl implements MissionService {
     public MissionResponse fail(
             Long id, MissionFailureRequest request, Authentication authentication) {
         return lifecycle.fail(id, request, authentication);
+    }
+
+    @Override
+    public MissionResponse forceFail(
+            Long id, MissionForceFailRequest request, Authentication authentication) {
+        return lifecycle.forceFail(id, request, authentication);
     }
 
     @Override

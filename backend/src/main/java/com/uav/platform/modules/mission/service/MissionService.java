@@ -29,6 +29,8 @@ public interface MissionService {
 
     MissionResponse cancel(Long id, Authentication authentication);
 
+    MissionResponse cancel(Long id, String reason, Authentication authentication);
+
     MissionResponse assignStation(
             Long id, ResourceAssignmentRequest request, Authentication authentication);
 
@@ -74,6 +76,9 @@ public interface MissionService {
             Long id, MissionCompletionRequest request, Authentication authentication);
 
     MissionResponse fail(Long id, MissionFailureRequest request, Authentication authentication);
+
+    MissionResponse forceFail(
+            Long id, MissionForceFailRequest request, Authentication authentication);
 
     MissionMediaResponse attachMedia(
             Long id, MissionMediaRequest request, Authentication authentication);

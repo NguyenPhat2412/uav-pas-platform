@@ -27,6 +27,9 @@ ENV APP_VERSION=${APP_VERSION} \
     APP_GIT_COMMIT=${APP_GIT_COMMIT} \
     APP_BUILD_TIME=${APP_BUILD_TIME}
 
+# One business time zone for every LocalDateTime the backend reads or stores (see UavPlatformApplication).
+ENV TZ=Asia/Ho_Chi_Minh
+
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Duser.timezone=Asia/Ho_Chi_Minh", "-jar", "app.jar"]

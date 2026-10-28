@@ -25,6 +25,8 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 public class MissionInvoiceServiceImpl implements MissionInvoiceService {
+    /** After this many failed attempts a job is FAILED and no longer picked up by the worker. */
+    static final int MAX_ATTEMPTS = 8;
 
     @org.springframework.beans.factory.annotation.Autowired
     private com.uav.platform.modules.webhook.service.FinancialOutboxService financialEvents;
@@ -66,8 +68,9 @@ public class MissionInvoiceServiceImpl implements MissionInvoiceService {
         try {
             var rate = new BigDecimal(config.valueOrDefault("billing.hourly_rate_vnd", ""));
             return rate.signum() > 0
+                    // VND has no minor unit: whole đồng so a VietQR/IPN transfer can match exactly.
                     ? rate.multiply(BigDecimal.valueOf(hours))
-                            .setScale(2, java.math.RoundingMode.HALF_UP)
+                            .setScale(0, java.math.RoundingMode.HALF_UP)
                     : null;
         } catch (NumberFormatException ex) {
             return null;
@@ -97,6 +100,7 @@ public class MissionInvoiceServiceImpl implements MissionInvoiceService {
                         var charge =
                                 job.getAmount() != null
                                         ? job.getAmount()
+                                                .setScale(0, java.math.RoundingMode.HALF_UP)
                                         : amount(job.getPlannedHours());
                         if (charge == null)
                             throw SystemException.conflict("INVOICE_PRICE_NOT_CONFIGURED");
@@ -130,10 +134,11 @@ public class MissionInvoiceServiceImpl implements MissionInvoiceService {
                         var mission = missions.findByIdForUpdate(missionId).orElseThrow();
                         var job = jobs.findByIdForUpdate(id).orElseThrow();
                         if ("ISSUED".equals(job.getStatus())) return;
-                        job.setStatus("ERROR");
-                        job.setLastError(category);
                         job.setAttempts(job.getAttempts() + 1);
-                        job.setNextAttemptAt(LocalDateTime.now().plusMinutes(1));
+                        job.setStatus(job.getAttempts() >= MAX_ATTEMPTS ? "FAILED" : "ERROR");
+                        job.setLastError(category);
+                        job.setNextAttemptAt(
+                                LocalDateTime.now().plusMinutes(Math.min(60, job.getAttempts())));
                         mission.setBillingStatus("ERROR");
                         // Never log a provider payload, customer content, raw exception or SQL
                         // message.

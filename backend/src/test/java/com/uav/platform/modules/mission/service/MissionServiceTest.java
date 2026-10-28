@@ -66,7 +66,7 @@ class MissionServiceTest {
                         events);
         MissionResponse response = service.create(request(), "customer");
 
-        assertEquals("MSN-2026-000001", response.code());
+        assertEquals("MSN-2099-000001", response.code());
         assertEquals(MissionStatus.DRAFT, response.status());
         verify(events).save(any());
     }
@@ -105,9 +105,9 @@ class MissionServiceTest {
                 MissionType.AREA_INSPECTION,
                 "Inspect area",
                 "North sector",
-                LocalDate.of(2026, 10, 8),
-                LocalDateTime.of(2026, 10, 8, 10, 0),
-                LocalDateTime.of(2026, 10, 8, 12, 0),
+                LocalDate.of(2099, 10, 8),
+                LocalDateTime.of(2099, 10, 8, 10, 0),
+                LocalDateTime.of(2099, 10, 8, 12, 0),
                 "Hanoi",
                 null,
                 null,
