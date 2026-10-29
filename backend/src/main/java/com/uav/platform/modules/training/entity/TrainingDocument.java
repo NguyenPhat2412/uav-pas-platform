@@ -58,4 +58,8 @@ public class TrainingDocument extends BaseEntity {
 
     @Column(name = "checklist_json", nullable = false, columnDefinition = "TEXT")
     private String checklistJson = "[]";
+
+    /** READY image {@link TrainingAsset} shown as the course cover; null for none. */
+    @Column(name = "cover_asset_id")
+    private Long coverAssetId;
 }
