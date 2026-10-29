@@ -65,7 +65,7 @@ export default function AboutPage() {
                     preload
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/20"/>
-                <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 space-y-3">
+                <div className="relative z-10 mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12 space-y-3">
                     <p className="text-xs font-extrabold uppercase tracking-widest text-rose-400">
                         Trường Đại học Việt Nhật (VJU – ĐHQGHN)
                     </p>
@@ -76,7 +76,7 @@ export default function AboutPage() {
             </section>
 
             <section className="py-14 sm:py-18">
-                <div className="mx-auto w-full max-w-6xl space-y-16 px-4 sm:px-6">
+                <div className="mx-auto w-full max-w-[1380px] space-y-16 px-5 sm:px-8 lg:px-12">
                     {/* 4 Bold Metric Numbers */}
                     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                         {projectHighlights.map((item) => (

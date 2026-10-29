@@ -28,11 +28,7 @@ function Services() {
     const services = q.data ?? [];
     return <div className="flex flex-1 flex-col bg-white">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-2.5 sm:px-5">
-            <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">{t('nav.services')}</span>
-                <span className="text-xs text-slate-400">·</span>
-                <span className="text-xs font-semibold tabular-nums text-slate-500">{services.length}</span>
-            </div>
+            <span className="text-xs font-semibold tabular-nums text-slate-500">{t('services.count', {count: services.length})}</span>
             {can('MISSION_CREATE') && (
                 <Link
                     href="/customer/missions/create"
@@ -62,7 +58,7 @@ function Services() {
                                             <Icon size={22} aria-hidden="true"/>
                                         </span>
                                         <div>
-                                            <span className="block font-mono text-[10.5px] font-bold uppercase tracking-wider text-slate-400">{service.code}</span>
+                                            <span className="block font-mono text-[10.5px] font-bold text-slate-400">{service.code}</span>
                                             <h2 className="m-0 text-card-foreground text-lg leading-snug font-extrabold">
                                                 {serviceName(service)}
                                             </h2>
@@ -73,7 +69,7 @@ function Services() {
                                     {service.description || t('services.defaultDescription')}
                                 </p>
                                 {!!serviceDeliverables[service.code]?.length && <div className="grid gap-1.5">
-                                    <h3 className="m-0 text-[11px] font-bold uppercase tracking-wide text-slate-500">{t('services.deliverablesTitle')}</h3>
+                                    <h3 className="m-0 text-[11px] font-bold text-slate-500">{t('services.deliverablesTitle')}</h3>
                                     <ul className="m-0 grid list-none gap-1.5 p-0 sm:grid-cols-2">{serviceDeliverables[service.code].map(item =>
                                         <li key={item} className="flex items-start gap-2 text-xs text-slate-700">
                                             <CheckCircle2 size={14} aria-hidden="true" className="mt-0.5 shrink-0 text-primary"/>
@@ -144,14 +140,14 @@ function SpecTable({services}: { services: UavService[] }) {
     ];
     return <section aria-labelledby="service-spec-title" className="overflow-hidden border-b border-slate-200 bg-white">
         <header className="border-b border-slate-200 bg-slate-50/70 px-5 py-3.5">
-            <h2 id="service-spec-title" className="m-0 text-sm font-bold uppercase tracking-wide text-slate-800">{t('services.spec.title')}</h2>
+            <h2 id="service-spec-title" className="m-0 text-sm font-bold text-slate-800">{t('services.spec.title')}</h2>
             <p className="m-0 mt-1 text-[13px] text-slate-500">{t('services.spec.subtitle')}</p>
         </header>
         <div className="overflow-x-auto" tabIndex={0} aria-label={t('services.spec.title')}>
             <table className="w-full min-w-[640px] border-collapse text-[13px]">
                 <thead>
                 <tr className="bg-slate-50">
-                    <th scope="col" className="sticky left-0 z-10 w-44 border-b border-border bg-slate-50 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th scope="col" className="sticky left-0 z-10 w-44 border-b border-border bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-500">
                         {t('services.spec.criteria')}</th>
                     {services.map(s => <th key={s.id} scope="col" className="border-b border-border px-4 py-3 text-left font-bold text-slate-900">{serviceName(s)}</th>)}
                 </tr>

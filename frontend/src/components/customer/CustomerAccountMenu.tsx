@@ -56,12 +56,12 @@ export function CustomerAccountMenu({name}: { name: string }) {
                     </Link>
                     {canUsePortal(user?.role, 'operations') && (
                         <Link role="menuitem" href="/operations/overview" onClick={close} className={itemClass}>
-                            <Radar size={16} aria-hidden="true"/>Cổng Điều hành
+                            <Radar size={16} aria-hidden="true"/>{t('shell.portalSwitcher.operationsPortal')}
                         </Link>
                     )}
                     {canUsePortal(user?.role, 'admin') && (
                         <Link role="menuitem" href="/admin/dashboard" onClick={close} className={itemClass}>
-                            <ShieldCheck size={16} aria-hidden="true"/>Cổng Quản trị
+                            <ShieldCheck size={16} aria-hidden="true"/>{t('shell.portalSwitcher.adminPortal')}
                         </Link>
                     )}
                     <hr className="my-1.5 border-slate-100"/>

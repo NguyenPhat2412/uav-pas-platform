@@ -86,7 +86,7 @@ export default function NotificationsPage() {
                         <thead>
                         <tr>
                             {(['type', 'title', 'message', 'time', 'status'] as const).map(col =>
-                                <th key={col} className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500">
+                                <th key={col} className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold text-slate-500">
                                     {t(`opsMissions.notifications.col.${col}`)}</th>)}
                         </tr>
                         </thead>

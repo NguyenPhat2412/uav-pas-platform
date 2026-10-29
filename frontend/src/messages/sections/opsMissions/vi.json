@@ -3,35 +3,35 @@
     "errors": {
       "noteTooLong": "Nội dung không được vượt quá 500 ký tự.",
       "reloadBeforeAccept": "Hãy tải lại nhiệm vụ trước khi tiếp nhận.",
-      "completionRequired": "Vui lòng nhập ghi chú kết quả và tình trạng thiết bị khi hoàn trả.",
+      "completionRequired": "Nhập ghi chú kết quả và tình trạng thiết bị.",
       "failureReasonRequired": "Vui lòng nhập lý do không thể hoàn thành nhiệm vụ.",
       "reasonTooLong": "Lý do không được vượt quá 500 ký tự.",
       "notesTooLong": "Ghi chú không được vượt quá 2.000 ký tự.",
       "quantityInvalid": "Số lượng thiết bị phải là số nguyên lớn hơn 0.",
       "quantityExceeded": "Số lượng yêu cầu vượt quá lượng thiết bị còn khả dụng.",
       "uavRedispatchReasonRequired": "Vui lòng nhập lý do điều phối lại UAV.",
-      "currentUavUnknown": "Chưa xác định được UAV hiện tại. Hãy tải lại nhiệm vụ.",
+      "currentUavUnknown": "Chưa rõ UAV hiện tại. Hãy tải lại nhiệm vụ.",
       "replacementUavRequired": "Hãy chọn một UAV khác để thay thế.",
       "redispatchReasonRequired": "Vui lòng nhập lý do điều phối lại.",
       "reloadBeforeRedispatch": "Hãy tải lại tài nguyên trước khi điều phối.",
       "replacementInvalid": "Tài nguyên thay thế không hợp lệ."
     },
     "apiErrors": {
-      "MISSION_ACCEPTANCE_REQUIRED": "Người vận hành cần tiếp nhận phân công hiện tại trước khi sẵn sàng hoặc bắt đầu.",
-      "MISSION_ACCEPTANCE_STALE": "Phân công đã thay đổi hoặc đã được tiếp nhận. Hãy xem lại tài nguyên mới nhất trước khi xác nhận.",
-      "MISSION_HANDOVER_NOTES_REQUIRED": "Cần ghi chú kết quả và tình trạng thiết bị khi hoàn trả.",
-      "MISSION_HANDOVER_RESULT_REQUIRED": "Cần ít nhất một tệp Kết quả bàn giao hoặc Báo cáo đã tải lên và gắn thành công.",
-      "MISSION_MEDIA_LOCKED": "Nhiệm vụ đã kết thúc. Tệp chỉ còn được xem và tải xuống.",
-      "MISSION_DISPATCH_STALE": "Phân công đã thay đổi ở màn hình khác. Dữ liệu đã được tải lại; hãy kiểm tra trước khi thử lại.",
-      "MISSION_RESERVATION_STALE": "Khoản giữ đã được đổi hoặc hoàn trả. Hãy kiểm tra danh sách mới nhất.",
-      "MISSION_STATION_RESOURCES_CONFLICT": "Tài nguyên không cùng trạm. Hãy gỡ UAV và hoàn trả thiết bị thuộc trạm cũ trước khi đổi trạm.",
-      "MISSION_RESERVATION_BALANCE_CONFLICT": "Số lượng giữ trong kho không khớp với các nhiệm vụ. Chưa hoàn trả để tránh lấy nhầm phần của nhiệm vụ khác.",
-      "MISSION_DISPATCH_REQUIRED": "Tài nguyên đã được phân công. Hãy dùng chức năng điều phối lại.",
-      "OPERATOR_NOT_AVAILABLE": "Người vận hành phải có đúng vai trò, đang hoạt động và không bị khóa.",
+      "MISSION_ACCEPTANCE_REQUIRED": "Người vận hành cần nhận nhiệm vụ trước khi bắt đầu.",
+      "MISSION_ACCEPTANCE_STALE": "Phân công đã thay đổi. Kiểm tra tài nguyên rồi xác nhận lại.",
+      "MISSION_HANDOVER_NOTES_REQUIRED": "Cần ghi chú kết quả và tình trạng thiết bị.",
+      "MISSION_HANDOVER_RESULT_REQUIRED": "Cần ít nhất một tệp kết quả hoặc báo cáo đã gắn.",
+      "MISSION_MEDIA_LOCKED": "Nhiệm vụ đã kết thúc. Tệp chỉ xem và tải xuống.",
+      "MISSION_DISPATCH_STALE": "Phân công đã đổi ở nơi khác. Đã tải lại, hãy kiểm tra.",
+      "MISSION_RESERVATION_STALE": "Khoản giữ đã thay đổi. Kiểm tra danh sách mới nhất.",
+      "MISSION_STATION_RESOURCES_CONFLICT": "Tài nguyên khác trạm. Gỡ UAV và trả thiết bị trạm cũ trước.",
+      "MISSION_RESERVATION_BALANCE_CONFLICT": "Số lượng giữ không khớp kho nên chưa hoàn trả.",
+      "MISSION_DISPATCH_REQUIRED": "Tài nguyên đã được phân công. Dùng điều phối lại.",
+      "OPERATOR_NOT_AVAILABLE": "Người vận hành phải đúng vai trò, đang hoạt động và không bị khóa.",
       "MISSION_RESOURCE_UNCHANGED": "Tài nguyên và số lượng chưa thay đổi.",
-      "MISSION_UAV_ASSIGNMENT_STALE": "UAV của nhiệm vụ đã thay đổi ở nơi khác. Thông tin đã được tải lại; hãy kiểm tra UAV hiện tại trước khi thao tác.",
-      "MISSION_INVALID_STATUS": "Trạng thái nhiệm vụ đã thay đổi. Thông tin đã được tải lại, vui lòng kiểm tra trước khi thao tác.",
-      "MISSION_RESOURCE_MISSING": "Chưa đủ tài nguyên hợp lệ. Hãy kiểm tra trạm, UAV, người vận hành và thiết bị.",
+      "MISSION_UAV_ASSIGNMENT_STALE": "UAV của nhiệm vụ đã đổi. Đã tải lại, hãy kiểm tra.",
+      "MISSION_INVALID_STATUS": "Trạng thái đã đổi. Đã tải lại, hãy kiểm tra.",
+      "MISSION_RESOURCE_MISSING": "Thiếu tài nguyên. Kiểm tra trạm, UAV, người vận hành, thiết bị.",
       "UAV_NOT_AVAILABLE": "UAV này hiện không sẵn sàng.",
       "UAV_TIME_CONFLICT": "UAV đã có lịch trong khung giờ này.",
       "OPERATOR_TIME_CONFLICT": "Người vận hành đã có lịch trong khung giờ này.",
@@ -56,8 +56,12 @@
           "submit": "Xác nhận hủy"
         },
         "fail": {
-          "title": "Ghi nhận nhiệm vụ không thành công",
+          "title": "Ghi nhận không thành công",
           "submit": "Xác nhận không thành công"
+        },
+        "forceFail": {
+          "title": "Buộc kết thúc nhiệm vụ",
+          "submit": "Buộc kết thúc"
         }
       },
       "sections": {
@@ -69,13 +73,13 @@
         "operators": "người vận hành"
       },
       "errors": {
-        "loadFailed": "Không thể tải nhiệm vụ hoặc bạn chưa được cấp quyền truy cập.",
-        "forbidden": "Bạn không còn quyền thực hiện thao tác này hoặc không phải người vận hành được phân công.",
-        "actionUnconfirmed": "Chưa xác nhận được kết quả thao tác. Kiểm tra trạng thái đã tải lại trước khi thử lại.",
-        "reloadStale": "Chưa tải được trạng thái mới nhất. Hãy tải lại trạng thái trước khi tiếp tục để tránh gửi lặp thao tác.",
-        "uploadUnconfirmed": "Chưa xác nhận được việc gắn tệp. Hãy kiểm tra danh sách đã tải lại trước khi thử lại.",
+        "loadFailed": "Không tải được nhiệm vụ hoặc bạn không có quyền.",
+        "forbidden": "Bạn không có quyền hoặc không phải người được giao.",
+        "actionUnconfirmed": "Chưa xác nhận được kết quả. Kiểm tra trạng thái rồi thử lại.",
+        "reloadStale": "Chưa có trạng thái mới nhất. Tải lại trước khi tiếp tục.",
+        "uploadUnconfirmed": "Chưa xác nhận việc gắn tệp. Kiểm tra danh sách rồi thử lại.",
         "downloadFailed": "Không thể tải tệp lúc này. Vui lòng thử lại.",
-        "reloadFailed": "Chưa thể tải lại trạng thái. Vui lòng kiểm tra kết nối và thử lại.",
+        "reloadFailed": "Chưa tải lại được. Kiểm tra kết nối rồi thử lại.",
         "reloadMissionFailed": "Không thể tải lại nhiệm vụ."
       },
       "loading": "Đang tải nhiệm vụ",
@@ -97,7 +101,7 @@
         "equipmentOption": "{name} · Còn {count}",
         "quantity": "Số lượng giữ",
         "available": "Còn khả dụng: {count}",
-        "selectEquipmentFirst": "Chọn thiết bị để nhập số lượng cần giữ.",
+        "selectEquipmentFirst": "Chọn thiết bị trước.",
         "title": "Bố trí tài nguyên"
       },
       "facts": {
@@ -117,21 +121,22 @@
         "conflict": "Báo vướng mắc",
         "reject": "Từ chối",
         "cancel": "Hủy nhiệm vụ",
-        "processing": "Đang xử lý…"
+        "processing": "Đang xử lý…",
+        "forceFail": "Buộc kết thúc"
       },
       "awaitingAcceptance": {
         "title": "Chờ người vận hành tiếp nhận",
-        "body": "Người được phân công cần xem lại tài nguyên và nhận nhiệm vụ trước khi sẵn sàng. Mỗi lần điều chỉnh nguồn lực sẽ yêu cầu tiếp nhận lại."
+        "body": "Người được giao cần xem tài nguyên và nhận nhiệm vụ."
       },
       "complete": {
-        "evidenceCount": "Đã có {count} tệp kết quả/báo cáo. Cần ít nhất 1 tệp để hoàn tất.",
-        "evidenceUnknown": "Chưa kiểm tra được tệp kết quả. Hãy tải lại danh sách hoặc nhờ người có quyền xem tệp.",
+        "evidenceCount": "Có {count} tệp kết quả. Cần ít nhất 1.",
+        "evidenceUnknown": "Chưa kiểm tra được tệp kết quả. Hãy tải lại.",
         "evidenceOptional": "Loại nhiệm vụ này không bắt buộc tệp kết quả.",
-        "goToMedia": "Đến phần tệp và kết quả",
-        "warning": "Hoàn tất sẽ hoàn trả tài nguyên và khóa cập nhật tệp. Hãy kiểm tra kết quả trước khi xác nhận."
+        "goToMedia": "Đến tệp và kết quả",
+        "warning": "Hoàn tất sẽ trả tài nguyên và khóa tệp."
       },
-      "cancelWarning": "Nhiệm vụ đã hủy sẽ không thể tiếp tục. Tài nguyên được hoàn trả theo quy trình.",
-      "failWarning": "Thao tác này kết thúc nhiệm vụ và giải phóng tài nguyên đang giữ. Nhiệm vụ sẽ không thể tiếp tục; lý do được lưu trong lịch sử.",
+      "cancelWarning": "Không thể tiếp tục sau khi hủy; tài nguyên được hoàn trả.",
+      "failWarning": "Kết thúc nhiệm vụ, trả tài nguyên; lý do được lưu.",
       "note": {
         "result": "Ghi chú kết quả",
         "failureReason": "Lý do không thành công",
@@ -139,7 +144,7 @@
         "maxLength": "Tối đa {count} ký tự.",
         "incident": "Ghi chú sự cố (tùy chọn)",
         "equipmentCondition": "Tình trạng thiết bị khi hoàn trả",
-        "equipmentConditionHint": "Ghi nhận này không tự thay đổi trạng thái hỏng hoặc bảo trì của thiết bị."
+        "equipmentConditionHint": "Không tự đổi trạng thái hỏng hay bảo trì của thiết bị."
       },
       "reloadStatus": "Tải lại trạng thái",
       "sectionsFailed": "Chưa tải được: {sections}.",
@@ -152,7 +157,7 @@
       },
       "uav": {
         "title": "Điều phối lại UAV",
-        "description": "Chỉ thay hoặc gỡ UAV trước khi nhiệm vụ bắt đầu. Trạm, người vận hành và thiết bị đang giữ được bảo toàn. Trạng thái tiếp nhận của người vận hành được đặt lại; nhiệm vụ cần được kiểm tra trước khi tiếp tục.",
+        "description": "Chỉ đổi hoặc gỡ UAV trước khi bay; người vận hành cần nhận lại.",
         "replace": "Thay UAV",
         "unassign": "Gỡ UAV khỏi nhiệm vụ",
         "replaceForm": "Thay UAV của nhiệm vụ",
@@ -160,13 +165,13 @@
         "confirmReplace": "Xác nhận thay UAV",
         "confirmUnassign": "Xác nhận gỡ UAV",
         "current": "UAV hiện tại: {uav}.",
-        "replaceHint": "UAV cũ chỉ được giải phóng khi UAV thay thế hợp lệ. Nếu đang sẵn sàng, nhiệm vụ sẽ quay về bước bố trí tài nguyên để kiểm tra lại.",
-        "unassignHint": "Nhiệm vụ sẽ quay về trạng thái đã xác nhận. Cần gán UAV khác trước khi sẵn sàng.",
+        "replaceHint": "UAV cũ chỉ được giải phóng khi UAV mới hợp lệ.",
+        "unassignHint": "Nhiệm vụ về trạng thái đã xác nhận; cần gán UAV khác.",
         "replacement": "UAV thay thế",
         "replacementPlaceholder": "Chọn UAV thay thế",
-        "noReplacement": "Chưa có UAV sẵn có phù hợp với trạm. Hãy kiểm tra đội UAV hoặc hoàn tất bảo trì trước.",
+        "noReplacement": "Không có UAV sẵn sàng tại trạm này.",
         "reason": "Lý do điều phối lại",
-        "reasonHint": "Tối đa {count} ký tự. Lý do được lưu trong lịch sử nhiệm vụ.",
+        "reasonHint": "Tối đa {count} ký tự, lưu vào lịch sử.",
         "keep": "Giữ nguyên UAV"
       },
       "assigned": {
@@ -199,22 +204,23 @@
         "role": "Vai trò tệp",
         "roleOutput": "Kết quả bàn giao",
         "roleDocument": "Báo cáo / tài liệu bàn giao",
-        "roleFlightData": "Dữ liệu bay (chưa phải kết quả bàn giao)",
+        "roleFlightData": "Dữ liệu bay (không tính bàn giao)",
         "uploading": "Đang tải tệp lên…",
         "upload": "Tải tệp kết quả lên",
-        "uploadHint": "Tệp được tính cho bàn giao sau khi tải lên, xác nhận và gắn vào nhiệm vụ thành công. Dữ liệu bay không thay thế tệp kết quả/báo cáo.",
+        "uploadHint": "Chỉ tính khi đã tải lên và gắn xong; dữ liệu bay không tính.",
         "noPermission": "Bạn chưa được cấp quyền xem tệp.",
         "downloading": "Đang tải…",
         "download": "Tải xuống",
         "empty": "Chưa có tệp được đính kèm.",
-        "locked": "Nhiệm vụ đã kết thúc. Tệp được giữ lại để tra cứu."
+        "locked": "Nhiệm vụ đã kết thúc. Tệp chỉ để tra cứu."
       },
       "timeline": {
         "title": "Lịch sử nhiệm vụ",
         "noPermission": "Bạn chưa được cấp quyền xem lịch sử."
       },
       "backToList": "Danh sách nhiệm vụ",
-      "backAction": "Quay lại"
+      "backAction": "Quay lại",
+      "forceFailWarning": "Dùng khi người vận hành không thể kết thúc; lý do được ghi vào nhật ký."
     },
     "redispatch": {
       "kind": {
@@ -222,22 +228,22 @@
         "station": "trạm",
         "equipment": "thiết bị"
       },
-      "title": "Điều phối người vận hành, trạm và thiết bị",
-      "description": "Thay đổi trước khi bay cần lý do và kiểm tra lại tài nguyên. Nhiệm vụ đang sẵn sàng sẽ quay về bước bố trí; người vận hành cần xem lại phân công mới.",
+      "title": "Điều phối lại tài nguyên",
+      "description": "Đổi trước khi bay cần lý do; người vận hành cần nhận lại.",
       "changeOperator": "Đổi hoặc gỡ người vận hành",
       "changeStation": "Đổi hoặc gỡ trạm",
       "reserved": "Thiết bị đang giữ",
       "reservationLine": "Khoản giữ #{id} · Số lượng: {quantity}",
       "changeReservationLabel": "Đổi hoặc hoàn trả khoản giữ {id}",
       "changeReservation": "Đổi / hoàn trả",
-      "noReservations": "Chưa giữ thiết bị nào. Cần giữ ít nhất một thiết bị hợp lệ trước khi sẵn sàng.",
+      "noReservations": "Chưa giữ thiết bị. Cần ít nhất một trước khi sẵn sàng.",
       "released": "Các khoản đã hoàn trả ({count})",
       "releasedLine": "{name} · {quantity} · Khoản #{id} đã hoàn trả",
       "equipmentOption": "{name} · Khả dụng {count}",
       "equipmentOptionHeld": "{name} · Khả dụng {count} + {held} đang giữ",
       "formTitle": "Điều phối lại {kind}",
-      "stationHint": "Trước khi đổi trạm, hãy gỡ UAV và hoàn trả thiết bị thuộc trạm khác. Gỡ trạm yêu cầu gỡ UAV và hoàn trả toàn bộ thiết bị. Người vận hành được giữ lại.",
-      "equipmentHint": "Khoản #{id} đang giữ {quantity}. Chọn lại cùng thiết bị để đổi số lượng; hệ thống trả khoản cũ và giữ khoản mới trong cùng một lần xử lý. Bỏ trống lựa chọn để hoàn trả toàn bộ khoản này.",
+      "stationHint": "Gỡ UAV và trả thiết bị khác trạm trước khi đổi trạm.",
+      "equipmentHint": "Khoản #{id} đang giữ {quantity}. Bỏ trống để hoàn trả toàn bộ.",
       "replacementEquipment": "Thiết bị thay thế",
       "replacementOperator": "Người vận hành thay thế",
       "replacementStation": "Trạm thay thế",
@@ -248,16 +254,16 @@
       },
       "schedule": {
         "checking": "Đang kiểm tra lịch…",
-        "available": "Chưa có lịch trùng. Hệ thống sẽ kiểm tra lại khi xác nhận.",
-        "conflict": "Người vận hành không khả dụng hoặc đã có lịch trùng. Hãy chọn người khác.",
+        "available": "Không trùng lịch. Sẽ kiểm tra lại khi xác nhận.",
+        "conflict": "Người vận hành bận hoặc trùng lịch. Chọn người khác.",
         "error": "Chưa kiểm tra được lịch.",
         "retry": "Kiểm tra lịch lại"
       },
       "newQuantity": "Số lượng mới",
-      "maxQuantity": "Tối đa có thể giữ: {count}. Đây là tổng số lượng mới của khoản đang đổi.",
+      "maxQuantity": "Tối đa {count} (tổng số lượng mới).",
       "reason": "Lý do thay đổi tài nguyên",
-      "reasonHint": "Tối đa {count} ký tự. Lưu vào lịch sử nhiệm vụ.",
-      "stale": "Dữ liệu đã thay đổi. Hãy đóng biểu mẫu và mở lại để dùng phân công mới nhất.",
+      "reasonHint": "Tối đa {count} ký tự, lưu vào lịch sử.",
+      "stale": "Dữ liệu đã đổi. Đóng và mở lại biểu mẫu.",
       "keep": "Giữ nguyên tài nguyên",
       "confirmChange": "Xác nhận thay đổi tài nguyên",
       "confirmRelease": "Xác nhận hoàn trả thiết bị",
@@ -272,9 +278,9 @@
       },
       "authenticating": "Đang xác thực",
       "openDispatch": "Mở điều phối",
-      "partialError": "Không tải được toàn bộ số liệu. Các module còn lại vẫn khả dụng.",
+      "partialError": "Một số số liệu chưa tải được.",
       "summary": {
-        "label": "Tóm tắt toàn bộ dữ liệu được cấp quyền",
+        "label": "Tóm tắt",
         "users": "Người dùng",
         "stations": "Trạm",
         "availableUavs": "UAV sẵn sàng",
@@ -282,26 +288,24 @@
         "auditEvents": "Sự kiện nhật ký"
       },
       "missions": {
-        "title": "Tổng quan nhiệm vụ",
-        "subtitle": "Trạng thái quy trình hiện tại",
+        "title": "Nhiệm vụ",
         "openList": "Mở danh sách",
         "total": "Tổng nhiệm vụ",
         "inProgress": "Đang xử lý",
         "completed": "Hoàn tất",
         "failed": "Thất bại",
-        "pending": "Đang chờ xác nhận:",
+        "pending": "Chờ xác nhận:",
         "ready": "Sẵn sàng:"
       },
       "fleet": {
-        "title": "Trạng thái đội UAV",
-        "subtitle": "Chọn một UAV để xem telemetry mới nhất",
+        "title": "Đội UAV",
         "viewAll": "Xem tất cả",
         "asset": "Tài sản",
         "status": "Trạng thái",
         "station": "Trạm",
         "manufacturer": "Nhà sản xuất",
         "actions": "Thao tác",
-        "empty": "Chưa có UAV hoặc chưa được cấp quyền xem.",
+        "empty": "Chưa có UAV hoặc không có quyền xem.",
         "unassigned": "Chưa gán",
         "details": "Chi tiết"
       },
@@ -313,19 +317,18 @@
         "altitude": "Độ cao",
         "speed": "Vận tốc",
         "liveFix": "GPS trực tiếp {lat}, {lng} · {seconds} giây trước",
-        "staleFix": "Gói cuối {seconds} giây trước tại {lat}, {lng} — mất liên kết",
+        "staleFix": "Gói cuối {seconds} giây trước tại {lat}, {lng} · mất liên kết",
         "liveCount": "Đang gửi telemetry",
         "available": "Sẵn sàng",
         "flying": "Đang bay",
         "assigned": "Đã phân công",
         "maintenance": "Bảo trì",
         "lowBattery": "Pin yếu (≤25%)",
-        "openSar": "Mở buồng lái AI & SAR",
-        "openFleet": "Mở bảng đội UAV"
+        "openSar": "Mở tác chiến SAR",
+        "openFleet": "Mở đội UAV"
       },
       "stations": {
-        "title": "Hoạt động trạm",
-        "subtitle": "Danh sách trạm hiện tại",
+        "title": "Trạm",
         "manage": "Quản lý trạm",
         "station": "Trạm",
         "status": "Trạng thái",
@@ -333,16 +336,15 @@
         "coordinates": "Tọa độ"
       },
       "quickActions": {
-        "title": "Thao tác nhanh",
-        "subtitle": "Truy cập nhanh"
+        "title": "Thao tác nhanh"
       }
     },
     "notifications": {
       "title": "Thông báo",
       "center": "Trung tâm thông báo",
-      "markAll": "Đánh dấu đã đọc tất cả ({count})",
+      "markAll": "Đọc tất cả ({count})",
       "searchLabel": "Tìm thông báo",
-      "searchPlaceholder": "Tìm kiếm nội dung thông báo...",
+      "searchPlaceholder": "Tìm thông báo…",
       "filter": {
         "ALL": "Tất cả",
         "ALERT": "Khẩn cấp",
@@ -352,8 +354,8 @@
       },
       "loading": "Đang tải thông báo…",
       "retry": "Thử lại",
-      "emptyTitle": "Không tìm thấy thông báo phù hợp",
-      "emptyHint": "Các thông báo mới sẽ tự động hiển thị tại đây khi phát sinh sự kiện.",
+      "emptyTitle": "Không có thông báo phù hợp",
+      "emptyHint": "Thông báo mới sẽ hiện tại đây.",
       "bell": {
         "newCount": "{count} mới",
         "readAll": "Đọc tất cả",

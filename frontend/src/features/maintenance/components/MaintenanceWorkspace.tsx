@@ -21,7 +21,7 @@ import {useI18n} from '@/contexts/I18nContext';
 
 const tableWrap = 'overflow-x-auto rounded-panel border border-border bg-card';
 const tableClass = 'w-full min-w-[880px] border-separate border-spacing-0 text-sm';
-const th = 'sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold uppercase tracking-wider text-slate-500';
+const th = 'sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold text-slate-500';
 const td = 'px-4 py-3 align-middle text-slate-700';
 
 export function MaintenanceWorkspace() {

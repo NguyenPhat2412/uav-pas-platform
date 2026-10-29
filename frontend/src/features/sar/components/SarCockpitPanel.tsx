@@ -126,9 +126,9 @@ function MissionCockpit({mission, missions, onChoose, canOperate}: {
             <div className="min-w-0">
                 <div className="mb-1.5 flex flex-wrap items-center gap-2">
                     {(mission.priority === 'HIGH' || mission.priority === 'URGENT') &&
-                        <span className="flex items-center gap-1.5 rounded-badge border border-rose-200 bg-uav-red-light px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary">
+                        <span className="flex items-center gap-1.5 rounded-badge border border-rose-200 bg-uav-red-light px-2.5 py-0.5 text-[11px] font-bold text-primary">
                             <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true"/>{t('opsShared.sar.cockpit.urgent')}</span>}
-                    <span className={cn('rounded-badge border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider', sarStatusTone[mission.sarStatus])}>
+                    <span className={cn('rounded-badge border px-2.5 py-0.5 text-[11px] font-bold', sarStatusTone[mission.sarStatus])}>
                         {t(`opsShared.sar.status.${mission.sarStatus}`)}</span>
                     {missions.length > 1 ? <label className="flex items-center gap-1.5 text-xs text-slate-500">
                         <span className="sr-only">{t('opsShared.sar.cockpit.chooseMission')}</span>

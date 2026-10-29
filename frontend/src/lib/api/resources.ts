@@ -46,6 +46,13 @@ export const operationsService = {
         latitude?: number;
         longitude?: number
     }) => apiClient.post<Station>(API_ROUTES.stations.list, data),
+    updateStation: (id: number, data: {
+        code: string;
+        name: string;
+        address?: string;
+        latitude?: number;
+        longitude?: number
+    }) => apiClient.put<Station>(API_ROUTES.stations.detail(id), data),
     createUav: (data: {
         model: string;
         serialNumber: string;

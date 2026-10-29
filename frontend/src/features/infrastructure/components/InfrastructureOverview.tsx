@@ -45,7 +45,6 @@ export function InfrastructureOverview() {
     ];
 
     return <div className="space-y-4">
-        <p className="m-0 text-[13px] text-slate-600">{t('adminInfra.overview.intro')}</p>
         <div className="grid gap-px border border-slate-200 bg-slate-200 sm:grid-cols-2 xl:grid-cols-3">
             {cards.map(card => {
                 const Icon = card.icon;
@@ -62,8 +61,7 @@ export function InfrastructureOverview() {
             })}
         </div>
 
-        <Panel id="runbook" title={t('adminInfra.overview.runbookTitle')} icon={Terminal} footer={t('adminInfra.overview.runbookFooter')}>
-            <p className="m-0 px-4 pt-3 text-[13px] text-slate-600">{t('adminInfra.overview.runbookIntro')}</p>
+        <Panel id="runbook" title={t('adminInfra.overview.runbookTitle')} icon={Terminal}>
             <ul className="m-0 divide-y divide-slate-100 px-4 py-2">
                 {runbook.map(item => <li key={item} className="grid gap-1 py-2.5 text-[13px] sm:grid-cols-[220px_minmax(0,1fr)]">
                     <strong className="text-slate-900">{t(`adminInfra.overview.runbook.${item}.title`)}</strong>

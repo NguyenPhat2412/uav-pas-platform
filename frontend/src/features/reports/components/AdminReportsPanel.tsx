@@ -51,15 +51,12 @@ function AdminReportsContent() {
 
     return (
         <div className="space-y-6">
-            {/* Top Banner with CSV Export */}
-            <div
-                className="flex flex-col gap-4 rounded-panel border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-end">
-
+            <div className="flex justify-end">
                 <button
                     type="button"
                     onClick={handleExportCsv}
                     disabled={isExporting}
-                    className="flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-control bg-primary px-4 py-2.5 text-xs font-bold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flex min-h-[36px] shrink-0 items-center justify-center gap-2 rounded-control bg-primary px-4 py-2 text-xs font-bold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     <FileSpreadsheet size={16}/>
                     {isExporting ? t('admin.reports.exporting') : t('admin.reports.exportCsv')}
@@ -126,7 +123,7 @@ function AdminReportsContent() {
 
             <MissionCharts/>
 
-            <p className="text-sm text-slate-500">{t('admin.reports.footer', {count: metrics.totalStationsCount})}</p>
+            <p className="text-xs text-slate-500">{t('admin.reports.footer', {count: metrics.totalStationsCount})}</p>
         </div>
     );
 }

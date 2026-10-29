@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
 import type {Control, Map as LeafletMap} from 'leaflet';
 import {fetchPublicSiteInfo} from '@/features/settings/api/platformSettings';
@@ -84,6 +84,35 @@ export function parsePlatformMapConfig(settings?: Record<string, string> | null)
     };
 }
 
+const MAP_PREFS_KEY = 'uav_map_prefs';
+
+interface MapPrefs {
+    basemap?: Basemap;
+    showStationRadius?: boolean;
+}
+
+function readMapPrefs(): MapPrefs {
+    try {
+        const raw: unknown = JSON.parse(localStorage.getItem(MAP_PREFS_KEY) ?? '{}');
+        if (!raw || typeof raw !== 'object') return {};
+        const {basemap, showStationRadius} = raw as Record<string, unknown>;
+        return {
+            basemap: typeof basemap === 'string' && isBasemap(basemap) ? basemap : undefined,
+            showStationRadius: typeof showStationRadius === 'boolean' ? showStationRadius : undefined,
+        };
+    } catch {
+        return {};
+    }
+}
+
+function writeMapPrefs(change: MapPrefs) {
+    try {
+        localStorage.setItem(MAP_PREFS_KEY, JSON.stringify({...readMapPrefs(), ...change}));
+    } catch {
+        // storage unavailable: the choice still applies for this visit
+    }
+}
+
 export function useMapConfig() {
     const siteInfoQuery = useQuery({
         queryKey: ['public', 'site-info'],
@@ -96,27 +125,36 @@ export function useMapConfig() {
         [siteInfoQuery.data?.settings],
     );
 
+    // A user's own basemap and station-range choice is kept in this browser and wins over the
+    // system default from Settings; with no choice saved, the system default applies.
     const [userBasemap, setUserBasemap] = useState<Basemap | null>(null);
     const [userShowStationRadius, setUserShowStationRadius] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        const saved = readMapPrefs();
+        if (saved.basemap) setUserBasemap(saved.basemap);
+        if (saved.showStationRadius !== undefined) setUserShowStationRadius(saved.showStationRadius);
+    }, []);
 
     const basemap: Basemap = userBasemap ?? config.defaultBasemap;
     const showStationRadius: boolean = userShowStationRadius ?? config.showStationRadius;
 
-    useEffect(() => {
-        setUserBasemap(null);
-    }, [config.defaultBasemap]);
-
-    useEffect(() => {
-        setUserShowStationRadius(null);
-    }, [config.showStationRadius]);
+    const setBasemap = useCallback((next: Basemap) => {
+        setUserBasemap(next);
+        writeMapPrefs({basemap: next});
+    }, []);
+    const setShowStationRadius = useCallback((next: boolean) => {
+        setUserShowStationRadius(next);
+        writeMapPrefs({showStationRadius: next});
+    }, []);
 
     return {
         config,
         basemap,
-        setBasemap: setUserBasemap,
+        setBasemap,
         tileSpec: MAP_BASEMAPS[basemap],
         showStationRadius,
-        setShowStationRadius: setUserShowStationRadius,
+        setShowStationRadius,
     };
 }
 

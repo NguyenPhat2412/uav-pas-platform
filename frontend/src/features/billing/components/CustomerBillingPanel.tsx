@@ -81,7 +81,7 @@ export default function CustomerBillingPage() {
                             </div>
                             <div>
                                 <div className="flex justify-between items-center mb-3">
-                                    <span className="inline-flex w-fit border border-rose-200 bg-uav-red-light px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary">
+                                    <span className="inline-flex w-fit border border-rose-200 bg-uav-red-light px-2 py-0.5 text-[11px] font-bold text-primary">
                                         {t('billingPage.currentPlan')}
                                     </span>
                                     <span className="text-[11px] text-slate-500">
@@ -106,7 +106,7 @@ export default function CustomerBillingPage() {
                         <div className="flex min-h-[200px] flex-col justify-between border-t-2 border-t-uav-blue bg-white p-5">
                             <div>
                                 <div className="flex justify-between items-center mb-2">
-                                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t('billingPage.hoursUsed')}</span>
+                                    <span className="text-[11px] font-bold text-slate-500">{t('billingPage.hoursUsed')}</span>
                                     <span className="text-xs font-bold text-primary tabular-nums">
                                         {t('billingPage.percentUsed', {percent: usagePercent})}
                                     </span>
@@ -133,7 +133,7 @@ export default function CustomerBillingPage() {
                         {/* Card 3: AI & Features Access */}
                         <div className="flex min-h-[200px] flex-col justify-between border-t-2 border-t-amber-500 bg-white p-5">
                             <div>
-                                <span className="block mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                <span className="block mb-3 text-[11px] font-bold text-slate-500">
                                     {t('billingPage.features')}
                                 </span>
                                 <ul className="list-none p-0 m-0 flex flex-col gap-2.5 text-xs">
@@ -170,7 +170,7 @@ export default function CustomerBillingPage() {
                 )}
                 <section aria-labelledby="available-plans-title" className="border-b border-slate-200 bg-white">
                     <header className="flex items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-5 py-3.5">
-                        <h2 id="available-plans-title" className="m-0 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-800">
+                        <h2 id="available-plans-title" className="m-0 flex items-center gap-2 text-sm font-bold text-slate-800">
                             <UavIcon size={18} aria-hidden="true" className="text-primary"/>{t('billingPage.plans')}
                         </h2>
                     </header>
@@ -197,7 +197,7 @@ export default function CustomerBillingPage() {
                 {/* Invoices Table */}
                 <div data-testid="my-invoices" className="flex-1 overflow-hidden bg-white">
                     <div className="border-b border-slate-200 bg-slate-50/70 px-5 py-3.5 flex justify-between items-center gap-3 flex-wrap">
-                        <h2 className="m-0 text-sm font-bold uppercase tracking-wide text-slate-800 flex items-center gap-2">
+                        <h2 className="m-0 text-sm font-bold text-slate-800 flex items-center gap-2">
                             <FileText size={17} className="text-slate-500"/> {t('billingPage.invoiceHistory')}
                         </h2>
                         <span className="text-xs text-slate-500 font-semibold whitespace-nowrap shrink-0">
@@ -208,7 +208,7 @@ export default function CustomerBillingPage() {
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[760px] border-collapse text-left text-[13px]">
                             <thead>
-                            <tr className="bg-slate-50 border-b border-border text-slate-500 text-[11px] uppercase tracking-wider">
+                            <tr className="bg-slate-50 border-b border-border text-slate-500 text-[11px]">
                                 <th className="px-5 py-3 whitespace-nowrap font-bold">{t('billingPage.invoiceNo')}</th>
                                 <th className="px-5 py-3 whitespace-nowrap font-bold">{t('billingPage.description')}</th>
                                 <th className="px-5 py-3 whitespace-nowrap font-bold">{t('billingPage.issuedOn')}</th>

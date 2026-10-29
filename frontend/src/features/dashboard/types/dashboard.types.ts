@@ -56,6 +56,8 @@ export interface FleetSummary {
     maintenanceUavs: number;
 }
 
+export type TrendViewMode = 'bars' | 'area' | 'matrix';
+
 export type ChartSeries = {
     key: string;
     label: string;
@@ -70,4 +72,6 @@ export type MapPoint = {
     longitude: number;
     color: string;
     label: string;
+    statusKey?: string;
+    pulse?: boolean;
 };

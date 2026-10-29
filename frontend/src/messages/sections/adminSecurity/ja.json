@@ -31,73 +31,72 @@
       "criticalCount": "重大 {count} 件",
       "codes": {
         "OTP_DEV_PREVIEW_ENABLED": {
-          "title": "OTPの開発用プレビューが有効です",
-          "fix": "OTPコードがAPI応答とログに出力され、誰でもメール認証や2FAを突破できます。サーバーで APP_AUTH_OTP_DEV_PREVIEW=false に設定し、バックエンドを再起動してください。"
+          "title": "OTPプレビューが有効",
+          "fix": "OTPがAPIとログに漏れます。APP_AUTH_OTP_DEV_PREVIEW=false に設定。"
         },
         "COOKIE_SAMESITE_NONE_INSECURE": {
-          "title": "SameSite=None のCookieに Secure がありません",
-          "fix": "ブラウザがセッションCookieを拒否します。APP_COOKIE_SECURE=true（HTTPS必須）にするか、APP_COOKIE_SAME_SITE を Lax に戻してください。"
+          "title": "SameSite=None に Secure なし",
+          "fix": "Cookieが拒否されます。APP_COOKIE_SECURE=true または SameSite=Lax に。"
         },
         "COOKIE_NOT_SECURE": {
-          "title": "セッションCookieに Secure 属性がありません",
-          "fix": "ログインCookieが暗号化されないHTTPで送信される可能性があります。本番サーバーでは APP_COOKIE_SECURE=true に設定してください。"
+          "title": "CookieにSecureなし",
+          "fix": "CookieがHTTPで送信され得ます。APP_COOKIE_SECURE=true に設定。"
         },
         "CORS_WILDCARD": {
-          "title": "CORSがすべてのオリジン（*）を許可しています",
-          "fix": "任意のWebサイトがユーザーのセッションでAPIを呼び出せます。APP_CORS_ALLOWED_ORIGINS にフロントエンドのドメインを正確に列挙してください。"
+          "title": "CORSが全オリジン（*）を許可",
+          "fix": "APP_CORS_ALLOWED_ORIGINS にドメインを正確に列挙。"
         },
         "CORS_LOCALHOST": {
-          "title": "CORSが localhost を許可したままです",
-          "fix": "localhost は開発専用です。本番サーバーでは APP_CORS_ALLOWED_ORIGINS から削除してください。"
+          "title": "CORSが localhost を許可",
+          "fix": "APP_CORS_ALLOWED_ORIGINS から localhost を削除。"
         },
         "CORS_PLAIN_HTTP": {
-          "title": "CORSが暗号化されていないHTTPオリジンを許可しています",
-          "fix": "APP_CORS_ALLOWED_ORIGINS では https:// のオリジンのみを許可してください。"
+          "title": "CORSがHTTPオリジンを許可",
+          "fix": "APP_CORS_ALLOWED_ORIGINS は https:// のみ。"
         },
         "MAIL_DISABLED": {
-          "title": "メール送信が無効です",
-          "fix": "OTPメール（アカウント確認、メール2FA、パスワード再設定）が届きません。SMTPを設定し APP_MAIL_ENABLED=true にしてください。"
+          "title": "メール送信が無効",
+          "fix": "OTPメールが届きません。SMTPを設定し APP_MAIL_ENABLED=true に。"
         },
         "ACCESS_TOKEN_LONG_LIVED": {
-          "title": "アクセストークンの有効期限が24時間を超えています",
-          "fix": "漏洩したトークンが長く使えてしまいます。APP_JWT_EXPIRATION_MS を短く（例：15〜60分）してください。ログイン状態はリフレッシュトークンで維持されます。"
+          "title": "アクセストークンが24時間超",
+          "fix": "APP_JWT_EXPIRATION_MS を15〜60分に短縮。"
         },
         "REFRESH_TOKEN_LONG_LIVED": {
-          "title": "リフレッシュトークンの有効期限が30日を超えています",
-          "fix": "古いセッションが早く失効するよう app.jwt.refresh-expiration-ms の短縮を検討してください。"
+          "title": "リフレッシュトークンが30日超",
+          "fix": "app.jwt.refresh-expiration-ms の短縮を検討。"
         },
         "NOT_PRODUCTION_PROFILE": {
-          "title": "本番環境として認識されていません",
-          "fix": "prod プロファイル、Cookieドメイン、公開 https のCORSオリジンのいずれもありません。本番サーバーであれば deploy/.env.production を確認してください。"
+          "title": "本番環境と未認識",
+          "fix": "本番なら deploy/.env.production を確認。"
         },
         "SECRET_MISSING": {
-          "title": "必須のシークレットが未設定です",
-          "fix": "deploy/.env.production に十分な長さのランダム値を設定し、サービスを再起動してください。"
+          "title": "必須シークレットが未設定",
+          "fix": "長いランダム値を設定して再起動。"
         },
         "SECRET_KNOWN_DEFAULT": {
-          "title": "シークレットが既定値またはサンプル値です",
-          "fix": "この値はソースコードやサンプルファイルに含まれるため、漏洩済みとみなしてください。直ちに新しいランダム値に置き換えてください。"
+          "title": "シークレットが既定値",
+          "fix": "漏洩扱い。新しいランダム値にすぐ置換。"
         },
         "SECRET_TOO_SHORT": {
-          "title": "シークレットが最小長より短いです",
-          "fix": "より長い値を生成してください。例：openssl rand -base64 48"
+          "title": "シークレットが短すぎる",
+          "fix": "生成：openssl rand -base64 48"
         }
       }
     },
     "sessions": {
       "revokeAll": {
         "title": "全ユーザーをログアウト",
-        "description": "あなた以外のすべてのアカウントのセッション（リフレッシュトークンとアクセストークン）を失効させます。侵害が疑われる場合や鍵の変更後に使用してください。",
+        "description": "あなた以外の全セッションを失効。",
         "action": "全員をログアウト"
       },
-      "mechanism": "失効は即時に反映されます。リフレッシュトークンが無効になり、失効時点より前に発行されたアクセストークンはすべて拒否されます。ユーザーは再ログインするだけです。",
       "filters": {
         "search": "アカウントを検索",
         "searchPlaceholder": "ユーザー名、メール、氏名",
         "searchButton": "検索",
         "role": "ロール",
         "allRoles": "すべてのロール",
-        "activeOnly": "有効なセッションのみ"
+        "activeOnly": "有効のみ"
       },
       "empty": "該当するアカウントはありません。",
       "columns": {
@@ -123,30 +122,29 @@
       },
       "twoFactorOff": "未設定",
       "revokedBy": "{time}（{name}）",
-      "selfWarning": "あなた自身のアカウントです。ログアウトされます。",
+      "selfWarning": "自分のアカウント：ログアウトされます。",
       "actions": {
         "revoke": "セッションを失効",
         "reset2fa": "2FAをリセット"
       },
       "confirm": {
-        "revokeUser": "{name} のすべてのセッションを失効させますか？すべての端末でログアウトされます。",
-        "revokeSelf": "あなた自身のアカウントです。失効させると、この画面を含むすべての端末で直ちにログアウトされます。続行しますか？",
-        "revokeAll": "他のすべてのユーザーをすべての端末でログアウトさせますか？元に戻せません。あなたのセッションは維持されます。",
-        "reset2fa": "{name} の二要素認証を無効にし、認証アプリの鍵を削除しますか？本人確認（例：スマートフォン紛失）を済ませてから実行してください。",
-        "reset2faSelf": "あなた自身のアカウントです。",
-        "reset2faRevoke": "{name} をすべての端末からログアウトさせますか？（推奨：OK。既存のセッションを残す場合はキャンセル）"
+        "revokeUser": "{name} の全セッションを失効しますか？",
+        "revokeSelf": "自分のアカウントです。すぐログアウトされます。続行しますか？",
+        "revokeAll": "他の全ユーザーをログアウトしますか？元に戻せません。",
+        "reset2fa": "{name} の2FAを無効にしますか？本人確認後に実行。",
+        "reset2faSelf": "自分のアカウントです。",
+        "reset2faRevoke": "{name} を全端末からもログアウトしますか？"
       },
       "done": {
         "REVOKE_USER_SESSIONS": "セッションを失効させました。",
-        "REVOKE_ALL_SESSIONS": "{count} 件のアカウントをログアウトしました（リフレッシュトークン {tokens} 件を失効）。",
-        "RESET_2FA": "2FAをリセットしました。ユーザーはパスワードでログインし、2FAを再設定できます。",
-        "selfSignedOut": "あなたのセッションが失効したため、ログイン画面に移動します。"
-      },
-      "footnote": "各アカウントのリフレッシュセッションは最大1つです。新しい端末でログインすると古いセッションは置き換えられます。すべての操作は監査ログに記録されます。"
+        "REVOKE_ALL_SESSIONS": "{count} 件をログアウト（トークン {tokens} 件）。",
+        "RESET_2FA": "2FAをリセットしました。",
+        "selfSignedOut": "あなたのセッションは失効しました。"
+      }
     },
     "policy": {
-      "readOnlyNote": "稼働中のサーバー設定から取得した読み取り専用の値です。変更するには VPS 上の deploy/.env.production を編集し、バックエンドを再起動してください。",
-      "allGood": "ログイン設定に問題は見つかりませんでした。",
+      "readOnlyNote": "読み取り専用。deploy/.env.production を編集して再起動。",
+      "allGood": "問題なし。",
       "groups": {
         "tokens": "ログイントークン",
         "otp": "OTPと2FA",
@@ -159,24 +157,24 @@
         "accessToken": "アクセストークンの有効期限",
         "refreshToken": "リフレッシュトークンの有効期限",
         "otpTtl": "OTPコードの有効期限",
-        "totpIssuer": "認証アプリに表示される名前",
-        "otpDevPreview": "OTPプレビュー（開発用）",
+        "totpIssuer": "認証アプリ表示名",
+        "otpDevPreview": "OTPプレビュー",
         "cookieSecure": "Cookie Secure",
         "cookieSameSite": "Cookie SameSite",
         "cookieDomain": "Cookieドメイン",
         "mailEnabled": "メール送信",
         "corsOrigins": "許可されたオリジン",
-        "profiles": "有効なSpringプロファイル",
-        "productionLike": "本番環境として認識"
+        "profiles": "Springプロファイル",
+        "productionLike": "本番環境"
       },
       "defaultProfile": "default"
     },
     "secrets": {
       "notice": {
-        "title": "シークレットはWeb上で表示・編集されません",
-        "body": "このページは各シークレットが設定済みか、十分な長さか、既定値でないかのみを示し、値は一切表示しません。シークレットは VPS 上の deploy/.env.production で管理されます。"
+        "title": "シークレットは表示されません",
+        "body": "VPS上の deploy/.env.production で管理。"
       },
-      "allGood": "すべてのシークレットが要件を満たしています。",
+      "allGood": "すべてOK。",
       "columns": {
         "secret": "シークレット",
         "status": "状態",
@@ -195,9 +193,9 @@
         "spring_datasource_password": "データベースのパスワード"
       },
       "notes": {
-        "DERIVED_FROM_JWT_SECRET": "未設定：JWT署名鍵から派生しています。",
-        "REQUIRED_WHEN_BILLING_PROVIDER_ENABLED": "決済プロバイダーが有効な場合のみ必須です。",
-        "REQUIRED_WHEN_SMTP_AUTH_ENABLED": "SMTP認証付きのメール送信が有効な場合のみ必須です。"
+        "DERIVED_FROM_JWT_SECRET": "未設定：JWT鍵から派生。",
+        "REQUIRED_WHEN_BILLING_PROVIDER_ENABLED": "決済有効時のみ必須。",
+        "REQUIRED_WHEN_SMTP_AUTH_ENABLED": "SMTP認証有効時のみ必須。"
       },
       "status": {
         "OK": "OK",
@@ -214,38 +212,38 @@
       "defaultNo": "いいえ",
       "aiKey": {
         "title": "AIプロバイダーのAPIキー",
-        "configured": "設定済み（データベースに暗号化して保存）。",
-        "configuredAt": "設定済み。{time} に {name} が更新。",
-        "missing": "未設定です。AIアシスタントは動作しません。",
+        "configured": "設定済み（暗号化）。",
+        "configuredAt": "設定済み：{time}（{name}）。",
+        "missing": "未設定。AIアシスタント停止中。",
         "manage": "AIルーターで管理"
       },
       "rotation": {
-        "title": "シークレットのローテーション手順",
-        "general": "VPS上で deploy/.env.production を編集し、docker compose を再実行してサービスを再起動した後、システムヘルスを確認してください。新しい値の生成：openssl rand -base64 48",
+        "title": "シークレットのローテーション",
+        "general": "deploy/.env.production を編集し docker compose を再実行。生成：openssl rand -base64 48",
         "items": {
           "jwt": {
-            "title": "JWT署名鍵（APP_JWT_SECRET）",
-            "body": "変更するとすべてのセッションが無効になり、ユーザーは再ログインが必要です。APP_AI_ROUTER_SECRET が未設定の場合、AIキーはJWT鍵から派生しているため、変更後にAIのAPIキーを再入力してください。"
+            "title": "JWT鍵（APP_JWT_SECRET）",
+            "body": "全セッション失効。APP_AI_ROUTER_SECRET 未設定ならAIキー再入力。"
           },
           "billingIpn": {
             "title": "IPNシークレット（APP_BILLING_IPN_SECRET）",
-            "body": "決済プロバイダーとサーバーで同時に更新してください。そうしないと決済通知が拒否されます。"
+            "body": "決済側とサーバーで同時に更新。"
           },
           "aiRouter": {
-            "title": "AIルーター暗号化鍵（APP_AI_ROUTER_SECRET）",
-            "body": "変更すると保存済みのAI APIキーを復号できなくなります。再起動後、AIルーター画面でAPIキーを再入力してください。"
+            "title": "AIルーター鍵（APP_AI_ROUTER_SECRET）",
+            "body": "変更後、AIルーターでAPIキーを再入力。"
           },
           "storage": {
             "title": "ストレージキー（APP_STORAGE_ACCESS_KEY / APP_STORAGE_SECRET_KEY）",
-            "body": "MinIO/R2/S3 で新しいキーペアを作成し、サーバーを更新してアップロードを確認した後、古いキーペアを削除してください。"
+            "body": "新キー作成→更新→アップロード確認→旧キー削除。"
           },
           "mail": {
             "title": "SMTPパスワード（SMTP_PASSWORD）",
-            "body": "メールプロバイダーで変更してからサーバーを更新し、パスワード再設定のOTPを送信して確認してください。"
+            "body": "プロバイダーで変更→サーバー更新→OTPで確認。"
           },
           "database": {
             "title": "データベースのパスワード（POSTGRES_PASSWORD）",
-            "body": "先に PostgreSQL でユーザーのパスワードを変更（ALTER USER）し、その後サーバーを更新してバックエンドを再起動してください。POSTGRES_PASSWORD はデータベースの初回作成時のみ適用されます。"
+            "body": "先に ALTER USER、次にサーバー更新と再起動。"
           }
         }
       }

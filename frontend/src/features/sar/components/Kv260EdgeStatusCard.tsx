@@ -28,7 +28,7 @@ export function Kv260EdgeStatusCard({task, loading}: { task: AiTask | null; load
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3.5">
             <div className="flex min-w-0 items-center gap-2">
                 <Cpu size={18} className="shrink-0 text-uav-blue" aria-hidden="true"/>
-                <h3 className="m-0 truncate text-xs font-bold uppercase tracking-wider text-slate-900">
+                <h3 className="m-0 truncate text-xs font-bold text-slate-900">
                     {t(edge ? 'opsShared.sar.kv260.title' : 'opsShared.sar.kv260.cloudTitle')}</h3>
             </div>
             {task && <span className={cn('rounded-badge border px-2.5 py-0.5 text-[10px] font-bold', statusTone[task.status])}>
@@ -66,7 +66,7 @@ function Metric({label, value, unit, icon, bar, tone, hint}: {
 }) {
     return <div className="bg-slate-50/50 p-3.5">
         <div className="flex items-center justify-between gap-2">
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</span>
+            <span className="block text-[10px] font-bold text-slate-500">{label}</span>
             <span className="text-slate-400">{icon}</span>
         </div>
         <div className="mt-1 flex items-baseline gap-1">

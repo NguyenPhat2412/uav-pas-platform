@@ -18,14 +18,14 @@ import {cn} from '@/lib/utils';
 
 const LIST_SIZE = 5;
 const severityIcon = {
-    CRITICAL: {icon: CircleAlert, tone: 'text-red-600'},
-    WARNING: {icon: AlertTriangle, tone: 'text-amber-600'},
-    INFO: {icon: Info, tone: 'text-blue-600'},
+    CRITICAL: {icon: CircleAlert, tone: 'text-primary'},
+    WARNING: {icon: AlertTriangle, tone: 'text-primary'},
+    INFO: {icon: Info, tone: 'text-primary/75'},
 } as const;
 
 /**
- * Admin home in the spirit of a cloud console: one question and a large page search on a plain page,
- * then three short live lists (missions waiting for approval, current alerts, pages visited last).
+ * Compact Red & White Admin Command Header + 3 live action cards
+ * so KPIs and the Interactive Mission Map remain immediately visible above the fold.
  */
 export function AdminHome() {
     const {user, can, permissionsReady} = useAuth();
@@ -72,40 +72,52 @@ export function AdminHome() {
     const alertItems = (alerts.data?.items ?? []).slice(0, LIST_SIZE);
     const missions = pending.data?.content ?? [];
 
-    return <div className="space-y-10 pb-2">
-        <section className="mx-auto flex max-w-3xl flex-col items-center gap-5 pt-6 text-center sm:pt-10">
-            {urgent > 0 && can('DASHBOARD_READ') && <Link href="/admin/alerts"
-                                       className="inline-flex items-center gap-2 rounded-badge border border-border bg-card px-4 py-1.5 text-[13px] font-medium text-foreground shadow-sm transition-colors hover:border-primary hover:text-primary">
-                <span className="h-2 w-2 rounded-full bg-red-600" aria-hidden="true"/>
-                {t('admin.dashboard.home.attention', {count: urgent})}
-                <ChevronRight size={14} aria-hidden="true"/>
-            </Link>}
-            <h1 className="m-0 text-[28px] font-semibold tracking-tight text-foreground sm:text-[34px]">{t('admin.dashboard.home.question')}</h1>
-            <div className="w-full text-left">
-                <HeaderSearch variant="hero" items={searchItems} recent={recentItems.map(toSearchItem)}
-                              placeholder={t('admin.dashboard.home.searchPlaceholder')}/>
+    return <div className="space-y-4">
+        <section className="flex flex-col gap-3 rounded-panel border border-rose-200 border-t-2 border-t-primary bg-white p-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-wrap items-center gap-3">
+                <h1 className="m-0 text-lg font-extrabold tracking-tight text-primary sm:text-xl">
+                    {t('admin.dashboard.home.question')}
+                </h1>
+                {urgent > 0 && can('DASHBOARD_READ') && (
+                    <Link
+                        href="/admin/alerts"
+                        className="inline-flex items-center gap-2 rounded-badge bg-primary px-3 py-1 text-xs font-bold text-white transition hover:opacity-90"
+                    >
+                        <span className="h-2 w-2 rounded-full bg-white animate-pulse" aria-hidden="true"/>
+                        {t('admin.dashboard.home.attention', {count: urgent})}
+                        <ChevronRight size={13} aria-hidden="true"/>
+                    </Link>
+                )}
+            </div>
+            <div className="w-full lg:max-w-md">
+                <HeaderSearch
+                    variant="hero"
+                    items={searchItems}
+                    recent={recentItems.map(toSearchItem)}
+                    placeholder={t('admin.dashboard.home.searchPlaceholder')}
+                />
             </div>
         </section>
 
-        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-px border border-rose-200 bg-rose-200 lg:grid-cols-3">
             {can('MISSION_VIEW_ALL') && <HomeColumn title={t('admin.dashboard.home.pending')} count={pending.data?.totalElements}
                                                     href="/operations/dispatch/missions"
                                                     empty={pending.isPending ? t('admin.dashboard.home.loading') : t('admin.dashboard.home.pendingEmpty')}>
                 {missions.slice(0, LIST_SIZE).map(mission => <HomeRow key={mission.id} href={`/operations/missions/${mission.id}`}
-                                                                       icon={<ClipboardList size={16} className="text-slate-400"/>}
+                                                                       icon={<ClipboardList size={15} className="text-primary"/>}
                                                                        label={mission.title || mission.code} meta={formatDate(mission.startTime)}/>)}
             </HomeColumn>}
             {can('DASHBOARD_READ') && <HomeColumn title={t('admin.dashboard.home.alerts')} count={alerts.data ? urgent : undefined} href="/admin/alerts"
                                                   empty={alerts.isPending ? t('admin.dashboard.home.loading') : t('admin.dashboard.home.alertsEmpty')}>
                 {alertItems.map(alert => {
                     const {icon: Icon, tone} = severityIcon[alert.severity];
-                    return <HomeRow key={alert.id} href={alert.href || '/admin/alerts'} icon={<Icon size={16} className={tone}/>}
+                    return <HomeRow key={alert.id} href={alert.href || '/admin/alerts'} icon={<Icon size={15} className={tone}/>}
                                     label={alertMessage(alert)}/>;
                 })}
             </HomeColumn>}
             <HomeColumn title={t('admin.dashboard.home.recent')} empty={t('admin.dashboard.home.recentEmpty')}>
-                {recentItems.map(item => <HomeRow key={item.href} href={item.href} icon={<History size={16} className="text-slate-400"/>}
-                                                  label={<><span className="text-muted">{t(`adminNavGroups.${item.group}`)} / </span>{labelOf(item)}</>}/>)}
+                {recentItems.map(item => <HomeRow key={item.href} href={item.href} icon={<History size={15} className="text-primary"/>}
+                                                  label={<><span className="text-primary/65">{t(`adminNavGroups.${item.group}`)} / </span>{labelOf(item)}</>}/>)}
             </HomeColumn>
         </div>
     </div>;
@@ -115,27 +127,27 @@ function HomeColumn({title, count, href, empty, children}: {
     title: string; count?: number; href?: string; empty: string; children: ReactNode[];
 }) {
     const heading = <>
-        {title}
-        {count !== undefined && <span className="rounded-badge bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">{count}</span>}
+        <span>{title}</span>
+        {count !== undefined && <span className="rounded-badge bg-primary px-2 py-0.5 text-[11px] font-bold text-white">{count}</span>}
         {href && <ChevronRight size={14} aria-hidden="true"/>}
     </>;
-    return <section className="min-w-0">
-        <h2 className="m-0 mb-1 text-sm font-medium text-muted">
-            {href ? <Link href={href} className="inline-flex items-center gap-2 hover:text-primary">{heading}</Link>
+    return <section className="min-w-0 bg-white p-4">
+        <h2 className="m-0 mb-2 border-b border-rose-100 pb-2 text-xs font-bold uppercase tracking-wider text-primary">
+            {href ? <Link href={href} className="inline-flex items-center gap-2 hover:underline">{heading}</Link>
                 : <span className="inline-flex items-center gap-2">{heading}</span>}
         </h2>
-        {children.length ? <ul className="m-0 list-none p-0">{children}</ul>
-            : <p className="m-0 border-b border-border py-4 text-sm text-muted">{empty}</p>}
+        {children.length ? <ul className="m-0 list-none divide-y divide-rose-100 p-0">{children}</ul>
+            : <p className="m-0 py-3 text-xs text-primary/65">{empty}</p>}
     </section>;
 }
 
 function HomeRow({href, icon, label, meta}: { href: string; icon: ReactNode; label: ReactNode; meta?: string }) {
-    return <li className="border-b border-border">
-        <Link href={href} className={cn('group flex items-center gap-3 py-3.5 text-[15px] text-foreground transition-colors hover:text-primary')}>
+    return <li>
+        <Link href={href} className={cn('group flex items-center gap-2.5 py-2 text-[13px] font-medium text-foreground transition-colors hover:text-primary')}>
             <span className="shrink-0" aria-hidden="true">{icon}</span>
             <span className="min-w-0 flex-1 truncate">{label}</span>
-            {meta && <span className="shrink-0 text-xs text-muted">{meta}</span>}
-            <ChevronRight size={16} aria-hidden="true" className="shrink-0 text-slate-300 transition-colors group-hover:text-primary"/>
+            {meta && <span className="shrink-0 text-[11px] text-primary/65">{meta}</span>}
+            <ChevronRight size={14} aria-hidden="true" className="shrink-0 text-rose-300 transition-colors group-hover:text-primary"/>
         </Link>
     </li>;
 }

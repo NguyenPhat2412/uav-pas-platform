@@ -25,3 +25,14 @@ export function safeNextPath(next: string | null | undefined): string | null {
         return null;
     }
 }
+
+/**
+ * The sign-in entry for a portal page the visitor reached while signed out: it returns them to that very page
+ * (path, query and hash) after sign-in, or to `fallback` when the current location is not a safe in-app path.
+ * Read in effects only: the query comes from `window.location` so callers need no `useSearchParams` Suspense boundary.
+ */
+export function loginEntryForPage(pathname: string | null | undefined, fallback: string): string {
+    const location = typeof window === 'undefined' ? undefined : window.location;
+    const here = pathname ? `${pathname}${location?.search ?? ''}${location?.hash ?? ''}` : null;
+    return authEntryUrl('login', safeNextPath(here) ?? fallback);
+}

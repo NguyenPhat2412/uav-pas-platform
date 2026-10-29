@@ -36,11 +36,12 @@ function SectionHead({eyebrow, jp, title, text, id, onPhoto = false}: { eyebrow:
     return (
         <div className="mb-10 grid grid-cols-1 items-end gap-6 lg:grid-cols-12">
             <div className="space-y-2 lg:col-span-7">
-                <p className="flex items-baseline gap-3 text-xs font-bold uppercase tracking-widest text-primary">
+                <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">
+                    <span className="h-px w-8 bg-primary/60" aria-hidden="true"/>
                     {eyebrow}
-                    <span lang="ja" className={`text-sm tracking-widest normal-case ${onPhoto ? 'text-white/60' : 'text-slate-400'}`}>{jp}</span>
+                    <span lang="ja" className={`text-xs tracking-[0.2em] normal-case ${onPhoto ? 'text-white/60' : 'text-slate-400'}`}>{jp}</span>
                 </p>
-                <h2 id={id} className={`text-2xl font-black tracking-tight sm:text-4xl ${onPhoto ? 'text-white' : 'text-foreground'}`}>
+                <h2 id={id} className={`text-3xl font-semibold leading-tight tracking-tight sm:text-[40px] ${onPhoto ? 'text-white' : 'text-foreground'}`}>
                     {keepVietnamesePhrases(title)}
                 </h2>
             </div>
@@ -53,52 +54,47 @@ export default function Page() {
     return (
         <div className="bg-card text-foreground overflow-x-hidden">
             {/* HERO */}
-            <section className="relative min-h-[600px] w-full overflow-hidden flex items-center py-20 lg:py-28" aria-labelledby="home-hero-title">
+            <section className="relative flex min-h-[560px] w-full items-center overflow-hidden sm:min-h-[630px] lg:min-h-[670px]" aria-labelledby="home-hero-title">
                 <HeroSlider/>
-                <div className="relative z-20 mx-auto w-full max-w-6xl px-4 sm:px-6">
-                    <div className="max-w-3xl space-y-6 text-white">
-                        <div className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md">
-                            <Image src="/vju-logo.svg" alt="Biểu trưng Trường Đại học Việt Nhật" width={36} height={36} priority unoptimized className="h-9 w-9 rounded-full bg-white p-0.5 object-contain"/>
-                            <div className="flex flex-col leading-tight">
-                                <strong className="text-xs font-bold text-white">Dự án Nền tảng UAV PAS · Trường Đại học Việt Nhật</strong>
-                                <span className="text-[11px] text-slate-300">ĐHQGHN · <span lang="ja">日越大学 · 無人航空機運用基盤</span></span>
-                            </div>
-                        </div>
-                        <h1 id="home-hero-title" className="text-3xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl leading-tight">
-                            {keepVietnamesePhrases('Nền tảng điều phối dịch vụ bay, ')}
-                            <em className="not-italic text-rose-400">{keepTogether('giám sát Telemetry RTK')}</em>
-                            {keepVietnamesePhrases(' & tác chiến AI UAV.')}
-                        </h1>
-                        <p className="max-w-2xl text-sm leading-relaxed text-slate-200 sm:text-base">
-                            Hệ thống quản trị và điều hành thiết bị bay không người lái toàn diện: kết nối trực tiếp yêu cầu khảo sát GIS của khách hàng với trung tâm chỉ huy bay, buồng lái Tìm kiếm Cứu nạn (SAR) tích hợp AI tại biên AMD Xilinx Kria KV260 và quy trình bàn giao dữ liệu bảo mật.
+                <div className="relative z-20 mx-auto w-full max-w-[1380px] px-6 py-20 sm:px-10 lg:px-16">
+                    <div className="max-w-[720px] text-white">
+                        <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#e2c18b]">
+                            <span className="h-px w-12 bg-[#e2c18b]" aria-hidden="true"/>
+                            Trường Đại học Việt Nhật · ĐHQGHN
                         </p>
-                        <div className="flex flex-wrap items-center gap-3.5 pt-2">
+                        <h1 id="home-hero-title" className="mt-7 text-[38px] font-medium leading-[1.13] tracking-[-0.025em] text-white sm:text-[58px] lg:text-[72px]">
+                            {keepVietnamesePhrases('Mỗi chuyến bay UAV')}<br/>
+                            {keepVietnamesePhrases('bắt đầu từ')}<br/>
+                            <em className="font-medium italic text-[#e2c18b]">một yêu cầu {keepTogether('rõ ràng.')}</em>
+                        </h1>
+                        <p className="mt-6 max-w-[520px] text-[15px] leading-7 text-white/80">
+                            Đặt dịch vụ bay, theo dõi nhiệm vụ và nhận dữ liệu an toàn trên một nền tảng của Trường Đại học Việt Nhật.
+                        </p>
+                        <div className="mt-9 flex flex-wrap items-center gap-3">
                             <Link
-                                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-primary px-6 py-3 text-sm font-bold text-primary-foreground hover:bg-primary-hover transition-colors shadow-lg"
+                                className="inline-flex min-h-12 items-center justify-center gap-3 rounded-control bg-primary px-7 text-xs font-semibold uppercase tracking-[0.14em] text-primary-foreground shadow-lg transition-colors hover:bg-primary-hover"
                                 href="/?auth=register"
                             >
                                 Bắt đầu yêu cầu bay <span aria-hidden="true">→</span>
                             </Link>
                             <Link
-                                className="inline-flex min-h-11 items-center justify-center rounded-control border border-white/30 bg-white/10 px-6 py-3 text-sm font-bold text-white backdrop-blur-md hover:bg-white/20 transition-colors"
+                                className="inline-flex min-h-12 items-center justify-center rounded-control border border-white/40 bg-white/5 px-7 text-xs font-semibold uppercase tracking-[0.14em] text-white backdrop-blur-md transition-colors hover:bg-white/15"
                                 href="#goi-cuoc"
                             >
-                                Xem bảng giá & gói cước
-                            </Link>
-                            <Link
-                                className="inline-flex min-h-11 items-center justify-center rounded-control border border-white/20 bg-slate-950/40 px-5 py-3 text-sm font-bold text-slate-200 backdrop-blur-md hover:bg-white/15 hover:text-white transition-colors"
-                                href="/?auth=login"
-                            >
-                                Đăng nhập cổng điều hành
+                                Xem bảng giá
                             </Link>
                         </div>
+                        <a href="#home-project-title" className="group mt-14 inline-flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/70 transition-colors hover:text-white">
+                            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/40 transition-transform group-hover:translate-y-0.5" aria-hidden="true">↓</span>
+                            Khám phá UAV PAS
+                        </a>
                     </div>
                 </div>
             </section>
 
             {/* PROJECT OVERVIEW & METRICS */}
-            <section className="border-b border-border bg-card py-14 sm:py-16" aria-labelledby="home-project-title">
-                <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 space-y-8">
+            <section className="border-b border-border bg-card py-16 sm:py-20" aria-labelledby="home-project-title">
+                <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12 space-y-8">
                     <SectionHead
                         id="home-project-title"
                         eyebrow="Giới thiệu Dự án UAV PAS"
@@ -133,7 +129,7 @@ export default function Page() {
             <section className="relative isolate overflow-hidden border-b border-border bg-slate-950 py-16 sm:py-20" aria-labelledby="home-capabilities-title">
                 <Image src={capabilitiesBackdrop.src} alt="" fill sizes="100vw" className="-z-10 object-cover opacity-45" aria-hidden="true"/>
                 <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950/80 via-slate-950/60 to-slate-950/85" aria-hidden="true"/>
-                <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+                <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12">
                     <SectionHead
                         onPhoto
                         id="home-capabilities-title"
@@ -181,7 +177,7 @@ export default function Page() {
 
             {/* CLEAR UAV SERVICES CATALOG WITH TECHNICAL SPECS */}
             <section className="border-b border-border bg-card py-16 sm:py-20" aria-labelledby="home-services-catalog-title">
-                <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 space-y-10">
+                <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12 space-y-10">
                     <SectionHead
                         id="home-services-catalog-title"
                         eyebrow="Danh mục Dịch vụ UAV"
@@ -262,7 +258,7 @@ export default function Page() {
             <section id="goi-cuoc" className="relative isolate scroll-mt-16 overflow-hidden bg-slate-950 py-16 sm:py-24" aria-labelledby="home-pricing-title">
                 <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,var(--primary)_0%,transparent_60%)] opacity-35" aria-hidden="true"/>
                 <div className="absolute inset-x-0 top-0 -z-10 h-1 bg-primary" aria-hidden="true"/>
-                <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+                <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12">
                     <SectionHead
                         onPhoto
                         id="home-pricing-title"
@@ -281,7 +277,7 @@ export default function Page() {
 
             {/* INTERACTIVE MISSION PLANNER */}
             <section className="border-b border-border bg-slate-50/60 py-16 sm:py-20" aria-labelledby="home-missions-title">
-                <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+                <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12">
                     <SectionHead
                         id="home-missions-title"
                         eyebrow="Mô phỏng Đường bay"
@@ -295,7 +291,7 @@ export default function Page() {
 
             {/* 3-PORTAL ECOSYSTEM ARCHITECTURE */}
             <section className="border-b border-border bg-card py-16 sm:py-20" aria-labelledby="home-portals-title">
-                <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+                <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12">
                     <SectionHead
                         id="home-portals-title"
                         eyebrow="Làm việc cùng UAV PAS"
@@ -349,7 +345,7 @@ export default function Page() {
 
             {/* PROCESS STEPS */}
             <section className="border-b border-border bg-card py-16 sm:py-20" aria-labelledby="home-process-title">
-                <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 space-y-8">
+                <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12 space-y-8">
                     <SectionHead
                         id="home-process-title"
                         eyebrow="Quy trình thực hiện"
@@ -370,7 +366,7 @@ export default function Page() {
             <section className="relative min-h-[420px] w-full overflow-hidden flex items-end py-16 text-white" aria-labelledby="home-pilot-title">
                 <Image src={pilotFromAbove.src} alt={pilotFromAbove.alt} fill sizes="100vw" className="object-cover object-center"/>
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent"/>
-                <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 space-y-3">
+                <div className="relative z-10 mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12 space-y-3">
                     <p className="flex items-baseline gap-3 text-xs font-bold uppercase tracking-widest text-rose-300">
                         Góc nhìn từ UAV <span lang="ja" className="text-sm text-slate-300 normal-case">操縦者</span>
                     </p>
@@ -393,7 +389,7 @@ export default function Page() {
 
             {/* DRONE ANATOMY */}
             <section className="border-b border-border bg-slate-50/60 py-16 sm:py-20" aria-labelledby="home-anatomy-title">
-                <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+                <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12">
                     <SectionHead
                         id="home-anatomy-title"
                         eyebrow="Cấu tạo kỹ thuật UAV"
@@ -407,7 +403,7 @@ export default function Page() {
 
             {/* HISTORY TIMELINE */}
             <HistoryTimeline>
-                <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+                <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12">
                     <SectionHead
                         id="home-history-title"
                         eyebrow="Hành trình UAV · 1888 → nay"
@@ -420,7 +416,7 @@ export default function Page() {
 
             {/* FIELD TEAM */}
             <section className="border-b border-border bg-slate-50/60 py-16 sm:py-20" aria-labelledby="home-field-title">
-                <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 space-y-6">
+                <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12 space-y-6">
                     <SectionHead
                         id="home-field-title"
                         eyebrow="Ngoài thực địa"
@@ -460,7 +456,7 @@ export default function Page() {
 
             {/* BOTTOM CTA */}
             <section className="relative overflow-hidden bg-primary py-16 text-primary-foreground sm:py-20" aria-labelledby="home-cta-title">
-                <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-8 px-4 sm:px-6">
+                <div className="relative z-10 mx-auto flex w-full max-w-[1380px] flex-wrap items-center justify-between gap-8 px-5 sm:px-8 lg:px-12">
                     <div className="max-w-xl space-y-3">
                         <h2 id="home-cta-title" className="text-2xl font-black tracking-tight sm:text-4xl">
                             {keepVietnamesePhrases('Mô tả nhiệm vụ trên bản đồ GIS. Đội vận hành lo phần bay.')}

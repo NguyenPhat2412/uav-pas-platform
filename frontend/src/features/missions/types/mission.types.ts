@@ -166,6 +166,7 @@ export interface MissionRequestDetailsData {
     latitude?: number | null;
     longitude?: number | null;
     notes?: string | null;
+    flightPlan?: FlightPlan | null;
 }
 
 export type RedispatchKind = 'operator' | 'station' | 'equipment';
@@ -190,7 +191,7 @@ export interface ResourceRedispatchProps {
 
 export type ExifMetadata = Record<string, unknown> & { latitude?: number; longitude?: number };
 
-export type MissionConfirmationKind = 'reject' | 'conflict' | 'complete' | 'cancel' | 'fail';
+export type MissionConfirmationKind = 'reject' | 'conflict' | 'complete' | 'cancel' | 'fail' | 'forceFail';
 export type MissionNoticeMessage = { key: string; params?: Record<string, string | number> } | { text: string };
 export type MissionDetailSection = 'timeline' | 'media' | 'stations' | 'uavs' | 'equipment' | 'operators';
 

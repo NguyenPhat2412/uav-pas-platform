@@ -18,6 +18,7 @@ export function missionControls(mission: Mission, userId: number | undefined, ca
         start: assigned && status === 'READY' && !!mission.operatorAccepted && can('MISSION_START'),
         complete: assigned && status === 'IN_PROGRESS' && can('MISSION_COMPLETE'),
         fail: assigned && ['RESOURCE_RESERVED', 'READY', 'IN_PROGRESS'].includes(status) && can('MISSION_STATUS_UPDATE'),
+        forceFail: !assigned && ['RESOURCE_RESERVED', 'READY', 'IN_PROGRESS'].includes(status) && can('MISSION_CONFIRM'),
         upload: !terminalStatuses.includes(status) && can('MISSION_MEDIA_UPLOAD'),
         station: planning && !mission.stationId && can('MISSION_ASSIGN_STATION') && can('STATION_READ'),
         uav: planning && !mission.uavId && can('MISSION_ASSIGN_UAV') && can('UAV_READ'),

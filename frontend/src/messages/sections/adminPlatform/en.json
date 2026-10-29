@@ -10,7 +10,7 @@
     "settings": {
       "pending": "{count} unsaved changes",
       "noPending": "No unsaved changes",
-      "fixErrors": "{count} values are invalid. Fix them before saving.",
+      "fixErrors": "{count} invalid values remain.",
       "history": "History",
       "historyTitle": "Change history: {name}",
       "historyEmpty": "No changes recorded yet.",
@@ -21,7 +21,7 @@
       "groups": {
         "SAFETY": "Safety & flight limits",
         "OPERATIONS": "Operations & dispatch",
-        "MAP": "Map & GIS configuration",
+        "MAP": "Map & GIS",
         "AI": "AI & KV260 edge processing",
         "BILLING": "Billing & invoices",
         "CONTACT": "Public contact details",
@@ -94,7 +94,7 @@
     },
     "deviceKeys": {
       "title": "Device API keys",
-      "intro": "Ground stations and UAV gateways use device keys to push telemetry. A key can only submit telemetry; it cannot call any other API.",
+      "intro": "Device keys can only send telemetry.",
       "create": "Create key",
       "showRevoked": "Show revoked keys",
       "empty": "No device keys yet.",
@@ -118,18 +118,18 @@
       "noExpiry": "No expiry",
       "revoke": "Revoke",
       "revokeTitle": "Revoke device key",
-      "revokeConfirm": "Revoke \"{name}\" ({prefix}…)? Devices using this key are rejected immediately. This can't be undone.",
+      "revokeConfirm": "Revoke \"{name}\" ({prefix}…)? Devices are rejected immediately; this can't be undone.",
       "createTitle": "Create device key",
       "form": {
         "name": "Key name",
         "namePlaceholder": "e.g. Hoa Lac station – gateway 1",
         "uav": "Bind to UAV",
-        "uavHint": "Bind each key to one UAV. \"Any UAV\" lets the key report telemetry for every UAV.",
+        "uavHint": "Bind each key to one UAV when possible.",
         "expiresAt": "Expires (optional)",
-        "expiresHint": "Leave empty for a key that doesn't expire. Server time."
+        "expiresHint": "Leave blank for no expiry (server time)."
       },
       "createdTitle": "Key created",
-      "onceWarning": "This is the only time the key is shown. Copy it to the device now; only its hash is stored.",
+      "onceWarning": "Shown only once. Copy and store it now.",
       "secretLabel": "Device key",
       "copy": "Copy",
       "copied": "Copied",

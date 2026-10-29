@@ -28,7 +28,7 @@
     --uav-color-success-light: #eff4ff;
     --uav-color-warning: #b54708;
     --uav-color-warning-light: #fffaeb;
-    --uav-font-sans: Arial, Helvetica, sans-serif;
+    --uav-font-sans: var(--font-inter), 'Inter', 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
     --font-sans: var(--uav-font-sans);
     --font-mono: var(--uav-font-sans);
     --font-serif: var(--uav-font-sans);
@@ -96,7 +96,7 @@
 :root[data-portal] {
     --radius-panel: 12px;
     --radius-control: 8px;
-    --radius-badge: 9999px;
+    --radius-badge: 4px;
     --radius-overlay: 16px;
 }
 
@@ -183,6 +183,7 @@
 :root[data-portal] :is(#workspace, #content) {
     background: #fff;
     padding: 1.5rem;
+    gap: 1rem;
 }
 
 :root[data-portal] :is(#workspace, #content) .rounded-panel.border,
@@ -196,13 +197,13 @@
 }
 
 /* Hairline tile grids (gap-px over a grey fill) and KPI rows open up into separate rounded cards. */
-:root[data-portal] :is(#workspace, #content) :is(.gap-px[class*="bg-slate-200"], .grid:has(> article.border-t-2)) {
+:root[data-portal] :is(#workspace, #content) :is(.gap-px[class*="bg-slate-200"]:not(.rounded-panel *), .grid:has(> article.border-t-2)) {
     gap: 1rem;
     background: transparent;
     border-width: 0;
 }
 
-:root[data-portal] :is(#workspace, #content) :is(.gap-px[class*="bg-slate-200"] > *, .grid:has(> article.border-t-2) > article) {
+:root[data-portal] :is(#workspace, #content) :is(.gap-px[class*="bg-slate-200"]:not(.rounded-panel *) > *, .grid:has(> article.border-t-2) > article) {
     background: #fff;
     border: 1px solid rgb(0 0 0 / 0.08);
     border-radius: var(--radius-panel);
@@ -248,6 +249,29 @@
     background-repeat: no-repeat;
     background-position: right 0.7rem center;
     background-size: 1rem;
+}
+
+/* A page root laid out as a column (customer and operations pages) spaces its blocks like the shell does. */
+:root[data-portal] :is(#workspace, #content) > .flex-col:not([class*="gap-"]) {
+    gap: 1rem;
+}
+
+/* A column of panels joined by divider lines becomes a stack of separate cards. */
+:root[data-portal] :is(#workspace, #content) .flex-col[class*="divide-y"]:has(> section.rounded-panel) {
+    gap: 1rem;
+    background: transparent !important;
+    border-width: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0;
+    overflow: visible;
+}
+
+:root[data-portal] :is(#workspace, #content) .flex-col[class*="divide-y"]:has(> section.rounded-panel) > * {
+    background: #fff;
+    border: 1px solid rgb(0 0 0 / 0.08);
+    border-radius: var(--radius-panel);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.05), 0 6px 20px rgb(0 0 0 / 0.05);
+    overflow: hidden;
 }
 
 /* Section labels read as quiet sentence-case captions instead of shouted uppercase tags. */

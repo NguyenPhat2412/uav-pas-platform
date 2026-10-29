@@ -102,3 +102,35 @@ test('a forbidden retry reports 403 rather than the original expired-token error
     };
     await assert.rejects(api.apiClient.get('/private'), error => error.status === 403 && error.message === 'permission revoked');
 });
+
+test('rate limiting (429) reads as a plain retry-later message, not a generic failure', async () => {
+    globalThis.fetch = async () => response({message: 'Too Many Requests'}, 429);
+    await assert.rejects(api.apiClient.post('/api/v1/auth/login', {}), error =>
+        error.status === 429 && error.code === 'RATE_LIMITED' && error.message === 'Bạn thử quá nhiều lần, vui lòng đợi vài phút.');
+});
+
+test('a refused refresh keeps the session when another tab already refreshed it', async () => {
+    let ended = false;
+    window.addEventListener('uav:session', event => {
+        if (!event.detail) ended = true;
+    });
+    let refreshed = false;
+    globalThis.fetch = async url => {
+        if (url.endsWith('/auth/refresh')) {
+            refreshed = true;
+            return response({message: 'refresh token already rotated'}, 401);
+        }
+        if (url.endsWith('/auth/me')) return response(user);
+        // The other tab's new cookies authenticate the retry.
+        return refreshed ? response({private: 'alpha'}) : response({}, 401);
+    };
+    assert.deepEqual(await api.apiClient.get('/private'), {private: 'alpha'});
+    assert.equal(ended, false);
+});
+
+test('signing in and out tells other tabs through uav_session', () => {
+    setSession({accessToken: 'a', user: {...user, id: 7}});
+    assert.match(localStorage.getItem('uav_session'), /^7:\d+$/);
+    setSession(null);
+    assert.equal(localStorage.getItem('uav_session'), null);
+});

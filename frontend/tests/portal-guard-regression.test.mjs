@@ -53,7 +53,8 @@ function harness(auth, search, storedDemo) {
             createContext: () => ({Provider: ({children}) => children}), useContext: () => null
         },
         'react/jsx-runtime': {jsx: element, jsxs: element, Fragment: 'fragment'},
-        'next/navigation': {useRouter: () => ({replace: path => redirects.push(path)})},
+        // The guarded page is a deep link; sign-in must bring the visitor back to it.
+        'next/navigation': {useRouter: () => ({replace: path => redirects.push(path)}), usePathname: () => '/admin/users'},
         'lucide-react': Object.fromEntries(['Database', 'ShieldAlert', 'ArrowUpRight', 'Users', 'MapPin', 'Plane', 'History', 'ChevronRight', 'CreditCard', 'Settings', 'ShieldCheck'].map(name => [name, () => null])),
         'next/link': {default: ({children}) => children},
         '@/components/shared/presentation': {
@@ -118,13 +119,14 @@ function harness(auth, search, storedDemo) {
             exports, require: name => {
                 assert.ok(Object.hasOwn(modules, name), `Unexpected dependency: ${name}`);
                 return modules[name];
-            }, window: {location: {search}, localStorage: {getItem: key => key === 'isDemo' ? storedDemo : null}}
+            }, URL, window: {location: {search}, localStorage: {getItem: key => key === 'isDemo' ? storedDemo : null}}
         }, {filename: path});
         return exports;
     }
 
     modules['@/components/data/WorkspaceState'] = load('src/components/data/WorkspaceState.tsx');
     modules['@/features/auth/utils/portal'] = load('src/features/auth/utils/portal.ts');
+    modules['@/features/auth/utils/auth-entry'] = load('src/features/auth/utils/auth-entry.ts');
     return {load, redirects, permissions, cards};
 }
 
@@ -196,8 +198,10 @@ for (const [search, storedDemo] of [['', null], ['?demo=true', null], ['', 'true
             children: 'PROTECTED_USER_DATA'
         }));
         assert.equal(rendered.includes('PROTECTED_USER_DATA'), state.visible);
-        // Anonymous visitors go to the shared sign-in dialog on the home page, then back to the admin dashboard.
-        assert.deepEqual(h.redirects, state.redirect ? ['/?auth=login&next=/admin/dashboard'] : []);
+        // Anonymous visitors go to the shared sign-in dialog on the home page, then back to the page they asked for
+        // (path and query; `?`/`=` are escaped so the query survives as part of `next`).
+        const next = '/admin/users' + (search ? encodeURIComponent(search) : '');
+        assert.deepEqual(h.redirects, state.redirect ? [`/?auth=login&next=${next}`] : []);
         if (state.visible) assert.ok(h.permissions.includes('USER_READ'));
     });
 

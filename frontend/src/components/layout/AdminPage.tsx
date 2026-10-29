@@ -1,13 +1,14 @@
 'use client';
 
 import {createContext, useContext, useEffect, useLayoutEffect, useState} from 'react';
-import {useRouter} from 'next/navigation';
+import {usePathname, useRouter} from 'next/navigation';
 import {Spinner} from "@/components/ui";
 import {AppShell} from "@/components/layout/AdminAppShell";
 import {PermissionGate} from "@/components/data/WorkspaceState";
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {canUsePortal, portalForRole, portalHome} from '@/features/auth/utils/portal';
+import {loginEntryForPage} from '@/features/auth/utils/auth-entry';
 
 interface AdminPageMeta {
     activeResource?: string;
@@ -24,13 +25,14 @@ export function AdminPortalFrame({children, page}: { children: React.ReactNode; 
     const {user, isAuthenticated, isLoading} = useAuth();
     const {t} = useI18n();
     const router = useRouter();
+    const pathname = usePathname();
     const [meta, setMeta] = useState<AdminPageMeta>({});
     const isAdmin = canUsePortal(user?.role, 'admin');
     useEffect(() => {
         if (isLoading) return;
-        if (!isAuthenticated) router.replace("/?auth=login&next=/admin/dashboard");
+        if (!isAuthenticated) router.replace(loginEntryForPage(pathname, '/admin/dashboard'));
         else if (!isAdmin) router.replace(portalHome(portalForRole(user?.role)));
-    }, [isAuthenticated, isAdmin, isLoading, router, user?.role]);
+    }, [isAuthenticated, isAdmin, isLoading, pathname, router, user?.role]);
     if (isLoading || !isAuthenticated || !isAdmin) return <div className="flex min-h-screen items-center justify-center"><Spinner
         size="lg" label={t('admin.page.authenticating')}/></div>;
     return <AdminFrameContext.Provider value={setMeta}>

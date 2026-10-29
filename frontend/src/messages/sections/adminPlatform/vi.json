@@ -10,7 +10,7 @@
     "settings": {
       "pending": "{count} thay đổi chưa lưu",
       "noPending": "Không có thay đổi chưa lưu",
-      "fixErrors": "Còn {count} giá trị không hợp lệ. Vui lòng sửa trước khi lưu.",
+      "fixErrors": "Còn {count} giá trị không hợp lệ.",
       "history": "Lịch sử",
       "historyTitle": "Lịch sử thay đổi: {name}",
       "historyEmpty": "Chưa có thay đổi nào được ghi nhận.",
@@ -21,7 +21,7 @@
       "groups": {
         "SAFETY": "An toàn & giới hạn bay",
         "OPERATIONS": "Vận hành & điều phối",
-        "MAP": "Bản đồ & hệ thống thông tin địa lý (GIS)",
+        "MAP": "Bản đồ & GIS",
         "AI": "AI & xử lý biên KV260",
         "BILLING": "Thanh toán & hóa đơn",
         "CONTACT": "Thông tin liên hệ công khai",
@@ -94,7 +94,7 @@
     },
     "deviceKeys": {
       "title": "Khóa API thiết bị",
-      "intro": "Trạm mặt đất và gateway UAV dùng khóa thiết bị để gửi telemetry. Khóa chỉ gửi được telemetry, không truy cập được API khác.",
+      "intro": "Khóa thiết bị chỉ dùng để gửi telemetry.",
       "create": "Tạo khóa",
       "showRevoked": "Hiện cả khóa đã thu hồi",
       "empty": "Chưa có khóa thiết bị nào.",
@@ -118,18 +118,18 @@
       "noExpiry": "Không hết hạn",
       "revoke": "Thu hồi",
       "revokeTitle": "Thu hồi khóa thiết bị",
-      "revokeConfirm": "Thu hồi khóa \"{name}\" ({prefix}…)? Thiết bị đang dùng khóa này sẽ bị từ chối ngay lập tức và không thể khôi phục.",
+      "revokeConfirm": "Thu hồi khóa \"{name}\" ({prefix}…)? Thiết bị bị từ chối ngay, không khôi phục được.",
       "createTitle": "Tạo khóa thiết bị",
       "form": {
         "name": "Tên khóa",
         "namePlaceholder": "VD: Trạm Hòa Lạc – gateway 1",
         "uav": "Gắn với UAV",
-        "uavHint": "Nên gắn mỗi khóa với một UAV. \"Mọi UAV\" cho phép gửi telemetry cho bất kỳ UAV nào.",
+        "uavHint": "Nên gắn mỗi khóa với một UAV.",
         "expiresAt": "Hết hạn (tùy chọn)",
-        "expiresHint": "Để trống nếu khóa không hết hạn. Theo giờ máy chủ."
+        "expiresHint": "Để trống nếu không hết hạn (giờ máy chủ)."
       },
       "createdTitle": "Khóa đã được tạo",
-      "onceWarning": "Đây là lần duy nhất khóa được hiển thị. Hãy sao chép và lưu vào thiết bị ngay; hệ thống chỉ lưu mã băm.",
+      "onceWarning": "Khóa chỉ hiện một lần. Sao chép và lưu ngay.",
       "secretLabel": "Khóa thiết bị",
       "copy": "Sao chép",
       "copied": "Đã sao chép",

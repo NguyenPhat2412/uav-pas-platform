@@ -67,7 +67,7 @@ export function Panel({title, children, action, className = ''}: {
         <section className={cn('flex flex-col rounded-panel border border-slate-200 bg-white', className)}>
             {title && (
                 <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
-                    <h2 className="text-sm font-bold uppercase tracking-wide text-slate-800">{keepVietnamesePhrases(title)}</h2>
+                    <h2 className="text-[15px] font-semibold tracking-tight text-slate-800">{keepVietnamesePhrases(title)}</h2>
                     {action}
                 </header>
             )}

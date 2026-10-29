@@ -47,6 +47,21 @@
       "results": "Results",
       "navigate": "to navigate",
       "select": "to select"
+    },
+    "home": {
+      "operationsQuestion": "What needs dispatching today?",
+      "operationsSearch": "Search operations pages",
+      "customerQuestion": "What do you need today?",
+      "customerSearch": "Search pages"
+    },
+    "portalSwitcher": {
+      "ariaLabel": "Switch workspace portal",
+      "admin": "Admin",
+      "operations": "Operations",
+      "customer": "Customer",
+      "adminPortal": "Admin Portal",
+      "operationsPortal": "Operations Portal",
+      "customerPortal": "Customer Portal"
     }
   },
   "operationsNavGroups": {
@@ -331,7 +346,10 @@
     "adminPortal": "Admin",
     "operationsPortal": "Operations",
     "customerPortal": "Customer",
-    "customerPortalUser": "Customer Portal ({username})"
+    "customerPortalUser": "Customer Portal ({username})",
+    "register": "Sign up",
+    "stripSchool": "Vietnam Japan University",
+    "stripUniversity": "Vietnam National University, Hanoi"
   },
   "publicFooter": {
     "university": "Vietnam Japan University – VNU",

@@ -108,8 +108,8 @@ function Matrix({permissions, template, target, values}: {
     const result = mutation.data;
     const modules = [...new Set(permissions.map(p => p.code.split('_')[0]))].sort();
     return <section className="space-y-4"><h2
-        className="text-lg font-semibold">{target ? t('admin.access.effectiveMatrix') : t('admin.access.rolePermissions')}</h2><p
-        className="text-sm text-slate-600">{t('admin.access.overrideHint')}</p>
+        className="text-[15px] font-semibold">{target ? t('admin.access.effectiveMatrix') : t('admin.access.rolePermissions')}</h2><p
+        className="text-xs text-slate-500">{t('admin.access.overrideHint')}</p>
         {target?.status !== 'ACTIVE' && target &&
             <Alert variant="warning">{t('admin.access.inactiveWarning', {status: displayLabel(target.status).toLowerCase()})}</Alert>}
         {result && <Alert variant={result.failed.length ? 'warning' : 'success'}><p>{t('admin.access.saved', {codes: result.succeeded.join(', ') || t('admin.access.none')})}</p>{result.failed.length > 0 &&

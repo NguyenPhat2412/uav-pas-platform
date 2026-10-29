@@ -59,6 +59,8 @@ export const missionService = {
     reportConflict: (id: number, note: string) => apiClient.post<Mission>(`${base}/${id}/report-conflict?note=${encodeURIComponent(missionEventNote(note))}`),
     complete: (id: number, completionNote: string, equipmentCondition?: string) => apiClient.post<Mission>(`${base}/${id}/complete`, completionInput(completionNote, equipmentCondition)),
     fail: (id: number, failureReason: string, notes?: string) => apiClient.post<Mission>(`${base}/${id}/fail`, failureInput(failureReason, notes)),
+    // Ends a stuck mission when the assigned operator can't; needs MISSION_CONFIRM and is audited.
+    forceFail: (id: number, reason: string, notes?: string) => apiClient.post<Mission>(`${base}/${id}/force-fail`, {reason: reason.trim(), notes: notes?.trim() || undefined}),
     assignStation: (id: number, resourceId: number) => apiClient.post<Mission>(`${base}/${id}/assign-station`, {
         resourceId,
         quantity: 1

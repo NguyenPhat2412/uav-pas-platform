@@ -99,20 +99,31 @@ function FlightMap({mission, fix, center}: { mission: Mission; fix: UavTelemetry
     const leaflet = useRef<typeof import('leaflet') | null>(null);
     const [ready, setReady] = useState(false);
     const plan = mission.flightPlan ?? null;
+    const effectiveCenter: [number, number] = center ?? config.defaultCenter;
 
     useEffect(() => {
         let disposed = false;
-        if (!center) return;
+        let resizeObserver: ResizeObserver | null = null;
         void import('leaflet').then(L => {
             if (disposed || !container.current || map.current) return;
             leaflet.current = L;
-            map.current = L.map(container.current, {scrollWheelZoom: false}).setView(center, 15);
+            map.current = L.map(container.current, {scrollWheelZoom: false}).setView(effectiveCenter, center ? 15 : config.defaultZoom);
             planLayer.current = L.layerGroup().addTo(map.current);
             uavLayer.current = L.layerGroup().addTo(map.current);
             setReady(true);
+
+            if (typeof ResizeObserver !== 'undefined' && container.current) {
+                resizeObserver = new ResizeObserver(() => {
+                    map.current?.invalidateSize();
+                });
+                resizeObserver.observe(container.current);
+            }
+            setTimeout(() => map.current?.invalidateSize(), 100);
+            setTimeout(() => map.current?.invalidateSize(), 350);
         });
         return () => {
             disposed = true;
+            resizeObserver?.disconnect();
             scaleControl.current = null;
             tiles.current = null;
             map.current?.remove();
@@ -120,7 +131,7 @@ function FlightMap({mission, fix, center}: { mission: Mission; fix: UavTelemetry
         };
         // One map per mission view; layers below follow the data.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [center == null]);
+    }, []);
 
     useEffect(() => {
         const L = leaflet.current;

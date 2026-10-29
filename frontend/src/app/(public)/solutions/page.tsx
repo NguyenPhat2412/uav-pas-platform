@@ -32,7 +32,7 @@ export default function SolutionsPage() {
                     preload
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-slate-950/40"/>
-                <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6">
+                <div className="relative z-10 mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12">
                     <div className="max-w-2xl space-y-4">
                         <p className="text-xs font-extrabold uppercase tracking-widest text-rose-400">
                             Giải pháp Chuyên ngành & R&D
@@ -48,7 +48,7 @@ export default function SolutionsPage() {
             </section>
 
             <section className="py-14 sm:py-18">
-                <div className="mx-auto w-full max-w-6xl space-y-16 px-4 sm:px-6">
+                <div className="mx-auto w-full max-w-[1380px] space-y-16 px-5 sm:px-8 lg:px-12">
                     {/* Part 1: Horizontal Split Cards for Commercial Solutions */}
                     <div className="space-y-6">
                         <div className="flex flex-wrap items-baseline justify-between gap-2">

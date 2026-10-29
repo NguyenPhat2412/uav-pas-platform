@@ -31,38 +31,14 @@ export function AdminAiConversationsWorkspace() {
             permission="PERMISSION_MANAGE"
             activeResource="/admin/ai-router/conversations"
         >
-            <div className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3 border border-border bg-card px-4 py-3">
-                    <div className="flex items-center gap-2">
-                        <MessagesSquare size={16} className="text-primary" />
-                        <div>
-                            <h2 className="text-sm font-bold text-slate-900">
-                                Nhật ký & Kiểm toán Hội thoại Trợ lý AI UAV
-                            </h2>
-                            <p className="text-xs text-slate-500">
-                                {t('admin.assistantChats.intro')}
-                            </p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Link
-                            href="/admin/ai-router"
-                            className="inline-flex h-8 items-center gap-1.5 rounded-control border border-border bg-slate-50 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-100"
-                        >
-                            <MonitorCog size={13} />
-                            Điều phối AI Router Gateway
-                        </Link>
-                        <Link
-                            href="/admin/settings#assistant"
-                            className="inline-flex h-8 items-center gap-1.5 rounded-control border border-border bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                        >
-                            <Settings size={13} />
-                            {t('admin.aiRouter.assistantSettings')}
-                        </Link>
-                    </div>
-                </div>
-                <AssistantConversations />
-            </div>
+            <AssistantConversations actions={<>
+                <Link href="/admin/ai-router"
+                      className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border bg-slate-50 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-100">
+                    <MonitorCog size={13} aria-hidden="true"/>{t('adminNav.aiRouter')}</Link>
+                <Link href="/admin/settings#assistant"
+                      className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                    <Settings size={13} aria-hidden="true"/>{t('admin.aiRouter.assistantSettings')}</Link>
+            </>}/>
         </AdminPage>
     );
 }

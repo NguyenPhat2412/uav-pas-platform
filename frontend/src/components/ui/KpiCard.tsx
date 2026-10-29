@@ -3,23 +3,23 @@ import type {Tone} from '@/types';
 import {cn} from '@/lib/utils';
 
 const iconTones: Record<Tone, string> = {
-    blue: 'bg-uav-blue-light text-uav-blue border-blue-200',
-    red: 'bg-uav-red-light text-primary border-rose-200',
-    amber: 'bg-amber-50 text-warning border-amber-200',
-    slate: 'bg-slate-100 text-slate-700 border-slate-200',
+    blue: 'bg-uav-red-light text-primary border-rose-200',
+    red: 'bg-primary text-white border-primary',
+    amber: 'bg-rose-50 text-primary border-rose-200',
+    slate: 'bg-white text-primary border-rose-200',
 };
 
 const accents: Record<Tone, string> = {
-    blue: 'border-t-uav-blue',
+    blue: 'border-t-primary',
     red: 'border-t-primary',
-    amber: 'border-t-amber-500',
-    slate: 'border-t-slate-400',
+    amber: 'border-t-rose-400',
+    slate: 'border-t-rose-300',
 };
 
 /**
  * One metric cell: flat, a coloured top rule carries the tone. Place cells in a MetricStrip so they share one frame.
  */
-export function KpiCard({label, value, meta, icon, tone = 'blue'}: {
+export function KpiCard({label, value, meta, icon, tone = 'red'}: {
     label: string;
     value?: number | string;
     meta?: string;
@@ -32,9 +32,9 @@ export function KpiCard({label, value, meta, icon, tone = 'blue'}: {
                 {icon}
             </div>}
             <div className="min-w-0 flex-1">
-                <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">{label}</span>
+                <span className="block text-[11px] font-bold uppercase tracking-wider text-primary/75">{label}</span>
                 <strong className="mt-1 block text-2xl font-black tabular-nums tracking-tight text-foreground">{value ?? '—'}</strong>
-                {meta && <small className="mt-0.5 block text-xs font-medium text-slate-500">{meta}</small>}
+                {meta && <small className="mt-0.5 block text-xs font-medium text-primary/70">{meta}</small>}
             </div>
         </article>
     );
@@ -43,7 +43,7 @@ export function KpiCard({label, value, meta, icon, tone = 'blue'}: {
 /** Seamless metric band: one border, cells split by hairline dividers instead of separate floating cards. */
 export function MetricStrip({children, className}: { children: ReactNode; className?: string }) {
     return (
-        <div className={cn('grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 sm:grid-cols-2 xl:grid-cols-4', className)}>
+        <div className={cn('grid grid-cols-1 gap-px border border-rose-200 bg-rose-200 sm:grid-cols-2 xl:grid-cols-4', className)}>
             {children}
         </div>
     );

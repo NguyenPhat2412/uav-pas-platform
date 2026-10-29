@@ -101,7 +101,10 @@ function WebhooksContent() {
     }
 
     return <div className="space-y-6">
-        <div className="flex flex-wrap items-center justify-end gap-4 rounded-panel border border-border bg-card p-5 text-foreground">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-border bg-card px-4 py-3 text-foreground">
+            <p className="m-0 min-w-0 flex-1 text-sm text-slate-600" role="status">
+                {status === 'UNCONFIGURED' ? t('admin.webhooks.runtime.unconfigured') : status === 'QUEUED' ? t('admin.webhooks.runtime.queued') : t('admin.webhooks.runtime.unknown')}
+            </p>
             <div className="flex flex-wrap gap-2">
                 <button
                     className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-control border border-border bg-card px-4 font-bold text-foreground transition hover:bg-background disabled:cursor-not-allowed disabled:opacity-55"
@@ -117,9 +120,6 @@ function WebhooksContent() {
                     disabled={loading || isDispatching || status !== 'QUEUED'}><Send
                     size={16}/> {isDispatching ? t('admin.webhooks.recording') : t('admin.webhooks.testEvent')}</button>
             </div>
-        </div>
-        <div className="rounded-panel border border-border bg-card p-4 text-foreground" role="status">
-            {status === 'UNCONFIGURED' ? t('admin.webhooks.runtime.unconfigured') : status === 'QUEUED' ? t('admin.webhooks.runtime.queued') : t('admin.webhooks.runtime.unknown')}
         </div>
         {error && <div role="alert" className="rounded-panel border border-border bg-card p-4 text-danger">{t(error)}</div>}
         {message && <div role="status" className="rounded-panel border border-border bg-card p-4 text-foreground">{message}</div>}

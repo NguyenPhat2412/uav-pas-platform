@@ -20,7 +20,7 @@ export default function ServicesPage() {
         <div className="bg-card text-foreground">
             {/* Minimalist Split Header */}
             <section className="border-b border-border bg-slate-50/70 py-12 sm:py-16">
-                <div className="mx-auto flex w-full max-w-6xl flex-wrap items-end justify-between gap-6 px-4 sm:px-6">
+                <div className="mx-auto flex w-full max-w-[1380px] flex-wrap items-end justify-between gap-6 px-5 sm:px-8 lg:px-12">
                     <div className="max-w-2xl space-y-2">
                         <p className="text-xs font-extrabold uppercase tracking-widest text-primary">
                             Danh mục Dịch vụ UAV • 4 Nhóm chuẩn hoá
@@ -39,7 +39,7 @@ export default function ServicesPage() {
 
             {/* Alternating Zig-Zag Split Showcase Rows */}
             <section className="py-12 sm:py-16">
-                <div className="mx-auto w-full max-w-6xl space-y-12 px-4 sm:px-6">
+                <div className="mx-auto w-full max-w-[1380px] space-y-12 px-5 sm:px-8 lg:px-12">
                     {services.map((item, idx) => {
                         const detail = serviceDetails[item.slug];
                         const sceneKey = serviceScenes[item.slug] ?? 'rentalFleet';

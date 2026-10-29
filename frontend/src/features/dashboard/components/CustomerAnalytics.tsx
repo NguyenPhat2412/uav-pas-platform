@@ -80,16 +80,18 @@ export function CustomerOperationalInsights({data, isPending}: { data?: Analytic
                 {isPending || !data ? (
                     <div className="h-16 animate-pulse bg-slate-100"/>
                 ) : data.turnaround.sampleSize ? (
-                    <div className="grid grid-cols-2 gap-px border border-slate-200 bg-slate-200">
-                        <div className="flex flex-col gap-1 bg-slate-50/70 px-3.5 py-2.5">
-                            <span className="text-[12px] text-muted">{t('dashboard.analytics.toConfirm')}</span>
-                            <strong className="text-lg font-extrabold tabular-nums text-foreground">{duration(data.turnaround.submitToConfirm)}</strong>
+                    <div className="overflow-hidden rounded-control bg-slate-50/80">
+                        <div className="grid grid-cols-2 divide-x divide-slate-200">
+                            <div className="flex flex-col gap-1 px-3.5 py-2.5">
+                                <span className="text-[12px] text-muted">{t('dashboard.analytics.toConfirm')}</span>
+                                <strong className="text-lg font-extrabold tabular-nums text-foreground">{duration(data.turnaround.submitToConfirm)}</strong>
+                            </div>
+                            <div className="flex flex-col gap-1 px-3.5 py-2.5">
+                                <span className="text-[12px] text-muted">{t('dashboard.analytics.toComplete')}</span>
+                                <strong className="text-lg font-extrabold tabular-nums text-foreground">{duration(data.turnaround.submitToComplete)}</strong>
+                            </div>
                         </div>
-                        <div className="flex flex-col gap-1 bg-slate-50/70 px-3.5 py-2.5">
-                            <span className="text-[12px] text-muted">{t('dashboard.analytics.toComplete')}</span>
-                            <strong className="text-lg font-extrabold tabular-nums text-foreground">{duration(data.turnaround.submitToComplete)}</strong>
-                        </div>
-                        <small className="col-span-full bg-white px-3.5 py-2 text-xs text-muted">
+                        <small className="block border-t border-slate-200/80 px-3.5 py-2 text-xs text-muted">
                             {t('dashboard.analytics.turnaroundHint', {count: data.turnaround.sampleSize})}
                         </small>
                     </div>
@@ -110,7 +112,7 @@ export function CustomerUpcomingStrip({data, isPending}: { data?: Analytics; isP
     return (
         <div className="border-t border-slate-200 bg-white">
             <header className="flex items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-2.5">
-                <h3 className="m-0 text-xs font-bold uppercase tracking-wide text-slate-800">{t('dashboard.analytics.upcomingTitle')}</h3>
+                <h3 className="m-0 text-xs font-bold text-slate-800">{t('dashboard.analytics.upcomingTitle')}</h3>
                 <span className="text-xs font-semibold tabular-nums text-slate-500">{data.upcoming.length}</span>
             </header>
             {data.upcoming.length ? (
@@ -141,9 +143,9 @@ export function CustomerAnalytics() {
     const {t} = useI18n();
     const query = useCustomerAnalyticsQuery();
     if (!can('MISSION_VIEW')) return null;
-    return <section className="flex flex-col bg-white" aria-labelledby="customer-analytics-title">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-2.5 sm:px-5">
-            <h2 id="customer-analytics-title" className="m-0 text-xs font-bold uppercase tracking-wider text-slate-700">{t('dashboard.analytics.title')}</h2>
+    return <section className="flex flex-col gap-3 bg-white" aria-labelledby="customer-analytics-title">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-1 pt-2">
+            <h2 id="customer-analytics-title" className="m-0 text-sm font-bold text-slate-800">{t('dashboard.analytics.title')}</h2>
         </div>
         {query.isPending ? (
             <div className="grid min-h-[260px] grid-cols-1 gap-px border-b border-slate-200 bg-slate-200 xl:grid-cols-2" role="status" aria-label={t('dashboard.analytics.loading')}>

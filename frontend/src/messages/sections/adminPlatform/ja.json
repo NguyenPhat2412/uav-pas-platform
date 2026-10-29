@@ -10,7 +10,7 @@
     "settings": {
       "pending": "未保存の変更 {count} 件",
       "noPending": "未保存の変更はありません",
-      "fixErrors": "{count} 件の値が無効です。保存する前に修正してください。",
+      "fixErrors": "無効な値が {count} 件あります。",
       "history": "履歴",
       "historyTitle": "変更履歴：{name}",
       "historyEmpty": "記録された変更はまだありません。",
@@ -21,7 +21,7 @@
       "groups": {
         "SAFETY": "安全・飛行制限",
         "OPERATIONS": "運用・配車",
-        "MAP": "地図・GIS設定",
+        "MAP": "地図・GIS",
         "AI": "AI・KV260エッジ処理",
         "BILLING": "請求・請求書",
         "CONTACT": "公開連絡先",
@@ -94,7 +94,7 @@
     },
     "deviceKeys": {
       "title": "デバイスAPIキー",
-      "intro": "地上局やUAVゲートウェイはデバイスキーでテレメトリを送信します。キーはテレメトリ送信のみ可能で、他のAPIは呼び出せません。",
+      "intro": "デバイスキーはテレメトリー送信専用です。",
       "create": "キーを作成",
       "showRevoked": "失効したキーも表示",
       "empty": "デバイスキーはまだありません。",
@@ -118,18 +118,18 @@
       "noExpiry": "期限なし",
       "revoke": "失効させる",
       "revokeTitle": "デバイスキーを失効",
-      "revokeConfirm": "「{name}」（{prefix}…）を失効させますか？このキーを使うデバイスは直ちに拒否されます。元に戻せません。",
+      "revokeConfirm": "\"{name}\"（{prefix}…）を失効しますか？即時拒否され、元に戻せません。",
       "createTitle": "デバイスキーを作成",
       "form": {
         "name": "キー名",
         "namePlaceholder": "例：ホアラック局 – ゲートウェイ1",
         "uav": "UAVに紐付け",
-        "uavHint": "キーは1機のUAVに紐付けることを推奨します。「すべてのUAV」はどのUAVのテレメトリも送信できます。",
+        "uavHint": "キーごとに1機の UAV に紐付けてください。",
         "expiresAt": "有効期限（任意）",
-        "expiresHint": "期限なしの場合は空欄。サーバー時刻です。"
+        "expiresHint": "空欄で無期限（サーバー時刻）。"
       },
       "createdTitle": "キーを作成しました",
-      "onceWarning": "キーが表示されるのは今回だけです。今すぐデバイスにコピーしてください。保存されるのはハッシュのみです。",
+      "onceWarning": "キーは一度だけ表示されます。今すぐコピーして保存してください。",
       "secretLabel": "デバイスキー",
       "copy": "コピー",
       "copied": "コピーしました",

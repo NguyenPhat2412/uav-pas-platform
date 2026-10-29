@@ -25,6 +25,7 @@ import {useI18n} from '@/contexts/I18nContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
 import {AccountMenu} from '@/components/layout/AccountMenu';
 import {AdminAlertsPopover} from '@/components/layout/AdminAlertsPopover';
+import {NotificationBell} from '@/components/notifications/NotificationBell';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {
@@ -221,6 +222,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                         <HeaderSearch items={visibleNav.map(item => ({href: item.href, label: getNavLabel(item), group: t(`adminNavGroups.${item.group}`)}))}/>
                         <PortalSwitcher currentPortal="admin"/>
                         <AdminAlertsPopover/>
+                        <NotificationBell viewAllHref="/admin/notifications"/>
                         <LanguageSwitcher variant="compact" className="hidden sm:inline-flex"/>
                         <AccountMenu portal="admin"/>
                     </div>

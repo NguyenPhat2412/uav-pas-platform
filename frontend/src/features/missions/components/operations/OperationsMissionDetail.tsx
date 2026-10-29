@@ -3,6 +3,7 @@ import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention} from "@/lib/api/m
 import {useCallback, useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {MissionRequestDetails} from '@/features/missions/components/MissionRequestDetails';
+import {MissionMonitoring} from '@/features/missions/components/customer/MissionMonitoring';
 import {useParams, useRouter} from 'next/navigation';
 import {ArrowLeft, CheckCircle2, Play} from 'lucide-react';
 import {MissionTimeline} from "@/components/shared/MissionTimeline";
@@ -221,14 +222,15 @@ function MissionDetail({id}: { id: string }) {
     };
     const confirmAction = () => {
         if (!confirmation || !controls[confirmation]) return;
-        if (['reject', 'conflict', 'fail', 'complete'].includes(confirmation) && !note.trim()) return;
+        if (['reject', 'conflict', 'fail', 'forceFail', 'complete'].includes(confirmation) && !note.trim()) return;
         if (confirmation === 'complete' && (!extraNote.trim() || !canFinish)) return;
         const run = {
             reject: () => missionService.reject(mission.id, note.trim()),
             conflict: () => missionService.reportConflict(mission.id, note.trim()),
             complete: () => missionService.complete(mission.id, note, extraNote),
             cancel: () => missionService.cancel(mission.id),
-            fail: () => missionService.fail(mission.id, note, extraNote)
+            fail: () => missionService.fail(mission.id, note, extraNote),
+            forceFail: () => missionService.forceFail(mission.id, note, extraNote)
         }[confirmation];
         void action(run);
     };
@@ -348,6 +350,8 @@ function MissionDetail({id}: { id: string }) {
                                                       leftIcon={<CheckCircle2 size={16}/>}>{t('opsMissions.detail.actions.complete')}</Button>}
                         {controls.fail &&
                             <Button disabled={disabled} variant="danger" onClick={() => openConfirmation('fail')}>{t('opsMissions.detail.actions.fail')}</Button>}
+                        {controls.forceFail &&
+                            <Button disabled={disabled} variant="danger" onClick={() => openConfirmation('forceFail')}>{t('opsMissions.detail.actions.forceFail')}</Button>}
                         {controls.conflict &&
                             <Button disabled={disabled} variant="outline" onClick={() => openConfirmation('conflict')}>{t('opsMissions.detail.actions.conflict')}</Button>}
                         {controls.reject &&
@@ -373,12 +377,14 @@ function MissionDetail({id}: { id: string }) {
                         <p className={mutedClass}>{t('opsMissions.detail.cancelWarning')}</p> : <>
                             {confirmation === 'fail' &&
                                 <p className={mutedClass}>{t('opsMissions.detail.failWarning')}</p>}
-                            <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{confirmation === 'complete' ? t('opsMissions.detail.note.result') : confirmation === 'fail' ? t('opsMissions.detail.note.failureReason') : t('opsMissions.detail.note.reason')}<RequiredMark/></span>
+                            {confirmation === 'forceFail' &&
+                                <p className={mutedClass}>{t('opsMissions.detail.forceFailWarning')}</p>}
+                            <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{confirmation === 'complete' ? t('opsMissions.detail.note.result') : confirmation === 'fail' || confirmation === 'forceFail' ? t('opsMissions.detail.note.failureReason') : t('opsMissions.detail.note.reason')}<RequiredMark/></span>
                                 <textarea autoFocus aria-required disabled={disabled} className={textareaClass}
                                           value={note} onChange={e => setNote(e.target.value)}/>
                                 <span className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.detail.note.maxLength', {count: 500})}</span>
                             </label>
-                            {confirmation === 'fail' &&
+                            {(confirmation === 'fail' || confirmation === 'forceFail') &&
                                 <label className="grid gap-1.5 text-sm font-semibold text-foreground">{t('opsMissions.detail.note.incident')}<textarea disabled={disabled} className={textareaClass}
                                                                          value={extraNote}
                                                                          onChange={e => setExtraNote(e.target.value)}/></label>}
@@ -390,8 +396,8 @@ function MissionDetail({id}: { id: string }) {
                                     className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.detail.note.equipmentConditionHint')}</span></label>}
                         </>}
                     <div className={actionsClass}><Button type="button" variant="outline" disabled={disabled}
-                                                             onClick={() => setConfirmation(null)}>{t('opsMissions.detail.backAction')}</Button><Button type="submit" variant={confirmation === 'fail' ? 'danger' : 'primary'}
-                                            disabled={disabled || (['reject', 'conflict', 'fail', 'complete'].includes(confirmation) && !note.trim()) || (confirmation === 'complete' && (!extraNote.trim() || !canFinish))}>{t(`opsMissions.detail.confirm.${confirmation}.submit`)}</Button>
+                                                             onClick={() => setConfirmation(null)}>{t('opsMissions.detail.backAction')}</Button><Button type="submit" variant={confirmation === 'fail' || confirmation === 'forceFail' ? 'danger' : 'primary'}
+                                            disabled={disabled || (['reject', 'conflict', 'fail', 'forceFail', 'complete'].includes(confirmation) && !note.trim()) || (confirmation === 'complete' && (!extraNote.trim() || !canFinish))}>{t(`opsMissions.detail.confirm.${confirmation}.submit`)}</Button>
                     </div>
                 </form>}
             {error && <div ref={mutationError} role="alert" tabIndex={-1}><Alert role="presentation"
@@ -413,8 +419,20 @@ function MissionDetail({id}: { id: string }) {
                                                                                                 if (actionLock.current) return;
                                                                                                 void load().catch(() => setError({key: 'opsMissions.detail.errors.reloadMissionFailed'}));
                                                                                             }}>{t('opsMissions.detail.retry')}</button></Alert>}
-            <nav className="flex flex-wrap gap-2" aria-label={t('opsMissions.detail.nav.label')}><a className={navPillClass} href="#resources">{t('opsMissions.detail.nav.resources')}</a><a
-                className={navPillClass} href="#media">{t('opsMissions.detail.nav.media')}</a><a className={navPillClass} href="#timeline">{t('opsMissions.detail.nav.timeline')}</a></nav>
+            <nav className="flex flex-wrap gap-2" aria-label={t('opsMissions.detail.nav.label')}>
+                <a className={navPillClass} href="#flight-map">{t('missionMonitor.mapTitle')}</a>
+                <a className={navPillClass} href="#resources">{t('opsMissions.detail.nav.resources')}</a>
+                <a className={navPillClass} href="#media">{t('opsMissions.detail.nav.media')}</a>
+                <a className={navPillClass} href="#timeline">{t('opsMissions.detail.nav.timeline')}</a>
+            </nav>
+            {(mission.flightPlan || (mission.latitude != null && mission.longitude != null)) && (
+                <section className={panelClass} id="flight-map">
+                    <header className={panelHeaderClass}><h2 className={panelTitleClass}>{t('missionMonitor.mapTitle')}</h2></header>
+                    <div className="p-5 md:p-6">
+                        <MissionMonitoring mission={mission}/>
+                    </div>
+                </section>
+            )}
             {resources.some(r => controls[r.key]) && <section className={panelClass}>
                 <header className={panelHeaderClass}><h2 className={panelTitleClass}>{t('opsMissions.detail.resources.title')}</h2></header>
                 <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2 md:p-6">{resources.filter(r => controls[r.key]).map(r =>

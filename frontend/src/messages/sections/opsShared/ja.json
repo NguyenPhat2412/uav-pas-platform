@@ -18,9 +18,9 @@
       },
       "cockpit": {
         "loading": "SAR任務を読み込み中…",
-        "loadError": "SAR任務を読み込めませんでした。再試行してください。",
+        "loadError": "SARミッションを読み込めません。再試行してください。",
         "emptyTitle": "進行中のSAR任務はありません",
-        "emptyBody": "捜索救助として登録された任務(LKP、捜索区域)がここに表示されます。",
+        "emptyBody": "LKPと捜索エリアのあるSARミッションがここに表示されます。",
         "openDispatch": "配車一覧を開く",
         "chooseMission": "SAR任務を選択",
         "urgent": "緊急優先",
@@ -32,13 +32,13 @@
         "updated": "{at} 更新",
         "dispatchButton": "救助座標を送信",
         "rthButton": "RTHを要求",
-        "selectTarget": "送信前にGPS座標のある検出を選択してください。",
-        "dispatchQueued": "{code} の救助座標を救助連携先へ送信しました。",
-        "dispatchUnconfigured": "内部に記録しましたが、{event} を受信するWebhookがありません。救助機関へ直接連絡してください。",
-        "rthConfirm": "UAV {uav} に帰還(RTH)要求を送信しますか?",
-        "rthQueued": "{code} のRTH要求を地上局へ送信しました。UAVの確認待ちです。",
-        "rthUnconfigured": "{event} を受信する地上局がありません。GCSから直接RTHを指示してください。",
-        "actionFailed": "操作を実行できませんでした。再試行してください。",
+        "selectTarget": "先にGPS座標のある目標を選択してください。",
+        "dispatchQueued": "{code} の救助座標を送信しました。",
+        "dispatchUnconfigured": "{event} を受信するWebhookがありません。救助機関に直接連絡してください。",
+        "rthConfirm": "UAV {uav} にRTHを送信しますか?",
+        "rthQueued": "{code} にRTHを送信しました。UAVの応答待ちです。",
+        "rthUnconfigured": "{event} を受信するGCSがありません。GCSで直接RTHしてください。",
+        "actionFailed": "操作に失敗しました。再試行してください。",
         "cameraError": "AI検出を表示できません",
         "mapError": "戦術マップを読み込めません",
         "hudError": "テレメトリ表示エラー",
@@ -50,7 +50,7 @@
         "loading": "検出を読み込み中…",
         "loadError": "AI検出を読み込めませんでした。",
         "noTask": "この任務のAIタスクはまだありません。",
-        "noFrame": "最新のAIタスクにフレームがありません。検出枠はグリッド上に表示します。",
+        "noFrame": "最新のAIタスクにフレームはありません。位置はグリッドに表示します。",
         "boxes": "検出枠 ({count})",
         "boxAria": "{label}、信頼度 {confidence}",
         "confidence": "信頼度:",
@@ -93,7 +93,7 @@
         "noUav": "この任務にUAVが割り当てられていません。",
         "loading": "テレメトリを読み込み中…",
         "waiting": "UAV {serial} からテレメトリをまだ受信していません。",
-        "stale": "最新テレメトリは {seconds} 秒前のものです。地上局との接続を確認してください。",
+        "stale": "テレメトリが古い({seconds}秒)。GCSリンクを確認してください。",
         "altitude": "高度(AGL)",
         "speed": "対地速度",
         "battery": "バッテリー",
@@ -137,17 +137,17 @@
       "loadingData": "データを読み込み中",
       "forbiddenAction": "この操作を行う権限がありません。",
       "errors": {
-        "equipmentReleaseRequired": "この機材はミッション用に確保されています。在庫のずれを防ぐため、ミッションを開いて機材を返却してください。",
+        "equipmentReleaseRequired": "機材はミッションで引当中です。ミッション側で返却してください。",
         "inventoryNotAvailable": "機材が稼働していないか、利用可能な数量が不足しています。",
-        "equipmentReserved": "機材は確保中です。基地を変更する前に確保を解除してください。",
-        "missionMediaLocked": "ミッションは終了しました。ファイルは閲覧・ダウンロードのみ可能で、追加・編集・削除はできません。"
+        "equipmentReserved": "機材は引当中です。ステーション変更前に返却してください。",
+        "missionMediaLocked": "ミッション終了。ファイルは閲覧・ダウンロードのみです。"
       },
       "retry": "再試行",
       "recheckPermissions": "権限を再確認",
       "noAccessTitle": "アクセス権がありません",
-      "noAccessDetail": "このアカウントにはこの項目を閲覧する権限がありません。必要な場合は管理者に連絡してください。",
+      "noAccessDetail": "アクセスが必要な場合は管理者に連絡してください。",
       "noMatchingData": "該当するデータがありません",
-      "noMatchingDetail": "フィルターを変更するか、権限があればデータを追加してください。",
+      "noMatchingDetail": "フィルターを変更してください。",
       "dataTable": "データテーブル",
       "previousPage": "前のページ",
       "nextPage": "次のページ",
@@ -160,8 +160,8 @@
     },
     "errorBoundary": {
       "title": "このエリアを表示できません",
-      "detail": "データの描画中にエラーが発生しました。",
-      "reset": "ウィジェットを復元"
+      "detail": "表示エラーが発生しました。",
+      "reset": "再試行"
     },
     "query": {
       "serverError": "サーバーで処理エラーが発生しました。",
@@ -186,13 +186,13 @@
     },
     "routes": {
       "operations": {
-        "errorTitle": "運用エリアの表示が中断されました",
-        "errorDetail": "作戦データの読み込み中に例外が発生しました。再読み込みするか概要ページに戻ってください。",
+        "errorTitle": "ページを表示できません",
+        "errorDetail": "データを読み込めません。再試行するか概要に戻ってください。",
         "reload": "再読み込み",
         "backOverview": "概要へ戻る",
-        "notFoundTitle": "運用モジュールが見つかりません",
-        "notFoundDetail": "リクエストされたパスまたはリソースは存在しないか、移動されました。",
-        "notFoundBack": "運用概要へ戻る"
+        "notFoundTitle": "ページが見つかりません",
+        "notFoundDetail": "このリンクは存在しないか、移動されました。",
+        "notFoundBack": "概要へ戻る"
       },
       "customer": {
         "errorTitle": "ページを表示できません",

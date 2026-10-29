@@ -20,3 +20,5 @@ export function rememberRecentPage(key: string, href: string) {
 }
 
 export const ADMIN_RECENT_PAGES_KEY = 'uav_admin_recent_pages';
+export const OPERATIONS_RECENT_PAGES_KEY = 'uav_ops_recent_pages';
+export const CUSTOMER_RECENT_PAGES_KEY = 'uav_customer_recent_pages';

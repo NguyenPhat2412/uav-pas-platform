@@ -18,9 +18,9 @@
       },
       "cockpit": {
         "loading": "Loading SAR missions…",
-        "loadError": "Could not load SAR missions. Please try again.",
+        "loadError": "Couldn’t load SAR missions. Retry.",
         "emptyTitle": "No open SAR missions",
-        "emptyBody": "Missions registered for search and rescue (LKP, search area) appear here.",
+        "emptyBody": "SAR missions with an LKP and search area appear here.",
         "openDispatch": "Open dispatch list",
         "chooseMission": "Choose SAR mission",
         "urgent": "Urgent priority",
@@ -32,13 +32,13 @@
         "updated": "Updated {at}",
         "dispatchButton": "Send rescue coordinates",
         "rthButton": "Request RTH",
-        "selectTarget": "Select a detection with GPS coordinates before sending.",
-        "dispatchQueued": "Rescue coordinates for {code} sent to the rescue integration.",
-        "dispatchUnconfigured": "Recorded internally, but no webhook subscribes to {event}. Contact the rescue authority directly.",
-        "rthConfirm": "Send a return-to-home request for UAV {uav}?",
-        "rthQueued": "RTH request for {code} sent to the ground station. Awaiting UAV confirmation.",
-        "rthUnconfigured": "No ground station subscribes to {event}. Issue RTH from the GCS directly.",
-        "actionFailed": "The action could not be completed. Please try again.",
+        "selectTarget": "Select a target with GPS coordinates first.",
+        "dispatchQueued": "Rescue coordinates for {code} sent.",
+        "dispatchUnconfigured": "No webhook receives {event}. Contact rescue directly.",
+        "rthConfirm": "Send RTH to UAV {uav}?",
+        "rthQueued": "RTH sent for {code}. Awaiting UAV ack.",
+        "rthUnconfigured": "No GCS receives {event}. Command RTH on the GCS.",
+        "actionFailed": "Action failed. Retry.",
         "cameraError": "Could not display AI detections",
         "mapError": "Could not load the tactical map",
         "hudError": "Telemetry display error",
@@ -50,7 +50,7 @@
         "loading": "Loading detections…",
         "loadError": "Could not load AI detections.",
         "noTask": "No AI task has run for this mission yet.",
-        "noFrame": "The latest AI task has no frame attached; boxes are drawn on a grid.",
+        "noFrame": "No frame in the latest AI task; boxes shown on the grid.",
         "boxes": "Bounding boxes ({count})",
         "boxAria": "{label}, confidence {confidence}",
         "confidence": "Confidence:",
@@ -93,7 +93,7 @@
         "noUav": "No UAV is assigned to this mission.",
         "loading": "Loading telemetry…",
         "waiting": "No telemetry received from UAV {serial} yet.",
-        "stale": "Latest telemetry is {seconds} s old. Check the ground-station link.",
+        "stale": "Telemetry stale ({seconds}s). Check the GCS link.",
         "altitude": "Altitude (AGL)",
         "speed": "Ground speed",
         "battery": "Battery",
@@ -137,17 +137,17 @@
       "loadingData": "Loading data",
       "forbiddenAction": "You do not have permission to perform this action.",
       "errors": {
-        "equipmentReleaseRequired": "This equipment is reserved for a mission. Open the mission and release the equipment to keep inventory accurate.",
+        "equipmentReleaseRequired": "Equipment is reserved for a mission. Release it there.",
         "inventoryNotAvailable": "The equipment is inactive or not enough units are available.",
-        "equipmentReserved": "The equipment is reserved. Release the reservations before changing station.",
-        "missionMediaLocked": "The mission has ended. Files can only be viewed or downloaded; they cannot be added, edited or deleted."
+        "equipmentReserved": "Equipment is reserved. Release it before changing station.",
+        "missionMediaLocked": "Mission closed. Files are view and download only."
       },
       "retry": "Retry",
       "recheckPermissions": "Check permissions again",
       "noAccessTitle": "Access denied",
-      "noAccessDetail": "Your account has not been granted permission to view this section. Contact an administrator if you need access.",
+      "noAccessDetail": "Contact an admin if you need access.",
       "noMatchingData": "No matching data",
-      "noMatchingDetail": "Try changing the filters, or add data if you have permission.",
+      "noMatchingDetail": "Try changing the filters.",
       "dataTable": "Data table",
       "previousPage": "Previous",
       "nextPage": "Next",
@@ -160,8 +160,8 @@
     },
     "errorBoundary": {
       "title": "This section could not be displayed",
-      "detail": "An error occurred while rendering data.",
-      "reset": "Restore widget"
+      "detail": "Rendering error.",
+      "reset": "Retry"
     },
     "query": {
       "serverError": "The server failed to process the request.",
@@ -186,13 +186,13 @@
     },
     "routes": {
       "operations": {
-        "errorTitle": "The operations area was interrupted",
-        "errorDetail": "An exception occurred while loading operations data. Please reload or return to the overview.",
+        "errorTitle": "Can’t display this page",
+        "errorDetail": "Couldn’t load data. Retry or go to overview.",
         "reload": "Reload",
         "backOverview": "Back to overview",
-        "notFoundTitle": "Operations module not found",
-        "notFoundDetail": "The operations path or resource you requested does not exist or has been moved.",
-        "notFoundBack": "Back to operations overview"
+        "notFoundTitle": "Page not found",
+        "notFoundDetail": "This link doesn’t exist or has moved.",
+        "notFoundBack": "Back to overview"
       },
       "customer": {
         "errorTitle": "This page cannot be displayed",

@@ -72,7 +72,7 @@ export default function HowItWorksPage() {
         <div className="bg-card text-foreground">
             {/* Top Interactive Flight Route Header */}
             <section className="border-b border-border bg-slate-50/70 py-12 sm:py-16">
-                <div className="mx-auto w-full max-w-6xl space-y-8 px-4 sm:px-6">
+                <div className="mx-auto w-full max-w-[1380px] space-y-8 px-5 sm:px-8 lg:px-12">
                     <div className="max-w-2xl space-y-2">
                         <p className="text-xs font-extrabold uppercase tracking-widest text-primary">
                             Quy trình thực hiện • 5 Bước khép kín

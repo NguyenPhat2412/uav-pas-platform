@@ -29,13 +29,13 @@
       "durationHours": "{hours} giờ {minutes} phút"
     },
     "deployment": {
-      "note": "Phiên bản, mã commit và thời điểm build được gắn khi build image (DEPLOY.md mục 8). Trang này chỉ đọc; triển khai lại thực hiện qua SSH.",
+      "note": "Chỉ đọc. Triển khai lại qua SSH (DEPLOY.md mục 8).",
       "banner": "Đang chạy phiên bản {version}",
       "bannerDetail": "Commit {commit} · Schema Flyway {flyway}",
-      "failedMigrations": "{count} migration thất bại: backend có thể không khởi động lại được, kiểm tra log ngay.",
+      "failedMigrations": "{count} migration thất bại. Kiểm tra log ngay.",
       "build": "Bản build",
       "runtime": "Môi trường chạy",
-      "unknownBuildHint": "Image được build không kèm thông tin phiên bản. Dùng lệnh build ở DEPLOY.md mục 8 để hiển thị commit và thời điểm build.",
+      "unknownBuildHint": "Chưa gắn phiên bản. Build theo DEPLOY.md mục 8.",
       "version": "Phiên bản",
       "commit": "Commit",
       "buildTime": "Thời điểm build",
@@ -67,12 +67,12 @@
         "UNREACHABLE": "Không kết nối được"
       },
       "hint": {
-        "OK": "Kiểm tra mỗi giờ một lần tại địa chỉ công khai. Nếu bật proxy Cloudflare, đây là chứng chỉ của Cloudflare; chứng chỉ certbot trên VPS kiểm tra bằng `certbot certificates`.",
-        "EXPIRING": "Còn dưới 14 ngày. Trên VPS chạy `certbot renew --dry-run` và kiểm tra timer certbot (DEPLOY.md mục 10.3).",
-        "EXPIRED": "Chứng chỉ đã hết hạn: trình duyệt sẽ chặn truy cập. Gia hạn ngay qua SSH bằng certbot.",
-        "NOT_HTTPS": "APP_PUBLIC_URL không dùng https, nên không có chứng chỉ để kiểm tra (bình thường khi chạy local).",
-        "NOT_CONFIGURED": "Chưa đặt APP_PUBLIC_URL cho backend.",
-        "UNREACHABLE": "Backend không bắt tay TLS được tới địa chỉ công khai (DNS, tường lửa hoặc nginx). Sẽ thử lại sau 10 phút."
+        "OK": "Kiểm tra mỗi giờ. VPS: certbot certificates.",
+        "EXPIRING": "Dưới 14 ngày. Chạy certbot renew --dry-run (mục 10.3).",
+        "EXPIRED": "Đã hết hạn. Gia hạn ngay bằng certbot.",
+        "NOT_HTTPS": "APP_PUBLIC_URL không dùng https.",
+        "NOT_CONFIGURED": "Chưa đặt APP_PUBLIC_URL.",
+        "UNREACHABLE": "Lỗi TLS tới địa chỉ công khai. Thử lại sau 10 phút."
       },
       "notAfter": "Hết hạn lúc",
       "daysLeft": "Số ngày còn lại",
@@ -81,7 +81,7 @@
       "checkedAt": "Kiểm tra lúc"
     },
     "backups": {
-      "note": "Đọc từ thư mục sao lưu gắn chỉ-đọc vào backend. Ứng dụng không thể tạo, xóa hay khôi phục bản sao lưu.",
+      "note": "Chỉ đọc. Không tạo, xóa hay khôi phục từ đây.",
       "status": {
         "OK": "Sao lưu đúng hạn",
         "STALE": "Sao lưu quá hạn",
@@ -89,10 +89,10 @@
         "NOT_CONFIGURED": "Chưa cấu hình thư mục sao lưu"
       },
       "hint": {
-        "OK": "Bản sao lưu gần nhất mới hơn {hours} giờ.",
-        "STALE": "Lần sao lưu thành công gần nhất đã quá {hours} giờ. Kiểm tra cron /etc/cron.daily/uav-pas-backup trên VPS.",
-        "MISSING": "Thư mục không có tệp *.sql.gz hoặc chưa được gắn vào container. Xem DEPLOY.md mục 9 và 10.4.",
-        "NOT_CONFIGURED": "APP_BACKUP_DIR chưa được đặt (bình thường khi chạy local)."
+        "OK": "Bản gần nhất trong {hours} giờ.",
+        "STALE": "Quá {hours} giờ. Kiểm tra cron uav-pas-backup.",
+        "MISSING": "Không có *.sql.gz. Xem DEPLOY.md mục 9, 10.4.",
+        "NOT_CONFIGURED": "Chưa đặt APP_BACKUP_DIR."
       },
       "lastSuccess": "Thành công gần nhất",
       "hoursAgo": "{hours} giờ trước",
@@ -108,23 +108,23 @@
       "offsite": "Bản sao ngoài VPS",
       "offsiteUnknown": "Ứng dụng không thấy",
       "offsiteTarget": "Nơi lưu",
-      "offsiteHint": "Ứng dụng không có quyền đọc bucket sao lưu. Kiểm tra trên Cloudflare R2 (bucket uavpas-backups) hoặc chạy `rclone ls r2backup:uavpas-backups/db/` trên VPS.",
+      "offsiteHint": "Kiểm tra: rclone ls r2backup:uavpas-backups/db/.",
       "restore": "Khôi phục",
-      "restoreHint": "Khôi phục chỉ làm qua SSH, thử trước vào một database tạm (DEPLOY.md mục 9.4). Không có nút khôi phục ở đây để tránh ghi đè dữ liệu đang chạy do bấm nhầm hoặc do tài khoản admin bị chiếm."
+      "restoreHint": "Chỉ qua SSH, thử DB tạm trước (mục 9.4)."
     },
     "storage": {
-      "note": "Không hiển thị endpoint, tên bucket hay khóa truy cập. Số liệu bucket được lưu đệm 10 phút.",
+      "note": "Ẩn endpoint và khóa. Số liệu đệm 10 phút.",
       "reachable": {
         "UP": "Kho tệp {provider} hoạt động",
         "DOWN": "Không kết nối được kho tệp {provider}",
         "UNKNOWN": "Không xác định được trạng thái kho tệp {provider}"
       },
       "usageError": "Không liệt kê được bucket ({error}).",
-      "cleanupWarn": "Có tệp đã xóa nhưng chưa được dọn khỏi kho quá hạn hoặc đang thử lại.",
+      "cleanupWarn": "Có tệp dọn quá hạn hoặc đang thử lại.",
       "provider": "Nhà cung cấp: {provider}",
       "bucket": "Dung lượng bucket",
-      "truncated": "Bucket có quá nhiều đối tượng; số liệu dừng ở giới hạn quét nên là giá trị tối thiểu.",
-      "cacheHint": "Đếm toàn bộ đối tượng trong bucket, kể cả tệp chưa được xác nhận.",
+      "truncated": "Quá nhiều đối tượng; số liệu là tối thiểu.",
+      "cacheHint": "Tính cả tệp chưa xác nhận.",
       "objects": "Số đối tượng",
       "totalSize": "Tổng dung lượng",
       "mediaBytes": "Tệp đã xác nhận",
@@ -132,7 +132,7 @@
       "providerLabel": "Nhà cung cấp",
       "media": "Vòng đời tệp media",
       "attention": "Cần chú ý",
-      "mediaHint": "Tệp bị xóa được dọn khỏi kho bởi tác vụ nền; quá hạn nghĩa là đã quá 1 giờ so với lịch dọn.",
+      "mediaHint": "Quá hạn: trễ hơn 1 giờ so với lịch dọn.",
       "confirmed": "Đã xác nhận",
       "awaitingUpload": "Đang chờ tải lên",
       "expiredUploads": "Tải lên hết hạn",
@@ -142,7 +142,7 @@
       "cleanupRetrying": "Đang thử dọn lại"
     },
     "database": {
-      "note": "Số liệu của database hiện tại, làm mới mỗi 30 giây. Không hiển thị chuỗi kết nối hay tài khoản.",
+      "note": "Làm mới mỗi 30 giây. Ẩn chuỗi kết nối.",
       "banner": "PostgreSQL {version}",
       "bannerDetail": "Dung lượng {size} · {used}/{max} kết nối",
       "connections": "Kết nối",
@@ -150,31 +150,31 @@
       "idle": "Rảnh",
       "idleInTransaction": "Treo trong giao dịch",
       "usage": "Đã dùng / tối đa",
-      "pool": "Pool kết nối của backend (Hikari)",
-      "poolHint": "Có luồng đang chờ nghĩa là pool đã đầy: truy vấn chậm hoặc pool quá nhỏ.",
+      "pool": "Pool kết nối (Hikari)",
+      "poolHint": "Có luồng chờ: pool đầy hoặc truy vấn chậm.",
       "poolUnavailable": "Không đọc được số liệu pool.",
       "poolActive": "Đang dùng / tối đa",
       "poolIdle": "Rảnh",
       "poolTotal": "Tổng",
       "poolWaiting": "Luồng đang chờ",
       "tables": "10 bảng lớn nhất",
-      "rowsHint": "Số dòng là ước tính của PostgreSQL, cập nhật khi autovacuum chạy.",
+      "rowsHint": "Số dòng ước tính, cập nhật theo autovacuum.",
       "colTable": "Bảng",
       "colSize": "Dung lượng (gồm index)",
       "colRows": "Số dòng (ước tính)"
     },
     "email": {
-      "note": "Máy chủ SMTP, tài khoản và mật khẩu không bao giờ được hiển thị. Thay đổi cấu hình trong .env.production trên VPS rồi tạo lại container backend.",
+      "note": "Ẩn SMTP. Sửa .env.production rồi tạo lại backend.",
       "connection": {
         "UP": "Máy chủ gửi thư kết nối được",
         "DOWN": "Không kết nối được máy chủ gửi thư",
         "DISABLED": "Gửi email đang tắt",
         "UNKNOWN": "Chưa xác định được kết nối gửi thư"
       },
-      "enabledDetail": "Mã OTP, xác thực 2 lớp và đặt lại mật khẩu được gửi qua email.",
-      "disabledDetail": "APP_MAIL_ENABLED=false: mã OTP không được gửi tới người dùng.",
+      "enabledDetail": "Gửi OTP, 2FA và đặt lại mật khẩu.",
+      "disabledDetail": "APP_MAIL_ENABLED=false: không gửi OTP.",
       "config": "Cấu hình",
-      "configHint": "Chỉ hiển thị có/không cho máy chủ và tài khoản SMTP.",
+      "configHint": "Máy chủ và tài khoản chỉ hiện có/không.",
       "enabled": "Bật gửi email",
       "hostConfigured": "Đã đặt máy chủ SMTP",
       "usernameConfigured": "Đã đặt tài khoản SMTP",
@@ -187,56 +187,53 @@
         "DISABLED": "Đang tắt",
         "UNKNOWN": "Không rõ"
       },
-      "connectionHint": "Chỉ mở kết nối và đăng nhập SMTP, không gửi thư. Kết quả lưu đệm 5 phút.",
+      "connectionHint": "Chỉ đăng nhập SMTP, không gửi. Đệm 5 phút.",
       "lastProbe": "Kiểm tra gần nhất",
       "testTitle": "Gửi email thử",
-      "testHint": "Chỉ gửi tới email của chính bạn; tối đa một lần mỗi {seconds} giây.",
+      "testHint": "Gửi tới email của bạn; mỗi {seconds} giây một lần.",
       "testRecipient": "Người nhận: {email}",
       "noRecipient": "Tài khoản của bạn chưa có email.",
       "sending": "Đang gửi…",
       "send": "Gửi email thử",
-      "testDisabled": "Bật APP_MAIL_ENABLED trên VPS để gửi thử.",
-      "testSent": "Đã gửi tới {email} lúc {time}. Kiểm tra cả thư mục spam.",
-      "testFailed": "Gửi thất bại ({error}). Xem log backend để biết chi tiết."
+      "testDisabled": "Bật APP_MAIL_ENABLED để gửi thử.",
+      "testSent": "Đã gửi tới {email} lúc {time}. Xem cả spam.",
+      "testFailed": "Gửi thất bại ({error}). Xem log backend."
     },
     "overview": {
-      "intro": "Các trang dưới đây chỉ đọc trạng thái hạ tầng. Mọi thao tác thay đổi máy chủ đều làm qua SSH theo DEPLOY.md.",
       "deploymentSummary": "{version} · {commit} · HTTPS: {tls}",
       "cards": {
-        "deployment": "Phiên bản, commit, migration Flyway, hạn chứng chỉ HTTPS.",
-        "backups": "Bản pg_dump hằng ngày trên VPS và lần sao lưu thành công gần nhất.",
-        "storage": "Dung lượng Cloudflare R2 và hàng đợi dọn tệp media.",
-        "database": "Kết nối, pool, dung lượng và các bảng lớn nhất.",
-        "email": "Cấu hình gửi thư, kiểm tra kết nối, gửi thư thử cho chính bạn.",
-        "health": "Bảng tổng hợp sức khỏe tất cả thành phần, làm mới mỗi 30 giây."
+        "deployment": "Phiên bản, migration, chứng chỉ HTTPS.",
+        "backups": "Bản pg_dump hằng ngày, lần gần nhất.",
+        "storage": "Dung lượng R2, hàng đợi dọn media.",
+        "database": "Kết nối, pool, bảng lớn nhất.",
+        "email": "Cấu hình SMTP, kiểm tra, gửi thử.",
+        "health": "Sức khỏe mọi thành phần, mỗi 30 giây."
       },
-      "runbookTitle": "Việc chỉ làm qua SSH",
-      "runbookIntro": "Ứng dụng web không được cấp quyền Docker hay shell: ai chiếm được một tài khoản admin sẽ không thể dùng nó để điều khiển máy chủ.",
-      "runbookFooter": "Hướng dẫn đầy đủ: deploy/DEPLOY.md (mục 8 cập nhật, 9 sao lưu, 10 giám sát).",
+      "runbookTitle": "Chỉ làm qua SSH",
       "runbook": {
         "restart": {
           "title": "Khởi động lại / triển khai",
-          "how": "docker compose … up -d --build (DEPLOY.md mục 8). Cần quyền root trên VPS."
+          "how": "docker compose … up -d --build (mục 8)"
         },
         "logs": {
-          "title": "Xem log container",
-          "how": "docker compose … logs --tail 200 backend. Log có thể chứa dữ liệu cá nhân nên không hiển thị trên web."
+          "title": "Xem log",
+          "how": "docker compose … logs --tail 200 backend"
         },
         "restore": {
           "title": "Khôi phục database",
-          "how": "Thử vào database tạm trước (mục 9.4). Ghi đè dữ liệu thật là thao tác không thể hoàn tác."
+          "how": "Thử DB tạm trước (mục 9.4)"
         },
         "certbot": {
           "title": "Gia hạn chứng chỉ",
-          "how": "certbot renew --dry-run; certbot certificates (mục 10.3)."
+          "how": "certbot renew --dry-run (mục 10.3)"
         },
         "secrets": {
-          "title": "Đổi mật khẩu, khóa R2, SMTP",
-          "how": "Sửa deploy/.env.production trên VPS rồi tạo lại container. Bí mật không bao giờ đi qua trang web."
+          "title": "Đổi bí mật",
+          "how": "Sửa .env.production, tạo lại container"
         },
         "uptime": {
-          "title": "Cảnh báo khi hệ thống sập",
-          "how": "Dịch vụ giám sát bên ngoài theo dõi /actuator/health (mục 10.1); trang này không thể báo khi chính nó không chạy."
+          "title": "Cảnh báo sập",
+          "how": "Giám sát ngoài /actuator/health (mục 10.1)"
         }
       }
     },
@@ -263,22 +260,22 @@
       },
       "hint": {
         "mail": {
-          "DOWN": "Không kết nối hoặc đăng nhập được máy chủ SMTP: người dùng sẽ không nhận được OTP. Xem trang Hạ tầng → Email.",
-          "DISABLED": "Gửi email đang tắt (APP_MAIL_ENABLED=false).",
-          "UNKNOWN": "Không kiểm tra được kết nối gửi thư."
+          "DOWN": "Lỗi SMTP: không gửi được OTP. Xem Hạ tầng → Email.",
+          "DISABLED": "Email đang tắt (APP_MAIL_ENABLED=false).",
+          "UNKNOWN": "Không kiểm tra được SMTP."
         },
         "backups": {
-          "DEGRADED": "Sao lưu quá hạn hoặc không có. Xem trang Hạ tầng → Sao lưu.",
+          "DEGRADED": "Sao lưu quá hạn hoặc thiếu. Xem Hạ tầng → Sao lưu.",
           "DOWN": "Không đọc được thư mục sao lưu.",
-          "UNKNOWN": "Chưa cấu hình thư mục sao lưu (APP_BACKUP_DIR)."
+          "UNKNOWN": "Chưa đặt APP_BACKUP_DIR."
         },
         "tls": {
-          "DEGRADED": "Chứng chỉ còn dưới 14 ngày hoặc không được tin cậy. Kiểm tra certbot.",
+          "DEGRADED": "Chứng chỉ dưới 14 ngày hoặc không tin cậy. Kiểm tra certbot.",
           "DOWN": "Chứng chỉ HTTPS đã hết hạn.",
-          "UNKNOWN": "Không kiểm tra được chứng chỉ (chưa đặt APP_PUBLIC_URL, không dùng https hoặc không kết nối được)."
+          "UNKNOWN": "Không kiểm tra được chứng chỉ (APP_PUBLIC_URL, https)."
         },
         "payments": {
-          "DEGRADED": "Chưa cấu hình tài khoản nhận chuyển khoản. Nhập thông tin ngân hàng ở Cấu hình hệ thống, nhóm Thanh toán.",
+          "DEGRADED": "Chưa có tài khoản nhận. Nhập ở Cấu hình → Thanh toán.",
           "DOWN": "Không đọc được cấu hình thanh toán.",
           "UNKNOWN": "Chưa kiểm tra được cấu hình thanh toán."
         }

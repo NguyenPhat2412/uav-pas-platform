@@ -26,7 +26,7 @@ const th = 'sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-
 const td = 'px-4 py-3 align-top text-foreground';
 
 /** Admin review of stored assistant chats from all three portals: search, filter, read and delete. */
-export function AssistantConversations() {
+export function AssistantConversations({actions}: { actions?: ReactNode } = {}) {
     const {t, formatDate, formatNumber} = useI18n();
     const [draft, setDraft] = useState('');
     const [filter, setFilter] = useState<ConversationFilter>({portal: '', q: '', page: 0, size: PAGE_SIZE});
@@ -57,6 +57,7 @@ export function AssistantConversations() {
                     {t(p ? `admin.assistantChats.portals.${p}` : 'admin.assistantChats.allPortals')}</button>)}
             </div>
             <Button type="submit" size="sm">{t('admin.assistantChats.apply')}</Button>
+            {actions && <div className="ml-auto flex flex-wrap items-center gap-2">{actions}</div>}
         </form>
         <QueryState query={list}>{list.data?.content.length ? <>
             <div className="overflow-x-auto" tabIndex={0} aria-label={t('admin.assistantChats.table')}>

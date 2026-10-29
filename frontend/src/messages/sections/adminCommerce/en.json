@@ -54,9 +54,9 @@
         "bank": "Receiving bank (BIN · account)",
         "created": "Recorded at",
         "completed": "Completed at",
-        "amountMismatch": "The transaction amount differs from the invoice amount — reconcile it.",
+        "amountMismatch": "Amount differs from invoice — reconcile.",
         "raw": "Raw callback data",
-        "rawHint": "Sensitive fields (signatures, tokens, keys) are masked.",
+        "rawHint": "Signatures, tokens and keys are masked.",
         "noRaw": "No callback data."
       }
     },
@@ -67,7 +67,7 @@
       "LOCAL_COMPLETED": "Processed"
     },
     "outbox": {
-      "intro": "Each financial event (invoice issued, payment recorded) creates a customer notification and queues webhooks. The background worker runs every minute; \"Retry\" only puts a failed or stuck event back in the queue right away.",
+      "intro": "The worker runs every minute; \"Retry\" requeues failed events now.",
       "filterLabel": "Filter by status",
       "table": "Financial events table",
       "empty": "No events.",
@@ -78,10 +78,10 @@
       "payload": "Event payload",
       "detailTitle": "Event {type}",
       "retry": "Retry",
-      "retryConfirm": "Put event {id} back in the queue for immediate reprocessing?",
-      "retried": "Event {id} requeued. The background worker will pick it up within a minute.",
-      "retryHint": "Retrying never duplicates: notifications and webhooks already created are not created again.",
-      "notRetryable": "This event is already processed or waiting for its first run; no retry needed.",
+      "retryConfirm": "Requeue event {id} now?",
+      "retried": "Event {id} requeued; runs within a minute.",
+      "retryHint": "Retrying never duplicates notifications or webhooks.",
+      "notRetryable": "Already processed or awaiting its first run.",
       "col": {
         "event": "Event",
         "invoice": "Invoice",
@@ -95,20 +95,20 @@
     },
     "webhooks": {
       "retry": "Resend",
-      "retryConfirm": "Resend {event} to {name}? The delivery is queued with 3 fresh attempts.",
-      "retried": "Resend queued. The outcome appears in the log after the next delivery run.",
+      "retryConfirm": "Resend {event} to {name} (3 fresh attempts)?",
+      "retried": "Resend queued.",
       "rotate": "Rotate signing secret for {name}",
-      "rotateConfirm": "Generate a new signing secret for {name}? The old secret stops working immediately; the receiver must switch to the new secret to verify signatures.",
+      "rotateConfirm": "Rotate {name}'s signing secret? The old one stops working now.",
       "maskedSecret": "Signing secret (masked)",
-      "createSecretHint": "Copy this secret before creating — once saved, only a masked value is shown.",
+      "createSecretHint": "Copy before creating; only a masked value shows afterwards.",
       "secret": {
         "title": "New webhook signing secret",
-        "intro": "New signing secret for \"{name}\". Use it to verify the HMAC-SHA256 signature header on every webhook.",
+        "intro": "New HMAC-SHA256 signing secret for \"{name}\".",
         "label": "New signing secret",
         "copy": "Copy",
         "copied": "Copied",
-        "copyFailed": "Could not copy. Select the value and copy it manually.",
-        "warning": "This secret is shown only once. After closing this dialog it cannot be viewed again — if lost, rotate it again.",
+        "copyFailed": "Couldn't copy; copy it manually.",
+        "warning": "Shown only once; rotate again if lost.",
         "done": "I have saved it"
       }
     },

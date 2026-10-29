@@ -54,9 +54,9 @@
         "bank": "Ngân hàng nhận (BIN · tài khoản)",
         "created": "Ghi nhận lúc",
         "completed": "Hoàn tất lúc",
-        "amountMismatch": "Số tiền giao dịch khác số tiền hóa đơn — cần đối soát.",
+        "amountMismatch": "Số tiền khác hóa đơn — cần đối soát.",
         "raw": "Dữ liệu callback gốc",
-        "rawHint": "Các trường nhạy cảm (chữ ký, token, khóa) đã được che.",
+        "rawHint": "Chữ ký, token và khóa đã được che.",
         "noRaw": "Không có dữ liệu callback."
       }
     },
@@ -67,7 +67,7 @@
       "LOCAL_COMPLETED": "Đã xử lý"
     },
     "outbox": {
-      "intro": "Mỗi sự kiện tài chính (phát hành hóa đơn, ghi nhận thanh toán) tạo thông báo cho khách hàng và xếp hàng webhook. Bộ xử lý nền chạy mỗi phút; nút \"Thử lại\" chỉ đưa sự kiện lỗi hoặc bị kẹt về hàng đợi ngay.",
+      "intro": "Bộ xử lý chạy mỗi phút; \"Thử lại\" xếp lại sự kiện lỗi ngay.",
       "filterLabel": "Lọc theo trạng thái",
       "table": "Bảng sự kiện tài chính",
       "empty": "Không có sự kiện nào.",
@@ -78,10 +78,10 @@
       "payload": "Nội dung sự kiện",
       "detailTitle": "Sự kiện {type}",
       "retry": "Thử lại",
-      "retryConfirm": "Đưa sự kiện {id} về hàng đợi để xử lý lại ngay?",
-      "retried": "Đã xếp lại sự kiện {id}. Bộ xử lý nền sẽ chạy trong vòng một phút.",
-      "retryHint": "Thử lại không gửi trùng: thông báo và webhook đã tạo sẽ không bị tạo lần nữa.",
-      "notRetryable": "Sự kiện này đã xử lý xong hoặc đang chờ lượt xử lý đầu tiên, không cần thử lại.",
+      "retryConfirm": "Xếp lại sự kiện {id} để xử lý ngay?",
+      "retried": "Đã xếp lại sự kiện {id}; xử lý trong vòng 1 phút.",
+      "retryHint": "Thử lại không tạo trùng thông báo hay webhook.",
+      "notRetryable": "Sự kiện đã xử lý hoặc đang chờ lượt đầu.",
       "col": {
         "event": "Sự kiện",
         "invoice": "Hóa đơn",
@@ -95,20 +95,20 @@
     },
     "webhooks": {
       "retry": "Gửi lại",
-      "retryConfirm": "Gửi lại sự kiện {event} tới {name}? Lượt gửi được xếp hàng với 3 lần thử mới.",
-      "retried": "Đã xếp hàng gửi lại. Kết quả sẽ hiện trong nhật ký sau lần gửi kế tiếp.",
+      "retryConfirm": "Gửi lại {event} tới {name} (3 lần thử mới)?",
+      "retried": "Đã xếp hàng gửi lại.",
       "rotate": "Đổi khóa ký cho {name}",
-      "rotateConfirm": "Tạo khóa ký mới cho {name}? Khóa cũ ngừng hiệu lực ngay; bên nhận phải cập nhật khóa mới để xác minh chữ ký.",
+      "rotateConfirm": "Tạo khóa ký mới cho {name}? Khóa cũ hết hiệu lực ngay.",
       "maskedSecret": "Khóa ký (đã che)",
-      "createSecretHint": "Hãy sao chép khóa này trước khi tạo — sau khi lưu, hệ thống chỉ hiển thị dạng đã che.",
+      "createSecretHint": "Sao chép khóa trước khi tạo; sau đó chỉ hiện dạng che.",
       "secret": {
         "title": "Khóa ký webhook mới",
-        "intro": "Khóa ký mới của \"{name}\". Dùng khóa này để xác minh chữ ký HMAC-SHA256 trong header của mỗi webhook.",
+        "intro": "Khóa ký mới của \"{name}\" (HMAC-SHA256).",
         "label": "Khóa ký mới",
         "copy": "Sao chép",
         "copied": "Đã sao chép",
-        "copyFailed": "Không sao chép được. Hãy chọn và sao chép thủ công.",
-        "warning": "Khóa chỉ hiển thị một lần. Sau khi đóng hộp thoại, bạn không thể xem lại — nếu làm mất, hãy đổi khóa lần nữa.",
+        "copyFailed": "Không sao chép được; hãy sao chép thủ công.",
+        "warning": "Khóa chỉ hiện một lần; mất thì đổi khóa lại.",
         "done": "Tôi đã lưu khóa"
       }
     },

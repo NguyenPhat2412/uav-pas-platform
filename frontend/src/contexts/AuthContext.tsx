@@ -5,7 +5,7 @@ import React, {createContext, ReactNode, useCallback, useContext, useEffect, use
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import type {AuthContextType, AuthResponse, RegisterRequest, UserResponse} from "@/features/auth/types/auth.types";
 import {authService} from '@/lib/api/services';
-import {apiClient, PERMISSIONS_EVENT, SESSION_EVENT, setAuthSession} from "@/lib/api";
+import {ApiError, apiClient, PERMISSIONS_EVENT, rememberSessionUser, SESSION_EVENT, SESSION_STORAGE_KEY, sessionOwnerOf, setAuthSession} from "@/lib/api";
 import {toast} from '@/contexts/ToastContext';
 import {useI18n} from '@/contexts/I18nContext';
 
@@ -26,7 +26,8 @@ export function AuthProvider({children}: { children: ReactNode }) {
         staleTime: 0,
         refetchInterval: 15_000,
         refetchOnWindowFocus: true,
-        retry: false,
+        // One retry absorbs a blip; a background failure after that keeps the last good set (see below).
+        retry: 1,
     });
 
     useEffect(() => {
@@ -43,11 +44,27 @@ export function AuthProvider({children}: { children: ReactNode }) {
             setIsLoading(false);
         };
         const permissionsChanged = () => void client.invalidateQueries({queryKey: ['session', identity.current ?? 'anonymous', 'permissions']});
-        const storageChanged = (event: StorageEvent) => {
-            if (event.key === 'token' || event.key === 'uav_session' || event.key === null) {
-                // Other-tab account changes must never reuse the current tab's cache or identity.
-                window.location.reload();
+        // Another tab signed in, switched account or signed out (uav_session changed). Cookies are shared, so ask the
+        // backend who this browser is now instead of trusting the marker: a tab that merely failed to load must not
+        // sign the others out.
+        const followOtherTab = async () => {
+            const expected = identity.current;
+            try {
+                const current = await authService.getMe();
+                if (identity.current !== expected || !current || current.id === expected) return;
+                // Other-tab account changes must never reuse the current tab's cache, identity or open drafts.
+                if (expected !== null) window.location.reload();
+                else setAuthSession({user: current}, {broadcast: false});
+            } catch (error) {
+                const ended = error instanceof ApiError && error.status === 401;
+                if (ended && identity.current === expected && expected !== null) setAuthSession(null, {broadcast: false});
             }
+        };
+        const storageChanged = (event: StorageEvent) => {
+            if (event.key !== SESSION_STORAGE_KEY && event.key !== null) return;
+            const owner = sessionOwnerOf(event.key === null ? null : event.newValue);
+            if (owner !== null && owner === String(identity.current)) return;
+            void followOtherTab();
         };
         window.addEventListener(SESSION_EVENT, receiveSession);
         window.addEventListener(PERMISSIONS_EVENT, permissionsChanged);
@@ -67,6 +84,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
                 const current = await authService.getMe();
                 if (active && current) {
                     identity.current = current.id;
+                    rememberSessionUser(current.id);
                     setUser(current);
                     setToken('cookie');
                 }
@@ -145,10 +163,15 @@ export function AuthProvider({children}: { children: ReactNode }) {
         } catch { /* Keep the current user; a broken session is handled by the API client. */
         }
     }, []);
-    const permissions = permissionQuery.isError ? [] : permissionQuery.data ?? [];
+    // A failed background refetch keeps the last good set so guarded pages (and their drafts) stay mounted; the
+    // blocking error only shows when nothing has loaded for this account yet. A 403 on the caller's own permission
+    // list is authoritative, though: it means no access at all.
+    const permissionsRevoked = permissionQuery.error instanceof ApiError && permissionQuery.error.status === 403;
+    const hasPermissions = permissionQuery.data !== undefined && !permissionsRevoked;
+    const permissions = hasPermissions ? permissionQuery.data ?? [] : [];
     return <AuthContext.Provider value={{
         user, token, isLoading, isAuthenticated: !!user,
-        permissions, permissionsReady: permissionQuery.isSuccess, permissionError: permissionQuery.error,
+        permissions, permissionsReady: hasPermissions, permissionError: hasPermissions ? null : permissionQuery.error,
         can: code => permissions.includes(code), refreshPermissions: permissionQuery.refetch, refreshUser,
         login, register, completeAuth, logout
     }}>{children}</AuthContext.Provider>;

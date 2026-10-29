@@ -71,10 +71,10 @@ function Missions() {
                             <table className="w-full border-collapse text-left text-sm">
                                 <thead className="hidden sm:table-header-group">
                                 <tr>
-                                    <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted">{t('missions.code')}</th>
-                                    <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted">{t('missions.titleColumn')}</th>
-                                    <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted">{t('missions.time')}</th>
-                                    <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted">{t('common.status')}</th>
+                                    <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-xs font-bold text-muted">{t('missions.code')}</th>
+                                    <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-xs font-bold text-muted">{t('missions.titleColumn')}</th>
+                                    <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-xs font-bold text-muted">{t('missions.time')}</th>
+                                    <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-xs font-bold text-muted">{t('common.status')}</th>
                                 </tr>
                                 </thead>
                                 <tbody className="block sm:table-row-group">{page.content.map(mission => <tr key={mission.id} className="group block border-b border-border px-4 py-3 last:border-b-0 hover:bg-slate-50 sm:table-row sm:px-0 sm:py-0">

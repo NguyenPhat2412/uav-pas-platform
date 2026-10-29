@@ -13,7 +13,7 @@ import {cn} from '@/lib/utils';
 
 export type {FleetSummary};
 
-const dot: Record<MonitoringTone, string> = {ok: 'bg-uav-blue', warn: 'bg-amber-500', down: 'bg-primary', idle: 'bg-slate-300'};
+const dot: Record<MonitoringTone, string> = {ok: 'bg-primary', warn: 'bg-primary animate-pulse', down: 'bg-primary ring-2 ring-rose-300', idle: 'bg-rose-200'};
 const healthTone: Record<HealthStatus, MonitoringTone> = {UP: 'ok', DEGRADED: 'warn', DOWN: 'down', UNKNOWN: 'idle'};
 
 /** Live platform signals for the admin dashboard: service health, telemetry feed, fleet and open SAR work. */
@@ -86,31 +86,31 @@ export function AdminMonitoringCard({fleet, summaryLoaded}: { fleet: FleetSummar
         href: '/operations/sar-cockpit',
     });
 
-    return <section className="min-w-0 rounded-panel border border-border bg-card">
-        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-[18px] py-3.5">
-            <h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.dashboard.status.title')}</h2>
-            {canHealth && health.data && <span className={cn('inline-flex items-center gap-1.5 text-xs font-semibold',
-                health.data.status === 'UP' ? 'text-uav-blue' : health.data.status === 'DOWN' ? 'text-primary' : 'text-amber-700')}>
-                <span className={cn('h-2 w-2 rounded-full', dot[healthTone[health.data.status]])} aria-hidden="true"/>
+    return <section className="min-w-0 rounded-panel border border-rose-200 bg-white">
+        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-rose-200 bg-uav-red-light/50 px-[18px] py-3.5">
+            <h2 className="text-[15px] font-bold tracking-tight text-primary">{t('admin.dashboard.status.title')}</h2>
+            {canHealth && health.data && <span className={cn('inline-flex items-center gap-1.5 rounded-badge px-2 py-0.5 text-xs font-bold',
+                health.data.status === 'UP' ? 'bg-white text-primary border border-rose-200' : 'bg-primary text-white')}>
+                <span className={cn('h-2 w-2 rounded-full', health.data.status === 'UP' ? 'bg-primary' : 'bg-white')} aria-hidden="true"/>
                 {t(`admin.health.status.${health.data.status}`)}</span>}
         </header>
         <ul className="m-0 list-none px-[18px] pb-3.5 pt-1.5">
             {rows.map(row => {
                 const body = <>
                     <span className={cn('h-2 w-2 shrink-0 rounded-full', dot[row.tone])} aria-hidden="true"/>
-                    <span className="flex-1 text-foreground">{row.label}</span>
-                    <small className={cn('text-right text-xs', row.tone === 'down' ? 'font-semibold text-primary' : row.tone === 'warn' ? 'text-amber-700' : 'text-muted')}>{row.value}</small>
+                    <span className="flex-1 font-medium text-foreground">{row.label}</span>
+                    <small className={cn('text-right text-xs', row.tone === 'down' || row.tone === 'warn' ? 'rounded-badge bg-primary px-1.5 py-0.5 font-bold text-white' : 'font-semibold text-primary')}>{row.value}</small>
                 </>;
-                return <li key={row.key} className="border-b border-dashed border-border text-[13px] last:border-b-0">
+                return <li key={row.key} className="border-b border-dashed border-rose-100 text-[13px] last:border-b-0">
                     {row.href ? <Link href={row.href} className="flex items-center gap-2.5 py-2.5 hover:text-primary">{body}</Link>
                         : <div className="flex items-center gap-2.5 py-2.5">{body}</div>}
                 </li>;
             })}
         </ul>
         {can('PERMISSION_MANAGE') && <div className="flex flex-wrap gap-2 px-[18px] pb-[18px]">
-            <Link href="/admin/system-health" className="inline-flex min-h-[40px] items-center rounded-control border border-border bg-card px-4 text-[13px] font-bold text-foreground transition hover:bg-background">
+            <Link href="/admin/system-health" className="inline-flex min-h-[40px] items-center rounded-control bg-primary px-4 text-[13px] font-bold text-white transition hover:opacity-90">
                 {t('admin.dashboard.status.openHealth')}</Link>
-            <Link href="/admin/webhooks" className="inline-flex min-h-[40px] items-center rounded-control border border-border bg-card px-4 text-[13px] font-bold text-foreground transition hover:bg-background">
+            <Link href="/admin/webhooks" className="inline-flex min-h-[40px] items-center rounded-control border border-rose-200 bg-white px-4 text-[13px] font-bold text-primary transition hover:bg-uav-red-light">
                 {t('admin.dashboard.status.manageIntegrations')}</Link>
         </div>}
     </section>;

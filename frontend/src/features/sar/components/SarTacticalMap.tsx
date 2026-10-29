@@ -57,6 +57,7 @@ export function SarTacticalMap({mission, detections, telemetry, selectedId, onSe
 
     useEffect(() => {
         let disposed = false;
+        let resizeObserver: ResizeObserver | null = null;
         void import('leaflet').then(L => {
             if (disposed || !container.current || map.current) return;
             leaflet.current = L;
@@ -64,9 +65,19 @@ export function SarTacticalMap({mission, detections, telemetry, selectedId, onSe
             overlay.current = L.layerGroup().addTo(map.current);
             uavLayer.current = L.layerGroup().addTo(map.current);
             setReady(true);
+
+            if (typeof ResizeObserver !== 'undefined' && container.current) {
+                resizeObserver = new ResizeObserver(() => {
+                    map.current?.invalidateSize();
+                });
+                resizeObserver.observe(container.current);
+            }
+            setTimeout(() => map.current?.invalidateSize(), 100);
+            setTimeout(() => map.current?.invalidateSize(), 350);
         });
         return () => {
             disposed = true;
+            resizeObserver?.disconnect();
             scaleControl.current = null;
             map.current?.remove();
             map.current = null;
@@ -146,7 +157,7 @@ export function SarTacticalMap({mission, detections, telemetry, selectedId, onSe
 
     return <div className="flex h-full flex-col overflow-hidden rounded-panel border border-border bg-card">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-slate-50 px-4 py-2.5">
-            <h3 className="m-0 text-xs font-bold uppercase tracking-wider text-slate-900">{t('opsShared.sar.map.title')}</h3>
+            <h3 className="m-0 text-xs font-bold text-slate-900">{t('opsShared.sar.map.title')}</h3>
             <div className="flex flex-wrap items-center gap-2 text-xs">
                 <button type="button" onClick={() => plan ? setPlan(null) : generate.mutate()} disabled={generate.isPending}
                         className={cn('flex items-center gap-1.5 rounded-control px-3 py-1.5 font-bold text-white transition disabled:opacity-60',
@@ -166,7 +177,7 @@ export function SarTacticalMap({mission, detections, telemetry, selectedId, onSe
             <Stat label={t('opsShared.sar.map.drift')} value={mission.driftRadiusMeters ? `${formatNumber(mission.driftRadiusMeters)} m` : '—'}/>
             <Stat label={t('opsShared.sar.map.toHome')} value={toHome != null ? `${formatNumber(Math.round(toHome))} m` : '—'}/>
             <div className="min-w-0">
-                <dt className="font-semibold uppercase tracking-wide text-slate-500">{t('opsShared.sar.map.areaCheck')}</dt>
+                <dt className="font-semibold text-slate-500">{t('opsShared.sar.map.areaCheck')}</dt>
                 <dd className={cn('m-0 flex items-center gap-1 font-bold', insideArea == null ? 'text-slate-500' : insideArea ? 'text-uav-blue' : 'text-primary')}>
                     {insideArea == null ? '—' : insideArea
                         ? <><ShieldCheck size={12} aria-hidden="true"/>{t('opsShared.sar.map.inside')}</>
@@ -182,7 +193,7 @@ export function SarTacticalMap({mission, detections, telemetry, selectedId, onSe
 
 function Stat({label, value}: { label: string; value: string }) {
     return <div className="min-w-0">
-        <dt className="font-semibold uppercase tracking-wide text-slate-500">{label}</dt>
+        <dt className="font-semibold text-slate-500">{label}</dt>
         <dd className="m-0 truncate font-bold tabular-nums text-slate-900">{value}</dd>
     </div>;
 }

@@ -7,7 +7,7 @@ import type {FleetStation, FleetUav} from '@/features/uavs/types/fleet-map.types
 import {MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 
 export const uavStatusColor: Record<string, string> = {
-    AVAILABLE: '#004ac6', ASSIGNED: '#ab2523', IN_USE: '#2a78d6', MAINTENANCE: '#d97706', INACTIVE: '#94a3b8',
+    AVAILABLE: '#dc2626', ASSIGNED: '#b91c1c', IN_USE: '#991b1b', MAINTENANCE: '#f87171', INACTIVE: '#fca5a5',
 };
 
 /**
@@ -37,15 +37,26 @@ export function FleetMap({uavs, stations, selectedId, onSelect, labels}: {
 
     useEffect(() => {
         let cancelled = false;
+        let resizeObserver: ResizeObserver | null = null;
         void import('leaflet').then(L => {
             if (cancelled || !container.current || map.current) return;
             leaflet.current = L;
             map.current = L.map(container.current, {scrollWheelZoom: true}).setView(config.defaultCenter, config.defaultZoom);
             layer.current = L.layerGroup().addTo(map.current);
             setReady(true);
+
+            if (typeof ResizeObserver !== 'undefined' && container.current) {
+                resizeObserver = new ResizeObserver(() => {
+                    map.current?.invalidateSize();
+                });
+                resizeObserver.observe(container.current);
+            }
+            setTimeout(() => map.current?.invalidateSize(), 100);
+            setTimeout(() => map.current?.invalidateSize(), 350);
         });
         return () => {
             cancelled = true;
+            resizeObserver?.disconnect();
             scaleControl.current = null;
             tiles.current = null;
             map.current?.remove();
@@ -79,10 +90,10 @@ export function FleetMap({uavs, stations, selectedId, onSelect, labels}: {
             if (showStationRadius && config.stationCoverageRadiusMeters > 0) {
                 L.circle([s.latitude, s.longitude], {
                     radius: config.stationCoverageRadiusMeters,
-                    color: '#004ac6',
+                    color: '#dc2626',
                     weight: 1.5,
                     dashArray: '6 4',
-                    fillColor: '#004ac6',
+                    fillColor: '#dc2626',
                     fillOpacity: 0.06,
                     interactive: false,
                 }).addTo(layer.current);

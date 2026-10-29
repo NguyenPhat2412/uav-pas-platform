@@ -76,10 +76,10 @@ const apiMessages: Record<PresentationLocale, Record<string, string>> = {
     },
 };
 
-const clientText: Record<PresentationLocale, { sessionExpired: string; forbidden: string; forbiddenTitle: string; failed: (status: number) => string }> = {
-    vi: {sessionExpired: 'Phiên đăng nhập đã hết hạn.', forbidden: 'Bạn không có quyền thực hiện thao tác này.', forbiddenTitle: 'Truy cập bị từ chối (403)', failed: status => `Yêu cầu thất bại (mã ${status}).`},
-    en: {sessionExpired: 'Your session has expired.', forbidden: 'You do not have permission to do this.', forbiddenTitle: 'Access denied (403)', failed: status => `Request failed (code ${status}).`},
-    ja: {sessionExpired: 'セッションの有効期限が切れました。', forbidden: 'この操作を行う権限がありません。', forbiddenTitle: 'アクセス拒否（403）', failed: status => `リクエストに失敗しました（コード ${status}）。`},
+const clientText: Record<PresentationLocale, { sessionExpired: string; forbidden: string; forbiddenTitle: string; tooManyRequests: string; failed: (status: number) => string }> = {
+    vi: {sessionExpired: 'Phiên đăng nhập đã hết hạn.', forbidden: 'Bạn không có quyền thực hiện thao tác này.', forbiddenTitle: 'Truy cập bị từ chối (403)', tooManyRequests: 'Bạn thử quá nhiều lần, vui lòng đợi vài phút.', failed: status => `Yêu cầu thất bại (mã ${status}).`},
+    en: {sessionExpired: 'Your session has expired.', forbidden: 'You do not have permission to do this.', forbiddenTitle: 'Access denied (403)', tooManyRequests: 'Too many attempts. Please wait a few minutes and try again.', failed: status => `Request failed (code ${status}).`},
+    ja: {sessionExpired: 'セッションの有効期限が切れました。', forbidden: 'この操作を行う権限がありません。', forbiddenTitle: 'アクセス拒否（403）', tooManyRequests: '試行回数が多すぎます。数分待ってから再度お試しください。', failed: status => `リクエストに失敗しました（コード ${status}）。`},
 };
 
 // Stable codes for those messages, so forms can translate them into the portal language.
@@ -113,9 +113,37 @@ export class ApiError extends Error {
 
 export const SESSION_EVENT = 'uav:session';
 export const PERMISSIONS_EVENT = 'uav:permissions';
+/** localStorage key other tabs watch: `${userId}:${timestamp}` while signed in, absent once signed out. */
+export const SESSION_STORAGE_KEY = 'uav_session';
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 let sessionGeneration = 0;
 let refreshFlight: { generation: number; promise: Promise<string> } | undefined;
+/** The account this tab is signed in as, so a session restored by another tab can be told apart from a switch. */
+let sessionUserId: number | null = null;
+
+type SessionLike = { accessToken?: string; refreshToken?: string; user?: { id?: number } | null };
+
+/** The user id recorded in a `uav_session` value, or null when the value is empty or malformed. */
+export function sessionOwnerOf(value: string | null | undefined): string | null {
+    const owner = value?.split(':')[0];
+    return owner ? owner : null;
+}
+
+function writeSessionMarker(userId: number | null, force: boolean) {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    try {
+        if (userId == null) window.localStorage.removeItem(SESSION_STORAGE_KEY);
+        else if (force || sessionOwnerOf(window.localStorage.getItem(SESSION_STORAGE_KEY)) !== String(userId))
+            window.localStorage.setItem(SESSION_STORAGE_KEY, `${userId}:${Date.now()}`);
+    } catch { /* Storage may be unavailable (private mode); cross-tab sync is best effort. */
+    }
+}
+
+/** Records the account restored from cookies on page load, telling other tabs only when it differs from theirs. */
+export function rememberSessionUser(userId: number | null) {
+    sessionUserId = userId;
+    writeSessionMarker(userId, false);
+}
 
 function currentToken() {
     if (typeof window === 'undefined' || typeof document !== 'undefined') return null;
@@ -143,8 +171,14 @@ function storeSession(session: { accessToken?: string; refreshToken?: string } |
     window.dispatchEvent(new CustomEvent(SESSION_EVENT, {detail: session}));
 }
 
-export function setAuthSession(session: { accessToken?: string; refreshToken?: string } | null) {
+/**
+ * Starts a new session generation (in-flight requests of the previous one are discarded). By default other tabs are
+ * told through `uav_session`; pass `broadcast: false` when this tab is only following a change made elsewhere.
+ */
+export function setAuthSession(session: SessionLike | null, {broadcast = true}: { broadcast?: boolean } = {}) {
     sessionGeneration += 1;
+    sessionUserId = session?.user?.id ?? null;
+    if (broadcast && (!session || session.user?.id != null)) writeSessionMarker(session?.user?.id ?? null, true);
     storeSession(session);
 }
 
@@ -158,25 +192,67 @@ function readCookie(name: string) {
     return match ? decodeURIComponent(match[1]) : null;
 }
 
+/** Runs the refresh exclusively across tabs: the backend keeps one refresh token per user, so parallel refreshes race. */
+function acrossTabs<T>(task: () => Promise<T>): Promise<T> {
+    const locks = typeof navigator !== 'undefined' ? (navigator as Navigator & { locks?: LockManager }).locks : undefined;
+    return locks?.request ? locks.request('uav-refresh', task) as Promise<T> : task();
+}
+
+/** After a refused refresh: another tab may already have rotated the cookies, so ask once whether the session lives. */
+async function sessionStillValid(): Promise<boolean> {
+    try {
+        const response = await fetch(`${baseUrl}/api/v1/auth/me`, {method: 'GET', credentials: 'include'});
+        if (!response.ok) return false;
+        const me = await response.json() as { id?: number } | null;
+        // A different account means another tab switched users; that tab's storage event reloads this one.
+        if (sessionUserId != null && me?.id != null && me.id !== sessionUserId) throw new DOMException('Session changed', 'AbortError');
+        return true;
+    } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') throw error;
+        return false;
+    }
+}
+
 async function refreshAccess(generation: number) {
     if (refreshFlight?.generation === generation) return refreshFlight.promise;
-    const promise = (async () => {
-        const refreshToken = typeof window === 'undefined' ? null : window.localStorage.getItem('refreshToken');
-        const response = await fetch(`${baseUrl}/api/v1/auth/refresh`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {'content-type': 'application/json'},
-            body: refreshToken ? JSON.stringify({refreshToken}) : JSON.stringify({}),
-        });
+    const promise = acrossTabs(async () => {
         requireCurrent(generation);
+        const refreshToken = typeof window === 'undefined' ? null : window.localStorage.getItem('refreshToken');
+        let response: Response;
+        try {
+            response = await fetch(`${baseUrl}/api/v1/auth/refresh`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {'content-type': 'application/json'},
+                body: refreshToken ? JSON.stringify({refreshToken}) : JSON.stringify({}),
+            });
+        } catch (error) {
+            if (error instanceof Error && error.name === 'AbortError') throw error;
+            // Offline is not a signed-out session; keep it and let the caller retry later.
+            throw new ApiError(0, 'NetworkError', error instanceof Error ? error.message : 'Network error', '/api/v1/auth/refresh', 'NETWORK_ERROR');
+        }
+        requireCurrent(generation);
+        if (response.status === 429) {
+            throw new ApiError(429, 'Too Many Requests', clientText[currentLocale()].tooManyRequests, '/api/v1/auth/refresh', 'RATE_LIMITED');
+        }
         if (!response.ok) {
+            if (response.status < 500 && await sessionStillValid()) {
+                requireCurrent(generation);
+                // Another tab refreshed first; its new cookies authenticate this tab too.
+                return currentToken() || '';
+            }
+            requireCurrent(generation);
+            if (response.status >= 500) {
+                throw new ApiError(response.status, response.statusText || 'Error', clientText[currentLocale()].failed(response.status), '/api/v1/auth/refresh');
+            }
             setAuthSession(null);
             throw new ApiError(401, 'Unauthorized', clientText[currentLocale()].sessionExpired, '/api/v1/auth/refresh', 'SESSION_EXPIRED');
         }
-        const session = await response.json() as { accessToken?: string; refreshToken?: string };
+        const session = await response.json() as SessionLike;
+        requireCurrent(generation);
         storeSession(session);
         return session.accessToken || '';
-    })();
+    });
     refreshFlight = {generation, promise};
     try {
         return await promise;
@@ -229,12 +305,14 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
             detail = await response.json();
         } catch { /* Preserve status for non-JSON errors. */
         }
+        // Rate limiting (auth endpoints): the backend's own wording is not localized, so always say it plainly.
+        const limited = response.status === 429;
         throw new ApiError(
             response.status,
             detail.error || response.statusText,
-            localizeApiMessage(detail.message) || clientText[currentLocale()].failed(response.status),
+            limited ? clientText[currentLocale()].tooManyRequests : localizeApiMessage(detail.message) || clientText[currentLocale()].failed(response.status),
             detail.path || endpoint,
-            detail.code ?? (detail.message ? apiMessageCodes[detail.message] : undefined),
+            detail.code ?? (detail.message ? apiMessageCodes[detail.message] : undefined) ?? (limited ? 'RATE_LIMITED' : undefined),
             // Field messages may be codes (e.g. FLIGHT_POLYGON_TOO_SMALL); translate them like the main message.
             detail.fields && Object.fromEntries(Object.entries(detail.fields).map(([name, text]) => [name, localizeApiMessage(text) ?? text])),
         );

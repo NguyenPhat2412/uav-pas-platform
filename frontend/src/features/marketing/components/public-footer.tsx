@@ -17,7 +17,7 @@ export function PublicFooter() {
 
     return (
         <footer className="border-t border-border bg-slate-50/80 pt-14 pb-8 text-sm text-slate-600">
-            <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-12">
+            <div className="mx-auto grid w-full max-w-[1380px] grid-cols-1 gap-8 px-5 sm:grid-cols-2 sm:px-8 lg:grid-cols-12 lg:px-12">
                 {/* Col 1: Brand & VJU Campus Info (4 cols) */}
                 <div className="space-y-3.5 lg:col-span-5">
                     <Link className="inline-flex items-center gap-2.5 text-base font-extrabold tracking-wider text-foreground" href="/">
@@ -111,7 +111,7 @@ export function PublicFooter() {
                 </div>
             </div>
 
-            <div className="mx-auto mt-10 flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 border-t border-border px-4 pt-6 text-xs text-slate-500 sm:px-6">
+            <div className="mx-auto mt-10 flex w-full max-w-[1380px] flex-wrap items-center justify-between gap-4 border-t border-border px-5 pt-6 text-xs text-slate-500 sm:px-8 lg:px-12">
                 <span>{t('publicFooter.copyright', {year})}</span>
                 <div className="flex items-center gap-4">
                     <div className="inline-flex items-center rounded-lg border border-slate-200 bg-white p-0.5" role="group" aria-label="Language selector">

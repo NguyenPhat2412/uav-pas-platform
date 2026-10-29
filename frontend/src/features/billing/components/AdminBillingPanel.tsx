@@ -85,48 +85,28 @@ export function AdminQuotasManagerSection() {
             {/* 4-Card Quota KPI Strip */}
             <div className="grid grid-cols-1 divide-y divide-border border border-border bg-card sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
                 <div className="p-4">
-                    <span className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
-                        TỔNG TÀI KHOẢN ĐƯỢC CẤP QUOTA
-                    </span>
+                    <span className="text-[11px] font-semibold text-slate-500">{t('admin.billing.kpi.accounts')}</span>
                     <div className="mt-1 font-mono text-2xl font-bold text-slate-900">
                         {quotas.length}
                     </div>
-                    <p className="mt-0.5 text-[11px] text-slate-500">
-                        Đang đồng bộ hạn mức bay theo kỳ cước
-                    </p>
                 </div>
                 <div className="p-4">
-                    <span className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
-                        TỔNG GIỜ BAY ĐÃ CẤP PHÁT
-                    </span>
+                    <span className="text-[11px] font-semibold text-slate-500">{t('admin.billing.kpi.allocated')}</span>
                     <div className="mt-1 font-mono text-2xl font-bold text-slate-900">
                         {totalAllocatedHours.toFixed(1)}h
                     </div>
-                    <p className="mt-0.5 text-[11px] text-slate-500">
-                        Tổng định mức cam kết SLA toàn hệ thống
-                    </p>
                 </div>
                 <div className="p-4">
-                    <span className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
-                        GIỜ BAY ĐÃ SỬ DỤNG THỰC TẾ
-                    </span>
+                    <span className="text-[11px] font-semibold text-slate-500">{t('admin.billing.kpi.used')}</span>
                     <div className="mt-1 font-mono text-2xl font-bold text-blue-700">
                         {totalUsedHours.toFixed(1)}h
                     </div>
-                    <p className="mt-0.5 text-[11px] text-slate-500">
-                        Tự động khấu trừ khi nhiệm vụ hoàn tất
-                    </p>
                 </div>
                 <div className="p-4">
-                    <span className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
-                        CẢNH BÁO CHẠM NGƯỠNG (&gt;85%)
-                    </span>
+                    <span className="text-[11px] font-semibold text-slate-500">{t('admin.billing.kpi.nearLimit')}</span>
                     <div className="mt-1 font-mono text-2xl font-bold text-amber-700">
                         {highUsageAccounts}
                     </div>
-                    <p className="mt-0.5 text-[11px] text-slate-500">
-                        Khách hàng cần nâng cấp hoặc gia hạn Quota
-                    </p>
                 </div>
             </div>
 
@@ -160,15 +140,10 @@ export function AdminQuotasManagerSection() {
             {/* User Quotas Management Table */}
             <div className="overflow-hidden rounded-panel border border-border bg-card">
                 <div className="flex flex-col gap-3 border-b border-border p-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h3 className="flex items-center gap-2 text-sm font-bold text-slate-900">
-                            <Users size={16} className="text-primary" />{' '}
-                            {t('admin.billing.quotasHeading')}
-                        </h3>
-                        <p className="mt-0.5 text-xs text-slate-500">
-                            {t('admin.billing.quotasIntro')}
-                        </p>
-                    </div>
+                    <h3 className="flex items-center gap-2 text-sm font-bold text-slate-900">
+                        <Users size={16} className="text-primary" />{' '}
+                        {t('admin.billing.quotasHeading')}
+                    </h3>
 
                     <div className="relative">
                         <Search

@@ -30,6 +30,7 @@ import {
 import {cn} from '@/lib/utils';
 import type {LucideIcon} from 'lucide-react';
 import {FoldingNavGroup, foldedLinkClass, useFoldedNavGroups} from '@/components/layout/FoldingNavGroup';
+import {OPERATIONS_RECENT_PAGES_KEY, rememberRecentPage} from '@/components/layout/recent-pages';
 
 // Cấu hình routes của Sidebar Điều hành (bao gồm /sar-cockpit [key: 'sar'], /notifications, v.v.)
 // được tách riêng và quản lý tập trung tại `@/components/layout/sidebar-routes.ts`.
@@ -75,6 +76,11 @@ function OperationsShell({children, activeResource}: { children: React.ReactNode
     const visibleNav = nav.filter(item => !item.permission || (permissionsReady && can(item.permission)));
     const activeNav = resolveSidebarActiveItem(visibleNav, pathname, activeResource);
     const {openGroups, toggleGroup} = useFoldedNavGroups('uav_ops_nav_open_groups', activeNav?.group);
+    // Feeds the overview's search "Recents"; only sidebar destinations are remembered.
+    const activeHref = activeNav?.href;
+    React.useEffect(() => {
+        if (activeHref) rememberRecentPage(OPERATIONS_RECENT_PAGES_KEY, activeHref);
+    }, [activeHref]);
     const getNavLabel = (item: typeof nav[0]) => t(`operationsNav.${item.key}`);
 
     // Selects the Operations shape scale in globals.css; on <html> so portalled dialogs pick it up too.

@@ -83,7 +83,7 @@ function Body({data}: { data: BankTransferInstructions }) {
             <p className="m-0 border-l-4 border-l-uav-amber bg-amber-50 px-3 py-2 text-xs text-amber-900">{t('payment.contentWarning')}</p>
 
             <section aria-labelledby="invoice-breakdown">
-                <h3 id="invoice-breakdown" className="mb-2 mt-0 text-xs font-bold uppercase tracking-wide text-slate-500">{t('payment.breakdown')}</h3>
+                <h3 id="invoice-breakdown" className="mb-2 mt-0 text-xs font-bold text-slate-500">{t('payment.breakdown')}</h3>
                 <table className="w-full border-collapse text-[13px]">
                     <tbody>
                     <tr className="border-b border-slate-100"><td className="py-1.5 text-slate-600">{t('payment.invoice')}</td>

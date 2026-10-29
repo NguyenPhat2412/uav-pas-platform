@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import {useRouter} from 'next/navigation';
 import {AppShell} from '@/components/layout/AppShell';
-import {Spinner, StatusBadge} from '@/components/ui';
+import {KpiCard, Spinner, StatusBadge} from '@/components/ui';
 import {useAuth} from '@/contexts/AuthContext';
 import {dashboardService} from '@/lib/api/services';
 import {missionService} from '@/lib/api/services';
@@ -88,27 +88,28 @@ export default function HomePage() {
     const statusCount = (status: string) => fleet.filter(u => u.status === status).length;
 
     return <AppShell activeResource="overview">
-        <div className="w-full">
-            <div className="mb-4 flex justify-end">
+        <div className="flex w-full flex-col gap-4">
+            <div className="flex justify-end">
                 <Link href="/operations/dispatch/missions"
                       className="inline-flex min-h-9 items-center gap-1.5 rounded-control bg-primary px-3.5 text-[13px] font-bold text-primary-foreground transition hover:bg-primary-hover">
                     <Plus size={15} aria-hidden="true"/>{t('opsMissions.overview.openDispatch')}</Link>
             </div>
             {(error || uavsQuery.isError || stationsQuery.isError) && <div
-                className="mb-4 rounded-panel border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{t('opsMissions.overview.partialError')}</div>}
-            {canReadSummary &&
-                <section className="mb-5 flex min-h-[48px] flex-wrap items-center gap-[22px] border-y border-border py-2 text-[13px] text-muted" aria-label={t('opsMissions.overview.summary.label')}>
-                    <span className="inline-flex items-center gap-[7px]"><Users
-                        size={15}/> {t('opsMissions.overview.summary.users')} <strong className="tabular-nums text-foreground">{count(summary?.totalUsers)}</strong></span><span className="inline-flex items-center gap-[7px]"><MapPinned
-                    size={15}/> {t('opsMissions.overview.summary.stations')} <strong className="tabular-nums text-foreground">{count(summary?.totalStations)}</strong></span><span className="inline-flex items-center gap-[7px]"><PlaneTakeoff
-                    size={15}/> {t('opsMissions.overview.summary.availableUavs')} <strong className="tabular-nums text-foreground">{count(summary?.availableUavs)}</strong></span><span className="inline-flex items-center gap-[7px]"><Boxes
-                    size={15}/> {t('opsMissions.overview.summary.equipment')} <strong className="tabular-nums text-foreground">{count(summary?.totalEquipmentUnits)}</strong></span><span className="inline-flex items-center gap-[7px]"><Activity
-                    size={15}/> {t('opsMissions.overview.summary.auditEvents')} <strong className="tabular-nums text-foreground">{count(summary?.totalAuditEvents)}</strong></span></section>}
-            <section className="grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 [&>*]:border-0">
-                <div className="min-w-0 divide-y divide-slate-200 bg-white [&>*]:border-0">
+                className="rounded-panel border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{t('opsMissions.overview.partialError')}</div>}
+            {canReadSummary && (
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5" aria-label={t('opsMissions.overview.summary.label')}>
+                    <KpiCard label={t('opsMissions.overview.summary.users')} value={count(summary?.totalUsers)} icon={<Users size={18}/>} tone="blue"/>
+                    <KpiCard label={t('opsMissions.overview.summary.stations')} value={count(summary?.totalStations)} icon={<MapPinned size={18}/>} tone="red"/>
+                    <KpiCard label={t('opsMissions.overview.summary.availableUavs')} value={count(summary?.availableUavs)} icon={<PlaneTakeoff size={18}/>} tone="blue"/>
+                    <KpiCard label={t('opsMissions.overview.summary.equipment')} value={count(summary?.totalEquipmentUnits)} icon={<Boxes size={18}/>} tone="amber"/>
+                    <KpiCard label={t('opsMissions.overview.summary.auditEvents')} value={count(summary?.totalAuditEvents)} icon={<Activity size={18}/>} tone="slate"/>
+                </div>
+            )}
+            <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(340px,1fr)]">
+                <div className="flex min-w-0 flex-col gap-4">
                     {canReadMissions && <div className="min-w-0 rounded-panel border border-border bg-card">
-                        <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-5">
-                            <div><h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.missions.title')}</h2><span className="text-xs text-muted">{t('opsMissions.overview.missions.subtitle')}</span></div>
+                        <div className="flex min-h-[56px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4">
+                            <h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.missions.title')}</h2>
                             <Link href="/operations/dispatch/missions"
                                   className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">{t('opsMissions.overview.missions.openList')}</Link></div>
                         <div className="grid grid-cols-2 gap-px bg-slate-100 sm:grid-cols-4">
@@ -130,8 +131,8 @@ export default function HomePage() {
                             href="/operations/dispatch/missions" className="font-semibold text-primary hover:underline">{t('opsMissions.overview.openDispatch')}</Link></div>
                     </div>}
                     <div className="min-w-0 rounded-panel border border-border bg-card">
-                        <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-5">
-                            <div><h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.fleet.title')}</h2><span className="text-xs text-muted">{t('opsMissions.overview.fleet.subtitle')}</span></div>
+                        <div className="flex min-h-[56px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4">
+                            <h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.fleet.title')}</h2>
                             <Link href="/operations/uavs"
                                   className="text-xs font-semibold text-primary hover:underline">{t('opsMissions.overview.fleet.viewAll')}</Link></div>
                         <div className="overflow-x-auto">
@@ -175,7 +176,7 @@ export default function HomePage() {
                         </div>
                         <StatusBadge status={activeUav?.status ?? 'UNKNOWN'}/>
                     </div>
-                    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-panel border border-border bg-slate-100">
+                    <div className="grid grid-cols-2 divide-x divide-y divide-slate-200 overflow-hidden rounded-control bg-slate-50/80">
                         <HudValue label={t('opsMissions.overview.hud.battery')} value={activeFix?.batteryPct != null ? `${activeFix.batteryPct}%` : '—'}
                                   tone={activeFix?.batteryPct != null && activeFix.batteryPct <= 25 ? 'text-primary' : undefined}/>
                         <HudValue label={t('opsMissions.overview.hud.altitude')} value={activeFix?.altitudeAglMeters != null ? `${formatNumber(Math.round(activeFix.altitudeAglMeters))} m` : '—'}/>
@@ -203,10 +204,10 @@ export default function HomePage() {
                     </div>
                 </div>
             </section>
-            <section className="-mt-px grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 [&>*]:border-0">
+            <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(340px,1fr)]">
                 <div className="min-w-0 rounded-panel border border-border bg-card">
-                    <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-5">
-                        <div><h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.stations.title')}</h2><span className="text-xs text-muted">{t('opsMissions.overview.stations.subtitle')}</span></div>
+                    <div className="flex min-h-[56px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4">
+                        <h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.stations.title')}</h2>
                         <Link href="/operations/stations"
                               className="text-xs font-semibold text-primary hover:underline">{t('opsMissions.overview.stations.manage')}</Link></div>
                     <div className="overflow-x-auto">
@@ -229,15 +230,15 @@ export default function HomePage() {
                         </table>
                     </div>
                 </div>
-                <div className="min-w-0 rounded-panel border border-border bg-card">
-                    <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-5">
-                        <div><h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.quickActions.title')}</h2><span className="text-xs text-muted">{t('opsMissions.overview.quickActions.subtitle')}</span></div>
+                <div className="flex min-w-0 flex-col rounded-panel border border-border bg-card">
+                    <div className="flex min-h-[56px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4">
+                        <h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.quickActions.title')}</h2>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 p-3 md:grid-cols-4">{quickActions.map(({icon: Icon, labelKey, href}) => <Link
+                    <div className="grid flex-1 grid-cols-2 gap-3 p-4">{quickActions.map(({icon: Icon, labelKey, href}) => <Link
                         key={href} href={href}
-                        className="group flex min-h-[76px] flex-col justify-between rounded-control border border-slate-200 p-3 transition hover:border-primary/40 hover:bg-primary/5"><span
-                        className="text-slate-400 group-hover:text-primary"><Icon size={17}/></span><span
-                        className="text-xs font-semibold text-slate-700">{t(labelKey)}</span></Link>)}</div>
+                        className="group flex min-h-[96px] flex-col justify-between rounded-control bg-slate-50/80 p-3.5 transition hover:bg-uav-red-light/70"><span
+                        className="text-slate-500 group-hover:text-primary"><Icon size={18}/></span><span
+                        className="text-xs font-semibold text-slate-800 group-hover:text-primary">{t(labelKey)}</span></Link>)}</div>
                 </div>
             </section>
         </div>
@@ -246,7 +247,7 @@ export default function HomePage() {
 
 function HudValue({label, value, tone}: { label: string; value: string; tone?: string }) {
     return <div className="bg-white p-3">
-        <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</span>
+        <span className="block text-[11px] font-semibold text-slate-500">{label}</span>
         <strong className={`mt-0.5 block text-lg tabular-nums ${tone ?? 'text-slate-900'}`}>{value}</strong>
     </div>;
 }

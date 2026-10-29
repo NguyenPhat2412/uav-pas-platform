@@ -16,6 +16,7 @@ import {trainingService} from '@/lib/api/resources';
 import type {
     TrainingAcademyWorkspaceProps,
     TrainingDocument,
+    TrainingOverview,
     TrainingPortalTier,
     UpsertTrainingDocumentPayload,
 } from '@/features/training/types/training.types';
@@ -418,8 +419,15 @@ export function TrainingAcademyWorkspace({
             checkedSteps: number[];
             markCompleted?: boolean;
         }) => trainingService.updateProgress(documentId, {checkedSteps, markCompleted}),
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['uav-training-overview', activePortal]});
+        // The next click is computed from the cached document, so write the server's copy in right away and keep the
+        // mutation pending (inputs disabled) until the refetched totals have landed too.
+        onSuccess: (saved) => {
+            queryClient.setQueryData<TrainingOverview>(['uav-training-overview', activePortal], (overview) =>
+                overview && saved
+                    ? {...overview, documents: overview.documents.map((doc) => (doc.id === saved.id ? {...doc, ...saved} : doc))}
+                    : overview,
+            );
+            return queryClient.invalidateQueries({queryKey: ['uav-training-overview', activePortal]});
         },
     });
 
@@ -459,6 +467,8 @@ export function TrainingAcademyWorkspace({
     };
 
     const handleToggleStep = (doc: TrainingDocument, stepIdx: number) => {
+        // A second click before the first save settles would be computed from the stale checklist.
+        if (progressMutation.isPending) return;
         const current = new Set(doc.checkedSteps ?? []);
         if (current.has(stepIdx)) {
             current.delete(stepIdx);
@@ -476,6 +486,7 @@ export function TrainingAcademyWorkspace({
     };
 
     const handleMarkAllCompleted = (doc: TrainingDocument) => {
+        if (progressMutation.isPending) return;
         const allIndices = doc.checklistSteps.map((_, idx) => idx);
         progressMutation.mutate({
             documentId: doc.id,
@@ -485,6 +496,7 @@ export function TrainingAcademyWorkspace({
     };
 
     const handleResetProgress = (doc: TrainingDocument) => {
+        if (progressMutation.isPending) return;
         progressMutation.mutate({
             documentId: doc.id,
             checkedSteps: [],

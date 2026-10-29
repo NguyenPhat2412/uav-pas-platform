@@ -102,6 +102,8 @@ export function HeaderSearch({items, variant = 'header', placeholder, recent = [
                     }}
                     onBlur={() => setOpen(false)}
                     onKeyDown={event => {
+                        // Enter that confirms an IME composition (Vietnamese/Japanese input) must not navigate.
+                        if (event.nativeEvent.isComposing || event.keyCode === 229) return;
                         if (event.key === 'ArrowDown') {
                             event.preventDefault();
                             setActive(index => Math.min(index + 1, Math.max(list.length - 1, 0)));

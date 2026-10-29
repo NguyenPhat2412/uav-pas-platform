@@ -179,7 +179,7 @@ function AdminSettingsContent() {
 
     return (
         <div className="space-y-6 pb-12">
-            <div className="flex flex-col gap-3 rounded-panel border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 rounded-panel border border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="m-0 text-sm text-slate-600">
                     {changed.length ? t('adminPlatform.settings.pending', {count: changed.length}) : t('adminPlatform.settings.noPending')}
                 </p>
@@ -195,7 +195,7 @@ function AdminSettingsContent() {
             </div>
 
             {errorMsg && <p role="alert" className="text-sm text-red-700">{errorMsg}</p>}
-            <p className="text-sm text-slate-500">{t('admin.settings.invoiceNote')}</p>
+            <p className="m-0 text-xs text-slate-500">{t('admin.settings.invoiceNote')}</p>
             {successMsg && (
                 <div role="status" className="flex items-center gap-2 rounded-panel border border-blue-200 bg-uav-blue-light px-4 py-3 text-xs font-semibold text-uav-blue">
                     <CheckCircle2 size={16} className="shrink-0 text-uav-blue"/>
@@ -234,7 +234,8 @@ function AdminSettingsContent() {
                                                           invalid={!!error} onChange={v => handleChange(s.configKey, v)}/>
                                             <p id={help} className="m-0 text-xs text-slate-500">
                                                 {hint(s)}
-                                                {s.description ? <span className="block text-slate-400">{s.description}</span> : null}
+                                                {s.description && s.description !== label(s)
+                                                    ? <span className="block truncate text-[11px] text-slate-400" title={s.description}>{s.description}</span> : null}
                                             </p>
                                             {error && <p className="m-0 text-xs font-semibold text-red-700" role="alert">{error}</p>}
                                         </div>

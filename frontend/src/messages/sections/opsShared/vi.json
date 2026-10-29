@@ -18,9 +18,9 @@
       },
       "cockpit": {
         "loading": "Đang tải nhiệm vụ SAR…",
-        "loadError": "Không tải được danh sách nhiệm vụ SAR. Vui lòng thử lại.",
+        "loadError": "Không tải được nhiệm vụ SAR. Thử lại.",
         "emptyTitle": "Chưa có nhiệm vụ SAR đang mở",
-        "emptyBody": "Khi một nhiệm vụ được đăng ký tìm kiếm cứu nạn (vị trí LKP, vùng tìm kiếm), nó sẽ xuất hiện tại đây.",
+        "emptyBody": "Nhiệm vụ SAR có LKP và vùng tìm kiếm sẽ hiện ở đây.",
         "openDispatch": "Mở danh sách điều phối",
         "chooseMission": "Chọn nhiệm vụ SAR",
         "urgent": "Ưu tiên khẩn cấp",
@@ -32,13 +32,13 @@
         "updated": "Cập nhật {at}",
         "dispatchButton": "Gửi tọa độ cứu nạn",
         "rthButton": "Yêu cầu RTH",
-        "selectTarget": "Chọn một mục tiêu có tọa độ GPS trong danh sách phát hiện trước khi gửi.",
-        "dispatchQueued": "Đã gửi tọa độ cứu nạn của {code} tới hệ thống cứu hộ.",
-        "dispatchUnconfigured": "Đã ghi nhận nội bộ, nhưng chưa có webhook nào nhận sự kiện {event}. Hãy liên hệ cơ quan cứu hộ trực tiếp.",
-        "rthConfirm": "Gửi yêu cầu quay về trạm (RTH) cho UAV {uav}?",
-        "rthQueued": "Đã gửi yêu cầu RTH của {code} tới trạm điều khiển mặt đất. Chờ UAV xác nhận.",
-        "rthUnconfigured": "Chưa có trạm mặt đất nào nhận sự kiện {event}. Hãy ra lệnh RTH trực tiếp trên GCS.",
-        "actionFailed": "Không thực hiện được thao tác. Vui lòng thử lại.",
+        "selectTarget": "Chọn một mục tiêu có tọa độ GPS trước.",
+        "dispatchQueued": "Đã gửi tọa độ cứu nạn của {code}.",
+        "dispatchUnconfigured": "Chưa có webhook nhận {event}. Hãy báo cứu hộ trực tiếp.",
+        "rthConfirm": "Gửi RTH cho UAV {uav}?",
+        "rthQueued": "Đã gửi RTH cho {code}. Chờ UAV xác nhận.",
+        "rthUnconfigured": "Chưa có GCS nhận {event}. Ra lệnh RTH trực tiếp trên GCS.",
+        "actionFailed": "Thao tác thất bại. Thử lại.",
         "cameraError": "Không thể hiển thị phát hiện AI",
         "mapError": "Không thể tải bản đồ tác chiến",
         "hudError": "Lỗi hiển thị telemetry",
@@ -50,7 +50,7 @@
         "loading": "Đang tải phát hiện…",
         "loadError": "Không tải được phát hiện AI.",
         "noTask": "Chưa có tác vụ AI nào cho nhiệm vụ này.",
-        "noFrame": "Tác vụ AI gần nhất không kèm khung hình; vị trí khung phát hiện hiển thị trên lưới.",
+        "noFrame": "Tác vụ AI không kèm khung hình; vị trí hiện trên lưới.",
         "boxes": "Khung phát hiện ({count})",
         "boxAria": "{label}, độ tin cậy {confidence}",
         "confidence": "Ngưỡng tin cậy:",
@@ -93,7 +93,7 @@
         "noUav": "Nhiệm vụ chưa được gán UAV.",
         "loading": "Đang tải telemetry…",
         "waiting": "Chưa nhận gói telemetry nào từ UAV {serial}.",
-        "stale": "Gói telemetry gần nhất đã cũ ({seconds} giây). Kiểm tra liên kết với trạm mặt đất.",
+        "stale": "Telemetry cũ ({seconds} giây). Kiểm tra liên kết GCS.",
         "altitude": "Độ cao (AGL)",
         "speed": "Vận tốc",
         "battery": "Pin",
@@ -137,17 +137,17 @@
       "loadingData": "Đang tải dữ liệu",
       "forbiddenAction": "Bạn không có quyền thực hiện thao tác này.",
       "errors": {
-        "equipmentReleaseRequired": "Thiết bị này đang được giữ cho nhiệm vụ. Hãy mở nhiệm vụ và dùng chức năng hoàn trả thiết bị để tránh sai lệch kho.",
+        "equipmentReleaseRequired": "Thiết bị đang giữ cho nhiệm vụ. Hoàn trả tại nhiệm vụ đó.",
         "inventoryNotAvailable": "Thiết bị không hoạt động hoặc không đủ số lượng khả dụng.",
-        "equipmentReserved": "Thiết bị đang được giữ. Hãy hoàn trả các khoản giữ trước khi đổi trạm.",
-        "missionMediaLocked": "Nhiệm vụ đã kết thúc. Tệp chỉ được xem hoặc tải xuống; không thể thêm, sửa hoặc xóa."
+        "equipmentReserved": "Thiết bị đang được giữ. Hoàn trả trước khi đổi trạm.",
+        "missionMediaLocked": "Nhiệm vụ đã kết thúc. Tệp chỉ xem và tải xuống."
       },
       "retry": "Thử lại",
       "recheckPermissions": "Kiểm tra lại quyền",
       "noAccessTitle": "Không có quyền truy cập",
-      "noAccessDetail": "Tài khoản của bạn chưa được cấp quyền xem mục này. Liên hệ quản trị viên nếu bạn cần truy cập.",
+      "noAccessDetail": "Liên hệ quản trị viên nếu cần quyền truy cập.",
       "noMatchingData": "Chưa có dữ liệu phù hợp",
-      "noMatchingDetail": "Thử thay đổi bộ lọc hoặc thêm dữ liệu khi bạn có quyền.",
+      "noMatchingDetail": "Thử đổi bộ lọc.",
       "dataTable": "Bảng dữ liệu",
       "previousPage": "Trang trước",
       "nextPage": "Trang sau",
@@ -160,8 +160,8 @@
     },
     "errorBoundary": {
       "title": "Không thể hiển thị khu vực này",
-      "detail": "Đã xảy ra lỗi kết xuất dữ liệu.",
-      "reset": "Khôi phục Widget"
+      "detail": "Lỗi hiển thị dữ liệu.",
+      "reset": "Thử lại"
     },
     "query": {
       "serverError": "Máy chủ gặp sự cố xử lý.",
@@ -186,13 +186,13 @@
     },
     "routes": {
       "operations": {
-        "errorTitle": "Gián đoạn hiển thị khu vực điều hành",
-        "errorDetail": "Đã xảy ra ngoại lệ trong quá trình tải dữ liệu tác chiến. Vui lòng thử tải lại hoặc quay về trang tổng quan.",
+        "errorTitle": "Không thể hiển thị trang",
+        "errorDetail": "Không tải được dữ liệu. Thử lại hoặc về tổng quan.",
         "reload": "Thử tải lại",
         "backOverview": "Về Tổng quan",
-        "notFoundTitle": "Không tìm thấy phân hệ điều hành",
-        "notFoundDetail": "Đường dẫn hoặc tài nguyên tác chiến bạn yêu cầu không tồn tại hoặc đã được di chuyển.",
-        "notFoundBack": "Quay về Tổng quan Điều hành"
+        "notFoundTitle": "Không tìm thấy trang",
+        "notFoundDetail": "Đường dẫn không tồn tại hoặc đã đổi.",
+        "notFoundBack": "Về tổng quan"
       },
       "customer": {
         "errorTitle": "Không thể hiển thị trang",

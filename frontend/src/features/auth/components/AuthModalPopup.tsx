@@ -139,6 +139,8 @@ export function AuthModalPopup() {
 
     const closeModal = useCallback(() => {
         setIsOpen(false);
+        // A later open (e.g. from the header) must not reuse the deep link this one was opened for.
+        setNextPath(null);
         setError(null);
         setFieldErrors({});
         if (searchParams.has('auth') || searchParams.has('next')) {
@@ -170,6 +172,7 @@ export function AuthModalPopup() {
         }
         setIsOpen(false);
         const dest = resolvePostLoginPath(response.user?.role, nextPath);
+        setNextPath(null);
         router.push(dest);
     };
 
@@ -346,7 +349,7 @@ export function AuthModalPopup() {
             setView('reset-password');
             toast.info(challenge.message, 'Khôi phục mật khẩu');
         } catch (err) {
-            showFailure(err, 'Không tìm thấy tài khoản với email này.');
+            showFailure(err, 'Chưa gửi được mã khôi phục. Vui lòng thử lại.');
         } finally {
             setSubmitting(false);
         }
@@ -557,16 +560,17 @@ export function AuthModalPopup() {
                     {/* VIEW 2: REGISTER */}
                     {view === 'register' && (
                         <form onSubmit={(e) => void handleRegisterSubmit(e)} className="space-y-3.5" noValidate>
-                            <div className="text-center">
+                            {/* Subtitle centred under the title so the heading block reads as one balanced unit. */}
+                            <div className="space-y-1 text-center">
                                 <h2 id="auth-modal-title" className="text-lg font-extrabold tracking-tight text-slate-900">
                                     Đăng ký tài khoản mới
                                 </h2>
+                                <p className="m-0 text-xs leading-5 text-slate-500 text-balance">
+                                    Dành cho khách hàng và doanh nghiệp đặt dịch vụ.<br/>
+                                    Nhân sự vận hành?{' '}
+                                    <a href="/contact" className="whitespace-nowrap font-semibold text-primary hover:underline">Liên hệ để được cấp tài khoản</a>
+                                </p>
                             </div>
-
-                            <p className="m-0 rounded-control border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                                Đăng ký dành cho khách hàng và doanh nghiệp đặt dịch vụ. Nhân sự vận hành được quản trị viên cấp tài khoản,{' '}
-                                <a href="/contact" className="font-semibold text-primary hover:underline">vui lòng liên hệ</a>.
-                            </p>
 
                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 <div>
@@ -815,14 +819,7 @@ export function AuthModalPopup() {
 
                             <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-xs text-slate-500">
                                 {mfaMethod === 'TOTP' ? (
-                                    <button
-                                        type="button"
-                                        disabled={submitting}
-                                        onClick={() => void handleResendOtp('LOGIN_2FA')}
-                                        className="font-bold text-uav-blue hover:underline"
-                                    >
-                                        Chuyển sang nhận mã OTP qua Email →
-                                    </button>
+                                    <span>Mở ứng dụng xác thực (Google Authenticator) để lấy mã 6 số.</span>
                                 ) : (
                                     <>
                                         <span>Chưa nhận được mã?</span>
@@ -999,6 +996,7 @@ export function AuthModalPopup() {
                                         type="button"
                                         onClick={() => {
                                             setIsOpen(false);
+                                            setNextPath(null);
                                             router.push('/admin/dashboard');
                                         }}
                                         className="group flex w-full items-center justify-between gap-3 rounded-control border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-colors hover:border-primary hover:bg-uav-red-light/40 cursor-pointer"
@@ -1025,6 +1023,7 @@ export function AuthModalPopup() {
                                         type="button"
                                         onClick={() => {
                                             setIsOpen(false);
+                                            setNextPath(null);
                                             router.push('/operations/overview');
                                         }}
                                         className="group flex w-full items-center justify-between gap-3 rounded-control border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-colors hover:border-uav-blue hover:bg-uav-blue-light/40 cursor-pointer"
@@ -1051,6 +1050,7 @@ export function AuthModalPopup() {
                                         type="button"
                                         onClick={() => {
                                             setIsOpen(false);
+                                            setNextPath(null);
                                             router.push('/customer/dashboard');
                                         }}
                                         className="group flex w-full items-center justify-between gap-3 rounded-control border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-colors hover:border-primary hover:bg-uav-red-light/40 cursor-pointer"

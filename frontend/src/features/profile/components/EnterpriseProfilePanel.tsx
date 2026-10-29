@@ -52,7 +52,7 @@ export function EnterpriseProfilePanel() {
         <div className="grid grid-cols-1 gap-px bg-slate-200 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
             <section className="flex h-full flex-col bg-card" aria-labelledby="enterprise-title">
                 <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
-                    <h2 id="enterprise-title" className="m-0 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-800">
+                    <h2 id="enterprise-title" className="m-0 flex items-center gap-2 text-sm font-bold text-slate-800">
                         <Building2 size={17} className="text-primary" aria-hidden="true"/>{t('enterprise.title')}</h2>
                     {!draft && profile && <button type="button" onClick={() => {
                         setErrors({});

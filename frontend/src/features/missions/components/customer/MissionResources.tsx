@@ -31,7 +31,7 @@ export function MissionResources({mission}: { mission: Mission }) {
     return <section className="min-w-0 overflow-hidden rounded-panel border-b border-border bg-card"
                     aria-labelledby="resources-title">
         <header className="flex items-center justify-between gap-3 border-b border-border bg-slate-50/70 px-5 py-3.5 md:px-6">
-            <h2 id="resources-title" className="m-0 text-sm font-bold uppercase tracking-wide text-slate-800">{t('resources.title')}</h2>
+            <h2 id="resources-title" className="m-0 text-sm font-bold text-slate-800">{t('resources.title')}</h2>
         </header>
         <ul className="m-0 grid list-none grid-cols-1 gap-px bg-slate-200 p-0 md:grid-cols-3">
             <Resource icon={<UavIcon size={20}/>} label={t('resources.uav')}>

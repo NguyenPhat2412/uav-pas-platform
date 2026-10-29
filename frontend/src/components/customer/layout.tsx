@@ -1,5 +1,5 @@
 'use client';
-import {useEffect} from 'react';
+import {createContext, useContext, useEffect} from 'react';
 import {useSidebarController} from '@/components/layout/useSidebarController';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import {AssistantWidget} from '@/features/assistant/components/AssistantWidget';
@@ -20,6 +20,7 @@ import {CustomerAccountMenu} from "@/components/customer/CustomerAccountMenu";
 import {NotificationBell} from "@/components/notifications/NotificationBell";
 import {PortalSwitcher} from "@/components/layout/PortalSwitcher";
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
+import {loginEntryForPage} from '@/features/auth/utils/auth-entry';
 import {
     CUSTOMER_SIDEBAR_GROUPS,
     CUSTOMER_SIDEBAR_ROUTES,
@@ -27,6 +28,18 @@ import {
 } from '@/components/layout/sidebar-routes';
 import {useCustomerProfile} from '@/lib/query/customer';
 import {Button} from "@/components/customer/ui";
+import {cn} from '@/lib/utils';
+import {Bell as BellIcon, CircleHelp, LayoutDashboard, Plane, ReceiptText} from 'lucide-react';
+import type {LucideIcon} from 'lucide-react';
+import {FoldingNavGroup, foldedLinkClass, useFoldedNavGroups} from '@/components/layout/FoldingNavGroup';
+import {CUSTOMER_RECENT_PAGES_KEY, rememberRecentPage} from '@/components/layout/recent-pages';
+
+const GROUP_ICONS: Partial<Record<(typeof CUSTOMER_SIDEBAR_GROUPS)[number], LucideIcon>> = {
+    overview: LayoutDashboard,
+    missions: Plane,
+    services: ReceiptText,
+    support: CircleHelp,
+};
 
 // Cấu hình routes của Sidebar Khách hàng (bao gồm /billing, /notifications, v.v.)
 // được tách riêng và quản lý tập trung tại `@/components/layout/sidebar-routes.ts`.
@@ -55,6 +68,12 @@ export function AppShell({children}: { children: React.ReactNode }) {
     const counts = useSidebarCounts();
     const badgeText = (value: number) => value > 99 ? '99+' : String(value);
     const activeNav = resolveSidebarActiveItem(visibleNav, pathname);
+    const {openGroups, toggleGroup} = useFoldedNavGroups('uav_customer_nav_open_groups', activeNav?.group);
+    // Feeds the dashboard's search "Recents"; only sidebar destinations are remembered.
+    const activeHref = activeNav?.href;
+    useEffect(() => {
+        if (activeHref) rememberRecentPage(CUSTOMER_RECENT_PAGES_KEY, activeHref);
+    }, [activeHref]);
 
     return (
         <div className="flex min-h-screen bg-background text-foreground">
@@ -79,10 +98,12 @@ export function AppShell({children}: { children: React.ReactNode }) {
                         aria-label="UAV PAS"
                         title={`UAV PAS · ${t('shell.customerTitle')}`}
                     >
-                        <img src="/vju-logo.svg" alt={t('shell.vjuUniversity')} width={28} height={28} className="h-7 w-7 shrink-0 object-contain"/>
+                        <span className="flex items-center justify-center bg-white p-0.5 rounded-lg border border-rose-100 shadow-xs overflow-hidden shrink-0">
+                            <img src="/vju-logo.svg" alt={t('shell.vjuUniversity')} width={26} height={26} className="w-[26px] h-[26px] object-contain"/>
+                        </span>
                         {!railCollapsed && (
                             <span className="flex flex-col leading-tight truncate">
-                                <b className="text-[13.5px] font-bold text-slate-900 truncate">UAV PAS</b>
+                                <strong className="text-[13.5px] font-bold text-slate-800 truncate">UAV PAS</strong>
                                 <small className="text-[10.5px] font-medium text-slate-500 truncate">{t('shell.customerTitle')}</small>
                             </span>
                         )}
@@ -112,49 +133,50 @@ export function AppShell({children}: { children: React.ReactNode }) {
                     <HeaderSearch variant="drawer" items={visibleNav.map(item => ({href: item.href, label: t(`nav.${item.key}`) || item.defaultLabel || item.key, group: t(`nav.groups.${item.group}`)}))}/>
                     <LanguageSwitcher variant="compact" className="sm:hidden"/>
                 </div>
-                <nav ref={navList} aria-label={t('shell.customerSection')} className="flex flex-1 flex-col gap-2.5 overflow-y-auto">
+                <nav ref={navList} aria-label={t('shell.customerSection')} className={cn('flex flex-1 flex-col overflow-y-auto', railCollapsed ? 'gap-2.5' : 'gap-0.5')}>
                     {navGroups.map((group, idx) => {
                         const items = visibleNav.filter(item => item.group === group);
                         if (!items.length) return null;
-                        return (
-                            <div key={group} role="group" aria-labelledby={railCollapsed ? undefined : `nav-group-${group}`}
-                                 aria-label={railCollapsed ? t(`nav.groups.${group}`) : undefined}
-                                 className="space-y-0.5">
-                                {railCollapsed ? (
-                                    idx > 0 ? <hr className="my-1.5 border-slate-100"/> : null
-                                ) : (
-                                    <div id={`nav-group-${group}`} className="mb-1 px-2 text-[11px] font-semibold text-slate-400 leading-none">
-                                        {t(`nav.groups.${group}`)}
-                                    </div>
-                                )}
+                        const renderBadge = (count: number, compact: boolean) => count > 0 && (compact
+                            ? <span className="absolute -top-1 -right-1 min-w-4 rounded-badge bg-primary px-1 text-center text-[9.5px] font-bold leading-4 text-primary-foreground" aria-hidden="true">{badgeText(count)}</span>
+                            : <span className="min-w-5 rounded-badge bg-primary px-1.5 text-center text-[11px] font-bold leading-5 text-primary-foreground tabular-nums" aria-hidden="true">{badgeText(count)}</span>);
+                        // The collapsed rail shows every page as an icon; groups fold only in the full sidebar.
+                        if (railCollapsed) return (
+                            <div key={group} role="group" aria-label={t(`nav.groups.${group}`)} className="space-y-0.5">
+                                {idx > 0 && <hr className="my-1.5 border-slate-100"/>}
                                 {items.map(({href, key, defaultLabel, icon: Icon, badge}) => {
                                     const label = t(`nav.${key}`) || defaultLabel || key;
                                     const active = href === activeNav?.href;
                                     const count = badge ? counts[badge] : 0;
                                     const accessibleLabel = count ? t(`nav.badges.${badge}`, {label, count}) : label;
-                                    return (
-                                        <Link
-                                            key={href}
-                                            href={href}
-                                            aria-current={active ? 'page' : undefined}
-                                            aria-label={accessibleLabel}
-                                            title={railCollapsed ? accessibleLabel : undefined}
-                                            onClick={() => setOpen(false)}
-                                            className={`relative flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] leading-5 transition-colors ${
-                                                active
-                                                    ? 'bg-uav-red-light font-semibold text-primary'
-                                                    : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                                            } ${railCollapsed ? 'mx-auto h-8 w-8 justify-center px-0 py-0' : ''}`}
-                                        >
-                                            <Icon size={16} className="shrink-0"/>
-                                            {!railCollapsed && <span className="flex-1 truncate">{label}</span>}
-                                            {count > 0 && (railCollapsed
-                                                ? <span className="absolute -top-1 -right-1 min-w-4 rounded-full bg-primary px-1 text-center text-[9.5px] font-bold leading-4 text-primary-foreground" aria-hidden="true">{badgeText(count)}</span>
-                                                : <span className="min-w-5 rounded-full bg-primary px-1.5 text-center text-[11px] font-bold leading-5 text-primary-foreground tabular-nums" aria-hidden="true">{badgeText(count)}</span>)}
-                                        </Link>
-                                    );
+                                    return <Link key={href} href={href} aria-current={active ? 'page' : undefined} aria-label={accessibleLabel}
+                                                 title={accessibleLabel} onClick={() => setOpen(false)}
+                                                 className={cn('relative mx-auto flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
+                                                     active ? 'bg-uav-red-light text-primary' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')}>
+                                        <Icon size={16} className="shrink-0"/>
+                                        {renderBadge(count, true)}
+                                    </Link>;
                                 })}
                             </div>
+                        );
+                        return (
+                            <FoldingNavGroup key={group} id={`customer-nav-${group}`} label={t(`nav.groups.${group}`)} icon={GROUP_ICONS[group] ?? BellIcon}
+                                             expanded={!!openGroups[group]} active={items.some(item => item.href === activeNav?.href)}
+                                             onToggle={() => toggleGroup(group)}>
+                                {items.map(({href, key, defaultLabel, badge}) => {
+                                    const label = t(`nav.${key}`) || defaultLabel || key;
+                                    const active = href === activeNav?.href;
+                                    const count = badge ? counts[badge] : 0;
+                                    const accessibleLabel = count ? t(`nav.badges.${badge}`, {label, count}) : label;
+                                    return <li key={href}>
+                                        <Link href={href} aria-current={active ? 'page' : undefined} aria-label={accessibleLabel} onClick={() => setOpen(false)}
+                                              className={cn(foldedLinkClass(active), 'flex items-center justify-between gap-2')}>
+                                            <span className="truncate">{label}</span>
+                                            {renderBadge(count, false)}
+                                        </Link>
+                                    </li>;
+                                })}
+                            </FoldingNavGroup>
                         );
                     })}
                 </nav>
@@ -180,11 +202,18 @@ export function AppShell({children}: { children: React.ReactNode }) {
                         >
                             <Menu size={18}/>
                         </button>
-                        <div className="min-w-0 truncate whitespace-nowrap text-[13px] text-slate-500">
-                            <span className="hidden xl:inline">UAV PAS / {t('shell.customerSection')} / </span>
-                            <strong className="font-semibold text-primary">
-                                {activeNav ? t(`nav.${activeNav.key}`) || activeNav.defaultLabel : t('shell.customerSection')}
-                            </strong>
+                        <div className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[13px] text-slate-500">
+                            <span className="hidden xl:inline">UAV PAS</span>
+                            <span className="hidden xl:inline">/</span>
+                            <span className={activeNav ? 'hidden xl:inline' : 'truncate font-semibold text-primary'}>{t('shell.customerSection')}</span>
+                            {activeNav && (
+                                <>
+                                    <span className="hidden xl:inline">/</span>
+                                    <strong className="truncate font-semibold text-primary">
+                                        {t(`nav.${activeNav.key}`) || activeNav.defaultLabel}
+                                    </strong>
+                                </>
+                            )}
                         </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-2 xl:gap-3">
@@ -206,16 +235,20 @@ export function AppShell({children}: { children: React.ReactNode }) {
     );
 }
 
-export function PageGuard({children, permission = 'MISSION_VIEW'}: {
-    children: React.ReactNode;
-    permission?: string | null
-}) {
+const PortalFrame = createContext(false);
+
+/**
+ * The customer portal layout's frame: signs the user in once and keeps one shell (sidebar, header,
+ * assistant) mounted while the user moves between pages. Pages still wrap themselves in PageGuard.
+ */
+export function CustomerPortalFrame({children}: { children: React.ReactNode }) {
     const router = useRouter();
-    const {isAuthenticated, isLoading, permissionsReady, permissionError, refreshPermissions, can} = useAuth();
+    const pathname = usePathname();
+    const {isAuthenticated, isLoading} = useAuth();
     const {t} = useI18n();
     useEffect(() => {
-        if (!isLoading && !isAuthenticated) router.replace("/?auth=login&next=/customer/dashboard");
-    }, [router, isLoading, isAuthenticated]);
+        if (!isLoading && !isAuthenticated) router.replace(loginEntryForPage(pathname, '/customer/dashboard'));
+    }, [router, pathname, isLoading, isAuthenticated]);
     if (isLoading || !isAuthenticated) {
         return (
             <div className="flex min-h-screen items-center justify-center p-6 text-sm font-semibold text-slate-500" role="status">
@@ -223,8 +256,30 @@ export function PageGuard({children, permission = 'MISSION_VIEW'}: {
             </div>
         );
     }
-    return (
-        <AppShell>
+    return <PortalFrame.Provider value={true}><AppShell>{children}</AppShell></PortalFrame.Provider>;
+}
+
+export function PageGuard({children, permission = 'MISSION_VIEW'}: {
+    children: React.ReactNode;
+    permission?: string | null
+}) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const {isAuthenticated, isLoading, permissionsReady, permissionError, refreshPermissions, can} = useAuth();
+    const {t} = useI18n();
+    const inFrame = useContext(PortalFrame);
+    useEffect(() => {
+        if (!inFrame && !isLoading && !isAuthenticated) router.replace(loginEntryForPage(pathname, '/customer/dashboard'));
+    }, [router, pathname, inFrame, isLoading, isAuthenticated]);
+    if (!inFrame && (isLoading || !isAuthenticated)) {
+        return (
+            <div className="flex min-h-screen items-center justify-center p-6 text-sm font-semibold text-slate-500" role="status">
+                {t('common.authenticating')}
+            </div>
+        );
+    }
+    const content = (
+        <>
             {permission && permissionError ? (
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-red-200 bg-red-50 p-4 text-sm text-danger" role="alert">
                     <span>{t('common.permissionError')}</span>
@@ -239,6 +294,8 @@ export function PageGuard({children, permission = 'MISSION_VIEW'}: {
             ) : (
                 children
             )}
-        </AppShell>
+        </>
     );
+    // Inside the portal layout the shell already exists; on its own a page still gets one.
+    return inFrame ? content : <AppShell>{content}</AppShell>;
 }

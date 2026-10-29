@@ -20,7 +20,7 @@ const quickPortals = [
 export default function ContactPage() {
     return (
         <section className="py-10 sm:py-16">
-            <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+            <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12">
                 {/* 50/50 Split-Screen Command Desk Right Above the Fold */}
                 <div className="grid grid-cols-1 overflow-hidden rounded-3xl border border-border bg-card shadow-lg lg:grid-cols-12">
                     {/* Left Visual Dark Panel (45%) */}

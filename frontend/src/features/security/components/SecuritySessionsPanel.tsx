@@ -2,7 +2,7 @@
 
 import {useState} from 'react';
 import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {KeyRound, LogOut, Search, ShieldOff, Users} from 'lucide-react';
+import {KeyRound, LogOut, Search, ShieldOff} from 'lucide-react';
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {Alert, Button} from '@/components/ui';
@@ -80,7 +80,6 @@ export function SecuritySessionsPanel() {
             <Button variant="danger" size="sm" onClick={onRevokeAll} disabled={busy} isLoading={revokeAll.isPending}>
                 <LogOut size={15} aria-hidden="true"/>{t('adminSecurity.sessions.revokeAll.action')}</Button>
         </section>
-        <p className="m-0 text-xs text-slate-500">{t('adminSecurity.sessions.mechanism')}</p>
 
         {notice && <Alert variant="success">{notice}</Alert>}
         <ErrorNotice error={error}/>
@@ -161,6 +160,5 @@ export function SecuritySessionsPanel() {
         </div>
         {query.data && <Pagination page={query.data.page} totalPages={query.data.totalPages} total={query.data.totalElements}
                                    onChange={page => setFilter(f => ({...f, page}))}/>}
-        <p className="m-0 flex items-center gap-1.5 text-xs text-slate-500"><Users size={13} aria-hidden="true"/>{t('adminSecurity.sessions.footnote')}</p>
     </div>;
 }

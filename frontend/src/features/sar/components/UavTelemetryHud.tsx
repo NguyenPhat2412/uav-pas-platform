@@ -30,7 +30,7 @@ export function UavTelemetryHud({mission, telemetry, loading}: { mission: SarCoc
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3.5">
             <div className="flex min-w-0 items-center gap-2">
                 <Gauge size={18} className="shrink-0 text-primary" aria-hidden="true"/>
-                <h3 className="m-0 truncate text-xs font-bold uppercase tracking-wider text-slate-900">{t('opsShared.sar.hud.title')}</h3>
+                <h3 className="m-0 truncate text-xs font-bold text-slate-900">{t('opsShared.sar.hud.title')}</h3>
             </div>
             <div className="flex items-center gap-2">
                 {telemetry?.rtkStatus && <span className={cn('rounded-badge border px-2.5 py-0.5 text-[10px] font-bold tabular-nums', rtkTone[telemetry.rtkStatus])}>
@@ -73,7 +73,7 @@ export function UavTelemetryHud({mission, telemetry, loading}: { mission: SarCoc
 function Metric({label, value, unit, hint, tone, icon}: { label: string; value: string; unit?: string; hint?: string; tone?: string; icon?: React.ReactNode }) {
     return <div className="bg-slate-50/50 p-3.5">
         <div className="flex items-center justify-between gap-2">
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</span>
+            <span className="block text-[10px] font-bold text-slate-500">{label}</span>
             {icon && <span className={tone ?? 'text-slate-400'}>{icon}</span>}
         </div>
         <div className="mt-1 flex items-baseline gap-1">

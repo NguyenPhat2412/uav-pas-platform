@@ -272,7 +272,7 @@ function AccountActions({user}: { user: User }) {
                                                                                            }), t('admin.users.changeRoleConfirm', {name: user.username, role: displayLabel(role)}))}>{t('admin.users.saveRole')}</Button><Button variant="danger" disabled={pending}
                                     onClick={() => void act(() => mutations.lock.mutateAsync(user.id), t('admin.users.lockConfirm', {name: user.username}))}>{t('admin.users.lock')}</Button><Button variant="outline" disabled={pending}
                                       onClick={() => void act(() => mutations.unlock.mutateAsync(user.id), t('admin.users.unlockConfirm', {name: user.username}))}>{t('admin.users.unlock')}</Button></div>
-        <p className="text-sm text-slate-600">{t('admin.users.lockHint')}</p><ErrorNotice
+        <p className="text-xs text-slate-500">{t('admin.users.lockHint')}</p><ErrorNotice
             error={mutations.lock.error || mutations.unlock.error || mutations.role.error}/>{message &&
             <Alert variant="success">{message}</Alert>}</section>;
 }
@@ -301,7 +301,7 @@ function PasswordReset({user}: { user: User }) {
                                                                                     onChange={e => setPassword(e.target.value)}/></label>
             <Button type="submit" variant="outline" disabled={resetPassword.isPending}>{t('admin.users.reset.submit')}</Button>
         </form>
-        <p className="text-sm text-slate-600">{t('admin.users.reset.hint')}</p>
+        <p className="text-xs text-slate-500">{t('admin.users.reset.hint')}</p>
         <ErrorNotice error={resetPassword.error}/>
         {done && <Alert variant="success">{t('admin.users.reset.done')}</Alert>}
     </section>;

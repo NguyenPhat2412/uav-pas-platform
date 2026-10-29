@@ -87,7 +87,8 @@ export function TwoFactorSettingsCard() {
     });
 
     const disableMutation = useMutation({
-        mutationFn: () => authService.disable2fa({password: disablePassword || undefined}),
+        // The backend now requires the current password to turn 2FA off.
+        mutationFn: () => authService.disable2fa({password: disablePassword}),
         onSuccess: (data) => {
             queryClient.setQueryData(queryKey, data);
             setShowDisableConfirm(false);
@@ -114,7 +115,7 @@ export function TwoFactorSettingsCard() {
                 <div className="flex items-center gap-2">
                     <ShieldCheck size={17} className="text-primary" aria-hidden="true" />
                     <h2 id="two-factor-title" className="m-0 text-[15px] font-bold text-slate-900">
-                        Bảo mật 2 lớp (2FA · OTP &amp; Authenticator)
+                        Bảo mật 2 lớp (2FA)
                     </h2>
                 </div>
                 {status && (
@@ -125,20 +126,17 @@ export function TwoFactorSettingsCard() {
                                 : 'border border-slate-200 bg-slate-100 text-slate-600'
                         }`}
                     >
-                        {status.enabled ? `ĐANG BẬT · ${status.method}` : 'CHƯA KÍCH HOẠT'}
+                        {status.enabled ? `ĐANG BẬT · ${status.method}` : 'CHƯA BẬT'}
                     </span>
                 )}
             </header>
 
             <div className="space-y-4 p-5">
                 {statusQuery.isPending ? (
-                    <p className="m-0 text-xs text-slate-500">Đang tải cấu hình bảo mật 2 lớp...</p>
+                    <p className="m-0 text-xs text-slate-500">Đang tải…</p>
                 ) : (
                     <>
-                        <p className="m-0 text-xs leading-relaxed text-slate-600">
-                            Tăng cường an toàn cho tài khoản điều hành bằng mã xác thực 6 chữ số qua{' '}
-                            <strong>Email OTP</strong> hoặc ứng dụng <strong>Google Authenticator (TOTP)</strong> mỗi khi đăng nhập.
-                        </p>
+                        <p className="m-0 text-xs text-slate-500">Mã 6 chữ số qua email hoặc ứng dụng khi đăng nhập.</p>
 
                         {/* Method Selector */}
                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -158,7 +156,7 @@ export function TwoFactorSettingsCard() {
                                 <div>
                                     <div className="text-xs font-bold text-slate-900">Email OTP (6 chữ số)</div>
                                     <div className="mt-0.5 text-[11px] text-slate-500">
-                                        Gửi mã OTP trực tiếp tới hộp thư {status?.maskedEmail || user?.email}
+                                        Gửi mã tới {status?.maskedEmail || user?.email}
                                     </div>
                                 </div>
                             </button>
@@ -179,7 +177,7 @@ export function TwoFactorSettingsCard() {
                                 <div>
                                     <div className="text-xs font-bold text-slate-900">Google Authenticator (TOTP)</div>
                                     <div className="mt-0.5 text-[11px] text-slate-500">
-                                        Sinh mã 6 chữ số tự động mỗi 30 giây trên điện thoại
+                                        Mã đổi mỗi 30 giây trên điện thoại
                                     </div>
                                 </div>
                             </button>
@@ -199,7 +197,7 @@ export function TwoFactorSettingsCard() {
                                         ? 'Đang khởi tạo...'
                                         : status?.enabled && status.method === selectedMethod
                                             ? `Cấu hình lại ${selectedMethod}`
-                                            : `Thiết lập & Bật 2FA (${selectedMethod})`}
+                                            : `Bật 2FA (${selectedMethod})`}
                                 </button>
 
                                 {status?.enabled && !showDisableConfirm && (
@@ -209,7 +207,7 @@ export function TwoFactorSettingsCard() {
                                         className="inline-flex h-9 items-center gap-1.5 rounded-control border border-slate-300 bg-white px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                                     >
                                         <ShieldAlert size={14} className="text-warning" />
-                                        Tắt bảo mật 2FA
+                                        Tắt 2FA
                                     </button>
                                 )}
                             </div>
@@ -234,10 +232,10 @@ export function TwoFactorSettingsCard() {
                                         )}
                                         <div className="flex-1 space-y-2 text-xs">
                                             <p className="m-0 font-bold text-slate-900">
-                                                Quét mã QR bằng Google Authenticator hoặc Authy
+                                                Quét mã QR bằng ứng dụng xác thực
                                             </p>
                                             <p className="m-0 text-slate-600">
-                                                Hoặc nhập thủ công khóa bí mật Base32 dưới đây vào ứng dụng xác thực:
+                                                Hoặc nhập khóa Base32:
                                             </p>
                                             {setupState.secret && (
                                                 <div className="flex items-center gap-2">
@@ -263,7 +261,7 @@ export function TwoFactorSettingsCard() {
                                 {setupState.devOtpPreview && (
                                     <div className="flex items-center justify-between border-l-[3px] border-l-uav-blue bg-uav-blue-light px-3 py-2 text-xs text-uav-blue">
                                         <span>
-                                            Mã OTP xác nhận (Local Dev):{' '}
+                                            Mã OTP (dev):{' '}
                                             <strong className="font-mono text-sm tracking-widest">
                                                 {setupState.devOtpPreview}
                                             </strong>
@@ -280,7 +278,7 @@ export function TwoFactorSettingsCard() {
 
                                 <div>
                                     <label className="mb-2 block text-[11px] font-bold uppercase tracking-wider text-slate-700">
-                                        Nhập mã xác thực 6 chữ số để kích hoạt
+                                        Mã xác thực 6 chữ số
                                     </label>
                                     <OtpCodeInput
                                         value={code}
@@ -310,13 +308,23 @@ export function TwoFactorSettingsCard() {
 
                         {/* Disable Confirmation */}
                         {showDisableConfirm && (
-                            <div className="space-y-3 rounded-control border border-amber-200 bg-amber-50/70 p-4">
-                                <p className="m-0 text-xs font-semibold text-slate-800">
-                                    Nhập mật khẩu hiện tại để xác nhận tắt bảo mật 2 lớp (2FA):
-                                </p>
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    if (disablePassword && !disableMutation.isPending) disableMutation.mutate();
+                                }}
+                                className="space-y-3 rounded-control border border-amber-200 bg-amber-50/70 p-4"
+                            >
+                                <label htmlFor="two-factor-disable-password" className="m-0 block text-xs font-semibold text-slate-800">
+                                    Nhập mật khẩu hiện tại để tắt 2FA:
+                                </label>
                                 <div className="flex flex-wrap items-center gap-2">
                                     <input
+                                        id="two-factor-disable-password"
                                         type="password"
+                                        name="password"
+                                        autoComplete="current-password"
+                                        required
                                         value={disablePassword}
                                         onChange={(e) => setDisablePassword(e.target.value)}
                                         placeholder="Mật khẩu tài khoản"
@@ -324,21 +332,23 @@ export function TwoFactorSettingsCard() {
                                     />
                                     <button
                                         type="button"
-                                        onClick={() => setShowDisableConfirm(false)}
+                                        onClick={() => {
+                                            setShowDisableConfirm(false);
+                                            setDisablePassword('');
+                                        }}
                                         className="h-9 rounded-control border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700"
                                     >
                                         Giữ 2FA
                                     </button>
                                     <button
-                                        type="button"
-                                        disabled={disableMutation.isPending}
-                                        onClick={() => disableMutation.mutate()}
+                                        type="submit"
+                                        disabled={disableMutation.isPending || !disablePassword}
                                         className="h-9 rounded-control bg-primary px-3.5 text-xs font-bold text-white hover:bg-primary-hover disabled:opacity-50"
                                     >
                                         {disableMutation.isPending ? 'Đang xử lý...' : 'Xác nhận tắt'}
                                     </button>
                                 </div>
-                            </div>
+                            </form>
                         )}
                     </>
                 )}

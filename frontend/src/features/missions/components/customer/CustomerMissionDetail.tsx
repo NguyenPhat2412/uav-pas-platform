@@ -40,7 +40,8 @@ function MissionDetail() {
     const mission = q.detail.data;
     const actionError = actions.submit.error || actions.cancel.error;
     if (q.detail.isLoading) return <div className="grid min-h-[70vh] place-items-center text-sm text-muted" role="status">{t('missionDetail.loading')}</div>;
-    if (q.detail.isError || !mission || mission.customerId !== user?.id) return <div className="flex flex-wrap items-center gap-3 rounded-panel bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline"
+    const canViewAny = can('MISSION_VIEW_ALL');
+    if (q.detail.isError || !mission || (!canViewAny && mission.customerId !== user?.id)) return <div className="flex flex-wrap items-center gap-3 rounded-panel bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline"
                                                                                      role="alert">{t('missionDetail.loadError')} <Button variant="secondary" onClick={() => void q.detail.refetch()}>{t('common.retry')}</Button> <Link href="/customer/missions">{t('missionDetail.backToList')}</Link></div>;
     const finished = ['COMPLETED', 'CANCELLED', 'REJECTED', 'FAILED'].includes(mission.status);
     const tabs: MissionTab[] = finished ? ['monitoring', 'delivery', 'history'] : ['monitoring', 'weather', 'delivery', 'history'];
@@ -62,14 +63,13 @@ function MissionDetail() {
     };
     const panelClass = 'min-w-0 overflow-hidden rounded-panel border-b border-border bg-card';
     const panelHeaderClass = 'flex items-center justify-between gap-3 border-b border-border bg-slate-50/70 px-4 py-3 md:px-5';
-    const panelTitleClass = 'm-0 text-sm font-bold uppercase tracking-wide text-slate-800';
+    const panelTitleClass = 'm-0 text-sm font-bold text-slate-800';
     const panelBodyClass = 'p-4 md:p-5';
     const mutedClass = 'm-0 text-sm leading-relaxed text-muted';
     const errorBoxClass = 'flex flex-wrap items-center gap-3 rounded-panel bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline';
     return <div className="flex flex-1 flex-col bg-white leading-normal text-foreground">
         <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/70 px-4 py-2.5 md:px-5">
             <Link href="/customer/missions" className="inline-flex min-h-8 w-fit items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('missionCreate.back')}</Link>
-            <span className="text-xs font-bold tracking-wider text-slate-500 tabular-nums">{mission.code}</span>
         </div>
         <section className={panelClass} aria-labelledby="mission-title">
             <div className="p-4 md:p-5">
@@ -173,7 +173,6 @@ function MissionDetail() {
         </section>}
                     <div className="grid gap-3">
                     <h2 id="files-title" className="m-0 text-base font-bold text-foreground">{t('missionDetail.files')} <span className="ml-1 text-xs font-semibold text-muted">{t('missionDetail.fileCount', {count: q.media.data?.length ?? 0})}</span></h2>
-                    <p className={mutedClass}>{t('missionDetail.filesIntro')}</p>
                     {mediaError && <div className={errorBoxClass} role="alert">{t('missionDetail.downloadError')}</div>}
                     {!can('MISSION_MEDIA_VIEW') ?
                         <p className={mutedClass}>{t('missionDetail.noFilePermission')}</p> : q.media.isLoading ?

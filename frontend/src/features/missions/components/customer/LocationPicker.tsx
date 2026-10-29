@@ -48,6 +48,7 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
 
     useEffect(() => {
         let disposed = false;
+        let resizeObserver: ResizeObserver | null = null;
         void import('leaflet').then(L => {
             if (disposed || !container.current || map.current) return;
             leaflet.current = L;
@@ -64,9 +65,19 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
             });
             map.current = instance;
             setReady(true);
+
+            if (typeof ResizeObserver !== 'undefined' && container.current) {
+                resizeObserver = new ResizeObserver(() => {
+                    map.current?.invalidateSize();
+                });
+                resizeObserver.observe(container.current);
+            }
+            setTimeout(() => map.current?.invalidateSize(), 100);
+            setTimeout(() => map.current?.invalidateSize(), 350);
         });
         return () => {
             disposed = true;
+            resizeObserver?.disconnect();
             scaleControl.current = null;
             map.current?.remove();
             map.current = null;

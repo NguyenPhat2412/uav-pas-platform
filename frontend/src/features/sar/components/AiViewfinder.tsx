@@ -56,7 +56,7 @@ export function AiViewfinder({missionId, detections, task, loading, failed, sele
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-slate-50 px-4 py-2.5">
             <div className="flex min-w-0 items-center gap-2.5">
                 <Flame size={15} className="shrink-0 text-primary" aria-hidden="true"/>
-                <h3 className="m-0 truncate text-xs font-bold uppercase tracking-wider text-slate-900">{t('opsShared.sar.viewfinder.title')}</h3>
+                <h3 className="m-0 truncate text-xs font-bold text-slate-900">{t('opsShared.sar.viewfinder.title')}</h3>
             </div>
             {task && <span className="truncate text-[11px] tabular-nums text-slate-500">
                 {t(`opsShared.sar.taskType.${task.taskType}`)} · {t(`opsShared.sar.node.${task.processingNode}`)} · {formatDate(task.createdAt, {timeStyle: 'medium'})}</span>}
@@ -106,7 +106,7 @@ export function AiViewfinder({missionId, detections, task, loading, failed, sele
 
         <div className="bg-slate-50/70 px-4 py-3">
             <div className="mb-2.5 flex items-center justify-between">
-                <h4 className="m-0 text-xs font-bold uppercase tracking-wider text-slate-900">{t('opsShared.sar.viewfinder.streamTitle')}</h4>
+                <h4 className="m-0 text-xs font-bold text-slate-900">{t('opsShared.sar.viewfinder.streamTitle')}</h4>
                 <span className="text-[11px] font-medium text-slate-500">{t('opsShared.sar.viewfinder.inView', {count: visible.length, total: detections.length})}</span>
             </div>
             {!visible.length ? <p className="m-0 py-3 text-center text-xs text-slate-500">

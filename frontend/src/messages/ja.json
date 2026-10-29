@@ -47,6 +47,21 @@
       "results": "検索結果",
       "navigate": "で移動",
       "select": "で選択"
+    },
+    "home": {
+      "operationsQuestion": "今日は何を手配しますか？",
+      "operationsSearch": "運用ページを検索",
+      "customerQuestion": "今日は何をしますか？",
+      "customerSearch": "ページを検索"
+    },
+    "portalSwitcher": {
+      "ariaLabel": "ポータルを切り替え",
+      "admin": "管理",
+      "operations": "運用管制",
+      "customer": "顧客",
+      "adminPortal": "管理ポータル",
+      "operationsPortal": "運用ポータル",
+      "customerPortal": "顧客ポータル"
     }
   },
   "operationsNavGroups": {
@@ -331,7 +346,10 @@
     "adminPortal": "管理",
     "operationsPortal": "運用",
     "customerPortal": "顧客",
-    "customerPortalUser": "顧客ポータル ({username})"
+    "customerPortalUser": "顧客ポータル ({username})",
+    "register": "新規登録",
+    "stripSchool": "日越大学",
+    "stripUniversity": "ベトナム国家大学ハノイ校"
   },
   "publicFooter": {
     "university": "日越大学（ベトナム国家大学ハノイ校）",

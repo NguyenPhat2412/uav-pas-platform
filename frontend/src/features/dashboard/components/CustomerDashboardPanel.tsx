@@ -50,16 +50,12 @@ function Dashboard() {
             {(missions.isError || services.isError) &&
                 <div role="alert" className="border-b border-red-200 bg-danger/10 px-4 py-3 text-[13px] text-danger">{t('dashboard.loadError')}</div>}
 
-            {/* Top Action Bar with Quick Shortcuts & Primary CTA */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-2.5 sm:px-5">
-                <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-700">{t('nav.dashboard')}</span>
-                    <span className="hidden text-xs text-slate-400 sm:inline">·</span>
-                    <span className="hidden text-xs font-medium text-slate-500 sm:inline">
-                        {t('dashboard.openServices')}: <strong className="font-bold text-slate-800 tabular-nums">{openServices}</strong>
-                    </span>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
+            {/* Toolbar: quick links and primary action */}
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-border bg-card px-4 py-3 sm:px-5">
+                <span className="hidden text-xs font-medium text-slate-500 sm:inline">
+                    {t('dashboard.openServices')}: <strong className="font-bold text-slate-800 tabular-nums">{openServices}</strong>
+                </span>
+                <div className="ml-auto flex flex-wrap items-center gap-2">
                     <Link
                         href="/customer/training"
                         className="inline-flex min-h-9 items-center justify-center rounded-control border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-primary"
@@ -89,7 +85,7 @@ function Dashboard() {
 
             {/* Pending Invoices Alert Strip */}
             {analytics && analytics.pendingInvoices.count > 0 && (
-                <div className="flex items-center gap-2.5 border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-[13.5px] text-amber-800 sm:px-5" role="status">
+                <div className="flex items-center gap-2.5 rounded-panel border border-amber-200 bg-amber-50 px-4 py-3 text-[13.5px] text-amber-800 sm:px-5" role="status">
                     <AlertTriangle size={17} aria-hidden="true" className="shrink-0"/>
                     <span className="flex-1">
                         {t('dashboard.analytics.pendingInvoices', {
@@ -231,7 +227,7 @@ function Dashboard() {
                         <div className="overflow-auto">
                             <table className="w-full border-collapse">
                                 <thead>
-                                <tr className="border-b border-border bg-slate-50/70 text-left text-[11px] font-bold uppercase tracking-wider text-muted">
+                                <tr className="border-b border-border bg-slate-50/70 text-left text-[11px] font-bold text-muted">
                                     <th className="px-4 py-3">{t('dashboard.missionCode')}</th>
                                     <th className="px-4 py-3">{t('dashboard.time')}</th>
                                     <th className="px-4 py-3 text-right">{t('common.status')}</th>
