@@ -50,6 +50,12 @@ public class BillingController {
         return ResponseEntity.ok(quotaService.listQuotas(Pageables.of(page, size)));
     }
 
+    @GetMapping("/admin/quotas/{userId}")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<UserQuotaResponse> getQuotaByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(quotaService.getQuotaByUserId(userId));
+    }
+
     @PutMapping("/admin/quotas/{userId}")
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<UserQuotaResponse> updateQuota(

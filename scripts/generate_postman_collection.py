@@ -9,7 +9,7 @@ with open(OPENAPI_PATH, 'r', encoding='utf-8') as f:
 
 schemas = openapi.get('components', {}).get('schemas', {})
 
-CURRENT_ADMIN_TOKEN = "eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiJjMWM1MDViZS0wMGQxLTRmN2QtYjYyYy04YzVhNDgwZjE0NjEiLCJzdWIiOiJhZG1pbiIsInVzZXJJZCI6MSwiZW1haWwiOiJhZG1pbkB1YXYtcGxhdGZvcm0uY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE3OTI2ODQ4MTgsImV4cCI6MTc5Mjc3MTIxOH0.WbQ-IYaF3cQPOWdP77SlBuKG47-f1-0vW7SbUYJy-U8tE675mc3tM4o9_RI6KnGc"
+CURRENT_ADMIN_TOKEN = ""
 CURRENT_REFRESH_TOKEN = "faf51f57a37f4dd288287cc690e3536010adf26aded941b6ba457121a5b4b68b"
 
 ENDPOINT_METADATA = {
@@ -373,6 +373,8 @@ if (!token && !isAuth) {
             }
         }
     });
+} else if (token && !isAuth) {
+    pm.request.headers.upsert({ key: "Authorization", value: "Bearer " + token });
 }
 """
 
@@ -393,7 +395,15 @@ collection = {
                        '5. **Test Scripts:** Tự động kiểm tra HTTP status 2xx và thời gian phản hồi cho từng request.\n',
         'schema': 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'
     },
-    'event': [],
+    'event': [
+        {
+            'listen': 'prerequest',
+            'script': {
+                'type': 'text/javascript',
+                'exec': [line for line in COLLECTION_PRE_REQUEST_SCRIPT.split('\n')]
+            }
+        }
+    ],
     'auth': {
         'type': 'bearer',
         'bearer': [
@@ -468,9 +478,12 @@ for path_str, methods in paths.items():
         
         path_var_names = re.findall(r':([a-zA-Z0-9_]+)', pm_path_str)
         for pv_name in path_var_names:
+            val = PATH_VAR_DEFAULTS.get(pv_name, '1')
+            if pv_name in ('id', 'userId') and any(x in pm_path_str for x in ['/users/', '/permissions/users/', '/billing/admin/quotas/']):
+                val = '2'
             url_obj['variable'].append({
                 'key': pv_name,
-                'value': PATH_VAR_DEFAULTS.get(pv_name, '1'),
+                'value': val,
                 'description': f'Tham số đường dẫn {pv_name}'
             })
             
@@ -600,24 +613,8 @@ for path_str, methods in paths.items():
                 'pm.test("Logout responded", function () {',
                 '    pm.expect(pm.response.code).to.be.below(500);',
                 '});',
-                'var baseUrl = pm.collectionVariables.get("baseUrl") || "http://localhost:8080";',
-                'pm.sendRequest({',
-                '    url: baseUrl + "/api/v1/auth/login",',
-                '    method: "POST",',
-                '    header: { "Content-Type": "application/json" },',
-                '    body: {',
-                '        mode: "raw",',
-                '        raw: JSON.stringify({ usernameOrEmail: "admin", password: "Password123@" })',
-                '    }',
-                '}, function (err, res) {',
-                '    if (!err && res.code === 200) {',
-                '        var data = res.json();',
-                '        var newToken = data.accessToken || (data.data && data.data.accessToken);',
-                '        if (newToken) {',
-                '            pm.collectionVariables.set("token", newToken);',
-                '        }',
-                '    }',
-                '});'
+                'pm.collectionVariables.set("token", "");',
+                'pm.collectionVariables.unset("token");',
             ]
             
         req_item = {

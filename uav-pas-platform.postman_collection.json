@@ -4,7 +4,55 @@
     "description": "# UAV PAS Platform API Documentation & Postman Collection\n\nTập hợp đầy đủ **130 API endpoints** với Sample Request Body chi tiết, Query Params, Path Variables mặc định, và **Cơ chế Tự Động Đăng Nhập (Auto-Login)**.\n\n### 🔑 Tài khoản Quản trị viên mặc định:\n- **Username:** `admin`\n- **Password:** `Password123@`\n- **Role:** `ROLE_ADMIN`\n\n### 🚀 Các tính năng tự động tích hợp:\n1. **Auto-Login:** Pre-request Script tự động gọi API login để cấp token mới nếu chưa có hoặc hết hạn.\n2. **Auto-Save Token:** Khi gọi request Login thủ công, token và refreshToken mới sẽ tự động lưu vào biến `{{token}}` và `{{refreshToken}}`.\n3. **Full Sample Body:** Tất cả ~60+ POST/PUT/PATCH đều đã được điền sẵn JSON body mẫu hợp lệ, không bị rỗng `{}`.\n4. **Default Path Variables:** Tất cả `:id`, `:userId`, `:missionId`... đều đã được gán sẵn giá trị mặc định `1`.\n5. **Test Scripts:** Tự động kiểm tra HTTP status 2xx và thời gian phản hồi cho từng request.\n",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "event": [],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// UAV PAS Platform - Automated Auto-Login Pre-request Script",
+          "var baseUrl = pm.collectionVariables.get(\"baseUrl\") || \"http://localhost:8080\";",
+          "var token = pm.collectionVariables.get(\"token\");",
+          "var urlStr = pm.request.url ? pm.request.url.toString() : \"\";",
+          "var isAuth = urlStr.indexOf(\"/auth/login\") !== -1 || urlStr.indexOf(\"/auth/register\") !== -1;",
+          "",
+          "if (!token && !isAuth) {",
+          "    var username = pm.collectionVariables.get(\"defaultUsername\") || \"admin\";",
+          "    var password = pm.collectionVariables.get(\"defaultPassword\") || \"Password123@\";",
+          "    ",
+          "    pm.sendRequest({",
+          "        url: baseUrl + \"/api/v1/auth/login\",",
+          "        method: \"POST\",",
+          "        header: { \"Content-Type\": \"application/json\" },",
+          "        body: {",
+          "            mode: \"raw\",",
+          "            raw: JSON.stringify({",
+          "                usernameOrEmail: username,",
+          "                password: password",
+          "            })",
+          "        }",
+          "    }, function (err, res) {",
+          "        if (!err && res.code === 200) {",
+          "            var data = res.json();",
+          "            var newToken = data.accessToken || (data.data && data.data.accessToken);",
+          "            var newRefreshToken = data.refreshToken || (data.data && data.data.refreshToken);",
+          "            if (newToken) {",
+          "                pm.collectionVariables.set(\"token\", newToken);",
+          "                pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + newToken });",
+          "            }",
+          "            if (newRefreshToken) {",
+          "                pm.collectionVariables.set(\"refreshToken\", newRefreshToken);",
+          "            }",
+          "        }",
+          "    });",
+          "} else if (token && !isAuth) {",
+          "    pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token });",
+          "}",
+          ""
+        ]
+      }
+    }
+  ],
   "auth": {
     "type": "bearer",
     "bearer": [
@@ -23,7 +71,7 @@
     },
     {
       "key": "token",
-      "value": "eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiJjMWM1MDViZS0wMGQxLTRmN2QtYjYyYy04YzVhNDgwZjE0NjEiLCJzdWIiOiJhZG1pbiIsInVzZXJJZCI6MSwiZW1haWwiOiJhZG1pbkB1YXYtcGxhdGZvcm0uY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE3OTI2ODQ4MTgsImV4cCI6MTc5Mjc3MTIxOH0.WbQ-IYaF3cQPOWdP77SlBuKG47-f1-0vW7SbUYJy-U8tE675mc3tM4o9_RI6KnGc",
+      "value": "",
       "type": "string"
     },
     {
@@ -310,24 +358,8 @@
                   "pm.test(\"Logout responded\", function () {",
                   "    pm.expect(pm.response.code).to.be.below(500);",
                   "});",
-                  "var baseUrl = pm.collectionVariables.get(\"baseUrl\") || \"http://localhost:8080\";",
-                  "pm.sendRequest({",
-                  "    url: baseUrl + \"/api/v1/auth/login\",",
-                  "    method: \"POST\",",
-                  "    header: { \"Content-Type\": \"application/json\" },",
-                  "    body: {",
-                  "        mode: \"raw\",",
-                  "        raw: JSON.stringify({ usernameOrEmail: \"admin\", password: \"Password123@\" })",
-                  "    }",
-                  "}, function (err, res) {",
-                  "    if (!err && res.code === 200) {",
-                  "        var data = res.json();",
-                  "        var newToken = data.accessToken || (data.data && data.data.accessToken);",
-                  "        if (newToken) {",
-                  "            pm.collectionVariables.set(\"token\", newToken);",
-                  "        }",
-                  "    }",
-                  "});"
+                  "pm.collectionVariables.set(\"token\", \"\");",
+                  "pm.collectionVariables.unset(\"token\");"
                 ]
               }
             }
@@ -435,7 +467,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
+                  "value": "2",
                   "description": "Tham số đường dẫn id"
                 }
               ]
@@ -481,7 +513,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
+                  "value": "2",
                   "description": "Tham số đường dẫn id"
                 }
               ]
@@ -527,7 +559,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
+                  "value": "2",
                   "description": "Tham số đường dẫn id"
                 }
               ]
@@ -579,7 +611,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
+                  "value": "2",
                   "description": "Tham số đường dẫn id"
                 }
               ]
@@ -4853,7 +4885,7 @@
               "variable": [
                 {
                   "key": "userId",
-                  "value": "1",
+                  "value": "2",
                   "description": "Tham số đường dẫn userId"
                 }
               ]
@@ -6089,7 +6121,7 @@
               "variable": [
                 {
                   "key": "userId",
-                  "value": "1",
+                  "value": "2",
                   "description": "Tham số đường dẫn userId"
                 }
               ]
@@ -6182,7 +6214,7 @@
               "variable": [
                 {
                   "key": "userId",
-                  "value": "1",
+                  "value": "2",
                   "description": "Tham số đường dẫn userId"
                 },
                 {
@@ -6234,7 +6266,7 @@
               "variable": [
                 {
                   "key": "userId",
-                  "value": "1",
+                  "value": "2",
                   "description": "Tham số đường dẫn userId"
                 },
                 {
