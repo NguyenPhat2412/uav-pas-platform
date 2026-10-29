@@ -78,13 +78,15 @@ rsync -az --delete \
   --exclude .DS_Store --exclude .idea --exclude .vscode \
   --exclude '/.env' --exclude '/backend/.env' --exclude '/frontend/.env' --exclude '.env.local' \
   --exclude 'deploy/.env.production' --exclude 'deploy/build.log' \
-  --exclude 'docs/handoff' --exclude 'docs/screenshots' \
+  --exclude 'docs/handoff' --exclude 'docs/screenshots' --exclude '/backups' \
   ./ root@160.22.123.184:/opt/uav-pas/
 scp deploy/.env.production root@160.22.123.184:/opt/uav-pas/deploy/.env.production
 ssh root@160.22.123.184 'chmod 600 /opt/uav-pas/deploy/.env.production'
 ```
 
 > Dùng `rsync` thay vì `git clone`, vì trên máy còn nhiều thay đổi chưa commit. Sau khi commit và push đầy đủ, có thể chuyển sang `git pull`.
+>
+> `--exclude '/backups'` là bắt buộc: `--delete` sẽ xóa mọi thứ trên VPS không có trong repo, kể cả bản sao lưu hằng ngày ở `/opt/uav-pas/backups` (mục 9).
 
 Nếu có số hotline điều phối, sửa `NEXT_PUBLIC_DISPATCH_HOTLINE` trong `/opt/uav-pas/deploy/.env.production` trước khi build.
 
