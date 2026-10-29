@@ -290,6 +290,18 @@ public final class ApiRoutes {
         public static final String BY_CODE = "/{codeOrSlug}";
         public static final String PROGRESS = "/{id}/progress";
         public static final String BY_ID = "/{id}";
+
+        // Courses: lessons (video / slides / article), learner progress and admin authoring.
+        public static final String COURSES = "/courses";
+        public static final String COURSE_BY_CODE = "/courses/{codeOrSlug}";
+        public static final String LESSON_BY_ID = "/lessons/{id}";
+        public static final String LESSON_PROGRESS = "/lessons/{id}/progress";
+        public static final String ADMIN_COURSE_LESSONS = "/admin/courses/{id}/lessons";
+        public static final String ADMIN_COURSE_COVER = "/admin/courses/{id}/cover";
+        public static final String ADMIN_LESSONS = "/admin/lessons";
+        public static final String ADMIN_LESSON_BY_ID = "/admin/lessons/{id}";
+        public static final String ADMIN_ASSETS = "/admin/assets";
+        public static final String ADMIN_ASSET_CONFIRM = "/admin/assets/{id}/confirm";
     }
 
     /**

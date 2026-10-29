@@ -208,12 +208,15 @@ public class S3CompatibleStorageService implements ObjectStorageService {
 
     @Override
     public String createSignedDownloadUrl(String objectKey) {
+        return createSignedDownloadUrl(objectKey, Duration.ofMinutes(15));
+    }
+
+    @Override
+    public String createSignedDownloadUrl(String objectKey, Duration validity) {
         GetObjectRequest request = GetObjectRequest.builder().bucket(bucket).key(objectKey).build();
         return presigner
                 .presignGetObject(
-                        builder ->
-                                builder.signatureDuration(Duration.ofMinutes(15))
-                                        .getObjectRequest(request))
+                        builder -> builder.signatureDuration(validity).getObjectRequest(request))
                 .url()
                 .toString();
     }

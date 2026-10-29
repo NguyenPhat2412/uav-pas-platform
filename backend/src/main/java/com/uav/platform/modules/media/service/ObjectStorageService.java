@@ -15,6 +15,11 @@ public interface ObjectStorageService {
 
     String createSignedDownloadUrl(String objectKey);
 
+    /** Signed GET valid for {@code validity}; implementations without a custom lifetime use their default. */
+    default String createSignedDownloadUrl(String objectKey, java.time.Duration validity) {
+        return createSignedDownloadUrl(objectKey);
+    }
+
     boolean objectExists(String objectKey);
 
     ObjectMetadata metadata(String objectKey);
