@@ -6,6 +6,7 @@ import {PageGuard} from "@/components/customer/layout";
 import {Button, Panel} from "@/components/customer/ui";
 import {type NotificationItem, useNotifications} from '@/lib/query/notifications';
 import {useI18n} from '@/contexts/I18nContext';
+import {FilterSelect} from '@/components/shared/FilterSelect';
 
 export default function CustomerNotificationsPage() {
     const {notifications, unreadCount, loading, busy, error, reload, markAllRead, markOneRead} = useNotifications();
@@ -50,30 +51,11 @@ export default function CustomerNotificationsPage() {
                         <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-500">
                             <Filter size={13}/> {t('notificationsPage.clickHint')}
                         </span>
-                        <div className="inline-flex bg-slate-100 p-1 rounded-panel border border-border">
-                            <button
-                                type="button"
-                                onClick={() => setFilter('ALL')}
-                                className={`border-0 font-bold text-xs px-3 py-1 rounded-control cursor-pointer transition-all ${
-                                    filter === 'ALL'
-                                        ? 'bg-card text-slate-900'
-                                        : 'bg-transparent text-slate-500 hover:text-slate-700'
-                                }`}
-                            >
-                                {t('notificationsPage.all', {count: notifications.length})}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setFilter('UNREAD')}
-                                className={`border-0 font-bold text-xs px-3 py-1 rounded-control cursor-pointer transition-all ${
-                                    filter === 'UNREAD'
-                                        ? 'bg-card text-primary'
-                                        : 'bg-transparent text-slate-500 hover:text-slate-700'
-                                }`}
-                            >
-                                {t('notificationsPage.unread', {count: unreadCount})}
-                            </button>
-                        </div>
+                        <FilterSelect label={t('notificationsPage.filter')} value={filter} onChange={setFilter}
+                                      options={[
+                                          {value: 'ALL', label: t('notificationsPage.all', {count: notifications.length})},
+                                          {value: 'UNREAD', label: t('notificationsPage.unread', {count: unreadCount})},
+                                      ]}/>
                         {unreadCount > 0 && (
                             <Button type="button" variant="secondary" onClick={markAllRead} disabled={busy || loading}>
                                 <span className="inline-flex items-center gap-1.5">

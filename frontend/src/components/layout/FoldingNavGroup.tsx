@@ -40,7 +40,7 @@ export function useFoldedNavGroups(storageKey: string, activeGroup?: string) {
 /** Link style for a page inside a folding group; the focus ring is drawn inside because the list clips. */
 export function foldedLinkClass(active: boolean) {
     return cn('block truncate rounded-lg px-2.5 py-1.5 text-[13px] leading-5 outline-none transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary',
-        active ? 'bg-uav-red-light font-semibold text-primary' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900');
+        active ? 'bg-slate-100 font-medium text-slate-900' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900');
 }
 
 /** A sidebar group shown as one row with an icon and chevron; its pages unfold underneath. */
@@ -50,7 +50,7 @@ export function FoldingNavGroup({id, label, icon: Icon, expanded, active, onTogg
     return <div>
         <button type="button" onClick={onToggle} aria-expanded={expanded} aria-controls={id}
                 className={cn('flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[13px] leading-5 outline-none transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary',
-                    active && !expanded ? 'font-semibold text-primary' : 'font-medium text-slate-700')}>
+                    active && !expanded ? 'font-semibold text-slate-900' : 'font-medium text-slate-800')}>
             <Icon size={16} className="shrink-0" aria-hidden="true"/>
             <span className="min-w-0 flex-1 truncate">{label}</span>
             <ChevronRight size={14} aria-hidden="true" className={cn('shrink-0 text-slate-400 transition-transform duration-200', expanded && 'rotate-90')}/>

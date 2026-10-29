@@ -1,12 +1,12 @@
 'use client';
 
 import {OperationsPage} from '@/components/layout/OperationsPage';
-import {TrainingAcademyWorkspace} from '@/features/training/components/TrainingAcademyWorkspace';
+import {TrainingCourseCatalog} from '@/features/training/components/TrainingCourseCatalog';
 
 export default function OperationsTrainingRoutePage() {
     return (
         <OperationsPage permission={null} activeResource="training">
-            <TrainingAcademyWorkspace defaultPortal="OPERATIONS" />
+            <TrainingCourseCatalog portal="OPERATIONS" courseHref={slug => `/operations/training/${encodeURIComponent(slug)}`} />
         </OperationsPage>
     );
 }

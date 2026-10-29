@@ -16,7 +16,7 @@ import {MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
 
 // Leaflet styles vectors through options, so the theme colours are spelled out here.
-const C = {red: '#ab2523', blue: '#004ac6', amber: '#d97706', slate: '#334155', muted: '#94a3b8'};
+const C = {red: '#c43a4a', blue: '#475569', amber: '#d97706', slate: '#334155', muted: '#94a3b8'};
 const pin = (bg: string, text: string, size = 24) =>
     `<span style="display:flex;width:${size}px;height:${size}px;align-items:center;justify-content:center;background:${bg};color:#fff;font:700 11px system-ui;border:2px solid #fff;box-shadow:0 1px 4px rgb(0 0 0/.4)">${text}</span>`;
 

@@ -411,7 +411,8 @@
         "recent": "Thông báo gần đây",
         "clickHint": "Bấm để đánh dấu đã đọc",
         "empty": "Không có thông báo phù hợp.",
-        "unreadDot": "Chưa đọc"
+        "unreadDot": "Chưa đọc",
+        "filter": "Hiển thị"
     },
     "profile": {
         "errors": {

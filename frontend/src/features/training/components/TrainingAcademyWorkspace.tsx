@@ -8,6 +8,7 @@ import {
     Edit3,
     Layers,
     Plus,
+    Eye,
     RefreshCw,
     Search,
     X,
@@ -21,303 +22,10 @@ import type {
     UpsertTrainingDocumentPayload,
 } from '@/features/training/types/training.types';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
-
-const PORTAL_META: Record<
-    TrainingPortalTier,
-    {
-        title: string;
-        subtitle: string;
-        /** Who reads this tier, as admins see it ("Tài liệu đào tạo cho …"). */
-        audience: string;
-        categories: Record<string, string>;
-    }
-> = {
-    CUSTOMER: {
-        title: 'Hướng dẫn sử dụng dịch vụ',
-        subtitle: 'Cách đặt nhiệm vụ bay, chuẩn bị hiện trường và nhận dữ liệu.',
-        audience: 'khách hàng',
-        categories: {
-            SITE_PREP: 'Khảo sát & Chuẩn bị Bãi đáp',
-            SENSOR_GSD: 'Cảm biến & Độ phân giải GSD',
-            DATA_DELIVERY: 'Nghiệm thu Dữ liệu & AI',
-            EMERGENCY_SAFETY: 'An toàn & Khẩn cấp',
-            MISSION_PLANNING: 'Khởi tạo & Tọa độ bay',
-            SAFETY_COMPLIANCE: 'An toàn bãi đáp & Hành lang',
-            DATA_DELIVERABLES: 'Nghiệm thu dữ liệu & AI',
-            BILLING_SLA: 'Hạn mức & Đối soát SLA',
-        },
-    },
-    OPERATIONS: {
-        title: 'Đào tạo & SOP điều hành',
-        subtitle: 'Quy trình chuẩn cho kiểm tra trước bay, điều phối, xử lý khẩn cấp và bảo dưỡng.',
-        audience: 'đội điều hành',
-        categories: {
-            FLIGHT_SOP: 'Quy trình Bay & BVLOS',
-            SAR_TACTICAL: 'Tác chiến SAR & AI Detection',
-            EMERGENCY_SAFETY: 'Ứng phó Khẩn cấp & Failsafe',
-            MAINTENANCE: 'Bảo dưỡng & Logistics',
-            PREFLIGHT_SOP: 'Kiểm tra Pre-flight & Trạm',
-            BVLOS_DISPATCH: 'Điều phối BVLOS & Telemetry',
-            EMERGENCY_SAR: 'Ứng cứu SAR & Khẩn cấp',
-            MAINTENANCE_LOGISTICS: 'Bảo dưỡng & Kho thiết bị',
-        },
-    },
-    ADMIN: {
-        title: 'Quy chuẩn quản trị',
-        subtitle: 'Phân quyền, bảo mật, AI Router, webhook và đối soát tài chính.',
-        audience: 'quản trị viên',
-        categories: {
-            RBAC_SECURITY: 'Bảo mật RBAC & 2FA',
-            BILLING_QUOTA: 'Đối soát Billing & Hạn mức',
-            INFRA_TELEMETRY: 'Hạ tầng AI Router & Webhook',
-            AI_ROUTER_GOVERNANCE: 'Điều phối AI Router',
-            WEBHOOK_BILLING_AUDIT: 'Kiểm toán Webhook & Billing',
-        },
-    },
-};
-
-const LEVEL_LABELS: Record<string, {label: string; toneClass: string}> = {
-    FUNDAMENTAL: {
-        label: 'Cơ bản',
-        toneClass: 'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300',
-    },
-    FOUNDATION: {
-        label: 'Cơ bản',
-        toneClass: 'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300',
-    },
-    STANDARD_SOP: {
-        label: 'Chuẩn SOP',
-        toneClass: 'border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300',
-    },
-    STANDARD: {
-        label: 'Tiêu chuẩn',
-        toneClass: 'border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300',
-    },
-    ADVANCED_TACTICAL: {
-        label: 'Nâng cao',
-        toneClass: 'border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300',
-    },
-    ADVANCED: {
-        label: 'Chuyên sâu',
-        toneClass: 'border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300',
-    },
-    MANDATORY: {
-        label: 'Trọng yếu',
-        toneClass: 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300',
-    },
-    SOP_CRITICAL: {
-        label: 'Trọng yếu',
-        toneClass: 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300',
-    },
-};
-
-function renderInlineFormatting(text: string): React.ReactNode {
-    const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
-    return parts.map((part, idx) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-            return (
-                <strong key={idx} className="font-semibold text-foreground">
-                    {part.slice(2, -2)}
-                </strong>
-            );
-        }
-        if (part.startsWith('`') && part.endsWith('`')) {
-            return (
-                <code
-                    key={idx}
-                    className="rounded-badge border border-border bg-surface-variant px-1.5 py-0.5 font-mono text-[12px] text-primary"
-                >
-                    {part.slice(1, -1)}
-                </code>
-            );
-        }
-        return <React.Fragment key={idx}>{part}</React.Fragment>;
-    });
-}
-
-function MarkdownSopRenderer({markdown}: {markdown: string}) {
-    const blocks = useMemo(() => {
-        const lines = (markdown || '').split('\n');
-        const result: Array<
-            | {type: 'heading'; text: string}
-            | {type: 'paragraph'; text: string}
-            | {type: 'ul'; items: string[]}
-            | {type: 'ol'; items: string[]}
-            | {type: 'table'; headers: string[]; rows: string[][]}
-        > = [];
-
-        let i = 0;
-        while (i < lines.length) {
-            const raw = lines[i].trim();
-            if (!raw) {
-                i++;
-                continue;
-            }
-
-            if (raw.startsWith('### ') || raw.startsWith('## ')) {
-                result.push({
-                    type: 'heading',
-                    text: raw.replace(/^#{2,3}\s+/, ''),
-                });
-                i++;
-                continue;
-            }
-
-            if (raw.startsWith('|') && raw.endsWith('|')) {
-                const tableLines: string[] = [];
-                while (i < lines.length && lines[i].trim().startsWith('|')) {
-                    tableLines.push(lines[i].trim());
-                    i++;
-                }
-                if (tableLines.length >= 2) {
-                    const parseRow = (row: string) =>
-                        row
-                            .replace(/^\|/, '')
-                            .replace(/\|$/, '')
-                            .split('|')
-                            .map((cell) => cell.trim());
-                    const headers = parseRow(tableLines[0]);
-                    const dataLines = tableLines.slice(1).filter((line) => !/^\|[\s\-:|]+\|$/.test(line));
-                    const rows = dataLines.map(parseRow);
-                    result.push({type: 'table', headers, rows});
-                }
-                continue;
-            }
-
-            if (raw.startsWith('- ') || raw.startsWith('* ')) {
-                const items: string[] = [];
-                while (
-                    i < lines.length &&
-                    (lines[i].trim().startsWith('- ') || lines[i].trim().startsWith('* '))
-                ) {
-                    items.push(lines[i].trim().slice(2));
-                    i++;
-                }
-                result.push({type: 'ul', items});
-                continue;
-            }
-
-            if (/^\d+\.\s+/.test(raw)) {
-                const items: string[] = [];
-                while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
-                    items.push(lines[i].trim().replace(/^\d+\.\s+/, ''));
-                    i++;
-                }
-                result.push({type: 'ol', items});
-                continue;
-            }
-
-            const paraLines: string[] = [];
-            while (
-                i < lines.length &&
-                lines[i].trim() !== '' &&
-                !lines[i].trim().startsWith('#') &&
-                !lines[i].trim().startsWith('|') &&
-                !lines[i].trim().startsWith('- ') &&
-                !/^\d+\.\s+/.test(lines[i].trim())
-            ) {
-                paraLines.push(lines[i].trim());
-                i++;
-            }
-            if (paraLines.length > 0) {
-                result.push({type: 'paragraph', text: paraLines.join(' ')});
-            } else {
-                i++;
-            }
-        }
-        return result;
-    }, [markdown]);
-
-    return (
-        <div className="space-y-4 text-sm leading-relaxed text-muted">
-            {blocks.map((block, index) => {
-                if (block.type === 'heading') {
-                    return (
-                        <div
-                            key={index}
-                            className="border-l-2 border-primary bg-surface-variant/60 px-3.5 py-2 font-semibold text-foreground"
-                        >
-                            {block.text}
-                        </div>
-                    );
-                }
-
-                if (block.type === 'paragraph') {
-                    return (
-                        <p key={index} className="text-sm leading-relaxed text-muted">
-                            {renderInlineFormatting(block.text)}
-                        </p>
-                    );
-                }
-
-                if (block.type === 'ul') {
-                    return (
-                        <ul key={index} className="space-y-2 pl-1">
-                            {block.items.map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-2.5">
-                                    <span className="mt-2 h-1.5 w-1.5 shrink-0 bg-primary" />
-                                    <span>{renderInlineFormatting(item)}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    );
-                }
-
-                if (block.type === 'ol') {
-                    return (
-                        <ol key={index} className="space-y-2 pl-1">
-                            {block.items.map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-2.5">
-                                    <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-badge border border-border bg-surface-variant font-mono text-[11px] font-semibold text-foreground">
-                                        {idx + 1}
-                                    </span>
-                                    <span className="pt-0.5">{renderInlineFormatting(item)}</span>
-                                </li>
-                            ))}
-                        </ol>
-                    );
-                }
-
-                if (block.type === 'table') {
-                    return (
-                        <div key={index} className="overflow-x-auto border border-border">
-                            <table className="w-full border-collapse text-left text-xs">
-                                <thead>
-                                    <tr className="border-b border-border bg-surface-variant">
-                                        {block.headers.map((header, hIdx) => (
-                                            <th
-                                                key={hIdx}
-                                                className="border-r border-border px-3.5 py-2.5 font-semibold tracking-wider text-foreground uppercase last:border-r-0"
-                                            >
-                                                {header}
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-border bg-card">
-                                    {block.rows.map((row, rIdx) => (
-                                        <tr key={rIdx} className="hover:bg-surface-variant/50">
-                                            {row.map((cell, cIdx) => (
-                                                <td
-                                                    key={cIdx}
-                                                    className="border-r border-border px-3.5 py-2.5 text-muted last:border-r-0"
-                                                >
-                                                    {renderInlineFormatting(cell)}
-                                                </td>
-                                            ))}
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    );
-                }
-
-                return null;
-            })}
-        </div>
-    );
-}
+import {MarkdownSopRenderer} from '@/features/training/components/MarkdownSopRenderer';
+import {adminTrainingPreviewHref, LEVEL_LABELS, PORTAL_META} from '@/features/training/utils/training-meta';
+import {TrainingCourseCatalog} from '@/features/training/components/TrainingCourseCatalog';
+import {TrainingCourseAdminPanel} from '@/features/training/components/TrainingCourseLessonsPanel';
 
 /**
  * Training for one portal. Customers and operations staff read lessons and tick off checklists;
@@ -337,6 +45,7 @@ export function TrainingAcademyWorkspace({
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [selectedDocCode, setSelectedDocCode] = useState<string | null>(null);
 
+    const [learnerPreview, setLearnerPreview] = useState<boolean>(false);
     const [editorOpen, setEditorOpen] = useState<boolean>(false);
     const [editingDoc, setEditingDoc] = useState<TrainingDocument | null>(null);
     const [formState, setFormState] = useState<UpsertTrainingDocumentPayload>({
@@ -585,6 +294,22 @@ export function TrainingAcademyWorkspace({
                     {manage && (
                         <button
                             type="button"
+                            onClick={() => setLearnerPreview(value => !value)}
+                            aria-pressed={learnerPreview}
+                            className={`inline-flex items-center gap-1.5 rounded-control border px-3 py-1.5 text-xs font-medium transition-colors ${
+                                learnerPreview
+                                    ? 'border-foreground bg-surface-variant text-foreground'
+                                    : 'border-border bg-card text-muted hover:bg-surface-variant hover:text-foreground'
+                            }`}
+                        >
+                            <Eye className="h-3.5 w-3.5" />
+                            Xem như học viên
+                        </button>
+                    )}
+
+                    {manage && (
+                        <button
+                            type="button"
                             onClick={openCreateModal}
                             className="inline-flex items-center gap-1.5 rounded-control bg-primary px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90"
                         >
@@ -595,6 +320,13 @@ export function TrainingAcademyWorkspace({
                 </div>
             </div>
 
+            {manage && learnerPreview ? (
+                <TrainingCourseCatalog
+                    portal={activePortal}
+                    embedded
+                    courseHref={slug => adminTrainingPreviewHref(slug, activePortal)}
+                />
+            ) : <>
             {/* 2. SUMMARY: the learner's progress, or the catalogue size for admins */}
             {manage ? (
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-1 px-5 py-3 text-sm text-muted">
@@ -864,6 +596,9 @@ export function TrainingAcademyWorkspace({
                                     </p>
                                 </div>
 
+                                {/* Course: cover, learner preview and lessons */}
+                                {manage && <TrainingCourseAdminPanel key={activeDocument.id} document={activeDocument} portal={activePortal} />}
+
                                 {/* Content */}
                                 <div className="bg-card p-5">
                                     <MarkdownSopRenderer markdown={activeDocument.contentMarkdown} />
@@ -910,6 +645,8 @@ export function TrainingAcademyWorkspace({
                     </div>
                 </div>
             )}
+
+            </>}
 
             {/* 5. ADMIN CREATE / EDIT MODAL */}
             {editorOpen && (

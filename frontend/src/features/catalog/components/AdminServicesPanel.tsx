@@ -7,6 +7,7 @@ import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
+import {FilterSelect} from '@/components/shared/FilterSelect';
 import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
 import {serviceOfferingsService} from '@/lib/api/services';
@@ -33,11 +34,8 @@ export function AdminServicesPanel() {
 
     return <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
-            {(['all', 'active', 'inactive'] as const).map(value => <button key={value} type="button" aria-pressed={show === value}
-                                                                          onClick={() => setShow(value)}
-                                                                          className={cn('h-9 border px-3 text-[13px] font-medium',
-                                                                              show === value ? 'border-primary bg-[#fdf2f2] text-primary' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50')}>
-                {t(`admin.services.filter.${value}`)}</button>)}
+            <FilterSelect label={t('admin.services.col.status')} value={show} onChange={setShow}
+                          options={(['all', 'active', 'inactive'] as const).map(value => ({value, label: t(`admin.services.filter.${value}`)}))}/>
             <label className="relative">
                 <span className="sr-only">{t('admin.services.search')}</span>
                 <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true"/>

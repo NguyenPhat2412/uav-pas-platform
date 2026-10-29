@@ -155,7 +155,7 @@ function WebhooksContent() {
                                             onClick={() => {
                                                 if (window.confirm(t('adminCommerce.webhooks.retryConfirm', {event: log.eventType, name: log.subscriptionName}))) retryDelivery.mutate(log.id);
                                             }}
-                                            className="inline-flex items-center gap-1 whitespace-nowrap px-2 py-1 text-xs font-semibold text-primary hover:bg-[#fdf2f2] disabled:opacity-50">
+                                            className="inline-flex items-center gap-1 whitespace-nowrap px-2 py-1 text-xs font-semibold text-primary hover:bg-uav-red-light disabled:opacity-50">
                                         <RotateCw size={13} aria-hidden="true"/>{t('adminCommerce.webhooks.retry')}</button>}</td>
                             </tr>)}</tbody>
                         </table>

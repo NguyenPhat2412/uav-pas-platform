@@ -411,7 +411,8 @@
         "recent": "最近の通知",
         "clickHint": "クリックで既読にします",
         "empty": "該当する通知はありません。",
-        "unreadDot": "未読"
+        "unreadDot": "未読",
+        "filter": "表示"
     },
     "profile": {
         "errors": {

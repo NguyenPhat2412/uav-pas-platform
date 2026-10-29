@@ -106,11 +106,11 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
         const group = overlay.current;
         if (!ready || !L || !group) return;
         group.clearLayers();
-        const area = {color: '#ab2523', weight: 2, fillColor: '#ab2523', fillOpacity: 0.15};
+        const area = {color: '#c43a4a', weight: 2, fillColor: '#c43a4a', fillOpacity: 0.15};
         if (current.areaType === 'POLYGON' && current.vertices.length) {
             if (current.vertices.length >= 3) L.polygon(current.vertices, area).addTo(group);
-            else L.polyline(current.vertices, {color: '#ab2523', weight: 2, dashArray: '6 4'}).addTo(group);
-            current.vertices.forEach(v => L.circleMarker(v, {radius: 4, color: '#fff', weight: 2, fillColor: '#ab2523', fillOpacity: 1}).addTo(group));
+            else L.polyline(current.vertices, {color: '#c43a4a', weight: 2, dashArray: '6 4'}).addTo(group);
+            current.vertices.forEach(v => L.circleMarker(v, {radius: 4, color: '#fff', weight: 2, fillColor: '#c43a4a', fillOpacity: 1}).addTo(group));
         }
         if (current.areaType === 'CIRCLE' && current.vertices.length === 1 && current.radiusMeters) {
             L.circle(current.vertices[0], {...area, radius: current.radiusMeters}).addTo(group);
@@ -119,7 +119,7 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
             L.marker([current.takeoffLatitude, current.takeoffLongitude], {
                 keyboard: false,
                 icon: L.divIcon({className: '', iconSize: [26, 26], iconAnchor: [13, 13],
-                    html: '<span style="display:flex;width:26px;height:26px;align-items:center;justify-content:center;background:#004ac6;color:#fff;font:700 11px system-ui;border:2px solid #fff;box-shadow:0 1px 4px rgb(0 0 0/.4)">H</span>'}),
+                    html: '<span style="display:flex;width:26px;height:26px;align-items:center;justify-content:center;background:#475569;color:#fff;font:700 11px system-ui;border:2px solid #fff;box-shadow:0 1px 4px rgb(0 0 0/.4)">H</span>'}),
             }).addTo(group);
         }
     }, [ready, current.areaType, current.vertices, current.radiusMeters, current.takeoffLatitude, current.takeoffLongitude]);

@@ -67,11 +67,7 @@ export function AdminAlertsPopover() {
                 type="button"
                 className={cn(
                     'relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-control border transition-colors',
-                    urgent
-                        ? 'border-red-200 bg-red-50 text-danger hover:bg-red-100'
-                        : alerts.length > 0
-                            ? 'border-amber-200 bg-amber-50 text-warning hover:bg-amber-100'
-                            : 'border-border bg-card text-slate-600 hover:bg-slate-100'
+                    'border-border bg-card text-slate-600 hover:bg-slate-100'
                 )}
                 aria-haspopup="dialog"
                 aria-expanded={open}
@@ -82,7 +78,7 @@ export function AdminAlertsPopover() {
             >
                 <Bell size={17} aria-hidden="true"/>
                 {alerts.length > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+                    <span className={cn('absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white', urgent ? 'bg-danger' : 'bg-amber-500')}>
                         {alerts.length}
                     </span>
                 )}

@@ -8,6 +8,7 @@ import {planName} from '@/components/shared/presentation';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
+import {FilterSelect} from '@/components/shared/FilterSelect';
 import {adminService} from '@/lib/api/admin';
 import {formatShortDate} from '@/lib/format';
 import {cn} from '@/lib/utils';
@@ -59,15 +60,12 @@ export function AdminInvoicesPanel() {
 
     return <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
-            {filters.map(key => <button key={key} type="button" aria-pressed={filter === key}
-                                        onClick={() => {
-                                            setFilter(key);
-                                            setPage(0);
-                                        }}
-                                        className={cn('h-9 border px-3 text-[13px] font-medium',
-                                            filter === key ? 'border-primary bg-[#fdf2f2] text-primary' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50')}>
-                {t(`admin.invoices.filter.${key}`)}
-            </button>)}
+            <FilterSelect label={t('admin.invoices.col.status')} value={filter}
+                          onChange={key => {
+                              setFilter(key);
+                              setPage(0);
+                          }}
+                          options={filters.map(key => ({value: key, label: t(`admin.invoices.filter.${key}`)}))}/>
             <button type="button" onClick={() => setCreating(true)}
                     className="ml-auto inline-flex h-9 items-center gap-1.5 bg-primary px-3 text-[13px] font-semibold text-primary-foreground hover:opacity-90">
                 <FilePlus2 size={15} aria-hidden="true"/>{t('admin.invoices.create')}
@@ -108,7 +106,7 @@ export function AdminInvoicesPanel() {
                             <td className="whitespace-nowrap px-4 py-3 text-slate-500">{date(inv.paidAt)}</td>
                             <td className="px-4 py-3 text-right">{inv.status === 'PENDING' &&
                                 <button type="button" disabled={confirm.isPending} onClick={() => askConfirm(inv)}
-                                        className="whitespace-nowrap px-2 py-1 text-xs font-semibold text-primary hover:bg-[#fdf2f2] disabled:opacity-50">
+                                        className="whitespace-nowrap px-2 py-1 text-xs font-semibold text-primary hover:bg-uav-red-light disabled:opacity-50">
                                     {t('admin.invoices.confirm')}</button>}</td>
                         </tr>)}</tbody>
                     </table>
@@ -167,7 +165,7 @@ function CreateInvoiceDialog({onClose, onCreated}: { onClose: () => void; onCrea
                 <button type="button" onClick={onClose} aria-label={t('admin.invoices.cancel')} className="p-1 text-slate-400 hover:bg-slate-100"><X size={18}/></button>
             </header>
             <div className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.customer')}<RequiredMark/>
-                {customer ? <div className="mt-1 flex items-center justify-between bg-[#fdf2f2] px-3 py-2 text-primary">
+                {customer ? <div className="mt-1 flex items-center justify-between bg-uav-red-light px-3 py-2 text-primary">
                     <span>{customer.name}</span>
                     <button type="button" onClick={() => setCustomer(null)} className="text-xs font-semibold hover:underline">{t('admin.invoices.change')}</button>
                 </div> : <>

@@ -13,6 +13,7 @@ import {adminService} from '@/lib/api/admin';
 import {cn} from '@/lib/utils';
 import {notificationsService} from '@/lib/api/services';
 import {RequiredMark} from '@/components/shared/RequiredMark';
+import {FilterSelect} from '@/components/shared/FilterSelect';
 import {notificationTypes, type NotificationRecord, type NotificationType} from '@/features/notifications/types/notification.types';
 
 const PAGE_SIZE = 20;
@@ -71,30 +72,20 @@ export function AdminNotificationsPanel() {
 
     return <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-3">
-            <div className="inline-flex rounded-panel border border-border bg-card p-1" role="group" aria-label={t('admin.notifications.readFilter')}>
-                {(['all', 'unread', 'read'] as const).map(value =>
-                    <button key={value} type="button" aria-pressed={readFilter === value} onClick={() => setReadFilter(value)}
-                            className={cn('rounded-control px-3 py-1.5 text-[13px] font-medium text-slate-500 hover:text-slate-900',
-                                readFilter === value && 'bg-primary/10 font-semibold text-primary hover:text-primary')}>
-                        {t(`admin.notifications.filter.${value}`)}
-                        {value === 'unread' && unreadOnPage > 0 &&
-                            <span className="ml-1.5 rounded-panel bg-primary px-1.5 text-[11px] font-bold text-primary-foreground">{unreadOnPage}</span>}
-                    </button>)}
-            </div>
+            <FilterSelect label={t('admin.notifications.col.status')} value={readFilter} onChange={setReadFilter}
+                          options={(['all', 'unread', 'read'] as const).map(value => ({
+                              value, label: t(`admin.notifications.filter.${value}`),
+                              count: value === 'unread' && unreadOnPage > 0 ? unreadOnPage : undefined,
+                          }))}/>
             <label className="relative">
                 <span className="sr-only">{t('admin.notifications.search')}</span>
                 <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true"/>
                 <input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder={t('admin.notifications.search')}
                        className="h-9 w-60 rounded-control border border-border bg-card pl-9 pr-3 text-[13px] focus:border-primary focus:outline-none"/>
             </label>
-            <label>
-                <span className="sr-only">{t('admin.notifications.type')}</span>
-                <select value={type} onChange={e => setType(e.target.value as NotificationType | '')}
-                        className="h-9 rounded-control border border-border bg-card px-3 text-[13px] focus:border-primary focus:outline-none">
-                    <option value="">{t('admin.notifications.allTypes')}</option>
-                    {notificationTypes.map(value => <option key={value} value={value}>{typeLabel(value)}</option>)}
-                </select>
-            </label>
+            <FilterSelect<NotificationType | ''> label={t('admin.notifications.type')} value={type} onChange={setType}
+                                                 options={[{value: '', label: t('admin.notifications.allTypes')},
+                                                     ...notificationTypes.map(value => ({value, label: typeLabel(value)}))]}/>
             <div className="ml-auto flex gap-2">
                 <Button size="sm" variant="outline" leftIcon={<CheckCheck size={15}/>} disabled={markAll.isPending || !unreadOnPage}
                         onClick={() => markAll.mutate()}>{t('admin.notifications.markAll')}</Button>

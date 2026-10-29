@@ -411,7 +411,8 @@
         "recent": "Recent notifications",
         "clickHint": "Click to mark as read",
         "empty": "No matching notifications.",
-        "unreadDot": "Unread"
+        "unreadDot": "Unread",
+        "filter": "Show"
     },
     "profile": {
         "errors": {

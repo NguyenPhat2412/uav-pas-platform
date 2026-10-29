@@ -7,6 +7,7 @@ import {AdminPage} from '@/components/layout/AdminPage';
 import {Drawer, Metadata} from '@/components/data/Drawer';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
+import {FilterSelect} from '@/components/shared/FilterSelect';
 import {useI18n} from '@/contexts/I18nContext';
 import {toast} from '@/contexts/ToastContext';
 import {cn} from '@/lib/utils';
@@ -61,21 +62,18 @@ export function AdminOutboxPanel() {
         <button type="button" disabled={retry.isPending} onClick={e => {
             e.stopPropagation();
             askRetry(event);
-        }} className="inline-flex items-center gap-1 whitespace-nowrap px-2 py-1 text-xs font-semibold text-primary hover:bg-[#fdf2f2] disabled:opacity-50">
+        }} className="inline-flex items-center gap-1 whitespace-nowrap px-2 py-1 text-xs font-semibold text-primary hover:bg-uav-red-light disabled:opacity-50">
             <RotateCw size={13} aria-hidden="true"/>{t('adminCommerce.outbox.retry')}</button>;
 
     return <div className="space-y-4">
         <p className="border-l-[3px] border-l-uav-blue bg-uav-blue-light px-3 py-2 text-[13px] text-uav-blue">{t('adminCommerce.outbox.intro')}</p>
-        <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('adminCommerce.outbox.filterLabel')}>
-            {filters.map(key => <button key={key} type="button" aria-pressed={filter === key}
-                                        onClick={() => {
-                                            setFilter(key);
-                                            setPage(0);
-                                        }}
-                                        className={cn('h-9 border px-3 text-[13px] font-medium',
-                                            filter === key ? 'border-primary bg-[#fdf2f2] text-primary' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50')}>
-                {key === 'ALL' ? t('adminCommerce.common.all') : statusLabel(key)}
-            </button>)}
+        <div className="flex flex-wrap items-center gap-2">
+            <FilterSelect label={t('adminCommerce.outbox.col.status')} value={filter}
+                          onChange={key => {
+                              setFilter(key);
+                              setPage(0);
+                          }}
+                          options={filters.map(key => ({value: key, label: key === 'ALL' ? t('adminCommerce.common.all') : statusLabel(key)}))}/>
         </div>
         <ErrorNotice error={retry.error}/>
 

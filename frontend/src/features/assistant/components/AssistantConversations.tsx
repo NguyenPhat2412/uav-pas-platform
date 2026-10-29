@@ -7,6 +7,7 @@ import {Drawer} from '@/components/data/Drawer';
 import {Pagination} from '@/components/data/Pagination';
 import {EmptyState, QueryState} from '@/components/data/WorkspaceState';
 import {Button} from '@/components/ui';
+import {FilterSelect} from '@/components/shared/FilterSelect';
 import {useI18n} from '@/contexts/I18nContext';
 import {toast} from '@/contexts/ToastContext';
 import {assistantKeys, assistantService, type ConversationFilter} from '@/lib/api/services';
@@ -49,13 +50,11 @@ export function AssistantConversations({actions}: { actions?: ReactNode } = {}) 
             <label className="flex min-w-[220px] flex-1 flex-col gap-1 text-xs font-semibold text-muted">{t('admin.assistantChats.search')}
                 <input type="search" value={draft} onChange={e => setDraft(e.target.value)} placeholder={t('admin.assistantChats.searchPlaceholder')}
                        className="h-9 rounded-control border border-border-input bg-card px-2.5 text-[13px] font-normal text-foreground"/></label>
-            <div role="radiogroup" aria-label={t('admin.assistantChats.portal')} className="flex flex-wrap gap-px border border-slate-200 bg-slate-200">
-                {(['', ...PORTALS] as const).map(p => <button key={p || 'all'} type="button" role="radio" aria-checked={filter.portal === p}
-                                                           onClick={() => setFilter(f => ({...f, portal: p, page: 0}))}
-                                                           className={cn('h-9 px-3 text-xs font-bold', filter.portal === p
-                                                               ? 'bg-uav-red-light text-primary shadow-[inset_0_-2px_0_var(--primary)]' : 'bg-white text-slate-600 hover:bg-slate-50')}>
-                    {t(p ? `admin.assistantChats.portals.${p}` : 'admin.assistantChats.allPortals')}</button>)}
-            </div>
+            <FilterSelect<AssistantPortal | ''> label={t('admin.assistantChats.portal')} value={filter.portal}
+                                                onChange={portal => setFilter(f => ({...f, portal, page: 0}))}
+                                                options={(['', ...PORTALS] as const).map(p => ({
+                                                    value: p, label: t(p ? `admin.assistantChats.portals.${p}` : 'admin.assistantChats.allPortals'),
+                                                }))}/>
             <Button type="submit" size="sm">{t('admin.assistantChats.apply')}</Button>
             {actions && <div className="ml-auto flex flex-wrap items-center gap-2">{actions}</div>}
         </form>

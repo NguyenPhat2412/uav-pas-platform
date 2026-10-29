@@ -7,7 +7,7 @@ import type {FleetStation, FleetUav} from '@/features/uavs/types/fleet-map.types
 import {MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 
 export const uavStatusColor: Record<string, string> = {
-    AVAILABLE: '#dc2626', ASSIGNED: '#b91c1c', IN_USE: '#991b1b', MAINTENANCE: '#f87171', INACTIVE: '#fca5a5',
+    AVAILABLE: '#3f3f46', ASSIGNED: '#71717a', IN_USE: '#c43a4a', MAINTENANCE: '#a1a1aa', INACTIVE: '#d4d4d8',
 };
 
 /**
@@ -90,17 +90,17 @@ export function FleetMap({uavs, stations, selectedId, onSelect, labels}: {
             if (showStationRadius && config.stationCoverageRadiusMeters > 0) {
                 L.circle([s.latitude, s.longitude], {
                     radius: config.stationCoverageRadiusMeters,
-                    color: '#dc2626',
+                    color: '#71717a',
                     weight: 1.5,
                     dashArray: '6 4',
-                    fillColor: '#dc2626',
+                    fillColor: '#71717a',
                     fillOpacity: 0.06,
                     interactive: false,
                 }).addTo(layer.current);
             }
             L.marker([s.latitude, s.longitude], {
                 icon: L.divIcon({className: '', iconSize: [16, 16], iconAnchor: [8, 8],
-                    html: '<span style="display:block;width:16px;height:16px;background:#fff;border:3px solid #ab2523;box-shadow:0 1px 3px rgb(0 0 0/.3)"></span>'}),
+                    html: '<span style="display:block;width:16px;height:16px;background:#fff;border:3px solid #c43a4a;box-shadow:0 1px 3px rgb(0 0 0/.3)"></span>'}),
                 keyboard: false, zIndexOffset: -100,
             }).bindTooltip(labels.station(s)).addTo(layer.current);
         }

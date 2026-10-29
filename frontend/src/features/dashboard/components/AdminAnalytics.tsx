@@ -18,19 +18,19 @@ const ranges = [7, 30, 90] as const;
 
 // Strict Red & White shades so every status group stays in the red-white palette.
 const statusGroups = [
-    {key: 'waiting', color: '#f87171', states: ['PENDING_CONFIRMATION']},
-    {key: 'scheduled', color: '#ef4444', states: ['CONFIRMED', 'RESOURCE_RESERVED', 'READY']},
-    {key: 'active', color: '#b91c1c', states: ['IN_PROGRESS']},
-    {key: 'completed', color: '#dc2626', states: ['COMPLETED']},
+    {key: 'waiting', color: '#a1a1aa', states: ['PENDING_CONFIRMATION']},
+    {key: 'scheduled', color: '#71717a', states: ['CONFIRMED', 'RESOURCE_RESERVED', 'READY']},
+    {key: 'active', color: '#c43a4a', states: ['IN_PROGRESS']},
+    {key: 'completed', color: '#3f3f46', states: ['COMPLETED']},
     {key: 'stopped', color: '#7f1d1d', states: ['CANCELLED', 'REJECTED', 'FAILED']},
     {key: 'draft', color: '#fecaca', states: ['DRAFT']},
 ] as const;
 
 const fleetColors: Record<string, string> = {
-    AVAILABLE: '#dc2626',
-    ASSIGNED: '#b91c1c',
-    IN_USE: '#991b1b',
-    MAINTENANCE: '#f87171',
+    AVAILABLE: '#3f3f46',
+    ASSIGNED: '#71717a',
+    IN_USE: '#c43a4a',
+    MAINTENANCE: '#a1a1aa',
     INACTIVE: '#fecaca',
 };
 

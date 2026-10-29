@@ -20,17 +20,20 @@ import {avatarSrc} from '@/components/shared/Avatar';
 import {CustomerBillingProfileCard} from '@/features/billing/components/CustomerBillingProfileCard';
 
 const roleChipStyles: Record<string, string> = {
-    ROLE_ADMIN: 'bg-red-100 text-red-800',
+    ROLE_ADMIN: 'bg-uav-red-light text-primary',
     ROLE_COMMANDER: 'bg-violet-100 text-violet-800',
     ROLE_OPERATOR: 'bg-sky-100 text-sky-800',
     ROLE_PILOT: 'bg-uav-blue-light text-uav-blue',
 };
 
-/** Stable avatar tint per account so the same person keeps the same colour across pages. */
+/**
+ * Stable avatar tint per account so the same person keeps the same colour across pages. Hues stay in
+ * the warm red–amber band (330°–40°) so no avatar comes out blue or green.
+ */
 function avatarHue(seed: string) {
     let hash = 0;
-    for (const ch of seed) hash = (hash * 31 + ch.charCodeAt(0)) % 360;
-    return hash;
+    for (const ch of seed) hash = (hash * 31 + ch.charCodeAt(0)) % 70;
+    return (330 + hash) % 360;
 }
 
 export function UserAvatar({user, size = 36}: { user: Pick<User, 'username' | 'fullName' | 'avatarUrl'>; size?: number }) {

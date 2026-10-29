@@ -209,6 +209,16 @@ export const API_ROUTES = {
         byCode: (codeOrSlug: string) => `/api/v1/training/${encodeURIComponent(codeOrSlug)}`,
         progress: (id: string | number) => `/api/v1/training/${id}/progress`,
         byId: (id: string | number) => `/api/v1/training/${id}`,
+        courses: '/api/v1/training/courses',
+        course: (codeOrSlug: string) => `/api/v1/training/courses/${encodeURIComponent(codeOrSlug)}`,
+        lesson: (id: string | number) => `/api/v1/training/lessons/${id}`,
+        lessonProgress: (id: string | number) => `/api/v1/training/lessons/${id}/progress`,
+        adminCourseLessons: (courseId: string | number) => `/api/v1/training/admin/courses/${courseId}/lessons`,
+        adminLessons: '/api/v1/training/admin/lessons',
+        adminLesson: (id: string | number) => `/api/v1/training/admin/lessons/${id}`,
+        adminCourseCover: (courseId: string | number) => `/api/v1/training/admin/courses/${courseId}/cover`,
+        adminAssets: '/api/v1/training/admin/assets',
+        adminAssetConfirm: (id: string | number) => `/api/v1/training/admin/assets/${id}/confirm`,
     },
 } as const;
 

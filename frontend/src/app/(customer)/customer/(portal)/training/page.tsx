@@ -1,12 +1,12 @@
 'use client';
 
 import {PageGuard} from '@/components/customer/layout';
-import {TrainingAcademyWorkspace} from '@/features/training/components/TrainingAcademyWorkspace';
+import {TrainingCourseCatalog} from '@/features/training/components/TrainingCourseCatalog';
 
 export default function CustomerTrainingRoutePage() {
     return (
         <PageGuard permission={null}>
-            <TrainingAcademyWorkspace defaultPortal="CUSTOMER" />
+            <TrainingCourseCatalog portal="CUSTOMER" courseHref={slug => `/customer/training/${encodeURIComponent(slug)}`} />
         </PageGuard>
     );
 }

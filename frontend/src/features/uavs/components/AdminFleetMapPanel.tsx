@@ -8,6 +8,7 @@ import {ExternalLink, Info, MapPin, Navigation, RefreshCw, Search, X} from 'luci
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {displayLabel} from '@/components/shared/presentation';
+import {FilterSelect} from '@/components/shared/FilterSelect';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
 import {useUavHistory} from '@/lib/query/operations';
@@ -51,9 +52,10 @@ export function AdminFleetMapPanel() {
 
     return <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
-            <StatusChip active={status === null} onClick={() => setStatus(null)} label={t('admin.fleetMap.all')} count={all.length}/>
-            {uavStatuses.map(s => <StatusChip key={s} active={status === s} onClick={() => setStatus(status === s ? null : s)}
-                                              label={displayLabel(s)} count={counts[s] ?? 0} color={uavStatusColor[s]}/>)}
+            <FilterSelect<UavStatus | 'ALL'> label={t('admin.fleetMap.field.status')} value={status ?? 'ALL'}
+                                             onChange={next => setStatus(next === 'ALL' ? null : next)}
+                                             options={[{value: 'ALL', label: t('admin.fleetMap.all'), count: all.length},
+                                                 ...uavStatuses.map(s => ({value: s, label: displayLabel(s), count: counts[s] ?? 0}))]}/>
             <div className="ml-auto flex items-center gap-2">
                 <button type="button" onClick={() => void query.refetch()} disabled={query.isFetching}
                         className="inline-flex h-9 items-center gap-1.5 border border-rose-200 bg-white px-3 text-[13px] font-medium text-primary hover:bg-uav-red-light disabled:opacity-50">
@@ -83,7 +85,7 @@ export function AdminFleetMapPanel() {
                         {visible.length ? [...located, ...unlocated].map(u => <li key={u.id}>
                             <button type="button" onClick={() => setSelectedId(u.id)} aria-pressed={u.id === selectedId}
                                     className={cn('flex w-full items-start gap-3 border-l-[3px] px-3 py-2.5 text-left hover:bg-rose-50/50',
-                                        u.id === selectedId ? 'border-l-primary bg-[#fdf2f2]' : 'border-l-transparent')}>
+                                        u.id === selectedId ? 'border-l-primary bg-uav-red-light' : 'border-l-transparent')}>
                                 <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full" style={{background: uavStatusColor[u.status]}} aria-hidden="true"/>
                                 <span className="min-w-0 flex-1">
                                     <strong className="block truncate text-[13px] text-foreground">{u.model}</strong>
@@ -118,17 +120,6 @@ export function AdminFleetMapPanel() {
             </p>
         </>}</QueryState>
     </div>;
-}
-
-function StatusChip({active, onClick, label, count, color}: {
-    active: boolean; onClick: () => void; label: string; count: number; color?: string
-}) {
-    return <button type="button" onClick={onClick} aria-pressed={active}
-                   className={cn('inline-flex h-9 items-center gap-2 border px-3 text-[13px] font-medium',
-                       active ? 'border-primary bg-primary text-white' : 'border-rose-200 bg-white text-primary hover:bg-uav-red-light')}>
-        {color && <span className="h-2.5 w-2.5 rounded-full border border-white" style={{background: active ? '#ffffff' : color}} aria-hidden="true"/>}
-        {label}<span className="text-xs font-bold">{count}</span>
-    </button>;
 }
 
 function UavDetail({uav, where, onClose, formatDate}: {

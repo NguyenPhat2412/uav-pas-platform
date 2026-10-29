@@ -9,11 +9,11 @@ export type {Series, TrendViewMode};
 
 // Strict Red & White monochrome palette across all admin charts and map markers.
 export const seriesColors = {
-    blue: '#dc2626',
-    orange: '#f87171',
-    aqua: '#b91c1c',
-    yellow: '#fca5a5',
-    violet: '#991b1b',
+    blue: '#c43a4a',
+    orange: '#3f3f46',
+    aqua: '#71717a',
+    yellow: '#a1a1aa',
+    violet: '#d4d4d8',
     red: '#7f1d1d',
     gray: '#fecaca',
 } as const;

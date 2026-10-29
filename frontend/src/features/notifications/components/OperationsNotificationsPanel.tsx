@@ -5,6 +5,7 @@ import {AlertCircle, Bell, CheckCheck, CheckCircle2, Clock, Info, Search, Shield
 import {useNotifications} from '@/lib/query/notifications';
 import {OperationsPage} from '@/components/layout/OperationsPage';
 import {useI18n} from '@/contexts/I18nContext';
+import {FilterSelect} from '@/components/shared/FilterSelect';
 
 const typeTone: Record<string, { icon: typeof Info; badge: string }> = {
     ALERT: {icon: ShieldAlert, badge: 'border-rose-200 bg-rose-50 text-primary'},
@@ -44,23 +45,9 @@ export default function NotificationsPage() {
                             className="h-9 w-full rounded-control border border-border bg-card pl-9 pr-3 text-[13px] text-slate-900 placeholder-slate-400 focus:border-primary focus:outline-none"
                         />
                     </label>
-                    <div className="flex items-center gap-1.5 overflow-x-auto" role="group" aria-label={t('opsMissions.notifications.col.type')}>
-                        {['ALL', 'ALERT', 'WARNING', 'INFO', 'SUCCESS'].map(id => (
-                            <button
-                                key={id}
-                                type="button"
-                                onClick={() => setFilterType(id)}
-                                aria-pressed={filterType === id}
-                                className={`h-9 whitespace-nowrap rounded-control px-3 text-xs font-bold transition cursor-pointer ${
-                                    filterType === id
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'border border-border bg-card text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                                }`}
-                            >
-                                {t(`opsMissions.notifications.filter.${id}`)}
-                            </button>
-                        ))}
-                    </div>
+                    <FilterSelect label={t('opsMissions.notifications.col.type')} value={filterType} onChange={setFilterType}
+                                  className="shrink-0 self-start lg:self-auto"
+                                  options={['ALL', 'ALERT', 'WARNING', 'INFO', 'SUCCESS'].map(id => ({value: id, label: t(`opsMissions.notifications.filter.${id}`)}))}/>
                     {unreadCount > 0 && (
                         <button
                             type="button"

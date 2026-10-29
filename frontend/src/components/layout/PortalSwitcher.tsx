@@ -62,7 +62,7 @@ export function PortalSwitcher({currentPortal, variant = 'header'}: { currentPor
                             'inline-flex items-center justify-center rounded-control transition-colors',
                             inDrawer ? 'h-8 flex-1' : 'h-7 w-7',
                             active
-                                ? 'bg-primary text-white shadow-2xs'
+                                ? 'bg-white text-slate-900 shadow-2xs'
                                 : 'text-slate-600 hover:bg-white hover:text-slate-900',
                         )}
                     >

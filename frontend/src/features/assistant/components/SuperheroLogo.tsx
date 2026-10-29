@@ -4,8 +4,8 @@ export function SuperheroLogo({size = 40, title}: { size?: number; title?: strin
         <svg width={size} height={size} viewBox="0 0 64 64" role={title ? 'img' : undefined} aria-hidden={title ? undefined : true}>
             {title && <title>{title}</title>}
             {/* helmet with fin */}
-            <path d="M32 3 L37 11 L27 11 Z" fill="#004ac6"/>
-            <circle cx="32" cy="34" r="25" fill="#004ac6"/>
+            <path d="M32 3 L37 11 L27 11 Z" fill="#475569"/>
+            <circle cx="32" cy="34" r="25" fill="#475569"/>
             {/* face */}
             <ellipse cx="32" cy="38" rx="20" ry="19" fill="#ffd9b8"/>
             {/* lightning emblem on the helmet */}

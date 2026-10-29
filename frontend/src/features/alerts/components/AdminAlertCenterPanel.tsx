@@ -6,6 +6,7 @@ import {useQuery} from '@tanstack/react-query';
 import {AlertTriangle, ChevronRight, CircleAlert, Info, RefreshCw} from 'lucide-react';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {QueryState} from '@/components/data/WorkspaceState';
+import {FilterSelect} from '@/components/shared/FilterSelect';
 import {useAuth} from '@/contexts/AuthContext';
 import {useI18n} from '@/contexts/I18nContext';
 import {cn} from '@/lib/utils';
@@ -32,7 +33,6 @@ function AlertCenterContent() {
     const items = useMemo(() => (query.data?.items ?? [])
         .filter(a => severity === 'ALL' || a.severity === severity)
         .filter(a => source === 'ALL' || a.source === source), [query.data, severity, source]);
-    const select = 'min-h-[40px] rounded-control border border-border-input bg-card px-2.5 text-sm text-slate-800';
 
     return <div className="space-y-5 pb-12">
         <div className="grid gap-3 sm:grid-cols-3">
@@ -40,32 +40,21 @@ function AlertCenterContent() {
                 const style = severityStyle[level];
                 const Icon = style.icon;
                 const count = query.data ? query.data[level.toLowerCase() as 'critical' | 'warning' | 'info'] : null;
-                return <button key={level} type="button" aria-pressed={severity === level}
-                               onClick={() => setSeverity(severity === level ? 'ALL' : level)}
-                               className={cn('flex items-center gap-3 rounded-panel border border-l-4 bg-card px-4 py-3 text-left transition hover:bg-slate-50',
-                                   style.stripe, severity === level ? 'ring-2 ring-primary/40' : 'border-border')}>
+                return <div key={level} className={cn('flex items-center gap-3 rounded-panel border border-l-4 border-border bg-card px-4 py-3', style.stripe)}>
                     <Icon size={20} className={style.text} aria-hidden="true"/>
                     <span className="flex-1 text-sm font-semibold text-slate-700">{t(`adminPlatform.alerts.severity.${level}`)}</span>
                     <span className={cn('text-xl font-bold tabular-nums', style.text)}>{count ?? '—'}</span>
-                </button>;
+                </div>;
             })}
         </div>
 
-        <div className="flex flex-wrap items-end gap-3">
-            <label className="space-y-1 text-xs font-semibold text-slate-600">
-                <span className="block">{t('adminPlatform.alerts.filters.severity')}</span>
-                <select className={select} value={severity} onChange={e => setSeverity(e.target.value as AlertSeverity | 'ALL')}>
-                    <option value="ALL">{t('adminPlatform.alerts.filters.all')}</option>
-                    {SEVERITIES.map(s => <option key={s} value={s}>{t(`adminPlatform.alerts.severity.${s}`)}</option>)}
-                </select>
-            </label>
-            <label className="space-y-1 text-xs font-semibold text-slate-600">
-                <span className="block">{t('adminPlatform.alerts.filters.source')}</span>
-                <select className={select} value={source} onChange={e => setSource(e.target.value as AlertSource | 'ALL')}>
-                    <option value="ALL">{t('adminPlatform.alerts.filters.all')}</option>
-                    {SOURCES.map(s => <option key={s} value={s}>{t(`adminPlatform.alerts.sources.${s}`)}</option>)}
-                </select>
-            </label>
+        <div className="flex flex-wrap items-center gap-3">
+            <FilterSelect<AlertSeverity | 'ALL'> label={t('adminPlatform.alerts.filters.severity')} value={severity} onChange={setSeverity}
+                                                 options={[{value: 'ALL', label: t('adminPlatform.alerts.filters.all')},
+                                                     ...SEVERITIES.map(s => ({value: s, label: t(`adminPlatform.alerts.severity.${s}`)}))]}/>
+            <FilterSelect<AlertSource | 'ALL'> label={t('adminPlatform.alerts.filters.source')} value={source} onChange={setSource}
+                                               options={[{value: 'ALL', label: t('adminPlatform.alerts.filters.all')},
+                                                   ...SOURCES.map(s => ({value: s, label: t(`adminPlatform.alerts.sources.${s}`)}))]}/>
             <div className="ml-auto flex items-center gap-3 text-xs text-slate-500">
                 {query.data && <span>{t('adminPlatform.alerts.generatedAt', {time: formatDate(query.data.generatedAt, {timeStyle: 'medium'})})}</span>}
                 <button type="button" onClick={() => void query.refetch()} disabled={query.isFetching}

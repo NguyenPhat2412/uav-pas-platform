@@ -17,7 +17,7 @@ import {cn} from '@/lib/utils';
 
 const LIVE_STATUSES = ['READY', 'IN_PROGRESS'];
 // Leaflet styles vectors through options, so the theme colours are spelled out here.
-const C = {red: '#ab2523', blue: '#004ac6', muted: '#94a3b8'};
+const C = {red: '#c43a4a', blue: '#475569', muted: '#94a3b8'};
 
 /** The customer's view of the flight: planned area, the assigned UAV's live position and its reported values. */
 export function MissionMonitoring({mission}: { mission: Mission }) {

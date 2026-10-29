@@ -3,13 +3,13 @@ import type {MissionStatus} from "@/features/missions/types/mission.types";
 
 const statusStyles: Partial<Record<MissionStatus, string>> = {
     COMPLETED: 'border-blue-200 bg-uav-blue-light text-uav-blue',
-    IN_PROGRESS: 'border-primary/30 bg-uav-red-light text-primary',
-    READY: 'border-primary/30 bg-uav-red-light text-primary',
+    IN_PROGRESS: 'border-slate-300 bg-slate-100 text-slate-800',
+    READY: 'border-slate-300 bg-slate-100 text-slate-800',
     PENDING_CONFIRMATION: 'border-amber-200 bg-amber-50 text-warning',
     RESOURCE_RESERVED: 'border-amber-200 bg-amber-50 text-warning',
     FAILED: 'border-red-200 bg-red-50 text-danger',
-    CANCELLED: 'border-red-200 bg-red-50 text-danger',
-    REJECTED: 'border-red-200 bg-red-50 text-danger',
+    CANCELLED: 'border-slate-200 bg-slate-50 text-slate-500',
+    REJECTED: 'border-slate-200 bg-slate-50 text-slate-500',
 };
 
 export function MissionStatusBadge({status}: { status: MissionStatus }) {

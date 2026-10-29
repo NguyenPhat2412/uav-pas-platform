@@ -166,7 +166,7 @@ function OperationsShell({children, activeResource}: { children: React.ReactNode
                                     return <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined}
                                                  aria-label={label} title={label}
                                                  className={cn('mx-auto flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
-                                                     active ? 'bg-uav-red-light text-primary' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')}>
+                                                     active ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')}>
                                         <Icon size={16} className="shrink-0"/>
                                     </Link>;
                                 })}
@@ -216,7 +216,7 @@ function OperationsShell({children, activeResource}: { children: React.ReactNode
                             {activeNav && (
                                 <>
                                     <span className="hidden xl:inline">/</span>
-                                    <strong className="truncate text-primary font-semibold">{getNavLabel(activeNav)}</strong>
+                                    <strong className="truncate font-semibold text-slate-900">{getNavLabel(activeNav)}</strong>
                                 </>
                             )}
                         </div>
