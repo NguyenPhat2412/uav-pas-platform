@@ -8,9 +8,15 @@ import com.uav.platform.modules.training.dto.request.UpsertTrainingDocumentReque
 import com.uav.platform.modules.training.dto.response.TrainingDocumentResponse;
 import com.uav.platform.modules.training.dto.response.TrainingOverviewResponse;
 import com.uav.platform.modules.training.entity.TrainingDocument;
+import com.uav.platform.modules.training.entity.TrainingLesson;
+import com.uav.platform.modules.training.entity.TrainingLessonProgress;
 import com.uav.platform.modules.training.entity.UserTrainingProgress;
 import com.uav.platform.modules.training.repository.TrainingDocumentRepository;
+import com.uav.platform.modules.training.repository.TrainingLessonProgressRepository;
+import com.uav.platform.modules.training.repository.TrainingLessonRepository;
 import com.uav.platform.modules.training.repository.UserTrainingProgressRepository;
+import com.uav.platform.modules.training.service.TrainingCourseProgress;
+import com.uav.platform.modules.training.service.TrainingCourseRecords;
 import com.uav.platform.modules.training.service.TrainingService;
 import com.uav.platform.modules.user.entity.AppUser;
 import com.uav.platform.modules.user.enums.UserRole;
@@ -45,6 +51,8 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainingDocumentRepository trainingDocumentRepository;
     private final UserTrainingProgressRepository userTrainingProgressRepository;
     private final UserRepository userRepository;
+    private final TrainingLessonRepository lessonRepository;
+    private final TrainingLessonProgressRepository lessonProgressRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -195,27 +203,58 @@ public class TrainingServiceImpl implements TrainingService {
             status = "NOT_STARTED";
         }
 
-        UserTrainingProgress progress =
+        UserTrainingProgress existing =
                 userTrainingProgressRepository
                         .findByUserIdAndDocumentId(user.getId(), doc.getId())
-                        .orElseGet(
-                                () -> {
-                                    UserTrainingProgress created = new UserTrainingProgress();
-                                    created.setUser(user);
-                                    created.setDocument(doc);
-                                    return created;
-                                });
+                        .orElse(null);
 
-        progress.setStatus(status);
+        // A course with active lessons is completed by its lessons and checklist together: ticking
+        // every step
+        // alone no longer completes it (same rule as the lesson progress endpoint).
+        List<TrainingLesson> activeLessons =
+                lessonRepository.findByDocumentIdAndActiveTrueOrderBySortOrderAscIdAsc(doc.getId());
+        if (!activeLessons.isEmpty()) {
+            List<TrainingLessonProgress> rows =
+                    lessonProgressRepository.findByUserIdAndLessonIdIn(
+                            user.getId(),
+                            activeLessons.stream().map(TrainingLesson::getId).toList());
+            int completedLessons = 0;
+            boolean activity = false;
+            for (TrainingLessonProgress row : rows) {
+                if (row.getCompletedAt() != null) completedLessons++;
+                if (row.getCompletedAt() != null
+                        || (row.getPositionSeconds() != null && row.getPositionSeconds() > 0))
+                    activity = true;
+            }
+            status =
+                    TrainingCourseProgress.recordStatus(
+                            existing == null ? null : existing.getStatus(),
+                            completedLessons,
+                            activeLessons.size(),
+                            totalChecklist.size(),
+                            checkedSteps.size(),
+                            activity);
+        }
+
+        UserTrainingProgress progress = existing;
+        if (progress == null) {
+            // Created by an insert that ignores a concurrent duplicate, then loaded and updated.
+            userTrainingProgressRepository.insertIfAbsent(user.getId(), doc.getId());
+            progress =
+                    userTrainingProgressRepository
+                            .findByUserIdAndDocumentId(user.getId(), doc.getId())
+                            .orElseGet(
+                                    () -> {
+                                        UserTrainingProgress created = new UserTrainingProgress();
+                                        created.setUser(user);
+                                        created.setDocument(doc);
+                                        return created;
+                                    });
+        }
+
+        TrainingCourseRecords.apply(progress, status);
         progress.setCheckedStepsJson(writeJson(checkedSteps));
         progress.setLastViewedAt(OffsetDateTime.now());
-        if ("COMPLETED".equals(status)) {
-            if (progress.getCompletedAt() == null) {
-                progress.setCompletedAt(OffsetDateTime.now());
-            }
-        } else {
-            progress.setCompletedAt(null);
-        }
 
         UserTrainingProgress saved = userTrainingProgressRepository.save(progress);
         return toResponse(doc, saved);

@@ -2,7 +2,6 @@ package com.uav.platform.modules.training.service.impl;
 
 import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.media.dto.record.ObjectMetadata;
-import com.uav.platform.modules.media.service.MediaUploadPolicy;
 import com.uav.platform.modules.media.service.ObjectStorageService;
 import com.uav.platform.modules.training.dto.request.CreateTrainingAssetRequest;
 import com.uav.platform.modules.training.dto.request.UpdateCourseCoverRequest;
@@ -22,6 +21,8 @@ import com.uav.platform.modules.training.repository.TrainingDocumentRepository;
 import com.uav.platform.modules.training.repository.TrainingLessonRepository;
 import com.uav.platform.modules.training.service.TrainingAssetPolicy;
 import com.uav.platform.modules.training.service.TrainingCourseAdminService;
+import com.uav.platform.modules.training.service.TrainingCourseRecords;
+import com.uav.platform.modules.training.service.TrainingDocumentUrls;
 import com.uav.platform.modules.training.service.TrainingMediaUrls;
 import com.uav.platform.modules.training.service.TrainingVideoUrls;
 
@@ -38,9 +39,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -55,6 +58,7 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
     static final int MAX_RESOURCES = 30;
     static final int MAX_RESOURCE_TITLE = 220;
     static final int MAX_DURATION_MINUTES = 1440;
+    static final int MAX_URL = 500;
 
     /** Signature lifetime of an upload URL; the upload itself must start within it. */
     static final Duration UPLOAD_VALIDITY = Duration.ofMinutes(30);
@@ -64,6 +68,7 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
     private final TrainingAssetRepository assets;
     private final ObjectStorageService storage;
     private final TrainingMediaUrls mediaUrls;
+    private final TrainingCourseRecords records;
 
     @Override
     @Transactional(readOnly = true)
@@ -93,7 +98,9 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
             lesson.setSortOrder(last + 10);
         }
         apply(lesson, request);
-        return toResponse(lessons.save(lesson));
+        TrainingLesson saved = lessons.save(lesson);
+        if (Boolean.TRUE.equals(saved.getActive())) records.recompute(Set.of(doc));
+        return toResponse(saved);
     }
 
     @Override
@@ -101,18 +108,32 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
     public TrainingLessonAdminResponse updateLesson(
             Long lessonId, UpsertTrainingLessonRequest request) {
         TrainingLesson lesson = lesson(lessonId);
+        TrainingDocument before = lesson.getDocument();
+        boolean wasActive = Boolean.TRUE.equals(lesson.getActive());
         if (request.courseId() != null && !request.courseId().equals(lesson.getDocument().getId()))
             lesson.setDocument(course(request.courseId()));
         apply(lesson, request);
-        return toResponse(lessons.save(lesson));
+        TrainingLesson saved = lessons.save(lesson);
+        // Learners' course status depends on the active lesson set: recompute it when that set
+        // changed.
+        boolean isActive = Boolean.TRUE.equals(saved.getActive());
+        if (!java.util.Objects.equals(before.getId(), saved.getDocument().getId())) {
+            Set<TrainingDocument> affected = new LinkedHashSet<>();
+            if (wasActive) affected.add(before);
+            if (isActive) affected.add(saved.getDocument());
+            records.recompute(affected);
+        } else if (wasActive != isActive) records.recompute(Set.of(saved.getDocument()));
+        return toResponse(saved);
     }
 
     @Override
     @Transactional
     public void deleteLesson(Long lessonId) {
         TrainingLesson lesson = lesson(lessonId);
+        boolean wasActive = Boolean.TRUE.equals(lesson.getActive());
         lesson.setActive(false);
         lessons.save(lesson);
+        if (wasActive) records.recompute(Set.of(lesson.getDocument()));
     }
 
     @Override
@@ -197,7 +218,7 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
                 || !TrainingAssetPolicy.baseType(metadata.contentType())
                         .equals(asset.getContentType())) throw mismatch(asset);
         try {
-            MediaUploadPolicy.validateHeader(
+            TrainingAssetPolicy.validateHeader(
                     asset.getContentType(), storage.readHeader(asset.getObjectKey()));
         } catch (SystemException ex) {
             throw mismatch(asset);
@@ -242,6 +263,7 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
         String videoUrl = null;
         Long videoAssetId = null;
         Long documentAssetId = null;
+        String documentUrl = null;
         List<TrainingLessonSlide> slides = new ArrayList<>();
         List<TrainingLessonResource> resources = resources(request.resources());
         switch (type) {
@@ -298,14 +320,25 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
                 }
             }
             case DOCUMENT -> {
-                documentAssetId = request.documentAssetId();
-                if (documentAssetId == null)
+                boolean hasUrl = StringUtils.hasText(request.documentUrl());
+                boolean hasAsset = request.documentAssetId() != null;
+                if (hasUrl == hasAsset)
                     throw SystemException.badRequest(
-                                    "Bài tài liệu cần một tệp PDF đã tải lên.",
+                                    "Bài tài liệu cần đúng một nguồn: tệp PDF đã tải lên hoặc liên kết Google Docs/Slides/Sheets/Drive.",
                                     "TRAINING_LESSON_DOCUMENT_REQUIRED")
-                            .at("documentAssetId");
-                requireReadyAsset(
-                        documentAssetId, "documentAssetId", "Tệp phải là PDF.", "application/pdf");
+                            .at(hasUrl ? "documentUrl" : "documentAssetId");
+                if (hasUrl) {
+                    documentUrl = request.documentUrl().trim();
+                    if (documentUrl.length() > MAX_URL) throw tooLong("documentUrl", MAX_URL);
+                    TrainingDocumentUrls.toPreviewUrl(documentUrl);
+                } else {
+                    documentAssetId = request.documentAssetId();
+                    requireReadyAsset(
+                            documentAssetId,
+                            "documentAssetId",
+                            "Tệp phải là PDF.",
+                            "application/pdf");
+                }
             }
             case ARTICLE -> {
                 if (body == null)
@@ -322,6 +355,7 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
         lesson.setVideoUrl(videoUrl);
         lesson.setVideoAssetId(videoAssetId);
         lesson.setDocumentAssetId(documentAssetId);
+        lesson.setDocumentUrl(documentUrl);
         if (lesson.getSlides() == null) lesson.setSlides(new ArrayList<>());
         lesson.getSlides().clear();
         lesson.getSlides().addAll(slides);
@@ -333,7 +367,10 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
         if (request.active() != null) lesson.setActive(request.active());
     }
 
-    /** Downloadable files of any lesson type: READY PDFs or images, titled by the editor or the file name. */
+    /**
+     * Downloadable files of any lesson type: READY PDFs, images or Word/PowerPoint/Excel files (the only place
+     * Office files are accepted), titled by the editor or the file name.
+     */
     private List<TrainingLessonResource> resources(
             List<UpsertTrainingLessonRequest.ResourceRequest> requested) {
         List<TrainingLessonResource> result = new ArrayList<>();
@@ -353,9 +390,12 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
                     requireReadyAsset(
                             resource.assetId(),
                             "resources",
-                            "Tài nguyên phải là tệp PDF hoặc ảnh PNG, JPEG, WebP.",
+                            "Tài nguyên phải là tệp PDF, Word, PowerPoint, Excel hoặc ảnh PNG, JPEG, WebP.",
                             "application/pdf",
-                            "image/");
+                            "image/",
+                            TrainingAssetPolicy.DOCX,
+                            TrainingAssetPolicy.PPTX,
+                            TrainingAssetPolicy.XLSX);
             String title =
                     StringUtils.hasText(resource.title())
                             ? resource.title().trim()
@@ -443,6 +483,7 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
                 .videoUrl(lesson.getVideoUrl())
                 .videoAssetId(lesson.getVideoAssetId())
                 .documentAssetId(lesson.getDocumentAssetId())
+                .documentUrl(lesson.getDocumentUrl())
                 .bodyMarkdown(lesson.getBodyMarkdown())
                 .slides(
                         lesson.getSlides().stream()

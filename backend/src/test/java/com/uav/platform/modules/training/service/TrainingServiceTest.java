@@ -9,8 +9,12 @@ import com.uav.platform.modules.training.dto.request.UpdateTrainingProgressReque
 import com.uav.platform.modules.training.dto.response.TrainingDocumentResponse;
 import com.uav.platform.modules.training.dto.response.TrainingOverviewResponse;
 import com.uav.platform.modules.training.entity.TrainingDocument;
+import com.uav.platform.modules.training.entity.TrainingLesson;
+import com.uav.platform.modules.training.entity.TrainingLessonProgress;
 import com.uav.platform.modules.training.entity.UserTrainingProgress;
 import com.uav.platform.modules.training.repository.TrainingDocumentRepository;
+import com.uav.platform.modules.training.repository.TrainingLessonProgressRepository;
+import com.uav.platform.modules.training.repository.TrainingLessonRepository;
 import com.uav.platform.modules.training.repository.UserTrainingProgressRepository;
 import com.uav.platform.modules.training.service.impl.TrainingServiceImpl;
 import com.uav.platform.modules.user.entity.AppUser;
@@ -22,6 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +36,8 @@ class TrainingServiceTest {
     private TrainingDocumentRepository trainingDocumentRepository;
     private UserTrainingProgressRepository userTrainingProgressRepository;
     private UserRepository userRepository;
+    private TrainingLessonRepository lessonRepository;
+    private TrainingLessonProgressRepository lessonProgressRepository;
     private TrainingServiceImpl trainingService;
 
     @BeforeEach
@@ -38,9 +45,15 @@ class TrainingServiceTest {
         trainingDocumentRepository = mock(TrainingDocumentRepository.class);
         userTrainingProgressRepository = mock(UserTrainingProgressRepository.class);
         userRepository = mock(UserRepository.class);
+        lessonRepository = mock(TrainingLessonRepository.class);
+        lessonProgressRepository = mock(TrainingLessonProgressRepository.class);
         trainingService =
                 new TrainingServiceImpl(
-                        trainingDocumentRepository, userTrainingProgressRepository, userRepository);
+                        trainingDocumentRepository,
+                        userTrainingProgressRepository,
+                        userRepository,
+                        lessonRepository,
+                        lessonProgressRepository);
     }
 
     @Test
@@ -230,5 +243,59 @@ class TrainingServiceTest {
                 new UpdateTrainingProgressRequest(List.of(0, 1), false);
         assertEquals(
                 "COMPLETED", trainingService.updateProgress(5L, real, customer).progressStatus());
+    }
+
+    @Test
+    @DisplayName(
+            "a course with lessons is not COMPLETED by ticking the checklist while lessons are unfinished")
+    void checklistAloneDoesNotCompleteACourseWithLessons() {
+        var customer = signedIn("pilot03", UserRole.ROLE_PILOT);
+        TrainingDocument course = doc(6, "CUSTOMER", true, "[\"a\",\"b\"]");
+        when(trainingDocumentRepository.findById(6L)).thenReturn(Optional.of(course));
+        TrainingLesson first = new TrainingLesson();
+        first.setId(60L);
+        TrainingLesson second = new TrainingLesson();
+        second.setId(61L);
+        when(lessonRepository.findByDocumentIdAndActiveTrueOrderBySortOrderAscIdAsc(6L))
+                .thenReturn(List.of(first, second));
+        TrainingLessonProgress firstDone = new TrainingLessonProgress();
+        firstDone.setLesson(first);
+        firstDone.setCompletedAt(OffsetDateTime.now());
+        when(lessonProgressRepository.findByUserIdAndLessonIdIn(7L, List.of(60L, 61L)))
+                .thenReturn(List.of(firstDone));
+        UserTrainingProgress[] stored = {null};
+        when(userTrainingProgressRepository.findByUserIdAndDocumentId(7L, 6L))
+                .thenAnswer(i -> Optional.ofNullable(stored[0]));
+        when(userTrainingProgressRepository.save(any()))
+                .thenAnswer(
+                        i -> {
+                            stored[0] = i.getArgument(0);
+                            return stored[0];
+                        });
+
+        UpdateTrainingProgressRequest allSteps =
+                new UpdateTrainingProgressRequest(List.of(0, 1), true);
+        TrainingDocumentResponse partial = trainingService.updateProgress(6L, allSteps, customer);
+        assertEquals("IN_PROGRESS", partial.progressStatus());
+        assertNull(partial.completedAt());
+        verify(userTrainingProgressRepository).insertIfAbsent(7L, 6L);
+
+        // Once every active lesson is done, the same checklist completes the course.
+        TrainingLessonProgress secondDone = new TrainingLessonProgress();
+        secondDone.setLesson(second);
+        secondDone.setCompletedAt(OffsetDateTime.now());
+        when(lessonProgressRepository.findByUserIdAndLessonIdIn(7L, List.of(60L, 61L)))
+                .thenReturn(List.of(firstDone, secondDone));
+        TrainingDocumentResponse complete = trainingService.updateProgress(6L, allSteps, customer);
+        assertEquals("COMPLETED", complete.progressStatus());
+        assertNotNull(complete.completedAt());
+
+        // Unticking a step re-opens it.
+        assertEquals(
+                "IN_PROGRESS",
+                trainingService
+                        .updateProgress(
+                                6L, new UpdateTrainingProgressRequest(List.of(0), false), customer)
+                        .progressStatus());
     }
 }

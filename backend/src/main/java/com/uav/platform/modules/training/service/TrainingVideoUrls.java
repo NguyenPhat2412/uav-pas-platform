@@ -12,7 +12,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
- * External lesson videos: only YouTube (youtube.com, www.youtube.com, youtu.be) and Vimeo (vimeo.com) links are
+ * External lesson videos: only YouTube (youtube.com, www.youtube.com, m.youtube.com, youtu.be) and Vimeo (vimeo.com) links are
  * accepted, and learners only ever receive the provider's embed URL built from the parsed video id, never the
  * link as entered.
  */
@@ -52,7 +52,8 @@ public final class TrainingVideoUrls {
                                 .toList();
 
         return switch (host) {
-            case "youtube.com", "www.youtube.com" -> youtube(youtubeId(segments, uri));
+            case "youtube.com", "www.youtube.com", "m.youtube.com" ->
+                    youtube(youtubeId(segments, uri));
             case "youtu.be" -> youtube(segments.size() == 1 ? segments.get(0) : null);
             case "vimeo.com" -> vimeo(segments);
             default -> throw unsupported();

@@ -27,6 +27,7 @@ import com.uav.platform.modules.training.repository.TrainingDocumentRepository;
 import com.uav.platform.modules.training.repository.TrainingLessonRepository;
 import com.uav.platform.modules.training.service.impl.TrainingCourseAdminServiceImpl;
 
+import org.hibernate.annotations.BatchSize;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 @DisplayName("Training course authoring")
@@ -47,6 +49,7 @@ class TrainingCourseAdminServiceTest {
     private TrainingLessonRepository lessons;
     private TrainingAssetRepository assets;
     private ObjectStorageService storage;
+    private TrainingCourseRecords records;
     private TrainingCourseAdminServiceImpl service;
     private TrainingDocument course;
 
@@ -56,9 +59,15 @@ class TrainingCourseAdminServiceTest {
         lessons = mock(TrainingLessonRepository.class);
         assets = mock(TrainingAssetRepository.class);
         storage = mock(ObjectStorageService.class);
+        records = mock(TrainingCourseRecords.class);
         service =
                 new TrainingCourseAdminServiceImpl(
-                        documents, lessons, assets, storage, new TrainingMediaUrls(storage));
+                        documents,
+                        lessons,
+                        assets,
+                        storage,
+                        new TrainingMediaUrls(storage),
+                        records);
         course = new TrainingDocument();
         course.setId(1L);
         course.setTargetPortal("CUSTOMER");
@@ -501,5 +510,207 @@ class TrainingCourseAdminServiceTest {
                                         new CreateTrainingAssetRequest(
                                                 "huong-dan.pdf", "application/pdf", 50_000_001L),
                                         "admin")));
+    }
+
+    private static final String DOC_ID = "1AbCdEfGhIjKlMnOpQrStUvWxYz0123456789";
+
+    @Test
+    void documentLessonTakesExactlyOneSourceFileOrGoogleLink() {
+        asset(20, "application/pdf", TrainingAssetStatus.READY);
+        assertEquals(
+                "TRAINING_LESSON_DOCUMENT_REQUIRED",
+                errorCode(
+                        () ->
+                                service.createLesson(
+                                        lesson("DOCUMENT")
+                                                .documentAssetId(20L)
+                                                .documentUrl(
+                                                        "https://docs.google.com/document/d/"
+                                                                + DOC_ID
+                                                                + "/edit")
+                                                .build())));
+        assertEquals(
+                "TRAINING_LESSON_DOCUMENT_REQUIRED",
+                errorCode(
+                        () -> service.createLesson(lesson("DOCUMENT").documentUrl("  ").build())));
+        assertEquals(
+                "TRAINING_LESSON_DOCUMENT_URL_INVALID",
+                errorCode(
+                        () ->
+                                service.createLesson(
+                                        lesson("DOCUMENT")
+                                                .documentUrl("https://dropbox.com/s/abc/guide.pdf")
+                                                .build())));
+        assertEquals(
+                "TRAINING_LESSON_DOCUMENT_URL_INVALID",
+                errorCode(
+                        () ->
+                                service.createLesson(
+                                        lesson("DOCUMENT")
+                                                .documentUrl(
+                                                        "http://docs.google.com/document/d/"
+                                                                + DOC_ID)
+                                                .build())));
+
+        String link = "https://drive.google.com/file/d/" + DOC_ID + "/view?usp=sharing";
+        TrainingLessonAdminResponse ok =
+                service.createLesson(lesson("DOCUMENT").documentUrl(" " + link + " ").build());
+        assertEquals(link, ok.documentUrl());
+        assertNull(ok.documentAssetId());
+
+        // Switching from a link to an uploaded PDF (or to another type) drops the link.
+        TrainingLesson existing = new TrainingLesson();
+        existing.setId(31L);
+        existing.setDocument(course);
+        existing.setType(TrainingLessonType.DOCUMENT);
+        existing.setDocumentUrl(link);
+        when(lessons.findById(31L)).thenReturn(Optional.of(existing));
+        TrainingLessonAdminResponse pdf =
+                service.updateLesson(31L, lesson("DOCUMENT").documentAssetId(20L).build());
+        assertNull(pdf.documentUrl());
+        assertEquals(20L, pdf.documentAssetId());
+        existing.setDocumentUrl(link);
+        assertNull(
+                service.updateLesson(
+                                31L, lesson("ARTICLE").bodyMarkdown("x").documentUrl(link).build())
+                        .documentUrl());
+    }
+
+    @Test
+    void officeFilesAreAcceptedUpToFiftyMegabytesButOnlyAsResources() {
+        for (String type : TrainingAssetPolicy.OFFICE_TYPES) {
+            when(storage.createSignedUploadUrl(
+                            anyString(), eq(type), eq(50_000_000L), any(Duration.class)))
+                    .thenReturn("https://signed-put");
+            assertEquals(
+                    "https://signed-put",
+                    service.createAsset(
+                                    new CreateTrainingAssetRequest("a", type, 50_000_000L), "admin")
+                            .uploadUrl());
+            assertEquals(
+                    "TRAINING_ASSET_SIZE_INVALID",
+                    errorCode(
+                            () ->
+                                    service.createAsset(
+                                            new CreateTrainingAssetRequest("a", type, 50_000_001L),
+                                            "admin")));
+        }
+
+        TrainingAsset docx = asset(40, TrainingAssetPolicy.DOCX, TrainingAssetStatus.READY);
+        docx.setFileName("Quy trình.docx");
+        asset(41, TrainingAssetPolicy.PPTX, TrainingAssetStatus.READY);
+        asset(42, TrainingAssetPolicy.XLSX, TrainingAssetStatus.READY);
+        TrainingLessonAdminResponse ok =
+                service.createLesson(
+                        lesson("ARTICLE")
+                                .bodyMarkdown("x")
+                                .resources(
+                                        List.of(
+                                                new ResourceRequest(40L, null),
+                                                new ResourceRequest(41L, "Slide"),
+                                                new ResourceRequest(42L, "Bảng tính")))
+                                .build());
+        assertEquals(3, ok.resources().size());
+        assertEquals("Quy trình.docx", ok.resources().get(0).title());
+
+        assertEquals(
+                "TRAINING_ASSET_TYPE_MISMATCH",
+                errorCode(
+                        () ->
+                                service.createLesson(
+                                        lesson("DOCUMENT").documentAssetId(40L).build())));
+        assertEquals(
+                "TRAINING_ASSET_TYPE_MISMATCH",
+                errorCode(() -> service.createLesson(lesson("VIDEO").videoAssetId(41L).build())));
+        assertEquals(
+                "TRAINING_ASSET_TYPE_MISMATCH",
+                errorCode(
+                        () ->
+                                service.createLesson(
+                                        lesson("SLIDES")
+                                                .slides(List.of(new SlideRequest(42L, null)))
+                                                .build())));
+        assertEquals(
+                "TRAINING_ASSET_TYPE_MISMATCH",
+                errorCode(
+                        () ->
+                                service.setCover(
+                                        1L,
+                                        new com.uav.platform.modules.training.dto.request
+                                                .UpdateCourseCoverRequest(40L))));
+    }
+
+    @Test
+    void confirmChecksOfficeFilesAreZipArchives() {
+        TrainingAsset a = asset(5, TrainingAssetPolicy.XLSX, TrainingAssetStatus.PENDING);
+        when(storage.objectExists(a.getObjectKey())).thenReturn(true);
+        when(storage.metadata(a.getObjectKey()))
+                .thenReturn(new ObjectMetadata(1000L, TrainingAssetPolicy.XLSX));
+        when(storage.readHeader(a.getObjectKey())).thenReturn("%PDF-1.7".getBytes());
+        assertEquals("TRAINING_ASSET_MISMATCH", errorCode(() -> service.confirmAsset(5L)));
+        assertEquals(TrainingAssetStatus.PENDING, a.getStatus());
+
+        when(storage.readHeader(a.getObjectKey())).thenReturn(new byte[] {'P', 'K', 3, 4, 20, 0});
+        assertEquals("READY", service.confirmAsset(5L).status());
+    }
+
+    @Test
+    void changingTheActiveLessonSetRecomputesLearnersCourseStatus() {
+        // Adding an active lesson.
+        TrainingLessonAdminResponse created =
+                service.createLesson(lesson("ARTICLE").bodyMarkdown("x").build());
+        assertTrue(created.active());
+        verify(records, times(1)).recompute(Set.of(course));
+
+        // A draft does not change what learners see.
+        service.createLesson(lesson("ARTICLE").bodyMarkdown("x").active(false).build());
+        verify(records, times(1)).recompute(any());
+
+        TrainingLesson existing = new TrainingLesson();
+        existing.setId(50L);
+        existing.setDocument(course);
+        existing.setType(TrainingLessonType.ARTICLE);
+        existing.setBodyMarkdown("x");
+        existing.setActive(true);
+        when(lessons.findById(50L)).thenReturn(Optional.of(existing));
+
+        // Editing content only: no recompute.
+        service.updateLesson(50L, lesson("ARTICLE").bodyMarkdown("y").build());
+        verify(records, times(1)).recompute(any());
+
+        // Hiding through PUT, then showing again.
+        service.updateLesson(50L, lesson("ARTICLE").bodyMarkdown("y").active(false).build());
+        verify(records, times(2)).recompute(Set.of(course));
+        service.updateLesson(50L, lesson("ARTICLE").bodyMarkdown("y").active(true).build());
+        verify(records, times(3)).recompute(Set.of(course));
+
+        // Moving to another course affects both.
+        TrainingDocument other = new TrainingDocument();
+        other.setId(2L);
+        when(documents.findById(2L)).thenReturn(Optional.of(other));
+        service.updateLesson(
+                50L,
+                UpsertTrainingLessonRequest.builder()
+                        .courseId(2L)
+                        .title("Bài 1")
+                        .type("ARTICLE")
+                        .bodyMarkdown("y")
+                        .build());
+        verify(records).recompute(Set.of(course, other));
+
+        // Deleting (soft) an active lesson; deleting it again changes nothing.
+        service.deleteLesson(50L);
+        service.deleteLesson(50L);
+        verify(records, times(1)).recompute(Set.of(other));
+    }
+
+    @Test
+    void lessonMediaCollectionsAreBatchFetched() throws Exception {
+        for (String field : List.of("slides", "resources")) {
+            BatchSize batch =
+                    TrainingLesson.class.getDeclaredField(field).getAnnotation(BatchSize.class);
+            assertNotNull(batch, field);
+            assertTrue(batch.size() >= 20, field);
+        }
     }
 }

@@ -5,7 +5,8 @@ import lombok.Builder;
 import java.util.List;
 
 /**
- * Every editable field of a lesson, as the admin editor sends it back. videoUrl is the link as entered.
+ * Every editable field of a lesson, as the admin editor sends it back. videoUrl and documentUrl are the links
+ * as entered.
  * Each slide and resource also carries a signed preview url (null when storage is not configured).
  */
 @Builder
@@ -21,6 +22,7 @@ public record TrainingLessonAdminResponse(
         String videoUrl,
         Long videoAssetId,
         Long documentAssetId,
+        String documentUrl,
         String bodyMarkdown,
         List<Slide> slides,
         List<Resource> resources) {

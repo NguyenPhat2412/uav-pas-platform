@@ -19,6 +19,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.hibernate.annotations.BatchSize;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,19 +62,30 @@ public class TrainingLesson extends BaseEntity {
     @Column(name = "video_asset_id")
     private Long videoAssetId;
 
-    /** READY application/pdf asset of a DOCUMENT lesson. */
+    /** READY application/pdf asset of a DOCUMENT lesson; exclusive with documentUrl. */
     @Column(name = "document_asset_id")
     private Long documentAssetId;
+
+    /**
+     * Google Docs / Slides / Sheets or Drive file link of a DOCUMENT lesson, exactly as entered; learners get the
+     * embeddable /preview URL.
+     */
+    @Column(name = "document_url", length = 500)
+    private String documentUrl;
 
     @Column(name = "body_markdown", columnDefinition = "TEXT")
     private String bodyMarkdown;
 
+    // Batched so listing many lessons loads slides and resources in a few queries, not one per
+    // lesson.
+    @BatchSize(size = 50)
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "training_lesson_slides", joinColumns = @JoinColumn(name = "lesson_id"))
     @OrderColumn(name = "sort_order")
     private List<TrainingLessonSlide> slides = new ArrayList<>();
 
     /** Downloadable files of the lesson (any type), in display order. */
+    @BatchSize(size = 50)
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
             name = "training_lesson_resources",

@@ -22,7 +22,9 @@ import com.uav.platform.modules.training.repository.TrainingLessonProgressReposi
 import com.uav.platform.modules.training.repository.TrainingLessonRepository;
 import com.uav.platform.modules.training.repository.UserTrainingProgressRepository;
 import com.uav.platform.modules.training.service.TrainingCourseProgress;
+import com.uav.platform.modules.training.service.TrainingCourseRecords;
 import com.uav.platform.modules.training.service.TrainingCourseService;
+import com.uav.platform.modules.training.service.TrainingDocumentUrls;
 import com.uav.platform.modules.training.service.TrainingMediaUrls;
 import com.uav.platform.modules.training.service.TrainingVideoUrls;
 import com.uav.platform.modules.user.entity.AppUser;
@@ -133,6 +135,8 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
         if (!readable(doc, user)) throw courseNotFound();
         TrainingCourseState state = loadState(doc, user);
         TrainingCourseSummaryResponse s = summary(state, coverUrl(doc));
+        Map<Long, Integer> resourceCounts =
+                resourceCounts(state.lessons().stream().map(TrainingLesson::getId).toList());
 
         List<TrainingCourseDetailResponse.Section> sections = new ArrayList<>();
         Map<String, List<TrainingCourseDetailResponse.LessonItem>> bySection =
@@ -147,9 +151,7 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
                                     lesson.getType().name(),
                                     lesson.getDurationMinutes(),
                                     isCompleted(state.progress().get(lesson.getId())),
-                                    lesson.getResources() == null
-                                            ? 0
-                                            : lesson.getResources().size()));
+                                    resourceCounts.getOrDefault(lesson.getId(), 0)));
         }
         bySection.forEach(
                 (title, items) ->
@@ -207,7 +209,7 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
                         : lessonProgress
                                 .findByUserIdAndLessonId(user.getId(), lesson.getId())
                                 .orElse(null);
-        return lessonDetail(lesson, progress);
+        return lessonDetail(lesson, progress, true);
     }
 
     @Override
@@ -216,73 +218,67 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
             Long lessonId, UpdateLessonProgressRequest request, Authentication authentication) {
         AppUser user = resolveUserRequired(authentication);
         TrainingLesson lesson = readableLesson(lessonId, user);
-        TrainingLessonProgress progress =
-                lessonProgress
-                        .findByUserIdAndLessonId(user.getId(), lesson.getId())
-                        .orElseGet(
-                                () -> {
-                                    TrainingLessonProgress created = new TrainingLessonProgress();
-                                    created.setUser(user);
-                                    created.setLesson(lesson);
-                                    return created;
-                                });
-        boolean uncompleted = false;
-        if (request != null && request.completed() != null) {
-            if (request.completed()) {
-                if (progress.getCompletedAt() == null)
-                    progress.setCompletedAt(OffsetDateTime.now());
-            } else {
-                uncompleted = progress.getCompletedAt() != null;
-                progress.setCompletedAt(null);
-            }
+        Integer position = request == null ? null : request.positionSeconds();
+        if (position != null && position < 0)
+            throw SystemException.badRequest(
+                            "Vị trí video không hợp lệ.", "TRAINING_PROGRESS_INVALID")
+                    .at("positionSeconds");
+        // Only an explicit true changes completion; false or a missing value never un-completes a
+        // lesson
+        // (video players send their position with completed=false all the time).
+        boolean complete = request != null && Boolean.TRUE.equals(request.completed());
+        lessonProgress.upsertProgress(
+                user.getId(),
+                lesson.getId(),
+                complete,
+                position != null,
+                position == null ? 0 : position);
+        TrainingLessonProgress saved =
+                lessonProgress.findByUserIdAndLessonId(user.getId(), lesson.getId()).orElse(null);
+        if (!complete) {
+            // A position-only save cannot change the course status: skip the record sync and do not
+            // re-sign the media URLs (they come back null; the response shape is unchanged).
+            return lessonDetail(lesson, saved, false);
         }
-        if (request != null && request.positionSeconds() != null) {
-            if (request.positionSeconds() < 0)
-                throw SystemException.badRequest(
-                                "Vị trí video không hợp lệ.", "TRAINING_PROGRESS_INVALID")
-                        .at("positionSeconds");
-            progress.setPositionSeconds(request.positionSeconds());
-        }
-        TrainingLessonProgress saved = lessonProgress.save(progress);
-        syncCourseRecord(lesson.getDocument(), user, uncompleted);
-        return lessonDetail(lesson, saved);
+        syncCourseRecord(lesson.getDocument(), user);
+        return lessonDetail(lesson, saved, true);
     }
 
     /**
-     * Keeps the existing course record in step with lesson progress: every active lesson done and the
-     * checklist (if any) fully ticked marks it COMPLETED, so the old overview counters stay correct.
+     * Keeps the existing course record in step with lesson progress (see {@link
+     * TrainingCourseProgress#recordStatus}), so the old overview counters stay correct. The record row is created
+     * with an insert that ignores a concurrent duplicate, then updated.
      */
-    private void syncCourseRecord(TrainingDocument doc, AppUser user, boolean lessonUncompleted) {
-        TrainingCourseState state = loadState(doc, user);
-        List<String> checklist =
-                parseList(doc.getChecklistJson(), new TypeReference<List<String>>() {});
-        UserTrainingProgress record = state.record();
-        List<Integer> checked =
-                record == null
-                        ? List.of()
-                        : parseList(
-                                record.getCheckedStepsJson(),
-                                new TypeReference<List<Integer>>() {});
-        boolean complete =
-                TrainingCourseProgress.courseComplete(
-                        state.completedLessons(),
-                        state.lessons().size(),
-                        checklist.size(),
-                        new HashSet<>(checked).size());
+    private void syncCourseRecord(TrainingDocument doc, AppUser user) {
+        UserTrainingProgress existing =
+                courseProgress.findByUserIdAndDocumentId(user.getId(), doc.getId()).orElse(null);
+        if (existing == null) {
+            courseProgress.insertIfAbsent(user.getId(), doc.getId());
+            existing =
+                    courseProgress
+                            .findByUserIdAndDocumentId(user.getId(), doc.getId())
+                            .orElse(null);
+        }
+        UserTrainingProgress record = existing;
         if (record == null) {
             record = new UserTrainingProgress();
             record.setUser(user);
             record.setDocument(doc);
             record.setStatus(TrainingCourseProgress.NOT_STARTED);
         }
+        TrainingCourseState state = loadState(doc, user, record);
+        int checklistSize = TrainingCourseRecords.checklistSize(doc);
         String next =
-                TrainingCourseProgress.nextRecordStatus(
-                        record.getStatus(), complete, lessonUncompleted);
-        record.setStatus(next);
+                TrainingCourseProgress.recordStatus(
+                        record.getStatus(),
+                        state.completedLessons(),
+                        state.lessons().size(),
+                        checklistSize,
+                        TrainingCourseRecords.checkedCount(
+                                record.getCheckedStepsJson(), checklistSize),
+                        state.anyActivity());
+        TrainingCourseRecords.apply(record, next);
         record.setLastViewedAt(OffsetDateTime.now());
-        if (TrainingCourseProgress.COMPLETED.equals(next)) {
-            if (record.getCompletedAt() == null) record.setCompletedAt(OffsetDateTime.now());
-        } else record.setCompletedAt(null);
         courseProgress.save(record);
     }
 
@@ -295,8 +291,13 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
         return lesson;
     }
 
+    /**
+     * @param sign whether to sign the media URLs; false leaves every asset url null (position-only saves, whose
+     *     caller only reads the learner state back)
+     */
     private TrainingLessonDetailResponse lessonDetail(
-            TrainingLesson lesson, TrainingLessonProgress progress) {
+            TrainingLesson lesson, TrainingLessonProgress progress, boolean sign) {
+        Function<TrainingAsset, String> url = sign ? mediaUrls::signedGet : a -> null;
         TrainingDocument doc = lesson.getDocument();
         List<TrainingLesson> ordered =
                 lessons.findByDocumentIdAndActiveTrueOrderBySortOrderAscIdAsc(doc.getId());
@@ -326,24 +327,15 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
             assetIds.add(lesson.getDocumentAssetId());
         Map<Long, TrainingAsset> byId = loadAssets(assetIds);
 
-        if (lesson.getType() == TrainingLessonType.VIDEO) video = video(lesson);
-        if (lesson.getType() == TrainingLessonType.DOCUMENT) {
-            TrainingAsset pdf =
-                    lesson.getDocumentAssetId() == null
-                            ? null
-                            : byId.get(lesson.getDocumentAssetId());
-            if (pdf != null)
-                document =
-                        new TrainingLessonDetailResponse.Document(
-                                mediaUrls.signedGet(pdf), pdf.getFileName(), pdf.getSizeBytes());
-        }
+        if (lesson.getType() == TrainingLessonType.VIDEO) video = video(lesson, url);
+        if (lesson.getType() == TrainingLessonType.DOCUMENT) document = document(lesson, byId, url);
         if (lesson.getType() == TrainingLessonType.SLIDES) {
             slides =
                     stored.stream()
                             .map(
                                     s ->
                                             new TrainingLessonDetailResponse.Slide(
-                                                    mediaUrls.signedGet(byId.get(s.getAssetId())),
+                                                    url.apply(byId.get(s.getAssetId())),
                                                     s.getCaption()))
                             .toList();
         }
@@ -366,7 +358,7 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
                                             TrainingAsset a = byId.get(r.getAssetId());
                                             return new TrainingLessonDetailResponse.Resource(
                                                     r.getTitle(),
-                                                    mediaUrls.signedGet(a),
+                                                    url.apply(a),
                                                     a.getContentType(),
                                                     a.getSizeBytes());
                                         })
@@ -382,11 +374,39 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
                 .build();
     }
 
-    private TrainingLessonDetailResponse.Video video(TrainingLesson lesson) {
+    /**
+     * FILE for an uploaded PDF (null when the asset is gone), EMBED with the /preview URL for a Google link (null
+     * when the stored link no longer parses).
+     */
+    private TrainingLessonDetailResponse.Document document(
+            TrainingLesson lesson,
+            Map<Long, TrainingAsset> byId,
+            Function<TrainingAsset, String> url) {
+        if (lesson.getDocumentAssetId() != null) {
+            TrainingAsset pdf = byId.get(lesson.getDocumentAssetId());
+            return pdf == null
+                    ? null
+                    : TrainingLessonDetailResponse.Document.file(
+                            url.apply(pdf), pdf.getFileName(), pdf.getSizeBytes());
+        }
+        if (StringUtils.hasText(lesson.getDocumentUrl())) {
+            try {
+                return TrainingLessonDetailResponse.Document.embed(
+                        TrainingDocumentUrls.toPreviewUrl(lesson.getDocumentUrl()),
+                        TrainingDocumentUrls.PROVIDER_GOOGLE);
+            } catch (SystemException invalid) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private TrainingLessonDetailResponse.Video video(
+            TrainingLesson lesson, Function<TrainingAsset, String> url) {
         if (lesson.getVideoAssetId() != null) {
             TrainingAsset asset = assets.findById(lesson.getVideoAssetId()).orElse(null);
             return TrainingLessonDetailResponse.Video.file(
-                    mediaUrls.signedGet(asset), asset == null ? null : asset.getContentType());
+                    url.apply(asset), asset == null ? null : asset.getContentType());
         }
         if (StringUtils.hasText(lesson.getVideoUrl())) {
             try {
@@ -400,18 +420,34 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
     }
 
     private TrainingCourseState loadState(TrainingDocument doc, AppUser user) {
-        List<TrainingLesson> courseLessons =
-                lessons.findByDocumentIdAndActiveTrueOrderBySortOrderAscIdAsc(doc.getId());
-        Map<Long, TrainingLessonProgress> progress =
-                loadLessonProgress(
-                        user, courseLessons.stream().map(TrainingLesson::getId).toList());
         UserTrainingProgress record =
                 user == null
                         ? null
                         : courseProgress
                                 .findByUserIdAndDocumentId(user.getId(), doc.getId())
                                 .orElse(null);
+        return loadState(doc, user, record);
+    }
+
+    private TrainingCourseState loadState(
+            TrainingDocument doc, AppUser user, UserTrainingProgress record) {
+        List<TrainingLesson> courseLessons =
+                lessons.findByDocumentIdAndActiveTrueOrderBySortOrderAscIdAsc(doc.getId());
+        Map<Long, TrainingLessonProgress> progress =
+                loadLessonProgress(
+                        user, courseLessons.stream().map(TrainingLesson::getId).toList());
         return new TrainingCourseState(doc, courseLessons, progress, record);
+    }
+
+    /** Resource count per lesson from one grouped query (the resources themselves are not loaded). */
+    private Map<Long, Integer> resourceCounts(Collection<Long> lessonIds) {
+        if (lessonIds.isEmpty()) return Collections.emptyMap();
+        Map<Long, Integer> counts = new HashMap<>();
+        List<Object[]> rows = lessons.countResources(lessonIds);
+        if (rows != null)
+            for (Object[] row : rows)
+                counts.put(((Number) row[0]).longValue(), ((Number) row[1]).intValue());
+        return counts;
     }
 
     private TrainingCourseSummaryResponse summary(TrainingCourseState state, String coverUrl) {

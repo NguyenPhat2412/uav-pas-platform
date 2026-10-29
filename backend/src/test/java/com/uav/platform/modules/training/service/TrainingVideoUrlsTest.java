@@ -19,6 +19,8 @@ class TrainingVideoUrlsTest {
         "https://youtube.com/watch?feature=share&v=dQw4w9WgXcQ&t=42, https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
         "http://www.youtube.com/watch?v=dQw4w9WgXcQ, https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
         "https://youtu.be/dQw4w9WgXcQ, https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+        "https://m.youtube.com/watch?v=dQw4w9WgXcQ, https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+        "https://m.youtube.com/watch?v=dQw4w9WgXcQ&feature=share, https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
         "https://youtu.be/dQw4w9WgXcQ?si=abc123, https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
         "https://www.youtube.com/embed/dQw4w9WgXcQ, https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
         "https://www.youtube.com/shorts/dQw4w9WgXcQ, https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
@@ -38,7 +40,8 @@ class TrainingVideoUrlsTest {
             strings = {
                 "   ",
                 "not a url",
-                "https://m.youtube.com/watch?v=dQw4w9WgXcQ",
+                "https://m.youtube.com/watch?v=short",
+                "https://m.youtube.com.evil.example/watch?v=dQw4w9WgXcQ",
                 "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
                 "https://player.vimeo.com/video/76979871",
                 "https://youtube.com.evil.example/watch?v=dQw4w9WgXcQ",

@@ -4,6 +4,8 @@ import com.uav.platform.modules.training.entity.TrainingLesson;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -22,4 +24,14 @@ public interface TrainingLessonRepository
     /** Active lessons of several courses at once (course list), in course order. */
     List<TrainingLesson> findByDocumentIdInAndActiveTrueOrderBySortOrderAscIdAsc(
             Collection<Long> documentIds);
+
+    /**
+     * Number of downloadable resources per lesson as [lessonId, count] rows, without loading the resources;
+     * lessons with none are absent.
+     */
+    @Query(
+            value =
+                    "SELECT lesson_id, COUNT(*) FROM training_lesson_resources WHERE lesson_id IN (:lessonIds) GROUP BY lesson_id",
+            nativeQuery = true)
+    List<Object[]> countResources(@Param("lessonIds") Collection<Long> lessonIds);
 }

@@ -36,14 +36,39 @@ public final class TrainingCourseProgress {
     }
 
     /**
-     * Next status of the course record after a lesson change. Completing everything marks it COMPLETED; an
-     * explicitly un-completed lesson takes a COMPLETED course back to IN_PROGRESS; otherwise it is kept, and a
-     * missing or NOT_STARTED record becomes IN_PROGRESS.
+     * Status the stored course record must have, derived from the learner's state. It is recomputed whenever
+     * that state changes (lesson completed, checklist ticked) and for every learner when an administrator
+     * changes the course's active lessons, so the record never goes stale.
+     *
+     * <p>A course with active lessons is COMPLETED only when every active lesson is done and the checklist, if
+     * any, is fully ticked; otherwise it is IN_PROGRESS once the learner did anything (lesson activity, a
+     * ticked step, an earlier record status) and NOT_STARTED before that.
+     *
+     * <p>A course without active lessons keeps the checklist-only rule: a fully ticked checklist completes it,
+     * a partly ticked one cannot stay COMPLETED, and a checklist-free course keeps its stored status (it is
+     * completed explicitly through the overview endpoint).
      */
-    public static String nextRecordStatus(
-            String current, boolean courseComplete, boolean lessonUncompleted) {
-        if (courseComplete) return COMPLETED;
-        if (COMPLETED.equals(current)) return lessonUncompleted ? IN_PROGRESS : COMPLETED;
-        return IN_PROGRESS;
+    public static String recordStatus(
+            String current,
+            int completedLessons,
+            int lessonCount,
+            int checklistSize,
+            int checkedSteps,
+            boolean lessonActivity) {
+        boolean started =
+                lessonActivity
+                        || checkedSteps > 0
+                        || IN_PROGRESS.equals(current)
+                        || COMPLETED.equals(current);
+        if (lessonCount > 0) {
+            if (courseComplete(completedLessons, lessonCount, checklistSize, checkedSteps))
+                return COMPLETED;
+            return started ? IN_PROGRESS : NOT_STARTED;
+        }
+        if (checklistSize > 0) {
+            if (checkedSteps >= checklistSize) return COMPLETED;
+            return started ? IN_PROGRESS : NOT_STARTED;
+        }
+        return current == null ? NOT_STARTED : current;
     }
 }

@@ -84,3 +84,34 @@ the signed PUT URL (bucket CORS already allows the app origin for mission media)
   and the course detail's lesson items add `"resourceCount": 2`.
 - Assets: also allow `application/pdf` (≤ 50 MB). Resources may also be images (png/jpeg/webp).
 - Learner course summary adds `"documentCount": n` (DOCUMENT lessons).
+
+## Addendum 2: files instead of written content, page-by-page PDFs, document links
+
+Training content comes from files and links that admins upload or paste, not from text written
+into migrations.
+
+- **No seeded lesson text.** The ARTICLE lessons that V34 generated from each document's
+  `contentMarkdown` are switched off (`active = false`, not deleted) by a new migration. A course
+  with no active lessons shows "Chưa có bài học" until an admin adds files. ARTICLE stays available
+  for admins who want to write a short text lesson themselves.
+- **The player no longer prints `overviewMarkdown`.** The "Tổng quan" tab shows the course summary
+  and meta only. The API still returns the field, so nothing breaks.
+- **DOCUMENT lessons take one source, either:**
+  - `documentAssetId`: a READY `application/pdf` asset, as before; or
+  - `documentUrl`: an https link to Google Docs, Slides or Sheets (`docs.google.com`) or a Drive
+    file (`drive.google.com/file/d/…`). It is stored as given and normalised server-side to an
+    embeddable `/preview` URL. Other hosts are rejected with `TRAINING_LESSON_DOCUMENT_URL_INVALID`.
+  - Sending both, or neither, is rejected with `TRAINING_LESSON_DOCUMENT_REQUIRED`.
+  - The admin lesson body and the admin lesson view add `"documentUrl": "…" | null`.
+  - The lesson detail `document` becomes either
+    `{ "kind": "FILE", "url": "https://signed-get…", "fileName": "…", "size": 123 }` or
+    `{ "kind": "EMBED", "url": "https://docs.google.com/…/preview", "provider": "GOOGLE" }`.
+- **Office files as attachments.** Assets also accept these types, at most 50 MB each:
+  - `application/vnd.openxmlformats-officedocument.wordprocessingml.document` (.docx)
+  - `application/vnd.openxmlformats-officedocument.presentationml.presentation` (.pptx)
+  - `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` (.xlsx)
+
+  They are valid only as lesson `resources` (downloads), never as `documentAssetId`, video or
+  slides.
+- **Page-by-page PDF viewing** happens in the browser with pdf.js, which fetches the signed GET
+  URL. The bucket CORS must allow GET from the app origin.

@@ -2,7 +2,9 @@ package com.uav.platform.modules.training.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,6 +43,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 
 import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -62,6 +65,7 @@ class TrainingCourseServiceTest {
 
     private final Map<Long, TrainingLessonProgress> savedLessonProgress = new HashMap<>();
     private final Map<Long, UserTrainingProgress> savedRecords = new HashMap<>();
+    private final Map<Object, TrainingLesson> lessonsById = new HashMap<>();
     private AppUser customer;
     private Authentication customerAuth;
 
@@ -87,13 +91,39 @@ class TrainingCourseServiceTest {
         customer = user(99L, "customer01", UserRole.ROLE_PILOT);
         customerAuth = new UsernamePasswordAuthenticationToken("customer01", "x", List.of());
 
-        // In-memory progress tables.
-        when(lessonProgress.save(any()))
+        // In-memory progress tables. The upsert mirrors the SQL: completion is only ever stamped,
+        // the
+        // position only changes when sent.
+        when(lessonProgress.upsertProgress(
+                        anyLong(), anyLong(), anyBoolean(), anyBoolean(), anyInt()))
                 .thenAnswer(
                         inv -> {
-                            TrainingLessonProgress p = inv.getArgument(0);
-                            savedLessonProgress.put(p.getLesson().getId(), p);
-                            return p;
+                            long lessonId = inv.getArgument(1);
+                            TrainingLessonProgress p =
+                                    savedLessonProgress.computeIfAbsent(
+                                            lessonId,
+                                            id -> {
+                                                TrainingLessonProgress created =
+                                                        new TrainingLessonProgress();
+                                                created.setLesson(lessonsById.get(id));
+                                                return created;
+                                            });
+                            if ((boolean) inv.getArgument(2) && p.getCompletedAt() == null)
+                                p.setCompletedAt(OffsetDateTime.now());
+                            if ((boolean) inv.getArgument(3))
+                                p.setPositionSeconds(inv.getArgument(4));
+                            return 1;
+                        });
+        when(lessons.countResources(anyCollection()))
+                .thenAnswer(
+                        inv -> {
+                            List<Object[]> rows = new ArrayList<>();
+                            for (Object id : (Collection<?>) inv.getArgument(0)) {
+                                TrainingLesson l = lessonsById.get(id);
+                                if (l != null && !l.getResources().isEmpty())
+                                    rows.add(new Object[] {id, (long) l.getResources().size()});
+                            }
+                            return rows;
                         });
         when(lessonProgress.findByUserIdAndLessonId(anyLong(), anyLong()))
                 .thenAnswer(
@@ -170,6 +200,7 @@ class TrainingCourseServiceTest {
         lesson.setDurationMinutes(6);
         lesson.setActive(true);
         when(lessons.findById(id)).thenReturn(Optional.of(lesson));
+        lessonsById.put(id, lesson);
         return lesson;
     }
 
@@ -228,10 +259,81 @@ class TrainingCourseServiceTest {
         assertEquals("Bắt đầu", detail.sections().get(0).title());
         assertEquals("Nội dung", detail.sections().get(1).title());
 
-        // Explicitly un-completing a lesson re-opens the course.
-        service.updateLessonProgress(11L, done(false), customerAuth);
-        assertEquals("IN_PROGRESS", savedRecords.get(1L).getStatus());
-        assertNull(savedRecords.get(1L).getCompletedAt());
+        // completed=false (sent by every video position save) never un-completes a lesson.
+        TrainingLessonDetailResponse afterFalse =
+                service.updateLessonProgress(11L, done(false), customerAuth);
+        assertTrue(afterFalse.completed());
+        assertNotNull(savedLessonProgress.get(11L).getCompletedAt());
+        assertEquals("COMPLETED", savedRecords.get(1L).getStatus());
+        assertNotNull(savedRecords.get(1L).getCompletedAt());
+    }
+
+    @Test
+    void positionOnlySaveKeepsCompletionAndSkipsRecordSyncAndSigning() {
+        TrainingDocument doc = course(1, "CUSTOMER", "[]");
+        TrainingAsset clip = readyAsset(5L, "video/mp4");
+        TrainingLesson video = lesson(10, doc, TrainingLessonType.VIDEO, null);
+        video.setVideoAssetId(clip.getId());
+        TrainingLesson other = lesson(11, doc, TrainingLessonType.ARTICLE, null);
+        courseLessons(doc, video, other);
+        when(storage.createSignedDownloadUrl(anyString(), any(Duration.class)))
+                .thenReturn("https://signed-get");
+
+        service.updateLessonProgress(10L, done(true), customerAuth);
+        verify(courseProgress, times(1)).save(any());
+        reset(storage);
+
+        // Missing completed and completed=false both only move the position.
+        TrainingLessonDetailResponse missing =
+                service.updateLessonProgress(
+                        10L, new UpdateLessonProgressRequest(null, 42), customerAuth);
+        TrainingLessonDetailResponse explicitFalse =
+                service.updateLessonProgress(
+                        10L, new UpdateLessonProgressRequest(false, 57), customerAuth);
+        assertTrue(missing.completed());
+        assertEquals(42, missing.positionSeconds());
+        assertTrue(explicitFalse.completed());
+        assertEquals(57, explicitFalse.positionSeconds());
+        assertNotNull(savedLessonProgress.get(10L).getCompletedAt());
+        // Same response shape (video kind, neighbours) but no record write and no URL signing.
+        assertEquals("FILE", explicitFalse.video().kind());
+        assertNull(explicitFalse.video().url());
+        assertEquals(11L, explicitFalse.nextLessonId());
+        verify(courseProgress, times(1)).save(any());
+        verifyNoInteractions(storage);
+        verify(lessonProgress, never()).save(any());
+    }
+
+    @Test
+    void negativePositionIsRejected() {
+        TrainingDocument doc = course(1, "CUSTOMER", "[]");
+        courseLessons(doc, lesson(10, doc, TrainingLessonType.VIDEO, null));
+        assertEquals(
+                "TRAINING_PROGRESS_INVALID",
+                assertThrows(
+                                SystemException.class,
+                                () ->
+                                        service.updateLessonProgress(
+                                                10L,
+                                                new UpdateLessonProgressRequest(null, -1),
+                                                customerAuth))
+                        .getCode());
+        verify(lessonProgress, never())
+                .upsertProgress(anyLong(), anyLong(), anyBoolean(), anyBoolean(), anyInt());
+    }
+
+    @Test
+    void firstSaveCreatesTheCourseRecordThroughAnInsertThatIgnoresDuplicates() {
+        TrainingDocument doc = course(1, "CUSTOMER", "[]");
+        courseLessons(doc, lesson(10, doc, TrainingLessonType.ARTICLE, null));
+        service.updateLessonProgress(10L, done(true), customerAuth);
+        verify(lessonProgress).upsertProgress(eq(99L), eq(10L), eq(true), eq(false), eq(0));
+        verify(courseProgress).insertIfAbsent(99L, 1L);
+        assertEquals("COMPLETED", savedRecords.get(1L).getStatus());
+
+        // The record now exists: no second insert attempt.
+        service.updateLessonProgress(10L, done(true), customerAuth);
+        verify(courseProgress, times(1)).insertIfAbsent(anyLong(), anyLong());
     }
 
     @Test
@@ -244,9 +346,50 @@ class TrainingCourseServiceTest {
         assertEquals("IN_PROGRESS", savedRecords.get(1L).getStatus());
 
         savedRecords.get(1L).setCheckedStepsJson("[0,1]");
-        service.updateLessonProgress(10L, new UpdateLessonProgressRequest(null, 30), customerAuth);
+        service.updateLessonProgress(10L, new UpdateLessonProgressRequest(true, 30), customerAuth);
         assertEquals("COMPLETED", savedRecords.get(1L).getStatus());
         assertEquals(30, savedLessonProgress.get(10L).getPositionSeconds());
+    }
+
+    @Test
+    void recordStatusRule() {
+        String ns = TrainingCourseProgress.NOT_STARTED;
+        String ip = TrainingCourseProgress.IN_PROGRESS;
+        String done = TrainingCourseProgress.COMPLETED;
+        // With lessons: all lessons and the checklist.
+        assertEquals(done, TrainingCourseProgress.recordStatus(null, 2, 2, 0, 0, true));
+        assertEquals(ip, TrainingCourseProgress.recordStatus(done, 1, 2, 0, 0, true));
+        assertEquals(ip, TrainingCourseProgress.recordStatus(null, 0, 2, 2, 2, false));
+        assertEquals(done, TrainingCourseProgress.recordStatus(ip, 2, 2, 2, 2, true));
+        assertEquals(ns, TrainingCourseProgress.recordStatus(null, 0, 2, 0, 0, false));
+        assertEquals(ip, TrainingCourseProgress.recordStatus(done, 0, 3, 0, 0, false));
+        // Without lessons: checklist-only rule, and a checklist-free course keeps its status.
+        assertEquals(done, TrainingCourseProgress.recordStatus(ip, 0, 0, 2, 2, false));
+        assertEquals(ip, TrainingCourseProgress.recordStatus(done, 0, 0, 2, 1, false));
+        assertEquals(done, TrainingCourseProgress.recordStatus(done, 0, 0, 0, 0, false));
+        assertEquals(ns, TrainingCourseProgress.recordStatus(null, 0, 0, 0, 0, false));
+    }
+
+    @Test
+    void linkedDocumentLessonIsEmbeddedAsGooglePreview() {
+        TrainingDocument doc = course(1, "CUSTOMER", "[]");
+        TrainingLesson linked = lesson(10, doc, TrainingLessonType.DOCUMENT, null);
+        linked.setDocumentUrl(
+                "https://docs.google.com/presentation/d/1AbCdEfGhIjKlMnOpQrStUvWxYz0123456789/edit?usp=sharing");
+        TrainingLesson broken = lesson(11, doc, TrainingLessonType.DOCUMENT, null);
+        broken.setDocumentUrl("https://example.com/a.pdf");
+        courseLessons(doc, linked, broken);
+
+        TrainingLessonDetailResponse detail = service.getLesson(10L, customerAuth);
+        assertEquals("EMBED", detail.document().kind());
+        assertEquals(
+                "https://docs.google.com/presentation/d/1AbCdEfGhIjKlMnOpQrStUvWxYz0123456789/preview",
+                detail.document().url());
+        assertEquals("GOOGLE", detail.document().provider());
+        assertNull(detail.document().fileName());
+        assertNull(detail.document().size());
+        verifyNoInteractions(storage);
+        assertNull(service.getLesson(11L, customerAuth).document());
     }
 
     @Test
@@ -366,6 +509,8 @@ class TrainingCourseServiceTest {
         TrainingLessonDetailResponse detail = service.getLesson(10L, customerAuth);
         assertEquals("DOCUMENT", detail.type());
         assertNull(detail.video());
+        assertEquals("FILE", detail.document().kind());
+        assertNull(detail.document().provider());
         assertEquals("https://signed/pdf", detail.document().url());
         assertEquals("huong-dan.pdf", detail.document().fileName());
         assertEquals(123_456L, detail.document().size());
@@ -380,7 +525,13 @@ class TrainingCourseServiceTest {
         assertNull(other.document());
         assertTrue(other.resources().isEmpty());
 
+        // Resource counts come from one grouped count query; the collections are not loaded.
+        TrainingLesson spyGuide = spy(guide);
+        when(lessons.findByDocumentIdAndActiveTrueOrderBySortOrderAscIdAsc(1L))
+                .thenReturn(List.of(spyGuide, video));
         TrainingCourseDetailResponse course = service.getCourse("TRN-1", customerAuth);
+        verify(lessons).countResources(List.of(10L, 11L));
+        verify(spyGuide, never()).getResources();
         assertEquals(1, course.documentCount());
         assertEquals(1, course.videoCount());
         assertEquals(2, course.sections().get(0).lessons().get(0).resourceCount());

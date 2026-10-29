@@ -13,8 +13,9 @@ import java.util.List;
 
 /**
  * Create or replace a lesson. VIDEO needs exactly one of videoUrl / videoAssetId, SLIDES at least one READY
- * image, ARTICLE a bodyMarkdown, DOCUMENT a READY PDF documentAssetId. Any type may carry resources (READY PDFs
- * or images). Fields that do not belong to the type are ignored.
+ * image, ARTICLE a bodyMarkdown, DOCUMENT exactly one of documentAssetId (READY PDF) / documentUrl (https Google
+ * Docs, Slides, Sheets or Drive file link). Any type may carry resources (READY PDFs, images or Word, PowerPoint,
+ * Excel files). Fields that do not belong to the type are ignored.
  */
 @Builder
 public record UpsertTrainingLessonRequest(
@@ -28,6 +29,7 @@ public record UpsertTrainingLessonRequest(
         @Size(max = 500) String videoUrl,
         Long videoAssetId,
         Long documentAssetId,
+        @Size(max = 500) String documentUrl,
         @Size(max = 100_000) String bodyMarkdown,
         @Size(max = 60) List<@Valid @NotNull SlideRequest> slides,
         @Size(max = 30) List<@Valid @NotNull ResourceRequest> resources) {

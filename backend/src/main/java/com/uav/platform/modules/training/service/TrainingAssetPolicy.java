@@ -1,7 +1,10 @@
 package com.uav.platform.modules.training.service;
 
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.media.service.MediaUploadPolicy;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -11,18 +14,44 @@ public final class TrainingAssetPolicy {
     public static final long MAX_VIDEO_BYTES = 500_000_000L;
     public static final long MAX_IMAGE_BYTES = 10_000_000L;
     public static final long MAX_PDF_BYTES = 50_000_000L;
+    public static final long MAX_OFFICE_BYTES = 50_000_000L;
+
+    public static final String DOCX =
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    public static final String PPTX =
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+    public static final String XLSX =
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+    /** Word, PowerPoint and Excel files: valid only as downloadable lesson resources. */
+    public static final List<String> OFFICE_TYPES = List.of(DOCX, PPTX, XLSX);
 
     public static final String DESCRIPTION =
-            "Video MP4/WebM: tối đa 500 MB (500000000 byte); PDF: tối đa 50 MB (50000000 byte); ảnh PNG/JPEG/WebP: tối đa 10 MB (10000000 byte).";
+            "Video MP4/WebM: tối đa 500 MB (500000000 byte); PDF và Word/PowerPoint/Excel (.docx, .pptx, .xlsx): tối đa 50 MB (50000000 byte); ảnh PNG/JPEG/WebP: tối đa 10 MB (10000000 byte).";
 
     private static final Map<String, Long> LIMITS =
             Map.of(
-                    "video/mp4", MAX_VIDEO_BYTES,
-                    "video/webm", MAX_VIDEO_BYTES,
-                    "image/png", MAX_IMAGE_BYTES,
-                    "image/jpeg", MAX_IMAGE_BYTES,
-                    "image/webp", MAX_IMAGE_BYTES,
-                    "application/pdf", MAX_PDF_BYTES);
+                    "video/mp4",
+                    MAX_VIDEO_BYTES,
+                    "video/webm",
+                    MAX_VIDEO_BYTES,
+                    "image/png",
+                    MAX_IMAGE_BYTES,
+                    "image/jpeg",
+                    MAX_IMAGE_BYTES,
+                    "image/webp",
+                    MAX_IMAGE_BYTES,
+                    "application/pdf",
+                    MAX_PDF_BYTES,
+                    DOCX,
+                    MAX_OFFICE_BYTES,
+                    PPTX,
+                    MAX_OFFICE_BYTES,
+                    XLSX,
+                    MAX_OFFICE_BYTES);
+
+    /** Local file header of a ZIP archive, which every Office Open XML file is. */
+    private static final byte[] ZIP_HEADER = {'P', 'K', 3, 4};
 
     private TrainingAssetPolicy() {}
 
@@ -50,6 +79,25 @@ public final class TrainingAssetPolicy {
                             "TRAINING_ASSET_SIZE_INVALID")
                     .at("size");
         return type;
+    }
+
+    /**
+     * Bounded format identification of the first bytes of an upload: Office files must be ZIP archives, every
+     * other type is checked by the shared media rule.
+     *
+     * @throws SystemException when the bytes do not match the declared type
+     */
+    public static void validateHeader(String contentType, byte[] header) {
+        String type = baseType(contentType);
+        if (OFFICE_TYPES.contains(type)) {
+            if (header == null
+                    || header.length < ZIP_HEADER.length
+                    || !Arrays.equals(Arrays.copyOf(header, ZIP_HEADER.length), ZIP_HEADER))
+                throw SystemException.conflict(
+                        "Nội dung tệp không khớp định dạng đã đăng ký.", "TRAINING_ASSET_MISMATCH");
+            return;
+        }
+        MediaUploadPolicy.validateHeader(type, header);
     }
 
     public static String objectKey(String fileName) {

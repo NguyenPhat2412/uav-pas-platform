@@ -45,8 +45,26 @@ public record TrainingLessonDetailResponse(
 
     public record Slide(String url, String caption) {}
 
-    /** PDF of a DOCUMENT lesson; url is null when storage is not configured. */
-    public record Document(String url, String fileName, long size) {}
+    /**
+     * Source of a DOCUMENT lesson. kind FILE: uploaded PDF with a signed GET url (null when storage is not
+     * configured), fileName and size; kind EMBED: the embeddable /preview url of a linked Google file and its
+     * provider.
+     */
+    public record Document(
+            String kind,
+            String url,
+            @JsonInclude(JsonInclude.Include.NON_NULL) String fileName,
+            @JsonInclude(JsonInclude.Include.NON_NULL) Long size,
+            @JsonInclude(JsonInclude.Include.NON_NULL) String provider) {
+
+        public static Document file(String url, String fileName, long size) {
+            return new Document("FILE", url, fileName, size, null);
+        }
+
+        public static Document embed(String previewUrl, String provider) {
+            return new Document("EMBED", previewUrl, null, null, provider);
+        }
+    }
 
     public record Resource(String title, String url, String contentType, long size) {}
 }
