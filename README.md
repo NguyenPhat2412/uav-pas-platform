@@ -1,57 +1,48 @@
-# UAV PAS Platform: nhánh `main`
+# Nhánh `testcase`: Kiểm thử
 
-Nền tảng điều phối UAV gồm website công khai và ba cổng Khách hàng, Vận hành, Quản trị. Backend dùng Spring Boot 4.1 (Java 21). Frontend là một ứng dụng Next.js trong `frontend/`.
+Nhánh này được đồng bộ từ `main` và tổng hợp bộ kiểm thử của đợt thay đổi ngày 31/10/2026.
 
-`main` là nhánh tích hợp. Các nhánh nhóm bên dưới được đồng bộ từ `main`, và mỗi nhánh có README mô tả phần việc của mình.
+## Kết quả gần nhất
 
-| Nhánh | Phạm vi |
+| Bộ | Lệnh | Kết quả |
+|---|---|---|
+| Backend | `./mvnw -B -Duav.build.directory=/tmp/uav-verify verify jacoco:report` | 1184 test, 0 lỗi. 191 test được bỏ qua là các test cần Docker |
+| Định dạng | `./mvnw spotless:check` | Sạch |
+| Frontend | `node --test tests/*.test.mjs` | 221/221 pass |
+| Kiểu | `npm run typecheck` | Sạch |
+| Kiến trúc | `npm run architecture:check` | OK |
+
+Độ phủ JaCoCo của module `weather` là 99,2% dòng và 96,8% nhánh:
+
+| Package | Dòng |
 |---|---|
-| `backend` | Controller, service, module weather, kiểm thử Java |
-| `frontend` | Cấu trúc thư mục, tầng dữ liệu, component dùng chung |
-| `database` | Flyway migration, bảng và cấu hình hệ thống |
-| `admin` | Cổng Quản trị |
-| `operations` | Cổng Vận hành và trạm mặt đất |
-| `customer` | Cổng Khách hàng |
-| `ba` | Quy tắc nghiệp vụ và luồng xử lý |
-| `testcase` | Bộ kiểm thử và kết quả |
+| controller, dto, entity, enums, specification | 100% |
+| service.impl | 99,1% |
 
-## Các hạng mục đã hoàn thành (31/10/2026)
+## Test mới
 
-1. **Chuẩn hoá controller backend.** Toàn bộ đường dẫn REST lấy từ `config/routes/ApiRoutes.java`. Lớp `RestEndpoint` đã bị xoá. Controller chỉ nhận request và gọi service. Ví dụ, controller cảnh báo không còn tự xử lý nghiệp vụ, và các quyền quản lý dùng `PERMISSION_MANAGE`.
-2. **Sắp xếp lại cấu trúc và tên file frontend.**
-   - Mỗi tính năng có các thư mục `features/<tên>/{api,hooks,components,types,utils}`.
-   - Context chuyển vào `providers/`. Component đặt tên theo PascalCase. Hook dùng chung nằm trong `src/hooks/`.
-3. **Chuẩn hoá tầng dữ liệu frontend.**
-   - Luồng gọi là Component → hook của feature → `*.api.ts` → `@/lib/api`.
-   - Query key có dạng `queryKeys.of(userId, feature, ...)`.
-   - Script `check-architecture.mjs` chặn UI import trực tiếp react-query hoặc api client.
-4. **Module thời tiết và an toàn bay.**
-   - Dự báo lấy từ Open-Meteo hoặc OpenWeatherMap, kèm chỉ số bão từ Kp của NOAA.
-   - Kết quả đánh giá là GO, CAUTION, NO_GO hoặc UNAVAILABLE, kèm điểm an toàn và các khung giờ bay đề xuất.
-   - API key nhà cung cấp được mã hoá bằng AES-256-GCM.
-   - Hệ thống có thể chặn cất cánh khi NO_GO và tạo cảnh báo cho admin.
+Backend, thư mục `backend/src/test/java/com/uav/platform/modules/`:
 
-Kết quả kiểm chứng:
+| File | Tầng | Nội dung chính |
+|---|---|---|
+| `weather/specification/WeatherObservationSpecificationsTest` | DAO | Lọc theo ô lưới, nhà cung cấp và thời điểm lấy dữ liệu trên H2. Dùng `@SpringBootTest` vì Spring Boot 4 tách `@DataJpaTest` ra module riêng |
+| `weather/service/WeatherCipherOperationsTest` | Service | AES-GCM mã hoá rồi giải mã đúng, IV ngẫu nhiên, phát hiện dữ liệu bị sửa |
+| `weather/service/FlightSafetyEvaluatorOperationsTest` | Service | Từng ngưỡng NO_GO/CAUTION, điểm, hệ số pin, khung giờ đề xuất |
+| `weather/service/WeatherServiceImplTest` | Service | Cache-aside, trả dữ liệu cũ khi lỗi, ngoài 24 giờ, toạ độ hoặc thời gian sai, cập nhật nhà cung cấp |
+| `weather/controller/WeatherControllerTest` | REST | 5 endpoint, mã lỗi 400 |
+| `mission/service/impl/MissionWeatherPreflightTest` | Service | Chặn khi NO_GO nếu bật cờ, chỉ ghi nhận nếu tắt, lỗi thời tiết không chặn |
+| `alerts/service/impl/AlertCenterWeatherTest` | Service | Cảnh báo `MISSION_WEATHER_HAZARD`, CAUTION không tạo cảnh báo, lỗi không ảnh hưởng cảnh báo khác |
+| `config/routes/ApiRoutesTest` | Quy ước | Thêm đường dẫn Weather |
+| `billing/service/impl/PlanStatisticsIntegrationTest` | Service | Thống kê gói |
 
-| Phần | Kết quả |
-|---|---|
-| Backend | 1184 test, 0 lỗi. 191 test được bỏ qua là các test cần Docker |
-| Module weather | Độ phủ JaCoCo 99,2% dòng, 96,8% nhánh |
-| Frontend | 221/221 test pass, typecheck sạch, kiểm tra kiến trúc OK |
+Frontend, thư mục `frontend/tests/`:
 
-## Chạy và kiểm thử
+- `weather-safety.test.mjs`: route khớp với `ApiRoutes.Weather`, không dùng `fetch`, không dùng màu xanh lá hay `rounded-full`, i18n vi/en/ja đồng bộ, áp dụng khung giờ bay, cả ba cổng đều dùng thẻ thời tiết.
+- `plan-stats.test.mjs`, `admin-files.test.mjs`.
+- `business-route-contract.test.mjs`: đối chiếu route frontend với `ApiRoutes`.
 
-```bash
-# Backend: luôn build ra thư mục riêng để không ghi đè backend/target của server đang chạy
-cd backend
-./mvnw spotless:apply
-./mvnw -B -Duav.build.directory=/tmp/uav-verify verify jacoco:report
+## Lưu ý khi chạy
 
-# Frontend
-cd frontend
-npm install
-npm run dev              # http://localhost:3100
-node --test tests/*.test.mjs && npm run typecheck && npm run architecture:check
-```
-
-Biến môi trường mẫu có trong `.env.example`. Hướng dẫn triển khai nằm ở `deploy/DEPLOY.md`, tài liệu chi tiết ở `docs/`.
+- **Thư mục build riêng:** luôn chạy Maven với `-Duav.build.directory=/tmp/...` để không ghi đè `backend/target` của server đang chạy.
+- **Tiến trình đang chạy:** không dừng các tiến trình localhost hoặc Docker để chạy test.
+- **Thời tiết thật:** cấu hình test tắt `app.weather.remote-enabled`, nên test không gọi API thời tiết thật.
