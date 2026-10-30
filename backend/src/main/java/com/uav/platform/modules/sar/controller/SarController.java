@@ -1,5 +1,6 @@
 package com.uav.platform.modules.sar.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.sar.dto.request.FlightPlanRequest;
 import com.uav.platform.modules.sar.dto.request.RescueDispatchRequest;
 import com.uav.platform.modules.sar.dto.request.SarMissionRequest;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/sar")
+@RequestMapping(ApiRoutes.Sar.BASE)
 @RequiredArgsConstructor
 public class SarController {
 

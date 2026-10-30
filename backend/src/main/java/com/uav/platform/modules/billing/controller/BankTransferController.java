@@ -1,5 +1,6 @@
 package com.uav.platform.modules.billing.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.billing.dto.request.ManualPaymentRequest;
 import com.uav.platform.modules.billing.dto.request.SubscribeRequest;
 import com.uav.platform.modules.billing.dto.response.BankTransferInstructionsResponse;
@@ -18,7 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/billing")
+@RequestMapping(ApiRoutes.Billing.BASE)
 @RequiredArgsConstructor
 public class BankTransferController {
     private final BankTransferService bankTransfer;

@@ -1,6 +1,6 @@
 package com.uav.platform.modules.user.controller;
 
-import com.uav.platform.common.constant.RestEndpoint;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.user.dto.request.BillingProfileRequest;
 import com.uav.platform.modules.user.dto.response.BillingProfileResponse;
 import com.uav.platform.modules.user.service.BillingProfileService;
@@ -16,7 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(RestEndpoint.USERS + "/profile/billing")
+@RequestMapping(ApiRoutes.Users.FULL_PROFILE_BILLING)
 @PreAuthorize("isAuthenticated()")
 @RequiredArgsConstructor
 public class BillingProfileController {

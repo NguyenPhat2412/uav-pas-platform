@@ -1,5 +1,6 @@
 package com.uav.platform.modules.billing.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.billing.dto.request.PaymentIpnRequest;
 import com.uav.platform.modules.billing.dto.response.PaymentIpnResponse;
 import com.uav.platform.modules.billing.service.BillingService;
@@ -13,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/billing/webhook")
+@RequestMapping(ApiRoutes.Webhook.BASE)
 @RequiredArgsConstructor
 public class PaymentIpnController {
 

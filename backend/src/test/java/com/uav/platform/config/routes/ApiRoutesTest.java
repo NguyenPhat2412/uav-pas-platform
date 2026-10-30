@@ -63,6 +63,13 @@ class ApiRoutesTest {
         assertEquals("/swagger-ui/**", ApiRoutes.Docs.SWAGGER_UI);
         assertEquals("/swagger-ui.html", ApiRoutes.Docs.SWAGGER_HTML);
 
+        // Weather & flight safety
+        assertEquals("/api/v1/weather", ApiRoutes.Weather.BASE);
+        assertEquals("/forecast", ApiRoutes.Weather.FORECAST);
+        assertEquals("/missions/{missionId}", ApiRoutes.Weather.BY_MISSION);
+        assertEquals("/stations", ApiRoutes.Weather.STATIONS);
+        assertEquals("/api/v1/admin/weather/provider", ApiRoutes.Weather.ADMIN_PROVIDER);
+
         // Training
         assertEquals("/api/v1/training", ApiRoutes.Training.BASE);
         assertEquals("/{codeOrSlug}", ApiRoutes.Training.BY_CODE);

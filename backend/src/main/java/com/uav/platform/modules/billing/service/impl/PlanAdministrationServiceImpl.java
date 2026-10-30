@@ -22,11 +22,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PlanAdministrationServiceImpl implements PlanAdministrationService {
-    /** Assigned to every new customer quota (see QuotaServiceImpl), so it must stay active. */
-    static final String DEFAULT_PLAN = "BASIC";
-
     static final String PLAN_EXISTS = "Service plan code already exists";
-    static final String DEFAULT_PLAN_REQUIRED = "The default BASIC plan cannot be deactivated";
 
     private final ServicePlanRepository plans;
     private final BillingMapper mapper;
@@ -94,8 +90,6 @@ public class PlanAdministrationServiceImpl implements PlanAdministrationService 
     @Transactional
     public ServicePlanResponse setActive(Long id, boolean active, String actor) {
         ServicePlan plan = find(id);
-        if (!active && DEFAULT_PLAN.equals(plan.getCode()))
-            throw SystemException.badRequest(DEFAULT_PLAN_REQUIRED);
         plan.setActive(active);
         ServicePlan saved = plans.save(plan);
         audit.record(

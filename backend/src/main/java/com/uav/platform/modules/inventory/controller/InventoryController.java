@@ -2,6 +2,7 @@ package com.uav.platform.modules.inventory.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.inventory.dto.request.*;
 import com.uav.platform.modules.inventory.dto.response.*;
 import com.uav.platform.modules.inventory.service.InventoryService;
@@ -16,7 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/inventory/equipment")
+@RequestMapping(ApiRoutes.Inventory.EQUIPMENT)
 @RequiredArgsConstructor
 public class InventoryController {
     private final InventoryService service;

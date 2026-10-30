@@ -1,5 +1,6 @@
 package com.uav.platform.modules.settings.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.settings.dto.request.UpdateConfigurationRequest;
 import com.uav.platform.modules.settings.dto.response.SystemConfigurationHistoryResponse;
 import com.uav.platform.modules.settings.dto.response.SystemConfigurationResponse;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/settings")
+@RequestMapping(ApiRoutes.Settings.BASE)
 @RequiredArgsConstructor
 public class SystemConfigController {
 

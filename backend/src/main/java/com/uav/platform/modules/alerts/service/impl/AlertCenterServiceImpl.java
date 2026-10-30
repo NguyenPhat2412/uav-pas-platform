@@ -10,10 +10,14 @@ import com.uav.platform.modules.dashboard.service.SystemHealthService;
 import com.uav.platform.modules.devicekey.entity.DeviceApiKey;
 import com.uav.platform.modules.devicekey.repository.DeviceApiKeyRepository;
 import com.uav.platform.modules.settings.service.SystemConfigService;
+import com.uav.platform.modules.weather.dto.response.WeatherAssessmentResponse;
+import com.uav.platform.modules.weather.enums.FlightClearanceLevel;
+import com.uav.platform.modules.weather.service.WeatherService;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -53,16 +57,33 @@ public class AlertCenterServiceImpl implements AlertCenterService {
     private final SystemConfigService settings;
     private final DeviceApiKeyRepository deviceKeys;
     private final ObjectProvider<SystemHealthService> health;
+    private final ObjectProvider<WeatherService> weather;
+
+    /** Missions starting within this window are checked against the forecast. */
+    static final Duration WEATHER_LOOKAHEAD = Duration.ofHours(6);
+
+    static final int WEATHER_MISSION_LIMIT = 5;
 
     public AlertCenterServiceImpl(
             JdbcTemplate db,
             SystemConfigService settings,
             DeviceApiKeyRepository deviceKeys,
             ObjectProvider<SystemHealthService> health) {
+        this(db, settings, deviceKeys, health, null);
+    }
+
+    @Autowired
+    public AlertCenterServiceImpl(
+            JdbcTemplate db,
+            SystemConfigService settings,
+            DeviceApiKeyRepository deviceKeys,
+            ObjectProvider<SystemHealthService> health,
+            ObjectProvider<WeatherService> weather) {
         this.db = db;
         this.settings = settings;
         this.deviceKeys = deviceKeys;
         this.health = health;
+        this.weather = weather;
     }
 
     /** Not transactional on purpose: a failing source query must not poison the others. */
@@ -114,6 +135,12 @@ public class AlertCenterServiceImpl implements AlertCenterService {
     }
 
     private void fleet(List<AdminAlertResponse> items, LocalDateTime now) {
+        try {
+            weatherHazards(items, now);
+        } catch (RuntimeException ex) {
+            // Weather is advisory here; battery and telemetry alerts must still be reported.
+            log.warn("Mission weather check unavailable: {}", ex.getClass().getSimpleName());
+        }
         int threshold = batteryThreshold();
         Map<Long, Object[]> latest = new HashMap<>();
         db.query(
@@ -181,6 +208,48 @@ public class AlertCenterServiceImpl implements AlertCenterService {
                                         recordedAt));
                     }
                 });
+    }
+
+    /** Confirmed missions starting in the next 6 hours whose site is forecast NO_GO. */
+    private void weatherHazards(List<AdminAlertResponse> items, LocalDateTime now) {
+        WeatherService service = weather == null ? null : weather.getIfAvailable();
+        if (service == null) return;
+        db.query(
+                "SELECT m.id, m.code, m.latitude, m.longitude, m.start_time, s.max_wind_ms"
+                        + " FROM missions m LEFT JOIN uav_services s ON s.id = m.service_id"
+                        + " WHERE m.status IN ('CONFIRMED', 'RESOURCE_RESERVED', 'READY')"
+                        + " AND m.latitude IS NOT NULL AND m.longitude IS NOT NULL"
+                        + " AND m.start_time >= ? AND m.start_time <= ?"
+                        + " ORDER BY m.start_time LIMIT "
+                        + WEATHER_MISSION_LIMIT,
+                rs -> {
+                    long id = rs.getLong("id");
+                    LocalDateTime start = rs.getTimestamp("start_time").toLocalDateTime();
+                    double serviceWind = rs.getDouble("max_wind_ms");
+                    Double serviceMaxWind = rs.wasNull() ? null : serviceWind;
+                    WeatherAssessmentResponse assessment =
+                            service.assess(
+                                    rs.getDouble("latitude"),
+                                    rs.getDouble("longitude"),
+                                    start,
+                                    serviceMaxWind);
+                    if (assessment.clearance() != FlightClearanceLevel.NO_GO) return;
+                    Map<String, Object> params = new LinkedHashMap<>();
+                    params.put("code", rs.getString("code"));
+                    params.put("reasons", String.join(", ", assessment.reasonCodes()));
+                    params.put("wind", assessment.windSpeed80mMs());
+                    items.add(
+                            alert(
+                                    "mission-weather-" + id,
+                                    "MISSION_WEATHER_HAZARD",
+                                    AlertSeverity.WARNING,
+                                    AlertSource.FLEET,
+                                    params,
+                                    "/operations/missions/" + id,
+                                    start));
+                },
+                Timestamp.valueOf(now),
+                Timestamp.valueOf(now.plus(WEATHER_LOOKAHEAD)));
     }
 
     private int batteryThreshold() {

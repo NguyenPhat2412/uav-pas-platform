@@ -1,5 +1,6 @@
 package com.uav.platform.modules.settings.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.settings.dto.response.PublicSiteInfoResponse;
 import com.uav.platform.modules.settings.service.SystemConfigService;
 
@@ -15,7 +16,7 @@ import java.time.Duration;
 
 /** Unauthenticated: contact details for the marketing site and portals (public settings only). */
 @RestController
-@RequestMapping("/api/v1/public")
+@RequestMapping(ApiRoutes.Public.BASE)
 @RequiredArgsConstructor
 public class PublicSiteInfoController {
     private final SystemConfigService configService;

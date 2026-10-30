@@ -1,6 +1,6 @@
 package com.uav.platform.modules.user.controller;
 
-import com.uav.platform.common.constant.RestEndpoint;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.user.dto.request.PasswordChangeRequest;
 import com.uav.platform.modules.user.service.PasswordChangeService;
 
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(RestEndpoint.USERS + "/profile/password")
+@RequestMapping(ApiRoutes.Users.FULL_PROFILE_PASSWORD)
 @PreAuthorize("isAuthenticated()")
 @Tag(name = "User profile", description = "Self-service account settings")
 @RequiredArgsConstructor

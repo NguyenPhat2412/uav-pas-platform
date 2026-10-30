@@ -2,6 +2,7 @@ package com.uav.platform.modules.billing.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.billing.dto.request.CreateInvoiceRequest;
 import com.uav.platform.modules.billing.dto.request.PayInvoiceRequest;
 import com.uav.platform.modules.billing.dto.request.UpdateQuotaRequest;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/billing")
+@RequestMapping(ApiRoutes.Billing.BASE)
 @RequiredArgsConstructor
 public class BillingController {
 

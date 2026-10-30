@@ -3,6 +3,7 @@ package com.uav.platform.modules.notification.controller;
 import com.uav.platform.common.dto.response.MessageResponse;
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.notification.dto.request.CreateNotificationRequest;
 import com.uav.platform.modules.notification.dto.response.NotificationResponse;
 import com.uav.platform.modules.notification.dto.response.UnreadCountResponse;
@@ -18,7 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/notifications")
+@RequestMapping(ApiRoutes.Notifications.BASE)
 @RequiredArgsConstructor
 public class NotificationController {
 

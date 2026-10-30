@@ -1,6 +1,7 @@
 package com.uav.platform.modules.assistant.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.assistant.dto.response.AssistantConversationDetailResponse;
 import com.uav.platform.modules.assistant.dto.response.AssistantConversationResponse;
 import com.uav.platform.modules.assistant.service.AssistantConversationService;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 /** Administrators review assistant conversations held in every portal. */
 @RestController
-@RequestMapping("/api/v1/admin/assistant/conversations")
+@RequestMapping(ApiRoutes.Admin.ASSISTANT_CONVERSATIONS)
 @RequiredArgsConstructor
 public class AssistantConversationController {
     private final AssistantConversationService service;

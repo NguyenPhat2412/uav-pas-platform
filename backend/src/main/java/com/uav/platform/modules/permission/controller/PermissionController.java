@@ -1,5 +1,6 @@
 package com.uav.platform.modules.permission.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.permission.dto.response.PermissionCodesResponse;
 import com.uav.platform.modules.permission.dto.response.PermissionResponse;
 import com.uav.platform.modules.permission.dto.response.UserPermissionResponse;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/permissions")
+@RequestMapping(ApiRoutes.Permissions.BASE)
 @RequiredArgsConstructor
 public class PermissionController {
     private final PermissionService permissionService;

@@ -1,5 +1,6 @@
 package com.uav.platform.modules.infrastructure.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.infrastructure.dto.response.BackupStatusResponse;
 import com.uav.platform.modules.infrastructure.dto.response.DatabaseStatusResponse;
 import com.uav.platform.modules.infrastructure.dto.response.DeploymentInfoResponse;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  * SSH-only (deploy/DEPLOY.md). The single write is a test email to the caller's own address.
  */
 @RestController
-@RequestMapping("/api/v1/admin/infrastructure")
+@RequestMapping(ApiRoutes.Admin.INFRASTRUCTURE)
 @RequiredArgsConstructor
 public class InfrastructureController {
     private final InfrastructureService infrastructure;

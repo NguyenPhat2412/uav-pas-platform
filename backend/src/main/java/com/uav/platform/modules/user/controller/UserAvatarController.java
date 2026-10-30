@@ -1,6 +1,6 @@
 package com.uav.platform.modules.user.controller;
 
-import com.uav.platform.common.constant.RestEndpoint;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.media.dto.response.SignedMediaUrlResponse;
 import com.uav.platform.modules.user.dto.request.AvatarUpdateRequest;
 import com.uav.platform.modules.user.dto.request.AvatarUploadRequest;
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Every signed-in user manages their own avatar; it is not tied to the media management permissions. */
 @RestController
-@RequestMapping(RestEndpoint.USERS)
+@RequestMapping(ApiRoutes.Users.BASE)
 @PreAuthorize("isAuthenticated()")
 @RequiredArgsConstructor
 public class UserAvatarController {

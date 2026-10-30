@@ -2,6 +2,7 @@ package com.uav.platform.modules.billing.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.billing.dto.response.PaymentTransactionAdminResponse;
 import com.uav.platform.modules.billing.service.BillingAdminService;
 import com.uav.platform.modules.webhook.dto.response.FinancialOutboxEventResponse;
@@ -19,7 +20,7 @@ import java.time.LocalDate;
 
 /** Operator views over payment/IPN records and the financial event outbox. */
 @RestController
-@RequestMapping("/api/v1/billing/admin")
+@RequestMapping(ApiRoutes.Billing.ADMIN)
 @RequiredArgsConstructor
 public class BillingAdminController {
     private final BillingAdminService billingAdmin;

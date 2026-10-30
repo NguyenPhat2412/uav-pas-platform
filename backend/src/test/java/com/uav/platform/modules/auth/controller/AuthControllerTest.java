@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uav.platform.common.constant.CoreConstants;
-import com.uav.platform.common.constant.RestEndpoint;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.auth.dto.request.GoogleLoginRequest;
@@ -75,7 +75,7 @@ class AuthControllerTest {
         when(authService.register(any(RegisterRequest.class))).thenReturn(response);
 
         mockMvc.perform(
-                        post(RestEndpoint.AUTH + RestEndpoint.REGISTER)
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.REGISTER)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -91,7 +91,7 @@ class AuthControllerTest {
                 new RegisterRequest("johndoe", "invalid-email", "P@ssword123", "0987654321");
 
         mockMvc.perform(
-                        post(RestEndpoint.AUTH + RestEndpoint.REGISTER)
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.REGISTER)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -110,7 +110,7 @@ class AuthControllerTest {
                                         "REGISTER_PASSWORD_MISMATCH")
                                 .at("confirmPassword"));
         mockMvc.perform(
-                        post(RestEndpoint.AUTH + RestEndpoint.REGISTER)
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.REGISTER)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         objectMapper.writeValueAsString(
@@ -135,7 +135,7 @@ class AuthControllerTest {
                 .thenThrow(SystemException.conflict(CoreConstants.EMAIL_ALREADY_EXISTS));
 
         mockMvc.perform(
-                        post(RestEndpoint.AUTH + RestEndpoint.REGISTER)
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.REGISTER)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
@@ -161,7 +161,7 @@ class AuthControllerTest {
         when(authService.login(any(LoginRequest.class))).thenReturn(response);
 
         mockMvc.perform(
-                        post(RestEndpoint.AUTH + RestEndpoint.LOGIN)
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.LOGIN)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -178,7 +178,7 @@ class AuthControllerTest {
                 .thenThrow(SystemException.unauthorized(CoreConstants.INVALID_CREDENTIALS));
 
         mockMvc.perform(
-                        post(RestEndpoint.AUTH + RestEndpoint.LOGIN)
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.LOGIN)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
@@ -191,7 +191,7 @@ class AuthControllerTest {
         LoginRequest request = new LoginRequest("johndoe", "");
 
         mockMvc.perform(
-                        post(RestEndpoint.AUTH + RestEndpoint.LOGIN)
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.LOGIN)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -215,7 +215,7 @@ class AuthControllerTest {
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken("johndoe", null, Collections.emptyList());
 
-        mockMvc.perform(get(RestEndpoint.AUTH + RestEndpoint.ME).principal(authentication))
+        mockMvc.perform(get(ApiRoutes.Auth.BASE + ApiRoutes.Auth.ME).principal(authentication))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.username").value("johndoe"))
@@ -224,7 +224,7 @@ class AuthControllerTest {
 
     @Test
     void getCurrentUser_Unauthenticated_ReturnsUnauthorized() throws Exception {
-        mockMvc.perform(get(RestEndpoint.AUTH + RestEndpoint.ME))
+        mockMvc.perform(get(ApiRoutes.Auth.BASE + ApiRoutes.Auth.ME))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.status").value(401))
                 .andExpect(jsonPath("$.message").value("Authentication required"));
@@ -247,7 +247,7 @@ class AuthControllerTest {
         when(authService.refreshToken(any(RefreshTokenRequest.class))).thenReturn(authResponse);
 
         mockMvc.perform(
-                        post(RestEndpoint.AUTH + RestEndpoint.REFRESH)
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.REFRESH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -271,7 +271,7 @@ class AuthControllerTest {
                 .thenReturn(AuthResponse.of("access-token", "refresh-token", user));
 
         mockMvc.perform(
-                        post(RestEndpoint.AUTH + RestEndpoint.GOOGLE)
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.GOOGLE)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{\"credential\":\"id-token\"}"))
                 .andExpect(status().isOk())
@@ -288,7 +288,7 @@ class AuthControllerTest {
                                 GoogleIdTokenService.DISABLED_CODE));
 
         mockMvc.perform(
-                        post(RestEndpoint.AUTH + RestEndpoint.GOOGLE)
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.GOOGLE)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{\"credential\":\"id-token\"}"))
                 .andExpect(status().isServiceUnavailable())
@@ -301,7 +301,7 @@ class AuthControllerTest {
         LogoutRequest request = new LogoutRequest("some-refresh-token");
 
         mockMvc.perform(
-                        post(RestEndpoint.AUTH + RestEndpoint.LOGOUT)
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.LOGOUT)
                                 .header("Authorization", "Bearer valid-access-token")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))

@@ -1,5 +1,6 @@
 package com.uav.platform.modules.webhook.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.webhook.dto.response.WebhookDeliveryLogResponse;
 import com.uav.platform.modules.webhook.dto.response.WebhookSecretRotationResponse;
 import com.uav.platform.modules.webhook.service.WebhookAdminService;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 /** Operator recovery actions for webhook deliveries and signing secrets. */
 @RestController
-@RequestMapping("/api/v1/webhooks")
+@RequestMapping(ApiRoutes.Webhooks.BASE)
 @RequiredArgsConstructor
 public class WebhookAdminController {
     private final WebhookAdminService admin;

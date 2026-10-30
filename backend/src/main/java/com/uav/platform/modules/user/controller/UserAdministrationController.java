@@ -1,6 +1,6 @@
 package com.uav.platform.modules.user.controller;
 
-import com.uav.platform.common.constant.RestEndpoint;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.user.dto.request.AdminCreateUserRequest;
 import com.uav.platform.modules.user.dto.request.BulkLockRequest;
 import com.uav.platform.modules.user.dto.request.PasswordResetRequest;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.charset.StandardCharsets;
 
 @RestController
-@RequestMapping(RestEndpoint.USERS)
+@RequestMapping(ApiRoutes.Users.BASE)
 @Tag(
         name = "User administration",
         description = "Provisioning, password reset, bulk locking and export")
@@ -46,7 +46,7 @@ public class UserAdministrationController {
     }
 
     @Operation(summary = "Set a new password and revoke the user's sessions")
-    @PostMapping(RestEndpoint.USER_ID + "/reset-password")
+    @PostMapping(ApiRoutes.Users.USER_ID + "/reset-password")
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<Void> resetPassword(
             @PathVariable Long id,

@@ -63,6 +63,9 @@ public final class ApiRoutes {
         public static final String PROFILE = "/profile";
 
         public static final String FULL_USERS = BASE;
+        public static final String FULL_PROFILE = BASE + PROFILE;
+        public static final String FULL_PROFILE_BILLING = FULL_PROFILE + "/billing";
+        public static final String FULL_PROFILE_PASSWORD = FULL_PROFILE + "/password";
         public static final String FULL_USER_BY_ID = BASE + USER_ID;
     }
 
@@ -122,6 +125,7 @@ public final class ApiRoutes {
         private Inventory() {}
 
         public static final String BASE = API_V1_PREFIX + "/inventory";
+        public static final String EQUIPMENT = BASE + "/equipment";
     }
 
     public static final class Media {
@@ -225,6 +229,9 @@ public final class ApiRoutes {
         public static final String INVOICES = "/invoices";
         public static final String INVOICE_BY_ID = "/invoices/{id}";
         public static final String PAY_INVOICE = "/invoices/{id}/pay";
+
+        public static final String ADMIN = BASE + "/admin";
+        public static final String ADMIN_PLANS = ADMIN + "/plans";
     }
 
     public static final class Webhook {
@@ -271,6 +278,50 @@ public final class ApiRoutes {
         public static final String BASE = API_V1_PREFIX + "/reports";
         public static final String OPERATIONS_SUMMARY = "/operations-summary";
         public static final String EXPORT_CSV = "/export-csv";
+    }
+
+    public static final class Maintenance {
+        private Maintenance() {}
+
+        public static final String BASE = API_V1_PREFIX + "/maintenance";
+    }
+
+    /**
+     * Nhóm route công khai không cần đăng nhập (thông tin website)
+     */
+    public static final class Public {
+        private Public() {}
+
+        public static final String BASE = API_V1_PREFIX + "/public";
+    }
+
+    /**
+     * Nhóm route chỉ dành cho quản trị viên (/api/v1/admin/**)
+     */
+    public static final class Admin {
+        private Admin() {}
+
+        public static final String BASE = API_V1_PREFIX + "/admin";
+        public static final String ALERTS = BASE + "/alerts";
+        public static final String SECURITY = BASE + "/security";
+        public static final String DEVICE_KEYS = BASE + "/device-keys";
+        public static final String FILES = BASE + "/files";
+        public static final String INFRASTRUCTURE = BASE + "/infrastructure";
+        public static final String ASSISTANT_CONVERSATIONS = BASE + "/assistant/conversations";
+        public static final String USER_BILLING_PROFILE = BASE + "/users/{id}/billing-profile";
+    }
+
+    /**
+     * Nhóm route khí tượng & an toàn cất cánh UAV (Weather & Flight-Safety)
+     */
+    public static final class Weather {
+        public static final String BASE = API_V1_PREFIX + "/weather";
+        public static final String FORECAST = "/forecast";
+        public static final String BY_MISSION = "/missions/{missionId}";
+        public static final String STATIONS = "/stations";
+        public static final String ADMIN_PROVIDER = API_V1_PREFIX + "/admin/weather/provider";
+
+        private Weather() {}
     }
 
     public static final class Dashboard {

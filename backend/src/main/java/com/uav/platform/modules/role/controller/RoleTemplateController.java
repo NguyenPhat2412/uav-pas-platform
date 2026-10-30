@@ -1,5 +1,6 @@
 package com.uav.platform.modules.role.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.permission.enums.PermissionCode;
 import com.uav.platform.modules.role.dto.response.RoleTemplateResponse;
 import com.uav.platform.modules.role.service.RoleTemplateService;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/role-templates")
+@RequestMapping(ApiRoutes.RoleTemplates.BASE)
 @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
 @RequiredArgsConstructor
 public class RoleTemplateController {

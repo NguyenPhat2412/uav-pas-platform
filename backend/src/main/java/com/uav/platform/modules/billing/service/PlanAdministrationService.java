@@ -15,6 +15,10 @@ public interface PlanAdministrationService {
 
     ServicePlanResponse update(Long id, ServicePlanUpdateRequest request, String actor);
 
-    /** The default plan new customers receive cannot be deactivated. */
+    /**
+     * Shows or hides a plan for new subscriptions. Any plan may be hidden, BASIC included: the
+     * starting plan of new customers and the fallback of lapsed paid plans is looked up by code,
+     * so it keeps working while hidden.
+     */
     ServicePlanResponse setActive(Long id, boolean active, String actor);
 }

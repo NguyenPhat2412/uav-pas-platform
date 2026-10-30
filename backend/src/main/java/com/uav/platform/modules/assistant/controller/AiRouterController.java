@@ -1,5 +1,6 @@
 package com.uav.platform.modules.assistant.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.assistant.dto.request.AiRouterSettingsRequest;
 import com.uav.platform.modules.assistant.dto.request.AssistantChatRequest;
 import com.uav.platform.modules.assistant.dto.response.AiRouterSettingsResponse;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 /** 9router gateway management (admins) and the admin assistant chat that runs through it. */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(ApiRoutes.API_V1_PREFIX)
 @RequiredArgsConstructor
 public class AiRouterController {
     private final AiRouterService service;

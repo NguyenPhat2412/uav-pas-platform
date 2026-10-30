@@ -2,6 +2,7 @@ package com.uav.platform.modules.uav.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.uav.dto.request.UavRequest;
 import com.uav.platform.modules.uav.dto.response.UavResponse;
 import com.uav.platform.modules.uav.dto.response.UavStatusHistoryResponse;
@@ -18,7 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/uavs")
+@RequestMapping(ApiRoutes.Uavs.BASE)
 @RequiredArgsConstructor
 public class UavController {
     private final UavService service;

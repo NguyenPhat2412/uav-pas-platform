@@ -2,6 +2,7 @@ package com.uav.platform.modules.media.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.media.dto.request.*;
 import com.uav.platform.modules.media.dto.response.*;
 import com.uav.platform.modules.media.service.MediaService;
@@ -16,7 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/media")
+@RequestMapping(ApiRoutes.Media.BASE)
 @RequiredArgsConstructor
 public class MediaController {
     private final MediaService service;

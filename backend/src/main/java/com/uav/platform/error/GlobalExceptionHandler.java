@@ -1,8 +1,8 @@
 package com.uav.platform.error;
 
 import com.uav.platform.common.constant.CoreConstants;
-import com.uav.platform.common.constant.RestEndpoint;
 import com.uav.platform.common.dto.response.ErrorResponse;
+import com.uav.platform.config.routes.ApiRoutes;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMalformedJson(
             HttpMessageNotReadableException ex, HttpServletRequest request) {
         log.warn("Malformed JSON request on {}: {}", request.getRequestURI(), ex.getMessage());
-        if ((RestEndpoint.USERS + "/profile").equals(request.getRequestURI())) {
+        if (ApiRoutes.Users.FULL_PROFILE.equals(request.getRequestURI())) {
             return respond(
                     HttpStatus.BAD_REQUEST,
                     "INVALID_PROFILE_REQUEST",

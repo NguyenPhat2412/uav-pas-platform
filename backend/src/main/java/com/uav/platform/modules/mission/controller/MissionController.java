@@ -2,6 +2,7 @@ package com.uav.platform.modules.mission.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.media.dto.request.MediaUploadRequest;
 import com.uav.platform.modules.media.dto.response.MediaAssetResponse;
 import com.uav.platform.modules.media.dto.response.SignedMediaUrlResponse;
@@ -28,7 +29,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/missions")
+@RequestMapping(ApiRoutes.Missions.BASE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MissionController {
     private final MissionService service;

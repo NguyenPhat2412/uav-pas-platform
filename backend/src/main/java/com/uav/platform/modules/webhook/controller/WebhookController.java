@@ -1,6 +1,7 @@
 package com.uav.platform.modules.webhook.controller;
 
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.webhook.dto.request.WebhookSubscriptionRequest;
 import com.uav.platform.modules.webhook.dto.request.WebhookTestDispatchRequest;
 import com.uav.platform.modules.webhook.dto.response.WebhookDeliveryLogResponse;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/webhooks")
+@RequestMapping(ApiRoutes.Webhooks.BASE)
 @RequiredArgsConstructor
 public class WebhookController {
 

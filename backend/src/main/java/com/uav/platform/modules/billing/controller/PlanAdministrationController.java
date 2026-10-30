@@ -1,9 +1,12 @@
 package com.uav.platform.modules.billing.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.billing.dto.request.ServicePlanRequest;
 import com.uav.platform.modules.billing.dto.request.ServicePlanUpdateRequest;
+import com.uav.platform.modules.billing.dto.response.PlanStatsResponse;
 import com.uav.platform.modules.billing.dto.response.ServicePlanResponse;
 import com.uav.platform.modules.billing.service.PlanAdministrationService;
+import com.uav.platform.modules.billing.service.PlanStatisticsService;
 
 import jakarta.validation.Valid;
 
@@ -18,15 +21,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/billing/admin/plans")
+@RequestMapping(ApiRoutes.Billing.ADMIN_PLANS)
 @RequiredArgsConstructor
 public class PlanAdministrationController {
     private final PlanAdministrationService plans;
+    private final PlanStatisticsService statistics;
 
     @GetMapping
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<List<ServicePlanResponse>> listAll() {
         return ResponseEntity.ok(plans.listAll());
+    }
+
+    /** Subscribers, usage and revenue per plan; months (1..24, default 6) sizes the monthly series. */
+    @GetMapping("/stats")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<PlanStatsResponse> stats(@RequestParam(defaultValue = "6") int months) {
+        return ResponseEntity.ok(statistics.stats(months));
     }
 
     @PostMapping

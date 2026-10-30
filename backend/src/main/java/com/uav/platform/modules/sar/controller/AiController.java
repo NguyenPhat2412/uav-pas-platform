@@ -1,5 +1,6 @@
 package com.uav.platform.modules.sar.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.sar.dto.request.AiTaskDispatchRequest;
 import com.uav.platform.modules.sar.dto.request.AiTaskResultRequest;
 import com.uav.platform.modules.sar.dto.request.VerifyDetectionRequest;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/ai")
+@RequestMapping(ApiRoutes.Ai.BASE)
 @RequiredArgsConstructor
 public class AiController {
 

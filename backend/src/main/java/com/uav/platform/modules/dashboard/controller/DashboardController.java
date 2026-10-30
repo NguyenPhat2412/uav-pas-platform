@@ -1,5 +1,6 @@
 package com.uav.platform.modules.dashboard.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.dashboard.dto.response.AdminAnalyticsResponse;
 import com.uav.platform.modules.dashboard.dto.response.CustomerAnalyticsResponse;
 import com.uav.platform.modules.dashboard.dto.response.DashboardResponse;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/dashboard")
+@RequestMapping(ApiRoutes.Dashboard.BASE)
 @RequiredArgsConstructor
 public class DashboardController {
     private final DashboardService service;

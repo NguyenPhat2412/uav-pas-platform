@@ -1,6 +1,7 @@
 package com.uav.platform.modules.security.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.security.dto.request.SecuritySessionQueryRequest;
 import com.uav.platform.modules.security.dto.request.TwoFactorResetRequest;
 import com.uav.platform.modules.security.dto.response.SecretsOverviewResponse;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 /** Admin security console: sessions, 2FA reset, auth policy and secret health (read-only). */
 @RestController
-@RequestMapping("/api/v1/admin/security")
+@RequestMapping(ApiRoutes.Admin.SECURITY)
 @RequiredArgsConstructor
 public class SecurityAdminController {
     private final SecuritySessionService sessions;

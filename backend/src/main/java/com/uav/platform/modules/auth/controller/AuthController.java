@@ -1,8 +1,8 @@
 package com.uav.platform.modules.auth.controller;
 
 import com.uav.platform.common.constant.CoreConstants;
-import com.uav.platform.common.constant.RestEndpoint;
 import com.uav.platform.common.dto.response.MessageResponse;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.auth.dto.request.*;
 import com.uav.platform.modules.auth.dto.response.*;
 import com.uav.platform.modules.auth.enums.AuthRateLimitAction;
@@ -26,7 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(RestEndpoint.AUTH)
+@RequestMapping(ApiRoutes.Auth.BASE)
 @Tag(name = CoreConstants.AUTH_TAG_NAME, description = CoreConstants.AUTH_TAG_DESCRIPTION)
 public class AuthController {
 
@@ -65,7 +65,7 @@ public class AuthController {
     }
 
     @Operation(summary = CoreConstants.AUTH_OP_REGISTER_SUMMARY)
-    @PostMapping(RestEndpoint.REGISTER)
+    @PostMapping(ApiRoutes.Auth.REGISTER)
     public ResponseEntity<UserResponse> register(
             HttpServletRequest httpRequest, @Valid @RequestBody RegisterRequest request) {
         limitClient(AuthRateLimitAction.OTP_ISSUE, httpRequest);
@@ -73,7 +73,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Register account and send 6-digit Email OTP verification code")
-    @PostMapping(RestEndpoint.REGISTER_OTP)
+    @PostMapping(ApiRoutes.Auth.REGISTER_OTP)
     public ResponseEntity<OtpChallengeResponse> registerWithOtp(
             HttpServletRequest httpRequest, @Valid @RequestBody RegisterRequest request) {
         limitClient(AuthRateLimitAction.OTP_ISSUE, httpRequest);
@@ -82,7 +82,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Verify 6-digit Email OTP and issue JWT session")
-    @PostMapping(RestEndpoint.VERIFY_EMAIL)
+    @PostMapping(ApiRoutes.Auth.VERIFY_EMAIL)
     public ResponseEntity<AuthResponse> verifyEmail(
             HttpServletRequest httpRequest, @Valid @RequestBody VerifyOtpRequest request) {
         limitClient(AuthRateLimitAction.OTP_VERIFY, httpRequest);
@@ -91,7 +91,7 @@ public class AuthController {
     }
 
     @Operation(summary = CoreConstants.AUTH_OP_LOGIN_SUMMARY)
-    @PostMapping(RestEndpoint.LOGIN)
+    @PostMapping(ApiRoutes.Auth.LOGIN)
     public ResponseEntity<AuthResponse> login(
             HttpServletRequest httpRequest, @Valid @RequestBody LoginRequest request) {
         limitClient(AuthRateLimitAction.LOGIN, httpRequest);
@@ -99,7 +99,7 @@ public class AuthController {
     }
 
     @Operation(summary = CoreConstants.AUTH_OP_GOOGLE_SUMMARY)
-    @PostMapping(RestEndpoint.GOOGLE)
+    @PostMapping(ApiRoutes.Auth.GOOGLE)
     public ResponseEntity<AuthResponse> loginWithGoogle(
             HttpServletRequest httpRequest,
             @RequestBody(required = false) GoogleLoginRequest request) {
@@ -109,7 +109,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Verify 2FA code (Email OTP or TOTP Authenticator) and issue JWT session")
-    @PostMapping(RestEndpoint.VERIFY_2FA)
+    @PostMapping(ApiRoutes.Auth.VERIFY_2FA)
     public ResponseEntity<AuthResponse> verify2fa(
             HttpServletRequest httpRequest, @Valid @RequestBody VerifyOtpRequest request) {
         limitClient(AuthRateLimitAction.OTP_VERIFY, httpRequest);
@@ -118,7 +118,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Resend 6-digit Email OTP for active challenge")
-    @PostMapping(RestEndpoint.RESEND_OTP)
+    @PostMapping(ApiRoutes.Auth.RESEND_OTP)
     public ResponseEntity<OtpChallengeResponse> resendOtp(
             HttpServletRequest httpRequest, @RequestBody ResendOtpRequest request) {
         limitClient(AuthRateLimitAction.OTP_ISSUE, httpRequest);
@@ -126,7 +126,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Request 6-digit Email OTP for password reset")
-    @PostMapping(RestEndpoint.FORGOT_PASSWORD)
+    @PostMapping(ApiRoutes.Auth.FORGOT_PASSWORD)
     public ResponseEntity<OtpChallengeResponse> forgotPassword(
             HttpServletRequest httpRequest, @Valid @RequestBody ForgotPasswordRequest request) {
         limitClient(AuthRateLimitAction.OTP_ISSUE, httpRequest);
@@ -134,7 +134,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Reset password using 6-digit Email OTP")
-    @PostMapping(RestEndpoint.RESET_PASSWORD)
+    @PostMapping(ApiRoutes.Auth.RESET_PASSWORD)
     public ResponseEntity<MessageResponse> resetPassword(
             HttpServletRequest httpRequest, @Valid @RequestBody ResetPasswordRequest request) {
         limitClient(AuthRateLimitAction.OTP_VERIFY, httpRequest);
@@ -142,7 +142,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Get current user 2FA configuration status")
-    @GetMapping(RestEndpoint.TWO_FACTOR_STATUS)
+    @GetMapping(ApiRoutes.Auth.TWO_FACTOR_STATUS)
     public ResponseEntity<TwoFactorStatusResponse> get2faStatus(Authentication authentication) {
         return ResponseEntity.ok(
                 authOtpService.get2faStatus(
@@ -150,7 +150,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Initialize 2FA setup (EMAIL OTP or TOTP QR secret)")
-    @PostMapping(RestEndpoint.TWO_FACTOR_SETUP)
+    @PostMapping(ApiRoutes.Auth.TWO_FACTOR_SETUP)
     public ResponseEntity<TwoFactorSetupResponse> setup2fa(
             Authentication authentication,
             @RequestBody(required = false) TwoFactorSetupRequest request) {
@@ -160,7 +160,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Verify code and enable 2FA on current account")
-    @PostMapping(RestEndpoint.TWO_FACTOR_ENABLE)
+    @PostMapping(ApiRoutes.Auth.TWO_FACTOR_ENABLE)
     public ResponseEntity<TwoFactorStatusResponse> enable2fa(
             Authentication authentication, @Valid @RequestBody TwoFactorVerifyRequest request) {
         return ResponseEntity.ok(
@@ -169,7 +169,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Disable 2FA on current account")
-    @PostMapping(RestEndpoint.TWO_FACTOR_DISABLE)
+    @PostMapping(ApiRoutes.Auth.TWO_FACTOR_DISABLE)
     public ResponseEntity<TwoFactorStatusResponse> disable2fa(
             Authentication authentication,
             @RequestBody(required = false) TwoFactorDisableRequest request) {
@@ -179,7 +179,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Refresh access token using refresh token")
-    @PostMapping(RestEndpoint.REFRESH)
+    @PostMapping(ApiRoutes.Auth.REFRESH)
     public ResponseEntity<AuthResponse> refreshToken(
             HttpServletRequest httpRequest,
             @RequestBody(required = false) RefreshTokenRequest request) {
@@ -191,7 +191,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Logout user and invalidate tokens")
-    @PostMapping(RestEndpoint.LOGOUT)
+    @PostMapping(ApiRoutes.Auth.LOGOUT)
     public ResponseEntity<MessageResponse> logout(
             HttpServletRequest request,
             @RequestBody(required = false) LogoutRequest logoutRequest) {
@@ -202,7 +202,7 @@ public class AuthController {
     }
 
     @Operation(summary = CoreConstants.AUTH_OP_ME_SUMMARY)
-    @GetMapping(RestEndpoint.ME)
+    @GetMapping(ApiRoutes.Auth.ME)
     public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
         return ResponseEntity.ok(
                 authService.getCurrentUser(

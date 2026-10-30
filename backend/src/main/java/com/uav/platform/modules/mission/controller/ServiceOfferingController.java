@@ -1,5 +1,6 @@
 package com.uav.platform.modules.mission.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.mission.dto.request.ServiceOfferingRequest;
 import com.uav.platform.modules.mission.dto.request.ServiceOfferingUpdateRequest;
 import com.uav.platform.modules.mission.dto.response.ServiceOfferingResponse;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/uav-services")
+@RequestMapping(ApiRoutes.UavServices.BASE)
 @RequiredArgsConstructor
 public class ServiceOfferingController {
     private final ServiceOfferingService services;

@@ -1,5 +1,6 @@
 package com.uav.platform.modules.devicekey.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.devicekey.dto.request.CreateDeviceKeyRequest;
 import com.uav.platform.modules.devicekey.dto.response.CreatedDeviceKeyResponse;
 import com.uav.platform.modules.devicekey.dto.response.DeviceKeyResponse;
@@ -20,7 +21,7 @@ import java.util.List;
 
 /** Telemetry device credentials. The full key is only ever in the create response. */
 @RestController
-@RequestMapping("/api/v1/admin/device-keys")
+@RequestMapping(ApiRoutes.Admin.DEVICE_KEYS)
 @RequiredArgsConstructor
 public class DeviceKeyController {
     private final DeviceKeyService deviceKeys;

@@ -5,8 +5,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.uav.platform.common.constant.RestEndpoint;
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.modules.user.dto.request.UserQueryRequest;
@@ -64,7 +64,7 @@ class UserControllerTest {
                 .thenReturn(pageResponse);
 
         mockMvc.perform(
-                        get(RestEndpoint.USERS)
+                        get(ApiRoutes.Users.BASE)
                                 .param("page", "0")
                                 .param("size", "10")
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -88,7 +88,7 @@ class UserControllerTest {
                         LocalDateTime.now());
         when(userService.getUserById(2L)).thenReturn(user);
 
-        mockMvc.perform(get(RestEndpoint.USERS + "/2"))
+        mockMvc.perform(get(ApiRoutes.Users.BASE + "/2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.username").value("commander_01"));
@@ -99,7 +99,7 @@ class UserControllerTest {
     void getUserById_NotFound_Returns404() throws Exception {
         when(userService.getUserById(999L)).thenThrow(SystemException.notFound("User not found"));
 
-        mockMvc.perform(get(RestEndpoint.USERS + "/999"))
+        mockMvc.perform(get(ApiRoutes.Users.BASE + "/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
     }

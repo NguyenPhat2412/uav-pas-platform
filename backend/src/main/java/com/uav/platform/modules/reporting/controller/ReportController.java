@@ -1,5 +1,6 @@
 package com.uav.platform.modules.reporting.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.reporting.dto.response.OperationsReportResponse;
 import com.uav.platform.modules.reporting.service.ReportService;
 
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.nio.charset.StandardCharsets;
 
 @RestController
-@RequestMapping("/api/v1/reports")
+@RequestMapping(ApiRoutes.Reports.BASE)
 @RequiredArgsConstructor
 public class ReportController {
 

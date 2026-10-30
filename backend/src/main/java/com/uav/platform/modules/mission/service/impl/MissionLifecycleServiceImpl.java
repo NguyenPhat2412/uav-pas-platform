@@ -19,9 +19,12 @@ import com.uav.platform.modules.mission.service.MissionLifecycleService;
 import com.uav.platform.modules.mission.service.MissionResourceService;
 import com.uav.platform.modules.uav.enums.UavStatus;
 import com.uav.platform.modules.user.entity.AppUser;
+import com.uav.platform.modules.weather.dto.response.WeatherAssessmentResponse;
+import com.uav.platform.modules.weather.enums.FlightClearanceLevel;
+import com.uav.platform.modules.weather.service.WeatherService;
 
-import lombok.RequiredArgsConstructor;
-
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 /** Mission creation, editing, acceptance and terminal state transitions. */
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     private final MissionRepository missions;
     private final ServiceOfferingRepository services;
@@ -42,6 +44,64 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     private final MissionResourceService resources;
     private final MissionBillingService billing;
     private final MissionMapper missionMapper;
+
+    /** Optional: without a weather module (or in focused tests) missions start as before. */
+    private final ObjectProvider<WeatherService> weather;
+
+    public MissionLifecycleServiceImpl(
+            MissionRepository missions,
+            ServiceOfferingRepository services,
+            AuditLogService audit,
+            MissionEventRepository events,
+            com.uav.platform.modules.billing.service.QuotaService quotaService,
+            MissionMediaRepository missionMedia,
+            MissionAccessService access,
+            MissionEventService missionEvents,
+            MissionResourceService resources,
+            MissionBillingService billing,
+            MissionMapper missionMapper) {
+        this(
+                missions,
+                services,
+                audit,
+                events,
+                quotaService,
+                missionMedia,
+                access,
+                missionEvents,
+                resources,
+                billing,
+                missionMapper,
+                null);
+    }
+
+    @Autowired
+    public MissionLifecycleServiceImpl(
+            MissionRepository missions,
+            ServiceOfferingRepository services,
+            AuditLogService audit,
+            MissionEventRepository events,
+            com.uav.platform.modules.billing.service.QuotaService quotaService,
+            MissionMediaRepository missionMedia,
+            MissionAccessService access,
+            MissionEventService missionEvents,
+            MissionResourceService resources,
+            MissionBillingService billing,
+            MissionMapper missionMapper,
+            ObjectProvider<WeatherService> weather) {
+        this.missions = missions;
+        this.services = services;
+        this.audit = audit;
+        this.events = events;
+        this.quotaService = quotaService;
+        this.missionMedia = missionMedia;
+        this.access = access;
+        this.missionEvents = missionEvents;
+        this.resources = resources;
+        this.billing = billing;
+        this.missionMapper = missionMapper;
+        this.weather = weather;
+    }
 
     /** start() opens this many minutes before the scheduled start time (2 h by default). */
     @org.springframework.beans.factory.annotation.Value("${app.mission.start-lead-minutes:120}")
@@ -319,6 +379,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         requireStartWindow(mission, java.time.LocalDateTime.now());
         resources.validatePreflightResources(mission);
         requireAcceptance(mission);
+        String weatherNote = preflightWeather(mission);
         MissionStatus old = mission.getStatus();
         MissionOperations.transitionTo(mission, MissionStatus.IN_PROGRESS);
         resources.changeUavStatus(
@@ -329,7 +390,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 authentication,
                 old,
                 mission.getStatus(),
-                "Mission started");
+                weatherNote == null ? "Mission started" : "Mission started · " + weatherNote);
         audit.record(
                 null,
                 authentication.getName(),
@@ -552,5 +613,40 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         mission.setFlightPlan(FlightPlanOperations.write(resolved));
         mission.setLatitude(java.math.BigDecimal.valueOf(resolved.centerLatitude()));
         mission.setLongitude(java.math.BigDecimal.valueOf(resolved.centerLongitude()));
+    }
+
+    /**
+     * Weather at the site right now. NO_GO stops the start only when an administrator enabled the
+     * preflight block; otherwise the verdict is recorded in the start event. A weather failure never
+     * blocks a start.
+     */
+    private String preflightWeather(Mission mission) {
+        WeatherService service = weather == null ? null : weather.getIfAvailable();
+        if (service == null || mission.getLatitude() == null || mission.getLongitude() == null)
+            return null;
+        WeatherAssessmentResponse assessment;
+        boolean block;
+        try {
+            Double serviceMaxWind =
+                    mission.getService() == null ? null : mission.getService().getMaxWindMs();
+            assessment =
+                    service.assess(
+                            mission.getLatitude().doubleValue(),
+                            mission.getLongitude().doubleValue(),
+                            null,
+                            serviceMaxWind);
+            block = service.preflightBlockEnabled();
+        } catch (RuntimeException ex) {
+            return null;
+        }
+        if (assessment.clearance() == FlightClearanceLevel.NO_GO && block)
+            throw SystemException.conflict("MISSION_WEATHER_UNSAFE");
+        return assessment.windSpeed80mMs() == null
+                ? "weather " + assessment.clearance()
+                : String.format(
+                        java.util.Locale.ROOT,
+                        "weather %s, wind 80 m %.1f m/s",
+                        assessment.clearance(),
+                        assessment.windSpeed80mMs());
     }
 }

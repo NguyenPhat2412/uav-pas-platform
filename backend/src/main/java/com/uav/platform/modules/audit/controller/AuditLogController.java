@@ -2,6 +2,7 @@ package com.uav.platform.modules.audit.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.audit.dto.request.AuditLogQueryRequest;
 import com.uav.platform.modules.audit.dto.response.AuditLogResponse;
 import com.uav.platform.modules.audit.enums.AuditAction;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/api/v1/audit-logs")
+@RequestMapping(ApiRoutes.AuditLogs.BASE)
 @RequiredArgsConstructor
 public class AuditLogController {
     private final AuditLogService auditLogService;

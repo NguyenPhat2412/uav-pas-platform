@@ -75,13 +75,9 @@ class PlanAdministrationServiceTest {
     }
 
     @Test
-    void theDefaultPlanCannotBeDeactivatedButOthersCan() {
+    void everyPlanCanBeHiddenAndShownIncludingBasic() {
         plan("BASIC");
-        SystemException e =
-                assertThrows(SystemException.class, () -> service.setActive(1L, false, "admin"));
-        assertEquals(PlanAdministrationServiceImpl.DEFAULT_PLAN_REQUIRED, e.getMessage());
-
-        plan("PRO");
         assertFalse(service.setActive(1L, false, "admin").active());
+        assertTrue(service.setActive(1L, true, "admin").active());
     }
 }

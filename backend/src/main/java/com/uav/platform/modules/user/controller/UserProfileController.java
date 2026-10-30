@@ -1,6 +1,6 @@
 package com.uav.platform.modules.user.controller;
 
-import com.uav.platform.common.constant.RestEndpoint;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.user.dto.request.UserProfilePatchRequest;
 import com.uav.platform.modules.user.dto.response.UserProfileResponse;
 import com.uav.platform.modules.user.service.UserProfileService;
@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(RestEndpoint.USERS + "/profile")
+@RequestMapping(ApiRoutes.Users.FULL_PROFILE)
 @PreAuthorize("isAuthenticated()")
 @RequiredArgsConstructor
 public class UserProfileController {

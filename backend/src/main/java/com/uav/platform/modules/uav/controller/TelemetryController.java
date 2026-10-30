@@ -1,5 +1,6 @@
 package com.uav.platform.modules.uav.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.uav.dto.request.TelemetryReportRequest;
 import com.uav.platform.modules.uav.dto.response.TelemetryResponse;
 import com.uav.platform.modules.uav.service.TelemetryService;
@@ -20,7 +21,7 @@ import java.util.List;
 
 /** Device telemetry: ground stations push samples, portals read the latest. 204 means the UAV has not reported. */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(ApiRoutes.API_V1_PREFIX)
 @RequiredArgsConstructor
 public class TelemetryController {
     private final TelemetryService telemetry;

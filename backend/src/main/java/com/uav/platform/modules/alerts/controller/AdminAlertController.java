@@ -1,5 +1,6 @@
 package com.uav.platform.modules.alerts.controller;
 
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.alerts.dto.response.AlertCenterResponse;
 import com.uav.platform.modules.alerts.service.AlertCenterService;
 
@@ -13,15 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/admin/alerts")
+@RequestMapping(ApiRoutes.Admin.ALERTS)
 @RequiredArgsConstructor
 public class AdminAlertController {
-    private final AlertCenterService alerts;
+    private final AlertCenterService service;
 
     @GetMapping
-    @PreAuthorize(
-            "hasAuthority('ROLE_ADMIN') and @permissionService.has(authentication, 'DASHBOARD_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<AlertCenterResponse> current() {
-        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(alerts.current());
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(service.current());
     }
 }

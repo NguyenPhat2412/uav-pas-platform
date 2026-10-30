@@ -2,6 +2,7 @@ package com.uav.platform.modules.station.controller;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.modules.station.dto.request.StationRequest;
 import com.uav.platform.modules.station.dto.response.StationResponse;
 import com.uav.platform.modules.station.service.StationService;
@@ -16,7 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/stations")
+@RequestMapping(ApiRoutes.Stations.BASE)
 @RequiredArgsConstructor
 public class StationController {
     private final StationService service;
