@@ -7,7 +7,7 @@ if [[ -f .env ]]; then
     # A read loop (not `source <(...)`, which is a no-op in macOS bash 3.2) and no eval, so values keep any characters.
     while IFS= read -r line; do
         export "$line"
-    done < <(grep -E '^(APP_STORAGE_[A-Z_]+|APP_JWT_SECRET|SPRING_DATASOURCE_USERNAME|SPRING_DATASOURCE_PASSWORD|SMTP_[A-Z_]+|APP_MAIL_[A-Z_]+)=' .env)
+    done < <(grep -E '^(APP_STORAGE_[A-Z_]+|APP_JWT_SECRET|SPRING_DATASOURCE_USERNAME|SPRING_DATASOURCE_PASSWORD|SMTP_[A-Z_]+|APP_MAIL_[A-Z_]+|GOOGLE_CLIENT_ID)=' .env)
 fi
 # Browser uploads go straight to storage, so the bucket must allow the frontend origin (see .env).
 # Without SMTP, show OTP codes in the API response and log so sign-up/2FA can be tested on this machine.

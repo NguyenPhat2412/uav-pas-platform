@@ -16,6 +16,7 @@ public final class RestEndpoint {
     public static final String REGISTER_OTP = ApiRoutes.Auth.REGISTER_OTP;
     public static final String VERIFY_EMAIL = ApiRoutes.Auth.VERIFY_EMAIL;
     public static final String LOGIN = ApiRoutes.Auth.LOGIN;
+    public static final String GOOGLE = ApiRoutes.Auth.GOOGLE;
     public static final String VERIFY_2FA = ApiRoutes.Auth.VERIFY_2FA;
     public static final String RESEND_OTP = ApiRoutes.Auth.RESEND_OTP;
     public static final String FORGOT_PASSWORD = ApiRoutes.Auth.FORGOT_PASSWORD;
