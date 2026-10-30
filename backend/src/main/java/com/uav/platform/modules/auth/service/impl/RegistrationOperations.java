@@ -135,6 +135,23 @@ public final class RegistrationOperations {
         };
     }
 
+    /**
+     * Starting point for a username derived from an email's local part (Google sign-in): lower-case,
+     * only the characters {@link #USERNAME} allows, at most 40 characters so a uniqueness suffix
+     * still fits in 50. Too short or reserved names get a {@code user} prefix.
+     */
+    public static String usernameFromEmail(String email) {
+        String local = email == null ? "" : email.trim();
+        int at = local.indexOf('@');
+        if (at >= 0) local = local.substring(0, at);
+        String base = local.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9._-]", "");
+        if (base.length() > 40) base = base.substring(0, 40);
+        if (base.length() < 3 || RESERVED.contains(base)) {
+            base = base.isEmpty() ? "user" : "user-" + base;
+        }
+        return base;
+    }
+
     /** A self-registered operations account that an administrator has not activated yet. */
     public static boolean awaitsApproval(AppUser user) {
         return user.getRole() == UserRole.ROLE_OPERATOR && user.getStatus() == UserStatus.INACTIVE;

@@ -23,6 +23,7 @@ public final class ApiRoutes {
         public static final String REGISTER_OTP = "/register-otp";
         public static final String VERIFY_EMAIL = "/verify-email";
         public static final String LOGIN = "/login";
+        public static final String GOOGLE = "/google";
         public static final String VERIFY_2FA = "/verify-2fa";
         public static final String RESEND_OTP = "/resend-otp";
         public static final String FORGOT_PASSWORD = "/forgot-password";
@@ -40,6 +41,7 @@ public final class ApiRoutes {
         public static final String FULL_REGISTER_OTP = BASE + REGISTER_OTP;
         public static final String FULL_VERIFY_EMAIL = BASE + VERIFY_EMAIL;
         public static final String FULL_LOGIN = BASE + LOGIN;
+        public static final String FULL_GOOGLE = BASE + GOOGLE;
         public static final String FULL_VERIFY_2FA = BASE + VERIFY_2FA;
         public static final String FULL_RESEND_OTP = BASE + RESEND_OTP;
         public static final String FULL_FORGOT_PASSWORD = BASE + FORGOT_PASSWORD;
@@ -334,6 +336,7 @@ public final class ApiRoutes {
      */
     public static final String[] PUBLIC_AUTH_WHITELIST = {
         Auth.FULL_LOGIN,
+        Auth.FULL_GOOGLE,
         Auth.FULL_REGISTER,
         Auth.FULL_REGISTER_OTP,
         Auth.FULL_VERIFY_EMAIL,

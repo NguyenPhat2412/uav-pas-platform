@@ -98,6 +98,16 @@ public class AuthController {
         return AuthCookieHelper.okWithCookies(authCookieHelper, authService.login(request));
     }
 
+    @Operation(summary = CoreConstants.AUTH_OP_GOOGLE_SUMMARY)
+    @PostMapping(RestEndpoint.GOOGLE)
+    public ResponseEntity<AuthResponse> loginWithGoogle(
+            HttpServletRequest httpRequest,
+            @RequestBody(required = false) GoogleLoginRequest request) {
+        limitClient(AuthRateLimitAction.LOGIN, httpRequest);
+        return AuthCookieHelper.okWithCookies(
+                authCookieHelper, authService.loginWithGoogle(request));
+    }
+
     @Operation(summary = "Verify 2FA code (Email OTP or TOTP Authenticator) and issue JWT session")
     @PostMapping(RestEndpoint.VERIFY_2FA)
     public ResponseEntity<AuthResponse> verify2fa(

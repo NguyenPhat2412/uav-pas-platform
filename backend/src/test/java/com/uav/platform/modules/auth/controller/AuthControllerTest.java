@@ -12,12 +12,14 @@ import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.common.constant.RestEndpoint;
 import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.modules.auth.dto.request.GoogleLoginRequest;
 import com.uav.platform.modules.auth.dto.request.LoginRequest;
 import com.uav.platform.modules.auth.dto.request.LogoutRequest;
 import com.uav.platform.modules.auth.dto.request.RefreshTokenRequest;
 import com.uav.platform.modules.auth.dto.request.RegisterRequest;
 import com.uav.platform.modules.auth.dto.response.AuthResponse;
 import com.uav.platform.modules.auth.service.AuthService;
+import com.uav.platform.modules.auth.service.GoogleIdTokenService;
 import com.uav.platform.modules.user.dto.response.UserResponse;
 import com.uav.platform.modules.user.enums.UserStatus;
 
@@ -251,6 +253,47 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").value("new-access-token"))
                 .andExpect(jsonPath("$.refreshToken").value("new-refresh-token"));
+    }
+
+    // ==================== Google Sign-in Tests ====================
+
+    @Test
+    void google_ValidCredential_ReturnsSession() throws Exception {
+        UserResponse user =
+                new UserResponse(
+                        1L,
+                        "jane",
+                        "jane@example.com",
+                        null,
+                        UserStatus.ACTIVE,
+                        LocalDateTime.now());
+        when(authService.loginWithGoogle(any(GoogleLoginRequest.class)))
+                .thenReturn(AuthResponse.of("access-token", "refresh-token", user));
+
+        mockMvc.perform(
+                        post(RestEndpoint.AUTH + RestEndpoint.GOOGLE)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"credential\":\"id-token\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").value("access-token"))
+                .andExpect(jsonPath("$.user.username").value("jane"));
+    }
+
+    @Test
+    void google_NotConfigured_Returns503WithCode() throws Exception {
+        when(authService.loginWithGoogle(any(GoogleLoginRequest.class)))
+                .thenThrow(
+                        SystemException.serviceUnavailable(
+                                GoogleIdTokenService.DISABLED_MESSAGE,
+                                GoogleIdTokenService.DISABLED_CODE));
+
+        mockMvc.perform(
+                        post(RestEndpoint.AUTH + RestEndpoint.GOOGLE)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"credential\":\"id-token\"}"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.code").value("GOOGLE_LOGIN_DISABLED"))
+                .andExpect(jsonPath("$.message").value("Đăng nhập Google chưa được cấu hình."));
     }
 
     @Test

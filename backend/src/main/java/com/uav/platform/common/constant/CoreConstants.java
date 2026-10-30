@@ -25,5 +25,7 @@ public final class CoreConstants {
     public static final String AUTH_OP_REGISTER_SUMMARY = "Register a new user account";
     public static final String AUTH_OP_LOGIN_SUMMARY =
             "User login with username/email and password";
+    public static final String AUTH_OP_GOOGLE_SUMMARY =
+            "Sign in with a Google ID token (creates a customer account for a new email)";
     public static final String AUTH_OP_ME_SUMMARY = "Get current authenticated user profile";
 }
