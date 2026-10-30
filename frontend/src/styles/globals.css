@@ -248,6 +248,8 @@
 :root[data-portal] :is(#workspace, #content) {
     background: #fff;
     padding: 1.5rem;
+    /* Room under the last row so it can scroll clear of the floating assistant button (bottom right). */
+    padding-bottom: 6rem;
     gap: 1rem;
 }
 

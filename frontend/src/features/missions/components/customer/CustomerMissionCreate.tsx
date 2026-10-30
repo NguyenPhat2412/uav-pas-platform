@@ -25,6 +25,8 @@ import type {MissionInput, MissionType} from "@/types/customer";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {resolveServiceIdFromParam, toServiceSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/contexts/I18nContext';
+import {defaultFlightPlan} from "@/features/missions/types/flight-plan.types";
+import {flightGeometry} from "@/features/missions/utils/flight-geometry";
 
 const initial: MissionInput = {
     missionType: 'AREA_INSPECTION',
@@ -47,7 +49,7 @@ function CreateMission() {
     const services = useServices();
     const actions = useMissionActions();
     const {can} = useAuth();
-    const {t, formatDate} = useI18n();
+    const {t, formatDate, formatNumber} = useI18n();
     const [formValues, setForm] = useState<MissionInput>({
         ...initial,
         serviceId: resolveServiceIdFromParam(params.get('service'), params.get('serviceId'))
@@ -116,6 +118,14 @@ function CreateMission() {
             if (!showFieldErrors(err)) setError(missionFormError(err, t));
         }
     };
+    // What the review step shows of the flight plan, so the customer checks it before sending.
+    const plan = form.flightPlan ?? defaultFlightPlan();
+    const planArea = flightGeometry(plan).areaSquareMeters;
+    const flightArea = plan.areaType === 'POLYGON'
+        ? `${t('planner.tool.polygon')}${planArea != null ? ` · ${formatNumber(Math.round(planArea / 100) / 100)} ha` : ''}`
+        : plan.areaType === 'CIRCLE'
+            ? `${t('planner.tool.circle')} · ${formatNumber(plan.radiusMeters ?? 0)} m`
+            : t('planner.tool.takeoff');
     const fieldClass = 'grid gap-1.5 text-xs font-bold text-foreground';
     const selectClass = 'min-h-11 w-full rounded-control border border-border-input bg-card px-3 py-2 text-base font-normal text-foreground sm:text-sm aria-[invalid=true]:border-danger';
     return <div className="flex flex-1 flex-col bg-white">
@@ -209,6 +219,34 @@ function CreateMission() {
                         <dt>{t('missionCreate.coordinates')}</dt>
                         <dd>{t('missionCreate.coordinatesValue', {lat: form.latitude ?? t('missionCreate.notEntered'), lng: form.longitude ?? t('missionCreate.notEntered')})}</dd>
                     </div>
+                    <div>
+                        <dt>{t('planner.label')}</dt>
+                        <dd>{flightArea}</dd>
+                    </div>
+                    <div>
+                        <dt>{t('flightSpec.altitude')}</dt>
+                        <dd>{plan.altitudeAglMeters} m</dd>
+                    </div>
+                    <div>
+                        <dt>{t('flightSpec.gsd')}</dt>
+                        <dd>{t(`flightSpec.gsdOption.${plan.targetGsdCm.toFixed(1).replace('.', '_')}`)}</dd>
+                    </div>
+                    <div>
+                        <dt>{t('flightSpec.forwardOverlap')} / {t('flightSpec.sideOverlap')}</dt>
+                        <dd>{plan.forwardOverlap}% / {plan.sideOverlap}%</dd>
+                    </div>
+                    <div className="sm:col-span-2">
+                        <dt>{t('flightSpec.sensors')}</dt>
+                        <dd>{plan.sensors.length ? plan.sensors.map(sensor => t(`flightSpec.sensor.${sensor}.name`)).join(', ') : t('missionCreate.notEntered')}</dd>
+                    </div>
+                    {plan.permitSupport && <div className="sm:col-span-2">
+                        <dt>{t('flightSpec.permit')}</dt>
+                        <dd>✓</dd>
+                    </div>}
+                    {plan.obstacles?.trim() && <div className="sm:col-span-2 lg:col-span-4">
+                        <dt>{t('flightSpec.obstacles')}</dt>
+                        <dd>{plan.obstacles.trim()}</dd>
+                    </div>}
                     {form.description && <div className="sm:col-span-2 lg:col-span-4">
                         <dt>{t('missionForm.description')}</dt>
                         <dd>{form.description}</dd>

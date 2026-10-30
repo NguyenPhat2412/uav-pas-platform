@@ -150,6 +150,10 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
     };
     const clearArea = () => emit({...current, areaType: 'POINT', vertices: [], radiusMeters: undefined});
     const area = geometry.areaSquareMeters;
+    // The hint explains the next click; once the chosen tool has what it needs it only adds noise.
+    const toolDone = tool === 'takeoff'
+        ? current.takeoffLatitude != null && current.takeoffLongitude != null
+        : current.areaType === tool && current.vertices.length >= (tool === 'POLYGON' ? 3 : 1);
     const tools: { id: PlannerTool; icon: typeof MapPin; label: string }[] = [
         {id: 'takeoff', icon: MapPin, label: t('planner.tool.takeoff')},
         {id: 'POLYGON', icon: Hexagon, label: t('planner.tool.polygon')},
@@ -198,7 +202,7 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
             <Stat label={t('planner.takeoff')} value={current.takeoffLatitude != null && current.takeoffLongitude != null
                 ? `${current.takeoffLatitude.toFixed(6)}, ${current.takeoffLongitude.toFixed(6)}` : '—'}/>
         </dl>
-        <p className="m-0 text-sm text-muted">{t(`planner.hint.${tool}`)}</p>
+        {!toolDone && <p className="m-0 text-sm text-muted">{t(`planner.hint.${tool}`)}</p>}
         {locateError && <p className="m-0 text-sm leading-normal text-danger" role="alert">{t(locateError === 'unsupported' ? 'map.unsupported' : 'map.locateFailed')}</p>}
     </div>;
 }
