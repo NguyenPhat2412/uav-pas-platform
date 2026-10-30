@@ -1,57 +1,46 @@
-# UAV PAS Platform: nhánh `main`
+# Nhánh `admin`: Cổng Quản trị
 
-Nền tảng điều phối UAV gồm website công khai và ba cổng Khách hàng, Vận hành, Quản trị. Backend dùng Spring Boot 4.1 (Java 21). Frontend là một ứng dụng Next.js trong `frontend/`.
+Đường dẫn: `/admin`. Mã nguồn nằm ở `frontend/src/app/(admin)` và các component admin trong `frontend/src/features/*`. Nhánh này được đồng bộ từ `main`.
 
-`main` là nhánh tích hợp. Các nhánh nhóm bên dưới được đồng bộ từ `main`, và mỗi nhánh có README mô tả phần việc của mình.
+## Các thay đổi
 
-| Nhánh | Phạm vi |
-|---|---|
-| `backend` | Controller, service, module weather, kiểm thử Java |
-| `frontend` | Cấu trúc thư mục, tầng dữ liệu, component dùng chung |
-| `database` | Flyway migration, bảng và cấu hình hệ thống |
-| `admin` | Cổng Quản trị |
-| `operations` | Cổng Vận hành và trạm mặt đất |
-| `customer` | Cổng Khách hàng |
-| `ba` | Quy tắc nghiệp vụ và luồng xử lý |
-| `testcase` | Bộ kiểm thử và kết quả |
+### Cài đặt nguồn thời tiết (Admin → Cài đặt)
 
-## Các hạng mục đã hoàn thành (31/10/2026)
+Component `features/weather/components/WeatherProviderSettingsSection.tsx`, chỉ hiện với người có quyền `PERMISSION_MANAGE`. Các mục cài đặt:
 
-1. **Chuẩn hoá controller backend.** Toàn bộ đường dẫn REST lấy từ `config/routes/ApiRoutes.java`. Lớp `RestEndpoint` đã bị xoá. Controller chỉ nhận request và gọi service. Ví dụ, controller cảnh báo không còn tự xử lý nghiệp vụ, và các quyền quản lý dùng `PERMISSION_MANAGE`.
-2. **Sắp xếp lại cấu trúc và tên file frontend.**
-   - Mỗi tính năng có các thư mục `features/<tên>/{api,hooks,components,types,utils}`.
-   - Context chuyển vào `providers/`. Component đặt tên theo PascalCase. Hook dùng chung nằm trong `src/hooks/`.
-3. **Chuẩn hoá tầng dữ liệu frontend.**
-   - Luồng gọi là Component → hook của feature → `*.api.ts` → `@/lib/api`.
-   - Query key có dạng `queryKeys.of(userId, feature, ...)`.
-   - Script `check-architecture.mjs` chặn UI import trực tiếp react-query hoặc api client.
-4. **Module thời tiết và an toàn bay.**
-   - Dự báo lấy từ Open-Meteo hoặc OpenWeatherMap, kèm chỉ số bão từ Kp của NOAA.
-   - Kết quả đánh giá là GO, CAUTION, NO_GO hoặc UNAVAILABLE, kèm điểm an toàn và các khung giờ bay đề xuất.
-   - API key nhà cung cấp được mã hoá bằng AES-256-GCM.
-   - Hệ thống có thể chặn cất cánh khi NO_GO và tạo cảnh báo cho admin.
+- **Nguồn dữ liệu:** Open-Meteo (không cần key) hoặc OpenWeatherMap.
+- **API key:**
+  - Server mã hoá key bằng AES-256-GCM. Giao diện chỉ biết key đã được cấu hình hay chưa, không bao giờ nhận lại key.
+  - Có nút xoá key.
+- **Thời gian sống của cache:** 1–120 phút.
+- **Chặn cất cánh khi NO_GO:** mặc định tắt. Khi tắt, hệ thống chỉ ghi nhận NO_GO vào sự kiện bắt đầu bay.
 
-Kết quả kiểm chứng:
+API dùng cho mục này là `GET/PUT /api/v1/admin/weather/provider`.
 
-| Phần | Kết quả |
-|---|---|
-| Backend | 1184 test, 0 lỗi. 191 test được bỏ qua là các test cần Docker |
-| Module weather | Độ phủ JaCoCo 99,2% dòng, 96,8% nhánh |
-| Frontend | 221/221 test pass, typecheck sạch, kiểm tra kiến trúc OK |
+### Ngưỡng an toàn bay
 
-## Chạy và kiểm thử
+Trang Cài đặt có thêm 4 ngưỡng an toàn bay trong nhóm SAFETY:
+
+- Gió giật tối đa.
+- Tầm nhìn tối thiểu.
+- Lượng mưa tối đa.
+- Chỉ số Kp tối đa.
+
+Nhãn của các ngưỡng là `settings.labels.uav_safety_*`.
+
+### Trung tâm cảnh báo
+
+- **Cảnh báo mới `MISSION_WEATHER_HAZARD` (mức WARNING):** xuất hiện khi một nhiệm vụ sẽ bay trong 6 giờ tới vào vùng dự báo NO_GO. Cảnh báo dẫn tới `/operations/missions/{id}`.
+- **Backend:** `AdminAlertController` chỉ còn gọi `AlertCenterService`, đường dẫn lấy từ `ApiRoutes`.
+
+### Khác
+
+- **Thống kê gói dịch vụ:** component `AdminPlanStats`.
+- **Trình duyệt file:** trang `/admin/files`.
+- **Tầng dữ liệu:** các panel admin lấy dữ liệu qua hook của feature, không gọi API trực tiếp.
+
+## Kiểm tra
 
 ```bash
-# Backend: luôn build ra thư mục riêng để không ghi đè backend/target của server đang chạy
-cd backend
-./mvnw spotless:apply
-./mvnw -B -Duav.build.directory=/tmp/uav-verify verify jacoco:report
-
-# Frontend
-cd frontend
-npm install
-npm run dev              # http://localhost:3100
-node --test tests/*.test.mjs && npm run typecheck && npm run architecture:check
+cd frontend && node --test tests/m3-admin.test.mjs tests/weather-safety.test.mjs tests/plan-stats.test.mjs tests/admin-files.test.mjs
 ```
-
-Biến môi trường mẫu có trong `.env.example`. Hướng dẫn triển khai nằm ở `deploy/DEPLOY.md`, tài liệu chi tiết ở `docs/`.
