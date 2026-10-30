@@ -235,7 +235,7 @@ function CreateMission() {
                         <dt>{t('flightSpec.forwardOverlap')} / {t('flightSpec.sideOverlap')}</dt>
                         <dd>{plan.forwardOverlap}% / {plan.sideOverlap}%</dd>
                     </div>
-                    <div className="sm:col-span-2">
+                    <div className={plan.permitSupport ? 'sm:col-span-2' : 'sm:col-span-2 lg:col-span-4'}>
                         <dt>{t('flightSpec.sensors')}</dt>
                         <dd>{plan.sensors.length ? plan.sensors.map(sensor => t(`flightSpec.sensor.${sensor}.name`)).join(', ') : t('missionCreate.notEntered')}</dd>
                     </div>
