@@ -24,6 +24,8 @@ export interface TrainingDocument {
     checkedSteps: number[];
     completedAt: string | null;
     updatedAt: string | null;
+    /** Signed cover URL, when the server sends it (admin listings include hidden courses). */
+    coverUrl?: string | null;
 }
 
 export interface TrainingOverview {
@@ -129,13 +131,24 @@ export interface TrainingLessonSlide {
     caption: string | null;
 }
 
-/** The PDF of a DOCUMENT lesson. */
-export interface TrainingLessonDocument {
+/** The uploaded PDF of a DOCUMENT lesson. Older servers omit `kind`. */
+export interface TrainingLessonDocumentFile {
+    kind?: 'FILE';
     /** Signed GET URL; null when storage is not configured. */
     url: string | null;
     fileName: string;
     size: number;
 }
+
+/** A Google Docs, Slides, Sheets or Drive document, as the server's embeddable `/preview` URL. */
+export interface TrainingLessonDocumentEmbed {
+    kind: 'EMBED';
+    url: string;
+    provider: 'GOOGLE' | string;
+}
+
+/** The content of a DOCUMENT lesson: an uploaded PDF or a pasted Google link. */
+export type TrainingLessonDocument = TrainingLessonDocumentFile | TrainingLessonDocumentEmbed;
 
 /** A downloadable file attached to a lesson (Udemy "Resources"). */
 export interface TrainingLessonResource {
@@ -165,10 +178,13 @@ export interface TrainingLessonDetail {
     nextLessonId: number | null;
 }
 
-/** `PUT /api/v1/training/lessons/{id}/progress`. */
+/**
+ * `PUT /api/v1/training/lessons/{id}/progress`. `completed` is only ever sent as `true` (left out of
+ * position saves), so a save can never mark a finished lesson unfinished.
+ */
 export interface UpdateTrainingLessonProgressPayload {
-    completed: boolean;
-    positionSeconds: number;
+    completed?: true;
+    positionSeconds?: number;
 }
 
 export interface TrainingLessonSlideInput {
@@ -194,8 +210,10 @@ export interface UpsertTrainingLessonPayload {
     videoAssetId: number | null;
     bodyMarkdown: string | null;
     slides: TrainingLessonSlideInput[];
-    /** READY application/pdf asset; DOCUMENT lessons only. */
+    /** READY application/pdf asset; DOCUMENT lessons only, and never together with `documentUrl`. */
     documentAssetId: number | null;
+    /** https link to a Google Docs/Slides/Sheets or Drive file; DOCUMENT lessons only. */
+    documentUrl: string | null;
     /**
      * Files attached to the lesson, in order. Left out only when re-saving a lesson whose admin
      * listing did not carry its resources, so they are not wiped.
@@ -204,12 +222,13 @@ export interface UpsertTrainingLessonPayload {
 }
 
 /** `GET /admin/courses/{id}/lessons`: every editable field, plus the lesson id. */
-export interface AdminTrainingLesson extends Omit<UpsertTrainingLessonPayload, 'sectionTitle' | 'slides' | 'documentAssetId' | 'resources'> {
+export interface AdminTrainingLesson extends Omit<UpsertTrainingLessonPayload, 'sectionTitle' | 'slides' | 'documentAssetId' | 'documentUrl' | 'resources'> {
     id: number;
     sectionTitle: string | null;
     /** The server may also send a signed `url` for each slide, used for thumbnails when present. */
     slides: Array<TrainingLessonSlideInput & {url?: string | null}>;
     documentAssetId?: number | null;
+    documentUrl?: string | null;
     /** Present when the server sends it; used to show the PDF's name in the editor. */
     document?: TrainingLessonDocument | null;
     resources?: Array<TrainingLessonResourceInput & {url?: string | null; contentType?: string; size?: number}>;

@@ -343,7 +343,8 @@ class MigrationUpgradePostgresTest {
                     statement.executeQuery(
                             "SELECT count(*),count(created_at) FROM system_configurations")) {
                 rows.next();
-                // Later migrations seed new keys, so only require that none of the old rows went missing.
+                // Later migrations seed new keys, so only require that none of the old rows went
+                // missing.
                 assertTrue(rows.getLong(1) > settings);
                 assertEquals(rows.getLong(1), rows.getLong(2));
             }

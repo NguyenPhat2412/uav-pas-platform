@@ -251,6 +251,11 @@
     gap: 1rem;
 }
 
+/* The course player runs edge to edge under the app header, like a video course site. */
+:root[data-portal] :is(#workspace, #content):has([data-course-player]) {
+    padding: 0;
+}
+
 :root[data-portal] :is(#workspace, #content) .rounded-panel.border,
 :root[data-portal] :is(#workspace, #content) .rounded-panel[class*="border-"] {
     border-color: rgb(0 0 0 / 0.08);

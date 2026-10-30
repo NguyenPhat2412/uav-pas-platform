@@ -324,6 +324,7 @@ export function TrainingAcademyWorkspace({
                 <TrainingCourseCatalog
                     portal={activePortal}
                     embedded
+                    manage
                     courseHref={slug => adminTrainingPreviewHref(slug, activePortal)}
                 />
             ) : <>

@@ -184,10 +184,11 @@ export const trainingService = {
 
     /**
      * Register the file, PUT it straight to storage with the signed URL (progress reported 0–1), then
-     * have the backend confirm the object. Resolves with the READY asset.
+     * have the backend confirm the object. Resolves with the READY asset. `contentType` overrides an
+     * empty `file.type` (common for Office files; the caller infers it from the extension).
      */
-    uploadAsset: async (file: File, onProgress?: (fraction: number) => void, signal?: AbortSignal) => {
-        const request: TrainingAssetUploadRequest = {fileName: file.name, contentType: file.type, size: file.size};
+    uploadAsset: async (file: File, onProgress?: (fraction: number) => void, signal?: AbortSignal, contentType = file.type) => {
+        const request: TrainingAssetUploadRequest = {fileName: file.name, contentType, size: file.size};
         const ticket = await apiClient.post<TrainingAssetUploadTicket>(API_ROUTES.training.adminAssets, request, {signal});
         await putFileWithProgress(ticket, file, onProgress, signal);
         return apiClient.post<TrainingAssetConfirmation>(API_ROUTES.training.adminAssetConfirm(ticket.assetId), undefined, {signal});

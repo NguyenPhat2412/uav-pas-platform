@@ -12,6 +12,7 @@ import com.uav.platform.modules.auth.dto.record.GoogleIdentity;
 import com.uav.platform.modules.auth.dto.request.GoogleLoginRequest;
 import com.uav.platform.modules.auth.dto.request.LoginRequest;
 import com.uav.platform.modules.auth.dto.response.AuthResponse;
+import com.uav.platform.modules.auth.entity.RefreshToken;
 import com.uav.platform.modules.auth.enums.AuthRateLimitAction;
 import com.uav.platform.modules.auth.service.impl.AuthServiceImpl;
 import com.uav.platform.modules.auth.service.impl.RegistrationOperations;
@@ -30,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +47,7 @@ class AuthServiceGoogleLoginTest {
     @Mock private GoogleIdTokenService googleVerifier;
     @Mock private AuthOtpService authOtpService;
     @Mock private AuthRateLimitService rateLimiter;
+    @Mock private RefreshTokenService refreshTokenService;
 
     private AuthServiceImpl authService;
 
@@ -63,9 +66,22 @@ class AuthServiceGoogleLoginTest {
         lenient()
                 .when(jwtTokenProvider.generateToken(any(), anyString(), anyString(), anyString()))
                 .thenReturn("access-token");
+        lenient()
+                .when(refreshTokenService.createRefreshToken(any(AppUser.class)))
+                .thenAnswer(
+                        call ->
+                                new RefreshToken(
+                                        call.getArgument(0),
+                                        "refresh-token",
+                                        Instant.now().plusSeconds(60)));
         authService =
                 new AuthServiceImpl(
-                        userRepository, passwordEncoder, jwtTokenProvider, null, null, sessionLock);
+                        userRepository,
+                        passwordEncoder,
+                        jwtTokenProvider,
+                        refreshTokenService,
+                        null,
+                        sessionLock);
         authService.setGoogleIdTokenService(googleVerifier);
         authService.setAuthOtpService(authOtpService);
         authService.setRateLimiter(rateLimiter);
@@ -126,11 +142,30 @@ class AuthServiceGoogleLoginTest {
         assertSame(challenge, response);
         assertTrue(response.mfaRequired());
         assertNull(response.accessToken());
+        assertEquals("hash", user.getPasswordHash());
         verify(jwtTokenProvider, never()).generateToken(any(), any(), any(), any());
+        verify(refreshTokenService, never()).deleteByUser(any());
+        verify(refreshTokenService, never()).createRefreshToken(any());
+        verify(userRepository, never()).save(any());
     }
 
     @Test
-    void existingUnverifiedEmail_IsMarkedVerifiedAndSignedIn() {
+    void verifiedAccount_KeepsItsPasswordAndSessions() {
+        AppUser user = user(UserRole.ROLE_PILOT, UserStatus.ACTIVE);
+        existing(user);
+
+        AuthResponse response = authService.loginWithGoogle(REQUEST);
+
+        assertEquals("access-token", response.accessToken());
+        assertEquals("hash", user.getPasswordHash());
+        assertTrue(user.isEmailVerified());
+        verify(refreshTokenService, never()).deleteByUser(any());
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void preRegisteredUnverifiedAccount_LosesItsPasswordAndSessions() {
+        // Someone registered the address with their own password and never verified it.
         AppUser user = user(UserRole.ROLE_PILOT, UserStatus.ACTIVE);
         user.setEmailVerified(false);
         existing(user);
@@ -138,20 +173,71 @@ class AuthServiceGoogleLoginTest {
         AuthResponse response = authService.loginWithGoogle(REQUEST);
 
         assertTrue(user.isEmailVerified());
+        assertNull(user.getPasswordHash());
         assertEquals("access-token", response.accessToken());
-        verify(userRepository).save(user);
+        var order = inOrder(userRepository, refreshTokenService);
+        order.verify(userRepository).save(user);
+        order.verify(refreshTokenService).deleteByUser(user);
+        order.verify(refreshTokenService).createRefreshToken(user);
         verify(authOtpService, never()).createLoginChallenge(any(), any());
+
+        // The pre-registered password no longer signs in.
+        SystemException ex =
+                assertThrows(
+                        SystemException.class,
+                        () -> authService.login(new LoginRequest(EMAIL, "attacker-password")));
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatus());
+        assertEquals(CoreConstants.INVALID_CREDENTIALS, ex.getMessage());
+        verify(passwordEncoder, never()).matches(any(), any());
     }
 
     @Test
-    void existingStaffKeepsItsRole() {
-        AppUser user = user(UserRole.ROLE_OPERATOR, UserStatus.ACTIVE);
-        existing(user);
+    void staffWith2fa_KeepsItsRoleAndGetsAChallenge() {
+        for (UserRole role :
+                new UserRole[] {
+                    UserRole.ROLE_OPERATOR, UserRole.ROLE_COMMANDER, UserRole.ROLE_ADMIN
+                }) {
+            AppUser user = user(role, UserStatus.ACTIVE);
+            user.setTwoFactorEnabled(true);
+            existing(user);
+            AuthResponse challenge =
+                    AuthResponse.challenge("EMAIL", "challenge-" + role, "j***", null, null);
+            when(authOtpService.createLoginChallenge(user, null)).thenReturn(challenge);
 
-        authService.loginWithGoogle(REQUEST);
-
-        assertEquals(UserRole.ROLE_OPERATOR, user.getRole());
+            assertSame(challenge, authService.loginWithGoogle(REQUEST));
+            assertEquals(role, user.getRole());
+        }
         verify(userRepository, never()).save(any());
+        verify(jwtTokenProvider, never()).generateToken(any(), any(), any(), any());
+    }
+
+    @Test
+    void staffWithout2fa_IsRejected() {
+        for (UserRole role :
+                new UserRole[] {
+                    UserRole.ROLE_OPERATOR, UserRole.ROLE_COMMANDER, UserRole.ROLE_ADMIN
+                }) {
+            AppUser user = user(role, UserStatus.ACTIVE);
+            user.setEmailVerified(false);
+            user.setFailedAttempts(2);
+            existing(user);
+
+            SystemException ex =
+                    assertThrows(SystemException.class, () -> authService.loginWithGoogle(REQUEST));
+
+            assertEquals(HttpStatus.FORBIDDEN, ex.getStatus());
+            assertEquals("GOOGLE_STAFF_REQUIRES_2FA", ex.getCode());
+            assertEquals(
+                    "Tài khoản nhân sự cần bật xác thực 2 lớp để đăng nhập bằng Google. Vui lòng đăng nhập bằng mật khẩu.",
+                    ex.getMessage());
+            // Nothing about the account changes.
+            assertEquals("hash", user.getPasswordHash());
+            assertFalse(user.isEmailVerified());
+            assertEquals(2, user.getFailedAttempts());
+        }
+        verify(userRepository, never()).save(any());
+        verifyNoInteractions(refreshTokenService, authOtpService);
+        verify(jwtTokenProvider, never()).generateToken(any(), any(), any(), any());
     }
 
     @Test

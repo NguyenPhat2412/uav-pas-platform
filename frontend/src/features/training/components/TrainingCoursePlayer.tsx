@@ -34,7 +34,6 @@ import type {
     TrainingLessonType,
     UpdateTrainingLessonProgressPayload,
 } from '@/features/training/types/training.types';
-import {MarkdownSopRenderer} from '@/features/training/components/MarkdownSopRenderer';
 import {
     ArticleLesson,
     DocumentLesson,
@@ -88,12 +87,14 @@ const BAR_BG = 'bg-[#1c1d1f]';
  * stage on the left with the lesson bar and Tổng quan / Tài liệu / Checklist tabs under it, and the
  * "Nội dung khóa học" curriculum on the right (sticky, own scroll, can be hidden). The current lesson
  * lives in the URL (`?lesson=ID`) so a refresh or a shared link opens the same lesson. Mount inside
- * a Suspense boundary (it reads search params).
+ * a Suspense boundary (it reads search params). `emptyHint` explains a course with no lessons yet
+ * (the admin preview says where to add files).
  */
-export function TrainingCoursePlayer({slug, backHref, backLabel = 'Tất cả khoá học'}: {
+export function TrainingCoursePlayer({slug, backHref, backLabel = 'Tất cả khóa học', emptyHint}: {
     slug: string;
     backHref: string;
     backLabel?: string;
+    emptyHint?: string;
 }) {
     const router = useRouter();
     const pathname = usePathname();
@@ -142,7 +143,12 @@ export function TrainingCoursePlayer({slug, backHref, backLabel = 'Tất cả kh
         },
     });
 
-    const {mutate: mutateProgress} = progress;
+    // The mutation is shared by every lesson: an error from the last lesson must not follow the learner.
+    const {mutate: mutateProgress, reset: resetProgress} = progress;
+    useEffect(() => {
+        resetProgress();
+    }, [lessonId, resetProgress]);
+
     const saveProgress = useCallback((id: number, payload: UpdateTrainingLessonProgressPayload, wasCompleted: boolean) => {
         mutateProgress({id, payload, wasCompleted});
     }, [mutateProgress]);
@@ -150,13 +156,13 @@ export function TrainingCoursePlayer({slug, backHref, backLabel = 'Tất cả kh
     if (courseQuery.error) {
         const notFound = courseQuery.error instanceof ApiError && courseQuery.error.status === 404;
         return (
-            <div className="bg-card">
-                <TopBar backHref={backHref} backLabel={backLabel} title="Khoá học" />
+            <div className="bg-card" data-course-player>
+                <TopBar backHref={backHref} backLabel={backLabel} title="Khóa học" />
                 <div className="p-5">
                     {notFound ? (
                         <div className="py-12 text-center">
-                            <p className="text-sm font-semibold text-foreground">Không tìm thấy khoá học</p>
-                            <p className="text-xs text-muted-foreground">Khoá học đã bị ẩn hoặc không dành cho cổng này.</p>
+                            <p className="text-sm font-semibold text-foreground">Không tìm thấy khóa học</p>
+                            <p className="text-xs text-muted-foreground">Khóa học đã bị ẩn hoặc không dành cho cổng này.</p>
                         </div>
                     ) : (
                         <ErrorNotice error={courseQuery.error} />
@@ -168,7 +174,7 @@ export function TrainingCoursePlayer({slug, backHref, backLabel = 'Tất cả kh
 
     if (!course) {
         return (
-            <div className="bg-card" role="status" aria-label="Đang tải khoá học">
+            <div className="bg-card" data-course-player role="status" aria-label="Đang tải khóa học">
                 <TopBar backHref={backHref} backLabel={backLabel} title="" />
                 <div className="flex flex-col lg:flex-row">
                     <div className="min-w-0 flex-1">
@@ -191,7 +197,7 @@ export function TrainingCoursePlayer({slug, backHref, backLabel = 'Tất cả kh
     const counts = courseLessonProgress(sections);
 
     return (
-        <div className="flex flex-col bg-card">
+        <div className="flex flex-col bg-card" data-course-player>
             <TopBar backHref={backHref} backLabel={backLabel} title={course.title}>
                 <ProgressRing done={counts.done} total={counts.total} percent={counts.percent} />
                 <button
@@ -215,6 +221,7 @@ export function TrainingCoursePlayer({slug, backHref, backLabel = 'Tất cả kh
                             expectedType={currentItem?.type}
                             lesson={lesson}
                             error={lessonQuery.error}
+                            emptyHint={emptyHint}
                             onSave={saveProgress}
                         />
                     </div>
@@ -222,7 +229,7 @@ export function TrainingCoursePlayer({slug, backHref, backLabel = 'Tất cả kh
                     <div className="flex flex-col gap-3 border-b border-border px-5 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-8">
                         <div className="min-w-0">
                             <h2 className="truncate text-lg font-bold text-foreground">
-                                {currentItem?.title ?? (lessonId === null ? 'Khoá học chưa có bài học' : 'Đang tải bài học')}
+                                {currentItem?.title ?? (lessonId === null ? 'Chưa có bài học' : 'Đang tải bài học')}
                             </h2>
                             {currentItem && (
                                 <p className="text-xs text-muted-foreground">
@@ -325,15 +332,23 @@ function NavButton({href, direction}: {href: string | null; direction: 'prev' | 
     return <Link href={href} scroll={false} className={className}>{content}</Link>;
 }
 
-function LessonStage({lessonId, expectedType, lesson, error, onSave}: {
+function LessonStage({lessonId, expectedType, lesson, error, emptyHint, onSave}: {
     lessonId: number | null;
     expectedType: TrainingLessonType | undefined;
     lesson: TrainingLessonDetail | undefined;
     error: Error | null;
+    emptyHint?: string;
     onSave: (id: number, payload: UpdateTrainingLessonProgressPayload, wasCompleted: boolean) => void;
 }) {
     if (lessonId === null) {
-        return <LessonMediaEmpty tone="light" icon={<FileText className="h-8 w-8" strokeWidth={1.5} />} title="Khoá học chưa có bài học" detail="Xem phần Tổng quan và Checklist bên dưới." />;
+        return (
+            <LessonMediaEmpty
+                tone="light"
+                icon={<FolderOpen className="h-8 w-8" strokeWidth={1.5} />}
+                title="Chưa có bài học"
+                detail={emptyHint ?? 'Khóa học này chưa có video hay tài liệu. Vui lòng quay lại sau.'}
+            />
+        );
     }
     if (error) return <div className="bg-white p-5"><ErrorNotice error={error} /></div>;
     if (!lesson) {
@@ -375,7 +390,16 @@ function LessonStage({lessonId, expectedType, lesson, error, onSave}: {
                 />
             );
         case 'DOCUMENT':
-            return <DocumentLesson key={lesson.id} pdf={lesson.document} title={lesson.title} />;
+            return (
+                <DocumentLesson
+                    key={lesson.id}
+                    document={lesson.document}
+                    title={lesson.title}
+                    lessonId={lesson.id}
+                    completed={lesson.completed}
+                    onReachedEnd={() => onSave(lesson.id, {completed: true, positionSeconds: 0}, lesson.completed)}
+                />
+            );
         default:
             return <ArticleLesson markdown={lesson.bodyMarkdown} />;
     }
@@ -624,7 +648,7 @@ function LessonTabs({course, slug, currentItem, lesson, lessonLoading}: {
                 ))}
             </div>
             <div role="tabpanel" id={`${tabsId}-panel`} aria-labelledby={`${tabsId}-${tab}`} className="px-5 py-6 sm:px-8">
-                {tab === 'overview' && <CourseOverview course={course} lesson={lesson} />}
+                {tab === 'overview' && <CourseOverview course={course} />}
                 {tab === 'resources' && <LessonResources lesson={lesson} loading={lessonLoading} hasLesson={currentItem !== null} />}
                 {tab === 'checklist' && <CourseChecklist course={course} slug={slug} />}
             </div>
@@ -632,38 +656,24 @@ function LessonTabs({course, slug, currentItem, lesson, lessonLoading}: {
     );
 }
 
-function CourseOverview({course, lesson}: {course: TrainingCourseDetail; lesson: TrainingLessonDetail | undefined}) {
+/** The course summary and its meta only: training content comes from the lessons' files, not from text. */
+function CourseOverview({course}: {course: TrainingCourseDetail}) {
     const level = LEVEL_LABELS[course.level];
-    // An article's body is the lesson itself (on the stage); for other types it is the lesson's notes.
-    const notes = lesson && lesson.type !== 'ARTICLE' ? lesson.bodyMarkdown?.trim() : '';
     const documentCount = course.documentCount ?? 0;
     return (
-        <div className="max-w-3xl space-y-8">
-            {notes && (
-                <section className="space-y-3">
-                    <h3 className="text-base font-bold text-foreground">Ghi chú bài học</h3>
-                    <MarkdownSopRenderer markdown={notes} />
-                </section>
-            )}
-            <section className="space-y-4">
-                <div className="space-y-2">
-                    <h3 className="text-base font-bold text-foreground">Về khóa học này</h3>
-                    {course.summary && <p className="text-sm leading-relaxed text-muted">{course.summary}</p>}
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-                        <span className="rounded-badge border border-border bg-surface-variant px-2 py-0.5">{trainingCategoryLabel(course.targetPortal, course.category)}</span>
-                        {level && <span className="rounded-badge border border-border bg-surface-variant px-2 py-0.5">{level.label}</span>}
-                        {course.isMandatory && <span className="rounded-badge border border-border px-2 py-0.5 font-semibold text-foreground">Bắt buộc</span>}
-                        <span>
-                            {course.lessonCount} bài · {course.estimatedMinutes} phút
-                            {documentCount > 0 && ` · ${documentCount} tài liệu`}
-                        </span>
-                    </div>
-                </div>
-                {course.overviewMarkdown?.trim()
-                    ? <MarkdownSopRenderer markdown={course.overviewMarkdown} />
-                    : <p className="text-sm text-muted-foreground">Khoá học chưa có phần tổng quan.</p>}
-            </section>
-        </div>
+        <section className="max-w-3xl space-y-2">
+            <h3 className="text-base font-bold text-foreground">Về khóa học này</h3>
+            {course.summary && <p className="text-sm leading-relaxed text-muted">{course.summary}</p>}
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+                <span className="rounded-badge border border-border bg-surface-variant px-2 py-0.5">{trainingCategoryLabel(course.targetPortal, course.category)}</span>
+                {level && <span className="rounded-badge border border-border bg-surface-variant px-2 py-0.5">{level.label}</span>}
+                {course.isMandatory && <span className="rounded-badge border border-border px-2 py-0.5 font-semibold text-foreground">Bắt buộc</span>}
+                <span>
+                    {course.lessonCount > 0 ? `${course.lessonCount} bài` : 'Chưa có bài học'} · {course.estimatedMinutes} phút
+                    {documentCount > 0 && ` · ${documentCount} tài liệu`}
+                </span>
+            </div>
+        </section>
     );
 }
 
@@ -714,7 +724,7 @@ function CourseChecklist({course, slug}: {course: TrainingCourseDetail; slug: st
         },
     });
 
-    if (steps.length === 0) return <p className="text-sm text-muted-foreground">Khoá học này không có checklist thực hành.</p>;
+    if (steps.length === 0) return <p className="text-sm text-muted-foreground">Khóa học này không có checklist thực hành.</p>;
 
     const toggle = (index: number) => {
         if (mutation.isPending) return;

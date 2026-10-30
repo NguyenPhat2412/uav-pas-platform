@@ -40,6 +40,10 @@ import java.util.UUID;
 @Transactional
 public class AuthServiceImpl implements AuthService {
 
+    public static final String STAFF_REQUIRES_2FA =
+            "Tài khoản nhân sự cần bật xác thực 2 lớp để đăng nhập bằng Google. Vui lòng đăng nhập bằng mật khẩu.";
+    public static final String STAFF_REQUIRES_2FA_CODE = "GOOGLE_STAFF_REQUIRES_2FA";
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -254,18 +258,32 @@ public class AuthServiceImpl implements AuthService {
         if (user.getStatus() != UserStatus.ACTIVE) {
             throw SystemException.badRequest(CoreConstants.ACCOUNT_INACTIVE);
         }
+        // Google vouches long-term only for gmail.com and Workspace addresses, and the match is by
+        // email alone: a staff account must still pass its own second factor.
+        if (user.getRole() != UserRole.ROLE_PILOT && !user.isTwoFactorEnabled()) {
+            throw SystemException.forbidden(STAFF_REQUIRES_2FA, STAFF_REQUIRES_2FA_CODE);
+        }
 
         // Google has just proven the address, which is what the emailed verification code proves.
         boolean changed = false;
+        boolean dropCredentials = false;
         if (!user.isEmailVerified()) {
+            // Anyone could have registered this unverified address with their own password: that
+            // password and its sessions are dropped (forgot-password can set a new one).
+            user.setPasswordHash(null);
             user.setEmailVerified(true);
             changed = true;
+            dropCredentials = true;
         }
         if (user.getFailedAttempts() > 0) {
             UserAccountServiceImpl.resetFailedAttempts(user);
             changed = true;
         }
         if (changed) userRepository.save(user);
+        // Refresh tokens only: an unverified account never received an access token (login asks
+        // for the emailed code first), and SessionTerminationService's access-token cut-off covers
+        // the current second, so it would also reject the session issued just below.
+        if (dropCredentials && refreshTokenService != null) refreshTokenService.deleteByUser(user);
 
         // Google never bypasses the account's second factor.
         if (authOtpService != null && user.isTwoFactorEnabled()) {

@@ -27,7 +27,7 @@ import type {AuthModalView, AuthResponse, TwoFactorMethod} from '@/features/auth
 import {availablePortalsForRole, canUsePortal, type Portal, portalForRole, portalHome} from '@/features/auth/utils/portal';
 import {safeNextPath} from '@/features/auth/utils/auth-entry';
 import {OtpCodeInput} from '@/features/auth/components/OtpCodeInput';
-import {cn} from '@/lib/utils';
+import {GoogleSignInButton} from '@/features/auth/components/GoogleSignInButton';
 
 export type {AuthModalView};
 
@@ -199,37 +199,57 @@ export function AuthModalPopup() {
         setFieldErrors({});
         setSubmitting(true);
         try {
-            const res = await login(usernameOrEmail.trim(), loginPassword);
-            if (res.mfaRequired) {
-                setChallengeToken(res.challengeToken ?? '');
-                setChallengeEmail(res.user?.email ?? usernameOrEmail.trim());
-                setMaskedEmail(res.maskedEmail ?? res.user?.email ?? '');
-                setDevOtpPreview(res.devOtpPreview ?? null);
-                setOtpCode('');
-                setResendCooldown(60);
-                if (res.mfaMethod === 'EMAIL_VERIFY') {
-                    setView('verify-email');
-                    toast.info('Vui lòng nhập mã OTP gửi qua email để kích hoạt tài khoản.');
-                } else {
-                    setMfaMethod(res.mfaMethod === 'TOTP' ? 'TOTP' : 'EMAIL');
-                    setView('verify-2fa');
-                    toast.info(
-                        res.mfaMethod === 'TOTP'
-                            ? 'Nhập mã 6 chữ số từ ứng dụng Google Authenticator.'
-                            : 'Mã xác thực 2FA gồm 6 chữ số đã được gửi tới email của bạn.',
-                    );
-                }
-                return;
-            }
-            finishAuthentication(
-                res,
-                `Xin chào ${res.user?.fullName || res.user?.username || 'bạn'}, đang chuyển vào hệ thống điều hành.`,
-            );
+            continueSignIn(await login(usernameOrEmail.trim(), loginPassword), usernameOrEmail.trim());
         } catch (err) {
             showFailure(err, 'Thông tin đăng nhập không chính xác.');
         } finally {
             setSubmitting(false);
         }
+    };
+
+    /** Google sign-in ends the same way as a password login: straight in, or on to the 2FA / email check. */
+    const handleGoogleCredential = async (credential: string) => {
+        if (submitting) return;
+        setError(null);
+        setFieldErrors({});
+        setSubmitting(true);
+        try {
+            const res = await authService.loginWithGoogle(credential);
+            continueSignIn(res, res.user?.email ?? '');
+        } catch (err) {
+            showFailure(err, 'Không đăng nhập được bằng Google. Vui lòng thử lại.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    /** After the first factor: either open the account or ask for the code the server requested. */
+    const continueSignIn = (res: AuthResponse, fallbackEmail: string) => {
+        if (res.mfaRequired) {
+            setChallengeToken(res.challengeToken ?? '');
+            setChallengeEmail(res.user?.email ?? fallbackEmail);
+            setMaskedEmail(res.maskedEmail ?? res.user?.email ?? '');
+            setDevOtpPreview(res.devOtpPreview ?? null);
+            setOtpCode('');
+            setResendCooldown(60);
+            if (res.mfaMethod === 'EMAIL_VERIFY') {
+                setView('verify-email');
+                toast.info('Vui lòng nhập mã OTP gửi qua email để kích hoạt tài khoản.');
+            } else {
+                setMfaMethod(res.mfaMethod === 'TOTP' ? 'TOTP' : 'EMAIL');
+                setView('verify-2fa');
+                toast.info(
+                    res.mfaMethod === 'TOTP'
+                        ? 'Nhập mã 6 chữ số từ ứng dụng Google Authenticator.'
+                        : 'Mã xác thực 2FA gồm 6 chữ số đã được gửi tới email của bạn.',
+                );
+            }
+            return;
+        }
+        finishAuthentication(
+            res,
+            `Xin chào ${res.user?.fullName || res.user?.username || 'bạn'}, đang chuyển vào hệ thống điều hành.`,
+        );
     };
 
     const handleRegisterSubmit = async (e: FormEvent) => {
@@ -541,19 +561,13 @@ export function AuthModalPopup() {
                                 {submitting ? 'Đang xử lý...' : 'Đăng nhập'}
                             </button>
 
-                            <div className="flex items-center justify-center border-t border-slate-100 pt-3 text-xs text-slate-500">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setError(null);
-                                        setFieldErrors({});
-                                        setView('register');
-                                    }}
-                                    className="font-bold text-primary hover:underline"
-                                >
-                                    Tạo tài khoản mới →
-                                </button>
+                            <div className="flex items-center gap-3 pt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                <span className="h-px flex-1 bg-slate-200"/>
+                                hoặc
+                                <span className="h-px flex-1 bg-slate-200"/>
                             </div>
+
+                            <GoogleSignInButton disabled={submitting} onCredential={credential => void handleGoogleCredential(credential)}/>
                         </form>
                     )}
 

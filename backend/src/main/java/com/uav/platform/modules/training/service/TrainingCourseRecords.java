@@ -42,7 +42,8 @@ public class TrainingCourseRecords {
 
     /**
      * Recomputes every learner's record of these courses after their active lesson set changed (a lesson was
-     * added, hidden, shown, moved or deleted). Only records whose status changes are written.
+     * added, hidden, shown, moved or deleted). Only records whose status changes are written; a COMPLETED record
+     * stays COMPLETED (see {@link #apply}).
      */
     public void recompute(Set<TrainingDocument> docs) {
         for (TrainingDocument doc : docs) if (doc != null && doc.getId() != null) recompute(doc);
@@ -81,16 +82,20 @@ public class TrainingCourseRecords {
     }
 
     /**
-     * Sets the status and keeps completedAt consistent with it (kept while COMPLETED, cleared otherwise).
+     * Sets the status, stamping completedAt on the first completion. A completion is history: a COMPLETED record
+     * is never moved back (lessons added later, a step unticked) and completedAt is never cleared.
      *
      * @return whether the status changed
      */
     public static boolean apply(UserTrainingProgress record, String status) {
+        if (TrainingCourseProgress.COMPLETED.equals(record.getStatus())) {
+            if (record.getCompletedAt() == null) record.setCompletedAt(OffsetDateTime.now());
+            return false;
+        }
         boolean changed = !Objects.equals(record.getStatus(), status);
         record.setStatus(status);
-        if (TrainingCourseProgress.COMPLETED.equals(status)) {
-            if (record.getCompletedAt() == null) record.setCompletedAt(OffsetDateTime.now());
-        } else record.setCompletedAt(null);
+        if (TrainingCourseProgress.COMPLETED.equals(status) && record.getCompletedAt() == null)
+            record.setCompletedAt(OffsetDateTime.now());
         return changed;
     }
 

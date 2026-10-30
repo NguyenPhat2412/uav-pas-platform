@@ -90,33 +90,87 @@ class TrainingCourseRecordsTest {
     }
 
     @Test
-    void addingALessonReopensCompletedLearnersAndHidingOneCompletesTheRest() {
+    void addingALessonKeepsCompletionsAndHidingTheLastUnfinishedOneCompletesTheRest() {
         UserTrainingProgress finished = record(7L, "COMPLETED");
+        OffsetDateTime finishedAt = OffsetDateTime.parse("2026-03-01T08:00:00+07:00");
+        finished.setCompletedAt(finishedAt);
         UserTrainingProgress almost = record(8L, "IN_PROGRESS");
         UserTrainingProgress idle = record(9L, "NOT_STARTED");
         when(courseProgress.findByDocumentId(1L)).thenReturn(List.of(finished, almost, idle));
 
-        // A third lesson was added: user 7 had done the first two only.
+        // A third lesson was added: user 7 had done the first two only, and keeps the completion.
         activeLessons(10L, 11L, 12L);
         when(lessonProgress.countByLearner(anyCollection()))
                 .thenReturn(List.of(counts(7L, 2, 2), counts(8L, 2, 2)));
         records.recompute(Set.of(course));
-        assertEquals("IN_PROGRESS", finished.getStatus());
-        assertNull(finished.getCompletedAt());
+        assertEquals("COMPLETED", finished.getStatus());
+        assertEquals(finishedAt, finished.getCompletedAt());
         assertEquals("IN_PROGRESS", almost.getStatus());
+        assertNull(almost.getCompletedAt());
         assertEquals("NOT_STARTED", idle.getStatus());
-        // Only the record that changed is written.
-        assertEquals(List.of(finished), saved);
+        // Nothing changed, so nothing is written.
+        verify(courseProgress, never()).saveAll(any(Collection.class));
 
-        // The new lesson was hidden again: both are complete now.
-        saved.clear();
+        // The new lesson was hidden again: user 8 completes now, user 7 keeps the original date.
         activeLessons(10L, 11L);
         records.recompute(Set.of(course));
         assertEquals("COMPLETED", finished.getStatus());
-        assertNotNull(finished.getCompletedAt());
+        assertEquals(finishedAt, finished.getCompletedAt());
         assertEquals("COMPLETED", almost.getStatus());
+        assertNotNull(almost.getCompletedAt());
         assertEquals("NOT_STARTED", idle.getStatus());
-        assertEquals(2, saved.size());
+        assertEquals(List.of(almost), saved);
+    }
+
+    @Test
+    void firstLessonOfACourseWithoutLessonsKeepsEveryCompletion() {
+        // Every lesson was switched off (V35): the first lesson an administrator adds must not
+        // reopen anyone who completed the course before.
+        UserTrainingProgress finished = record(7L, "COMPLETED");
+        OffsetDateTime finishedAt = OffsetDateTime.parse("2025-11-20T10:30:00+07:00");
+        finished.setCompletedAt(finishedAt);
+        UserTrainingProgress started = record(8L, "IN_PROGRESS");
+        UserTrainingProgress idle = record(9L, "NOT_STARTED");
+        when(courseProgress.findByDocumentId(1L)).thenReturn(List.of(finished, started, idle));
+
+        activeLessons(10L);
+        when(lessonProgress.countByLearner(anyCollection())).thenReturn(List.of());
+        records.recompute(Set.of(course));
+
+        assertEquals("COMPLETED", finished.getStatus());
+        assertEquals(finishedAt, finished.getCompletedAt());
+        assertEquals("IN_PROGRESS", started.getStatus());
+        assertEquals("NOT_STARTED", idle.getStatus());
+        verify(courseProgress, never()).saveAll(any(Collection.class));
+    }
+
+    @Test
+    void notStartedLearnerWhoFinishedEveryLessonIsUpgraded() {
+        UserTrainingProgress idle = record(9L, "NOT_STARTED");
+        when(courseProgress.findByDocumentId(1L)).thenReturn(List.of(idle));
+        activeLessons(10L);
+        when(lessonProgress.countByLearner(anyCollection())).thenReturn(List.of(counts(9L, 1, 1)));
+
+        records.recompute(Set.of(course));
+
+        assertEquals("COMPLETED", idle.getStatus());
+        assertNotNull(idle.getCompletedAt());
+        assertEquals(List.of(idle), saved);
+    }
+
+    @Test
+    void applyNeverDowngradesOrClearsTheCompletionDate() {
+        UserTrainingProgress r = record(7L, "COMPLETED");
+        OffsetDateTime at = r.getCompletedAt();
+        assertFalse(TrainingCourseRecords.apply(r, "IN_PROGRESS"));
+        assertFalse(TrainingCourseRecords.apply(r, "NOT_STARTED"));
+        assertFalse(TrainingCourseRecords.apply(r, "COMPLETED"));
+        assertEquals("COMPLETED", r.getStatus());
+        assertEquals(at, r.getCompletedAt());
+
+        UserTrainingProgress open = record(8L, "IN_PROGRESS");
+        assertTrue(TrainingCourseRecords.apply(open, "COMPLETED"));
+        assertNotNull(open.getCompletedAt());
     }
 
     @Test
@@ -133,14 +187,16 @@ class TrainingCourseRecordsTest {
                 .thenReturn(List.of(counts(7L, 1, 1), counts(8L, 1, 1)));
         records.recompute(Set.of(course));
         assertEquals("COMPLETED", ticked.getStatus());
-        assertEquals("IN_PROGRESS", partly.getStatus());
+        // An earlier completion is kept even though the checklist is only partly ticked.
+        assertEquals("COMPLETED", partly.getStatus());
+        assertNotNull(partly.getCompletedAt());
 
         // Every lesson hidden: the checklist alone decides, no lesson query is made.
         activeLessons();
         reset(lessonProgress);
         records.recompute(Set.of(course));
         assertEquals("COMPLETED", ticked.getStatus());
-        assertEquals("IN_PROGRESS", partly.getStatus());
+        assertEquals("COMPLETED", partly.getStatus());
         verifyNoInteractions(lessonProgress);
     }
 

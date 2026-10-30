@@ -352,20 +352,44 @@ class TrainingCourseServiceTest {
     }
 
     @Test
+    void completingALessonAddedLaterKeepsTheEarlierCompletion() {
+        TrainingDocument doc = course(1, "CUSTOMER", "[]");
+        TrainingLesson added = lesson(10, doc, TrainingLessonType.ARTICLE, null);
+        TrainingLesson other = lesson(11, doc, TrainingLessonType.ARTICLE, null);
+        courseLessons(doc, added, other);
+        UserTrainingProgress record = new UserTrainingProgress();
+        record.setUser(customer);
+        record.setDocument(doc);
+        record.setStatus("COMPLETED");
+        OffsetDateTime completedAt = OffsetDateTime.parse("2025-12-01T09:00:00+07:00");
+        record.setCompletedAt(completedAt);
+        savedRecords.put(1L, record);
+
+        // Only one of the two lessons added after the completion is done.
+        service.updateLessonProgress(10L, done(true), customerAuth);
+
+        assertEquals("COMPLETED", savedRecords.get(1L).getStatus());
+        assertEquals(completedAt, savedRecords.get(1L).getCompletedAt());
+        assertEquals("COMPLETED", service.listCourses("CUSTOMER", customerAuth).get(0).status());
+    }
+
+    @Test
     void recordStatusRule() {
         String ns = TrainingCourseProgress.NOT_STARTED;
         String ip = TrainingCourseProgress.IN_PROGRESS;
         String done = TrainingCourseProgress.COMPLETED;
         // With lessons: all lessons and the checklist.
         assertEquals(done, TrainingCourseProgress.recordStatus(null, 2, 2, 0, 0, true));
-        assertEquals(ip, TrainingCourseProgress.recordStatus(done, 1, 2, 0, 0, true));
+        // A completion is kept when lessons are added or steps change later.
+        assertEquals(done, TrainingCourseProgress.recordStatus(done, 1, 2, 0, 0, true));
         assertEquals(ip, TrainingCourseProgress.recordStatus(null, 0, 2, 2, 2, false));
         assertEquals(done, TrainingCourseProgress.recordStatus(ip, 2, 2, 2, 2, true));
         assertEquals(ns, TrainingCourseProgress.recordStatus(null, 0, 2, 0, 0, false));
-        assertEquals(ip, TrainingCourseProgress.recordStatus(done, 0, 3, 0, 0, false));
+        assertEquals(done, TrainingCourseProgress.recordStatus(done, 0, 3, 0, 0, false));
         // Without lessons: checklist-only rule, and a checklist-free course keeps its status.
         assertEquals(done, TrainingCourseProgress.recordStatus(ip, 0, 0, 2, 2, false));
-        assertEquals(ip, TrainingCourseProgress.recordStatus(done, 0, 0, 2, 1, false));
+        assertEquals(done, TrainingCourseProgress.recordStatus(done, 0, 0, 2, 1, false));
+        assertEquals(ip, TrainingCourseProgress.recordStatus(null, 0, 0, 2, 1, false));
         assertEquals(done, TrainingCourseProgress.recordStatus(done, 0, 0, 0, 0, false));
         assertEquals(ns, TrainingCourseProgress.recordStatus(null, 0, 0, 0, 0, false));
     }

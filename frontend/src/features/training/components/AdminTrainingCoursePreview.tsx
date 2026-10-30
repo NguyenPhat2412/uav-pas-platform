@@ -26,7 +26,12 @@ export function AdminTrainingCoursePreview({slug}: {slug: string}) {
     return (
         // activeDestination matches a resource without its leading slash.
         <AdminPage title="Xem như học viên" permission="DASHBOARD_READ" activeResource={home.slice(1)}>
-            <TrainingCoursePlayer slug={slug} backHref={home} backLabel="Quay lại quản lý" />
+            <TrainingCoursePlayer
+                slug={slug}
+                backHref={home}
+                backLabel="Quay lại quản lý"
+                emptyHint="Thêm video, PDF hoặc tài liệu trong Đào tạo: mở khóa học và kéo thả tệp vào mục Bài học."
+            />
         </AdminPage>
     );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import type {ReactNode} from 'react';
 import {Upload} from 'lucide-react';
 import {trainingService} from '@/lib/api/resources';
@@ -8,12 +8,15 @@ import type {TrainingAssetConfirmation} from '@/features/training/types/training
 import {
     formatFileSize,
     TRAINING_IMAGE_MAX_BYTES,
+    TRAINING_OFFICE_MAX_BYTES,
+    TRAINING_OFFICE_TYPES,
     TRAINING_IMAGE_TYPES,
     TRAINING_PDF_MAX_BYTES,
     TRAINING_PDF_TYPE,
     TRAINING_VIDEO_MAX_BYTES,
     TRAINING_VIDEO_TYPES,
     trainingAssetError,
+    trainingFileContentType,
 } from '@/features/training/utils/course-helpers';
 import type {TrainingAssetKind} from '@/features/training/utils/course-helpers';
 
@@ -31,8 +34,8 @@ const KIND_RULES: Record<TrainingAssetKind, {accept: string; hint: string}> = {
         hint: `Một tệp PDF, tối đa ${formatFileSize(TRAINING_PDF_MAX_BYTES)}`,
     },
     resource: {
-        accept: [TRAINING_PDF_TYPE, ...TRAINING_IMAGE_TYPES].join(','),
-        hint: `PDF tối đa ${formatFileSize(TRAINING_PDF_MAX_BYTES)}; ảnh PNG, JPEG, WebP tối đa ${formatFileSize(TRAINING_IMAGE_MAX_BYTES)}`,
+        accept: [TRAINING_PDF_TYPE, ...TRAINING_OFFICE_TYPES, '.docx', '.pptx', '.xlsx', ...TRAINING_IMAGE_TYPES].join(','),
+        hint: `PDF, Word, PowerPoint, Excel tối đa ${formatFileSize(Math.max(TRAINING_PDF_MAX_BYTES, TRAINING_OFFICE_MAX_BYTES))}; ảnh PNG, JPEG, WebP tối đa ${formatFileSize(TRAINING_IMAGE_MAX_BYTES)}`,
     },
 };
 
@@ -45,19 +48,33 @@ function fileProblem(file: File, kind: TrainingAssetKind): string | null {
 
 /**
  * Pick file(s), check type and size, then upload each one in turn (register → PUT to storage →
- * confirm) with a progress bar. `onUploaded` runs once per READY asset.
+ * confirm) with a progress bar. `onUploaded` runs once per READY asset; `onBusyChange` reports when an
+ * upload starts and ends (also on unmount), so a dialog can refuse to close mid-upload.
  */
-export function TrainingAssetUpload({kind, multiple = false, label, icon, onUploaded, disabled = false}: {
+export function TrainingAssetUpload({kind, multiple = false, label, icon, onUploaded, onBusyChange, disabled = false}: {
     kind: TrainingAssetKind;
     multiple?: boolean;
     label: string;
     icon?: ReactNode;
     onUploaded: (asset: TrainingAssetConfirmation, file: File) => void;
+    onBusyChange?: (busy: boolean) => void;
     disabled?: boolean;
 }) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [status, setStatus] = useState<{index: number; total: number; name: string; fraction: number} | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const busy = status !== null;
+    const onBusyChangeRef = useRef(onBusyChange);
+
+    useEffect(() => {
+        onBusyChangeRef.current = onBusyChange;
+    }, [onBusyChange]);
+
+    useEffect(() => {
+        if (!busy) return;
+        onBusyChangeRef.current?.(true);
+        return () => onBusyChangeRef.current?.(false);
+    }, [busy]);
 
     const run = async (files: File[]) => {
         setError(null);
@@ -69,8 +86,12 @@ export function TrainingAssetUpload({kind, multiple = false, label, icon, onUplo
         for (const [index, file] of files.entries()) {
             setStatus({index, total: files.length, name: file.name, fraction: 0});
             try {
-                const asset = await trainingService.uploadAsset(file, fraction =>
-                    setStatus(current => (current ? {...current, fraction} : current)));
+                const asset = await trainingService.uploadAsset(
+                    file,
+                    fraction => setStatus(current => (current ? {...current, fraction} : current)),
+                    undefined,
+                    trainingFileContentType(file),
+                );
                 onUploaded(asset, file);
             } catch (cause) {
                 setError(`${file.name}: ${cause instanceof Error ? cause.message : 'tải lên thất bại.'}`);

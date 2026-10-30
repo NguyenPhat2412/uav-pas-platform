@@ -122,6 +122,10 @@ export const authService = {
     async login(credentials: LoginRequest): Promise<AuthResponse> {
         return apiClient.post<AuthResponse>(API_ROUTES.auth.login, credentials);
     },
+    /** Signs in with a Google ID token; the answer has the same shape as a password login. */
+    async loginWithGoogle(credential: string): Promise<AuthResponse> {
+        return apiClient.post<AuthResponse>(API_ROUTES.auth.google, {credential});
+    },
     async register(data: RegisterRequest): Promise<UserResponse> {
         return apiClient.post<UserResponse>(API_ROUTES.auth.register, data);
     },

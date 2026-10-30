@@ -5,6 +5,7 @@
 export const API_ROUTES = {
     auth: {
         login: '/api/v1/auth/login',
+        google: '/api/v1/auth/google',
         register: '/api/v1/auth/register',
         registerOtp: '/api/v1/auth/register-otp',
         verifyEmail: '/api/v1/auth/verify-email',

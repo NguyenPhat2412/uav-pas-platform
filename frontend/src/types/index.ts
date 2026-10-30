@@ -70,6 +70,7 @@ export interface PublicEnv {
     NEXT_PUBLIC_APP_URL: string;
     NEXT_PUBLIC_ENVIRONMENT: 'local' | 'staging' | 'production';
     NEXT_PUBLIC_DISPATCH_HOTLINE?: string;
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID?: string;
 }
 
 export type ApiRoutes = Record<string, Record<string, string | ((...args: never[]) => string)>>;

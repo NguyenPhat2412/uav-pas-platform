@@ -2,9 +2,10 @@ package com.uav.platform.modules.auth.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.nio.charset.StandardCharsets;
 
 /** The decoy reset challenge must hash with real BCrypt, which refuses inputs over 72 bytes. */
 class DecoyResetSecretTest {

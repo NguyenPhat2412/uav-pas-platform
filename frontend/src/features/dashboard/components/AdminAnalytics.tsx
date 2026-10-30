@@ -453,7 +453,7 @@ function AnalyticsBody({data, money}: { data: Analytics; money: Intl.NumberForma
                     const ratio = Math.min(1, q.used / q.limit);
                     return <li key={q.username}>
                         <div className="mb-[5px] flex justify-between gap-2 text-[13px]"><span className="truncate font-medium text-primary">{q.username}</span><strong className="text-primary">{t('admin.analytics.quotaUsage', {used: q.used, limit: q.limit})}</strong></div>
-                        <span className="flex h-[7px] gap-0.5 overflow-hidden rounded-full bg-rose-50"><span className="rounded-panel" style={{width: `${ratio * 100}%`, background: ratio >= 1 ? '#7f1d1d' : '#dc2626'}}/></span>
+                        <span className="flex h-[7px] gap-0.5 overflow-hidden rounded-full bg-rose-50"><span className="rounded-panel" style={{width: `${ratio * 100}%`, background: ratio >= 1 ? '#c43a4a' : '#52525b'}}/></span>
                     </li>;
                 })}</ul> : <p className="m-0 p-6 text-[13px] text-primary/70">{t('admin.analytics.quotaEmpty')}</p>}
             </section>}
@@ -468,7 +468,7 @@ function AnalyticsBody({data, money}: { data: Analytics; money: Intl.NumberForma
                     const total = w.success + w.failed;
                     return <li key={w.name}>
                         <div className="mb-[5px] flex justify-between gap-2 text-[13px]"><span className="truncate text-primary/80">{w.name}</span><strong className="text-primary">{t('admin.analytics.webhookRate', {rate: Math.round(w.success / total * 100), total})}</strong></div>
-                        <span className="flex h-[7px] gap-0.5 overflow-hidden rounded-panel bg-rose-50"><span style={{flexGrow: w.success, background: '#dc2626'}}/><span style={{flexGrow: w.failed, background: '#fca5a5'}}/></span>
+                        <span className="flex h-[7px] gap-0.5 overflow-hidden rounded-panel bg-rose-50"><span style={{flexGrow: w.success, background: '#52525b'}}/><span style={{flexGrow: w.failed, background: '#c43a4a'}}/></span>
                     </li>;
                 })}</ul> : <p className="m-0 p-6 text-[13px] text-primary/70">{t('admin.analytics.webhookEmpty')}</p>}
             </section>}

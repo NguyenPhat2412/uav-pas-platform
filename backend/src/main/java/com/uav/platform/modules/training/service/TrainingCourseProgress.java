@@ -38,15 +38,16 @@ public final class TrainingCourseProgress {
     /**
      * Status the stored course record must have, derived from the learner's state. It is recomputed whenever
      * that state changes (lesson completed, checklist ticked) and for every learner when an administrator
-     * changes the course's active lessons, so the record never goes stale.
+     * changes the course's active lessons, so the record never goes stale. A completion is kept: once the
+     * record is COMPLETED it stays COMPLETED, whatever lessons or steps change later.
      *
      * <p>A course with active lessons is COMPLETED only when every active lesson is done and the checklist, if
      * any, is fully ticked; otherwise it is IN_PROGRESS once the learner did anything (lesson activity, a
      * ticked step, an earlier record status) and NOT_STARTED before that.
      *
      * <p>A course without active lessons keeps the checklist-only rule: a fully ticked checklist completes it,
-     * a partly ticked one cannot stay COMPLETED, and a checklist-free course keeps its stored status (it is
-     * completed explicitly through the overview endpoint).
+     * and a checklist-free course keeps its stored status (it is completed explicitly through the overview
+     * endpoint).
      */
     public static String recordStatus(
             String current,
@@ -55,11 +56,8 @@ public final class TrainingCourseProgress {
             int checklistSize,
             int checkedSteps,
             boolean lessonActivity) {
-        boolean started =
-                lessonActivity
-                        || checkedSteps > 0
-                        || IN_PROGRESS.equals(current)
-                        || COMPLETED.equals(current);
+        if (COMPLETED.equals(current)) return COMPLETED;
+        boolean started = lessonActivity || checkedSteps > 0 || IN_PROGRESS.equals(current);
         if (lessonCount > 0) {
             if (courseComplete(completedLessons, lessonCount, checklistSize, checkedSteps))
                 return COMPLETED;

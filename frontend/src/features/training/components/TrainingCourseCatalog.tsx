@@ -10,18 +10,21 @@ import {ErrorNotice} from '@/components/data/WorkspaceState';
 import type {TrainingCourseSummary, TrainingPortalTier} from '@/features/training/types/training.types';
 import {PORTAL_META, TRAINING_CATEGORY_ICONS, TrainingDefaultCategoryIcon, trainingCategoryLabel} from '@/features/training/utils/training-meta';
 import {courseCallToAction, matchesCourseSearch} from '@/features/training/utils/course-helpers';
+import type {CourseCallToAction} from '@/features/training/utils/course-helpers';
 
 export const trainingCoursesQueryKey = (portal: TrainingPortalTier) => ['uav-training-courses', portal] as const;
 
 /**
  * The learner's course catalogue: a grid of course cards with search and a topic filter.
  * `courseHref` decides where a card leads (the portal's own player, or the admin preview).
- * `embedded` drops the page heading when the catalogue sits inside another page.
+ * `embedded` drops the page heading when the catalogue sits inside another page; `manage` (admin
+ * preview) tells admins where to add lessons to an empty course.
  */
-export function TrainingCourseCatalog({portal, courseHref, embedded = false}: {
+export function TrainingCourseCatalog({portal, courseHref, embedded = false, manage = false}: {
     portal: TrainingPortalTier;
     courseHref: (slug: string) => string;
     embedded?: boolean;
+    manage?: boolean;
 }) {
     const [search, setSearch] = useState('');
     const [category, setCategory] = useState('ALL');
@@ -49,13 +52,13 @@ export function TrainingCourseCatalog({portal, courseHref, embedded = false}: {
         <div className="bg-card">
             <div className="flex flex-col gap-3 border-b border-border px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
                 {embedded ? (
-                    <p className="text-sm text-muted">Danh mục khoá học như {meta.audience} nhìn thấy.</p>
+                    <p className="text-sm text-muted">Danh mục khóa học như {meta.audience} nhìn thấy.</p>
                 ) : (
                     <div className="space-y-1">
                         <h1 className="text-lg font-bold tracking-tight text-foreground sm:text-xl">{meta.title}</h1>
                         <p className="text-sm text-muted">
                             {meta.subtitle}
-                            {courses.length > 0 && <> · Đã hoàn thành <strong className="text-foreground">{completed}/{courses.length}</strong> khoá</>}
+                            {courses.length > 0 && <> · Đã hoàn thành <strong className="text-foreground">{completed}/{courses.length}</strong> khóa</>}
                         </p>
                     </div>
                 )}
@@ -66,15 +69,15 @@ export function TrainingCourseCatalog({portal, courseHref, embedded = false}: {
                             type="search"
                             value={search}
                             onChange={event => setSearch(event.target.value)}
-                            placeholder="Tìm khoá học"
-                            aria-label="Tìm khoá học"
+                            placeholder="Tìm khóa học"
+                            aria-label="Tìm khóa học"
                             className="h-9 w-full rounded-control border border-border-input bg-card pr-8 pl-8 text-xs text-foreground placeholder:text-muted-foreground focus:border-foreground/40 focus:outline-none"
                         />
                         {search && (
                             <button
                                 type="button"
                                 onClick={() => setSearch('')}
-                                aria-label="Xoá từ khoá"
+                                aria-label="Xóa từ khóa"
                                 className="absolute top-1/2 right-2.5 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                             >
                                 <X className="h-3.5 w-3.5" />
@@ -98,7 +101,7 @@ export function TrainingCourseCatalog({portal, courseHref, embedded = false}: {
                 {query.error ? (
                     <ErrorNotice error={query.error} />
                 ) : query.isPending ? (
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4" role="status" aria-label="Đang tải khoá học">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4" role="status" aria-label="Đang tải khóa học">
                         {[0, 1, 2, 3].map(index => (
                             <div key={index} className="overflow-hidden rounded-panel border border-border">
                                 <div className="aspect-video animate-pulse bg-surface-variant" />
@@ -112,17 +115,17 @@ export function TrainingCourseCatalog({portal, courseHref, embedded = false}: {
                 ) : visible.length === 0 ? (
                     <div className="flex flex-col items-center gap-1 py-14 text-center">
                         <p className="text-sm font-semibold text-foreground">
-                            {courses.length === 0 ? 'Chưa có khoá học' : 'Không có khoá học phù hợp'}
+                            {courses.length === 0 ? 'Chưa có khóa học' : 'Không có khóa học phù hợp'}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                            {courses.length === 0 ? 'Khoá học mới sẽ hiện ở đây.' : 'Thử bỏ bộ lọc hoặc đổi từ khoá.'}
+                            {courses.length === 0 ? 'Khóa học mới sẽ hiện ở đây.' : 'Thử bỏ bộ lọc hoặc đổi từ khóa.'}
                         </p>
                     </div>
                 ) : (
                     <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                         {visible.map(course => (
                             <li key={course.id}>
-                                <CourseCard course={course} href={courseHref(course.slug)} portal={portal} />
+                                <CourseCard course={course} href={courseHref(course.slug)} portal={portal} manage={manage} />
                             </li>
                         ))}
                     </ul>
@@ -132,8 +135,9 @@ export function TrainingCourseCatalog({portal, courseHref, embedded = false}: {
     );
 }
 
-function CourseCard({course, href, portal}: {course: TrainingCourseSummary; href: string; portal: TrainingPortalTier}) {
+function CourseCard({course, href, portal, manage}: {course: TrainingCourseSummary; href: string; portal: TrainingPortalTier; manage: boolean}) {
     const cta = courseCallToAction(course.status, course.completedLessons);
+    const empty = (course.lessonCount ?? 0) === 0;
     const Icon = TRAINING_CATEGORY_ICONS[course.category] ?? TrainingDefaultCategoryIcon;
     const percent = Math.min(Math.max(Math.round(course.progressPercent ?? 0), 0), 100);
     return (
@@ -161,31 +165,53 @@ function CourseCard({course, href, portal}: {course: TrainingCourseSummary; href
             <div className="flex flex-1 flex-col gap-1.5 p-3">
                 <h2 className="line-clamp-2 text-sm leading-snug font-semibold text-foreground">{course.title}</h2>
                 {course.summary && <p className="line-clamp-1 text-xs text-muted">{course.summary}</p>}
-                <p className="text-[11px] text-muted-foreground">
-                    {course.lessonCount} bài · {course.estimatedMinutes} phút
-                    {(course.documentCount ?? 0) > 0 && ` · ${course.documentCount} tài liệu`}
-                </p>
+                {!empty && (
+                    <p className="text-[11px] text-muted-foreground">
+                        {course.lessonCount} bài · {course.estimatedMinutes} phút
+                        {(course.documentCount ?? 0) > 0 && ` · ${course.documentCount} tài liệu`}
+                    </p>
+                )}
                 <div className="mt-auto pt-2">
-                    {cta === 'continue' && (
-                        <div className="mb-2 flex items-center gap-2">
-                            <div className="h-1 flex-1 overflow-hidden rounded-full bg-surface-variant" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label="Tiến độ">
-                                <div className="h-full bg-slate-700" style={{width: `${percent}%`}} />
-                            </div>
-                            <span className="text-[11px] font-medium text-muted">{percent}%</span>
-                        </div>
-                    )}
-                    {cta === 'done' ? (
-                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700">
-                            <CircleCheck className="h-3.5 w-3.5" />
-                            Đã hoàn thành
-                        </span>
-                    ) : (
-                        <span className="text-xs font-semibold text-primary group-hover:underline">
-                            {cta === 'continue' ? 'Tiếp tục học' : 'Bắt đầu'}
-                        </span>
-                    )}
+                    {empty ? <EmptyCourseNote manage={manage} /> : <CourseProgress cta={cta} percent={percent} />}
                 </div>
             </div>
         </Link>
+    );
+}
+
+/** A course with no active lessons yet (admins have not added files). */
+function EmptyCourseNote({manage}: {manage: boolean}) {
+    return (
+        <div className="space-y-0.5">
+            <span className="inline-flex rounded-badge border border-border bg-surface-variant px-1.5 py-0.5 text-[11px] font-semibold text-muted">Chưa có bài học</span>
+            <p className="text-[11px] text-muted-foreground">
+                {manage ? 'Thêm video, PDF hoặc tài liệu trong Đào tạo (mục Bài học của khóa).' : 'Nội dung sẽ sớm được cập nhật.'}
+            </p>
+        </div>
+    );
+}
+
+function CourseProgress({cta, percent}: {cta: CourseCallToAction; percent: number}) {
+    return (
+        <>
+            {cta === 'continue' && (
+                <div className="mb-2 flex items-center gap-2">
+                    <div className="h-1 flex-1 overflow-hidden rounded-full bg-surface-variant" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label="Tiến độ">
+                        <div className="h-full bg-slate-700" style={{width: `${percent}%`}} />
+                    </div>
+                    <span className="text-[11px] font-medium text-muted">{percent}%</span>
+                </div>
+            )}
+            {cta === 'done' ? (
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700">
+                    <CircleCheck className="h-3.5 w-3.5" />
+                    Đã hoàn thành
+                </span>
+            ) : (
+                <span className="text-xs font-semibold text-primary group-hover:underline">
+                    {cta === 'continue' ? 'Tiếp tục học' : 'Bắt đầu'}
+                </span>
+            )}
+        </>
     );
 }

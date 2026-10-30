@@ -34,3 +34,6 @@ backend/target/
 # Python interpreter cache
 __pycache__/
 *.py[cod]
+
+# Agent worktrees (local only)
+.claude/worktrees/

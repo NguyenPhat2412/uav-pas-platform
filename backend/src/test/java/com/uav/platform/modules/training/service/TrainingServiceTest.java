@@ -290,12 +290,11 @@ class TrainingServiceTest {
         assertEquals("COMPLETED", complete.progressStatus());
         assertNotNull(complete.completedAt());
 
-        // Unticking a step re-opens it.
-        assertEquals(
-                "IN_PROGRESS",
-                trainingService
-                        .updateProgress(
-                                6L, new UpdateTrainingProgressRequest(List.of(0), false), customer)
-                        .progressStatus());
+        // Unticking a step afterwards keeps the completion and its date.
+        TrainingDocumentResponse unticked =
+                trainingService.updateProgress(
+                        6L, new UpdateTrainingProgressRequest(List.of(0), false), customer);
+        assertEquals("COMPLETED", unticked.progressStatus());
+        assertEquals(complete.completedAt(), unticked.completedAt());
     }
 }
