@@ -1,57 +1,60 @@
-# UAV PAS Platform: nhánh `main`
+# Nhánh `backend`
 
-Nền tảng điều phối UAV gồm website công khai và ba cổng Khách hàng, Vận hành, Quản trị. Backend dùng Spring Boot 4.1 (Java 21). Frontend là một ứng dụng Next.js trong `frontend/`.
+Spring Boot 4.1.1 (Java 21), mã nguồn ở `backend/`. Nhánh này được đồng bộ từ `main`.
 
-`main` là nhánh tích hợp. Các nhánh nhóm bên dưới được đồng bộ từ `main`, và mỗi nhánh có README mô tả phần việc của mình.
+## 1. Chuẩn hoá controller
 
-| Nhánh | Phạm vi |
+- **Đường dẫn tập trung:** mọi đường dẫn REST lấy từ `config/routes/ApiRoutes.java`, nhóm theo module. Ví dụ: `ApiRoutes.Weather.BASE + ApiRoutes.Weather.FORECAST`. Lớp `common/constant/RestEndpoint.java` đã bị xoá.
+- **Controller chỉ điều phối:** nó nhận request, kiểm tra quyền bằng `@PreAuthorize` rồi gọi service. Mọi nghiệp vụ nằm trong `service/impl`.
+- **Controller cảnh báo:** `AdminAlertController` đã chuyển phần xử lý sang `AlertCenterService` và dùng quyền `PERMISSION_MANAGE`.
+- **Kiểm thử bảo vệ quy ước:** `ApiRoutesTest` giữ cho đường dẫn đúng chuẩn. `ArchitecturePackageTest`, `ModuleDtoStructureTest`, `EntityDtoBoundaryTest` và `ConstantsIntegrityTest` kiểm tra cấu trúc package và ranh giới entity/DTO.
+
+## 2. Module `weather`
+
+Package `modules/weather/`:
+
+| Thành phần | Nội dung |
 |---|---|
-| `backend` | Controller, service, module weather, kiểm thử Java |
-| `frontend` | Cấu trúc thư mục, tầng dữ liệu, component dùng chung |
-| `database` | Flyway migration, bảng và cấu hình hệ thống |
-| `admin` | Cổng Quản trị |
-| `operations` | Cổng Vận hành và trạm mặt đất |
-| `customer` | Cổng Khách hàng |
-| `ba` | Quy tắc nghiệp vụ và luồng xử lý |
-| `testcase` | Bộ kiểm thử và kết quả |
+| `entity` | `WeatherObservationCache` (cache theo ô lưới), `WeatherProviderSettings` (chỉ có một dòng, id = 1) |
+| `repository` | Kế thừa `JpaRepository` và `JpaSpecificationExecutor` |
+| `specification` | `withinGrid`, `byProvider`, `fetchedAfter` |
+| `dto/request`, `dto/response`, `dto/record` | Không có record lồng trong ServiceImpl hay Controller |
+| `service/impl/WeatherServiceImpl` | Gọi Open-Meteo 25 giờ tới, NOAA Kp và OpenWeatherMap. Cache-aside; khi lỗi thì trả dữ liệu cũ hoặc UNAVAILABLE |
+| `service/impl/FlightSafetyEvaluatorOperations` | Chấm điểm GO/CAUTION/NO_GO, tính hệ số hao pin, đề xuất 3 khung giờ bay |
+| `service/impl/WeatherCipherOperations` | AES/GCM/NoPadding, khoá 256 bit, IV 12 byte, tag 128 bit. Không bao giờ trả về API key |
+| `controller/WeatherController` | 5 endpoint, liệt kê bên dưới |
 
-## Các hạng mục đã hoàn thành (31/10/2026)
+| Phương thức | Đường dẫn | Quyền |
+|---|---|---|
+| GET | `/api/v1/weather/forecast?lat&lng&time&maxWindMs` | Đã đăng nhập |
+| GET | `/api/v1/weather/missions/{missionId}` | Quyền đọc nhiệm vụ |
+| GET | `/api/v1/weather/stations` | `STATION_READ` |
+| GET/PUT | `/api/v1/admin/weather/provider` | `PERMISSION_MANAGE` |
 
-1. **Chuẩn hoá controller backend.** Toàn bộ đường dẫn REST lấy từ `config/routes/ApiRoutes.java`. Lớp `RestEndpoint` đã bị xoá. Controller chỉ nhận request và gọi service. Ví dụ, controller cảnh báo không còn tự xử lý nghiệp vụ, và các quyền quản lý dùng `PERMISSION_MANAGE`.
-2. **Sắp xếp lại cấu trúc và tên file frontend.**
-   - Mỗi tính năng có các thư mục `features/<tên>/{api,hooks,components,types,utils}`.
-   - Context chuyển vào `providers/`. Component đặt tên theo PascalCase. Hook dùng chung nằm trong `src/hooks/`.
-3. **Chuẩn hoá tầng dữ liệu frontend.**
-   - Luồng gọi là Component → hook của feature → `*.api.ts` → `@/lib/api`.
-   - Query key có dạng `queryKeys.of(userId, feature, ...)`.
-   - Script `check-architecture.mjs` chặn UI import trực tiếp react-query hoặc api client.
-4. **Module thời tiết và an toàn bay.**
-   - Dự báo lấy từ Open-Meteo hoặc OpenWeatherMap, kèm chỉ số bão từ Kp của NOAA.
-   - Kết quả đánh giá là GO, CAUTION, NO_GO hoặc UNAVAILABLE, kèm điểm an toàn và các khung giờ bay đề xuất.
-   - API key nhà cung cấp được mã hoá bằng AES-256-GCM.
-   - Hệ thống có thể chặn cất cánh khi NO_GO và tạo cảnh báo cho admin.
+Tích hợp với các module khác, vẫn giữ tương thích ngược qua constructor overload và `ObjectProvider<WeatherService>`:
 
-Kết quả kiểm chứng:
+- **`MissionLifecycleServiceImpl`:** khi bắt đầu bay, hệ thống ghi kết luận thời tiết vào sự kiện. Nếu bật chặn cất cánh và kết quả là NO_GO, nó trả `409 MISSION_WEATHER_UNSAFE`.
+- **`AlertCenterServiceImpl`:** tạo cảnh báo `MISSION_WEATHER_HAZARD` cho các nhiệm vụ sẽ bay trong 6 giờ tới vào vùng dự báo NO_GO.
+- **Cấu hình:** `app.weather.encryption-secret`, mặc định dùng JWT secret. `app.weather.remote-enabled` được tắt khi chạy test.
 
-| Phần | Kết quả |
-|---|---|
-| Backend | 1184 test, 0 lỗi. 191 test được bỏ qua là các test cần Docker |
-| Module weather | Độ phủ JaCoCo 99,2% dòng, 96,8% nhánh |
-| Frontend | 221/221 test pass, typecheck sạch, kiểm tra kiến trúc OK |
+## 3. Plan statistics và storage
 
-## Chạy và kiểm thử
+- **Thống kê gói:** API thống kê cho trang quản trị, gồm `PlanStatisticsService` và `PlanStatsResponse`.
+- **Module `storage`:** cung cấp trình duyệt file cho admin.
+- **JaCoCo:** đã thêm plugin vào `pom.xml`.
+
+## Kiểm thử
 
 ```bash
-# Backend: luôn build ra thư mục riêng để không ghi đè backend/target của server đang chạy
 cd backend
 ./mvnw spotless:apply
 ./mvnw -B -Duav.build.directory=/tmp/uav-verify verify jacoco:report
-
-# Frontend
-cd frontend
-npm install
-npm run dev              # http://localhost:3100
-node --test tests/*.test.mjs && npm run typecheck && npm run architecture:check
+# Báo cáo độ phủ: /tmp/uav-verify/site/jacoco/index.html
 ```
 
-Biến môi trường mẫu có trong `.env.example`. Hướng dẫn triển khai nằm ở `deploy/DEPLOY.md`, tài liệu chi tiết ở `docs/`.
+> Luôn dùng `-Duav.build.directory=...` để không ghi đè `backend/target` của server đang chạy. Không dừng các tiến trình localhost hoặc Docker.
+
+Kết quả gần nhất:
+
+- 1184 test, 0 lỗi. 191 test được bỏ qua vì cần Docker.
+- Độ phủ của module weather là 99,2% dòng và 96,8% nhánh. Controller, entity, DTO và specification đạt 100%. Service đạt 99,1%.
