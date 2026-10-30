@@ -12,7 +12,7 @@ const compile = value => `data:text/javascript;base64,${Buffer.from(ts.transpile
 }).outputText).toString('base64')}`;
 const formatUrl = compile(await source('src/lib/format.ts'));
 const labelsUrl = compile(await source('src/components/shared/presentation.ts'));
-const mediaPolicyUrl = compile(await source('src/lib/api/media-policy.ts'));
+const mediaPolicyUrl = compile(await source('src/features/media/utils/media-policy.ts'));
 const formsUrl = compile((await source('src/features/missions/utils/workflows.ts')).replace('@/lib/format', formatUrl));
 const {failureInput, reservationQuantity, missionEventNote} = await import(formsUrl);
 const {missionControls} = await import(compile((await source('src/features/missions/utils/presentation.ts')).replace('@/components/shared/presentation', labelsUrl)));
@@ -24,9 +24,12 @@ const apiUrl = compile(`
   export const apiRequest = async () => {};
 `);
 const {requests} = await import(apiUrl);
-const {missionService} = await import(compile((await source('src/lib/api/missions.ts')).replace('@/lib/api/media-policy', mediaPolicyUrl).replace('@/lib/api', apiUrl).replace('@/features/missions/utils/workflows', formsUrl)));
+const {missionService} = await import(compile((await source('src/features/missions/api/missions.api.ts')).replace('@/features/media/utils/media-policy', mediaPolicyUrl).replace('@/lib/api', apiUrl).replace('@/features/missions/utils/workflows', formsUrl)));
 const uavWorkflowsUrl = compile((await source('src/features/uavs/utils/workflows.ts')).replace('@/lib/format', formatUrl));
-const {operationsService} = await import(compile((await source('src/lib/api/resources.ts')).replace('@/lib/api', apiUrl).replace('@/features/uavs/utils/workflows', uavWorkflowsUrl)));
+const operationsApi = async file => import(compile((await source(file)).replace('@/lib/api', apiUrl).replace('@/features/uavs/utils/workflows', uavWorkflowsUrl)));
+const {uavsService} = await operationsApi('src/features/uavs/api/uavs.api.ts');
+const {inventoryService} = await operationsApi('src/features/inventory/api/inventory.api.ts');
+const {operatorsService} = await operationsApi('src/features/users/api/operators.api.ts');
 
 test('failure requires assignment, status-update permission, and a permitted nonterminal state', () => {
     const statuses = ['DRAFT', 'PENDING_CONFIRMATION', 'CONFIRMED', 'RESOURCE_RESERVED', 'READY', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'REJECTED', 'FAILED'];
@@ -128,9 +131,9 @@ test('reservation quantity is converted, not judged: the API checks it against a
 });
 test('later operator and history pages keep their server pagination parameters', async () => {
     requests.length = 0;
-    await operationsService.listOperators(2);
-    await operationsService.inventoryHistory(1);
-    await operationsService.uavHistory(42, 3);
+    await operatorsService.listOperators(2);
+    await inventoryService.inventoryHistory(1);
+    await uavsService.uavHistory(42, 3);
     assert.deepEqual(requests.map(request => request.path), [
         '/api/v1/users?role=ROLE_OPERATOR&page=2&size=100',
         '/api/v1/inventory/equipment/history?page=1&size=20',
@@ -157,8 +160,8 @@ test('maintenance reason boundaries and encoded stale-state contract are preserv
     // Empty or over-255 reasons are refused by the API on the reason field, not here.
     assert.equal(uavChangeReason('x'.repeat(256)).length, 256);
     requests.length = 0;
-    await operationsService.maintenanceUav({id: 8, reason: ' Cánh & pin? kiểm tra ', expectedStatus: 'AVAILABLE'});
-    await operationsService.completeUavMaintenance({id: 8, reason: ' Đạt yêu cầu ', expectedStatus: 'MAINTENANCE'});
+    await uavsService.maintenanceUav({id: 8, reason: ' Cánh & pin? kiểm tra ', expectedStatus: 'AVAILABLE'});
+    await uavsService.completeUavMaintenance({id: 8, reason: ' Đạt yêu cầu ', expectedStatus: 'MAINTENANCE'});
     assert.deepEqual(requests.map(request => request.method), ['post', 'put']);
     const [entry, recovery] = requests.map(request => new URL(request.path, 'http://test.invalid'));
     assert.equal(entry.pathname, '/api/v1/uavs/8/maintenance');

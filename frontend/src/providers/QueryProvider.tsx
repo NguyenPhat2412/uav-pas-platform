@@ -2,9 +2,9 @@
 
 import {MutationCache, QueryCache, QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {ReactNode, useEffect, useState} from 'react';
-import {toast} from '@/contexts/ToastContext';
+import {toast} from '@/providers/ToastContext';
 import {ApiError} from '@/lib/api';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 import type {Translate} from '@/types';
 // The query client is created once, so its cache callbacks read the active translator from here.

@@ -3,17 +3,16 @@
 import Link from 'next/link';
 import {useEffect, useMemo, useState} from 'react';
 import type {ReactNode} from 'react';
-import {useQuery} from '@tanstack/react-query';
 import {AlertTriangle, ChevronRight, CircleAlert, ClipboardList, History, Info} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {ADMIN_SIDEBAR_ROUTES} from '@/components/layout/sidebar-routes';
 import {ADMIN_RECENT_PAGES_KEY, readRecentPages} from '@/components/layout/recent-pages';
 import {formatDate} from '@/components/shared/presentation';
-import {adminService} from '@/lib/api/admin';
-import {alertCenterApi, alertCenterQueryKey} from '@/features/alerts/api';
-import {useAlertMessage} from '@/features/alerts/useAlertMessage';
+import {useAdminPendingMissions} from '@/features/dashboard/hooks/useAdminDashboard';
+import {useAlertCenter} from '@/features/alerts/hooks/useAlertCenter';
+import {useAlertMessage} from '@/features/alerts/hooks/useAlertMessage';
 import {cn} from '@/lib/utils';
 
 const LIST_SIZE = 5;
@@ -28,7 +27,7 @@ const severityIcon = {
  * so KPIs and the Interactive Mission Map remain immediately visible above the fold.
  */
 export function AdminHome() {
-    const {user, can, permissionsReady} = useAuth();
+    const {can, permissionsReady} = useAuth();
     const {t} = useI18n();
     const alertMessage = useAlertMessage();
     const [recent, setRecent] = useState<string[]>([]);
@@ -44,18 +43,8 @@ export function AdminHome() {
     };
     const byHref = new Map(allowed.map(item => [item.href, item]));
 
-    const pending = useQuery({
-        queryKey: ['session', user?.id, 'admin-pending-missions'],
-        queryFn: ({signal}) => adminService.pendingMissions(signal),
-        enabled: permissionsReady && can('MISSION_VIEW_ALL'),
-    });
-    const alerts = useQuery({
-        queryKey: alertCenterQueryKey(user?.id),
-        queryFn: ({signal}) => alertCenterApi.current(signal),
-        enabled: permissionsReady && can('DASHBOARD_READ'),
-        refetchInterval: 60_000,
-        retry: false,
-    });
+    const pending = useAdminPendingMissions();
+    const alerts = useAlertCenter();
 
     useEffect(() => {
         // Read after mount: the list lives in this browser's storage, which the server cannot see.

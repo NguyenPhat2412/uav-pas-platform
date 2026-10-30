@@ -1,28 +1,17 @@
 'use client';
 import {useState} from 'react';
-import {useQueries} from '@tanstack/react-query';
 import {X} from 'lucide-react';
-import {customerService} from '@/lib/api/customer';
-import {useCustomerScope} from '@/lib/query/customer';
+import {useMediaDownloadUrls} from '@/features/media/hooks/useMedia';
 import type {MissionMedia} from '@/types/customer';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {ExifPanel} from '@/features/missions/components/customer/ExifPanel';
 
 const PREVIEW_LIMIT = 8;
-// Signed URLs expire; refresh well before a typical 15-minute validity window.
-const URL_STALE_MS = 5 * 60_000;
 
 export function MediaPreview({items}: { items: MissionMedia[] }) {
-    const {key} = useCustomerScope();
     const {t} = useI18n();
     const images = items.filter(item => item.media.contentType?.startsWith('image/')).slice(0, PREVIEW_LIMIT);
-    const urls = useQueries({
-        queries: images.map(item => ({
-            queryKey: [...key, 'media-url', item.media.id],
-            queryFn: () => customerService.download(item.media.id),
-            staleTime: URL_STALE_MS,
-        }))
-    });
+    const urls = useMediaDownloadUrls(images.map(item => item.media.id));
     const [open, setOpen] = useState<number | null>(null);
     if (!images.length) return null;
     const active = open == null ? null : images.findIndex(item => item.media.id === open);

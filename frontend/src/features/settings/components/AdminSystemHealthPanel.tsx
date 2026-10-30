@@ -1,12 +1,10 @@
 'use client';
 
-import {useQuery} from '@tanstack/react-query';
 import {Activity, AlertTriangle, Archive, CheckCircle2, CircleHelp, Cpu, Database, HardDrive, Lock, Mail, RefreshCw, Send, Wallet, XCircle} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {cn} from '@/lib/utils';
-import {systemHealthService} from '@/lib/api/services';
+import {useSystemHealth} from '@/features/settings/hooks/useSettings';
 import type {HealthStatus, SystemHealth} from '@/features/settings/types/system-health.types';
 
 const tone: Record<HealthStatus, { stripe: string; text: string; icon: typeof CheckCircle2 }> = {
@@ -32,13 +30,8 @@ function useHealthLabel() {
 }
 
 export function AdminSystemHealthPanel() {
-    const {user} = useAuth();
     const {t, formatDate} = useI18n();
-    const query = useQuery({
-        queryKey: ['session', user?.id, 'system-health'],
-        queryFn: ({signal}) => systemHealthService.get(signal),
-        refetchInterval: 30_000,
-    });
+    const query = useSystemHealth();
     return <div className="space-y-4">
         <QueryState query={query}>{query.data && <Body data={query.data} refreshing={query.isFetching} onRefresh={() => void query.refetch()}
                                                        checkedAt={formatDate(query.data.checkedAt, {timeStyle: 'medium'})}/>}</QueryState>

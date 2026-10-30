@@ -35,7 +35,8 @@
       "UAV_NOT_AVAILABLE": "このUAVは現在利用できません。",
       "UAV_TIME_CONFLICT": "このUAVはこの時間帯にすでに予定があります。",
       "OPERATOR_TIME_CONFLICT": "このオペレーターはこの時間帯にすでに予定があります。",
-      "INVENTORY_NOT_AVAILABLE": "機材の数量が不足しています。"
+      "INVENTORY_NOT_AVAILABLE": "機材の数量が不足しています。",
+      "MISSION_WEATHER_UNSAFE": "飛行地点の気象がNO-GOで、管理者が離陸ブロックを有効にしています。より安全な時間帯をお待ちください。"
     },
     "detail": {
       "confirm": {

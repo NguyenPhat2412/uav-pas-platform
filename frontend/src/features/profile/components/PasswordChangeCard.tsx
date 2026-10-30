@@ -1,13 +1,12 @@
 'use client';
 
 import {useState, type FormEvent} from 'react';
-import {useMutation} from '@tanstack/react-query';
 import {KeyRound, LogOut} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
 import {RequiredMark} from '@/components/shared/RequiredMark';
-import {profileService} from '@/lib/api/services';
+import {useChangePassword} from '@/features/profile/hooks/useProfile';
 
 export function PasswordChangeCard() {
     const {logout} = useAuth();
@@ -17,14 +16,12 @@ export function PasswordChangeCard() {
     const [confirm, setConfirm] = useState('');
     const [error, setError] = useState('');
     const [done, setDone] = useState(false);
-    const change = useMutation({
-        mutationFn: () => profileService.changePassword(current, next, confirm),
-    });
+    const change = useChangePassword();
     const submit = async (e: FormEvent) => {
         e.preventDefault();
         setError('');
         try {
-            await change.mutateAsync();
+            await change.mutateAsync({current, next, confirm});
             setCurrent('');
             setNext('');
             setConfirm('');

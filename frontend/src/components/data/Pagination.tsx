@@ -1,6 +1,6 @@
 'use client';
 import {Button} from "@/components/ui";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function Pagination({page, totalPages, total, onChange}: {
     page: number;

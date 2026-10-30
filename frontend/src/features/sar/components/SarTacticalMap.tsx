@@ -2,16 +2,16 @@
 
 import 'leaflet/dist/leaflet.css';
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {useMutation} from '@tanstack/react-query';
 import type {Control, LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
 import {Route, ShieldAlert, ShieldCheck} from 'lucide-react';
 import {MapLayerToolbar} from '@/components/shared/MapLayerToolbar';
-import {parseSearchArea, sarService} from '@/lib/api/services';
+import {parseSearchArea} from '@/features/sar/utils/search-area';
+import {useSarFlightPlan} from '@/features/sar/hooks/useSar';
 import {isPersonLabel} from '@/features/sar/components/AiViewfinder';
-import {calculateHaversineDistance, isPointInsideGeofence} from '@/features/sar/utils/sarAlgorithms';
+import {calculateHaversineDistance, isPointInsideGeofence} from '@/features/sar/utils/sar-algorithms';
 import type {SarFlightPlan, SarTacticalMapProps} from '@/features/sar/types/sar.types';
-import {useI18n} from '@/contexts/I18nContext';
-import {toast} from '@/contexts/ToastContext';
+import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
 import {MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
 
@@ -46,8 +46,7 @@ export function SarTacticalMap({mission, detections, telemetry, selectedId, onSe
     const insideArea = uav && area.length ? isPointInsideGeofence(uav, area.map(([lat, lng]) => ({lat, lng}))) : null;
     const toHome = uav && home ? calculateHaversineDistance(uav, home) : null;
 
-    const generate = useMutation({
-        mutationFn: () => sarService.flightPlan(mission.missionId, mission.lkpLatitude, mission.lkpLongitude),
+    const generate = useSarFlightPlan(mission, {
         onSuccess: p => {
             setPlan(p);
             toast.success(t('opsShared.sar.map.planReady', {legs: p.waypoints.length - 1, minutes: p.estimatedFlightMinutes}));

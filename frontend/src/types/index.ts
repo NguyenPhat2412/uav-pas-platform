@@ -44,27 +44,6 @@ export interface CollectionPage<T> {
 
 export type Deliverable = 'geotaggedPhotos' | 'video' | 'inspectionReport' | 'flightLog' | 'dataSummary';
 
-export type WeatherHourlyKey =
-    | 'temperature_2m'
-    | 'relative_humidity_2m'
-    | 'wind_speed_10m'
-    | 'wind_gusts_10m'
-    | 'wind_direction_10m'
-    | 'visibility'
-    | 'precipitation_probability';
-
-export interface SiteWeather {
-    time: string;
-    forecast: boolean;
-    temperature?: number;
-    humidity?: number;
-    windSpeed?: number;
-    windGusts?: number;
-    windDirection?: number;
-    visibility?: number;
-    precipitationProbability?: number;
-}
-
 export interface PublicEnv {
     NEXT_PUBLIC_API_URL: string;
     NEXT_PUBLIC_APP_URL: string;

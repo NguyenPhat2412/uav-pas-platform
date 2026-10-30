@@ -1,17 +1,15 @@
 'use client';
 
 import React, {useEffect, useId, useRef, useState} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {Check, Copy, KeyRound, Plus, ShieldOff, TriangleAlert} from 'lucide-react';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {Button} from '@/components/ui';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
-import {apiClient, ApiError} from '@/lib/api';
+import {useI18n} from '@/providers/I18nContext';
+import {ApiError} from '@/lib/api';
 import {cn} from '@/lib/utils';
-import {deviceKeysApi, type CreatedDeviceKey, type DeviceKey} from '@/features/device-keys/api';
-import type {PageResponse} from '@/types';
+import type {CreatedDeviceKey, DeviceKey} from '@/features/device-keys/api/device-keys.api';
+import {useCreateDeviceKey, useDeviceKeys, useDeviceKeyUavOptions, useRevokeDeviceKey} from '@/features/device-keys/hooks/useDeviceKeys';
 
 interface UavOption {
     id: number;
@@ -52,27 +50,14 @@ function Modal({title, onClose, children}: { title: string; onClose: () => void;
 
 function AdminDeviceKeysContent() {
     const {t, formatDate} = useI18n();
-    const {user, can} = useAuth();
-    const queryClient = useQueryClient();
-    const queryKey = ['session', user?.id, 'device-keys'];
-    const query = useQuery({queryKey, queryFn: ({signal}) => deviceKeysApi.list(signal)});
-    const uavQuery = useQuery({
-        queryKey: ['session', user?.id, 'device-keys', 'uav-options'],
-        queryFn: ({signal}) => apiClient.get<PageResponse<UavOption>>('/api/v1/uavs?size=100', {signal}),
-        enabled: can('UAV_READ'),
-    });
+    const {query, refresh} = useDeviceKeys();
+    const uavQuery = useDeviceKeyUavOptions();
     const [creating, setCreating] = useState(false);
     const [created, setCreated] = useState<CreatedDeviceKey | null>(null);
     const [revoking, setRevoking] = useState<DeviceKey | null>(null);
     const [showRevoked, setShowRevoked] = useState(false);
 
-    const revoke = useMutation({
-        mutationFn: (id: number) => deviceKeysApi.revoke(id),
-        onSuccess: () => {
-            setRevoking(null);
-            void queryClient.invalidateQueries({queryKey});
-        },
-    });
+    const revoke = useRevokeDeviceKey({onSuccess: () => setRevoking(null)});
 
     const date = (value: string | null) => value ? formatDate(value, {dateStyle: 'medium', timeStyle: 'short'}) : '—';
     const keys = (query.data ?? []).filter(k => showRevoked || k.status !== 'REVOKED');
@@ -139,7 +124,7 @@ function AdminDeviceKeysContent() {
                                       onCreated={result => {
                                           setCreating(false);
                                           setCreated(result);
-                                          void queryClient.invalidateQueries({queryKey});
+                                          void refresh();
                                       }}/>}
         {created && <ShowKeyDialog created={created} onClose={() => setCreated(null)}/>}
         {revoking && <Modal title={t('adminPlatform.deviceKeys.revokeTitle')} onClose={() => setRevoking(null)}>
@@ -162,20 +147,17 @@ function CreateKeyDialog({uavs, onClose, onCreated}: {
     const [name, setName] = useState('');
     const [uavId, setUavId] = useState('');
     const [expiresAt, setExpiresAt] = useState('');
-    const create = useMutation({
-        mutationFn: () => deviceKeysApi.create({
-            name: name.trim(),
-            uavId: uavId ? Number(uavId) : null,
-            expiresAt: expiresAt ? `${expiresAt}:00` : null,
-        }),
-        onSuccess: onCreated,
-    });
+    const create = useCreateDeviceKey({onSuccess: onCreated});
     const fieldError = (field: string) => create.error instanceof ApiError ? create.error.fields?.[field] : undefined;
     const input = 'min-h-[40px] w-full rounded-control border border-border-input bg-slate-50 px-2.5 text-sm text-slate-900 focus:border-primary focus:outline-none';
     return <Modal title={t('adminPlatform.deviceKeys.createTitle')} onClose={onClose}>
         <form className="space-y-4" onSubmit={event => {
             event.preventDefault();
-            if (name.trim()) create.mutate();
+            if (name.trim()) create.mutate({
+                name: name.trim(),
+                uavId: uavId ? Number(uavId) : null,
+                expiresAt: expiresAt ? `${expiresAt}:00` : null,
+            });
         }}>
             <label className="block space-y-1 text-sm font-semibold text-slate-800">
                 <span>{t('adminPlatform.deviceKeys.form.name')}</span>

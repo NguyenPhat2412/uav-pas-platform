@@ -2,10 +2,10 @@
 
 import React from 'react';
 import {Battery, Compass, Gauge, Navigation, Satellite, Timer} from 'lucide-react';
-import {calculateHaversineDistance} from '@/features/sar/utils/sarAlgorithms';
+import {calculateHaversineDistance} from '@/features/sar/utils/sar-algorithms';
 import type {SarCockpitMission} from '@/features/sar/types/sar.types';
 import type {UavTelemetry} from '@/features/uavs/types/telemetry.types';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {formatTelemetryNumber} from '@/lib/format';
 import {cn} from '@/lib/utils';
 

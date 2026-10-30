@@ -13,7 +13,7 @@ import {
     Search,
     X,
 } from 'lucide-react';
-import {trainingService} from '@/lib/api/resources';
+import {trainingService} from '@/features/training/api/training.api';
 import type {
     TrainingAcademyWorkspaceProps,
     TrainingDocument,

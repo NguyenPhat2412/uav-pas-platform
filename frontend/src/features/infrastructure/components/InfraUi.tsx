@@ -1,9 +1,7 @@
 'use client';
 
-import {useQuery, type QueryFunction} from '@tanstack/react-query';
 import {AlertTriangle, CheckCircle2, CircleHelp, CircleSlash, RefreshCw, XCircle, type LucideIcon} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
 
 export type Tone = 'good' | 'warn' | 'bad' | 'neutral' | 'off';
@@ -15,11 +13,6 @@ const toneStyle: Record<Tone, { stripe: string; text: string; icon: LucideIcon }
     neutral: {stripe: 'border-l-slate-400', text: 'text-slate-500', icon: CircleHelp},
     off: {stripe: 'border-l-slate-300', text: 'text-slate-500', icon: CircleSlash},
 };
-
-export function useInfraQuery<T>(name: string, fn: QueryFunction<T>, refetchInterval: number | false = false) {
-    const {user} = useAuth();
-    return useQuery({queryKey: ['session', user?.id, 'infrastructure', name], queryFn: fn, refetchInterval});
-}
 
 export function StatusBanner({tone, title, detail, onRefresh, refreshing, checkedAt}: {
     tone: Tone; title: string; detail?: React.ReactNode; onRefresh?: () => void; refreshing?: boolean; checkedAt?: string;

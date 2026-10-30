@@ -1,6 +1,6 @@
 'use client';
 
-import {useSidebarController} from '@/components/layout/useSidebarController';
+import {useSidebarController} from '@/hooks/useSidebarController';
 import {AssistantWidget} from '@/features/assistant/components/AssistantWidget';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import Link from 'next/link';
@@ -20,8 +20,8 @@ import {
     PanelLeftOpen,
     X
 } from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
 import {AccountMenu} from '@/components/layout/AccountMenu';
 import {AdminAlertsPopover} from '@/components/layout/AdminAlertsPopover';

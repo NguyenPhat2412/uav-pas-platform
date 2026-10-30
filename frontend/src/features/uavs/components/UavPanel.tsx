@@ -3,10 +3,9 @@ import {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {Plus} from 'lucide-react';
 import {Button, Input, StatusBadge} from '@/components/ui';
-import {useAuth} from '@/contexts/AuthContext';
-import {useOperationMutation, useUav, useUavHistory} from '@/lib/query/operations';
-import {useCollection} from '@/lib/query/operations';
-import {operationsService} from "@/lib/api/resources";
+import {useAuth} from '@/providers/AuthContext';
+import {useUav, useUavHistory, useUavMutations} from '@/features/uavs/hooks/useUavs';
+import {useCollection} from '@/hooks/useCollection';
 import {DataTable, options} from '@/components/data/DataTable';
 import {Drawer, Metadata, Tabs} from '@/components/data/Drawer';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
@@ -18,7 +17,7 @@ import {displayLabel, formatDate} from "@/components/shared/presentation";
 import type {Uav} from "@/types/resources";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {resolveUavIdFromParam, toUavSlug} from "@/lib/url-slugs";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 const validUavTabs = new Set(['overview', 'maintenance', 'assignment', 'activity', 'media']);
 
@@ -35,7 +34,7 @@ export function UavPanel() {
     const [show3d, setShow3d] = useState(false);
     const [openCreate, setOpenCreate] = useState(false);
     const [form, setForm] = useState({model: '', serialNumber: '', manufacturer: ''});
-    const create = useOperationMutation(operationsService.createUav, ['uavs', 'dashboard', 'audit']);
+    const {create} = useUavMutations();
     const [lifecycleBusy, setLifecycleBusy] = useState(false);
     const rows = query.data || [];
 

@@ -6,10 +6,10 @@ import {ApiError} from '@/lib/api';
 import type {Uav} from "@/types/resources";
 import type {MaintenanceSchedule} from "@/features/maintenance/types/maintenance.types";
 import {ScheduleFieldsForm, UavField} from "@/features/maintenance/components/Fields";
-import {ActionFeedback, useMaintenanceAction} from "@/features/maintenance/components/Feedback";
+import {ActionFeedback} from "@/features/maintenance/components/Feedback";
+import {useMaintenanceAction} from '@/features/maintenance/hooks/useMaintenanceAction';
 import {businessToday, positiveId} from "@/features/maintenance/utils/workflows";
-import {maintenanceService as service} from '@/lib/api/services';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function ScheduleForm({schedule, uavId: initialUavId, uavs, canRead, onClose, refresh}: {
     schedule?: MaintenanceSchedule;
@@ -34,7 +34,7 @@ export function ScheduleForm({schedule, uavId: initialUavId, uavs, canRead, onCl
         <form className="space-y-4" onSubmit={event => {
             event.preventDefault();
             if (conflicted) return;
-            void action.run(async () => {
+            void action.run(async service => {
                 try {
                     return await (schedule ? service.updateSchedule(schedule, fields, schedule.active) : service.createSchedule(positiveId(uavId), fields));
                 } catch (failure) {

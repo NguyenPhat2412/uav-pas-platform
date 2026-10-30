@@ -1,16 +1,14 @@
 'use client';
 
 import {useState, type FormEvent} from 'react';
-import {useMutation} from '@tanstack/react-query';
 import {Copy, KeyRound, Plus, RefreshCcwDot, Trash2, X} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
 import {RequiredMark} from '@/components/shared/RequiredMark';
 import {Switch} from '@/components/ui/Switch';
-import {adminService} from '@/lib/api/admin';
 import {cn} from '@/lib/utils';
 import type {WebhookEndpointItem} from '@/types/admin';
-import {webhookAdminApi} from '@/features/webhooks/admin-api';
+import {useCreateWebhook, useWebhookSubscriptionMutations} from '@/features/webhooks/hooks/useWebhooks';
 import {WebhookSecretDialog} from '@/features/webhooks/components/WebhookSecretDialog';
 
 /** Event types the backend actually dispatches; a subscription matches when its list contains the type. */
@@ -24,19 +22,11 @@ function newSecret() {
 export function WebhookSubscriptions({items, onChanged}: { items: WebhookEndpointItem[]; onChanged: () => void }) {
     const {t} = useI18n();
     const [creating, setCreating] = useState(false);
-    const toggle = useMutation({
-        mutationFn: ({id, active}: { id: number; active: boolean }) => adminService.toggleWebhook(id, active),
-        onSuccess: onChanged,
-    });
-    const remove = useMutation({mutationFn: adminService.deleteWebhook, onSuccess: onChanged});
     // The rotated secret is held only in component state until the reveal dialog closes.
     const [revealed, setRevealed] = useState<{ name: string; secret: string } | null>(null);
-    const rotate = useMutation({
-        mutationFn: (item: WebhookEndpointItem) => webhookAdminApi.rotateSecret(item.id),
-        onSuccess: (result, item) => {
-            setRevealed({name: item.name, secret: result.secretKey});
-            onChanged();
-        },
+    const {toggle, remove, rotate} = useWebhookSubscriptionMutations({
+        onChanged,
+        onRotated: (result, item) => setRevealed({name: item.name, secret: result.secretKey}),
     });
     const busy = toggle.isPending || remove.isPending || rotate.isPending;
 
@@ -110,7 +100,7 @@ function CreateDialog({onClose, onCreated}: { onClose: () => void; onCreated: ()
     const [url, setUrl] = useState('https://');
     const [secret, setSecret] = useState(newSecret);
     const [events, setEvents] = useState<string[]>(['SAR_EMERGENCY_TRIGGERED']);
-    const create = useMutation({mutationFn: adminService.createWebhook});
+    const create = useCreateWebhook();
     const submit = async (e: FormEvent) => {
         e.preventDefault();
         try {

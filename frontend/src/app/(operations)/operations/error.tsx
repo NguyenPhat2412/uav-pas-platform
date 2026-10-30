@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import {AlertTriangle, Home, RotateCcw} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export default function OperationsErrorPage({
                                                 error,

@@ -52,8 +52,9 @@ test('Operations App has NotificationBell and Notifications page', () => {
 
     const bellContent = readFileSync(bellPath, 'utf8');
     assert.match(bellContent, /useNotifications/);
-    const hook = readFileSync(atRoot('src/lib/query/notifications.ts'), 'utf8');
-    assert.match(hook, /API_ROUTES.notifications.unreadCount/);
+    const hook = readFileSync(atRoot('src/features/notifications/hooks/useNotifications.ts'), 'utf8');
+    assert.match(hook, /notificationsService\.unreadCount/);
+    assert.match(readFileSync(atRoot('src/features/notifications/api/notifications.api.ts'), 'utf8'), /API_ROUTES.notifications.unreadCount/);
     assert.match(hook, /NotificationItem/);
 
     const shellContent = readFileSync(shellPath, 'utf8');
@@ -64,13 +65,14 @@ test('Operations App has NotificationBell and Notifications page', () => {
 test('Customer Portal has Billing & Quotas and Notifications pages', () => {
     const billingPath = `${root}src/features/billing/components/CustomerBillingPanel.tsx`;
     const notifPath = `${root}src/features/notifications/components/CustomerNotificationsPanel.tsx`;
-    const layoutPath = `${root}src/components/customer/layout.tsx`;
+    const layoutPath = `${root}src/components/customer/CustomerLayout.tsx`;
 
     assert.equal(existsSync(billingPath), true, 'Customer billing page must exist');
     assert.equal(existsSync(notifPath), true, 'Customer notifications page must exist');
 
     const billingContent = readFileSync(billingPath, 'utf8');
-    assert.match(billingContent, /bankTransferService/, 'payments go through the VietQR bank-transfer API');
+    assert.match(billingContent, /useSubscribePlan|useBankTransferStatus/, 'payments go through the billing hooks');
+    assert.match(readFileSync(`${root}src/features/billing/hooks/useCustomerBilling.ts`, 'utf8'), /bankTransferService/, 'the hooks use the VietQR bank-transfer API');
     assert.match(billingContent, /payment\.awaitingTransferHint/);
     assert.equal(customerVi.billingPage.gatewayNotice, undefined, 'no "gateway not configured" copy');
     assert.equal(customerVi.billingPage.subtitle, undefined, 'customer pages carry no title/description block');
@@ -103,8 +105,9 @@ test('Admin Portal has Billing Management, Reports & CSV Export, and Settings Co
     assert.match(billingContent, /admin\.pages\.billing\.title/);
     assert.match(adminVi.pages.billing.title, /Gói Cước/i);
     assert.match(billingContent, /User Quotas/i);
-    // The page reaches the billing API through the shared admin service, not a hard-coded path.
-    assert.match(billingContent, /adminService\.billing(Plans|Quotas)/);
+    // The page reaches the billing API through the billing hooks and quota service, not a hard-coded path.
+    assert.match(billingContent, /useBillingPlans\(\)/);
+    assert.match(readFileSync(`${root}src/features/billing/hooks/useBillingAdmin.ts`, 'utf8'), /quotasService\.billing(Plans|Quotas)/);
 
     const reportsContent = readFileSync(reportsPath, 'utf8');
     assert.match(reportsContent, /admin\.reports\.exportCsv/);
@@ -147,11 +150,15 @@ test('Centralized API_ROUTES registry in @/lib/api and Service-Layer delegation'
     assert.doesNotMatch(customerBillingContent, /billingPage\.(gatewayNotice|upgradeUnavailable)/);
 
     const adminReportsContent = readFileSync(`${root}src/features/reports/components/AdminReportsPanel.tsx`, 'utf8');
-    assert.match(adminReportsContent, /adminService\.operationsReport/);
+    assert.match(adminReportsContent, /useOperationsReport\(\)/);
+    assert.match(readFileSync(`${root}src/features/reports/hooks/useReports.ts`, 'utf8'), /reportsService\.operationsReport/);
 
     const adminSettingsContent = readFileSync(`${root}src/features/settings/components/AdminSettingsPanel.tsx`, 'utf8');
-    assert.match(adminSettingsContent, /adminService\.settings/);
-    assert.match(adminSettingsContent, /adminService\.updateSetting/);
+    assert.match(adminSettingsContent, /usePlatformSettings\(\)/);
+    assert.match(adminSettingsContent, /useSaveSetting\(\)/);
+    const settingsHooks = readFileSync(`${root}src/features/settings/hooks/useSettings.ts`, 'utf8');
+    assert.match(settingsHooks, /platformSettingsService\.list/);
+    assert.match(settingsHooks, /platformSettingsService\.update/);
 });
 
 
@@ -198,9 +205,15 @@ test('Notifications adapt actual backend DTOs and preserve HTTP and user-cache c
         }])),
     };
     try {
-        const source = readFileSync(atRoot('src/lib/query/notifications.ts'), 'utf8')
-            .replace(/^import .*;$/gm, '') + '\n';
-        const notificationModule = await import('data:text/javascript;base64,' + Buffer.from(compile('const {useAuth,useI18n,useQuery,useQueryClient,useMutation,apiClient,API_ROUTES}=globalThis.__notificationTest;\n' + source)).toString('base64'));
+        // The real query keys and notification service, wired to the recording client above.
+        const strip = file => readFileSync(atRoot(file), 'utf8').replace(/^import .*;$/gm, '') + '\n';
+        const load = source => import('data:text/javascript;base64,' + Buffer.from(compile(source)).toString('base64'));
+        globalThis.__notificationTest.queryKeys = (await load(strip('src/lib/query/index.ts'))).queryKeys;
+        globalThis.__notificationTest.buildQueryString = (await load(strip('src/lib/format.ts').replace(/^export type .*$/gm, ''))).buildQueryString;
+        globalThis.__notificationTest.notificationsService = (await load('const {apiClient,API_ROUTES,buildQueryString}=globalThis.__notificationTest;\n'
+            + strip('src/features/notifications/api/notifications.api.ts'))).notificationsService;
+        const notificationModule = await load('const {useAuth,useI18n,useQuery,useQueryClient,useMutation,queryKeys,notificationsService,usersService}=globalThis.__notificationTest;\n'
+            + strip('src/features/notifications/hooks/useNotifications.ts'));
         const state = notificationModule.useNotifications();
         assert.deepEqual(state.notifications, [], 'no synthetic notifications while loading');
         const items = await queries[0].queryFn({signal: undefined});

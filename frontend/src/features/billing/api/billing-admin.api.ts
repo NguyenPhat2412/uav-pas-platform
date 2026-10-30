@@ -1,4 +1,4 @@
-import {apiClient} from '@/lib/api';
+import {apiClient, API_ROUTES} from '@/lib/api';
 import {buildQueryString} from '@/lib/format';
 import type {PageResponse} from '@/types';
 
@@ -59,9 +59,9 @@ export interface AdminBillingProfile {
     updatedAt: string | null;
 }
 
-const BASE = '/api/v1/billing/admin';
+const BASE = API_ROUTES.billing.admin;
 
-export const commerceAdminApi = {
+export const billingAdminService = {
     transactions: (page: number, filters: TransactionFilters, signal?: AbortSignal) =>
         apiClient.get<PageResponse<AdminPaymentTransaction>>(`${BASE}/transactions?${buildQueryString({
             page,
@@ -78,5 +78,5 @@ export const commerceAdminApi = {
     retryOutbox: (id: string) =>
         apiClient.post<FinancialOutboxEvent>(`${BASE}/outbox/${encodeURIComponent(id)}/retry`),
     userBillingProfile: (userId: number, signal?: AbortSignal) =>
-        apiClient.get<AdminBillingProfile>(`/api/v1/admin/users/${userId}/billing-profile`, {signal}),
+        apiClient.get<AdminBillingProfile>(API_ROUTES.admin.userBillingProfile(userId), {signal}),
 };

@@ -1,6 +1,6 @@
 'use client';
 import {PhoneCall} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {useSiteInfo} from '@/features/settings/hooks/useSiteInfo';
 
 // Admin setting contact.dispatch_hotline wins; NEXT_PUBLIC_DISPATCH_HOTLINE is the build-time fallback.

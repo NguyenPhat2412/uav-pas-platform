@@ -26,6 +26,6 @@ test('public content labels planned capabilities and avoids private API calls', 
     assert.match(content, /Phát hiện có AI hỗ trợ/);
     assert.match(content, /PLANNED/);
     assert.doesNotMatch(content, /price:\s*['"]?\d|testimonial|partner|fleet/i);
-    assert.doesNotMatch(read('src/features/marketing/components/home-landing.tsx'), /fetch\(|api\//);
+    assert.doesNotMatch(read('src/features/marketing/components/HomeLanding.tsx'), /fetch\(|api\//);
     assert.match(read('src/app/(public)/layout.tsx'), /application\/ld\+json/);
 });

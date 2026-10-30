@@ -5,6 +5,7 @@ import test from 'node:test';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const atRoot = path => `${root}${path}`;
+const sarHooksPath = `${root}src/features/sar/hooks/useSar.ts`;
 
 test('SAR AI Cockpit route exists and is configured with OperationsPage', () => {
     const pagePath = `${root}src/app/(operations)/operations/(portal)/sar-cockpit/page.tsx`;
@@ -32,7 +33,8 @@ test('AiViewfinder draws real AI detections and verifies them through the API', 
     const content = readFileSync(viewfinderPath, 'utf8');
     assert.doesNotMatch(content, /mockDetections|TRK-10\d/, 'detections must come from the API, not a fixture');
     assert.match(content, /detections: AiDetection\[\]/, 'should render detections passed from the mission query');
-    assert.match(content, /sarService\.verify/, 'should verify through the AI detections API');
+    assert.match(content, /useSarVerifyDetection/, 'should verify through the SAR hook');
+    assert.match(readFileSync(sarHooksPath, 'utf8'), /sarService\.verify/, 'the hook verifies through the AI detections API');
     assert.match(content, /threshold/, 'should have a confidence threshold slider');
     assert.match(content, /toast\.(success|error)/, 'should report verify outcome with a toast');
 });
@@ -45,7 +47,8 @@ test('SarTacticalMap plots the mission datum, search area, detections and live U
     assert.match(content, /import\('leaflet'\)/, 'should render a Leaflet map');
     assert.match(content, /parseSearchArea\(mission\.searchAreaPolygon\)/, 'should draw the stored search polygon');
     assert.match(content, /mission\.lkpLatitude/, 'should place the Last Known Position from the mission');
-    assert.match(content, /sarService\.flightPlan/, 'should request the IAMSAR route from the backend');
+    assert.match(content, /useSarFlightPlan/, 'should request the IAMSAR route through the SAR hook');
+    assert.match(readFileSync(sarHooksPath, 'utf8'), /sarService\.flightPlan/, 'the hook requests the IAMSAR route from the backend');
     assert.match(content, /telemetry\.latitude/, 'should place the UAV from telemetry');
     assert.doesNotMatch(content, /20\.7284|107\.0512/, 'no hardcoded coordinates');
 });

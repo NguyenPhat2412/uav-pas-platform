@@ -1,4 +1,4 @@
-import {QueryClient} from '@tanstack/react-query';
+import {QueryClient, type UseMutationOptions} from '@tanstack/react-query';
 
 export const createQueryClient = () => new QueryClient({
     defaultOptions: {
@@ -10,37 +10,33 @@ export const createQueryClient = () => new QueryClient({
     },
 });
 
-export const sessionKey = (subject: string, ...parts: unknown[]) => ['session', subject, ...parts] as const;
+type Subject = number | string | null | undefined;
 
-/** Every Phase 1 cache belongs to the authenticated account. */
+/**
+ * One shape for every cached server response: ['session', userId, feature, ...parts].
+ * AuthProvider clears the whole cache on sign-out or account switch; invalidate a feature with queryKeys.feature().
+ */
 export const queryKeys = {
-    feature: (userId: number | undefined, feature: string) => ['session', userId ?? 'anonymous', feature] as const,
-    list: (userId: number | undefined, feature: string, page = 0) => [...queryKeys.feature(userId, feature), 'list', page] as const,
-    detail: (userId: number | undefined, feature: string, id: number | undefined) => [...queryKeys.feature(userId, feature), 'detail', id] as const,
-    history: (userId: number | undefined, feature: string, id?: number) => [...queryKeys.feature(userId, feature), 'history', id] as const,
+    of: (userId: Subject, feature: string, ...parts: unknown[]) => ['session', userId ?? 'anonymous', feature, ...parts] as const,
+    feature: (userId: Subject, feature: string) => queryKeys.of(userId, feature),
+    list: (userId: Subject, feature: string, page = 0) => queryKeys.of(userId, feature, 'list', page),
+    detail: (userId: Subject, feature: string, id: number | string | undefined) => queryKeys.of(userId, feature, 'detail', id),
+    history: (userId: Subject, feature: string, id?: number) => queryKeys.of(userId, feature, 'history', id),
 };
 
-export const uavQueryKeys = {
-    session: (subject?: number | string) => ['session', String(subject ?? 'anonymous')] as const,
-    domain: (subject?: number | string, feature?: string) => ['session', String(subject ?? 'anonymous'), String(feature ?? 'default')] as const,
-    list: (subject?: number | string, feature?: string, filters?: unknown) => ['session', String(subject ?? 'anonymous'), String(feature ?? 'default'), 'list', filters] as const,
-    detail: (subject?: number | string, feature?: string, id?: number | string) => ['session', String(subject ?? 'anonymous'), String(feature ?? 'default'), 'detail', id] as const,
-    admin: {
-        all: (subject?: number | string) => ['session', String(subject ?? 'anonymous'), 'admin'] as const,
-        users: (subject?: number | string, page = 0, keyword = '', role?: string) => ['session', String(subject ?? 'anonymous'), 'admin', 'users', {
-            page,
-            keyword,
-            role
-        }] as const,
-        user: (subject?: number | string, id?: number) => ['session', String(subject ?? 'anonymous'), 'admin', 'user', id] as const,
-        dashboard: (subject?: number | string) => ['session', String(subject ?? 'anonymous'), 'admin', 'dashboard'] as const,
-        audit: (subject?: number | string, page = 0) => ['session', String(subject ?? 'anonymous'), 'admin', 'audit', page] as const,
-    },
-    customer: {
-        all: (subject?: number | string) => ['session', String(subject ?? 'anonymous'), 'customer'] as const,
-        services: (subject?: number | string) => ['session', String(subject ?? 'anonymous'), 'customer', 'services'] as const,
-        missions: (subject?: number | string, filters?: unknown) => ['session', String(subject ?? 'anonymous'), 'customer', 'missions', filters] as const,
-        mission: (subject?: number | string, id?: number) => ['session', String(subject ?? 'anonymous'), 'customer', 'mission', id] as const,
-    },
-};
+/** What a component may add to a feature mutation: its own callbacks and meta, never the request itself. */
+export type MutationOptions<TData, TVariables = void> = Omit<UseMutationOptions<TData, Error, TVariables>, 'mutationFn'>;
 
+/** Runs the hook's cache work after a success, then the caller's onSuccess (awaited, as React Query does). */
+export function afterSuccess<TData, TVariables>(
+    options: MutationOptions<TData, TVariables> | undefined,
+    effect: (data: TData, variables: TVariables) => unknown,
+): NonNullable<MutationOptions<TData, TVariables>['onSuccess']> {
+    return async (data, variables, result, context) => {
+        await effect(data, variables);
+        return options?.onSuccess?.(data, variables, result, context);
+    };
+}
+
+/** For calls whose errors the component shows itself: no global error toast. */
+export const QUIET = {suppressToast: true} as const;

@@ -3,34 +3,26 @@
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {useMemo, useState} from 'react';
-import {useQuery} from '@tanstack/react-query';
 import {ExternalLink, Info, MapPin, Navigation, RefreshCw, Search, X} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {displayLabel} from '@/components/shared/presentation';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
-import {useUavHistory} from '@/lib/query/operations';
+import {useUavHistory} from '@/features/uavs/hooks/useUavs';
 import {cn} from '@/lib/utils';
-import {fleetMapService} from '@/lib/api/services';
+import {useFleetMap} from '@/features/uavs/hooks/useTelemetry';
 import {uavStatuses, type FleetStation, type FleetUav, type UavStatus} from '@/features/uavs/types/fleet-map.types';
 import {uavStatusColor} from '@/features/uavs/components/FleetMap';
 
 const FleetMap = dynamic(() => import('@/features/uavs/components/FleetMap').then(m => m.FleetMap), {ssr: false});
 
 export function AdminFleetMapPanel() {
-    const {user, can} = useAuth();
     const {t, formatDate} = useI18n();
     const [status, setStatus] = useState<UavStatus | null>(null);
     const [search, setSearch] = useState('');
     const [selectedId, setSelectedId] = useState<number | null>(null);
-    const query = useQuery({
-        queryKey: ['session', user?.id, 'fleet-map'],
-        queryFn: ({signal}) => fleetMapService.get(signal),
-        enabled: can('MISSION_VIEW_ALL'),
-        refetchInterval: 60_000,
-    });
+    const query = useFleetMap();
     const all = useMemo(() => query.data?.uavs ?? [], [query.data]);
     const term = search.trim().toLowerCase();
     const visible = useMemo(() => all.filter(u => (!status || u.status === status)

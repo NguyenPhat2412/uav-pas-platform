@@ -1,22 +1,18 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import {useQuery} from '@tanstack/react-query';
 import QRCode from 'qrcode';
 import {Copy, Landmark, Printer, X} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
-import {toast} from '@/contexts/ToastContext';
-import {bankTransferService, type BankTransferInstructions} from '@/lib/api/services';
+import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
+import {useBankTransferInstructions} from '@/features/billing/hooks/useCustomerBilling';
+import {type BankTransferInstructions} from '@/features/billing/types/billing.types';
 import {formatShortDate} from '@/lib/format';
 
 /** VietQR / NAPAS 247 payment for one invoice. The QR payload and account come from the backend configuration. */
 export function BankTransferDialog({invoiceId, onClose}: { invoiceId: number; onClose: () => void }) {
     const {t} = useI18n();
-    const query = useQuery({
-        queryKey: ['billing', 'bank-transfer', invoiceId],
-        queryFn: ({signal}) => bankTransferService.instructions(invoiceId, signal),
-        retry: false,
-    });
+    const query = useBankTransferInstructions(invoiceId);
     return <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4" role="presentation"
                 onMouseDown={e => e.target === e.currentTarget && onClose()}>
         <section role="dialog" aria-modal="true" aria-labelledby="bank-transfer-title" onKeyDown={e => e.key === 'Escape' && onClose()}

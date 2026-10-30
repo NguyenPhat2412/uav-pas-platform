@@ -5,8 +5,8 @@ import {usePathname, useRouter} from 'next/navigation';
 import {Spinner} from '@/components/ui';
 import {AppShell, OperationsShellHost} from '@/components/layout/AppShell';
 import {PermissionGate} from '@/components/data/WorkspaceState';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {canUsePortal, portalForRole, portalHome} from '@/features/auth/utils/portal';
 import {loginEntryForPage} from '@/features/auth/utils/auth-entry';
 

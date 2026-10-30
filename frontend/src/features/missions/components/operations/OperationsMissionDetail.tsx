@@ -1,5 +1,5 @@
 'use client';
-import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention} from "@/lib/api/media-policy";
+import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention} from "@/features/media/utils/media-policy";
 import {useCallback, useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {MissionRequestDetails} from '@/features/missions/components/MissionRequestDetails';
@@ -9,8 +9,13 @@ import {ArrowLeft, CheckCircle2, Play} from 'lucide-react';
 import {MissionTimeline} from "@/components/shared/MissionTimeline";
 import {displayLabel, formatDate, missionHint, terminalStatuses} from "@/components/shared/presentation";
 import {Alert, Button, Spinner} from '@/components/ui';
-import {useAuth} from '@/contexts/AuthContext';
-import {missionService} from '@/lib/api/services';
+import {useAuth} from '@/providers/AuthContext';
+import {missionService} from '@/features/missions/api/missions.api';
+import {stationsService} from '@/features/stations/api/stations.api';
+import {uavsService} from '@/features/uavs/api/uavs.api';
+import {inventoryService} from '@/features/inventory/api/inventory.api';
+import {operatorsService} from '@/features/users/api/operators.api';
+import {mediaService} from '@/features/media/api/media.api';
 import {ResourceRedispatch} from '@/features/missions/components/ResourceRedispatch';
 import type {
     DispatchResources,
@@ -30,12 +35,13 @@ import {
 } from '@/features/missions/utils/workflows';
 import {collectPages} from '@/lib/api/collection';
 import {ApiError} from '@/lib/api';
-import {operationsService} from "@/lib/api/resources";
 import type {Equipment, Operator, Station, Uav} from "@/types/resources";
 import {AppShell} from '@/components/layout/AppShell';
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {parseEntityId} from "@/lib/url-slugs";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
+import {useMissionWeather} from '@/features/weather/hooks/useWeather';
+import {PreflightWeatherCard} from '@/features/weather/components/PreflightWeatherCard';
 
 // Backend error codes with a dedicated explanation under opsMissions.apiErrors.
 const errorCodes = new Set([
@@ -44,6 +50,7 @@ const errorCodes = new Set([
     'MISSION_STATION_RESOURCES_CONFLICT', 'MISSION_RESERVATION_BALANCE_CONFLICT', 'MISSION_DISPATCH_REQUIRED',
     'OPERATOR_NOT_AVAILABLE', 'MISSION_RESOURCE_UNCHANGED', 'MISSION_UAV_ASSIGNMENT_STALE', 'MISSION_INVALID_STATUS',
     'MISSION_RESOURCE_MISSING', 'UAV_NOT_AVAILABLE', 'UAV_TIME_CONFLICT', 'OPERATOR_TIME_CONFLICT', 'INVENTORY_NOT_AVAILABLE',
+    'MISSION_WEATHER_UNSAFE',
 ]);
 const codeMessage = (err: unknown, fallbackKey: string): Message => {
     const code = err instanceof Error ? err.message : '';
@@ -74,6 +81,10 @@ function MissionDetail({id}: { id: string }) {
     const [uploading, setUploading] = useState(false);
     const actionLock = useRef(false);
     const loadGeneration = useRef(0);
+    // Take-off weather matters until the flight is over; it follows the mission's site and start time.
+    const weatherRelevant = !!mission && mission.latitude != null && mission.longitude != null
+        && !['COMPLETED', 'CANCELLED', 'FAILED', 'REJECTED'].includes(mission.status);
+    const weather = useMissionWeather(mission?.id, weatherRelevant);
     const [stale, setStale] = useState(false);
     const [error, setError] = useState<Message | null>(null);
     const [sectionErrors, setSectionErrors] = useState<Section[]>([]);
@@ -127,10 +138,10 @@ function MissionDetail({id}: { id: string }) {
         await Promise.all([
             section(readTimeline, 'timeline', () => missionService.timeline(missionId), setEvents),
             section(readMedia, 'media', () => missionService.media(missionId), setMedia),
-            section(readStations, 'stations', () => collectPages(page => operationsService.listStations(page)), setStations),
-            section(readUavs, 'uavs', () => collectPages(page => operationsService.listUavs(page)), setUavs),
-            section(readEquipment, 'equipment', () => collectPages(page => operationsService.listEquipment(page)), setEquipment),
-            section(readOperators, 'operators', () => collectPages(page => operationsService.listOperators(page)), setOperators),
+            section(readStations, 'stations', () => collectPages(page => stationsService.listStations(page)), setStations),
+            section(readUavs, 'uavs', () => collectPages(page => uavsService.listUavs(page)), setUavs),
+            section(readEquipment, 'equipment', () => collectPages(page => inventoryService.listEquipment(page)), setEquipment),
+            section(readOperators, 'operators', () => collectPages(page => operatorsService.listOperators(page)), setOperators),
         ]);
         if (isCurrent()) setSectionErrors(failures);
     }, [missionId, readTimeline, readMedia, readStations, readUavs, readEquipment, readOperators]);
@@ -238,7 +249,7 @@ function MissionDetail({id}: { id: string }) {
         setDownloading(mediaId);
         setError(null);
         try {
-            const signed = await operationsService.downloadUrl(mediaId);
+            const signed = await mediaService.downloadUrl(mediaId);
             window.open(signed.url, '_blank', 'noopener,noreferrer');
         } catch {
             focusMutationError.current = true;
@@ -332,6 +343,8 @@ function MissionDetail({id}: { id: string }) {
                     {mission.description &&
                         <p className="m-0 mt-5 text-sm leading-relaxed text-muted">{mission.description}</p>}
                     <MissionRequestDetails mission={mission}/>
+                    {weatherRelevant && <PreflightWeatherCard className="mt-5" assessment={weather.data}
+                                                              isPending={weather.isPending} isError={weather.isError}/>}
                 </div>
                 <div className="flex flex-col items-stretch justify-between gap-4 border-t border-border bg-background px-5 py-4 md:flex-row md:items-center md:px-7"><p className="m-0 max-w-[70ch] text-sm text-muted">{missionHint(mission.status)}</p>
                     <div className="flex w-full flex-wrap items-center gap-2.5 md:w-auto">

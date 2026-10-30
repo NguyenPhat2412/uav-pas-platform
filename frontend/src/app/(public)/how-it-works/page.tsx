@@ -2,9 +2,9 @@ import Image from 'next/image';
 import {keepVietnamesePhrases} from "@/lib/typography";
 import {pageMetadata} from "@/features/marketing/content/metadata";
 import {steps} from "@/features/marketing/content/site-content";
-import {CustomerCta} from "@/features/marketing/components/public-page";
-import {ProcessRoute} from "@/features/marketing/components/home-process-route";
-import {scenes, type UavScene} from "@/features/marketing/components/uav-photo";
+import {CustomerCta} from "@/features/marketing/components/PublicPage";
+import {ProcessRoute} from "@/features/marketing/components/HomeProcessRoute";
+import {scenes, type UavScene} from "@/features/marketing/components/UavPhoto";
 
 export const metadata = pageMetadata(
     "Quy trình thực hiện nhiệm vụ UAV",

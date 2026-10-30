@@ -1,21 +1,19 @@
 'use client';
 
 import {useState, type FormEvent} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {AlertTriangle, FilePlus2, X} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {planName} from '@/components/shared/presentation';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {FilterSelect} from '@/components/shared/FilterSelect';
-import {adminService} from '@/lib/api/admin';
 import {formatShortDate} from '@/lib/format';
 import {cn} from '@/lib/utils';
-import {invoicesService, type InvoiceFilters} from '@/lib/api/services';
+import {useAdminInvoices, useBillingPlans, useConfirmBankTransfer, useCreateInvoice, useInvoiceCustomerSearch} from '@/features/billing/hooks/useBillingAdmin';
+import {type InvoiceFilters} from '@/features/billing/types/billing.types';
 import type {InvoiceFilterKey} from '@/features/billing/types/billing.types';
-import {bankTransferService} from '@/lib/api/services';
-import {toast} from '@/contexts/ToastContext';
+import {toast} from '@/providers/ToastContext';
 import type {Invoice, InvoiceStatus} from '@/types';
 
 const filters: InvoiceFilterKey[] = ['ALL', 'PENDING', 'OVERDUE', 'PAID', 'FAILED', 'CANCELLED'];
@@ -36,12 +34,9 @@ export function AdminInvoicesPanel() {
     const [page, setPage] = useState(0);
     const [creating, setCreating] = useState(false);
     const [notice, setNotice] = useState('');
-    const client = useQueryClient();
-    const confirm = useMutation({
-        mutationFn: ({id, reference}: { id: number; reference: string }) => bankTransferService.confirm(id, reference),
+    const confirm = useConfirmBankTransfer({
         onSuccess: inv => {
             toast.success(t('admin.invoices.confirmed', {code: inv.code}));
-            void client.invalidateQueries({queryKey: ['admin', 'billing']});
         },
         onError: error => toast.error(error instanceof Error ? error.message : t('admin.invoices.confirmFailed')),
     });
@@ -49,10 +44,7 @@ export function AdminInvoicesPanel() {
         const reference = window.prompt(t('admin.invoices.confirmPrompt', {code: inv.code, amount: formatCurrency(inv.amount)}));
         if (reference && reference.trim()) confirm.mutate({id: inv.id, reference: reference.trim()});
     };
-    const query = useQuery({
-        queryKey: ['admin', 'billing', 'invoices', filter, page],
-        queryFn: ({signal}) => invoicesService.page(page, toFilters(filter), signal),
-    });
+    const query = useAdminInvoices(page, toFilters(filter));
     // Captured once per mount so "overdue" stays stable across re-renders.
     const [now] = useState(() => Date.now());
     const isOverdue = (inv: Invoice) => inv.status === 'PENDING' && !!inv.dueDate && new Date(inv.dueDate).getTime() < now;
@@ -125,23 +117,15 @@ export function AdminInvoicesPanel() {
 
 function CreateInvoiceDialog({onClose, onCreated}: { onClose: () => void; onCreated: (code: string) => void }) {
     const {t} = useI18n();
-    const client = useQueryClient();
     const [keyword, setKeyword] = useState('');
     const [customer, setCustomer] = useState<{ id: number; name: string } | null>(null);
     const [amount, setAmount] = useState('');
     const [planId, setPlanId] = useState('');
     const [missionId, setMissionId] = useState('');
     const [notes, setNotes] = useState('');
-    const users = useQuery({
-        queryKey: ['admin-invoice-customers', keyword],
-        queryFn: ({signal}) => adminService.users(0, keyword, undefined, signal, undefined, 8),
-        enabled: keyword.trim().length >= 2 && !customer,
-    });
-    const plans = useQuery({queryKey: ['admin', 'billing', 'plans'], queryFn: ({signal}) => adminService.billingPlans(signal)});
-    const create = useMutation({
-        mutationFn: invoicesService.create,
-        onSuccess: () => client.invalidateQueries({queryKey: ['admin', 'billing', 'invoices']}),
-    });
+    const users = useInvoiceCustomerSearch(keyword, !customer);
+    const plans = useBillingPlans();
+    const create = useCreateInvoice();
     const submit = async (e: FormEvent) => {
         e.preventDefault();
         if (!customer) return;

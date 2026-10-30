@@ -3,7 +3,7 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
 import type {Control, Map as LeafletMap} from 'leaflet';
-import {fetchPublicSiteInfo} from '@/features/settings/api/platformSettings';
+import {fetchPublicSiteInfo} from '@/features/settings/api/platform-settings.api';
 import type {Basemap} from '@/types';
 
 export const MAP_BASEMAP_ORDER: readonly Basemap[] = ['streets', 'satellite', 'terrain', 'dark'] as const;

@@ -1,7 +1,6 @@
 'use client';
 
 import React, {useMemo, useState} from 'react';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {CheckCircle2, Cpu, Globe, History, MapPin, Phone, Receipt, Save, Settings2, ShieldCheck} from 'lucide-react';
 import {settingLabel} from '@/components/shared/presentation';
 import {AdminPage} from '@/components/layout/AdminPage';
@@ -9,11 +8,11 @@ import {Drawer} from '@/components/data/Drawer';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {Switch} from '@/components/ui';
 import {AssistantSettingsSection} from '@/features/assistant/components/AssistantSettingsSection';
-import {platformSettingsApi, type TypedSetting} from '@/features/settings/api/platformSettings';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {WeatherProviderSettingsSection} from '@/features/weather/components/WeatherProviderSettingsSection';
+import type {TypedSetting} from '@/features/settings/api/platform-settings.api';
+import {usePlatformSettings, useSaveSetting, useSettingHistory} from '@/features/settings/hooks/useSettings';
+import {useI18n} from '@/providers/I18nContext';
 import {ApiError} from '@/lib/api';
-import {adminService} from '@/lib/api/admin';
 
 type GroupId = 'SAFETY' | 'OPERATIONS' | 'MAP' | 'AI' | 'BILLING' | 'CONTACT' | 'OTHER';
 // Existing group titles keep their admin.settings catalog keys (AI group = KV260 edge processing).
@@ -83,11 +82,8 @@ export function clientCheck(s: TypedSetting, raw: string): string | null {
 
 function AdminSettingsContent() {
     const {t, formatNumber} = useI18n();
-    const {user} = useAuth();
-    const queryClient = useQueryClient();
-    const queryKey = ['session', user?.id, 'platform-settings'];
-    const query = useQuery({queryKey, // The settings endpoint returns the typed shape (valueType, bounds, choices).
-    queryFn: async ({signal}) => (await adminService.settings(signal)) as unknown as TypedSetting[]});
+    const query = usePlatformSettings();
+    const {save, refresh} = useSaveSetting();
     const [drafts, setDrafts] = useState<Record<string, string>>({});
     const [isSaving, setIsSaving] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -152,7 +148,7 @@ function AdminSettingsContent() {
         try {
             for (const item of [...changed].sort((a, b) => order(a) - order(b))) {
                 try {
-                    await adminService.updateSetting(item.configKey, valueOf(item).trim());
+                    await save.mutateAsync({key: item.configKey, value: valueOf(item).trim()});
                     saved += 1;
                     setDrafts(prev => {
                         const next = {...prev};
@@ -170,10 +166,7 @@ function AdminSettingsContent() {
             setErrorMsg(t('admin.settings.partialSave', {detail: error instanceof Error ? error.message : t('admin.settings.checkAndRetry')}));
         } finally {
             setIsSaving(false);
-            if (saved) {
-                await queryClient.invalidateQueries({queryKey});
-                await queryClient.invalidateQueries({queryKey: ['public', 'site-info']});
-            }
+            if (saved) await refresh();
         }
     };
 
@@ -302,11 +295,7 @@ function SettingInput({setting, id, labelText, describedBy, value, disabled, inv
 
 function SettingHistoryDrawer({setting, title, onClose}: { setting: TypedSetting; title: string; onClose: () => void }) {
     const {t, formatDate} = useI18n();
-    const {user} = useAuth();
-    const query = useQuery({
-        queryKey: ['session', user?.id, 'platform-settings', 'history', setting.configKey],
-        queryFn: ({signal}) => platformSettingsApi.history(setting.configKey, signal),
-    });
+    const query = useSettingHistory(setting.configKey);
     const shown = (v: string | null) => (v === null ? '—' : v === '' ? t('adminPlatform.settings.emptyValue') : v);
     return <Drawer title={t('adminPlatform.settings.historyTitle', {name: title})} onClose={onClose}>
         <p className="m-0 font-mono text-xs text-slate-500">{setting.configKey}</p>
@@ -341,6 +330,9 @@ export default function AdminSettingsPage() {
             activeResource="settings"
         >
             <AdminSettingsContent/>
+            <section id="weather" className="mb-6 scroll-mt-16">
+                <WeatherProviderSettingsSection/>
+            </section>
             <section id="assistant" className="scroll-mt-16">
                 <AssistantSettingsSection/>
             </section>

@@ -3,10 +3,10 @@ import Link from 'next/link';
 import {useParams, useRouter} from 'next/navigation';
 import {useState} from 'react';
 import {displayLabel, serviceName} from "@/components/shared/presentation";
-import {PageGuard} from "@/components/customer/layout";
-import {Button, Panel} from "@/components/customer/ui";
-import {useAuth} from '@/contexts/AuthContext';
-import {useMission, useMissionActions, useServices} from "@/lib/query/customer";
+import {PageGuard} from "@/components/customer/CustomerLayout";
+import {Button, Panel} from "@/components/customer/CustomerUi";
+import {useAuth} from '@/providers/AuthContext';
+import {useMission, useMissionActions, useServices} from '@/features/missions/hooks/useCustomerMissions';
 import {
     focusMissionErrors,
     MissionErrorSummary,
@@ -21,7 +21,8 @@ import {
 } from "@/features/missions/forms/mission-form";
 import type {Mission} from "@/types/customer";
 import {parseEntityId, toMissionSlug} from "@/lib/url-slugs";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
+import {MissionWeatherAdvisor} from '@/features/weather/components/MissionWeatherAdvisor';
 
 export default function EditMissionPage() {
     return <PageGuard><EditMission/></PageGuard>;
@@ -123,7 +124,8 @@ function DraftEditor({mission, reload}: { mission: Mission; reload: () => Promis
                 <MissionErrorSummary errors={errors}/>
                 <fieldset className="m-0 border-0 p-0 disabled:opacity-65" disabled={actions.update.isPending || mustReload || reloading}>
                     <legend className="sr-only">{t('missionEdit.legend')}</legend>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2"><MissionFields form={form} onChange={setForm} errors={errors}/></div>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2"><MissionFields form={form} onChange={setForm} errors={errors}/>
+                        <MissionWeatherAdvisor className="col-span-full" form={form} onChange={setForm}/></div>
                     <div className="mt-5 flex flex-wrap justify-end gap-3"><Link href={`/customer/missions/${toMissionSlug(mission)}`}
                                                         className="inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-control border border-border bg-card px-4 text-sm font-bold text-foreground transition-colors hover:bg-background">{t('missionEdit.backToDetail')}</Link><Button
                         type="submit">{actions.update.isPending ? t('missionCreate.saving') : t('missionEdit.saveChanges')}</Button></div>

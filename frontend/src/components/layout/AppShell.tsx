@@ -1,5 +1,5 @@
 'use client';
-import {useSidebarController} from '@/components/layout/useSidebarController';
+import {useSidebarController} from '@/hooks/useSidebarController';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import {AssistantWidget} from '@/features/assistant/components/AssistantWidget';
 import React from 'react';
@@ -15,13 +15,13 @@ import {
     PanelLeftOpen,
     X
 } from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
+import {useAuth} from '@/providers/AuthContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
 import {NotificationBell} from '@/components/notifications/NotificationBell';
 import {AccountMenu} from '@/components/layout/AccountMenu';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {
     OPERATIONS_SIDEBAR_GROUPS,
     OPERATIONS_SIDEBAR_ROUTES,

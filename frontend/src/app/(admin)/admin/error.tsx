@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export default function ErrorPage({
                                       error,

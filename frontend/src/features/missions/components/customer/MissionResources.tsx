@@ -1,28 +1,18 @@
 'use client';
 import type {ReactNode} from 'react';
-import {useQuery} from '@tanstack/react-query';
 import {MapPin, UserCheck} from 'lucide-react';
 import {UavIcon} from '@/components/shared/UavIcon';
 import {displayLabel} from '@/components/shared/presentation';
-import {useI18n} from '@/contexts/I18nContext';
-import {operationsService} from '@/lib/api/resources';
-import {useCustomerScope} from '@/lib/query/customer';
+import {useI18n} from '@/providers/I18nContext';
+import {useUav} from '@/features/uavs/hooks/useUavs';
+import {useStation} from '@/features/stations/hooks/useStations';
 import type {Mission} from '@/types/customer';
 
 /** Equipment and crew assigned by dispatch. Operator identity stays private; only assignment state is shown. */
 export function MissionResources({mission}: { mission: Mission }) {
     const {t} = useI18n();
-    const {key, can, permissionsReady} = useCustomerScope();
-    const uav = useQuery({
-        queryKey: [...key, 'uav', mission.uavId],
-        queryFn: ({signal}) => operationsService.uav(mission.uavId!, signal),
-        enabled: mission.uavId != null && permissionsReady && can('UAV_READ'),
-    });
-    const station = useQuery({
-        queryKey: [...key, 'station', mission.stationId],
-        queryFn: ({signal}) => operationsService.station(mission.stationId!, signal),
-        enabled: mission.stationId != null && permissionsReady && can('STATION_READ'),
-    });
+    const uav = useUav(mission.uavId ?? undefined);
+    const station = useStation(mission.stationId ?? undefined);
     const pending = <strong className="text-sm font-semibold text-muted">{t('resources.notAssigned')}</strong>;
     const state = (query: { isError: boolean }) =>
         <strong className="text-sm font-semibold text-muted">{query.isError ? t('resources.unavailable') : t('common.loading')}</strong>;

@@ -3,7 +3,6 @@
 import React, {useState} from 'react';
 import {planName} from '@/components/shared/presentation';
 import {AdminPage} from '@/components/layout/AdminPage';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {
     AlertCircle,
     CheckCircle2,
@@ -11,37 +10,19 @@ import {
     Search,
     Users,
 } from 'lucide-react';
-import {adminService} from '@/lib/api/admin';
+import {useBillingPlans, useUpdateQuota, useUserQuotas} from '@/features/billing/hooks/useBillingAdmin';
 import {Drawer} from '@/components/data/Drawer';
 import type {UserQuota} from '@/types/admin';
 import {RequiredMark} from '@/components/shared/RequiredMark';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {AdminInvoicesPanel} from '@/features/billing/components/AdminInvoicesPanel';
 import {AdminPlansManager} from '@/features/billing/components/AdminPlansManager';
 
 export function AdminQuotasManagerSection() {
-    const queryClient = useQueryClient();
     const {t} = useI18n();
-    const plansQuery = useQuery({
-        queryKey: ['admin', 'billing', 'plans'],
-        queryFn: ({signal}) => adminService.billingPlans(signal),
-    });
-    const quotasQuery = useQuery({
-        queryKey: ['admin', 'billing', 'quotas'],
-        queryFn: ({signal}) => adminService.billingQuotas(0, signal),
-    });
-    const updateQuota = useMutation({
-        mutationFn: ({
-            userId,
-            planCode,
-            flightHoursLimit,
-        }: {
-            userId: number;
-            planCode: string;
-            flightHoursLimit: number;
-        }) => adminService.updateQuota(userId, {planCode, flightHoursLimit}),
-        onSuccess: () => queryClient.invalidateQueries({queryKey: ['admin', 'billing', 'quotas']}),
-    });
+    const plansQuery = useBillingPlans();
+    const quotasQuery = useUserQuotas();
+    const updateQuota = useUpdateQuota();
 
     const [search, setSearch] = useState('');
     const [editingUser, setEditingUser] = useState<UserQuota | null>(null);

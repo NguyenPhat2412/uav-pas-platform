@@ -2,14 +2,14 @@
 import Link from 'next/link';
 import {useEffect, useState} from 'react';
 import {displayLabel, formatDate} from "@/components/shared/presentation";
-import {PageGuard} from "@/components/customer/layout";
-import {Button, Panel, Status} from "@/components/customer/ui";
-import {useAuth} from '@/contexts/AuthContext';
-import {useMissions} from "@/lib/query/customer";
+import {PageGuard} from "@/components/customer/CustomerLayout";
+import {Button, Panel, Status} from "@/components/customer/CustomerUi";
+import {useAuth} from '@/providers/AuthContext';
+import {useMissions} from '@/features/missions/hooks/useCustomerMissions';
 import {missionListFilters, missionPageRange, missionStatuses, missionTypes} from "@/features/missions/forms/mission-form";
 import type {MissionStatus, MissionType} from "@/types/customer";
 import {toMissionSlug} from "@/lib/url-slugs";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export default function MissionsPage() {
     return <PageGuard><Missions/></PageGuard>;

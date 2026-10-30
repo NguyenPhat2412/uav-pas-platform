@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from 'react';
 import {ChevronLeft, ChevronRight, Film, X} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import type {ChatImage, ChatMessage} from '@/features/assistant/types/assistant.types';
 import {SuperheroLogo} from '@/features/assistant/components/SuperheroLogo';
 import {groupMessages} from '@/features/assistant/utils/chat-groups';

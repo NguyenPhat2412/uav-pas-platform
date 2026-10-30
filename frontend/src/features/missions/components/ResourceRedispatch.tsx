@@ -6,10 +6,10 @@ import type {
     RedispatchKind as Kind,
     ResourceRedispatchProps as Props,
 } from "@/features/missions/types/mission.types";
-import {missionService} from '@/lib/api/services';
+import {missionService} from '@/features/missions/api/missions.api';
 import {reservationQuantity} from "@/features/missions/utils/workflows";
 import {RequiredMark} from "@/components/shared/RequiredMark";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function ResourceRedispatch({snapshot, stations, operators, equipment, allowed, disabled, action}: Props) {
     const {t} = useI18n();

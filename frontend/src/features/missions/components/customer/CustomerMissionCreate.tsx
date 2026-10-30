@@ -3,11 +3,11 @@ import Link from 'next/link';
 import {displayLabel, serviceName} from "@/components/shared/presentation";
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useState} from 'react';
-import {PageGuard} from "@/components/customer/layout";
-import {Button, Panel} from "@/components/customer/ui";
-import {useAuth} from '@/contexts/AuthContext';
-import {useMissionActions, useServices} from "@/lib/query/customer";
-import {customerService} from "@/lib/api/customer";
+import {PageGuard} from "@/components/customer/CustomerLayout";
+import {Button, Panel} from "@/components/customer/CustomerUi";
+import {useAuth} from '@/providers/AuthContext';
+import {useMissionActions, useServices} from '@/features/missions/hooks/useCustomerMissions';
+import {customerMissionService} from '@/features/missions/api/customer-missions.api';
 import {
     focusMissionErrors,
     MissionErrorSummary,
@@ -24,9 +24,10 @@ import {
 import type {MissionInput, MissionType} from "@/types/customer";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {resolveServiceIdFromParam, toServiceSlug} from "@/lib/url-slugs";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {defaultFlightPlan} from "@/features/missions/types/flight-plan.types";
 import {flightGeometry} from "@/features/missions/utils/flight-geometry";
+import {MissionWeatherAdvisor} from '@/features/weather/components/MissionWeatherAdvisor';
 
 const initial: MissionInput = {
     missionType: 'AREA_INSPECTION',
@@ -87,7 +88,7 @@ function CreateMission() {
         setChecking(true);
         try {
             // The server checks every rule; the form itself does not repeat them.
-            await customerService.validateMission(payload());
+            await customerMissionService.validateMission(payload());
         } catch (err) {
             if (!showFieldErrors(err)) setError(missionFormError(err, t));
             setChecking(false);
@@ -95,7 +96,7 @@ function CreateMission() {
         }
         try {
             if (can('MISSION_VIEW')) {
-                const result = await customerService.availability(form.startTime, form.expectedEndTime);
+                const result = await customerMissionService.availability(form.startTime, form.expectedEndTime);
                 setAvailability(result.available ? 'ok' : 'conflict');
             } else setAvailability('draft');
             setStep(2);
@@ -180,6 +181,7 @@ function CreateMission() {
                                                                                    onChange={event => setMissionTypeOverride(event.target.value as MissionType)}>{missionTypes.map(type =>
                             <option key={type} value={type}>{displayLabel(type)}</option>)}</select></label>
                         <MissionFields form={form} onChange={setForm} errors={errors}/>
+                        <MissionWeatherAdvisor className="col-span-full" form={form} onChange={setForm}/>
                         <div className="col-span-full mt-5 flex flex-wrap justify-end gap-3"><Button type="submit"
                                                                         disabled={checking || (form.serviceId != null && services.isLoading)}>{checking ? t('missionCreate.checking') : t('missionCreate.review')}</Button>
                         </div>

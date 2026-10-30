@@ -1,7 +1,7 @@
-import {apiClient} from '@/lib/api';
-import type {BackupStatus, DatabaseStatus, DeploymentInfo, EmailStatus, EmailTestResult, StorageStatus} from './types';
+import {apiClient, API_ROUTES} from '@/lib/api';
+import type {BackupStatus, DatabaseStatus, DeploymentInfo, EmailStatus, EmailTestResult, StorageStatus} from '../types/infrastructure.types';
 
-const BASE = '/api/v1/admin/infrastructure';
+const BASE = API_ROUTES.admin.infrastructure;
 
 export const INFRASTRUCTURE_ROUTES = {
     deployment: `${BASE}/deployment`,
@@ -13,7 +13,7 @@ export const INFRASTRUCTURE_ROUTES = {
 } as const;
 
 /** Read-only infrastructure views; the only POST sends a test email to the signed-in admin. */
-export const infrastructureApi = {
+export const infrastructureService = {
     deployment: (signal?: AbortSignal) => apiClient.get<DeploymentInfo>(INFRASTRUCTURE_ROUTES.deployment, {signal}),
     backups: (signal?: AbortSignal) => apiClient.get<BackupStatus>(INFRASTRUCTURE_ROUTES.backups, {signal}),
     storage: (signal?: AbortSignal) => apiClient.get<StorageStatus>(INFRASTRUCTURE_ROUTES.storage, {signal}),

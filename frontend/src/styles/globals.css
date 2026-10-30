@@ -151,6 +151,11 @@
     --radius-overlay: 16px;
 }
 
+/* Operations status chips are full pills. */
+:root[data-portal="operations"] {
+    --radius-badge: 9999px;
+}
+
 /*
  * The signed-in portals (admin, operations, customer) work in white and light greys with a soft
  * accent taken from the VJU logo red (#b8021e): lighter for actions and selection, a barely-there

@@ -1,19 +1,18 @@
 'use client';
 
 import {useState} from 'react';
-import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {KeyRound, LogOut, Search, ShieldOff} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {Alert, Button} from '@/components/ui';
 import {EmptyState, ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
 import {displayLabel} from '@/components/shared/presentation';
 import {roles} from '@/types/admin';
 import {cn} from '@/lib/utils';
-import {securityKeys, securityService} from '@/features/security/api';
+import {useSecurityActions, useSecuritySessions} from '@/features/security/hooks/useSecurity';
 import {} from '@/features/security/components/SecurityShared';
-import type {SecurityActionResult, SecuritySession, SessionFilter, SessionState} from '@/features/security/types';
+import type {SecurityActionResult, SecuritySession, SessionFilter, SessionState} from '@/features/security/types/security.types';
 
 const stateStyle: Record<SessionState, string> = {
     ACTIVE: 'bg-uav-blue-light text-uav-blue',
@@ -25,28 +24,17 @@ const stateStyle: Record<SessionState, string> = {
 export function SecuritySessionsPanel() {
     const {t, formatDate} = useI18n();
     const {user: me} = useAuth();
-    const queryClient = useQueryClient();
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState<SessionFilter>({page: 0, keyword: '', activeOnly: false});
     const [notice, setNotice] = useState('');
-    const query = useQuery({
-        queryKey: securityKeys.sessions(filter),
-        queryFn: ({signal}) => securityService.sessions(filter, signal),
-        placeholderData: keepPreviousData,
-    });
+    const query = useSecuritySessions(filter);
 
     const done = (result: SecurityActionResult) => {
-        void queryClient.invalidateQueries({queryKey: securityKeys.all});
         const parts = [t(`adminSecurity.sessions.done.${result.action}`, {count: result.affectedUsers, tokens: result.refreshTokensRevoked})];
         if (result.includesCurrentUser) parts.push(t('adminSecurity.sessions.done.selfSignedOut'));
         setNotice(parts.join(' '));
     };
-    const revokeUser = useMutation({mutationFn: (id: number) => securityService.revokeUserSessions(id), onSuccess: done});
-    const revokeAll = useMutation({mutationFn: () => securityService.revokeAllSessions(), onSuccess: done});
-    const resetTwoFactor = useMutation({
-        mutationFn: ({id, revoke}: { id: number; revoke: boolean }) => securityService.resetTwoFactor(id, revoke),
-        onSuccess: done,
-    });
+    const {revokeUser, revokeAll, resetTwoFactor} = useSecurityActions({onSuccess: done});
     const busy = revokeUser.isPending || revokeAll.isPending || resetTwoFactor.isPending;
     const error = revokeUser.error ?? revokeAll.error ?? resetTwoFactor.error;
 

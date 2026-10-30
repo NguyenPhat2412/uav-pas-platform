@@ -1,13 +1,15 @@
 'use client';
 import {useState} from 'react';
-import {useQuery} from '@tanstack/react-query';
 import {Button} from '@/components/ui';
 import {Drawer, Metadata} from '@/components/data/Drawer';
 import {LoadingRows} from '@/components/data/WorkspaceState';
-import {useAuth} from '@/contexts/AuthContext';
+import {useAuth} from '@/providers/AuthContext';
 import {formatDate} from "@/components/shared/presentation";
-import {maintenanceService as service} from '@/lib/api/services';
-import {ActionFeedback, Feedback, maintenanceError, useMaintenanceAction} from "@/features/maintenance/components/Feedback";
+import {useMaintenanceOrder} from '@/features/maintenance/hooks/useMaintenance';
+import {useMaintenanceAction} from '@/features/maintenance/hooks/useMaintenanceAction';
+import type {MaintenanceService} from '@/features/maintenance/api/maintenance.api';
+import {maintenanceError} from '@/features/maintenance/utils/errors';
+import {ActionFeedback, Feedback} from "@/features/maintenance/components/Feedback";
 import {fieldClass, OrderFieldsForm} from "@/features/maintenance/components/Fields";
 import {MaterialEditor} from "@/features/maintenance/components/MaterialEditor";
 import {
@@ -17,7 +19,7 @@ import {
 } from "@/features/maintenance/utils/workflows";
 import type {OrderDetailMode as Mode, OrderFields, RepairOrder} from "@/features/maintenance/types/maintenance.types";
 import {RequiredMark} from "@/components/shared/RequiredMark";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 function EditOrder({order, disabled, onSave, onCancel}: {
     order: RepairOrder;
@@ -84,16 +86,10 @@ export function OrderDetail({id, onClose, refreshLists}: {
     onClose: () => void;
     refreshLists: () => Promise<boolean>
 }) {
-    const {user, can} = useAuth();
+    const {can} = useAuth();
     const {t, locale} = useI18n();
     const vnd = (value: string) => formatVnd(value, t, locale);
-    const query = useQuery({
-        queryKey: ['maintenance', user?.id, 'order', id],
-        queryFn: ({signal}) => service.order(id, signal),
-        enabled: can('UAV_MANAGE'),
-        retry: false,
-        refetchOnWindowFocus: false
-    });
+    const query = useMaintenanceOrder(id);
     const [mode, setMode] = useState<Mode>('view');
     const action = useMaintenanceAction(async () => {
         const [detail, lists] = await Promise.all([query.refetch(), refreshLists()]);
@@ -102,9 +98,9 @@ export function OrderDetail({id, onClose, refreshLists}: {
     const order = query.data;
     const controls = order ? orderControls(order.status, can('UAV_MANAGE')) : null;
     const blocked = action.blocked || query.isFetching || !!query.error;
-    const submit = (request: () => Promise<unknown>, successKey: string) => void action.run(async () => {
+    const submit = (request: (service: MaintenanceService) => Promise<unknown>, successKey: string) => void action.run(async service => {
         try {
-            return await request();
+            return await request(service);
         } finally {
             setMode('view');
         }
@@ -156,15 +152,15 @@ export function OrderDetail({id, onClose, refreshLists}: {
                     <p className="rounded-panel bg-slate-100 p-4 text-sm">{t('opsAssets.maintenance.order.closedNote')}</p>}</>}
             {mode === 'edit' && controls?.edit &&
                 <EditOrder key={order.version} order={order} disabled={blocked} onCancel={() => setMode('view')}
-                           onSave={fields => submit(() => service.updateOrder(order, fields), 'opsAssets.maintenance.order.success.updated')}/>}
+                           onSave={fields => submit(service => service.updateOrder(order, fields), 'opsAssets.maintenance.order.success.updated')}/>}
             {mode === 'materials' && controls?.edit &&
                 <MaterialEditor key={order.version} order={order} disabled={blocked} onCancel={() => setMode('view')}
-                                onSave={items => submit(() => service.materials(order, items), 'opsAssets.maintenance.order.success.materials')}/>}
+                                onSave={items => submit(service => service.materials(order, items), 'opsAssets.maintenance.order.success.materials')}/>}
             {(['start', 'complete', 'cancel'] as Mode[]).includes(mode) &&
                 <OrderConfirmation key={`${mode}-${order.version}`} order={order}
                                    mode={mode as 'start' | 'complete' | 'cancel'} disabled={blocked}
                                    onCancel={() => setMode('view')}
-                                   onConfirm={(note, passed) => submit(() => mode === 'start' ? service.start(order) : mode === 'complete' ? service.complete(order, note, passed) : service.cancel(order, note), `opsAssets.maintenance.order.success.${mode}`)}/>}
+                                   onConfirm={(note, passed) => submit(service => mode === 'start' ? service.start(order) : mode === 'complete' ? service.complete(order, note, passed) : service.cancel(order, note), `opsAssets.maintenance.order.success.${mode}`)}/>}
         </>}</div>
     </Drawer>;
 }

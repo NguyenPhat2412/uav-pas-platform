@@ -2,16 +2,14 @@
 
 import Link from 'next/link';
 import {useState, type FormEvent} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {CheckCheck, Mail, MailOpen, Search, Send, X} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {Alert, Button} from '@/components/ui';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
-import {adminService} from '@/lib/api/admin';
 import {cn} from '@/lib/utils';
-import {notificationsService} from '@/lib/api/services';
+import {useNotificationPage, useNotificationReadActions, useRecipientSearch, useSendNotification} from '@/features/notifications/hooks/useNotifications';
 import {RequiredMark} from '@/components/shared/RequiredMark';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {notificationTypes, type NotificationRecord, type NotificationType} from '@/features/notifications/types/notification.types';
@@ -43,24 +41,16 @@ function referenceHref(n: NotificationRecord) {
 }
 
 export function AdminNotificationsPanel() {
-    const {user, can} = useAuth();
+    const {can} = useAuth();
     const {t, formatDate} = useI18n();
-    const client = useQueryClient();
     const [page, setPage] = useState(0);
     const [readFilter, setReadFilter] = useState<'all' | 'unread' | 'read'>('all');
     const [type, setType] = useState<NotificationType | ''>('');
     const [search, setSearch] = useState('');
     const [composing, setComposing] = useState(false);
     const [notice, setNotice] = useState('');
-    const key = ['session', user?.id ?? 'anonymous', 'notifications'] as const;
-    const query = useQuery({
-        queryKey: [...key, 'admin-page', page],
-        queryFn: ({signal}) => notificationsService.page(page, PAGE_SIZE, signal),
-        enabled: !!user,
-    });
-    const refresh = () => client.invalidateQueries({queryKey: key});
-    const markOne = useMutation({mutationFn: notificationsService.markRead, onSuccess: refresh});
-    const markAll = useMutation({mutationFn: notificationsService.markAllRead, onSuccess: refresh});
+    const query = useNotificationPage(page, PAGE_SIZE);
+    const {markOne, markAll} = useNotificationReadActions();
 
     const term = search.trim().toLowerCase();
     const rows = (query.data?.content ?? []).filter(n =>
@@ -166,12 +156,8 @@ function SendDialog({onClose, onSent}: { onClose: () => void; onSent: (name: str
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [type, setType] = useState<NotificationType>('SYSTEM');
-    const users = useQuery({
-        queryKey: ['admin-notification-recipients', keyword],
-        queryFn: ({signal}) => adminService.users(0, keyword, undefined, signal, undefined, 8),
-        enabled: keyword.trim().length >= 2 && !recipient,
-    });
-    const send = useMutation({mutationFn: notificationsService.send});
+    const users = useRecipientSearch(keyword, !recipient);
+    const send = useSendNotification();
     const submit = async (e: FormEvent) => {
         e.preventDefault();
         if (!recipient) return;

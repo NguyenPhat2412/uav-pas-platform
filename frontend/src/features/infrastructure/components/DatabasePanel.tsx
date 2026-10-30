@@ -1,33 +1,28 @@
 'use client';
 
 import {Database, Gauge, Table2} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {cn} from '@/lib/utils';
-import {infrastructureApi} from '../api';
-import type {DatabaseStatus} from '../types';
-import {formatBytes, Note, Panel, Stat, StatGrid, StatusBanner, useInfraQuery} from './InfraUi';
+import type {DatabaseStatus} from '../types/infrastructure.types';
+import {formatBytes, Note, Panel, Stat, StatGrid} from './InfraUi';
+import {useDatabaseStatus} from '@/features/infrastructure/hooks/useInfrastructure';
 
 export function DatabasePanel() {
     const {t} = useI18n();
-    const query = useInfraQuery('database', ({signal}) => infrastructureApi.database(signal), 30_000);
+    const query = useDatabaseStatus();
     return <div className="space-y-4">
-        <QueryState query={query}>{query.data && <Body data={query.data} refreshing={query.isFetching} onRefresh={() => void query.refetch()}/>}</QueryState>
+        <QueryState query={query}>{query.data && <Body data={query.data}/>}</QueryState>
         <Note>{t('adminInfra.database.note')}</Note>
     </div>;
 }
 
-function Body({data, refreshing, onRefresh}: { data: DatabaseStatus; refreshing: boolean; onRefresh: () => void }) {
+function Body({data}: { data: DatabaseStatus }) {
     const {t, formatNumber} = useI18n();
     const c = data.connections;
     const usage = c.max ? Math.round(c.total / c.max * 100) : 0;
     const poolBusy = data.pool && data.pool.threadsAwaiting > 0;
-    const warn = usage >= 80 || c.idleInTransaction > 0 || poolBusy;
     return <>
-        <StatusBanner tone={warn ? 'warn' : 'good'} title={t('adminInfra.database.banner', {version: data.version})}
-                      detail={t('adminInfra.database.bannerDetail', {size: formatBytes(data.sizeBytes, formatNumber), used: c.total, max: c.max})}
-                      onRefresh={onRefresh} refreshing={refreshing}/>
-
         <Panel id="connections" title={t('adminInfra.database.connections')} icon={Database}>
             <StatGrid>
                 <Stat label={t('adminInfra.database.active')} value={formatNumber(c.active)}/>
@@ -36,7 +31,7 @@ function Body({data, refreshing, onRefresh}: { data: DatabaseStatus; refreshing:
                 <Stat label={t('adminInfra.database.usage')} value={`${c.total} / ${c.max}`} warn={usage >= 80}/>
             </StatGrid>
             <div className="px-4 pb-3"><span className="block h-1.5 bg-slate-100"><span
-                className={cn('block h-1.5', usage >= 90 ? 'bg-red-600' : usage >= 80 ? 'bg-amber-500' : 'bg-uav-blue')}
+                className={cn('block h-1.5', usage >= 90 ? 'bg-red-600' : usage >= 80 ? 'bg-amber-500' : 'bg-slate-500')}
                 style={{width: `${Math.min(usage, 100)}%`}}/></span></div>
         </Panel>
 

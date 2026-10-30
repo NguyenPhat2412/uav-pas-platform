@@ -1,13 +1,14 @@
 'use client';
 import {useState, type FormEvent} from 'react';
 import {auditDetail, displayLabel, formatDate} from "@/components/shared/presentation";
-import {useAdminAnalytics, useAdminAudit} from "@/lib/query/admin";
+import {useAdminAnalytics} from '@/features/dashboard/hooks/useAdminDashboard';
+import {useAdminAudit} from '@/features/audit/hooks/useAdminAudit';
 import {EmptyState, QueryState} from "@/components/data/WorkspaceState";
 import {Pagination} from "@/components/data/Pagination";
 import {Button} from "@/components/ui";
 import {Heatmap} from "@/features/dashboard/components/AdminCharts";
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import type {AuditFilters} from "@/types/admin";
 
 const actions = ['CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT', 'GRANT', 'REVOKE', 'ASSIGN', 'STATUS_CHANGE',

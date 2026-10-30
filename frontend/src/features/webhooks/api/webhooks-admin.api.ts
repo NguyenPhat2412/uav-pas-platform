@@ -1,4 +1,4 @@
-import {apiClient} from '@/lib/api';
+import {apiClient, API_ROUTES} from '@/lib/api';
 
 /** Returned only by rotate-secret; the plain secret is never retrievable again. */
 export interface WebhookSecretRotation {
@@ -8,8 +8,8 @@ export interface WebhookSecretRotation {
     rotatedAt: string;
 }
 
-export const webhookAdminApi = {
-    retryDelivery: (id: number) => apiClient.post<unknown>(`/api/v1/webhooks/deliveries/${id}/retry`),
+export const webhooksAdminService = {
+    retryDelivery: (id: number) => apiClient.post<unknown>(API_ROUTES.webhooks.retryDelivery(id)),
     rotateSecret: (id: number) =>
-        apiClient.post<WebhookSecretRotation>(`/api/v1/webhooks/subscriptions/${id}/rotate-secret`),
+        apiClient.post<WebhookSecretRotation>(API_ROUTES.webhooks.rotateSecret(id)),
 };

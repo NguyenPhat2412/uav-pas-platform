@@ -1,23 +1,24 @@
 'use client';
 import {useState} from 'react';
 import {useSearchParams} from 'next/navigation';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {Button} from '@/components/ui';
 import {Drawer, Tabs} from '@/components/data/Drawer';
 import {EmptyState, LoadingRows} from '@/components/data/WorkspaceState';
-import {useAuth} from '@/contexts/AuthContext';
-import {useCollection} from '@/lib/query/operations';
+import {useAuth} from '@/providers/AuthContext';
+import {useCollection} from '@/hooks/useCollection';
 import {Pagination} from "@/components/data/ResourceState";
-import {maintenanceService as service} from '@/lib/api/services';
+import {useMaintenanceLists} from '@/features/maintenance/hooks/useMaintenance';
+import {useMaintenanceAction} from '@/features/maintenance/hooks/useMaintenanceAction';
+import {maintenanceError} from '@/features/maintenance/utils/errors';
 import type {MaintenanceSchedule} from "@/features/maintenance/types/maintenance.types";
-import {ActionFeedback, Feedback, maintenanceError, useMaintenanceAction} from "@/features/maintenance/components/Feedback";
-import {calendarDate, dueLabels, formatVnd, orderLabels, pageAfterRefresh} from "@/features/maintenance/utils/workflows";
+import {ActionFeedback, Feedback} from "@/features/maintenance/components/Feedback";
+import {calendarDate, dueLabels, formatVnd, orderLabels} from "@/features/maintenance/utils/workflows";
 import {fieldClass} from "@/features/maintenance/components/Fields";
 import {ScheduleForm} from "@/features/maintenance/components/ScheduleForm";
 import {OrderCreate} from "@/features/maintenance/components/OrderCreate";
 import {OrderDetail} from "@/features/maintenance/components/OrderDetail";
 import {resolveUavIdFromParam, toUavSlug} from "@/lib/url-slugs";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 const tableWrap = 'overflow-x-auto rounded-panel border border-border bg-card';
 const tableClass = 'w-full min-w-[880px] border-separate border-spacing-0 text-sm';
@@ -25,7 +26,7 @@ const th = 'sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-
 const td = 'px-4 py-3 align-middle text-slate-700';
 
 export function MaintenanceWorkspace() {
-    const {user, can} = useAuth();
+    const {can} = useAuth();
     const {t, locale} = useI18n();
     const params = useSearchParams();
     const [tab, setTab] = useState('schedules');
@@ -37,33 +38,13 @@ export function MaintenanceWorkspace() {
     const [selectedOrder, setSelectedOrder] = useState<number>();
     const [changeActive, setChangeActive] = useState<MaintenanceSchedule | null>(null);
     const uavs = useCollection('uavs');
-    const client = useQueryClient();
-    const schedules = useQuery({
-        queryKey: ['maintenance', user?.id, 'schedules', uavId, dueStatus, schedulePage],
-        queryFn: ({signal}) => service.schedules(schedulePage, uavId, dueStatus, signal),
-        enabled: can('UAV_MANAGE'),
-        retry: false
+    const {schedules, orders, refresh} = useMaintenanceLists({
+        uavId, dueStatus, status, schedulePage, orderPage,
+        onPages: pages => {
+            if (pages.schedulePage) setSchedulePage(pages.schedulePage);
+            if (pages.orderPage) setOrderPage(pages.orderPage);
+        },
     });
-    const orders = useQuery({
-        queryKey: ['maintenance', user?.id, 'orders', uavId, status, orderPage],
-        queryFn: ({signal}) => service.orders(orderPage, uavId, status, signal),
-        enabled: can('UAV_MANAGE'),
-        retry: false
-    });
-    const refresh = async () => {
-        // A mutation can remove a row from a filtered page. Mark every cached list page
-        // stale before moving to a remaining page, so its count and rows reload too.
-        await Promise.all(['schedules', 'orders'].map(resource => client.invalidateQueries({
-            queryKey: ['maintenance', user?.id, resource],
-            refetchType: 'none'
-        })));
-        const results = await Promise.all([schedules.refetch(), orders.refetch()]);
-        const schedulePages = results[0].data?.totalPages, orderPages = results[1].data?.totalPages;
-        if (!results[0].isError && schedulePages !== undefined) setSchedulePage(current => pageAfterRefresh(current, schedulePages));
-        if (!results[1].isError && orderPages !== undefined) setOrderPage(current => pageAfterRefresh(current, orderPages));
-        await client.invalidateQueries({predicate: query => Array.isArray(query.queryKey) && (query.queryKey.includes('uavs') || query.queryKey.includes('audit') || query.queryKey.includes('dashboard'))});
-        return results.every(result => !result.isError);
-    };
     const action = useMaintenanceAction(refresh);
     const query = tab === 'schedules' ? schedules : orders;
     return <div className="space-y-5">
@@ -207,7 +188,7 @@ export function MaintenanceWorkspace() {
                     className="text-sm text-slate-600">{changeActive.active ? t('opsAssets.maintenance.workspace.pauseNote') : t('opsAssets.maintenance.workspace.activateNote')}</p>
                     <div className="flex flex-wrap gap-3"><Button type="button" variant="outline" disabled={action.busy}
                                                                   onClick={() => setChangeActive(null)}>{t('opsAssets.maintenance.workspace.keep')}</Button><Button type="button" disabled={action.blocked}
-                                             onClick={() => void action.run(async () => {
+                                             onClick={() => void action.run(async service => {
                                                  try {
                                                      return await service.updateSchedule(changeActive, {
                                                          title: changeActive.title,

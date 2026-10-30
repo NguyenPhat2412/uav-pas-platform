@@ -5,9 +5,9 @@ import {PortalHomeColumn, PortalHomeHero, PortalHomeRow} from '@/components/layo
 import {OPERATIONS_SIDEBAR_ROUTES} from '@/components/layout/sidebar-routes';
 import {OPERATIONS_RECENT_PAGES_KEY} from '@/components/layout/recent-pages';
 import {displayLabel} from '@/components/shared/presentation';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
-import {useCollection} from '@/lib/query/operations';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
+import {useCollection} from '@/hooks/useCollection';
 import {toStationSlug, toUavSlug} from '@/lib/url-slugs';
 
 /** Search-first header of the operations overview with 3 live operational columns. */

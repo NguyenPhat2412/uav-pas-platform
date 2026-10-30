@@ -5,8 +5,8 @@ import {useState} from 'react';
 import {usePathname} from 'next/navigation';
 import {Briefcase, LogOut, Menu, Radar, ShieldCheck, UserCheck, X} from 'lucide-react';
 import {Button} from '@/components/shared';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {openAuthModal} from '@/features/auth/components/AuthModalPopup';
 import {canUsePortal, portalForRole, portalHome} from '@/features/auth/utils/portal';
 

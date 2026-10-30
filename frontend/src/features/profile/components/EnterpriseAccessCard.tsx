@@ -1,10 +1,10 @@
 'use client';
 
 import {ShieldCheck} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {displayLabel, permissionLabel, planName} from '@/components/shared/presentation';
-import {useBilling} from '@/lib/query/customer';
+import {useBilling} from '@/features/billing/hooks/useCustomerBilling';
 
 /** Current plan and the permissions the signed-in account actually holds. */
 export function EnterpriseAccessCard() {

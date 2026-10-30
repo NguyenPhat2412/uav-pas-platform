@@ -1,5 +1,5 @@
 import {pageMetadata} from "@/features/marketing/content/metadata";
-import {PublicPage} from "@/features/marketing/components/public-page";
+import {PublicPage} from "@/features/marketing/components/PublicPage";
 
 export const metadata = pageMetadata("Trạng thái công bố điều khoản", "Điều khoản đang chờ phê duyệt để công bố. Thông tin giới thiệu không xác nhận đặt dịch vụ hay quyền thực hiện nhiệm vụ.", "/terms", false);
 

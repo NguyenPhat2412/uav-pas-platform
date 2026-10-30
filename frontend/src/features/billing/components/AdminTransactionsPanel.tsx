@@ -1,15 +1,15 @@
 'use client';
 
 import {useState, type FormEvent} from 'react';
-import {useQuery} from '@tanstack/react-query';
 import {Search, X} from 'lucide-react';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {Drawer, Metadata} from '@/components/data/Drawer';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
-import {commerceAdminApi, type AdminPaymentTransaction, type TransactionFilters} from '@/features/billing/admin-api';
+import type {AdminPaymentTransaction, TransactionFilters} from '@/features/billing/api/billing-admin.api';
+import {useBillingTransactions} from '@/features/billing/hooks/useBillingAdmin';
 
 const statuses = ['SUCCESS', 'PENDING', 'FAILED'] as const;
 const gateways = ['VIETQR_NAPAS_247', 'BANK_TRANSFER_MANUAL', 'VIETQR_NAPAS'] as const;
@@ -28,10 +28,7 @@ export function AdminTransactionsPanel() {
     const [filters, setFilters] = useState<TransactionFilters>({});
     const [page, setPage] = useState(0);
     const [selected, setSelected] = useState<AdminPaymentTransaction | null>(null);
-    const query = useQuery({
-        queryKey: ['admin', 'billing', 'transactions', filters, page],
-        queryFn: ({signal}) => commerceAdminApi.transactions(page, filters, signal),
-    });
+    const query = useBillingTransactions(page, filters);
     // Unknown provider values are shown verbatim rather than as a missing catalog key.
     const label = (key: string, value: string | null | undefined) => {
         if (!value) return '—';

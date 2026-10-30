@@ -4,11 +4,11 @@ import dynamic from 'next/dynamic';
 import {useMemo, useState} from 'react';
 import {BarChart3, ExternalLink, Grid2x2, MapPin, Navigation, TrendingUp} from 'lucide-react';
 import {displayLabel} from '@/components/shared/presentation';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {BarList, ColumnChart, Delta, Legend, SegmentBar, seriesColors, TrendChart, type TrendViewMode} from '@/features/dashboard/components/AdminCharts';
-import {useAdminAnalytics} from '@/lib/query/admin';
+import {useAdminAnalytics} from '@/features/dashboard/hooks/useAdminDashboard';
 import type {AdminAnalytics as Analytics} from '@/types/admin';
 import {cn} from '@/lib/utils';
 

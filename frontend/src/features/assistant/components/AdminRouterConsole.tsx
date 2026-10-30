@@ -1,13 +1,12 @@
 'use client';
 
 import {type ReactNode, useEffect, useState} from 'react';
-import {useQuery} from '@tanstack/react-query';
 import {MessagesSquare, MonitorCog, Router, Settings} from 'lucide-react';
 import Link from 'next/link';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {QueryState} from '@/components/data/WorkspaceState';
-import {useI18n} from '@/contexts/I18nContext';
-import {assistantKeys, assistantService} from '@/lib/api/services';
+import {useI18n} from '@/providers/I18nContext';
+import {useRouterSettings} from '@/features/assistant/hooks/useAssistant';
 import {AssistantConversations} from '@/features/assistant/components/AssistantConversations';
 import type {RouterConsoleTab} from '@/features/assistant/types/assistant.types';
 import {cn} from '@/lib/utils';
@@ -76,7 +75,7 @@ function AssistantTabs() {
  */
 function RouterFrame({tabs}: { tabs: ReactNode }) {
     const {t} = useI18n();
-    const settings = useQuery({queryKey: assistantKeys.settings, queryFn: ({signal}) => assistantService.settings(signal)});
+    const settings = useRouterSettings();
     return <QueryState query={settings}>{settings.data && (() => {
         const url = consoleUrl(settings.data.baseUrl);
         return <div className="-mb-6 flex h-[calc(100dvh-3.25rem)] flex-col border-b border-slate-200 bg-white">

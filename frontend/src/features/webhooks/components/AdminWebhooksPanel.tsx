@@ -1,16 +1,13 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {AdminPage} from '@/components/layout/AdminPage';
-import {adminService} from "@/lib/api/admin";
-import type {WebhookDeliveryLogItem, WebhookEndpointItem} from "@/types/admin";
 import {RotateCw, Send} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {WebhookSubscriptions} from '@/features/webhooks/components/WebhookSubscriptions';
-import {useMutation} from '@tanstack/react-query';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
-import {toast} from '@/contexts/ToastContext';
-import {webhookAdminApi} from '@/features/webhooks/admin-api';
+import {toast} from '@/providers/ToastContext';
+import {useRetryDelivery, useWebhookOverview, useWebhookTestDispatch} from '@/features/webhooks/hooks/useWebhooks';
 
 import type {Translate} from '@/types';
 const knownStatuses = ['QUEUED', 'DELIVERED', 'FAILED', 'RETRYING', 'CANCELLED', 'UNCONFIGURED', 'LEGACY_UNVERIFIED'];
@@ -28,75 +25,38 @@ const statusLabel = (status: string, t?: Translate) => t
     }[status] ?? 'Chưa xác định');
 
 function WebhooksContent() {
-    const [webhooks, setWebhooks] = useState<WebhookEndpointItem[]>([]);
-    const [logs, setLogs] = useState<WebhookDeliveryLogItem[]>([]);
-    const [status, setStatus] = useState('UNKNOWN');
-    const [loading, setLoading] = useState(true);
-    const [isDispatching, setIsDispatching] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const overview = useWebhookOverview();
+    const webhooks = overview.data?.subscriptions ?? [];
+    const logs = overview.data?.deliveries ?? [];
+    const status = overview.data?.status ?? 'UNKNOWN';
+    const [reloading, setReloading] = useState(false);
+    const loading = overview.isPending || reloading;
+    const testDispatch = useWebhookTestDispatch();
+    const isDispatching = testDispatch.isPending;
+    // Errors are catalog keys rendered through t(), so they follow language changes.
+    const [actionError, setError] = useState<string | null>(null);
+    const error = actionError ?? (overview.isError && !overview.isFetching ? 'admin.webhooks.loadError' : null);
     const [message, setMessage] = useState<string | null>(null);
     const {t, formatDate} = useI18n();
     // Manual requeue of a FAILED delivery; the delivery worker sends it on its next run.
-    const retryDelivery = useMutation({
-        mutationFn: (id: number) => webhookAdminApi.retryDelivery(id),
+    const retryDelivery = useRetryDelivery({
         onSuccess: () => {
             toast.success(t('adminCommerce.webhooks.retried'));
             void refresh();
         },
     });
 
-    // Errors are stored as catalog keys and rendered through t(), so effects stay locale-independent.
-    async function refresh(signal?: AbortSignal) {
-        try {
-            const [subscriptions, deliveries, runtime] = await Promise.all([
-                adminService.webhooks(signal), adminService.webhookLogs(signal), adminService.webhookStatus(signal),
-            ]);
-            if (signal?.aborted) return;
-            setWebhooks(subscriptions);
-            setLogs(deliveries);
-            setStatus(runtime.status);
-        } catch {
-            if (!signal?.aborted) {
-                setError('admin.webhooks.loadError');
-                setWebhooks([]);
-                setLogs([]);
-                setStatus('UNKNOWN');
-            }
-        } finally {
-            if (!signal?.aborted) setLoading(false);
-        }
-    }
-
-    useEffect(() => {
-        const controller = new AbortController();
-        Promise.all([adminService.webhooks(controller.signal), adminService.webhookLogs(controller.signal), adminService.webhookStatus(controller.signal)])
-            .then(([subscriptions, deliveries, runtime]) => {
-                if (controller.signal.aborted) return;
-                setWebhooks(subscriptions);
-                setLogs(deliveries);
-                setStatus(runtime.status);
-                setLoading(false);
-            })
-            .catch(() => {
-                if (controller.signal.aborted) return;
-                setError('admin.webhooks.loadError');
-                setLoading(false);
-            });
-        return () => controller.abort();
-    }, []);
+    const refresh = () => overview.refetch();
 
     async function handleTestDispatch() {
-        setIsDispatching(true);
         setError(null);
         setMessage(null);
         try {
-            const result = await adminService.triggerWebhookTest();
+            const result = await testDispatch.mutateAsync();
             setMessage(`${statusLabel(result.status, t)}. ${result.message}`);
             await refresh();
         } catch {
             setError('admin.webhooks.testError');
-        } finally {
-            setIsDispatching(false);
         }
     }
 
@@ -109,9 +69,9 @@ function WebhooksContent() {
                 <button
                     className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-control border border-border bg-card px-4 font-bold text-foreground transition hover:bg-background disabled:cursor-not-allowed disabled:opacity-55"
                     onClick={() => {
-                        setLoading(true);
+                        setReloading(true);
                         setError(null);
-                        void refresh();
+                        void refresh().finally(() => setReloading(false));
                     }} disabled={loading}><RotateCw size={16}/> {t('admin.webhooks.refresh')}
                 </button>
                 <button

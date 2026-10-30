@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import {fetchPublicSiteInfo, type PublicSiteInfo} from '@/features/settings/api/platformSettings';
+import {fetchPublicSiteInfo, type PublicSiteInfo} from '@/features/settings/api/platform-settings.api';
 
 // One request per page load, shared by every consumer.
 let cached: PublicSiteInfo | null | undefined;

@@ -5,7 +5,7 @@ import type {MaterialInput, RepairOrder} from "@/features/maintenance/types/main
 import {formatVnd, materialInput} from "@/features/maintenance/utils/workflows";
 import {Feedback} from "@/features/maintenance/components/Feedback";
 import {RequiredMark} from "@/components/shared/RequiredMark";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function MaterialEditor({order, disabled, onSave, onCancel}: {
     order: RepairOrder;

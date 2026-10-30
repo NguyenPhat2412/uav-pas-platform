@@ -1,8 +1,8 @@
 import {keepVietnamesePhrases} from "@/lib/typography";
 import {pageMetadata} from "@/features/marketing/content/metadata";
-import {CustomerCta, PublicPage} from "@/features/marketing/components/public-page";
+import {CustomerCta, PublicPage} from "@/features/marketing/components/PublicPage";
 import {pricingComparisonRows} from "@/features/marketing/content/home-content";
-import {PlanCards} from "@/features/marketing/components/plan-cards";
+import {PlanCards} from "@/features/marketing/components/PlanCards";
 
 export const metadata = pageMetadata(
     "Bảng giá & Gói dịch vụ UAV",

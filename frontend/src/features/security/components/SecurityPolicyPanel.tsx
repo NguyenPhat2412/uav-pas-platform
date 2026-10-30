@@ -1,17 +1,16 @@
 'use client';
 
 import type {ReactNode} from 'react';
-import {useQuery} from '@tanstack/react-query';
 import {Cookie, Globe, KeyRound, Mail, Server, Timer} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
-import {securityKeys, securityService} from '@/features/security/api';
+import {useSecurityPolicy} from '@/features/security/hooks/useSecurity';
 import {Flag, WarningList} from '@/features/security/components/SecurityShared';
-import type {SecurityPolicy} from '@/features/security/types';
+import type {SecurityPolicy} from '@/features/security/types/security.types';
 
 export function SecurityPolicyPanel() {
     const {t} = useI18n();
-    const query = useQuery({queryKey: securityKeys.policy, queryFn: ({signal}) => securityService.policy(signal)});
+    const query = useSecurityPolicy();
     return <div className="space-y-4">
         <QueryState query={query}>{query.data && <Body policy={query.data}/>}</QueryState>
         <p className="m-0 text-xs text-slate-500">{t('adminSecurity.policy.readOnlyNote')}</p>

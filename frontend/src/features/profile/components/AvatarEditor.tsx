@@ -2,10 +2,11 @@
 import {useRef, useState} from 'react';
 import {Camera, Trash2} from 'lucide-react';
 import {Avatar} from '@/components/shared/Avatar';
-import {Button, Panel} from '@/components/customer/ui';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
-import {AVATAR_TYPES, avatarFileError, avatarService} from '@/lib/api/services';
+import {Button, Panel} from '@/components/customer/CustomerUi';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
+import {AVATAR_TYPES, avatarFileError} from '@/features/profile/utils/avatar';
+import {useAvatarMutations} from '@/features/profile/hooks/useProfile';
 import type {AvatarUploadStatus as Status} from '@/features/profile/types/profile.types';
 
 /** Upload, replace or remove the signed-in user's avatar; the account refreshes so every avatar updates. */
@@ -16,6 +17,7 @@ export function AvatarEditor({name}: { name: string }) {
     const [busy, setBusy] = useState<'upload' | 'remove' | null>(null);
     const [status, setStatus] = useState<Status>(null);
 
+    const avatar = useAvatarMutations();
     const run = async (kind: 'upload' | 'remove', action: () => Promise<unknown>, success: string) => {
         setBusy(kind);
         setStatus(null);
@@ -39,7 +41,7 @@ export function AvatarEditor({name}: { name: string }) {
             if (input.current) input.current.value = '';
             return;
         }
-        void run('upload', () => avatarService.upload(file), 'avatar.saved');
+        void run('upload', () => avatar.upload.mutateAsync(file), 'avatar.saved');
     };
 
     return <Panel title={t('avatar.title')} className="h-full border-0">
@@ -55,7 +57,7 @@ export function AvatarEditor({name}: { name: string }) {
                             {busy === 'upload' ? t('avatar.uploading') : user?.avatarUrl ? t('avatar.change') : t('avatar.upload')}</span>
                     </Button>
                     {user?.avatarUrl && <Button type="button" variant="secondary" disabled={busy !== null}
-                                                onClick={() => void run('remove', () => avatarService.remove(), 'avatar.removed')}>
+                                                onClick={() => void run('remove', () => avatar.remove.mutateAsync(), 'avatar.removed')}>
                         <span className="inline-flex items-center gap-2"><Trash2 size={16} aria-hidden="true"/>
                             {busy === 'remove' ? t('avatar.removing') : t('avatar.remove')}</span>
                     </Button>}

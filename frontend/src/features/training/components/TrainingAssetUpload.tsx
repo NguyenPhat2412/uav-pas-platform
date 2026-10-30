@@ -3,7 +3,7 @@
 import {useEffect, useRef, useState} from 'react';
 import type {ReactNode} from 'react';
 import {Upload} from 'lucide-react';
-import {trainingService} from '@/lib/api/resources';
+import {trainingService} from '@/features/training/api/training.api';
 import type {TrainingAssetConfirmation} from '@/features/training/types/training.types';
 import {
     formatFileSize,

@@ -1,4 +1,4 @@
-import {apiClient, apiRequest} from '@/lib/api';
+import {apiClient, apiRequest, API_ROUTES} from '@/lib/api';
 import {
     acceptanceInput,
     completionInput,
@@ -24,9 +24,9 @@ import type {
     UavService
 } from "@/features/missions/types/mission.types";
 
-const base = '/api/v1/missions';
+const base = API_ROUTES.missions.list;
 export const missionService = {
-    services: () => apiClient.get<UavService[]>('/api/v1/uav-services'),
+    services: () => apiClient.get<UavService[]>(API_ROUTES.uavServices.list),
     list: (params?: { status?: MissionStatus; missionType?: MissionType; search?: string }) => {
         const query = new URLSearchParams({size: '50'});
         if (params?.status) query.set('status', params.status);
@@ -97,6 +97,6 @@ export const missionService = {
     }),
     confirmMedia: (id: number, mediaId: number) => apiClient.post(`${base}/${id}/media/${mediaId}/confirm`),
     timeline: (id: number) => apiClient.get<MissionEvent[]>(`${base}/${id}/timeline`),
-    dashboard: () => apiClient.get<MissionDashboard>('/api/v1/dashboard/missions'),
+    dashboard: () => apiClient.get<MissionDashboard>(API_ROUTES.dashboard.missions),
     availability: (startTime: string, endTime: string) => apiClient.get<MissionAvailability>(`${base}/availability?startTime=${encodeURIComponent(startTime)}&endTime=${encodeURIComponent(endTime)}`),
 };

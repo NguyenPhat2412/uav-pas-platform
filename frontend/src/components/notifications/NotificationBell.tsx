@@ -3,8 +3,8 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {AlertCircle, Bell, CheckCheck, CheckCircle2, ChevronRight, Info, ShieldAlert} from 'lucide-react';
-import {useNotifications} from '@/lib/query/notifications';
-import {useI18n} from '@/contexts/I18nContext';
+import {useNotifications} from '@/features/notifications/hooks/useNotifications';
+import {useI18n} from '@/providers/I18nContext';
 
 /** Top-bar notifications popover; viewAllHref points at the portal's own notifications page. */
 export function NotificationBell({viewAllHref = '/operations/notifications'}: { viewAllHref?: string }) {

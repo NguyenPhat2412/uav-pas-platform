@@ -1,7 +1,6 @@
 'use client';
-import {useQuery} from '@tanstack/react-query';
-import {useI18n} from '@/contexts/I18nContext';
-import type {ExifMetadata as Exif} from '@/features/missions/types/mission.types';
+import {useI18n} from '@/providers/I18nContext';
+import {useImageExif} from '@/features/media/hooks/useMedia';
 
 const num = (value: unknown) => typeof value === 'number' && Number.isFinite(value) ? value
     : typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value)) ? Number(value) : undefined;
@@ -12,15 +11,7 @@ const num = (value: unknown) => typeof value === 'number' && Number.isFinite(val
  */
 export function ExifPanel({url, cacheKey}: { url: string; cacheKey: number }) {
     const {t, formatNumber, formatDate} = useI18n();
-    const exif = useQuery({
-        queryKey: ['media-exif', cacheKey],
-        queryFn: async () => {
-            const exifr = (await import('exifr')).default;
-            return (await exifr.parse(url, {tiff: true, exif: true, gps: true, xmp: true})) as Exif | undefined ?? null;
-        },
-        staleTime: Infinity,
-        retry: false,
-    });
+    const exif = useImageExif(url, cacheKey);
     const n = (value: unknown, digits = 1) => {
         const parsed = num(value);
         return parsed == null ? undefined : formatNumber(parsed, {maximumFractionDigits: digits});

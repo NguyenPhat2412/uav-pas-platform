@@ -1,15 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import {useQuery} from '@tanstack/react-query';
 import {Bot, CheckCircle2, CircleSlash, Lock, ShieldAlert, XCircle} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {Alert} from '@/components/ui';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {cn} from '@/lib/utils';
-import {securityKeys, securityService} from '@/features/security/api';
+import {useSecuritySecrets} from '@/features/security/hooks/useSecurity';
 import {WarningList} from '@/features/security/components/SecurityShared';
-import type {SecretHealth, SecretsOverview} from '@/features/security/types';
+import type {SecretHealth, SecretsOverview} from '@/features/security/types/security.types';
 
 const healthStyle: Record<SecretHealth, { text: string; icon: typeof CheckCircle2 }> = {
     OK: {text: 'text-uav-blue', icon: CheckCircle2},
@@ -21,7 +20,7 @@ const healthStyle: Record<SecretHealth, { text: string; icon: typeof CheckCircle
 
 export function SecuritySecretsPanel() {
     const {t} = useI18n();
-    const query = useQuery({queryKey: securityKeys.secrets, queryFn: ({signal}) => securityService.secrets(signal)});
+    const query = useSecuritySecrets();
     return <div className="space-y-4">
         <Alert variant="info" icon={<Lock size={18} className="shrink-0 text-slate-600"/>} title={t('adminSecurity.secrets.notice.title')}>
             {t('adminSecurity.secrets.notice.body')}</Alert>

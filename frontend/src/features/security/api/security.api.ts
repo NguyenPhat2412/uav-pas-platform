@@ -1,16 +1,10 @@
-import {apiClient} from '@/lib/api';
-import type {SecretsOverview, SecurityActionResult, SecurityPolicy, SecuritySessionPage, SessionFilter} from '@/features/security/types';
+import {apiClient, API_ROUTES} from '@/lib/api';
+import type {SecretsOverview, SecurityActionResult, SecurityPolicy, SecuritySessionPage, SessionFilter} from '@/features/security/types/security.types';
 
-const BASE = '/api/v1/admin/security';
+const BASE = API_ROUTES.admin.security;
 
 export const SESSION_PAGE_SIZE = 20;
 
-export const securityKeys = {
-    all: ['admin', 'security'] as const,
-    sessions: (filter: SessionFilter) => ['admin', 'security', 'sessions', filter] as const,
-    policy: ['admin', 'security', 'policy'] as const,
-    secrets: ['admin', 'security', 'secrets'] as const,
-};
 
 export const securityService = {
     sessions: (filter: SessionFilter, signal?: AbortSignal) => {

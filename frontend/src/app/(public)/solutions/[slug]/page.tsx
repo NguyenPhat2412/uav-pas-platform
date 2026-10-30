@@ -3,8 +3,8 @@ import {notFound} from 'next/navigation';
 import Link from 'next/link';
 import {solutionDetails} from "@/features/marketing/content/solution-details";
 import {legacySolutionSlugAliases, solutions} from "@/features/marketing/content/site-content";
-import {CustomerCta, PublicPage} from "@/features/marketing/components/public-page";
-import {solutionScenes} from "@/features/marketing/components/uav-photo";
+import {CustomerCta, PublicPage} from "@/features/marketing/components/PublicPage";
+import {solutionScenes} from "@/features/marketing/components/UavPhoto";
 
 export function generateStaticParams() {
     return [

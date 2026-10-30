@@ -2,16 +2,15 @@
 import {displayLabel, permissionLabel} from "@/components/shared/presentation";
 import {useEffect, useState} from 'react';
 import Link from 'next/link';
-import {useMutation, useQuery} from '@tanstack/react-query';
-import {useAuth} from '@/contexts/AuthContext';
+import {useAuth} from '@/providers/AuthContext';
 import {Alert, Button} from "@/components/ui";
 import {QueryState} from "@/components/data/WorkspaceState";
-import {useAdminInvalidation, useAdminReferenceData} from "@/lib/query/admin";
-import {adminService} from "@/lib/api/admin";
-import {type Override, permissionState, saveChanges} from "@/features/access/utils/permission-model";
+import {useAdminReferenceData} from '@/features/users/hooks/useAdminUsers';
+import {usePermissionChanges, useUserPermissionOverrides} from '@/features/access/hooks/useAccess';
+import {type Override, permissionState} from "@/features/access/utils/permission-model";
 import type {Permission, RoleTemplate, User} from "@/types/admin";
 import {Users} from "@/features/users/components/Users";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function AccessControl() {
     const [selected, setSelected] = useState<User | null>(null);
@@ -26,13 +25,8 @@ export function AccessControl() {
 }
 
 export function PermissionEditor({target}: { target: User }) {
-    const {user, can} = useAuth();
     const {permissions, templates} = useAdminReferenceData();
-    const overrides = useQuery({
-        queryKey: ['session', user?.id, 'admin-user-permissions', target.id],
-        queryFn: ({signal}) => adminService.userPermissions(target.id, signal),
-        enabled: can('PERMISSION_MANAGE')
-    });
+    const overrides = useUserPermissionOverrides(target.id);
     const template = templates.data?.find(t => t.role === target.role);
     return <QueryState query={permissions}><QueryState query={templates}><QueryState
         query={overrides}>{permissions.data && overrides.data &&
@@ -67,7 +61,7 @@ function Matrix({permissions, template, target, values}: {
     const [draft, setDraft] = useState<Record<string, Override>>({});
     const [filter, setFilter] = useState('');
     const {t} = useI18n();
-    const invalidate = useAdminInvalidation();
+    const {save: mutation, reload, invalidate} = usePermissionChanges({target, template});
     const changes = Object.entries(draft).filter(([code, value]) => value !== (values[code] ?? (target ? null : false))).map(([code, value]) => ({
         code,
         value
@@ -83,26 +77,11 @@ function Matrix({permissions, template, target, values}: {
         window.addEventListener('beforeunload', warn);
         return () => window.removeEventListener('beforeunload', warn);
     }, [dirty]);
-    const mutation = useMutation({
-        mutationFn: async () => {
-            const result = await saveChanges(changes, ({
-                                                           code,
-                                                           value
-                                                       }) => target ? (value === null ? adminService.clearUserPermission(target.id, code) : adminService.setUserPermission(target.id, code, value)) : adminService.setRolePermission(template!.role, code, value === true), t);
-            return result;
-        }
-    });
-    const reload = useMutation({
-        mutationFn: () => invalidate(target?.id, !target), onSuccess: () => {
-            setDraft({});
-            mutation.reset();
-        }
-    });
     const save = async () => {
         if (!window.confirm(target ? t('admin.access.saveConfirmUser', {count: changes.length, name: target.username}) : t('admin.access.saveConfirmTemplate', {count: changes.length, name: template?.name ?? ''}))) return;
-        await mutation.mutateAsync();
+        await mutation.mutateAsync(changes);
         setDraft({});
-        await invalidate(target?.id, !target);
+        await invalidate();
         // The result stays visible while the server-backed queries refresh.
     };
     const result = mutation.data;
@@ -116,7 +95,12 @@ function Matrix({permissions, template, target, values}: {
             <ul>{result.failed.map(f => <li key={f.code}>{t('admin.access.failedItem', {code: f.code, message: f.message})}</li>)}</ul>}<p>{t('admin.access.noUndo')}</p><Button size="sm" variant="outline"
                                                                                       disabled={reload.isPending}
                                                                                       isLoading={reload.isPending}
-                                                                                      onClick={() => reload.mutate()}>{t('admin.access.reloadActual')}</Button></Alert>}
+                                                                                      onClick={() => reload.mutate(undefined, {
+                                                                                          onSuccess: () => {
+                                                                                              setDraft({});
+                                                                                              mutation.reset();
+                                                                                          }
+                                                                                      })}>{t('admin.access.reloadActual')}</Button></Alert>}
         {reload.error && <Alert variant="error">{t('admin.access.reloadFailed')}</Alert>}
         <div className="flex flex-wrap items-center gap-2 rounded-panel border border-border bg-card p-4"><label className="flex min-h-[44px] min-w-[160px] max-w-[320px] flex-1 items-center gap-2 rounded-panel border border-border-input bg-card px-2.5 text-muted focus-within:outline-2 focus-within:outline-primary"><span
             className="sr-only">{t('admin.access.filterLabel')}</span><input className="min-h-[42px] w-full min-w-0 bg-transparent text-sm text-foreground outline-none" placeholder={t('admin.access.filterPlaceholder')} value={filter}

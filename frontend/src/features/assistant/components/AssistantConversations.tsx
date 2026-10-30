@@ -1,16 +1,16 @@
 'use client';
 
 import {type FormEvent, type ReactNode, useState} from 'react';
-import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {Trash2} from 'lucide-react';
 import {Drawer} from '@/components/data/Drawer';
 import {Pagination} from '@/components/data/Pagination';
 import {EmptyState, QueryState} from '@/components/data/WorkspaceState';
 import {Button} from '@/components/ui';
 import {FilterSelect} from '@/components/shared/FilterSelect';
-import {useI18n} from '@/contexts/I18nContext';
-import {toast} from '@/contexts/ToastContext';
-import {assistantKeys, assistantService, type ConversationFilter} from '@/lib/api/services';
+import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
+import {useAssistantConversation, useAssistantConversations, useDeleteConversation} from '@/features/assistant/hooks/useAssistant';
+import {type ConversationFilter} from '@/features/assistant/types/assistant.types';
 import type {AssistantConversation, AssistantPortal} from '@/features/assistant/types/assistant.types';
 import {ChatMessages} from '@/features/assistant/components/ChatMessages';
 import {cn} from '@/lib/utils';
@@ -32,11 +32,7 @@ export function AssistantConversations({actions}: { actions?: ReactNode } = {}) 
     const [draft, setDraft] = useState('');
     const [filter, setFilter] = useState<ConversationFilter>({portal: '', q: '', page: 0, size: PAGE_SIZE});
     const [openId, setOpenId] = useState<number | null>(null);
-    const list = useQuery({
-        queryKey: assistantKeys.conversationList(filter),
-        queryFn: ({signal}) => assistantService.conversations(filter, signal),
-        placeholderData: keepPreviousData,
-    });
+    const list = useAssistantConversations(filter);
     const search = (event: FormEvent) => {
         event.preventDefault();
         setFilter(f => ({...f, q: draft.trim(), page: 0}));
@@ -102,14 +98,10 @@ function PortalBadge({portal}: { portal: AssistantPortal }) {
 
 function ConversationDrawer({id, onClose}: { id: number; onClose: () => void }) {
     const {t, formatDate, formatNumber} = useI18n();
-    const client = useQueryClient();
-    const detail = useQuery({queryKey: assistantKeys.conversation(id), queryFn: ({signal}) => assistantService.conversation(id, signal)});
-    const remove = useMutation({
-        mutationFn: () => assistantService.deleteConversation(id),
+    const detail = useAssistantConversation(id);
+    const remove = useDeleteConversation(id, {
         onSuccess: () => {
             toast.success(t('admin.assistantChats.deleted'));
-            client.removeQueries({queryKey: assistantKeys.conversation(id)});
-            void client.invalidateQueries({queryKey: assistantKeys.conversations});
             onClose();
         },
         onError: () => toast.error(t('admin.assistantChats.deleteFailed')),

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import {customerUrl} from "@/features/marketing/content/site-content";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import type {SupportedLocale} from '@/i18n/config';
 
 const LOCALES: { code: SupportedLocale; label: string }[] = [

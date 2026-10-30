@@ -2,10 +2,10 @@
 
 import React, {useState} from 'react';
 import {AlertCircle, CheckCheck, CheckCircle2, Clock, Filter, Info, ShieldAlert} from 'lucide-react';
-import {PageGuard} from "@/components/customer/layout";
-import {Button, Panel} from "@/components/customer/ui";
-import {type NotificationItem, useNotifications} from '@/lib/query/notifications';
-import {useI18n} from '@/contexts/I18nContext';
+import {PageGuard} from "@/components/customer/CustomerLayout";
+import {Button, Panel} from "@/components/customer/CustomerUi";
+import {type NotificationItem, useNotifications} from '@/features/notifications/hooks/useNotifications';
+import {useI18n} from '@/providers/I18nContext';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 
 export default function CustomerNotificationsPage() {

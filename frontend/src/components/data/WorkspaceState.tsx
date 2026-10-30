@@ -1,10 +1,10 @@
 'use client';
 import type {ReactNode} from 'react';
 import {Database, ShieldAlert} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
+import {useAuth} from '@/providers/AuthContext';
 import {Alert, Button} from '@/components/ui';
 import {ApiError} from '@/lib/api';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function EmptyState({title, detail, action}: {
     title?: string;

@@ -1,17 +1,16 @@
 'use client';
 import {useRef, useState} from 'react';
 import {Button, Input} from '@/components/ui';
-import {useAuth} from '@/contexts/AuthContext';
-import {useInventoryHistory, useOperationMutation} from '@/lib/query/operations';
-import {useCollection} from '@/lib/query/operations';
-import {operationsService} from "@/lib/api/resources";
+import {useAuth} from '@/providers/AuthContext';
+import {useEquipmentMutations, useInventoryHistory} from '@/features/inventory/hooks/useInventory';
+import {useCollection} from '@/hooks/useCollection';
 import {DataTable, options} from '@/components/data/DataTable';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from "@/components/data/ResourceState";
 import {displayLabel, formatDate} from "@/components/shared/presentation";
 import type {Equipment} from "@/types/resources";
 import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function EquipmentPanel() {
     const {can} = useAuth();
@@ -25,8 +24,7 @@ export function EquipmentPanel() {
     const [movement, setMovement] = useState({id: '', action: 'stock-in', quantity: '1', note: '', stationId: ''});
     const replay = useRef<{ payload: string; requestId: string } | null>(null);
     const [success, setSuccess] = useState('');
-    const create = useOperationMutation(operationsService.createEquipment, ['equipment', 'dashboard', 'audit']);
-    const move = useOperationMutation(operationsService.moveEquipment, ['equipment', 'dashboard', 'audit']);
+    const {create, move} = useEquipmentMutations();
     const rows = collection.data || [];
     const columns = [
         {

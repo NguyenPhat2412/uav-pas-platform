@@ -2,8 +2,8 @@
 
 import {useEffect, useRef} from 'react';
 import {eras} from "@/features/marketing/content/home-content";
-import {EraSilhouette} from "@/features/marketing/components/home-icons";
-import {FlatTag} from "@/features/marketing/components/flat-tag";
+import {EraSilhouette} from "@/features/marketing/components/HomeIcons";
+import {FlatTag} from "@/features/marketing/components/FlatTag";
 
 /**
  * Vertical history rail read top to bottom while scrolling: each milestone fades in as it reaches the viewport and

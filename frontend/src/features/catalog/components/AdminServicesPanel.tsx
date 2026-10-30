@@ -1,32 +1,24 @@
 'use client';
 
 import {useState, type FormEvent} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {Pencil, Plus, Search, X} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
-import {serviceOfferingsService} from '@/lib/api/services';
+import {useAdminServiceOfferings, useSaveServiceOffering, useToggleServiceOffering} from '@/features/catalog/hooks/useServiceOfferings';
 import {serviceSensors, type ServiceOffering} from '@/features/catalog/types/service-offering.types';
-import {toast} from '@/contexts/ToastContext';
+import {toast} from '@/providers/ToastContext';
 
 export function AdminServicesPanel() {
-    const {user} = useAuth();
     const {t} = useI18n();
-    const client = useQueryClient();
     const [search, setSearch] = useState('');
     const [show, setShow] = useState<'all' | 'active' | 'inactive'>('all');
     const [editing, setEditing] = useState<ServiceOffering | 'new' | null>(null);
-    const key = ['session', user?.id, 'admin-services'];
-    const query = useQuery({queryKey: key, queryFn: ({signal}) => serviceOfferingsService.all(signal)});
-    const toggle = useMutation({
-        mutationFn: ({id, active}: { id: number; active: boolean }) => serviceOfferingsService.setActive(id, active),
-        onSuccess: () => client.invalidateQueries({queryKey: key}),
-    });
+    const {query, refresh} = useAdminServiceOfferings();
+    const toggle = useToggleServiceOffering();
     const term = search.trim().toLowerCase();
     const rows = (query.data ?? []).filter(s => (show === 'all' || (show === 'active') === s.active)
         && (!term || `${s.code} ${s.name} ${s.description ?? ''}`.toLowerCase().includes(term)));
@@ -88,7 +80,7 @@ export function AdminServicesPanel() {
         <p className="text-xs text-slate-500">{t('admin.services.note')}</p>
         {editing && <ServiceDialog service={editing === 'new' ? null : editing} onClose={() => setEditing(null)} onSaved={() => {
             setEditing(null);
-            void client.invalidateQueries({queryKey: key});
+            void refresh();
         }}/>}
     </div>;
 }
@@ -106,19 +98,7 @@ function ServiceDialog({service, onClose, onSaved}: { service: ServiceOffering |
         deliveryHours: service?.deliveryHours?.toString() ?? '',
     });
     const optional = (v: string) => v.trim() === '' ? null : Number(v);
-    const save = useMutation({
-        mutationFn: async () => {
-            const body = {name: name.trim(), description: description.trim() || undefined, defaultDurationMinutes: Number(minutes)};
-            const specs = {
-                sensors, bestGsdCm: optional(spec.bestGsdCm), maxAreaHectares: optional(spec.maxAreaHectares), maxWindMs: optional(spec.maxWindMs),
-                onSiteHours: optional(spec.onSiteHours), deliveryHours: optional(spec.deliveryHours),
-            };
-            if (service) return serviceOfferingsService.update(service.id, {...body, ...specs});
-            // Creation takes the identity only; the technical sheet is stored with a follow-up update.
-            const created = await serviceOfferingsService.create({...body, code: code.trim().toUpperCase()});
-            return serviceOfferingsService.update(created.id, {...body, ...specs});
-        },
-    });
+    const save = useSaveServiceOffering();
     const specField = (key: keyof typeof spec, label: string, min: number, max: number, step: number) =>
         <label className="text-[13px] font-semibold text-slate-600">{label}
             <input type="number" step={step} value={spec[key]} placeholder={t('admin.services.spec.notCommitted')}
@@ -126,7 +106,15 @@ function ServiceDialog({service, onClose, onSaved}: { service: ServiceOffering |
     const submit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            await save.mutateAsync();
+            await save.mutateAsync({
+                id: service?.id,
+                code: code.trim().toUpperCase(),
+                details: {
+                    name: name.trim(), description: description.trim() || undefined, defaultDurationMinutes: Number(minutes),
+                    sensors, bestGsdCm: optional(spec.bestGsdCm), maxAreaHectares: optional(spec.maxAreaHectares), maxWindMs: optional(spec.maxWindMs),
+                    onSiteHours: optional(spec.onSiteHours), deliveryHours: optional(spec.deliveryHours),
+                },
+            });
             toast.success(t(service ? 'admin.services.savedToast' : 'admin.services.createdToast', {name: name.trim()}));
             onSaved();
         } catch (error) {

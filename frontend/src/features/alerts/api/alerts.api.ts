@@ -1,4 +1,4 @@
-import {apiClient} from '@/lib/api';
+import {apiClient, API_ROUTES} from '@/lib/api';
 
 export type AlertSeverity = 'CRITICAL' | 'WARNING' | 'INFO';
 export type AlertSource = 'FLEET' | 'MAINTENANCE' | 'WEBHOOK' | 'FINANCE' | 'BILLING' | 'SYSTEM' | 'SECURITY';
@@ -23,11 +23,7 @@ export interface AlertCenter {
     items: PlatformAlert[];
 }
 
-export const alertCenterApi = {
-    current: (signal?: AbortSignal) => apiClient.get<AlertCenter>('/api/v1/admin/alerts', {signal}),
+export const alertsService = {
+    current: (signal?: AbortSignal) => apiClient.get<AlertCenter>(API_ROUTES.admin.alerts, {signal}),
 };
 
-export const alertCenterQueryKey = (userId: unknown) => ['session', userId, 'admin-alert-center'];
-
-export const SEVERITIES: AlertSeverity[] = ['CRITICAL', 'WARNING', 'INFO'];
-export const SOURCES: AlertSource[] = ['FLEET', 'MAINTENANCE', 'WEBHOOK', 'FINANCE', 'BILLING', 'SYSTEM', 'SECURITY'];

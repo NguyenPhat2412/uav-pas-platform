@@ -2,14 +2,13 @@
 
 import {type FormEvent, useState} from 'react';
 import Link from 'next/link';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {KeyRound, RefreshCw, Router, Save, Unplug} from 'lucide-react';
 import {KpiCard, MetricStrip} from '@/components/ui';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {ApiError} from '@/lib/api';
-import {useI18n} from '@/contexts/I18nContext';
-import {toast} from '@/contexts/ToastContext';
-import {assistantKeys, assistantService} from '@/lib/api/services';
+import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
+import {useRouterSettings, useRouterStatus, useSaveRouterSettings} from '@/features/assistant/hooks/useAssistant';
 import type {AiRouterSettings, AiRouterStatus} from '@/features/assistant/types/assistant.types';
 import {SuperheroLogo} from '@/features/assistant/components/SuperheroLogo';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
@@ -30,8 +29,8 @@ const label = 'block text-[12px] font-semibold uppercase tracking-wide text-slat
 
 /** Assistant connection, API key and the two AI modes; lives in the admin System settings page. */
 export function AssistantSettingsSection() {
-    const settings = useQuery({queryKey: assistantKeys.settings, queryFn: ({signal}) => assistantService.settings(signal)});
-    const status = useQuery({queryKey: assistantKeys.status, queryFn: ({signal}) => assistantService.status(signal), retry: false});
+    const settings = useRouterSettings();
+    const status = useRouterStatus();
     return <div className="space-y-4">
         <StatusStrip status={status.data} loading={status.isFetching} settings={settings.data} onRefresh={() => void status.refetch()}/>
         <QueryState query={settings}>{settings.data &&
@@ -75,7 +74,6 @@ function StatusStrip({status, loading, settings, onRefresh}: {
 function SettingsForm({settings, models}: { settings: AiRouterSettings; models: string[] }) {
     const {t} = useI18n();
     const errorText = useErrorText();
-    const client = useQueryClient();
     const [baseUrl, setBaseUrl] = useState(settings.baseUrl);
     const [apiKey, setApiKey] = useState('');
     const [mode1Label, setMode1Label] = useState(settings.mode1Label);
@@ -85,34 +83,31 @@ function SettingsForm({settings, models}: { settings: AiRouterSettings; models: 
     const [systemPrompt, setSystemPrompt] = useState(settings.systemPrompt ?? '');
     const [enabled, setEnabled] = useState(settings.enabled);
 
-    const save = useMutation({
-        mutationFn: (apiKeyChange?: string) => assistantService.save({
-            baseUrl: baseUrl.trim(), apiKey: apiKeyChange, mode1Label: mode1Label.trim(), mode1Model: mode1Model.trim() || null,
-            mode2Label: mode2Label.trim(), mode2Model: mode2Model.trim() || null, systemPrompt: systemPrompt.trim() || null,
-            enabled, expectedVersion: settings.version,
-        }),
-        onSuccess: next => {
-            client.setQueryData(assistantKeys.settings, next);
-            void client.invalidateQueries({queryKey: assistantKeys.status});
-            void client.invalidateQueries({queryKey: assistantKeys.info});
+    const save = useSaveRouterSettings({
+        onSuccess: () => {
             setApiKey('');
             toast.success(t('admin.aiRouter.saved'));
         },
         onError: error => {
             const code = error instanceof ApiError ? error.code ?? '' : '';
-            if (code === 'AI_ROUTER_SETTINGS_STALE') void client.invalidateQueries({queryKey: assistantKeys.settings});
             toast.error(code ? errorText(code) : error instanceof Error ? error.message : t('admin.aiRouter.saveFailed'));
         },
     });
 
+    /** `apiKeyChange`: undefined keeps the stored key, '' removes it. */
+    const input = (apiKeyChange?: string) => ({
+        baseUrl: baseUrl.trim(), apiKey: apiKeyChange, mode1Label: mode1Label.trim(), mode1Model: mode1Model.trim() || null,
+        mode2Label: mode2Label.trim(), mode2Model: mode2Model.trim() || null, systemPrompt: systemPrompt.trim() || null,
+        enabled, expectedVersion: settings.version,
+    });
     const submit = (event: FormEvent) => {
         event.preventDefault();
-        save.mutate(apiKey.trim() ? apiKey.trim() : undefined);
+        save.mutate(input(apiKey.trim() ? apiKey.trim() : undefined));
     };
     const disconnect = () => {
         if (window.confirm(t('admin.aiRouter.disconnectConfirm'))) {
             setEnabled(false);
-            save.mutate('');
+            save.mutate(input(''));
         }
     };
 

@@ -1,9 +1,11 @@
 "use client";
 
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {useAuth} from "@/contexts/AuthContext";
-import {useI18n} from '@/contexts/I18nContext';
-import {apiClient, API_ROUTES} from '@/lib/api';
+import {useAuth} from "@/providers/AuthContext";
+import {useI18n} from '@/providers/I18nContext';
+import {queryKeys} from '@/lib/query';
+import {notificationsService} from '@/features/notifications/api/notifications.api';
+import {usersService} from '@/features/users/api/users.api';
 import type {NotificationItem, NotificationResponse} from '@/features/notifications/types/notification.types';
 
 export type {NotificationItem};
@@ -19,22 +21,17 @@ export function useNotifications() {
     const {user} = useAuth();
     const {t} = useI18n();
     const client = useQueryClient();
-    const key = ['session', user?.id ?? 'anonymous', 'notifications'] as const;
+    const key = queryKeys.feature(user?.id, 'notifications');
     const list = useQuery({
         queryKey: [...key, 'recent'], enabled: !!user, retry: false,
-        queryFn: async ({signal}) => {
-            const response = await apiClient.get<{ content: NotificationResponse[] }>(`${API_ROUTES.notifications.list}?page=0&size=50`, {signal});
-            return response.content.map(toNotificationItem);
-        },
+        queryFn: async ({signal}) => (await notificationsService.recent(50, signal)).content.map(toNotificationItem),
     });
     const count = useQuery({
         queryKey: [...key, 'unread'], enabled: !!user, retry: false,
-        queryFn: ({signal}) => apiClient.get<{ unreadCount: number }>(API_ROUTES.notifications.unreadCount, {signal}),
+        queryFn: ({signal}) => notificationsService.unreadCount(signal),
     });
     const mutation = useMutation({
-        mutationFn: (id: string | null) => id === null
-            ? apiClient.post(API_ROUTES.notifications.markAllRead)
-            : apiClient.patch(API_ROUTES.notifications.markRead(id)),
+        mutationFn: (id: string | null) => id === null ? notificationsService.markAllRead() : notificationsService.markRead(id),
         onSuccess: () => client.invalidateQueries({queryKey: key}),
     });
     return {
@@ -48,4 +45,40 @@ export function useNotifications() {
         },
         markAllRead: () => mutation.mutate(null), markOneRead: (id: string) => mutation.mutate(id),
     };
+}
+
+/** One page of the administrator's notification history. */
+export function useNotificationPage(page: number, size: number) {
+    const {user} = useAuth();
+    return useQuery({
+        queryKey: queryKeys.of(user?.id, 'notifications', 'admin-page', page),
+        queryFn: ({signal}) => notificationsService.page(page, size, signal),
+        enabled: !!user,
+    });
+}
+
+/** Read-state changes; each refreshes every notification view (bell, list, counts). */
+export function useNotificationReadActions() {
+    const client = useQueryClient();
+    const {user} = useAuth();
+    const refresh = () => client.invalidateQueries({queryKey: queryKeys.feature(user?.id, 'notifications')});
+    return {
+        markOne: useMutation({mutationFn: notificationsService.markRead, onSuccess: refresh}),
+        markAll: useMutation({mutationFn: notificationsService.markAllRead, onSuccess: refresh}),
+        refresh,
+    };
+}
+
+/** Recipient lookup for a new notification; searches from two characters and stops once one is chosen. */
+export function useRecipientSearch(keyword: string, enabled: boolean) {
+    const {user} = useAuth();
+    return useQuery({
+        queryKey: queryKeys.of(user?.id, 'notifications', 'recipients', keyword),
+        queryFn: ({signal}) => usersService.users(0, keyword, undefined, signal, undefined, 8),
+        enabled: enabled && keyword.trim().length >= 2,
+    });
+}
+
+export function useSendNotification() {
+    return useMutation({mutationFn: notificationsService.send});
 }

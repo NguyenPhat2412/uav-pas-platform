@@ -1,7 +1,6 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import {useQuery} from '@tanstack/react-query';
 import Link from 'next/link';
 import {
     Activity,
@@ -19,15 +18,12 @@ import {
 import {useRouter} from 'next/navigation';
 import {AppShell} from '@/components/layout/AppShell';
 import {KpiCard, Spinner, StatusBadge} from '@/components/ui';
-import {useAuth} from '@/contexts/AuthContext';
-import {dashboardService} from '@/lib/api/services';
-import {missionService} from '@/lib/api/services';
-import type {DashboardSummary} from '@/features/dashboard/types/dashboard.types';
-import type {MissionDashboard} from '@/features/missions/types/mission.types';
-import {useCollection} from '@/lib/query/operations';
-import {TELEMETRY_POLL_MS, telemetryService} from '@/lib/api/services';
+import {useAuth} from '@/providers/AuthContext';
+import {useOperationsOverview} from '@/features/dashboard/hooks/useOperationsOverview';
+import {useCollection} from '@/hooks/useCollection';
+import {useFleetTelemetry} from '@/features/uavs/hooks/useTelemetry';
 import {toStationSlug, toUavSlug} from "@/lib/url-slugs";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 const quickActions = [
     {icon: Settings2, labelKey: 'opsMissions.overview.quick.stations', href: "/operations/stations"},
@@ -38,43 +34,20 @@ const quickActions = [
 
 export default function HomePage() {
     const router = useRouter();
-    const {user, isAuthenticated, isLoading, permissionsReady, can} = useAuth();
+    const {user, isAuthenticated, isLoading, can} = useAuth();
     const {t, formatNumber} = useI18n();
     const count = (value?: number) => value == null ? '—' : formatNumber(value);
     const canReadSummary = can('DASHBOARD_READ');
     const canReadMissions = can('DASHBOARD_MISSION');
-    const [summary, setSummary] = useState<DashboardSummary | null>(null);
-    const [missions, setMissions] = useState<MissionDashboard | null>(null);
+    const canReadUavs = can('UAV_READ');
+    const {summary, missions, error} = useOperationsOverview();
     const uavsQuery = useCollection('uavs');
     const stationsQuery = useCollection('stations');
-    const [error, setError] = useState(false);
     const [selectedUavId, setSelectedUavId] = useState<number | null>(null);
-    const canReadUavs = can('UAV_READ');
-    const fleetTelemetry = useQuery({
-        queryKey: ['telemetry', 'fleet'],
-        queryFn: ({signal}) => telemetryService.fleet(signal),
-        enabled: isAuthenticated && permissionsReady && canReadUavs,
-        refetchInterval: TELEMETRY_POLL_MS,
-    });
+    const fleetTelemetry = useFleetTelemetry();
     useEffect(() => {
         if (!isLoading && !isAuthenticated) router.replace("/operations/login");
     }, [isAuthenticated, isLoading, router]);
-    useEffect(() => {
-        if (!isAuthenticated || !permissionsReady) return;
-        let active = true;
-        Promise.allSettled([
-            canReadSummary ? dashboardService.getSummary() : Promise.resolve(null),
-            canReadMissions ? missionService.dashboard() : Promise.resolve(null),
-        ]).then(([resources, mission]) => {
-            if (!active) return;
-            setSummary(resources.status === 'fulfilled' ? resources.value : null);
-            setMissions(mission.status === 'fulfilled' ? mission.value : null);
-            setError(resources.status === 'rejected' || mission.status === 'rejected');
-        });
-        return () => {
-            active = false;
-        };
-    }, [isAuthenticated, permissionsReady, canReadSummary, canReadMissions]);
     if (isLoading || !isAuthenticated || !user) return <div
         className="flex min-h-screen items-center justify-center bg-background"><Spinner size="lg"
                                                                                         label={t('opsMissions.overview.authenticating')}/></div>;

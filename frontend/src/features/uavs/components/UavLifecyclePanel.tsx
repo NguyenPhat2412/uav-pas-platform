@@ -2,12 +2,11 @@
 import {useRef, useState} from 'react';
 import {Alert, Button} from '@/components/ui';
 import {ApiError} from '@/lib/api';
-import {useOperationMutation} from '@/lib/query/operations';
-import {operationsService} from "@/lib/api/resources";
+import {useUavMutations} from '@/features/uavs/hooks/useUavs';
 import type {Station, Uav} from "@/types/resources";
 import {uavControls} from "@/features/uavs/utils/workflows";
 import {RequiredMark} from "@/components/shared/RequiredMark";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 const errorCodes = new Set([
     'UAV_HAS_IN_PROGRESS_REPAIR_ORDER',
@@ -40,12 +39,7 @@ export function UavLifecyclePanel({uav, mode, stations, canReadStations, onRefre
     const [stale, setStale] = useState(false);
     const [busy, setBusy] = useState(false);
     const lock = useRef(false);
-    const maintenance = useOperationMutation(operationsService.maintenanceUav, ['uavs', 'dashboard', 'audit']);
-    const recover = useOperationMutation(operationsService.completeUavMaintenance, ['uavs', 'dashboard', 'audit']);
-    const assign = useOperationMutation(({id, stationId}: {
-        id: number;
-        stationId: number
-    }) => operationsService.assignUav(id, stationId), ['uavs', 'audit']);
+    const {maintenance, recover, assign} = useUavMutations();
     const run = async (request: () => Promise<Uav>, message: string) => {
         if (lock.current || stale) return;
         lock.current = true;

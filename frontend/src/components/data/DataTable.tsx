@@ -15,7 +15,7 @@ import {
 import {ArrowDown, ArrowUp, ChevronsUpDown, Search, SlidersHorizontal} from 'lucide-react';
 import {Button} from '@/components/ui';
 import {EmptyState} from "@/components/data/WorkspaceState";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import type {TableColumn, TableFilter} from '@/types/ui';
 
 export type {TableColumn, TableFilter};

@@ -15,6 +15,7 @@ import {
     FileKey2,
     FileLock2,
     FileSpreadsheet,
+    FolderOpen,
     Gauge,
     GraduationCap,
     HardDrive,
@@ -335,6 +336,13 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         key: 'infrastructureStorage',
         group: 'infrastructure',
         icon: HardDrive,
+        permission: 'PERMISSION_MANAGE',
+    },
+    {
+        href: '/admin/files',
+        key: 'files',
+        group: 'infrastructure',
+        icon: FolderOpen,
         permission: 'PERMISSION_MANAGE',
     },
     {

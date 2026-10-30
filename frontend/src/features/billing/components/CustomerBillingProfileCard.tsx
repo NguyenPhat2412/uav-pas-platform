@@ -1,19 +1,15 @@
 'use client';
 
-import {useQuery} from '@tanstack/react-query';
 import {Receipt} from 'lucide-react';
 import {Metadata} from '@/components/data/Drawer';
 import {QueryState} from '@/components/data/WorkspaceState';
-import {useI18n} from '@/contexts/I18nContext';
-import {commerceAdminApi} from '@/features/billing/admin-api';
+import {useI18n} from '@/providers/I18nContext';
+import {useUserBillingProfile} from '@/features/billing/hooks/useBillingAdmin';
 
 /** Read-only invoicing details a customer saved in their profile; editing stays with the customer. */
 export function CustomerBillingProfileCard({userId}: { userId: number }) {
     const {t, formatDate} = useI18n();
-    const query = useQuery({
-        queryKey: ['admin', 'users', userId, 'billing-profile'],
-        queryFn: ({signal}) => commerceAdminApi.userBillingProfile(userId, signal),
-    });
+    const query = useUserBillingProfile(userId);
     const p = query.data;
     return <section className="min-w-0 space-y-3 rounded-panel border border-border bg-card p-5">
         <header className="flex flex-wrap items-center justify-between gap-2">

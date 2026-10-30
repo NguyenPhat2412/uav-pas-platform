@@ -1,7 +1,7 @@
 'use client';
 import {useState} from 'react';
 import {eventNote, eventTitle, formatDate, type TimelineEvent} from "@/components/shared/presentation";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function MissionTimeline({events, showActor = false}: { events: TimelineEvent[]; showActor?: boolean }) {
     const [expanded, setExpanded] = useState(false);

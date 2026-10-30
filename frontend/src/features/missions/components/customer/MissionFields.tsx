@@ -7,7 +7,7 @@ import {FlightSpecFields} from "@/features/missions/components/customer/FlightSp
 import {defaultFlightPlan} from "@/features/missions/types/flight-plan.types";
 import {type MissionFormErrors} from "@/features/missions/forms/mission-form";
 import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function MissionFields({form, onChange, errors = {}}: {
     form: MissionInput;

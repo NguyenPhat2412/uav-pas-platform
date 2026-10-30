@@ -1,13 +1,12 @@
 'use client';
 
 import {useState} from 'react';
-import {useQuery} from '@tanstack/react-query';
-import {useAuth} from '@/contexts/AuthContext';
+import {useAuth} from '@/providers/AuthContext';
 import {displayLabel} from '@/components/shared/presentation';
-import {adminService} from '@/lib/api/admin';
+import {useReportMissions} from '@/features/reports/hooks/useReports';
 import type {MissionOutcome as Outcome} from '@/types/admin';
 import type {Mission, MissionStatus} from '@/types/customer';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 const MONTHS = 6;
 
@@ -53,12 +52,8 @@ function typeCounts(missions: Mission[]) {
 }
 
 export function MissionCharts() {
-    const {user, can, permissionsReady} = useAuth();
-    const missions = useQuery({
-        queryKey: ['session', user?.id, 'admin-report-missions'],
-        queryFn: ({signal}) => adminService.reportMissions(signal),
-        enabled: permissionsReady && can('MISSION_VIEW_ALL')
-    });
+    const {can} = useAuth();
+    const missions = useReportMissions();
     const [hover, setHover] = useState<string | null>(null);
     const {t} = useI18n();
     if (!can('MISSION_VIEW_ALL')) return null;

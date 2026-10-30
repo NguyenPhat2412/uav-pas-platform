@@ -1,15 +1,14 @@
 'use client';
 
 import {useEffect, useState, type FormEvent} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {Save, UserRound} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {displayLabel} from '@/components/shared/presentation';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {profileError} from '@/features/profile/forms/profile-form';
-import {profileService} from '@/lib/api/services';
+import {useOwnProfile, useUpdateProfile} from '@/features/profile/hooks/useProfile';
 import type {ProfileErrors, ProfileFields} from '@/features/profile/types/profile.types';
 import {PasswordChangeCard} from '@/features/profile/components/PasswordChangeCard';
 import {TwoFactorSettingsCard} from '@/features/profile/components/TwoFactorSettingsCard';
@@ -19,29 +18,20 @@ export function AdminProfilePanel() {
     const {user, refreshUser} = useAuth();
     const {t} = useI18n();
     const tp = (key: string, params?: Record<string, string | number>) => t(key.replace(/^profile\./, 'admin.profile.'), params);
-    const client = useQueryClient();
-    const key = ['session', user?.id, 'admin-profile'];
-    const profile = useQuery({
-        queryKey: key, enabled: !!user, retry: false,
-        queryFn: ({signal}) => profileService.get(signal),
-    });
+    const profile = useOwnProfile();
     const [fields, setFields] = useState<ProfileFields>({fullName: '', phoneNumber: ''});
     const [errors, setErrors] = useState<ProfileErrors>({});
     const [saved, setSaved] = useState(false);
     useEffect(() => {
         if (profile.data) setFields({fullName: profile.data.fullName ?? '', phoneNumber: profile.data.phoneNumber ?? ''});
     }, [profile.data]);
-    const save = useMutation({
-        retry: false,
-        mutationFn: () => profileService.update(fields, profile.data!.revision),
-        onSuccess: data => client.setQueryData(key, data),
-    });
+    const save = useUpdateProfile();
     const submit = async (e: FormEvent) => {
         e.preventDefault();
         setSaved(false);
         setErrors({});
         try {
-            await save.mutateAsync();
+            await save.mutateAsync({fields, revision: profile.data!.revision});
             setSaved(true);
             void refreshUser();
         } catch (error) {

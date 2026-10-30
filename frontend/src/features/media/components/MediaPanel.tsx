@@ -1,17 +1,15 @@
 'use client';
-import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention} from "@/lib/api/media-policy";
+import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention} from "@/features/media/utils/media-policy";
 import {displayLabel} from "@/components/shared/presentation";
 import {useState} from 'react';
 import {Badge, Button, Input} from '@/components/ui';
-import {useAuth} from '@/contexts/AuthContext';
-import {useOperationMutation} from '@/lib/query/operations';
-import {useCollection} from '@/lib/query/operations';
-import {operationsService as service} from "@/lib/api/resources";
+import {useAuth} from '@/providers/AuthContext';
+import {useMediaMutations} from '@/features/media/hooks/useMedia';
+import {useCollection} from '@/hooks/useCollection';
 import type {MediaAsset} from "@/types/resources";
 import {DataTable, Detail, ErrorNotice, selectClass} from "@/components/data/ResourceState";
 import {QueryState} from '@/components/data/WorkspaceState';
-import {apiRequest} from '@/lib/api';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function MediaPanel() {
     const {can} = useAuth();
@@ -25,38 +23,26 @@ export function MediaPanel() {
     const [incompleteUploadId, setIncompleteUploadId] = useState<number>();
     const [preview, setPreview] = useState<{ asset: MediaAsset; url: string }>();
     const [deleting, setDeleting] = useState<number>();
-    const upload = useOperationMutation(async ({file, existing}: { file: File; existing?: MediaAsset }) => {
-        // The API accepts or rejects the type and size (MediaUploadPolicy) when the upload is registered.
-        const contentType = file.type;
-        if (existing && (existing.size !== file.size || existing.contentType !== contentType)) throw new Error(t('opsAssets.media.reuploadMismatch'));
-        setIncompleteUploadId(undefined);
-        setStage({key: 'opsAssets.media.stage.registering'});
-        const asset = existing || await service.registerMedia({
-            originalName: file.name, contentType, size: file.size,
-            type: contentType.startsWith('video/') ? 'VIDEO' : contentType.startsWith('image/') ? 'IMAGE' : 'DOCUMENT',
-            linkedEntityType: link.type || undefined, linkedEntityId: link.type ? link.id : undefined
-        });
-        setIncompleteUploadId(asset.id);
-        setStage({key: 'opsAssets.media.stage.uploading', params: {id: asset.id}});
-        const signed = await service.uploadUrl(asset.id);
-        await apiRequest<void>(signed.url, {
-            method: 'PUT',
-            headers: {'If-None-Match': '*', 'Content-Type': contentType},
-            body: file
-        });
-        setStage({key: 'opsAssets.media.stage.confirming'});
-        await service.confirmMedia(asset.id);
-        setIncompleteUploadId(undefined);
-        setStage({key: 'opsAssets.media.stage.uploaded'});
-    }, ['media', 'audit']);
-    const confirm = useOperationMutation(service.confirmMedia, ['media', 'audit']);
-    const remove = useOperationMutation(service.deleteMedia, ['media', 'audit']);
-    const open = useOperationMutation(service.downloadUrl, ['audit']);
+    const {upload, confirm, remove, open} = useMediaMutations();
     const runUpload = async (selected: File, existing?: MediaAsset) => {
         confirm.reset();
         open.reset();
         try {
-            await upload.mutateAsync({file: selected, existing});
+            // The API accepts or rejects the type and size (MediaUploadPolicy) when the upload is registered.
+            await upload.mutateAsync({
+                file: selected, existing, link,
+                onStep: (step, asset) => {
+                    if (step === 'registering') {
+                        setIncompleteUploadId(undefined);
+                        setStage({key: 'opsAssets.media.stage.registering'});
+                    } else if (step === 'uploading' && asset) {
+                        setIncompleteUploadId(asset.id);
+                        setStage({key: 'opsAssets.media.stage.uploading', params: {id: asset.id}});
+                    } else setStage({key: 'opsAssets.media.stage.confirming'});
+                },
+            });
+            setIncompleteUploadId(undefined);
+            setStage({key: 'opsAssets.media.stage.uploaded'});
         } catch {
             setStage({key: 'opsAssets.media.stage.failed'});
         } finally {

@@ -3,10 +3,10 @@ import Link from 'next/link';
 import {auditDetail, displayLabel, formatDate} from "@/components/shared/presentation";
 import {useState, type FormEvent} from 'react';
 import {Download, Lock, LockOpen, Search, UserPlus, X} from 'lucide-react';
-import {useAdminAudit, useAdminMutations, useAdminUser, useAdminUserCounts, useAdminUsers, userStatuses} from "@/lib/query/admin";
-import {adminService} from "@/lib/api/admin";
+import {useAdminAudit} from '@/features/audit/hooks/useAdminAudit';
+import {useAdminMutations, useAdminUser, useAdminUserCounts, useAdminUsers, userStatuses} from '@/features/users/hooks/useAdminUsers';
 import {roles, type User, type UserRole, type UserStatus} from "@/types/admin";
-import {useAuth} from '@/contexts/AuthContext';
+import {useAuth} from '@/providers/AuthContext';
 import {EmptyState, ErrorNotice, PermissionGate, QueryState} from "@/components/data/WorkspaceState";
 import {Alert, Button, StatusBadge} from "@/components/ui";
 import {Metadata} from '@/components/data/Drawer';
@@ -15,7 +15,7 @@ import {PermissionEditor} from "@/features/access/components/PermissionEditor";
 import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {cn} from '@/lib/utils';
 import {toUserSlug} from '@/lib/url-slugs';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {avatarSrc} from '@/components/shared/Avatar';
 import {CustomerBillingProfileCard} from '@/features/billing/components/CustomerBillingProfileCard';
 
@@ -85,7 +85,12 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
         }
     };
     const exportCsv = async () => {
-        const csv = await adminService.exportUsers({keyword, role, status});
+        let csv: string;
+        try {
+            csv = await mutations.exportCsv.mutateAsync({keyword, role, status});
+        } catch {
+            return; // The failure is reported by the global mutation toast.
+        }
         const url = URL.createObjectURL(new Blob([csv], {type: 'text/csv;charset=utf-8'}));
         const link = Object.assign(document.createElement('a'), {href: url, download: `users-${new Date().toISOString().slice(0, 10)}.csv`});
         link.click();

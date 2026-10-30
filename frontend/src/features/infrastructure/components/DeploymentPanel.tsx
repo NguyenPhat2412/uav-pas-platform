@@ -1,11 +1,11 @@
 'use client';
 
 import {GitCommitHorizontal, History, Lock, Server} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
-import {infrastructureApi} from '../api';
-import type {DeploymentInfo, TlsCertificateInfo} from '../types';
-import {Facts, formatDuration, Note, Panel, StatusBanner, type Tone, useInfraQuery} from './InfraUi';
+import type {DeploymentInfo, TlsCertificateInfo} from '../types/infrastructure.types';
+import {Facts, formatDuration, Note, Panel, StatusBanner, type Tone} from './InfraUi';
+import {useDeploymentInfo} from '@/features/infrastructure/hooks/useInfrastructure';
 
 export function tlsTone(tls: TlsCertificateInfo): Tone {
     if (tls.status === 'EXPIRED') return 'bad';
@@ -16,7 +16,7 @@ export function tlsTone(tls: TlsCertificateInfo): Tone {
 
 export function DeploymentPanel() {
     const {t, formatDate} = useI18n();
-    const query = useInfraQuery('deployment', ({signal}) => infrastructureApi.deployment(signal));
+    const query = useDeploymentInfo();
     return <div className="space-y-4">
         <QueryState query={query}>{query.data && <Body data={query.data} refreshing={query.isFetching}
                                                        onRefresh={() => void query.refetch()}

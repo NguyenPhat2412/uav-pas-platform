@@ -3,13 +3,13 @@ import {UavIcon} from '@/components/shared/UavIcon';
 import {serviceName} from '@/components/shared/presentation';
 import Link from 'next/link';
 import {Camera, CheckCircle2, Clock3, Database, type LucideIcon, MapPinned, Timer} from 'lucide-react';
-import {serviceDeliverables} from '@/features/catalog/service-specs';
-import {PageGuard} from '@/components/customer/layout';
-import {Button, Panel} from '@/components/customer/ui';
-import {useServices} from '@/lib/query/customer';
-import {useAuth} from '@/contexts/AuthContext';
+import {serviceDeliverables} from '@/features/catalog/utils/service-specs';
+import {PageGuard} from '@/components/customer/CustomerLayout';
+import {Button, Panel} from '@/components/customer/CustomerUi';
+import {useServices} from '@/features/missions/hooks/useCustomerMissions';
+import {useAuth} from '@/providers/AuthContext';
 import {toServiceSlug} from '@/lib/url-slugs';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import type {UavService} from '@/features/missions/types/mission.types';
 
 const serviceIcons: Record<string, LucideIcon | typeof UavIcon> = {

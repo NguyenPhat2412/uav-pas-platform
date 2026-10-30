@@ -1,7 +1,7 @@
 'use client';
 
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {useSidebarShortcut} from '@/components/layout/useSidebarShortcut';
+import {useSidebarShortcut} from '@/hooks/useSidebarShortcut';
 
 /**
  * Custom hook dùng chung cho cả 3 cổng (Admin, Operations, Customer) để quản lý:

@@ -1,5 +1,95 @@
 {
   "admin": {
+    "files": {
+      "title": "Quản lý tệp",
+      "intro": "Mọi tệp nền tảng lưu trên kho lưu trữ, kèm nơi đang dùng và người tải lên. Chỉ tệp không dùng hoặc tải lên dở mới xoá được.",
+      "refresh": "Làm mới",
+      "tiles": {
+        "total": "Tổng dung lượng",
+        "count": "Số tệp",
+        "unused": "Không dùng",
+        "pending": "Tải lên dở",
+        "files": "{count} tệp"
+      },
+      "byModule": "Theo phân hệ",
+      "byModuleDetail": "{count} tệp · {unused} không dùng · {pending} tải dở",
+      "largest": "Tệp lớn nhất",
+      "module": {
+        "all": "Tất cả",
+        "MISSION_MEDIA": "Tệp nhiệm vụ",
+        "TRAINING": "Đào tạo",
+        "AVATAR": "Ảnh đại diện",
+        "STATION_MEDIA": "Tệp trạm",
+        "UAV_MEDIA": "Tệp UAV",
+        "EQUIPMENT_MEDIA": "Tệp thiết bị",
+        "UNLINKED": "Chưa gắn"
+      },
+      "kind": {
+        "all": "Tất cả",
+        "VIDEO": "Video",
+        "IMAGE": "Hình ảnh",
+        "DOCUMENT": "Tài liệu",
+        "OTHER": "Khác"
+      },
+      "status": {
+        "all": "Tất cả",
+        "IN_USE": "Đang dùng",
+        "UNUSED": "Không dùng",
+        "PENDING": "Tải lên dở"
+      },
+      "filter": {
+        "module": "Phân hệ",
+        "type": "Loại",
+        "status": "Trạng thái"
+      },
+      "search": "Tìm tên tệp, mục liên kết, người tải",
+      "col": {
+        "name": "Tệp",
+        "module": "Phân hệ",
+        "linked": "Liên kết",
+        "owner": "Người tải lên",
+        "size": "Dung lượng",
+        "created": "Ngày tạo",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "sortBy": "Sắp xếp theo {column}",
+      "table": "Danh sách tệp",
+      "empty": "Không có tệp nào khớp bộ lọc.",
+      "open": "Xem hoặc tải {name}",
+      "delete": "Xoá {name}",
+      "deleteBlocked": {
+        "IN_USE": "Tệp đang được dùng nên không xoá được.",
+        "MISSION_MEDIA": "Tệp nhiệm vụ chỉ được xem tại đây.",
+        "UPLOADING": "Tệp vừa đăng ký, có thể vẫn đang tải lên."
+      },
+      "openFailed": "Không mở được tệp. Vui lòng thử lại.",
+      "confirmTitle": "Xoá tệp?",
+      "confirmBody": "Tệp \"{name}\" ({size}) sẽ bị xoá vĩnh viễn khỏi kho lưu trữ. Thao tác này không thể hoàn tác.",
+      "cancel": "Huỷ",
+      "confirmDelete": "Xoá tệp",
+      "deleted": "Đã xoá tệp {name}.",
+      "deleteFailed": "Không xoá được tệp.",
+      "readOnlyNote": "Tệp nhiệm vụ chỉ xem trong phiên bản này: tệp kết quả có thể vừa tải lên và chưa kịp gắn vào nhiệm vụ. Tệp nhiệm vụ tải dở quá 24 giờ được hệ thống tự dọn.",
+      "cleanup": {
+        "open": "Dọn tệp không dùng",
+        "title": "Dọn tệp không dùng",
+        "intro": "Tệp không dùng và tệp tải lên dở có thể xoá. Tệp nhiệm vụ không nằm trong danh sách này.",
+        "selectAll": "Chọn tất cả ({count})",
+        "selected": "Đã chọn {count} tệp · {size}",
+        "empty": "Không có tệp nào cần dọn.",
+        "truncated": "Đang hiện {shown}/{total} tệp lớn nhất. Mở lại sau khi dọn để xem phần còn lại.",
+        "start": "Xoá {count} tệp",
+        "confirm": "Xoá vĩnh viễn {count} tệp ({size})? Thao tác này không thể hoàn tác.",
+        "confirmYes": "Xác nhận xoá",
+        "back": "Quay lại",
+        "progress": "Đang xoá {done}/{total}",
+        "done": "Đã xoá {ok}/{total} tệp.",
+        "failed": "{count} tệp không xoá được:",
+        "stop": "Dừng",
+        "close": "Đóng"
+      }
+    },
     "pages": {
       "dashboard": {
         "title": "Tổng quan hệ thống"
@@ -816,20 +906,25 @@
         "hours": "Giờ bay/tháng",
         "uavs": "UAV cùng lúc",
         "sarAi": "AI SAR",
-        "status": "Trạng thái"
+        "limits": "Hạn mức",
+        "status": "Trạng thái",
+        "customers": "Khách (trả phí/tổng)",
+        "pending": "Chờ thanh toán",
+        "revenueMonth": "Doanh thu tháng",
+        "avgUsage": "Sử dụng TB"
       },
       "cycle": {
         "MONTHLY": "mỗi tháng",
         "YEARLY": "mỗi năm"
       },
       "hours": "{count} giờ",
+      "uavsCount": "{count} UAV cùng lúc",
       "yes": "Có",
       "no": "Không",
       "active": "Đang bật",
       "inactive": "Đã tắt",
       "toggleLabel": "Bật hoặc tắt gói {name}",
       "deactivateConfirm": "Tắt gói {name}? Khách đang dùng vẫn giữ hạn mức.",
-      "defaultLocked": "Gói mặc định, không thể tắt.",
       "edit": "Sửa gói {name}",
       "empty": "Chưa có gói cước nào.",
       "addTitle": "Thêm gói cước",
@@ -845,7 +940,50 @@
       "description": "Mô tả",
       "editNote": "Áp dụng từ lần gán gói tiếp theo.",
       "cancel": "Hủy",
-      "save": "Lưu"
+      "save": "Lưu",
+      "overdueCount": "{count} quá hạn",
+      "revenueTotal": "Tổng {amount}",
+      "stats": {
+        "title": "Thống kê gói cước",
+        "kpi": {
+          "customers": "Khách hàng",
+          "customersSplit": "{paying} trả phí · {free} miễn phí",
+          "mrr": "MRR",
+          "mrrHint": "Doanh thu định kỳ quy về tháng; gói năm tính 1/12",
+          "revenue": "Doanh thu tháng này",
+          "change": "{value} so với tháng trước",
+          "noBaseline": "Tháng trước chưa có doanh thu",
+          "revenueSplit": "Gói {plan} · Nhiệm vụ {mission}",
+          "pending": "Hóa đơn chờ thanh toán",
+          "overdue": "Quá hạn",
+          "nearLimit": "Sắp hết giờ bay",
+          "expiring": "{count} gói hết hạn trong 7 ngày"
+        },
+        "chart": {
+          "title": "Doanh thu theo tháng",
+          "period": "Giai đoạn",
+          "months": "{count} tháng",
+          "mission": "Nhiệm vụ",
+          "label": "Doanh thu đã thu theo tháng, chia theo gói và nhiệm vụ",
+          "empty": "Chưa có doanh thu đã thu trong {count} tháng qua.",
+          "newSubscriptions": "{count} khách đăng ký mới"
+        },
+        "share": {
+          "title": "Tỷ lệ khách theo gói",
+          "row": "{count} khách · {percent}%",
+          "paying": "Trả phí",
+          "free": "Chưa trả phí",
+          "empty": "Chưa có khách hàng nào.",
+          "inactive": "đã tắt"
+        },
+        "nearLimit": {
+          "title": "Khách sắp hết giờ bay",
+          "hint": "Đã dùng từ 80% giờ bay của chu kỳ",
+          "hours": "{used}/{limit} giờ",
+          "empty": "Không có khách nào dùng từ 80% giờ bay.",
+          "open": "Mở hạn mức của {name}"
+        }
+      }
     },
     "health": {
       "overall": {

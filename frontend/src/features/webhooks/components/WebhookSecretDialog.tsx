@@ -2,7 +2,7 @@
 
 import {useEffect, useRef, useState} from 'react';
 import {Check, Copy, KeyRound} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 /**
  * Shows a freshly rotated signing secret exactly once. The value lives only in this component's

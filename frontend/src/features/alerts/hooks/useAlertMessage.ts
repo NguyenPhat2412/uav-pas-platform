@@ -1,8 +1,8 @@
 'use client';
 
 import {useCallback} from 'react';
-import {useI18n} from '@/contexts/I18nContext';
-import type {PlatformAlert} from '@/features/alerts/api';
+import {useI18n} from '@/providers/I18nContext';
+import type {PlatformAlert} from '@/features/alerts/api/alerts.api';
 
 /** Renders an alert's message key with its params; translates component/source names in params. */
 export function useAlertMessage() {

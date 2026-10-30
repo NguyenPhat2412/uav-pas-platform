@@ -1,6 +1,6 @@
 import {Check, X} from 'lucide-react';
 import type {MissionStatus} from '@/types/customer';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 const steps = [
     {label: 'progress.draft', statuses: ['DRAFT']},

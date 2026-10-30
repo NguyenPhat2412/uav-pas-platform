@@ -1,4 +1,4 @@
-import {apiClient} from '@/lib/api';
+import {apiClient, API_ROUTES} from '@/lib/api';
 
 export type DeviceKeyStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED';
 
@@ -31,9 +31,9 @@ export interface CreateDeviceKeyInput {
     expiresAt?: string | null;
 }
 
-const base = '/api/v1/admin/device-keys';
+const base = API_ROUTES.admin.deviceKeys;
 
-export const deviceKeysApi = {
+export const deviceKeysService = {
     list: (signal?: AbortSignal) => apiClient.get<DeviceKey[]>(base, {signal}),
     create: (input: CreateDeviceKeyInput) => apiClient.post<CreatedDeviceKey>(base, input),
     revoke: (id: number) => apiClient.post<DeviceKey>(`${base}/${id}/revoke`),

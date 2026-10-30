@@ -35,7 +35,8 @@
       "UAV_NOT_AVAILABLE": "This UAV is not currently available.",
       "UAV_TIME_CONFLICT": "The UAV is already scheduled in this time slot.",
       "OPERATOR_TIME_CONFLICT": "The operator is already scheduled in this time slot.",
-      "INVENTORY_NOT_AVAILABLE": "Not enough equipment is available."
+      "INVENTORY_NOT_AVAILABLE": "Not enough equipment is available.",
+      "MISSION_WEATHER_UNSAFE": "The weather at the site is NO-GO and an administrator has enabled the take-off block. Wait for a safer window."
     },
     "detail": {
       "confirm": {

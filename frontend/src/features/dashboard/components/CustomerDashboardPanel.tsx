@@ -1,15 +1,15 @@
 'use client';
 import Link from 'next/link';
-import {PageGuard} from "@/components/customer/layout";
-import {Panel, Status} from "@/components/customer/ui";
+import {PageGuard} from "@/components/customer/CustomerLayout";
+import {Panel, Status} from "@/components/customer/CustomerUi";
 import {
     CustomerAnalytics,
     CustomerOperationalInsights,
     CustomerUpcomingStrip,
-    useCustomerAnalyticsQuery,
 } from "@/features/dashboard/components/CustomerAnalytics";
+import {useCustomerAnalytics} from '@/features/dashboard/hooks/useCustomerAnalytics';
 import {Delta} from "@/features/dashboard/components/AdminCharts";
-import {useMissions, useServices} from "@/lib/query/customer";
+import {useMissions, useServices} from '@/features/missions/hooks/useCustomerMissions';
 import {formatShortDate} from "@/lib/format";
 import {toMissionSlug} from "@/lib/url-slugs";
 import {
@@ -22,7 +22,7 @@ import {
     Plane,
     Wallet,
 } from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export default function DashboardPage() {
     return <PageGuard><Dashboard/></PageGuard>;
@@ -33,7 +33,7 @@ function Dashboard() {
     const shortDate = (value?: string) => formatShortDate(value, formatDate);
     const missions = useMissions();
     const services = useServices();
-    const analyticsQuery = useCustomerAnalyticsQuery();
+    const analyticsQuery = useCustomerAnalytics();
     const analytics = analyticsQuery.data;
 
     const rows = missions.data?.content ?? [];

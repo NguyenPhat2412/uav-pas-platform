@@ -1,9 +1,9 @@
 'use client';
 
 import {useEffect} from 'react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
-import {toast} from '@/contexts/ToastContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
 import {claimWelcome} from '@/lib/welcome-flag';
 
 /**

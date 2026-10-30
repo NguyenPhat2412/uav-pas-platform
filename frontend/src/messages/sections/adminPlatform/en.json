@@ -70,7 +70,11 @@
         "map_default_zoom": "Default map zoom level",
         "map_show_scale_bar": "Show distance scale bar",
         "map_show_station_radius": "Show UAV station coverage radius",
-        "map_station_coverage_radius_m": "Station coverage radius (m)"
+        "map_station_coverage_radius_m": "Station coverage radius (m)",
+        "uav_safety_max_wind_gust_limit": "Maximum wind gust (m/s)",
+        "uav_safety_min_visibility_meters": "Minimum visibility (m)",
+        "uav_safety_max_precipitation_mm": "Maximum rainfall per hour (mm)",
+        "uav_safety_max_kp_index": "Maximum geomagnetic Kp index"
       },
       "notes": {
         "billing_vat_rate": "Enter a fraction: 0.10 = 10%",
@@ -178,7 +182,8 @@
         "HEALTH_COMPONENT_DOWN": "{component} is down",
         "HEALTH_COMPONENT_DEGRADED": "{component} is degraded",
         "HEALTH_COMPONENT_UNKNOWN": "{component} status is unknown",
-        "ALERT_SOURCE_UNAVAILABLE": "Couldn't read alert source: {source}"
+        "ALERT_SOURCE_UNAVAILABLE": "Couldn't read alert source: {source}",
+        "MISSION_WEATHER_HAZARD": "Mission {code} is about to fly into NO-GO weather ({reasons}), 80 m wind {wind} m/s"
       }
     }
   }

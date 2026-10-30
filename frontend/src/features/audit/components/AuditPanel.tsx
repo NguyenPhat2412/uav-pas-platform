@@ -1,10 +1,10 @@
 'use client';
-import {useCollection} from '@/lib/query/operations';
+import {useCollection} from '@/hooks/useCollection';
 import type {AuditLog} from "@/types/resources";
 import {DataTable, options} from '@/components/data/DataTable';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {auditDetail, displayLabel} from "@/components/shared/presentation";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function AuditPanel() {
     const {t, formatDate} = useI18n();

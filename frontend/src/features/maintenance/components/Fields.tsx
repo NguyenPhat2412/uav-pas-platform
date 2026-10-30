@@ -3,7 +3,7 @@ import {Input} from '@/components/ui';
 import type {Uav} from "@/types/resources";
 import type {OrderFields, ScheduleFields} from "@/features/maintenance/types/maintenance.types";
 import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export const fieldClass = 'min-h-11 w-full min-w-0 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm';
 

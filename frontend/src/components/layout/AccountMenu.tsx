@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import {Briefcase, ChevronDown, LogOut, Radar, Settings, ShieldCheck, UserRound} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {Avatar} from '@/components/shared/Avatar';
 import {displayLabel} from '@/components/shared/presentation';
 import {canUsePortal} from '@/features/auth/utils/portal';

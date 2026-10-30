@@ -1,4 +1,4 @@
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import type {MissionRequestDetailsData as RequestDetails} from '@/features/missions/types/mission.types';
 
 /** The original customer request, shared by the customer and dispatch detail views. */

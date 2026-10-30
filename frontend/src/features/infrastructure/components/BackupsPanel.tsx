@@ -1,17 +1,17 @@
 'use client';
 
 import {Archive, CloudUpload, Terminal} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
-import {infrastructureApi} from '../api';
-import type {BackupState, BackupStatus} from '../types';
-import {Facts, formatBytes, Note, Panel, Stat, StatGrid, StatusBanner, type Tone, useInfraQuery} from './InfraUi';
+import type {BackupState, BackupStatus} from '../types/infrastructure.types';
+import {Facts, formatBytes, Note, Panel, Stat, StatGrid, StatusBanner, type Tone} from './InfraUi';
+import {useBackupStatus} from '@/features/infrastructure/hooks/useInfrastructure';
 
 export const backupTone: Record<BackupState, Tone> = {OK: 'good', STALE: 'warn', MISSING: 'bad', NOT_CONFIGURED: 'neutral'};
 
 export function BackupsPanel() {
     const {t, formatDate} = useI18n();
-    const query = useInfraQuery('backups', ({signal}) => infrastructureApi.backups(signal), 300_000);
+    const query = useBackupStatus(300_000);
     return <div className="space-y-4">
         <QueryState query={query}>{query.data && <Body data={query.data} refreshing={query.isFetching}
                                                        onRefresh={() => void query.refetch()}

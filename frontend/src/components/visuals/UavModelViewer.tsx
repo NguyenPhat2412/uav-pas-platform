@@ -2,7 +2,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {Maximize2, RotateCcw, ZoomIn, ZoomOut} from 'lucide-react';
 import {Button, StatusBadge} from '@/components/ui';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function UavModelViewer({serial = 'UAV', status = 'UNKNOWN', compact = false}: {
     serial?: string;

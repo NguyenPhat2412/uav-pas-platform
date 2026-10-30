@@ -4,10 +4,10 @@ import {clearWelcomeFlags} from '@/lib/welcome-flag';
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import type {AuthContextType, AuthResponse, RegisterRequest, UserResponse} from "@/features/auth/types/auth.types";
-import {authService} from '@/lib/api/services';
-import {ApiError, apiClient, PERMISSIONS_EVENT, rememberSessionUser, SESSION_EVENT, SESSION_STORAGE_KEY, sessionOwnerOf, setAuthSession} from "@/lib/api";
-import {toast} from '@/contexts/ToastContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {authService} from '@/features/auth/api/auth.api';
+import {API_ROUTES, ApiError, apiClient, PERMISSIONS_EVENT, rememberSessionUser, SESSION_EVENT, SESSION_STORAGE_KEY, sessionOwnerOf, setAuthSession} from "@/lib/api";
+import {toast} from '@/providers/ToastContext';
+import {useI18n} from '@/providers/I18nContext';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -21,7 +21,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
     const permissionSignature = useRef<string | null>(null);
     const permissionQuery = useQuery({
         queryKey: ['session', user?.id ?? 'anonymous', 'permissions'],
-        queryFn: ({signal}) => apiClient.get<string[]>('/api/v1/permissions/me', {signal}),
+        queryFn: ({signal}) => apiClient.get<string[]>(API_ROUTES.permissions.me, {signal}),
         enabled: !!user,
         staleTime: 0,
         refetchInterval: 15_000,

@@ -1,13 +1,12 @@
 'use client';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import {useQuery} from '@tanstack/react-query';
 import {CalendarClock} from 'lucide-react';
-import {Panel, Status} from '@/components/customer/ui';
+import {Panel, Status} from '@/components/customer/CustomerUi';
 import {displayLabel, planName} from '@/components/shared/presentation';
-import {useI18n} from '@/contexts/I18nContext';
-import {useCustomerScope} from '@/lib/query/customer';
-import {dashboardService} from '@/lib/api/services';
+import {useI18n} from '@/providers/I18nContext';
+import {useCustomerAnalytics} from '@/features/dashboard/hooks/useCustomerAnalytics';
+import {useAuth} from '@/providers/AuthContext';
 import type {CustomerAnalytics as Analytics} from '@/features/dashboard/types/dashboard.types';
 import {BarList, ColumnChart, Legend, SegmentBar, seriesColors} from '@/features/dashboard/components/AdminCharts';
 
@@ -17,16 +16,6 @@ export const pipelineColors = {waiting: seriesColors.yellow, scheduled: seriesCo
 const mapColor = (status: string) => status === 'COMPLETED' ? seriesColors.blue
     : ['FAILED', 'CANCELLED', 'REJECTED'].includes(status) ? seriesColors.red
         : status === 'DRAFT' ? seriesColors.gray : seriesColors.aqua;
-
-export function useCustomerAnalyticsQuery() {
-    const {key, can, permissionsReady} = useCustomerScope();
-    return useQuery({
-        queryKey: [...key, 'analytics'],
-        queryFn: ({signal}) => dashboardService.getCustomerAnalytics(signal),
-        enabled: permissionsReady && can('MISSION_VIEW'),
-        staleTime: 60_000,
-    });
-}
 
 /**
  * Compact combined panel for the right-hand operational column:
@@ -139,9 +128,9 @@ export function CustomerUpcomingStrip({data, isPending}: { data?: Analytics; isP
 }
 
 export function CustomerAnalytics() {
-    const {can} = useCustomerScope();
+    const {can} = useAuth();
     const {t} = useI18n();
-    const query = useCustomerAnalyticsQuery();
+    const query = useCustomerAnalytics();
     if (!can('MISSION_VIEW')) return null;
     return <section className="flex flex-col gap-3 bg-white" aria-labelledby="customer-analytics-title">
         <div className="flex flex-wrap items-center justify-between gap-3 px-1 pt-2">

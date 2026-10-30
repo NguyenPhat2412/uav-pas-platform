@@ -2,9 +2,9 @@
 
 import {useState} from 'react';
 import {AlertCircle, Bell, CheckCheck, CheckCircle2, Clock, Info, Search, ShieldAlert} from 'lucide-react';
-import {useNotifications} from '@/lib/query/notifications';
+import {useNotifications} from '@/features/notifications/hooks/useNotifications';
 import {OperationsPage} from '@/components/layout/OperationsPage';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 
 const typeTone: Record<string, { icon: typeof Info; badge: string }> = {

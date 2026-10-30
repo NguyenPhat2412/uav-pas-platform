@@ -1,5 +1,95 @@
 {
   "admin": {
+    "files": {
+      "title": "File manager",
+      "intro": "Every file the platform keeps in object storage, with where it is used and who uploaded it. Only unused files and unfinished uploads can be deleted.",
+      "refresh": "Refresh",
+      "tiles": {
+        "total": "Total size",
+        "count": "Files",
+        "unused": "Unused",
+        "pending": "Unfinished uploads",
+        "files": "{count} files"
+      },
+      "byModule": "By module",
+      "byModuleDetail": "{count} files · {unused} unused · {pending} unfinished",
+      "largest": "Largest files",
+      "module": {
+        "all": "All",
+        "MISSION_MEDIA": "Mission files",
+        "TRAINING": "Training",
+        "AVATAR": "Avatars",
+        "STATION_MEDIA": "Station files",
+        "UAV_MEDIA": "UAV files",
+        "EQUIPMENT_MEDIA": "Equipment files",
+        "UNLINKED": "Unlinked"
+      },
+      "kind": {
+        "all": "All",
+        "VIDEO": "Video",
+        "IMAGE": "Image",
+        "DOCUMENT": "Document",
+        "OTHER": "Other"
+      },
+      "status": {
+        "all": "All",
+        "IN_USE": "In use",
+        "UNUSED": "Unused",
+        "PENDING": "Unfinished"
+      },
+      "filter": {
+        "module": "Module",
+        "type": "Type",
+        "status": "Status"
+      },
+      "search": "Search file name, linked item, uploader",
+      "col": {
+        "name": "File",
+        "module": "Module",
+        "linked": "Linked to",
+        "owner": "Uploaded by",
+        "size": "Size",
+        "created": "Created",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "sortBy": "Sort by {column}",
+      "table": "Files",
+      "empty": "No files match these filters.",
+      "open": "View or download {name}",
+      "delete": "Delete {name}",
+      "deleteBlocked": {
+        "IN_USE": "The file is in use and cannot be deleted.",
+        "MISSION_MEDIA": "Mission files are view-only here.",
+        "UPLOADING": "The file was just registered and may still be uploading."
+      },
+      "openFailed": "Could not open the file. Please try again.",
+      "confirmTitle": "Delete file?",
+      "confirmBody": "\"{name}\" ({size}) will be permanently removed from storage. This cannot be undone.",
+      "cancel": "Cancel",
+      "confirmDelete": "Delete file",
+      "deleted": "Deleted {name}.",
+      "deleteFailed": "Could not delete the file.",
+      "readOnlyNote": "Mission files are view-only in this version: a result file may have just been uploaded and not yet attached to its mission. Unfinished mission uploads older than 24 hours are cleaned up automatically.",
+      "cleanup": {
+        "open": "Clean up unused files",
+        "title": "Clean up unused files",
+        "intro": "Unused files and unfinished uploads can be deleted. Mission files are not listed here.",
+        "selectAll": "Select all ({count})",
+        "selected": "{count} files selected · {size}",
+        "empty": "Nothing to clean up.",
+        "truncated": "Showing the {shown} largest of {total} files. Open again after cleaning to see the rest.",
+        "start": "Delete {count} files",
+        "confirm": "Permanently delete {count} files ({size})? This cannot be undone.",
+        "confirmYes": "Confirm delete",
+        "back": "Back",
+        "progress": "Deleting {done}/{total}",
+        "done": "Deleted {ok}/{total} files.",
+        "failed": "{count} files could not be deleted:",
+        "stop": "Stop",
+        "close": "Close"
+      }
+    },
     "pages": {
       "dashboard": {
         "title": "System overview"
@@ -816,20 +906,25 @@
         "hours": "Flight hours/month",
         "uavs": "Concurrent UAVs",
         "sarAi": "SAR AI",
-        "status": "Status"
+        "limits": "Limits",
+        "status": "Status",
+        "customers": "Customers (paying/total)",
+        "pending": "Awaiting payment",
+        "revenueMonth": "Revenue this month",
+        "avgUsage": "Avg. usage"
       },
       "cycle": {
         "MONTHLY": "per month",
         "YEARLY": "per year"
       },
       "hours": "{count} h",
+      "uavsCount": "{count} concurrent UAVs",
       "yes": "Yes",
       "no": "No",
       "active": "Active",
       "inactive": "Inactive",
       "toggleLabel": "Turn plan {name} on or off",
       "deactivateConfirm": "Deactivate {name}? Current subscribers keep their quota.",
-      "defaultLocked": "Default plan; can't be deactivated.",
       "edit": "Edit plan {name}",
       "empty": "No plans yet.",
       "addTitle": "Add service plan",
@@ -845,7 +940,50 @@
       "description": "Description",
       "editNote": "Applies from the next plan assignment.",
       "cancel": "Cancel",
-      "save": "Save"
+      "save": "Save",
+      "overdueCount": "{count} overdue",
+      "revenueTotal": "Total {amount}",
+      "stats": {
+        "title": "Plan statistics",
+        "kpi": {
+          "customers": "Customers",
+          "customersSplit": "{paying} paying · {free} free",
+          "mrr": "MRR",
+          "mrrHint": "Recurring revenue per month; yearly plans count 1/12",
+          "revenue": "Revenue this month",
+          "change": "{value} vs last month",
+          "noBaseline": "No revenue last month",
+          "revenueSplit": "Plans {plan} · Missions {mission}",
+          "pending": "Invoices awaiting payment",
+          "overdue": "Overdue",
+          "nearLimit": "Running out of flight hours",
+          "expiring": "{count} plans expire within 7 days"
+        },
+        "chart": {
+          "title": "Revenue by month",
+          "period": "Period",
+          "months": "{count} months",
+          "mission": "Missions",
+          "label": "Collected revenue per month, split by plan and missions",
+          "empty": "No revenue collected in the last {count} months.",
+          "newSubscriptions": "{count} new subscribers"
+        },
+        "share": {
+          "title": "Customers by plan",
+          "row": "{count} customers · {percent}%",
+          "paying": "Paying",
+          "free": "Not paying",
+          "empty": "No customers yet.",
+          "inactive": "inactive"
+        },
+        "nearLimit": {
+          "title": "Customers running out of flight hours",
+          "hint": "Used 80% or more of this cycle's hours",
+          "hours": "{used}/{limit} h",
+          "empty": "No customer has used 80% of their flight hours.",
+          "open": "Open the quota of {name}"
+        }
+      }
     },
     "health": {
       "overall": {

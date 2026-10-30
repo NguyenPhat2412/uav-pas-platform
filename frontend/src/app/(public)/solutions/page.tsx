@@ -4,9 +4,9 @@ import {keepVietnamesePhrases} from "@/lib/typography";
 import {pageMetadata} from "@/features/marketing/content/metadata";
 import {solutions} from "@/features/marketing/content/site-content";
 import {solutionDetails} from "@/features/marketing/content/solution-details";
-import {CustomerCta} from "@/features/marketing/components/public-page";
-import {FlatTag} from "@/features/marketing/components/flat-tag";
-import {scenes, solutionScenes} from "@/features/marketing/components/uav-photo";
+import {CustomerCta} from "@/features/marketing/components/PublicPage";
+import {FlatTag} from "@/features/marketing/components/FlatTag";
+import {scenes, solutionScenes} from "@/features/marketing/components/UavPhoto";
 
 export const metadata = pageMetadata(
     "Giải pháp UAV & Edge AI",

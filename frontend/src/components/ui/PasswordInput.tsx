@@ -2,7 +2,7 @@ import React, {forwardRef, useState} from 'react';
 import {Eye, EyeOff} from 'lucide-react';
 import {cn} from '@/lib/utils';
 import {FieldLabelMark} from "@/components/shared/RequiredMark";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import type {PasswordInputProps} from '@/types/ui';
 
 export type {PasswordInputProps};

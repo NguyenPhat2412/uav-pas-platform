@@ -2,9 +2,9 @@
 import {displayLabel, permissionLabel} from "@/components/shared/presentation";
 import {Search} from 'lucide-react';
 import {useState} from 'react';
-import {useAdminReferenceData} from "@/lib/query/admin";
+import {useAdminReferenceData} from '@/features/users/hooks/useAdminUsers';
 import {EmptyState, QueryState} from "@/components/data/WorkspaceState";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function Registry() {
     const {permissions} = useAdminReferenceData();

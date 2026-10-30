@@ -5,9 +5,9 @@ import {PortalHomeColumn, PortalHomeHero, PortalHomeRow} from '@/components/layo
 import {CUSTOMER_SIDEBAR_ROUTES} from '@/components/layout/sidebar-routes';
 import {CUSTOMER_RECENT_PAGES_KEY} from '@/components/layout/recent-pages';
 import {displayLabel} from '@/components/shared/presentation';
-import {useI18n} from '@/contexts/I18nContext';
-import {useCustomerAnalyticsQuery} from '@/features/dashboard/components/CustomerAnalytics';
-import {useMissions} from '@/lib/query/customer';
+import {useI18n} from '@/providers/I18nContext';
+import {useCustomerAnalytics} from '@/features/dashboard/hooks/useCustomerAnalytics';
+import {useMissions} from '@/features/missions/hooks/useCustomerMissions';
 import {formatShortDate} from '@/lib/format';
 import {toMissionSlug} from '@/lib/url-slugs';
 
@@ -15,7 +15,7 @@ import {toMissionSlug} from '@/lib/url-slugs';
 export function CustomerHome() {
     const {t, formatDate} = useI18n();
     const missionsQuery = useMissions();
-    const analyticsQuery = useCustomerAnalyticsQuery();
+    const analyticsQuery = useCustomerAnalytics();
     const missions = (missionsQuery.data?.content ?? []).slice(0, 4);
     const upcoming = (analyticsQuery.data?.upcoming ?? []).slice(0, 4);
 

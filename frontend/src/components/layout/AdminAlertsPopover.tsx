@@ -2,15 +2,13 @@
 
 import Link from 'next/link';
 import {AlertTriangle, Bell, ChevronRight, CircleAlert, Info} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {useDropdownMenu} from '@/hooks/useDropdownMenu';
-import {useAdminAnalytics} from '@/lib/query/admin';
+import {useAdminAnalytics} from '@/features/dashboard/hooks/useAdminDashboard';
 import type {AdminAlert} from '@/types/admin';
 import {cn} from '@/lib/utils';
-import {useQuery} from '@tanstack/react-query';
-import {useAuth} from '@/contexts/AuthContext';
-import {alertCenterApi, alertCenterQueryKey} from '@/features/alerts/api';
-import {useAlertMessage} from '@/features/alerts/useAlertMessage';
+import {useAlertCenter} from '@/features/alerts/hooks/useAlertCenter';
+import {useAlertMessage} from '@/features/alerts/hooks/useAlertMessage';
 
 const centerLevel = {CRITICAL: 'danger', WARNING: 'warning', INFO: 'info'} as const;
 
@@ -27,15 +25,8 @@ export function AdminAlertsPopover() {
     const {t} = useI18n();
     const analyticsAlerts = useAdminAnalytics(30).data?.alerts ?? [];
     // Alert center (GET /api/v1/admin/alerts): top critical/warning items join the analytics alerts.
-    const {user, can} = useAuth();
     const centerMessage = useAlertMessage();
-    const center = useQuery({
-        queryKey: alertCenterQueryKey(user?.id),
-        queryFn: ({signal}) => alertCenterApi.current(signal),
-        enabled: can('DASHBOARD_READ'),
-        refetchInterval: 60_000,
-        retry: false,
-    });
+    const center = useAlertCenter();
     const centerItems = (center.data?.items ?? []).filter(item => item.severity !== 'INFO').slice(0, 5);
     const alerts: (AdminAlert & { text?: string })[] = [
         ...centerItems.map(item => ({

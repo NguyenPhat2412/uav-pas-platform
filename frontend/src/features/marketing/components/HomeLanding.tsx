@@ -4,11 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {capabilities, customerUrl, readinessLabels, services, steps} from "@/features/marketing/content/site-content";
 import { serviceDetails } from "@/features/marketing/content/service-details";
-import { HeroSlider } from "@/features/marketing/components/hero-slider";
-import { HistoryTimeline } from "@/features/marketing/components/home-history-timeline";
-import { DroneAnatomy } from "@/features/marketing/components/home-drone-anatomy";
-import { MissionPlanner } from "@/features/marketing/components/home-mission-planner";
-import { ProcessRoute } from "@/features/marketing/components/home-process-route";
+import { HeroSlider } from "@/features/marketing/components/HeroSlider";
+import { HistoryTimeline } from "@/features/marketing/components/HomeHistoryTimeline";
+import { DroneAnatomy } from "@/features/marketing/components/HomeDroneAnatomy";
+import { MissionPlanner } from "@/features/marketing/components/HomeMissionPlanner";
+import { ProcessRoute } from "@/features/marketing/components/HomeProcessRoute";
 import {
     fieldTeam,
     pilotFromAbove,
@@ -16,8 +16,8 @@ import {
     projectHighlights,
     uavPlatformFeatures,
 } from "@/features/marketing/content/home-content";
-import {FlatTag} from "@/features/marketing/components/flat-tag";
-import {PlanCards} from "@/features/marketing/components/plan-cards";
+import {FlatTag} from "@/features/marketing/components/FlatTag";
+import {PlanCards} from "@/features/marketing/components/PlanCards";
 
 // One drone-in-flight photo sits behind the capabilities section; cards stay text-only so the page repeats no image.
 const capabilitiesBackdrop = {src: '/images/people/usgs-everglades-tracking-test.jpg'};

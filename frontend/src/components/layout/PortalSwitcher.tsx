@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import {Briefcase, Radar, ShieldCheck} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {availablePortalsForRole, type Portal} from '@/features/auth/utils/portal';
 import {cn} from '@/lib/utils';
 

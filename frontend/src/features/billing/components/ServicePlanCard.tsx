@@ -2,7 +2,7 @@ import {UavIcon} from '@/components/shared/UavIcon';
 import {BadgeCheck, Clock3, Radar, Sparkles} from 'lucide-react';
 import {displayLabel, planName} from '@/components/shared/presentation';
 import type {ServicePlan} from '@/types/customer';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 /** onSelect enables the subscribe button; pendingCode marks the plan whose request is in flight. */
 export function ServicePlanCards({plans, currentPlanCode, onSelect, pendingCode}: {

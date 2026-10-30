@@ -25,7 +25,7 @@ const {
 const routesUrl = compile(await source('src/lib/api/routes.ts'));
 const apiUrl = compile(`export {API_ROUTES} from "${routesUrl}"; export const requests = []; export const apiClient = Object.fromEntries(['get','post','put'].map(method => [method, async (path, body) => { requests.push({method,path,body}); return {}; }]));`);
 const {requests} = await import(apiUrl);
-const {maintenanceService} = await import(compile((await source('src/lib/api/maintenance.ts')).replace('@/lib/api', apiUrl).replace('@/features/maintenance/utils/workflows', workflowUrl).replace('@/lib/format', formatUrl)));
+const {maintenanceService} = await import(compile((await source('src/features/maintenance/api/maintenance.api.ts')).replace('@/lib/api', apiUrl).replace('@/features/maintenance/utils/workflows', workflowUrl).replace('@/lib/format', formatUrl)));
 const schedule = {title: ' Kiểm tra pin ', intervalDays: '30', nextDueDate: '2028-02-29'};
 const order = {
     title: ' Kiểm tra pin ',

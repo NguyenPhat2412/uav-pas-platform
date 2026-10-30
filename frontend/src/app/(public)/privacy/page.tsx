@@ -1,5 +1,5 @@
 import {pageMetadata} from "@/features/marketing/content/metadata";
-import {PublicPage} from "@/features/marketing/components/public-page";
+import {PublicPage} from "@/features/marketing/components/PublicPage";
 
 export const metadata = pageMetadata("Trạng thái công bố chính sách quyền riêng tư", "Chính sách quyền riêng tư đang chờ phê duyệt để công bố. Tìm hiểu phạm vi hiện tại của trang giới thiệu.", "/privacy", false);
 

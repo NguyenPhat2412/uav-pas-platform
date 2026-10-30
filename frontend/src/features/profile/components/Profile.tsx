@@ -1,17 +1,17 @@
 'use client';
 import {type FormEvent, useEffect, useRef, useState} from 'react';
 import {displayLabel} from "@/components/shared/presentation";
-import {Button, Field, Panel} from "@/components/customer/ui";
-import {useAuth} from '@/contexts/AuthContext';
+import {Button, Field, Panel} from "@/components/customer/CustomerUi";
+import {useAuth} from '@/providers/AuthContext';
 import {
     type CustomerProfile,
     profileError,
     type ProfileErrors,
     type ProfileFields,
 } from "@/features/profile/forms/profile-form";
-import {useCustomerProfile, useUpdateCustomerProfile} from '@/lib/query/customer';
-import {useI18n} from '@/contexts/I18nContext';
-import {toast} from '@/contexts/ToastContext';
+import {useOwnProfile, useUpdateProfile} from '@/features/profile/hooks/useProfile';
+import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
 import {EnterpriseProfilePanel} from '@/features/profile/components/EnterpriseProfilePanel';
 import {AvatarEditor} from '@/features/profile/components/AvatarEditor';
 
@@ -23,8 +23,8 @@ export function CustomerProfilePage() {
 function Profile() {
     const {user} = useAuth();
     const {t} = useI18n();
-    const query = useCustomerProfile();
-    const update = useUpdateCustomerProfile();
+    const query = useOwnProfile();
+    const update = useUpdateProfile();
     const [draft, setDraft] = useState<{ fields: ProfileFields; revision: string } | null>(null);
     const [errors, setErrors] = useState<ProfileErrors>({});
     const [failure, setFailure] = useState<ReturnType<typeof profileError> | null>(null);

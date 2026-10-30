@@ -35,7 +35,8 @@
       "UAV_NOT_AVAILABLE": "UAV này hiện không sẵn sàng.",
       "UAV_TIME_CONFLICT": "UAV đã có lịch trong khung giờ này.",
       "OPERATOR_TIME_CONFLICT": "Người vận hành đã có lịch trong khung giờ này.",
-      "INVENTORY_NOT_AVAILABLE": "Thiết bị không còn đủ số lượng."
+      "INVENTORY_NOT_AVAILABLE": "Thiết bị không còn đủ số lượng.",
+      "MISSION_WEATHER_UNSAFE": "Thời tiết tại điểm bay đang ở mức NO-GO và quản trị viên đã bật chặn cất cánh. Hãy chờ khung giờ an toàn hơn."
     },
     "detail": {
       "confirm": {

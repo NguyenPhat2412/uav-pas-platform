@@ -62,6 +62,7 @@ export const API_ROUTES = {
         customerAnalytics: '/api/v1/dashboard/customer-analytics',
         systemHealth: '/api/v1/dashboard/system-health',
         fleetMap: '/api/v1/dashboard/fleet-map',
+        missions: '/api/v1/dashboard/missions',
     },
     aiRouter: {
         settings: '/api/v1/admin/ai-router',
@@ -176,6 +177,7 @@ export const API_ROUTES = {
         adminPlanById: (id: string | number) => `/api/v1/billing/admin/plans/${id}`,
         adminPlanActive: (id: string | number, active: boolean) =>
             `/api/v1/billing/admin/plans/${id}/active?active=${active}`,
+        adminPlanStats: (months: number) => `/api/v1/billing/admin/plans/stats?months=${months}`,
         subscription: '/api/v1/billing/quota',
         subscriptions: '/api/v1/billing/subscriptions',
         invoices: '/api/v1/billing/invoices',
@@ -188,6 +190,7 @@ export const API_ROUTES = {
         adminQuotas: '/api/v1/billing/admin/quotas',
         adminQuotaByUser: (userId: string | number) => `/api/v1/billing/admin/quotas/${userId}`,
         paymentIpn: '/api/v1/billing/webhook/payment-ipn',
+        admin: '/api/v1/billing/admin',
     },
     reports: {
         operations: '/api/v1/reports/operations-summary',
@@ -196,6 +199,7 @@ export const API_ROUTES = {
     settings: {
         list: '/api/v1/settings',
         byKey: (key: string) => `/api/v1/settings/${encodeURIComponent(key)}`,
+        history: (key: string) => `/api/v1/settings/${encodeURIComponent(key)}/history`,
     },
     webhooks: {
         list: '/api/v1/webhooks/subscriptions',
@@ -204,6 +208,8 @@ export const API_ROUTES = {
         logs: '/api/v1/webhooks/logs',
         test: '/api/v1/webhooks/test-dispatch',
         status: '/api/v1/webhooks/status',
+        retryDelivery: (id: string | number) => `/api/v1/webhooks/deliveries/${id}/retry`,
+        rotateSecret: (id: string | number) => `/api/v1/webhooks/subscriptions/${id}/rotate-secret`,
     },
     training: {
         list: '/api/v1/training',
@@ -220,6 +226,24 @@ export const API_ROUTES = {
         adminCourseCover: (courseId: string | number) => `/api/v1/training/admin/courses/${courseId}/cover`,
         adminAssets: '/api/v1/training/admin/assets',
         adminAssetConfirm: (id: string | number) => `/api/v1/training/admin/assets/${id}/confirm`,
+    },
+    /** Administrator-only areas; each feature appends its own sub-paths to these bases. */
+    admin: {
+        alerts: '/api/v1/admin/alerts',
+        deviceKeys: '/api/v1/admin/device-keys',
+        files: '/api/v1/admin/files',
+        infrastructure: '/api/v1/admin/infrastructure',
+        security: '/api/v1/admin/security',
+        userBillingProfile: (userId: string | number) => `/api/v1/admin/users/${userId}/billing-profile`,
+    },
+    public: {
+        siteInfo: '/api/v1/public/site-info',
+    },
+    weather: {
+        forecast: '/api/v1/weather/forecast',
+        byMission: (missionId: string | number) => `/api/v1/weather/missions/${missionId}`,
+        stations: '/api/v1/weather/stations',
+        adminProvider: '/api/v1/admin/weather/provider',
     },
 } as const;
 

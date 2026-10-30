@@ -2,31 +2,25 @@
 
 import {UavIcon} from '@/components/shared/UavIcon';
 import React, {useState} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {BankTransferDialog} from '@/features/billing/components/BankTransferDialog';
-import {bankTransferService} from '@/lib/api/services';
-import {toast} from '@/contexts/ToastContext';
-import {useCustomerScope} from '@/lib/query/customer';
+import {toast} from '@/providers/ToastContext';
 import {displayLabel, planName} from "@/components/shared/presentation";
 import {AlertCircle, CheckCircle, Clock, FileText, Radar} from 'lucide-react';
-import {PageGuard} from "@/components/customer/layout";
-import {useBilling} from "@/lib/query/customer";
+import {PageGuard} from "@/components/customer/CustomerLayout";
+import {useBankTransferStatus, useBilling, useRefreshCustomerBilling, useSubscribePlan} from '@/features/billing/hooks/useCustomerBilling';
 import {ServicePlanCards} from '@/features/billing/components/ServicePlanCard';
 import type {Invoice} from "@/types/customer";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 // Plan changes create a plan invoice; paying it (VietQR / NAPAS 247) applies the plan to the quota.
 
 export default function CustomerBillingPage() {
     const {quota: quotaQuery, invoices: invoicesQuery, plans: plansQuery} = useBilling();
     const [payingInvoice, setPayingInvoice] = useState<Invoice | null>(null);
-    const {key} = useCustomerScope();
-    const client = useQueryClient();
-    const transfer = useQuery({queryKey: [...key, 'billing', 'bank-transfer'], queryFn: ({signal}) => bankTransferService.status(signal)});
-    const subscribe = useMutation({
-        mutationFn: (code: string) => bankTransferService.subscribe(code),
-        onSuccess: async invoice => {
-            await client.invalidateQueries({queryKey: [...key, 'billing']});
+    const refreshBilling = useRefreshCustomerBilling();
+    const transfer = useBankTransferStatus();
+    const subscribe = useSubscribePlan({
+        onSuccess: invoice => {
             if (!invoice) {
                 toast.success(t('plans.appliedFree'));
             } else {
@@ -269,7 +263,7 @@ export default function CustomerBillingPage() {
 
                 {payingInvoice && <BankTransferDialog invoiceId={payingInvoice.id} onClose={() => {
                     setPayingInvoice(null);
-                    void client.invalidateQueries({queryKey: [...key, 'billing']});
+                    void refreshBilling();
                 }}/>}
             </div>
         </PageGuard>

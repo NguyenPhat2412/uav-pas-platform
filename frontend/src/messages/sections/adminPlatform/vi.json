@@ -70,7 +70,11 @@
         "map_default_zoom": "Mức thu phóng (Zoom) mặc định",
         "map_show_scale_bar": "Hiển thị thước tỷ lệ khoảng cách",
         "map_show_station_radius": "Hiển thị vòng phủ sóng trạm UAV",
-        "map_station_coverage_radius_m": "Bán kính vùng phủ sóng trạm UAV (m)"
+        "map_station_coverage_radius_m": "Bán kính vùng phủ sóng trạm UAV (m)",
+        "uav_safety_max_wind_gust_limit": "Gió giật tối đa (m/s)",
+        "uav_safety_min_visibility_meters": "Tầm nhìn ngang tối thiểu (m)",
+        "uav_safety_max_precipitation_mm": "Lượng mưa tối đa mỗi giờ (mm)",
+        "uav_safety_max_kp_index": "Chỉ số bão từ Kp tối đa"
       },
       "notes": {
         "billing_vat_rate": "Nhập dạng phân số: 0.10 = 10%",
@@ -178,7 +182,8 @@
         "HEALTH_COMPONENT_DOWN": "{component} đang ngừng hoạt động",
         "HEALTH_COMPONENT_DEGRADED": "{component} hoạt động không ổn định",
         "HEALTH_COMPONENT_UNKNOWN": "Không xác định được trạng thái {component}",
-        "ALERT_SOURCE_UNAVAILABLE": "Không đọc được nguồn cảnh báo: {source}"
+        "ALERT_SOURCE_UNAVAILABLE": "Không đọc được nguồn cảnh báo: {source}",
+        "MISSION_WEATHER_HAZARD": "Nhiệm vụ {code} sắp bay vào thời tiết NO-GO ({reasons}), gió 80 m {wind} m/s"
       }
     }
   }

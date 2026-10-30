@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {Compass, Layers, Radio} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {MAP_BASEMAP_ORDER} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
 import type {Basemap} from '@/types';

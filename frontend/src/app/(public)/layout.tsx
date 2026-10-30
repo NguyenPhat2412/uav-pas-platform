@@ -1,8 +1,8 @@
 import type {Metadata} from 'next';
 import {Suspense} from 'react';
-import {PublicFooter} from '@/features/marketing/components/public-footer';
-import {PublicHeader} from '@/features/marketing/components/public-header';
-import {ScrollToTopButton} from '@/features/marketing/components/scroll-to-top-button';
+import {PublicFooter} from '@/features/marketing/components/PublicFooter';
+import {PublicHeader} from '@/features/marketing/components/PublicHeader';
+import {ScrollToTopButton} from '@/features/marketing/components/ScrollToTopButton';
 import {PortalProviders} from '@/providers/PortalProviders';
 import {AuthModalPopup} from '@/features/auth/components/AuthModalPopup';
 import {publicUrl as siteUrl} from '@/features/marketing/content/origins';

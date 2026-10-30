@@ -70,7 +70,11 @@
         "map_default_zoom": "デフォルトズームレベル",
         "map_show_scale_bar": "距離スケールバーを表示",
         "map_show_station_radius": "UAV基地局カバー圏を表示",
-        "map_station_coverage_radius_m": "UAV基地局カバー半径 (m)"
+        "map_station_coverage_radius_m": "UAV基地局カバー半径 (m)",
+        "uav_safety_max_wind_gust_limit": "最大突風（m/s）",
+        "uav_safety_min_visibility_meters": "最小視程（m）",
+        "uav_safety_max_precipitation_mm": "1時間あたりの最大降水量（mm）",
+        "uav_safety_max_kp_index": "最大地磁気Kp指数"
       },
       "notes": {
         "billing_vat_rate": "小数で入力：0.10 = 10%",
@@ -178,7 +182,8 @@
         "HEALTH_COMPONENT_DOWN": "{component} が停止しています",
         "HEALTH_COMPONENT_DEGRADED": "{component} が不安定です",
         "HEALTH_COMPONENT_UNKNOWN": "{component} の状態が不明です",
-        "ALERT_SOURCE_UNAVAILABLE": "アラートの発生元を読み取れません：{source}"
+        "ALERT_SOURCE_UNAVAILABLE": "アラートの発生元を読み取れません：{source}",
+        "MISSION_WEATHER_HAZARD": "ミッション {code} はまもなくNO-GOの気象で飛行予定です（{reasons}）。80 m の風 {wind} m/s"
       }
     }
   }

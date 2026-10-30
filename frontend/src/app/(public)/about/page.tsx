@@ -2,8 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {keepVietnamesePhrases} from "@/lib/typography";
 import {pageMetadata} from "@/features/marketing/content/metadata";
-import {scenes} from "@/features/marketing/components/uav-photo";
-import {CustomerCta} from "@/features/marketing/components/public-page";
+import {scenes} from "@/features/marketing/components/UavPhoto";
+import {CustomerCta} from "@/features/marketing/components/PublicPage";
 import {portalEcosystem, projectHighlights} from "@/features/marketing/content/home-content";
 
 export const metadata = pageMetadata(

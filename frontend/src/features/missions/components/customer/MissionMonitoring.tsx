@@ -2,13 +2,12 @@
 
 import 'leaflet/dist/leaflet.css';
 import {useEffect, useRef, useState} from 'react';
-import {useQuery} from '@tanstack/react-query';
 import type {Control, LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
 import {Battery, Gauge, Mountain, Navigation, Radio, Timer} from 'lucide-react';
 import {MapLayerToolbar} from '@/components/shared/MapLayerToolbar';
-import {useI18n} from '@/contexts/I18nContext';
-import {TELEMETRY_POLL_MS, telemetryService} from '@/lib/api/services';
-import {calculateHaversineDistance} from '@/features/sar/utils/sarAlgorithms';
+import {useI18n} from '@/providers/I18nContext';
+import {useMissionTelemetry} from '@/features/uavs/hooks/useTelemetry';
+import {calculateHaversineDistance} from '@/features/sar/utils/sar-algorithms';
 import type {UavTelemetry} from '@/features/uavs/types/telemetry.types';
 import type {Mission} from '@/features/missions/types/mission.types';
 import {formatTelemetryNumber} from '@/lib/format';
@@ -23,12 +22,9 @@ const C = {red: '#c43a4a', blue: '#475569', muted: '#94a3b8'};
 export function MissionMonitoring({mission}: { mission: Mission }) {
     const {t, formatNumber, formatDate} = useI18n();
     const live = LIVE_STATUSES.includes(mission.status);
-    const telemetry = useQuery({
-        queryKey: ['mission', mission.id, 'telemetry'],
-        queryFn: ({signal}) => telemetryService.forMission(mission.id, signal).then(v => v ?? null),
+    const telemetry = useMissionTelemetry(mission.id, {
         enabled: mission.uavId != null && mission.status !== 'DRAFT' && mission.status !== 'PENDING_CONFIRMATION',
-        refetchInterval: live ? TELEMETRY_POLL_MS : false,
-        retry: false,
+        live,
     });
     const fix = telemetry.data ?? null;
     // A sample from another mission of the same UAV says nothing about this one.

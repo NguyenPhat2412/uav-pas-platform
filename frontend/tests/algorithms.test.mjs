@@ -19,7 +19,7 @@ const {
     generateExpandingSquarePattern,
     isPointInsideGeofence,
     calculateRthFeasibility
-} = await loadTs('../src/features/sar/utils/sarAlgorithms.ts');
+} = await loadTs('../src/features/sar/utils/sar-algorithms.ts');
 const {calculateCrc16Ccitt, generateVietQrPayload} = await loadTs('../src/features/billing/utils/vietqr.ts');
 
 test('Algorithm 1: Haversine distance calculates accurate geodesic length', () => {

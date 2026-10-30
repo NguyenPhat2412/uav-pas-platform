@@ -1,6 +1,6 @@
 import {keepVietnamesePhrases} from "@/lib/typography";
 import {customerUrl} from "@/features/marketing/content/site-content";
-import {type UavScene, UavPhoto} from "@/features/marketing/components/uav-photo";
+import {type UavScene, UavPhoto} from "@/features/marketing/components/UavPhoto";
 
 export function PublicPage({eyebrow, title, accent, intro, scene, children}: {
     eyebrow: string;

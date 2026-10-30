@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import {Button, Panel} from "@/components/customer/ui";
-import {useI18n} from '@/contexts/I18nContext';
+import {Button, Panel} from "@/components/customer/CustomerUi";
+import {useI18n} from '@/providers/I18nContext';
 
 export default function CustomerErrorPage({
                                               error,

@@ -2,16 +2,16 @@
 
 import Link from 'next/link';
 import {useMemo, useState} from 'react';
-import {useQuery} from '@tanstack/react-query';
 import {AlertTriangle, ChevronRight, CircleAlert, Info, RefreshCw} from 'lucide-react';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {FilterSelect} from '@/components/shared/FilterSelect';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
-import {alertCenterApi, alertCenterQueryKey, SEVERITIES, SOURCES, type AlertSeverity, type AlertSource} from '@/features/alerts/api';
-import {useAlertMessage} from '@/features/alerts/useAlertMessage';
+import type {AlertSeverity, AlertSource} from '@/features/alerts/api/alerts.api';
+import {SEVERITIES, SOURCES} from '@/features/alerts/utils/alert-options';
+import {useAlertCenter} from '@/features/alerts/hooks/useAlertCenter';
+import {useAlertMessage} from '@/features/alerts/hooks/useAlertMessage';
 
 export const severityStyle: Record<AlertSeverity, { stripe: string; icon: typeof Info; text: string; chip: string }> = {
     CRITICAL: {stripe: 'border-l-red-600', icon: CircleAlert, text: 'text-red-700', chip: 'border-red-200 bg-red-50 text-red-700'},
@@ -21,13 +21,8 @@ export const severityStyle: Record<AlertSeverity, { stripe: string; icon: typeof
 
 function AlertCenterContent() {
     const {t, formatDate} = useI18n();
-    const {user} = useAuth();
     const message = useAlertMessage();
-    const query = useQuery({
-        queryKey: alertCenterQueryKey(user?.id),
-        queryFn: ({signal}) => alertCenterApi.current(signal),
-        refetchInterval: 60_000,
-    });
+    const query = useAlertCenter();
     const [severity, setSeverity] = useState<AlertSeverity | 'ALL'>('ALL');
     const [source, setSource] = useState<AlertSource | 'ALL'>('ALL');
     const items = useMemo(() => (query.data?.items ?? [])

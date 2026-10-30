@@ -8,7 +8,7 @@ import {displayLabel} from "@/components/shared/presentation";
 import {Mission} from "@/features/missions/types/mission.types";
 import {MissionStatusBadge} from "@/features/missions/components/MissionStatusBadge";
 import {toMissionSlug} from "@/lib/url-slugs";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 /** Full-width mission table for the operations portal; search, sort, filters and paging run on the loaded list. */
 export function MissionList({missions, loading, error, onRefresh, label, showCustomer = false}: {

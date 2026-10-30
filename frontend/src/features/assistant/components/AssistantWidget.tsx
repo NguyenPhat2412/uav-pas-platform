@@ -13,13 +13,12 @@ import {
     useRef,
     useState,
 } from 'react';
-import {useMutation, useQuery} from '@tanstack/react-query';
 import {Eraser, Film, Maximize2, Minimize2, Paperclip, SendHorizontal, X} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
+import {useAuth} from '@/providers/AuthContext';
 import {ApiError} from '@/lib/api';
-import {useI18n} from '@/contexts/I18nContext';
-import {toast} from '@/contexts/ToastContext';
-import {assistantKeys, assistantService} from '@/lib/api/services';
+import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
+import {useAssistantChat, useAssistantInfo} from '@/features/assistant/hooks/useAssistant';
 import type {
     AssistantCorner as Corner,
     AssistantPortal,
@@ -134,12 +133,7 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
     const input = useRef<HTMLTextAreaElement>(null);
     const picker = useRef<HTMLInputElement>(null);
 
-    const info = useQuery({
-        queryKey: assistantKeys.info,
-        queryFn: ({signal}) => assistantService.info(signal),
-        enabled: allowed && open,
-        staleTime: 60_000,
-    });
+    const info = useAssistantInfo(allowed && open);
     const modes = info.data?.modes ?? [];
     const activeMode = modes.find(m => m.mode === mode) ?? modes[0] ?? null;
 
@@ -194,12 +188,7 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
         }
     }, [conversationId, threadKey]);
 
-    const send = useMutation({
-        mutationFn: ({history, files}: { history: ChatMessage[]; files: PendingAttachment[] }) =>
-            assistantService.chat(activeMode!.mode, history.slice(-HISTORY_LIMIT).map((m, i, all) =>
-                // Only the newest question carries real images; earlier ones just say they had some.
-                i < all.length - 1 && m.images?.length ? {...m, content: `${m.content}\n${t('admin.assistant.attachedEarlier', {count: m.images.length})}`} : m),
-            portal, conversationId, files.map(({kind, name, data}) => ({kind, name, data}))),
+    const send = useAssistantChat({
         onSuccess: reply => {
             setMessages(prev => [...prev, {role: 'assistant', content: reply.reply, at: sentAt()}]);
             if (reply.conversationId) setConversationId(reply.conversationId);
@@ -333,7 +322,13 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
         setMessages(next);
         setDraft('');
         setPending([]);
-        send.mutate({history: next, files});
+        send.mutate({
+            mode: activeMode.mode,
+            messages: next.slice(-HISTORY_LIMIT).map((m, i, all) =>
+                // Only the newest question carries real images; earlier ones just say they had some.
+                i < all.length - 1 && m.images?.length ? {...m, content: `${m.content}\n${t('admin.assistant.attachedEarlier', {count: m.images.length})}`} : m),
+            portal, conversationId, attachments: files.map(({kind, name, data}) => ({kind, name, data})),
+        });
     };
     const submit = (event?: FormEvent) => {
         event?.preventDefault();

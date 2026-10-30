@@ -18,10 +18,10 @@ import {
     UserPlus,
     X,
 } from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {toast} from '@/contexts/ToastContext';
+import {useAuth} from '@/providers/AuthContext';
+import {toast} from '@/providers/ToastContext';
 import {ApiError} from '@/lib/api';
-import {authService} from '@/lib/api/services';
+import {authService} from '@/features/auth/api/auth.api';
 import {RequiredMark} from '@/components/shared/RequiredMark';
 import type {AuthModalView, AuthResponse, TwoFactorMethod} from '@/features/auth/types/auth.types';
 import {availablePortalsForRole, canUsePortal, type Portal, portalForRole, portalHome} from '@/features/auth/utils/portal';

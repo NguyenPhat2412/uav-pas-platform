@@ -5,10 +5,10 @@ import {Drawer} from '@/components/data/Drawer';
 import type {Uav} from "@/types/resources";
 import type {MaintenanceSchedule, RepairOrder} from "@/features/maintenance/types/maintenance.types";
 import {OrderFieldsForm, UavField} from "@/features/maintenance/components/Fields";
-import {ActionFeedback, useMaintenanceAction} from "@/features/maintenance/components/Feedback";
+import {ActionFeedback} from "@/features/maintenance/components/Feedback";
+import {useMaintenanceAction} from '@/features/maintenance/hooks/useMaintenanceAction';
 import {businessToday, positiveId} from "@/features/maintenance/utils/workflows";
-import {maintenanceService as service} from '@/lib/api/services';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function OrderCreate({schedule, uavId: initialUavId, uavs, canRead, onClose, onCreated, refresh}: {
     schedule?: MaintenanceSchedule;
@@ -34,7 +34,7 @@ export function OrderCreate({schedule, uavId: initialUavId, uavs, canRead, onClo
         <form className="space-y-4" onSubmit={event => {
             event.preventDefault();
             let created: RepairOrder | undefined;
-            void action.run(async () => {
+            void action.run(async service => {
                 created = await service.createOrder(positiveId(uavId), fields, schedule?.id);
             }, 'opsAssets.maintenance.orderCreate.created', () => {
                 if (created) onCreated(created);

@@ -1,12 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import {useQuery} from '@tanstack/react-query';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
-import {systemHealthService} from '@/lib/api/services';
-import {TELEMETRY_POLL_MS, telemetryService} from '@/lib/api/services';
-import {sarKeys, sarService} from '@/lib/api/services';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
+import {useSystemHealth} from '@/features/settings/hooks/useSettings';
+import {useFleetTelemetry} from '@/features/uavs/hooks/useTelemetry';
+import {useSarMissions} from '@/features/sar/hooks/useSar';
 import type {HealthStatus} from '@/features/settings/types/system-health.types';
 import type {FleetSummary, MonitoringTone} from '@/features/dashboard/types/dashboard.types';
 import {cn} from '@/lib/utils';
@@ -18,27 +17,12 @@ const healthTone: Record<HealthStatus, MonitoringTone> = {UP: 'ok', DEGRADED: 'w
 
 /** Live platform signals for the admin dashboard: service health, telemetry feed, fleet and open SAR work. */
 export function AdminMonitoringCard({fleet, summaryLoaded}: { fleet: FleetSummary | null; summaryLoaded: boolean }) {
-    const {user, can, permissionsReady} = useAuth();
+    const {can, permissionsReady} = useAuth();
     const {t, formatNumber} = useI18n();
     const canHealth = permissionsReady && can('PERMISSION_MANAGE');
-    const health = useQuery({
-        queryKey: ['session', user?.id, 'system-health'],
-        queryFn: ({signal}) => systemHealthService.get(signal),
-        enabled: canHealth,
-        refetchInterval: 30_000,
-    });
-    const telemetry = useQuery({
-        queryKey: ['telemetry', 'fleet'],
-        queryFn: ({signal}) => telemetryService.fleet(signal),
-        enabled: permissionsReady && can('UAV_READ'),
-        refetchInterval: TELEMETRY_POLL_MS,
-    });
-    const sar = useQuery({
-        queryKey: sarKeys.missions,
-        queryFn: ({signal}) => sarService.missions(false, signal),
-        enabled: permissionsReady && (can('MISSION_VIEW') || can('MISSION_VIEW_ALL')),
-        refetchInterval: 30_000,
-    });
+    const health = useSystemHealth();
+    const telemetry = useFleetTelemetry();
+    const sar = useSarMissions({enabled: permissionsReady && (can('MISSION_VIEW') || can('MISSION_VIEW_ALL')), refetchInterval: 30_000});
 
     const live = (telemetry.data ?? []).filter(f => !f.stale);
     const freshest = live.reduce<number | null>((min, f) => min == null || f.ageSeconds < min ? f.ageSeconds : min, null);

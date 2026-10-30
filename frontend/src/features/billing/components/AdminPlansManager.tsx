@@ -1,92 +1,128 @@
 'use client';
 
 import {useState, type FormEvent} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {Check, Minus, Pencil, Plus, X} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {planName} from '@/components/shared/presentation';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
-import {plansService} from '@/lib/api/services';
+import {useAllPlans, usePlanMutations, usePlanStats} from '@/features/billing/hooks/useBillingAdmin';
 import type {ServicePlan} from '@/types';
+import type {PlanStatsRow} from '@/features/billing/types/billing.types';
+import {clampPercent} from '@/features/billing/utils/plan-stats';
+import {AdminPlanStats} from '@/features/billing/components/AdminPlanStats';
 
 /** BASIC is assigned to every new customer, so the backend refuses to deactivate it. */
-const DEFAULT_PLAN = 'BASIC';
 
 export function AdminPlansManager() {
     const {t, formatCurrency} = useI18n();
-    const client = useQueryClient();
     const [editing, setEditing] = useState<ServicePlan | 'new' | null>(null);
-    const query = useQuery({queryKey: ['admin', 'billing', 'plans', 'all'], queryFn: ({signal}) => plansService.all(signal)});
-    // The quota editor reads ['admin','billing','plans'] (active plans only); refresh both views together.
-    const refresh = () => client.invalidateQueries({queryKey: ['admin', 'billing', 'plans']});
-    const toggle = useMutation({
-        mutationFn: ({id, active}: { id: number; active: boolean }) => plansService.setActive(id, active),
-        onSuccess: refresh,
-    });
+    const [months, setMonths] = useState(6);
+    const query = useAllPlans();
+    const stats = usePlanStats(months);
+    const statsByPlan = new Map((stats.data?.plans ?? []).map(row => [row.planId, row]));
+    // Active plans, every plan and the statistics share one key prefix, so a refresh updates all three.
+    const {toggle, refreshPlans: refresh} = usePlanMutations();
 
-    return <section className="border border-slate-200 bg-white">
-        <header className="flex flex-wrap items-center justify-end gap-3 border-b border-slate-100 px-4 py-3">
-            <button type="button" onClick={() => setEditing('new')}
-                    className="inline-flex h-9 items-center gap-1.5 bg-primary px-3 text-[13px] font-semibold text-primary-foreground hover:opacity-90">
-                <Plus size={15} aria-hidden="true"/>{t('admin.plans.add')}</button>
-        </header>
-        <ErrorNotice error={toggle.error}/>
-        <QueryState query={query}>{query.data?.length ? <div className="overflow-x-auto" tabIndex={0} aria-label={t('admin.plans.table')}>
-            <table className="w-full min-w-[860px] border-collapse text-left text-[13px]">
-                <thead className="bg-slate-50 text-[11.5px] font-semibold uppercase tracking-wide text-slate-500">
-                <tr>
-                    <th className="px-4 py-3">{t('admin.plans.col.plan')}</th>
-                    <th className="px-4 py-3 text-right">{t('admin.plans.col.price')}</th>
-                    <th className="px-4 py-3 text-right">{t('admin.plans.col.hours')}</th>
-                    <th className="px-4 py-3 text-right">{t('admin.plans.col.uavs')}</th>
-                    <th className="px-4 py-3 text-center">{t('admin.plans.col.sarAi')}</th>
-                    <th className="w-36 px-4 py-3">{t('admin.plans.col.status')}</th>
-                    <th className="w-16 px-4 py-3"/>
-                </tr>
-                </thead>
-                <tbody>{query.data.map(p => {
-                    const locked = p.code === DEFAULT_PLAN && p.active;
-                    return <tr key={p.id} className={cn('border-t border-slate-100 align-top', !p.active && 'bg-slate-50/60 text-slate-500')}>
-                        <td className="px-4 py-3"><strong className="block text-slate-900">{planName(p.name)}</strong>
-                            <span className="font-mono text-[11.5px] text-slate-500">{p.code}</span>
-                            {p.description && <span className="mt-0.5 block text-xs text-slate-500">{p.description}</span>}</td>
-                        <td className="px-4 py-3 text-right tabular-nums"><strong className="text-slate-900">{formatCurrency(p.price)}</strong>
-                            <span className="block text-xs text-slate-500">{t(`admin.plans.cycle.${p.billingCycle}`)}</span></td>
-                        <td className="px-4 py-3 text-right tabular-nums">{t('admin.plans.hours', {count: p.maxMonthlyFlightHours})}</td>
-                        <td className="px-4 py-3 text-right tabular-nums">{p.maxConcurrentUavs}</td>
-                        <td className="px-4 py-3 text-center">{p.allowSarAi
-                            ? <Check size={16} className="inline text-primary" aria-label={t('admin.plans.yes')}/>
-                            : <Minus size={16} className="inline text-slate-300" aria-label={t('admin.plans.no')}/>}</td>
-                        <td className="px-4 py-3">
-                            <Switch
-                                checked={p.active}
-                                disabled={toggle.isPending || locked}
-                                title={locked ? t('admin.plans.defaultLocked') : undefined}
-                                aria-label={t('admin.plans.toggleLabel', {name: planName(p.name)})}
-                                label={t(p.active ? 'admin.plans.active' : 'admin.plans.inactive')}
-                                onCheckedChange={(nextActive) => {
-                                    if (!nextActive && !window.confirm(t('admin.plans.deactivateConfirm', {name: planName(p.name)}))) return;
-                                    toggle.mutate({id: p.id, active: nextActive});
-                                }}
-                            />
-                            {locked && <span className="mt-1 block text-[11px] text-slate-400">{t('admin.plans.defaultLocked')}</span>}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                            <button type="button" onClick={() => setEditing(p)} aria-label={t('admin.plans.edit', {name: planName(p.name)})}
-                                    className="p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-800"><Pencil size={15}/></button>
-                        </td>
-                    </tr>;
-                })}</tbody>
-            </table>
-        </div> : <p className="px-6 py-10 text-center text-[13px] text-slate-500">{t('admin.plans.empty')}</p>}</QueryState>
-        {editing && <PlanDialog plan={editing === 'new' ? null : editing} onClose={() => setEditing(null)} onSaved={() => {
-            setEditing(null);
-            void refresh();
-        }}/>}
-    </section>;
+    return <>
+        <AdminPlanStats query={stats} months={months} onMonthsChange={setMonths}/>
+        <section className="border border-slate-200 bg-white">
+            <header className="flex flex-wrap items-center justify-end gap-3 border-b border-slate-100 px-4 py-3">
+                <button type="button" onClick={() => setEditing('new')}
+                        className="inline-flex h-9 items-center gap-1.5 bg-primary px-3 text-[13px] font-semibold text-primary-foreground hover:opacity-90">
+                    <Plus size={15} aria-hidden="true"/>{t('admin.plans.add')}</button>
+            </header>
+            <ErrorNotice error={toggle.error}/>
+            <QueryState query={query}>{query.data?.length ? <div className="overflow-x-auto" tabIndex={0} aria-label={t('admin.plans.table')}>
+                <table className="w-full min-w-[920px] border-collapse text-left text-[13px]">
+                    <thead className="bg-slate-50 text-[11.5px] font-semibold uppercase tracking-wide text-slate-500">
+                    <tr>
+                        <th className="px-4 py-3">{t('admin.plans.col.plan')}</th>
+                        <th className="px-4 py-3 text-right">{t('admin.plans.col.price')}</th>
+                        <th className="px-4 py-3">{t('admin.plans.col.limits')}</th>
+                        <th className="px-4 py-3 text-right">{t('admin.plans.col.customers')}</th>
+                        <th className="px-4 py-3 text-right">{t('admin.plans.col.pending')}</th>
+                        <th className="px-4 py-3 text-right">{t('admin.plans.col.revenueMonth')}</th>
+                        <th className="w-32 px-4 py-3">{t('admin.plans.col.avgUsage')}</th>
+                        <th className="w-36 px-4 py-3">{t('admin.plans.col.status')}</th>
+                        <th className="w-16 px-4 py-3"/>
+                    </tr>
+                    </thead>
+                    <tbody>{query.data.map(p => {
+                        return <tr key={p.id} className={cn('border-t border-slate-100 align-top', !p.active && 'bg-slate-50/60 text-slate-500')}>
+                            <td className="px-4 py-3"><strong className="block text-slate-900">{planName(p.name)}</strong>
+                                <span className="font-mono text-[11.5px] text-slate-500">{p.code}</span>
+                                {p.description && <span className="mt-0.5 line-clamp-2 block max-w-56 text-xs text-slate-500" title={p.description}>{p.description}</span>}</td>
+                            <td className="px-4 py-3 text-right tabular-nums"><strong className="text-slate-900">{formatCurrency(p.price)}</strong>
+                                <span className="block text-xs text-slate-500">{t(`admin.plans.cycle.${p.billingCycle}`)}</span></td>
+                            {/* Hours, UAVs and SAR/AI share one column so the table fits beside the statistics. */}
+                            <td className="whitespace-nowrap px-4 py-3 tabular-nums">
+                                <span className="block text-slate-900">{t('admin.plans.hours', {count: p.maxMonthlyFlightHours})}</span>
+                                <span className="block text-xs text-slate-500">{t('admin.plans.uavsCount', {count: p.maxConcurrentUavs})}</span>
+                                <span className="mt-0.5 inline-flex items-center gap-1 text-xs text-slate-500">{p.allowSarAi
+                                    ? <Check size={13} className="text-slate-700" aria-label={t('admin.plans.yes')}/>
+                                    : <Minus size={13} className="text-slate-300" aria-label={t('admin.plans.no')}/>}{t('admin.plans.col.sarAi')}</span>
+                            </td>
+                            <PlanStatCells row={statsByPlan.get(p.id)} loading={stats.isPending}/>
+                            <td className="px-4 py-3">
+                                <Switch
+                                    checked={p.active}
+                                    disabled={toggle.isPending}
+                                    aria-label={t('admin.plans.toggleLabel', {name: planName(p.name)})}
+                                    label={t(p.active ? 'admin.plans.active' : 'admin.plans.inactive')}
+                                    onCheckedChange={(nextActive) => {
+                                        if (!nextActive && !window.confirm(t('admin.plans.deactivateConfirm', {name: planName(p.name)}))) return;
+                                        toggle.mutate({id: p.id, active: nextActive});
+                                    }}
+                                />
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                                <button type="button" onClick={() => setEditing(p)} aria-label={t('admin.plans.edit', {name: planName(p.name)})}
+                                        className="p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-800"><Pencil size={15}/></button>
+                            </td>
+                        </tr>;
+                    })}</tbody>
+                </table>
+            </div> : <p className="px-6 py-10 text-center text-[13px] text-slate-500">{t('admin.plans.empty')}</p>}</QueryState>
+            {editing && <PlanDialog plan={editing === 'new' ? null : editing} onClose={() => setEditing(null)} onSaved={() => {
+                setEditing(null);
+                void refresh();
+            }}/>}
+        </section>
+    </>;
+}
+
+/** Customers, open invoices, revenue and usage for one table row, joined from the stats by plan id. */
+function PlanStatCells({row, loading}: { row?: PlanStatsRow; loading: boolean }) {
+    const {t, formatCurrency, formatNumber} = useI18n();
+    if (!row) {
+        const empty = <span className="text-slate-300">{loading ? '…' : '—'}</span>;
+        return <>
+            <td className="px-4 py-3 text-right">{empty}</td>
+            <td className="px-4 py-3 text-right">{empty}</td>
+            <td className="px-4 py-3 text-right">{empty}</td>
+            <td className="px-4 py-3">{empty}</td>
+        </>;
+    }
+    const usage = row.avgUsagePercent;
+    return <>
+        <td className="px-4 py-3 text-right tabular-nums"><strong className="text-slate-900">{row.payingSubscribers}</strong>
+            <span className="text-slate-500">/{row.subscribers}</span></td>
+        <td className="px-4 py-3 text-right tabular-nums">
+            <span className="text-slate-900">{row.pendingInvoices.count} · {formatCurrency(row.pendingInvoices.amount)}</span>
+            {row.overdueInvoices.count > 0 && <span className="block text-xs font-semibold text-[#c43a4a]">
+                {t('admin.plans.overdueCount', {count: row.overdueInvoices.count})}</span>}</td>
+        <td className="px-4 py-3 text-right tabular-nums"><strong className="text-slate-900">{formatCurrency(row.revenueThisMonth)}</strong>
+            <span className="block text-xs text-slate-500">{t('admin.plans.revenueTotal', {amount: formatCurrency(row.revenueTotal)})}</span></td>
+        <td className="px-4 py-3">
+            <span className={cn('block text-right font-mono text-xs font-semibold tabular-nums', usage >= 80 ? 'text-[#c43a4a]' : 'text-slate-700')}>
+                {formatNumber(usage, {maximumFractionDigits: 1})}%</span>
+            <span className="mt-1 block h-1.5 bg-slate-100" aria-hidden="true">
+                <span className={cn('block h-full', usage >= 80 ? 'bg-[#c43a4a]' : 'bg-slate-500')} style={{width: `${clampPercent(usage)}%`}}/></span>
+        </td>
+    </>;
 }
 
 function PlanDialog({plan, onClose, onSaved}: { plan: ServicePlan | null; onClose: () => void; onSaved: () => void }) {
@@ -99,19 +135,18 @@ function PlanDialog({plan, onClose, onSaved}: { plan: ServicePlan | null; onClos
     const [uavs, setUavs] = useState(String(plan?.maxConcurrentUavs ?? 1));
     const [sarAi, setSarAi] = useState(plan?.allowSarAi ?? false);
     const [description, setDescription] = useState(plan?.description ?? '');
-    const save = useMutation({
-        mutationFn: () => {
-            const body = {
-                name: name.trim(), price: Number(price), billingCycle: cycle, maxMonthlyFlightHours: Number(hours),
-                maxConcurrentUavs: Number(uavs), allowSarAi: sarAi, description: description.trim() || undefined
-            };
-            return plan ? plansService.update(plan.id, body) : plansService.create({...body, code: code.trim().toUpperCase()});
-        },
-    });
+    const {save} = usePlanMutations();
     const submit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            await save.mutateAsync();
+            await save.mutateAsync({
+                id: plan?.id,
+                body: {
+                    code: code.trim().toUpperCase(), name: name.trim(), price: Number(price), billingCycle: cycle,
+                    maxMonthlyFlightHours: Number(hours), maxConcurrentUavs: Number(uavs), allowSarAi: sarAi,
+                    description: description.trim() || undefined
+                },
+            });
             onSaved();
         } catch {/* Shown below. */
         }

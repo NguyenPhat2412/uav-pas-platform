@@ -1,28 +1,22 @@
 'use client';
 import Link from 'next/link';
-import {useQuery} from '@tanstack/react-query';
 import {History, MapPin, Plane, Users} from 'lucide-react';
 import {auditDetail, displayLabel, formatDate} from "@/components/shared/presentation";
-import {useAuth} from '@/contexts/AuthContext';
+import {useAuth} from '@/providers/AuthContext';
 import {KpiCard, MetricStrip} from "@/components/ui";
 import {EmptyState, QueryState} from "@/components/data/WorkspaceState";
-import {adminService} from "@/lib/api/admin";
-import {useI18n} from '@/contexts/I18nContext';
+import {useAdminDashboardSummary} from '@/features/dashboard/hooks/useAdminDashboard';
+import {useAdminAudit} from '@/features/audit/hooks/useAdminAudit';
+import {useI18n} from '@/providers/I18nContext';
 import {AdminMonitoringCard} from '@/features/dashboard/components/AdminMonitoringCard';
 
+const NO_FILTERS = {};
+
 export function Dashboard() {
-    const {user, can, permissionsReady} = useAuth();
+    const {can} = useAuth();
     const {t} = useI18n();
-    const summary = useQuery({
-        queryKey: ['session', user?.id, 'admin-dashboard'],
-        queryFn: ({signal}) => adminService.dashboard(signal),
-        enabled: permissionsReady && can('DASHBOARD_READ')
-    });
-    const audit = useQuery({
-        queryKey: ['session', user?.id, 'admin-audit', 'recent'],
-        queryFn: ({signal}) => adminService.audit(0, 5, signal),
-        enabled: permissionsReady && can('AUDIT_READ')
-    });
+    const summary = useAdminDashboardSummary();
+    const audit = useAdminAudit(0, 5, NO_FILTERS);
     const fleet = summary.data;
     const cards = summary.data ? [
         {label: t('admin.dashboard.cards.users'), value: summary.data.totalUsers, icon: <Users size={18}/>, tone: 'red' as const},

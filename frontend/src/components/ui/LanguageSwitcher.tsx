@@ -1,6 +1,6 @@
 'use client';
 import {LanguageSelect} from "@/components/shared";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {LocaleFlag} from '@/components/shared/LocaleFlag';
 import {localeMetaMap, supportedLocales} from '@/i18n/config';
 import type {LanguageSwitcherProps} from '@/types/ui';

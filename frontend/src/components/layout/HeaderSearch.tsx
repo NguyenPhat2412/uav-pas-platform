@@ -4,7 +4,7 @@ import {useRouter} from 'next/navigation';
 import {useEffect, useId, useMemo, useRef, useState} from 'react';
 import type {ReactNode} from 'react';
 import {ArrowDown, ArrowRight, ArrowUp, CornerDownLeft, Search} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export interface HeaderSearchItem {
     href: string;

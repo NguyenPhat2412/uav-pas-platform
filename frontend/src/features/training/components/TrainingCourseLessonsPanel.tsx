@@ -27,7 +27,7 @@ import {
     X,
 } from 'lucide-react';
 import type {LucideIcon} from 'lucide-react';
-import {trainingService} from '@/lib/api/resources';
+import {trainingService} from '@/features/training/api/training.api';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import type {

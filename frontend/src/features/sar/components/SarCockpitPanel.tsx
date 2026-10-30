@@ -2,22 +2,20 @@
 
 import React, {useEffect, useMemo, useState} from 'react';
 import Link from 'next/link';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {LifeBuoy, RotateCcw, Send} from 'lucide-react';
 import {ErrorBoundary, Spinner} from '@/components/ui';
 import {AiViewfinder} from '@/features/sar/components/AiViewfinder';
 import {SarTacticalMap} from '@/features/sar/components/SarTacticalMap';
 import {UavTelemetryHud} from '@/features/sar/components/UavTelemetryHud';
 import {Kv260EdgeStatusCard} from '@/features/sar/components/Kv260EdgeStatusCard';
-import {sarKeys, sarService} from '@/lib/api/services';
-import {TELEMETRY_POLL_MS, telemetryService} from '@/lib/api/services';
-import type {AiDetection, SarCockpitMission, SarDispatchResult} from '@/features/sar/types/sar.types';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
-import {toast} from '@/contexts/ToastContext';
+import {useSarDetections, useSarDispatchRescue, useSarMissions, useSarReturnToHome, useSarTasks} from '@/features/sar/hooks/useSar';
+import {useMissionTelemetry} from '@/features/uavs/hooks/useTelemetry';
+import type {SarCockpitMission, SarDispatchResult} from '@/features/sar/types/sar.types';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
 import {cn} from '@/lib/utils';
 
-const DETECTION_POLL_MS = 10000;
 
 const sarStatusTone: Record<string, string> = {
     SEARCHING: 'bg-uav-blue-light text-uav-blue border-blue-200',
@@ -29,10 +27,7 @@ const sarStatusTone: Record<string, string> = {
 export function SarCockpitPanel() {
     const {t} = useI18n();
     const {can} = useAuth();
-    const missionsQuery = useQuery({
-        queryKey: sarKeys.missions,
-        queryFn: ({signal}) => sarService.missions(false, signal),
-    });
+    const missionsQuery = useSarMissions();
     const missions = useMemo(() => missionsQuery.data ?? [], [missionsQuery.data]);
     const [chosenId, setChosenId] = useState<number | null>(null);
     const mission = missions.find(m => m.missionId === chosenId) ?? missions[0] ?? null;
@@ -56,54 +51,28 @@ function MissionCockpit({mission, missions, onChoose, canOperate}: {
     mission: SarCockpitMission; missions: SarCockpitMission[]; onChoose: (id: number) => void; canOperate: boolean;
 }) {
     const {t, formatDate} = useI18n();
-    const queryClient = useQueryClient();
     const [selectedId, setSelectedId] = useState<number | null>(null);
 
-    const detectionsQuery = useQuery({
-        queryKey: sarKeys.detections(mission.missionId),
-        queryFn: ({signal}) => sarService.detections(mission.missionId, signal),
-        refetchInterval: DETECTION_POLL_MS,
-    });
-    const tasksQuery = useQuery({
-        queryKey: sarKeys.tasks(mission.missionId),
-        queryFn: ({signal}) => sarService.tasks(mission.missionId, signal),
-        refetchInterval: DETECTION_POLL_MS,
-    });
-    const telemetryQuery = useQuery({
-        queryKey: sarKeys.telemetry(mission.missionId),
-        queryFn: ({signal}) => telemetryService.forMission(mission.missionId, signal).then(v => v ?? null),
-        enabled: mission.uavId != null,
-        refetchInterval: TELEMETRY_POLL_MS,
-    });
+    const detectionsQuery = useSarDetections(mission.missionId);
+    const tasksQuery = useSarTasks(mission.missionId);
+    const telemetryQuery = useMissionTelemetry(mission.missionId, {enabled: mission.uavId != null});
     const detections = useMemo(() => detectionsQuery.data ?? [], [detectionsQuery.data]);
     const selected = detections.find(d => d.id === selectedId) ?? null;
     const telemetry = telemetryQuery.data ?? null;
     const latestTask = useMemo(() => [...(tasksQuery.data ?? [])]
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0] ?? null, [tasksQuery.data]);
 
-    const refreshMissions = () => void queryClient.invalidateQueries({queryKey: sarKeys.missions});
     const report = (result: SarDispatchResult, queuedKey: string, unconfiguredKey: string) => {
         if (result.status === 'QUEUED') toast.success(t(queuedKey, {code: mission.missionCode}));
         else toast.warning(t(unconfiguredKey, {event: result.eventType}));
-        refreshMissions();
     };
     const fail = (error: unknown) => toast.error(error instanceof Error ? error.message : t('opsShared.sar.cockpit.actionFailed'));
 
-    const dispatch = useMutation({
-        mutationFn: (target: AiDetection) => sarService.dispatchRescue(mission.missionId, {
-            detectionId: target.id,
-            label: target.label,
-            confidence: target.confidence,
-            latitude: target.latitude,
-            longitude: target.longitude,
-            coordinates: `${target.latitude}, ${target.longitude}`,
-            verified: target.verified,
-        }),
+    const dispatch = useSarDispatchRescue(mission.missionId, {
         onSuccess: r => report(r, 'opsShared.sar.cockpit.dispatchQueued', 'opsShared.sar.cockpit.dispatchUnconfigured'),
         onError: fail,
     });
-    const rth = useMutation({
-        mutationFn: () => sarService.returnToHome(mission.missionId),
+    const rth = useSarReturnToHome(mission.missionId, {
         onSuccess: r => report(r, 'opsShared.sar.cockpit.rthQueued', 'opsShared.sar.cockpit.rthUnconfigured'),
         onError: fail,
     });

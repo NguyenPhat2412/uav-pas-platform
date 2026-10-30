@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {useEffect, useRef, useState} from 'react';
 import {type MissionKind, missionPatterns, surveyPilot} from "@/features/marketing/content/home-content";
 import type {PlannerPlan as Plan, PlannerPoint as Point} from '@/features/marketing/types/marketing.types';
-import {MissionIcon} from "@/features/marketing/components/home-icons";
+import {MissionIcon} from "@/features/marketing/components/HomeIcons";
 
 const station: Point = [0.1, 0.84];
 

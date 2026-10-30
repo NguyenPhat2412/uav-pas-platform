@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import {useEffect, useRef, useState} from 'react';
 import type {Control, LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
 import {Circle as CircleIcon, Crosshair, Hexagon, MapPin, Trash2, Undo2} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {MAP_BASEMAP_ORDER, MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
 import {defaultFlightPlan, radiusLimits, type FlightPlanInput} from '@/features/missions/types/flight-plan.types';

@@ -135,6 +135,7 @@
     "infrastructureDeployment": "Triển khai",
     "infrastructureBackups": "Sao lưu",
     "infrastructureStorage": "Lưu trữ tệp",
+    "files": "Quản lý tệp",
     "infrastructureDatabase": "Cơ sở dữ liệu",
     "infrastructureEmail": "Email"
   },
@@ -373,5 +374,81 @@
     "privacy": "Chính sách quyền riêng tư",
     "terms": "Điều khoản dịch vụ",
     "copyright": "© {year} UAV PAS · Trường Đại học Việt Nhật (ĐHQGHN)"
+  },
+  "weather": {
+    "preflight": {
+      "title": "Thời tiết & an toàn cất cánh",
+      "score": "{score}/100 điểm",
+      "loadError": "Không tải được đánh giá thời tiết.",
+      "noLocation": "Chưa có vị trí để đánh giá thời tiết.",
+      "pickLocation": "Chọn vị trí trên bản đồ để xem thời tiết và khung giờ bay gợi ý.",
+      "forecastAt": "Dự báo lúc {time}",
+      "currentAt": "Hiện tại · {time}",
+      "cached": "dữ liệu đệm",
+      "provider": {
+        "OPEN_METEO": "Open-Meteo",
+        "OPENWEATHERMAP": "OpenWeatherMap"
+      },
+      "clearance": {
+        "GO": "ĐỦ ĐIỀU KIỆN BAY (GO)",
+        "CAUTION": "CẢNH BÁO GIÓ & KHÍ TƯỢNG (CAUTION)",
+        "NO_GO": "KHÔNG AN TOÀN CẤT CÁNH (NO-GO)",
+        "UNAVAILABLE": "CHƯA CÓ DỮ LIỆU"
+      },
+      "wind10m": "Gió mặt đất (10 m)",
+      "windFlight": "Gió tầng bay (80 m / 120 m)",
+      "limit": "Ngưỡng cho phép {limit} m/s",
+      "gusts": "Gió giật",
+      "direction": "Hướng gió",
+      "visibility": "Tầm nhìn ngang",
+      "rain": "Lượng mưa",
+      "temperature": "Nhiệt độ · độ ẩm",
+      "kp": "Chỉ số từ trường Kp",
+      "battery": "Hệ số hao pin dự kiến",
+      "batteryHint": "So với khi lặng gió",
+      "reasonsLabel": "Lý do cảnh báo",
+      "windows": "Khung giờ bay an toàn gợi ý",
+      "noWindows": "Chưa có khung giờ ban ngày an toàn trong 24 giờ tới.",
+      "windowWind": "gió 80 m {wind} m/s",
+      "useWindow": "Áp dụng giờ này",
+      "disclaimer": "Thông tin tham khảo từ dịch vụ khí tượng; quyết định cất cánh cuối cùng thuộc về đội điều hành.",
+      "stationColumn": "Thời tiết",
+      "stationSummary": "gió 80 m {wind} m/s · {temperature}°C",
+      "reasons": {
+        "WIND_LIMIT_EXCEEDED": "Gió vượt ngưỡng cất cánh cho phép.",
+        "WIND_GUST_EXCEEDED": "Gió giật vượt ngưỡng an toàn.",
+        "PRECIPITATION_UNSAFE": "Lượng mưa vượt ngưỡng bay an toàn.",
+        "VISIBILITY_TOO_LOW": "Tầm nhìn ngang dưới mức tối thiểu.",
+        "GEOMAGNETIC_STORM": "Bão từ mạnh (Kp cao) có thể làm sai la bàn và GNSS.",
+        "WIND_NEAR_LIMIT": "Gió gần chạm ngưỡng cho phép.",
+        "WIND_GUST_HIGH": "Gió giật mạnh, cần theo dõi sát.",
+        "RAIN_PROBABILITY_HIGH": "Khả năng mưa cao.",
+        "VISIBILITY_MODERATE": "Tầm nhìn hạn chế.",
+        "KP_ELEVATED": "Chỉ số Kp ở mức cao, kiểm tra la bàn trước khi bay.",
+        "WEATHER_SOURCE_UNAVAILABLE": "Chưa lấy được dữ liệu thời tiết. Hãy kiểm tra lại trước giờ bay.",
+        "FORECAST_OUT_OF_RANGE": "Thời điểm này nằm ngoài khoảng dự báo (16 ngày).",
+        "MISSION_LOCATION_MISSING": "Nhiệm vụ chưa có tọa độ nên chưa đánh giá được thời tiết."
+      }
+    },
+    "provider": {
+      "title": "Nguồn dữ liệu thời tiết",
+      "intro": "Open-Meteo không cần khóa. Khi chọn OpenWeatherMap, khóa API được mã hóa AES-256-GCM trên máy chủ và không bao giờ hiển thị lại.",
+      "source": "Nhà cung cấp",
+      "cacheTtl": "Thời gian lưu đệm dự báo (phút)",
+      "cacheTtlRange": "Nhập số nguyên từ 1 đến 120.",
+      "apiKey": "Khóa API OpenWeatherMap",
+      "apiKeyKeep": "Để trống để giữ khóa hiện tại",
+      "apiKeyPlaceholder": "Dán khóa API",
+      "keyStored": "Đã lưu một khóa (đã mã hóa).",
+      "keyMissing": "Chưa có khóa nào được lưu.",
+      "block": "Chặn cất cánh khi thời tiết NO-GO",
+      "blockHint": "Khi bật, không thể bắt đầu nhiệm vụ nếu thời tiết tại điểm bay ở mức NO-GO.",
+      "updated": "Cập nhật bởi {name} lúc {time}",
+      "removeKey": "Xóa khóa",
+      "removeKeyConfirm": "Xóa khóa API đã lưu?",
+      "save": "Lưu cấu hình thời tiết",
+      "saving": "Đang lưu...",
+      "saved": "Đã lưu cấu hình thời tiết."
+    }
   }
 }

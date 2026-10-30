@@ -1,9 +1,9 @@
 'use client';
 
 import {MissionList} from '@/features/missions/components/MissionList';
-import {useMissions} from '@/lib/query/operations';
+import {useMissions} from '@/features/missions/hooks/useOperationsMissions';
 import {OperationsPage} from '@/components/layout/OperationsPage';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export default function AssignedMissionsPage() {
     const {missions, isLoading, error, reload} = useMissions();

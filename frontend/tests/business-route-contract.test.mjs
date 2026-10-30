@@ -21,9 +21,31 @@ const {API_ROUTES} = await load(compile(read('src/lib/api/routes.ts')));
 
 // Compare actual consumer requests to controller mappings, so changing a wrong shared literal
 // and its static assertion together cannot conceal a nonexistent business endpoint.
+// Controllers map their base path through the backend's central ApiRoutes constants.
+const javaRoutes = (() => {
+    const source = read('../backend/src/main/java/com/uav/platform/config/routes/ApiRoutes.java');
+    const constants = new Map();
+    let scope = '';
+    for (const line of source.split('\n')) {
+        const nested = line.match(/^\s{4}public static final class (\w+)/);
+        if (nested) scope = nested[1];
+        else if (/^\s{4}\}/.test(line)) scope = '';
+        const constant = line.match(/public static final String (\w+)\s*=\s*(.+);/);
+        if (constant) constants.set(scope ? `${scope}.${constant[1]}` : constant[1], {scope, expr: constant[2]});
+    }
+    const value = (name, scope = '') => {
+        const entry = constants.get(scope && !name.includes('.') ? `${scope}.${name}` : name) ?? constants.get(name);
+        assert.ok(entry, `ApiRoutes.${name} must exist`);
+        return entry.expr.split('+').map(part => part.trim()).map(part =>
+            part.startsWith('"') ? JSON.parse(part) : value(part, entry.scope)).join('');
+    };
+    return expression => value(expression.replace(/^ApiRoutes\./, ''));
+})();
+
 function controllerGet(controller, method) {
     const source = read(`../backend/src/main/java/com/uav/platform/modules/${controller}`);
-    const base = source.match(/@RequestMapping\("([^"]+)"\)/)?.[1];
+    const mapping = source.match(/^@RequestMapping\((.+)\)$/m)?.[1];
+    const base = mapping?.startsWith('"') ? JSON.parse(mapping) : mapping && javaRoutes(mapping);
     const declaration = source.indexOf(` ${method}(`);
     assert.ok(declaration >= 0, `${method} controller method must exist`);
     const annotation = source.slice(source.lastIndexOf('@GetMapping(', declaration), declaration);
@@ -48,7 +70,7 @@ async function service(path, exportedName) {
 }
 
 test('customer quota consumer calls the controller quota route and forwards cancellation', async () => {
-    const {instance, calls} = await service('src/lib/api/customer.ts', 'customerService');
+    const {instance, calls} = await service('src/features/billing/api/customer-billing.api.ts', 'customerBillingService');
     const signal = new AbortController().signal;
     await instance.quota(signal);
     assert.equal(calls[0].endpoint, controllerGet('billing/controller/BillingController.java', 'getQuota'));
@@ -56,7 +78,7 @@ test('customer quota consumer calls the controller quota route and forwards canc
 });
 
 test('admin summary and CSV consumers call their actual role-protected report endpoints', async () => {
-    const {instance, calls} = await service('src/lib/api/admin.ts', 'adminService');
+    const {instance, calls} = await service('src/features/reports/api/reports.api.ts', 'reportsService');
     await instance.operationsReport();
     assert.equal(calls[0].endpoint, controllerGet('reporting/controller/ReportController.java', 'getOperationsSummary'));
     assert.equal(API_ROUTES.reports.exportOperationsCsv, controllerGet('reporting/controller/ReportController.java', 'exportCsv'));

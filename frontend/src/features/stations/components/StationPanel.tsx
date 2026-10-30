@@ -2,10 +2,9 @@
 import {useEffect, useState} from 'react';
 import {Edit3, Plus} from 'lucide-react';
 import {Button, Input, StatusBadge} from '@/components/ui';
-import {useAuth} from '@/contexts/AuthContext';
-import {useOperationMutation, useStation} from '@/lib/query/operations';
-import {useCollection} from '@/lib/query/operations';
-import {operationsService} from "@/lib/api/resources";
+import {useAuth} from '@/providers/AuthContext';
+import {useStation, useStationMutations} from '@/features/stations/hooks/useStations';
+import {useCollection} from '@/hooks/useCollection';
 import {DataTable, options} from '@/components/data/DataTable';
 import {Drawer, Metadata, Tabs} from '@/components/data/Drawer';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
@@ -13,7 +12,9 @@ import {SectionHeading} from '@/components/layout/PageHeader';
 import type {Station} from "@/types/resources";
 import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {resolveStationIdFromParam, toStationSlug} from "@/lib/url-slugs";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
+import {useStationsWeather} from '@/features/weather/hooks/useWeather';
+import {StationWeatherCell} from '@/features/weather/components/StationWeatherCell';
 
 const validStationTabs = new Set(['overview', 'uavs', 'inventory', 'activity']);
 
@@ -21,6 +22,8 @@ export function StationPanel() {
     const {can} = useAuth();
     const {t} = useI18n();
     const query = useCollection('stations');
+    const weather = useStationsWeather();
+    const weatherByStation = new Map((weather.data ?? []).map(item => [item.stationId, item]));
     const [selected, setSelected] = useState<number>();
     const detail = useStation(selected);
     const [tab, setTab] = useState('overview');
@@ -29,12 +32,7 @@ export function StationPanel() {
     const [isEditing, setIsEditing] = useState(false);
     const [editForm, setEditForm] = useState({code: '', name: '', address: '', latitude: '', longitude: ''});
 
-    const create = useOperationMutation(operationsService.createStation, ['stations', 'dashboard', 'audit']);
-    const update = useOperationMutation(
-        ({id, data}: {id: number; data: {code: string; name: string; address?: string; latitude?: number; longitude?: number}}) =>
-            operationsService.updateStation(id, data),
-        ['stations', 'dashboard', 'audit']
-    );
+    const {create, update} = useStationMutations();
     const rows = query.data || [];
 
     const syncStationUrl = (stationId?: number, nextTab = 'overview') => {
@@ -99,6 +97,13 @@ export function StationPanel() {
             accessorKey: 'status',
             header: t('opsAssets.shared.status'),
             cell: ({row}: { row: { original: Station } }) => <StatusBadge status={row.original.status}/>
+        },
+        {
+            id: 'weather',
+            header: t('weather.preflight.stationColumn'),
+            enableSorting: false,
+            cell: ({row}: { row: { original: Station } }) =>
+                <StationWeatherCell summary={weatherByStation.get(row.original.id)} loading={weather.isPending && weather.fetchStatus !== 'idle'}/>
         },
         {
             id: 'actions',

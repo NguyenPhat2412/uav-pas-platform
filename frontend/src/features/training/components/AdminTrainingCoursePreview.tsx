@@ -3,7 +3,7 @@
 import {useQuery} from '@tanstack/react-query';
 import {useSearchParams} from 'next/navigation';
 import {AdminPage} from '@/components/layout/AdminPage';
-import {trainingService} from '@/lib/api/resources';
+import {trainingService} from '@/features/training/api/training.api';
 import type {TrainingPortalTier} from '@/features/training/types/training.types';
 import {TrainingCoursePlayer, trainingCourseQueryKey} from '@/features/training/components/TrainingCoursePlayer';
 import {adminTrainingHome} from '@/features/training/utils/training-meta';

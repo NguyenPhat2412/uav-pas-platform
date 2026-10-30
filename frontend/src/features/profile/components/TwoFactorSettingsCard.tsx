@@ -1,25 +1,17 @@
 'use client';
 
 import React, {type FormEvent, useEffect, useState} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import QRCode from 'qrcode';
 import {Copy, Mail, QrCode, ShieldAlert, ShieldCheck, Smartphone} from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {toast} from '@/contexts/ToastContext';
-import {authService} from '@/lib/api/services';
+import {useAuth} from '@/providers/AuthContext';
+import {toast} from '@/providers/ToastContext';
+import {useDisableTwoFactor, useEnableTwoFactor, useTwoFactorSetup, useTwoFactorStatus} from '@/features/profile/hooks/useProfile';
 import type {TwoFactorMethod, TwoFactorSetupResponse} from '@/features/auth/types/auth.types';
 import {OtpCodeInput} from '@/features/auth/components/OtpCodeInput';
 
 export function TwoFactorSettingsCard() {
     const {user, refreshUser} = useAuth();
-    const queryClient = useQueryClient();
-    const queryKey = ['session', user?.id ?? 'anonymous', '2fa-status'];
-
-    const statusQuery = useQuery({
-        queryKey,
-        enabled: !!user,
-        queryFn: ({signal}) => authService.get2faStatus(signal),
-    });
+    const statusQuery = useTwoFactorStatus();
 
     const [selectedMethod, setSelectedMethod] = useState<TwoFactorMethod>('EMAIL');
     const [setupState, setSetupState] = useState<TwoFactorSetupResponse | null>(null);
@@ -52,8 +44,7 @@ export function TwoFactorSettingsCard() {
         };
     }, [setupState?.otpauthUri]);
 
-    const setupMutation = useMutation({
-        mutationFn: (method: TwoFactorMethod) => authService.setup2fa({method}),
+    const setupMutation = useTwoFactorSetup({
         onSuccess: (data) => {
             setSetupState(data);
             setCode('');
@@ -64,15 +55,8 @@ export function TwoFactorSettingsCard() {
         },
     });
 
-    const enableMutation = useMutation({
-        mutationFn: () =>
-            authService.enable2fa({
-                method: setupState?.method ?? selectedMethod,
-                challengeToken: setupState?.challengeToken,
-                code: code.trim(),
-            }),
+    const enableMutation = useEnableTwoFactor({
         onSuccess: (data) => {
-            queryClient.setQueryData(queryKey, data);
             setSetupState(null);
             setCode('');
             void refreshUser();
@@ -86,11 +70,8 @@ export function TwoFactorSettingsCard() {
         },
     });
 
-    const disableMutation = useMutation({
-        // The backend now requires the current password to turn 2FA off.
-        mutationFn: () => authService.disable2fa({password: disablePassword}),
-        onSuccess: (data) => {
-            queryClient.setQueryData(queryKey, data);
+    const disableMutation = useDisableTwoFactor({
+        onSuccess: () => {
             setShowDisableConfirm(false);
             setDisablePassword('');
             setSetupState(null);
@@ -104,7 +85,11 @@ export function TwoFactorSettingsCard() {
 
     const handleEnableSubmit = (e: FormEvent) => {
         e.preventDefault();
-        enableMutation.mutate();
+        enableMutation.mutate({
+            method: setupState?.method ?? selectedMethod,
+            challengeToken: setupState?.challengeToken,
+            code: code.trim(),
+        });
     };
 
     const status = statusQuery.data;
@@ -311,7 +296,7 @@ export function TwoFactorSettingsCard() {
                             <form
                                 onSubmit={(e) => {
                                     e.preventDefault();
-                                    if (disablePassword && !disableMutation.isPending) disableMutation.mutate();
+                                    if (disablePassword && !disableMutation.isPending) disableMutation.mutate(disablePassword);
                                 }}
                                 className="space-y-3 rounded-control border border-amber-200 bg-amber-50/70 p-4"
                             >

@@ -56,3 +56,5 @@ export const maintenanceService = {
             reason: closingNote(reason)
         }),
 };
+
+export type MaintenanceService = typeof maintenanceService;

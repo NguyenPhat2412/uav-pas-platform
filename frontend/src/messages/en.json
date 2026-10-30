@@ -135,6 +135,7 @@
     "infrastructureDeployment": "Deployment",
     "infrastructureBackups": "Backups",
     "infrastructureStorage": "File storage",
+    "files": "File manager",
     "infrastructureDatabase": "Database",
     "infrastructureEmail": "Email"
   },
@@ -373,5 +374,81 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "copyright": "© {year} UAV PAS · Vietnam Japan University (VNU)"
+  },
+  "weather": {
+    "preflight": {
+      "title": "Weather & take-off safety",
+      "score": "{score}/100",
+      "loadError": "Could not load the weather assessment.",
+      "noLocation": "No location to assess the weather yet.",
+      "pickLocation": "Pick the site on the map to see the weather and suggested flight windows.",
+      "forecastAt": "Forecast for {time}",
+      "currentAt": "Now · {time}",
+      "cached": "cached data",
+      "provider": {
+        "OPEN_METEO": "Open-Meteo",
+        "OPENWEATHERMAP": "OpenWeatherMap"
+      },
+      "clearance": {
+        "GO": "CLEAR TO FLY (GO)",
+        "CAUTION": "WIND & WEATHER CAUTION",
+        "NO_GO": "UNSAFE FOR TAKE-OFF (NO-GO)",
+        "UNAVAILABLE": "NO DATA YET"
+      },
+      "wind10m": "Ground wind (10 m)",
+      "windFlight": "Flight-level wind (80 m / 120 m)",
+      "limit": "Limit {limit} m/s",
+      "gusts": "Gusts",
+      "direction": "Wind direction",
+      "visibility": "Visibility",
+      "rain": "Rain",
+      "temperature": "Temperature · humidity",
+      "kp": "Geomagnetic Kp index",
+      "battery": "Expected battery drain",
+      "batteryHint": "Compared with calm air",
+      "reasonsLabel": "Warning reasons",
+      "windows": "Suggested safe flight windows",
+      "noWindows": "No safe daytime window in the next 24 hours.",
+      "windowWind": "80 m wind {wind} m/s",
+      "useWindow": "Use this time",
+      "disclaimer": "Reference information from weather services; the operations team makes the final take-off decision.",
+      "stationColumn": "Weather",
+      "stationSummary": "80 m wind {wind} m/s · {temperature}°C",
+      "reasons": {
+        "WIND_LIMIT_EXCEEDED": "Wind exceeds the take-off limit.",
+        "WIND_GUST_EXCEEDED": "Gusts exceed the safe limit.",
+        "PRECIPITATION_UNSAFE": "Rainfall exceeds the safe flying limit.",
+        "VISIBILITY_TOO_LOW": "Horizontal visibility is below the minimum.",
+        "GEOMAGNETIC_STORM": "Strong geomagnetic storm (high Kp) can disturb compass and GNSS.",
+        "WIND_NEAR_LIMIT": "Wind is close to the limit.",
+        "WIND_GUST_HIGH": "Strong gusts; monitor closely.",
+        "RAIN_PROBABILITY_HIGH": "High chance of rain.",
+        "VISIBILITY_MODERATE": "Reduced visibility.",
+        "KP_ELEVATED": "Elevated Kp index; check the compass before flight.",
+        "WEATHER_SOURCE_UNAVAILABLE": "Weather data is not available yet. Check again before the flight.",
+        "FORECAST_OUT_OF_RANGE": "This time is outside the 16-day forecast.",
+        "MISSION_LOCATION_MISSING": "The mission has no coordinates, so weather cannot be assessed."
+      }
+    },
+    "provider": {
+      "title": "Weather data source",
+      "intro": "Open-Meteo needs no key. With OpenWeatherMap the API key is sealed with AES-256-GCM on the server and is never shown again.",
+      "source": "Provider",
+      "cacheTtl": "Forecast cache lifetime (minutes)",
+      "cacheTtlRange": "Enter a whole number from 1 to 120.",
+      "apiKey": "OpenWeatherMap API key",
+      "apiKeyKeep": "Leave empty to keep the current key",
+      "apiKeyPlaceholder": "Paste the API key",
+      "keyStored": "A key is stored (encrypted).",
+      "keyMissing": "No key is stored.",
+      "block": "Block take-off when weather is NO-GO",
+      "blockHint": "When on, a mission cannot start while the weather at its site is NO-GO.",
+      "updated": "Updated by {name} at {time}",
+      "removeKey": "Remove key",
+      "removeKeyConfirm": "Remove the stored API key?",
+      "save": "Save weather settings",
+      "saving": "Saving...",
+      "saved": "Weather settings saved."
+    }
   }
 }

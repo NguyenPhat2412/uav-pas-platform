@@ -2,9 +2,9 @@
 import {Fragment, useState} from 'react';
 import {Check, Minus} from 'lucide-react';
 import {displayLabel, permissionLabel} from "@/components/shared/presentation";
-import {useAdminReferenceData} from "@/lib/query/admin";
+import {useAdminReferenceData} from '@/features/users/hooks/useAdminUsers';
 import {EmptyState, QueryState} from "@/components/data/WorkspaceState";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 /** Read-only roles × permissions grid, grouped by permission prefix, for comparing role templates side by side. */
 export function RoleMatrix() {

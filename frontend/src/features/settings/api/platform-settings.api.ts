@@ -1,4 +1,4 @@
-import {apiClient} from '@/lib/api';
+import {apiClient, API_ROUTES} from '@/lib/api';
 
 export type SettingValueType = 'STRING' | 'INTEGER' | 'DECIMAL' | 'BOOLEAN' | 'ENUM' | 'PHONE' | 'EMAIL' | 'URL';
 
@@ -39,18 +39,18 @@ export interface PublicSiteInfo {
     settings: Record<string, string>;
 }
 
-export const platformSettingsApi = {
-    list: (signal?: AbortSignal) => apiClient.get<TypedSetting[]>('/api/v1/settings', {signal}),
+export const platformSettingsService = {
+    list: (signal?: AbortSignal) => apiClient.get<TypedSetting[]>(API_ROUTES.settings.list, {signal}),
     update: (key: string, configValue: string) =>
-        apiClient.put<TypedSetting>(`/api/v1/settings/${encodeURIComponent(key)}`, {configValue}),
+        apiClient.put<TypedSetting>(API_ROUTES.settings.byKey(key), {configValue}),
     history: (key: string, signal?: AbortSignal) =>
-        apiClient.get<SettingHistoryEntry[]>(`/api/v1/settings/${encodeURIComponent(key)}/history?limit=50`, {signal}),
+        apiClient.get<SettingHistoryEntry[]>(`${API_ROUTES.settings.history(key)}?limit=50`, {signal}),
 };
 
 /** Public endpoint; failures resolve to null so callers fall back to env values. */
 export async function fetchPublicSiteInfo(signal?: AbortSignal): Promise<PublicSiteInfo | null> {
     try {
-        return await apiClient.get<PublicSiteInfo>('/api/v1/public/site-info', {signal});
+        return await apiClient.get<PublicSiteInfo>(API_ROUTES.public.siteInfo, {signal});
     } catch {
         return null;
     }

@@ -18,8 +18,11 @@ test('admin exposes only supported M3 routes inside the single application', () 
 test('admin writes only through shared API client and uses actual permission endpoints', () => {
     const source = filesUnder(at('src/features')).filter(p => /\.(ts|tsx)$/.test(p)).map(p => readFileSync(p, 'utf8')).join('\n');
     assert.doesNotMatch(source, /\bfetch\s*\(/);
-    const service = readFileSync(`${root}src/lib/api/admin.ts`, 'utf8');
-    for (const endpoint of ['/api/v1/users', '/api/v1/permissions', '/api/v1/role-templates', '/api/v1/audit-logs', '/api/v1/dashboard/summary']) assert.match(service, new RegExp(endpoint.replaceAll('/', '\\/')));
+    const routes = readFileSync(`${root}src/lib/api/routes.ts`, 'utf8');
+    for (const endpoint of ['/api/v1/users', '/api/v1/permissions', '/api/v1/role-templates', '/api/v1/audit-logs', '/api/v1/dashboard/summary']) assert.match(routes, new RegExp(endpoint.replaceAll('/', '\\/')));
+    for (const [file, group] of [['users/api/users.api.ts', 'users'], ['access/api/access.api.ts', 'permissions'], ['access/api/access.api.ts', 'roleTemplates'], ['audit/api/audit.api.ts', 'auditLogs'], ['dashboard/api/admin-dashboard.api.ts', 'dashboard']]) {
+        assert.match(readFileSync(`${root}src/features/${file}`, 'utf8'), new RegExp(`API_ROUTES\\.${group}\\.`), file);
+    }
     assert.match(readFileSync(`${root}src/features/access/components/PermissionEditor.tsx`, 'utf8'), /admin\.access\.overrideHint/);
     const adminVi = JSON.parse(readFileSync(`${root}src/messages/sections/admin/vi.json`, 'utf8')).admin;
     assert.match(adminVi.access.overrideHint, /Quyền cho phép hoặc từ chối riêng/);

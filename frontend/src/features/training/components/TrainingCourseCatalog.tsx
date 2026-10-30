@@ -4,7 +4,7 @@ import {useMemo, useState} from 'react';
 import Link from 'next/link';
 import {useQuery} from '@tanstack/react-query';
 import {CircleCheck, RefreshCw, Search, X} from 'lucide-react';
-import {trainingService} from '@/lib/api/resources';
+import {trainingService} from '@/features/training/api/training.api';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
 import type {TrainingCourseSummary, TrainingPortalTier} from '@/features/training/types/training.types';

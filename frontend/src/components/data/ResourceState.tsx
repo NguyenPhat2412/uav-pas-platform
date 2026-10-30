@@ -2,7 +2,7 @@
 import type {ReactNode} from 'react';
 import {EmptyState, ErrorNotice} from '@/components/data/WorkspaceState';
 import {Button, Spinner} from '@/components/ui';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export {ErrorNotice};
 

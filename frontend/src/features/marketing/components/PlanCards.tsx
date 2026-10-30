@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {Check, Star} from 'lucide-react';
 import {publicPricingPlans} from "@/features/marketing/content/home-content";
-import {FlatTag} from "@/features/marketing/components/flat-tag";
+import {FlatTag} from "@/features/marketing/components/FlatTag";
 
 /**
  * The three subscription plans, shared by the home page and /pricing. The featured plan is lifted, ringed in red

@@ -1,7 +1,7 @@
 'use client';
 import {type ReactNode, useEffect, useId, useRef} from 'react';
 import {X} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 export function Drawer({title, onClose, children, wide = false}: {
     title: string;

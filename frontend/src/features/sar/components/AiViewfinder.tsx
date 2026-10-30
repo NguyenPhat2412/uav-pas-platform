@@ -1,13 +1,12 @@
 'use client';
 
 import React, {useMemo, useState} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {CheckCircle2, Eye, EyeOff, Flame, ImageOff, Sliders} from 'lucide-react';
-import {operationsService} from '@/lib/api/resources';
-import {sarKeys, sarService} from '@/lib/api/services';
-import type {AiDetection, AiTask, AiViewfinderProps} from '@/features/sar/types/sar.types';
-import {useI18n} from '@/contexts/I18nContext';
-import {toast} from '@/contexts/ToastContext';
+import {useMediaDownloadUrl} from '@/features/media/hooks/useMedia';
+import {useSarVerifyDetection} from '@/features/sar/hooks/useSar';
+import type {AiDetection, AiViewfinderProps} from '@/features/sar/types/sar.types';
+import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
 import {cn} from '@/lib/utils';
 
 /** People are the search target; everything else (debris, lifebuoys, vessels) is a clue. */
@@ -22,7 +21,6 @@ export function detectionTone(d: AiDetection) {
 /** Detections from the mission's AI tasks drawn over the analysed frame (when the task kept one). */
 export function AiViewfinder({missionId, detections, task, loading, failed, selectedId, onSelect, canVerify}: AiViewfinderProps & { detections: AiDetection[] }) {
     const {t, formatDate} = useI18n();
-    const queryClient = useQueryClient();
     const [showBoxes, setShowBoxes] = useState(true);
     const [threshold, setThreshold] = useState(() => Math.round((task?.confidenceThreshold ?? 0.5) * 100));
     const visible = useMemo(() => detections
@@ -31,19 +29,10 @@ export function AiViewfinder({missionId, detections, task, loading, failed, sele
     // Boxes are relative to one frame, so only the latest task's boxes are overlaid.
     const framed = visible.filter(d => task == null || d.aiTaskId === task.id);
 
-    const frame = useQuery({
-        queryKey: ['media', 'download-url', task?.mediaId],
-        queryFn: () => operationsService.downloadUrl(task!.mediaId!),
-        enabled: task?.mediaId != null,
-        staleTime: 4 * 60 * 1000,
-        retry: false,
-    });
+    const frame = useMediaDownloadUrl(task?.mediaId);
 
-    const verify = useMutation({
-        mutationFn: (d: AiDetection) => sarService.verify(d.id, !d.verified),
+    const verify = useSarVerifyDetection(missionId, {
         onSuccess: updated => {
-            queryClient.setQueryData<AiDetection[]>(sarKeys.detections(missionId),
-                prev => prev?.map(d => d.id === updated.id ? updated : d));
             toast.success(t(updated.verified ? 'opsShared.sar.viewfinder.verifiedToast' : 'opsShared.sar.viewfinder.unverifiedToast',
                 {label: updated.label, id: updated.trackingId ?? String(updated.id)}));
         },

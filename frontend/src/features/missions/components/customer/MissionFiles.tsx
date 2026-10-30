@@ -1,7 +1,7 @@
 'use client';
 import {FileText, Film, Image as ImageIcon, Paperclip} from 'lucide-react';
-import {Button} from '@/components/customer/ui';
-import {useI18n} from '@/contexts/I18nContext';
+import {Button} from '@/components/customer/CustomerUi';
+import {useI18n} from '@/providers/I18nContext';
 import {formatFileSize} from '@/lib/format';
 import type {MissionMedia} from '@/types/customer';
 

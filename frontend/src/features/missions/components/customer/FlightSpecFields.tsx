@@ -1,5 +1,5 @@
 'use client';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
 import {OptionalMark} from '@/components/shared/RequiredMark';
 import {flightAltitudes, flightGsdOptions, flightSensors, type FlightPlanInput, type FlightSensor} from '@/features/missions/types/flight-plan.types';

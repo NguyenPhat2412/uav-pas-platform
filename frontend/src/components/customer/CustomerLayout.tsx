@@ -1,6 +1,6 @@
 'use client';
 import {createContext, useContext, useEffect} from 'react';
-import {useSidebarController} from '@/components/layout/useSidebarController';
+import {useSidebarController} from '@/hooks/useSidebarController';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import {AssistantWidget} from '@/features/assistant/components/AssistantWidget';
 import Link from 'next/link';
@@ -11,11 +11,11 @@ import {
     PanelLeftOpen,
     X
 } from 'lucide-react';
-import {useAuth} from '@/contexts/AuthContext';
-import {useI18n} from '@/contexts/I18nContext';
+import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {LanguageSwitcher} from "@/components/ui/LanguageSwitcher";
 import {DispatchHotline} from "@/components/customer/DispatchHotline";
-import {useSidebarCounts} from "@/components/customer/useSidebarCounts";
+import {useSidebarCounts} from "@/hooks/useSidebarCounts";
 import {CustomerAccountMenu} from "@/components/customer/CustomerAccountMenu";
 import {NotificationBell} from "@/components/notifications/NotificationBell";
 import {PortalSwitcher} from "@/components/layout/PortalSwitcher";
@@ -26,8 +26,8 @@ import {
     CUSTOMER_SIDEBAR_ROUTES,
     resolveSidebarActiveItem,
 } from '@/components/layout/sidebar-routes';
-import {useCustomerProfile} from '@/lib/query/customer';
-import {Button} from "@/components/customer/ui";
+import {useOwnProfile} from '@/features/profile/hooks/useProfile';
+import {Button} from "@/components/customer/CustomerUi";
 import {cn} from '@/lib/utils';
 import {Bell as BellIcon, CircleHelp, LayoutDashboard, Plane, ReceiptText} from 'lucide-react';
 import type {LucideIcon} from 'lucide-react';
@@ -50,7 +50,7 @@ export function AppShell({children}: { children: React.ReactNode }) {
     const pathname = usePathname();
     const {user, can, permissionsReady} = useAuth();
     const {t} = useI18n();
-    const profile = useCustomerProfile();
+    const profile = useOwnProfile();
     const {open, setOpen, railCollapsed, toggleCollapsed, shortcut, menuButton, rail, navList} =
         useSidebarController('uav_customer_sidebar_collapsed');
 

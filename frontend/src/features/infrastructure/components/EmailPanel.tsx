@@ -1,19 +1,18 @@
 'use client';
 
-import {useMutation} from '@tanstack/react-query';
 import {Mail, Plug, Send} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {cn} from '@/lib/utils';
-import {infrastructureApi} from '../api';
-import type {EmailStatus, MailConnectionCheck} from '../types';
-import {Facts, Note, Panel, StatusBanner, type Tone, useInfraQuery} from './InfraUi';
+import type {EmailStatus, MailConnectionCheck} from '../types/infrastructure.types';
+import {Facts, Note, Panel, StatusBanner, type Tone} from './InfraUi';
+import {useEmailStatus, useSendTestEmail} from '@/features/infrastructure/hooks/useInfrastructure';
 
 const connectionTone: Record<MailConnectionCheck['status'], Tone> = {UP: 'good', DOWN: 'bad', DISABLED: 'off', UNKNOWN: 'neutral'};
 
 export function EmailPanel() {
     const {t} = useI18n();
-    const query = useInfraQuery('email', ({signal}) => infrastructureApi.email(signal));
+    const query = useEmailStatus();
     return <div className="space-y-4">
         <QueryState query={query}>{query.data && <Body data={query.data} refreshing={query.isFetching} onRefresh={() => void query.refetch()}/>}</QueryState>
         <Note>{t('adminInfra.email.note')}</Note>
@@ -53,7 +52,7 @@ function Body({data, refreshing, onRefresh}: { data: EmailStatus; refreshing: bo
 
 function TestEmail({data}: { data: EmailStatus }) {
     const {t, formatDate} = useI18n();
-    const mutation = useMutation({mutationFn: () => infrastructureApi.sendTestEmail()});
+    const mutation = useSendTestEmail();
     const result = mutation.data;
     const disabled = !data.enabled || !data.testRecipient || mutation.isPending;
     return <Panel id="mail-test" title={t('adminInfra.email.testTitle')} icon={Send}

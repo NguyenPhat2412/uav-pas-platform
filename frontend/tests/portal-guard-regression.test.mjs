@@ -69,8 +69,8 @@ function harness(auth, search, storedDemo) {
                 error: null
             } : options
         },
-        '@/contexts/AuthContext': {useAuth: () => context},
-        '@/contexts/I18nContext': {
+        '@/providers/AuthContext': {useAuth: () => context},
+        '@/providers/I18nContext': {
             useI18n: () => ({
                 t: translate,
                 locale: 'vi',
@@ -103,9 +103,11 @@ function harness(auth, search, storedDemo) {
     };
     modules['@/components/ui'] = modules['@/components/ui'];
     modules['@/components/layout/AdminAppShell'] = modules['@/components/layout/AppShell'];
-    modules['@/lib/api/admin'] = {adminService: {}};
-    modules['@/lib/api/resources'] = {operationsService: {}};
-    modules['@/lib/api/missions'] = {missionService: {}};
+    modules['@/features/users/api/users.api'] = {usersService: {}};
+    modules['@/features/access/api/access.api'] = {accessService: {}};
+    modules['@/features/dashboard/api/admin-dashboard.api'] = {adminDashboardService: {}};
+    modules['@/features/audit/api/audit.api'] = {auditService: {}};
+    modules['@/features/missions/api/missions.api'] = {missionService: {}};
     modules['@/features/dashboard/components/AdminMonitoringCard'] = {AdminMonitoringCard: () => null};
 
     function load(path) {
@@ -124,6 +126,11 @@ function harness(auth, search, storedDemo) {
         return exports;
     }
 
+    modules['@/lib/api/routes'] = load('src/lib/api/routes.ts');
+    modules['@/lib/query'] = load('src/lib/query/index.ts');
+    modules['@/features/dashboard/hooks/query-keys'] = load('src/features/dashboard/hooks/query-keys.ts');
+    modules['@/features/dashboard/hooks/useAdminDashboard'] = load('src/features/dashboard/hooks/useAdminDashboard.ts');
+    modules['@/features/audit/hooks/useAdminAudit'] = load('src/features/audit/hooks/useAdminAudit.ts');
     modules['@/components/data/WorkspaceState'] = load('src/components/data/WorkspaceState.tsx');
     modules['@/features/auth/utils/portal'] = load('src/features/auth/utils/portal.ts');
     modules['@/features/auth/utils/auth-entry'] = load('src/features/auth/utils/auth-entry.ts');
@@ -225,14 +232,14 @@ for (const [search, storedDemo] of [['', null], ['?demo=true', null], ['', 'true
     for (const [ready, allowed] of [[false, false], [false, true], [true, false], [true, true]]) {
         test(`admin user query requires ready USER_READ (${ready}/${allowed}) with ${mode}`, () => {
             const h = harness({isAuthenticated: true, permissionsReady: ready, allowed}, search, storedDemo);
-            const {useAdminUsers} = h.load('src/lib/query/admin.ts');
+            const {useAdminUsers} = h.load('src/features/users/hooks/useAdminUsers.ts');
             assert.equal(useAdminUsers(0, '').enabled, ready && allowed);
         });
     }
     for (const [enabled, allowed] of [[false, false], [false, true], [true, false], [true, true]]) {
         test(`operations collection honors MEDIA_READ and caller enable (${enabled}/${allowed}) with ${mode}`, () => {
             const h = harness({isAuthenticated: true, permissionsReady: true, allowed}, search, storedDemo);
-            const {useCollection} = h.load('src/lib/query/operations.ts');
+            const {useCollection} = h.load('src/hooks/useCollection.ts');
             assert.equal(useCollection('media', enabled).enabled, enabled && allowed);
             if (enabled) assert.ok(h.permissions.includes('MEDIA_READ'));
         });

@@ -1,34 +1,27 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {CheckCircle2, Clock, FileSpreadsheet, LifeBuoy, PlaneTakeoff, TrendingUp, Wrench} from 'lucide-react';
-import {adminService} from "@/lib/api/admin";
-import type {OperationsReportData} from "@/types/admin";
+import {useExportOperationsCsv, useOperationsReport} from '@/features/reports/hooks/useReports';
 import {MissionCharts} from "@/features/reports/components/MissionCharts";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 
 function AdminReportsContent() {
-    const [metrics, setMetrics] = useState<OperationsReportData | null>(null);
-    const [error, setError] = useState(false);
+    const report = useOperationsReport();
+    const metrics = report.data ?? null;
+    const error = report.isError;
+    const exportCsv = useExportOperationsCsv();
     const [exportError, setExportError] = useState<string | null>(null);
     const [isExporting, setIsExporting] = useState(false);
     const {t, formatNumber} = useI18n();
-
-    useEffect(() => {
-        adminService.operationsReport()
-            .then(res => {
-                if (res) setMetrics(res);
-            })
-            .catch(() => setError(true));
-    }, []);
 
     const handleExportCsv = async () => {
         if (!metrics) return;
         setIsExporting(true);
         try {
             setExportError(null);
-            const csvData = await adminService.exportOperationsCsv();
+            const csvData = await exportCsv.mutateAsync();
 
             const blob = new Blob([csvData], {type: 'text/csv;charset=utf-8;'});
             const url = URL.createObjectURL(blob);

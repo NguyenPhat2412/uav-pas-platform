@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import {Activity, Archive, ArrowRight, Database, HardDrive, Mail, Rocket, Terminal} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
-import {infrastructureApi} from '../api';
+import {useI18n} from '@/providers/I18nContext';
 import {backupTone} from './BackupsPanel';
 import {tlsTone} from './DeploymentPanel';
-import {Panel, type Tone, useInfraQuery} from './InfraUi';
+import {Panel, type Tone} from './InfraUi';
 import {cn} from '@/lib/utils';
+import {useBackupStatus, useDeploymentInfo, useEmailStatus} from '@/features/infrastructure/hooks/useInfrastructure';
 
 const toneDot: Record<Tone, string> = {good: 'bg-uav-blue', warn: 'bg-amber-500', bad: 'bg-red-600', neutral: 'bg-slate-400', off: 'bg-slate-300'};
 
@@ -16,9 +16,9 @@ const runbook = ['restart', 'logs', 'restore', 'certbot', 'secrets', 'uptime'] a
 export function InfrastructureOverview() {
     const {t} = useI18n();
     // Only the cheap, local checks load here; storage listing and DB stats load on their own pages.
-    const deployment = useInfraQuery('deployment', ({signal}) => infrastructureApi.deployment(signal));
-    const backups = useInfraQuery('backups', ({signal}) => infrastructureApi.backups(signal));
-    const email = useInfraQuery('email', ({signal}) => infrastructureApi.email(signal));
+    const deployment = useDeploymentInfo();
+    const backups = useBackupStatus();
+    const email = useEmailStatus();
 
     const cards: { key: string; href: string; icon: typeof Rocket; tone?: Tone; summary?: string }[] = [
         {

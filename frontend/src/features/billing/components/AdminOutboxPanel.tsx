@@ -1,17 +1,17 @@
 'use client';
 
 import {useState} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {RotateCw} from 'lucide-react';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {Drawer, Metadata} from '@/components/data/Drawer';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
 import {FilterSelect} from '@/components/shared/FilterSelect';
-import {useI18n} from '@/contexts/I18nContext';
-import {toast} from '@/contexts/ToastContext';
+import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
 import {cn} from '@/lib/utils';
-import {commerceAdminApi, type FinancialOutboxEvent} from '@/features/billing/admin-api';
+import type {FinancialOutboxEvent} from '@/features/billing/api/billing-admin.api';
+import {useBillingOutbox, useRetryOutbox} from '@/features/billing/hooks/useBillingAdmin';
 
 const filters = ['ALL', 'PENDING', 'WAITING_SUBSCRIBERS', 'FAILED', 'LOCAL_COMPLETED'] as const;
 
@@ -35,17 +35,11 @@ export function AdminOutboxPanel() {
     const [filter, setFilter] = useState<(typeof filters)[number]>('ALL');
     const [page, setPage] = useState(0);
     const [selected, setSelected] = useState<FinancialOutboxEvent | null>(null);
-    const client = useQueryClient();
-    const query = useQuery({
-        queryKey: ['admin', 'billing', 'outbox', filter, page],
-        queryFn: ({signal}) => commerceAdminApi.outbox(page, filter === 'ALL' ? undefined : filter, signal),
-    });
-    const retry = useMutation({
-        mutationFn: commerceAdminApi.retryOutbox,
+    const query = useBillingOutbox(page, filter === 'ALL' ? undefined : filter);
+    const retry = useRetryOutbox({
         onSuccess: event => {
             toast.success(t('adminCommerce.outbox.retried', {id: event.id}));
             setSelected(current => (current?.id === event.id ? event : current));
-            void client.invalidateQueries({queryKey: ['admin', 'billing', 'outbox']});
         },
     });
     const askRetry = (event: FinancialOutboxEvent) => {

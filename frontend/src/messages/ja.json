@@ -135,6 +135,7 @@
     "infrastructureDeployment": "デプロイ",
     "infrastructureBackups": "バックアップ",
     "infrastructureStorage": "ファイルストレージ",
+    "files": "ファイル管理",
     "infrastructureDatabase": "データベース",
     "infrastructureEmail": "メール"
   },
@@ -373,5 +374,81 @@
     "privacy": "プライバシーポリシー",
     "terms": "利用規約",
     "copyright": "© {year} UAV PAS · 日越大学（VNU）"
+  },
+  "weather": {
+    "preflight": {
+      "title": "気象と離陸の安全性",
+      "score": "{score}/100",
+      "loadError": "気象評価を読み込めませんでした。",
+      "noLocation": "気象を評価する位置がまだありません。",
+      "pickLocation": "地図で地点を選ぶと、気象と推奨飛行時間帯が表示されます。",
+      "forecastAt": "{time} の予報",
+      "currentAt": "現在 · {time}",
+      "cached": "キャッシュ",
+      "provider": {
+        "OPEN_METEO": "Open-Meteo",
+        "OPENWEATHERMAP": "OpenWeatherMap"
+      },
+      "clearance": {
+        "GO": "飛行可能（GO）",
+        "CAUTION": "風・気象に注意（CAUTION）",
+        "NO_GO": "離陸不可（NO-GO）",
+        "UNAVAILABLE": "データなし"
+      },
+      "wind10m": "地上風（10 m）",
+      "windFlight": "飛行高度の風（80 m / 120 m）",
+      "limit": "上限 {limit} m/s",
+      "gusts": "突風",
+      "direction": "風向",
+      "visibility": "視程",
+      "rain": "降水",
+      "temperature": "気温・湿度",
+      "kp": "地磁気Kp指数",
+      "battery": "予想バッテリー消費",
+      "batteryHint": "無風時との比較",
+      "reasonsLabel": "警告の理由",
+      "windows": "推奨される安全な飛行時間帯",
+      "noWindows": "今後24時間に安全な日中の時間帯はありません。",
+      "windowWind": "80 m の風 {wind} m/s",
+      "useWindow": "この時刻を使う",
+      "disclaimer": "気象サービスによる参考情報です。最終的な離陸判断は運航チームが行います。",
+      "stationColumn": "気象",
+      "stationSummary": "80 m の風 {wind} m/s · {temperature}°C",
+      "reasons": {
+        "WIND_LIMIT_EXCEEDED": "風速が離陸制限を超えています。",
+        "WIND_GUST_EXCEEDED": "突風が安全上限を超えています。",
+        "PRECIPITATION_UNSAFE": "降水量が安全な飛行の上限を超えています。",
+        "VISIBILITY_TOO_LOW": "水平視程が最低基準を下回っています。",
+        "GEOMAGNETIC_STORM": "強い磁気嵐（高いKp）によりコンパスやGNSSが乱れる恐れがあります。",
+        "WIND_NEAR_LIMIT": "風速が上限に近づいています。",
+        "WIND_GUST_HIGH": "突風が強いため注意して監視してください。",
+        "RAIN_PROBABILITY_HIGH": "降水確率が高いです。",
+        "VISIBILITY_MODERATE": "視程が低下しています。",
+        "KP_ELEVATED": "Kp指数が高めです。飛行前にコンパスを確認してください。",
+        "WEATHER_SOURCE_UNAVAILABLE": "気象データを取得できませんでした。飛行前に再確認してください。",
+        "FORECAST_OUT_OF_RANGE": "この日時は16日間の予報範囲外です。",
+        "MISSION_LOCATION_MISSING": "ミッションに座標がないため気象を評価できません。"
+      }
+    },
+    "provider": {
+      "title": "気象データの取得元",
+      "intro": "Open-Meteoはキー不要です。OpenWeatherMapではAPIキーをサーバーでAES-256-GCM暗号化して保存し、再表示しません。",
+      "source": "プロバイダー",
+      "cacheTtl": "予報キャッシュの保持時間（分）",
+      "cacheTtlRange": "1〜120の整数を入力してください。",
+      "apiKey": "OpenWeatherMap APIキー",
+      "apiKeyKeep": "空欄のままにすると現在のキーを維持します",
+      "apiKeyPlaceholder": "APIキーを貼り付け",
+      "keyStored": "キーが保存されています（暗号化済み）。",
+      "keyMissing": "キーは保存されていません。",
+      "block": "NO-GOの気象では離陸をブロック",
+      "blockHint": "オンにすると、飛行地点の気象がNO-GOの間はミッションを開始できません。",
+      "updated": "{name} が {time} に更新",
+      "removeKey": "キーを削除",
+      "removeKeyConfirm": "保存されたAPIキーを削除しますか？",
+      "save": "気象設定を保存",
+      "saving": "保存中...",
+      "saved": "気象設定を保存しました。"
+    }
   }
 }

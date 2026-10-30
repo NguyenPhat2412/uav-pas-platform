@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import type {LucideIcon} from 'lucide-react';
 import {ApiError} from '@/lib/api';
-import {trainingService} from '@/lib/api/resources';
+import {trainingService} from '@/features/training/api/training.api';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
 import type {
     TrainingCourseDetail,

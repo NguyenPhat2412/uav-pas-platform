@@ -1,17 +1,17 @@
 'use client';
 
 import {HardDrive, Images} from 'lucide-react';
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
-import {infrastructureApi} from '../api';
-import type {StorageStatus} from '../types';
-import {formatBytes, Note, Panel, Stat, StatGrid, StatusBanner, type Tone, useInfraQuery} from './InfraUi';
+import type {StorageStatus} from '../types/infrastructure.types';
+import {formatBytes, Note, Panel, Stat, StatGrid, StatusBanner, type Tone} from './InfraUi';
+import {useStorageStatus} from '@/features/infrastructure/hooks/useInfrastructure';
 
 const reachTone: Record<StorageStatus['reachable'], Tone> = {UP: 'good', DOWN: 'bad', UNKNOWN: 'neutral'};
 
 export function StoragePanel() {
     const {t} = useI18n();
-    const query = useInfraQuery('storage', ({signal}) => infrastructureApi.storage(signal));
+    const query = useStorageStatus();
     return <div className="space-y-4">
         <QueryState query={query}>{query.data && <Body data={query.data} refreshing={query.isFetching} onRefresh={() => void query.refetch()}/>}</QueryState>
         <Note>{t('adminInfra.storage.note')}</Note>

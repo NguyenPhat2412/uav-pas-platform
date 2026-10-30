@@ -5,11 +5,11 @@ import {useParams} from 'next/navigation';
 import {useState} from 'react';
 import {MissionTimeline} from "@/components/shared/MissionTimeline";
 import {displayLabel, formatDate, missionHint, serviceName} from "@/components/shared/presentation";
-import {PageGuard} from "@/components/customer/layout";
-import {Button, Status} from "@/components/customer/ui";
-import {useAuth} from '@/contexts/AuthContext';
-import {useMissionActions, useMissionDetail, useServices} from "@/lib/query/customer";
-import {customerService} from "@/lib/api/customer";
+import {PageGuard} from "@/components/customer/CustomerLayout";
+import {Button, Status} from "@/components/customer/CustomerUi";
+import {useAuth} from '@/providers/AuthContext';
+import {useMissionActions, useMissionDetail, useServices} from '@/features/missions/hooks/useCustomerMissions';
+import {customerMissionService} from '@/features/missions/api/customer-missions.api';
 import {canEditMission} from "@/features/missions/forms/mission-form";
 import {MissionProgress} from "@/features/missions/components/customer/MissionProgress";
 import {MediaPreview} from "@/features/missions/components/customer/MediaPreview";
@@ -18,7 +18,7 @@ import {MissionResources} from "@/features/missions/components/customer/MissionR
 import {SiteWeather} from "@/features/missions/components/customer/SiteWeather";
 import {MissionMonitoring} from "@/features/missions/components/customer/MissionMonitoring";
 import {parseEntityId, toMissionSlug} from "@/lib/url-slugs";
-import {useI18n} from '@/contexts/I18nContext';
+import {useI18n} from '@/providers/I18nContext';
 import type {MissionTab} from '@/features/missions/types/mission.types';
 
 export default function MissionDetailPage() {
@@ -53,7 +53,7 @@ function MissionDetail() {
         setDownloading(mediaId);
         setMediaError(false);
         try {
-            const signed = await customerService.download(mediaId);
+            const signed = await customerMissionService.download(mediaId);
             window.open(signed.url, '_blank', 'noopener,noreferrer');
         } catch {
             setMediaError(true);

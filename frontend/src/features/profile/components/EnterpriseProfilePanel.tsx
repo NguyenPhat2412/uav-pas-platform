@@ -1,12 +1,10 @@
 'use client';
 import {type FormEvent, useState} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {Building2} from 'lucide-react';
 import {ApiError} from '@/lib/api';
-import {useI18n} from '@/contexts/I18nContext';
-import {toast} from '@/contexts/ToastContext';
-import {useCustomerScope} from '@/lib/query/customer';
-import {profileService} from '@/lib/api/services';
+import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
+import {useBillingProfile, useUpdateBillingProfile} from '@/features/profile/hooks/useProfile';
 import type {BillingProfileFields} from '@/features/profile/types/profile.types';
 import {EnterpriseAccessCard} from '@/features/profile/components/EnterpriseAccessCard';
 import {TwoFactorSettingsCard} from '@/features/profile/components/TwoFactorSettingsCard';
@@ -16,15 +14,11 @@ const fieldKeys: (keyof BillingProfileFields)[] = ['organizationName', 'taxCode'
 /** Enterprise identity for VAT invoices and the on-site emergency contact, plus the account's plan and permissions. */
 export function EnterpriseProfilePanel() {
     const {t} = useI18n();
-    const {key} = useCustomerScope();
-    const client = useQueryClient();
-    const query = useQuery({queryKey: [...key, 'billing-profile'], queryFn: ({signal}) => profileService.getBilling(signal)});
+    const query = useBillingProfile();
     const [draft, setDraft] = useState<BillingProfileFields | null>(null);
     const [errors, setErrors] = useState<Partial<Record<keyof BillingProfileFields, string>>>({});
-    const save = useMutation({
-        mutationFn: (fields: BillingProfileFields) => profileService.updateBilling(fields, query.data?.version ?? 0),
-        onSuccess: data => {
-            client.setQueryData([...key, 'billing-profile'], data);
+    const save = useUpdateBillingProfile({
+        onSuccess: () => {
             setDraft(null);
             toast.success(t('enterprise.saved'));
         },
@@ -43,7 +37,7 @@ export function EnterpriseProfilePanel() {
         e.preventDefault();
         if (!draft) return;
         setErrors({});
-        save.mutate(Object.fromEntries(fieldKeys.map(k => [k, draft[k].trim()])) as BillingProfileFields);
+        save.mutate({fields: Object.fromEntries(fieldKeys.map(k => [k, draft[k].trim()])) as BillingProfileFields, version: query.data?.version ?? 0});
     };
     const profile = query.data;
     const field = 'w-full border border-border-input bg-card px-3 py-2.5 text-base font-normal text-card-foreground focus:border-primary focus:outline-none sm:text-sm aria-[invalid=true]:border-danger';
