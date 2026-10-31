@@ -2,7 +2,22 @@
 
 Spring Boot 4.1.1 (Java 21), mã nguồn ở `backend/`. Nhánh này được đồng bộ từ `main`.
 
-## 1. Chuẩn hoá controller
+## 1. Cấu trúc package và chuẩn hoá controller
+
+Các tầng đứng ngang cấp với `common`, `config`, `error`, `security`, mỗi tầng chia theo tính năng (thư mục `modules/` đã bỏ):
+
+```text
+com/uav/platform/
+├── common/  config/  error/  security/
+├── controller/<tính năng>/         entity/<tính năng>/       repository/<tính năng>/
+├── service/<tính năng>/            service/impl/<tính năng>/
+├── dto/{request,response,record}/<tính năng>/
+├── enums/  mapper/  specification/  transport/   (mỗi thư mục chia theo tính năng)
+└── config/mission, config/permission             (DataInitializer)
+```
+
+`ArchitecturePackageTest` bắt buộc bố cục `<tầng>/<tính năng>` và chặn tạo lại `modules/`. Test tích hợp theo tính năng nằm ở `integration/<tính năng>`.
+
 
 - **Đường dẫn tập trung:** mọi đường dẫn REST lấy từ `config/routes/ApiRoutes.java`, nhóm theo module. Ví dụ: `ApiRoutes.Weather.BASE + ApiRoutes.Weather.FORECAST`. Lớp `common/constant/RestEndpoint.java` đã bị xoá.
 - **Controller chỉ điều phối:** nó nhận request, kiểm tra quyền bằng `@PreAuthorize` rồi gọi service. Mọi nghiệp vụ nằm trong `service/impl`.
@@ -11,7 +26,7 @@ Spring Boot 4.1.1 (Java 21), mã nguồn ở `backend/`. Nhánh này được đ
 
 ## 2. Module `weather`
 
-Package `modules/weather/`:
+Các lớp của tính năng `weather`, mỗi lớp nằm trong `<tầng>/weather/`:
 
 | Thành phần | Nội dung |
 |---|---|
@@ -19,10 +34,10 @@ Package `modules/weather/`:
 | `repository` | Kế thừa `JpaRepository` và `JpaSpecificationExecutor` |
 | `specification` | `withinGrid`, `byProvider`, `fetchedAfter` |
 | `dto/request`, `dto/response`, `dto/record` | Không có record lồng trong ServiceImpl hay Controller |
-| `service/impl/WeatherServiceImpl` | Gọi Open-Meteo 25 giờ tới, NOAA Kp và OpenWeatherMap. Cache-aside; khi lỗi thì trả dữ liệu cũ hoặc UNAVAILABLE |
-| `service/impl/FlightSafetyEvaluatorOperations` | Chấm điểm GO/CAUTION/NO_GO, tính hệ số hao pin, đề xuất 3 khung giờ bay |
-| `service/impl/WeatherCipherOperations` | AES/GCM/NoPadding, khoá 256 bit, IV 12 byte, tag 128 bit. Không bao giờ trả về API key |
-| `controller/WeatherController` | 5 endpoint, liệt kê bên dưới |
+| `service/impl/weather/WeatherServiceImpl` | Gọi Open-Meteo 25 giờ tới, NOAA Kp và OpenWeatherMap. Cache-aside; khi lỗi thì trả dữ liệu cũ hoặc UNAVAILABLE |
+| `service/impl/weather/FlightSafetyEvaluatorOperations` | Chấm điểm GO/CAUTION/NO_GO, tính hệ số hao pin, đề xuất 3 khung giờ bay |
+| `service/impl/weather/WeatherCipherOperations` | AES/GCM/NoPadding, khoá 256 bit, IV 12 byte, tag 128 bit. Không bao giờ trả về API key |
+| `controller/weather/WeatherController` | 5 endpoint, liệt kê bên dưới |
 
 | Phương thức | Đường dẫn | Quyền |
 |---|---|---|
