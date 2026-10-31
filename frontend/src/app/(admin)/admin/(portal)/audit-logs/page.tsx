@@ -1,5 +1,5 @@
 import {AdminPage} from '@/components/layout/AdminPage';
-import {AuditLogs} from "@/features/audit/components/AdminAuditLogs";
+import {AuditLogs} from "@/components/audit/AdminAuditLogs";
 
 export default function Page() {
     return <AdminPage title="admin.pages.auditLogs.title"

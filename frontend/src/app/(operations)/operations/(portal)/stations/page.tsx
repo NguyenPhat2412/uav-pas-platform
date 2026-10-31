@@ -1,5 +1,5 @@
 'use client';
-import {StationPanel} from "@/features/stations/components/StationPanel";
+import {StationPanel} from "@/components/station/StationPanel";
 import {OperationsPage} from '@/components/layout/OperationsPage';
 
 export default function StationsPage() {

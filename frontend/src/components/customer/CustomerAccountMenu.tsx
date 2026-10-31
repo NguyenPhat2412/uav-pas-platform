@@ -5,8 +5,8 @@ import {ChevronDown, CreditCard, LogOut, Radar, ShieldCheck, UserRound} from 'lu
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {Avatar} from '@/components/shared/Avatar';
-import {displayLabel} from '@/components/shared/presentation';
-import {canUsePortal} from '@/features/auth/utils/portal';
+import {displayLabel} from '@/lib/presentation';
+import {canUsePortal} from '@/utils/auth/portal';
 import {useDropdownMenu} from '@/hooks/useDropdownMenu';
 import {cn} from '@/lib/utils';
 

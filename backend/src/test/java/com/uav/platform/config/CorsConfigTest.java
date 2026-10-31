@@ -2,12 +2,12 @@ package com.uav.platform.config;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-import com.uav.platform.modules.audit.enums.*;
-import com.uav.platform.modules.inventory.enums.*;
-import com.uav.platform.modules.media.enums.*;
-import com.uav.platform.modules.mission.enums.*;
-import com.uav.platform.modules.station.enums.*;
-import com.uav.platform.modules.uav.enums.*;
+import com.uav.platform.enums.audit.*;
+import com.uav.platform.enums.inventory.*;
+import com.uav.platform.enums.media.*;
+import com.uav.platform.enums.mission.*;
+import com.uav.platform.enums.station.*;
+import com.uav.platform.enums.uav.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

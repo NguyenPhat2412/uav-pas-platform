@@ -7,17 +7,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.uav.platform.common.dto.response.MessageResponse;
-import com.uav.platform.modules.notification.dto.response.UnreadCountResponse;
-import com.uav.platform.modules.permission.dto.response.PermissionCodesResponse;
-import com.uav.platform.modules.sar.controller.SarController;
-import com.uav.platform.modules.sar.dto.request.RescueDispatchRequest;
-import com.uav.platform.modules.sar.dto.response.RescueDispatchResponse;
-import com.uav.platform.modules.sar.service.SarService;
-import com.uav.platform.modules.user.dto.request.UserProfilePatchRequest;
-import com.uav.platform.modules.webhook.controller.WebhookController;
-import com.uav.platform.modules.webhook.dto.request.WebhookTestDispatchRequest;
-import com.uav.platform.modules.webhook.dto.response.WebhookDispatchResponse;
-import com.uav.platform.modules.webhook.service.WebhookService;
+import com.uav.platform.controller.sar.SarController;
+import com.uav.platform.controller.webhook.WebhookController;
+import com.uav.platform.dto.request.sar.RescueDispatchRequest;
+import com.uav.platform.dto.request.user.UserProfilePatchRequest;
+import com.uav.platform.dto.request.webhook.WebhookTestDispatchRequest;
+import com.uav.platform.dto.response.notification.UnreadCountResponse;
+import com.uav.platform.dto.response.permission.PermissionCodesResponse;
+import com.uav.platform.dto.response.sar.RescueDispatchResponse;
+import com.uav.platform.dto.response.webhook.WebhookDispatchResponse;
+import com.uav.platform.service.sar.SarService;
+import com.uav.platform.service.webhook.WebhookService;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

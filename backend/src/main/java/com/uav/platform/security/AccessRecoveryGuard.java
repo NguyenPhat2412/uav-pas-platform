@@ -1,11 +1,11 @@
 package com.uav.platform.security;
 
+import com.uav.platform.enums.permission.PermissionCode;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.modules.permission.enums.PermissionCode;
-import com.uav.platform.modules.permission.repository.PermissionRepository;
-import com.uav.platform.modules.permission.service.PermissionService;
-import com.uav.platform.modules.user.repository.UserRepository;
-import com.uav.platform.modules.user.service.impl.UserAccountServiceImpl;
+import com.uav.platform.repository.permission.PermissionRepository;
+import com.uav.platform.repository.user.UserRepository;
+import com.uav.platform.service.impl.user.UserAccountServiceImpl;
+import com.uav.platform.service.permission.PermissionService;
 
 import jakarta.persistence.EntityManager;
 

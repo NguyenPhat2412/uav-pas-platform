@@ -1,10 +1,10 @@
-import {pageMetadata} from "@/features/marketing/content/metadata";
+import {pageMetadata} from "@/content/marketing/metadata";
 import {notFound} from 'next/navigation';
 import Link from 'next/link';
-import {solutionDetails} from "@/features/marketing/content/solution-details";
-import {legacySolutionSlugAliases, solutions} from "@/features/marketing/content/site-content";
-import {CustomerCta, PublicPage} from "@/features/marketing/components/PublicPage";
-import {solutionScenes} from "@/features/marketing/components/UavPhoto";
+import {solutionDetails} from "@/content/marketing/solution-details";
+import {legacySolutionSlugAliases, solutions} from "@/content/marketing/site-content";
+import {CustomerCta, PublicPage} from "@/components/marketing/PublicPage";
+import {solutionScenes} from "@/components/marketing/UavPhoto";
 
 export function generateStaticParams() {
     return [
