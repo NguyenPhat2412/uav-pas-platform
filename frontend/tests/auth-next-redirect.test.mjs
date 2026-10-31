@@ -5,11 +5,11 @@ import vm from 'node:vm';
 import test from 'node:test';
 
 const ts = createRequire(import.meta.url)('typescript');
-const source = readFileSync(new URL('../src/features/auth/utils/auth-entry.ts', import.meta.url), 'utf8');
+const source = readFileSync(new URL('../src/utils/auth/auth-entry.ts', import.meta.url), 'utf8');
 const js = ts.transpileModule(source, {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022}}).outputText;
-const module = {exports: {}};
-vm.runInNewContext(js, {module, exports: module.exports, URL, encodeURIComponent});
-const {authEntryUrl, safeNextPath} = module.exports;
+const sandboxModule = {exports: {}};
+vm.runInNewContext(js, {module: sandboxModule, exports: sandboxModule.exports, URL, encodeURIComponent});
+const {authEntryUrl, safeNextPath} = sandboxModule.exports;
 
 test('post-login next stays on this site', () => {
     for (const evil of ['//evil.com', '/\\evil.com', '/\\/evil.com', '/\t/evil.com', '/\n/evil.com', 'https://evil.com', 'evil.com', '', null])

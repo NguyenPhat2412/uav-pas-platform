@@ -1,7 +1,7 @@
 package com.uav.platform.security;
 
-import com.uav.platform.modules.devicekey.dto.record.DevicePrincipal;
-import com.uav.platform.modules.devicekey.service.DeviceKeyService;
+import com.uav.platform.dto.record.devicekey.DevicePrincipal;
+import com.uav.platform.service.devicekey.DeviceKeyService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

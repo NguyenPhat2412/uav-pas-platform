@@ -2,9 +2,9 @@ package com.uav.platform.stabilization;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.uav.platform.modules.training.repository.TrainingLessonProgressRepository;
-import com.uav.platform.modules.training.repository.TrainingLessonRepository;
-import com.uav.platform.modules.training.repository.UserTrainingProgressRepository;
+import com.uav.platform.repository.training.TrainingLessonProgressRepository;
+import com.uav.platform.repository.training.TrainingLessonRepository;
+import com.uav.platform.repository.training.UserTrainingProgressRepository;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;

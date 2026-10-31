@@ -1,4 +1,4 @@
-import CustomerBillingPanel from '@/features/billing/components/CustomerBillingPanel';
+import CustomerBillingPanel from '@/components/billing/CustomerBillingPanel';
 
 export default function CustomerBillingRoutePage() {
     return <CustomerBillingPanel/>;

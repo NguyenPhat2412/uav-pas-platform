@@ -1,4 +1,4 @@
-import AdminBillingPanel from '@/features/billing/components/AdminBillingPanel';
+import AdminBillingPanel from '@/components/billing/AdminBillingPanel';
 
 export default function AdminBillingRoutePage() {
     return <AdminBillingPanel/>;

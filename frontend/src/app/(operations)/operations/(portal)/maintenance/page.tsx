@@ -2,7 +2,7 @@
 import {Suspense} from 'react';
 import {OperationsPage} from '@/components/layout/OperationsPage';
 import {LoadingRows} from '@/components/data/WorkspaceState';
-import {MaintenanceWorkspace} from '@/features/maintenance/components/MaintenanceWorkspace';
+import {MaintenanceWorkspace} from '@/components/maintenance/MaintenanceWorkspace';
 
 export default function MaintenancePage() {
     return <OperationsPage

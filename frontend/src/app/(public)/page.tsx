@@ -1,4 +1,4 @@
-import HomeLanding, {metadata as homeMetadata} from '@/features/marketing/components/HomeLanding';
+import HomeLanding, {metadata as homeMetadata} from '@/components/marketing/HomeLanding';
 
 export const metadata = homeMetadata;
 

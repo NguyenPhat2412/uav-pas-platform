@@ -1,12 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {keepVietnamesePhrases} from "@/lib/typography";
-import {pageMetadata} from "@/features/marketing/content/metadata";
-import {solutions} from "@/features/marketing/content/site-content";
-import {solutionDetails} from "@/features/marketing/content/solution-details";
-import {CustomerCta} from "@/features/marketing/components/PublicPage";
-import {FlatTag} from "@/features/marketing/components/FlatTag";
-import {scenes, solutionScenes} from "@/features/marketing/components/UavPhoto";
+import {pageMetadata} from "@/content/marketing/metadata";
+import {solutions} from "@/content/marketing/site-content";
+import {solutionDetails} from "@/content/marketing/solution-details";
+import {CustomerCta} from "@/components/marketing/PublicPage";
+import {FlatTag} from "@/components/marketing/FlatTag";
+import {scenes, solutionScenes} from "@/components/marketing/UavPhoto";
 
 export const metadata = pageMetadata(
     "Giải pháp UAV & Edge AI",

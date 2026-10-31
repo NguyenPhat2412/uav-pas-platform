@@ -1,5 +1,5 @@
 'use client';
-import {EquipmentPanel} from "@/features/inventory/components/EquipmentPanel";
+import {EquipmentPanel} from "@/components/inventory/EquipmentPanel";
 import {OperationsPage} from '@/components/layout/OperationsPage';
 
 export default function InventoryPage() {

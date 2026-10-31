@@ -15,7 +15,7 @@ async function loadTs(path) {
 }
 
 const {percentChange, stackMonths, earningCodes, axisTicks, clampPercent, MISSION_KEY} =
-    await loadTs('../src/features/billing/utils/plan-stats.ts');
+    await loadTs('../src/utils/billing/plan-stats.ts');
 
 const readJson = async path => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8')).admin;
 
@@ -93,13 +93,13 @@ test('Plan stats: every admin locale carries the statistics keys', async () => {
 test('Plan stats: endpoint, client and query wiring', async () => {
     const routes = await readFile(new URL('../src/lib/api/routes.ts', import.meta.url), 'utf8');
     assert.match(routes, /adminPlanStats: \(months: number\) => `\/api\/v1\/billing\/admin\/plans\/stats\?months=\$\{months\}`/);
-    const manager = await readFile(new URL('../src/features/billing/components/AdminPlansManager.tsx', import.meta.url), 'utf8');
+    const manager = await readFile(new URL('../src/components/billing/AdminPlansManager.tsx', import.meta.url), 'utf8');
     // The stats key sits under the prefix every plan mutation invalidates.
     assert.match(manager, /usePlanStats\(months\)/);
-    const hooks = await readFile(new URL('../src/features/billing/hooks/useBillingAdmin.ts', import.meta.url), 'utf8');
+    const hooks = await readFile(new URL('../src/hooks/billing/useBillingAdmin.ts', import.meta.url), 'utf8');
     assert.match(hooks, /queryKey: billingKeys\.planStats\(user\?\.id, months\)/);
     assert.match(hooks, /invalidateQueries\(\{queryKey: billingKeys\.plans\(user\?\.id\)\}\)/);
-    const stats = await readFile(new URL('../src/features/billing/components/AdminPlanStats.tsx', import.meta.url), 'utf8');
+    const stats = await readFile(new URL('../src/components/billing/AdminPlanStats.tsx', import.meta.url), 'utf8');
     assert.doesNotMatch(stats + manager, /\b(?:bg|text|border|ring)-(?:blue|sky|indigo)-/, 'no blue classes');
     assert.match(stats, /FilterSelect/);
 });

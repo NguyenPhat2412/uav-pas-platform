@@ -11,7 +11,7 @@ const walk = directory => readdirSync(directory, {withFileTypes: true}).flatMap(
     const file = path.join(directory, entry.name);
     return entry.isDirectory() ? walk(file) : [file];
 });
-for (const retired of ['apps', 'packages', 'legacy', 'tsconfig.base.json']) {
+for (const retired of ['apps', 'packages', 'legacy', 'tsconfig.base.json', 'src/features']) {
     assert.ok(!existsSync(path.join(root, retired)), `Retired architecture must stay removed: ${retired}`);
 }
 const manifest = JSON.parse(read('package.json'));
@@ -23,25 +23,11 @@ const files = walk(path.join(root, 'src'));
 const cssFiles = files.filter(name => name.endsWith('.css')).map(name => path.relative(root, name).replaceAll('\\', '/'));
 assert.deepEqual(cssFiles, ['src/styles/globals.css'], `Only src/styles/globals.css is allowed in 100% Tailwind architecture, found: ${cssFiles.join(', ')}`);
 let routes = 0;
-// Data layer: UI (app/, components/, features/*/components/) reaches the server only through hooks.
-// features/*/api/*.api.ts holds the requests, features/*/hooks/ the React Query queries and mutations.
+// Layers sit side by side under src/, each split per feature: api/<feature>, hooks/<feature>, components/<feature>,
+// types/<feature>, utils/<feature> (plus forms/ and content/). UI (app/, components/) reaches the server only through
+// hooks: api/*/*.api.ts holds the requests, hooks/*/ the React Query queries and mutations.
 const dataLayer = [];
-// Imperative workflows still being moved behind feature hooks. Shrink this list; never add to it.
-const pendingDataLayerMigration = new Set([
-    'src/features/auth/components/AuthModalPopup.tsx',
-    'src/features/missions/components/ResourceRedispatch.tsx',
-    'src/features/missions/components/customer/CustomerMissionCreate.tsx',
-    'src/features/missions/components/customer/CustomerMissionDetail.tsx',
-    'src/features/missions/components/operations/OperationsMissionDetail.tsx',
-    'src/features/training/components/AdminTrainingCoursePreview.tsx',
-    'src/features/training/components/TrainingAcademyWorkspace.tsx',
-    'src/features/training/components/TrainingAssetUpload.tsx',
-    'src/features/training/components/TrainingCourseCatalog.tsx',
-    'src/features/training/components/TrainingCourseLessonsPanel.tsx',
-    'src/features/training/components/TrainingCoursePlayer.tsx',
-]);
-const isUi = file => !pendingDataLayerMigration.has(path.relative(root, file).replaceAll('\\', '/'))
-    && (/\/src\/(app|components)\//.test(file) || /\/src\/features\/[^/]+\/components\//.test(file));
+const isUi = file => /\/src\/(app|components)\//.test(file);
 const clientOnly = new Set(['apiClient', 'apiRequest', 'request']);
 for (const file of files.filter(name => /\.[cm]?[jt]sx?$/.test(name))) {
     const source = readFileSync(file, 'utf8');
@@ -57,21 +43,21 @@ for (const file of files.filter(name => /\.[cm]?[jt]sx?$/.test(name))) {
                 const values = [...(clause.name ? [clause.name.text] : []), ...named.filter(e => !e.isTypeOnly).map(e => (e.propertyName ?? e.name).text)];
                 const rel = path.relative(root, file);
                 if (specifier === '@tanstack/react-query' && values.length) dataLayer.push(`${rel}: React Query belongs in a feature hook (${values.join(', ')})`);
-                if (/^@\/features\/[^/]+\/api\//.test(specifier) && values.length) dataLayer.push(`${rel}: call ${values.join(', ')} through a feature hook`);
-                if (specifier === '@/lib/api' && values.some(v => clientOnly.has(v))) dataLayer.push(`${rel}: the API client is used only by features/*/api`);
+                if (/^@\/api\//.test(specifier) && values.length) dataLayer.push(`${rel}: call ${values.join(', ')} through a feature hook`);
+                if (specifier === '@/lib/api' && values.some(v => clientOnly.has(v))) dataLayer.push(`${rel}: the API client is used only by api/*`);
             }
         }
         ts.forEachChild(node, visit);
     };
     visit(tree);
-    if (file.includes('/src/features/')) {
+    if (/\/src\/(api|components|content|forms|hooks|types|utils)\//.test(file)) {
         assert.doesNotMatch(source, /\bfetch\s*\(/, `${file}: use the central API client`);
         assert.ok(!file.includes('/pages/'), `${file}: feature pages belong in components/ or app/`);
     }
     assert.ok(source.trim().split('\n').length > 1, `${file}: 1-line proxy files are not allowed`);
     if (file.includes('/src/app/') && file.endsWith('/page.tsx')) {
         routes++;
-        assert.match(source, /from ['"]@\/features\//, file);
+        assert.match(source, /from ['"]@\/(api|components|content|forms|hooks|types|utils)\/[a-z-]+\//, file);
         assert.doesNotMatch(source, /^\s*export\s+\{\s*default\b/, `${file}: route pages must be real components, not 1-line re-exports`);
         assert.doesNotMatch(source, /useState|useQuery|apiClient/, `${file}: keep route entries thin`);
     }
