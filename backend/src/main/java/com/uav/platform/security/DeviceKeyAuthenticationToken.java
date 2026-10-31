@@ -1,6 +1,6 @@
 package com.uav.platform.security;
 
-import com.uav.platform.modules.devicekey.dto.record.DevicePrincipal;
+import com.uav.platform.dto.record.devicekey.DevicePrincipal;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

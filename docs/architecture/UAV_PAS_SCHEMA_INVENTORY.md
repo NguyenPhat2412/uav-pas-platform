@@ -86,7 +86,7 @@ erDiagram
 
 ## Mapping nguồn / evidence
 
-- Entity/repository boundary: `backend/src/main/java/com/uav/platform/modules/*/{entity,repository}`.
+- Entity/repository boundary: `backend/src/main/java/com/uav/platform/{entity,repository}/*`.
 - Migration validation: `backend/src/test/java/com/uav/platform/config/MigrationBaselineTest.java` và M6 stabilization evidence trong `docs/handoff/m6/evidence/tests/backend-stabilization-current-summary.json`.
 - Runtime schema used by the isolated API flow: PostgreSQL disposable on port 55444, Flyway schema version 2; redacted business evidence: `docs/handoff/m6/evidence/tests/m6-current-isolated-runtime.json`.
 - Fresh install và V1→V2 upgrade data preservation hiện đã có evidence PostgreSQL cùng revision ở `docs/handoff/m6/evidence/tests/backend-migration-upgrade-current-summary.json` và test `backend/src/test/java/com/uav/platform/stabilization/MigrationUpgradePostgresTest.java`. Durability/restart và backup/restore synthetic DB + media object hiện có evidence riêng ở `docs/handoff/m6/evidence/tests/backend-durability-restore-current-summary.json`; full production-like concurrency vẫn là acceptance riêng.

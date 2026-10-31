@@ -10,43 +10,43 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.uav.platform.controller.audit.AuditLogController;
+import com.uav.platform.dto.request.billing.PaymentIpnRequest;
+import com.uav.platform.dto.request.sar.VerifyDetectionRequest;
+import com.uav.platform.entity.billing.Invoice;
+import com.uav.platform.entity.billing.PaymentTransaction;
+import com.uav.platform.entity.mission.Mission;
+import com.uav.platform.entity.sar.AiDetection;
+import com.uav.platform.entity.sar.SarMission;
+import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.entity.webhook.WebhookSubscription;
+import com.uav.platform.enums.billing.InvoiceStatus;
+import com.uav.platform.enums.mission.MissionPriority;
+import com.uav.platform.enums.mission.MissionType;
+import com.uav.platform.enums.sar.SarStatus;
+import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.modules.audit.controller.AuditLogController;
-import com.uav.platform.modules.audit.service.AuditLogService;
-import com.uav.platform.modules.billing.dto.request.PaymentIpnRequest;
-import com.uav.platform.modules.billing.entity.Invoice;
-import com.uav.platform.modules.billing.entity.PaymentTransaction;
-import com.uav.platform.modules.billing.enums.InvoiceStatus;
-import com.uav.platform.modules.billing.repository.InvoiceRepository;
-import com.uav.platform.modules.billing.repository.PaymentTransactionRepository;
-import com.uav.platform.modules.billing.repository.ServicePlanRepository;
-import com.uav.platform.modules.billing.service.impl.BillingServiceImpl;
-import com.uav.platform.modules.media.repository.MediaAssetRepository;
-import com.uav.platform.modules.mission.entity.Mission;
-import com.uav.platform.modules.mission.enums.MissionPriority;
-import com.uav.platform.modules.mission.enums.MissionType;
-import com.uav.platform.modules.mission.repository.MissionRepository;
-import com.uav.platform.modules.mission.service.impl.MissionOperations;
-import com.uav.platform.modules.permission.service.PermissionService;
-import com.uav.platform.modules.reporting.service.impl.ReportServiceImpl;
-import com.uav.platform.modules.sar.dto.request.VerifyDetectionRequest;
-import com.uav.platform.modules.sar.entity.AiDetection;
-import com.uav.platform.modules.sar.entity.SarMission;
-import com.uav.platform.modules.sar.enums.SarStatus;
-import com.uav.platform.modules.sar.repository.AiDetectionRepository;
-import com.uav.platform.modules.sar.repository.AiTaskRepository;
-import com.uav.platform.modules.sar.repository.SarMissionRepository;
-import com.uav.platform.modules.sar.service.impl.AiServiceImpl;
-import com.uav.platform.modules.sar.service.impl.SarMissionOperations;
-import com.uav.platform.modules.sar.service.impl.SarServiceImpl;
-import com.uav.platform.modules.station.repository.StationRepository;
-import com.uav.platform.modules.uav.repository.UavRepository;
-import com.uav.platform.modules.user.entity.AppUser;
-import com.uav.platform.modules.user.enums.UserStatus;
-import com.uav.platform.modules.user.repository.UserRepository;
-import com.uav.platform.modules.webhook.entity.WebhookSubscription;
-import com.uav.platform.modules.webhook.mapper.WebhookMapper;
-import com.uav.platform.modules.webhook.service.impl.WebhookServiceImpl;
+import com.uav.platform.mapper.webhook.WebhookMapper;
+import com.uav.platform.repository.billing.InvoiceRepository;
+import com.uav.platform.repository.billing.PaymentTransactionRepository;
+import com.uav.platform.repository.billing.ServicePlanRepository;
+import com.uav.platform.repository.media.MediaAssetRepository;
+import com.uav.platform.repository.mission.MissionRepository;
+import com.uav.platform.repository.sar.AiDetectionRepository;
+import com.uav.platform.repository.sar.AiTaskRepository;
+import com.uav.platform.repository.sar.SarMissionRepository;
+import com.uav.platform.repository.station.StationRepository;
+import com.uav.platform.repository.uav.UavRepository;
+import com.uav.platform.repository.user.UserRepository;
+import com.uav.platform.service.audit.AuditLogService;
+import com.uav.platform.service.impl.billing.BillingServiceImpl;
+import com.uav.platform.service.impl.mission.MissionOperations;
+import com.uav.platform.service.impl.reporting.ReportServiceImpl;
+import com.uav.platform.service.impl.sar.AiServiceImpl;
+import com.uav.platform.service.impl.sar.SarMissionOperations;
+import com.uav.platform.service.impl.sar.SarServiceImpl;
+import com.uav.platform.service.impl.webhook.WebhookServiceImpl;
+import com.uav.platform.service.permission.PermissionService;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -99,7 +99,7 @@ class SecurityAuditHardeningTest {
                 billingService,
                 "financialEvents",
                 org.mockito.Mockito.mock(
-                        com.uav.platform.modules.webhook.service.FinancialOutboxService.class));
+                        com.uav.platform.service.webhook.FinancialOutboxService.class));
         AppUser owner = user(1L, "customer1");
         Invoice invoice = invoice(10L, "INV-2026-0001", owner, new BigDecimal("500.00"));
 
@@ -136,7 +136,7 @@ class SecurityAuditHardeningTest {
                 billingService,
                 "financialEvents",
                 org.mockito.Mockito.mock(
-                        com.uav.platform.modules.webhook.service.FinancialOutboxService.class));
+                        com.uav.platform.service.webhook.FinancialOutboxService.class));
         AppUser owner = user(1L, "customer1");
         AppUser attacker = user(2L, "customer2");
         Authentication attackerAuth = auth("customer2");
@@ -174,7 +174,7 @@ class SecurityAuditHardeningTest {
                 billingService,
                 "financialEvents",
                 org.mockito.Mockito.mock(
-                        com.uav.platform.modules.webhook.service.FinancialOutboxService.class));
+                        com.uav.platform.service.webhook.FinancialOutboxService.class));
         AppUser owner = user(1L, "customer1");
         Invoice invoice = invoice(10L, "INV-2026-0001", owner, new BigDecimal("500.00"));
         when(invoiceRepository.findById(10L)).thenReturn(Optional.of(invoice));
