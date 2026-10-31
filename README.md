@@ -1,6 +1,6 @@
 # Nhánh `operations`: Cổng Vận hành
 
-Đường dẫn: `/operations`. Mã nguồn nằm ở `frontend/src/app/(operations)` và `features/missions/components/operations`. Nhánh này được đồng bộ từ `main`.
+Đường dẫn: `/operations`. Mã nguồn nằm ở `frontend/src/app/(operations)` và `frontend/src/components/mission/operations`. Nhánh này được đồng bộ từ `main`.
 
 ## Các thay đổi
 
@@ -23,8 +23,8 @@ Bảng trạm có thêm cột thời tiết (`StationWeatherCell`), dùng dữ l
 
 ### Khác
 
-- **Cấu trúc:** các màn hình vận hành đã chuyển sang cấu trúc `features/*` mới và lấy dữ liệu qua hook.
-- **Còn lại:** `OperationsMissionDetail` vẫn nằm trong danh sách chờ di chuyển tầng dữ liệu.
+- **Cấu trúc:** các màn hình vận hành nằm trong `components/<tính năng>` và lấy dữ liệu qua `hooks/<tính năng>`.
+- **Điều phối nhiệm vụ:** `OperationsMissionDetail` và `ResourceRedispatch` gọi các bước tuần tự (gán trạm, UAV, nhân sự, upload media, chuyển trạng thái) qua `useMissionWorkflow`, không gọi API trực tiếp.
 
 ## Kiểm tra
 
