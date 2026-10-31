@@ -1,6 +1,6 @@
 # Nhánh `customer`: Cổng Khách hàng
 
-Đường dẫn: `/customer`. Mã nguồn nằm ở `frontend/src/app/(customer)` và `features/missions/components/customer`. Nhánh này được đồng bộ từ `main`.
+Đường dẫn: `/customer`. Mã nguồn nằm ở `frontend/src/app/(customer)` và `frontend/src/components/mission/customer`. Nhánh này được đồng bộ từ `main`.
 
 ## Các thay đổi
 
