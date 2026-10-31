@@ -2,6 +2,7 @@
 
 import {useEffect, useRef, useState} from 'react';
 import {toast} from '@/providers/ToastContext';
+import {useI18n} from '@/providers/I18nContext';
 
 const GSI_SRC = 'https://accounts.google.com/gsi/client';
 const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim() ?? '';
@@ -60,14 +61,16 @@ function GoogleMark() {
 }
 
 /**
- * "Đăng nhập bằng Google". Google draws its own button (required by its branding rules) sized to the
- * form; until a client id is configured, or while the script loads, a look-alike placeholder holds the
- * place so the form does not jump.
+ * "Đăng nhập / Đăng ký bằng Google". Google draws its own button (required by its branding rules) sized
+ * to the form; until a client id is configured, or while the script loads, a look-alike placeholder holds
+ * the place so the form does not jump. Both texts hit the same endpoint: a first sign-in creates the account.
  */
-export function GoogleSignInButton({onCredential, disabled = false}: {
+export function GoogleSignInButton({onCredential, disabled = false, text = 'signin_with'}: {
     onCredential: (credential: string) => void;
     disabled?: boolean;
+    text?: 'signin_with' | 'signup_with';
 }) {
+    const {t, locale} = useI18n();
     const slot = useRef<HTMLDivElement>(null);
     const callback = useRef(onCredential);
     const [ready, setReady] = useState(false);
@@ -97,10 +100,10 @@ export function GoogleSignInButton({onCredential, disabled = false}: {
                     type: 'standard',
                     theme: 'outline',
                     size: 'large',
-                    text: 'signin_with',
+                    text,
                     shape: 'rectangular',
                     logo_alignment: 'center',
-                    locale: 'vi',
+                    locale,
                     width: Math.min(400, Math.max(200, Math.round(parent.getBoundingClientRect().width))),
                 });
                 setReady(true);
@@ -111,7 +114,7 @@ export function GoogleSignInButton({onCredential, disabled = false}: {
         return () => {
             active = false;
         };
-    }, []);
+    }, [text, locale]);
 
     return (
         <div className={`relative h-10 w-full ${disabled ? 'pointer-events-none opacity-50' : ''}`}>
@@ -119,13 +122,11 @@ export function GoogleSignInButton({onCredential, disabled = false}: {
             {!ready && (
                 <button
                     type="button"
-                    onClick={() => toast.info(CLIENT_ID
-                        ? 'Đang tải đăng nhập Google, vui lòng thử lại sau giây lát.'
-                        : 'Đăng nhập Google chưa được cấu hình.')}
+                    onClick={() => toast.info(t(CLIENT_ID ? 'auth.google.loading' : 'auth.google.notConfigured'))}
                     className="flex h-10 w-full items-center justify-center gap-2.5 rounded-control border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                 >
                     <GoogleMark/>
-                    Đăng nhập bằng Google
+                    {t(`auth.google.${text}`)}
                 </button>
             )}
         </div>

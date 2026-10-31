@@ -28,6 +28,7 @@ import {availablePortalsForRole, canUsePortal, type Portal, portalForRole, porta
 import {safeNextPath} from '@/utils/auth/auth-entry';
 import {OtpCodeInput} from '@/components/auth/OtpCodeInput';
 import {GoogleSignInButton} from '@/components/auth/GoogleSignInButton';
+import {useI18n} from '@/providers/I18nContext';
 
 export type {AuthModalView};
 
@@ -64,6 +65,7 @@ function resolvePostLoginPath(role: string | undefined, next: string | null): st
 
 export function AuthModalPopup() {
     const router = useRouter();
+    const {t} = useI18n();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const {login, completeAuth} = useAuth();
@@ -564,7 +566,7 @@ export function AuthModalPopup() {
 
                             <div className="flex items-center gap-3 pt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                                 <span className="h-px flex-1 bg-slate-200"/>
-                                hoặc
+                                {t('auth.orDivider')}
                                 <span className="h-px flex-1 bg-slate-200"/>
                             </div>
 
@@ -701,6 +703,14 @@ export function AuthModalPopup() {
                             >
                                 {submitting ? 'Đang xử lý...' : 'Đăng ký tài khoản'}
                             </button>
+
+                            <div className="flex items-center gap-3 pt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                <span className="h-px flex-1 bg-slate-200"/>
+                                {t('auth.orDivider')}
+                                <span className="h-px flex-1 bg-slate-200"/>
+                            </div>
+
+                            <GoogleSignInButton text="signup_with" disabled={submitting} onCredential={credential => void handleGoogleCredential(credential)}/>
                         </form>
                     )}
 

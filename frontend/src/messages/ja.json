@@ -62,6 +62,15 @@
       "adminPortal": "管理ポータル",
       "operationsPortal": "運用ポータル",
       "customerPortal": "顧客ポータル"
+    },
+    "tabs": {
+      "label": "開いているページ",
+      "close": "{page} を閉じる",
+      "closeThis": "タブを閉じる",
+      "closeOthers": "他のタブを閉じる",
+      "closeAll": "すべて閉じる",
+      "unsaved": "未保存の変更があります",
+      "discardConfirm": "このページには未保存の変更があります。変更を破棄して移動しますか？"
     }
   },
   "operationsNavGroups": {
@@ -178,7 +187,13 @@
     "groundControl": "地上管制局接続済",
     "orDivider": "または",
     "forgotPassword": "パスワードをお忘れですか？",
-    "zaloDescription": "認証済みZalo公式アカウントで素早く安全にログイン。"
+    "zaloDescription": "認証済みZalo公式アカウントで素早く安全にログイン。",
+    "google": {
+      "signin_with": "Google でログイン",
+      "signup_with": "Google で登録",
+      "loading": "Google ログインを読み込み中です。しばらくしてからもう一度お試しください。",
+      "notConfigured": "Google ログインは設定されていません。"
+    }
   },
   "dashboard": {
     "welcome": "ようこそ、{name}！",

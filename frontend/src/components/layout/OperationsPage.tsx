@@ -2,7 +2,7 @@
 
 import {useEffect} from 'react';
 import {usePathname, useRouter} from 'next/navigation';
-import {Spinner} from '@/components/ui';
+import {UavLoader} from '@/components/ui';
 import {AppShell, OperationsShellHost} from '@/components/layout/AppShell';
 import {PermissionGate} from '@/components/data/WorkspaceState';
 import {useAuth} from '@/providers/AuthContext';
@@ -31,8 +31,7 @@ function useOperationsAccess(): boolean {
 export function OperationsPortalFrame({children}: { children: React.ReactNode }) {
     const allowed = useOperationsAccess();
     const {t} = useI18n();
-    if (!allowed) return <div className="flex min-h-screen items-center justify-center"><Spinner
-        size="lg" label={t('opsShared.state.authenticating')}/></div>;
+    if (!allowed) return <UavLoader fullScreen label={t('opsShared.state.authenticating')}/>;
     return <OperationsShellHost>{children}</OperationsShellHost>;
 }
 
@@ -44,8 +43,7 @@ export function OperationsPage({permission, activeResource, children}: {
 }) {
     const allowed = useOperationsAccess();
     const {t} = useI18n();
-    if (!allowed) return <div className="flex min-h-screen items-center justify-center"><Spinner
-        size="lg" label={t('opsShared.state.authenticating')}/></div>;
+    if (!allowed) return <UavLoader fullScreen label={t('opsShared.state.authenticating')}/>;
     return <AppShell activeResource={activeResource}>{permission ?
         <PermissionGate code={permission}>{children}</PermissionGate> : children}</AppShell>;
 }

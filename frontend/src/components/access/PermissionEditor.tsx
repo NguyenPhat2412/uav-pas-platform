@@ -1,6 +1,6 @@
 "use client";
 import {displayLabel, permissionLabel} from "@/lib/presentation";
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import Link from 'next/link';
 import {useAuth} from '@/providers/AuthContext';
 import {Alert, Button} from "@/components/ui";
@@ -11,6 +11,7 @@ import {type Override, permissionState} from "@/utils/access/permission-model";
 import type {Permission, RoleTemplate, User} from "@/types/admin";
 import {Users} from "@/components/user/Users";
 import {useI18n} from '@/providers/I18nContext';
+import {useUnsavedChanges} from '@/hooks/useWorkspaceTabs';
 
 export function AccessControl() {
     const [selected, setSelected] = useState<User | null>(null);
@@ -67,16 +68,7 @@ function Matrix({permissions, template, target, values}: {
         value
     }));
     const dirty = changes.length > 0;
-    useEffect(() => {
-        const warn = (e: BeforeUnloadEvent) => {
-            if (dirty) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        };
-        window.addEventListener('beforeunload', warn);
-        return () => window.removeEventListener('beforeunload', warn);
-    }, [dirty]);
+    useUnsavedChanges(dirty);
     const save = async () => {
         if (!window.confirm(target ? t('admin.access.saveConfirmUser', {count: changes.length, name: target.username}) : t('admin.access.saveConfirmTemplate', {count: changes.length, name: template?.name ?? ''}))) return;
         await mutation.mutateAsync(changes);

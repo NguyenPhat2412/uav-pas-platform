@@ -36,6 +36,8 @@ import {
 import {cn} from '@/lib/utils';
 import {ADMIN_RECENT_PAGES_KEY, rememberRecentPage} from '@/lib/recent-pages';
 import {FoldingNavGroup, foldedLinkClass, useFoldedNavGroups} from '@/components/layout/FoldingNavGroup';
+import {WorkspaceTabs} from '@/components/layout/WorkspaceTabs';
+import {UnsavedChangesContext, useWorkspaceTabs} from '@/hooks/useWorkspaceTabs';
 
 // Cấu hình routes của Sidebar Admin (bao gồm /reports, /billing, /settings, /access-control/*)
 // được tách riêng và quản lý tập trung tại `@/config/sidebar-routes.ts`.
@@ -53,6 +55,8 @@ const GROUP_ICONS: Partial<Record<(typeof ADMIN_SIDEBAR_GROUPS)[number], typeof 
     infrastructure: Server,
 };
 const OPEN_GROUPS_KEY = 'uav_admin_nav_open_groups';
+const TABS_KEY = 'uav_admin_workspace_tabs';
+const HOME = '/admin/dashboard';
 
 
 /** pageTitle names pages that have no sidebar entry (e.g. the profile) in the breadcrumb. */
@@ -85,6 +89,12 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
         const key = `adminNav.${item.key}`;
         const translated = t(key);
         return translated !== key ? translated : (item.defaultLabel || item.key);
+    };
+    const workspaceTabs = useWorkspaceTabs({storageKey: TABS_KEY, pinnedHref: HOME, activeHref, pathname});
+    // A tab whose page the user can no longer open (permission removed) is simply not drawn.
+    const describeTab = (href: string) => {
+        const item = visibleNav.find(entry => entry.href === href);
+        return item && {label: getNavLabel(item), icon: item.icon};
     };
 
     return (
@@ -194,42 +204,46 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                 />
             )}
             <div className="flex min-w-0 flex-1 flex-col" inert={open}>
-                <header className="sticky top-0 z-20 flex min-h-13 items-center justify-between gap-4 border-b border-border bg-card/90 px-4 sm:px-6 backdrop-blur-md">
-                    <div className="flex min-w-0 flex-1 items-center gap-2.5">
-                        <button
-                            ref={menuButton}
-                            aria-controls="portal-navigation"
-                            className="lg:hidden inline-flex h-8 w-8 items-center justify-center rounded-control border border-border text-slate-700 hover:bg-slate-100"
-                            aria-label={t('shell.openNavigation')}
-                            aria-expanded={open}
-                            onClick={() => setOpen(true)}
-                        >
-                            <Menu size={18}/>
-                        </button>
-                        <div className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[13px] text-slate-500">
-                            <span className="hidden xl:inline">UAV PAS</span>
-                            <span className="hidden xl:inline">/</span>
-                            <span className="hidden xl:inline">{t('shell.adminSection')}</span>
-                            {(activeNav || pageTitle) && (
-                                <>
-                                    <span className="hidden xl:inline">/</span>
-                                    <strong className="truncate font-semibold text-slate-900">{activeNav ? getNavLabel(activeNav) : pageTitle}</strong>
-                                </>
-                            )}
+                <div className="sticky top-0 z-20">
+                    <header className="flex min-h-13 items-center justify-between gap-4 border-b border-border bg-card/90 px-4 sm:px-6 backdrop-blur-md">
+                        <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                            <button
+                                ref={menuButton}
+                                aria-controls="portal-navigation"
+                                className="lg:hidden inline-flex h-8 w-8 items-center justify-center rounded-control border border-border text-slate-700 hover:bg-slate-100"
+                                aria-label={t('shell.openNavigation')}
+                                aria-expanded={open}
+                                onClick={() => setOpen(true)}
+                            >
+                                <Menu size={18}/>
+                            </button>
+                            <div className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[13px] text-slate-500">
+                                <span className="hidden xl:inline">UAV PAS</span>
+                                <span className="hidden xl:inline">/</span>
+                                <span className="hidden xl:inline">{t('shell.adminSection')}</span>
+                                {(activeNav || pageTitle) && (
+                                    <>
+                                        <span className="hidden xl:inline">/</span>
+                                        <strong className="truncate font-semibold text-slate-900">{activeNav ? getNavLabel(activeNav) : pageTitle}</strong>
+                                    </>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-2 xl:gap-3">
-                        <HeaderSearch items={visibleNav.map(item => ({href: item.href, label: getNavLabel(item), group: t(`adminNavGroups.${item.group}`)}))}/>
-                        <PortalSwitcher currentPortal="admin"/>
-                        <AdminAlertsPopover/>
-                        <NotificationBell viewAllHref="/admin/notifications"/>
-                        <LanguageSwitcher variant="compact" className="hidden sm:inline-flex"/>
-                        <AccountMenu portal="admin"/>
-                    </div>
-                </header>
+                        <div className="flex shrink-0 items-center gap-2 xl:gap-3">
+                            <HeaderSearch items={visibleNav.map(item => ({href: item.href, label: getNavLabel(item), group: t(`adminNavGroups.${item.group}`)}))}/>
+                            <PortalSwitcher currentPortal="admin"/>
+                            <AdminAlertsPopover/>
+                            <NotificationBell viewAllHref="/admin/notifications"/>
+                            <LanguageSwitcher variant="compact" className="hidden sm:inline-flex"/>
+                            <AccountMenu portal="admin"/>
+                        </div>
+                    </header>
+                    <WorkspaceTabs tabs={workspaceTabs.tabs} activeHref={activeHref} pinnedHref={HOME} dirtyHref={workspaceTabs.dirtyHref}
+                                   describe={describeTab} onClose={workspaceTabs.close} onCloseOthers={workspaceTabs.closeOthers}/>
+                </div>
                 <WelcomeBack/>
                 <main id="workspace" className="flex w-full flex-1 flex-col gap-4 outline-none" tabIndex={-1}>
-                    {children}
+                    <UnsavedChangesContext.Provider value={workspaceTabs.reportDirty}>{children}</UnsavedChangesContext.Provider>
                 </main>
                 <AssistantWidget portal="ADMIN"/>
             </div>

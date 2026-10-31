@@ -62,6 +62,15 @@
       "adminPortal": "Cổng Quản trị",
       "operationsPortal": "Cổng Điều hành",
       "customerPortal": "Cổng Khách hàng"
+    },
+    "tabs": {
+      "label": "Các trang đang mở",
+      "close": "Đóng {page}",
+      "closeThis": "Đóng tab",
+      "closeOthers": "Đóng các tab khác",
+      "closeAll": "Đóng tất cả",
+      "unsaved": "Có thay đổi chưa lưu",
+      "discardConfirm": "Trang này có thay đổi chưa lưu. Rời trang và bỏ các thay đổi?"
     }
   },
   "operationsNavGroups": {
@@ -178,7 +187,13 @@
     "groundControl": "Kết nối trạm kiểm soát",
     "orDivider": "HOẶC",
     "forgotPassword": "Quên mật khẩu?",
-    "zaloDescription": "Đăng nhập nhanh chóng và bảo mật thông qua tài khoản Zalo Official Account đã xác thực."
+    "zaloDescription": "Đăng nhập nhanh chóng và bảo mật thông qua tài khoản Zalo Official Account đã xác thực.",
+    "google": {
+      "signin_with": "Đăng nhập bằng Google",
+      "signup_with": "Đăng ký bằng Google",
+      "loading": "Đang tải đăng nhập Google, vui lòng thử lại sau giây lát.",
+      "notConfigured": "Đăng nhập Google chưa được cấu hình."
+    }
   },
   "dashboard": {
     "welcome": "Chào mừng, {name}!",

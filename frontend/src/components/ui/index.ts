@@ -12,3 +12,4 @@ export * from "@/components/ui/KpiCard";
 export * from "@/components/ui/ErrorBoundary";
 export * from "@/components/ui/Toast";
 export * from "@/components/ui/Switch";
+export * from "@/components/ui/UavLoader";

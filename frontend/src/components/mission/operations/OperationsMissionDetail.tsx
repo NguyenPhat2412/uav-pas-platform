@@ -9,7 +9,7 @@ import {useParams, useRouter} from 'next/navigation';
 import {ArrowLeft, CheckCircle2, Play} from 'lucide-react';
 import {MissionTimeline} from "@/components/shared/MissionTimeline";
 import {displayLabel, formatDate, missionHint, terminalStatuses} from "@/lib/presentation";
-import {Alert, Button, Spinner} from '@/components/ui';
+import {Alert, Button, UavLoader} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
 import {ResourceRedispatch} from '@/components/mission/ResourceRedispatch';
 import type {
@@ -162,7 +162,7 @@ function MissionDetail({id}: { id: string }) {
     }, [error, busy, uploading]);
     if (isLoading || !isAuthenticated || !permissionsReady || !mission || mission.id !== missionId) return <div
         className="flex min-h-screen items-center justify-center">{error ?
-        <p role="alert" className="text-danger">{errorText}</p> : <Spinner size="lg" label={t('opsMissions.detail.loading')}/>}</div>;
+        <p role="alert" className="text-danger">{errorText}</p> : <UavLoader label={t('opsMissions.detail.loading')}/>}</div>;
     const controls = missionControls(mission, user?.id, can);
     const disabled = busy || uploading || stale;
     const evidence = handoverEvidence(mission.missionType, media);

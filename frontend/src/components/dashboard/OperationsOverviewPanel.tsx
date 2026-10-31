@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import {useRouter} from 'next/navigation';
 import {AppShell} from '@/components/layout/AppShell';
-import {KpiCard, Spinner, StatusBadge} from '@/components/ui';
+import {KpiCard, StatusBadge, UavLoader} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
 import {useOperationsOverview} from '@/hooks/dashboard/useOperationsOverview';
 import {useCollection} from '@/hooks/useCollection';
@@ -48,9 +48,7 @@ export default function HomePage() {
     useEffect(() => {
         if (!isLoading && !isAuthenticated) router.replace("/operations/login");
     }, [isAuthenticated, isLoading, router]);
-    if (isLoading || !isAuthenticated || !user) return <div
-        className="flex min-h-screen items-center justify-center bg-background"><Spinner size="lg"
-                                                                                        label={t('opsMissions.overview.authenticating')}/></div>;
+    if (isLoading || !isAuthenticated || !user) return <UavLoader fullScreen label={t('opsMissions.overview.authenticating')}/>;
 
     const fleet = uavsQuery.data ?? [];
     const uavList = fleet.slice(0, 6);

@@ -2,7 +2,7 @@
 
 import {createContext, useContext, useEffect, useLayoutEffect, useState} from 'react';
 import {usePathname, useRouter} from 'next/navigation';
-import {Spinner} from "@/components/ui";
+import {UavLoader} from "@/components/ui";
 import {AppShell} from "@/components/layout/AdminAppShell";
 import {PermissionGate} from "@/components/data/WorkspaceState";
 import {useAuth} from '@/providers/AuthContext';
@@ -33,8 +33,7 @@ export function AdminPortalFrame({children, page}: { children: React.ReactNode; 
         if (!isAuthenticated) router.replace(loginEntryForPage(pathname, '/admin/dashboard'));
         else if (!isAdmin) router.replace(portalHome(portalForRole(user?.role)));
     }, [isAuthenticated, isAdmin, isLoading, pathname, router, user?.role]);
-    if (isLoading || !isAuthenticated || !isAdmin) return <div className="flex min-h-screen items-center justify-center"><Spinner
-        size="lg" label={t('admin.page.authenticating')}/></div>;
+    if (isLoading || !isAuthenticated || !isAdmin) return <UavLoader fullScreen label={t('admin.page.authenticating')}/>;
     return <AdminFrameContext.Provider value={setMeta}>
         <AppShell activeResource={(page ?? meta).activeResource} pageTitle={(page ?? meta).pageTitle}>{children}</AppShell>
     </AdminFrameContext.Provider>;

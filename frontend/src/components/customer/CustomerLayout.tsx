@@ -14,6 +14,7 @@ import {
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {LanguageSwitcher} from "@/components/ui/LanguageSwitcher";
+import {UavLoader} from "@/components/ui/UavLoader";
 import {DispatchHotline} from "@/components/customer/DispatchHotline";
 import {useSidebarCounts} from "@/hooks/useSidebarCounts";
 import {CustomerAccountMenu} from "@/components/customer/CustomerAccountMenu";
@@ -251,9 +252,7 @@ export function CustomerPortalFrame({children}: { children: React.ReactNode }) {
     }, [router, pathname, isLoading, isAuthenticated]);
     if (isLoading || !isAuthenticated) {
         return (
-            <div className="flex min-h-screen items-center justify-center p-6 text-sm font-semibold text-slate-500" role="status">
-                {t('common.authenticating')}
-            </div>
+            <UavLoader fullScreen label={t('common.authenticating')}/>
         );
     }
     return <PortalFrame.Provider value={true}><AppShell>{children}</AppShell></PortalFrame.Provider>;
@@ -273,9 +272,7 @@ export function PageGuard({children, permission = 'MISSION_VIEW'}: {
     }, [router, pathname, inFrame, isLoading, isAuthenticated]);
     if (!inFrame && (isLoading || !isAuthenticated)) {
         return (
-            <div className="flex min-h-screen items-center justify-center p-6 text-sm font-semibold text-slate-500" role="status">
-                {t('common.authenticating')}
-            </div>
+            <UavLoader fullScreen label={t('common.authenticating')}/>
         );
     }
     const content = (

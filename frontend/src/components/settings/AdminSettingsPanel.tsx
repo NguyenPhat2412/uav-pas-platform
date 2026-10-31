@@ -12,6 +12,7 @@ import {WeatherProviderSettingsSection} from '@/components/weather/WeatherProvid
 import type {TypedSetting} from '@/api/settings/platform-settings.api';
 import {usePlatformSettings, useSaveSetting, useSettingHistory} from '@/hooks/settings/useSettings';
 import {useI18n} from '@/providers/I18nContext';
+import {useUnsavedChanges} from '@/hooks/useWorkspaceTabs';
 import {ApiError} from '@/lib/api';
 
 type GroupId = 'SAFETY' | 'OPERATIONS' | 'MAP' | 'AI' | 'BILLING' | 'CONTACT' | 'OTHER';
@@ -95,6 +96,7 @@ function AdminSettingsContent() {
     const valueOf = (s: TypedSetting) => drafts[s.configKey] ?? s.configValue;
     const changed = settings.filter(s => drafts[s.configKey] !== undefined && drafts[s.configKey] !== s.configValue);
     const invalid = changed.filter(s => clientCheck(s, valueOf(s)) !== null);
+    useUnsavedChanges(changed.length > 0);
 
     const label = (s: TypedSetting) => {
         const key = `adminPlatform.settings.labels.${flatKey(s.configKey)}`;

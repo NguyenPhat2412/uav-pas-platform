@@ -150,6 +150,15 @@ const config = {
                     "0%, 100%": {transform: "scale(0.95)", opacity: "0.8"},
                     "50%": {transform: "scale(1.15)", opacity: "0.3"},
                 },
+                // UavLoader: the ground shadow shrinks as the airframe rises; nav lights blink twice a cycle.
+                "uav-shadow": {
+                    "0%, 100%": {transform: "scaleX(1)", opacity: "0.18"},
+                    "50%": {transform: "scaleX(0.78)", opacity: "0.08"},
+                },
+                "nav-blink": {
+                    "0%, 60%, 100%": {opacity: "1"},
+                    "70%, 90%": {opacity: "0.15"},
+                },
             },
             animation: {
                 "slide-in-right": "slide-in-right 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards",
@@ -159,6 +168,11 @@ const config = {
                 "scan": "laser-scan 2.6s ease-in-out infinite",
                 "uav-hover": "uav-hover 3.2s ease-in-out infinite",
                 "pulse-ring": "pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                "rotor": "radar-sweep 0.28s linear infinite",
+                "rotor-reverse": "radar-sweep 0.28s linear infinite reverse",
+                "uav-bob": "uav-hover 1.8s ease-in-out infinite",
+                "uav-shadow": "uav-shadow 1.8s ease-in-out infinite",
+                "nav-blink": "nav-blink 1.2s steps(1, end) infinite",
             },
             borderRadius: {
                 // Shape scale lives in CSS variables (src/styles/globals.css) so a portal can override it.

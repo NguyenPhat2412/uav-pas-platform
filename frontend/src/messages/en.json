@@ -62,6 +62,15 @@
       "adminPortal": "Admin Portal",
       "operationsPortal": "Operations Portal",
       "customerPortal": "Customer Portal"
+    },
+    "tabs": {
+      "label": "Open pages",
+      "close": "Close {page}",
+      "closeThis": "Close tab",
+      "closeOthers": "Close other tabs",
+      "closeAll": "Close all",
+      "unsaved": "Unsaved changes",
+      "discardConfirm": "This page has unsaved changes. Leave and discard them?"
     }
   },
   "operationsNavGroups": {
@@ -178,7 +187,13 @@
     "groundControl": "Ground control connected",
     "orDivider": "OR",
     "forgotPassword": "Forgot password?",
-    "zaloDescription": "Fast and secure sign-in via verified Zalo Official Account."
+    "zaloDescription": "Fast and secure sign-in via verified Zalo Official Account.",
+    "google": {
+      "signin_with": "Sign in with Google",
+      "signup_with": "Sign up with Google",
+      "loading": "Google sign-in is still loading, please try again in a moment.",
+      "notConfigured": "Google sign-in is not configured."
+    }
   },
   "dashboard": {
     "welcome": "Welcome, {name}!",
