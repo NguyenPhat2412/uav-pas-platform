@@ -21,19 +21,19 @@ Nhánh này được đồng bộ từ `main` và tổng hợp bộ kiểm thử
 
 ## Test mới
 
-Backend, thư mục `backend/src/test/java/com/uav/platform/modules/`:
+Backend, thư mục `backend/src/test/java/com/uav/platform/` (bố cục `<tầng>/<tính năng>` giống mã nguồn):
 
 | File | Tầng | Nội dung chính |
 |---|---|---|
-| `weather/specification/WeatherObservationSpecificationsTest` | DAO | Lọc theo ô lưới, nhà cung cấp và thời điểm lấy dữ liệu trên H2. Dùng `@SpringBootTest` vì Spring Boot 4 tách `@DataJpaTest` ra module riêng |
-| `weather/service/WeatherCipherOperationsTest` | Service | AES-GCM mã hoá rồi giải mã đúng, IV ngẫu nhiên, phát hiện dữ liệu bị sửa |
-| `weather/service/FlightSafetyEvaluatorOperationsTest` | Service | Từng ngưỡng NO_GO/CAUTION, điểm, hệ số pin, khung giờ đề xuất |
-| `weather/service/WeatherServiceImplTest` | Service | Cache-aside, trả dữ liệu cũ khi lỗi, ngoài 24 giờ, toạ độ hoặc thời gian sai, cập nhật nhà cung cấp |
-| `weather/controller/WeatherControllerTest` | REST | 5 endpoint, mã lỗi 400 |
-| `mission/service/impl/MissionWeatherPreflightTest` | Service | Chặn khi NO_GO nếu bật cờ, chỉ ghi nhận nếu tắt, lỗi thời tiết không chặn |
-| `alerts/service/impl/AlertCenterWeatherTest` | Service | Cảnh báo `MISSION_WEATHER_HAZARD`, CAUTION không tạo cảnh báo, lỗi không ảnh hưởng cảnh báo khác |
+| `specification/weather/WeatherObservationSpecificationsTest` | DAO | Lọc theo ô lưới, nhà cung cấp và thời điểm lấy dữ liệu trên H2. Dùng `@SpringBootTest` vì Spring Boot 4 tách `@DataJpaTest` ra module riêng |
+| `service/weather/WeatherCipherOperationsTest` | Service | AES-GCM mã hoá rồi giải mã đúng, IV ngẫu nhiên, phát hiện dữ liệu bị sửa |
+| `service/weather/FlightSafetyEvaluatorOperationsTest` | Service | Từng ngưỡng NO_GO/CAUTION, điểm, hệ số pin, khung giờ đề xuất |
+| `service/weather/WeatherServiceImplTest` | Service | Cache-aside, trả dữ liệu cũ khi lỗi, ngoài 24 giờ, toạ độ hoặc thời gian sai, cập nhật nhà cung cấp |
+| `controller/weather/WeatherControllerTest` | REST | 5 endpoint, mã lỗi 400 |
+| `service/impl/mission/MissionWeatherPreflightTest` | Service | Chặn khi NO_GO nếu bật cờ, chỉ ghi nhận nếu tắt, lỗi thời tiết không chặn |
+| `service/impl/alerts/AlertCenterWeatherTest` | Service | Cảnh báo `MISSION_WEATHER_HAZARD`, CAUTION không tạo cảnh báo, lỗi không ảnh hưởng cảnh báo khác |
 | `config/routes/ApiRoutesTest` | Quy ước | Thêm đường dẫn Weather |
-| `billing/service/impl/PlanStatisticsIntegrationTest` | Service | Thống kê gói |
+| `service/impl/billing/PlanStatisticsIntegrationTest` | Service | Thống kê gói |
 
 Frontend, thư mục `frontend/tests/`:
 
