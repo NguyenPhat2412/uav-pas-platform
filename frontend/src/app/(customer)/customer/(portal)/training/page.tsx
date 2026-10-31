@@ -1,7 +1,7 @@
 'use client';
 
 import {PageGuard} from '@/components/customer/CustomerLayout';
-import {TrainingCourseCatalog} from '@/features/training/components/TrainingCourseCatalog';
+import {TrainingCourseCatalog} from '@/components/training/TrainingCourseCatalog';
 
 export default function CustomerTrainingRoutePage() {
     return (

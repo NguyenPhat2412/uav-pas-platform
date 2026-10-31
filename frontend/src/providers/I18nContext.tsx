@@ -17,7 +17,7 @@ import jaMessages from '@/messages/ja.json';
 import customerVi from '@/messages/customer/vi.json';
 import customerEn from '@/messages/customer/en.json';
 import customerJa from '@/messages/customer/ja.json';
-import {setPresentationLocale} from '@/components/shared/presentation';
+import {setPresentationLocale} from '@/lib/presentation';
 import {sectionMessages} from '@/messages/sections';
 import type {I18nContextType, MessageRecord} from '@/types';
 

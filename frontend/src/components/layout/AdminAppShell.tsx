@@ -1,7 +1,7 @@
 'use client';
 
 import {useSidebarController} from '@/hooks/useSidebarController';
-import {AssistantWidget} from '@/features/assistant/components/AssistantWidget';
+import {AssistantWidget} from '@/components/assistant/AssistantWidget';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
@@ -25,20 +25,20 @@ import {useI18n} from '@/providers/I18nContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
 import {AccountMenu} from '@/components/layout/AccountMenu';
 import {AdminAlertsPopover} from '@/components/layout/AdminAlertsPopover';
-import {NotificationBell} from '@/components/notifications/NotificationBell';
+import {NotificationBell} from '@/components/notification/NotificationBell';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {
     ADMIN_SIDEBAR_GROUPS,
     ADMIN_SIDEBAR_ROUTES,
     resolveSidebarActiveItem,
-} from '@/components/layout/sidebar-routes';
+} from '@/config/sidebar-routes';
 import {cn} from '@/lib/utils';
-import {ADMIN_RECENT_PAGES_KEY, rememberRecentPage} from '@/components/layout/recent-pages';
+import {ADMIN_RECENT_PAGES_KEY, rememberRecentPage} from '@/lib/recent-pages';
 import {FoldingNavGroup, foldedLinkClass, useFoldedNavGroups} from '@/components/layout/FoldingNavGroup';
 
 // Cấu hình routes của Sidebar Admin (bao gồm /reports, /billing, /settings, /access-control/*)
-// được tách riêng và quản lý tập trung tại `@/components/layout/sidebar-routes.ts`.
+// được tách riêng và quản lý tập trung tại `@/config/sidebar-routes.ts`.
 const nav = ADMIN_SIDEBAR_ROUTES;
 const navGroups = ADMIN_SIDEBAR_GROUPS;
 

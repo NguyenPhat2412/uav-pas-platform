@@ -1,4 +1,4 @@
-import CustomerNotificationsPanel from '@/features/notifications/components/CustomerNotificationsPanel';
+import CustomerNotificationsPanel from '@/components/notification/CustomerNotificationsPanel';
 
 export default function CustomerNotificationsRoutePage() {
     return <CustomerNotificationsPanel/>;

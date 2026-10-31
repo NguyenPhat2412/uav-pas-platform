@@ -1,4 +1,4 @@
-import AdminDeviceKeysPage from '@/features/device-keys/components/AdminDeviceKeysPanel';
+import AdminDeviceKeysPage from '@/components/devicekey/AdminDeviceKeysPanel';
 
 export default function AdminDeviceKeysRoutePage() {
     return <AdminDeviceKeysPage/>;

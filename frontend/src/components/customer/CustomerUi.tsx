@@ -1,6 +1,6 @@
 'use client';
 import {keepVietnamesePhrases} from "@/lib/typography";
-import {displayLabel} from "@/components/shared/presentation";
+import {displayLabel} from "@/lib/presentation";
 import {Button as SharedButton} from "@/components/shared";
 import type {ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes} from 'react';
 import {FieldLabelMark} from "@/components/shared/RequiredMark";

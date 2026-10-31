@@ -17,9 +17,9 @@ Nền tảng điều phối UAV gồm website công khai và ba cổng Khách h�
 
 ## Các hạng mục đã hoàn thành (31/10/2026)
 
-1. **Chuẩn hoá controller backend.** Toàn bộ đường dẫn REST lấy từ `config/routes/ApiRoutes.java`. Lớp `RestEndpoint` đã bị xoá. Controller chỉ nhận request và gọi service. Ví dụ, controller cảnh báo không còn tự xử lý nghiệp vụ, và các quyền quản lý dùng `PERMISSION_MANAGE`.
+1. **Chuẩn hoá controller backend.** Các tầng đứng ngang cấp với `common` và `config`, mỗi tầng chia theo tính năng: `controller/<tên>`, `service/<tên>`, `service/impl/<tên>`, `repository/<tên>`, `entity/<tên>`, `dto/{request,response,record}/<tên>`. Toàn bộ đường dẫn REST lấy từ `config/routes/ApiRoutes.java`. Lớp `RestEndpoint` đã bị xoá. Controller chỉ nhận request và gọi service. Ví dụ, controller cảnh báo không còn tự xử lý nghiệp vụ, và các quyền quản lý dùng `PERMISSION_MANAGE`.
 2. **Sắp xếp lại cấu trúc và tên file frontend.**
-   - Mỗi tính năng có các thư mục `features/<tên>/{api,hooks,components,types,utils}`.
+   - Chia theo tầng rồi theo tính năng, giống backend: `src/{api,hooks,components,types,utils}/<tên>`.
    - Context chuyển vào `providers/`. Component đặt tên theo PascalCase. Hook dùng chung nằm trong `src/hooks/`.
 3. **Chuẩn hoá tầng dữ liệu frontend.**
    - Luồng gọi là Component → hook của feature → `*.api.ts` → `@/lib/api`.

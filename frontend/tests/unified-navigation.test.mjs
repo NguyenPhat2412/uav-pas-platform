@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import ts from 'typescript';
 
 async function loadSidebarRoutes() {
-    const raw = await readFile(new URL('../src/components/layout/sidebar-routes.ts', import.meta.url), 'utf8');
+    const raw = await readFile(new URL('../src/config/sidebar-routes.ts', import.meta.url), 'utf8');
     const cleaned = raw
         .replace(/import\s*\{[^}]*\}\s*from\s*['"]lucide-react['"];?/g, 'const LucideMock = () => null;')
         .replace(/icon:\s*([A-Za-z0-9_]+)/g, 'icon: LucideMock')

@@ -4,7 +4,7 @@ Cấu trúc hiện hành ngày 18/10/2026:
 
 ```text
 uav-pas-platform/
-├── frontend/     # một Next app: src/app, src/features, public, tests
+├── frontend/     # một Next app: src/app, src/{api,hooks,components,types,utils}/<tính năng>, public, tests
 ├── backend/      # Spring Boot, hạ tầng và công cụ kiểm thử
 └── docs/         # architecture, handoff, tasks, work (cục bộ)
 ```

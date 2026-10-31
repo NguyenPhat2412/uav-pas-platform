@@ -17,7 +17,7 @@ let fixture = 0;
 
 async function service(client) {
     globalThis.__webhookFixture = {API_ROUTES, apiClient: client};
-    return (await load('const {API_ROUTES,apiClient}=globalThis.__webhookFixture;\n' + compile(read('src/features/webhooks/api/webhooks.api.ts')).replace(/^import .*?;\n/gm, '') + `\n//${fixture++}`)).webhooksService;
+    return (await load('const {API_ROUTES,apiClient}=globalThis.__webhookFixture;\n' + compile(read('src/api/webhook/webhooks.api.ts')).replace(/^import .*?;\n/gm, '') + `\n//${fixture++}`)).webhooksService;
 }
 
 test('subscription and test requests match actual controller paths and queued response', async () => {
@@ -54,7 +54,7 @@ test('logs use page content and errors propagate without fixtures', async () => 
     await assert.rejects(failed.triggerWebhookTest(), /denied/);
 });
 test('page has real error and empty states without fabricated success rows', () => {
-    const page = read('src/features/webhooks/components/AdminWebhooksPanel.tsx');
+    const page = read('src/components/webhook/AdminWebhooksPanel.tsx');
     assert.doesNotMatch(page, /DEFAULT_WEBHOOKS|INITIAL_LOGS|Math.random|setTimeout|catch\(\(\) => \{\}\)/);
     assert.match(page, /role="alert"/);
     assert.match(page, /Chưa cấu hình/);
@@ -62,7 +62,7 @@ test('page has real error and empty states without fabricated success rows', () 
 });
 
 test('retained cancelled delivery is labelled as removed destination, not success', async () => {
-    const page = read('src/features/webhooks/components/AdminWebhooksPanel.tsx');
+    const page = read('src/components/webhook/AdminWebhooksPanel.tsx');
     const mapper = page.slice(page.indexOf('const statusLabel'), page.indexOf('function WebhooksContent'));
     const {statusLabel} = await load(compile(mapper + '\nexport {statusLabel};'));
     assert.equal(statusLabel('CANCELLED'), 'Đã hủy — đích nhận đã xóa');

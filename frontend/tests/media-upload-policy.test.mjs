@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
 
-const source = await fs.readFile(new URL('../src/features/media/utils/media-policy.ts', import.meta.url), 'utf8');
+const source = await fs.readFile(new URL('../src/utils/media/media-policy.ts', import.meta.url), 'utf8');
 const compiled = ts.transpile(source, {module: ts.ModuleKind.ESNext});
 const policy = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`);
 
