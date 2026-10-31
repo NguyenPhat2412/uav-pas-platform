@@ -4,11 +4,11 @@ import Link from 'next/link';
 import {AlertTriangle, Bell, ChevronRight, CircleAlert, Info} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {useDropdownMenu} from '@/hooks/useDropdownMenu';
-import {useAdminAnalytics} from '@/features/dashboard/hooks/useAdminDashboard';
+import {useAdminAnalytics} from '@/hooks/dashboard/useAdminDashboard';
 import type {AdminAlert} from '@/types/admin';
 import {cn} from '@/lib/utils';
-import {useAlertCenter} from '@/features/alerts/hooks/useAlertCenter';
-import {useAlertMessage} from '@/features/alerts/hooks/useAlertMessage';
+import {useAlertCenter} from '@/hooks/alerts/useAlertCenter';
+import {useAlertMessage} from '@/hooks/alerts/useAlertMessage';
 
 const centerLevel = {CRITICAL: 'danger', WARNING: 'warning', INFO: 'info'} as const;
 

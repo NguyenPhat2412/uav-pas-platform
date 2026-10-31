@@ -4,13 +4,27 @@ The 2026-10-17 entity/service refactor supersedes the earlier accessor-only poli
 
 ## Layers
 
-- `modules/<feature>/entity`: persisted fields, mapping annotations, Lombok getters/setters and assignment-only constructors. Do not use `@Data`, which would also change identity and string output. Do not add business methods or validation to entity constructors.
-- `modules/<feature>/service`: application service contracts and existing orchestration services. Controllers depend on service contracts and never query repositories or map entities directly.
-- `modules/<feature>/service/impl`: application implementations and internal `*Operations` helpers for state changes, validation and calculations. These helpers operate on entities inside the transaction and locking boundaries owned by application services. Helpers do not open transactions or expose entities through HTTP.
-- `modules/<feature>/mapper`: conversion to response DTOs; persistence objects remain internal.
-- `modules/<feature>/dto/request`: HTTP JSON input, including Java records used as input DTOs.
-- `modules/<feature>/dto/response`: HTTP output, including Java records used as response DTOs. Shared response DTOs live in `common/dto/response`.
-- `modules/<feature>/dto/record`: intermediate records used inside the backend, such as object metadata, media permission snapshots, queue counts and internal alert results. These are not endpoint request or response types.
+Layers sit beside `common`, `config`, `error` and `security` under `com.uav.platform`, each split into one subpackage per feature (2026-10-31; the former `modules/<feature>/<layer>` tree is retired):
+
+```text
+com/uav/platform/
+├── common/  config/  error/  security/
+├── controller/<feature>/        entity/<feature>/       repository/<feature>/
+├── service/<feature>/           service/impl/<feature>/
+├── dto/{request,response,record}/<feature>/
+├── enums/<feature>/  mapper/<feature>/  specification/<feature>/  transport/<feature>/
+└── config/<feature>/            # feature data initializers (mission, permission)
+```
+
+Backend integration tests that span a whole feature live in `com.uav.platform.integration.<feature>`.
+
+- `entity/<feature>`: persisted fields, mapping annotations, Lombok getters/setters and assignment-only constructors. Do not use `@Data`, which would also change identity and string output. Do not add business methods or validation to entity constructors.
+- `service/<feature>`: application service contracts and existing orchestration services. Controllers depend on service contracts and never query repositories or map entities directly.
+- `service/impl/<feature>`: application implementations and internal `*Operations` helpers for state changes, validation and calculations. These helpers operate on entities inside the transaction and locking boundaries owned by application services. Helpers do not open transactions or expose entities through HTTP.
+- `mapper/<feature>`: conversion to response DTOs; persistence objects remain internal.
+- `dto/request/<feature>`: HTTP JSON input, including Java records used as input DTOs.
+- `dto/response/<feature>`: HTTP output, including Java records used as response DTOs. Shared response DTOs live in `common/dto/response`.
+- `dto/record/<feature>`: intermediate records used inside the backend, such as object metadata, media permission snapshots, queue counts and internal alert results. These are not endpoint request or response types.
 
 ## Entity and framework behavior
 

@@ -43,7 +43,7 @@ const javaRoutes = (() => {
 })();
 
 function controllerGet(controller, method) {
-    const source = read(`../backend/src/main/java/com/uav/platform/modules/${controller}`);
+    const source = read(`../backend/src/main/java/com/uav/platform/controller/${controller}`);
     const mapping = source.match(/^@RequestMapping\((.+)\)$/m)?.[1];
     const base = mapping?.startsWith('"') ? JSON.parse(mapping) : mapping && javaRoutes(mapping);
     const declaration = source.indexOf(` ${method}(`);
@@ -70,19 +70,19 @@ async function service(path, exportedName) {
 }
 
 test('customer quota consumer calls the controller quota route and forwards cancellation', async () => {
-    const {instance, calls} = await service('src/features/billing/api/customer-billing.api.ts', 'customerBillingService');
+    const {instance, calls} = await service('src/api/billing/customer-billing.api.ts', 'customerBillingService');
     const signal = new AbortController().signal;
     await instance.quota(signal);
-    assert.equal(calls[0].endpoint, controllerGet('billing/controller/BillingController.java', 'getQuota'));
+    assert.equal(calls[0].endpoint, controllerGet('billing/BillingController.java', 'getQuota'));
     assert.equal(calls[0].options.signal, signal);
 });
 
 test('admin summary and CSV consumers call their actual role-protected report endpoints', async () => {
-    const {instance, calls} = await service('src/features/reports/api/reports.api.ts', 'reportsService');
+    const {instance, calls} = await service('src/api/reporting/reports.api.ts', 'reportsService');
     await instance.operationsReport();
-    assert.equal(calls[0].endpoint, controllerGet('reporting/controller/ReportController.java', 'getOperationsSummary'));
-    assert.equal(API_ROUTES.reports.exportOperationsCsv, controllerGet('reporting/controller/ReportController.java', 'exportCsv'));
+    assert.equal(calls[0].endpoint, controllerGet('reporting/ReportController.java', 'getOperationsSummary'));
+    assert.equal(API_ROUTES.reports.exportOperationsCsv, controllerGet('reporting/ReportController.java', 'exportCsv'));
     assert.equal(typeof instance.exportOperationsCsv, 'function');
     await instance.exportOperationsCsv();
-    assert.equal(calls[1].endpoint, controllerGet('reporting/controller/ReportController.java', 'exportCsv'));
+    assert.equal(calls[1].endpoint, controllerGet('reporting/ReportController.java', 'exportCsv'));
 });

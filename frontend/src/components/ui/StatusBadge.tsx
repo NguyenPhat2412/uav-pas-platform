@@ -1,4 +1,4 @@
-import {displayLabel} from "@/components/shared/presentation";
+import {displayLabel} from "@/lib/presentation";
 import {cn} from '@/lib/utils';
 
 const tones: Record<string, { badge: string; dot: string }> = {

@@ -1,5 +1,5 @@
 'use client';
-import {displayLabel} from "@/components/shared/presentation";
+import {displayLabel} from "@/lib/presentation";
 import {type ReactNode, useMemo, useState} from 'react';
 import {
     type ColumnFiltersState,

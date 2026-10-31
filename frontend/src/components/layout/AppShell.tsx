@@ -1,7 +1,7 @@
 'use client';
 import {useSidebarController} from '@/hooks/useSidebarController';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
-import {AssistantWidget} from '@/features/assistant/components/AssistantWidget';
+import {AssistantWidget} from '@/components/assistant/AssistantWidget';
 import React from 'react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import {useAuth} from '@/providers/AuthContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
-import {NotificationBell} from '@/components/notifications/NotificationBell';
+import {NotificationBell} from '@/components/notification/NotificationBell';
 import {AccountMenu} from '@/components/layout/AccountMenu';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
@@ -26,14 +26,14 @@ import {
     OPERATIONS_SIDEBAR_GROUPS,
     OPERATIONS_SIDEBAR_ROUTES,
     resolveSidebarActiveItem,
-} from '@/components/layout/sidebar-routes';
+} from '@/config/sidebar-routes';
 import {cn} from '@/lib/utils';
 import type {LucideIcon} from 'lucide-react';
 import {FoldingNavGroup, foldedLinkClass, useFoldedNavGroups} from '@/components/layout/FoldingNavGroup';
-import {OPERATIONS_RECENT_PAGES_KEY, rememberRecentPage} from '@/components/layout/recent-pages';
+import {OPERATIONS_RECENT_PAGES_KEY, rememberRecentPage} from '@/lib/recent-pages';
 
 // Cấu hình routes của Sidebar Điều hành (bao gồm /sar-cockpit [key: 'sar'], /notifications, v.v.)
-// được tách riêng và quản lý tập trung tại `@/components/layout/sidebar-routes.ts`.
+// được tách riêng và quản lý tập trung tại `@/config/sidebar-routes.ts`.
 const nav = OPERATIONS_SIDEBAR_ROUTES;
 const navGroups = OPERATIONS_SIDEBAR_GROUPS;
 

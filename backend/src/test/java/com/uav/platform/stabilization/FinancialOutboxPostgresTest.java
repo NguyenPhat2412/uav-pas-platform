@@ -3,17 +3,17 @@ package com.uav.platform.stabilization;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.modules.billing.dto.request.*;
-import com.uav.platform.modules.billing.service.impl.BillingServiceImpl;
-import com.uav.platform.modules.notification.service.NotificationService;
-import com.uav.platform.modules.permission.enums.PermissionCode;
-import com.uav.platform.modules.user.entity.AppUser;
-import com.uav.platform.modules.user.enums.UserStatus;
-import com.uav.platform.modules.webhook.repository.FinancialOutboxRepository;
-import com.uav.platform.modules.webhook.service.FinancialOutboxService;
-import com.uav.platform.modules.webhook.service.impl.FinancialOutboxServiceImpl;
-import com.uav.platform.modules.webhook.service.impl.WebhookServiceImpl;
-import com.uav.platform.modules.webhook.transport.WebhookTransport;
+import com.uav.platform.dto.request.billing.*;
+import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.permission.PermissionCode;
+import com.uav.platform.enums.user.UserStatus;
+import com.uav.platform.repository.webhook.FinancialOutboxRepository;
+import com.uav.platform.service.impl.billing.BillingServiceImpl;
+import com.uav.platform.service.impl.webhook.FinancialOutboxServiceImpl;
+import com.uav.platform.service.impl.webhook.WebhookServiceImpl;
+import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.webhook.FinancialOutboxService;
+import com.uav.platform.transport.webhook.WebhookTransport;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -63,13 +63,12 @@ class FinancialOutboxPostgresTest {
     @Autowired WebhookServiceImpl hooks;
     @Autowired NotificationService notifications;
     @Autowired PlatformTransactionManager manager;
-    @Autowired com.uav.platform.modules.user.repository.UserRepository users;
-    @Autowired com.uav.platform.modules.permission.service.PermissionService permissions;
-    @Autowired com.uav.platform.modules.billing.repository.InvoiceRepository invoices;
-    @Autowired com.uav.platform.modules.webhook.repository.WebhookDeliveryLogRepository logs;
+    @Autowired com.uav.platform.repository.user.UserRepository users;
+    @Autowired com.uav.platform.service.permission.PermissionService permissions;
+    @Autowired com.uav.platform.repository.billing.InvoiceRepository invoices;
+    @Autowired com.uav.platform.repository.webhook.WebhookDeliveryLogRepository logs;
 
-    @Autowired
-    com.uav.platform.modules.webhook.repository.WebhookSubscriptionRepository subscriptions;
+    @Autowired com.uav.platform.repository.webhook.WebhookSubscriptionRepository subscriptions;
 
     @BeforeEach
     void reset() {
@@ -193,7 +192,7 @@ class FinancialOutboxPostgresTest {
                             eq("PAYMENT_COMPLETED"),
                             eq(paymentId));
             assertEquals(
-                    com.uav.platform.modules.billing.enums.InvoiceStatus.PAID,
+                    com.uav.platform.enums.billing.InvoiceStatus.PAID,
                     invoices.findById(response.id()).orElseThrow().getStatus());
             assertEquals(
                     2,
@@ -356,7 +355,7 @@ class FinancialOutboxPostgresTest {
                 "UPDATE webhook_delivery_logs SET delivery_status='RETRYING',retry_count=1,response_status_code=503 WHERE id=?",
                 retryId);
         var failed =
-                new com.uav.platform.modules.webhook.entity.WebhookDeliveryLog(
+                new com.uav.platform.entity.webhook.WebhookDeliveryLog(
                         logs.findById(pendingId).orElseThrow().getSubscription(),
                         "TEST",
                         "{}",
@@ -414,7 +413,7 @@ class FinancialOutboxPostgresTest {
                         invoice.id()));
         assertEquals(2, events.count());
         assertEquals(
-                com.uav.platform.modules.billing.enums.InvoiceStatus.PAID,
+                com.uav.platform.enums.billing.InvoiceStatus.PAID,
                 invoices.findById(invoice.id()).orElseThrow().getStatus());
     }
 

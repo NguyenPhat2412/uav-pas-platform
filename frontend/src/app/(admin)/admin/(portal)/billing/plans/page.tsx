@@ -1,4 +1,4 @@
-import {AdminBillingPlansWorkspace} from '@/features/billing/components/AdminBillingPanel';
+import {AdminBillingPlansWorkspace} from '@/components/billing/AdminBillingPanel';
 
 export default function AdminBillingPlansRoutePage() {
     return <AdminBillingPlansWorkspace />;

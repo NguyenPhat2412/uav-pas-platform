@@ -1,8 +1,8 @@
 package com.uav.platform.security;
 
 import com.uav.platform.config.routes.ApiRoutes;
-import com.uav.platform.modules.devicekey.service.DeviceKeyService;
 import com.uav.platform.security.jwt.JwtAuthenticationFilter;
+import com.uav.platform.service.devicekey.DeviceKeyService;
 
 import lombok.RequiredArgsConstructor;
 

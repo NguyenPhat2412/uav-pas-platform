@@ -28,13 +28,8 @@ class EntityDtoBoundaryTest {
                         ? Path.of("src/main/java")
                         : Path.of("backend/src/main/java");
         List<Path> entities;
-        try (var paths = Files.walk(source.resolve("com/uav/platform/modules"))) {
-            entities =
-                    paths.filter(
-                                    p ->
-                                            p.toString().contains("/entity/")
-                                                    && p.toString().endsWith(".java"))
-                            .toList();
+        try (var paths = Files.walk(source.resolve("com/uav/platform/entity"))) {
+            entities = paths.filter(p -> p.toString().endsWith(".java")).toList();
         }
         assertFalse(entities.isEmpty());
         var compiler = ToolProvider.getSystemJavaCompiler();
@@ -177,7 +172,10 @@ class EntityDtoBoundaryTest {
                 for (Parameter parameter : method.getParameters()) {
                     if (parameter.isAnnotationPresent(RequestBody.class)) {
                         assertTrue(
-                                parameter.getType().getPackageName().endsWith(".dto.request"),
+                                parameter
+                                        .getType()
+                                        .getPackageName()
+                                        .matches(".*\\.dto\\.request(\\.\\w+)?"),
                                 "JSON request body must use a request DTO: " + method);
                     }
                 }
@@ -206,7 +204,7 @@ class EntityDtoBoundaryTest {
                     raw == Void.class
                             || raw == void.class
                             || raw == byte[].class
-                            || raw.getPackageName().endsWith(".dto.response"),
+                            || raw.getPackageName().matches(".*\\.dto\\.response(\\.\\w+)?"),
                     "API responses must use response DTOs (CSV binary and empty bodies are transport exceptions): "
                             + type);
         }
@@ -220,7 +218,7 @@ class EntityDtoBoundaryTest {
     private void assertRecordLocation(Class<?> type) {
         if (type.isRecord())
             assertTrue(
-                    type.getPackageName().matches(".*\\.dto\\.(request|response|record)"),
+                    type.getPackageName().matches(".*\\.dto\\.(request|response|record)(\\.\\w+)?"),
                     "Internal records belong in dto.record: " + type.getName());
         for (Class<?> nested : type.getDeclaredClasses()) assertRecordLocation(nested);
     }

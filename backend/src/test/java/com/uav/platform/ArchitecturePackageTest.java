@@ -9,14 +9,26 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
- * Guards the source layout so a future change cannot silently reintroduce the
- * legacy package or bypass the module boundaries established by the migration.
+ * Guards the source layout: layers (controller, service, repository, entity, dto, ...) sit beside
+ * common and config, each split into one subpackage per feature.
  */
 class ArchitecturePackageTest {
     private static final Path MAIN_SOURCE = resolveMainSource();
+    private static final Set<String> FEATURE_LAYERS =
+            Set.of(
+                    "controller",
+                    "dto",
+                    "entity",
+                    "enums",
+                    "mapper",
+                    "repository",
+                    "service",
+                    "specification",
+                    "transport");
 
     @Test
     void platformRootAndLegacyPackageAreConsistent() throws IOException {
@@ -36,7 +48,10 @@ class ArchitecturePackageTest {
     }
 
     @Test
-    void moduleBoundariesUseTheDeclaredFeaturePackages() throws IOException {
+    void layersSitBesideCommonAndConfigWithFeatureSubpackages() throws IOException {
+        assertFalse(
+                Files.exists(MAIN_SOURCE.resolve("com/uav/platform/modules")),
+                "Layers live at com.uav.platform.<layer>.<feature>; the modules package is retired");
         List<Path> files = javaFiles(MAIN_SOURCE).toList();
         for (Path file : files) {
             String relative =
@@ -56,50 +71,53 @@ class ArchitecturePackageTest {
                     || !"platform".equals(parts[2])) {
                 continue;
             }
-            if ("modules".equals(parts[3])) {
+            String layer = parts[3];
+            if (!FEATURE_LAYERS.contains(layer)) {
+                continue;
+            }
+            String name = file.getFileName().toString();
+            boolean nested =
+                    "service".equals(layer) && "impl".equals(parts[4]) || "dto".equals(layer);
+            assertTrue(
+                    parts.length >= (nested ? 7 : 6),
+                    "Classes must be inside <layer>/<feature> (service/impl/<feature>, dto/<role>/<feature>): "
+                            + relative);
+            if (name.endsWith("Controller.java")) {
                 assertTrue(
-                        parts.length >= 6,
-                        "Module classes must be inside modules/<feature>/<layer>: " + relative);
-                String layer = parts[5];
-                if (file.getFileName().toString().endsWith("Controller.java")) {
-                    assertTrue(
-                            "controller".equals(layer),
-                            "Controllers must be in a controller package: " + relative);
-                }
-                if (file.getFileName().toString().endsWith("Repository.java")) {
-                    assertTrue(
-                            "repository".equals(layer),
-                            "Repositories must be in a repository package: " + relative);
-                    assertTrue(
-                            Files.readString(file).contains("JpaSpecificationExecutor"),
-                            "Repositories must expose specification support: " + relative);
-                }
-                if (file.getFileName().toString().endsWith("Specifications.java")) {
-                    assertTrue(
-                            "specification".equals(layer),
-                            "Specifications must be in a specification package: " + relative);
-                }
-                if ("service".equals(layer) && parts.length >= 7 && "impl".equals(parts[6])) {
-                    String name = file.getFileName().toString();
-                    assertTrue(
-                            name.endsWith("ServiceImpl.java")
-                                    || name.endsWith("Operations.java")
-                                    || "UserAccountPersistenceListener.java".equals(name)
-                                    || "S3CompatibleStorageService.java".equals(name),
-                            "Service implementations must use ServiceImpl, Operations, or an explicit framework adapter: "
-                                    + relative);
-                }
-                assertFalse(
-                        relative.matches(".*/modules/[^/]+/config/(request|response)/.*"),
-                        "Module DTOs must be in dto/request or dto/response: " + relative);
-                if (Files.readString(file).matches("(?s).*public enum \\w+.*")) {
-                    assertTrue(
-                            "enums".equals(layer),
-                            "Domain enums must be in an enums package: " + relative);
-                }
-                assertFalse(
-                        relative.matches(".*/repository/specification/.*"),
-                        "Specifications must not be nested under repository: " + relative);
+                        "controller".equals(layer),
+                        "Controllers must be in the controller package: " + relative);
+            }
+            if (name.endsWith("Repository.java")) {
+                assertTrue(
+                        "repository".equals(layer),
+                        "Repositories must be in the repository package: " + relative);
+                assertTrue(
+                        Files.readString(file).contains("JpaSpecificationExecutor"),
+                        "Repositories must expose specification support: " + relative);
+            }
+            if (name.endsWith("Specifications.java")) {
+                assertTrue(
+                        "specification".equals(layer),
+                        "Specifications must be in the specification package: " + relative);
+            }
+            if ("service".equals(layer) && "impl".equals(parts[4])) {
+                assertTrue(
+                        name.endsWith("ServiceImpl.java")
+                                || name.endsWith("Operations.java")
+                                || "UserAccountPersistenceListener.java".equals(name)
+                                || "S3CompatibleStorageService.java".equals(name),
+                        "Service implementations must use ServiceImpl, Operations, or an explicit framework adapter: "
+                                + relative);
+            }
+            if ("dto".equals(layer)) {
+                assertTrue(
+                        Set.of("request", "response", "record").contains(parts[4]),
+                        "DTOs must be in dto/request, dto/response or dto/record: " + relative);
+            }
+            if (Files.readString(file).matches("(?s).*public enum \\w+.*")) {
+                assertTrue(
+                        "enums".equals(layer),
+                        "Domain enums must be in the enums package: " + relative);
             }
         }
     }
@@ -125,31 +143,24 @@ class ArchitecturePackageTest {
                             .relativize(file)
                             .toString()
                             .replace(file.getFileSystem().getSeparator(), "/");
-            boolean moduleEntityOrDto =
-                    relative.contains("/modules/")
-                            && (relative.contains("/entity/")
-                                    || relative.contains("/dto/request/")
-                                    || relative.contains("/dto/response/")
-                                    || relative.contains("/dto/record/"));
-            if (moduleEntityOrDto) {
+            boolean entityOrDto =
+                    relative.startsWith("com/uav/platform/entity/")
+                            || relative.startsWith("com/uav/platform/dto/");
+            if (entityOrDto) {
                 assertFalse(
-                        Files.readString(file)
-                                .contains(
-                                        "import com.uav.platform.modules."
-                                                + relative.split("/modules/")[1].split("/")[0]
-                                                + ".mapper."),
+                        Files.readString(file).contains("import com.uav.platform.mapper."),
                         "Entities and DTOs must not depend on mapper classes: " + relative);
             }
             if (file.getFileName().toString().endsWith("Mapper.java")) {
                 assertTrue(
-                        relative.matches(".*/modules/[^/]+/mapper/[^/]+Mapper\\.java"),
-                        "Mappers must be in a module mapper package: " + relative);
+                        relative.matches("com/uav/platform/mapper/[^/]+/[^/]+Mapper\\.java"),
+                        "Mappers must be in mapper/<feature>: " + relative);
             }
             if (file.getFileName().toString().endsWith("Controller.java")) {
                 assertFalse(
                         Files.readString(file)
                                 .matches(
-                                        "(?s).*import\\s+com\\.uav\\.platform\\.modules\\.[^;]+\\.entity\\.[^;]+;.*"),
+                                        "(?s).*import\\s+com\\.uav\\.platform\\.entity\\.[^;]+;.*"),
                         "Controllers must only use Request/Response DTOs and must not directly import JPA Entities: "
                                 + relative);
             }

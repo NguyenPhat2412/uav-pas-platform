@@ -1,0 +1,206 @@
+'use client';
+import {useState} from 'react';
+import {useSearchParams} from 'next/navigation';
+import {Button} from '@/components/ui';
+import {Drawer, Tabs} from '@/components/data/Drawer';
+import {EmptyState, LoadingRows} from '@/components/data/WorkspaceState';
+import {useAuth} from '@/providers/AuthContext';
+import {useCollection} from '@/hooks/useCollection';
+import {Pagination} from "@/components/data/ResourceState";
+import {useMaintenanceLists} from '@/hooks/maintenance/useMaintenance';
+import {useMaintenanceAction} from '@/hooks/maintenance/useMaintenanceAction';
+import {maintenanceError} from '@/utils/maintenance/errors';
+import type {MaintenanceSchedule} from "@/types/maintenance/maintenance.types";
+import {ActionFeedback, Feedback} from "@/components/maintenance/Feedback";
+import {calendarDate, dueLabels, formatVnd, orderLabels} from "@/utils/maintenance/workflows";
+import {fieldClass} from "@/components/maintenance/Fields";
+import {ScheduleForm} from "@/components/maintenance/ScheduleForm";
+import {OrderCreate} from "@/components/maintenance/OrderCreate";
+import {OrderDetail} from "@/components/maintenance/OrderDetail";
+import {resolveUavIdFromParam, toUavSlug} from "@/lib/url-slugs";
+import {useI18n} from '@/providers/I18nContext';
+
+const tableWrap = 'overflow-x-auto rounded-panel border border-border bg-card';
+const tableClass = 'w-full min-w-[880px] border-separate border-spacing-0 text-sm';
+const th = 'sticky top-0 z-10 whitespace-nowrap border-b border-border bg-slate-50 px-4 py-3 text-left text-[11.5px] font-semibold text-slate-500';
+const td = 'px-4 py-3 align-middle text-slate-700';
+
+export function MaintenanceWorkspace() {
+    const {can} = useAuth();
+    const {t, locale} = useI18n();
+    const params = useSearchParams();
+    const [tab, setTab] = useState('schedules');
+    const [uavId, setUavId] = useState(() => resolveUavIdFromParam(params.get('uav'), params.get('uavId')));
+    const [dueStatus, setDueStatus] = useState(''), [status, setStatus] = useState('');
+    const [schedulePage, setSchedulePage] = useState(0), [orderPage, setOrderPage] = useState(0);
+    const [scheduleForm, setScheduleForm] = useState<MaintenanceSchedule | 'new' | null>(null);
+    const [orderForm, setOrderForm] = useState<MaintenanceSchedule | 'new' | null>(null);
+    const [selectedOrder, setSelectedOrder] = useState<number>();
+    const [changeActive, setChangeActive] = useState<MaintenanceSchedule | null>(null);
+    const uavs = useCollection('uavs');
+    const {schedules, orders, refresh} = useMaintenanceLists({
+        uavId, dueStatus, status, schedulePage, orderPage,
+        onPages: pages => {
+            if (pages.schedulePage) setSchedulePage(pages.schedulePage);
+            if (pages.orderPage) setOrderPage(pages.orderPage);
+        },
+    });
+    const action = useMaintenanceAction(refresh);
+    const query = tab === 'schedules' ? schedules : orders;
+    return <div className="space-y-5">
+        {!changeActive && <ActionFeedback action={action}/>}
+        <Tabs items={[{id: 'schedules', label: t('opsAssets.maintenance.workspace.tabs.schedules')}, {id: 'orders', label: t('opsAssets.maintenance.workspace.tabs.orders')}]} value={tab}
+              onChange={setTab}/>
+        <div className="flex flex-wrap items-end gap-3 rounded-panel border border-border bg-card p-4 sm:px-6 sm:py-5">
+            <label className="flex min-w-[180px] flex-1 flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{t('opsAssets.maintenance.workspace.filterUav')}</span><select aria-label={t('opsAssets.maintenance.workspace.filterUav')}
+                                                                           className={fieldClass} value={uavId}
+                                                                           onChange={event => {
+                                                                               const nextUavId = event.target.value;
+                                                                               setUavId(nextUavId);
+                                                                               setSchedulePage(0);
+                                                                               setOrderPage(0);
+                                                                               if (typeof window !== 'undefined') {
+                                                                                   const matched = uavs.data?.find(item => String(item.id) === nextUavId);
+                                                                                   const nextUrl = nextUavId
+                                                                                       ? `${window.location.pathname}?uav=${matched ? toUavSlug(matched) : nextUavId}`
+                                                                                       : window.location.pathname;
+                                                                                   window.history.replaceState(null, '', nextUrl);
+                                                                               }
+                                                                           }}>
+                <option value="">{t('opsAssets.maintenance.workspace.allUavs')}</option>
+                {uavs.data?.map(uav => <option key={uav.id}
+                                               value={uav.id}>{uav.serialNumber}</option>)}{uavId && !uavs.data?.some(uav => String(uav.id) === uavId) &&
+                <option value={uavId}>{t('opsAssets.maintenance.fields.uavNumber', {id: uavId})}</option>}</select></label>
+            {tab === 'schedules' ?
+                <label className="flex min-w-[180px] flex-1 flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{t('opsAssets.maintenance.workspace.filterDue')}</span><select aria-label={t('opsAssets.maintenance.workspace.filterDue')}
+                                                                                  className={fieldClass}
+                                                                                  value={dueStatus} onChange={event => {
+                    setDueStatus(event.target.value);
+                    setSchedulePage(0);
+                }}>
+                    <option value="">{t('opsAssets.maintenance.workspace.allSchedules')}</option>
+                    {Object.keys(dueLabels).map(value => <option key={value}
+                                                                               value={value}>{t(`opsAssets.maintenance.due.${value}`)}</option>)}</select></label> :
+                <label className="flex min-w-[180px] flex-1 flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{t('opsAssets.maintenance.workspace.filterStatus')}</span><select aria-label={t('opsAssets.maintenance.workspace.filterStatus')}
+                                                                                       className={fieldClass}
+                                                                                       value={status}
+                                                                                       onChange={event => {
+                                                                                           setStatus(event.target.value);
+                                                                                           setOrderPage(0);
+                                                                                       }}>
+                    <option value="">{t('opsAssets.maintenance.workspace.allStatuses')}</option>
+                    {Object.keys(orderLabels).map(value => <option key={value}
+                                                                                 value={value}>{t(`opsAssets.maintenance.orderStatus.${value}`)}</option>)}
+                </select></label>}
+            <div className="flex items-end"><Button type="button" className="min-h-11 w-full" disabled={action.blocked}
+                                                    onClick={() => tab === 'schedules' ? setScheduleForm('new') : setOrderForm('new')}>{tab === 'schedules' ? t('opsAssets.maintenance.workspace.createSchedule') : t('opsAssets.maintenance.workspace.createOrder')}</Button>
+            </div>
+        </div>
+        {uavs.error && can('UAV_READ') && <div className="space-y-2"><Feedback
+            error={t('opsAssets.maintenance.workspace.uavsError')}/><Button
+            type="button" variant="outline" onClick={() => void uavs.refetch()}>{t('opsAssets.maintenance.workspace.reloadUavs')}</Button></div>}
+        {query.error ? <div className="space-y-3"><Feedback error={maintenanceError(query.error, t)}/><Button type="button"
+                                                                                                           variant="outline"
+                                                                                                           onClick={() => void query.refetch()}>{t('opsAssets.maintenance.workspace.reloadList')}</Button></div> : query.isPending ? <LoadingRows/> : <>
+            <p className="m-0 border-b border-border px-4 py-2 text-xs font-medium text-muted"
+               role="status">{t(tab === 'schedules' ? 'opsAssets.maintenance.workspace.countSchedules' : 'opsAssets.maintenance.workspace.countOrders', {count: query.data?.totalElements || 0})}{query.isFetching ? t('opsAssets.maintenance.workspace.updating') : ''}</p>
+            {tab === 'schedules' ? <section aria-label={t('opsAssets.maintenance.workspace.scheduleList')} className="space-y-3">
+                {schedules.data?.content.length ? <div className={tableWrap} tabIndex={0} aria-label={t('opsAssets.maintenance.workspace.scheduleList')}>
+                    <table className={tableClass}>
+                        <thead><tr>
+                            <th className={th}>{t('opsAssets.maintenance.workspace.col.schedule')}</th>
+                            <th className={th}>UAV</th>
+                            <th className={th}>{t('opsAssets.maintenance.workspace.interval')}</th>
+                            <th className={th}>{t('opsAssets.maintenance.workspace.nextDue')}</th>
+                            <th className={th}>{t('opsAssets.maintenance.workspace.lastCompleted')}</th>
+                            <th className={th}>{t('opsAssets.maintenance.workspace.col.status')}</th>
+                            <th className={th}>{t('opsAssets.maintenance.workspace.col.actions')}</th>
+                        </tr></thead>
+                        <tbody className="divide-y divide-border">{schedules.data.content.map(schedule => <tr key={schedule.id} className="transition-colors hover:bg-slate-50/70">
+                            <td className={`${td} min-w-[220px]`}><strong className="block break-words text-slate-900">{schedule.title}</strong>
+                                <small className="text-xs text-slate-500">{t('opsAssets.maintenance.workspace.scheduleNumber', {id: schedule.id})}</small></td>
+                            <td className={`${td} whitespace-nowrap font-mono text-xs`}>{schedule.uavSerialNumber}</td>
+                            <td className={`${td} whitespace-nowrap`}>{t('opsAssets.maintenance.workspace.intervalDays', {days: schedule.intervalDays})}</td>
+                            <td className={`${td} whitespace-nowrap tabular-nums`}>{calendarDate(schedule.nextDueDate, t, locale)}</td>
+                            <td className={`${td} whitespace-nowrap tabular-nums`}>{calendarDate(schedule.lastCompletedDate, t, locale)}</td>
+                            <td className={td}><span data-due-status={schedule.dueStatus}
+                                                     className={`inline-block whitespace-nowrap rounded-badge px-2.5 py-0.5 text-xs font-semibold ${schedule.dueStatus === 'OVERDUE' ? 'bg-red-50 text-red-800' : schedule.dueStatus === 'DUE' ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-700'}`}>{t(`opsAssets.maintenance.due.${schedule.dueStatus}`)}</span>
+                                {!schedule.active && <span className="ml-1.5 inline-block rounded-badge bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500">{t('opsAssets.maintenance.workspace.col.paused')}</span>}</td>
+                            <td className={td}><div className="flex flex-wrap gap-1.5">
+                                <Button type="button" variant="outline" size="sm" disabled={action.blocked || schedules.isFetching}
+                                        onClick={() => setScheduleForm(schedule)}>{t('opsAssets.maintenance.workspace.editSchedule')}</Button>
+                                <Button type="button" variant="outline" size="sm" disabled={action.blocked || schedules.isFetching}
+                                        onClick={() => setChangeActive(schedule)}>{schedule.active ? t('opsAssets.maintenance.workspace.pauseSchedule') : t('opsAssets.maintenance.workspace.activateSchedule')}</Button>
+                                {schedule.active && <Button type="button" size="sm" disabled={action.blocked || schedules.isFetching}
+                                                            onClick={() => setOrderForm(schedule)}>{t('opsAssets.maintenance.workspace.orderFromSchedule')}</Button>}
+                            </div></td>
+                        </tr>)}</tbody>
+                    </table>
+                </div> : <EmptyState title={t('opsAssets.maintenance.workspace.noSchedules')}
+                                     detail={t('opsAssets.maintenance.workspace.noSchedulesDetail')}/>}
+                <Pagination page={schedulePage} pages={schedules.data?.totalPages} onPage={setSchedulePage}/></section> :
+                <section aria-label={t('opsAssets.maintenance.workspace.orderList')} className="space-y-3">
+                    {orders.data?.content.length ? <div className={tableWrap} tabIndex={0} aria-label={t('opsAssets.maintenance.workspace.orderList')}>
+                        <table className={tableClass}>
+                            <thead><tr>
+                                <th className={th}>{t('opsAssets.maintenance.workspace.col.order')}</th>
+                                <th className={th}>UAV</th>
+                                <th className={th}>{t('opsAssets.maintenance.workspace.col.planned')}</th>
+                                <th className={th}>{t('opsAssets.maintenance.workspace.col.technician')}</th>
+                                <th className={`${th} text-right`}>{t('opsAssets.maintenance.workspace.col.cost')}</th>
+                                <th className={th}>{t('opsAssets.maintenance.workspace.col.status')}</th>
+                                <th className={th}>{t('opsAssets.maintenance.workspace.col.actions')}</th>
+                            </tr></thead>
+                            <tbody className="divide-y divide-border">{orders.data.content.map(order => <tr key={order.id} className="transition-colors hover:bg-slate-50/70">
+                                <td className={`${td} min-w-[220px]`}><strong className="block break-words text-slate-900">{order.title}</strong>
+                                    <small className="text-xs text-slate-500">{t('opsAssets.maintenance.workspace.orderNumber', {id: order.id})}</small></td>
+                                <td className={`${td} whitespace-nowrap font-mono text-xs`}>{order.uavSerialNumber}</td>
+                                <td className={`${td} whitespace-nowrap tabular-nums`}>{calendarDate(order.plannedDate, t, locale)}</td>
+                                <td className={td}>{order.technicianName}</td>
+                                <td className={`${td} whitespace-nowrap text-right font-semibold tabular-nums`}>{formatVnd(order.totalMaterialCost, t, locale)}</td>
+                                <td className={td}><span className="inline-block whitespace-nowrap rounded-badge bg-slate-100 px-2.5 py-0.5 text-xs font-semibold">{t(`opsAssets.maintenance.orderStatus.${order.status}`)}</span></td>
+                                <td className={td}><Button type="button" variant="outline" size="sm"
+                                                           onClick={() => setSelectedOrder(order.id)}>{t('opsAssets.maintenance.workspace.openOrder')}</Button></td>
+                            </tr>)}</tbody>
+                        </table>
+                    </div> : <EmptyState title={t('opsAssets.maintenance.workspace.noOrders')}
+                                         detail={t('opsAssets.maintenance.workspace.noOrdersDetail')}/>}
+                    <Pagination page={orderPage} pages={orders.data?.totalPages} onPage={setOrderPage}/></section>}
+        </>}
+        {scheduleForm && <ScheduleForm schedule={scheduleForm === 'new' ? undefined : scheduleForm} uavId={uavId}
+                                       uavs={uavs.data || []} canRead={can('UAV_READ')}
+                                       onClose={() => setScheduleForm(null)} refresh={refresh}/>}
+        {orderForm &&
+            <OrderCreate schedule={orderForm === 'new' ? undefined : orderForm} uavId={uavId} uavs={uavs.data || []}
+                         canRead={can('UAV_READ')} onClose={() => setOrderForm(null)} onCreated={order => {
+                setOrderForm(null);
+                setTab('orders');
+                setSelectedOrder(order.id);
+            }} refresh={refresh}/>}
+        {selectedOrder &&
+            <OrderDetail id={selectedOrder} onClose={() => setSelectedOrder(undefined)} refreshLists={refresh}/>}
+        {changeActive &&
+            <Drawer title={changeActive.active ? t('opsAssets.maintenance.workspace.pauseTitle') : t('opsAssets.maintenance.workspace.activateTitle')} onClose={() => {
+                if (!action.busy) setChangeActive(null);
+            }}>
+                <div className="space-y-4"><ActionFeedback action={action}/><p>
+                    <strong>{changeActive.title}</strong> · {changeActive.uavSerialNumber}</p><p
+                    className="text-sm text-slate-600">{changeActive.active ? t('opsAssets.maintenance.workspace.pauseNote') : t('opsAssets.maintenance.workspace.activateNote')}</p>
+                    <div className="flex flex-wrap gap-3"><Button type="button" variant="outline" disabled={action.busy}
+                                                                  onClick={() => setChangeActive(null)}>{t('opsAssets.maintenance.workspace.keep')}</Button><Button type="button" disabled={action.blocked}
+                                             onClick={() => void action.run(async service => {
+                                                 try {
+                                                     return await service.updateSchedule(changeActive, {
+                                                         title: changeActive.title,
+                                                         intervalDays: String(changeActive.intervalDays),
+                                                         nextDueDate: changeActive.nextDueDate
+                                                     }, !changeActive.active);
+                                                 } finally {
+                                                     setChangeActive(null);
+                                                 }
+                                             }, changeActive.active ? 'opsAssets.maintenance.workspace.paused' : 'opsAssets.maintenance.workspace.activated')}>{changeActive.active ? t('opsAssets.maintenance.workspace.confirmPause') : t('opsAssets.maintenance.workspace.confirmActivate')}</Button>
+                    </div>
+                </div>
+            </Drawer>}
+    </div>;
+}

@@ -2,7 +2,7 @@
 
 import {Suspense, use} from 'react';
 import {PageGuard} from '@/components/customer/CustomerLayout';
-import {TrainingCoursePlayer} from '@/features/training/components/TrainingCoursePlayer';
+import {TrainingCoursePlayer} from '@/components/training/TrainingCoursePlayer';
 
 export default function CustomerTrainingCourseRoutePage({params}: {params: Promise<{slug: string}>}) {
     const {slug} = use(params);

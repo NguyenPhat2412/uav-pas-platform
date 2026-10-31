@@ -1,5 +1,5 @@
 import {AdminPage} from '@/components/layout/AdminPage';
-import {AccessHub} from "@/features/access/components/AccessHub";
+import {AccessHub} from "@/components/access/AccessHub";
 
 export default function AdminAccessRoleMatrixPage() {
     return <AdminPage title="admin.pages.access.title"
