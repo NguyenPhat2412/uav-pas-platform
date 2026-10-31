@@ -1,5 +1,5 @@
 'use client';
-import {AuditPanel} from "@/features/audit/components/AuditPanel";
+import {AuditPanel} from "@/components/audit/AuditPanel";
 import {OperationsPage} from '@/components/layout/OperationsPage';
 
 export default function AuditPage() {

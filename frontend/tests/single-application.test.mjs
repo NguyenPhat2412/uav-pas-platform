@@ -24,7 +24,7 @@ test('feature route entries contain no duplicated page implementation', () => {
     assert.ok(pages.length >= 56);
     for (const p of pages) {
         const s = readFileSync(p, 'utf8');
-        assert.match(s, /from ['"]@\/features\//, p);
+        assert.match(s, /from ['"]@\/(api|components|content|forms|hooks|types|utils)\/[a-z-]+\//, p);
         assert.doesNotMatch(s, /useState|apiClient|useQuery/, p);
     }
 });

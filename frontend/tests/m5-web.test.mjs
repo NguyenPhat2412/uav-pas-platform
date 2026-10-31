@@ -15,17 +15,17 @@ test('M5 public route map exists and excludes private portal pages from sitemap'
 });
 
 test('public app uses the customer path without token forwarding', () => {
-    assert.match(read('src/features/marketing/content/origins.ts'), /customerUrl = ['"]\/customer['"]/);
-    const source = readdirSync(atRoot('src/features/marketing/components')).map((name) => read(`src/features/marketing/components/${name}`)).join('\n');
+    assert.match(read('src/content/marketing/origins.ts'), /customerUrl = ['"]\/customer['"]/);
+    const source = readdirSync(atRoot('src/components/marketing')).map((name) => read(`src/components/marketing/${name}`)).join('\n');
     assert.match(source, /NEXT_PUBLIC_CUSTOMER_URL|customerUrl/);
     assert.doesNotMatch(source, /token=|access_token|returnTo=/i);
 });
 
 test('public content labels planned capabilities and avoids private API calls', () => {
-    const content = read('src/features/marketing/content/site-content.ts');
+    const content = read('src/content/marketing/site-content.ts');
     assert.match(content, /Phát hiện có AI hỗ trợ/);
     assert.match(content, /PLANNED/);
     assert.doesNotMatch(content, /price:\s*['"]?\d|testimonial|partner|fleet/i);
-    assert.doesNotMatch(read('src/features/marketing/components/HomeLanding.tsx'), /fetch\(|api\//);
+    assert.doesNotMatch(read('src/components/marketing/HomeLanding.tsx'), /fetch\(|api\//);
     assert.match(read('src/app/(public)/layout.tsx'), /application\/ld\+json/);
 });

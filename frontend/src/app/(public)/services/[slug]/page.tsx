@@ -1,10 +1,10 @@
-import {serviceScenes} from "@/features/marketing/components/UavPhoto";
-import {pageMetadata} from "@/features/marketing/content/metadata";
+import {serviceScenes} from "@/components/marketing/UavPhoto";
+import {pageMetadata} from "@/content/marketing/metadata";
 import {notFound} from 'next/navigation';
 import Link from 'next/link';
-import {serviceDetails} from "@/features/marketing/content/service-details";
-import {services} from "@/features/marketing/content/site-content";
-import {CustomerCta, PublicPage} from "@/features/marketing/components/PublicPage";
+import {serviceDetails} from "@/content/marketing/service-details";
+import {services} from "@/content/marketing/site-content";
+import {CustomerCta, PublicPage} from "@/components/marketing/PublicPage";
 
 export function generateStaticParams() {
     return services.map(({slug}) => ({slug}));

@@ -1,4 +1,4 @@
-import CustomerMissionEdit from '@/features/missions/components/customer/CustomerMissionEdit';
+import CustomerMissionEdit from '@/components/mission/customer/CustomerMissionEdit';
 
 export default function CustomerMissionEditRoutePage() {
     return <CustomerMissionEdit/>;

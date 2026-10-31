@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import ts from 'typescript';
 
-const code = await readFile(new URL('../src/components/shared/navigation.ts', import.meta.url), 'utf8');
+const code = await readFile(new URL('../src/lib/navigation.ts', import.meta.url), 'utf8');
 const js = ts.transpileModule(code, {compilerOptions: {module: ts.ModuleKind.ESNext}}).outputText;
 const {activeDestination} = await import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
 const items = [{href: '/overview'}, {href: '/dispatch/missions'}, {href: '/users'}, {href: '/users/permissions'}];
@@ -67,7 +67,7 @@ test('URL-friendly slugs format human-readable identifiers and parse back to exa
     assert.equal(resolveStationIdFromParam('HN-VJU-01', stations), 2);
 });
 
-const sidebarRoutesSource = await readFile(new URL('../src/components/layout/sidebar-routes.ts', import.meta.url), 'utf8');
+const sidebarRoutesSource = await readFile(new URL('../src/config/sidebar-routes.ts', import.meta.url), 'utf8');
 test('centralized sidebar-routes config separates Admin access-control sub-pages and groups Operations routes', () => {
     for (const route of [
         '/admin/access-control',

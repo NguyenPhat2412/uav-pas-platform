@@ -3,8 +3,8 @@
 import {clearWelcomeFlags} from '@/lib/welcome-flag';
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
-import type {AuthContextType, AuthResponse, RegisterRequest, UserResponse} from "@/features/auth/types/auth.types";
-import {authService} from '@/features/auth/api/auth.api';
+import type {AuthContextType, AuthResponse, RegisterRequest, UserResponse} from "@/types/auth/auth.types";
+import {authService} from '@/api/auth/auth.api';
 import {API_ROUTES, ApiError, apiClient, PERMISSIONS_EVENT, rememberSessionUser, SESSION_EVENT, SESSION_STORAGE_KEY, sessionOwnerOf, setAuthSession} from "@/lib/api";
 import {toast} from '@/providers/ToastContext';
 import {useI18n} from '@/providers/I18nContext';

@@ -1,4 +1,4 @@
-import AdminWebhooksPanel from '@/features/webhooks/components/AdminWebhooksPanel';
+import AdminWebhooksPanel from '@/components/webhook/AdminWebhooksPanel';
 
 export default function AdminWebhooksRoutePage() {
     return <AdminWebhooksPanel/>;

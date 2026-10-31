@@ -2,7 +2,7 @@
 import {createContext, useContext, useEffect} from 'react';
 import {useSidebarController} from '@/hooks/useSidebarController';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
-import {AssistantWidget} from '@/features/assistant/components/AssistantWidget';
+import {AssistantWidget} from '@/components/assistant/AssistantWidget';
 import Link from 'next/link';
 import {usePathname, useRouter} from 'next/navigation';
 import {
@@ -17,22 +17,22 @@ import {LanguageSwitcher} from "@/components/ui/LanguageSwitcher";
 import {DispatchHotline} from "@/components/customer/DispatchHotline";
 import {useSidebarCounts} from "@/hooks/useSidebarCounts";
 import {CustomerAccountMenu} from "@/components/customer/CustomerAccountMenu";
-import {NotificationBell} from "@/components/notifications/NotificationBell";
+import {NotificationBell} from "@/components/notification/NotificationBell";
 import {PortalSwitcher} from "@/components/layout/PortalSwitcher";
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
-import {loginEntryForPage} from '@/features/auth/utils/auth-entry';
+import {loginEntryForPage} from '@/utils/auth/auth-entry';
 import {
     CUSTOMER_SIDEBAR_GROUPS,
     CUSTOMER_SIDEBAR_ROUTES,
     resolveSidebarActiveItem,
-} from '@/components/layout/sidebar-routes';
-import {useOwnProfile} from '@/features/profile/hooks/useProfile';
+} from '@/config/sidebar-routes';
+import {useOwnProfile} from '@/hooks/profile/useProfile';
 import {Button} from "@/components/customer/CustomerUi";
 import {cn} from '@/lib/utils';
 import {Bell as BellIcon, CircleHelp, LayoutDashboard, Plane, ReceiptText} from 'lucide-react';
 import type {LucideIcon} from 'lucide-react';
 import {FoldingNavGroup, foldedLinkClass, useFoldedNavGroups} from '@/components/layout/FoldingNavGroup';
-import {CUSTOMER_RECENT_PAGES_KEY, rememberRecentPage} from '@/components/layout/recent-pages';
+import {CUSTOMER_RECENT_PAGES_KEY, rememberRecentPage} from '@/lib/recent-pages';
 
 const GROUP_ICONS: Partial<Record<(typeof CUSTOMER_SIDEBAR_GROUPS)[number], LucideIcon>> = {
     overview: LayoutDashboard,
@@ -42,7 +42,7 @@ const GROUP_ICONS: Partial<Record<(typeof CUSTOMER_SIDEBAR_GROUPS)[number], Luci
 };
 
 // Cấu hình routes của Sidebar Khách hàng (bao gồm /billing, /notifications, v.v.)
-// được tách riêng và quản lý tập trung tại `@/components/layout/sidebar-routes.ts`.
+// được tách riêng và quản lý tập trung tại `@/config/sidebar-routes.ts`.
 const navItems = CUSTOMER_SIDEBAR_ROUTES;
 const navGroups = CUSTOMER_SIDEBAR_GROUPS;
 

@@ -16,4 +16,4 @@ export type {
     MissionMedia,
     MissionInput,
     MissionAvailability,
-} from '@/features/missions/types/mission.types';
+} from '@/types/mission/mission.types';

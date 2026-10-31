@@ -6,7 +6,7 @@ import type {ReactNode} from 'react';
 import {ChevronRight, History} from 'lucide-react';
 import type {SidebarRouteItem} from '@/types/ui';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
-import {readRecentPages} from '@/components/layout/recent-pages';
+import {readRecentPages} from '@/lib/recent-pages';
 import {useAuth} from '@/providers/AuthContext';
 import {cn} from '@/lib/utils';
 

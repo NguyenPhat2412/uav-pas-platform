@@ -1,6 +1,6 @@
 # UAV PAS Frontend
 
-Một ứng dụng Next.js chia theo nghiệp vụ trong `src/features`. `src/app` chỉ định tuyến và layout. Không còn kiến trúc
+Một ứng dụng Next.js chia theo tầng rồi theo tính năng: `src/{api,hooks,components,types,utils}/<tính năng>`. `src/app` chỉ định tuyến và layout. Không còn kiến trúc
 workspace nhiều app hoặc giao diện legacy.
 
 ```sh

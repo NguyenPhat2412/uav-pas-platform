@@ -1,4 +1,4 @@
-import AdminReportsPanel from '@/features/reports/components/AdminReportsPanel';
+import AdminReportsPanel from '@/components/reporting/AdminReportsPanel';
 
 export default function AdminReportsRoutePage() {
     return <AdminReportsPanel/>;

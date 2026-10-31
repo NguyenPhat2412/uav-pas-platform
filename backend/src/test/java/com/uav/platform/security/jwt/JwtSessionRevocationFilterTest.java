@@ -5,11 +5,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.modules.security.service.SessionRevocationService;
-import com.uav.platform.modules.user.entity.AppUser;
-import com.uav.platform.modules.user.enums.UserRole;
-import com.uav.platform.modules.user.enums.UserStatus;
-import com.uav.platform.modules.user.repository.UserRepository;
+import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.user.UserRole;
+import com.uav.platform.enums.user.UserStatus;
+import com.uav.platform.repository.user.UserRepository;
+import com.uav.platform.service.security.SessionRevocationService;
 
 import jakarta.servlet.FilterChain;
 
@@ -85,8 +85,7 @@ class JwtSessionRevocationFilterTest {
     void failedPasswordLockDoesNotEndAnExistingSession() throws Exception {
         AppUser user = users.findByUsername("pilot").orElseThrow();
         for (int i = 0; i < 5; i++)
-            com.uav.platform.modules.user.service.impl.UserAccountServiceImpl
-                    .incrementFailedAttempts(user);
+            com.uav.platform.service.impl.user.UserAccountServiceImpl.incrementFailedAttempts(user);
         assertNotNull(user.getLockTime());
         String token = provider.generateToken(7L, "pilot", "p@x.vn", "ROLE_PILOT");
 
