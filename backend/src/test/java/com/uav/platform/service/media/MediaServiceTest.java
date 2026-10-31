@@ -1,0 +1,193 @@
+package com.uav.platform.service.media;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import com.uav.platform.dto.record.media.ObjectMetadata;
+import com.uav.platform.entity.media.MediaAsset;
+import com.uav.platform.enums.audit.*;
+import com.uav.platform.enums.inventory.*;
+import com.uav.platform.enums.media.*;
+import com.uav.platform.enums.media.MediaType;
+import com.uav.platform.enums.mission.*;
+import com.uav.platform.enums.station.*;
+import com.uav.platform.enums.uav.*;
+import com.uav.platform.error.SystemException;
+import com.uav.platform.repository.media.MediaAssetRepository;
+import com.uav.platform.service.audit.AuditLogService;
+import com.uav.platform.service.impl.media.MediaServiceImpl;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.Optional;
+
+@ExtendWith(MockitoExtension.class)
+class MediaServiceTest {
+    @Mock MediaAssetRepository repository;
+    @Mock ObjectStorageService storage;
+    @Mock AuditLogService audit;
+
+    @org.mockito.Spy
+    com.uav.platform.mapper.media.MediaMapper mapper =
+            org.mapstruct.factory.Mappers.getMapper(
+                    com.uav.platform.mapper.media.MediaMapper.class);
+
+    @InjectMocks MediaServiceImpl service;
+
+    @Test
+    void registrationRejectsUnsupportedTypesAndDecimalSizeOverflowBeforePersistence() {
+        for (String mime :
+                java.util.List.of("text/plain", "image/gif", "application/octet-stream")) {
+            assertThrows(
+                    SystemException.class,
+                    () ->
+                            service.register(
+                                    new com.uav.platform.dto.request.media.MediaUploadRequest(
+                                            "bad", mime, 1, MediaType.DOCUMENT, null, null),
+                                    "pilot"));
+        }
+        for (String mime :
+                java.util.List.of(
+                        "image/jpeg",
+                        "image/png",
+                        "image/webp",
+                        "application/pdf",
+                        "video/mp4",
+                        "video/webm")) {
+            long max = mime.startsWith("video/") ? 1_000_000_000L : 100_000_000L;
+            assertThrows(
+                    SystemException.class,
+                    () ->
+                            service.register(
+                                    new com.uav.platform.dto.request.media.MediaUploadRequest(
+                                            "large", mime, max + 1, MediaType.DOCUMENT, null, null),
+                                    "pilot"));
+        }
+        assertThrows(
+                SystemException.class,
+                () ->
+                        service.register(
+                                new com.uav.platform.dto.request.media.MediaUploadRequest(
+                                        "empty", "image/png", 0, MediaType.IMAGE, null, null),
+                                "pilot"));
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void confirmationRequiresObjectAndDownloadRequiresConfirmation() {
+        MediaAsset asset =
+                new MediaAsset(
+                        "photo.jpg",
+                        "image/key",
+                        "image/jpeg",
+                        10,
+                        MediaType.IMAGE,
+                        "UAV",
+                        "7",
+                        "pilot",
+                        "test");
+        asset.setId(7L);
+        when(repository.findById(7L)).thenReturn(Optional.of(asset));
+        when(storage.objectExists("image/key")).thenReturn(false);
+        assertThrows(SystemException.class, () -> service.confirm(7L, "pilot"));
+        assertThrows(SystemException.class, () -> service.downloadUrl(7L, "pilot"));
+        verify(storage, never()).createSignedDownloadUrl(any());
+    }
+
+    @Test
+    void listUsesDatabaseSpecificationForSoftDeletedAssetsAndPageable() {
+        Pageable pageable = PageRequest.of(0, 20, Sort.by("id"));
+        when(repository.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(Page.empty(pageable));
+
+        assertEquals(0, service.list(pageable).content().size());
+        verify(repository).findAll(any(Specification.class), eq(pageable));
+        verify(repository, never()).findAll(any(Specification.class), any(Sort.class));
+    }
+
+    @Test
+    void listUsesAuthorizedDatabasePageAndReportsVisibleTotals() {
+        MediaAccessService access = mock(MediaAccessService.class);
+        MediaServiceImpl securedService =
+                new MediaServiceImpl(repository, storage, audit, null, access);
+        MediaAsset visible =
+                new MediaAsset(
+                        "visible.jpg",
+                        "visible",
+                        "image/jpeg",
+                        1,
+                        MediaType.IMAGE,
+                        "UAV",
+                        "8",
+                        "pilot",
+                        "test");
+        when(access.readableBy("pilot"))
+                .thenReturn(
+                        com.uav.platform.specification.media.MediaAssetSpecifications.hasUploader(
+                                "pilot"));
+        var pageable = PageRequest.of(0, 1, Sort.by("id"));
+        when(repository.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(
+                        new org.springframework.data.domain.PageImpl<>(
+                                java.util.List.of(visible), pageable, 1));
+        SecurityContextHolder.getContext()
+                .setAuthentication(
+                        UsernamePasswordAuthenticationToken.authenticated(
+                                "pilot", "n/a", java.util.List.of()));
+        try {
+            var result = securedService.list(PageRequest.of(0, 1));
+            assertEquals(1, result.content().size());
+            assertEquals("visible.jpg", result.content().get(0).originalName());
+            assertEquals(1, result.totalElements());
+            assertEquals(1, result.totalPages());
+            verify(access).readableBy("pilot");
+            verify(repository, never()).findAll(any(Specification.class), any(Sort.class));
+        } finally {
+            SecurityContextHolder.clearContext();
+        }
+    }
+
+    @Test
+    void confirmationEnablesDownloadAndDeleteQueuesDurableCleanup() {
+        MediaAsset asset =
+                new MediaAsset(
+                        "photo.jpg",
+                        "image/key",
+                        "image/jpeg",
+                        10,
+                        MediaType.IMAGE,
+                        "UAV",
+                        "7",
+                        "pilot",
+                        "test");
+        asset.setId(7L);
+        when(repository.findById(7L)).thenReturn(Optional.of(asset));
+        when(storage.objectExists("image/key")).thenReturn(true);
+        when(storage.metadata("image/key")).thenReturn(new ObjectMetadata(10, "image/jpeg"));
+        when(storage.readHeader("image/key"))
+                .thenReturn(new byte[] {(byte) 255, (byte) 216, (byte) 255});
+        when(storage.createSignedDownloadUrl("image/key"))
+                .thenReturn("https://example.test/signed");
+        var confirmed = service.confirm(7L, "pilot");
+        assertEquals(true, confirmed.confirmed());
+        assertEquals("https://example.test/signed", service.downloadUrl(7L, "pilot").url());
+        service.delete(7L, "pilot");
+        verify(storage, never()).deleteObject("image/key");
+        org.junit.jupiter.api.Assertions.assertNotNull(asset.getDeleteAfter());
+        assertEquals(true, asset.isDeleted());
+        verify(repository, times(2)).save(asset);
+    }
+}

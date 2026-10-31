@@ -1,4 +1,4 @@
-import AdminSettingsPanel from '@/features/settings/components/AdminSettingsPanel';
+import AdminSettingsPanel from '@/components/settings/AdminSettingsPanel';
 
 export default function AdminSettingsRoutePage() {
     return <AdminSettingsPanel/>;

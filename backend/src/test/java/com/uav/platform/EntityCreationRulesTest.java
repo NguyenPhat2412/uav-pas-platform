@@ -3,21 +3,21 @@ package com.uav.platform;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.modules.billing.entity.ServicePlan;
-import com.uav.platform.modules.billing.service.impl.ServicePlanOperations;
-import com.uav.platform.modules.billing.service.impl.UserQuotaOperations;
-import com.uav.platform.modules.media.entity.MediaAsset;
-import com.uav.platform.modules.mission.entity.Mission;
-import com.uav.platform.modules.notification.enums.NotificationType;
-import com.uav.platform.modules.notification.service.impl.NotificationOperations;
-import com.uav.platform.modules.sar.enums.AiTaskStatus;
-import com.uav.platform.modules.sar.enums.AiTaskType;
-import com.uav.platform.modules.sar.enums.ProcessingNode;
-import com.uav.platform.modules.sar.enums.SarStatus;
-import com.uav.platform.modules.sar.service.impl.AiTaskOperations;
-import com.uav.platform.modules.sar.service.impl.SarMissionOperations;
-import com.uav.platform.modules.settings.service.impl.SystemConfigurationOperations;
-import com.uav.platform.modules.user.entity.AppUser;
+import com.uav.platform.entity.billing.ServicePlan;
+import com.uav.platform.entity.media.MediaAsset;
+import com.uav.platform.entity.mission.Mission;
+import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.notification.NotificationType;
+import com.uav.platform.enums.sar.AiTaskStatus;
+import com.uav.platform.enums.sar.AiTaskType;
+import com.uav.platform.enums.sar.ProcessingNode;
+import com.uav.platform.enums.sar.SarStatus;
+import com.uav.platform.service.impl.billing.ServicePlanOperations;
+import com.uav.platform.service.impl.billing.UserQuotaOperations;
+import com.uav.platform.service.impl.notification.NotificationOperations;
+import com.uav.platform.service.impl.sar.AiTaskOperations;
+import com.uav.platform.service.impl.sar.SarMissionOperations;
+import com.uav.platform.service.impl.settings.SystemConfigurationOperations;
 
 import org.junit.jupiter.api.Test;
 

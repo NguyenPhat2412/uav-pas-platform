@@ -1,10 +1,10 @@
 package com.uav.platform.security;
 
 import com.uav.platform.common.dto.response.MessageResponse;
+import com.uav.platform.dto.request.auth.LogoutRequest;
+import com.uav.platform.dto.request.auth.RefreshTokenRequest;
+import com.uav.platform.dto.response.auth.AuthResponse;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.modules.auth.dto.request.LogoutRequest;
-import com.uav.platform.modules.auth.dto.request.RefreshTokenRequest;
-import com.uav.platform.modules.auth.dto.response.AuthResponse;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

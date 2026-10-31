@@ -56,7 +56,7 @@ Bổ sung thêm ngày 2026-10-25: 7 ảnh USGS cho lưới ảnh và ba thẻ c�
 
 Ba ảnh đầu đang dùng trên website, được lưu trong `frontend/public/images/uav-photos/` ở định dạng WebP 1536×1024. Ảnh
 đăng nhập có bản 640/960 px dùng chung cho ba khu vực `/customer`, `/operations` và `/admin` trong một ứng dụng
-frontend. Các thành phần hiển thị nằm tại `frontend/src/features/marketing/components/uav-photo.tsx` và
+frontend. Các thành phần hiển thị nằm tại `frontend/src/components/marketing/UavPhoto.tsx` và
 `frontend/src/components/shared/PortalAuthLayout.tsx`. Chỉ xoay theo EXIF, cắt khung và tối ưu dung lượng; không tạo
 thêm chi tiết bằng AI. Các ảnh AI cũ không còn được frontend tham chiếu.
 

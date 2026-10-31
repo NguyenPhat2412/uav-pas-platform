@@ -1,0 +1,19 @@
+package com.uav.platform.dto.record.mission;
+
+import com.uav.platform.enums.mission.MissionStatus;
+import com.uav.platform.enums.mission.MissionType;
+
+import java.time.LocalDate;
+
+public record MissionFilter(
+        MissionStatus status,
+        MissionType missionType,
+        Long stationId,
+        Long operatorId,
+        Long customerId,
+        LocalDate requestedDate,
+        String search) {
+    public static MissionFilter empty() {
+        return new MissionFilter(null, null, null, null, null, null, null);
+    }
+}

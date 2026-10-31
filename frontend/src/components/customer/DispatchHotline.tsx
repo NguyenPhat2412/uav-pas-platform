@@ -1,7 +1,7 @@
 'use client';
 import {PhoneCall} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
-import {useSiteInfo} from '@/features/settings/hooks/useSiteInfo';
+import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
 
 // Admin setting contact.dispatch_hotline wins; NEXT_PUBLIC_DISPATCH_HOTLINE is the build-time fallback.
 // The button stays hidden until a staffed number is configured in either place.

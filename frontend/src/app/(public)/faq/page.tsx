@@ -1,6 +1,6 @@
 import {keepVietnamesePhrases} from "@/lib/typography";
-import {pageMetadata} from "@/features/marketing/content/metadata";
-import {CustomerCta, PublicPage} from "@/features/marketing/components/PublicPage";
+import {pageMetadata} from "@/content/marketing/metadata";
+import {CustomerCta, PublicPage} from "@/components/marketing/PublicPage";
 
 export const metadata = pageMetadata(
     "Câu hỏi thường gặp",

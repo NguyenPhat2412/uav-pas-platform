@@ -1,7 +1,7 @@
 import React from 'react';
 import {Loader2} from 'lucide-react';
 import {cn} from '@/lib/utils';
-import {getPresentationLocale} from '@/components/shared/presentation';
+import {getPresentationLocale} from '@/lib/presentation';
 import type {SpinnerProps} from '@/types/ui';
 
 export type {SpinnerProps};

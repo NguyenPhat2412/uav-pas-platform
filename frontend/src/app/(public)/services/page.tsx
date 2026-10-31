@@ -1,12 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {keepVietnamesePhrases} from "@/lib/typography";
-import {scenes, serviceScenes} from "@/features/marketing/components/UavPhoto";
-import {pageMetadata} from "@/features/marketing/content/metadata";
-import {customerUrl, services} from "@/features/marketing/content/site-content";
-import {serviceDetails} from "@/features/marketing/content/service-details";
-import {CustomerCta} from "@/features/marketing/components/PublicPage";
-import {FlatTag} from "@/features/marketing/components/FlatTag";
+import {scenes, serviceScenes} from "@/components/marketing/UavPhoto";
+import {pageMetadata} from "@/content/marketing/metadata";
+import {customerUrl, services} from "@/content/marketing/site-content";
+import {serviceDetails} from "@/content/marketing/service-details";
+import {CustomerCta} from "@/components/marketing/PublicPage";
+import {FlatTag} from "@/components/marketing/FlatTag";
 
 export const metadata = pageMetadata(
     "Dịch vụ UAV",

@@ -2,27 +2,27 @@ package com.uav.platform.stabilization;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.uav.platform.dto.request.inventory.*;
+import com.uav.platform.dto.request.station.StationRequest;
+import com.uav.platform.dto.response.inventory.*;
+import com.uav.platform.entity.inventory.*;
+import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.audit.*;
+import com.uav.platform.enums.inventory.*;
+import com.uav.platform.enums.media.*;
+import com.uav.platform.enums.mission.*;
+import com.uav.platform.enums.permission.PermissionCode;
+import com.uav.platform.enums.station.*;
+import com.uav.platform.enums.uav.*;
+import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.modules.audit.enums.*;
-import com.uav.platform.modules.inventory.dto.request.*;
-import com.uav.platform.modules.inventory.dto.response.*;
-import com.uav.platform.modules.inventory.entity.*;
-import com.uav.platform.modules.inventory.enums.*;
-import com.uav.platform.modules.inventory.repository.EquipmentRepository;
-import com.uav.platform.modules.inventory.service.InventoryService;
-import com.uav.platform.modules.media.enums.*;
-import com.uav.platform.modules.mission.enums.*;
-import com.uav.platform.modules.mission.service.impl.MissionOperations;
-import com.uav.platform.modules.permission.enums.PermissionCode;
-import com.uav.platform.modules.permission.service.PermissionService;
-import com.uav.platform.modules.station.dto.request.StationRequest;
-import com.uav.platform.modules.station.enums.*;
-import com.uav.platform.modules.station.service.StationService;
-import com.uav.platform.modules.uav.enums.*;
-import com.uav.platform.modules.user.entity.AppUser;
-import com.uav.platform.modules.user.enums.UserStatus;
-import com.uav.platform.modules.user.repository.UserRepository;
-import com.uav.platform.modules.user.service.UserService;
+import com.uav.platform.repository.inventory.EquipmentRepository;
+import com.uav.platform.repository.user.UserRepository;
+import com.uav.platform.service.impl.mission.MissionOperations;
+import com.uav.platform.service.inventory.InventoryService;
+import com.uav.platform.service.permission.PermissionService;
+import com.uav.platform.service.station.StationService;
+import com.uav.platform.service.user.UserService;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -63,14 +63,14 @@ class StabilizationPostgresTest {
     }
 
     @Autowired JdbcTemplate db;
-    @Autowired com.uav.platform.modules.billing.service.MissionInvoiceService invoiceWorker;
-    @Autowired com.uav.platform.modules.billing.repository.MissionBillingJobRepository billingJobs;
-    @Autowired com.uav.platform.modules.billing.repository.InvoiceRepository invoices;
-    @Autowired com.uav.platform.modules.billing.repository.ServicePlanRepository plans;
-    @Autowired com.uav.platform.modules.billing.service.impl.BillingServiceImpl billing;
-    @Autowired com.uav.platform.modules.mission.repository.MissionRepository missionRepository;
-    @Autowired com.uav.platform.modules.mission.service.MissionService missionService;
-    @Autowired com.uav.platform.modules.billing.service.QuotaService quotas;
+    @Autowired com.uav.platform.service.billing.MissionInvoiceService invoiceWorker;
+    @Autowired com.uav.platform.repository.billing.MissionBillingJobRepository billingJobs;
+    @Autowired com.uav.platform.repository.billing.InvoiceRepository invoices;
+    @Autowired com.uav.platform.repository.billing.ServicePlanRepository plans;
+    @Autowired com.uav.platform.service.impl.billing.BillingServiceImpl billing;
+    @Autowired com.uav.platform.repository.mission.MissionRepository missionRepository;
+    @Autowired com.uav.platform.service.mission.MissionService missionService;
+    @Autowired com.uav.platform.service.billing.QuotaService quotas;
     @Autowired InventoryService inventory;
     @Autowired EquipmentRepository equipment;
     @Autowired StationService stations;
@@ -167,7 +167,7 @@ class StabilizationPostgresTest {
                 .authenticated(user.getUsername(), "", List.of());
     }
 
-    private com.uav.platform.modules.mission.entity.Mission runningMission(
+    private com.uav.platform.entity.mission.Mission runningMission(
             AppUser customer, AppUser operator, double hours) {
         var start = java.time.LocalDateTime.of(2026, 10, 17, 10, 0);
         var m =
@@ -208,7 +208,7 @@ class StabilizationPostgresTest {
                                     gate.await();
                                     return missionService.complete(
                                             m.getId(),
-                                            new com.uav.platform.modules.mission.dto.request
+                                            new com.uav.platform.dto.request.mission
                                                     .MissionCompletionRequest("Complete", "Intact"),
                                             auth(operator));
                                 }));
@@ -222,7 +222,7 @@ class StabilizationPostgresTest {
                     () ->
                             missionService.complete(
                                     a.getId(),
-                                    new com.uav.platform.modules.mission.dto.request
+                                    new com.uav.platform.dto.request.mission
                                             .MissionCompletionRequest("Again", "Intact"),
                                     auth(operator)));
             assertEquals(3.5, quotas.getQuotaByUserId(customer.getId()).flightHoursUsed());
@@ -243,7 +243,7 @@ class StabilizationPostgresTest {
                 "UPDATE system_configurations SET config_value='123' WHERE config_key='billing.hourly_rate_vnd'");
         missionService.complete(
                 m.getId(),
-                new com.uav.platform.modules.mission.dto.request.MissionCompletionRequest(
+                new com.uav.platform.dto.request.mission.MissionCompletionRequest(
                         "Complete", "Intact"),
                 auth(operator));
         var job = billingJobs.findByMissionId(m.getId()).orElseThrow();
@@ -287,8 +287,8 @@ class StabilizationPostgresTest {
                 () ->
                         missionService.complete(
                                 m.getId(),
-                                new com.uav.platform.modules.mission.dto.request
-                                        .MissionCompletionRequest("Bad", "Intact"),
+                                new com.uav.platform.dto.request.mission.MissionCompletionRequest(
+                                        "Bad", "Intact"),
                                 auth(owner("stranger_completion"))));
     }
 
@@ -302,7 +302,7 @@ class StabilizationPostgresTest {
         missionRepository.save(mission);
         var invoice =
                 invoices.save(
-                        new com.uav.platform.modules.billing.entity.Invoice(
+                        new com.uav.platform.entity.billing.Invoice(
                                 "INV-MISSION-" + mission.getId(),
                                 customer,
                                 mission,
@@ -312,7 +312,7 @@ class StabilizationPostgresTest {
                                 "Existing invoice"));
         var job =
                 billingJobs.save(
-                        new com.uav.platform.modules.billing.entity.MissionBillingJob(
+                        new com.uav.platform.entity.billing.MissionBillingJob(
                                 mission, 1, new java.math.BigDecimal("123.45")));
         invoiceWorker.process(job.getId());
         var failed = billingJobs.findById(job.getId()).orElseThrow();
@@ -336,9 +336,7 @@ class StabilizationPostgresTest {
                     mission, "status", MissionStatus.COMPLETED);
             missionRepository.save(mission);
             var amount = i < 50 ? null : new java.math.BigDecimal("123.45");
-            var job =
-                    new com.uav.platform.modules.billing.entity.MissionBillingJob(
-                            mission, 1, amount);
+            var job = new com.uav.platform.entity.billing.MissionBillingJob(mission, 1, amount);
             job.setNextAttemptAt(java.time.LocalDateTime.now().minusHours(i < 50 ? 2 : 1));
             var saved = billingJobs.save(job);
             if (i == 50) healthyJob = saved.getId();
@@ -375,12 +373,12 @@ class StabilizationPostgresTest {
         }
     }
 
-    private com.uav.platform.modules.billing.entity.Invoice invoice(
+    private com.uav.platform.entity.billing.Invoice invoice(
             AppUser customer,
-            com.uav.platform.modules.mission.entity.Mission mission,
-            com.uav.platform.modules.billing.entity.ServicePlan plan) {
+            com.uav.platform.entity.mission.Mission mission,
+            com.uav.platform.entity.billing.ServicePlan plan) {
         return invoices.save(
-                new com.uav.platform.modules.billing.entity.Invoice(
+                new com.uav.platform.entity.billing.Invoice(
                         "INV-TEST-" + UUID.randomUUID().toString().substring(0, 8),
                         customer,
                         mission,
@@ -390,11 +388,9 @@ class StabilizationPostgresTest {
                         null));
     }
 
-    private com.uav.platform.modules.billing.dto.request.PaymentIpnRequest ipn(
-            com.uav.platform.modules.billing.entity.Invoice inv,
-            String transaction,
-            String status) {
-        return new com.uav.platform.modules.billing.dto.request.PaymentIpnRequest(
+    private com.uav.platform.dto.request.billing.PaymentIpnRequest ipn(
+            com.uav.platform.entity.billing.Invoice inv, String transaction, String status) {
+        return new com.uav.platform.dto.request.billing.PaymentIpnRequest(
                 inv.getCode(),
                 inv.getId(),
                 transaction,
@@ -409,7 +405,7 @@ class StabilizationPostgresTest {
         quotas.recordMissionUsage(customer.getId(), 3.5);
         var before = quotas.getQuotaByUserId(customer.getId());
         var plan =
-                com.uav.platform.modules.billing.service.impl.ServicePlanOperations.create(
+                com.uav.platform.service.impl.billing.ServicePlanOperations.create(
                         "PAID-TEST",
                         "Paid test",
                         java.math.BigDecimal.valueOf(100),
@@ -438,7 +434,7 @@ class StabilizationPostgresTest {
                         "SELECT count(*) FROM payment_transactions WHERE transaction_code='PLAN-REPLAY'",
                         Integer.class));
         assertEquals(
-                com.uav.platform.modules.billing.enums.InvoiceStatus.PAID,
+                com.uav.platform.enums.billing.InvoiceStatus.PAID,
                 invoices.findById(inv.getId()).orElseThrow().getStatus());
         var another = invoice(customer, null, null);
         var reused = ipn(another, "PLAN-REPLAY", "SUCCESS");
@@ -499,7 +495,7 @@ class StabilizationPostgresTest {
                                 () -> billing.processPaymentIpn(success, null, auth(customer)))
                         .getStatus());
         var mismatch =
-                new com.uav.platform.modules.billing.dto.request.PaymentIpnRequest(
+                new com.uav.platform.dto.request.billing.PaymentIpnRequest(
                         inv.getCode(), inv.getId() + 1, "MISMATCH", inv.getAmount(), "SUCCESS");
         assertEquals(
                 org.springframework.http.HttpStatus.CONFLICT,
@@ -524,7 +520,7 @@ class StabilizationPostgresTest {
         quotas.recordMissionUsage(customer.getId(), 2);
         var paidPlan =
                 plans.save(
-                        com.uav.platform.modules.billing.service.impl.ServicePlanOperations.create(
+                        com.uav.platform.service.impl.billing.ServicePlanOperations.create(
                                 "ROLLBACK-PLAN",
                                 "Rollback test",
                                 java.math.BigDecimal.valueOf(100),
@@ -550,7 +546,7 @@ class StabilizationPostgresTest {
             db.execute("DROP FUNCTION reject_test_payment()");
         }
         assertEquals(
-                com.uav.platform.modules.billing.enums.InvoiceStatus.PENDING,
+                com.uav.platform.enums.billing.InvoiceStatus.PENDING,
                 invoices.findById(inv.getId()).orElseThrow().getStatus());
         assertNull(invoices.findById(inv.getId()).orElseThrow().getPaidAt());
         assertEquals(

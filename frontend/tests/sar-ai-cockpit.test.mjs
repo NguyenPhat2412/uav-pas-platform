@@ -5,7 +5,7 @@ import test from 'node:test';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const atRoot = path => `${root}${path}`;
-const sarHooksPath = `${root}src/features/sar/hooks/useSar.ts`;
+const sarHooksPath = `${root}src/hooks/sar/useSar.ts`;
 
 test('SAR AI Cockpit route exists and is configured with OperationsPage', () => {
     const pagePath = `${root}src/app/(operations)/operations/(portal)/sar-cockpit/page.tsx`;
@@ -27,7 +27,7 @@ test('AppShell includes SAR AI Cockpit in navigation', () => {
 });
 
 test('AiViewfinder draws real AI detections and verifies them through the API', () => {
-    const viewfinderPath = `${root}src/features/sar/components/AiViewfinder.tsx`;
+    const viewfinderPath = `${root}src/components/sar/AiViewfinder.tsx`;
     assert.equal(existsSync(viewfinderPath), true);
 
     const content = readFileSync(viewfinderPath, 'utf8');
@@ -40,7 +40,7 @@ test('AiViewfinder draws real AI detections and verifies them through the API', 
 });
 
 test('SarTacticalMap plots the mission datum, search area, detections and live UAV on a real map', () => {
-    const mapPath = `${root}src/features/sar/components/SarTacticalMap.tsx`;
+    const mapPath = `${root}src/components/sar/SarTacticalMap.tsx`;
     assert.equal(existsSync(mapPath), true);
 
     const content = readFileSync(mapPath, 'utf8');
@@ -54,8 +54,8 @@ test('SarTacticalMap plots the mission datum, search area, detections and live U
 });
 
 test('UavTelemetryHud and Kv260EdgeStatusCard show reported values only', () => {
-    const hudPath = `${root}src/features/sar/components/UavTelemetryHud.tsx`;
-    const kv260Path = `${root}src/features/sar/components/Kv260EdgeStatusCard.tsx`;
+    const hudPath = `${root}src/components/sar/UavTelemetryHud.tsx`;
+    const kv260Path = `${root}src/components/sar/Kv260EdgeStatusCard.tsx`;
     assert.equal(existsSync(hudPath), true);
     assert.equal(existsSync(kv260Path), true);
 
@@ -75,8 +75,7 @@ test('UavTelemetryHud and Kv260EdgeStatusCard show reported values only', () => 
     for (const file of [hudPath, kv260Path]) {
         assert.doesNotMatch(readFileSync(file, 'utf8'), /const \w+ = \d+(\.\d+)?; \/\/ (m|%|FPS|ms|°C|dBm)/, `${file} must not hardcode readings`);
     }
-    const sarDir = `${root}src/features/sar`;
-    assert.equal(existsSync(`${sarDir}/stores/sarStore.ts`), false, 'the simulated telemetry store is gone');
+    assert.equal(existsSync(`${root}src/stores/sar/sarStore.ts`), false, 'the simulated telemetry store is gone');
     for (const text of Object.values(opsSharedVi.opsShared.sar.cockpit)) {
         assert.doesNotMatch(text, /mô phỏng/i, 'cockpit copy must not describe a simulation');
     }

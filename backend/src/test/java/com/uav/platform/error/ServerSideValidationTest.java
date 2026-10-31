@@ -3,13 +3,13 @@ package com.uav.platform.error;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.uav.platform.common.util.PhoneNumbers;
-import com.uav.platform.modules.billing.dto.request.UpdateQuotaRequest;
-import com.uav.platform.modules.inventory.dto.request.EquipmentRequest;
-import com.uav.platform.modules.inventory.dto.request.QuantityRequest;
-import com.uav.platform.modules.inventory.enums.EquipmentType;
-import com.uav.platform.modules.mission.dto.request.MissionCreateRequest;
-import com.uav.platform.modules.mission.enums.MissionType;
-import com.uav.platform.modules.mission.service.impl.MissionInputOperations;
+import com.uav.platform.dto.request.billing.UpdateQuotaRequest;
+import com.uav.platform.dto.request.inventory.EquipmentRequest;
+import com.uav.platform.dto.request.inventory.QuantityRequest;
+import com.uav.platform.dto.request.mission.MissionCreateRequest;
+import com.uav.platform.enums.inventory.EquipmentType;
+import com.uav.platform.enums.mission.MissionType;
+import com.uav.platform.service.impl.mission.MissionInputOperations;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
