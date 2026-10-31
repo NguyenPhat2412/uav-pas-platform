@@ -1,5 +1,5 @@
-import CustomerDashboardPanel from '@/features/dashboard/components/CustomerDashboardPanel';
-import {CustomerHome} from '@/features/dashboard/components/CustomerHome';
+import CustomerDashboardPanel from '@/components/dashboard/CustomerDashboardPanel';
+import {CustomerHome} from '@/components/dashboard/CustomerHome';
 
 export default function CustomerDashboardRoutePage() {
     return <><CustomerHome/><CustomerDashboardPanel/></>;

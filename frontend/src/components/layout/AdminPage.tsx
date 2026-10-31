@@ -7,8 +7,8 @@ import {AppShell} from "@/components/layout/AdminAppShell";
 import {PermissionGate} from "@/components/data/WorkspaceState";
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {canUsePortal, portalForRole, portalHome} from '@/features/auth/utils/portal';
-import {loginEntryForPage} from '@/features/auth/utils/auth-entry';
+import {canUsePortal, portalForRole, portalHome} from '@/utils/auth/portal';
+import {loginEntryForPage} from '@/utils/auth/auth-entry';
 
 interface AdminPageMeta {
     activeResource?: string;

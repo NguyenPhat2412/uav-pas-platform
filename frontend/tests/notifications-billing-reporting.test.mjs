@@ -43,8 +43,8 @@ test('Database Flyway migrations V4, V5, V6, V7 exist and contain proper schemas
 });
 
 test('Operations App has NotificationBell and Notifications page', () => {
-    const bellPath = `${root}src/components/notifications/NotificationBell.tsx`;
-    const pagePath = `${root}src/features/notifications/components/OperationsNotificationsPanel.tsx`;
+    const bellPath = `${root}src/components/notification/NotificationBell.tsx`;
+    const pagePath = `${root}src/components/notification/OperationsNotificationsPanel.tsx`;
     const shellPath = `${root}src/components/layout/AppShell.tsx`;
 
     assert.equal(existsSync(bellPath), true, 'NotificationBell must exist');
@@ -52,9 +52,9 @@ test('Operations App has NotificationBell and Notifications page', () => {
 
     const bellContent = readFileSync(bellPath, 'utf8');
     assert.match(bellContent, /useNotifications/);
-    const hook = readFileSync(atRoot('src/features/notifications/hooks/useNotifications.ts'), 'utf8');
+    const hook = readFileSync(atRoot('src/hooks/notification/useNotifications.ts'), 'utf8');
     assert.match(hook, /notificationsService\.unreadCount/);
-    assert.match(readFileSync(atRoot('src/features/notifications/api/notifications.api.ts'), 'utf8'), /API_ROUTES.notifications.unreadCount/);
+    assert.match(readFileSync(atRoot('src/api/notification/notifications.api.ts'), 'utf8'), /API_ROUTES.notifications.unreadCount/);
     assert.match(hook, /NotificationItem/);
 
     const shellContent = readFileSync(shellPath, 'utf8');
@@ -63,8 +63,8 @@ test('Operations App has NotificationBell and Notifications page', () => {
 });
 
 test('Customer Portal has Billing & Quotas and Notifications pages', () => {
-    const billingPath = `${root}src/features/billing/components/CustomerBillingPanel.tsx`;
-    const notifPath = `${root}src/features/notifications/components/CustomerNotificationsPanel.tsx`;
+    const billingPath = `${root}src/components/billing/CustomerBillingPanel.tsx`;
+    const notifPath = `${root}src/components/notification/CustomerNotificationsPanel.tsx`;
     const layoutPath = `${root}src/components/customer/CustomerLayout.tsx`;
 
     assert.equal(existsSync(billingPath), true, 'Customer billing page must exist');
@@ -72,7 +72,7 @@ test('Customer Portal has Billing & Quotas and Notifications pages', () => {
 
     const billingContent = readFileSync(billingPath, 'utf8');
     assert.match(billingContent, /useSubscribePlan|useBankTransferStatus/, 'payments go through the billing hooks');
-    assert.match(readFileSync(`${root}src/features/billing/hooks/useCustomerBilling.ts`, 'utf8'), /bankTransferService/, 'the hooks use the VietQR bank-transfer API');
+    assert.match(readFileSync(`${root}src/hooks/billing/useCustomerBilling.ts`, 'utf8'), /bankTransferService/, 'the hooks use the VietQR bank-transfer API');
     assert.match(billingContent, /payment\.awaitingTransferHint/);
     assert.equal(customerVi.billingPage.gatewayNotice, undefined, 'no "gateway not configured" copy');
     assert.equal(customerVi.billingPage.subtitle, undefined, 'customer pages carry no title/description block');
@@ -92,9 +92,9 @@ test('Customer Portal has Billing & Quotas and Notifications pages', () => {
 });
 
 test('Admin Portal has Billing Management, Reports & CSV Export, and Settings Configuration', () => {
-    const billingPath = `${root}src/features/billing/components/AdminBillingPanel.tsx`;
-    const reportsPath = `${root}src/features/reports/components/AdminReportsPanel.tsx`;
-    const settingsPath = `${root}src/features/settings/components/AdminSettingsPanel.tsx`;
+    const billingPath = `${root}src/components/billing/AdminBillingPanel.tsx`;
+    const reportsPath = `${root}src/components/reporting/AdminReportsPanel.tsx`;
+    const settingsPath = `${root}src/components/settings/AdminSettingsPanel.tsx`;
     const shellPath = `${root}src/components/layout/AdminAppShell.tsx`;
 
     assert.equal(existsSync(billingPath), true, 'Admin billing page must exist');
@@ -107,7 +107,7 @@ test('Admin Portal has Billing Management, Reports & CSV Export, and Settings Co
     assert.match(billingContent, /User Quotas/i);
     // The page reaches the billing API through the billing hooks and quota service, not a hard-coded path.
     assert.match(billingContent, /useBillingPlans\(\)/);
-    assert.match(readFileSync(`${root}src/features/billing/hooks/useBillingAdmin.ts`, 'utf8'), /quotasService\.billing(Plans|Quotas)/);
+    assert.match(readFileSync(`${root}src/hooks/billing/useBillingAdmin.ts`, 'utf8'), /quotasService\.billing(Plans|Quotas)/);
 
     const reportsContent = readFileSync(reportsPath, 'utf8');
     assert.match(reportsContent, /admin\.reports\.exportCsv/);
@@ -144,19 +144,19 @@ test('Centralized API_ROUTES registry in @/lib/api and Service-Layer delegation'
     const indexContent = readFileSync(indexClientPath, 'utf8');
     assert.match(indexContent, /export \{ API_ROUTES, type ApiRoutes \} from ['"]@\/lib\/api\/routes['"]/);
 
-    const customerBillingContent = readFileSync(`${root}src/features/billing/components/CustomerBillingPanel.tsx`, 'utf8');
+    const customerBillingContent = readFileSync(`${root}src/components/billing/CustomerBillingPanel.tsx`, 'utf8');
     assert.doesNotMatch(customerBillingContent, /fetch\(['"`]\/api\/v1\//);
     assert.doesNotMatch(customerBillingContent, /simulatePaymentIpn|Xác nhận thủ công|101869876543/);
     assert.doesNotMatch(customerBillingContent, /billingPage\.(gatewayNotice|upgradeUnavailable)/);
 
-    const adminReportsContent = readFileSync(`${root}src/features/reports/components/AdminReportsPanel.tsx`, 'utf8');
+    const adminReportsContent = readFileSync(`${root}src/components/reporting/AdminReportsPanel.tsx`, 'utf8');
     assert.match(adminReportsContent, /useOperationsReport\(\)/);
-    assert.match(readFileSync(`${root}src/features/reports/hooks/useReports.ts`, 'utf8'), /reportsService\.operationsReport/);
+    assert.match(readFileSync(`${root}src/hooks/reporting/useReports.ts`, 'utf8'), /reportsService\.operationsReport/);
 
-    const adminSettingsContent = readFileSync(`${root}src/features/settings/components/AdminSettingsPanel.tsx`, 'utf8');
+    const adminSettingsContent = readFileSync(`${root}src/components/settings/AdminSettingsPanel.tsx`, 'utf8');
     assert.match(adminSettingsContent, /usePlatformSettings\(\)/);
     assert.match(adminSettingsContent, /useSaveSetting\(\)/);
-    const settingsHooks = readFileSync(`${root}src/features/settings/hooks/useSettings.ts`, 'utf8');
+    const settingsHooks = readFileSync(`${root}src/hooks/settings/useSettings.ts`, 'utf8');
     assert.match(settingsHooks, /platformSettingsService\.list/);
     assert.match(settingsHooks, /platformSettingsService\.update/);
 });
@@ -211,9 +211,9 @@ test('Notifications adapt actual backend DTOs and preserve HTTP and user-cache c
         globalThis.__notificationTest.queryKeys = (await load(strip('src/lib/query/index.ts'))).queryKeys;
         globalThis.__notificationTest.buildQueryString = (await load(strip('src/lib/format.ts').replace(/^export type .*$/gm, ''))).buildQueryString;
         globalThis.__notificationTest.notificationsService = (await load('const {apiClient,API_ROUTES,buildQueryString}=globalThis.__notificationTest;\n'
-            + strip('src/features/notifications/api/notifications.api.ts'))).notificationsService;
+            + strip('src/api/notification/notifications.api.ts'))).notificationsService;
         const notificationModule = await load('const {useAuth,useI18n,useQuery,useQueryClient,useMutation,queryKeys,notificationsService,usersService}=globalThis.__notificationTest;\n'
-            + strip('src/features/notifications/hooks/useNotifications.ts'));
+            + strip('src/hooks/notification/useNotifications.ts'));
         const state = notificationModule.useNotifications();
         assert.deepEqual(state.notifications, [], 'no synthetic notifications while loading');
         const items = await queries[0].queryFn({signal: undefined});

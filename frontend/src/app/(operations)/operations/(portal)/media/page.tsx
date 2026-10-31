@@ -1,5 +1,5 @@
 'use client';
-import {MediaPanel} from "@/features/media/components/MediaPanel";
+import {MediaPanel} from "@/components/media/MediaPanel";
 import {OperationsPage} from '@/components/layout/OperationsPage';
 
 export default function MediaPage() {

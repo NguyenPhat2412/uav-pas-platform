@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {keepVietnamesePhrases} from "@/lib/typography";
-import {pageMetadata} from "@/features/marketing/content/metadata";
-import {scenes} from "@/features/marketing/components/UavPhoto";
-import {ContactQuickForm} from "@/features/marketing/components/ContactQuickForm";
+import {pageMetadata} from "@/content/marketing/metadata";
+import {scenes} from "@/components/marketing/UavPhoto";
+import {ContactQuickForm} from "@/components/marketing/ContactQuickForm";
 
 export const metadata = pageMetadata(
     "Liên hệ & Hỗ trợ điều phối UAV",

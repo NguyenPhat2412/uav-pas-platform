@@ -57,7 +57,7 @@ function harness(auth, search, storedDemo) {
         'next/navigation': {useRouter: () => ({replace: path => redirects.push(path)}), usePathname: () => '/admin/users'},
         'lucide-react': Object.fromEntries(['Database', 'ShieldAlert', 'ArrowUpRight', 'Users', 'MapPin', 'Plane', 'History', 'ChevronRight', 'CreditCard', 'Settings', 'ShieldCheck'].map(name => [name, () => null])),
         'next/link': {default: ({children}) => children},
-        '@/components/shared/presentation': {
+        '@/lib/presentation': {
             displayLabel: value => value,
             formatDate: value => value,
             auditDetail: value => value
@@ -99,16 +99,16 @@ function harness(auth, search, storedDemo) {
         },
         './services/admin.service': {adminService: {}},
         '../services/admin.service': {adminService: {}},
-        '@/features/dashboard/components/AdminMonitoringCard': {AdminMonitoringCard: () => null},
+        '@/components/dashboard/AdminMonitoringCard': {AdminMonitoringCard: () => null},
     };
     modules['@/components/ui'] = modules['@/components/ui'];
     modules['@/components/layout/AdminAppShell'] = modules['@/components/layout/AppShell'];
-    modules['@/features/users/api/users.api'] = {usersService: {}};
-    modules['@/features/access/api/access.api'] = {accessService: {}};
-    modules['@/features/dashboard/api/admin-dashboard.api'] = {adminDashboardService: {}};
-    modules['@/features/audit/api/audit.api'] = {auditService: {}};
-    modules['@/features/missions/api/missions.api'] = {missionService: {}};
-    modules['@/features/dashboard/components/AdminMonitoringCard'] = {AdminMonitoringCard: () => null};
+    modules['@/api/user/users.api'] = {usersService: {}};
+    modules['@/api/access/access.api'] = {accessService: {}};
+    modules['@/api/dashboard/admin-dashboard.api'] = {adminDashboardService: {}};
+    modules['@/api/audit/audit.api'] = {auditService: {}};
+    modules['@/api/mission/missions.api'] = {missionService: {}};
+    modules['@/components/dashboard/AdminMonitoringCard'] = {AdminMonitoringCard: () => null};
 
     function load(path) {
         const compiled = ts.transpileModule(source(path), {
@@ -128,12 +128,12 @@ function harness(auth, search, storedDemo) {
 
     modules['@/lib/api/routes'] = load('src/lib/api/routes.ts');
     modules['@/lib/query'] = load('src/lib/query/index.ts');
-    modules['@/features/dashboard/hooks/query-keys'] = load('src/features/dashboard/hooks/query-keys.ts');
-    modules['@/features/dashboard/hooks/useAdminDashboard'] = load('src/features/dashboard/hooks/useAdminDashboard.ts');
-    modules['@/features/audit/hooks/useAdminAudit'] = load('src/features/audit/hooks/useAdminAudit.ts');
+    modules['@/hooks/dashboard/query-keys'] = load('src/hooks/dashboard/query-keys.ts');
+    modules['@/hooks/dashboard/useAdminDashboard'] = load('src/hooks/dashboard/useAdminDashboard.ts');
+    modules['@/hooks/audit/useAdminAudit'] = load('src/hooks/audit/useAdminAudit.ts');
     modules['@/components/data/WorkspaceState'] = load('src/components/data/WorkspaceState.tsx');
-    modules['@/features/auth/utils/portal'] = load('src/features/auth/utils/portal.ts');
-    modules['@/features/auth/utils/auth-entry'] = load('src/features/auth/utils/auth-entry.ts');
+    modules['@/utils/auth/portal'] = load('src/utils/auth/portal.ts');
+    modules['@/utils/auth/auth-entry'] = load('src/utils/auth/auth-entry.ts');
     return {load, redirects, permissions, cards};
 }
 
@@ -232,7 +232,7 @@ for (const [search, storedDemo] of [['', null], ['?demo=true', null], ['', 'true
     for (const [ready, allowed] of [[false, false], [false, true], [true, false], [true, true]]) {
         test(`admin user query requires ready USER_READ (${ready}/${allowed}) with ${mode}`, () => {
             const h = harness({isAuthenticated: true, permissionsReady: ready, allowed}, search, storedDemo);
-            const {useAdminUsers} = h.load('src/features/users/hooks/useAdminUsers.ts');
+            const {useAdminUsers} = h.load('src/hooks/user/useAdminUsers.ts');
             assert.equal(useAdminUsers(0, '').enabled, ready && allowed);
         });
     }
@@ -255,7 +255,7 @@ for (const [available, total, expectedValue, expectedMeta] of [
         isAuthenticated: true, permissionsReady: true, allowed: true,
         summary: {totalUsers: 1, totalStations: 1, availableUavs: available, totalUavs: total, totalAuditEvents: 1}
     }, '', null);
-    const {Dashboard} = h.load('src/features/dashboard/components/AdminDashboard.tsx');
+    const {Dashboard} = h.load('src/components/dashboard/AdminDashboard.tsx');
     content(Dashboard());
     const fleet = h.cards.find(card => card.label === 'UAV sẵn sàng');
     assert.ok(fleet);

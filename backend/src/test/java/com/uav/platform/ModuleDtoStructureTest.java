@@ -11,12 +11,12 @@ import java.nio.file.Path;
 class ModuleDtoStructureTest {
     @Test
     void dtoFilesAreRecordsWithNamesThatMatchTheirRole() throws Exception {
-        Path modules = Path.of("src/main/java/com/uav/platform/modules");
+        Path dto = Path.of("src/main/java/com/uav/platform/dto");
         int checked = 0;
-        try (var files = Files.walk(modules)) {
+        try (var files = Files.walk(dto)) {
             for (Path file : files.filter(p -> p.toString().endsWith(".java")).toList()) {
-                if (!file.toString().contains("/dto/")) continue;
-                String role = file.getParent().getFileName().toString();
+                // dto/<role>/<feature>/<Name>.java
+                String role = dto.relativize(file).getName(0).toString();
                 assertTrue(
                         java.util.Set.of("request", "response", "record").contains(role),
                         file.toString());

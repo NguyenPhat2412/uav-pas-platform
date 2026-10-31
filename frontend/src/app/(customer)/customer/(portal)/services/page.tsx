@@ -1,4 +1,4 @@
-import CustomerServicesCatalog from '@/features/catalog/components/CustomerServicesCatalog';
+import CustomerServicesCatalog from '@/components/catalog/CustomerServicesCatalog';
 
 export default function CustomerServicesRoutePage() {
     return <CustomerServicesCatalog/>;

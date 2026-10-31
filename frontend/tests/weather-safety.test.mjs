@@ -10,7 +10,7 @@ const load = async (path, replace = s => s) => {
     const compiled = ts.transpileModule(replace(read(path)), {compilerOptions: {module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022}}).outputText;
     return import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
 };
-const weatherFiles = dir => readdirSync(new URL(`src/features/weather/${dir}`, root)).map(name => `src/features/weather/${dir}/${name}`);
+const weatherFiles = dir => readdirSync(new URL(`src/${dir}/weather`, root)).map(name => `src/${dir}/weather/${name}`);
 
 test('Weather: routes match the backend ApiRoutes.Weather contract', async () => {
     const {API_ROUTES} = await load('src/lib/api/routes.ts');
@@ -24,14 +24,14 @@ test('Weather: routes match the backend ApiRoutes.Weather contract', async () =>
 });
 
 test('Weather: requests go through the shared API client, never fetch or the retired browser client', () => {
-    const api = read('src/features/weather/api/weather.api.ts');
+    const api = read('src/api/weather/weather.api.ts');
     assert.match(api, /from '@\/lib\/api'/);
     assert.match(api, /API_ROUTES\.weather\.forecast/);
     for (const file of [...weatherFiles('api'), ...weatherFiles('hooks'), ...weatherFiles('components')]) {
         assert.doesNotMatch(read(file), /\bfetch\s*\(/, file);
     }
-    assert.match(read('src/features/missions/hooks/useSiteWeather.ts'), /useMissionWeather/);
-    assert.doesNotMatch(read('src/features/missions/hooks/useSiteWeather.ts'), /external\/weather/);
+    assert.match(read('src/hooks/mission/useSiteWeather.ts'), /useMissionWeather/);
+    assert.doesNotMatch(read('src/hooks/mission/useSiteWeather.ts'), /external\/weather/);
 });
 
 test('Weather: UI follows the design system (no green, no pill badges)', () => {
@@ -40,7 +40,7 @@ test('Weather: UI follows the design system (no green, no pill badges)', () => {
         assert.doesNotMatch(source, /\b(emerald|green|teal)-\d/, file);
         assert.doesNotMatch(source, /rounded-full/, file);
     }
-    const tones = read('src/features/weather/utils/clearance.ts');
+    const tones = read('src/utils/weather/clearance.ts');
     assert.match(tones, /GO: 'bg-sky-50 text-uav-blue border-sky-200'/);
     assert.match(tones, /CAUTION: 'bg-amber-50 text-amber-800 border-amber-200'/);
     assert.match(tones, /NO_GO: 'bg-red-50 text-danger border-red-200'/);
@@ -70,11 +70,11 @@ test('Weather: every locale carries the same weather, error, label and alert key
     for (const level of ['GO', 'CAUTION', 'NO_GO', 'UNAVAILABLE']) assert.ok(vi.weather.includes(`preflight.clearance.${level}`), level);
     assert.deepEqual(vi.labels.filter(k => /gust|visibility|precipitation|kp/.test(k)),
         ['uav_safety_max_kp_index', 'uav_safety_max_precipitation_mm', 'uav_safety_max_wind_gust_limit', 'uav_safety_min_visibility_meters']);
-    assert.match(read('src/features/missions/components/operations/OperationsMissionDetail.tsx'), /'MISSION_WEATHER_UNSAFE'/);
+    assert.match(read('src/components/mission/operations/OperationsMissionDetail.tsx'), /'MISSION_WEATHER_UNSAFE'/);
 });
 
 test('Weather: applying a recommended window keeps the flight duration and the requested date', async () => {
-    const {applyFlightWindow} = await load('src/features/weather/utils/flight-window.ts', s => s.replace(/^import type .*$/m, ''));
+    const {applyFlightWindow} = await load('src/utils/weather/flight-window.ts', s => s.replace(/^import type .*$/m, ''));
     const form = {startTime: '2026-10-31T13:00', expectedEndTime: '2026-10-31T14:30', requestedDate: '2026-10-31', title: 'x'};
     assert.deepEqual(applyFlightWindow(form, '2026-11-01T07:00'),
         {...form, startTime: '2026-11-01T07:00', expectedEndTime: '2026-11-01T08:30', requestedDate: '2026-11-01'});
@@ -83,11 +83,11 @@ test('Weather: applying a recommended window keeps the flight duration and the r
 });
 
 test('Weather: the three portals render the shared preflight card', () => {
-    assert.match(read('src/features/missions/components/customer/SiteWeather.tsx'), /PreflightWeatherCard/);
-    assert.match(read('src/features/missions/components/customer/CustomerMissionCreate.tsx'), /MissionWeatherAdvisor/);
-    assert.match(read('src/features/missions/components/customer/CustomerMissionEdit.tsx'), /MissionWeatherAdvisor/);
-    assert.match(read('src/features/missions/components/operations/OperationsMissionDetail.tsx'), /PreflightWeatherCard/);
-    assert.match(read('src/features/stations/components/StationPanel.tsx'), /useStationsWeather\(\)/);
-    assert.match(read('src/features/settings/components/AdminSettingsPanel.tsx'), /WeatherProviderSettingsSection/);
-    assert.doesNotMatch(read('src/features/weather/types/weather.types.ts'), /apiKeyCipher/);
+    assert.match(read('src/components/mission/customer/SiteWeather.tsx'), /PreflightWeatherCard/);
+    assert.match(read('src/components/mission/customer/CustomerMissionCreate.tsx'), /MissionWeatherAdvisor/);
+    assert.match(read('src/components/mission/customer/CustomerMissionEdit.tsx'), /MissionWeatherAdvisor/);
+    assert.match(read('src/components/mission/operations/OperationsMissionDetail.tsx'), /PreflightWeatherCard/);
+    assert.match(read('src/components/station/StationPanel.tsx'), /useStationsWeather\(\)/);
+    assert.match(read('src/components/settings/AdminSettingsPanel.tsx'), /WeatherProviderSettingsSection/);
+    assert.doesNotMatch(read('src/types/weather/weather.types.ts'), /apiKeyCipher/);
 });
