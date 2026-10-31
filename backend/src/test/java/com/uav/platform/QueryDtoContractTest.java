@@ -8,16 +8,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.controller.maintenance.MaintenanceController;
+import com.uav.platform.controller.user.UserController;
+import com.uav.platform.dto.request.maintenance.MaintenanceScheduleQueryRequest;
+import com.uav.platform.dto.request.maintenance.RepairOrderQueryRequest;
+import com.uav.platform.enums.maintenance.DueStatus;
+import com.uav.platform.enums.maintenance.RepairStatus;
 import com.uav.platform.error.GlobalExceptionHandler;
-import com.uav.platform.modules.maintenance.controller.MaintenanceController;
-import com.uav.platform.modules.maintenance.dto.request.MaintenanceScheduleQueryRequest;
-import com.uav.platform.modules.maintenance.dto.request.RepairOrderQueryRequest;
-import com.uav.platform.modules.maintenance.enums.DueStatus;
-import com.uav.platform.modules.maintenance.enums.RepairStatus;
-import com.uav.platform.modules.maintenance.service.MaintenanceService;
-import com.uav.platform.modules.user.controller.UserController;
-import com.uav.platform.modules.user.repository.UserRepository;
-import com.uav.platform.modules.user.service.impl.UserServiceImpl;
+import com.uav.platform.repository.user.UserRepository;
+import com.uav.platform.service.impl.user.UserServiceImpl;
+import com.uav.platform.service.maintenance.MaintenanceService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

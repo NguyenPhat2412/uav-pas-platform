@@ -1,5 +1,5 @@
-import OperationsOverviewPanel from '@/features/dashboard/components/OperationsOverviewPanel';
-import {OperationsHome} from '@/features/dashboard/components/OperationsHome';
+import OperationsOverviewPanel from '@/components/dashboard/OperationsOverviewPanel';
+import {OperationsHome} from '@/components/dashboard/OperationsHome';
 
 export default function OperationsOverviewRoutePage() {
     return <><OperationsHome/><OperationsOverviewPanel/></>;

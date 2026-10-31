@@ -1,7 +1,7 @@
 package com.uav.platform.support;
 
-import com.uav.platform.modules.billing.repository.ServicePlanRepository;
-import com.uav.platform.modules.billing.service.impl.ServicePlanOperations;
+import com.uav.platform.repository.billing.ServicePlanRepository;
+import com.uav.platform.service.impl.billing.ServicePlanOperations;
 
 import java.math.BigDecimal;
 

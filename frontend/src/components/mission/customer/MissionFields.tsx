@@ -1,0 +1,88 @@
+'use client';
+import {displayLabel} from "@/lib/presentation";
+import type {ChangeEvent} from 'react';
+import type {MissionInput} from "@/types/customer";
+import {LocationPicker} from "@/components/mission/customer/LocationPicker";
+import {FlightSpecFields} from "@/components/mission/customer/FlightSpecFields";
+import {defaultFlightPlan} from "@/types/mission/flight-plan.types";
+import {type MissionFormErrors} from "@/forms/mission/mission-form";
+import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
+import {useI18n} from '@/providers/I18nContext';
+
+export function MissionFields({form, onChange, errors = {}}: {
+    form: MissionInput;
+    onChange: (form: MissionInput) => void;
+    errors?: MissionFormErrors
+}) {
+    const {t} = useI18n();
+    const set = (key: keyof MissionInput) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const value = event.target.value;
+        onChange({
+            ...form,
+            [key]: key === 'latitude' || key === 'longitude' ? value === '' ? undefined : Number(value) : value
+        });
+    };
+    const attributes = (key: keyof MissionInput) => ({
+        id: `mission-${key}`,
+        'aria-invalid': !!errors[key],
+        'aria-describedby': errors[key] ? `mission-${key}-error` : undefined
+    });
+    const error = (key: keyof MissionInput) => errors[key] ?
+        <span className="text-sm font-normal leading-normal text-danger" id={`mission-${key}-error`}>{errors[key]}</span> : null;
+    const fieldClass = 'grid gap-1.5 text-xs font-bold text-foreground';
+    const inputClass = 'min-h-11 w-full rounded-control border border-border-input bg-card px-3 py-2 text-base font-normal text-foreground sm:text-sm aria-[invalid=true]:border-danger';
+    const textareaClass = 'min-h-28 w-full resize-y rounded-control border border-border-input bg-card px-3 py-2.5 text-base font-normal text-foreground sm:text-sm aria-[invalid=true]:border-danger';
+    return <>
+        <label className={fieldClass}><span>{t('missionForm.title')}<RequiredMark/></span><input className={inputClass} {...attributes('title')}
+                                                                                              value={form.title}
+                                                                                              onChange={set('title')}/>{error('title')}
+        </label>
+        <label className={fieldClass}><span>{t('missionForm.requestedDate')}<RequiredMark/></span><input className={inputClass} {...attributes('requestedDate')} type="date"
+                                                     value={form.requestedDate}
+                                                     onChange={set('requestedDate')}/>{error('requestedDate')}
+        </label>
+        <label className={fieldClass}><span>{t('missionForm.start')}<RequiredMark/></span><input className={inputClass} {...attributes('startTime')} type="datetime-local" step="any"
+                                                     value={form.startTime} onChange={set('startTime')}/>{error('startTime')}</label>
+        <label className={fieldClass}><span>{t('missionForm.expectedEnd')}<RequiredMark/></span><input className={inputClass} {...attributes('expectedEndTime')} type="datetime-local" step="any"
+                                                     value={form.expectedEndTime} onChange={set('expectedEndTime')}/>{error('expectedEndTime')}</label>
+        <p className="col-span-full m-0 border-l-2 border-primary/40 bg-slate-50 px-3 py-1.5 text-xs text-slate-600">{t('missionForm.timeHint')}</p>
+        <label className={fieldClass}><span>{t('missionForm.location')}<RequiredMark/></span><input className={inputClass} {...attributes('locationName')} value={form.locationName}
+                                                     onChange={set('locationName')}/>{error('locationName')}</label>
+        <label className={fieldClass}><span>{t('missionForm.priority')}</span><select className={inputClass} {...attributes('priority')}
+                                                                 value={form.priority ?? 'NORMAL'}
+                                                                 onChange={set('priority')}>{['LOW', 'NORMAL', 'HIGH', 'URGENT'].map(priority =>
+            <option key={priority} value={priority}>{displayLabel(priority)}</option>)}</select>{error('priority')}
+        </label>
+        <LocationPicker plan={form.flightPlan} fallbackLatitude={form.latitude} fallbackLongitude={form.longitude}
+                        onChange={(flightPlan, center) => onChange({
+                            ...form, flightPlan,
+                            latitude: center ? Math.round(center[0] * 1e6) / 1e6 : undefined,
+                            longitude: center ? Math.round(center[1] * 1e6) / 1e6 : undefined,
+                        })}/>
+        {error('latitude')}
+        <FlightSpecFields plan={form.flightPlan ?? defaultFlightPlan()} onChange={flightPlan => onChange({...form, flightPlan})}/>
+        <label className={fieldClass}><span>{t('missionForm.description')}<OptionalMark/></span><textarea className={textareaClass} {...attributes('description')}
+                                                                       value={form.description ?? ''}
+                                                                       onChange={set('description')}
+                                                                       rows={3}/>{error('description')}<span
+            className="text-xs font-normal text-muted">{t('missionForm.maxChars')}</span></label>
+        <label className={fieldClass}><span>{t('missionForm.notes')}<OptionalMark/></span><textarea className={textareaClass} {...attributes('notes')}
+                                                                         value={form.notes ?? ''}
+                                                                         onChange={set('notes')}
+                                                                         rows={3}/>{error('notes')}<span
+            className="text-xs font-normal text-muted">{t('missionForm.maxChars')}</span></label>
+    </>;
+}
+
+export function MissionErrorSummary({errors}: { errors: MissionFormErrors }) {
+    const {t} = useI18n();
+    if (!Object.keys(errors).length) return null;
+    return <div className="mb-5 rounded-panel bg-red-50 px-3.5 py-3 text-xs text-danger" role="alert" tabIndex={-1} id="mission-error-summary"><strong>{t('missionForm.checkErrors')}</strong>
+        <ul className="m-0 mt-2 list-disc pl-5">{Object.entries(errors).map(([key, message]) => <li key={key}><a className="underline" href={`#mission-${key}`}>{message}</a>
+        </li>)}</ul>
+    </div>;
+}
+
+export function focusMissionErrors() {
+    requestAnimationFrame(() => document.getElementById('mission-error-summary')?.focus());
+}

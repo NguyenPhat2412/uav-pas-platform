@@ -1,5 +1,5 @@
 'use client';
-import {UavPanel} from "@/features/uavs/components/UavPanel";
+import {UavPanel} from "@/components/uav/UavPanel";
 import {OperationsPage} from '@/components/layout/OperationsPage';
 
 export default function UavsPage() {

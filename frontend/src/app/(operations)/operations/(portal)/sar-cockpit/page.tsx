@@ -1,6 +1,6 @@
 'use client';
 
-import {SarCockpitPanel} from '@/features/sar/components/SarCockpitPanel';
+import {SarCockpitPanel} from '@/components/sar/SarCockpitPanel';
 import {OperationsPage} from '@/components/layout/OperationsPage';
 
 export default function SarCockpitPage() {

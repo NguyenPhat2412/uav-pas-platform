@@ -1,7 +1,7 @@
 'use client';
 
 import {AdminPage} from '@/components/layout/AdminPage';
-import {TrainingAcademyWorkspace} from '@/features/training/components/TrainingAcademyWorkspace';
+import {TrainingAcademyWorkspace} from '@/components/training/TrainingAcademyWorkspace';
 
 export default function AdminTrainingGovernanceRoutePage() {
     return (
