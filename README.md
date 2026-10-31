@@ -1,12 +1,12 @@
 # Nhánh `admin`: Cổng Quản trị
 
-Đường dẫn: `/admin`. Mã nguồn nằm ở `frontend/src/app/(admin)` và các component admin trong `frontend/src/features/*`. Nhánh này được đồng bộ từ `main`.
+Đường dẫn: `/admin`. Mã nguồn nằm ở `frontend/src/app/(admin)` và các component admin trong `frontend/src/components/<tính năng>`. Nhánh này được đồng bộ từ `main`.
 
 ## Các thay đổi
 
 ### Cài đặt nguồn thời tiết (Admin → Cài đặt)
 
-Component `features/weather/components/WeatherProviderSettingsSection.tsx`, chỉ hiện với người có quyền `PERMISSION_MANAGE`. Các mục cài đặt:
+Component `components/weather/WeatherProviderSettingsSection.tsx`, chỉ hiện với người có quyền `PERMISSION_MANAGE`. Các mục cài đặt:
 
 - **Nguồn dữ liệu:** Open-Meteo (không cần key) hoặc OpenWeatherMap.
 - **API key:**
