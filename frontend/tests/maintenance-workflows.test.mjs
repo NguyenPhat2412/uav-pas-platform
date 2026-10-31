@@ -11,7 +11,7 @@ const compile = value => `data:text/javascript;base64,${Buffer.from(ts.transpile
     }
 }).outputText).toString('base64')}`;
 const formatUrl = compile(await source('src/lib/format.ts'));
-const workflowUrl = compile((await source('src/features/maintenance/utils/workflows.ts')).replace('@/lib/format', formatUrl));
+const workflowUrl = compile((await source('src/utils/maintenance/workflows.ts')).replace('@/lib/format', formatUrl));
 const {
     orderControls,
     scheduleInput,
@@ -25,7 +25,7 @@ const {
 const routesUrl = compile(await source('src/lib/api/routes.ts'));
 const apiUrl = compile(`export {API_ROUTES} from "${routesUrl}"; export const requests = []; export const apiClient = Object.fromEntries(['get','post','put'].map(method => [method, async (path, body) => { requests.push({method,path,body}); return {}; }]));`);
 const {requests} = await import(apiUrl);
-const {maintenanceService} = await import(compile((await source('src/features/maintenance/api/maintenance.api.ts')).replace('@/lib/api', apiUrl).replace('@/features/maintenance/utils/workflows', workflowUrl).replace('@/lib/format', formatUrl)));
+const {maintenanceService} = await import(compile((await source('src/api/maintenance/maintenance.api.ts')).replace('@/lib/api', apiUrl).replace('@/utils/maintenance/workflows', workflowUrl).replace('@/lib/format', formatUrl)));
 const schedule = {title: ' Kiểm tra pin ', intervalDays: '30', nextDueDate: '2028-02-29'};
 const order = {
     title: ' Kiểm tra pin ',
@@ -127,14 +127,14 @@ test('VND display retains server integer precision; identifiers are passed to th
     assert.equal(positiveId(''), 0);
 });
 test('neutral repair history is translated without rewriting user-authored text', async () => {
-    const {uavHistoryReason} = await import(compile((await source('src/features/uavs/utils/workflows.ts')).replace('@/lib/format', formatUrl)));
+    const {uavHistoryReason} = await import(compile((await source('src/utils/uav/workflows.ts')).replace('@/lib/format', formatUrl)));
     assert.equal(uavHistoryReason('Repair order #42 started'), 'Bắt đầu phiếu sửa chữa #42');
     assert.equal(uavHistoryReason('Repair order #42 completed'), 'Hoàn tất phiếu sửa chữa #42');
     assert.equal(uavHistoryReason('Đã kiểm tra động cơ'), 'Đã kiểm tra động cơ');
 });
 
 test('maintenance audit translates generated records and retains exact VND amount and unknown text', async () => {
-    const {displayLabel, auditDetail} = await import(compile(await source('src/components/shared/presentation.ts')));
+    const {displayLabel, auditDetail} = await import(compile(await source('src/lib/presentation.ts')));
     assert.equal(displayLabel('REPAIR_ORDER'), 'Phiếu sửa chữa');
     assert.equal(displayLabel('MAINTENANCE_SCHEDULE'), 'Lịch bảo trì');
     assert.equal(auditDetail('MATERIALS_UPDATED lines=2 totalVND=1000000000000000'), 'Cập nhật 2 dòng vật tư · Tổng 1.000.000.000.000.000 ₫');

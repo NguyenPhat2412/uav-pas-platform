@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {keepVietnamesePhrases} from "@/lib/typography";
-import {pageMetadata} from "@/features/marketing/content/metadata";
-import {scenes} from "@/features/marketing/components/UavPhoto";
-import {CustomerCta} from "@/features/marketing/components/PublicPage";
-import {portalEcosystem, projectHighlights} from "@/features/marketing/content/home-content";
+import {pageMetadata} from "@/content/marketing/metadata";
+import {scenes} from "@/components/marketing/UavPhoto";
+import {CustomerCta} from "@/components/marketing/PublicPage";
+import {portalEcosystem, projectHighlights} from "@/content/marketing/home-content";
 
 export const metadata = pageMetadata(
     "Giới thiệu dự án UAV PAS",

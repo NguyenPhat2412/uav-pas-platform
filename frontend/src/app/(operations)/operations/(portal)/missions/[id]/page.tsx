@@ -1,4 +1,4 @@
-import OperationsMissionDetail from '@/features/missions/components/operations/OperationsMissionDetail';
+import OperationsMissionDetail from '@/components/mission/operations/OperationsMissionDetail';
 
 export default function OperationsMissionDetailRoutePage() {
     return <OperationsMissionDetail/>;

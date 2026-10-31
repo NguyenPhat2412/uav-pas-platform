@@ -1,5 +1,5 @@
 import type {MetadataRoute} from 'next';
-import {publicUrl, services, solutions} from "@/features/marketing/content/site-content";
+import {publicUrl, services, solutions} from "@/content/marketing/site-content";
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const routes = [

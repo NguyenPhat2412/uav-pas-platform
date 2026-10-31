@@ -7,7 +7,7 @@ const formatCompiled = ts.transpileModule(await readFile(new URL('../src/lib/for
     compilerOptions: {module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022}
 }).outputText;
 const formatUrl = `data:text/javascript;base64,${Buffer.from(formatCompiled).toString('base64')}`;
-const source = (await readFile(new URL('../src/features/missions/forms/mission-form.ts', import.meta.url), 'utf8')).replace('@/lib/format', formatUrl);
+const source = (await readFile(new URL('../src/forms/mission/mission-form.ts', import.meta.url), 'utf8')).replace('@/lib/format', formatUrl);
 const compiled = ts.transpileModule(source, {
     compilerOptions: {
         module: ts.ModuleKind.ESNext,
@@ -141,7 +141,7 @@ test('a missing or invalid draft version cannot produce an unprotected PATCH', (
     assert.equal(missionDraftUpdatePayload(form, 0).expectedVersion, 0);
 });
 
-const profileSource = (await readFile(new URL('../src/features/profile/forms/profile-form.ts', import.meta.url), 'utf8')).replace('@/lib/format', formatUrl);
+const profileSource = (await readFile(new URL('../src/forms/profile/profile-form.ts', import.meta.url), 'utf8')).replace('@/lib/format', formatUrl);
 const profileCompiled = ts.transpileModule(profileSource, {
     compilerOptions: {
         module: ts.ModuleKind.ESNext,

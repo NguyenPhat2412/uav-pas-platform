@@ -1,11 +1,11 @@
 package com.uav.platform.security.jwt;
 
-import com.uav.platform.modules.auth.service.InvalidatedTokenService;
-import com.uav.platform.modules.security.service.SessionRevocationService;
-import com.uav.platform.modules.user.entity.AppUser;
-import com.uav.platform.modules.user.repository.UserRepository;
-import com.uav.platform.modules.user.service.impl.UserAccountServiceImpl;
+import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.AuthCookieHelper;
+import com.uav.platform.service.auth.InvalidatedTokenService;
+import com.uav.platform.service.impl.user.UserAccountServiceImpl;
+import com.uav.platform.service.security.SessionRevocationService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

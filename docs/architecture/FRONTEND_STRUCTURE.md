@@ -1,6 +1,6 @@
-# Frontend: một ứng dụng, chia theo features
+# Frontend: một ứng dụng, chia theo tầng rồi theo tính năng
 
-Kiến trúc hiện hành từ 18/10/2026. Tham khảo cách tổ chức của `management-shop`; không sao chép nghiệp vụ hoặc sửa dự án tham khảo.
+Kiến trúc hiện hành từ 31/10/2026, giống bố cục backend (`controller/<tính năng>`, `service/<tính năng>`...). Bản 18/10/2026 dùng `src/features/<tính năng>/<tầng>` đã được thay thế. Tham khảo cách tổ chức của `management-shop`; không sao chép nghiệp vụ hoặc sửa dự án tham khảo.
 
 ```text
 frontend/
@@ -11,14 +11,16 @@ frontend/
 │   │   ├── (operations)/operations/
 │   │   ├── (admin)/admin/
 │   │   └── health/
-│   ├── features/            # giao diện, quy tắc, API, hooks và types theo nghiệp vụ
-│   ├── components/          # thành phần dùng chung, khung trang và biến thể từng khu vực
-│   ├── contexts/            # AuthContext và I18nContext duy nhất
-│   ├── providers/           # QueryProvider và PortalProviders
-│   ├── lib/                # API client, registry endpoint, các bộ truy vấn liên phân hệ
-│   ├── hooks/
-│   ├── config/
-│   ├── types/
+│   ├── api/<tính năng>/        # <tính năng>.api.ts: request tới backend qua @/lib/api
+│   ├── hooks/<tính năng>/      # query-keys.ts và useXxx.ts (React Query); hook dùng chung ở hooks/
+│   ├── components/<tính năng>/ # giao diện theo tính năng; dùng chung: ui, data, layout, shared, customer, visuals
+│   ├── types/<tính năng>/      # <tính năng>.types.ts; types/index.ts dùng chung
+│   ├── utils/<tính năng>/      # hàm thuần theo tính năng
+│   ├── forms/<tính năng>/      # schema form (missions, profile)
+│   ├── content/<tính năng>/    # nội dung tĩnh (marketing)
+│   ├── providers/           # AuthContext, I18nContext, ToastContext, QueryProvider, PortalProviders
+│   ├── lib/                # API client, routes.ts, queryKeys, presentation (nhãn hiển thị), navigation, recent-pages
+│   ├── config/              # env, navigation, sidebar-routes (menu ba cổng)
 │   ├── i18n/
 │   ├── messages/
 │   └── styles/
@@ -32,8 +34,11 @@ frontend/
 
 ## Quy tắc phát triển
 
-- Chức năng mới nằm trong `src/features/<nghiệp-vụ>`. Các miền hiện có: auth, access, audit, billing, catalog, dashboard, inventory, maintenance, marketing, media, missions, navigation, notifications, profile, reports, sar, settings, stations, uavs, users.
-- `src/app/**/page.tsx` chỉ export trang từ feature. Các biến thể UI của customer, operations, admin nằm trong feature tương ứng; không tái tạo ba ứng dụng riêng.
+- Chức năng mới chia vào đúng tầng: `src/api/<tính năng>`, `src/hooks/<tính năng>`, `src/components/<tính năng>`, `src/types/<tính năng>`, `src/utils/<tính năng>`. Không tạo lại `src/features` (bị `architecture:check` chặn). Luồng dữ liệu: component → `hooks/<tính năng>` → `api/<tính năng>` → `@/lib/api`.
+- Tên thư mục tính năng trùng tên package backend: `mission`, `station`, `uav`, `user`, `notification`, `webhook`, `reporting`, `devicekey`, `storage`, `weather`, `training`... Các nhóm chỉ có ở frontend: `access` (backend `permission` + `role`), `catalog` (gói dịch vụ trong `mission`), `profile` (trong `user`), `marketing` (website).
+- `components/` chỉ chứa component. Hàm, hằng và cấu hình dùng chung đặt ở `lib/` hoặc `config/`.
+- Không còn danh sách ngoại lệ tầng dữ liệu: mọi component lấy dữ liệu qua `hooks/<tính năng>`. Luồng nhiều bước tuần tự (upload từng tệp, đăng nhập nhiều bước, điều phối nhiệm vụ) dùng hook trả về hàm request ổn định (`useTrainingUploads`, `useAuthFlow`, `useMissionWorkflow`), không gọi `api/*` trực tiếp.
+- `src/app/**/page.tsx` chỉ dựng trang từ một tầng của tính năng (thường là `components/<tính năng>`). Các biến thể UI của customer, operations, admin nằm trong feature tương ứng; không tái tạo ba ứng dụng riêng.
 - Thành phần dùng chung đặt trong `src/components`. Biến thể hình thức theo khu vực được giữ khi cần để không làm thay đổi giao diện hiện hành.
 - Truy cập mạng qua `src/lib/api/index.ts`; registry endpoint ở `src/lib/api/routes.ts`. Dịch vụ đặc thù mới đặt trong feature. Các adapter liên nhiều nghiệp vụ được chuyển nguyên trạng vào `lib/api` và `lib/query` để giữ hợp đồng hiện tại.
 - Một `AuthContext` quản lý phiên cookie, quyền chi tiết, làm mới quyền và xóa cache khi đổi tài khoản. Quyền vẫn kiểm tra theo từng trang/từng thao tác; đường dẫn khu vực không thay thế việc kiểm tra quyền.

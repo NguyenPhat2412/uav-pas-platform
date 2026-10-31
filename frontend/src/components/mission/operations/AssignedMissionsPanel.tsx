@@ -1,0 +1,14 @@
+'use client';
+
+import {MissionList} from '@/components/mission/MissionList';
+import {useMissions} from '@/hooks/mission/useOperationsMissions';
+import {OperationsPage} from '@/components/layout/OperationsPage';
+import {useI18n} from '@/providers/I18nContext';
+
+export default function AssignedMissionsPage() {
+    const {missions, isLoading, error, reload} = useMissions();
+    const {t} = useI18n();
+    return <OperationsPage
+                           permission="MISSION_VIEW" activeResource="assigned-missions"><MissionList
+        label={t('opsMissions.assigned.title')} missions={missions} loading={isLoading} error={error} onRefresh={() => void reload()}/></OperationsPage>;
+}
