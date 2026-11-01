@@ -17,7 +17,7 @@ Người sử dụng gồm chủ dự án, người phân tích nghiệp vụ, n
 | Tên đầy đủ trong đặc tả | Low-Altitude Economy UAV Platform-as-a-Service |
 | Sinh viên thực hiện | Nguyễn Xuân Phát |
 | Mã sinh viên | 23110209 |
-| Đơn vị | Trường Đại học Việt Nhật – Đại học Quốc gia Hà Nội |
+| Đơn vị | Đồ án cá nhân (không liên kết với trường hay tổ chức nào) |
 | Ngày tổng hợp | 17 tháng 10 năm 2026 |
 | Phạm vi phiên bản | Phase 1, Phase 2, M1–M6 và các ưu tiên đã duyệt đến ngày 17 tháng 10 năm 2026 |
 | Trạng thái nghiệp vụ | Bản phân tích để rà soát và thống nhất phạm vi; chưa có biên bản phê duyệt nghiệp vụ |

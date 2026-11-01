@@ -229,7 +229,7 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
                                     "eventType",
                                     eventType,
                                     "platform",
-                                    "UAV_PAS_VJU",
+                                    "UAV_PAS",
                                     "data",
                                     eventData));
             var targets = subscriptionRepository.findActiveSubscribersForEvent(eventType);

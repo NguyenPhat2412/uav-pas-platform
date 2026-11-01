@@ -8,7 +8,7 @@ import {portalEcosystem, projectHighlights} from "@/content/marketing/home-conte
 
 export const metadata = pageMetadata(
     "Giới thiệu dự án UAV PAS",
-    "Tìm hiểu dự án UAV PAS (VJU – ĐHQGHN): nền tảng đám mây điều phối dịch vụ UAV công nghiệp, viễn thám GIS, giám sát Telemetry thời gian thực, Edge AI Kria KV260 và Học viện SOP.",
+    "Tìm hiểu UAV PAS, đồ án cá nhân của Nguyễn Phát: bản demo nền tảng web điều phối nhiệm vụ UAV, lập kế hoạch bay GIS, theo dõi telemetry mô phỏng và quản lý dữ liệu nhiệm vụ.",
     "/about",
     true
 );
@@ -18,21 +18,21 @@ const photoMosaic = [
         src: scenes.aboutPreflight.src,
         alt: scenes.aboutPreflight.alt,
         tag: 'An toàn tiền bay (SOP)',
-        caption: '100% chuyến bay thực hiện kiểm tra kỹ thuật trước khi cất cánh.',
+        caption: 'Checklist kiểm tra tiền bay được số hoá trong luồng nhiệm vụ.',
         span: 'md:col-span-7',
     },
     {
         src: scenes.aboutGnssBase.src,
         alt: scenes.aboutGnssBase.alt,
-        tag: 'Trắc địa RTK 1–3 cm',
-        caption: 'Thu thập dữ liệu bình đồ 2D/3D chuẩn tọa độ quốc gia.',
+        tag: 'Định vị GNSS/RTK',
+        caption: 'Hiển thị trạng thái định vị từ dữ liệu telemetry (mô phỏng trong bản demo).',
         span: 'md:col-span-5',
     },
     {
         src: scenes.aboutSensorPayload.src,
         alt: scenes.aboutSensorPayload.alt,
-        tag: 'Edge AI Kria KV260',
-        caption: 'Tăng tốc suy luận thị giác máy tính YOLOv8s ngay trên khoang bay.',
+        tag: 'AI biên (thử nghiệm)',
+        caption: 'Hướng nghiên cứu: suy luận YOLOv8s trên bo mạch Kria KV260 đặt tại mặt đất, không gắn trên UAV.',
         span: 'md:col-span-5',
     },
     {
@@ -67,10 +67,10 @@ export default function AboutPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/20"/>
                 <div className="relative z-10 mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12 space-y-3">
                     <p className="text-xs font-extrabold uppercase tracking-widest text-rose-400">
-                        Trường Đại học Việt Nhật (VJU – ĐHQGHN)
+                        Đồ án cá nhân · Bản demo
                     </p>
                     <h1 className="max-w-3xl text-3xl font-black tracking-tight text-white sm:text-5xl leading-tight">
-                        {keepVietnamesePhrases('Nền tảng đám mây điều phối đội bay & tác chiến AI UAV.')}
+                        {keepVietnamesePhrases('Nền tảng web điều phối nhiệm vụ UAV dân sự.')}
                     </h1>
                 </div>
             </section>
@@ -91,9 +91,9 @@ export default function AboutPage() {
                     <div className="space-y-6">
                         <div className="flex flex-wrap items-baseline justify-between gap-2">
                             <h2 className="text-2xl font-black tracking-tight text-foreground">
-                                Từ phòng thí nghiệm VJU ra hiện trường bay thực tế
+                                Các mảng chức năng của bản demo
                             </h2>
-                            <span className="text-xs font-bold text-uav-blue">Nghiên cứu ứng dụng & Vận hành chuẩn SOP</span>
+                            <span className="text-xs font-bold text-uav-blue">Ảnh minh hoạ từ USGS (Public Domain), không phải ảnh của dự án</span>
                         </div>
 
                         <div className="grid grid-cols-1 gap-5 md:grid-cols-12">

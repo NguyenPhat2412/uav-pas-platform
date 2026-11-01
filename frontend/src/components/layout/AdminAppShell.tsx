@@ -126,7 +126,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                         title={`UAV PAS · ${t('shell.adminTitle')}`}
                     >
                         <span className="flex items-center justify-center bg-white p-0.5 rounded-lg border border-rose-100 shadow-xs overflow-hidden shrink-0">
-                            <Image src="/vju-logo.svg" alt={t('shell.vjuUniversity')} width={26} height={26} className="w-[26px] h-[26px] object-contain"/>
+                            <Image src="/uav-pas-logo.svg" alt={t('shell.brandName')} width={26} height={26} className="w-[26px] h-[26px] object-contain"/>
                         </span>
                         {!railCollapsed && (
                             <span className="flex flex-col leading-tight truncate">

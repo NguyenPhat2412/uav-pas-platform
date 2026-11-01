@@ -109,7 +109,7 @@
         "time": "日時",
         "loadingMissions": "ミッションを読み込み中…",
         "noMissions": "ミッションはまだありません。",
-        "quotaTitle": "飛行上限とVJUプラン",
+        "quotaTitle": "飛行上限とプラン（デモ）",
         "loadingQuota": "上限を読み込み中…",
         "quotaError": "上限情報を読み込めませんでした。",
         "viewPlans": "プランを見る",

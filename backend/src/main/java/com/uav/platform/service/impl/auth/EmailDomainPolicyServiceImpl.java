@@ -22,7 +22,7 @@ public class EmailDomainPolicyServiceImpl implements EmailDomainPolicyService {
     public static final String DEFAULT_ALLOWED_DOMAINS =
             "gmail.com,googlemail.com,outlook.com,outlook.com.vn,hotmail.com,live.com,msn.com,"
                     + "icloud.com,me.com,mac.com,yahoo.com,yahoo.com.vn,proton.me,protonmail.com,"
-                    + "zoho.com,vju.ac.vn,vnu.edu.vn,.edu.vn,.ac.vn,.gov.vn,.edu,.ac.jp";
+                    + "zoho.com,.edu.vn,.ac.vn,.gov.vn,.edu,.ac.jp";
 
     private final boolean allowAllNonBlocked;
     private final List<String> allowedRules;

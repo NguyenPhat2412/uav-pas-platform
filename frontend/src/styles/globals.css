@@ -13,7 +13,7 @@
     --uav-color-blue: #475569;
     --uav-color-blue-hover: #334155;
     --uav-color-blue-light: #f1f5f9;
-    --uav-color-vju-red: #ab2523;
+    --uav-color-brand: #ab2523;
     --uav-color-surface: #ffffff;
     --uav-color-canvas: #faf6f6;
     --uav-color-text: #202020;
@@ -93,7 +93,7 @@
 }
 
 /*
- * No blue anywhere: the palette is white, greys and the soft VJU red. Tailwind's blue, sky, indigo
+ * No blue anywhere: the palette is white, greys and the soft brand red. Tailwind's blue, sky, indigo
  * and cyan utilities read these variables, so they render as the matching grey.
  */
 :root {
@@ -158,7 +158,7 @@
 
 /*
  * The signed-in portals (admin, operations, customer) work in white and light greys with a soft
- * accent taken from the VJU logo red (#b8021e): lighter for actions and selection, a barely-there
+ * accent taken from the brand red (#b8021e): lighter for actions and selection, a barely-there
  * tint for highlights. Errors keep danger/red-*.
  */
 :root[data-portal] {

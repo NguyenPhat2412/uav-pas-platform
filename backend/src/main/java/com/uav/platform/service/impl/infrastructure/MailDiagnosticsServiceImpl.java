@@ -74,7 +74,7 @@ public class MailDiagnosticsServiceImpl implements MailDiagnosticsService {
             AuthMailService authMail,
             ObjectProvider<JavaMailSender> senderProvider,
             UserRepository users,
-            @Value("${app.mail.from:no-reply@uav-pas.vju.ac.vn}") String fromAddress,
+            @Value("${app.mail.from:no-reply@uav.all1.vn}") String fromAddress,
             @Value("${spring.mail.host:}") String host,
             @Value("${spring.mail.username:}") String username,
             @Value("${spring.mail.port:#{null}}") Integer port) {
@@ -145,7 +145,7 @@ public class MailDiagnosticsServiceImpl implements MailDiagnosticsService {
                     new MimeMessageHelper(message, false, StandardCharsets.UTF_8.name());
             helper.setFrom(fromAddress);
             helper.setTo(admin.getEmail().trim());
-            helper.setSubject("[VJU UAV-PAS] Email kiểm tra cấu hình / Test email");
+            helper.setSubject("[UAV PAS] Email kiểm tra cấu hình / Test email");
             helper.setText(body(now), false);
             sender.send(message);
             log.info("Infrastructure test email sent to {}", masked);
@@ -224,10 +224,10 @@ public class MailDiagnosticsServiceImpl implements MailDiagnosticsService {
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss xxx")
                         .format(now.atZone(ZoneId.systemDefault()));
         return """
-                Đây là email kiểm tra cấu hình gửi thư của hệ thống VJU UAV-PAS.
+                Đây là email kiểm tra cấu hình gửi thư của hệ thống UAV PAS.
                 Nếu bạn nhận được email này, máy chủ gửi thư đang hoạt động.
 
-                This is a test message from the VJU UAV-PAS admin portal (Infrastructure > Email).
+                This is a test message from the UAV PAS admin portal (Infrastructure > Email).
                 If it reached you, outbound email is working.
 
                 Thời điểm gửi / Sent at: %s

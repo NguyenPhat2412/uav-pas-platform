@@ -59,7 +59,7 @@
       "streets": "Streets (OSM)",
       "satellite": "Satellite",
       "terrain": "Terrain",
-      "dark": "Tactical Dark"
+      "dark": "Dark"
     },
     "radius": "Radius",
     "ariaLabel": "Flight area planner. Click to set the takeoff point or add area vertices.",

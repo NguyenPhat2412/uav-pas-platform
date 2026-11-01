@@ -1,5 +1,5 @@
 /**
- * Centralized API Route Registry for UAV Platform (VJU PAS)
+ * Centralized API Route Registry for UAV Platform (UAV PAS)
  * Single source of truth for all Backend /api/v1/* endpoints across Frontend portals.
  */
 export const API_ROUTES = {

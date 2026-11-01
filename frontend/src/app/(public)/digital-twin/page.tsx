@@ -3,7 +3,7 @@ import {DigitalTwinShowcase} from '@/components/digital-twin/DigitalTwinShowcase
 
 export const metadata = pageMetadata(
     'Digital Twin – Mô hình 3D từ dữ liệu UAV',
-    'Xem mô hình số 3D của khu VJU UAV Hub: xoay, phóng to, đổi góc nhìn và theo dõi UAV tuần tra, khảo sát theo thời gian thực.',
+    'Xem mô hình số 3D mẫu (dựng tự động để minh hoạ): xoay, phóng to, đổi góc nhìn và xem UAV mô phỏng tuần tra, khảo sát.',
     '/digital-twin',
 );
 

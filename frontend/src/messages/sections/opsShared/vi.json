@@ -40,7 +40,7 @@
         "rthUnconfigured": "Chưa có GCS nhận {event}. Ra lệnh RTH trực tiếp trên GCS.",
         "actionFailed": "Thao tác thất bại. Thử lại.",
         "cameraError": "Không thể hiển thị phát hiện AI",
-        "mapError": "Không thể tải bản đồ tác chiến",
+        "mapError": "Không thể tải bản đồ điều hành",
         "hudError": "Lỗi hiển thị telemetry",
         "kv260Error": "Lỗi hiển thị bo mạch suy luận"
       },
@@ -67,8 +67,8 @@
         "verifyFailed": "Không cập nhật được trạng thái xác nhận."
       },
       "map": {
-        "title": "Bản đồ tác chiến SAR",
-        "aria": "Bản đồ tác chiến của nhiệm vụ {code}",
+        "title": "Bản đồ tìm kiếm cứu nạn",
+        "aria": "Bản đồ điều hành của nhiệm vụ {code}",
         "generatePlan": "Sinh đường bay IAMSAR",
         "clearPlan": "Ẩn đường bay",
         "planReady": "Đã sinh đường bay {legs} chặng, ước tính {minutes} phút.",

@@ -1,18 +1,18 @@
 import Image from 'next/image';
 import React, {type ButtonHTMLAttributes, type PropsWithChildren} from 'react';
 import {cn} from '@/lib/utils';
-import type {VjuLogoProps} from '@/types/ui';
+import type {AppLogoProps} from '@/types/ui';
 
-export type {VjuLogoProps};
+export type {AppLogoProps};
 
 export function Button({children, ...props}: PropsWithChildren<ButtonHTMLAttributes<HTMLButtonElement>>) {
     return <button {...props}>{children}</button>;
 }
 
-export function VjuLogo({size = 32, className, alt = 'VJU - Trường Đại học Việt Nhật'}: VjuLogoProps) {
+export function AppLogo({size = 32, className, alt = 'UAV PAS'}: AppLogoProps) {
     return (
         <Image
-            src="/vju-logo.svg"
+            src="/uav-pas-logo.svg"
             alt={alt}
             width={size}
             height={size}

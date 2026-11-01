@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     output: 'standalone',
     devIndicators: false,
     async redirects() {
-        return [{source: '/favicon.ico', destination: '/vju-logo.svg', permanent: false}];
+        return [{source: '/favicon.ico', destination: '/uav-pas-logo.svg', permanent: false}];
     },
     outputFileTracingRoot: path.resolve(__dirname),
     turbopack: {root: path.resolve(__dirname)},

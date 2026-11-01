@@ -93,7 +93,7 @@
         "streets": "Streets (OpenStreetMap)",
         "satellite": "Satellite (Esri World Imagery)",
         "terrain": "Terrain (OpenTopoMap)",
-        "dark": "Tactical Dark (Carto Dark)"
+        "dark": "Dark (Carto Dark)"
       }
     },
     "deviceKeys": {

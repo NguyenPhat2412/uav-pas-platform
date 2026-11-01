@@ -241,7 +241,7 @@ class SecurityAuditHardeningTest {
                 new WebhookSubscription(
                         "Emergency Center",
                         "https://hooks.partner.example.com/uav",
-                        "vju_sec_live_88392019948",
+                        "demo_sec_live_88392019948",
                         "SAR_CRITICAL_ALERT,PAYMENT_COMPLETED");
         sub.setId(1L);
 
@@ -250,7 +250,7 @@ class SecurityAuditHardeningTest {
                         .toSubscriptionResponse(sub);
 
         assertEquals("********9948", dto.secretKey());
-        assertTrue(!dto.secretKey().contains("vju_sec_live"));
+        assertTrue(!dto.secretKey().contains("demo_sec_live"));
     }
 
     @Test

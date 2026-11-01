@@ -423,7 +423,7 @@ export function AuthModalPopup() {
                     <div className="flex items-center gap-2.5">
                         <span className="inline-block h-2 w-2 rounded-badge bg-primary" aria-hidden="true" />
                         <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-slate-200">
-                            VJU UAV-PAS · CỔNG XÁC THỰC TẬP TRUNG
+                            UAV PAS · CỔNG XÁC THỰC · BẢN DEMO
                         </span>
                     </div>
                     <button
@@ -507,7 +507,7 @@ export function AuthModalPopup() {
                                     disabled={submitting}
                                     value={usernameOrEmail}
                                     onChange={(e) => setUsernameOrEmail(e.target.value)}
-                                    placeholder="operator@vju.ac.vn hoặc username"
+                                    placeholder="operator@example.com hoặc username"
                                     className={inputClass}
                                 />
                             </div>
@@ -603,7 +603,7 @@ export function AuthModalPopup() {
                                         disabled={submitting}
                                         value={regUsername}
                                         onChange={(e) => setRegUsername(e.target.value)}
-                                        placeholder="pilot_vju"
+                                        placeholder="pilot_demo"
                                         className={inputClass}
                                     />
                                 </div>
@@ -882,7 +882,7 @@ export function AuthModalPopup() {
                                     disabled={submitting}
                                     value={forgotEmail}
                                     onChange={(e) => setForgotEmail(e.target.value)}
-                                    placeholder="operator@vju.ac.vn"
+                                    placeholder="operator@example.com"
                                     className={inputClass}
                                 />
                             </div>

@@ -1,4 +1,4 @@
-/** The assistant's mascot: a cute superhero head in VJU red and engineering blue. Decorative unless a title is given. */
+/** The assistant's mascot: a cute superhero head in the brand red and engineering blue. Decorative unless a title is given. */
 export function SuperheroLogo({size = 40, title}: { size?: number; title?: string }) {
     return (
         <svg width={size} height={size} viewBox="0 0 64 64" role={title ? 'img' : undefined} aria-hidden={title ? undefined : true}>

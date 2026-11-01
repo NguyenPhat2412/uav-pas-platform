@@ -46,13 +46,13 @@ class RegistrationSafetyTest {
         var in =
                 RegistrationOperations.normalize(
                         req(
-                                " pilot.vju ",
-                                " Pilot@VJU.Edu.VN ",
+                                " pilot.demo ",
+                                " Pilot@School.Edu.VN ",
                                 "+84 901-234.567",
                                 "secret123",
                                 null));
-        assertEquals("pilot.vju", in.username());
-        assertEquals("pilot@vju.edu.vn", in.email());
+        assertEquals("pilot.demo", in.username());
+        assertEquals("pilot@school.edu.vn", in.email());
         assertEquals("0901234567", in.phoneNumber());
         assertEquals(UserRole.ROLE_PILOT, in.role());
         assertEquals(UserStatus.ACTIVE, in.status());

@@ -102,9 +102,9 @@ export default async function SolutionDetail({params}: { params: Promise<{ slug:
                 ) : (
                     <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-amber-200 bg-amber-50/70 p-6">
                         <div className="space-y-1 max-w-2xl">
-                            <p className="text-sm font-bold text-amber-900">Giải pháp thuộc nhóm R&D chuyên sâu (Gói Enterprise)</p>
+                            <p className="text-sm font-bold text-amber-900">Mô-đun đang thử nghiệm (bản demo)</p>
                             <p className="text-xs text-amber-800">
-                                Buồng lái SAR chuẩn IAMSAR và mô-đun Edge AI Kria KV260 đã được tích hợp trong cổng vận hành. Liên hệ đội ngũ kỹ thuật hoặc đăng ký gói Enterprise để kích hoạt thử nghiệm thực địa.
+                                Buồng lái SAR và mô-đun AI có trong cổng vận hành nhưng chỉ chạy trên dữ liệu mô phỏng/mẫu; chưa có thử nghiệm bay thực địa.
                             </p>
                         </div>
                         <div className="flex flex-wrap gap-3">

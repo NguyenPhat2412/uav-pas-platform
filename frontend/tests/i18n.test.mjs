@@ -36,7 +36,7 @@ test('i18n: shell and navigation keys exist for operations, admin and customer',
     const requiredShellKeys = [
         'skipToContent', 'expandSidebar', 'collapseSidebar', 'openNavigation',
         'closeNavigation', 'operationsTitle', 'adminTitle', 'customerTitle',
-        'operationsSection', 'adminSection', 'customerSection', 'vjuUniversity'
+        'operationsSection', 'adminSection', 'customerSection', 'brandName'
     ];
 
     for (const catalog of [vi, en, ja]) {

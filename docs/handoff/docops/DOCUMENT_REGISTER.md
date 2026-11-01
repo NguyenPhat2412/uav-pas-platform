@@ -18,7 +18,7 @@ Inspection basis: repository `HEAD` `6ecc85111a28e53679b2a6d8ac7ec93730d80be4` o
 | [FINAL_INTEGRATION_HANDOFF.md](FINAL_INTEGRATION_HANDOFF.md) | Executive integration result, module statuses, security/data findings, gaps and next goal | All current final reports and admissible evidence in this package | Current |
 | [REMAINING_GAPS_BACKLOG.md](REMAINING_GAPS_BACKLOG.md) | Prioritized backlog with acceptance criteria and ownership boundaries | Confirmed findings from current source and evidence | Current |
 | [CURRENT_STATE.txt](CURRENT_STATE.txt) | Repository, branch, worktree, SHA and working-tree snapshot | Read-only Git inspection at package finalization | Historical (`6ecc851`) |
-| [DOC_SYNC_2026-10-14_b3d8f9b.md](DOC_SYNC_2026-10-14_b3d8f9b.md) | 2026-10-14 synchronization report covering M1–M6 multi-app architecture, VJU UI/UX alignment, and 4-layer exception handling | Current `main` at `b3d8f9b` | Current |
+| [DOC_SYNC_2026-10-14_b3d8f9b.md](DOC_SYNC_2026-10-14_b3d8f9b.md) | 2026-10-14 synchronization report covering M1–M6 multi-app architecture, UAV PAS UI/UX alignment, and 4-layer exception handling | Current `main` at `b3d8f9b` | Current |
 | [EXCEPTION_HANDLING_ARCHITECTURE.md](EXCEPTION_HANDLING_ARCHITECTURE.md) | 4-layer exception handling specification (Spring Boot `GlobalExceptionHandler`, `@uav/api-client`, TanStack Query, Next.js `error.tsx`/`not-found.tsx`) | `GlobalExceptionHandlerTest` (6/6 PASS) + `typecheck` (11/11 PASS) | Current |
 | [UI_UX_ALIGNMENT_AND_FLOWS_REPORT.md](UI_UX_ALIGNMENT_AND_FLOWS_REPORT.md) | Collapsible sidebar, Bento frame system, SAR & AI Cockpit (`KV260`), and Customer Portal end-to-end flows | Visual browser verification + 28/28 frontend tests PASS | Current |
 

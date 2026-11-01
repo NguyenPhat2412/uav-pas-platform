@@ -843,7 +843,7 @@ InetAddress predicates omit IPv6 unique-local range; client sends request and re
                         .header("Content-Type", "application/json")
                         .header("X-Signature-SHA256", signature)
                         .header("X-Event-Type", eventType)
-                        .header("User-Agent", "UAV-PAS-VJU-Webhook-Dispatcher/1.0")
+                        .header("User-Agent", "UAV-PAS-Webhook-Dispatcher/1.0")
                         .timeout(Duration.ofSeconds(4))
                         .POST(HttpRequest.BodyPublishers.ofString(jsonPayload, StandardCharsets.UTF_8))
                         .build();
@@ -939,7 +939,7 @@ InetAddress predicates omit IPv6 unique-local range; client sends request and re
                         .header("Content-Type", "application/json")
                         .header("X-Signature-SHA256", signature)
                         .header("X-Event-Type", eventType)
-                        .header("User-Agent", "UAV-PAS-VJU-Webhook-Dispatcher/1.0")
+                        .header("User-Agent", "UAV-PAS-Webhook-Dispatcher/1.0")
                         .timeout(Duration.ofSeconds(4))
                         .POST(HttpRequest.BodyPublishers.ofString(jsonPayload, StandardCharsets.UTF_8))
                         .build();
@@ -1036,7 +1036,7 @@ InetAddress predicates omit IPv6 unique-local range; client sends request and re
                         .header("Content-Type", "application/json")
                         .header("X-Signature-SHA256", signature)
                         .header("X-Event-Type", eventType)
-                        .header("User-Agent", "UAV-PAS-VJU-Webhook-Dispatcher/1.0")
+                        .header("User-Agent", "UAV-PAS-Webhook-Dispatcher/1.0")
                         .timeout(Duration.ofSeconds(4))
                         .POST(HttpRequest.BodyPublishers.ofString(jsonPayload, StandardCharsets.UTF_8))
                         .build();

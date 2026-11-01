@@ -114,7 +114,7 @@ export function ContactQuickForm() {
                     >
                         <option value="SURVEY_SERVICE">Đặt dịch vụ bay khảo sát GIS / Quay chụp</option>
                         <option value="PRICING_PLAN">Tư vấn gói cước Basic / Pro / Enterprise</option>
-                        <option value="SAR_AI_RND">Hợp tác R&D: Edge AI Kria KV260 & Buồng lái SAR</option>
+                        <option value="SAR_AI_RND">Góp ý kỹ thuật: AI thử nghiệm & Buồng lái SAR</option>
                         <option value="TRAINING_SOP">Đào tạo an toàn bay & Học viện SOP UAV</option>
                     </select>
                 </div>

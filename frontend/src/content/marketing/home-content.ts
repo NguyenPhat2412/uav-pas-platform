@@ -25,8 +25,8 @@ export type {
 
 export const projectHighlights = [
     {label: 'Kiến trúc điều hành', value: '3 Phân hệ', detail: 'Khách hàng · Điều phối Vận hành · Quản trị Hệ thống'},
-    {label: 'Độ chính xác định vị', value: '1–3 cm RTK', detail: 'Đa hệ vệ tinh GNSS + trạm tham chiếu mặt đất'},
-    {label: 'Xử lý AI tại biên', value: 'Kria KV260', detail: 'Mô hình YOLOv8s tăng tốc phần cứng FPGA DPU'},
+    {label: 'Dữ liệu bay', value: 'Mô phỏng', detail: 'Telemetry giả lập trong bản demo, không có chuyến bay thật'},
+    {label: 'AI biên', value: 'Thử nghiệm', detail: 'Hướng nghiên cứu YOLOv8s trên Kria KV260 tại mặt đất'},
     {label: 'Vòng đời nhiệm vụ', value: '7 Trạng thái', detail: 'Kiểm soát chặt từ bản nháp đến bàn giao dữ liệu'},
 ] as const;
 
@@ -49,12 +49,12 @@ export const uavPlatformFeatures: UavPlatformFeature[] = [
     {
         id: 'realtime-telemetry-rtk',
         badge: 'Telemetry & RTK',
-        title: 'Giám sát Telemetry & RTK thời gian thực',
+        title: 'Theo dõi telemetry (mô phỏng)',
         subtitle: 'Theo dõi trực tiếp tọa độ, dung lượng pin và ranh giới an toàn không phận.',
         description:
-            'Truyền liên tục tọa độ GPS/RTK, độ cao, tốc độ, hướng bay và điện áp pin về trung tâm chỉ huy kèm cảnh báo tự động.',
+            'Hiển thị tọa độ, độ cao, tốc độ, hướng bay và điện áp pin từ nguồn telemetry giả lập, kèm cảnh báo tự động.',
         specs: [
-            'Định vị RTK chuẩn 1–3 cm (FIXED / FLOAT)',
+            'Hiển thị trạng thái định vị GNSS (FIXED / FLOAT)',
             'Kiểm tra vùng cấm bay Geofence tức thời',
             'Tự động tính ngưỡng pin an toàn quay về (RTH)',
         ],
@@ -64,10 +64,10 @@ export const uavPlatformFeatures: UavPlatformFeature[] = [
     {
         id: 'sar-ai-kv260',
         badge: 'Edge AI & SAR',
-        title: 'Buồng lái SAR & Edge AI Kria KV260',
+        title: 'Buồng lái SAR & AI biên (thử nghiệm)',
         subtitle: 'Nhận diện mục tiêu tại biên và sinh lộ trình tìm kiếm chuẩn quốc tế IAMSAR.',
         description:
-            'Xử lý thị giác máy tính trực tiếp trên bo mạch FPGA Kria KV260 gắn trên UAV, hỗ trợ xác minh mục tiêu cứu nạn khẩn cấp.',
+            'Hướng thử nghiệm: suy luận thị giác máy tính trên bo mạch Kria KV260 đặt tại mặt đất (không gắn trên UAV); kết quả chỉ để minh hoạ.',
         specs: [
             'Giám sát tải DPU (%), tốc độ FPS & nhiệt độ SoC',
             'Lộ trình tìm kiếm tự động IAMSAR Expanding Square',
@@ -202,7 +202,7 @@ export const publicPricingPlans: PublicPricingPlan[] = [
     {
         code: 'PRO',
         name: 'Gói Chuyên Nghiệp (Pro)',
-        subtitle: 'Tăng tốc AI KV260 & điều phối đa UAV',
+        subtitle: 'Gói minh hoạ: AI thử nghiệm & điều phối đa UAV',
         monthlyVnd: '15.000.000 ₫',
         billingCycle: '/ tháng (hỗ trợ hóa đơn VAT)',
         flightHoursQuota: '80 giờ bay / tháng',
@@ -213,38 +213,38 @@ export const publicPricingPlans: PublicPricingPlan[] = [
         targetAudience: 'Dành cho doanh nghiệp khảo sát hạ tầng, điện lực, nông nghiệp và khu công nghiệp.',
         highlights: [
             '80 giờ bay/tháng & ưu tiên xếp lịch điều phối',
-            'Mở khoá xử lý AI YOLOv8s trên phần cứng Kria KV260',
+            'Mở khoá mô-đun AI thử nghiệm (YOLOv8s)',
             'Đầy đủ 4 cảm biến: RGB 4K, Nhiệt, LiDAR, Đa phổ',
             'Báo cáo phân tích hiệu suất nhiệm vụ thời gian thực',
         ],
     },
     {
         code: 'ENTERPRISE',
-        name: 'Gói Tác Chiến (Enterprise / SAR)',
+        name: 'Gói Doanh nghiệp (Enterprise / SAR)',
         subtitle: 'Đội bay quy mô lớn & cứu nạn khẩn cấp',
         monthlyVnd: '45.000.000 ₫',
         billingCycle: '/ tháng (hợp đồng SLA riêng)',
         flightHoursQuota: '300 giờ bay / tháng',
         concurrentUavs: '10 UAV đồng thời',
         sarAiIncluded: true,
-        badge: 'Tác chiến & SAR',
+        badge: 'Doanh nghiệp & SAR',
         targetAudience: 'Thiết kế cho đơn vị quản lý hạ tầng trọng điểm, phòng chống thiên tai và cứu nạn SAR.',
         highlights: [
             '300 giờ bay/tháng, điều phối đồng thời tới 10 UAV',
             'Toàn quyền Buồng lái SAR AI & đường bay IAMSAR 24/7',
             'Tích hợp Webhook sự kiện thời gian thực (SAR, RTH)',
-            'Cam kết SLA ưu tiên & đội ngũ phi công chuyên trách',
+            'Minh hoạ cấu hình SLA & phân công phi công',
         ],
     },
 ];
 
 export const pricingComparisonRows: PricingComparisonRow[] = [
-    {feature: 'Mức cước niêm yết hàng tháng', basic: '5.000.000 ₫ / tháng', pro: '15.000.000 ₫ / tháng', enterprise: '45.000.000 ₫ / tháng'},
+    {feature: 'Mức cước minh hoạ hàng tháng (không thu phí thật)', basic: '5.000.000 ₫ / tháng', pro: '15.000.000 ₫ / tháng', enterprise: '45.000.000 ₫ / tháng'},
     {feature: 'Hạn mức giờ bay định kỳ', basic: '20 giờ / tháng', pro: '80 giờ / tháng', enterprise: '300 giờ / tháng'},
     {feature: 'Số lượng UAV hoạt động đồng thời tối đa', basic: '01 UAV', pro: '03 UAV', enterprise: '10 UAV'},
     {feature: 'Công cụ lập vùng bay GIS & cấu hình AGL / GSD / Overlap', basic: 'Có đầy đủ', pro: 'Có đầy đủ', enterprise: 'Có đầy đủ'},
     {feature: 'Tải trọng cảm biến hỗ trợ', basic: 'RGB 4K tiêu chuẩn', pro: 'RGB 4K · Nhiệt · LiDAR · Đa phổ', enterprise: 'Toàn bộ cảm biến + cấu hình đặc thù'},
-    {feature: 'Xử lý AI YOLOv8s trên phần cứng biên Kria KV260', basic: 'Không bao gồm', pro: 'Đã bao gồm', enterprise: 'Đã bao gồm (Ưu tiên DPU)'},
+    {feature: 'Mô-đun AI thử nghiệm (YOLOv8s)', basic: 'Không bao gồm', pro: 'Đã bao gồm', enterprise: 'Đã bao gồm'},
     {feature: 'Buồng lái Tìm kiếm Cứu nạn (SAR) & đường bay IAMSAR', basic: 'Không bao gồm', pro: 'Hỗ trợ theo yêu cầu', enterprise: 'Toàn quyền kích hoạt 24/7'},
     {feature: 'Tích hợp Webhook sự kiện thời gian thực & API', basic: 'Thông báo trên cổng', pro: 'Thông báo + Báo cáo nâng cao', enterprise: 'Webhook HMAC đầy đủ + SLA riêng'},
     {feature: 'Phương thức thanh toán & kích hoạt hạn mức', basic: 'Chuyển khoản VietQR', pro: 'Chuyển khoản VietQR / Hợp đồng', enterprise: 'VietQR / Đối soát doanh nghiệp'},

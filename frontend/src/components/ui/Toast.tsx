@@ -47,7 +47,7 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                                 {item.type === 'info' && <Info size={20} strokeWidth={2.5}/>}
                             </div>
                             <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-panel bg-white border border-slate-100 flex items-center justify-center overflow-hidden">
-                                <Image src="/vju-logo.svg" alt="UAV" width={14} height={14} className="w-3.5 h-3.5 object-contain"/>
+                                <Image src="/uav-pas-logo.svg" alt="UAV" width={14} height={14} className="w-3.5 h-3.5 object-contain"/>
                             </div>
                         </div>
 

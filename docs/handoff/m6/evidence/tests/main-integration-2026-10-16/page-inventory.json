@@ -316,7 +316,7 @@
       "title": "UAV PAS Cổng khách hàng",
       "resolvedPath": "/missions/3",
       "httpStatus": 200,
-      "heading": "Khảo sát khu vực thực nghiệm Việt Nhật",
+      "heading": "Khảo sát khu vực thực nghiệm mẫu",
       "runtimeErrors": [],
       "status": "PASS"
     },
@@ -822,7 +822,7 @@
       "title": "UAV PAS - Precision Flight Control & Telemetry Platform",
       "resolvedPath": "/preview",
       "httpStatus": 200,
-      "heading": "TRUNG TÂM CHỈ HUY BAY TỰ ĐỘNG UAV PAS\nVJU EDITION",
+      "heading": "TRUNG TÂM CHỈ HUY BAY TỰ ĐỘNG UAV PAS\nDEMO EDITION",
       "runtimeErrors": [],
       "status": "PASS"
     },
@@ -1561,7 +1561,7 @@
         "wide": [
           {
             "tag": "TABLE",
-            "cls": "vju-table"
+            "cls": "uav-table"
           },
           {
             "tag": "THEAD",
@@ -1569,15 +1569,15 @@
           },
           {
             "tag": "TR",
-            "cls": "vju-thead-tr"
+            "cls": "uav-thead-tr"
           },
           {
             "tag": "TH",
-            "cls": "vju-th"
+            "cls": "uav-th"
           },
           {
             "tag": "TH",
-            "cls": "vju-th"
+            "cls": "uav-th"
           }
         ]
       }

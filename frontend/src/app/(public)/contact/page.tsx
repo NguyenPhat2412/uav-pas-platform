@@ -7,7 +7,7 @@ import {ContactQuickForm} from "@/components/marketing/ContactQuickForm";
 
 export const metadata = pageMetadata(
     "Liên hệ & Hỗ trợ điều phối UAV",
-    "Kết nối với Trung tâm Điều phối UAV PAS (Trường Đại học Việt Nhật – ĐHQGHN): tư vấn dịch vụ khảo sát GIS, gói cước doanh nghiệp, hỗ trợ kỹ thuật bay và hợp tác R&D Edge AI.",
+    "Liên hệ về UAV PAS, đồ án cá nhân của Nguyễn Phát: góp ý, câu hỏi kỹ thuật hoặc yêu cầu xem demo. Đây không phải dịch vụ thương mại.",
     "/contact",
     true
 );
@@ -37,30 +37,20 @@ export default function ContactPage() {
 
                         <div className="relative z-10 space-y-6">
                             <p className="text-xs font-extrabold uppercase tracking-widest text-rose-400">
-                                Liên hệ & Điều phối 24/7
+                                Liên hệ · Bản demo
                             </p>
                             <h1 className="text-2xl font-black tracking-tight text-white sm:text-4xl leading-tight">
-                                {keepVietnamesePhrases('Kết nối trực tiếp với Trung tâm Chỉ huy UAV PAS.')}
+                                {keepVietnamesePhrases('Góp ý và câu hỏi về dự án UAV PAS.')}
                             </h1>
 
                             <div className="space-y-4 border-t border-white/15 pt-5 text-xs">
                                 <div>
-                                    <p className="font-bold text-rose-300">Trạm Thực nghiệm Hòa Lạc (ĐHQGHN)</p>
-                                    <p className="mt-0.5 text-slate-300">Khu Công nghệ cao Hòa Lạc, Thạch Thất, Hà Nội</p>
+                                    <p className="font-bold text-rose-300">Đồ án cá nhân</p>
+                                    <p className="mt-0.5 text-slate-300">UAV PAS do Nguyễn Phát thực hiện, không đại diện và không liên kết với bất kỳ trường học hay tổ chức nào.</p>
                                 </div>
                                 <div>
-                                    <p className="font-bold text-rose-300">Văn phòng Mỹ Đình (VJU)</p>
-                                    <p className="mt-0.5 text-slate-300">Đường Lưu Hữu Phước, Nam Từ Liêm, Hà Nội</p>
-                                </div>
-                                <div className="grid grid-cols-2 gap-3 pt-1">
-                                    <div className="rounded-xl bg-white/10 p-3">
-                                        <span className="block text-[10px] uppercase text-slate-400">Email hỗ trợ</span>
-                                        <strong className="mt-0.5 block text-white">uav-pas@vju.ac.vn</strong>
-                                    </div>
-                                    <div className="rounded-xl bg-white/10 p-3">
-                                        <span className="block text-[10px] uppercase text-slate-400">Trực điều phối</span>
-                                        <strong className="mt-0.5 block text-white">08:00 – 17:30 (T2–T7)</strong>
-                                    </div>
+                                    <p className="font-bold text-rose-300">Không phải dịch vụ thương mại</p>
+                                    <p className="mt-0.5 text-slate-300">Không nhận đặt bay thật, không báo giá và không thu phí. Biểu mẫu bên cạnh chỉ dùng để góp ý hoặc hẹn xem demo.</p>
                                 </div>
                             </div>
                         </div>
@@ -90,10 +80,10 @@ export default function ContactPage() {
                                 Gửi yêu cầu nhanh
                             </span>
                             <h2 className="text-2xl font-black tracking-tight text-slate-900">
-                                Nhận tư vấn thông số bay & báo giá gói cước
+                                Góp ý hoặc hẹn xem demo
                             </h2>
                             <p className="text-xs text-slate-500">
-                                Điền ngắn gọn nhu cầu của bạn hoặc đăng nhập để vẽ trực tiếp vùng bay trên bản đồ GIS.
+                                Để lại câu hỏi hoặc góp ý; bạn cũng có thể đăng nhập để thử vẽ vùng bay mẫu trên bản đồ GIS.
                             </p>
                         </div>
 

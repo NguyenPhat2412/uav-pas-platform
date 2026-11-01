@@ -44,8 +44,8 @@ const timelineStages: {
     {
         number: '04',
         role: 'Tổ bay Thực địa',
-        title: 'Bay thực địa & truyền Telemetry RTK',
-        short: 'Kiểm tra tiền bay SOP, cất cánh và xử lý AI Kria KV260 trực tiếp.',
+        title: 'Thực hiện bay & theo dõi telemetry',
+        short: 'Kiểm tra tiền bay SOP và theo dõi chuyến bay (mô phỏng trong bản demo).',
         scene: 'stepRtk',
     },
     {

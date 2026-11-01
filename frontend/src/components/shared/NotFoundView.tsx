@@ -42,7 +42,7 @@ export function NotFoundView({title, detail, homeHref, homeLabel, backLabel, lin
             {fullScreen && (
                 <Link href="/" className="mx-auto mb-auto inline-flex items-center gap-2.5 text-sm font-semibold text-slate-900">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/vju-logo.svg" alt="" width={32} height={32} className="h-8 w-8"/>
+                    <img src="/uav-pas-logo.svg" alt="" width={32} height={32} className="h-8 w-8"/>
                     <span>UAV<span className="text-primary">PAS</span></span>
                 </Link>
             )}
@@ -80,7 +80,7 @@ export function NotFoundView({title, detail, homeHref, homeLabel, backLabel, lin
                     </nav>
                 )}
             </div>
-            {fullScreen && <p className="mx-auto mt-auto pt-8 text-xs text-slate-400">Trường Đại học Việt Nhật · ĐHQGHN</p>}
+            {fullScreen && <p className="mx-auto mt-auto pt-8 text-xs text-slate-400">UAV PAS · Đồ án cá nhân · Bản demo</p>}
         </main>
     );
 }

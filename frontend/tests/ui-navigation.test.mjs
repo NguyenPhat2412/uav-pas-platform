@@ -43,7 +43,7 @@ test('URL-friendly slugs format human-readable identifiers and parse back to exa
     assert.equal(toMissionSlug({id: 15, code: 'MSN-2026-0015'}), 'msn-2026-0015-15');
     assert.equal(toUserSlug({id: 4, username: 'nguyen_van_an'}), 'nguyen-van-an-4');
     assert.equal(toUavSlug({id: 9, serialNumber: 'UAV-M350-VN-009'}), 'uav-m350-vn-009-9');
-    assert.equal(toStationSlug({id: 2, code: 'HN-VJU-01'}), 'hn-vju-01-2');
+    assert.equal(toStationSlug({id: 2, code: 'HN-HL-01'}), 'hn-hl-01-2');
     assert.equal(toServiceSlug({id: 3, code: 'AREA_INSPECTION'}), 'area-inspection-3');
 
     assert.equal(parseEntityId('15'), 15);
@@ -62,9 +62,9 @@ test('URL-friendly slugs format human-readable identifiers and parse back to exa
     assert.equal(resolveUavIdFromParam('UAV-M350-VN-009', null, uavs), '9');
     assert.equal(resolveUavIdFromParam(null, '9', uavs), '9');
 
-    const stations = [{id: 2, code: 'HN-VJU-01', name: 'Trạm Hòa Lạc'}];
-    assert.equal(resolveStationIdFromParam('hn-vju-01-2', stations), 2);
-    assert.equal(resolveStationIdFromParam('HN-VJU-01', stations), 2);
+    const stations = [{id: 2, code: 'HN-HL-01', name: 'Trạm Hòa Lạc'}];
+    assert.equal(resolveStationIdFromParam('hn-hl-01-2', stations), 2);
+    assert.equal(resolveStationIdFromParam('HN-HL-01', stations), 2);
 });
 
 const sidebarRoutesSource = await readFile(new URL('../src/config/sidebar-routes.ts', import.meta.url), 'utf8');

@@ -14,7 +14,7 @@ Changed locally & synced from Google Drive (`uav_platform_pass`):
 - Updated `docs/handoff/docops/LAST_SYNCED_SHA` to `b3d8f9b`.
 - Added `DOC_SYNC_2026-10-14_b3d8f9b.md`, `EXCEPTION_HANDLING_ARCHITECTURE.md`, and `UI_UX_ALIGNMENT_AND_FLOWS_REPORT.md` covering:
   1. Multi-app monorepo (`apps/web`, `apps/customer`, `apps/operations`, `apps/admin` + 7 `@uav/*` packages).
-  2. Collapsible sidebar (`228px`/`68px` with `localStorage`), VJU brand identity, high-contrast Bento frames, and full-bleed dark SAR & AI Cockpit (`KV260` telemetry + YOLOv8/Thermal HUD).
+  2. Collapsible sidebar (`228px`/`68px` with `localStorage`), UAV PAS brand identity, high-contrast Bento frames, and full-bleed dark SAR & AI Cockpit (`KV260` telemetry + YOLOv8/Thermal HUD).
   3. End-to-end Customer Portal (`apps/customer`) & Operations Portal (`apps/operations`) API wiring with resilient demo/offline fallbacks.
   4. 4-layer Exception Management hardening (`GlobalExceptionHandler.java` + `GlobalExceptionHandlerTest.java`, `ApiError.code` propagation in `@uav/api-client`, and Next.js App Router `error.tsx` / `not-found.tsx` across all 3 portals).
 

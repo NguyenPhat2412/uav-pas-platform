@@ -1,4 +1,4 @@
-# Báo cáo Hoàn thiện Toàn diện UI/UX & Luồng Nghiệp vụ Hệ thống UAV PAS (VJU)
+# Báo cáo Hoàn thiện Toàn diện UI/UX & Luồng Nghiệp vụ Hệ thống UAV PAS
 
 Toàn bộ các điểm lệch giao diện (UI/UX) cùng **6 nhóm chức năng & luồng thực thi End-to-End** trên cả 3 cổng (**Customer Portal**, **Operations Portal**, **Admin Portal**) và **Backend Spring Boot** đã được khắc phục, đấu nối hoàn chỉnh và kiểm thử tự động đạt 100%.
 
@@ -8,10 +8,10 @@ Toàn bộ các điểm lệch giao diện (UI/UX) cùng **6 nhóm chức năng 
 
 ### 1.1. Khắc phục Xung đột CSS & Nâng cấp Trung tâm Thông báo (`/notifications`)
 - **Vấn đề trước đây**: Trang [notifications/page.tsx](file:///d:/uav_pas/apps/customer/app/(portal)/notifications/page.tsx) sử dụng các class Tailwind (`space-y-6`, `bg-blue-600`) trong khi `apps/customer` dùng Plain CSS ([globals.css](file:///d:/uav_pas/apps/customer/app/globals.css)), khiến bố cục không có khung viền và lệch màu.
-- **Giải pháp đã thực hiện**: Viết lại toàn bộ giao diện bằng hệ thống `<Panel>`, `<Button>` chuẩn VJU, tích hợp bộ lọc trạng thái (`Tất cả` / `Chưa đọc`), phân loại nhãn màu theo mức độ (`Khẩn cấp` `#ab2523`, `Cảnh báo` `#b45309`, `Hoàn tất` `#007f3e`) và đấu nối API `/api/v1/notifications/read-all` & `/api/v1/notifications/{id}/read`.
+- **Giải pháp đã thực hiện**: Viết lại toàn bộ giao diện bằng hệ thống `<Panel>`, `<Button>` chuẩn UAV PAS, tích hợp bộ lọc trạng thái (`Tất cả` / `Chưa đọc`), phân loại nhãn màu theo mức độ (`Khẩn cấp` `#ab2523`, `Cảnh báo` `#b45309`, `Hoàn tất` `#007f3e`) và đấu nối API `/api/v1/notifications/read-all` & `/api/v1/notifications/{id}/read`.
 
 ### 1.2. Mở rộng Danh mục Dịch vụ UAV Chuyên dụng (`/services`)
-- **Giải pháp đã thực hiện**: Nâng cấp [services/page.tsx](file:///d:/uav_pas/apps/customer/app/(portal)/services/page.tsx) và [service.ts](file:///d:/uav_pas/apps/customer/src/features/customer/service.ts) với 6 gói dịch vụ UAV chuyên dụng của VJU (`SAR-01`, `MAP-02`, `AGRI-03`, `SEC-04`, `ENV-05`, `LOG-06`), hiển thị đầy đủ thông số cảm biến/tải trọng, thời lượng ca bay, cam kết SLA, trần bay và liên kết đặt lịch trực tiếp `/missions/create?serviceId=...`.
+- **Giải pháp đã thực hiện**: Nâng cấp [services/page.tsx](file:///d:/uav_pas/apps/customer/app/(portal)/services/page.tsx) và [service.ts](file:///d:/uav_pas/apps/customer/src/features/customer/service.ts) với 6 gói dịch vụ UAV chuyên dụng của UAV PAS (`SAR-01`, `MAP-02`, `AGRI-03`, `SEC-04`, `ENV-05`, `LOG-06`), hiển thị đầy đủ thông số cảm biến/tải trọng, thời lượng ca bay, cam kết SLA, trần bay và liên kết đặt lịch trực tiếp `/missions/create?serviceId=...`.
 
 ### 1.3. Luồng Quản lý Nhiệm vụ, Timeline & Tải xuống Media Bảo mật (`/missions` & `/missions/[id]`)
 - **Giải pháp đã thực hiện**:
@@ -22,15 +22,15 @@ Toàn bộ các điểm lệch giao diện (UI/UX) cùng **6 nhóm chức năng 
 - **Giải pháp đã thực hiện**: Thiết kế lại [profile/page.tsx](file:///d:/uav_pas/apps/customer/app/(portal)/profile/page.tsx) theo bố cục Bento 2 cột cân đối gồm **Thông tin Định danh Tài khoản IAM** và **Tùy chọn Nhận Cảnh báo & Điều phối Nhiệm vụ SAR**.
 
 ````carousel
-![Danh mục 6 dịch vụ UAV chuyên dụng VJU](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\customer_services_catalog_vju.png)
+![Danh mục 6 dịch vụ UAV chuyên dụng](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\customer_services_catalog.png)
 <!-- slide -->
-![Trung tâm Thông báo Customer Portal đã chuẩn hóa VJU](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\customer_notifications_vju.png)
+![Trung tâm Thông báo Customer Portal đã chuẩn hóa](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\customer_notifications.png)
 <!-- slide -->
-![Chi tiết Mission, Media Signed URL và Nhật ký Điều phối](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\customer_mission_detail_vju.png)
+![Chi tiết Mission, Media Signed URL và Nhật ký Điều phối](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\customer_mission_detail.png)
 <!-- slide -->
-![Hồ sơ Tài khoản & Cấu hình Liên lạc Bento 2 cột](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\customer_profile_bento_vju.png)
+![Hồ sơ Tài khoản & Cấu hình Liên lạc Bento 2 cột](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\customer_profile_bento.png)
 <!-- slide -->
-![Tổng quan Customer Portal VJU](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\customer_dashboard_aligned_vju.png)
+![Tổng quan Customer Portal](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\customer_dashboard_aligned.png)
 ````
 
 ---
@@ -49,9 +49,9 @@ Toàn bộ các điểm lệch giao diện (UI/UX) cùng **6 nhóm chức năng 
   - Chuẩn hóa đầy đủ các trường `availableQuantity`, `reservedQuantity`, `actorUsername`, `entityType`, `DEMO_MEDIA`, `DEMO_MOVEMENTS` giúp mọi phân hệ (`/stations`, `/uavs`, `/inventory`, `/media`, `/audit`, `/dispatch/missions`) luôn hiển thị đầy đủ dữ liệu ngay cả khi chạy độc lập.
 
 ````carousel
-![Buồng lái Tác chiến SAR AI Cockpit VJU](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\cockpit_sar_tactical_dark_shell.png)
+![Buồng lái Tác chiến SAR AI Cockpit](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\cockpit_sar_tactical_dark_shell.png)
 <!-- slide -->
-![Admin Portal Dashboard VJU](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\admin_dashboard_aligned.png)
+![Admin Portal Dashboard](C:\Users\maste\.gemini\antigravity\brain\f9a9efbc-c772-424b-a54e-470d0d797ce4\admin_dashboard_aligned.png)
 ````
 
 ---

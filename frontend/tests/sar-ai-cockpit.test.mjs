@@ -23,7 +23,7 @@ test('AppShell includes SAR AI Cockpit in navigation', () => {
     assert.match(content, /\/sar-cockpit/, 'AppShell navigation should have /sar-cockpit link');
     assert.match(content, /key: 'sar'/, 'AppShell navigation should label the SAR entry via operationsNav.sar');
     const vi = JSON.parse(readFileSync(atRoot('src/messages/vi.json'), 'utf8'));
-    assert.match(vi.operationsNav.sar, /Tác chiến AI & SAR/, 'vi catalog should label Tác chiến AI & SAR');
+    assert.match(vi.operationsNav.sar, /AI & Tìm kiếm cứu nạn/, 'vi catalog should label AI & Tìm kiếm cứu nạn');
 });
 
 test('AiViewfinder draws real AI detections and verifies them through the API', () => {

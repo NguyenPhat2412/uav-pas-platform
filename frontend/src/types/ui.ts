@@ -148,8 +148,8 @@ export interface TableFilter {
     options: { value: string; label: string }[];
 }
 
-/** The static VJU logo (next/image); a fixed square, so only its size, class and text alternative vary. */
-export interface VjuLogoProps {
+/** The static UAV PAS logo (next/image); a fixed square, so only its size, class and text alternative vary. */
+export interface AppLogoProps {
     size?: number;
     className?: string;
     alt?: string;

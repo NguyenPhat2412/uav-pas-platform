@@ -26,9 +26,9 @@ class EmailDomainPolicyServiceTest {
                         "pilot@hotmail.com",
                         "pilot@icloud.com",
                         "pilot@yahoo.com",
-                        "student@vju.ac.vn",
-                        "researcher@vnu.edu.vn",
-                        "student@uet.vnu.edu.vn",
+                        "student@school.ac.vn",
+                        "researcher@university.edu.vn",
+                        "student@dept.university.edu.vn",
                         "faculty@hust.edu.vn",
                         "officer@caa.gov.vn",
                         "scholar@tokyo-u.ac.jp")) {
@@ -84,7 +84,7 @@ class EmailDomainPolicyServiceTest {
                         "spoof@fakegmail.com",
                         "spoof@gmail.com.evil.ru",
                         "spoof@not-edu.vn",
-                        "spoof@vju.ac.vn.attacker.org")) {
+                        "spoof@school.ac.vn.attacker.org")) {
             SystemException ex =
                     assertThrows(
                             SystemException.class,

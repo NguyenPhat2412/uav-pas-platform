@@ -96,9 +96,9 @@ export function PublicHeader() {
 
     return (
         <>
-            {/* University strip, as on the other VJU sites; it scrolls away while the header stays. */}
-            <div className="bg-primary px-5 py-2 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-white sm:text-[11px]">
-                <span className="whitespace-nowrap">{t('publicHeader.stripSchool')}</span> · <span className="whitespace-nowrap">{t('publicHeader.stripUniversity')}</span>
+            {/* Demo notice: this is a personal project, not a commercial service; it scrolls away while the header stays. */}
+            <div role="note" className="bg-primary px-5 py-2 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-white sm:text-[11px]">
+                <span className="whitespace-nowrap">{t('publicHeader.demoNotice')}</span> · <span className="whitespace-nowrap">{t('publicHeader.demoNoticeDetail')}</span>
             </div>
             <header
                 className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur-xs"
@@ -110,11 +110,11 @@ export function PublicHeader() {
                 }}
             >
                 <div className="relative mx-auto flex min-h-[76px] w-full max-w-[1380px] items-center justify-between gap-5 px-5 sm:px-8 lg:px-12">
-                    <Link href="/" className="flex min-w-0 items-center gap-3.5" aria-label="UAV PAS - Đại học Việt Nhật">
-                        <Image src="/vju-logo.svg" alt="" width={46} height={46} priority
+                    <Link href="/" className="flex min-w-0 items-center gap-3.5" aria-label="UAV PAS - Trang chủ">
+                        <Image src="/uav-pas-logo.svg" alt="" width={46} height={46} priority
                              className="size-[46px] shrink-0 rounded-full bg-white p-0.5 object-contain shadow-2xs ring-1 ring-slate-200"/>
                         <span className="min-w-0 border-l border-slate-200 pl-3.5">
-                            <span className="block text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-[10px]">Vietnam Japan University</span>
+                            <span className="block text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-[10px]">Personal project · Demo</span>
                             <span className="mt-0.5 block text-[17px] font-extrabold tracking-tight text-slate-900">UAV<span className="text-primary">PAS</span></span>
                         </span>
                     </Link>

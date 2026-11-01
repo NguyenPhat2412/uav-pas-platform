@@ -152,7 +152,7 @@ export const scenes = {
         credit: 'Pacific Coastal and Marine Science Center / USGS'
     },
     researchTeam: {
-        src: '/images/about/vju-research-banner.webp',
+        src: '/images/about/research-banner.webp',
         alt: 'Ảnh chụp từ UAV: ba nhà nghiên cứu đứng ở điểm quan sát trên một mỏ đá giữa vùng đồi.',
         caption: 'Nhóm nghiên cứu tại mỏ đá Marsh-Felch, ảnh do UAV chụp.',
         source: 'https://www.usgs.gov/media/images/group-photo-captured-using-a-drone-standing-overlook-marsh-felch-quarry',

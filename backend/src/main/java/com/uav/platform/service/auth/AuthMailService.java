@@ -29,7 +29,7 @@ public class AuthMailService {
     public AuthMailService(
             @Autowired(required = false) JavaMailSender mailSender,
             @Value("${app.mail.enabled:false}") boolean mailEnabled,
-            @Value("${app.mail.from:no-reply@uav-pas.vju.ac.vn}") String fromAddress,
+            @Value("${app.mail.from:no-reply@uav.all1.vn}") String fromAddress,
             @Value("${app.auth.otp-dev-preview:false}") boolean otpDevPreview) {
         this.mailSender = mailSender;
         this.mailEnabled = mailEnabled;
@@ -89,7 +89,7 @@ public class AuthMailService {
                     new MimeMessageHelper(message, false, StandardCharsets.UTF_8.name());
             helper.setFrom(fromAddress);
             helper.setTo(toEmail);
-            helper.setSubject("[VJU UAV-PAS] Mã xác thực OTP: " + otpCode + " — " + purposeLabel);
+            helper.setSubject("[UAV PAS] Mã xác thực OTP: " + otpCode + " — " + purposeLabel);
             helper.setText(buildHtmlTemplate(purposeLabel, otpCode, ttlMinutes), true);
             mailSender.send(message);
         } catch (Exception ex) {
@@ -104,14 +104,14 @@ public class AuthMailService {
         return """
                 <div style="font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; max-width: 520px; margin: 0 auto; border: 1px solid #e2e8f0; background: #ffffff;">
                   <div style="background: #ab2523; color: #ffffff; padding: 14px 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;">
-                    VJU UAV-PAS · TRUNG TÂM ĐIỀU HÀNH BAY &amp; CỨU NẠN
+                    UAV PAS · NỀN TẢNG ĐIỀU PHỐI NHIỆM VỤ UAV (BẢN DEMO)
                   </div>
                   <div style="padding: 24px 20px; color: #0f172a;">
                     <p style="margin: 0 0 8px; font-size: 13px; color: #475569; text-transform: uppercase; font-weight: 600;">
                       %s
                     </p>
                     <p style="margin: 0 0 16px; font-size: 14px; line-height: 1.6; color: #334155;">
-                      Sử dụng mã OTP gồm 6 chữ số dưới đây để hoàn tất xác thực trên hệ thống VJU UAV-PAS:
+                      Sử dụng mã OTP gồm 6 chữ số dưới đây để hoàn tất xác thực trên hệ thống UAV PAS:
                     </p>
                     <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; text-align: center; font-family: JetBrains Mono, monospace; font-size: 28px; font-weight: 700; letter-spacing: 0.25em; color: #ab2523;">
                       %s

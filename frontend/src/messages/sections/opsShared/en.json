@@ -40,7 +40,7 @@
         "rthUnconfigured": "No GCS receives {event}. Command RTH on the GCS.",
         "actionFailed": "Action failed. Retry.",
         "cameraError": "Could not display AI detections",
-        "mapError": "Could not load the tactical map",
+        "mapError": "Could not load the operations map",
         "hudError": "Telemetry display error",
         "kv260Error": "Inference board display error"
       },
@@ -67,8 +67,8 @@
         "verifyFailed": "Could not update verification."
       },
       "map": {
-        "title": "SAR tactical map",
-        "aria": "Tactical map for mission {code}",
+        "title": "SAR operations map",
+        "aria": "Operations map for mission {code}",
         "generatePlan": "Generate IAMSAR route",
         "clearPlan": "Hide route",
         "planReady": "Generated a {legs}-leg route, about {minutes} min.",

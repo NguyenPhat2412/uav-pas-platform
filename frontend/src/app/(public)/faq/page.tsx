@@ -16,7 +16,7 @@ const faqs = [
     ],
     [
         'Chi phí và các gói thuê bao trên UAV PAS được tính như thế nào?',
-        'Hệ thống cung cấp 3 gói thuê bao minh bạch theo chu kỳ 30 ngày: Gói Cơ bản (Basic - 5.000.000đ / 10 nhiệm vụ), Gói Chuyên nghiệp (Pro - 15.000.000đ / 50 nhiệm vụ, hỗ trợ cảm biến nhiệt & RTK) và Gói Doanh nghiệp (Enterprise - 45.000.000đ / Không giới hạn nhiệm vụ, hỗ trợ buồng lái SAR IAMSAR, Edge AI Kria KV260 và Webhook API).',
+        'Bản demo có 3 gói thuê bao minh hoạ theo chu kỳ 30 ngày (không thu phí thật): Gói Cơ bản (Basic - 5.000.000đ / 10 nhiệm vụ), Gói Chuyên nghiệp (Pro - 15.000.000đ / 50 nhiệm vụ, hỗ trợ cảm biến nhiệt & RTK) và Gói Doanh nghiệp (Enterprise - 45.000.000đ / Không giới hạn nhiệm vụ, hỗ trợ buồng lái SAR IAMSAR, mô-đun AI thử nghiệm và Webhook API).',
     ],
     [
         'Tôi thanh toán và kích hoạt gói dịch vụ bằng cách nào?',
@@ -31,8 +31,8 @@ const faqs = [
         'Mỗi yêu cầu đi qua vòng đời 7 trạng thái minh bạch: Bản nháp (DRAFT) → Đã gửi yêu cầu (REQUESTED) → Đang thẩm định an toàn vùng trời & thời tiết (UNDER_REVIEW) → Đã phê duyệt & gán phi công/UAV (APPROVED) → Đang bay thực địa (IN_PROGRESS) → Hoàn thành & bàn giao tệp qua Signed-URL (COMPLETED).',
     ],
     [
-        'Buồng lái Tìm kiếm Cứu nạn (SAR) và Edge AI Kria KV260 hoạt động ra sao?',
-        'Trong cổng vận hành (Operations Portal), phi công và chỉ huy hiện trường có thể sử dụng Buồng lái SAR chuẩn IAMSAR để sinh đường bay tìm kiếm tự động, kết hợp luồng suy luận AI tại biên trên vi mạch FPGA Xilinx Kria KV260 giúp phát hiện người/phương tiện và dị thường nhiệt theo thời gian thực.',
+        'Buồng lái Tìm kiếm Cứu nạn (SAR) và mô-đun AI thử nghiệm hoạt động ra sao?',
+        'Trong cổng vận hành (Operations Portal), phi công và chỉ huy hiện trường có thể sử dụng Buồng lái SAR chuẩn IAMSAR để sinh đường bay tìm kiếm tự động, trên dữ liệu telemetry mô phỏng. Mô-đun AI (YOLOv8s trên bo mạch Kria KV260 đặt tại mặt đất) đang ở mức thử nghiệm và chưa vận hành trên UAV thật.',
     ],
     [
         'Dữ liệu ảnh, video và bản đồ sau chuyến bay được bàn giao như thế nào?',

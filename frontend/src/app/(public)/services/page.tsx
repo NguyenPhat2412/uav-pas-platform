@@ -30,7 +30,7 @@ export default function ServicesPage() {
                         </h1>
                     </div>
                     <div className="flex flex-wrap gap-3 text-xs font-bold">
-                        <FlatTag>RTK 1–3 cm</FlatTag>
+                        <FlatTag>GNSS/RTK</FlatTag>
                         <FlatTag tone="blue">4 Dòng cảm biến</FlatTag>
                         <FlatTag>Signed-URL bàn giao</FlatTag>
                     </div>

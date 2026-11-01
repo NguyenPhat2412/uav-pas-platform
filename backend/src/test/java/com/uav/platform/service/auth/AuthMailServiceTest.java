@@ -34,7 +34,7 @@ class AuthMailServiceTest {
 
         verify(sender, never()).send(any(MimeMessage.class));
 
-        mail.sendOtpEmail("pilot@vju.ac.vn", "Xác thực email", "654321", 10);
+        mail.sendOtpEmail("pilot@example.com", "Xác thực email", "654321", 10);
         mail.sendOtpEmail("customer@gmail.com", "Xác thực email", "654321", 10);
         // An existing account on a real company domain (outside the sign-up allowlist) still gets
         // its login / reset code; sign-up codes never reach here without passing the allowlist.

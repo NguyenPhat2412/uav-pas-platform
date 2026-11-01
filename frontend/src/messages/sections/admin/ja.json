@@ -532,7 +532,7 @@
       "plannedHoursNote": "下書き・中止・完了を含む",
       "completedMissions": "完了した任務",
       "successRate": "成功率:",
-      "sarOperations": "SAR 作戦",
+      "sarOperations": "SAR 運用",
       "verifiedDetections": "検証済みの人物検出:",
       "detectionsCount": "{count} 件の検出",
       "uavStatus": "UAV の状態",

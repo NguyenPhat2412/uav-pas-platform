@@ -93,7 +93,7 @@
         "streets": "Đường phố (OpenStreetMap)",
         "satellite": "Vệ tinh (Esri World Imagery)",
         "terrain": "Địa hình (OpenTopoMap)",
-        "dark": "Chiến thuật nền tối (Carto Dark)"
+        "dark": "Nền tối (Carto Dark)"
       }
     },
     "deviceKeys": {

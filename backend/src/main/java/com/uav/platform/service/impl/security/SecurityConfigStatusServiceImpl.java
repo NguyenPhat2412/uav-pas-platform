@@ -122,7 +122,7 @@ public class SecurityConfigStatusServiceImpl implements SecurityConfigStatusServ
                 accessMs,
                 refreshMs,
                 integer("app.auth.otp-ttl-minutes", 10),
-                text("app.auth.totp-issuer", "VJU UAV-PAS"),
+                text("app.auth.totp-issuer", "UAV PAS"),
                 otpDevPreview,
                 cookieSecure,
                 sameSite,

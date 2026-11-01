@@ -6,7 +6,7 @@ import {PlanCards} from "@/components/marketing/PlanCards";
 
 export const metadata = pageMetadata(
     "Bảng giá & Gói dịch vụ UAV",
-    "Bảng giá chính thức các gói dịch vụ UAV PAS (Basic, Pro, Enterprise): hạn mức giờ bay, số lượng UAV đồng thời, hỗ trợ xử lý AI Kria KV260, tác chiến SAR và thanh toán VietQR.",
+    "Bảng giá minh hoạ trong bản demo UAV PAS (Basic, Pro, Enterprise): mô phỏng hạn mức giờ bay, số UAV đồng thời và luồng thanh toán. Không thu phí thật.",
     "/pricing",
     true
 );
@@ -32,9 +32,9 @@ const paymentSteps = [
 export default function PricingPage() {
     return (
         <PublicPage
-            eyebrow="Bảng giá & Gói cước chính thức"
+            eyebrow="Bảng giá minh hoạ · Bản demo"
             title="Minh bạch chi phí theo hạn mức giờ bay và năng lực công nghệ."
-            intro="UAV PAS cung cấp 3 gói dịch vụ tiêu chuẩn từ khảo sát định kỳ đến tác chiến AI & Tìm kiếm Cứu nạn (SAR), tích hợp quản lý hạn mức giờ bay tự động và thanh toán chuyển khoản VietQR."
+            intro="Đây là bảng giá minh hoạ để demo luồng gói cước, hạn mức giờ bay và thanh toán VietQR trong đồ án. UAV PAS không phải dịch vụ thương mại: không nhận đặt bay thật và không thu tiền."
             scene="landing"
         >
             <div className="space-y-14">

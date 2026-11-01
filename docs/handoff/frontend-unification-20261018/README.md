@@ -4,7 +4,7 @@
 
 Frontend canonical ở `/Volumes/D/Codex/projects/uav-pas-platform/frontend` dùng duy nhất một Next application. 56 trang được chuyển vào features; route entries ở `src/app`. Website cùng ba khu vực customer, operations, admin dùng origin `http://localhost:3100`. Không còn thư mục hoặc runtime `apps`, `packages`, `legacy` trong frontend.
 
-Giao diện, ảnh thực tế, cookie session, quyền theo từng trang/thao tác, trạng thái form và hợp đồng API được bảo toàn. Chỉ thay import, vị trí mã, prefix URL và cấu hình chạy. Một dòng hướng dẫn ở trang chủ được sửa để không còn mô tả khách hàng là ứng dụng riêng; favicon sử dụng logo VJU hiện có.
+Giao diện, ảnh thực tế, cookie session, quyền theo từng trang/thao tác, trạng thái form và hợp đồng API được bảo toàn. Chỉ thay import, vị trí mã, prefix URL và cấu hình chạy. Một dòng hướng dẫn ở trang chủ được sửa để không còn mô tả khách hàng là ứng dụng riêng; favicon sử dụng logo UAV PAS hiện có.
 
 `management-shop` chỉ được đọc để tham khảo tổ chức, không chỉnh sửa. Các thay đổi backend DTO/controller/service của luồng khác được giữ nguyên. Chỉ cập nhật phần chạy frontend trong Compose, runner CI, dependency audit, workflow, template PR, Dependabot và hướng dẫn hiện hành.
 

@@ -29,8 +29,8 @@ public class TotpService {
     private final SecureRandom secureRandom = new SecureRandom();
     private final String issuer;
 
-    public TotpService(@Value("${app.auth.totp-issuer:VJU UAV-PAS}") String issuer) {
-        this.issuer = issuer != null && !issuer.isBlank() ? issuer.trim() : "VJU UAV-PAS";
+    public TotpService(@Value("${app.auth.totp-issuer:UAV PAS}") String issuer) {
+        this.issuer = issuer != null && !issuer.isBlank() ? issuer.trim() : "UAV PAS";
     }
 
     public String getIssuer() {

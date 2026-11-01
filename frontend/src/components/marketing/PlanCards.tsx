@@ -54,7 +54,7 @@ export function PlanCards({detailed = false}: { detailed?: boolean }) {
                                         <div className="col-span-2 bg-slate-50 px-3 py-2">
                                             <dt className="text-[11px] font-semibold text-slate-500">Edge AI & SAR</dt>
                                             <dd className={`m-0 font-extrabold ${plan.sarAiIncluded ? 'text-success' : 'text-slate-500'}`}>
-                                                {plan.sarAiIncluded ? 'Đã bao gồm (Kria KV260)' : 'Không bao gồm'}
+                                                {plan.sarAiIncluded ? 'Đã bao gồm (thử nghiệm)' : 'Không bao gồm'}
                                             </dd>
                                         </div>
                                     )}

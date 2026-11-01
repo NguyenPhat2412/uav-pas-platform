@@ -44,8 +44,8 @@ class BillingProfileServiceTest {
         var saved =
                 service.update(
                         "pilot",
-                        new BillingProfileRequest(0L, " VJU ", "0101234567-001", " ", null, null));
-        assertEquals("VJU", saved.organizationName());
+                        new BillingProfileRequest(0L, " ACME ", "0101234567-001", " ", null, null));
+        assertEquals("ACME", saved.organizationName());
         assertEquals("0101234567-001", saved.taxCode());
         assertNull(saved.billingAddress());
     }
@@ -63,7 +63,7 @@ class BillingProfileServiceTest {
                                         service.update(
                                                 "pilot",
                                                 new BillingProfileRequest(
-                                                        2L, "VJU", null, null, null, null)))
+                                                        2L, "ACME", null, null, null, null)))
                         .getMessage());
     }
 }

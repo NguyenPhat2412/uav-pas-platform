@@ -10,7 +10,7 @@ import {scenes, solutionScenes} from "@/components/marketing/UavPhoto";
 
 export const metadata = pageMetadata(
     "Giải pháp UAV & Edge AI",
-    "Tìm hiểu các giải pháp chuyên sâu trên UAV PAS: vận hành UAV theo yêu cầu, khảo sát hạ tầng kỹ thuật, tìm kiếm cứu nạn SAR chuẩn IAMSAR và nhận diện Edge AI Xilinx Kria KV260.",
+    "Tìm hiểu các giải pháp chuyên sâu trên UAV PAS: vận hành UAV theo yêu cầu, khảo sát hạ tầng kỹ thuật, tìm kiếm cứu nạn SAR theo mẫu IAMSAR và mô-đun nhận diện AI thử nghiệm (bản demo).",
     "/solutions",
     true
 );
@@ -41,7 +41,7 @@ export default function SolutionsPage() {
                             {keepVietnamesePhrases('Từ khảo sát thương mại đến buồng lái cứu nạn AI.')}
                         </h1>
                         <p className="text-sm text-slate-300 sm:text-base">
-                            Hai phân nhóm giải pháp tách biệt: vận hành UAV thương mại trọn gói và tác chiến Edge AI Kria KV260 / SAR chuẩn quốc tế IAMSAR.
+                            Hai phân nhóm giải pháp tách biệt: điều phối vận hành UAV và mô-đun AI thử nghiệm / SAR theo mẫu IAMSAR.
                         </p>
                     </div>
                 </div>
@@ -108,7 +108,7 @@ export default function SolutionsPage() {
                             <div>
                                 <span className="text-xs font-bold uppercase tracking-widest text-primary">Tích hợp Cổng Điều hành & Gói Enterprise</span>
                                 <h2 className="mt-1 text-2xl font-black tracking-tight text-foreground">
-                                    02 · Tổ hợp Tác chiến Edge AI & Tìm kiếm Cứu nạn (SAR)
+                                    02 · AI thử nghiệm & Tìm kiếm Cứu nạn (SAR)
                                 </h2>
                             </div>
                             <Link href="/pricing" className="text-xs font-bold text-primary hover:underline">

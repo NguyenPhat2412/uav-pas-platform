@@ -19,12 +19,12 @@ export function PublicFooter() {
     return (
         <footer className="border-t border-border bg-slate-50/80 pt-14 pb-8 text-sm text-slate-600">
             <div className="mx-auto grid w-full max-w-[1380px] grid-cols-1 gap-8 px-5 sm:grid-cols-2 sm:px-8 lg:grid-cols-12 lg:px-12">
-                {/* Col 1: Brand & VJU Campus Info (4 cols) */}
+                {/* Col 1: Brand & project disclaimer (4 cols) */}
                 <div className="space-y-3.5 lg:col-span-5">
                     <Link className="inline-flex items-center gap-2.5 text-base font-extrabold tracking-wider text-foreground" href="/">
                         <Image
-                            src="/vju-logo.svg"
-                            alt="Biểu trưng Đại học Việt Nhật"
+                            src="/uav-pas-logo.svg"
+                            alt="Biểu trưng UAV PAS"
                             width={32}
                             height={32}
                             className="h-8 w-8 object-contain"
@@ -40,19 +40,18 @@ export function PublicFooter() {
                         {t('publicFooter.description')}
                     </p>
                     <div className="space-y-1 text-xs text-slate-500">
-                        <p>{t('publicFooter.campusHoaLac')}</p>
-                        <p>{t('publicFooter.campusMyDinh')}</p>
-                        <p className="font-semibold text-slate-700">Email: uav-pas@vju.ac.vn</p>
+                        <p>{t('publicFooter.disclaimer')}</p>
+                        <p className="font-semibold text-slate-700">{t('publicFooter.demoNotice')}</p>
                     </div>
                     <div className="flex flex-wrap gap-1.5 pt-1">
                         <span className="rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-bold text-slate-700">
-                            RTK 1–3 cm
+                            Next.js
                         </span>
                         <span className="rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-bold text-slate-700">
-                            Xilinx Kria KV260
+                            Spring Boot
                         </span>
                         <span className="rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-bold text-slate-700">
-                            VietQR EMVCo
+                            Demo
                         </span>
                     </div>
                 </div>

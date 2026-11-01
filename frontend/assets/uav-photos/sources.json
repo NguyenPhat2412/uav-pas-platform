@@ -566,7 +566,7 @@
       "note": "Ảnh gốc dạng dọc được đặt giữa nền trắng tỉ lệ 3:2, không cắt."
     },
     {
-      "id": "vju-research-banner",
+      "id": "research-banner",
       "title": "Nhóm nghiên cứu tại mỏ đá Marsh-Felch",
       "sourcePage": "https://www.usgs.gov/media/images/group-photo-captured-using-a-drone-standing-overlook-marsh-felch-quarry",
       "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/2024-07-09%20Dronie%20far%20away%20with%20quarry.JPG",
@@ -579,7 +579,7 @@
         "width": 8192,
         "height": 6144
       },
-      "webFile": "frontend/public/images/about/vju-research-banner.webp",
+      "webFile": "frontend/public/images/about/research-banner.webp",
       "webBytes": 350690,
       "webDimensions": {
         "width": 1600,

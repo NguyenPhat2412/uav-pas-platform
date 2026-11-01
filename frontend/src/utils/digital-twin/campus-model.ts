@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 /**
- * A procedurally built sample digital twin: the "VJU UAV Hub" district with an operations tower, city
+ * A procedurally built sample digital twin: the "UAV PAS" sample district with an operations tower, city
  * blocks, roads with traffic, a river and three working UAVs (patrol loop, survey grid, pad take-off).
  * It stands in for a photogrammetry model until one is captured; the same viewer can load a .glb later.
  * Units are metres; north is -Z. Seeded, so every visitor sees the same district.
@@ -138,8 +138,8 @@ function crownTexture() {
     ctx.font = 'bold 96px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('VJU · UAV PAS', 512, 84);
-    ctx.fillText('VJU · UAV PAS', 1536, 84);
+    ctx.fillText('UAV PAS · DEMO', 512, 84);
+    ctx.fillText('UAV PAS · DEMO', 1536, 84);
     return texture(element);
 }
 
@@ -272,7 +272,7 @@ export function buildCampusModel(): CampusModel {
         }
     }
 
-    // operations tower: glass drum, red VJU crown, rooftop pad and a blinking mast light
+    // operations tower: glass drum, red brand crown, rooftop pad and a blinking mast light
     const towerFacade = facade.clone();
     towerFacade.repeat.set(16, 17);
     towerFacade.needsUpdate = true;
