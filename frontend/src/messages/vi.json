@@ -365,7 +365,8 @@
     "customerPortalUser": "Cổng Khách hàng ({username})",
     "register": "Đăng ký",
     "stripSchool": "Trường Đại học Việt Nhật",
-    "stripUniversity": "Đại học Quốc gia Hà Nội"
+    "stripUniversity": "Đại học Quốc gia Hà Nội",
+    "digitalTwin": "Digital Twin"
   },
   "publicFooter": {
     "university": "Trường Đại học Việt Nhật – ĐHQGHN",
@@ -464,6 +465,54 @@
       "save": "Lưu cấu hình thời tiết",
       "saving": "Đang lưu...",
       "saved": "Đã lưu cấu hình thời tiết."
+    }
+  },
+  "digitalTwin": {
+    "badge": "VJU UAV Hub · Mô hình 3D",
+    "loading": "Đang dựng mô hình 3D",
+    "webglError": "Trình duyệt này không hỗ trợ WebGL nên không hiển thị được mô hình 3D.",
+    "hint": "Kéo để xoay, cuộn để phóng to, hoặc dùng các nút điều khiển để đổi góc nhìn",
+    "sampleNote": "Mô hình mẫu được dựng tự động để minh hoạ. Dự án thật dùng mô hình photogrammetry từ ảnh UAV bay chụp.",
+    "controls": {
+      "toolbar": "Công cụ hiển thị",
+      "pad": "Điều khiển góc nhìn",
+      "fullscreen": "Toàn màn hình",
+      "exitFullscreen": "Thoát toàn màn hình",
+      "autoRotate": "Tự xoay",
+      "paths": "Hiện đường bay",
+      "zoomIn": "Phóng to",
+      "zoomOut": "Thu nhỏ",
+      "tiltUp": "Nghiêng lên",
+      "tiltDown": "Nghiêng xuống",
+      "rotateLeft": "Xoay trái",
+      "rotateRight": "Xoay phải",
+      "north": "Hướng Bắc",
+      "top": "Nhìn từ trên xuống",
+      "reset": "Đặt lại góc nhìn"
+    },
+    "legend": {
+      "title": "Chú thích",
+      "tower": "Trung tâm điều hành UAV",
+      "patrol": "UAV tuần tra – đường bay",
+      "survey": "UAV khảo sát – vùng quét",
+      "pad": "UAV cất/hạ cánh tại bãi H"
+    },
+    "explainer": {
+      "title": "Digital twin từ dữ liệu bay UAV",
+      "subtitle": "Bản sao số 3D của công trình hoặc khu vực, dựng từ ảnh UAV, giúp kiểm tra hiện trạng, đo đạc và giám sát từ xa mà không cần ra hiện trường.",
+      "capture": {
+        "title": "Bay chụp",
+        "body": "UAV bay theo lưới và vòng quanh công trình, chụp ảnh chồng phủ cao kèm toạ độ GPS/RTK."
+      },
+      "process": {
+        "title": "Dựng mô hình",
+        "body": "Phần mềm photogrammetry ghép ảnh thành mô hình 3D có texture, đám mây điểm và bản đồ trực ảnh."
+      },
+      "operate": {
+        "title": "Khai thác",
+        "body": "Xem trực tuyến trên nền tảng UAV PAS: xoay, đo, so sánh theo thời gian và gắn với nhiệm vụ bay."
+      },
+      "cta": "Đăng ký tư vấn digital twin"
     }
   }
 }

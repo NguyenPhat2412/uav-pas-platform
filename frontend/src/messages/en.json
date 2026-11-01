@@ -365,7 +365,8 @@
     "customerPortalUser": "Customer Portal ({username})",
     "register": "Sign up",
     "stripSchool": "Vietnam Japan University",
-    "stripUniversity": "Vietnam National University, Hanoi"
+    "stripUniversity": "Vietnam National University, Hanoi",
+    "digitalTwin": "Digital Twin"
   },
   "publicFooter": {
     "university": "Vietnam Japan University – VNU",
@@ -464,6 +465,54 @@
       "save": "Save weather settings",
       "saving": "Saving...",
       "saved": "Weather settings saved."
+    }
+  },
+  "digitalTwin": {
+    "badge": "VJU UAV Hub · 3D model",
+    "loading": "Building the 3D model",
+    "webglError": "This browser does not support WebGL, so the 3D model cannot be shown.",
+    "hint": "Drag to rotate, scroll to zoom, or use the controls to change the view",
+    "sampleNote": "A procedurally built sample for illustration. Real projects use a photogrammetry model made from UAV imagery.",
+    "controls": {
+      "toolbar": "View tools",
+      "pad": "View controls",
+      "fullscreen": "Full screen",
+      "exitFullscreen": "Exit full screen",
+      "autoRotate": "Auto-rotate",
+      "paths": "Show flight paths",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "tiltUp": "Tilt up",
+      "tiltDown": "Tilt down",
+      "rotateLeft": "Rotate left",
+      "rotateRight": "Rotate right",
+      "north": "Face north",
+      "top": "Top-down view",
+      "reset": "Reset view"
+    },
+    "legend": {
+      "title": "Legend",
+      "tower": "UAV operations centre",
+      "patrol": "Patrol UAV – flight path",
+      "survey": "Survey UAV – scan area",
+      "pad": "UAV take-off and landing at pad H"
+    },
+    "explainer": {
+      "title": "Digital twins from UAV flights",
+      "subtitle": "A 3D digital copy of a building or site, built from UAV imagery, for inspecting condition, measuring and monitoring remotely without a site visit.",
+      "capture": {
+        "title": "Capture",
+        "body": "The UAV flies a grid and orbits the structure, taking highly overlapping photos tagged with GPS/RTK positions."
+      },
+      "process": {
+        "title": "Reconstruct",
+        "body": "Photogrammetry software turns the photos into a textured 3D mesh, a point cloud and an orthomosaic."
+      },
+      "operate": {
+        "title": "Use",
+        "body": "View it online in UAV PAS: rotate, measure, compare over time and link it to flight missions."
+      },
+      "cta": "Ask about a digital twin"
     }
   }
 }

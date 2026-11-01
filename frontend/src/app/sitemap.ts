@@ -3,7 +3,7 @@ import {publicUrl, services, solutions} from "@/content/marketing/site-content";
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const routes = [
-        '/', '/about', '/services', '/solutions', '/how-it-works', '/pricing', '/contact', '/faq',
+        '/', '/about', '/services', '/solutions', '/how-it-works', '/digital-twin', '/pricing', '/contact', '/faq',
         ...services.map(({slug}) => `/services/${slug}`),
         ...solutions.map(({slug}) => `/solutions/${slug}`),
     ];

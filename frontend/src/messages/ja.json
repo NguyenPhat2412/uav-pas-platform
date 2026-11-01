@@ -365,7 +365,8 @@
     "customerPortalUser": "顧客ポータル ({username})",
     "register": "新規登録",
     "stripSchool": "日越大学",
-    "stripUniversity": "ベトナム国家大学ハノイ校"
+    "stripUniversity": "ベトナム国家大学ハノイ校",
+    "digitalTwin": "デジタルツイン"
   },
   "publicFooter": {
     "university": "日越大学（ベトナム国家大学ハノイ校）",
@@ -464,6 +465,54 @@
       "save": "気象設定を保存",
       "saving": "保存中...",
       "saved": "気象設定を保存しました。"
+    }
+  },
+  "digitalTwin": {
+    "badge": "VJU UAV Hub · 3D モデル",
+    "loading": "3D モデルを構築中",
+    "webglError": "このブラウザは WebGL に対応していないため、3D モデルを表示できません。",
+    "hint": "ドラッグで回転、スクロールで拡大、または操作ボタンで視点を変更できます",
+    "sampleNote": "説明用に自動生成したサンプルモデルです。実際の案件では UAV 撮影画像から作るフォトグラメトリモデルを使用します。",
+    "controls": {
+      "toolbar": "表示ツール",
+      "pad": "視点操作",
+      "fullscreen": "全画面",
+      "exitFullscreen": "全画面を終了",
+      "autoRotate": "自動回転",
+      "paths": "飛行経路を表示",
+      "zoomIn": "拡大",
+      "zoomOut": "縮小",
+      "tiltUp": "上に傾ける",
+      "tiltDown": "下に傾ける",
+      "rotateLeft": "左に回転",
+      "rotateRight": "右に回転",
+      "north": "北向き",
+      "top": "真上から見る",
+      "reset": "視点をリセット"
+    },
+    "legend": {
+      "title": "凡例",
+      "tower": "UAV 運用センター",
+      "patrol": "巡回 UAV – 飛行経路",
+      "survey": "測量 UAV – スキャン範囲",
+      "pad": "H パッドでの UAV 離着陸"
+    },
+    "explainer": {
+      "title": "UAV 飛行データから作るデジタルツイン",
+      "subtitle": "UAV 画像から構築した建物やエリアの 3D デジタルコピー。現地に行かずに現況確認・計測・遠隔監視ができます。",
+      "capture": {
+        "title": "撮影",
+        "body": "UAV がグリッド飛行と周回飛行を行い、GPS/RTK 位置付きの高重複写真を撮影します。"
+      },
+      "process": {
+        "title": "モデル構築",
+        "body": "フォトグラメトリソフトで写真からテクスチャ付き 3D メッシュ、点群、オルソ画像を作成します。"
+      },
+      "operate": {
+        "title": "活用",
+        "body": "UAV PAS 上でオンライン表示：回転・計測・経時比較ができ、飛行ミッションとも連携します。"
+      },
+      "cta": "デジタルツインについて相談する"
     }
   }
 }

@@ -13,6 +13,7 @@ import {canUsePortal, portalForRole, portalHome} from '@/utils/auth/portal';
 const navLinks = [
     ['/services', 'publicHeader.services'],
     ['/solutions', 'publicHeader.solutions'],
+    ['/digital-twin', 'publicHeader.digitalTwin'],
     ['/pricing', 'publicHeader.pricing'],
     ['/how-it-works', 'publicHeader.howItWorks'],
     ['/about', 'publicHeader.about'],
