@@ -1,12 +1,5 @@
 import {apiClient, API_ROUTES} from '@/lib/api';
-
-/** Returned only by rotate-secret; the plain secret is never retrievable again. */
-export interface WebhookSecretRotation {
-    subscriptionId: number;
-    secretKey: string;
-    maskedSecret: string;
-    rotatedAt: string;
-}
+import type {WebhookSecretRotation} from '@/types/webhook/webhook-admin.types';
 
 export const webhooksAdminService = {
     retryDelivery: (id: number) => apiClient.post<unknown>(API_ROUTES.webhooks.retryDelivery(id)),

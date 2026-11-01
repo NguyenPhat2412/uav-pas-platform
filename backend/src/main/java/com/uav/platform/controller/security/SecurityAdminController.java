@@ -27,7 +27,7 @@ public class SecurityAdminController {
     private final SecuritySessionService sessions;
     private final SecurityConfigStatusService configStatus;
 
-    @GetMapping("/sessions")
+    @GetMapping(ApiRoutes.Admin.SECURITY_SESSIONS)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<PageResponse<SecuritySessionResponse>> sessions(
             @RequestParam(defaultValue = "0") int page,
@@ -40,20 +40,20 @@ public class SecurityAdminController {
                         new SecuritySessionQueryRequest(page, size, keyword, role, activeOnly)));
     }
 
-    @PostMapping("/users/{id}/revoke-sessions")
+    @PostMapping(ApiRoutes.Admin.SECURITY_USERS_REVOKE_SESSIONS)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<SecurityActionResponse> revokeUserSessions(
             @PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(sessions.revokeUserSessions(id, auth));
     }
 
-    @PostMapping("/revoke-all-sessions")
+    @PostMapping(ApiRoutes.Admin.SECURITY_REVOKE_ALL_SESSIONS)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<SecurityActionResponse> revokeAllSessions(Authentication auth) {
         return ResponseEntity.ok(sessions.revokeAllSessions(auth));
     }
 
-    @PostMapping("/users/{id}/reset-2fa")
+    @PostMapping(ApiRoutes.Admin.SECURITY_USERS_RESET_2FA)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<SecurityActionResponse> resetTwoFactor(
             @PathVariable Long id,
@@ -62,13 +62,13 @@ public class SecurityAdminController {
         return ResponseEntity.ok(sessions.resetTwoFactor(id, request, auth));
     }
 
-    @GetMapping("/policy")
+    @GetMapping(ApiRoutes.Admin.SECURITY_POLICY)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<SecurityPolicyResponse> policy() {
         return ResponseEntity.ok(configStatus.policy());
     }
 
-    @GetMapping("/secrets")
+    @GetMapping(ApiRoutes.Admin.SECURITY_SECRETS)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<SecretsOverviewResponse> secrets() {
         return ResponseEntity.ok(configStatus.secrets());

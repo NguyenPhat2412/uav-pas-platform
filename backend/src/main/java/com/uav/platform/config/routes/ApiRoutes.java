@@ -67,6 +67,17 @@ public final class ApiRoutes {
         public static final String FULL_PROFILE_BILLING = FULL_PROFILE + "/billing";
         public static final String FULL_PROFILE_PASSWORD = FULL_PROFILE + "/password";
         public static final String FULL_USER_BY_ID = BASE + USER_ID;
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String BULK_LOCK = "/bulk-lock";
+        public static final String PROFILE_AVATAR_UPLOAD_URL = "/profile/avatar/upload-url";
+        public static final String PROFILE_AVATAR = "/profile/avatar";
+        public static final String AVATAR = "/{id}/avatar";
+        public static final String LOCK = USER_ID + "/lock";
+        public static final String UNLOCK = USER_ID + "/unlock";
+        public static final String ROLE = USER_ID + "/role";
+        public static final String RESET_PASSWORD = USER_ID + "/reset-password";
+        public static final String EXPORT = "/export";
     }
 
     /**
@@ -126,12 +137,27 @@ public final class ApiRoutes {
 
         public static final String BASE = API_V1_PREFIX + "/inventory";
         public static final String EQUIPMENT = BASE + "/equipment";
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String EQUIPMENT_BY_ID = "/{id}";
+        public static final String EQUIPMENT_HISTORY = "/history";
+        public static final String EQUIPMENT_STOCK_IN = "/{id}/stock-in";
+        public static final String EQUIPMENT_STOCK_OUT = "/{id}/stock-out";
+        public static final String EQUIPMENT_RESERVE = "/{id}/reserve";
+        public static final String EQUIPMENT_RELEASE = "/{id}/release";
+        public static final String EQUIPMENT_TRANSFER = "/{id}/transfer/{stationId}";
     }
 
     public static final class Media {
         private Media() {}
 
         public static final String BASE = API_V1_PREFIX + "/media";
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String UPLOAD_URL = "/{id}/upload-url";
+        public static final String DOWNLOAD_URL = "/{id}/download-url";
+        public static final String CONFIRM = "/{id}/confirm";
+        public static final String BY_ID = "/{id}";
     }
 
     /**
@@ -182,12 +208,31 @@ public final class ApiRoutes {
         public static final String FULL_MISSION_BY_ID = BASE + MISSION_ID;
         public static final String FULL_ASSIGN_UAV = BASE + ASSIGN_UAV;
         public static final String FULL_TIMELINE = BASE + TIMELINE;
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String VALIDATE = "/validate";
+        public static final String REPLACE_UAV = "/{id}/replace-uav";
+        public static final String UNASSIGN_UAV = "/{id}/unassign-uav";
+        public static final String DISPATCH_RESOURCES = "/{id}/dispatch-resources";
+        public static final String REDISPATCH_OPERATOR = "/{id}/redispatch-operator";
+        public static final String REDISPATCH_STATION = "/{id}/redispatch-station";
+        public static final String REDISPATCH_EQUIPMENT = "/{id}/redispatch-equipment";
+        public static final String ACCEPT = "/{id}/accept";
+        public static final String REPORT_CONFLICT = "/{id}/report-conflict";
+        public static final String FORCE_FAIL = "/{id}/force-fail";
+        public static final String MEDIA_UPLOAD_URL = "/{id}/media/upload-url";
+        public static final String MEDIA_CONFIRM = "/{id}/media/{mediaId}/confirm";
     }
 
     public static final class UavServices {
         private UavServices() {}
 
         public static final String BASE = API_V1_PREFIX + "/uav-services";
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String ALL = "/all";
+        public static final String BY_ID = "/{id}";
+        public static final String ACTIVE = "/{id}/active";
     }
 
     /**
@@ -203,6 +248,9 @@ public final class ApiRoutes {
         public static final String FLIGHT_PLAN = "/flight-plan";
         public static final String TELEMETRY_EVALUATE = "/telemetry-evaluate";
         public static final String DISPATCH_RESCUE = "/missions/{missionId}/dispatch-rescue";
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String MISSIONS_RETURN_TO_HOME = "/missions/{missionId}/return-to-home";
     }
 
     public static final class Ai {
@@ -213,6 +261,9 @@ public final class ApiRoutes {
         public static final String MISSION_DETECTIONS = "/missions/{missionId}/detections";
         public static final String MISSION_TASKS = "/missions/{missionId}/tasks";
         public static final String VERIFY_DETECTION = "/detections/{id}/verify";
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String TASKS_RESULTS = "/tasks/{id}/results";
     }
 
     /**
@@ -232,6 +283,19 @@ public final class ApiRoutes {
 
         public static final String ADMIN = BASE + "/admin";
         public static final String ADMIN_PLANS = ADMIN + "/plans";
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String BANK_TRANSFER = "/bank-transfer";
+        public static final String INVOICES_BANK_TRANSFER = "/invoices/{id}/bank-transfer";
+        public static final String SUBSCRIPTIONS = "/subscriptions";
+        public static final String ADMIN_INVOICES_CONFIRM_PAYMENT =
+                "/admin/invoices/{id}/confirm-payment";
+        public static final String ADMIN_TRANSACTIONS = "/transactions";
+        public static final String ADMIN_OUTBOX = "/outbox";
+        public static final String ADMIN_OUTBOX_RETRY = "/outbox/{id}/retry";
+        public static final String ADMIN_PLANS_STATS = "/stats";
+        public static final String ADMIN_PLANS_BY_ID = "/{id}";
+        public static final String ADMIN_PLANS_ACTIVE = "/{id}/active";
     }
 
     public static final class Webhook {
@@ -251,6 +315,12 @@ public final class ApiRoutes {
         public static final String SUBSCRIPTION_BY_ID = "/subscriptions/{id}";
         public static final String TEST_DISPATCH = "/test-dispatch";
         public static final String LOGS = "/logs";
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String DELIVERIES_RETRY = "/deliveries/{id}/retry";
+        public static final String SUBSCRIPTIONS_ROTATE_SECRET =
+                "/subscriptions/{id}/rotate-secret";
+        public static final String STATUS = "/status";
     }
 
     /**
@@ -270,6 +340,9 @@ public final class ApiRoutes {
 
         public static final String BASE = API_V1_PREFIX + "/settings";
         public static final String BY_KEY = "/{key}";
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String HISTORY = "/{key}/history";
     }
 
     public static final class Reports {
@@ -284,6 +357,16 @@ public final class ApiRoutes {
         private Maintenance() {}
 
         public static final String BASE = API_V1_PREFIX + "/maintenance";
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String SCHEDULES = "/schedules";
+        public static final String SCHEDULES_BY_ID = "/schedules/{id}";
+        public static final String ORDERS = "/orders";
+        public static final String ORDERS_BY_ID = "/orders/{id}";
+        public static final String ORDERS_START = "/orders/{id}/start";
+        public static final String ORDERS_MATERIALS = "/orders/{id}/materials";
+        public static final String ORDERS_COMPLETE = "/orders/{id}/complete";
+        public static final String ORDERS_CANCEL = "/orders/{id}/cancel";
     }
 
     /**
@@ -293,6 +376,9 @@ public final class ApiRoutes {
         private Public() {}
 
         public static final String BASE = API_V1_PREFIX + "/public";
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String SITE_INFO = "/site-info";
     }
 
     /**
@@ -309,6 +395,25 @@ public final class ApiRoutes {
         public static final String INFRASTRUCTURE = BASE + "/infrastructure";
         public static final String ASSISTANT_CONVERSATIONS = BASE + "/assistant/conversations";
         public static final String USER_BILLING_PROFILE = BASE + "/users/{id}/billing-profile";
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String ASSISTANT_CONVERSATIONS_BY_ID = "/{id}";
+        public static final String DEVICE_KEYS_REVOKE = "/{id}/revoke";
+        public static final String INFRASTRUCTURE_DEPLOYMENT = "/deployment";
+        public static final String INFRASTRUCTURE_BACKUPS = "/backups";
+        public static final String INFRASTRUCTURE_STORAGE = "/storage";
+        public static final String INFRASTRUCTURE_DATABASE = "/database";
+        public static final String INFRASTRUCTURE_EMAIL = "/email";
+        public static final String INFRASTRUCTURE_EMAIL_TEST = "/email/test";
+        public static final String SECURITY_SESSIONS = "/sessions";
+        public static final String SECURITY_USERS_REVOKE_SESSIONS = "/users/{id}/revoke-sessions";
+        public static final String SECURITY_REVOKE_ALL_SESSIONS = "/revoke-all-sessions";
+        public static final String SECURITY_USERS_RESET_2FA = "/users/{id}/reset-2fa";
+        public static final String SECURITY_POLICY = "/policy";
+        public static final String SECURITY_SECRETS = "/secrets";
+        public static final String FILES_SUMMARY = "/summary";
+        public static final String FILES_DOWNLOAD = "/{id}/download";
+        public static final String FILES_BY_ID = "/{id}";
     }
 
     /**
@@ -328,6 +433,14 @@ public final class ApiRoutes {
         private Dashboard() {}
 
         public static final String BASE = API_V1_PREFIX + "/dashboard";
+
+        // Method-level paths, relative to the controller mapping.
+        public static final String SUMMARY = "/summary";
+        public static final String MISSIONS = "/missions";
+        public static final String ANALYTICS = "/analytics";
+        public static final String CUSTOMER_ANALYTICS = "/customer-analytics";
+        public static final String FLEET_MAP = "/fleet-map";
+        public static final String SYSTEM_HEALTH = "/system-health";
     }
 
     public static final class AuditLogs {
@@ -378,6 +491,26 @@ public final class ApiRoutes {
     /**
      * Danh sách route Swagger công khai (không yêu cầu JWT Bearer)
      */
+    /** Routes relative to {@link #API_V1_PREFIX} for the controller mapped at the API root. */
+    public static final class Assistant {
+        private Assistant() {}
+
+        public static final String ADMIN_AI_ROUTER = "/admin/ai-router";
+        public static final String ADMIN_AI_ROUTER_STATUS = "/admin/ai-router/status";
+        public static final String ASSISTANT = "/assistant";
+        public static final String ASSISTANT_CHAT = "/assistant/chat";
+    }
+
+    /** Routes relative to {@link #API_V1_PREFIX} for the controller mapped at the API root. */
+    public static final class Telemetry {
+        private Telemetry() {}
+
+        public static final String UAVS_TELEMETRY = "/uavs/{id}/telemetry";
+        public static final String UAVS_TELEMETRY_LATEST = "/uavs/{id}/telemetry/latest";
+        public static final String UAVS_TELEMETRY_LATEST_ALL = "/uavs/telemetry/latest";
+        public static final String MISSIONS_TELEMETRY_LATEST = "/missions/{id}/telemetry/latest";
+    }
+
     public static final String[] SWAGGER_WHITELIST = {
         Docs.API_DOCS, Docs.SWAGGER_UI, Docs.SWAGGER_HTML
     };

@@ -61,10 +61,10 @@ cd backend
 ./mvnw spring-boot:run
 ```
 
-Từ gốc dự án, lệnh Compose mới là:
+`docker-compose.yml` nằm ở gốc dự án, cạnh `.env`, nên từ gốc dự án chỉ cần:
 
 ```sh
-docker compose --env-file .env -f backend/docker-compose.yml up -d --build
+docker compose up -d --build
 ```
 
 Chuẩn bị `.env` ở gốc và `backend/.env` từ các mẫu tương ứng như trước khi dùng Compose. Compose build frontend một ứng dụng từ `frontend/Dockerfile`. Tên Compose project mặc định được giữ là `uav-pas-platform` để tiếp tục dùng đúng volume PostgreSQL và MinIO. Nếu trước đây dùng `-p <tên-riêng>`, tiếp tục dùng tên đó.

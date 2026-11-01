@@ -38,7 +38,7 @@ public class PlanAdministrationServiceImpl implements PlanAdministrationService 
     @Transactional
     public ServicePlanResponse create(ServicePlanRequest request, String actor) {
         if (plans.findByCode(request.code()).isPresent())
-            throw SystemException.conflict(PLAN_EXISTS);
+            throw SystemException.conflict(PLAN_EXISTS).at("code");
         ServicePlan plan = new ServicePlan();
         plan.setCode(request.code());
         apply(

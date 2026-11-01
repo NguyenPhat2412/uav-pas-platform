@@ -23,6 +23,36 @@ import {
     Wallet,
 } from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
+import {HomeWeatherWidget} from '@/components/weather/HomeWeatherWidget';
+
+const TILE_TONES = {
+    red: {accent: 'border-t-primary', icon: 'bg-uav-red-light text-primary'},
+    blue: {accent: 'border-t-uav-blue', icon: 'bg-uav-blue-light text-uav-blue'},
+    amber: {accent: 'border-t-amber-500', icon: 'bg-amber-50 text-amber-600'},
+} as const;
+
+/**
+ * One KPI cell. The title area is always two lines tall (1-line titles leave a gap, longer ones clamp),
+ * so the value lands on the same row in every cell whatever the title or hint length.
+ */
+function KpiTile({label, icon, tone, value, children}: {
+    label: string;
+    icon: React.ReactNode;
+    tone: keyof typeof TILE_TONES;
+    value: React.ReactNode;
+    children: React.ReactNode;
+}) {
+    return (
+        <article className={`flex flex-col gap-2.5 border-t-2 bg-white p-4 ${TILE_TONES[tone].accent}`}>
+            <div className="flex items-start justify-between gap-2">
+                <span className="line-clamp-2 min-h-[2lh] text-xs font-semibold leading-5 text-muted">{label}</span>
+                <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-panel ${TILE_TONES[tone].icon}`}>{icon}</span>
+            </div>
+            <strong className="block text-2xl font-extrabold leading-none tabular-nums tracking-tight text-slate-900">{value}</strong>
+            <div className="text-[11.5px] font-medium leading-5 text-slate-500">{children}</div>
+        </article>
+    );
+}
 
 export default function DashboardPage() {
     return <PageGuard><Dashboard/></PageGuard>;
@@ -102,117 +132,36 @@ function Dashboard() {
                 </div>
             )}
 
-            {/* Unified 6-Card KPI Strip (Zero Duplication, Stable Height) */}
+            <HomeWeatherWidget detailsHref="/customer/weather"/>
+
+            {/* 6-card KPI strip: every title area is two lines tall, so all six numbers sit on one row. */}
             <div className="grid grid-cols-2 gap-px border-b border-slate-200 bg-slate-200 md:grid-cols-3 xl:grid-cols-6">
-                <article className="flex flex-col justify-between gap-2 border-t-2 border-t-primary bg-white p-4">
-                    <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-semibold text-muted">{t('dashboard.totalMissions')}</span>
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-panel bg-uav-red-light text-primary">
-                            <Activity size={15}/>
-                        </span>
-                    </div>
-                    <div>
-                        <strong className="block text-2xl font-extrabold leading-none tabular-nums tracking-tight text-slate-900">
-                            {totalMissions}
-                        </strong>
-                        <small className="mt-1.5 block text-[11.5px] font-medium text-slate-500">
-                            {t('dashboard.totalMissionsHint')}
-                        </small>
-                    </div>
-                </article>
-
-                <article className="flex flex-col justify-between gap-2 border-t-2 border-t-uav-blue bg-white p-4">
-                    <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-semibold text-muted">{t('dashboard.inProgress')}</span>
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-panel bg-uav-blue-light text-uav-blue">
-                            <Plane size={15}/>
-                        </span>
-                    </div>
-                    <div>
-                        <strong className="block text-2xl font-extrabold leading-none tabular-nums tracking-tight text-uav-blue">
-                            {inProgressMissions}
-                        </strong>
-                        <small className="mt-1.5 block text-[11.5px] font-medium text-uav-blue">
-                            {t('dashboard.inProgressHint')}
-                        </small>
-                    </div>
-                </article>
-
-                <article className="flex flex-col justify-between gap-2 border-t-2 border-t-uav-blue bg-white p-4">
-                    <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-semibold text-muted">{t('dashboard.analytics.kpi.flightHours')}</span>
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-panel bg-uav-blue-light text-uav-blue">
-                            <Clock size={15}/>
-                        </span>
-                    </div>
-                    <div>
-                        <strong className="block text-2xl font-extrabold leading-none tabular-nums tracking-tight text-slate-900">
-                            {analytics ? t('dashboard.analytics.hours', {value: formatNumber(analytics.thisMonth.flightHours)}) : '—'}
-                        </strong>
-                        <div className="mt-1.5">
-                            {analytics ? (
-                                <Delta current={analytics.thisMonth.flightHours} previous={analytics.lastMonth.flightHours} label={vs}/>
-                            ) : (
-                                <span className="inline-block h-4 w-24 animate-pulse bg-slate-100"/>
-                            )}
-                        </div>
-                    </div>
-                </article>
-
-                <article className="flex flex-col justify-between gap-2 border-t-2 border-t-amber-500 bg-white p-4">
-                    <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-semibold text-muted">{t('dashboard.analytics.kpi.spend')}</span>
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-panel bg-amber-50 text-amber-600">
-                            <Wallet size={15}/>
-                        </span>
-                    </div>
-                    <div>
-                        <strong className="block text-2xl font-extrabold leading-none tabular-nums tracking-tight text-slate-900">
-                            {analytics ? formatCurrency(analytics.thisMonth.spend) : '—'}
-                        </strong>
-                        <div className="mt-1.5">
-                            {analytics ? (
-                                <Delta current={analytics.thisMonth.spend} previous={analytics.lastMonth.spend} higherIsBetter={false} label={vs}/>
-                            ) : (
-                                <span className="inline-block h-4 w-24 animate-pulse bg-slate-100"/>
-                            )}
-                        </div>
-                    </div>
-                </article>
-
-                <article className="flex flex-col justify-between gap-2 border-t-2 border-t-uav-blue bg-white p-4">
-                    <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-semibold text-muted">{t('dashboard.analytics.kpi.successRate')}</span>
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-panel bg-uav-blue-light text-uav-blue">
-                            <CheckCircle2 size={15}/>
-                        </span>
-                    </div>
-                    <div>
-                        <strong className="block text-2xl font-extrabold leading-none tabular-nums tracking-tight text-slate-900">
-                            {analytics ? (finishedCount ? `${formatNumber(analytics.outcomes.successRate)}%` : '—') : '—'}
-                        </strong>
-                        <small className="mt-1.5 block text-[11.5px] font-medium text-slate-500">
-                            {analytics ? t('dashboard.analytics.finishedCount', {count: finishedCount}) : '—'}
-                        </small>
-                    </div>
-                </article>
-
-                <article className="flex flex-col justify-between gap-2 border-t-2 border-t-primary bg-white p-4">
-                    <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-semibold text-muted">{t('dashboard.analytics.kpi.media')}</span>
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-panel bg-uav-red-light text-primary">
-                            <FolderCheck size={15}/>
-                        </span>
-                    </div>
-                    <div>
-                        <strong className="block text-2xl font-extrabold leading-none tabular-nums tracking-tight text-slate-900">
-                            {analytics ? analytics.mediaFiles : '—'}
-                        </strong>
-                        <small className="mt-1.5 block text-[11.5px] font-medium text-slate-500">
-                            {t('dashboard.analytics.mediaHint')}
-                        </small>
-                    </div>
-                </article>
+                <KpiTile label={t('dashboard.totalMissions')} icon={<Activity size={15}/>} tone="red" value={totalMissions}>
+                    {t('dashboard.totalMissionsHint')}
+                </KpiTile>
+                <KpiTile label={t('dashboard.inProgress')} icon={<Plane size={15}/>} tone="blue" value={inProgressMissions}>
+                    {t('dashboard.inProgressHint')}
+                </KpiTile>
+                <KpiTile label={t('dashboard.analytics.kpi.flightHours')} icon={<Clock size={15}/>} tone="blue"
+                         value={analytics ? t('dashboard.analytics.hours', {value: formatNumber(analytics.thisMonth.flightHours)}) : '—'}>
+                    {analytics
+                        ? <Delta current={analytics.thisMonth.flightHours} previous={analytics.lastMonth.flightHours} label={vs}/>
+                        : <span className="inline-block h-4 w-24 animate-pulse bg-slate-100"/>}
+                </KpiTile>
+                <KpiTile label={t('dashboard.analytics.kpi.spend')} icon={<Wallet size={15}/>} tone="amber"
+                         value={analytics ? formatCurrency(analytics.thisMonth.spend) : '—'}>
+                    {analytics
+                        ? <Delta current={analytics.thisMonth.spend} previous={analytics.lastMonth.spend} higherIsBetter={false} label={vs}/>
+                        : <span className="inline-block h-4 w-24 animate-pulse bg-slate-100"/>}
+                </KpiTile>
+                <KpiTile label={t('dashboard.analytics.kpi.successRate')} icon={<CheckCircle2 size={15}/>} tone="blue"
+                         value={analytics ? (finishedCount ? `${formatNumber(analytics.outcomes.successRate)}%` : '—') : '—'}>
+                    {analytics ? t('dashboard.analytics.finishedCount', {count: finishedCount}) : '—'}
+                </KpiTile>
+                <KpiTile label={t('dashboard.analytics.kpi.media')} icon={<FolderCheck size={15}/>} tone="red"
+                         value={analytics ? analytics.mediaFiles : '—'}>
+                    {t('dashboard.analytics.mediaHint')}
+                </KpiTile>
             </div>
 
             {/* Above-the-Fold Operational Workspace: Recent Missions + Upcoming | Quota + Pipeline + Turnaround */}

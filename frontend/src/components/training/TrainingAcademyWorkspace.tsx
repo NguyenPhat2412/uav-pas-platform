@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {
     CheckCircle2,
     Clock,
@@ -13,6 +13,14 @@ import {
     X,
 } from 'lucide-react';
 import {useSaveTrainingDocument, useTrainingDocumentProgress, useTrainingOverview} from '@/hooks/training/useTraining';
+import {ErrorNotice} from '@/components/data/WorkspaceState';
+import {
+    canSubmitTrainingDocument,
+    emptyTrainingDocumentDraft,
+    toUpsertTrainingDocumentPayload,
+    trainingDocumentDraftFromDetail,
+    trainingDocumentFieldErrors,
+} from '@/forms/training/training-form';
 import type {
     TrainingAcademyWorkspaceProps,
     TrainingDocument,
@@ -45,25 +53,13 @@ export function TrainingAcademyWorkspace({
     const [learnerPreview, setLearnerPreview] = useState<boolean>(false);
     const [editorOpen, setEditorOpen] = useState<boolean>(false);
     const [editingDoc, setEditingDoc] = useState<TrainingDocument | null>(null);
-    const [formState, setFormState] = useState<UpsertTrainingDocumentPayload>({
-        code: '',
-        targetPortal: defaultPortal,
-        category: 'PREFLIGHT_SOP',
-        level: 'STANDARD',
-        versionTag: 'SOP-2026.2',
-        estimatedMinutes: 15,
-        isMandatory: true,
-        sortOrder: 10,
-        active: true,
-        title: '',
-        summary: '',
-        contentMarkdown: '',
-        checklistSteps: [''],
-    });
+    const [formState, setFormState] = useState<UpsertTrainingDocumentPayload>(() =>
+        emptyTrainingDocumentDraft(defaultPortal),
+    );
 
     const {data, isLoading, isFetching, refetch} = useTrainingOverview(activePortal);
 
-    const allDocuments = data?.documents ?? [];
+    const allDocuments = useMemo(() => data?.documents ?? [], [data?.documents]);
 
     const filteredDocuments = useMemo(() => {
         const q = searchQuery.trim().toLowerCase();
@@ -86,17 +82,7 @@ export function TrainingAcademyWorkspace({
         });
     }, [allDocuments, selectedCategory, onlyMandatory, searchQuery]);
 
-    useEffect(() => {
-        if (filteredDocuments.length === 0) {
-            setSelectedDocCode(null);
-            return;
-        }
-        const exists = filteredDocuments.some((d) => d.code === selectedDocCode);
-        if (!exists) {
-            setSelectedDocCode(filteredDocuments[0].code);
-        }
-    }, [filteredDocuments, selectedDocCode]);
-
+    // A selection hidden by the filters falls back to the first visible document (derived, not stored).
     const activeDocument = useMemo(() => {
         if (!selectedDocCode) return filteredDocuments[0] ?? null;
         return (
@@ -178,46 +164,18 @@ export function TrainingAcademyWorkspace({
     const openCreateModal = () => {
         const defaultCategory = Object.keys(PORTAL_META[activePortal].categories)[0] || 'GENERAL';
         setEditingDoc(null);
-        setFormState({
-            code: `TRN-${activePortal === 'CUSTOMER' ? 'CUST' : activePortal === 'OPERATIONS' ? 'OPS' : 'ADM'}-0${allDocuments.length + 1}`,
-            targetPortal: activePortal,
-            category: defaultCategory,
-            level: 'STANDARD',
-            versionTag: 'SOP-2026.2',
-            estimatedMinutes: 15,
-            isMandatory: true,
-            sortOrder: (allDocuments.length + 1) * 10,
-            active: true,
-            title: '',
-            summary: '',
-            contentMarkdown: '### 1. Mục tiêu quy trình\n- Mô tả chi tiết các bước thực hiện.\n\n### 2. Tiêu chuẩn kỹ thuật\n- Các thông số an toàn bắt buộc.',
-            checklistSteps: [
-                'Xác nhận đã đọc và nắm vững quy trình kỹ thuật',
-                'Kiểm tra danh mục an toàn trước khi áp dụng trên hệ thống',
-            ],
-        });
+        saveDocumentMutation.reset();
+        setFormState(emptyTrainingDocumentDraft(activePortal, defaultCategory, allDocuments.length + 1));
         setEditorOpen(true);
     };
 
     const openEditModal = (doc: TrainingDocument) => {
         setEditingDoc(doc);
-        setFormState({
-            code: doc.code,
-            targetPortal: doc.targetPortal,
-            category: doc.category,
-            level: doc.level,
-            versionTag: doc.versionTag || 'SOP-2026.1',
-            estimatedMinutes: doc.estimatedMinutes || 15,
-            isMandatory: doc.isMandatory,
-            sortOrder: doc.sortOrder || 10,
-            active: doc.active,
-            title: doc.title,
-            summary: doc.summary,
-            contentMarkdown: doc.contentMarkdown,
-            checklistSteps: doc.checklistSteps.length > 0 ? [...doc.checklistSteps] : [''],
-        });
+        saveDocumentMutation.reset();
+        setFormState(trainingDocumentDraftFromDetail(doc));
         setEditorOpen(true);
     };
+    const docFieldErrors = trainingDocumentFieldErrors(saveDocumentMutation.error);
 
     const totalDocs = data?.totalDocuments ?? 0;
     const completedDocs = data?.completedDocuments ?? 0;
@@ -644,12 +602,16 @@ export function TrainingAcademyWorkspace({
                                     <input
                                         type="text"
                                         aria-required
+                                        aria-invalid={Boolean(docFieldErrors?.code)}
                                         value={formState.code}
                                         onChange={(e) =>
                                             setFormState({...formState, code: e.target.value})
                                         }
                                         className="w-full rounded-control border border-border bg-card px-3 py-1.5 font-mono text-xs text-foreground"
                                     />
+                                    {docFieldErrors?.code && (
+                                        <span className="mt-1 block text-[11px] text-danger">{docFieldErrors.code}</span>
+                                    )}
                                 </div>
 
                                 <div>
@@ -727,66 +689,84 @@ export function TrainingAcademyWorkspace({
                                     <label className="mb-1 block font-semibold text-foreground">
                                         Thời lượng (Phút) <RequiredMark />
                                     </label>
+                                        <input
+                                            type="number"
+                                            aria-required
+                                            aria-invalid={Boolean(docFieldErrors?.estimatedMinutes)}
+                                            value={formState.estimatedMinutes}
+                                            onChange={(e) =>
+                                                setFormState({
+                                                    ...formState,
+                                                    estimatedMinutes: Number(e.target.value),
+                                                })
+                                            }
+                                            className="w-full rounded-control border border-border bg-card px-3 py-1.5 font-mono text-xs text-foreground"
+                                        />
+                                        {docFieldErrors?.estimatedMinutes && (
+                                            <span className="mt-1 block text-[11px] text-danger">{docFieldErrors.estimatedMinutes}</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="mb-1 block font-semibold text-foreground">
+                                        Tiêu đề học phần / Tài liệu SOP <RequiredMark />
+                                    </label>
                                     <input
-                                        type="number"
+                                        type="text"
                                         aria-required
-                                        value={formState.estimatedMinutes}
+                                        aria-invalid={Boolean(docFieldErrors?.title)}
+                                        value={formState.title}
+                                        onChange={(e) =>
+                                            setFormState({...formState, title: e.target.value})
+                                        }
+                                        className="w-full rounded-control border border-border bg-card px-3 py-1.5 text-xs text-foreground"
+                                    />
+                                    {docFieldErrors?.title && (
+                                        <span className="mt-1 block text-[11px] text-danger">{docFieldErrors.title}</span>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="mb-1 block font-semibold text-foreground">
+                                        Tóm tắt mục tiêu đào tạo <RequiredMark />
+                                    </label>
+                                    <textarea
+                                        rows={2}
+                                        aria-required
+                                        aria-invalid={Boolean(docFieldErrors?.summary)}
+                                        value={formState.summary}
+                                        onChange={(e) =>
+                                            setFormState({...formState, summary: e.target.value})
+                                        }
+                                        className="w-full rounded-control border border-border bg-card px-3 py-1.5 text-xs text-foreground"
+                                    />
+                                    {docFieldErrors?.summary && (
+                                        <span className="mt-1 block text-[11px] text-danger">{docFieldErrors.summary}</span>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="mb-1 block font-semibold text-foreground">
+                                        Nội dung chi tiết (Hỗ trợ Markdown: ### Tiêu đề, - Danh sách, | Bảng |) <RequiredMark />
+                                    </label>
+                                    <textarea
+                                        rows={8}
+                                        aria-required
+                                        aria-invalid={Boolean(docFieldErrors?.contentMarkdown)}
+                                        value={formState.contentMarkdown}
                                         onChange={(e) =>
                                             setFormState({
                                                 ...formState,
-                                                estimatedMinutes: Number(e.target.value) || 10,
+                                                contentMarkdown: e.target.value,
                                             })
                                         }
-                                        className="w-full rounded-control border border-border bg-card px-3 py-1.5 font-mono text-xs text-foreground"
+                                        className="w-full rounded-control border border-border bg-card px-3 py-2 font-mono text-xs text-foreground"
                                     />
+                                    {docFieldErrors?.contentMarkdown && (
+                                        <span className="mt-1 block text-[11px] text-danger">{docFieldErrors.contentMarkdown}</span>
+                                    )}
                                 </div>
-                            </div>
-
-                            <div>
-                                <label className="mb-1 block font-semibold text-foreground">
-                                    Tiêu đề học phần / Tài liệu SOP <RequiredMark />
-                                </label>
-                                <input
-                                    type="text"
-                                    aria-required
-                                    value={formState.title}
-                                    onChange={(e) =>
-                                        setFormState({...formState, title: e.target.value})
-                                    }
-                                    className="w-full rounded-control border border-border bg-card px-3 py-1.5 text-xs text-foreground"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="mb-1 block font-semibold text-foreground">
-                                    Tóm tắt mục tiêu đào tạo <OptionalMark />
-                                </label>
-                                <textarea
-                                    rows={2}
-                                    value={formState.summary}
-                                    onChange={(e) =>
-                                        setFormState({...formState, summary: e.target.value})
-                                    }
-                                    className="w-full rounded-control border border-border bg-card px-3 py-1.5 text-xs text-foreground"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="mb-1 block font-semibold text-foreground">
-                                    Nội dung chi tiết (Hỗ trợ Markdown: ### Tiêu đề, - Danh sách, | Bảng |) <RequiredMark />
-                                </label>
-                                <textarea
-                                    rows={8}
-                                    value={formState.contentMarkdown}
-                                    onChange={(e) =>
-                                        setFormState({
-                                            ...formState,
-                                            contentMarkdown: e.target.value,
-                                        })
-                                    }
-                                    className="w-full rounded-control border border-border bg-card px-3 py-2 font-mono text-xs text-foreground"
-                                />
-                            </div>
 
                             <div>
                                 <label className="mb-1 block font-semibold text-foreground">
@@ -821,6 +801,8 @@ export function TrainingAcademyWorkspace({
                                     Đánh dấu là tài liệu SOP bắt buộc (Mandatory SOP)
                                 </span>
                             </label>
+
+                            {saveDocumentMutation.error && <ErrorNotice error={saveDocumentMutation.error} />}
                         </div>
 
                         <div className="flex items-center justify-end gap-2 border-t border-border bg-surface-variant px-5 py-3">
@@ -835,10 +817,9 @@ export function TrainingAcademyWorkspace({
                                 type="button"
                                 disabled={
                                     saveDocumentMutation.isPending ||
-                                    !formState.code.trim() ||
-                                    !formState.title.trim()
+                                    !canSubmitTrainingDocument(formState)
                                 }
-                                onClick={() => saveDocumentMutation.mutate(formState)}
+                                onClick={() => saveDocumentMutation.mutate(toUpsertTrainingDocumentPayload(formState))}
                                 className="rounded-control bg-primary px-4 py-1.5 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
                             >
                                 {saveDocumentMutation.isPending

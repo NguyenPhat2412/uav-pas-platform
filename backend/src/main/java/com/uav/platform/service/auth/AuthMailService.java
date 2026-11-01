@@ -24,6 +24,7 @@ public class AuthMailService {
     private final boolean mailEnabled;
     private final String fromAddress;
     private final boolean otpDevPreview;
+    private EmailDomainPolicyService emailDomainPolicy;
 
     public AuthMailService(
             @Autowired(required = false) JavaMailSender mailSender,
@@ -34,6 +35,11 @@ public class AuthMailService {
         this.mailEnabled = mailEnabled;
         this.fromAddress = fromAddress;
         this.otpDevPreview = otpDevPreview;
+    }
+
+    @Autowired(required = false)
+    public void setEmailDomainPolicy(EmailDomainPolicyService emailDomainPolicy) {
+        this.emailDomainPolicy = emailDomainPolicy;
     }
 
     /**
@@ -65,6 +71,15 @@ public class AuthMailService {
         }
 
         if (!isMailEnabled()) {
+            return;
+        }
+
+        if (EmailDomainPolicyService.isReservedOrDisposable(toEmail)
+                || (emailDomainPolicy != null
+                        && !emailDomainPolicy.isAllowedForOutboundSmtp(toEmail))) {
+            log.warn(
+                    "[UAV-PAS AUTH MAIL BLOCKED] Suppressed outbound SMTP dispatch to disallowed/reserved recipient: {}",
+                    maskEmail(toEmail));
             return;
         }
 

@@ -30,13 +30,13 @@ public class InventoryController {
         return ResponseEntity.ok(service.list(Pageables.asc(page, size, "name")));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(ApiRoutes.Inventory.EQUIPMENT_BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_READ')")
     public ResponseEntity<EquipmentResponse> get(@PathVariable Long id) {
         return ResponseEntity.ok(service.get(id));
     }
 
-    @GetMapping("/history")
+    @GetMapping(ApiRoutes.Inventory.EQUIPMENT_HISTORY)
     @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_READ')")
     public ResponseEntity<PageResponse<InventoryMovementResponse>> history(
             @RequestParam(defaultValue = "0") int page,
@@ -51,42 +51,42 @@ public class InventoryController {
         return ResponseEntity.status(201).body(service.create(r, a.getName()));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(ApiRoutes.Inventory.EQUIPMENT_BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_MANAGE')")
     public ResponseEntity<EquipmentResponse> update(
             @PathVariable Long id, @Valid @RequestBody EquipmentRequest r, Authentication a) {
         return ResponseEntity.ok(service.update(id, r, a.getName()));
     }
 
-    @PostMapping("/{id}/stock-in")
+    @PostMapping(ApiRoutes.Inventory.EQUIPMENT_STOCK_IN)
     @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_MANAGE')")
     public ResponseEntity<EquipmentResponse> stockIn(
             @PathVariable Long id, @Valid @RequestBody QuantityRequest r, Authentication a) {
         return ResponseEntity.ok(service.stockIn(id, r, a.getName()));
     }
 
-    @PostMapping("/{id}/stock-out")
+    @PostMapping(ApiRoutes.Inventory.EQUIPMENT_STOCK_OUT)
     @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_MANAGE')")
     public ResponseEntity<EquipmentResponse> stockOut(
             @PathVariable Long id, @Valid @RequestBody QuantityRequest r, Authentication a) {
         return ResponseEntity.ok(service.stockOut(id, r, a.getName()));
     }
 
-    @PostMapping("/{id}/reserve")
+    @PostMapping(ApiRoutes.Inventory.EQUIPMENT_RESERVE)
     @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_MANAGE')")
     public ResponseEntity<EquipmentResponse> reserve(
             @PathVariable Long id, @Valid @RequestBody QuantityRequest r, Authentication a) {
         return ResponseEntity.ok(service.reserve(id, r, a.getName()));
     }
 
-    @PostMapping("/{id}/release")
+    @PostMapping(ApiRoutes.Inventory.EQUIPMENT_RELEASE)
     @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_MANAGE')")
     public ResponseEntity<EquipmentResponse> release(
             @PathVariable Long id, @Valid @RequestBody QuantityRequest r, Authentication a) {
         return ResponseEntity.ok(service.release(id, r, a.getName()));
     }
 
-    @PostMapping("/{id}/transfer/{stationId}")
+    @PostMapping(ApiRoutes.Inventory.EQUIPMENT_TRANSFER)
     @PreAuthorize("@permissionService.has(authentication, 'INVENTORY_MANAGE')")
     public ResponseEntity<EquipmentResponse> transfer(
             @PathVariable Long id,

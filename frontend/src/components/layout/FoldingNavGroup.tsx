@@ -1,15 +1,16 @@
 'use client';
 
-import {useEffect, useState} from 'react';
+import {useMemo, useState} from 'react';
+import {useBrowserStorage, writeBrowserStorage} from '@/hooks/useBrowserStorage';
 import type {ReactNode} from 'react';
 import type {LucideIcon} from 'lucide-react';
 import {ChevronRight} from 'lucide-react';
 import {cn} from '@/lib/utils';
 
-function readOpenGroups(storageKey: string): Record<string, boolean> {
+function parseOpenGroups(raw: string | null): Record<string, boolean> {
     try {
-        const parsed: unknown = JSON.parse(localStorage.getItem(storageKey) ?? '{}');
-        return parsed && typeof parsed === 'object' ? parsed as Record<string, boolean> : {};
+        const parsed: unknown = JSON.parse(raw ?? '{}');
+        return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed as Record<string, boolean> : {};
     } catch {
         return {};
     }
@@ -20,20 +21,22 @@ function readOpenGroups(storageKey: string): Record<string, boolean> {
  * page being opened always unfolds so the current page stays visible, without being stored.
  */
 export function useFoldedNavGroups(storageKey: string, activeGroup?: string) {
-    const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
-    useEffect(() => {
-        const saved = readOpenGroups(storageKey);
-        setOpenGroups(activeGroup ? {...saved, [activeGroup]: true} : saved);
-    }, [storageKey, activeGroup]);
-    const toggleGroup = (group: string) => setOpenGroups(prev => {
-        const expand = !prev[group];
-        try {
-            localStorage.setItem(storageKey, JSON.stringify({...readOpenGroups(storageKey), [group]: expand}));
-        } catch {
-            // storage unavailable: folding still works for this visit
-        }
-        return {...prev, [group]: expand};
-    });
+    const raw = useBrowserStorage(storageKey);
+    const saved = useMemo(() => parseOpenGroups(raw), [raw]);
+    // Clicks on this page win over the forced-open active group; a new page starts from what is stored.
+    const [clicked, setClicked] = useState<Record<string, boolean>>({});
+    const [clickedFor, setClickedFor] = useState(activeGroup);
+    if (clickedFor !== activeGroup) {
+        setClickedFor(activeGroup);
+        setClicked({});
+    }
+    const openGroups = {...saved, ...(activeGroup ? {[activeGroup]: true} : {}), ...clicked};
+    const toggleGroup = (group: string) => {
+        const expand = !openGroups[group];
+        setClicked(prev => ({...prev, [group]: expand}));
+        // When storage refuses the write, the click still applies for this visit through `clicked`.
+        writeBrowserStorage(storageKey, JSON.stringify({...saved, [group]: expand}));
+    };
     return {openGroups, toggleGroup};
 }
 

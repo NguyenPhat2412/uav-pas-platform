@@ -26,7 +26,7 @@ public class BillingAdminController {
     private final BillingAdminService billingAdmin;
     private final FinancialOutboxAdminService outbox;
 
-    @GetMapping("/transactions")
+    @GetMapping(ApiRoutes.Billing.ADMIN_TRANSACTIONS)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<PageResponse<PaymentTransactionAdminResponse>> transactions(
             @RequestParam(defaultValue = "0") int page,
@@ -44,7 +44,7 @@ public class BillingAdminController {
                         status, gateway, from, to, invoiceId, q, Pageables.of(page, size)));
     }
 
-    @GetMapping("/outbox")
+    @GetMapping(ApiRoutes.Billing.ADMIN_OUTBOX)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<PageResponse<FinancialOutboxEventResponse>> outbox(
             @RequestParam(defaultValue = "0") int page,
@@ -53,7 +53,7 @@ public class BillingAdminController {
         return ResponseEntity.ok(outbox.list(status, Pageables.of(page, size)));
     }
 
-    @PostMapping("/outbox/{id}/retry")
+    @PostMapping(ApiRoutes.Billing.ADMIN_OUTBOX_RETRY)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<FinancialOutboxEventResponse> retryOutbox(
             @PathVariable String id, Authentication auth) {

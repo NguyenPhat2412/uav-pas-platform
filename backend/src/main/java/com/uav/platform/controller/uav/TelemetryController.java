@@ -31,7 +31,7 @@ public class TelemetryController {
      * UAV_MANAGE. A device principal is never evaluated as a user.
      */
     @Operation(summary = "Report a telemetry sample (device key or gateway service account)")
-    @PostMapping("/uavs/{id}/telemetry")
+    @PostMapping(ApiRoutes.Telemetry.UAVS_TELEMETRY)
     @PreAuthorize(
             "@deviceKeyService.isDevice(authentication)"
                     + " ? @deviceKeyService.canWriteTelemetry(authentication, #id)"
@@ -44,7 +44,7 @@ public class TelemetryController {
                 .body(telemetry.ingest(id, request, auth.getName()));
     }
 
-    @GetMapping("/uavs/{id}/telemetry/latest")
+    @GetMapping(ApiRoutes.Telemetry.UAVS_TELEMETRY_LATEST)
     @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
     public ResponseEntity<TelemetryResponse> latest(@PathVariable Long id) {
         return telemetry
@@ -53,14 +53,14 @@ public class TelemetryController {
                 .orElse(ResponseEntity.noContent().build());
     }
 
-    @GetMapping("/uavs/telemetry/latest")
+    @GetMapping(ApiRoutes.Telemetry.UAVS_TELEMETRY_LATEST_ALL)
     @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
     public ResponseEntity<List<TelemetryResponse>> fleet() {
         return ResponseEntity.ok(telemetry.latestForFleet());
     }
 
     /** For anyone who may see the mission (its customer included): the assigned UAV's latest sample. */
-    @GetMapping("/missions/{id}/telemetry/latest")
+    @GetMapping(ApiRoutes.Telemetry.MISSIONS_TELEMETRY_LATEST)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
     public ResponseEntity<TelemetryResponse> forMission(
             @PathVariable Long id, Authentication auth) {

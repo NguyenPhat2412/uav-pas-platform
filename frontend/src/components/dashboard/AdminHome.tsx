@@ -1,19 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import {useEffect, useMemo, useState} from 'react';
+import {useMemo} from 'react';
 import type {ReactNode} from 'react';
 import {AlertTriangle, ChevronRight, CircleAlert, ClipboardList, History, Info} from 'lucide-react';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {ADMIN_SIDEBAR_ROUTES} from '@/config/sidebar-routes';
-import {ADMIN_RECENT_PAGES_KEY, readRecentPages} from '@/lib/recent-pages';
+import {ADMIN_RECENT_PAGES_KEY, parseRecentPages} from '@/lib/recent-pages';
+import {useBrowserStorage} from '@/hooks/useBrowserStorage';
 import {formatDate} from '@/lib/presentation';
 import {useAdminPendingMissions} from '@/hooks/dashboard/useAdminDashboard';
 import {useAlertCenter} from '@/hooks/alerts/useAlertCenter';
 import {useAlertMessage} from '@/hooks/alerts/useAlertMessage';
 import {cn} from '@/lib/utils';
+import {HomeWeatherWidget} from '@/components/weather/HomeWeatherWidget';
 
 const LIST_SIZE = 5;
 const severityIcon = {
@@ -30,7 +32,9 @@ export function AdminHome() {
     const {can, permissionsReady} = useAuth();
     const {t} = useI18n();
     const alertMessage = useAlertMessage();
-    const [recent, setRecent] = useState<string[]>([]);
+    // The list lives in this browser's storage, which the server cannot see (null until hydrated).
+    const recentRaw = useBrowserStorage(ADMIN_RECENT_PAGES_KEY);
+    const recent = useMemo(() => parseRecentPages(recentRaw).filter(href => href !== '/admin/dashboard'), [recentRaw]);
 
     const allowed = useMemo(
         () => ADMIN_SIDEBAR_ROUTES.filter(item => !item.permission || (permissionsReady && can(item.permission))),
@@ -46,10 +50,6 @@ export function AdminHome() {
     const pending = useAdminPendingMissions();
     const alerts = useAlertCenter();
 
-    useEffect(() => {
-        // Read after mount: the list lives in this browser's storage, which the server cannot see.
-        setRecent(readRecentPages(ADMIN_RECENT_PAGES_KEY).filter(href => href !== '/admin/dashboard'));
-    }, []);
 
     const toSearchItem = (item: (typeof ADMIN_SIDEBAR_ROUTES)[number]) => {
         const Icon = item.icon;
@@ -87,6 +87,8 @@ export function AdminHome() {
                 />
             </div>
         </section>
+
+        <HomeWeatherWidget detailsHref="/admin/weather"/>
 
         <div className="grid grid-cols-1 gap-px border border-rose-200 bg-rose-200 lg:grid-cols-3">
             {can('MISSION_VIEW_ALL') && <HomeColumn title={t('admin.dashboard.home.pending')} count={pending.data?.totalElements}

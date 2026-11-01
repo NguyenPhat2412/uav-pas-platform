@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import {useEffect, useMemo, useState} from 'react';
+import {useMemo} from 'react';
 import type {ReactNode} from 'react';
 import {ChevronRight, History} from 'lucide-react';
 import type {SidebarRouteItem} from '@/types/ui';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
-import {readRecentPages} from '@/lib/recent-pages';
+import {parseRecentPages} from '@/lib/recent-pages';
+import {useBrowserStorage} from '@/hooks/useBrowserStorage';
 import {useAuth} from '@/providers/AuthContext';
 import {cn} from '@/lib/utils';
 
@@ -26,6 +27,7 @@ export function PortalHomeHero<G extends string>({
     groupOf,
     recentTitle,
     recentEmpty,
+    banner,
     children,
 }: {
     question: string;
@@ -37,14 +39,14 @@ export function PortalHomeHero<G extends string>({
     groupOf: (item: SidebarRouteItem<G>) => string;
     recentTitle?: string;
     recentEmpty?: string;
+    /** Full-width block between the search and the columns (e.g. today's weather). */
+    banner?: ReactNode;
     children?: ReactNode;
 }) {
     const {can, permissionsReady} = useAuth();
-    const [recent, setRecent] = useState<string[]>([]);
-    useEffect(() => {
-        // Read after mount: the list lives in this browser's storage, which the server cannot see.
-        setRecent(readRecentPages(recentKey).filter(href => href !== homeHref));
-    }, [recentKey, homeHref]);
+    // The list lives in this browser's storage, which the server cannot see (null until hydrated).
+    const recentRaw = useBrowserStorage(recentKey);
+    const recent = useMemo(() => parseRecentPages(recentRaw).filter(href => href !== homeHref), [recentRaw, homeHref]);
 
     const allowed = useMemo(
         () => routes.filter(item => !item.permission || (permissionsReady && can(item.permission))),
@@ -66,6 +68,8 @@ export function PortalHomeHero<G extends string>({
                     <HeaderSearch variant="hero" items={allowed.map(toItem)} recent={recentItems} placeholder={placeholder}/>
                 </div>
             </section>
+
+            {banner && <div className="mx-auto w-full max-w-6xl">{banner}</div>}
 
             {(children || recentTitle) && (
                 <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">

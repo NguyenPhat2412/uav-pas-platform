@@ -34,7 +34,7 @@ public class PlanAdministrationController {
     }
 
     /** Subscribers, usage and revenue per plan; months (1..24, default 6) sizes the monthly series. */
-    @GetMapping("/stats")
+    @GetMapping(ApiRoutes.Billing.ADMIN_PLANS_STATS)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<PlanStatsResponse> stats(@RequestParam(defaultValue = "6") int months) {
         return ResponseEntity.ok(statistics.stats(months));
@@ -48,7 +48,7 @@ public class PlanAdministrationController {
                 .body(plans.create(request, auth.getName()));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(ApiRoutes.Billing.ADMIN_PLANS_BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<ServicePlanResponse> update(
             @PathVariable Long id,
@@ -57,7 +57,7 @@ public class PlanAdministrationController {
         return ResponseEntity.ok(plans.update(id, request, auth.getName()));
     }
 
-    @PatchMapping("/{id}/active")
+    @PatchMapping(ApiRoutes.Billing.ADMIN_PLANS_ACTIVE)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<ServicePlanResponse> setActive(
             @PathVariable Long id, @RequestParam boolean active, Authentication auth) {

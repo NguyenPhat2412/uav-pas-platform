@@ -17,11 +17,13 @@ import com.uav.platform.mapper.auth.AuthMapper;
 import com.uav.platform.mapper.user.UserMapper;
 import com.uav.platform.repository.auth.AuthOtpTokenRepository;
 import com.uav.platform.repository.user.UserRepository;
+import com.uav.platform.security.ClientIpResolver;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.auth.AuthMailService;
 import com.uav.platform.service.auth.AuthOtpService;
 import com.uav.platform.service.auth.AuthRateLimitService;
 import com.uav.platform.service.auth.AuthSessionLock;
+import com.uav.platform.service.auth.EmailDomainPolicyService;
 import com.uav.platform.service.auth.RefreshTokenService;
 import com.uav.platform.service.auth.SessionTerminationService;
 import com.uav.platform.service.auth.TotpService;
@@ -32,6 +34,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -73,6 +77,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
     private final int otpTtlMinutes;
     private final SecureRandom secureRandom = new SecureRandom();
     private AuthRateLimitService rateLimiter;
+    private EmailDomainPolicyService emailDomainPolicy;
     private SessionTerminationService sessionTermination;
     private AuthSessionLock sessionLock;
 
@@ -115,9 +120,16 @@ public class AuthOtpServiceImpl implements AuthOtpService {
         this.sessionLock = sessionLock;
     }
 
+    @Autowired(required = false)
+    public void setEmailDomainPolicy(EmailDomainPolicyService emailDomainPolicy) {
+        this.emailDomainPolicy = emailDomainPolicy;
+    }
+
     @Override
     public OtpChallengeResponse requestRegisterOtp(RegisterRequest request) {
         RegistrationInput in = RegistrationOperations.normalize(request);
+        validateEmailDomain(in.email());
+        checkCooldown(in.email(), PURPOSE_REGISTER_VERIFY);
         limitAccount(AuthRateLimitAction.OTP_ISSUE, in.email());
         Optional<AppUser> existingByEmail =
                 userRepository.findFirstByEmailIgnoreCaseOrderByIdAsc(in.email());
@@ -250,6 +262,9 @@ public class AuthOtpServiceImpl implements AuthOtpService {
     @Override
     public AuthResponse createLoginChallenge(AppUser user, String methodOverride) {
         if (!user.isEmailVerified()) {
+            checkCooldown(user.getEmail(), PURPOSE_REGISTER_VERIFY);
+            limitClientEmailFromCurrentRequest();
+            limitAccount(AuthRateLimitAction.OTP_ISSUE, user.getEmail());
             IssuedChallenge issued =
                     issueOtpToken(
                             user,
@@ -276,6 +291,9 @@ public class AuthOtpServiceImpl implements AuthOtpService {
                     userMapper.toResponse(user));
         }
 
+        checkCooldown(user.getEmail(), PURPOSE_LOGIN_2FA);
+        limitClientEmailFromCurrentRequest();
+        limitAccount(AuthRateLimitAction.OTP_ISSUE, user.getEmail());
         IssuedChallenge issued =
                 issueOtpToken(
                         user,
@@ -408,8 +426,8 @@ public class AuthOtpServiceImpl implements AuthOtpService {
                         "OTP_CHALLENGE_EXPIRED");
             }
         }
-        limitAccount(AuthRateLimitAction.OTP_ISSUE, email);
         checkCooldown(email, purpose);
+        limitAccount(AuthRateLimitAction.OTP_ISSUE, email);
 
         String label =
                 switch (purpose) {
@@ -453,9 +471,12 @@ public class AuthOtpServiceImpl implements AuthOtpService {
      * Same answer whether or not the email has an account, so the endpoint cannot be used to list
      * accounts. Unknown emails get a stand-in challenge that no code can ever satisfy.
      */
-    private OtpChallengeResponse passwordResetChallenge(String email) {
-        limitAccount(AuthRateLimitAction.OTP_ISSUE, email);
+    private OtpChallengeResponse passwordResetChallenge(String rawEmail) {
+        String email = EmailDomainPolicyService.validateSyntaxAndReserved(rawEmail);
+        // Reset serves existing accounts, so the sign-up allowlist does not apply here.
+        if (emailDomainPolicy != null) emailDomainPolicy.validateForExistingAccount(email);
         checkCooldown(email, PURPOSE_PASSWORD_RESET);
+        limitAccount(AuthRateLimitAction.OTP_ISSUE, email);
         AppUser user =
                 userRepository
                         .findByEmail(email)
@@ -539,6 +560,9 @@ public class AuthOtpServiceImpl implements AuthOtpService {
                     "Quét mã QR bằng Google Authenticator hoặc nhập khóa bí mật, sau đó nhập mã 6 số để kích hoạt.");
         }
 
+        checkCooldown(user.getEmail(), PURPOSE_ENABLE_2FA_EMAIL);
+        limitClientEmailFromCurrentRequest();
+        limitAccount(AuthRateLimitAction.OTP_ISSUE, user.getEmail());
         IssuedChallenge issued =
                 issueOtpToken(
                         user,
@@ -711,6 +735,20 @@ public class AuthOtpServiceImpl implements AuthOtpService {
         }
     }
 
+    private void validateEmailDomain(String email) {
+        if (emailDomainPolicy != null) {
+            emailDomainPolicy.validateForAuth(email);
+        }
+    }
+
+    private void limitClientEmailFromCurrentRequest() {
+        if (rateLimiter == null) return;
+        if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attrs) {
+            rateLimiter.checkClient(
+                    AuthRateLimitAction.OTP_ISSUE, ClientIpResolver.resolve(attrs.getRequest()));
+        }
+    }
+
     private void limitAccount(AuthRateLimitAction action, String key) {
         if (rateLimiter != null) rateLimiter.checkAccount(action, key);
     }
@@ -769,6 +807,12 @@ public class AuthOtpServiceImpl implements AuthOtpService {
             String purpose,
             String emailPurposeLabel,
             PendingSignup pending) {
+        if (rateLimiter != null) {
+            // Login 2FA and enabling email 2FA follow a correct password or a live session, so an
+            // anonymous flood (sign-ups, resets) cannot use up the budget staff need to sign in.
+            rateLimiter.checkGlobalEmailBudget(
+                    PURPOSE_LOGIN_2FA.equals(purpose) || PURPOSE_ENABLE_2FA_EMAIL.equals(purpose));
+        }
         invalidateExistingTokens(email, purpose);
         String rawCode = String.format("%06d", secureRandom.nextInt(1_000_000));
         String challengeToken = UUID.randomUUID().toString();

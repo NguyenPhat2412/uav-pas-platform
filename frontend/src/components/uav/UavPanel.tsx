@@ -1,5 +1,5 @@
 'use client';
-import {useEffect, useState} from 'react';
+import {useMemo, useState} from 'react';
 import Link from 'next/link';
 import {Plus} from 'lucide-react';
 import {Button, Input, StatusBadge} from '@/components/ui';
@@ -12,6 +12,12 @@ import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {UavModelViewer} from '@/components/visuals/UavModelViewer';
 import {Pagination} from "@/components/data/ResourceState";
 import {UavLifecyclePanel} from "@/components/uav/UavLifecyclePanel";
+import {
+    canSubmitUavCreate,
+    emptyUavCreateDraft,
+    toUavCreatePayload,
+    uavFieldErrors,
+} from "@/forms/uav/uav-form";
 import {uavHistoryReason} from "@/utils/uav/workflows";
 import {displayLabel, formatDate} from "@/lib/presentation";
 import type {Uav} from "@/types/resources";
@@ -33,10 +39,11 @@ export function UavPanel() {
     const [tab, setTab] = useState('overview');
     const [show3d, setShow3d] = useState(false);
     const [openCreate, setOpenCreate] = useState(false);
-    const [form, setForm] = useState({model: '', serialNumber: '', manufacturer: ''});
+    const [form, setForm] = useState(emptyUavCreateDraft);
     const {create} = useUavMutations();
+    const createFieldErrors = uavFieldErrors(create.error);
     const [lifecycleBusy, setLifecycleBusy] = useState(false);
-    const rows = query.data || [];
+    const rows = useMemo(() => query.data ?? [], [query.data]);
 
     const syncUavUrl = (uavId?: number, nextTab = 'overview') => {
         if (typeof window === 'undefined') return;
@@ -52,19 +59,20 @@ export function UavPanel() {
         window.history.replaceState(null, '', `${window.location.pathname}?${search.toString()}`);
     };
 
-    useEffect(() => {
-        if (typeof window === 'undefined' || selected !== undefined) return;
+    // A link like ?uav=DJI-M30-001&tab=history opens that UAV once the list has loaded (only once, so closing the
+    // drawer does not reopen it). Adjusting state while rendering avoids an extra render pass from an effect.
+    const [deepLinkHandled, setDeepLinkHandled] = useState(false);
+    if (!deepLinkHandled && rows.length > 0 && typeof window !== 'undefined') {
+        setDeepLinkHandled(true);
         const params = new URLSearchParams(window.location.search);
-        const resolved = resolveUavIdFromParam(params.get('uav'), params.get('uavId'), rows);
-        if (resolved) {
-            const id = Number(resolved);
-            if (Number.isSafeInteger(id) && id > 0) {
-                setSelected(id);
-                const requestedTab = params.get('tab');
-                if (requestedTab && validUavTabs.has(requestedTab)) setTab(requestedTab);
-            }
+        const resolved = selected === undefined ? resolveUavIdFromParam(params.get('uav'), params.get('uavId'), rows) : undefined;
+        const id = Number(resolved);
+        if (resolved && Number.isSafeInteger(id) && id > 0) {
+            setSelected(id);
+            const requestedTab = params.get('tab');
+            if (requestedTab && validUavTabs.has(requestedTab)) setTab(requestedTab);
         }
-    }, [rows, selected]);
+    }
 
     const refreshUav = async () => {
         const results = await Promise.all([query.refetch(), detail.refetch(), history.refetch(), ...(can('STATION_READ') ? [stations.refetch()] : [])]);
@@ -115,11 +123,11 @@ export function UavPanel() {
                                                                         onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.uav.closeForm') : t('opsAssets.uav.add')}</Button>
         </div>}
         {openCreate && can('UAV_MANAGE') &&
-            <form className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
+            <form noValidate className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 try {
-                    await create.mutateAsync(form);
-                    setForm({model: '', serialNumber: '', manufacturer: ''});
+                    await create.mutateAsync(toUavCreatePayload(form));
+                    setForm(emptyUavCreateDraft());
                     setOpenCreate(false);
                     await query.refetch();
                 } catch { /* visible below */
@@ -127,6 +135,7 @@ export function UavPanel() {
             }}>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="uav-model">{t('opsAssets.uav.model')}<RequiredMark/></label><Input id="uav-model" aria-required
+                                                                                                 error={createFieldErrors?.model}
                                                                                                  value={form.model}
                                                                                                  onChange={e => setForm({
                                                                                                      ...form,
@@ -134,6 +143,7 @@ export function UavPanel() {
                                                                                                  })}/></div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="uav-serial">{t('opsAssets.uav.serial')}<RequiredMark/></label><Input id="uav-serial"
                                                                                                     aria-required
+                                                                                                    error={createFieldErrors?.serialNumber}
                                                                                                     value={form.serialNumber}
                                                                                                     onChange={e => setForm({
                                                                                                         ...form,
@@ -141,14 +151,15 @@ export function UavPanel() {
                                                                                                     })}/></div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="uav-maker">{t('opsAssets.uav.manufacturer')}<RequiredMark/></label><Input id="uav-maker"
                                                                                                       aria-required
+                                                                                                      error={createFieldErrors?.manufacturer}
                                                                                                       value={form.manufacturer}
                                                                                                       onChange={e => setForm({
                                                                                                           ...form,
                                                                                                           manufacturer: e.target.value
                                                                                                       })}/></div>
                 </div>
-                <div className="mt-6 flex flex-wrap justify-end"><Button size="sm" type="submit" isLoading={create.isPending}>{t('opsAssets.uav.create')}</Button></div>
-                <ErrorNotice error={create.error}/></form>}
+                <div className="mt-6 flex flex-wrap justify-end"><Button size="sm" type="submit" disabled={!canSubmitUavCreate(form)} isLoading={create.isPending}>{t('opsAssets.uav.create')}</Button></div>
+                {create.error && !createFieldErrors && <ErrorNotice error={create.error}/>}</form>}
         <QueryState query={query}><DataTable label={t('opsAssets.uav.tableLabel')} data={rows} columns={columns} filters={[{
             column: 'status',
             label: t('opsAssets.uav.status'),

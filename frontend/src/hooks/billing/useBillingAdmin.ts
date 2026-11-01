@@ -3,7 +3,8 @@ import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack
 import {useAuth} from '@/providers/AuthContext';
 import {afterSuccess, type MutationOptions} from '@/lib/query';
 import {bankTransferService, invoicesService, plansService} from '@/api/billing/billing.api';
-import {billingAdminService, type FinancialOutboxEvent, type TransactionFilters} from '@/api/billing/billing-admin.api';
+import {billingAdminService} from '@/api/billing/billing-admin.api';
+import type {FinancialOutboxEvent, TransactionFilters} from '@/types/billing/billing-admin.types';
 import {quotasService} from '@/api/billing/quotas.api';
 import {usersService} from '@/api/user/users.api';
 import {billingKeys} from '@/hooks/billing/query-keys';

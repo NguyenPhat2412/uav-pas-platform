@@ -8,6 +8,7 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.service.auth.EmailDomainPolicyService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -69,12 +70,7 @@ public final class RegistrationOperations {
                             "REGISTER_USERNAME_RESERVED")
                     .at("username");
 
-        String email =
-                request.email() == null ? "" : request.email().trim().toLowerCase(Locale.ROOT);
-        if (email.isEmpty() || email.length() > EMAIL_MAX_LENGTH)
-            throw SystemException.badRequest(
-                            "Địa chỉ email không hợp lệ.", "REGISTER_EMAIL_INVALID")
-                    .at("email");
+        String email = EmailDomainPolicyService.validateSyntaxAndReserved(request.email());
 
         String phone = normalizePhone(request.phoneNumber());
         if (phone == null)

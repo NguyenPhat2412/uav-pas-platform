@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class MaintenanceController {
     private final MaintenanceService service;
 
-    @GetMapping("/schedules")
+    @GetMapping(ApiRoutes.Maintenance.SCHEDULES)
     public ResponseEntity<PageResponse<MaintenanceScheduleResponse>> schedules(
             @RequestParam(required = false) Long uavId,
             @RequestParam(required = false) DueStatus dueStatus,
@@ -37,13 +37,13 @@ public class MaintenanceController {
                         Pageables.strictDesc(page, size, "id", "MAINTENANCE_INVALID_PAGE")));
     }
 
-    @PostMapping("/schedules")
+    @PostMapping(ApiRoutes.Maintenance.SCHEDULES)
     public ResponseEntity<MaintenanceScheduleResponse> createSchedule(
             @Valid @RequestBody CreateMaintenanceScheduleRequest r, Authentication auth) {
         return ResponseEntity.status(201).body(service.createSchedule(r, auth.getName()));
     }
 
-    @PutMapping("/schedules/{id}")
+    @PutMapping(ApiRoutes.Maintenance.SCHEDULES_BY_ID)
     public ResponseEntity<MaintenanceScheduleResponse> updateSchedule(
             @PathVariable Long id,
             @Valid @RequestBody UpdateMaintenanceScheduleRequest r,
@@ -51,7 +51,7 @@ public class MaintenanceController {
         return ResponseEntity.ok(service.updateSchedule(id, r, auth.getName()));
     }
 
-    @GetMapping("/orders")
+    @GetMapping(ApiRoutes.Maintenance.ORDERS)
     public ResponseEntity<PageResponse<RepairOrderResponse>> orders(
             @RequestParam(required = false) Long uavId,
             @RequestParam(required = false) RepairStatus status,
@@ -63,18 +63,18 @@ public class MaintenanceController {
                         Pageables.strictDesc(page, size, "id", "MAINTENANCE_INVALID_PAGE")));
     }
 
-    @GetMapping("/orders/{id}")
+    @GetMapping(ApiRoutes.Maintenance.ORDERS_BY_ID)
     public ResponseEntity<RepairOrderResponse> order(@PathVariable Long id) {
         return ResponseEntity.ok(service.order(id));
     }
 
-    @PostMapping("/orders")
+    @PostMapping(ApiRoutes.Maintenance.ORDERS)
     public ResponseEntity<RepairOrderResponse> createOrder(
             @Valid @RequestBody CreateRepairOrderRequest r, Authentication auth) {
         return ResponseEntity.status(201).body(service.createOrder(r, auth.getName()));
     }
 
-    @PutMapping("/orders/{id}")
+    @PutMapping(ApiRoutes.Maintenance.ORDERS_BY_ID)
     public ResponseEntity<RepairOrderResponse> updateOrder(
             @PathVariable Long id,
             @Valid @RequestBody UpdateRepairOrderRequest r,
@@ -82,7 +82,7 @@ public class MaintenanceController {
         return ResponseEntity.ok(service.updateOrder(id, r, auth.getName()));
     }
 
-    @PostMapping("/orders/{id}/start")
+    @PostMapping(ApiRoutes.Maintenance.ORDERS_START)
     public ResponseEntity<RepairOrderResponse> start(
             @PathVariable Long id,
             @Valid @RequestBody RepairOrderVersionRequest r,
@@ -90,7 +90,7 @@ public class MaintenanceController {
         return ResponseEntity.ok(service.start(id, r, auth.getName()));
     }
 
-    @PutMapping("/orders/{id}/materials")
+    @PutMapping(ApiRoutes.Maintenance.ORDERS_MATERIALS)
     public ResponseEntity<RepairOrderResponse> materials(
             @PathVariable Long id,
             @Valid @RequestBody UpdateRepairMaterialsRequest r,
@@ -98,7 +98,7 @@ public class MaintenanceController {
         return ResponseEntity.ok(service.materials(id, r, auth.getName()));
     }
 
-    @PostMapping("/orders/{id}/complete")
+    @PostMapping(ApiRoutes.Maintenance.ORDERS_COMPLETE)
     public ResponseEntity<RepairOrderResponse> complete(
             @PathVariable Long id,
             @Valid @RequestBody CompleteRepairOrderRequest r,
@@ -106,7 +106,7 @@ public class MaintenanceController {
         return ResponseEntity.ok(service.complete(id, r, auth.getName()));
     }
 
-    @PostMapping("/orders/{id}/cancel")
+    @PostMapping(ApiRoutes.Maintenance.ORDERS_CANCEL)
     public ResponseEntity<RepairOrderResponse> cancel(
             @PathVariable Long id,
             @Valid @RequestBody CancelRepairOrderRequest r,

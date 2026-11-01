@@ -27,7 +27,7 @@ public class RoleTemplateController {
         return ResponseEntity.ok(service.list());
     }
 
-    @PutMapping("/{role}/permissions/{code}")
+    @PutMapping(ApiRoutes.RoleTemplates.ROLE_PERMISSION)
     public ResponseEntity<Void> set(
             @PathVariable UserRole role,
             @PathVariable PermissionCode code,

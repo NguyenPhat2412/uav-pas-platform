@@ -10,7 +10,7 @@ import {FilterSelect} from '@/components/shared/FilterSelect';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import {cn} from '@/lib/utils';
-import type {FinancialOutboxEvent} from '@/api/billing/billing-admin.api';
+import type {FinancialOutboxEvent} from '@/types/billing/billing-admin.types';
 import {useBillingOutbox, useRetryOutbox} from '@/hooks/billing/useBillingAdmin';
 
 const filters = ['ALL', 'PENDING', 'WAITING_SUBSCRIBERS', 'FAILED', 'LOCAL_COMPLETED'] as const;

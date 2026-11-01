@@ -40,7 +40,8 @@
             "activeMissions": "{label}: {count} nhiệm vụ đang xử lý",
             "pendingInvoices": "{label}: {count} hóa đơn chờ thanh toán",
             "unreadNotifications": "{label}: {count} thông báo chưa đọc"
-        }
+        },
+        "weather": "Thời tiết bay"
     },
     "billing": {
         "title": "Gói Cước & Quota Vận Hành",

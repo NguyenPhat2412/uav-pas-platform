@@ -144,7 +144,11 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
     }
 
     public static void validateSafeWebhookUrl(String targetUrl) {
-        com.uav.platform.transport.webhook.PublicAddressPolicy.parse(targetUrl);
+        try {
+            com.uav.platform.transport.webhook.PublicAddressPolicy.parse(targetUrl);
+        } catch (SystemException ex) {
+            throw ex.getField() == null ? ex.at("targetUrl") : ex;
+        }
     }
 
     @Override

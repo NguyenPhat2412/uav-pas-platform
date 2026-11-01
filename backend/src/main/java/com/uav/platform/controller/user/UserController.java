@@ -70,21 +70,21 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(ApiRoutes.Users.USER_ID + "/lock")
+    @PostMapping(ApiRoutes.Users.LOCK)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<Void> lock(@PathVariable Long id, Authentication authentication) {
         userService.lockUser(id, authentication.getName());
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(ApiRoutes.Users.USER_ID + "/unlock")
+    @PostMapping(ApiRoutes.Users.UNLOCK)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<Void> unlock(@PathVariable Long id, Authentication authentication) {
         userService.unlockUser(id, authentication.getName());
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping(ApiRoutes.Users.USER_ID + "/role")
+    @PutMapping(ApiRoutes.Users.ROLE)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<UserResponse> updateRole(
             @PathVariable Long id,

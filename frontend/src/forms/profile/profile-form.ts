@@ -1,8 +1,31 @@
-import type {CustomerProfile, ProfileErrors, ProfileFields} from '@/types/profile/profile.types';
+import type {
+    BillingProfile,
+    BillingProfileFields,
+    CustomerProfile,
+    ProfileErrors,
+    ProfileFields,
+} from '@/types/profile/profile.types';
 import type {Translate} from '@/types';
 import {translateMessage} from '@/lib/format';
 
-export type {CustomerProfile, ProfileErrors, ProfileFields, Translate};
+export type {BillingProfile, BillingProfileFields, CustomerProfile, ProfileErrors, ProfileFields, Translate};
+
+export const BILLING_PROFILE_FIELD_KEYS: (keyof BillingProfileFields)[] = [
+    'organizationName',
+    'taxCode',
+    'billingAddress',
+    'emergencyContactName',
+    'emergencyContactPhone',
+];
+
+export interface PasswordChangeDraft {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
+export type PasswordChangeFieldErrors = Partial<Record<keyof PasswordChangeDraft, string>>;
+export type BillingProfileFieldErrors = Partial<Record<keyof BillingProfileFields, string>>;
 
 // Without a translator the Vietnamese default is returned, which keeps these helpers usable outside React.
 const message = (t: Translate | undefined, key: string, fallback: string) =>
@@ -43,4 +66,44 @@ export function profileError(error: unknown, t?: Translate): { kind: 'fields' | 
         message: message(t, 'uncertain', 'Chưa xác nhận được kết quả lưu. Nội dung đang nhập vẫn được giữ lại; hãy kiểm tra bản mới nhất khi kết nối ổn định.')
     };
     return {kind: 'other', message: message(t, 'other', 'Không thể lưu hồ sơ. Vui lòng kiểm tra họ tên và số điện thoại rồi thử lại.')};
+}
+
+export function billingProfileDraftFromDetail(profile: BillingProfile): BillingProfileFields {
+    return Object.fromEntries(BILLING_PROFILE_FIELD_KEYS.map(key => [key, profile[key] ?? ''])) as BillingProfileFields;
+}
+
+export function toBillingProfilePayload(
+    draft: BillingProfileFields,
+    version: number,
+): { fields: BillingProfileFields; version: number } {
+    return {
+        fields: Object.fromEntries(BILLING_PROFILE_FIELD_KEYS.map(key => [key, draft[key].trim()])) as BillingProfileFields,
+        version,
+    };
+}
+
+export function billingProfileFieldErrors(error: unknown): BillingProfileFieldErrors | null {
+    const fields = (error as { fields?: Record<string, string> } | null)?.fields;
+    return fields && Object.keys(fields).length ? (fields as BillingProfileFieldErrors) : null;
+}
+
+export function emptyPasswordChangeDraft(): PasswordChangeDraft {
+    return {currentPassword: '', newPassword: '', confirmPassword: ''};
+}
+
+export function canSubmitPasswordChange(draft: PasswordChangeDraft): boolean {
+    return Boolean(draft.currentPassword && draft.newPassword && draft.confirmPassword);
+}
+
+export function toPasswordChangePayload(draft: PasswordChangeDraft): { current: string; next: string; confirm: string } {
+    return {
+        current: draft.currentPassword,
+        next: draft.newPassword,
+        confirm: draft.confirmPassword,
+    };
+}
+
+export function passwordChangeFieldErrors(error: unknown): PasswordChangeFieldErrors | null {
+    const fields = (error as { fields?: Record<string, string> } | null)?.fields;
+    return fields && Object.keys(fields).length ? (fields as PasswordChangeFieldErrors) : null;
 }

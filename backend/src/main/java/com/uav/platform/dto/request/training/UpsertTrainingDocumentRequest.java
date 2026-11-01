@@ -1,7 +1,9 @@
 package com.uav.platform.dto.request.training;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import lombok.Builder;
 
@@ -9,18 +11,18 @@ import java.util.List;
 
 @Builder
 public record UpsertTrainingDocumentRequest(
-        @NotBlank(message = "Document code is required") String code,
-        @NotBlank(message = "Target portal is required") String targetPortal,
-        @NotBlank(message = "Category is required") String category,
-        @NotBlank(message = "Level is required") String level,
-        String versionTag,
-        @NotNull(message = "Estimated minutes is required") Integer estimatedMinutes,
+        @NotBlank @Size(max = 40) String code,
+        @NotBlank @Size(max = 20) String targetPortal,
+        @NotBlank @Size(max = 40) String category,
+        @NotBlank @Size(max = 25) String level,
+        @Size(max = 25) String versionTag,
+        @NotNull @Min(1) Integer estimatedMinutes,
         Boolean isMandatory,
         Integer sortOrder,
         Boolean active,
-        @NotBlank(message = "Title is required") String title,
-        @NotBlank(message = "Summary is required") String summary,
-        @NotBlank(message = "Markdown content is required") String contentMarkdown,
+        @NotBlank @Size(max = 220) String title,
+        @NotBlank @Size(max = 500) String summary,
+        @NotBlank String contentMarkdown,
         List<String> checklistSteps) {
 
     public String getCode() {

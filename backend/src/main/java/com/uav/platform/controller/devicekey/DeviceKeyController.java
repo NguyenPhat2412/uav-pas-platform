@@ -41,7 +41,7 @@ public class DeviceKeyController {
                 .body(deviceKeys.create(request, auth.getName()));
     }
 
-    @PostMapping("/{id}/revoke")
+    @PostMapping(ApiRoutes.Admin.DEVICE_KEYS_REVOKE)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<DeviceKeyResponse> revoke(@PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(deviceKeys.revoke(id, auth.getName()));

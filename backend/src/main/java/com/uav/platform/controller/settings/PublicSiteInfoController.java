@@ -21,7 +21,7 @@ import java.time.Duration;
 public class PublicSiteInfoController {
     private final SystemConfigService configService;
 
-    @GetMapping("/site-info")
+    @GetMapping(ApiRoutes.Public.SITE_INFO)
     public ResponseEntity<PublicSiteInfoResponse> siteInfo() {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(Duration.ofSeconds(60)).cachePublic())

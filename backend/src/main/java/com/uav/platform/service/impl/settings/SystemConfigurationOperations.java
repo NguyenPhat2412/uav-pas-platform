@@ -146,13 +146,15 @@ public final class SystemConfigurationOperations {
 
     /** Validates a candidate value against the setting's declared type; returns the stored form. */
     public static String validate(SystemConfiguration c, String raw) {
-        if (raw == null) throw invalid("Setting value is required", "SETTING_VALUE_REQUIRED");
+        if (raw == null) throw invalid("Vui lòng nhập giá trị cấu hình.", "SETTING_VALUE_REQUIRED");
         String value = raw.trim();
         if (value.length() > MAX_VALUE_LENGTH)
-            throw invalid("Setting value is too long", "SETTING_VALUE_TOO_LONG");
+            throw invalid(
+                    "Giá trị cấu hình không được vượt quá " + MAX_VALUE_LENGTH + " ký tự.",
+                    "SETTING_VALUE_TOO_LONG");
         if (value.isEmpty()) {
             if (emptyAllowed(c)) return value;
-            throw invalid("Setting value is required", "SETTING_VALUE_REQUIRED");
+            throw invalid("Vui lòng nhập giá trị cấu hình.", "SETTING_VALUE_REQUIRED");
         }
         switch (typeOf(c)) {
             case INTEGER -> {
@@ -163,7 +165,8 @@ public final class SystemConfigurationOperations {
                         throw new NumberFormatException();
                 } catch (NumberFormatException ex) {
                     throw invalid(
-                            "Setting value must be a whole number", "SETTING_INVALID_INTEGER");
+                            "Giá trị phải là số nguyên (không có phần thập phân).",
+                            "SETTING_INVALID_INTEGER");
                 }
                 checkRange(c, number);
             }
@@ -175,28 +178,32 @@ public final class SystemConfigurationOperations {
                     number = new BigDecimal(value);
                 } catch (NumberFormatException ex) {
                     throw invalid(
-                            "Setting value must be a decimal number", "SETTING_INVALID_DECIMAL");
+                            "Giá trị phải là số hợp lệ (dùng dấu chấm cho phần thập phân).",
+                            "SETTING_INVALID_DECIMAL");
                 }
                 checkRange(c, number);
             }
             case BOOLEAN -> {
                 if (!BOOLEANS.contains(value))
-                    throw invalid("Setting value must be true or false", "SETTING_INVALID_BOOLEAN");
+                    throw invalid(
+                            "Giá trị bật/tắt phải là true hoặc false.", "SETTING_INVALID_BOOLEAN");
             }
             case ENUM -> {
                 if (!allowedValues(c).contains(value))
                     throw invalid(
-                            "Setting value is not an allowed choice", "SETTING_INVALID_CHOICE");
+                            "Giá trị không nằm trong danh sách cho phép.",
+                            "SETTING_INVALID_CHOICE");
             }
             case PHONE -> {
                 long digits = value.chars().filter(Character::isDigit).count();
                 if (!PHONE.matcher(value).matches() || digits < 3 || digits > 15)
-                    throw invalid("Setting value must be a phone number", "SETTING_INVALID_PHONE");
+                    throw invalid(
+                            "Số điện thoại không đúng định dạng (3–15 chữ số).",
+                            "SETTING_INVALID_PHONE");
             }
             case EMAIL -> {
                 if (!EMAIL.matcher(value).matches() || value.contains(".."))
-                    throw invalid(
-                            "Setting value must be an email address", "SETTING_INVALID_EMAIL");
+                    throw invalid("Địa chỉ email không đúng định dạng.", "SETTING_INVALID_EMAIL");
             }
             case URL -> {
                 try {
@@ -207,7 +214,9 @@ public final class SystemConfigurationOperations {
                                     || scheme.equalsIgnoreCase("http"))
                             || uri.getHost() == null) throw new IllegalArgumentException();
                 } catch (Exception ex) {
-                    throw invalid("Setting value must be an http(s) URL", "SETTING_INVALID_URL");
+                    throw invalid(
+                            "Địa chỉ URL phải bắt đầu bằng http:// hoặc https://.",
+                            "SETTING_INVALID_URL");
                 }
             }
             case STRING -> {
@@ -215,8 +224,7 @@ public final class SystemConfigurationOperations {
                 BigDecimal min = minOf(c), max = maxOf(c);
                 if ((min != null && length.compareTo(min) < 0)
                         || (max != null && length.compareTo(max) > 0))
-                    throw invalid(
-                            "Setting value length is out of range", "SETTING_LENGTH_OUT_OF_RANGE");
+                    throw invalid(lengthRangeMessage(min, max), "SETTING_LENGTH_OUT_OF_RANGE");
                 String pattern = patternOf(c);
                 if (pattern != null && !pattern.isBlank()) {
                     boolean matches;
@@ -227,7 +235,7 @@ public final class SystemConfigurationOperations {
                     }
                     if (!matches)
                         throw invalid(
-                                "Setting value has an invalid format", "SETTING_INVALID_FORMAT");
+                                "Giá trị không khớp định dạng yêu cầu.", "SETTING_INVALID_FORMAT");
                 }
             }
         }
@@ -238,7 +246,27 @@ public final class SystemConfigurationOperations {
         BigDecimal min = minOf(c), max = maxOf(c);
         if ((min != null && number.compareTo(min) < 0)
                 || (max != null && number.compareTo(max) > 0))
-            throw invalid("Setting value is out of range", "SETTING_OUT_OF_RANGE");
+            throw invalid(numericRangeMessage(min, max), "SETTING_OUT_OF_RANGE");
+    }
+
+    private static String numericRangeMessage(BigDecimal min, BigDecimal max) {
+        if (min != null && max != null) {
+            return "Giá trị phải nằm trong khoảng từ " + plain(min) + " đến " + plain(max) + ".";
+        }
+        if (min != null) return "Giá trị tối thiểu là " + plain(min) + ".";
+        return "Giá trị tối đa là " + plain(max) + ".";
+    }
+
+    private static String lengthRangeMessage(BigDecimal min, BigDecimal max) {
+        if (min != null && max != null) {
+            return "Độ dài phải từ " + plain(min) + " đến " + plain(max) + " ký tự.";
+        }
+        if (min != null) return "Độ dài tối thiểu " + plain(min) + " ký tự.";
+        return "Độ dài không được vượt quá " + plain(max) + " ký tự.";
+    }
+
+    private static String plain(BigDecimal value) {
+        return value.stripTrailingZeros().toPlainString();
     }
 
     private static SystemException invalid(String message, String code) {

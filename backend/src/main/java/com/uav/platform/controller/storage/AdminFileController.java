@@ -47,20 +47,20 @@ public class AdminFileController {
                 files.list(new AdminFileQueryRequest(module, type, status, q), page, size, sort));
     }
 
-    @GetMapping("/summary")
+    @GetMapping(ApiRoutes.Admin.FILES_SUMMARY)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<AdminFileSummaryResponse> summary() {
         return ResponseEntity.ok(files.summary());
     }
 
-    @GetMapping("/{id}/download")
+    @GetMapping(ApiRoutes.Admin.FILES_DOWNLOAD)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<AdminFileDownloadResponse> download(
             @PathVariable String id, Authentication authentication) {
         return ResponseEntity.ok(files.downloadUrl(id, authentication.getName()));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(ApiRoutes.Admin.FILES_BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<Void> delete(@PathVariable String id, Authentication authentication) {
         files.delete(id, authentication.getName());

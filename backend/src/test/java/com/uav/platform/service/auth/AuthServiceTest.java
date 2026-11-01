@@ -53,9 +53,9 @@ class AuthServiceTest {
     @Test
     void register_Success() {
         RegisterRequest request =
-                new RegisterRequest("johndoe", "john@example.com", "P@ssword123", "0987654321");
+                new RegisterRequest("johndoe", "john@gmail.com", "P@ssword123", "0987654321");
 
-        when(userRepository.existsByEmailIgnoreCase("john@example.com")).thenReturn(false);
+        when(userRepository.existsByEmailIgnoreCase("john@gmail.com")).thenReturn(false);
         when(userRepository.existsByUsernameIgnoreCase("johndoe")).thenReturn(false);
         when(userRepository.existsByPhoneNumber("0987654321")).thenReturn(false);
         when(passwordEncoder.encode("P@ssword123")).thenReturn("hashedPassword");
@@ -63,7 +63,7 @@ class AuthServiceTest {
         AppUser savedUser =
                 new AppUser(
                         "johndoe",
-                        "john@example.com",
+                        "john@gmail.com",
                         "hashedPassword",
                         "0987654321",
                         UserStatus.ACTIVE);
@@ -73,7 +73,7 @@ class AuthServiceTest {
 
         assertNotNull(response);
         assertEquals("johndoe", response.username());
-        assertEquals("john@example.com", response.email());
+        assertEquals("john@gmail.com", response.email());
         assertEquals("0987654321", response.phoneNumber());
         assertEquals(UserStatus.ACTIVE, response.status());
 
@@ -83,8 +83,8 @@ class AuthServiceTest {
     @Test
     void register_DuplicateEmail_ThrowsConflict() {
         RegisterRequest request =
-                new RegisterRequest("johndoe", "john@example.com", "P@ssword123", "0987654321");
-        when(userRepository.existsByEmailIgnoreCase("john@example.com")).thenReturn(true);
+                new RegisterRequest("johndoe", "john@gmail.com", "P@ssword123", "0987654321");
+        when(userRepository.existsByEmailIgnoreCase("john@gmail.com")).thenReturn(true);
 
         SystemException ex =
                 assertThrows(SystemException.class, () -> authService.register(request));
@@ -95,8 +95,8 @@ class AuthServiceTest {
     @Test
     void register_DuplicateUsername_ThrowsConflict() {
         RegisterRequest request =
-                new RegisterRequest("johndoe", "john@example.com", "P@ssword123", "0987654321");
-        when(userRepository.existsByEmailIgnoreCase("john@example.com")).thenReturn(false);
+                new RegisterRequest("johndoe", "john@gmail.com", "P@ssword123", "0987654321");
+        when(userRepository.existsByEmailIgnoreCase("john@gmail.com")).thenReturn(false);
         when(userRepository.existsByUsernameIgnoreCase("johndoe")).thenReturn(true);
 
         SystemException ex =
@@ -108,8 +108,8 @@ class AuthServiceTest {
     @Test
     void register_DuplicatePhoneNumber_ThrowsConflict() {
         RegisterRequest request =
-                new RegisterRequest("johndoe", "john@example.com", "P@ssword123", "0987654321");
-        when(userRepository.existsByEmailIgnoreCase("john@example.com")).thenReturn(false);
+                new RegisterRequest("johndoe", "john@gmail.com", "P@ssword123", "0987654321");
+        when(userRepository.existsByEmailIgnoreCase("john@gmail.com")).thenReturn(false);
         when(userRepository.existsByUsernameIgnoreCase("johndoe")).thenReturn(false);
         when(userRepository.existsByPhoneNumber("0987654321")).thenReturn(true);
 
@@ -367,7 +367,25 @@ class AuthServiceTest {
         UserResponse response =
                 authService.register(
                         new RegisterRequest(
-                                "newpilot", "new@example.com", "P@ssword123", "0987654321"));
+                                "newpilot", "new@gmail.com", "P@ssword123", "0987654321"));
         assertFalse(response.emailVerified());
+    }
+
+    @Test
+    void register_BlockedExampleDomain_ThrowsBadRequest() {
+        SystemException ex =
+                assertThrows(
+                        SystemException.class,
+                        () ->
+                                authService.register(
+                                        new RegisterRequest(
+                                                "wxtest",
+                                                "wxtest@example.invalid",
+                                                "P@ssword123",
+                                                "0987654321")));
+        assertEquals(400, ex.getStatus().value());
+        assertEquals("REGISTER_EMAIL_DOMAIN_BLOCKED", ex.getCode());
+        assertEquals("email", ex.getField());
+        verify(userRepository, never()).save(any(AppUser.class));
     }
 }

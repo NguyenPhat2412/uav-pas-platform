@@ -8,7 +8,7 @@ import {QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
-import type {AdminPaymentTransaction, TransactionFilters} from '@/api/billing/billing-admin.api';
+import type {AdminPaymentTransaction, TransactionFilters} from '@/types/billing/billing-admin.types';
 import {useBillingTransactions} from '@/hooks/billing/useBillingAdmin';
 
 const statuses = ['SUCCESS', 'PENDING', 'FAILED'] as const;

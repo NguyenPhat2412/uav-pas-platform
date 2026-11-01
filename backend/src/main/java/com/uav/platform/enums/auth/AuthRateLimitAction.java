@@ -6,11 +6,11 @@ package com.uav.platform.enums.auth;
  */
 public enum AuthRateLimitAction {
     /** Password check; may also email a 2FA code. */
-    LOGIN(10, 40),
-    /** Anything that emails a code: register-otp, resend-otp, forgot-password. */
-    OTP_ISSUE(5, 20),
+    LOGIN(8, 25),
+    /** Anything that emails a code: register-otp, login email challenge, resend-otp, forgot-password, 2fa/setup. */
+    OTP_ISSUE(3, 8),
     /** Anything that checks a code: verify-email, verify-2fa, reset-password. */
-    OTP_VERIFY(10, 40);
+    OTP_VERIFY(10, 30);
 
     private final int perAccount;
     private final int perClient;

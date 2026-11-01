@@ -1,7 +1,6 @@
 import type {
     ButtonHTMLAttributes,
     HTMLAttributes,
-    ImgHTMLAttributes,
     InputHTMLAttributes,
     ReactNode,
     SelectHTMLAttributes,
@@ -149,9 +148,11 @@ export interface TableFilter {
     options: { value: string; label: string }[];
 }
 
-export interface VjuLogoProps extends ImgHTMLAttributes<HTMLImageElement> {
+/** The static VJU logo (next/image); a fixed square, so only its size, class and text alternative vary. */
+export interface VjuLogoProps {
     size?: number;
     className?: string;
+    alt?: string;
 }
 
 export type AdminNavGroup =

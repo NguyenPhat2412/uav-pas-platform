@@ -21,6 +21,7 @@ import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.auth.AuthRateLimitService;
 import com.uav.platform.service.auth.AuthService;
+import com.uav.platform.service.auth.EmailDomainPolicyService;
 import com.uav.platform.service.auth.GoogleIdTokenService;
 import com.uav.platform.service.auth.InvalidatedTokenService;
 import com.uav.platform.service.auth.RefreshTokenService;
@@ -54,6 +55,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private com.uav.platform.service.auth.AuthOtpService authOtpService;
     private AuthRateLimitService rateLimiter;
+    private EmailDomainPolicyService emailDomainPolicy;
     private GoogleIdTokenService googleVerifier;
     private TransactionTemplate transactionTemplate;
 
@@ -65,6 +67,11 @@ public class AuthServiceImpl implements AuthService {
     @Autowired(required = false)
     public void setRateLimiter(AuthRateLimitService rateLimiter) {
         this.rateLimiter = rateLimiter;
+    }
+
+    @Autowired(required = false)
+    public void setEmailDomainPolicy(EmailDomainPolicyService emailDomainPolicy) {
+        this.emailDomainPolicy = emailDomainPolicy;
     }
 
     @Autowired(required = false)
@@ -118,6 +125,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserResponse register(RegisterRequest request) {
         RegistrationInput in = RegistrationOperations.normalize(request);
+        if (emailDomainPolicy != null) {
+            emailDomainPolicy.validateForAuth(in.email());
+        }
+        if (rateLimiter != null) {
+            rateLimiter.checkAccount(AuthRateLimitAction.OTP_ISSUE, in.email());
+        }
         if (userRepository.existsByEmailIgnoreCase(in.email()))
             throw SystemException.conflict(
                             RegistrationOperations.TAKEN_EMAIL, "REGISTER_EMAIL_TAKEN")

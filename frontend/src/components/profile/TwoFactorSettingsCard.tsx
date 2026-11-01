@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-img-element -- the QR code is a generated data: URI; there is nothing for next/image to optimise. */
 
 import React, {type FormEvent, useEffect, useState} from 'react';
 import QRCode from 'qrcode';
@@ -6,6 +7,7 @@ import {Copy, Mail, QrCode, ShieldAlert, ShieldCheck, Smartphone} from 'lucide-r
 import {useAuth} from '@/providers/AuthContext';
 import {toast} from '@/providers/ToastContext';
 import {useDisableTwoFactor, useEnableTwoFactor, useTwoFactorSetup, useTwoFactorStatus} from '@/hooks/profile/useProfile';
+import {canSubmitDisableTwoFactor, toEnableTwoFactorPayload} from '@/forms/auth/auth-form';
 import type {TwoFactorMethod, TwoFactorSetupResponse} from '@/types/auth/auth.types';
 import {OtpCodeInput} from '@/components/auth/OtpCodeInput';
 
@@ -15,30 +17,34 @@ export function TwoFactorSettingsCard() {
 
     const [selectedMethod, setSelectedMethod] = useState<TwoFactorMethod>('EMAIL');
     const [setupState, setSetupState] = useState<TwoFactorSetupResponse | null>(null);
-    const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+    // The QR image belongs to one otpauth URI; a different (or no) setup shows none until its image is drawn.
+    const [qr, setQr] = useState<{ uri: string; url: string } | null>(null);
+    const qrDataUrl = qr && qr.uri === setupState?.otpauthUri ? qr.url : null;
     const [code, setCode] = useState('');
     const [disablePassword, setDisablePassword] = useState('');
     const [showDisableConfirm, setShowDisableConfirm] = useState(false);
 
-    useEffect(() => {
-        if (statusQuery.data?.method) {
-            setSelectedMethod(statusQuery.data.method);
-        }
-    }, [statusQuery.data?.method]);
+    // Follow the account's saved method whenever the server reports a different one (adjusted while rendering).
+    const serverMethod = statusQuery.data?.method;
+    const [followedMethod, setFollowedMethod] = useState(serverMethod);
+    if (serverMethod && serverMethod !== followedMethod) {
+        setFollowedMethod(serverMethod);
+        setSelectedMethod(serverMethod);
+    }
 
     useEffect(() => {
+        const uri = setupState?.otpauthUri;
+        if (!uri) return;
         let active = true;
-        if (setupState?.otpauthUri) {
-            void QRCode.toDataURL(setupState.otpauthUri, {
-                width: 176,
-                margin: 1,
-                color: {dark: '#0f172a', light: '#ffffff'},
-            }).then((url) => {
-                if (active) setQrDataUrl(url);
-            });
-        } else {
-            setQrDataUrl(null);
-        }
+        QRCode.toDataURL(uri, {
+            width: 176,
+            margin: 1,
+            color: {dark: '#0f172a', light: '#ffffff'},
+        }).then(url => {
+            if (active) setQr({uri, url});
+        }).catch(() => {
+            // No image: the manual secret shown beside it still sets up the authenticator app.
+        });
         return () => {
             active = false;
         };
@@ -85,11 +91,7 @@ export function TwoFactorSettingsCard() {
 
     const handleEnableSubmit = (e: FormEvent) => {
         e.preventDefault();
-        enableMutation.mutate({
-            method: setupState?.method ?? selectedMethod,
-            challengeToken: setupState?.challengeToken,
-            code: code.trim(),
-        });
+        enableMutation.mutate(toEnableTwoFactorPayload(setupState?.method ?? selectedMethod, setupState?.challengeToken, code));
     };
 
     const status = statusQuery.data;
@@ -294,9 +296,10 @@ export function TwoFactorSettingsCard() {
                         {/* Disable Confirmation */}
                         {showDisableConfirm && (
                             <form
+                                noValidate
                                 onSubmit={(e) => {
                                     e.preventDefault();
-                                    if (disablePassword && !disableMutation.isPending) disableMutation.mutate(disablePassword);
+                                    if (canSubmitDisableTwoFactor(disablePassword) && !disableMutation.isPending) disableMutation.mutate(disablePassword);
                                 }}
                                 className="space-y-3 rounded-control border border-amber-200 bg-amber-50/70 p-4"
                             >
@@ -327,7 +330,7 @@ export function TwoFactorSettingsCard() {
                                     </button>
                                     <button
                                         type="submit"
-                                        disabled={disableMutation.isPending || !disablePassword}
+                                        disabled={disableMutation.isPending || !canSubmitDisableTwoFactor(disablePassword)}
                                         className="h-9 rounded-control bg-primary px-3.5 text-xs font-bold text-white hover:bg-primary-hover disabled:opacity-50"
                                     >
                                         {disableMutation.isPending ? 'Đang xử lý...' : 'Xác nhận tắt'}

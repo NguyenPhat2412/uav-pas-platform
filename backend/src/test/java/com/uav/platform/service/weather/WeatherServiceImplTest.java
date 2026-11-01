@@ -1,6 +1,7 @@
 package com.uav.platform.service.weather;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -246,6 +247,112 @@ class WeatherServiceImplTest {
         assertTrue(result.fromCache());
         assertEquals(1.0, result.kpIndex());
         assertEquals(0, calls.get());
+    }
+
+    @Test
+    void otherHoursOfTheSameCellReuseTheFetchedSeries() {
+        WeatherServiceImpl weather = service(true);
+        WeatherAssessmentResponse first =
+                weather.assess(21.0285, 105.8542, LocalDateTime.of(2026, 10, 31, 10, 0), null);
+        int afterFirst = calls.get(); // Open-Meteo + NOAA
+        WeatherAssessmentResponse later =
+                weather.assess(21.0285, 105.8542, LocalDateTime.of(2026, 10, 31, 13, 0), null);
+        assertEquals(afterFirst, calls.get(), "the second hour comes from the cached series");
+        assertNotEquals(FlightClearanceLevel.UNAVAILABLE, first.clearance());
+        assertNotEquals(FlightClearanceLevel.UNAVAILABLE, later.clearance());
+        assertNotEquals(first.evaluatedTime(), later.evaluatedTime());
+    }
+
+    @Test
+    void theKpFeedIsReadOnceAndItsCopyCoversAnOutage() {
+        WeatherServiceImpl weather = service(true);
+        weather.assess(21.0285, 105.8542, null, null);
+        int afterFirst = calls.get();
+        responses.put("services.swpc.noaa.gov", new IOException("noaa down"));
+        // Another cell: one Open-Meteo call, no NOAA call, and Kp still known from the cached feed.
+        WeatherAssessmentResponse other = weather.assess(16.0544, 108.2022, null, null);
+        assertEquals(afterFirst + 1, calls.get());
+        assertEquals(2.33, other.kpIndex());
+    }
+
+    @Test
+    void anHourOutsideTheSeriesSlicesToNothing() {
+        List<HourlyWeatherSlot> series =
+                List.of(
+                        new HourlyWeatherSlot(
+                                "2026-10-31T08:00",
+                                25.0,
+                                70,
+                                3.0,
+                                4.0,
+                                4.5,
+                                6.0,
+                                90,
+                                10000.0,
+                                0.0,
+                                5,
+                                20,
+                                0));
+        assertEquals(1, WeatherServiceImpl.slice(series, "2026-10-31T08:00").size());
+        assertTrue(WeatherServiceImpl.slice(series, "2026-11-20T08:00").isEmpty());
+    }
+
+    @Test
+    void aRateLimitedSourceIsRetriedAndThenAnswers() throws Exception {
+        String body = (String) responses.get("api.open-meteo.com");
+        AtomicInteger openMeteoCalls = new AtomicInteger();
+        when(http.send(any(HttpRequest.class), any()))
+                .thenAnswer(
+                        call -> {
+                            HttpRequest request = call.getArgument(0);
+                            @SuppressWarnings("unchecked")
+                            HttpResponse<String> response = mock(HttpResponse.class);
+                            boolean meteo = request.uri().getHost().equals("api.open-meteo.com");
+                            if (meteo && openMeteoCalls.incrementAndGet() == 1) {
+                                when(response.statusCode()).thenReturn(429);
+                                return response;
+                            }
+                            when(response.statusCode()).thenReturn(200);
+                            when(response.body())
+                                    .thenReturn(
+                                            meteo
+                                                    ? body
+                                                    : (String)
+                                                            responses.get(request.uri().getHost()));
+                            return response;
+                        });
+        WeatherAssessmentResponse result = service(true).assess(21.0285, 105.8542, null, null);
+        assertEquals(2, openMeteoCalls.get());
+        assertNotEquals(FlightClearanceLevel.UNAVAILABLE, result.clearance());
+    }
+
+    @Test
+    void aSourceThatStaysRateLimitedGivesUpAfterThreeTries() throws Exception {
+        responses.put("api.open-meteo.com", 429);
+        WeatherAssessmentResponse result = service(true).assess(21.0285, 105.8542, null, null);
+        assertEquals(FlightClearanceLevel.UNAVAILABLE, result.clearance());
+        // three Open-Meteo attempts; the NOAA feed is not asked once the forecast failed
+        assertEquals(3, calls.get());
+    }
+
+    @Test
+    void retryAfterIsHonouredButCapped() {
+        @SuppressWarnings("unchecked")
+        HttpResponse<String> response = mock(HttpResponse.class);
+        when(response.headers())
+                .thenReturn(
+                        java.net.http.HttpHeaders.of(
+                                java.util.Map.of("Retry-After", java.util.List.of("1")),
+                                (k, v) -> true));
+        assertEquals(java.time.Duration.ofSeconds(1), WeatherServiceImpl.retryDelay(response, 1));
+        when(response.headers())
+                .thenReturn(
+                        java.net.http.HttpHeaders.of(
+                                java.util.Map.of("Retry-After", java.util.List.of("30")),
+                                (k, v) -> true));
+        assertEquals(java.time.Duration.ofSeconds(2), WeatherServiceImpl.retryDelay(response, 1));
+        when(response.headers()).thenReturn(null);
+        assertEquals(java.time.Duration.ofMillis(800), WeatherServiceImpl.retryDelay(response, 2));
     }
 
     @Test

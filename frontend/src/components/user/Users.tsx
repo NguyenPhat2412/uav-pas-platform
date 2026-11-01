@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element -- avatars use signed storage URLs, which next/image cannot optimise without remote patterns. */
 "use client";
 import Link from 'next/link';
 import {auditDetail, displayLabel, formatDate} from "@/lib/presentation";
@@ -5,6 +6,15 @@ import {useState, type FormEvent} from 'react';
 import {Download, Lock, LockOpen, Search, UserPlus, X} from 'lucide-react';
 import {useAdminAudit} from '@/hooks/audit/useAdminAudit';
 import {useAdminMutations, useAdminUser, useAdminUserCounts, useAdminUsers, userStatuses} from '@/hooks/user/useAdminUsers';
+import {
+    adminUserFieldErrors,
+    canSubmitAdminCreateUser,
+    canSubmitAdminPasswordReset,
+    emptyAdminCreateUserDraft,
+    toAdminCreateUserPayload,
+    toAdminPasswordResetPayload,
+    type AdminCreateUserDraft,
+} from '@/forms/user/user-form';
 import {roles, type User, type UserRole, type UserStatus} from "@/types/admin";
 import {useAuth} from '@/providers/AuthContext';
 import {EmptyState, ErrorNotice, PermissionGate, QueryState} from "@/components/data/WorkspaceState";
@@ -184,51 +194,50 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
     </div>;
 }
 
-const emptyForm = {username: '', fullName: '', email: '', phoneNumber: '', password: '', confirm: '', role: 'ROLE_PILOT' as UserRole};
-
 function CreateUserDialog({onClose, onCreated}: { onClose: () => void; onCreated: (name: string) => void }) {
     const {t} = useI18n();
     const {create} = useAdminMutations();
-    const [form, setForm] = useState(emptyForm);
-    const [error, setError] = useState('');
-    const set = (field: keyof typeof emptyForm) => (e: { target: { value: string } }) => setForm(f => ({...f, [field]: e.target.value}));
+    const [form, setForm] = useState<AdminCreateUserDraft>(emptyAdminCreateUserDraft);
+    const fieldErrors = adminUserFieldErrors(create.error);
+    const set = (field: keyof AdminCreateUserDraft) => (e: { target: { value: string } }) => setForm(f => ({...f, [field]: e.target.value}));
     const submit = async (e: FormEvent) => {
         e.preventDefault();
-        setError('');
         try {
-            const created = await create.mutateAsync({
-                username: form.username.trim(), fullName: form.fullName.trim() || undefined, email: form.email.trim(),
-                phoneNumber: form.phoneNumber.trim(), password: form.password, confirmPassword: form.confirm, role: form.role
-            });
+            const created = await create.mutateAsync(toAdminCreateUserPayload(form));
             onCreated(created.username);
         } catch {/* The mutation error is shown in the dialog. */
         }
     };
-    const inputClass = "min-h-[44px] w-full rounded-control border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground";
+    const inputClass = "min-h-[44px] w-full rounded-control border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground aria-[invalid=true]:border-danger";
     return <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-900/45 p-4" role="presentation" onMouseDown={e => e.target === e.currentTarget && onClose()}>
-        <form className="flex max-h-[calc(100dvh-32px)] w-[min(640px,100%)] flex-col gap-3.5 overflow-y-auto rounded-overlay bg-card px-[22px] py-5 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="create-user-title"
+        <form noValidate className="flex max-h-[calc(100dvh-32px)] w-[min(640px,100%)] flex-col gap-3.5 overflow-y-auto rounded-overlay bg-card px-[22px] py-5 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="create-user-title"
               onSubmit={e => void submit(e)} onKeyDown={e => e.key === 'Escape' && onClose()}>
             <header className="flex items-center justify-between gap-2.5"><h2 id="create-user-title" className="text-[17px] font-bold text-foreground">{t('admin.users.create.title')}</h2>
                 <button type="button" className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-control border border-border bg-card text-muted transition-colors hover:border-primary hover:bg-uav-red-light hover:text-primary" aria-label={t('admin.users.create.cancel')} onClick={onClose}><X size={18}/></button></header>
             <div className="grid grid-cols-1 gap-x-3.5 gap-y-3 sm:grid-cols-2">
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.username')}<RequiredMark/></span><input className={inputClass} aria-required autoFocus
-                                                                                      value={form.username} onChange={set('username')} autoComplete="off"/></label>
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.fullName')}<OptionalMark/></span><input className={inputClass} value={form.fullName} onChange={set('fullName')}/></label>
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.email')}<RequiredMark/></span><input className={inputClass} aria-required type="email" value={form.email} onChange={set('email')}/></label>
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.phone')}<RequiredMark/></span><input className={inputClass} aria-required type="tel" value={form.phoneNumber} onChange={set('phoneNumber')}/></label>
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.username')}<RequiredMark/></span><input className={inputClass} aria-required aria-invalid={Boolean(fieldErrors?.username)} autoFocus
+                                                                                      value={form.username} onChange={set('username')} autoComplete="off"/>
+                    {fieldErrors?.username && <span className="text-xs font-normal text-danger">{fieldErrors.username}</span>}</label>
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.fullName')}<OptionalMark/></span><input className={inputClass} aria-invalid={Boolean(fieldErrors?.fullName)} value={form.fullName} onChange={set('fullName')}/>
+                    {fieldErrors?.fullName && <span className="text-xs font-normal text-danger">{fieldErrors.fullName}</span>}</label>
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.email')}<RequiredMark/></span><input className={inputClass} aria-required aria-invalid={Boolean(fieldErrors?.email)} type="email" value={form.email} onChange={set('email')}/>
+                    {fieldErrors?.email && <span className="text-xs font-normal text-danger">{fieldErrors.email}</span>}</label>
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.phone')}<RequiredMark/></span><input className={inputClass} aria-required aria-invalid={Boolean(fieldErrors?.phoneNumber)} type="tel" value={form.phoneNumber} onChange={set('phoneNumber')}/>
+                    {fieldErrors?.phoneNumber && <span className="text-xs font-normal text-danger">{fieldErrors.phoneNumber}</span>}</label>
                 <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.field.role')}<RequiredMark/></span><select className={inputClass} value={form.role} onChange={set('role')}>{roles.map(r =>
                     <option key={r} value={r}>{displayLabel(r)}</option>)}</select></label>
                 <span/>
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.create.password')}<RequiredMark/></span><input className={inputClass} aria-required type="password"
-                                                                                       autoComplete="new-password" value={form.password} onChange={set('password')}/></label>
-                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.create.confirm')}<RequiredMark/></span><input className={inputClass} aria-required type="password"
-                                                                                      autoComplete="new-password" value={form.confirm} onChange={set('confirm')}/></label>
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.create.password')}<RequiredMark/></span><input className={inputClass} aria-required aria-invalid={Boolean(fieldErrors?.password)} type="password"
+                                                                                       autoComplete="new-password" value={form.password} onChange={set('password')}/>
+                    {fieldErrors?.password && <span className="text-xs font-normal text-danger">{fieldErrors.password}</span>}</label>
+                <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.create.confirm')}<RequiredMark/></span><input className={inputClass} aria-required aria-invalid={Boolean(fieldErrors?.confirmPassword)} type="password"
+                                                                                      autoComplete="new-password" value={form.confirmPassword} onChange={set('confirmPassword')}/>
+                    {fieldErrors?.confirmPassword && <span className="text-xs font-normal text-danger">{fieldErrors.confirmPassword}</span>}</label>
             </div>
             <p className="text-xs text-slate-500">{t('admin.users.create.hint')}</p>
-            {error && <Alert variant="error">{error}</Alert>}
-            <ErrorNotice error={create.error}/>
+            {create.error && !fieldErrors && <ErrorNotice error={create.error}/>}
             <footer className="flex items-center justify-end gap-2.5"><Button type="button" variant="outline" onClick={onClose}>{t('admin.users.create.cancel')}</Button>
-                <Button type="submit" disabled={create.isPending}>{t('admin.users.create.submit')}</Button></footer>
+                <Button type="submit" disabled={create.isPending || !canSubmitAdminCreateUser(form)}>{t('admin.users.create.submit')}</Button></footer>
         </form>
     </div>;
 }
@@ -292,10 +301,11 @@ function PasswordReset({user}: { user: User }) {
     const [done, setDone] = useState(false);
     const submit = async (e: FormEvent) => {
         e.preventDefault();
+        if (!canSubmitAdminPasswordReset(password)) return;
         if (!window.confirm(t('admin.users.reset.confirm', {name: user.username}))) return;
         setDone(false);
         try {
-            await resetPassword.mutateAsync({id: user.id, password});
+            await resetPassword.mutateAsync(toAdminPasswordResetPayload(user.id, password));
             setPassword('');
             setDone(true);
         } catch {/* The mutation error is shown below. */
@@ -303,11 +313,11 @@ function PasswordReset({user}: { user: User }) {
     };
     return <section className="min-w-0 space-y-3 rounded-panel border border-border bg-card p-5">
         <h2 className="font-semibold">{t('admin.users.reset.title')}</h2>
-        <form className="flex flex-wrap items-end gap-3" onSubmit={e => void submit(e)}>
+        <form noValidate className="flex flex-wrap items-end gap-3" onSubmit={e => void submit(e)}>
             <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground"><span>{t('admin.users.reset.newPassword')}<RequiredMark/></span><input className="min-h-[44px] w-full rounded-control border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground" type="password" aria-required
                                                                                     autoComplete="new-password" value={password}
                                                                                     onChange={e => setPassword(e.target.value)}/></label>
-            <Button type="submit" variant="outline" disabled={resetPassword.isPending}>{t('admin.users.reset.submit')}</Button>
+            <Button type="submit" variant="outline" disabled={resetPassword.isPending || !canSubmitAdminPasswordReset(password)}>{t('admin.users.reset.submit')}</Button>
         </form>
         <p className="text-xs text-slate-500">{t('admin.users.reset.hint')}</p>
         <ErrorNotice error={resetPassword.error}/>

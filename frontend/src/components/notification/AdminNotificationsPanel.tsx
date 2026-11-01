@@ -10,6 +10,12 @@ import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
 import {cn} from '@/lib/utils';
 import {useNotificationPage, useNotificationReadActions, useRecipientSearch, useSendNotification} from '@/hooks/notification/useNotifications';
+import {
+    canSubmitSendNotification,
+    emptySendNotificationDraft,
+    notificationFieldErrors,
+    toSendNotificationPayload,
+} from '@/forms/notification/notification-form';
 import {RequiredMark} from '@/components/shared/RequiredMark';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {notificationTypes, type NotificationRecord, type NotificationType} from '@/types/notification/notification.types';
@@ -152,25 +158,24 @@ export function AdminNotificationsPanel() {
 function SendDialog({onClose, onSent}: { onClose: () => void; onSent: (name: string) => void }) {
     const {t} = useI18n();
     const [keyword, setKeyword] = useState('');
-    const [recipient, setRecipient] = useState<{ id: number; name: string } | null>(null);
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [type, setType] = useState<NotificationType>('SYSTEM');
-    const users = useRecipientSearch(keyword, !recipient);
+    const [draft, setDraft] = useState(emptySendNotificationDraft);
+    const users = useRecipientSearch(keyword, !draft.recipient);
     const send = useSendNotification();
+    const fieldErrors = notificationFieldErrors(send.error);
     const submit = async (e: FormEvent) => {
         e.preventDefault();
-        if (!recipient) return;
+        if (!canSubmitSendNotification(draft)) return;
         try {
-            await send.mutateAsync({userId: recipient.id, title: title.trim(), content: content.trim(), type});
-            onSent(recipient.name);
+            const recipientName = draft.recipient?.name ?? '';
+            await send.mutateAsync(toSendNotificationPayload(draft));
+            onSent(recipientName);
         } catch {/* The error is shown in the dialog. */
         }
     };
-    const field = 'mt-1 w-full rounded-control border border-border px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none';
+    const field = 'mt-1 w-full rounded-control border border-border px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none aria-[invalid=true]:border-danger';
     return <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/45 p-4" role="presentation"
                 onMouseDown={e => e.target === e.currentTarget && onClose()}>
-        <form role="dialog" aria-modal="true" aria-labelledby="send-notification-title" onSubmit={e => void submit(e)}
+        <form noValidate role="dialog" aria-modal="true" aria-labelledby="send-notification-title" onSubmit={e => void submit(e)}
               onKeyDown={e => e.key === 'Escape' && onClose()}
               className="flex max-h-[calc(100dvh-32px)] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-overlay bg-card p-6 shadow-2xl">
             <header className="flex items-center justify-between">
@@ -179,16 +184,16 @@ function SendDialog({onClose, onSent}: { onClose: () => void; onSent: (name: str
                         className="rounded-control p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"><X size={18}/></button>
             </header>
             <div className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.recipient')}<RequiredMark/>
-                {recipient ? <div className="mt-1 flex items-center justify-between rounded-panel bg-primary/10 px-3 py-2 text-primary">
-                    <span>{recipient.name}</span>
-                    <button type="button" onClick={() => setRecipient(null)} className="text-xs font-semibold hover:underline">
+                {draft.recipient ? <div className="mt-1 flex items-center justify-between rounded-panel bg-primary/10 px-3 py-2 text-primary">
+                    <span>{draft.recipient.name}</span>
+                    <button type="button" onClick={() => setDraft(prev => ({...prev, recipient: null}))} className="text-xs font-semibold hover:underline">
                         {t('admin.notifications.change')}</button>
                 </div> : <>
                     <input autoFocus value={keyword} onChange={e => setKeyword(e.target.value)} className={field}
                            placeholder={t('admin.notifications.recipientSearch')} aria-label={t('admin.notifications.recipient')}/>
                     {users.data?.content.length ? <ul className="mt-1 max-h-48 overflow-y-auto rounded-panel border border-border">
                         {users.data.content.map(u => <li key={u.id}>
-                            <button type="button" onClick={() => setRecipient({id: u.id, name: u.fullName || u.username})}
+                            <button type="button" onClick={() => setDraft(prev => ({...prev, recipient: {id: u.id, name: u.fullName || u.username}}))}
                                     className="flex w-full justify-between px-3 py-2 text-left font-normal hover:bg-slate-50">
                                 <span>{u.fullName || u.username}</span><small className="text-slate-400">@{u.username}</small>
                             </button>
@@ -196,19 +201,22 @@ function SendDialog({onClose, onSent}: { onClose: () => void; onSent: (name: str
                     </ul> : keyword.trim().length >= 2 && users.isFetched &&
                         <p className="mt-1 text-xs font-normal text-slate-500">{t('admin.notifications.noRecipient')}</p>}
                 </>}
+                {fieldErrors?.userId && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.userId}</span>}
             </div>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.type')}<RequiredMark/>
-                <select value={type} onChange={e => setType(e.target.value as NotificationType)} className={field}>
+                <select value={draft.type} onChange={e => setDraft(prev => ({...prev, type: e.target.value as NotificationType}))} className={field}>
                     {notificationTypes.map(value => <option key={value} value={value}>{t(`admin.notifications.types.${value}`)}</option>)}
                 </select></label>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.titleField')}<RequiredMark/>
-                <input aria-required value={title} onChange={e => setTitle(e.target.value)} className={field}/></label>
+                <input aria-required aria-invalid={Boolean(fieldErrors?.title)} value={draft.title} onChange={e => setDraft(prev => ({...prev, title: e.target.value}))} className={field}/>
+                {fieldErrors?.title && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.title}</span>}</label>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.notifications.contentField')}<RequiredMark/>
-                <textarea aria-required rows={4} value={content} onChange={e => setContent(e.target.value)} className={field}/></label>
-            <ErrorNotice error={send.error}/>
+                <textarea aria-required aria-invalid={Boolean(fieldErrors?.content || fieldErrors?.message)} rows={4} value={draft.content} onChange={e => setDraft(prev => ({...prev, content: e.target.value}))} className={field}/>
+                {(fieldErrors?.content || fieldErrors?.message) && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors?.content || fieldErrors?.message}</span>}</label>
+            {send.error && !fieldErrors && <ErrorNotice error={send.error}/>}
             <footer className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={onClose}>{t('admin.notifications.cancel')}</Button>
-                <Button type="submit" disabled={!recipient || send.isPending}>{t('admin.notifications.submit')}</Button>
+                <Button type="submit" disabled={!canSubmitSendNotification(draft) || send.isPending}>{t('admin.notifications.submit')}</Button>
             </footer>
         </form>
     </div>;

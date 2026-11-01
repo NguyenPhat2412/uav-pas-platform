@@ -9,15 +9,15 @@ import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
 import type {WebhookEndpointItem} from '@/types/admin';
 import {useCreateWebhook, useWebhookSubscriptionMutations} from '@/hooks/webhook/useWebhooks';
+import {
+    canSubmitWebhookSubscription,
+    createWebhookSubscriptionDraft,
+    generateWebhookSecret,
+    toWebhookSubscriptionPayload,
+    WEBHOOK_EVENTS,
+    webhookFieldErrors,
+} from '@/forms/webhook/webhook-form';
 import {WebhookSecretDialog} from '@/components/webhook/WebhookSecretDialog';
-
-/** Event types the backend actually dispatches; a subscription matches when its list contains the type. */
-const webhookEvents = ['SAR_EMERGENCY_TRIGGERED', 'GEOFENCE_BREACH', 'BATTERY_CRITICAL_RTH', 'SAR_RTH_REQUESTED', 'INVOICE_ISSUED', 'PAYMENT_COMPLETED', 'WEBHOOK_TEST'];
-
-function newSecret() {
-    const bytes = crypto.getRandomValues(new Uint8Array(24));
-    return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
-}
 
 export function WebhookSubscriptions({items, onChanged}: { items: WebhookEndpointItem[]; onChanged: () => void }) {
     const {t} = useI18n();
@@ -96,23 +96,21 @@ export function WebhookSubscriptions({items, onChanged}: { items: WebhookEndpoin
 
 function CreateDialog({onClose, onCreated}: { onClose: () => void; onCreated: () => void }) {
     const {t} = useI18n();
-    const [name, setName] = useState('');
-    const [url, setUrl] = useState('https://');
-    const [secret, setSecret] = useState(newSecret);
-    const [events, setEvents] = useState<string[]>(['SAR_EMERGENCY_TRIGGERED']);
+    const [draft, setDraft] = useState(createWebhookSubscriptionDraft);
     const create = useCreateWebhook();
+    const fieldErrors = webhookFieldErrors(create.error);
     const submit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            await create.mutateAsync({name: name.trim(), targetUrl: url.trim(), secretKey: secret.trim(), eventsSubscribed: events.join(',')});
+            await create.mutateAsync(toWebhookSubscriptionPayload(draft));
             onCreated();
         } catch {/* Shown below. */
         }
     };
-    const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none';
+    const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none aria-[invalid=true]:border-danger';
     return <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/45 p-4" role="presentation"
                 onMouseDown={e => e.target === e.currentTarget && onClose()}>
-        <form role="dialog" aria-modal="true" aria-labelledby="create-webhook-title" onSubmit={e => void submit(e)}
+        <form noValidate role="dialog" aria-modal="true" aria-labelledby="create-webhook-title" onSubmit={e => void submit(e)}
               onKeyDown={e => e.key === 'Escape' && onClose()}
               className="flex max-h-[calc(100dvh-32px)] w-full max-w-lg flex-col gap-4 overflow-y-auto bg-white p-6 shadow-2xl">
             <header className="flex items-center justify-between">
@@ -120,36 +118,43 @@ function CreateDialog({onClose, onCreated}: { onClose: () => void; onCreated: ()
                 <button type="button" onClick={onClose} aria-label={t('admin.webhooks.crud.cancel')} className="p-1 text-slate-400 hover:bg-slate-100"><X size={18}/></button>
             </header>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.webhooks.crud.name')}<RequiredMark/>
-                <input aria-required autoFocus value={name} onChange={e => setName(e.target.value)} className={field}/></label>
+                <input aria-required aria-invalid={Boolean(fieldErrors?.name)} autoFocus value={draft.name} onChange={e => setDraft(prev => ({...prev, name: e.target.value}))} className={field}/>
+                {fieldErrors?.name && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.name}</span>}</label>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.webhooks.crud.url')}<RequiredMark/>
-                <input aria-required type="url" value={url} onChange={e => setUrl(e.target.value)} className={cn(field, 'font-mono')}/>
-                <span className="mt-1 block text-xs font-normal text-slate-500">{t('admin.webhooks.crud.urlHint')}</span></label>
+                <input aria-required aria-invalid={Boolean(fieldErrors?.targetUrl)} type="url" value={draft.targetUrl} onChange={e => setDraft(prev => ({...prev, targetUrl: e.target.value}))} className={cn(field, 'font-mono')}/>
+                {fieldErrors?.targetUrl ? <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.targetUrl}</span> :
+                    <span className="mt-1 block text-xs font-normal text-slate-500">{t('admin.webhooks.crud.urlHint')}</span>}</label>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.webhooks.crud.secret')}<RequiredMark/>
                 <span className="mt-1 flex gap-2">
-                    <input aria-required value={secret} onChange={e => setSecret(e.target.value)} className={cn(field, 'mt-0 font-mono')}/>
-                    <button type="button" onClick={() => setSecret(newSecret())} title={t('admin.webhooks.crud.regenerate')}
+                    <input aria-required aria-invalid={Boolean(fieldErrors?.secretKey)} value={draft.secretKey} onChange={e => setDraft(prev => ({...prev, secretKey: e.target.value}))} className={cn(field, 'mt-0 font-mono')}/>
+                    <button type="button" onClick={() => setDraft(prev => ({...prev, secretKey: generateWebhookSecret()}))} title={t('admin.webhooks.crud.regenerate')}
                             className="inline-flex items-center gap-1 border border-slate-200 px-3 text-xs font-medium text-slate-600 hover:bg-slate-50">
                         <KeyRound size={14} aria-hidden="true"/>{t('admin.webhooks.crud.regenerate')}</button>
-                    <button type="button" onClick={() => void navigator.clipboard?.writeText(secret).catch(() => undefined)}
+                    <button type="button" onClick={() => void navigator.clipboard?.writeText(draft.secretKey).catch(() => undefined)}
                             title={t('adminCommerce.webhooks.secret.copy')} aria-label={t('adminCommerce.webhooks.secret.copy')}
                             className="inline-flex items-center border border-slate-200 px-2.5 text-slate-600 hover:bg-slate-50">
                         <Copy size={14} aria-hidden="true"/></button>
                 </span>
+                {fieldErrors?.secretKey && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.secretKey}</span>}
                 <span className="mt-1 block text-xs font-normal text-amber-700">{t('adminCommerce.webhooks.createSecretHint')}</span>
                 <span className="mt-1 block text-xs font-normal text-slate-500">{t('admin.webhooks.crud.secretHint')}</span></label>
             <fieldset className="text-[13px]">
                 <legend className="font-semibold text-slate-600">{t('admin.webhooks.crud.events')}<RequiredMark/></legend>
-                <div className="mt-1 grid gap-1.5 sm:grid-cols-2">{webhookEvents.map(event => <label key={event} className="flex items-center gap-2">
-                    <input type="checkbox" checked={events.includes(event)}
-                           onChange={e => setEvents(list => e.target.checked ? [...list, event] : list.filter(x => x !== event))}/>
+                <div className="mt-1 grid gap-1.5 sm:grid-cols-2">{WEBHOOK_EVENTS.map(event => <label key={event} className="flex items-center gap-2">
+                    <input type="checkbox" checked={draft.events.includes(event)}
+                           onChange={e => setDraft(prev => ({
+                               ...prev,
+                               events: e.target.checked ? [...prev.events, event] : prev.events.filter(x => x !== event),
+                           }))}/>
                     <span className="font-mono text-xs">{event}</span>
                 </label>)}</div>
+                {fieldErrors?.eventsSubscribed && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.eventsSubscribed}</span>}
             </fieldset>
-            <ErrorNotice error={create.error}/>
+            {create.error && !fieldErrors && <ErrorNotice error={create.error}/>}
             <footer className="flex justify-end gap-2">
                 <button type="button" onClick={onClose} className="h-9 border border-slate-200 px-4 text-[13px] font-medium text-slate-600 hover:bg-slate-50">
                     {t('admin.webhooks.crud.cancel')}</button>
-                <button type="submit" disabled={create.isPending || !events.length}
+                <button type="submit" disabled={create.isPending || !canSubmitWebhookSubscription(draft)}
                         className="h-9 bg-primary px-4 text-[13px] font-semibold text-primary-foreground disabled:opacity-50">{t('admin.webhooks.crud.submit')}</button>
             </footer>
         </form>

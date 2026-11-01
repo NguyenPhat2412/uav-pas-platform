@@ -2,7 +2,13 @@
 import {useState} from 'react';
 import {Button, Input} from '@/components/ui';
 import type {MaterialInput, RepairOrder} from "@/types/maintenance/maintenance.types";
-import {formatVnd, materialInput} from "@/utils/maintenance/workflows";
+import {
+    emptyMaterialRowDraft,
+    MAX_MAINTENANCE_MATERIAL_ROWS,
+    toMaterialRowsDraft,
+    toMaterialRowsPayload,
+} from "@/forms/maintenance/maintenance-form";
+import {formatVnd} from "@/utils/maintenance/workflows";
 import {Feedback} from "@/components/maintenance/Feedback";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';
@@ -14,26 +20,16 @@ export function MaterialEditor({order, disabled, onSave, onCancel}: {
     onCancel: () => void
 }) {
     const {t, locale} = useI18n();
-    const [items, setItems] = useState<MaterialInput[]>(order.materials.map(({
-                                                                                 name,
-                                                                                 unit,
-                                                                                 quantity,
-                                                                                 unitPrice
-                                                                             }) => ({
-        name,
-        unit,
-        quantity,
-        unitPrice
-    })));
+    const [items, setItems] = useState<MaterialInput[]>(() => toMaterialRowsDraft(order));
     const [error, setError] = useState('');
     const change = (index: number, field: keyof MaterialInput, value: string) => setItems(current => current.map((item, i) => i === index ? {
         ...item,
         [field]: value
     } : item));
-    return <form className="space-y-4" aria-label={t('opsAssets.maintenance.materials.form')} onSubmit={event => {
+    return <form noValidate className="space-y-4" aria-label={t('opsAssets.maintenance.materials.form')} onSubmit={event => {
         event.preventDefault();
         setError('');
-        onSave(materialInput(items));
+        onSave(toMaterialRowsPayload(items));
     }}><Feedback error={error}/><p className="text-sm text-slate-600">{t('opsAssets.maintenance.materials.notePrefix')}<strong>{t('opsAssets.maintenance.materials.noteStrong')}</strong>{t('opsAssets.maintenance.materials.noteSuffix')}</p>{items.length === 0 &&
         <p className="rounded-panel bg-slate-50 p-4 text-sm">{t('opsAssets.maintenance.materials.empty')}</p>}{items.map((item, index) => <fieldset key={index}
                                                          className="space-y-3 rounded-panel border border-border p-4 disabled:opacity-70"
@@ -57,13 +53,8 @@ export function MaterialEditor({order, disabled, onSave, onCancel}: {
         </div>
         <Button type="button" variant="outline" size="sm"
                 onClick={() => setItems(current => current.filter((_, i) => i !== index))}>{t('opsAssets.maintenance.materials.remove', {line: index + 1})}</Button></fieldset>)}<Button type="button" variant="outline"
-                                                        disabled={disabled || items.length >= 100}
-                                                        onClick={() => setItems(current => [...current, {
-                                                            name: '',
-                                                            unit: '',
-                                                            quantity: '1',
-                                                            unitPrice: '0'
-                                                        }])}>{t('opsAssets.maintenance.materials.add')}</Button><p
+                                                        disabled={disabled || items.length >= MAX_MAINTENANCE_MATERIAL_ROWS}
+                                                        onClick={() => setItems(current => [...current, emptyMaterialRowDraft()])}>{t('opsAssets.maintenance.materials.add')}</Button><p
         className="text-sm text-slate-600">{t('opsAssets.maintenance.materials.savedTotal')}<strong>{formatVnd(order.totalMaterialCost, t, locale)}</strong>{t('opsAssets.maintenance.materials.savedTotalNote')}</p>
         <div className="flex flex-wrap gap-3"><Button type="button" variant="outline" disabled={disabled}
                                                       onClick={onCancel}>{t('opsAssets.maintenance.materials.discard')}</Button><Button

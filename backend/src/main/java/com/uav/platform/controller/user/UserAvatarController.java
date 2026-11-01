@@ -30,26 +30,26 @@ import java.util.concurrent.TimeUnit;
 public class UserAvatarController {
     private final AvatarService avatars;
 
-    @PostMapping("/profile/avatar/upload-url")
+    @PostMapping(ApiRoutes.Users.PROFILE_AVATAR_UPLOAD_URL)
     public ResponseEntity<SignedMediaUrlResponse> uploadUrl(
             Authentication authentication, @Valid @RequestBody AvatarUploadRequest request) {
         return ResponseEntity.ok(avatars.uploadUrl(authentication.getName(), request));
     }
 
-    @PutMapping("/profile/avatar")
+    @PutMapping(ApiRoutes.Users.PROFILE_AVATAR)
     public ResponseEntity<AvatarResponse> use(
             Authentication authentication, @Valid @RequestBody AvatarUpdateRequest request) {
         return ResponseEntity.ok(avatars.use(authentication.getName(), request.mediaId()));
     }
 
-    @DeleteMapping("/profile/avatar")
+    @DeleteMapping(ApiRoutes.Users.PROFILE_AVATAR)
     public ResponseEntity<Void> remove(Authentication authentication) {
         avatars.remove(authentication.getName());
         return ResponseEntity.noContent().build();
     }
 
     /** Redirects to a short-lived storage URL; the stored path carries ?v= so a new picture busts caches. */
-    @GetMapping("/{id}/avatar")
+    @GetMapping(ApiRoutes.Users.AVATAR)
     public ResponseEntity<Void> image(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(avatars.signedUrl(id, authentication)))

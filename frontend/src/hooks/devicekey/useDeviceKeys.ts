@@ -2,7 +2,8 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
 import {afterSuccess, queryKeys, type MutationOptions} from '@/lib/query';
-import {deviceKeysService, type CreatedDeviceKey, type CreateDeviceKeyInput, type DeviceKey} from '@/api/devicekey/device-keys.api';
+import {deviceKeysService} from '@/api/devicekey/device-keys.api';
+import type {CreatedDeviceKey, CreateDeviceKeyInput, DeviceKey} from '@/types/devicekey/device-key.types';
 import {uavsService} from '@/api/uav/uavs.api';
 
 const deviceKeyKeys = {

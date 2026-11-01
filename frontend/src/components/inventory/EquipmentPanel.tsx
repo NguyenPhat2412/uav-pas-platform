@@ -8,6 +8,16 @@ import {DataTable, options} from '@/components/data/DataTable';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from "@/components/data/ResourceState";
 import {displayLabel, formatDate} from "@/lib/presentation";
+import {
+    canSubmitEquipmentCreate,
+    canSubmitInventoryMovement,
+    emptyEquipmentCreateDraft,
+    emptyInventoryMovementDraft,
+    EQUIPMENT_TYPES,
+    equipmentFieldErrors,
+    toEquipmentCreatePayload,
+    toInventoryMovementPayload,
+} from "@/forms/inventory/equipment-form";
 import type {Equipment} from "@/types/resources";
 import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';
@@ -20,11 +30,13 @@ export function EquipmentPanel() {
     const history = useInventoryHistory(historyPage);
     const stations = useCollection('stations');
     const [openCreate, setOpenCreate] = useState(false);
-    const [form, setForm] = useState({name: '', type: 'BATTERY', serialNumber: '', stationId: ''});
-    const [movement, setMovement] = useState({id: '', action: 'stock-in', quantity: '1', note: '', stationId: ''});
+    const [form, setForm] = useState(emptyEquipmentCreateDraft);
+    const [movement, setMovement] = useState(emptyInventoryMovementDraft);
     const replay = useRef<{ payload: string; requestId: string } | null>(null);
     const [success, setSuccess] = useState('');
     const {create, move} = useEquipmentMutations();
+    const createFieldErrors = equipmentFieldErrors(create.error);
+    const moveFieldErrors = equipmentFieldErrors(move.error);
     const rows = collection.data || [];
     const columns = [
         {
@@ -53,15 +65,11 @@ export function EquipmentPanel() {
                                                                               onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.shared.closeForm') : t('opsAssets.equipment.create')}</Button>
         </div>}
         {openCreate && can('INVENTORY_MANAGE') &&
-            <form className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
+            <form noValidate className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 try {
-                    await create.mutateAsync({
-                        ...form,
-                        serialNumber: form.serialNumber || undefined,
-                        stationId: Number(form.stationId) || undefined
-                    });
-                    setForm({name: '', type: 'BATTERY', serialNumber: '', stationId: ''});
+                    await create.mutateAsync(toEquipmentCreatePayload(form));
+                    setForm(emptyEquipmentCreateDraft());
                     setOpenCreate(false);
                     await collection.refetch();
                 } catch { /* visible below */
@@ -69,7 +77,7 @@ export function EquipmentPanel() {
             }}>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-name">{t('opsAssets.equipment.name')}<RequiredMark/></label><Input
-                        id="equipment-name" aria-required value={form.name}
+                        id="equipment-name" aria-required error={createFieldErrors?.name} value={form.name}
                         onChange={event => setForm({...form, name: event.target.value})}/></div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-type">{t('opsAssets.equipment.type')}</label><select id="equipment-type"
                                                                                                      className="min-h-11 w-full min-w-0 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm"
@@ -77,10 +85,10 @@ export function EquipmentPanel() {
                                                                                                      onChange={event => setForm({
                                                                                                          ...form,
                                                                                                          type: event.target.value
-                                                                                                     })}>{['BATTERY', 'CAMERA', 'KV260', 'SENSOR', 'ACCESSORY'].map(type =>
+                                                                                                     })}>{EQUIPMENT_TYPES.map(type =>
                         <option key={type}>{type}</option>)}</select></div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-serial">{t('opsAssets.equipment.serial')}<OptionalMark/></label><Input
-                        id="equipment-serial" value={form.serialNumber}
+                        id="equipment-serial" error={createFieldErrors?.serialNumber} value={form.serialNumber}
                         onChange={event => setForm({...form, serialNumber: event.target.value})}/></div>
                 </div>
                 {can('STATION_READ') &&
@@ -93,23 +101,16 @@ export function EquipmentPanel() {
                         {stations.data?.filter(station => station.status === 'ACTIVE').map(station => <option
                             key={station.id} value={station.id}>{station.code} · {station.name}</option>)}
                     </select><ErrorNotice error={stations.error}/></div>}
-                <div className="mt-6 flex flex-wrap justify-end"><Button size="sm" type="submit" isLoading={create.isPending}>{t('opsAssets.equipment.create')}</Button></div>
-                <ErrorNotice error={create.error}/></form>}
+                <div className="mt-6 flex flex-wrap justify-end"><Button size="sm" type="submit" disabled={!canSubmitEquipmentCreate(form)} isLoading={create.isPending}>{t('opsAssets.equipment.create')}</Button></div>
+                {create.error && !createFieldErrors && <ErrorNotice error={create.error}/>}</form>}
         {can('INVENTORY_MANAGE') &&
-            <form className="rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
+            <form noValidate className="rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 setSuccess('');
                 const payload = JSON.stringify(movement);
                 if (replay.current?.payload !== payload) replay.current = {payload, requestId: crypto.randomUUID()};
                 try {
-                    await move.mutateAsync({
-                        id: Number(movement.id),
-                        action: movement.action,
-                        quantity: Number(movement.quantity),
-                        note: movement.note || undefined,
-                        stationId: Number(movement.stationId) || undefined,
-                        requestId: replay.current.requestId
-                    });
+                    await move.mutateAsync(toInventoryMovementPayload(movement, replay.current.requestId));
                     replay.current = null;
                     setSuccess('opsAssets.equipment.movementRecorded');
                     setHistoryPage(0);
@@ -133,9 +134,10 @@ export function EquipmentPanel() {
                                 disabled={value === 'transfer' && !can('STATION_READ')}>{label}</option>)}</select>
                     </div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-quantity">{t('opsAssets.equipment.quantity')}<RequiredMark/></label><Input
-                        id="movement-quantity" aria-required type="number" step={1} value={movement.quantity}
+                        id="movement-quantity" aria-required type="number" step={1} error={moveFieldErrors?.quantity} value={movement.quantity}
                         onChange={event => setMovement({...movement, quantity: event.target.value})}/></div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-note">{t('opsAssets.equipment.note')}<OptionalMark/></label><Input id="movement-note"
+                                                                                                     error={moveFieldErrors?.note}
                                                                                                      value={movement.note}
                                                                                                      onChange={event => setMovement({
                                                                                                          ...movement,
@@ -151,7 +153,7 @@ export function EquipmentPanel() {
                         {stations.data?.filter(station => station.status === 'ACTIVE').map(station => <option
                             key={station.id} value={station.id}>{station.code}</option>)}</select></div>}
                 <div className="mt-4 flex items-center gap-3"><Button size="sm" type="submit" isLoading={move.isPending}
-                                                                      disabled={movement.action === 'transfer' && (!can('STATION_READ') || stations.isPending || !!stations.error)}>{t('opsAssets.equipment.record')}</Button>{success && <span role="status" className="text-sm text-uav-blue">{t(success)}</span>}
+                                                                      disabled={!canSubmitInventoryMovement(movement) || (movement.action === 'transfer' && (!can('STATION_READ') || stations.isPending || !!stations.error))}>{t('opsAssets.equipment.record')}</Button>{success && <span role="status" className="text-sm text-uav-blue">{t(success)}</span>}
                 </div>
                 <ErrorNotice error={move.error}/></form>}
         <QueryState query={collection}><DataTable label={t('opsAssets.equipment.tableLabel')} data={rows} columns={columns} filters={[{

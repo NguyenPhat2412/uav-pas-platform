@@ -1,6 +1,7 @@
 'use client';
 
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
+import {readBrowserStorage, useBrowserStorage, writeBrowserStorage} from '@/hooks/useBrowserStorage';
 import {useQuery} from '@tanstack/react-query';
 import type {Control, Map as LeafletMap} from 'leaflet';
 import {fetchPublicSiteInfo} from '@/api/settings/platform-settings.api';
@@ -91,9 +92,9 @@ interface MapPrefs {
     showStationRadius?: boolean;
 }
 
-function readMapPrefs(): MapPrefs {
+function parseMapPrefs(stored: string | null): MapPrefs {
     try {
-        const raw: unknown = JSON.parse(localStorage.getItem(MAP_PREFS_KEY) ?? '{}');
+        const raw: unknown = JSON.parse(stored ?? '{}');
         if (!raw || typeof raw !== 'object') return {};
         const {basemap, showStationRadius} = raw as Record<string, unknown>;
         return {
@@ -106,11 +107,8 @@ function readMapPrefs(): MapPrefs {
 }
 
 function writeMapPrefs(change: MapPrefs) {
-    try {
-        localStorage.setItem(MAP_PREFS_KEY, JSON.stringify({...readMapPrefs(), ...change}));
-    } catch {
-        // storage unavailable: the choice still applies for this visit
-    }
+    // When storage refuses the write the choice still applies for this visit (useMapConfig keeps it in state).
+    writeBrowserStorage(MAP_PREFS_KEY, JSON.stringify({...parseMapPrefs(readBrowserStorage(MAP_PREFS_KEY)), ...change}));
 }
 
 export function useMapConfig() {
@@ -127,17 +125,13 @@ export function useMapConfig() {
 
     // A user's own basemap and station-range choice is kept in this browser and wins over the
     // system default from Settings; with no choice saved, the system default applies.
+    const storedRaw = useBrowserStorage(MAP_PREFS_KEY);
+    const saved = useMemo(() => parseMapPrefs(storedRaw), [storedRaw]);
     const [userBasemap, setUserBasemap] = useState<Basemap | null>(null);
     const [userShowStationRadius, setUserShowStationRadius] = useState<boolean | null>(null);
 
-    useEffect(() => {
-        const saved = readMapPrefs();
-        if (saved.basemap) setUserBasemap(saved.basemap);
-        if (saved.showStationRadius !== undefined) setUserShowStationRadius(saved.showStationRadius);
-    }, []);
-
-    const basemap: Basemap = userBasemap ?? config.defaultBasemap;
-    const showStationRadius: boolean = userShowStationRadius ?? config.showStationRadius;
+    const basemap: Basemap = userBasemap ?? saved.basemap ?? config.defaultBasemap;
+    const showStationRadius: boolean = userShowStationRadius ?? saved.showStationRadius ?? config.showStationRadius;
 
     const setBasemap = useCallback((next: Basemap) => {
         setUserBasemap(next);

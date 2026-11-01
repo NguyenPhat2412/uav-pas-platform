@@ -36,20 +36,20 @@ public class ServiceOfferingController {
         return ResponseEntity.status(201).body(services.create(request));
     }
 
-    @GetMapping("/all")
+    @GetMapping(ApiRoutes.UavServices.ALL)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_CONFIRM')")
     public ResponseEntity<List<ServiceOfferingResponse>> listAll() {
         return ResponseEntity.ok(services.listAll());
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(ApiRoutes.UavServices.BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_CONFIRM')")
     public ResponseEntity<ServiceOfferingResponse> update(
             @PathVariable Long id, @Valid @RequestBody ServiceOfferingUpdateRequest request) {
         return ResponseEntity.ok(services.update(id, request));
     }
 
-    @PatchMapping("/{id}/active")
+    @PatchMapping(ApiRoutes.UavServices.ACTIVE)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_CONFIRM')")
     public ResponseEntity<ServiceOfferingResponse> setActive(
             @PathVariable Long id, @RequestParam boolean active) {

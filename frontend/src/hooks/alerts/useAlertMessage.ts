@@ -2,7 +2,7 @@
 
 import {useCallback} from 'react';
 import {useI18n} from '@/providers/I18nContext';
-import type {PlatformAlert} from '@/api/alerts/alerts.api';
+import type {PlatformAlert} from '@/types/alerts/alerts.types';
 
 /** Renders an alert's message key with its params; translates component/source names in params. */
 export function useAlertMessage() {

@@ -70,7 +70,10 @@
       "closeOthers": "他のタブを閉じる",
       "closeAll": "すべて閉じる",
       "unsaved": "未保存の変更があります",
-      "discardConfirm": "このページには未保存の変更があります。変更を破棄して移動しますか？"
+      "discardConfirm": "このページには未保存の変更があります。変更を破棄して移動しますか？",
+      "scrollLeft": "左のタブを表示",
+      "scrollRight": "右のタブを表示",
+      "all": "開いているすべてのタブ"
     }
   },
   "operationsNavGroups": {
@@ -91,7 +94,8 @@
     "media": "メディア",
     "notifications": "通知",
     "audit": "監査ログ",
-    "training": "UAV研修・SOP手順書"
+    "training": "UAV研修・SOP手順書",
+    "weather": "飛行気象"
   },
   "adminNavGroups": {
     "overview": "概要・統計",
@@ -146,7 +150,8 @@
     "infrastructureStorage": "ファイルストレージ",
     "files": "ファイル管理",
     "infrastructureDatabase": "データベース",
-    "infrastructureEmail": "メール"
+    "infrastructureEmail": "メール",
+    "weather": "飛行気象"
   },
   "sidebar": {
     "title": "UAV PAS",
@@ -465,6 +470,78 @@
       "save": "気象設定を保存",
       "saving": "保存中...",
       "saved": "気象設定を保存しました。"
+    },
+    "workspace": {
+      "place": "場所",
+      "time": "時刻",
+      "myLocation": "現在地",
+      "pickedPoint": "地図で選んだ地点",
+      "locateUnsupported": "このブラウザは位置情報に対応していません。",
+      "locateDenied": "現在地を取得できませんでした。位置情報へのアクセスを許可して再試行してください。",
+      "presets": {
+        "home": "既定のエリア",
+        "hanoi": "ハノイ",
+        "halong": "ハロン",
+        "danang": "ダナン",
+        "hcmc": "ホーチミン市"
+      },
+      "times": {
+        "now": "現在",
+        "plus3": "3 時間後",
+        "plus6": "6 時間後",
+        "tomorrow": "明日 7:00",
+        "custom": "時刻を指定"
+      },
+      "filters": "フィルター",
+      "map": "天気マップ",
+      "stations": "基地"
+    },
+    "home": {
+      "title": "今日の天気",
+      "details": "詳細を見る",
+      "next": "この先の時間",
+      "wind": "風",
+      "rain": "雨",
+      "visibility": "視程",
+      "conditions": {
+        "clear": "晴れ",
+        "partly": "晴れ時々曇り",
+        "cloudy": "曇り",
+        "fog": "霧",
+        "drizzle": "霧雨",
+        "rain": "雨",
+        "showers": "にわか雨",
+        "thunder": "雷雨",
+        "snow": "雪",
+        "unknown": "不明"
+      },
+      "verdict": {
+        "GO": "飛行可能",
+        "CAUTION": "注意して飛行",
+        "NO_GO": "飛行不可",
+        "UNAVAILABLE": "データなし"
+      },
+      "levels": {
+        "wind": {
+          "good": "弱い風",
+          "fair": "やや強い風",
+          "poor": "強風"
+        },
+        "rain": {
+          "good": "乾燥",
+          "fair": "雨の可能性",
+          "poor": "雨"
+        },
+        "visibility": {
+          "good": "良好",
+          "fair": "やや悪い",
+          "poor": "不良"
+        }
+      },
+      "conditionsNight": {
+        "clear": "晴れ",
+        "partly": "晴れ時々曇り"
+      }
     }
   },
   "digitalTwin": {
@@ -514,5 +591,16 @@
       },
       "cta": "デジタルツインについて相談する"
     }
+  },
+  "errorPage": {
+    "title": "このページで問題が発生しました",
+    "detail": "ページを表示できませんでした。再試行してください。繰り返し発生する場合は、下の参照コードをサポートにお送りください。",
+    "staleTitle": "新しいバージョンを読み込み中",
+    "staleDetail": "システムが更新されました。ページは自動で再読み込みされます。されない場合は「ページを再読み込み」を押してください。",
+    "reference": "参照コード:",
+    "technical": "技術的な詳細（開発時のみ）",
+    "retry": "再試行",
+    "reload": "ページを再読み込み",
+    "home": "ホームへ"
   }
 }

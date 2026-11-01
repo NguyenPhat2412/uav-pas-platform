@@ -49,7 +49,9 @@ function controllerGet(controller, method) {
     const declaration = source.indexOf(` ${method}(`);
     assert.ok(declaration >= 0, `${method} controller method must exist`);
     const annotation = source.slice(source.lastIndexOf('@GetMapping(', declaration), declaration);
-    const path = annotation.match(/@GetMapping\((?:value\s*=\s*)?"([^"]+)"/)?.[1];
+    // Method paths come from ApiRoutes constants too (a literal is still understood for older code).
+    const raw = annotation.match(/@GetMapping\((?:value\s*=\s*)?(ApiRoutes\.[\w.]+|"[^"]+")/)?.[1];
+    const path = raw?.startsWith('"') ? JSON.parse(raw) : raw && javaRoutes(raw);
     assert.ok(base && path, `${method} must have a concrete GET mapping`);
     return base + path;
 }

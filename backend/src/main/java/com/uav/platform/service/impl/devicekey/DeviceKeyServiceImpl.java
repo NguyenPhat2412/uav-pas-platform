@@ -54,11 +54,11 @@ public class DeviceKeyServiceImpl implements DeviceKeyService {
     @Transactional
     public CreatedDeviceKeyResponse create(CreateDeviceKeyRequest request, String actor) {
         if (request.uavId() != null && !uavs.existsById(request.uavId()))
-            throw SystemException.notFound("UAV not found").at("uavId");
+            throw SystemException.notFound("Không tìm thấy UAV đã chọn.").at("uavId");
         LocalDateTime now = LocalDateTime.now();
         if (request.expiresAt() != null && !request.expiresAt().isAfter(now))
             throw SystemException.badRequest(
-                            "Expiry must be in the future", "DEVICE_KEY_EXPIRY_PAST")
+                            "Thời điểm hết hạn phải ở tương lai.", "DEVICE_KEY_EXPIRY_PAST")
                     .at("expiresAt");
         String secret = DeviceKeyOperations.generate();
         DeviceApiKey saved =

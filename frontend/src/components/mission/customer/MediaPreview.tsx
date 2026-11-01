@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-img-element -- mission images use signed storage URLs (R2, minutes-long expiry); they are not next/image remote patterns, so the browser loads them directly. */
 import {useState} from 'react';
 import {X} from 'lucide-react';
 import {useMediaDownloadUrls} from '@/hooks/media/useMedia';

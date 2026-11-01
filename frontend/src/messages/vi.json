@@ -70,7 +70,10 @@
       "closeOthers": "Đóng các tab khác",
       "closeAll": "Đóng tất cả",
       "unsaved": "Có thay đổi chưa lưu",
-      "discardConfirm": "Trang này có thay đổi chưa lưu. Rời trang và bỏ các thay đổi?"
+      "discardConfirm": "Trang này có thay đổi chưa lưu. Rời trang và bỏ các thay đổi?",
+      "scrollLeft": "Xem các tab bên trái",
+      "scrollRight": "Xem các tab bên phải",
+      "all": "Tất cả tab đang mở"
     }
   },
   "operationsNavGroups": {
@@ -91,7 +94,8 @@
     "media": "Tệp kết quả",
     "notifications": "Thông báo",
     "audit": "Nhật ký",
-    "training": "Đào tạo & SOP UAV"
+    "training": "Đào tạo & SOP UAV",
+    "weather": "Thời tiết bay"
   },
   "adminNavGroups": {
     "overview": "Tổng quan",
@@ -146,7 +150,8 @@
     "infrastructureStorage": "Lưu trữ tệp",
     "files": "Quản lý tệp",
     "infrastructureDatabase": "Cơ sở dữ liệu",
-    "infrastructureEmail": "Email"
+    "infrastructureEmail": "Email",
+    "weather": "Thời tiết bay"
   },
   "sidebar": {
     "title": "UAV PAS",
@@ -465,6 +470,78 @@
       "save": "Lưu cấu hình thời tiết",
       "saving": "Đang lưu...",
       "saved": "Đã lưu cấu hình thời tiết."
+    },
+    "workspace": {
+      "place": "Vị trí",
+      "time": "Thời điểm",
+      "myLocation": "Vị trí của tôi",
+      "pickedPoint": "Điểm đã chọn trên bản đồ",
+      "locateUnsupported": "Trình duyệt không hỗ trợ định vị.",
+      "locateDenied": "Không lấy được vị trí. Hãy cho phép truy cập vị trí rồi thử lại.",
+      "presets": {
+        "home": "Khu vực mặc định",
+        "hanoi": "Hà Nội",
+        "halong": "Hạ Long",
+        "danang": "Đà Nẵng",
+        "hcmc": "TP. Hồ Chí Minh"
+      },
+      "times": {
+        "now": "Bây giờ",
+        "plus3": "Sau 3 giờ",
+        "plus6": "Sau 6 giờ",
+        "tomorrow": "7:00 sáng mai",
+        "custom": "Chọn giờ"
+      },
+      "filters": "Bộ lọc",
+      "map": "Bản đồ thời tiết",
+      "stations": "Trạm"
+    },
+    "home": {
+      "title": "Thời tiết hôm nay",
+      "details": "Xem chi tiết",
+      "next": "Các giờ tới",
+      "wind": "Gió",
+      "rain": "Mưa",
+      "visibility": "Tầm nhìn",
+      "conditions": {
+        "clear": "Nắng đẹp",
+        "partly": "Nắng xen mây",
+        "cloudy": "Nhiều mây",
+        "fog": "Sương mù",
+        "drizzle": "Mưa phùn",
+        "rain": "Mưa",
+        "showers": "Mưa rào",
+        "thunder": "Dông",
+        "snow": "Tuyết",
+        "unknown": "Chưa rõ"
+      },
+      "verdict": {
+        "GO": "Bay được",
+        "CAUTION": "Cần thận trọng",
+        "NO_GO": "Không nên bay",
+        "UNAVAILABLE": "Chưa có dữ liệu"
+      },
+      "levels": {
+        "wind": {
+          "good": "Gió nhẹ",
+          "fair": "Gió vừa",
+          "poor": "Gió mạnh"
+        },
+        "rain": {
+          "good": "Khô ráo",
+          "fair": "Có thể mưa",
+          "poor": "Có mưa"
+        },
+        "visibility": {
+          "good": "Tầm nhìn tốt",
+          "fair": "Hơi hạn chế",
+          "poor": "Tầm nhìn kém"
+        }
+      },
+      "conditionsNight": {
+        "clear": "Trời quang",
+        "partly": "Ít mây"
+      }
     }
   },
   "digitalTwin": {
@@ -514,5 +591,16 @@
       },
       "cta": "Đăng ký tư vấn digital twin"
     }
+  },
+  "errorPage": {
+    "title": "Trang này gặp sự cố",
+    "detail": "Đã xảy ra lỗi khi hiển thị trang. Bạn có thể thử lại; nếu lỗi lặp lại, hãy gửi mã tham chiếu bên dưới cho bộ phận hỗ trợ.",
+    "staleTitle": "Đang cập nhật phiên bản mới",
+    "staleDetail": "Hệ thống vừa được cập nhật. Trang sẽ tự tải lại; nếu không, hãy bấm Tải lại trang.",
+    "reference": "Mã tham chiếu:",
+    "technical": "Chi tiết kỹ thuật (chỉ hiện khi phát triển)",
+    "retry": "Thử lại",
+    "reload": "Tải lại trang",
+    "home": "Về trang chủ"
   }
 }

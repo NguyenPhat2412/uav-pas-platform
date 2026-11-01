@@ -25,13 +25,13 @@ public class BankTransferController {
     private final BankTransferService bankTransfer;
     private final BillingService billing;
 
-    @GetMapping("/bank-transfer")
+    @GetMapping(ApiRoutes.Billing.BANK_TRANSFER)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BankTransferStatusResponse> status() {
         return ResponseEntity.ok(bankTransfer.status());
     }
 
-    @GetMapping("/invoices/{id}/bank-transfer")
+    @GetMapping(ApiRoutes.Billing.INVOICES_BANK_TRANSFER)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BankTransferInstructionsResponse> instructions(
             @PathVariable Long id, Authentication auth) {
@@ -39,7 +39,7 @@ public class BankTransferController {
     }
 
     /** Returns the plan invoice to pay, or 204 when a free plan was applied straight away. */
-    @PostMapping("/subscriptions")
+    @PostMapping(ApiRoutes.Billing.SUBSCRIPTIONS)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<InvoiceResponse> subscribe(
             @Valid @RequestBody SubscribeRequest request, Authentication auth) {
@@ -47,7 +47,7 @@ public class BankTransferController {
         return invoice == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(invoice);
     }
 
-    @PostMapping("/admin/invoices/{id}/confirm-payment")
+    @PostMapping(ApiRoutes.Billing.ADMIN_INVOICES_CONFIRM_PAYMENT)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<InvoiceResponse> confirm(
             @PathVariable Long id,

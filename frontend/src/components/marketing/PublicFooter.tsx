@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import {customerUrl} from "@/content/marketing/site-content";
 import {useI18n} from '@/providers/I18nContext';
@@ -21,7 +22,7 @@ export function PublicFooter() {
                 {/* Col 1: Brand & VJU Campus Info (4 cols) */}
                 <div className="space-y-3.5 lg:col-span-5">
                     <Link className="inline-flex items-center gap-2.5 text-base font-extrabold tracking-wider text-foreground" href="/">
-                        <img
+                        <Image
                             src="/vju-logo.svg"
                             alt="Biểu trưng Đại học Việt Nhật"
                             width={32}

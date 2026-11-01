@@ -29,26 +29,26 @@ public class WebhookController {
 
     private final WebhookService webhookService;
 
-    @GetMapping("/status")
+    @GetMapping(ApiRoutes.Webhooks.STATUS)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<WebhookStatusResponse> status() {
         return ResponseEntity.ok(new WebhookStatusResponse(webhookService.dispatchStatus()));
     }
 
-    @GetMapping("/subscriptions")
+    @GetMapping(ApiRoutes.Webhooks.SUBSCRIPTIONS)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<List<WebhookSubscriptionResponse>> listSubscriptions() {
         return ResponseEntity.ok(webhookService.listSubscriptions());
     }
 
-    @PostMapping("/subscriptions")
+    @PostMapping(ApiRoutes.Webhooks.SUBSCRIPTIONS)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<WebhookSubscriptionResponse> createSubscription(
             @Valid @RequestBody WebhookSubscriptionRequest request) {
         return ResponseEntity.ok(webhookService.createSubscription(request));
     }
 
-    @PutMapping("/subscriptions/{id}/toggle")
+    @PutMapping(ApiRoutes.Webhooks.TOGGLE_SUBSCRIPTION)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<Void> toggleSubscription(
             @PathVariable Long id, @RequestParam boolean active) {
@@ -56,21 +56,21 @@ public class WebhookController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/subscriptions/{id}")
+    @DeleteMapping(ApiRoutes.Webhooks.SUBSCRIPTION_BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<Void> deleteSubscription(@PathVariable Long id) {
         webhookService.deleteSubscription(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/test-dispatch")
+    @PostMapping(ApiRoutes.Webhooks.TEST_DISPATCH)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<WebhookDispatchResponse> testDispatch(
             @RequestBody WebhookTestDispatchRequest request) {
         return ResponseEntity.ok(webhookService.dispatchTest(request));
     }
 
-    @GetMapping("/logs")
+    @GetMapping(ApiRoutes.Webhooks.LOGS)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<Page<WebhookDeliveryLogResponse>> listLogs(Pageable pageable) {
         return ResponseEntity.ok(webhookService.listDeliveryLogs(Pageables.from(pageable, 20)));

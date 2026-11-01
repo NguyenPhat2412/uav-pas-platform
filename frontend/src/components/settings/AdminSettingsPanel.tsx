@@ -9,11 +9,17 @@ import {QueryState} from '@/components/data/WorkspaceState';
 import {Switch} from '@/components/ui';
 import {AssistantSettingsSection} from '@/components/assistant/AssistantSettingsSection';
 import {WeatherProviderSettingsSection} from '@/components/weather/WeatherProviderSettingsSection';
-import type {TypedSetting} from '@/api/settings/platform-settings.api';
+import type {TypedSetting} from '@/types/settings/platform-settings.types';
+import {
+    changedSettings,
+    settingEmptyProblem,
+    settingServerError,
+    sortedSettingsToSave,
+    toSettingUpdatePayload,
+} from '@/forms/settings/settings-form';
 import {usePlatformSettings, useSaveSetting, useSettingHistory} from '@/hooks/settings/useSettings';
 import {useI18n} from '@/providers/I18nContext';
 import {useUnsavedChanges} from '@/hooks/useWorkspaceTabs';
-import {ApiError} from '@/lib/api';
 
 type GroupId = 'SAFETY' | 'OPERATIONS' | 'MAP' | 'AI' | 'BILLING' | 'CONTACT' | 'OTHER';
 // Existing group titles keep their admin.settings catalog keys (AI group = KV260 edge processing).
@@ -37,50 +43,6 @@ function groupOf(category: string): GroupId {
 /** Catalog keys cannot contain dots, so setting keys are flattened for label lookup. */
 const flatKey = (key: string) => key.replace(/[^A-Za-z0-9]/g, '_');
 
-/** Mirrors the server rule so mistakes show before saving; the server stays authoritative. */
-export function clientCheck(s: TypedSetting, raw: string): string | null {
-    const value = raw.trim();
-    if (!value) return s.emptyAllowed ? null : 'required';
-    const inRange = (n: number) => (s.minValue == null || n >= s.minValue) && (s.maxValue == null || n <= s.maxValue);
-    switch (s.valueType) {
-        case 'INTEGER':
-            if (!/^[+-]?\d+$/.test(value)) return 'integer';
-            return inRange(Number(value)) ? null : 'range';
-        case 'DECIMAL':
-            if (!/^[+-]?(\d+(\.\d*)?|\.\d+)$/.test(value)) return 'decimal';
-            return inRange(Number(value)) ? null : 'range';
-        case 'BOOLEAN':
-            return value === 'true' || value === 'false' ? null : 'boolean';
-        case 'ENUM':
-            return s.allowedValues.includes(value) ? null : 'choice';
-        case 'PHONE': {
-            const digits = value.replace(/\D/g, '').length;
-            return /^\+?[0-9][0-9 .()-]{4,22}[0-9]$/.test(value) && digits >= 3 && digits <= 15 ? null : 'phone';
-        }
-        case 'EMAIL':
-            return /^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]{1,190}\.[A-Za-z]{2,24}$/.test(value) && !value.includes('..') ? null : 'email';
-        case 'URL':
-            try {
-                const url = new URL(value);
-                return url.protocol === 'https:' || url.protocol === 'http:' ? null : 'url';
-            } catch {
-                return 'url';
-            }
-        default: {
-            const length = [...value].length;
-            if ((s.minValue != null && length < s.minValue) || (s.maxValue != null && length > s.maxValue)) return 'length';
-            if (s.valuePattern) {
-                try {
-                    if (!new RegExp(`^(?:${s.valuePattern})$`).test(value)) return 'format';
-                } catch {
-                    return null;
-                }
-            }
-            return null;
-        }
-    }
-}
-
 function AdminSettingsContent() {
     const {t, formatNumber} = useI18n();
     const query = usePlatformSettings();
@@ -94,8 +56,8 @@ function AdminSettingsContent() {
 
     const settings = useMemo(() => query.data ?? [], [query.data]);
     const valueOf = (s: TypedSetting) => drafts[s.configKey] ?? s.configValue;
-    const changed = settings.filter(s => drafts[s.configKey] !== undefined && drafts[s.configKey] !== s.configValue);
-    const invalid = changed.filter(s => clientCheck(s, valueOf(s)) !== null);
+    const changed = changedSettings(settings, drafts);
+    const invalid = changed.filter(s => settingEmptyProblem(s, valueOf(s)) !== null);
     useUnsavedChanges(changed.length > 0);
 
     const label = (s: TypedSetting) => {
@@ -145,12 +107,10 @@ function AdminSettingsContent() {
         setErrorMsg(null);
         setSuccessMsg(null);
         let saved = 0;
-        // Disable first, persist an explicit price next, and enable only after the price is saved.
-        const order = (item: TypedSetting) => item.configKey === 'billing.auto_generate_invoice' ? (valueOf(item) === 'false' ? 0 : 3) : item.configKey === 'billing.hourly_rate_vnd' ? 1 : 2;
         try {
-            for (const item of [...changed].sort((a, b) => order(a) - order(b))) {
+            for (const item of sortedSettingsToSave(changed, valueOf)) {
                 try {
-                    await save.mutateAsync({key: item.configKey, value: valueOf(item).trim()});
+                    await save.mutateAsync(toSettingUpdatePayload(item, valueOf(item)));
                     saved += 1;
                     setDrafts(prev => {
                         const next = {...prev};
@@ -158,7 +118,7 @@ function AdminSettingsContent() {
                         return next;
                     });
                 } catch (error) {
-                    const detail = error instanceof ApiError ? error.message : t('admin.settings.checkAndRetry');
+                    const detail = settingServerError(error, t);
                     setServerErrors(prev => ({...prev, [item.configKey]: detail}));
                     throw new Error(`${label(item)}: ${detail}`);
                 }
@@ -212,7 +172,7 @@ function AdminSettingsContent() {
                                 {items.map(s => {
                                     const value = valueOf(s);
                                     const dirty = drafts[s.configKey] !== undefined && drafts[s.configKey] !== s.configValue;
-                                    const problem = dirty ? clientCheck(s, value) : null;
+                                    const problem = dirty ? settingEmptyProblem(s, value) : null;
                                     const error = serverErrors[s.configKey] ?? (problem ? t(`adminPlatform.settings.errors.${problem}`) : null);
                                     const id = `setting-${flatKey(s.configKey)}`;
                                     const help = `${id}-help`;

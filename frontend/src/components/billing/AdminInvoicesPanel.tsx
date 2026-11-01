@@ -11,6 +11,12 @@ import {FilterSelect} from '@/components/shared/FilterSelect';
 import {formatShortDate} from '@/lib/format';
 import {cn} from '@/lib/utils';
 import {useAdminInvoices, useBillingPlans, useConfirmBankTransfer, useCreateInvoice, useInvoiceCustomerSearch} from '@/hooks/billing/useBillingAdmin';
+import {
+    canSubmitCreateInvoice,
+    emptyCreateInvoiceDraft,
+    invoiceFieldErrors,
+    toCreateInvoicePayload,
+} from '@/forms/billing/billing-form';
 import {type InvoiceFilters} from '@/types/billing/billing.types';
 import type {InvoiceFilterKey} from '@/types/billing/billing.types';
 import {toast} from '@/providers/ToastContext';
@@ -118,30 +124,24 @@ export function AdminInvoicesPanel() {
 function CreateInvoiceDialog({onClose, onCreated}: { onClose: () => void; onCreated: (code: string) => void }) {
     const {t} = useI18n();
     const [keyword, setKeyword] = useState('');
-    const [customer, setCustomer] = useState<{ id: number; name: string } | null>(null);
-    const [amount, setAmount] = useState('');
-    const [planId, setPlanId] = useState('');
-    const [missionId, setMissionId] = useState('');
-    const [notes, setNotes] = useState('');
-    const users = useInvoiceCustomerSearch(keyword, !customer);
+    const [draft, setDraft] = useState(emptyCreateInvoiceDraft);
+    const users = useInvoiceCustomerSearch(keyword, !draft.customer);
     const plans = useBillingPlans();
     const create = useCreateInvoice();
+    const fieldErrors = invoiceFieldErrors(create.error);
     const submit = async (e: FormEvent) => {
         e.preventDefault();
-        if (!customer) return;
+        if (!canSubmitCreateInvoice(draft)) return;
         try {
-            const invoice = await create.mutateAsync({
-                userId: customer.id, amount: Number(amount), notes: notes.trim() || undefined,
-                planId: planId ? Number(planId) : undefined, missionId: missionId ? Number(missionId) : undefined,
-            });
+            const invoice = await create.mutateAsync(toCreateInvoicePayload(draft));
             onCreated(invoice.code);
         } catch {/* Shown below. */
         }
     };
-    const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none';
+    const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none aria-[invalid=true]:border-danger';
     return <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/45 p-4" role="presentation"
                 onMouseDown={e => e.target === e.currentTarget && onClose()}>
-        <form role="dialog" aria-modal="true" aria-labelledby="create-invoice-title" onSubmit={e => void submit(e)}
+        <form noValidate role="dialog" aria-modal="true" aria-labelledby="create-invoice-title" onSubmit={e => void submit(e)}
               onKeyDown={e => e.key === 'Escape' && onClose()}
               className="flex max-h-[calc(100dvh-32px)] w-full max-w-lg flex-col gap-4 overflow-y-auto bg-white p-6 shadow-2xl">
             <header className="flex items-center justify-between">
@@ -149,15 +149,15 @@ function CreateInvoiceDialog({onClose, onCreated}: { onClose: () => void; onCrea
                 <button type="button" onClick={onClose} aria-label={t('admin.invoices.cancel')} className="p-1 text-slate-400 hover:bg-slate-100"><X size={18}/></button>
             </header>
             <div className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.customer')}<RequiredMark/>
-                {customer ? <div className="mt-1 flex items-center justify-between bg-uav-red-light px-3 py-2 text-primary">
-                    <span>{customer.name}</span>
-                    <button type="button" onClick={() => setCustomer(null)} className="text-xs font-semibold hover:underline">{t('admin.invoices.change')}</button>
+                {draft.customer ? <div className="mt-1 flex items-center justify-between bg-uav-red-light px-3 py-2 text-primary">
+                    <span>{draft.customer.name}</span>
+                    <button type="button" onClick={() => setDraft(f => ({...f, customer: null}))} className="text-xs font-semibold hover:underline">{t('admin.invoices.change')}</button>
                 </div> : <>
                     <input autoFocus value={keyword} onChange={e => setKeyword(e.target.value)} className={field}
                            placeholder={t('admin.invoices.customerSearch')} aria-label={t('admin.invoices.customer')}/>
                     {users.data?.content.length ? <ul className="mt-1 max-h-48 overflow-y-auto border border-slate-200">
                         {users.data.content.map(u => <li key={u.id}>
-                            <button type="button" onClick={() => setCustomer({id: u.id, name: u.fullName || u.username})}
+                            <button type="button" onClick={() => setDraft(f => ({...f, customer: {id: u.id, name: u.fullName || u.username}}))}
                                     className="flex w-full justify-between px-3 py-2 text-left font-normal hover:bg-slate-50">
                                 <span>{u.fullName || u.username}</span><small className="text-slate-400">@{u.username}</small>
                             </button>
@@ -165,26 +165,31 @@ function CreateInvoiceDialog({onClose, onCreated}: { onClose: () => void; onCrea
                     </ul> : keyword.trim().length >= 2 && users.isFetched &&
                         <p className="mt-1 text-xs font-normal text-slate-500">{t('admin.invoices.noCustomer')}</p>}
                 </>}
+                {fieldErrors?.userId && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.userId}</span>}
             </div>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.amount')}<RequiredMark/>
-                <input aria-required type="number" step="1000" inputMode="numeric" value={amount}
-                       onChange={e => setAmount(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
+                <input aria-required aria-invalid={Boolean(fieldErrors?.amount)} type="number" step="1000" inputMode="numeric" value={draft.amount}
+                       onChange={e => setDraft(f => ({...f, amount: e.target.value}))} className={cn(field, 'tabular-nums')}/>
+                {fieldErrors?.amount && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.amount}</span>}</label>
             <div className="grid gap-3 sm:grid-cols-2">
                 <label className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.plan')}<OptionalMark/>
-                    <select value={planId} onChange={e => setPlanId(e.target.value)} className={field}>
+                    <select value={draft.planId} onChange={e => setDraft(f => ({...f, planId: e.target.value}))} className={field}>
                         <option value="">{t('admin.invoices.none')}</option>
                         {plans.data?.map(p => <option key={p.id} value={p.id}>{planName(p.name)}</option>)}
-                    </select></label>
+                    </select>
+                    {fieldErrors?.planId && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.planId}</span>}</label>
                 <label className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.missionId')}<OptionalMark/>
-                    <input type="number" value={missionId} onChange={e => setMissionId(e.target.value)} className={field}/></label>
+                    <input type="number" aria-invalid={Boolean(fieldErrors?.missionId)} value={draft.missionId} onChange={e => setDraft(f => ({...f, missionId: e.target.value}))} className={field}/>
+                    {fieldErrors?.missionId && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.missionId}</span>}</label>
             </div>
             <label className="text-[13px] font-semibold text-slate-600">{t('admin.invoices.notes')}<OptionalMark/>
-                <textarea rows={3} value={notes} onChange={e => setNotes(e.target.value)} className={field}/></label>
-            <ErrorNotice error={create.error}/>
+                <textarea rows={3} aria-invalid={Boolean(fieldErrors?.notes)} value={draft.notes} onChange={e => setDraft(f => ({...f, notes: e.target.value}))} className={field}/>
+                {fieldErrors?.notes && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.notes}</span>}</label>
+            {create.error && !fieldErrors && <ErrorNotice error={create.error}/>}
             <footer className="flex justify-end gap-2">
                 <button type="button" onClick={onClose} className="h-9 border border-slate-200 px-4 text-[13px] font-medium text-slate-600 hover:bg-slate-50">
                     {t('admin.invoices.cancel')}</button>
-                <button type="submit" disabled={!customer || !amount || create.isPending}
+                <button type="submit" disabled={!canSubmitCreateInvoice(draft) || create.isPending}
                         className="h-9 bg-primary px-4 text-[13px] font-semibold text-primary-foreground disabled:opacity-50">{t('admin.invoices.submit')}</button>
             </footer>
         </form>

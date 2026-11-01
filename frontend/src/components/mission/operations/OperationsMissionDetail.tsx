@@ -28,8 +28,13 @@ import {
     handoverEvidence,
     reservationQuantity
 } from '@/utils/mission/workflows';
+import {
+    canSubmitMissionConfirmation,
+    canSubmitUavRedispatch,
+    isValidEquipmentQuantity,
+    operationsMissionNotice,
+} from '@/forms/mission/operations-mission-form';
 import {collectPages} from '@/lib/api/collection';
-import {ApiError} from '@/lib/api';
 import type {Equipment, Operator, Station, Uav} from "@/types/resources";
 import {AppShell} from '@/components/layout/AppShell';
 import {RequiredMark} from "@/components/shared/RequiredMark";
@@ -38,22 +43,7 @@ import {useI18n} from '@/providers/I18nContext';
 import {useMissionWeather} from '@/hooks/weather/useWeather';
 import {PreflightWeatherCard} from '@/components/weather/PreflightWeatherCard';
 
-// Backend error codes with a dedicated explanation under opsMissions.apiErrors.
-const errorCodes = new Set([
-    'MISSION_ACCEPTANCE_REQUIRED', 'MISSION_ACCEPTANCE_STALE', 'MISSION_HANDOVER_NOTES_REQUIRED',
-    'MISSION_HANDOVER_RESULT_REQUIRED', 'MISSION_MEDIA_LOCKED', 'MISSION_DISPATCH_STALE', 'MISSION_RESERVATION_STALE',
-    'MISSION_STATION_RESOURCES_CONFLICT', 'MISSION_RESERVATION_BALANCE_CONFLICT', 'MISSION_DISPATCH_REQUIRED',
-    'OPERATOR_NOT_AVAILABLE', 'MISSION_RESOURCE_UNCHANGED', 'MISSION_UAV_ASSIGNMENT_STALE', 'MISSION_INVALID_STATUS',
-    'MISSION_RESOURCE_MISSING', 'UAV_NOT_AVAILABLE', 'UAV_TIME_CONFLICT', 'OPERATOR_TIME_CONFLICT', 'INVENTORY_NOT_AVAILABLE',
-    'MISSION_WEATHER_UNSAFE',
-]);
-const codeMessage = (err: unknown, fallbackKey: string): Message => {
-    const code = err instanceof Error ? err.message : '';
-    if (errorCodes.has(code)) return {key: `opsMissions.apiErrors.${code}`};
-    // Rule errors now arrive as readable Vietnamese from the API; show them rather than a generic fallback.
-    if (err instanceof ApiError && code && !/^[A-Z0-9_]+$/.test(code)) return {text: code};
-    return {key: fallbackKey};
-};
+// Backend error codes (including 'MISSION_WEATHER_UNSAFE') are mapped via operationsMissionNotice.
 export default function MissionDetailPage() {
     const {id} = useParams<{ id: string }>();
     return <MissionDetail key={id} id={id}/>;
@@ -183,7 +173,7 @@ function MissionDetail({id}: { id: string }) {
         } catch (err) {
             focusMutationError.current = true;
             setRedispatch(null);
-            setError(err instanceof ApiError && err.status === 403 ? {key: 'opsMissions.detail.errors.forbidden'} : codeMessage(err, 'opsMissions.detail.errors.actionUnconfirmed'));
+            setError(operationsMissionNotice(err, 'opsMissions.detail.errors.actionUnconfirmed'));
         } finally {
             try {
                 await load();
@@ -210,7 +200,7 @@ function MissionDetail({id}: { id: string }) {
             await load();
         } catch (err) {
             focusMutationError.current = true;
-            setError(codeMessage(err, 'opsMissions.detail.errors.uploadUnconfirmed'));
+            setError(operationsMissionNotice(err, 'opsMissions.detail.errors.uploadUnconfirmed'));
             try {
                 await load();
             } catch {
@@ -230,8 +220,7 @@ function MissionDetail({id}: { id: string }) {
     };
     const confirmAction = () => {
         if (!confirmation || !controls[confirmation]) return;
-        if (['reject', 'conflict', 'fail', 'forceFail', 'complete'].includes(confirmation) && !note.trim()) return;
-        if (confirmation === 'complete' && (!extraNote.trim() || !canFinish)) return;
+        if (!canSubmitMissionConfirmation(confirmation, note, extraNote, canFinish)) return;
         const run = {
             reject: () => missions.reject(mission.id, note.trim()),
             conflict: () => missions.reportConflict(mission.id, note.trim()),
@@ -268,7 +257,7 @@ function MissionDetail({id}: { id: string }) {
         setError(null);
     };
     const selectedEquipment = equipment.find(e => String(e.id) === resourceIds.equipment);
-    const validQuantity = Number.isSafeInteger(Number(quantity)) && Number(quantity) > 0 && Number(quantity) <= (selectedEquipment?.availableQuantity ?? 0);
+    const validQuantity = isValidEquipmentQuantity(quantity, selectedEquipment?.availableQuantity ?? 0);
     const resources = [
         {
             key: 'station' as const,
@@ -407,7 +396,7 @@ function MissionDetail({id}: { id: string }) {
                         </>}
                     <div className={actionsClass}><Button type="button" variant="outline" disabled={disabled}
                                                              onClick={() => setConfirmation(null)}>{t('opsMissions.detail.backAction')}</Button><Button type="submit" variant={confirmation === 'fail' || confirmation === 'forceFail' ? 'danger' : 'primary'}
-                                            disabled={disabled || (['reject', 'conflict', 'fail', 'forceFail', 'complete'].includes(confirmation) && !note.trim()) || (confirmation === 'complete' && (!extraNote.trim() || !canFinish))}>{t(`opsMissions.detail.confirm.${confirmation}.submit`)}</Button>
+                                            disabled={disabled || !canSubmitMissionConfirmation(confirmation, note, extraNote, canFinish)}>{t(`opsMissions.detail.confirm.${confirmation}.submit`)}</Button>
                     </div>
                 </form>}
             {error && <div ref={mutationError} role="alert" tabIndex={-1}><Alert role="presentation"
@@ -484,7 +473,7 @@ function MissionDetail({id}: { id: string }) {
                                                                           aria-label={redispatch.kind === 'replaceUav' ? t('opsMissions.detail.uav.replaceForm') : t('opsMissions.detail.uav.unassignForm')}
                                                                           onSubmit={event => {
                                                                               event.preventDefault();
-                                                                              if (!redispatchReason.trim() || (redispatch.kind === 'replaceUav' && !replacementUavs.some(uav => String(uav.id) === replacementUavId))) return;
+                                                                              if (!canSubmitUavRedispatch(redispatch.kind, redispatchReason, replacementUavId, replacementUavs.map(uav => uav.id))) return;
                                                                               void action(() => redispatch.kind === 'replaceUav' ? missions.replaceUav(mission.id, redispatch.expectedCurrentUavId, Number(replacementUavId), redispatchReason) : missions.unassignUav(mission.id, redispatch.expectedCurrentUavId, redispatchReason));
                                                                           }}>
                             <strong>{redispatch.kind === 'replaceUav' ? t('opsMissions.detail.uav.confirmReplace') : t('opsMissions.detail.uav.confirmUnassign')}</strong>
@@ -507,7 +496,7 @@ function MissionDetail({id}: { id: string }) {
                                 className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.detail.uav.reasonHint', {count: 500})}</span></label>
                             <div className={actionsClass}><Button type="button" disabled={disabled} variant="outline"
                                                                      onClick={() => setRedispatch(null)}>{t('opsMissions.detail.uav.keep')}</Button><Button type="submit"
-                                                    disabled={disabled || !redispatchReason.trim() || (redispatch.kind === 'replaceUav' && !replacementUavs.some(uav => String(uav.id) === replacementUavId))}>{redispatch.kind === 'replaceUav' ? t('opsMissions.detail.uav.confirmReplace') : t('opsMissions.detail.uav.confirmUnassign')}</Button>
+                                                    disabled={disabled || !canSubmitUavRedispatch(redispatch.kind, redispatchReason, replacementUavId, replacementUavs.map(uav => uav.id))}>{redispatch.kind === 'replaceUav' ? t('opsMissions.detail.uav.confirmReplace') : t('opsMissions.detail.uav.confirmUnassign')}</Button>
                             </div>
                         </form>}
                     </div>

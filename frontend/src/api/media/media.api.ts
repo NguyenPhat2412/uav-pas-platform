@@ -1,14 +1,6 @@
 import {apiClient, apiRequest, API_ROUTES} from '@/lib/api';
 import type {MediaAsset, MediaInput, PageResponse} from '@/types/resources';
-
-export type MediaUploadStep = 'registering' | 'uploading' | 'confirming';
-
-export interface MediaUploadOptions {
-    /** Resume an asset that was registered but never confirmed instead of registering a new one. */
-    existing?: MediaAsset;
-    link?: { type: string; id: string };
-    onStep?: (step: MediaUploadStep, asset?: MediaAsset) => void;
-}
+import type {MediaUploadOptions} from '@/types/media/media-upload.types';
 
 export const mediaService = {
     listMedia: (page = 0, signal?: AbortSignal) =>

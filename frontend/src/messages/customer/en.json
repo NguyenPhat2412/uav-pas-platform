@@ -40,7 +40,8 @@
             "activeMissions": "{label}: {count} missions in progress",
             "pendingInvoices": "{label}: {count} invoices awaiting payment",
             "unreadNotifications": "{label}: {count} unread notifications"
-        }
+        },
+        "weather": "Flight weather"
     },
     "billing": {
         "title": "Service Plans & Operational Quota",

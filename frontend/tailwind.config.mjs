@@ -159,6 +159,35 @@ const config = {
                     "0%, 60%, 100%": {opacity: "1"},
                     "70%, 90%": {opacity: "0.15"},
                 },
+                // Weather icons: clouds and rain drift a few pixels; the sun turns slowly.
+                "weather-float": {
+                    "0%, 100%": {transform: "translateY(0)"},
+                    "50%": {transform: "translateY(-3px)"},
+                },
+                // WeatherBackdrop: falling drops/flakes, drifting clouds and fog, twinkling stars, lightning, sun glow.
+                "sky-fall": {
+                    "0%": {transform: "translate3d(0, -40px, 0)", opacity: "0"},
+                    "10%": {opacity: "1"},
+                    "100%": {transform: "translate3d(var(--sky-wind, 0px), 260px, 0)", opacity: "0.9"},
+                },
+                "sky-drift": {
+                    "0%": {transform: "translate3d(-30%, 0, 0)"},
+                    "100%": {transform: "translate3d(130%, 0, 0)"},
+                },
+                "sky-twinkle": {
+                    "0%, 100%": {opacity: "0.25"},
+                    "50%": {opacity: "1"},
+                },
+                "sky-flash": {
+                    "0%, 86%, 100%": {opacity: "0"},
+                    "88%": {opacity: "0.55"},
+                    "90%": {opacity: "0.05"},
+                    "92%": {opacity: "0.4"},
+                },
+                "sky-glow": {
+                    "0%, 100%": {transform: "scale(1)", opacity: "0.75"},
+                    "50%": {transform: "scale(1.12)", opacity: "1"},
+                },
             },
             animation: {
                 "slide-in-right": "slide-in-right 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards",
@@ -173,6 +202,14 @@ const config = {
                 "uav-bob": "uav-hover 1.8s ease-in-out infinite",
                 "uav-shadow": "uav-shadow 1.8s ease-in-out infinite",
                 "nav-blink": "nav-blink 1.2s steps(1, end) infinite",
+                "weather-float": "weather-float 3.2s ease-in-out infinite",
+                "weather-sun": "radar-sweep 18s linear infinite",
+                "sky-fall": "sky-fall 1s linear infinite",
+                "sky-drift": "sky-drift 60s linear infinite",
+                "sky-twinkle": "sky-twinkle 3s ease-in-out infinite",
+                "sky-flash": "sky-flash 7s linear infinite",
+                "sky-glow": "sky-glow 6s ease-in-out infinite",
+                "sky-rays": "radar-sweep 80s linear infinite",
             },
             borderRadius: {
                 // Shape scale lives in CSS variables (src/styles/globals.css) so a portal can override it.

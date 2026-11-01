@@ -4,6 +4,15 @@ import {Alert, Button} from '@/components/ui';
 import {ApiError} from '@/lib/api';
 import {useUavMutations} from '@/hooks/uav/useUavs';
 import type {Station, Uav} from "@/types/resources";
+import {
+    canAssignUavToStation,
+    canSubmitUavLifecycleReason,
+    createUavLifecycleConfirmation,
+    toUavLifecyclePayload,
+    toUavStationAssignPayload,
+    type UavLifecycleAction,
+    type UavLifecycleConfirmation,
+} from "@/forms/uav/uav-form";
 import {uavControls} from "@/utils/uav/workflows";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';
@@ -28,10 +37,7 @@ export function UavLifecyclePanel({uav, mode, stations, canReadStations, onRefre
 }) {
     const {t} = useI18n();
     const controls = uavControls(uav.status, true);
-    const [confirmation, setConfirmation] = useState<{
-        action: 'maintenance' | 'recover';
-        expectedStatus: string
-    } | null>(null);
+    const [confirmation, setConfirmation] = useState<UavLifecycleConfirmation | null>(null);
     const [reason, setReason] = useState('');
     const [stationId, setStationId] = useState('');
     const [error, setError] = useState('');
@@ -71,8 +77,8 @@ export function UavLifecyclePanel({uav, mode, stations, canReadStations, onRefre
             onBusy(false);
         }
     };
-    const open = (action: 'maintenance' | 'recover') => {
-        setConfirmation({action, expectedStatus: uav.status});
+    const open = (action: UavLifecycleAction) => {
+        setConfirmation(createUavLifecycleConfirmation(action, uav.status));
         setReason('');
         setError('');
         setSuccess('');
@@ -114,11 +120,12 @@ export function UavLifecyclePanel({uav, mode, stations, canReadStations, onRefre
                             onClick={() => open('recover')}>{legacyRecovery ? t('opsAssets.uavLifecycle.recoverLegacy') : t('opsAssets.uavLifecycle.completeMaintenance')}</Button>}
             </div>}
             {confirmation && <form
+                noValidate
                 aria-label={text('form')}
                 className="grid gap-4 rounded-panel border border-border bg-slate-50 p-4"
                 onSubmit={event => {
                     event.preventDefault();
-                    const input = {id: uav.id, reason, expectedStatus: confirmation.expectedStatus};
+                    const input = toUavLifecyclePayload(uav.id, confirmation, reason);
                     void run(() => confirmation.action === 'maintenance' ? maintenance.mutateAsync(input) : recover.mutateAsync(input), `opsAssets.uavLifecycle.success.${variant}`);
                 }}>
                 <strong>{text('heading')}</strong>
@@ -132,19 +139,16 @@ export function UavLifecyclePanel({uav, mode, stations, canReadStations, onRefre
                     className="text-xs text-slate-600">{t('opsAssets.uavLifecycle.maxChars', {max: 255})}</span></div>
                 <div className="flex flex-wrap gap-3"><Button type="button" className="min-h-11" disabled={blocked}
                                                               variant="outline" onClick={() => setConfirmation(null)}>{t('opsAssets.uavLifecycle.back')}</Button><Button type="submit" className="min-h-11"
-                                        disabled={blocked || !reason.trim()}>{text('submit')}</Button>
+                                        disabled={blocked || !canSubmitUavLifecycleReason(reason)}>{text('submit')}</Button>
                 </div>
             </form>}
         </>}
         {mode === 'assignment' && (!canReadStations ?
             <p className="text-sm text-slate-600">{t('opsAssets.uavLifecycle.needStationRead')}</p> : controls.station ?
-                <form className="grid gap-4" aria-label={t('opsAssets.uavLifecycle.transferForm')} onSubmit={event => {
+                <form noValidate className="grid gap-4" aria-label={t('opsAssets.uavLifecycle.transferForm')} onSubmit={event => {
                     event.preventDefault();
-                    if (!stations.some(station => station.id === Number(stationId) && station.status === 'ACTIVE') || Number(stationId) === uav.stationId) return;
-                    void run(() => assign.mutateAsync({
-                        id: uav.id,
-                        stationId: Number(stationId)
-                    }), 'opsAssets.uavLifecycle.success.station');
+                    if (!canAssignUavToStation(stationId, uav.stationId, stations)) return;
+                    void run(() => assign.mutateAsync(toUavStationAssignPayload(uav.id, stationId)), 'opsAssets.uavLifecycle.success.station');
                 }}>
                     <p className="text-sm text-slate-600">{t('opsAssets.uavLifecycle.transferNote')}</p>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="uav-station">{t('opsAssets.uavLifecycle.targetStation')}<RequiredMark/></label><select

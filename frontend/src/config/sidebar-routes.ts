@@ -6,6 +6,7 @@ import {
     BarChart3,
     Bell,
     Boxes,
+    CloudSun,
     ClipboardList,
     CreditCard,
     Crosshair,
@@ -113,6 +114,14 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         defaultLabel: 'Bản đồ đội bay',
         group: 'overview',
         icon: MapIcon,
+        permission: 'MISSION_VIEW_ALL',
+    },
+    {
+        href: '/admin/weather',
+        key: 'weather',
+        defaultLabel: 'Thời tiết bay',
+        group: 'overview',
+        icon: CloudSun,
         permission: 'MISSION_VIEW_ALL',
     },
 
@@ -387,6 +396,13 @@ export const OPERATIONS_SIDEBAR_ROUTES: SidebarRouteItem<OperationsNavGroup>[] =
         permission: 'MISSION_VIEW',
         aliases: ['/operations/flight-ops'],
     },
+    {
+        href: '/operations/weather',
+        key: 'weather',
+        group: 'command',
+        icon: CloudSun,
+        permission: 'MISSION_VIEW',
+    },
 
     // Nhóm: Điều phối nhiệm vụ (missions)
     {
@@ -513,6 +529,14 @@ export const CUSTOMER_SIDEBAR_ROUTES: SidebarRouteItem<CustomerNavGroup>[] = [
         icon: Activity,
         permission: 'MISSION_VIEW',
         badge: 'activeMissions',
+    },
+    {
+        href: '/customer/weather',
+        key: 'weather',
+        defaultLabel: 'Thời tiết bay',
+        group: 'missions',
+        icon: CloudSun,
+        permission: 'MISSION_VIEW',
     },
 
     // Nhóm: Dịch vụ & thanh toán (services)

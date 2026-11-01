@@ -96,8 +96,9 @@ public class SystemConfigServiceImpl implements SystemConfigService {
                             > 0) throw new NumberFormatException();
         } catch (NumberFormatException ex) {
             throw SystemException.badRequest(
-                    "Giá theo giờ phải là số đồng nguyên dương (không có phần lẻ) trước khi bật tính phí.",
-                    "BILLING_HOURLY_RATE_INVALID");
+                            "Giá theo giờ phải là số đồng nguyên dương (không có phần lẻ) trước khi bật tính phí.",
+                            "BILLING_HOURLY_RATE_INVALID")
+                    .at("configValue");
         }
     }
 
@@ -110,7 +111,10 @@ public class SystemConfigServiceImpl implements SystemConfigService {
         // Dedicated billing rules run first so their established messages are preserved.
         if ("billing.auto_generate_invoice".equals(key)) {
             if (requested == null || !java.util.Set.of("true", "false").contains(requested.trim()))
-                throw SystemException.badRequest("Billing flag must be true or false");
+                throw SystemException.badRequest(
+                                "Giá trị bật/tắt phải là true hoặc false.",
+                                "SETTING_INVALID_BOOLEAN")
+                        .at("configValue");
             if ("true".equals(requested.trim()))
                 validateRate(valueOrDefault("billing.hourly_rate_vnd", ""));
         }

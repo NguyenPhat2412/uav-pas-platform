@@ -43,6 +43,10 @@ const apiMessages: Record<PresentationLocale, Record<string, string>> = {
         'Email already exists in the system': 'Email này đã được sử dụng.',
         'Username already exists in the system': 'Tên đăng nhập này đã được sử dụng.',
         'Phone number already exists in the system': 'Số điện thoại này đã được sử dụng.',
+        'Station code already exists': 'Mã trạm này đã tồn tại.',
+        'UAV serial number already exists': 'Số serial UAV này đã tồn tại.',
+        'Webhook URL must target a public HTTP(S) endpoint without credentials or fragments': 'Địa chỉ webhook phải là HTTP(S) công khai, không chứa thông tin đăng nhập hoặc dấu #.',
+        'INVOICE_AMOUNT_WHOLE_DONG_REQUIRED': 'Số tiền hóa đơn phải là số đồng nguyên dương (không có phần thập phân).',
     },
     en: {
         'Service plan code already exists': "This plan code already exists.",
@@ -58,6 +62,10 @@ const apiMessages: Record<PresentationLocale, Record<string, string>> = {
         'Email already exists in the system': 'This email is already in use.',
         'Username already exists in the system': 'This username is already taken.',
         'Phone number already exists in the system': 'This phone number is already in use.',
+        'Station code already exists': 'This station code already exists.',
+        'UAV serial number already exists': 'This UAV serial number already exists.',
+        'Webhook URL must target a public HTTP(S) endpoint without credentials or fragments': 'Webhook URL must target a public HTTP(S) endpoint without credentials or fragments.',
+        'INVOICE_AMOUNT_WHOLE_DONG_REQUIRED': 'Invoice amount must be a positive whole VND amount.',
     },
     ja: {
         'Service plan code already exists': "このプランコードは既に存在します。",
@@ -73,6 +81,10 @@ const apiMessages: Record<PresentationLocale, Record<string, string>> = {
         'Email already exists in the system': 'このメールアドレスは既に使用されています。',
         'Username already exists in the system': 'このユーザー名は既に使用されています。',
         'Phone number already exists in the system': 'この電話番号は既に使用されています。',
+        'Station code already exists': 'このステーションコードは既に存在します。',
+        'UAV serial number already exists': 'このUAVシリアル番号は既に存在します。',
+        'Webhook URL must target a public HTTP(S) endpoint without credentials or fragments': 'Webhook URLは認証情報やフラグメントを含まない公開HTTP(S)エンドポイントである必要があります。',
+        'INVOICE_AMOUNT_WHOLE_DONG_REQUIRED': '請求金額は正の整数（ドン）である必要があります。',
     },
 };
 
@@ -129,14 +141,44 @@ export function sessionOwnerOf(value: string | null | undefined): string | null 
     return owner ? owner : null;
 }
 
+/**
+ * Set once this browser has learned for certain that it has no session (a refused /auth/me or refresh, or a sign-out),
+ * cleared by any sign-in. A page load that finds it skips the /auth/me → refresh → /auth/me round-trips, so anonymous
+ * visitors cost the API nothing. Absent (first visit, cleared storage) means "unknown": the page asks once.
+ */
+const SIGNED_OUT_KEY = 'uav_signed_out';
+
 function writeSessionMarker(userId: number | null, force: boolean) {
     if (typeof window === 'undefined' || !window.localStorage) return;
     try {
-        if (userId == null) window.localStorage.removeItem(SESSION_STORAGE_KEY);
-        else if (force || sessionOwnerOf(window.localStorage.getItem(SESSION_STORAGE_KEY)) !== String(userId))
-            window.localStorage.setItem(SESSION_STORAGE_KEY, `${userId}:${Date.now()}`);
+        if (userId == null) {
+            window.localStorage.removeItem(SESSION_STORAGE_KEY);
+            window.localStorage.setItem(SIGNED_OUT_KEY, '1');
+        } else {
+            window.localStorage.removeItem(SIGNED_OUT_KEY);
+            if (force || sessionOwnerOf(window.localStorage.getItem(SESSION_STORAGE_KEY)) !== String(userId))
+                window.localStorage.setItem(SESSION_STORAGE_KEY, `${userId}:${Date.now()}`);
+        }
     } catch { /* Storage may be unavailable (private mode); cross-tab sync is best effort. */
     }
+}
+
+function readStorage(key: string): string | null {
+    try {
+        return typeof window !== 'undefined' && window.localStorage ? window.localStorage.getItem(key) : null;
+    } catch {
+        return null;
+    }
+}
+
+/** True when this browser last knew it had no session and no tab has signed in since (see SIGNED_OUT_KEY). */
+export function knownSignedOut(): boolean {
+    return readStorage(SIGNED_OUT_KEY) === '1' && readStorage(SESSION_STORAGE_KEY) === null;
+}
+
+/** True when some tab of this browser holds a session (the cross-tab `uav_session` marker is set). */
+function sessionMarkerPresent(): boolean {
+    return readStorage(SESSION_STORAGE_KEY) !== null;
 }
 
 /** Records the account restored from cookies on page load, telling other tabs only when it differs from theirs. */
@@ -236,7 +278,9 @@ async function refreshAccess(generation: number) {
             throw new ApiError(429, 'Too Many Requests', clientText[currentLocale()].tooManyRequests, '/api/v1/auth/refresh', 'RATE_LIMITED');
         }
         if (!response.ok) {
-            if (response.status < 500 && await sessionStillValid()) {
+            // Only a browser with a session somewhere can have had its cookies rotated by another tab; without one,
+            // asking /auth/me again would just be a second refused request.
+            if (response.status < 500 && sessionMarkerPresent() && await sessionStillValid()) {
                 requireCurrent(generation);
                 // Another tab refreshed first; its new cookies authenticate this tab too.
                 return currentToken() || '';

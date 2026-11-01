@@ -1,4 +1,4 @@
-import type {AlertSeverity, AlertSource} from '@/api/alerts/alerts.api';
+import type {AlertSeverity, AlertSource} from '@/types/alerts/alerts.types';
 
 /** Filter options in display order. */
 export const SEVERITIES: AlertSeverity[] = ['CRITICAL', 'WARNING', 'INFO'];

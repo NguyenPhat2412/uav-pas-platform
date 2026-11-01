@@ -21,7 +21,12 @@ export function maintenanceError(error: unknown, t: Translate) {
     if (error instanceof ApiError) {
         if (error.status === 403) return t('opsAssets.maintenance.errors.forbidden');
         if (error.status === 404) return t('opsAssets.maintenance.errors.notFound');
+        if (error.code && errorCodes.has(error.code)) return t(`opsAssets.maintenance.errors.${error.code}`);
         if (errorCodes.has(error.message)) return t(`opsAssets.maintenance.errors.${error.message}`);
+        if (error.fields && Object.keys(error.fields).length > 0) {
+            return [...new Set(Object.values(error.fields).filter(Boolean))].join(' ');
+        }
+        if (error.status === 400 && error.message && !/^[A-Z0-9_]+$/.test(error.message)) return error.message;
         if (error.status === 409) return t('opsAssets.maintenance.errors.conflict');
         if (error.status === 400) return t('opsAssets.maintenance.errors.badRequest');
         return t('opsAssets.maintenance.errors.unconfirmed');

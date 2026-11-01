@@ -5,10 +5,17 @@ import Link from 'next/link';
 import {KeyRound, RefreshCw, Router, Save, Unplug} from 'lucide-react';
 import {KpiCard, MetricStrip} from '@/components/ui';
 import {QueryState} from '@/components/data/WorkspaceState';
-import {ApiError} from '@/lib/api';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import {useRouterSettings, useRouterStatus, useSaveRouterSettings} from '@/hooks/assistant/useAssistant';
+import {
+    aiRouterDraftFromSettings,
+    aiRouterFieldErrors,
+    canSubmitAiRouterSettings,
+    resolveAiRouterErrorCode,
+    toAiRouterSettingsPayload,
+    type AiRouterFormDraft,
+} from '@/forms/assistant/assistant-settings-form';
 import type {AiRouterSettings, AiRouterStatus} from '@/types/assistant/assistant.types';
 import {SuperheroLogo} from '@/components/assistant/SuperheroLogo';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
@@ -74,61 +81,52 @@ function StatusStrip({status, loading, settings, onRefresh}: {
 function SettingsForm({settings, models}: { settings: AiRouterSettings; models: string[] }) {
     const {t} = useI18n();
     const errorText = useErrorText();
-    const [baseUrl, setBaseUrl] = useState(settings.baseUrl);
-    const [apiKey, setApiKey] = useState('');
-    const [mode1Label, setMode1Label] = useState(settings.mode1Label);
-    const [mode1Model, setMode1Model] = useState(settings.mode1Model ?? '');
-    const [mode2Label, setMode2Label] = useState(settings.mode2Label);
-    const [mode2Model, setMode2Model] = useState(settings.mode2Model ?? '');
-    const [systemPrompt, setSystemPrompt] = useState(settings.systemPrompt ?? '');
-    const [enabled, setEnabled] = useState(settings.enabled);
+    const [draft, setDraft] = useState<AiRouterFormDraft>(() => aiRouterDraftFromSettings(settings));
+    const set = (patch: Partial<AiRouterFormDraft>) => setDraft(prev => ({...prev, ...patch}));
 
     const save = useSaveRouterSettings({
         onSuccess: () => {
-            setApiKey('');
+            set({apiKey: ''});
             toast.success(t('admin.aiRouter.saved'));
         },
         onError: error => {
-            const code = error instanceof ApiError ? error.code ?? '' : '';
+            const code = resolveAiRouterErrorCode(error);
             toast.error(code ? errorText(code) : error instanceof Error ? error.message : t('admin.aiRouter.saveFailed'));
         },
     });
+    const fieldErrors = aiRouterFieldErrors(save.error);
+    const renderFieldError = (msg?: string) =>
+        msg ? <span className="mt-1 block text-xs font-normal normal-case tracking-normal text-danger">{/^[A-Z0-9_]+$/.test(msg) ? errorText(msg) : msg}</span> : null;
 
-    /** `apiKeyChange`: undefined keeps the stored key, '' removes it. */
-    const input = (apiKeyChange?: string) => ({
-        baseUrl: baseUrl.trim(), apiKey: apiKeyChange, mode1Label: mode1Label.trim(), mode1Model: mode1Model.trim() || null,
-        mode2Label: mode2Label.trim(), mode2Model: mode2Model.trim() || null, systemPrompt: systemPrompt.trim() || null,
-        enabled, expectedVersion: settings.version,
-    });
     const submit = (event: FormEvent) => {
         event.preventDefault();
-        save.mutate(input(apiKey.trim() ? apiKey.trim() : undefined));
+        save.mutate(toAiRouterSettingsPayload(draft, settings.version));
     };
     const disconnect = () => {
         if (window.confirm(t('admin.aiRouter.disconnectConfirm'))) {
-            setEnabled(false);
-            save.mutate(input(''));
+            set({enabled: false});
+            save.mutate(toAiRouterSettingsPayload(draft, settings.version, true));
         }
     };
 
-    return <form onSubmit={submit} className="border border-slate-200 bg-white">
+    return <form noValidate onSubmit={submit} className="border border-slate-200 bg-white">
         <div className="grid grid-cols-1 gap-px bg-slate-200 lg:grid-cols-2">
             <fieldset className="m-0 space-y-4 border-0 bg-white p-4">
                 <legend className="sr-only">{t('admin.aiRouter.connection')}</legend>
                 <h3 className="m-0 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-800">
                     <KeyRound size={15} className="text-primary" aria-hidden="true"/>{t('admin.aiRouter.connection')}</h3>
                 <label className={label}>{t('admin.aiRouter.baseUrl')}<RequiredMark/>
-                    <input aria-required type="url" value={baseUrl} onChange={e => setBaseUrl(e.target.value)} className={cn(field, 'font-mono')}/>
-                    <span className="mt-1 block text-xs font-normal normal-case tracking-normal text-slate-500">{t('admin.aiRouter.baseUrlHint')}</span></label>
+                    <input aria-required aria-invalid={Boolean(fieldErrors?.baseUrl)} type="url" value={draft.baseUrl} onChange={e => set({baseUrl: e.target.value})} className={cn(field, 'font-mono', fieldErrors?.baseUrl && 'border-danger')}/>
+                    {renderFieldError(fieldErrors?.baseUrl) ?? <span className="mt-1 block text-xs font-normal normal-case tracking-normal text-slate-500">{t('admin.aiRouter.baseUrlHint')}</span>}</label>
                 <label className={label}>{t('admin.aiRouter.apiKey')}<OptionalMark/>
-                    <input type="password" autoComplete="off" value={apiKey} onChange={e => setApiKey(e.target.value)} className={cn(field, 'font-mono')}
+                    <input type="password" autoComplete="off" aria-invalid={Boolean(fieldErrors?.apiKey)} value={draft.apiKey} onChange={e => set({apiKey: e.target.value})} className={cn(field, 'font-mono', fieldErrors?.apiKey && 'border-danger')}
                            placeholder={settings.apiKeyConfigured ? t('admin.aiRouter.apiKeyStored', {hint: settings.apiKeyHint ?? '••••'}) : t('admin.aiRouter.apiKeyPlaceholder')}/>
-                    <span className="mt-1 block text-xs font-normal normal-case tracking-normal text-slate-500">{t('admin.aiRouter.apiKeyHint')}</span></label>
+                    {renderFieldError(fieldErrors?.apiKey) ?? <span className="mt-1 block text-xs font-normal normal-case tracking-normal text-slate-500">{t('admin.aiRouter.apiKeyHint')}</span>}</label>
                 {settings.apiKeyConfigured && <button type="button" onClick={disconnect} disabled={save.isPending}
                                                       className="rounded-control inline-flex h-8 items-center gap-1.5 border border-rose-200 bg-white px-3 text-xs font-semibold text-primary hover:bg-uav-red-light disabled:opacity-60">
                     <Unplug size={13} aria-hidden="true"/>{t('admin.aiRouter.disconnect')}</button>}
                 <label className="flex items-center gap-2.5 border-t border-slate-200 pt-4 text-[13px] font-semibold text-slate-800">
-                    <input type="checkbox" checked={enabled} onChange={e => setEnabled(e.target.checked)} className="h-4 w-4 accent-primary"/>
+                    <input type="checkbox" checked={draft.enabled} onChange={e => set({enabled: e.target.checked})} className="h-4 w-4 accent-primary"/>
                     {t('admin.aiRouter.enable')}</label>
             </fieldset>
 
@@ -137,22 +135,28 @@ function SettingsForm({settings, models}: { settings: AiRouterSettings; models: 
                 <h3 className="m-0 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-800">
                     <SuperheroLogo size={18}/>{t('admin.aiRouter.modes')}</h3>
                 <datalist id="ai-router-models">{models.map(m => <option key={m} value={m}/>)}</datalist>
-                {([[1, mode1Label, setMode1Label, mode1Model, setMode1Model], [2, mode2Label, setMode2Label, mode2Model, setMode2Model]] as const).map(([n, name, setName, model, setModel]) =>
+                {([
+                    [1, draft.mode1Label, (v: string) => set({mode1Label: v}), draft.mode1Model, (v: string) => set({mode1Model: v}), fieldErrors?.mode1Label, fieldErrors?.mode1Model],
+                    [2, draft.mode2Label, (v: string) => set({mode2Label: v}), draft.mode2Model, (v: string) => set({mode2Model: v}), fieldErrors?.mode2Label, fieldErrors?.mode2Model],
+                ] as const).map(([n, name, setName, model, setModel, labelErr, modelErr]) =>
                     <div key={n} className="grid grid-cols-1 gap-3 border-l-2 border-l-uav-blue pl-3 sm:grid-cols-[160px_minmax(0,1fr)]">
                         <label className={label}>{t('admin.aiRouter.modeName', {n})}<RequiredMark/>
-                            <input aria-required value={name} onChange={e => setName(e.target.value)} className={field}/></label>
+                            <input aria-required aria-invalid={Boolean(labelErr)} value={name} onChange={e => setName(e.target.value)} className={cn(field, labelErr && 'border-danger')}/>
+                            {renderFieldError(labelErr)}</label>
                         <label className={label}>{t('admin.aiRouter.modeModel', {n})}<OptionalMark/>
-                            <input list="ai-router-models" value={model} onChange={e => setModel(e.target.value)} className={cn(field, 'font-mono')}
-                                   placeholder={models[0] ?? 'cc/claude-sonnet-4-5'}/></label>
+                            <input list="ai-router-models" aria-invalid={Boolean(modelErr)} value={model} onChange={e => setModel(e.target.value)} className={cn(field, 'font-mono', modelErr && 'border-danger')}
+                                   placeholder={models[0] ?? 'cc/claude-sonnet-4-5'}/>
+                            {renderFieldError(modelErr)}</label>
                     </div>)}
                 <p className="m-0 text-xs text-slate-500">{models.length ? t('admin.aiRouter.modelsFromRouter', {count: models.length}) : t('admin.aiRouter.modelsManual')}</p>
                 <label className={label}>{t('admin.aiRouter.systemPrompt')}<OptionalMark/>
-                    <textarea rows={5} value={systemPrompt} onChange={e => setSystemPrompt(e.target.value)} className={cn(field, 'resize-y leading-relaxed')}/></label>
+                    <textarea rows={5} value={draft.systemPrompt} onChange={e => set({systemPrompt: e.target.value})} className={cn(field, 'resize-y leading-relaxed')}/>
+                    {renderFieldError(fieldErrors?.systemPrompt)}</label>
             </fieldset>
         </div>
         <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-slate-50/70 px-4 py-3">
             <span className="text-xs text-slate-500">{t('admin.aiRouter.securityNote')}</span>
-            <button type="submit" disabled={save.isPending}
+            <button type="submit" disabled={save.isPending || !canSubmitAiRouterSettings(draft)}
                     className="rounded-control inline-flex h-9 items-center gap-1.5 bg-primary px-4 text-[13px] font-bold text-primary-foreground hover:bg-primary-hover disabled:opacity-60">
                 <Save size={15} aria-hidden="true"/>{save.isPending ? t('admin.aiRouter.saving') : t('admin.aiRouter.save')}</button>
         </footer>

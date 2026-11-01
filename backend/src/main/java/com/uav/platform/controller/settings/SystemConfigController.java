@@ -30,20 +30,20 @@ public class SystemConfigController {
         return ResponseEntity.ok(configService.listAll());
     }
 
-    @GetMapping("/{key}")
+    @GetMapping(ApiRoutes.Settings.BY_KEY)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<SystemConfigurationResponse> getSetting(@PathVariable String key) {
         return ResponseEntity.ok(configService.getByKey(key));
     }
 
-    @GetMapping("/{key}/history")
+    @GetMapping(ApiRoutes.Settings.HISTORY)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<List<SystemConfigurationHistoryResponse>> history(
             @PathVariable String key, @RequestParam(defaultValue = "50") int limit) {
         return ResponseEntity.ok(configService.history(key, limit));
     }
 
-    @PutMapping("/{key}")
+    @PutMapping(ApiRoutes.Settings.BY_KEY)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<SystemConfigurationResponse> updateSetting(
             @PathVariable String key,

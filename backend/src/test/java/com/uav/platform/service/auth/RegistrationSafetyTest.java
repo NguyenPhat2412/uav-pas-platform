@@ -306,4 +306,42 @@ class RegistrationSafetyTest {
                                                 "short", null, "newPassword", "confirmPassword"))
                         .getField());
     }
+
+    @Test
+    void blocksExampleInvalidTestAndDisposableEmailsAtNormalization() {
+        for (String bogus :
+                List.of(
+                        "wxtest112945@example.invalid",
+                        "user@example.com",
+                        "probe@example.test",
+                        "dev@localhost",
+                        "burner@mailinator.com")) {
+            var err =
+                    error(
+                            () ->
+                                    RegistrationOperations.normalize(
+                                            req(
+                                                    "pilot01",
+                                                    bogus,
+                                                    "0901234567",
+                                                    "secret123",
+                                                    null)));
+            assertEquals("REGISTER_EMAIL_DOMAIN_BLOCKED", err.getCode(), bogus);
+            assertEquals("email", err.getField(), bogus);
+        }
+        for (String malformed : List.of("not-an-email", "missing-tld@domain", "two@at@gmail.com")) {
+            var err =
+                    error(
+                            () ->
+                                    RegistrationOperations.normalize(
+                                            req(
+                                                    "pilot01",
+                                                    malformed,
+                                                    "0901234567",
+                                                    "secret123",
+                                                    null)));
+            assertEquals("REGISTER_EMAIL_INVALID", err.getCode(), malformed);
+            assertEquals("email", err.getField(), malformed);
+        }
+    }
 }

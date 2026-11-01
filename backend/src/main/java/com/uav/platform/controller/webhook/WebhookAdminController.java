@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class WebhookAdminController {
     private final WebhookAdminService admin;
 
-    @PostMapping("/deliveries/{id}/retry")
+    @PostMapping(ApiRoutes.Webhooks.DELIVERIES_RETRY)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<WebhookDeliveryLogResponse> retryDelivery(
             @PathVariable Long id, Authentication auth) {
@@ -28,7 +28,7 @@ public class WebhookAdminController {
     }
 
     /** The response carries the new secret once; it must never be cached. */
-    @PostMapping("/subscriptions/{id}/rotate-secret")
+    @PostMapping(ApiRoutes.Webhooks.SUBSCRIPTIONS_ROTATE_SECRET)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<WebhookSecretRotationResponse> rotateSecret(
             @PathVariable Long id, Authentication auth) {

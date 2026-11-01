@@ -13,6 +13,11 @@ import {ActionFeedback, Feedback} from "@/components/maintenance/Feedback";
 import {fieldClass, OrderFieldsForm} from "@/components/maintenance/Fields";
 import {MaterialEditor} from "@/components/maintenance/MaterialEditor";
 import {
+    canSubmitOrderConfirmation,
+    emptyOrderConfirmationDraft,
+    toEditOrderFields,
+} from "@/forms/maintenance/maintenance-form";
+import {
     calendarDate,
     formatVnd,
     orderControls
@@ -27,15 +32,10 @@ function EditOrder({order, disabled, onSave, onCancel}: {
     onSave: (fields: OrderFields) => void;
     onCancel: () => void
 }) {
-    const [fields, setFields] = useState({
-        title: order.title,
-        description: order.description || '',
-        plannedDate: order.plannedDate,
-        technicianName: order.technicianName
-    });
+    const [fields, setFields] = useState(() => toEditOrderFields(order));
     const [error, setError] = useState('');
     const {t} = useI18n();
-    return <form className="space-y-4" aria-label={t('opsAssets.maintenance.order.editForm')} onSubmit={event => {
+    return <form noValidate className="space-y-4" aria-label={t('opsAssets.maintenance.order.editForm')} onSubmit={event => {
         event.preventDefault();
         setError('');
         onSave(fields);
@@ -53,15 +53,16 @@ function OrderConfirmation({order, mode, disabled, onConfirm, onCancel}: {
     onConfirm: (note: string, passed: boolean) => void;
     onCancel: () => void
 }) {
-    const [note, setNote] = useState(''), [passed, setPassed] = useState(false), [error, setError] = useState('');
+    const [draft, setDraft] = useState(emptyOrderConfirmationDraft);
+    const [error, setError] = useState('');
     const {t} = useI18n();
     const label = t(`opsAssets.maintenance.order.confirm.${mode}`);
-    return <form className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" aria-label={label}
+    return <form noValidate className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" aria-label={label}
                  onSubmit={event => {
                      event.preventDefault();
                      try {
                          setError('');
-                         onConfirm(note, passed);
+                         onConfirm(draft.note, draft.passed);
                      } catch (failure) {
                          setError(maintenanceError(failure, t));
                      }
@@ -69,14 +70,14 @@ function OrderConfirmation({order, mode, disabled, onConfirm, onCancel}: {
         className="text-sm text-slate-600">{t(mode === 'start' ? 'opsAssets.maintenance.order.desc.start' : mode === 'complete' ? 'opsAssets.maintenance.order.desc.complete' : order.status === 'IN_PROGRESS' ? 'opsAssets.maintenance.order.desc.cancelStarted' : 'opsAssets.maintenance.order.desc.cancelOpen')}</p>{mode !== 'start' &&
         <label
             className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700"><span>{mode === 'complete' ? t('opsAssets.maintenance.order.inspectionResult') : t('opsAssets.maintenance.order.cancelReason')}<RequiredMark/></span><textarea
-            autoFocus aria-required rows={4} className={fieldClass} value={note} disabled={disabled}
-            onChange={event => setNote(event.target.value)}/></label>}{mode === 'complete' &&
+            autoFocus aria-required rows={4} className={fieldClass} value={draft.note} disabled={disabled}
+            onChange={event => setDraft(current => ({...current, note: event.target.value}))}/></label>}{mode === 'complete' &&
         <label className="flex items-start gap-3 text-sm"><input className="mt-1 h-5 w-5 shrink-0" type="checkbox"
-                                                                 aria-required checked={passed} disabled={disabled}
-                                                                 onChange={event => setPassed(event.target.checked)}/><span>{t('opsAssets.maintenance.order.inspectedConfirm')}<RequiredMark/></span></label>}
+                                                                 aria-required checked={draft.passed} disabled={disabled}
+                                                                 onChange={event => setDraft(current => ({...current, passed: event.target.checked}))}/><span>{t('opsAssets.maintenance.order.inspectedConfirm')}<RequiredMark/></span></label>}
         <div className="flex flex-wrap gap-3"><Button type="button" variant="outline" disabled={disabled}
                                                       onClick={onCancel}>{t('opsAssets.maintenance.order.backToOrder')}</Button><Button type="submit"
-                                                                                                        disabled={disabled || (mode !== 'start' && !note.trim()) || (mode === 'complete' && !passed)}>{label}</Button>
+                                                                                                        disabled={disabled || !canSubmitOrderConfirmation(mode, draft)}>{label}</Button>
         </div>
     </form>;
 }

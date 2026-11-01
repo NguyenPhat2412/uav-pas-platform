@@ -20,8 +20,16 @@ import {
 } from 'lucide-react';
 import {useAuth} from '@/providers/AuthContext';
 import {toast} from '@/providers/ToastContext';
-import {ApiError} from '@/lib/api';
 import {useAuthFlow} from '@/hooks/auth/useAuthFlow';
+import {
+    authErrorMessage,
+    authFieldErrors,
+    toForgotPasswordPayload,
+    toLoginPayload,
+    toRegisterPayload,
+    toResetPasswordPayload,
+    toVerifyOtpPayload,
+} from '@/forms/auth/auth-form';
 import {RequiredMark} from '@/components/shared/RequiredMark';
 import type {AuthModalView, AuthResponse, TwoFactorMethod} from '@/types/auth/auth.types';
 import {availablePortalsForRole, canUsePortal, type Portal, portalForRole, portalHome} from '@/utils/auth/portal';
@@ -107,9 +115,13 @@ export function AuthModalPopup() {
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [authenticatedPortals, setAuthenticatedPortals] = useState<Portal[]>([]);
 
-    useEffect(() => {
-        const authQuery = searchParams.get('auth');
-        const nextQuery = searchParams.get('next');
+    // ?auth=login|register|forgot (and ?next=) open the dialog; applied once per URL change, while rendering.
+    const authQuery = searchParams.get('auth');
+    const nextQuery = searchParams.get('next');
+    const [appliedQuery, setAppliedQuery] = useState<string | null>(null);
+    const queryKey = `${authQuery ?? ''}|${nextQuery ?? ''}`;
+    if (queryKey !== appliedQuery) {
+        setAppliedQuery(queryKey);
         if (nextQuery) setNextPath(nextQuery);
         if (authQuery === 'login' || authQuery === 'register' || authQuery === 'forgot') {
             setError(null);
@@ -117,7 +129,7 @@ export function AuthModalPopup() {
             setView(authQuery === 'forgot' ? 'forgot-password' : authQuery);
             setIsOpen(true);
         }
-    }, [searchParams]);
+    }
 
     useEffect(() => {
         const handleCustomOpen = (event: Event) => {
@@ -181,18 +193,15 @@ export function AuthModalPopup() {
 
     /** Shows the backend's verdict: every rejected field is marked, listed, and the first one is focused. */
     const showFailure = (err: unknown, fallback: string) => {
-        if (err instanceof ApiError && err.fields && Object.keys(err.fields).length) {
-            const fields = err.fields;
-            // List and focus in the order the inputs appear on the form.
-            const onForm = Array.from(document.querySelectorAll<HTMLInputElement>('[role="dialog"] [name]')).map(input => input.name);
-            const order = (name: string) => (onForm.indexOf(name) + 1 || onForm.length + 1);
-            const names = Object.keys(fields).sort((a, b) => order(a) - order(b));
-            setFieldErrors(fields);
-            setError(names.map(name => fields[name]).join('\n'));
-            document.querySelector<HTMLElement>(`[role="dialog"] [name="${names[0]}"]`)?.focus();
+        const onForm = Array.from(document.querySelectorAll<HTMLInputElement>('[role="dialog"] [name]')).map(input => input.name);
+        const rejected = authFieldErrors(err, onForm);
+        if (rejected) {
+            setFieldErrors(rejected.fields);
+            setError(rejected.message);
+            document.querySelector<HTMLElement>(`[role="dialog"] [name="${rejected.orderedNames[0]}"]`)?.focus();
             return;
         }
-        setError(err instanceof Error ? err.message : fallback);
+        setError(authErrorMessage(err, fallback));
     };
     const invalid = (name: string) => (fieldErrors[name] ? true : undefined);
 
@@ -202,7 +211,8 @@ export function AuthModalPopup() {
         setFieldErrors({});
         setSubmitting(true);
         try {
-            continueSignIn(await login(usernameOrEmail.trim(), loginPassword), usernameOrEmail.trim());
+            const payload = toLoginPayload(usernameOrEmail, loginPassword);
+            continueSignIn(await login(payload.usernameOrEmail, payload.password), payload.usernameOrEmail);
         } catch (err) {
             showFailure(err, 'Thông tin đăng nhập không chính xác.');
         } finally {
@@ -261,14 +271,13 @@ export function AuthModalPopup() {
         setFieldErrors({});
         setSubmitting(true);
         try {
-            const challenge = await authFlow.registerWithOtp({
+            const challenge = await authFlow.registerWithOtp(toRegisterPayload({
                 username: regUsername,
                 email: regEmail,
                 phoneNumber: regPhone,
                 password: regPassword,
                 confirmPassword: regConfirmPassword,
-                role: 'ROLE_PILOT',
-            });
+            }));
             setChallengeToken(challenge.challengeToken);
             setChallengeEmail(challenge.email);
             setMaskedEmail(challenge.maskedEmail);
@@ -290,12 +299,7 @@ export function AuthModalPopup() {
         setFieldErrors({});
         setSubmitting(true);
         try {
-            const res = await authFlow.verifyEmail({
-                challengeToken,
-                email: challengeEmail,
-                code: otpCode.trim(),
-                method: 'EMAIL',
-            });
+            const res = await authFlow.verifyEmail(toVerifyOtpPayload(challengeToken, challengeEmail, otpCode, 'EMAIL'));
             if (res.mfaMethod === 'PENDING_APPROVAL' && !res.accessToken) {
                 // Staff sign-ups are confirmed by email but opened by an administrator; no session is issued yet.
                 toast.success('Email đã được xác thực. Tài khoản Nhân sự vận hành đang chờ quản trị viên duyệt.', 'Đăng ký thành công');
@@ -316,12 +320,7 @@ export function AuthModalPopup() {
         setFieldErrors({});
         setSubmitting(true);
         try {
-            const res = await authFlow.verify2fa({
-                challengeToken,
-                email: challengeEmail,
-                code: otpCode.trim(),
-                method: mfaMethod,
-            });
+            const res = await authFlow.verify2fa(toVerifyOtpPayload(challengeToken, challengeEmail, otpCode, mfaMethod));
             finishAuthentication(res, 'Xác thực bảo mật 2 lớp (2FA) thành công.');
         } catch (err) {
             showFailure(err, 'Mã xác thực 2FA không chính xác.');
@@ -362,7 +361,7 @@ export function AuthModalPopup() {
         setFieldErrors({});
         setSubmitting(true);
         try {
-            const challenge = await authFlow.forgotPassword({email: forgotEmail.trim()});
+            const challenge = await authFlow.forgotPassword(toForgotPasswordPayload(forgotEmail));
             setChallengeToken(challenge.challengeToken);
             setChallengeEmail(challenge.email);
             setMaskedEmail(challenge.maskedEmail);
@@ -384,13 +383,13 @@ export function AuthModalPopup() {
         setFieldErrors({});
         setSubmitting(true);
         try {
-            const res = await authFlow.resetPassword({
+            const res = await authFlow.resetPassword(toResetPasswordPayload({
                 challengeToken,
-                email: challengeEmail || forgotEmail.trim(),
-                code: otpCode.trim(),
+                email: challengeEmail || forgotEmail,
+                code: otpCode,
                 newPassword,
                 confirmPassword: confirmNewPassword,
-            });
+            }));
             toast.success(res.message, 'Đặt lại mật khẩu thành công');
             setUsernameOrEmail(challengeEmail || forgotEmail.trim());
             setLoginPassword('');

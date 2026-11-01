@@ -20,7 +20,7 @@ public class PaymentIpnController {
 
     private final BillingService billingService;
 
-    @PostMapping("/payment-ipn")
+    @PostMapping(ApiRoutes.Webhook.PAYMENT_IPN)
     public ResponseEntity<PaymentIpnResponse> handlePaymentIpn(
             @Valid @RequestBody PaymentIpnRequest request,
             @RequestHeader(value = "X-Signature-SHA256", required = false) String signatureHeader,

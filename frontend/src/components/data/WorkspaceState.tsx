@@ -40,8 +40,17 @@ export function ErrorNotice({error}: { error: Error | null | undefined }) {
     const {t} = useI18n();
     if (!error) return null;
     const known = Object.prototype.hasOwnProperty.call(resourceErrors, error.message) ? resourceErrors[error.message] : undefined;
-    return <Alert
-        variant="error">{error instanceof ApiError && error.status === 403 ? t('opsShared.state.forbiddenAction') : known ? t(`opsShared.state.errors.${known}`) : error.message}</Alert>;
+    const fieldSummary = error instanceof ApiError && error.fields
+        ? [...new Set(Object.values(error.fields).filter(Boolean))]
+        : [];
+    const text = error instanceof ApiError && error.status === 403
+        ? t('opsShared.state.forbiddenAction')
+        : known
+          ? t(`opsShared.state.errors.${known}`)
+          : fieldSummary.length > 1
+            ? fieldSummary.join(' ')
+            : error.message;
+    return <Alert variant="error">{text}</Alert>;
 }
 
 export function QueryState({query, children}: {

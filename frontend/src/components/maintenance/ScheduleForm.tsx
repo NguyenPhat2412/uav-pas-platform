@@ -8,7 +8,8 @@ import type {MaintenanceSchedule} from "@/types/maintenance/maintenance.types";
 import {ScheduleFieldsForm, UavField} from "@/components/maintenance/Fields";
 import {ActionFeedback} from "@/components/maintenance/Feedback";
 import {useMaintenanceAction} from '@/hooks/maintenance/useMaintenanceAction';
-import {businessToday, positiveId} from "@/utils/maintenance/workflows";
+import {createMaintenanceScheduleDraft} from "@/forms/maintenance/maintenance-form";
+import {positiveId} from "@/utils/maintenance/workflows";
 import {useI18n} from '@/providers/I18nContext';
 
 export function ScheduleForm({schedule, uavId: initialUavId, uavs, canRead, onClose, refresh}: {
@@ -19,19 +20,16 @@ export function ScheduleForm({schedule, uavId: initialUavId, uavs, canRead, onCl
     onClose: () => void;
     refresh: () => Promise<boolean>
 }) {
-    const [uavId, setUavId] = useState(schedule ? String(schedule.uavId) : initialUavId);
-    const [fields, setFields] = useState({
-        title: schedule?.title || '',
-        intervalDays: String(schedule?.intervalDays || 30),
-        nextDueDate: schedule?.nextDueDate || businessToday()
-    });
+    const initialDraft = createMaintenanceScheduleDraft(initialUavId, schedule);
+    const [uavId, setUavId] = useState(initialDraft.uavId);
+    const [fields, setFields] = useState(initialDraft.fields);
     const {t} = useI18n();
     const action = useMaintenanceAction(refresh);
     const [conflicted, setConflicted] = useState(false);
     return <Drawer title={schedule ? t('opsAssets.maintenance.schedule.editTitle') : t('opsAssets.maintenance.schedule.createTitle')} onClose={() => {
         if (!action.busy) onClose();
     }}>
-        <form className="space-y-4" onSubmit={event => {
+        <form noValidate className="space-y-4" onSubmit={event => {
             event.preventDefault();
             if (conflicted) return;
             void action.run(async service => {

@@ -3,7 +3,10 @@ package com.uav.platform.service.impl.weather;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dto.record.weather.CachedKpFeed;
+import com.uav.platform.dto.record.weather.CachedWeatherSeries;
 import com.uav.platform.dto.record.weather.HourlyWeatherSlot;
+import com.uav.platform.dto.record.weather.KpReading;
 import com.uav.platform.dto.record.weather.SafetyThresholds;
 import com.uav.platform.dto.record.weather.WeatherForecastData;
 import com.uav.platform.dto.request.weather.WeatherProviderUpdateRequest;
@@ -55,9 +58,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
@@ -81,7 +89,21 @@ public class WeatherServiceImpl implements WeatherService {
     static final String OPEN_WEATHER_URL =
             "https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&units=metric&appid=%s";
     static final Duration HTTP_TIMEOUT = Duration.ofSeconds(4);
+    static final int REMOTE_CONCURRENCY = 2;
+    static final int MAX_ATTEMPTS = 3;
+    static final Duration RETRY_BACKOFF = Duration.ofMillis(400);
+    static final Duration MAX_RETRY_DELAY = Duration.ofSeconds(2);
     static final int SERIES_HOURS = 25;
+
+    /** NOAA publishes Kp in 3-hour steps; one read per half hour is plenty. */
+    static final Duration KP_TTL = Duration.ofMinutes(30);
+
+    /** A Kp reading older than this is no longer used when the feed is down. */
+    static final Duration KP_STALE_LIMIT = Duration.ofHours(6);
+
+    /** Upper bound on cells kept in memory (a few hundred covers every station and map place). */
+    static final int MAX_SERIES_CELLS = 500;
+
     static final int MAX_STATIONS = 50;
     static final Duration CACHE_RETENTION = Duration.ofDays(2);
     private static final DateTimeFormatter NOAA_TIME =
@@ -99,6 +121,19 @@ public class WeatherServiceImpl implements WeatherService {
     private final FlightSafetyEvaluatorOperations evaluator;
     private final ObjectMapper json;
     private final HttpClient http;
+    private final Semaphore remoteSlots = new Semaphore(REMOTE_CONCURRENCY, true);
+
+    /**
+     * The whole Open-Meteo series per grid cell. One call answers every hour of the next 16 days, so
+     * the home strip's five hours or a map of places cost one remote call per cell, not one per hour.
+     */
+    private final Map<String, CachedWeatherSeries> seriesCache = new ConcurrentHashMap<>();
+
+    /** One lock per cell, so concurrent requests for the same cell share a single remote call. */
+    private final Map<String, Object> cellLocks = new ConcurrentHashMap<>();
+
+    private volatile CachedKpFeed kpFeed;
+
     private final Clock clock;
     private final boolean remoteEnabled;
 
@@ -215,6 +250,12 @@ public class WeatherServiceImpl implements WeatherService {
     @Transactional
     public WeatherProviderSettingsResponse updateProvider(
             WeatherProviderUpdateRequest request, Authentication authentication) {
+        if (request.cacheTtlMinutes() < 1 || request.cacheTtlMinutes() > 120) {
+            throw SystemException.badRequest(
+                            "Thời gian lưu đệm phải từ 1 đến 120 phút.",
+                            "WEATHER_CACHE_TTL_INVALID")
+                    .at("cacheTtlMinutes");
+        }
         WeatherProviderSettings settings =
                 providerSettings.findById(1).orElseGet(WeatherProviderSettings::new);
         settings.setProvider(request.provider());
@@ -312,7 +353,8 @@ public class WeatherServiceImpl implements WeatherService {
             return cached.get();
         if (!remoteEnabled) return cached.orElse(null);
         try {
-            List<HourlyWeatherSlot> hours = openMeteo(gridLat, gridLng, hour);
+            List<HourlyWeatherSlot> hours =
+                    slice(series(gridLat, gridLng, settings.getCacheTtlMinutes()), hour);
             if (hours.isEmpty()) return new WeatherForecastData(hours, null, provider, false);
             if (currentHour) hours = withLiveObservation(hours, gridLat, gridLng, settings);
             Double kp = kpIndex(hour);
@@ -374,23 +416,64 @@ public class WeatherServiceImpl implements WeatherService {
         }
     }
 
-    /** The hourly series from {@code hour} on (up to 25 hours); empty when the hour is out of range. */
-    List<HourlyWeatherSlot> openMeteo(double lat, double lng, String hour)
+    /**
+     * The cell's full hourly series: from memory while younger than the cache TTL, otherwise fetched
+     * once under the cell's lock (a second caller waiting on that lock reuses the result). A failed
+     * fetch throws, and the caller falls back to its stale database row.
+     */
+    private List<HourlyWeatherSlot> series(double gridLat, double gridLng, int ttlMinutes)
+            throws IOException, InterruptedException {
+        String key = gridLat + "," + gridLng;
+        CachedWeatherSeries hit = seriesCache.get(key);
+        if (fresh(hit, ttlMinutes)) return hit.slots();
+        synchronized (cellLocks.computeIfAbsent(key, k -> new Object())) {
+            hit = seriesCache.get(key);
+            if (fresh(hit, ttlMinutes)) return hit.slots();
+            List<HourlyWeatherSlot> slots = openMeteoSeries(gridLat, gridLng);
+            if (seriesCache.size() >= MAX_SERIES_CELLS) evictStaleSeries(ttlMinutes);
+            seriesCache.put(key, new CachedWeatherSeries(LocalDateTime.now(clock), slots));
+            return slots;
+        }
+    }
+
+    private boolean fresh(CachedWeatherSeries hit, int ttlMinutes) {
+        return hit != null
+                && !hit.slots().isEmpty()
+                && hit.fetchedAt().isAfter(LocalDateTime.now(clock).minusMinutes(ttlMinutes));
+    }
+
+    /** Drops expired cells; if every cell is still fresh, drops the oldest so memory stays bounded. */
+    private void evictStaleSeries(int ttlMinutes) {
+        LocalDateTime cutoff = LocalDateTime.now(clock).minusMinutes(ttlMinutes);
+        seriesCache.entrySet().removeIf(entry -> !entry.getValue().fetchedAt().isAfter(cutoff));
+        if (seriesCache.size() < MAX_SERIES_CELLS) return;
+        seriesCache.entrySet().stream()
+                .min(
+                        Map.Entry.comparingByValue(
+                                Comparator.comparing(CachedWeatherSeries::fetchedAt)))
+                .ifPresent(oldest -> seriesCache.remove(oldest.getKey()));
+    }
+
+    /** {@code hour} and the following hours (up to 25); empty when the hour is outside the series. */
+    public static List<HourlyWeatherSlot> slice(List<HourlyWeatherSlot> series, String hour) {
+        String prefix = hour.substring(0, 13);
+        for (int i = 0; i < series.size(); i++) {
+            String time = series.get(i).time();
+            if (time != null && time.startsWith(prefix))
+                return List.copyOf(series.subList(i, Math.min(series.size(), i + SERIES_HOURS)));
+        }
+        return List.of();
+    }
+
+    /** Every hourly slot Open-Meteo returns for the cell (16 days). */
+    List<HourlyWeatherSlot> openMeteoSeries(double lat, double lng)
             throws IOException, InterruptedException {
         JsonNode hourly =
                 json.readTree(get(String.format(Locale.ROOT, OPEN_METEO_URL, lat, lng)))
                         .path("hourly");
         JsonNode times = hourly.path("time");
-        int start = -1;
+        List<HourlyWeatherSlot> slots = new ArrayList<>(times.size());
         for (int i = 0; i < times.size(); i++) {
-            if (times.get(i).asText().startsWith(hour.substring(0, 13))) {
-                start = i;
-                break;
-            }
-        }
-        List<HourlyWeatherSlot> slots = new ArrayList<>();
-        if (start < 0) return slots;
-        for (int i = start; i < Math.min(times.size(), start + SERIES_HOURS); i++) {
             slots.add(
                     new HourlyWeatherSlot(
                             times.get(i).asText(),
@@ -410,46 +493,66 @@ public class WeatherServiceImpl implements WeatherService {
         return slots;
     }
 
-    /** NOAA planetary Kp nearest to the hour (UTC); null when the feed cannot be read. */
+    /** NOAA planetary Kp nearest to the hour (UTC); null when no reading is available. */
     Double kpIndex(String hour) {
-        try {
-            JsonNode rows = json.readTree(get(NOAA_KP_URL));
-            LocalDateTime targetUtc =
-                    LocalDateTime.parse(hour, HOUR_KEY)
-                            .atZone(ZONE)
-                            .withZoneSameInstant(ZoneOffset.UTC)
-                            .toLocalDateTime();
-            Double best = null;
-            long bestDistance = Long.MAX_VALUE;
-            for (JsonNode row : rows) {
-                String time = row.isArray() ? row.path(0).asText() : row.path("time_tag").asText();
-                JsonNode kpNode = row.isArray() ? row.path(1) : row.path("kp");
-                LocalDateTime tag;
-                try {
-                    tag = LocalDateTime.parse(time.replace('T', ' '), NOAA_TIME);
-                } catch (DateTimeParseException ex) {
-                    continue; // header row
-                }
-                double kp;
-                try {
-                    kp = Double.parseDouble(kpNode.asText());
-                } catch (NumberFormatException ex) {
-                    continue;
-                }
-                long distance = Math.abs(Duration.between(tag, targetUtc).toMinutes());
-                if (distance < bestDistance) {
-                    bestDistance = distance;
-                    best = kp;
-                }
+        List<KpReading> points = kpPoints();
+        if (points == null || points.isEmpty()) return null;
+        LocalDateTime targetUtc =
+                LocalDateTime.parse(hour, HOUR_KEY)
+                        .atZone(ZONE)
+                        .withZoneSameInstant(ZoneOffset.UTC)
+                        .toLocalDateTime();
+        Double best = null;
+        long bestDistance = Long.MAX_VALUE;
+        for (KpReading point : points) {
+            long distance = Math.abs(Duration.between(point.tagUtc(), targetUtc).toMinutes());
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                best = point.kp();
             }
-            return best;
+        }
+        return best;
+    }
+
+    /**
+     * The Kp feed, read at most every {@link #KP_TTL}. When NOAA cannot be read the last reading is
+     * used while younger than {@link #KP_STALE_LIMIT}; after that Kp is simply unknown (it is
+     * optional in the assessment).
+     */
+    private List<KpReading> kpPoints() {
+        LocalDateTime now = LocalDateTime.now(clock);
+        CachedKpFeed feed = kpFeed;
+        if (feed != null && feed.fetchedAt().isAfter(now.minus(KP_TTL))) return feed.readings();
+        try {
+            List<KpReading> points = parseKp(json.readTree(get(NOAA_KP_URL)));
+            kpFeed = new CachedKpFeed(now, points);
+            return points;
         } catch (IOException | RuntimeException ex) {
             log.debug("NOAA Kp feed unavailable: {}", ex.toString());
-            return null;
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            return null;
         }
+        return feed != null && feed.fetchedAt().isAfter(now.minus(KP_STALE_LIMIT))
+                ? feed.readings()
+                : null;
+    }
+
+    /** Both NOAA shapes (array rows with a header, or objects); unreadable rows are skipped. */
+    private static List<KpReading> parseKp(JsonNode rows) {
+        List<KpReading> points = new ArrayList<>();
+        for (JsonNode row : rows) {
+            String time = row.isArray() ? row.path(0).asText() : row.path("time_tag").asText();
+            JsonNode kpNode = row.isArray() ? row.path(1) : row.path("kp");
+            try {
+                points.add(
+                        new KpReading(
+                                LocalDateTime.parse(time.replace('T', ' '), NOAA_TIME),
+                                Double.parseDouble(kpNode.asText())));
+            } catch (DateTimeParseException | NumberFormatException ex) {
+                // header row or a missing value ("n/a")
+            }
+        }
+        return List.copyOf(points);
     }
 
     /** With OpenWeatherMap and a key, the current hour uses its live observation where it has one. */
@@ -498,6 +601,11 @@ public class WeatherServiceImpl implements WeatherService {
         }
     }
 
+    /**
+     * One outbound call. At most {@link #REMOTE_CONCURRENCY} run at once, because Open-Meteo answers a
+     * burst of full 16-day requests from one IP with HTTP 429 (a map with several places and the home
+     * strip's hours fire together); a 429 is retried after a short pause or the server's Retry-After.
+     */
     private String get(String url) throws IOException, InterruptedException {
         HttpRequest request =
                 HttpRequest.newBuilder(URI.create(url))
@@ -505,11 +613,43 @@ public class WeatherServiceImpl implements WeatherService {
                         .header("Accept", "application/json")
                         .GET()
                         .build();
-        HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() / 100 != 2)
-            throw new IOException(
-                    "HTTP " + response.statusCode() + " from " + request.uri().getHost());
-        return response.body();
+        if (!remoteSlots.tryAcquire(HTTP_TIMEOUT.toMillis() * 2, TimeUnit.MILLISECONDS))
+            throw new IOException("Weather sources busy");
+        try {
+            for (int attempt = 1; ; attempt++) {
+                HttpResponse<String> response =
+                        http.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 429 && attempt < MAX_ATTEMPTS) {
+                    Thread.sleep(retryDelay(response, attempt).toMillis());
+                    continue;
+                }
+                if (response.statusCode() / 100 != 2)
+                    throw new IOException(
+                            "HTTP " + response.statusCode() + " from " + request.uri().getHost());
+                return response.body();
+            }
+        } finally {
+            remoteSlots.release();
+        }
+    }
+
+    /** Retry-After in seconds when the server sends one (capped), else a growing short pause. */
+    public static Duration retryDelay(HttpResponse<?> response, int attempt) {
+        Duration fallback = RETRY_BACKOFF.multipliedBy(attempt);
+        if (response.headers() == null) return fallback;
+        return response.headers()
+                .firstValue("Retry-After")
+                .flatMap(
+                        value -> {
+                            try {
+                                return Optional.of(
+                                        Duration.ofSeconds(Long.parseLong(value.trim())));
+                            } catch (NumberFormatException ex) {
+                                return Optional.empty();
+                            }
+                        })
+                .map(delay -> delay.compareTo(MAX_RETRY_DELAY) > 0 ? MAX_RETRY_DELAY : delay)
+                .orElse(fallback);
     }
 
     SafetyThresholds thresholds(Double serviceMaxWindMs) {

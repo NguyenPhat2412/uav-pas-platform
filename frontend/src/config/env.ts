@@ -10,6 +10,8 @@ export const publicEnvSchema = z.object({
     // Staffed 24/7 dispatch number shown to customers; leave unset to hide the call button.
     NEXT_PUBLIC_DISPATCH_HOTLINE: z.string().optional(),
     // OAuth Web client ID for "Đăng nhập bằng Google"; unset shows the button as not configured.
-    NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string().optional()
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string().optional(),
+    // 'off' disables the production shortcut deterrent for DevTools / view-source (see DevtoolsGuard).
+    NEXT_PUBLIC_DEVTOOLS_GUARD: z.enum(['on', 'off']).optional()
 });
 export const getPublicEnv = (env: NodeJS.ProcessEnv = process.env): PublicEnv => publicEnvSchema.parse(env);

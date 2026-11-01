@@ -7,30 +7,32 @@ import {useI18n} from '@/providers/I18nContext';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
 import {RequiredMark} from '@/components/shared/RequiredMark';
 import {useChangePassword} from '@/hooks/profile/useProfile';
+import {
+    canSubmitPasswordChange,
+    emptyPasswordChangeDraft,
+    passwordChangeFieldErrors,
+    toPasswordChangePayload,
+    type PasswordChangeDraft,
+} from '@/forms/profile/profile-form';
 
 export function PasswordChangeCard() {
     const {logout} = useAuth();
     const {t} = useI18n();
-    const [current, setCurrent] = useState('');
-    const [next, setNext] = useState('');
-    const [confirm, setConfirm] = useState('');
-    const [error, setError] = useState('');
+    const [draft, setDraft] = useState<PasswordChangeDraft>(emptyPasswordChangeDraft);
     const [done, setDone] = useState(false);
     const change = useChangePassword();
+    const fieldErrors = passwordChangeFieldErrors(change.error);
     const submit = async (e: FormEvent) => {
         e.preventDefault();
-        setError('');
         try {
-            await change.mutateAsync({current, next, confirm});
-            setCurrent('');
-            setNext('');
-            setConfirm('');
+            await change.mutateAsync(toPasswordChangePayload(draft));
+            setDraft(emptyPasswordChangeDraft());
             setDone(true);
         } catch {
             /* Shown below. */
         }
     };
-    const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none';
+    const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none aria-[invalid=true]:border-danger';
     return <section className="border border-slate-200 bg-white" aria-labelledby="password-title">
         <header className="flex items-center gap-2 border-b border-slate-100 px-5 py-3.5">
             <KeyRound size={17} className="text-primary" aria-hidden="true"/>
@@ -44,17 +46,19 @@ export function PasswordChangeCard() {
                 <LogOut size={15} aria-hidden="true"/>{t('admin.profile.password.signInAgain')}</button>
         </div> : <form className="space-y-4 p-5" onSubmit={e => void submit(e)} noValidate>
             <label className="block text-[13px] font-semibold text-slate-600">{t('admin.profile.password.current')}<RequiredMark/>
-                <input type="password" aria-required autoComplete="current-password" value={current} onChange={e => setCurrent(e.target.value)} className={field}/></label>
+                <input type="password" aria-required aria-invalid={Boolean(fieldErrors?.currentPassword)} autoComplete="current-password" value={draft.currentPassword} onChange={e => setDraft({...draft, currentPassword: e.target.value})} className={field}/>
+                {fieldErrors?.currentPassword && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.currentPassword}</span>}</label>
             <label className="block text-[13px] font-semibold text-slate-600">{t('admin.profile.password.new')}<RequiredMark/>
-                <input type="password" aria-required autoComplete="new-password" value={next}
-                       onChange={e => setNext(e.target.value)} className={field}/></label>
+                <input type="password" aria-required aria-invalid={Boolean(fieldErrors?.newPassword)} autoComplete="new-password" value={draft.newPassword}
+                       onChange={e => setDraft({...draft, newPassword: e.target.value})} className={field}/>
+                {fieldErrors?.newPassword && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.newPassword}</span>}</label>
             <label className="block text-[13px] font-semibold text-slate-600">{t('admin.profile.password.confirm')}<RequiredMark/>
-                <input type="password" aria-required autoComplete="new-password" value={confirm}
-                       onChange={e => setConfirm(e.target.value)} className={field}/></label>
+                <input type="password" aria-required aria-invalid={Boolean(fieldErrors?.confirmPassword)} autoComplete="new-password" value={draft.confirmPassword}
+                       onChange={e => setDraft({...draft, confirmPassword: e.target.value})} className={field}/>
+                {fieldErrors?.confirmPassword && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.confirmPassword}</span>}</label>
             <p className="text-xs text-slate-500">{t('admin.profile.password.hint')}</p>
-            {error && <p role="alert" className="border-l-[3px] border-l-red-600 bg-red-50 px-3 py-2 text-[13px] text-red-800">{error}</p>}
-            <ErrorNotice error={change.error}/>
-            <button type="submit" disabled={change.isPending}
+            {change.error && !fieldErrors && <ErrorNotice error={change.error}/>}
+            <button type="submit" disabled={change.isPending || !canSubmitPasswordChange(draft)}
                     className="inline-flex h-9 items-center gap-1.5 bg-primary px-4 text-[13px] font-semibold text-primary-foreground disabled:opacity-50">
                 <KeyRound size={15} aria-hidden="true"/>{t('admin.profile.password.submit')}</button>
         </form>}

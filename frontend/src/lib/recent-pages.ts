@@ -1,10 +1,19 @@
 /** Pages a user opened most recently in one portal, newest first, kept in this browser only. */
 const LIMIT = 6;
 
+/** The list stored under a key, from its raw JSON; malformed or missing values give an empty list. */
+export function parseRecentPages(raw: string | null): string[] {
+    try {
+        const parsed: unknown = JSON.parse(raw ?? '[]');
+        return Array.isArray(parsed) ? parsed.filter((href): href is string => typeof href === 'string').slice(0, LIMIT) : [];
+    } catch {
+        return [];
+    }
+}
+
 export function readRecentPages(key: string): string[] {
     try {
-        const parsed: unknown = JSON.parse(localStorage.getItem(key) ?? '[]');
-        return Array.isArray(parsed) ? parsed.filter((href): href is string => typeof href === 'string').slice(0, LIMIT) : [];
+        return parseRecentPages(localStorage.getItem(key));
     } catch {
         return [];
     }

@@ -343,4 +343,80 @@ class AuthOtpHardeningTest {
         assertEquals(UserStatus.SUSPENDED, existing.getStatus());
         verifyNoInteractions(jwt);
     }
+
+    @Test
+    void loginChallengeAndSetup2faEnforceCooldownAndAccountOtpRateLimit() {
+        var clock = new AuthRateLimitServiceTest.MutableClock();
+        var limiter = new com.uav.platform.service.impl.auth.AuthRateLimitServiceImpl(true, clock);
+        otp.setRateLimiter(limiter);
+
+        AppUser unverified =
+                new AppUser("wxpilot", "wxpilot@gmail.com", "pw", "0901234567", UserStatus.ACTIVE);
+        unverified.setId(42L);
+        unverified.setRole(UserRole.ROLE_PILOT);
+        unverified.setEmailVerified(false);
+
+        // First login challenge sends 1 OTP and starts the 60s cooldown.
+        otp.createLoginChallenge(unverified, null);
+        verify(mail, times(1)).sendOtpEmail(eq("wxpilot@gmail.com"), any(), any(), anyInt());
+
+        // Immediate retry via /login within 60s is blocked by cooldown (fixes the login OTP flood).
+        clock.advance(java.time.Duration.ofSeconds(25));
+        assertEquals(
+                "AUTH_OTP_RESEND_COOLDOWN", code(() -> otp.createLoginChallenge(unverified, null)));
+        verify(mail, times(1)).sendOtpEmail(eq("wxpilot@gmail.com"), any(), any(), anyInt());
+
+        // After 61s x 2 more times -> hits the 3-per-15-minutes OTP_ISSUE account cap on the 4th
+        // try!
+        clock.advance(java.time.Duration.ofSeconds(40));
+        otp.createLoginChallenge(unverified, null);
+        clock.advance(java.time.Duration.ofSeconds(61));
+        otp.createLoginChallenge(unverified, null);
+        clock.advance(java.time.Duration.ofSeconds(61));
+        assertEquals("AUTH_RATE_LIMITED", code(() -> otp.createLoginChallenge(unverified, null)));
+        verify(mail, times(3)).sendOtpEmail(eq("wxpilot@gmail.com"), any(), any(), anyInt());
+    }
+
+    @Test
+    void emailDomainPolicyGatesSignUpsAndBlocksOnlyReservedDomainsOnReset() {
+        otp.setEmailDomainPolicy(
+                new com.uav.platform.service.impl.auth.EmailDomainPolicyServiceImpl(
+                        com.uav.platform.service.impl.auth.EmailDomainPolicyServiceImpl
+                                .DEFAULT_ALLOWED_DOMAINS,
+                        ""));
+
+        assertEquals(
+                "REGISTER_EMAIL_DOMAIN_BLOCKED",
+                code(
+                        () ->
+                                otp.requestRegisterOtp(
+                                        new RegisterRequest(
+                                                "wxtest112945",
+                                                "wxtest112945@example.invalid",
+                                                "Secret123!",
+                                                "0901234567",
+                                                null,
+                                                null))));
+        assertEquals(
+                "REGISTER_EMAIL_DOMAIN_NOT_ALLOWED",
+                code(
+                        () ->
+                                otp.requestRegisterOtp(
+                                        new RegisterRequest(
+                                                "pilot99",
+                                                "pilot99@random-domain.xyz",
+                                                "Secret123!",
+                                                "0901234567",
+                                                null,
+                                                null))));
+        assertEquals(
+                "REGISTER_EMAIL_DOMAIN_BLOCKED",
+                code(() -> otp.forgotPassword(new ForgotPasswordRequest("bot@example.com"))));
+        // The allowlist gates sign-ups only: a reset for a real but unlisted domain (a company or
+        // Workspace account) goes through, answering like any reset; this one has no account, so
+        // nothing is mailed.
+        assertDoesNotThrow(
+                () -> otp.forgotPassword(new ForgotPasswordRequest("staff@random-domain.xyz")));
+        verify(mail, never()).sendOtpEmail(any(), any(), any(), anyInt());
+    }
 }

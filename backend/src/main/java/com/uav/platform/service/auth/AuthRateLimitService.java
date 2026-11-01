@@ -20,4 +20,16 @@ public interface AuthRateLimitService {
 
     /** Starts the resend cooldown for this key (called whenever a code is emailed). */
     void startResendCooldown(String key);
+
+    /** Caps outbound authentication emails per minute across the platform (anonymous flows). */
+    default void checkGlobalEmailBudget() {
+        checkGlobalEmailBudget(false);
+    }
+
+    /**
+     * Caps outbound authentication emails per minute across the platform. {@code signedIn} codes
+     * (after a correct password or within a session) have a budget of their own, so a distributed
+     * flood of anonymous requests cannot stop existing users from receiving their login codes.
+     */
+    default void checkGlobalEmailBudget(boolean signedIn) {}
 }

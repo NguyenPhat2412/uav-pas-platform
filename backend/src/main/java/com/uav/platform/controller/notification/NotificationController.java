@@ -34,18 +34,18 @@ public class NotificationController {
                 notificationService.listForUser(auth, Pageables.desc(page, size, "createdAt")));
     }
 
-    @GetMapping("/unread-count")
+    @GetMapping(ApiRoutes.Notifications.UNREAD_COUNT)
     public ResponseEntity<UnreadCountResponse> countUnread(Authentication auth) {
         return ResponseEntity.ok(new UnreadCountResponse(notificationService.countUnread(auth)));
     }
 
-    @PatchMapping("/{id}/read")
+    @PatchMapping(ApiRoutes.Notifications.MARK_READ)
     public ResponseEntity<NotificationResponse> markAsRead(
             @PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(notificationService.markAsRead(id, auth));
     }
 
-    @PostMapping("/read-all")
+    @PostMapping(ApiRoutes.Notifications.MARK_ALL_READ)
     public ResponseEntity<MessageResponse> markAllAsRead(Authentication auth) {
         notificationService.markAllAsRead(auth);
         return ResponseEntity.ok(new MessageResponse("All notifications marked as read"));

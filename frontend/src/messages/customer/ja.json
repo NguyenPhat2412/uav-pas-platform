@@ -40,7 +40,8 @@
             "activeMissions": "{label}：処理中のミッション {count} 件",
             "pendingInvoices": "{label}：支払い待ちの請求書 {count} 件",
             "unreadNotifications": "{label}：未読の通知 {count} 件"
-        }
+        },
+        "weather": "飛行気象"
     },
     "billing": {
         "title": "サービスプラン & 利用枠",

@@ -24,8 +24,8 @@ class OtpPreviewGuardTest {
     private AuthOtpServiceImpl service(boolean devPreview) {
         UserRepository users = mock(UserRepository.class);
         AppUser user = mock(AppUser.class);
-        when(user.getEmail()).thenReturn("victim@example.com");
-        when(users.findByEmail("victim@example.com")).thenReturn(Optional.of(user));
+        when(user.getEmail()).thenReturn("victim@gmail.com");
+        when(users.findByEmail("victim@gmail.com")).thenReturn(Optional.of(user));
         AuthOtpTokenRepository tokens = mock(AuthOtpTokenRepository.class);
         when(tokens.findByEmailIgnoreCaseAndPurposeAndConsumedAtIsNull(anyString(), anyString()))
                 .thenReturn(List.of());
@@ -47,14 +47,14 @@ class OtpPreviewGuardTest {
 
     @Test
     void resetCodeIsNeverReturnedByDefaultEvenWithoutSmtp() {
-        var res = service(false).forgotPassword(new ForgotPasswordRequest("victim@example.com"));
+        var res = service(false).forgotPassword(new ForgotPasswordRequest("victim@gmail.com"));
         assertNull(res.devOtpPreview());
         assertNotNull(res.challengeToken());
     }
 
     @Test
     void developerPreviewIsOptIn() {
-        var res = service(true).forgotPassword(new ForgotPasswordRequest("victim@example.com"));
+        var res = service(true).forgotPassword(new ForgotPasswordRequest("victim@gmail.com"));
         assertNotNull(res.devOtpPreview());
         assertTrue(res.devOtpPreview().matches("\\d{6}"));
     }

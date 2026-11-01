@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, {type ButtonHTMLAttributes, type PropsWithChildren} from 'react';
 import {cn} from '@/lib/utils';
 import type {VjuLogoProps} from '@/types/ui';
@@ -8,15 +9,14 @@ export function Button({children, ...props}: PropsWithChildren<ButtonHTMLAttribu
     return <button {...props}>{children}</button>;
 }
 
-export function VjuLogo({size = 32, className, alt = 'VJU - Trường Đại học Việt Nhật', ...props}: VjuLogoProps) {
+export function VjuLogo({size = 32, className, alt = 'VJU - Trường Đại học Việt Nhật'}: VjuLogoProps) {
     return (
-        <img
+        <Image
             src="/vju-logo.svg"
             alt={alt}
             width={size}
             height={size}
             className={cn('inline-block shrink-0 object-contain', className)}
-            {...props}
         />
     );
 }

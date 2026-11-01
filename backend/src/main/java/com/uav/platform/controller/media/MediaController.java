@@ -37,26 +37,26 @@ public class MediaController {
         return ResponseEntity.status(201).body(service.register(request, auth.getName()));
     }
 
-    @GetMapping("/{id}/upload-url")
+    @GetMapping(ApiRoutes.Media.UPLOAD_URL)
     @PreAuthorize("@permissionService.has(authentication, 'MEDIA_MANAGE')")
     public ResponseEntity<SignedMediaUrlResponse> uploadUrl(@PathVariable Long id) {
         return ResponseEntity.ok(service.uploadUrl(id));
     }
 
-    @GetMapping("/{id}/download-url")
+    @GetMapping(ApiRoutes.Media.DOWNLOAD_URL)
     @PreAuthorize("@permissionService.has(authentication, 'MEDIA_READ')")
     public ResponseEntity<SignedMediaUrlResponse> downloadUrl(
             @PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(service.downloadUrl(id, auth.getName()));
     }
 
-    @PostMapping("/{id}/confirm")
+    @PostMapping(ApiRoutes.Media.CONFIRM)
     @PreAuthorize("@permissionService.has(authentication, 'MEDIA_MANAGE')")
     public ResponseEntity<MediaAssetResponse> confirm(@PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(service.confirm(id, auth.getName()));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(ApiRoutes.Media.BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'MEDIA_MANAGE')")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
         service.delete(id, auth.getName());

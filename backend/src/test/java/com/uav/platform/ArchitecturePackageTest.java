@@ -8,8 +8,11 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -45,6 +48,40 @@ class ArchitecturePackageTest {
         assertFalse(
                 javaFiles(MAIN_SOURCE).anyMatch(this::containsLegacyPackage),
                 "Main sources must not reference com.uav_pass.local");
+    }
+
+    /**
+     * Every request mapping takes its path from ApiRoutes, so one file lists every endpoint (and the
+     * security rules and tests that refer to them). A literal path, or a constant glued to a literal,
+     * fails here with the file and line to fix.
+     */
+    @Test
+    void controllerMappingsTakeTheirPathsFromApiRoutes() throws IOException {
+        Pattern mapping =
+                Pattern.compile("@(Get|Post|Put|Patch|Delete|Request)Mapping\\((?<args>[^)]*)\\)");
+        List<String> offenders = new ArrayList<>();
+        for (Path file : javaFiles(MAIN_SOURCE.resolve("com/uav/platform/controller")).toList()) {
+            List<String> lines = Files.readAllLines(file);
+            for (int i = 0; i < lines.size(); i++) {
+                Matcher found = mapping.matcher(lines.get(i));
+                while (found.find()) {
+                    // produces/consumes media types may stay literal; the path itself may not.
+                    String path =
+                            found.group("args")
+                                    .replaceAll("(produces|consumes)\\s*=\\s*\"[^\"]*\"", "");
+                    if (path.contains("\""))
+                        offenders.add(
+                                MAIN_SOURCE.relativize(file)
+                                        + ":"
+                                        + (i + 1)
+                                        + "  "
+                                        + lines.get(i).trim());
+                }
+            }
+        }
+        assertTrue(
+                offenders.isEmpty(),
+                "Use an ApiRoutes constant for these paths:\n" + String.join("\n", offenders));
     }
 
     @Test

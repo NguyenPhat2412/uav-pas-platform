@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useState, type FormEvent} from 'react';
+import {useState, type FormEvent} from 'react';
 import {Save, UserRound} from 'lucide-react';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
@@ -22,9 +22,12 @@ export function AdminProfilePanel() {
     const [fields, setFields] = useState<ProfileFields>({fullName: '', phoneNumber: ''});
     const [errors, setErrors] = useState<ProfileErrors>({});
     const [saved, setSaved] = useState(false);
-    useEffect(() => {
-        if (profile.data) setFields({fullName: profile.data.fullName ?? '', phoneNumber: profile.data.phoneNumber ?? ''});
-    }, [profile.data]);
+    // Load the form from each newly fetched profile (first load, and the refetch after a save).
+    const [loadedFrom, setLoadedFrom] = useState(profile.data);
+    if (profile.data && profile.data !== loadedFrom) {
+        setLoadedFrom(profile.data);
+        setFields({fullName: profile.data.fullName ?? '', phoneNumber: profile.data.phoneNumber ?? ''});
+    }
     const save = useUpdateProfile();
     const submit = async (e: FormEvent) => {
         e.preventDefault();

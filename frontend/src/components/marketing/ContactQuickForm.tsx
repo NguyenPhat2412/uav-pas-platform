@@ -2,22 +2,24 @@
 
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import {
+    canSubmitContactInquiry,
+    emptyContactInquiryDraft,
+    toContactInquiryPayload,
+} from '@/forms/marketing/contact-form';
 
 export function ContactQuickForm() {
-    const [fullName, setFullName] = useState('');
-    const [organization, setOrganization] = useState('');
-    const [contactInfo, setContactInfo] = useState('');
-    const [topic, setTopic] = useState('SURVEY_SERVICE');
-    const [message, setMessage] = useState('');
-    const [submitted, setSubmitted] = useState(false);
+    const [draft, setDraft] = useState(emptyContactInquiryDraft);
+    const [submittedName, setSubmittedName] = useState<string | null>(null);
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        if (!fullName.trim() || !contactInfo.trim()) return;
-        setSubmitted(true);
+        if (!canSubmitContactInquiry(draft)) return;
+        const payload = toContactInquiryPayload(draft);
+        setSubmittedName(payload.fullName);
     };
 
-    if (submitted) {
+    if (submittedName !== null) {
         return (
             <div className="rounded-2xl border border-rose-200 bg-uav-red-light/50 p-6 space-y-4">
                 <div className="space-y-1.5">
@@ -25,7 +27,7 @@ export function ContactQuickForm() {
                         Đã ghi nhận thông tin
                     </p>
                     <h3 className="text-lg font-extrabold text-slate-900">
-                        Cảm ơn {fullName}! Yêu cầu tư vấn của bạn đã được tiếp nhận.
+                        Cảm ơn {submittedName}! Yêu cầu tư vấn của bạn đã được tiếp nhận.
                     </h3>
                     <p className="text-xs leading-relaxed text-slate-600">
                         Để khởi tạo ngay vùng bay khảo sát trên bản đồ GIS và nhận báo giá tự động theo gói cước, bạn có thể đăng nhập trực tiếp vào Cổng Khách hàng bên dưới.
@@ -41,8 +43,8 @@ export function ContactQuickForm() {
                     <button
                         type="button"
                         onClick={() => {
-                            setSubmitted(false);
-                            setMessage('');
+                            setSubmittedName(null);
+                            setDraft((prev) => ({ ...prev, message: '' }));
                         }}
                         className="text-xs font-semibold text-slate-600 hover:text-primary underline"
                     >
@@ -54,7 +56,7 @@ export function ContactQuickForm() {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form noValidate onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                     <label htmlFor="contact-fullname" className="block text-xs font-bold text-slate-700 mb-1">
@@ -63,9 +65,9 @@ export function ContactQuickForm() {
                     <input
                         id="contact-fullname"
                         type="text"
-                        required
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
+                        aria-required
+                        value={draft.fullName}
+                        onChange={(e) => setDraft((prev) => ({ ...prev, fullName: e.target.value }))}
                         placeholder="Nguyễn Văn A"
                         className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-primary focus:bg-white focus:outline-none"
                     />
@@ -77,8 +79,8 @@ export function ContactQuickForm() {
                     <input
                         id="contact-org"
                         type="text"
-                        value={organization}
-                        onChange={(e) => setOrganization(e.target.value)}
+                        value={draft.organization}
+                        onChange={(e) => setDraft((prev) => ({ ...prev, organization: e.target.value }))}
                         placeholder="Công ty / Ban quản lý dự án..."
                         className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-primary focus:bg-white focus:outline-none"
                     />
@@ -93,9 +95,9 @@ export function ContactQuickForm() {
                     <input
                         id="contact-info"
                         type="text"
-                        required
-                        value={contactInfo}
-                        onChange={(e) => setContactInfo(e.target.value)}
+                        aria-required
+                        value={draft.contactInfo}
+                        onChange={(e) => setDraft((prev) => ({ ...prev, contactInfo: e.target.value }))}
                         placeholder="email@doanhnghiep.vn / 09xx..."
                         className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-primary focus:bg-white focus:outline-none"
                     />
@@ -106,8 +108,8 @@ export function ContactQuickForm() {
                     </label>
                     <select
                         id="contact-topic"
-                        value={topic}
-                        onChange={(e) => setTopic(e.target.value)}
+                        value={draft.topic}
+                        onChange={(e) => setDraft((prev) => ({ ...prev, topic: e.target.value }))}
                         className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs font-semibold text-slate-800 focus:border-primary focus:bg-white focus:outline-none"
                     >
                         <option value="SURVEY_SERVICE">Đặt dịch vụ bay khảo sát GIS / Quay chụp</option>
@@ -125,8 +127,8 @@ export function ContactQuickForm() {
                 <textarea
                     id="contact-message"
                     rows={3}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    value={draft.message}
+                    onChange={(e) => setDraft((prev) => ({ ...prev, message: e.target.value }))}
                     placeholder="Ví dụ: Khảo sát bình đồ 2D/3D khu công nghiệp 120 ha tại Bắc Ninh, yêu cầu GSD 2 cm/px..."
                     className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-primary focus:bg-white focus:outline-none"
                 />
@@ -135,7 +137,8 @@ export function ContactQuickForm() {
             <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
                 <button
                     type="submit"
-                    className="inline-flex h-10 items-center justify-center rounded-control bg-primary px-5 text-xs font-bold text-primary-foreground hover:bg-primary-hover transition-colors shadow-xs"
+                    disabled={!canSubmitContactInquiry(draft)}
+                    className="inline-flex h-10 items-center justify-center rounded-control bg-primary px-5 text-xs font-bold text-primary-foreground hover:bg-primary-hover transition-colors shadow-xs disabled:opacity-50"
                 >
                     Gửi yêu cầu tư vấn →
                 </button>

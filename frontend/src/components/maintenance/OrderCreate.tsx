@@ -7,7 +7,8 @@ import type {MaintenanceSchedule, RepairOrder} from "@/types/maintenance/mainten
 import {OrderFieldsForm, UavField} from "@/components/maintenance/Fields";
 import {ActionFeedback} from "@/components/maintenance/Feedback";
 import {useMaintenanceAction} from '@/hooks/maintenance/useMaintenanceAction';
-import {businessToday, positiveId} from "@/utils/maintenance/workflows";
+import {createMaintenanceOrderDraft} from "@/forms/maintenance/maintenance-form";
+import {positiveId} from "@/utils/maintenance/workflows";
 import {useI18n} from '@/providers/I18nContext';
 
 export function OrderCreate({schedule, uavId: initialUavId, uavs, canRead, onClose, onCreated, refresh}: {
@@ -19,19 +20,15 @@ export function OrderCreate({schedule, uavId: initialUavId, uavs, canRead, onClo
     onCreated: (order: RepairOrder) => void;
     refresh: () => Promise<boolean>
 }) {
-    const [uavId, setUavId] = useState(schedule ? String(schedule.uavId) : initialUavId);
-    const [fields, setFields] = useState({
-        title: schedule?.title || '',
-        description: '',
-        plannedDate: schedule?.nextDueDate || businessToday(),
-        technicianName: ''
-    });
+    const initialDraft = createMaintenanceOrderDraft(initialUavId, schedule);
+    const [uavId, setUavId] = useState(initialDraft.uavId);
+    const [fields, setFields] = useState(initialDraft.fields);
     const {t} = useI18n();
     const action = useMaintenanceAction(refresh);
     return <Drawer title={schedule ? t('opsAssets.maintenance.orderCreate.fromSchedule') : t('opsAssets.maintenance.orderCreate.title')} onClose={() => {
         if (!action.busy) onClose();
     }}>
-        <form className="space-y-4" onSubmit={event => {
+        <form noValidate className="space-y-4" onSubmit={event => {
             event.preventDefault();
             let created: RepairOrder | undefined;
             void action.run(async service => {

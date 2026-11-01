@@ -25,32 +25,32 @@ import org.springframework.web.bind.annotation.*;
 public class AiRouterController {
     private final AiRouterService service;
 
-    @GetMapping("/admin/ai-router")
+    @GetMapping(ApiRoutes.Assistant.ADMIN_AI_ROUTER)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<AiRouterSettingsResponse> settings() {
         return ResponseEntity.ok(service.settings());
     }
 
-    @PutMapping("/admin/ai-router")
+    @PutMapping(ApiRoutes.Assistant.ADMIN_AI_ROUTER)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<AiRouterSettingsResponse> update(
             @Valid @RequestBody AiRouterSettingsRequest request, Authentication auth) {
         return ResponseEntity.ok(service.update(request, auth));
     }
 
-    @GetMapping("/admin/ai-router/status")
+    @GetMapping(ApiRoutes.Assistant.ADMIN_AI_ROUTER_STATUS)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<AiRouterStatusResponse> status() {
         return ResponseEntity.ok(service.status());
     }
 
-    @GetMapping("/assistant")
+    @GetMapping(ApiRoutes.Assistant.ASSISTANT)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AssistantInfoResponse> info() {
         return ResponseEntity.ok(service.info());
     }
 
-    @PostMapping("/assistant/chat")
+    @PostMapping(ApiRoutes.Assistant.ASSISTANT_CHAT)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AssistantChatResponse> chat(
             @Valid @RequestBody AssistantChatRequest request, Authentication auth) {

@@ -6,6 +6,7 @@ import type {
     ResourceRedispatchProps as Props,
 } from "@/types/mission/mission.types";
 import {reservationQuantity} from "@/utils/mission/workflows";
+import {canSubmitResourceRedispatch, redispatchAvailableQuantity} from "@/forms/mission/operations-mission-form";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';
 import {useMissionWorkflow} from '@/hooks/mission/useMissionWorkflow';
@@ -69,13 +70,19 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
                 label: e.id === form.oldEquipmentId ? t('opsMissions.redispatch.equipmentOptionHeld', {name: e.name, count: e.availableQuantity, held: form.oldQuantity ?? 0}) : t('opsMissions.redispatch.equipmentOption', {name: e.name, count: e.availableQuantity})
             }));
     const item = equipment.find(e => String(e.id) === replacement);
-    const available = (item?.availableQuantity ?? 0) + (item?.id === form?.oldEquipmentId ? form?.oldQuantity ?? 0 : 0);
-    const validQuantity = Number.isSafeInteger(Number(quantity)) && Number(quantity) > 0 && Number(quantity) <= available;
-    const validReplacement = !replacement || candidates.some(c => String(c.id) === replacement);
-    const unchanged = form?.kind === 'equipment' && Number(replacement) === form.oldEquipmentId && Number(quantity) === form.oldQuantity;
+    const available = redispatchAvailableQuantity(item, form);
     const formStale = !!form && form.version !== snapshot.version;
-    const submitDisabled = disabled || formStale || !reason.trim() || !validReplacement || unchanged ||
-        (form?.kind === 'equipment' && !!replacement && !validQuantity) || (form?.kind === 'operator' && !!replacement && schedule !== 'available');
+    const submitDisabled = !canSubmitResourceRedispatch({
+        disabled: Boolean(disabled),
+        form,
+        snapshotVersion: snapshot.version,
+        reason,
+        replacement,
+        candidateIds: candidates.map(c => c.id),
+        quantity,
+        maxAvailable: available,
+        schedule,
+    });
     return <section className="min-w-0 overflow-hidden rounded-panel border border-border bg-card" aria-labelledby="resource-redispatch-title">
         <header className="flex items-center justify-between gap-3 border-b border-border px-6 py-5"><h2 id="resource-redispatch-title" className="m-0 text-lg font-bold text-foreground">{t('opsMissions.redispatch.title')}</h2></header>
         <div className="grid gap-4 p-6">

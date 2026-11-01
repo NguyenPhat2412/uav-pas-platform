@@ -66,7 +66,7 @@ public class MissionController {
                         authentication));
     }
 
-    @GetMapping("/availability")
+    @GetMapping(ApiRoutes.Missions.AVAILABILITY)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
     public ResponseEntity<MissionAvailabilityResponse> availability(
             @RequestParam LocalDateTime startTime,
@@ -78,7 +78,7 @@ public class MissionController {
                 service.availability(startTime, endTime, stationId, uavId, operatorId));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(ApiRoutes.Missions.MISSION_ID)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
     public ResponseEntity<MissionResponse> get(
             @PathVariable Long id, Authentication authentication) {
@@ -93,14 +93,14 @@ public class MissionController {
     }
 
     /** Validates a mission request without saving it; 204 when it would be accepted, field errors otherwise. */
-    @PostMapping("/validate")
+    @PostMapping(ApiRoutes.Missions.VALIDATE)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_CREATE')")
     public ResponseEntity<Void> validate(@Valid @RequestBody MissionCreateRequest request) {
         service.validate(request);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping(ApiRoutes.Missions.MISSION_ID)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_UPDATE')")
     public ResponseEntity<MissionResponse> update(
             @PathVariable Long id,
@@ -109,14 +109,14 @@ public class MissionController {
         return ResponseEntity.ok(service.updateDraft(id, request, authentication));
     }
 
-    @PostMapping("/{id}/submit")
+    @PostMapping(ApiRoutes.Missions.SUBMIT)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_UPDATE')")
     public ResponseEntity<MissionResponse> submit(
             @PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(service.submit(id, authentication));
     }
 
-    @PostMapping("/{id}/cancel")
+    @PostMapping(ApiRoutes.Missions.CANCEL)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_CANCEL')")
     public ResponseEntity<MissionResponse> cancel(
             @PathVariable Long id,
@@ -128,7 +128,7 @@ public class MissionController {
         return ResponseEntity.ok(service.cancel(id, note, authentication));
     }
 
-    @PostMapping("/{id}/assign-station")
+    @PostMapping(ApiRoutes.Missions.ASSIGN_STATION)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_STATION')")
     public ResponseEntity<MissionResponse> assignStation(
             @PathVariable Long id,
@@ -137,7 +137,7 @@ public class MissionController {
         return ResponseEntity.ok(service.assignStation(id, request, authentication));
     }
 
-    @PostMapping("/{id}/assign-uav")
+    @PostMapping(ApiRoutes.Missions.ASSIGN_UAV)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_UAV')")
     public ResponseEntity<MissionResponse> assignUav(
             @PathVariable Long id,
@@ -146,7 +146,7 @@ public class MissionController {
         return ResponseEntity.ok(service.assignUav(id, request, authentication));
     }
 
-    @PostMapping("/{id}/replace-uav")
+    @PostMapping(ApiRoutes.Missions.REPLACE_UAV)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_UAV')")
     public ResponseEntity<MissionResponse> replaceUav(
             @PathVariable Long id,
@@ -155,7 +155,7 @@ public class MissionController {
         return ResponseEntity.ok(service.replaceUav(id, request, authentication));
     }
 
-    @PostMapping("/{id}/unassign-uav")
+    @PostMapping(ApiRoutes.Missions.UNASSIGN_UAV)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_UAV')")
     public ResponseEntity<MissionResponse> unassignUav(
             @PathVariable Long id,
@@ -164,7 +164,7 @@ public class MissionController {
         return ResponseEntity.ok(service.unassignUav(id, request, authentication));
     }
 
-    @PostMapping("/{id}/assign-operator")
+    @PostMapping(ApiRoutes.Missions.ASSIGN_OPERATOR)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_OPERATOR')")
     public ResponseEntity<MissionResponse> assignOperator(
             @PathVariable Long id,
@@ -173,7 +173,7 @@ public class MissionController {
         return ResponseEntity.ok(service.assignOperator(id, request, authentication));
     }
 
-    @PostMapping("/{id}/reserve-equipment")
+    @PostMapping(ApiRoutes.Missions.RESERVE_EQUIPMENT)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_RESERVE_EQUIPMENT')")
     public ResponseEntity<MissionResponse> reserveEquipment(
             @PathVariable Long id,
@@ -182,14 +182,14 @@ public class MissionController {
         return ResponseEntity.ok(service.reserveEquipment(id, request, authentication));
     }
 
-    @GetMapping("/{id}/dispatch-resources")
+    @GetMapping(ApiRoutes.Missions.DISPATCH_RESOURCES)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
     public ResponseEntity<MissionDispatchResourcesResponse> dispatchResources(
             @PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(service.dispatchResources(id, authentication));
     }
 
-    @PostMapping("/{id}/redispatch-operator")
+    @PostMapping(ApiRoutes.Missions.REDISPATCH_OPERATOR)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_OPERATOR')")
     public ResponseEntity<MissionResponse> redispatchOperator(
             @PathVariable Long id,
@@ -198,7 +198,7 @@ public class MissionController {
         return ResponseEntity.ok(service.redispatchOperator(id, request, authentication));
     }
 
-    @PostMapping("/{id}/redispatch-station")
+    @PostMapping(ApiRoutes.Missions.REDISPATCH_STATION)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_ASSIGN_STATION')")
     public ResponseEntity<MissionResponse> redispatchStation(
             @PathVariable Long id,
@@ -207,7 +207,7 @@ public class MissionController {
         return ResponseEntity.ok(service.redispatchStation(id, request, authentication));
     }
 
-    @PostMapping("/{id}/redispatch-equipment")
+    @PostMapping(ApiRoutes.Missions.REDISPATCH_EQUIPMENT)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_RESERVE_EQUIPMENT')")
     public ResponseEntity<MissionResponse> redispatchEquipment(
             @PathVariable Long id,
@@ -216,35 +216,35 @@ public class MissionController {
         return ResponseEntity.ok(service.redispatchEquipment(id, request, authentication));
     }
 
-    @PostMapping("/{id}/confirm")
+    @PostMapping(ApiRoutes.Missions.CONFIRM)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_CONFIRM')")
     public ResponseEntity<MissionResponse> confirm(
             @PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(service.confirm(id, authentication));
     }
 
-    @PostMapping("/{id}/reject")
+    @PostMapping(ApiRoutes.Missions.REJECT)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_REJECT')")
     public ResponseEntity<MissionResponse> reject(
             @PathVariable Long id, @RequestParam String reason, Authentication authentication) {
         return ResponseEntity.ok(service.reject(id, reason, authentication));
     }
 
-    @PostMapping("/{id}/ready")
+    @PostMapping(ApiRoutes.Missions.READY)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE')")
     public ResponseEntity<MissionResponse> ready(
             @PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(service.ready(id, authentication));
     }
 
-    @PostMapping("/{id}/start")
+    @PostMapping(ApiRoutes.Missions.START)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_START')")
     public ResponseEntity<MissionResponse> start(
             @PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(service.start(id, authentication));
     }
 
-    @PostMapping("/{id}/accept")
+    @PostMapping(ApiRoutes.Missions.ACCEPT)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE')")
     public ResponseEntity<MissionResponse> accept(
             @PathVariable Long id,
@@ -253,14 +253,14 @@ public class MissionController {
         return ResponseEntity.ok(service.acceptOperator(id, request, authentication));
     }
 
-    @PostMapping("/{id}/report-conflict")
+    @PostMapping(ApiRoutes.Missions.REPORT_CONFLICT)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE')")
     public ResponseEntity<MissionResponse> reportConflict(
             @PathVariable Long id, @RequestParam String note, Authentication authentication) {
         return ResponseEntity.ok(service.reportOperatorConflict(id, note, authentication));
     }
 
-    @PostMapping("/{id}/complete")
+    @PostMapping(ApiRoutes.Missions.COMPLETE)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_COMPLETE')")
     public ResponseEntity<MissionResponse> complete(
             @PathVariable Long id,
@@ -269,7 +269,7 @@ public class MissionController {
         return ResponseEntity.ok(service.complete(id, request, authentication));
     }
 
-    @PostMapping("/{id}/fail")
+    @PostMapping(ApiRoutes.Missions.FAIL)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_STATUS_UPDATE')")
     public ResponseEntity<MissionResponse> fail(
             @PathVariable Long id,
@@ -282,7 +282,7 @@ public class MissionController {
      * Commander/admin closure of a READY, RESOURCE_RESERVED or IN_PROGRESS mission whose assigned
      * operator cannot complete or fail it. Requires a reason; releases the UAV and equipment.
      */
-    @PostMapping("/{id}/force-fail")
+    @PostMapping(ApiRoutes.Missions.FORCE_FAIL)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_CONFIRM')")
     public ResponseEntity<MissionResponse> forceFail(
             @PathVariable Long id,
@@ -291,14 +291,14 @@ public class MissionController {
         return ResponseEntity.ok(service.forceFail(id, request, authentication));
     }
 
-    @GetMapping("/{id}/media")
+    @GetMapping(ApiRoutes.Missions.MEDIA)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_MEDIA_VIEW')")
     public ResponseEntity<List<MissionMediaResponse>> media(
             @PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(service.listMedia(id, authentication));
     }
 
-    @PostMapping("/{id}/media")
+    @PostMapping(ApiRoutes.Missions.MEDIA)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_MEDIA_UPLOAD')")
     public ResponseEntity<MissionMediaResponse> attachMedia(
             @PathVariable Long id,
@@ -307,7 +307,7 @@ public class MissionController {
         return ResponseEntity.status(201).body(service.attachMedia(id, request, authentication));
     }
 
-    @PostMapping("/{id}/media/upload-url")
+    @PostMapping(ApiRoutes.Missions.MEDIA_UPLOAD_URL)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_MEDIA_UPLOAD')")
     public ResponseEntity<SignedMediaUrlResponse> mediaUploadUrl(
             @PathVariable Long id,
@@ -318,7 +318,7 @@ public class MissionController {
                 mediaService.registerMissionUploadUrl(id, request, authentication.getName()));
     }
 
-    @PostMapping("/{id}/media/{mediaId}/confirm")
+    @PostMapping(ApiRoutes.Missions.MEDIA_CONFIRM)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_MEDIA_UPLOAD')")
     public ResponseEntity<MediaAssetResponse> confirmMedia(
             @PathVariable Long id, @PathVariable Long mediaId, Authentication authentication) {
@@ -327,7 +327,7 @@ public class MissionController {
                 mediaService.confirmMission(mediaId, id, authentication.getName()));
     }
 
-    @GetMapping("/{id}/timeline")
+    @GetMapping(ApiRoutes.Missions.TIMELINE)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_TIMELINE_VIEW')")
     public ResponseEntity<List<MissionEventResponse>> timeline(
             @PathVariable Long id, Authentication authentication) {

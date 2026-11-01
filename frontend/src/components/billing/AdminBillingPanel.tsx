@@ -11,6 +11,13 @@ import {
     Users,
 } from 'lucide-react';
 import {useBillingPlans, useUpdateQuota, useUserQuotas} from '@/hooks/billing/useBillingAdmin';
+import {
+    canSubmitUserQuota,
+    quotaFieldErrors,
+    toUserQuotaDraft,
+    toUserQuotaPayload,
+    type UserQuotaDraft,
+} from '@/forms/billing/billing-form';
 import {Drawer} from '@/components/data/Drawer';
 import type {UserQuota} from '@/types/admin';
 import {RequiredMark} from '@/components/shared/RequiredMark';
@@ -26,25 +33,24 @@ export function AdminQuotasManagerSection() {
 
     const [search, setSearch] = useState('');
     const [editingUser, setEditingUser] = useState<UserQuota | null>(null);
-    const [newLimit, setNewLimit] = useState<number>(50);
-    const [newPlan, setNewPlan] = useState<string>('PRO');
+    const [quotaDraft, setQuotaDraft] = useState<UserQuotaDraft>({planCode: 'PRO', flightHoursLimit: '50'});
 
     const plans = plansQuery.data ?? [];
     const quotas = quotasQuery.data?.content ?? [];
     const isLoading = plansQuery.isLoading || quotasQuery.isLoading;
     const queryError = plansQuery.error ?? quotasQuery.error;
+    const quotaErrors = quotaFieldErrors(updateQuota.error);
 
     const handleOpenEdit = (q: UserQuota) => {
         updateQuota.reset();
         setEditingUser(q);
-        setNewLimit(q.flightHoursLimit);
-        setNewPlan(q.planCode);
+        setQuotaDraft(toUserQuotaDraft(q));
     };
 
     const handleSaveQuota = () => {
-        if (!editingUser) return;
+        if (!editingUser || !canSubmitUserQuota(quotaDraft)) return;
         updateQuota.mutate(
-            {userId: editingUser.userId, planCode: newPlan, flightHoursLimit: newLimit},
+            toUserQuotaPayload(editingUser.userId, quotaDraft),
             {onSuccess: () => setEditingUser(null)},
         );
     };
@@ -230,7 +236,14 @@ export function AdminQuotasManagerSection() {
             {/* Edit Quota Modal */}
             {editingUser && (
                 <Drawer title={t('admin.billing.drawerTitle')} onClose={() => setEditingUser(null)}>
-                    <div className="space-y-4">
+                    <form
+                        noValidate
+                        className="space-y-4"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSaveQuota();
+                        }}
+                    >
                         <div className="space-y-3 text-xs">
                             <div>
                                 <span className="mb-1 block text-slate-500">
@@ -252,9 +265,15 @@ export function AdminQuotasManagerSection() {
                                 <select
                                     id="quota-plan"
                                     aria-required
-                                    value={newPlan}
-                                    onChange={(e) => setNewPlan(e.target.value)}
-                                    className="w-full rounded-control border border-slate-300 bg-slate-50 p-2 text-xs text-slate-800 focus:border-primary focus:outline-none"
+                                    aria-invalid={Boolean(quotaErrors?.planCode)}
+                                    value={quotaDraft.planCode}
+                                    onChange={(e) =>
+                                        setQuotaDraft((prev) => ({
+                                            ...prev,
+                                            planCode: e.target.value,
+                                        }))
+                                    }
+                                    className="w-full rounded-control border border-slate-300 bg-slate-50 p-2 text-xs text-slate-800 focus:border-primary focus:outline-none aria-[invalid=true]:border-danger"
                                 >
                                     {plans.map((p) => (
                                         <option key={p.code} value={p.code}>
@@ -266,9 +285,14 @@ export function AdminQuotasManagerSection() {
                                         </option>
                                     ))}
                                 </select>
+                                {quotaErrors?.planCode && (
+                                    <span className="mt-1 block text-xs text-danger">
+                                        {quotaErrors.planCode}
+                                    </span>
+                                )}
                             </div>
 
-                            {updateQuota.error && (
+                            {updateQuota.error && !quotaErrors && (
                                 <div className="flex items-start gap-2 rounded-panel border border-rose-200 bg-rose-50 p-2.5 text-rose-700">
                                     <AlertCircle size={14} className="mt-0.5 shrink-0" />
                                     <span>
@@ -293,11 +317,22 @@ export function AdminQuotasManagerSection() {
                                 <input
                                     id="quota-limit"
                                     aria-required
+                                    aria-invalid={Boolean(quotaErrors?.flightHoursLimit)}
                                     type="number"
-                                    value={newLimit}
-                                    onChange={(e) => setNewLimit(Number(e.target.value))}
-                                    className="w-full rounded-control border border-slate-300 bg-slate-50 p-2 text-xs font-bold text-slate-800 tabular-nums focus:border-primary focus:outline-none"
+                                    value={quotaDraft.flightHoursLimit}
+                                    onChange={(e) =>
+                                        setQuotaDraft((prev) => ({
+                                            ...prev,
+                                            flightHoursLimit: e.target.value,
+                                        }))
+                                    }
+                                    className="w-full rounded-control border border-slate-300 bg-slate-50 p-2 text-xs font-bold text-slate-800 tabular-nums focus:border-primary focus:outline-none aria-[invalid=true]:border-danger"
                                 />
+                                {quotaErrors?.flightHoursLimit && (
+                                    <span className="mt-1 block text-xs text-danger">
+                                        {quotaErrors.flightHoursLimit}
+                                    </span>
+                                )}
                             </div>
                         </div>
 
@@ -310,9 +345,8 @@ export function AdminQuotasManagerSection() {
                                 {t('admin.billing.cancel')}
                             </button>
                             <button
-                                type="button"
-                                disabled={updateQuota.isPending}
-                                onClick={handleSaveQuota}
+                                type="submit"
+                                disabled={updateQuota.isPending || !canSubmitUserQuota(quotaDraft)}
                                 className="cursor-pointer rounded-control bg-primary px-3.5 py-1.5 text-xs font-bold text-primary-foreground transition hover:bg-primary-hover disabled:opacity-50"
                             >
                                 {updateQuota.isPending
@@ -320,7 +354,7 @@ export function AdminQuotasManagerSection() {
                                     : t('admin.billing.saveChanges')}
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </Drawer>
             )}
         </div>

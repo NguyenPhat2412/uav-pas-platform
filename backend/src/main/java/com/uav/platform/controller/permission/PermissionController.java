@@ -22,7 +22,7 @@ import java.util.List;
 public class PermissionController {
     private final PermissionService permissionService;
 
-    @GetMapping("/me")
+    @GetMapping(ApiRoutes.Permissions.ME)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PermissionCodesResponse> current(Authentication authentication) {
         return ResponseEntity.ok(permissionService.current(authentication));
@@ -34,13 +34,13 @@ public class PermissionController {
         return ResponseEntity.ok(permissionService.list());
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping(ApiRoutes.Permissions.BY_USER)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<List<UserPermissionResponse>> listUser(@PathVariable Long userId) {
         return ResponseEntity.ok(permissionService.listUserPermissions(userId));
     }
 
-    @PutMapping("/users/{userId}/{code}")
+    @PutMapping(ApiRoutes.Permissions.BY_USER_CODE)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<Void> set(
             @PathVariable Long userId,
@@ -51,7 +51,7 @@ public class PermissionController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/users/{userId}/{code}")
+    @DeleteMapping(ApiRoutes.Permissions.BY_USER_CODE)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<Void> reset(
             @PathVariable Long userId,

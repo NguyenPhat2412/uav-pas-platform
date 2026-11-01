@@ -4,7 +4,8 @@ import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {queryKeys, type MutationOptions} from '@/lib/query';
 import {useOperationMutation} from '@/hooks/useOperationMutation';
-import {mediaService, type MediaUploadOptions} from '@/api/media/media.api';
+import {mediaService} from '@/api/media/media.api';
+import type {MediaUploadOptions} from '@/types/media/media-upload.types';
 import {mediaKeys} from '@/hooks/media/query-keys';
 import type {ExifMetadata} from '@/types/mission/mission.types';
 

@@ -8,7 +8,7 @@ import {QueryState} from '@/components/data/WorkspaceState';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
-import type {AlertSeverity, AlertSource} from '@/api/alerts/alerts.api';
+import type {AlertSeverity, AlertSource} from '@/types/alerts/alerts.types';
 import {SEVERITIES, SOURCES} from '@/utils/alerts/alert-options';
 import {useAlertCenter} from '@/hooks/alerts/useAlertCenter';
 import {useAlertMessage} from '@/hooks/alerts/useAlertMessage';

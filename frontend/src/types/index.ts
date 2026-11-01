@@ -50,6 +50,7 @@ export interface PublicEnv {
     NEXT_PUBLIC_ENVIRONMENT: 'local' | 'staging' | 'production';
     NEXT_PUBLIC_DISPATCH_HOTLINE?: string;
     NEXT_PUBLIC_GOOGLE_CLIENT_ID?: string;
+    NEXT_PUBLIC_DEVTOOLS_GUARD?: 'on' | 'off';
 }
 
 export type ApiRoutes = Record<string, Record<string, string | ((...args: never[]) => string)>>;

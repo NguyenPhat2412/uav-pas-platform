@@ -6,9 +6,14 @@ import {AdminPage} from '@/components/layout/AdminPage';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {Button} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
-import {ApiError} from '@/lib/api';
 import {cn} from '@/lib/utils';
-import type {CreatedDeviceKey, DeviceKey} from '@/api/devicekey/device-keys.api';
+import type {CreatedDeviceKey, DeviceKey} from '@/types/devicekey/device-key.types';
+import {
+    canSubmitDeviceKeyCreate,
+    deviceKeyFieldErrors,
+    emptyDeviceKeyCreateDraft,
+    toDeviceKeyCreatePayload,
+} from '@/forms/devicekey/device-key-form';
 import {useCreateDeviceKey, useDeviceKeys, useDeviceKeyUavOptions, useRevokeDeviceKey} from '@/hooks/devicekey/useDeviceKeys';
 
 interface UavOption {
@@ -144,46 +149,46 @@ function CreateKeyDialog({uavs, onClose, onCreated}: {
     onCreated: (created: CreatedDeviceKey) => void
 }) {
     const {t} = useI18n();
-    const [name, setName] = useState('');
-    const [uavId, setUavId] = useState('');
-    const [expiresAt, setExpiresAt] = useState('');
+    const [draft, setDraft] = useState(emptyDeviceKeyCreateDraft);
     const create = useCreateDeviceKey({onSuccess: onCreated});
-    const fieldError = (field: string) => create.error instanceof ApiError ? create.error.fields?.[field] : undefined;
-    const input = 'min-h-[40px] w-full rounded-control border border-border-input bg-slate-50 px-2.5 text-sm text-slate-900 focus:border-primary focus:outline-none';
+    const fieldErrors = deviceKeyFieldErrors(create.error);
+    const input = 'min-h-[40px] w-full rounded-control border border-border-input bg-slate-50 px-2.5 text-sm text-slate-900 focus:border-primary focus:outline-none aria-[invalid=true]:border-danger';
     return <Modal title={t('adminPlatform.deviceKeys.createTitle')} onClose={onClose}>
-        <form className="space-y-4" onSubmit={event => {
+        <form noValidate className="space-y-4" onSubmit={event => {
             event.preventDefault();
-            if (name.trim()) create.mutate({
-                name: name.trim(),
-                uavId: uavId ? Number(uavId) : null,
-                expiresAt: expiresAt ? `${expiresAt}:00` : null,
-            });
+            if (canSubmitDeviceKeyCreate(draft)) {
+                create.mutate(toDeviceKeyCreatePayload(draft));
+            }
         }}>
             <label className="block space-y-1 text-sm font-semibold text-slate-800">
                 <span>{t('adminPlatform.deviceKeys.form.name')}</span>
-                <input className={input} value={name} maxLength={120} required autoFocus onChange={e => setName(e.target.value)}
+                <input className={input} aria-required aria-invalid={Boolean(fieldErrors?.name)} value={draft.name} autoFocus
+                       onChange={e => setDraft(prev => ({...prev, name: e.target.value}))}
                        placeholder={t('adminPlatform.deviceKeys.form.namePlaceholder')}/>
-                {fieldError('name') && <span className="block text-xs text-red-700">{fieldError('name')}</span>}
+                {fieldErrors?.name && <span className="block text-xs text-red-700">{fieldErrors.name}</span>}
             </label>
             <label className="block space-y-1 text-sm font-semibold text-slate-800">
                 <span>{t('adminPlatform.deviceKeys.form.uav')}</span>
-                <select className={input} value={uavId} onChange={e => setUavId(e.target.value)}>
+                <select className={input} aria-invalid={Boolean(fieldErrors?.uavId)} value={draft.uavId}
+                        onChange={e => setDraft(prev => ({...prev, uavId: e.target.value}))}>
                     <option value="">{t('adminPlatform.deviceKeys.anyUav')}</option>
                     {uavs.map(u => <option key={u.id} value={u.id}>{u.serialNumber} · {u.model}</option>)}
                 </select>
+                {fieldErrors?.uavId && <span className="block text-xs text-red-700">{fieldErrors.uavId}</span>}
                 <span className="block text-xs font-normal text-slate-500">{t('adminPlatform.deviceKeys.form.uavHint')}</span>
             </label>
             <label className="block space-y-1 text-sm font-semibold text-slate-800">
                 <span>{t('adminPlatform.deviceKeys.form.expiresAt')}</span>
-                <input type="datetime-local" className={input} value={expiresAt} onChange={e => setExpiresAt(e.target.value)}/>
+                <input type="datetime-local" className={input} aria-invalid={Boolean(fieldErrors?.expiresAt)} value={draft.expiresAt}
+                       onChange={e => setDraft(prev => ({...prev, expiresAt: e.target.value}))}/>
                 <span className="block text-xs font-normal text-slate-500">{t('adminPlatform.deviceKeys.form.expiresHint')}</span>
-                {fieldError('expiresAt') && <span className="block text-xs text-red-700">{fieldError('expiresAt')}</span>}
+                {fieldErrors?.expiresAt && <span className="block text-xs text-red-700">{fieldErrors.expiresAt}</span>}
             </label>
-            {create.error && !fieldError('name') && !fieldError('expiresAt') &&
+            {create.error && !fieldErrors &&
                 <p role="alert" className="m-0 text-sm text-red-700">{create.error.message}</p>}
             <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={onClose}>{t('adminPlatform.common.cancel')}</Button>
-                <Button type="submit" isLoading={create.isPending} disabled={!name.trim()}>{t('adminPlatform.deviceKeys.create')}</Button>
+                <Button type="submit" isLoading={create.isPending} disabled={!canSubmitDeviceKeyCreate(draft)}>{t('adminPlatform.deviceKeys.create')}</Button>
             </div>
         </form>
     </Modal>;

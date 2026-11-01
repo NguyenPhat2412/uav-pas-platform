@@ -269,8 +269,10 @@ public class TrainingServiceImpl implements TrainingService {
                 .findByCodeIgnoreCase(normalizedCode)
                 .ifPresent(
                         existing -> {
-                            throw SystemException.badRequest(
-                                    "Training document code already exists: " + normalizedCode);
+                            throw SystemException.conflict(
+                                            "Mã tài liệu đào tạo đã tồn tại: " + normalizedCode,
+                                            "TRAINING_DOCUMENT_CODE_EXISTS")
+                                    .at("code");
                         });
 
         String targetPortal = normalizePortal(request.getTargetPortal());
@@ -324,8 +326,10 @@ public class TrainingServiceImpl implements TrainingService {
                 .ifPresent(
                         existing -> {
                             if (!existing.getId().equals(id)) {
-                                throw SystemException.badRequest(
-                                        "Training document code already exists: " + normalizedCode);
+                                throw SystemException.conflict(
+                                                "Mã tài liệu đào tạo đã tồn tại: " + normalizedCode,
+                                                "TRAINING_DOCUMENT_CODE_EXISTS")
+                                        .at("code");
                             }
                         });
 

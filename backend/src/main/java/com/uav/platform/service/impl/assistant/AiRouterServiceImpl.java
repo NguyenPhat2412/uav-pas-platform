@@ -177,8 +177,9 @@ public class AiRouterServiceImpl implements AiRouterService {
             // A stored key is only ever sent to the host it was entered for.
             if (r.enabled())
                 throw SystemException.badRequest(
-                        "Đổi địa chỉ gateway thì phải nhập lại API key.",
-                        "AI_ROUTER_KEY_REENTRY_REQUIRED");
+                                "Đổi địa chỉ gateway thì phải nhập lại API key.",
+                                "AI_ROUTER_KEY_REENTRY_REQUIRED")
+                        .at("apiKey");
             s.setApiKeyCipher(null);
             s.setApiKeyHint(null);
             keyChanged = true;
@@ -204,8 +205,9 @@ public class AiRouterServiceImpl implements AiRouterService {
                 && (s.getApiKeyCipher() == null
                         || (s.getMode1Model() == null && s.getMode2Model() == null)))
             throw SystemException.badRequest(
-                    "Connect an API key and pick at least one model before enabling",
-                    "AI_ROUTER_INCOMPLETE");
+                            "Cần nhập API key và chọn ít nhất một mô hình trước khi bật trợ lý AI.",
+                            "AI_ROUTER_INCOMPLETE")
+                    .at(s.getApiKeyCipher() == null ? "apiKey" : "mode1Model");
         s.setEnabled(r.enabled());
         s.setUpdatedAt(LocalDateTime.now());
         s.setUpdatedBy(auth.getName());

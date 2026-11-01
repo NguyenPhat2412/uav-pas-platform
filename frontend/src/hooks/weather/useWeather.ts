@@ -1,5 +1,5 @@
 'use client';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useMutation, useQueries, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
 import {afterSuccess, QUIET, type MutationOptions} from '@/lib/query';
 import {weatherService} from '@/api/weather/weather.api';
@@ -24,6 +24,30 @@ export function useForecastAssessment(query: ForecastQuery | null) {
     });
 }
 
+/**
+ * Assessments for one point at several hours (undefined = now), e.g. the home-page weather strip.
+ * Each hour is its own cached query, so the strip shares cache with the weather page.
+ */
+export function useForecastTimeline(point: { lat: number; lng: number }, times: readonly (string | undefined)[]) {
+    return useForecastMany(times.map(at => ({lat: point.lat, lng: point.lng, at})));
+}
+
+/** Assessments for several points and hours at once (map markers, location lists), one cached query each. */
+export function useForecastMany(queries: readonly ForecastQuery[]) {
+    const {user} = useAuth();
+    return useQueries({
+        queries: queries.map(query => {
+            return {
+                queryKey: weatherKeys.forecast(user?.id, query),
+                queryFn: ({signal}: { signal: AbortSignal }) => weatherService.forecast(query, signal),
+                enabled: !!user,
+                staleTime: WEATHER_STALE_MS,
+                meta: QUIET,
+            };
+        }),
+    });
+}
+
 /** Assessment at a mission's site and start time (now once it is due). */
 export function useMissionWeather(missionId: number | undefined, enabled = true) {
     const {user} = useAuth();
@@ -37,12 +61,12 @@ export function useMissionWeather(missionId: number | undefined, enabled = true)
 }
 
 /** Current conditions at every active ground station (STATION_READ), refreshed every 10 minutes. */
-export function useStationsWeather() {
+export function useStationsWeather(enabled = true) {
     const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: weatherKeys.stations(user?.id),
         queryFn: ({signal}) => weatherService.stations(signal),
-        enabled: permissionsReady && can('STATION_READ'),
+        enabled: enabled && permissionsReady && can('STATION_READ'),
         staleTime: WEATHER_STALE_MS,
         refetchInterval: 10 * 60_000,
         meta: QUIET,

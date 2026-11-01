@@ -70,7 +70,10 @@
       "closeOthers": "Close other tabs",
       "closeAll": "Close all",
       "unsaved": "Unsaved changes",
-      "discardConfirm": "This page has unsaved changes. Leave and discard them?"
+      "discardConfirm": "This page has unsaved changes. Leave and discard them?",
+      "scrollLeft": "Show tabs on the left",
+      "scrollRight": "Show tabs on the right",
+      "all": "All open tabs"
     }
   },
   "operationsNavGroups": {
@@ -91,7 +94,8 @@
     "media": "Media Assets",
     "notifications": "Notifications",
     "audit": "Activity Log",
-    "training": "UAV Training & SOP"
+    "training": "UAV Training & SOP",
+    "weather": "Flight weather"
   },
   "adminNavGroups": {
     "overview": "Overview & Analytics",
@@ -146,7 +150,8 @@
     "infrastructureStorage": "File storage",
     "files": "File manager",
     "infrastructureDatabase": "Database",
-    "infrastructureEmail": "Email"
+    "infrastructureEmail": "Email",
+    "weather": "Flight weather"
   },
   "sidebar": {
     "title": "UAV PAS",
@@ -465,6 +470,78 @@
       "save": "Save weather settings",
       "saving": "Saving...",
       "saved": "Weather settings saved."
+    },
+    "workspace": {
+      "place": "Place",
+      "time": "Time",
+      "myLocation": "My location",
+      "pickedPoint": "Point picked on the map",
+      "locateUnsupported": "This browser does not support geolocation.",
+      "locateDenied": "Could not get your location. Allow location access and try again.",
+      "presets": {
+        "home": "Default area",
+        "hanoi": "Hanoi",
+        "halong": "Ha Long",
+        "danang": "Da Nang",
+        "hcmc": "Ho Chi Minh City"
+      },
+      "times": {
+        "now": "Now",
+        "plus3": "In 3 hours",
+        "plus6": "In 6 hours",
+        "tomorrow": "Tomorrow 7:00",
+        "custom": "Pick a time"
+      },
+      "filters": "Filters",
+      "map": "Weather map",
+      "stations": "Stations"
+    },
+    "home": {
+      "title": "Today's weather",
+      "details": "See details",
+      "next": "Next hours",
+      "wind": "Wind",
+      "rain": "Rain",
+      "visibility": "Visibility",
+      "conditions": {
+        "clear": "Sunny",
+        "partly": "Partly cloudy",
+        "cloudy": "Cloudy",
+        "fog": "Fog",
+        "drizzle": "Drizzle",
+        "rain": "Rain",
+        "showers": "Showers",
+        "thunder": "Thunderstorm",
+        "snow": "Snow",
+        "unknown": "Unknown"
+      },
+      "verdict": {
+        "GO": "Good to fly",
+        "CAUTION": "Fly with caution",
+        "NO_GO": "Do not fly",
+        "UNAVAILABLE": "No data yet"
+      },
+      "levels": {
+        "wind": {
+          "good": "Light wind",
+          "fair": "Moderate wind",
+          "poor": "Strong wind"
+        },
+        "rain": {
+          "good": "Dry",
+          "fair": "Rain possible",
+          "poor": "Rainy"
+        },
+        "visibility": {
+          "good": "Clear",
+          "fair": "Somewhat limited",
+          "poor": "Poor"
+        }
+      },
+      "conditionsNight": {
+        "clear": "Clear",
+        "partly": "Partly cloudy"
+      }
     }
   },
   "digitalTwin": {
@@ -514,5 +591,16 @@
       },
       "cta": "Ask about a digital twin"
     }
+  },
+  "errorPage": {
+    "title": "Something went wrong on this page",
+    "detail": "The page could not be displayed. You can try again; if it keeps happening, send the reference below to support.",
+    "staleTitle": "Loading the new version",
+    "staleDetail": "The system was just updated. The page reloads itself; if it does not, press Reload page.",
+    "reference": "Reference:",
+    "technical": "Technical details (development only)",
+    "retry": "Try again",
+    "reload": "Reload page",
+    "home": "Go to home"
   }
 }

@@ -5,7 +5,7 @@ import React, {createContext, ReactNode, useCallback, useContext, useEffect, use
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import type {AuthContextType, AuthResponse, RegisterRequest, UserResponse} from "@/types/auth/auth.types";
 import {authService} from '@/api/auth/auth.api';
-import {API_ROUTES, ApiError, apiClient, PERMISSIONS_EVENT, rememberSessionUser, SESSION_EVENT, SESSION_STORAGE_KEY, sessionOwnerOf, setAuthSession} from "@/lib/api";
+import {API_ROUTES, ApiError, apiClient, knownSignedOut, PERMISSIONS_EVENT, rememberSessionUser, SESSION_EVENT, SESSION_STORAGE_KEY, sessionOwnerOf, setAuthSession} from "@/lib/api";
 import {toast} from '@/providers/ToastContext';
 import {useI18n} from '@/providers/I18nContext';
 
@@ -79,6 +79,11 @@ export function AuthProvider({children}: { children: ReactNode }) {
     useEffect(() => {
         let active = true;
         const initialize = async () => {
+            // Known to be signed out (and no tab has signed in since): nothing to ask the API.
+            if (knownSignedOut()) {
+                setIsLoading(false);
+                return;
+            }
             try {
                 // With HttpOnly cookies, browser sends uav_access_token automatically
                 const current = await authService.getMe();
@@ -89,12 +94,14 @@ export function AuthProvider({children}: { children: ReactNode }) {
                     setToken('cookie');
                 }
             } catch (error) {
-                if (active && !(error instanceof Error && error.name === 'AbortError')) {
-                    identity.current = null;
-                    setUser(null);
-                    setToken(null);
-                    setAuthSession(null);
-                }
+                if (!active || (error instanceof Error && error.name === 'AbortError')) return;
+                identity.current = null;
+                setUser(null);
+                setToken(null);
+                // An unreachable or overloaded API (offline, 5xx, 429) says nothing about the session: keep the markers so
+                // the next load asks again instead of signing every tab out. Only a refusal ends the session.
+                const unreachable = error instanceof ApiError && (error.status === 0 || error.status === 429 || error.status >= 500);
+                if (!unreachable) setAuthSession(null);
             } finally {
                 if (active) setIsLoading(false);
             }

@@ -134,3 +134,26 @@ test('signing in and out tells other tabs through uav_session', () => {
     setSession(null);
     assert.equal(localStorage.getItem('uav_session'), null);
 });
+
+test('a known sign-out is remembered until any sign-in, so page loads can skip the auth round-trips', () => {
+    setSession(null);
+    assert.equal(api.knownSignedOut(), true);
+    setSession({accessToken: 'a', user: {...user, id: 9}});
+    assert.equal(api.knownSignedOut(), false);
+    assert.equal(localStorage.getItem('uav_signed_out'), null);
+    // Another tab signing in sets uav_session, which overrides a stale signed-out flag.
+    localStorage.setItem('uav_signed_out', '1');
+    assert.equal(api.knownSignedOut(), false);
+});
+
+test('without a session anywhere a refused refresh does not ask /auth/me a second time', async () => {
+    setSession(null);
+    const asked = [];
+    globalThis.fetch = async url => {
+        asked.push(new URL(url).pathname);
+        return url.endsWith('/auth/refresh') ? response({message: 'no refresh token'}, 400) : response({}, 401);
+    };
+    await assert.rejects(api.apiClient.get('/api/v1/auth/me'), error => error.status === 401);
+    assert.deepEqual(asked, ['/api/v1/auth/me', '/api/v1/auth/refresh']);
+    assert.equal(api.knownSignedOut(), true);
+});

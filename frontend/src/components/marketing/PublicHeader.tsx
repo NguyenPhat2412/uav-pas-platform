@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import {useState} from 'react';
 import {usePathname} from 'next/navigation';
@@ -110,7 +111,7 @@ export function PublicHeader() {
             >
                 <div className="relative mx-auto flex min-h-[76px] w-full max-w-[1380px] items-center justify-between gap-5 px-5 sm:px-8 lg:px-12">
                     <Link href="/" className="flex min-w-0 items-center gap-3.5" aria-label="UAV PAS - Đại học Việt Nhật">
-                        <img src="/vju-logo.svg" alt="" width={46} height={46}
+                        <Image src="/vju-logo.svg" alt="" width={46} height={46} priority
                              className="size-[46px] shrink-0 rounded-full bg-white p-0.5 object-contain shadow-2xs ring-1 ring-slate-200"/>
                         <span className="min-w-0 border-l border-slate-200 pl-3.5">
                             <span className="block text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-[10px]">Vietnam Japan University</span>

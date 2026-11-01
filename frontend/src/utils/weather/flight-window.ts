@@ -1,8 +1,10 @@
 import type {MissionInput} from '@/types/mission/mission.types';
 
 const pad = (value: number) => String(value).padStart(2, '0');
-const local = (date: Date) =>
+/** Local date-time as the weather API and datetime-local inputs expect it: yyyy-MM-ddTHH:mm. */
+export const localIso = (date: Date) =>
     `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+const local = localIso;
 
 /** Default flight length when the form has no valid end time yet. */
 const DEFAULT_DURATION_MS = 60 * 60_000;

@@ -162,11 +162,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> handleConflictState(
             IllegalStateException ex, HttpServletRequest request) {
+        Map<String, String> fields =
+                "Service code already exists".equals(ex.getMessage())
+                        ? Map.of("code", ex.getMessage())
+                        : null;
         return respond(
                 HttpStatus.CONFLICT,
                 resolveCode(ex.getMessage(), "INVALID_STATE"),
                 ex.getMessage(),
-                request);
+                request,
+                fields);
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)

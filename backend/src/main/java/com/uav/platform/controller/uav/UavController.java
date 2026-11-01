@@ -32,7 +32,7 @@ public class UavController {
         return ResponseEntity.ok(service.list(Pageables.desc(page, size, "createdAt")));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(ApiRoutes.Uavs.BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
     public ResponseEntity<UavResponse> get(@PathVariable Long id) {
         return ResponseEntity.ok(service.get(id));
@@ -45,21 +45,21 @@ public class UavController {
         return ResponseEntity.status(201).body(service.create(request, auth.getName()));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(ApiRoutes.Uavs.BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
     public ResponseEntity<UavResponse> update(
             @PathVariable Long id, @Valid @RequestBody UavRequest request, Authentication auth) {
         return ResponseEntity.ok(service.update(id, request, auth.getName()));
     }
 
-    @PutMapping("/{id}/station/{stationId}")
+    @PutMapping(ApiRoutes.Uavs.ASSIGN_STATION)
     @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
     public ResponseEntity<UavResponse> assign(
             @PathVariable Long id, @PathVariable Long stationId, Authentication auth) {
         return ResponseEntity.ok(service.assign(id, stationId, auth.getName()));
     }
 
-    @PutMapping("/{id}/status")
+    @PutMapping(ApiRoutes.Uavs.STATUS)
     @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
     public ResponseEntity<UavResponse> status(
             @PathVariable Long id,
@@ -71,7 +71,7 @@ public class UavController {
                 service.changeStatus(id, status, reason, expectedStatus, auth.getName()));
     }
 
-    @PostMapping("/{id}/maintenance")
+    @PostMapping(ApiRoutes.Uavs.MAINTENANCE)
     @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
     public ResponseEntity<UavResponse> maintenance(
             @PathVariable Long id,
@@ -81,7 +81,7 @@ public class UavController {
         return ResponseEntity.ok(service.maintenance(id, reason, expectedStatus, auth.getName()));
     }
 
-    @GetMapping("/{id}/history")
+    @GetMapping(ApiRoutes.Uavs.HISTORY)
     @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
     public ResponseEntity<PageResponse<UavStatusHistoryResponse>> history(
             @PathVariable Long id,

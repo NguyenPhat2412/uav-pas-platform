@@ -1,5 +1,5 @@
 'use client';
-import {useEffect, useState} from 'react';
+import {useMemo, useState} from 'react';
 import {Edit3, Plus} from 'lucide-react';
 import {Button, Input, StatusBadge} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
@@ -9,6 +9,13 @@ import {DataTable, options} from '@/components/data/DataTable';
 import {Drawer, Metadata, Tabs} from '@/components/data/Drawer';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {SectionHeading} from '@/components/layout/PageHeader';
+import {
+    canSubmitStation,
+    emptyStationDraft,
+    stationFieldErrors,
+    toStationDraft,
+    toStationPayload,
+} from '@/forms/station/station-form';
 import type {Station} from "@/types/resources";
 import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {resolveStationIdFromParam, toStationSlug} from "@/lib/url-slugs";
@@ -28,12 +35,14 @@ export function StationPanel() {
     const detail = useStation(selected);
     const [tab, setTab] = useState('overview');
     const [openCreate, setOpenCreate] = useState(false);
-    const [form, setForm] = useState({code: '', name: '', address: '', latitude: '', longitude: ''});
+    const [form, setForm] = useState(emptyStationDraft);
     const [isEditing, setIsEditing] = useState(false);
-    const [editForm, setEditForm] = useState({code: '', name: '', address: '', latitude: '', longitude: ''});
+    const [editForm, setEditForm] = useState(emptyStationDraft);
 
     const {create, update} = useStationMutations();
-    const rows = query.data || [];
+    const createFieldErrors = stationFieldErrors(create.error);
+    const updateFieldErrors = stationFieldErrors(update.error);
+    const rows = useMemo(() => query.data ?? [], [query.data]);
 
     const syncStationUrl = (stationId?: number, nextTab = 'overview') => {
         if (typeof window === 'undefined') return;
@@ -49,29 +58,30 @@ export function StationPanel() {
         window.history.replaceState(null, '', `${window.location.pathname}?${search.toString()}`);
     };
 
-    useEffect(() => {
-        if (typeof window === 'undefined' || selected !== undefined) return;
+    // A link like ?station=HN-01&tab=fleet opens that station once the list has loaded (only once, so closing the
+    // drawer does not reopen it). Adjusting state while rendering avoids an extra render pass from an effect.
+    const [deepLinkHandled, setDeepLinkHandled] = useState(false);
+    if (!deepLinkHandled && rows.length > 0 && typeof window !== 'undefined') {
+        setDeepLinkHandled(true);
         const params = new URLSearchParams(window.location.search);
-        const resolved = resolveStationIdFromParam(params.get('station') || params.get('stationId'), rows);
+        const resolved = selected === undefined ? resolveStationIdFromParam(params.get('station') || params.get('stationId'), rows) : undefined;
         if (resolved) {
             setSelected(resolved);
             const requestedTab = params.get('tab');
             if (requestedTab && validStationTabs.has(requestedTab)) setTab(requestedTab);
         }
-    }, [rows, selected]);
-
-    useEffect(() => {
-        if (detail.data) {
-            setEditForm({
-                code: detail.data.code,
-                name: detail.data.name,
-                address: detail.data.address || '',
-                latitude: detail.data.latitude != null ? String(detail.data.latitude) : '',
-                longitude: detail.data.longitude != null ? String(detail.data.longitude) : '',
-            });
-            setIsEditing(false);
-        }
-    }, [detail.data]);
+    }
+    // Opening another station leaves edit mode.
+    const [editingFor, setEditingFor] = useState(selected);
+    if (editingFor !== selected) {
+        setEditingFor(selected);
+        setIsEditing(false);
+    }
+    const startEditing = () => {
+        if (!detail.data) return;
+        setEditForm(toStationDraft(detail.data));
+        setIsEditing(true);
+    };
 
     const columns = [
         {
@@ -123,17 +133,11 @@ export function StationPanel() {
                                                                             onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.shared.closeForm') : t('opsAssets.station.create')}</Button>
         </div>}
         {openCreate &&
-            <form className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
+            <form noValidate className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 try {
-                    await create.mutateAsync({
-                        code: form.code.trim(),
-                        name: form.name.trim(),
-                        address: form.address.trim() || undefined,
-                        latitude: form.latitude.trim() ? Number(form.latitude) : undefined,
-                        longitude: form.longitude.trim() ? Number(form.longitude) : undefined,
-                    });
-                    setForm({code: '', name: '', address: '', latitude: '', longitude: ''});
+                    await create.mutateAsync(toStationPayload(form));
+                    setForm(emptyStationDraft());
                     setOpenCreate(false);
                     await query.refetch();
                 } catch { /* visible below */
@@ -142,6 +146,7 @@ export function StationPanel() {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="station-code">{t('opsAssets.station.code')}<RequiredMark/></label><Input id="station-code"
                                                                                                     aria-required
+                                                                                                    error={createFieldErrors?.code}
                                                                                                     value={form.code}
                                                                                                     onChange={e => setForm({
                                                                                                         ...form,
@@ -149,27 +154,30 @@ export function StationPanel() {
                                                                                                     })}/></div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="station-name">{t('opsAssets.station.name')}<RequiredMark/></label><Input id="station-name"
                                                                                                      aria-required
+                                                                                                     error={createFieldErrors?.name}
                                                                                                      value={form.name}
                                                                                                      onChange={e => setForm({
                                                                                                          ...form,
                                                                                                          name: e.target.value
                                                                                                      })}/></div>
                     <div className="col-span-full flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="station-address">{t('opsAssets.station.address')}<OptionalMark/></label><Input
-                        id="station-address" value={form.address}
+                        id="station-address" error={createFieldErrors?.address} value={form.address}
                         onChange={e => setForm({...form, address: e.target.value})}/></div>
                     <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-semibold text-slate-700" htmlFor="station-lat">{t('opsAssets.station.latitude')}<OptionalMark/></label>
-                        <Input id="station-lat" type="number" step="any" min={-90} max={90} placeholder="e.g. 21.0285"
+                        <Input id="station-lat" type="number" step="any" placeholder="e.g. 21.0285"
+                               error={createFieldErrors?.latitude}
                                value={form.latitude} onChange={e => setForm({...form, latitude: e.target.value})}/>
                     </div>
                     <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-semibold text-slate-700" htmlFor="station-lng">{t('opsAssets.station.longitude')}<OptionalMark/></label>
-                        <Input id="station-lng" type="number" step="any" min={-180} max={180} placeholder="e.g. 105.8048"
+                        <Input id="station-lng" type="number" step="any" placeholder="e.g. 105.8048"
+                               error={createFieldErrors?.longitude}
                                value={form.longitude} onChange={e => setForm({...form, longitude: e.target.value})}/>
                     </div>
                 </div>
-                <div className="mt-6 flex flex-wrap justify-end"><Button size="sm" type="submit" isLoading={create.isPending}>{t('opsAssets.station.create')}</Button></div>
-                <ErrorNotice error={create.error}/></form>}
+                <div className="mt-6 flex flex-wrap justify-end"><Button size="sm" type="submit" disabled={!canSubmitStation(form)} isLoading={create.isPending}>{t('opsAssets.station.create')}</Button></div>
+                {create.error && !createFieldErrors && <ErrorNotice error={create.error}/>}</form>}
         <QueryState query={query}><DataTable label={t('opsAssets.station.tableLabel')} data={rows} columns={columns} filters={[{
             column: 'status',
             label: t('opsAssets.shared.status'),
@@ -201,26 +209,20 @@ export function StationPanel() {
                     />
                     {can('STATION_MANAGE') && (
                         <div className="flex justify-end pt-2">
-                            <Button size="sm" variant="outline" leftIcon={<Edit3 size={14}/>} onClick={() => setIsEditing(true)}>
+                            <Button size="sm" variant="outline" leftIcon={<Edit3 size={14}/>} onClick={startEditing}>
                                 {t('opsAssets.station.edit')}
                             </Button>
                         </div>
                     )}
                 </div>
             ) : (
-                <form className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" onSubmit={async e => {
+                <form noValidate className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" onSubmit={async e => {
                     e.preventDefault();
                     if (!detail.data) return;
                     try {
                         await update.mutateAsync({
                             id: detail.data.id,
-                            data: {
-                                code: editForm.code.trim(),
-                                name: editForm.name.trim(),
-                                address: editForm.address.trim() || undefined,
-                                latitude: editForm.latitude.trim() ? Number(editForm.latitude) : undefined,
-                                longitude: editForm.longitude.trim() ? Number(editForm.longitude) : undefined,
-                            }
+                            data: toStationPayload(editForm),
                         });
                         setIsEditing(false);
                         await detail.refetch();
@@ -230,34 +232,34 @@ export function StationPanel() {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-semibold text-slate-700" htmlFor="edit-station-code">{t('opsAssets.station.code')}<RequiredMark/></label>
-                            <Input id="edit-station-code" value={editForm.code} onChange={e => setEditForm({...editForm, code: e.target.value})}/>
+                            <Input id="edit-station-code" error={updateFieldErrors?.code} value={editForm.code} onChange={e => setEditForm({...editForm, code: e.target.value})}/>
                         </div>
                         <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-semibold text-slate-700" htmlFor="edit-station-name">{t('opsAssets.station.name')}<RequiredMark/></label>
-                            <Input id="edit-station-name" value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})}/>
+                            <Input id="edit-station-name" error={updateFieldErrors?.name} value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})}/>
                         </div>
                         <div className="col-span-full flex flex-col gap-1.5">
                             <label className="text-xs font-semibold text-slate-700" htmlFor="edit-station-address">{t('opsAssets.station.address')}<OptionalMark/></label>
-                            <Input id="edit-station-address" value={editForm.address} onChange={e => setEditForm({...editForm, address: e.target.value})}/>
+                            <Input id="edit-station-address" error={updateFieldErrors?.address} value={editForm.address} onChange={e => setEditForm({...editForm, address: e.target.value})}/>
                         </div>
                         <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-semibold text-slate-700" htmlFor="edit-station-lat">{t('opsAssets.station.latitude')}<OptionalMark/></label>
-                            <Input id="edit-station-lat" type="number" step="any" min={-90} max={90} value={editForm.latitude} onChange={e => setEditForm({...editForm, latitude: e.target.value})}/>
+                            <Input id="edit-station-lat" type="number" step="any" error={updateFieldErrors?.latitude} value={editForm.latitude} onChange={e => setEditForm({...editForm, latitude: e.target.value})}/>
                         </div>
                         <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-semibold text-slate-700" htmlFor="edit-station-lng">{t('opsAssets.station.longitude')}<OptionalMark/></label>
-                            <Input id="edit-station-lng" type="number" step="any" min={-180} max={180} value={editForm.longitude} onChange={e => setEditForm({...editForm, longitude: e.target.value})}/>
+                            <Input id="edit-station-lng" type="number" step="any" error={updateFieldErrors?.longitude} value={editForm.longitude} onChange={e => setEditForm({...editForm, longitude: e.target.value})}/>
                         </div>
                     </div>
                     <div className="flex justify-end gap-2 pt-2">
                         <Button size="sm" variant="ghost" type="button" onClick={() => setIsEditing(false)}>
                             {t('opsAssets.station.cancel')}
                         </Button>
-                        <Button size="sm" type="submit" isLoading={update.isPending}>
+                        <Button size="sm" type="submit" disabled={!canSubmitStation(editForm)} isLoading={update.isPending}>
                             {t('opsAssets.station.save')}
                         </Button>
                     </div>
-                    <ErrorNotice error={update.error}/>
+                    {update.error && !updateFieldErrors && <ErrorNotice error={update.error}/>}
                 </form>
             ))}{tab === 'uavs' &&
             <p className="text-sm text-slate-600">{t('opsAssets.station.uavsNote')}</p>}{tab === 'inventory' &&

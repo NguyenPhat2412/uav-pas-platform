@@ -24,13 +24,13 @@ public class ReportController {
 
     private final ReportService reportService;
 
-    @GetMapping("/operations-summary")
+    @GetMapping(ApiRoutes.Reports.OPERATIONS_SUMMARY)
     @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
     public ResponseEntity<OperationsReportResponse> getOperationsSummary(Authentication auth) {
         return ResponseEntity.ok(reportService.getOperationsSummary(auth));
     }
 
-    @GetMapping(value = "/export-csv", produces = "text/csv")
+    @GetMapping(value = ApiRoutes.Reports.EXPORT_CSV, produces = "text/csv")
     @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
     public ResponseEntity<byte[]> exportCsv(Authentication auth) {
         String csvContent = reportService.exportOperationsCsv(auth);

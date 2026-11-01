@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-img-element -- avatars use signed storage URLs, which next/image cannot optimise without remote patterns. */
 import {useState} from 'react';
 import {cn} from '@/lib/utils';
 

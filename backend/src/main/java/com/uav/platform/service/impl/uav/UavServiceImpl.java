@@ -65,7 +65,7 @@ public class UavServiceImpl implements UavService {
     @Override
     public UavResponse create(UavRequest request, String actor) {
         if (repository.existsBySerialNumber(request.serialNumber()))
-            throw SystemException.conflict("UAV serial number already exists");
+            throw SystemException.conflict("UAV serial number already exists").at("serialNumber");
         Uav saved =
                 repository.save(
                         new Uav(request.model(), request.serialNumber(), request.manufacturer()));

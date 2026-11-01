@@ -26,7 +26,7 @@ public class AiController {
 
     private final AiService aiService;
 
-    @PostMapping("/dispatch")
+    @PostMapping(ApiRoutes.Ai.DISPATCH)
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_CREATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<AiTaskResponse> dispatchTask(
@@ -34,7 +34,7 @@ public class AiController {
         return ResponseEntity.status(201).body(aiService.dispatchTask(request, auth));
     }
 
-    @GetMapping("/missions/{missionId}/detections")
+    @GetMapping(ApiRoutes.Ai.MISSION_DETECTIONS)
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<List<AiDetectionResponse>> listDetections(
@@ -42,7 +42,7 @@ public class AiController {
         return ResponseEntity.ok(aiService.listDetections(missionId, auth));
     }
 
-    @GetMapping("/missions/{missionId}/tasks")
+    @GetMapping(ApiRoutes.Ai.MISSION_TASKS)
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<List<AiTaskResponse>> listTasks(
@@ -51,7 +51,7 @@ public class AiController {
     }
 
     /** Called by the KV260 edge board / cloud inference worker (gateway service account). */
-    @PostMapping("/tasks/{id}/results")
+    @PostMapping(ApiRoutes.Ai.TASKS_RESULTS)
     @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
     public ResponseEntity<AiTaskResponse> submitResults(
             @PathVariable Long id,
@@ -60,7 +60,7 @@ public class AiController {
         return ResponseEntity.ok(aiService.submitResults(id, request, auth));
     }
 
-    @PatchMapping("/detections/{id}/verify")
+    @PatchMapping(ApiRoutes.Ai.VERIFY_DETECTION)
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<AiDetectionResponse> verifyDetection(

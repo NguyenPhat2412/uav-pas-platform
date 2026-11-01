@@ -9,6 +9,12 @@ import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
 import {useAllPlans, usePlanMutations, usePlanStats} from '@/hooks/billing/useBillingAdmin';
+import {
+    canSubmitServicePlan,
+    createServicePlanDraft,
+    servicePlanFieldErrors,
+    toServicePlanPayload,
+} from '@/forms/billing/billing-form';
 import type {ServicePlan} from '@/types';
 import type {PlanStatsRow} from '@/types/billing/billing.types';
 import {clampPercent} from '@/utils/billing/plan-stats';
@@ -127,35 +133,25 @@ function PlanStatCells({row, loading}: { row?: PlanStatsRow; loading: boolean })
 
 function PlanDialog({plan, onClose, onSaved}: { plan: ServicePlan | null; onClose: () => void; onSaved: () => void }) {
     const {t} = useI18n();
-    const [code, setCode] = useState('');
-    const [name, setName] = useState(plan?.name ?? '');
-    const [price, setPrice] = useState(String(plan?.price ?? ''));
-    const [cycle, setCycle] = useState(plan?.billingCycle ?? 'MONTHLY');
-    const [hours, setHours] = useState(String(plan?.maxMonthlyFlightHours ?? 20));
-    const [uavs, setUavs] = useState(String(plan?.maxConcurrentUavs ?? 1));
-    const [sarAi, setSarAi] = useState(plan?.allowSarAi ?? false);
-    const [description, setDescription] = useState(plan?.description ?? '');
+    const [draft, setDraft] = useState(() => createServicePlanDraft(plan));
     const {save} = usePlanMutations();
+    const fieldErrors = servicePlanFieldErrors(save.error);
     const submit = async (e: FormEvent) => {
         e.preventDefault();
         try {
             await save.mutateAsync({
                 id: plan?.id,
-                body: {
-                    code: code.trim().toUpperCase(), name: name.trim(), price: Number(price), billingCycle: cycle,
-                    maxMonthlyFlightHours: Number(hours), maxConcurrentUavs: Number(uavs), allowSarAi: sarAi,
-                    description: description.trim() || undefined
-                },
+                body: toServicePlanPayload(draft),
             });
             onSaved();
         } catch {/* Shown below. */
         }
     };
-    const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none';
+    const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none aria-[invalid=true]:border-danger';
     const label = 'block text-[13px] font-semibold text-slate-600';
     return <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/45 p-4" role="presentation"
                 onMouseDown={e => e.target === e.currentTarget && onClose()}>
-        <form role="dialog" aria-modal="true" aria-labelledby="plan-dialog-title" onSubmit={e => void submit(e)}
+        <form noValidate role="dialog" aria-modal="true" aria-labelledby="plan-dialog-title" onSubmit={e => void submit(e)}
               onKeyDown={e => e.key === 'Escape' && onClose()}
               className="flex max-h-[calc(100dvh-32px)] w-full max-w-xl flex-col gap-4 overflow-y-auto bg-white p-6 shadow-2xl">
             <header className="flex items-center justify-between">
@@ -164,34 +160,40 @@ function PlanDialog({plan, onClose, onSaved}: { plan: ServicePlan | null; onClos
             </header>
             {plan ? <p className="m-0 text-[13px] text-slate-600">{t('admin.plans.code')}: <span className="font-mono font-semibold">{plan.code}</span></p> :
                 <label className={label}>{t('admin.plans.code')}<RequiredMark/>
-                    <input aria-required autoFocus value={code} onChange={e => setCode(e.target.value)}
+                    <input aria-required aria-invalid={Boolean(fieldErrors?.code)} autoFocus value={draft.code} onChange={e => setDraft(f => ({...f, code: e.target.value}))}
                            className={cn(field, 'font-mono uppercase')} placeholder="ENTERPRISE"/>
-                    <span className="mt-1 block text-xs font-normal text-slate-500">{t('admin.plans.codeHint')}</span></label>}
+                    {fieldErrors?.code ? <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.code}</span> :
+                        <span className="mt-1 block text-xs font-normal text-slate-500">{t('admin.plans.codeHint')}</span>}</label>}
             <label className={label}>{t('admin.plans.name')}<RequiredMark/>
-                <input aria-required autoFocus={!!plan} value={name} onChange={e => setName(e.target.value)} className={field}/></label>
+                <input aria-required aria-invalid={Boolean(fieldErrors?.name)} autoFocus={!!plan} value={draft.name} onChange={e => setDraft(f => ({...f, name: e.target.value}))} className={field}/>
+                {fieldErrors?.name && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.name}</span>}</label>
             <div className="grid gap-3 sm:grid-cols-2">
                 <label className={label}>{t('admin.plans.price')}<RequiredMark/>
-                    <input aria-required type="number" step={1000} value={price} onChange={e => setPrice(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
+                    <input aria-required aria-invalid={Boolean(fieldErrors?.price)} type="number" step={1000} value={draft.price} onChange={e => setDraft(f => ({...f, price: e.target.value}))} className={cn(field, 'tabular-nums')}/>
+                    {fieldErrors?.price && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.price}</span>}</label>
                 <label className={label}>{t('admin.plans.cycleLabel')}<RequiredMark/>
-                    <select value={cycle} onChange={e => setCycle(e.target.value)} className={field}>
+                    <select value={draft.billingCycle} onChange={e => setDraft(f => ({...f, billingCycle: e.target.value}))} className={field}>
                         <option value="MONTHLY">{t('admin.plans.cycle.MONTHLY')}</option>
                         <option value="YEARLY">{t('admin.plans.cycle.YEARLY')}</option>
                     </select></label>
                 <label className={label}>{t('admin.plans.hoursLabel')}<RequiredMark/>
-                    <input aria-required type="number" step={0.5} value={hours} onChange={e => setHours(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
+                    <input aria-required aria-invalid={Boolean(fieldErrors?.maxMonthlyFlightHours)} type="number" step={0.5} value={draft.maxMonthlyFlightHours} onChange={e => setDraft(f => ({...f, maxMonthlyFlightHours: e.target.value}))} className={cn(field, 'tabular-nums')}/>
+                    {fieldErrors?.maxMonthlyFlightHours && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.maxMonthlyFlightHours}</span>}</label>
                 <label className={label}>{t('admin.plans.uavsLabel')}<RequiredMark/>
-                    <input aria-required type="number" value={uavs} onChange={e => setUavs(e.target.value)} className={cn(field, 'tabular-nums')}/></label>
+                    <input aria-required aria-invalid={Boolean(fieldErrors?.maxConcurrentUavs)} type="number" value={draft.maxConcurrentUavs} onChange={e => setDraft(f => ({...f, maxConcurrentUavs: e.target.value}))} className={cn(field, 'tabular-nums')}/>
+                    {fieldErrors?.maxConcurrentUavs && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.maxConcurrentUavs}</span>}</label>
             </div>
             <label className="flex items-center gap-2 text-[13px] font-semibold text-slate-600">
-                <input type="checkbox" checked={sarAi} onChange={e => setSarAi(e.target.checked)}/>{t('admin.plans.sarAiLabel')}</label>
+                <input type="checkbox" checked={draft.allowSarAi} onChange={e => setDraft(f => ({...f, allowSarAi: e.target.checked}))}/>{t('admin.plans.sarAiLabel')}</label>
             <label className={label}>{t('admin.plans.description')}<OptionalMark/>
-                <textarea rows={3} value={description} onChange={e => setDescription(e.target.value)} className={field}/></label>
+                <textarea rows={3} aria-invalid={Boolean(fieldErrors?.description)} value={draft.description} onChange={e => setDraft(f => ({...f, description: e.target.value}))} className={field}/>
+                {fieldErrors?.description && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.description}</span>}</label>
             {plan && <p className="m-0 text-xs text-slate-500">{t('admin.plans.editNote')}</p>}
-            <ErrorNotice error={save.error}/>
+            {save.error && !fieldErrors && <ErrorNotice error={save.error}/>}
             <footer className="flex justify-end gap-2">
                 <button type="button" onClick={onClose} className="h-9 border border-slate-200 px-4 text-[13px] font-medium text-slate-600 hover:bg-slate-50">
                     {t('admin.plans.cancel')}</button>
-                <button type="submit" disabled={save.isPending}
+                <button type="submit" disabled={save.isPending || !canSubmitServicePlan(draft, Boolean(plan))}
                         className="h-9 bg-primary px-4 text-[13px] font-semibold text-primary-foreground disabled:opacity-50">{t('admin.plans.save')}</button>
             </footer>
         </form>

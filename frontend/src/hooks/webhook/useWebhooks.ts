@@ -3,7 +3,8 @@ import {useMutation, useQuery} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
 import {QUIET, queryKeys, type MutationOptions} from '@/lib/query';
 import {webhooksService} from '@/api/webhook/webhooks.api';
-import {webhooksAdminService, type WebhookSecretRotation} from '@/api/webhook/webhooks-admin.api';
+import {webhooksAdminService} from '@/api/webhook/webhooks-admin.api';
+import type {WebhookSecretRotation} from '@/types/webhook/webhook-admin.types';
 import type {WebhookEndpointItem} from '@/types/admin';
 
 const webhookKeys = {

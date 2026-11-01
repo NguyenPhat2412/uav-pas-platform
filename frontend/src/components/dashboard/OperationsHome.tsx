@@ -1,6 +1,6 @@
 'use client';
 
-import {Activity, MapPinned, PlaneTakeoff} from 'lucide-react';
+import {MapPinned, PlaneTakeoff} from 'lucide-react';
 import {PortalHomeColumn, PortalHomeHero, PortalHomeRow} from '@/components/layout/PortalHomeHero';
 import {OPERATIONS_SIDEBAR_ROUTES} from '@/config/sidebar-routes';
 import {OPERATIONS_RECENT_PAGES_KEY} from '@/lib/recent-pages';
@@ -9,6 +9,7 @@ import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useCollection} from '@/hooks/useCollection';
 import {toStationSlug, toUavSlug} from '@/lib/url-slugs';
+import {HomeWeatherWidget} from '@/components/weather/HomeWeatherWidget';
 
 /** Search-first header of the operations overview with 3 live operational columns. */
 export function OperationsHome() {
@@ -21,6 +22,7 @@ export function OperationsHome() {
 
     return (
         <PortalHomeHero
+            banner={<HomeWeatherWidget detailsHref="/operations/weather"/>}
             question={t('shell.home.operationsQuestion')}
             placeholder={t('shell.home.operationsSearch')}
             routes={OPERATIONS_SIDEBAR_ROUTES}

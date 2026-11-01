@@ -31,7 +31,7 @@ public class SarController {
 
     private final SarService sarService;
 
-    @PostMapping("/missions")
+    @PostMapping(ApiRoutes.Sar.MISSIONS)
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_CREATE') or @permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<SarMissionResponse> registerSar(
@@ -39,7 +39,7 @@ public class SarController {
         return ResponseEntity.status(201).body(sarService.registerSar(request, auth));
     }
 
-    @GetMapping("/missions")
+    @GetMapping(ApiRoutes.Sar.MISSIONS)
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<List<SarCockpitMissionResponse>> list(
@@ -50,7 +50,7 @@ public class SarController {
         return ResponseEntity.ok(sarService.listForCockpit(includeClosed, page, size, auth));
     }
 
-    @PostMapping("/missions/{missionId}/return-to-home")
+    @PostMapping(ApiRoutes.Sar.MISSIONS_RETURN_TO_HOME)
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<RescueDispatchResponse> returnToHome(
@@ -58,7 +58,7 @@ public class SarController {
         return ResponseEntity.ok(sarService.requestReturnToHome(missionId, auth));
     }
 
-    @GetMapping("/missions/{missionId}")
+    @GetMapping(ApiRoutes.Sar.MISSION_BY_ID)
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<SarMissionResponse> getByMissionId(
@@ -66,7 +66,7 @@ public class SarController {
         return ResponseEntity.ok(sarService.getByMissionId(missionId, auth));
     }
 
-    @PatchMapping("/missions/{missionId}/status")
+    @PatchMapping(ApiRoutes.Sar.MISSION_STATUS)
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<SarMissionResponse> updateStatus(
@@ -74,7 +74,7 @@ public class SarController {
         return ResponseEntity.ok(sarService.updateSarStatus(missionId, status, auth));
     }
 
-    @PostMapping("/flight-plan")
+    @PostMapping(ApiRoutes.Sar.FLIGHT_PLAN)
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_VIEW') or @permissionService.has(authentication, 'MISSION_CREATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<FlightPlanResponse> generateFlightPlan(
@@ -82,7 +82,7 @@ public class SarController {
         return ResponseEntity.ok(sarService.generateFlightPlan(request, auth));
     }
 
-    @PostMapping("/telemetry-evaluate")
+    @PostMapping(ApiRoutes.Sar.TELEMETRY_EVALUATE)
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<TelemetryEvaluateResponse> evaluateTelemetry(
@@ -90,7 +90,7 @@ public class SarController {
         return ResponseEntity.ok(sarService.evaluateTelemetry(request, auth));
     }
 
-    @PostMapping("/missions/{missionId}/dispatch-rescue")
+    @PostMapping(ApiRoutes.Sar.DISPATCH_RESCUE)
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<RescueDispatchResponse> dispatchRescue(

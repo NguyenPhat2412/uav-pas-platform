@@ -30,7 +30,7 @@ public class StationController {
         return ResponseEntity.ok(service.list(Pageables.asc(page, size, "name")));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(ApiRoutes.Stations.BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'STATION_READ')")
     public ResponseEntity<StationResponse> get(@PathVariable Long id) {
         return ResponseEntity.ok(service.get(id));
@@ -43,7 +43,7 @@ public class StationController {
         return ResponseEntity.status(201).body(service.create(request, auth.getName()));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(ApiRoutes.Stations.BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'STATION_MANAGE')")
     public ResponseEntity<StationResponse> update(
             @PathVariable Long id,
@@ -52,7 +52,7 @@ public class StationController {
         return ResponseEntity.ok(service.update(id, request, auth.getName()));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(ApiRoutes.Stations.BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'STATION_MANAGE')")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
         service.delete(id, auth.getName());

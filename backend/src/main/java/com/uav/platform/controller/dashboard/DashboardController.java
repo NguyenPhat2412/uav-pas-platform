@@ -33,19 +33,19 @@ public class DashboardController {
     private final FleetMapService fleetMap;
     private final SystemHealthService systemHealth;
 
-    @GetMapping("/summary")
+    @GetMapping(ApiRoutes.Dashboard.SUMMARY)
     @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
     public ResponseEntity<DashboardResponse> summary(Authentication authentication) {
         return ResponseEntity.ok(service.summary(authentication));
     }
 
-    @GetMapping("/missions")
+    @GetMapping(ApiRoutes.Dashboard.MISSIONS)
     @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_MISSION')")
     public ResponseEntity<MissionDashboardResponse> missions(Authentication authentication) {
         return ResponseEntity.ok(service.missionSummary(authentication));
     }
 
-    @GetMapping("/analytics")
+    @GetMapping(ApiRoutes.Dashboard.ANALYTICS)
     @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
     public ResponseEntity<AdminAnalyticsResponse> analytics(
             @RequestParam(defaultValue = "30") int days, Authentication authentication) {
@@ -53,7 +53,7 @@ public class DashboardController {
     }
 
     /** The caller's own missions, invoices and quota; no other customer's data is reachable here. */
-    @GetMapping("/customer-analytics")
+    @GetMapping(ApiRoutes.Dashboard.CUSTOMER_ANALYTICS)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
     public ResponseEntity<CustomerAnalyticsResponse> customerAnalytics(
             Authentication authentication) {
@@ -64,14 +64,14 @@ public class DashboardController {
      * Every UAV with the active mission it serves, across all customers. Customers hold UAV_READ for their own
      * assigned equipment, so the fleet-wide view requires the dispatcher-level MISSION_VIEW_ALL instead.
      */
-    @GetMapping("/fleet-map")
+    @GetMapping(ApiRoutes.Dashboard.FLEET_MAP)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW_ALL')")
     public ResponseEntity<FleetMapResponse> fleetMap() {
         return ResponseEntity.ok(fleetMap.fleetMap());
     }
 
     /** Admin-only health snapshot; the public actuator endpoints stay limited to health and info. */
-    @GetMapping("/system-health")
+    @GetMapping(ApiRoutes.Dashboard.SYSTEM_HEALTH)
     @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
     public ResponseEntity<SystemHealthResponse> systemHealth() {
         return ResponseEntity.ok(systemHealth.check());

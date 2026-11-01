@@ -1,10 +1,10 @@
 'use client';
 
-import React, {createContext, ReactNode, useCallback, useContext, useEffect, useState,} from 'react';
+import React, {createContext, ReactNode, useCallback, useContext, useEffect, useState, useSyncExternalStore} from 'react';
+import {useBrowserStorage, writeBrowserStorage} from '@/hooks/useBrowserStorage';
 import {
   defaultLocale,
   LocaleInput,
-  LocaleMeta,
   localeMetaMap,
   normalizeLocale,
   SupportedLocale,
@@ -57,37 +57,39 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined);
 const STORAGE_KEY = 'uav_locale';
 const LEGACY_STORAGE_KEY = 'uav_customer_locale';
 
+/** The URL does not change under the provider without a reload, so its read needs no subscription. */
+const noSubscribe = () => () => {};
+
+function readQueryLocale(): string | null {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('lang') || params.get('locale');
+}
+
 export function I18nProvider({children, area = 'operations'}: {
     children: ReactNode;
     area?: 'customer' | 'operations' | 'admin'
 }) {
     const activeCatalog = area === 'customer' ? customerMessagesMap : defaultMessagesMap;
 
-    // SSR-safe initialization: start with defaultLocale on server and client initial render
-    const [locale, setLocaleState] = useState<SupportedLocale>(defaultLocale);
+    // Server render and hydration use defaultLocale; the browser then reads ?lang= (wins and is remembered) or the
+    // saved choice. A choice made on this page lives in state too, so it applies even when storage refuses the write.
+    const queryLocale = useSyncExternalStore(noSubscribe, readQueryLocale, () => null);
+    const savedLocale = useBrowserStorage(STORAGE_KEY);
+    const legacyLocale = useBrowserStorage(LEGACY_STORAGE_KEY);
+    const [chosenLocale, setChosenLocale] = useState<SupportedLocale | null>(null);
+    const fromBrowser = queryLocale ?? savedLocale ?? legacyLocale;
+    const locale: SupportedLocale = chosenLocale ?? (fromBrowser ? normalizeLocale(fromBrowser) : defaultLocale);
 
-    // Synchronize saved locale from localStorage/query param after hydration
+    // Remember a locale given in the URL (or migrate the legacy key) for the next visit; no state is set here.
     useEffect(() => {
-        try {
-            const params = new URLSearchParams(window.location.search);
-            const queryLang = params.get('lang') || params.get('locale');
-            if (queryLang) {
-                const normalized = normalizeLocale(queryLang);
-                setLocaleState(normalized);
-                localStorage.setItem(STORAGE_KEY, normalized);
-                localStorage.setItem(LEGACY_STORAGE_KEY, normalized);
-                return;
-            }
-            const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
-            if (saved) {
-                const normalized = normalizeLocale(saved);
-                setLocaleState(normalized);
-                localStorage.setItem(STORAGE_KEY, normalized);
-            }
-        } catch {
-            // localStorage not available
+        if (queryLocale) {
+            const normalized = normalizeLocale(queryLocale);
+            writeBrowserStorage(STORAGE_KEY, normalized);
+            writeBrowserStorage(LEGACY_STORAGE_KEY, normalized);
+        } else if (!savedLocale && legacyLocale) {
+            writeBrowserStorage(STORAGE_KEY, normalizeLocale(legacyLocale));
         }
-    }, []);
+    }, [queryLocale, savedLocale, legacyLocale]);
 
     // Plain label helpers read this during the same render pass, so it must be set before children render.
     setPresentationLocale(locale);
@@ -101,13 +103,9 @@ export function I18nProvider({children, area = 'operations'}: {
 
     const setLocale = useCallback((newLocaleInput: LocaleInput) => {
         const canonical = normalizeLocale(newLocaleInput);
-        setLocaleState(canonical);
-        try {
-            localStorage.setItem(STORAGE_KEY, canonical);
-            localStorage.setItem(LEGACY_STORAGE_KEY, canonical);
-        } catch {
-            // localStorage not accessible
-        }
+        setChosenLocale(canonical);
+        writeBrowserStorage(STORAGE_KEY, canonical);
+        writeBrowserStorage(LEGACY_STORAGE_KEY, canonical);
     }, []);
 
     const toggleLocale = useCallback(() => {

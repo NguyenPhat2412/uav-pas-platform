@@ -34,8 +34,15 @@ import type {
     TrainingDocument,
     TrainingLessonType,
     TrainingPortalTier,
-    UpsertTrainingLessonPayload,
 } from '@/types/training/training.types';
+import {
+    lessonDraftFromDetail,
+    lessonDraftProblem,
+    lessonPayloadFromDetail,
+    toUpsertTrainingLessonPayload,
+    trainingLessonFieldErrors,
+    type TrainingLessonDraft,
+} from '@/forms/training/training-form';
 import {TrainingAssetUpload} from '@/components/training/TrainingAssetUpload';
 import {RESOURCE_ICONS} from '@/components/training/TrainingLessonViewers';
 import {MarkdownSopRenderer} from '@/components/training/MarkdownSopRenderer';
@@ -43,8 +50,6 @@ import {adminTrainingPreviewHref} from '@/utils/training/training-meta';
 import {
     defaultResourceTitle,
     formatFileSize,
-    isSupportedDocumentLink,
-    isSupportedVideoLink,
     LESSON_TYPE_LABELS,
     moveItem,
     planBulkLessons,
@@ -61,27 +66,6 @@ const TYPE_ICONS: Record<TrainingLessonType, LucideIcon> = {VIDEO: Video, SLIDES
 
 const inputClass = 'w-full rounded-control border border-border bg-card px-3 py-1.5 text-xs text-foreground focus:border-foreground/40 focus:outline-none';
 const ghostButton = 'inline-flex h-7 w-7 items-center justify-center rounded-control text-muted hover:bg-surface-variant hover:text-foreground disabled:pointer-events-none disabled:opacity-30';
-
-function lessonPayload(lesson: AdminTrainingLesson, overrides: Partial<UpsertTrainingLessonPayload> = {}): UpsertTrainingLessonPayload {
-    return {
-        courseId: lesson.courseId,
-        sectionTitle: lesson.sectionTitle ?? '',
-        title: lesson.title,
-        type: lesson.type,
-        sortOrder: lesson.sortOrder,
-        durationMinutes: lesson.durationMinutes,
-        active: lesson.active,
-        videoUrl: lesson.videoUrl,
-        videoAssetId: lesson.videoAssetId,
-        bodyMarkdown: lesson.bodyMarkdown,
-        slides: (lesson.slides ?? []).map(slide => ({assetId: slide.assetId, caption: slide.caption ?? ''})),
-        documentAssetId: lesson.documentAssetId ?? null,
-        documentUrl: lesson.documentUrl ?? null,
-        // Re-send the attachments as listed; leave the key out if the listing did not carry them so they are not wiped.
-        ...(lesson.resources ? {resources: lesson.resources.map(resource => ({assetId: resource.assetId, title: resource.title}))} : {}),
-        ...overrides,
-    };
-}
 
 /**
  * Admin side of a course: its cover image, a link to the learner view, the lesson list with add,
@@ -108,7 +92,7 @@ export function TrainingCourseAdminPanel({document, portal}: {document: Training
         const moved = moveItem(lessons, from, to);
         const orders = respacedSortOrders(moved.length);
         reorder.mutate(moved.flatMap((lesson, index) =>
-            lesson.sortOrder !== orders[index] ? [{id: lesson.id, payload: lessonPayload(lesson, {sortOrder: orders[index]})}] : []));
+            lesson.sortOrder !== orders[index] ? [{id: lesson.id, payload: lessonPayloadFromDetail(lesson, {sortOrder: orders[index]})} ] : []));
     };
     const toggleActive = useUpdateTrainingLessons(document.id);
     const cover = useSetTrainingCover(document.id, portal, {
@@ -224,7 +208,7 @@ export function TrainingCourseAdminPanel({document, portal}: {document: Training
                                             disabled={busy}
                                             onClick={() => {
                                                 if (!lesson.active || window.confirm(`Ẩn bài "${lesson.title}"? Học viên sẽ không thấy bài này nữa; bạn có thể hiện lại bất cứ lúc nào.`)) {
-                                                    toggleActive.mutate([{id: lesson.id, payload: lessonPayload(lesson, {active: !lesson.active})}]);
+                                                    toggleActive.mutate([{id: lesson.id, payload: lessonPayloadFromDetail(lesson, {active: !lesson.active})}]);
                                                 }
                                             }}
                                             aria-label={lesson.active ? 'Ẩn bài' : 'Hiện lại bài'}
@@ -265,110 +249,6 @@ export function TrainingCourseAdminPanel({document, portal}: {document: Training
     );
 }
 
-type SlideDraft = {key: string; assetId: number; caption: string; previewUrl: string | null};
-type ResourceDraft = {key: string; assetId: number; title: string; contentType: string | null; size: number | null};
-
-interface LessonDraft {
-    sectionTitle: string;
-    title: string;
-    type: TrainingLessonType;
-    sortOrder: number;
-    durationMinutes: number;
-    active: boolean;
-    videoSource: 'FILE' | 'LINK';
-    videoUrl: string;
-    videoAssetId: number | null;
-    videoFileName: string | null;
-    bodyMarkdown: string;
-    slides: SlideDraft[];
-    documentSource: 'FILE' | 'LINK';
-    documentAssetId: number | null;
-    documentFileName: string | null;
-    documentUrl: string;
-    resources: ResourceDraft[];
-}
-
-function draftFrom(lesson: AdminTrainingLesson | null, sortOrder: number, sectionTitle: string): LessonDraft {
-    if (!lesson) {
-        return {
-            sectionTitle, title: '', type: 'VIDEO', sortOrder, durationMinutes: 5, active: true,
-            videoSource: 'FILE', videoUrl: '', videoAssetId: null, videoFileName: null, bodyMarkdown: '', slides: [],
-            documentSource: 'FILE', documentAssetId: null, documentFileName: null, documentUrl: '', resources: [],
-        };
-    }
-    return {
-        sectionTitle: lesson.sectionTitle ?? '',
-        title: lesson.title,
-        type: lesson.type,
-        sortOrder: lesson.sortOrder,
-        durationMinutes: lesson.durationMinutes,
-        active: lesson.active,
-        videoSource: lesson.videoUrl ? 'LINK' : 'FILE',
-        videoUrl: lesson.videoUrl ?? '',
-        videoAssetId: lesson.videoAssetId,
-        videoFileName: lesson.videoAssetId ? `Tệp đã tải lên #${lesson.videoAssetId}` : null,
-        bodyMarkdown: lesson.bodyMarkdown ?? '',
-        slides: (lesson.slides ?? []).map((slide, index) => ({
-            key: `existing-${slide.assetId}-${index}`,
-            assetId: slide.assetId,
-            caption: slide.caption ?? '',
-            previewUrl: slide.url ?? null,
-        })),
-        documentSource: lesson.documentUrl ? 'LINK' : 'FILE',
-        documentAssetId: lesson.documentAssetId ?? null,
-        documentFileName: (lesson.document?.kind !== 'EMBED' ? lesson.document?.fileName : null)
-            ?? (lesson.documentAssetId ? `Tệp PDF đã tải lên #${lesson.documentAssetId}` : null),
-        documentUrl: lesson.documentUrl ?? '',
-        resources: (lesson.resources ?? []).map((resource, index) => ({
-            key: `existing-${resource.assetId}-${index}`,
-            assetId: resource.assetId,
-            title: resource.title ?? '',
-            contentType: resource.contentType ?? null,
-            size: resource.size ?? null,
-        })),
-    };
-}
-
-/** What still blocks saving, in the order the form shows it; null when the draft is complete. */
-function draftProblem(draft: LessonDraft): string | null {
-    if (!draft.title.trim()) return 'Nhập tên bài học.';
-    if (!Number.isFinite(draft.durationMinutes) || draft.durationMinutes < 0) return 'Thời lượng không hợp lệ.';
-    if (draft.type === 'VIDEO') {
-        if (draft.videoSource === 'LINK' && !isSupportedVideoLink(draft.videoUrl)) return 'Dán liên kết YouTube hoặc Vimeo.';
-        if (draft.videoSource === 'FILE' && draft.videoAssetId === null) return 'Tải tệp video lên trước khi lưu.';
-    }
-    if (draft.type === 'SLIDES' && draft.slides.length === 0) return 'Thêm ít nhất một ảnh slide.';
-    if (draft.type === 'ARTICLE' && !draft.bodyMarkdown.trim()) return 'Nhập nội dung bài đọc.';
-    if (draft.type === 'DOCUMENT') {
-        if (draft.documentSource === 'FILE' && draft.documentAssetId === null) return 'Tải tệp PDF lên trước khi lưu.';
-        if (draft.documentSource === 'LINK' && !isSupportedDocumentLink(draft.documentUrl)) return 'Dán liên kết Google Docs, Slides, Sheets hoặc Google Drive.';
-    }
-    if (draft.resources.some(resource => !resource.title.trim())) return 'Đặt tên cho mọi tài liệu đính kèm.';
-    return null;
-}
-
-function payloadFrom(draft: LessonDraft, courseId: number): UpsertTrainingLessonPayload {
-    const isVideo = draft.type === 'VIDEO';
-    const isDocument = draft.type === 'DOCUMENT';
-    return {
-        courseId,
-        sectionTitle: draft.sectionTitle.trim(),
-        title: draft.title.trim(),
-        type: draft.type,
-        sortOrder: draft.sortOrder,
-        durationMinutes: Math.round(draft.durationMinutes),
-        active: draft.active,
-        videoUrl: isVideo && draft.videoSource === 'LINK' ? draft.videoUrl.trim() : null,
-        videoAssetId: isVideo && draft.videoSource === 'FILE' ? draft.videoAssetId : null,
-        // An article's body is the lesson; other types keep whatever notes they had (no longer shown or edited).
-        bodyMarkdown: draft.type === 'ARTICLE' ? draft.bodyMarkdown : draft.bodyMarkdown.trim() || null,
-        slides: draft.type === 'SLIDES' ? draft.slides.map(slide => ({assetId: slide.assetId, caption: slide.caption.trim()})) : [],
-        documentAssetId: isDocument && draft.documentSource === 'FILE' ? draft.documentAssetId : null,
-        documentUrl: isDocument && draft.documentSource === 'LINK' ? draft.documentUrl.trim() : null,
-        resources: draft.resources.map(resource => ({assetId: resource.assetId, title: resource.title.trim()})),
-    };
-}
-
 function LessonDialog({courseId, lesson, nextSortOrder, lastSection, onClose, onSaved}: {
     courseId: number;
     lesson: AdminTrainingLesson | null;
@@ -377,12 +257,12 @@ function LessonDialog({courseId, lesson, nextSortOrder, lastSection, onClose, on
     onClose: () => void;
     onSaved: () => void;
 }) {
-    const [draft, setDraft] = useState<LessonDraft>(() => draftFrom(lesson, nextSortOrder, lastSection));
+    const [draft, setDraft] = useState<TrainingLessonDraft>(() => lessonDraftFromDetail(lesson, nextSortOrder, lastSection));
     const [articlePreview, setArticlePreview] = useState(false);
     const [attempted, setAttempted] = useState(false);
     const [uploads, setUploads] = useState(0);
     const objectUrls = useRef<string[]>([]);
-    const set = (patch: Partial<LessonDraft>) => setDraft(current => ({...current, ...patch}));
+    const set = (patch: Partial<TrainingLessonDraft>) => setDraft(current => ({...current, ...patch}));
     // While a file is uploading the dialog cannot be closed or saved: the asset would be lost or missing.
     const uploading = uploads > 0;
     const onUploadBusy = useCallback((busy: boolean) => setUploads(count => Math.max(0, count + (busy ? 1 : -1))), []);
@@ -394,6 +274,7 @@ function LessonDialog({courseId, lesson, nextSortOrder, lastSection, onClose, on
     }, []);
 
     const save = useSaveTrainingLesson(lesson?.id, {onSuccess: onSaved});
+    const fieldErrors = trainingLessonFieldErrors(save.error);
     const locked = uploading || save.isPending;
 
     useEffect(() => {
@@ -404,7 +285,7 @@ function LessonDialog({courseId, lesson, nextSortOrder, lastSection, onClose, on
         return () => window.removeEventListener('keydown', onKey);
     }, [onClose, locked]);
 
-    const problem = draftProblem(draft);
+    const problem = lessonDraftProblem(draft);
     const moveSlide = (from: number, to: number) => set({slides: moveItem(draft.slides, from, to)});
     const moveResource = (from: number, to: number) => set({resources: moveItem(draft.resources, from, to)});
 
@@ -447,16 +328,19 @@ function LessonDialog({courseId, lesson, nextSortOrder, lastSection, onClose, on
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <label className="block sm:col-span-2">
                             <span className="mb-1 block font-semibold text-foreground">Tên bài <RequiredMark /></span>
-                            <input className={inputClass} value={draft.title} onChange={event => set({title: event.target.value})} aria-required />
+                            <input className={inputClass} value={draft.title} onChange={event => set({title: event.target.value})} aria-required aria-invalid={Boolean(fieldErrors?.title)} />
+                            {fieldErrors?.title && <span className="mt-1 block text-[11px] text-danger">{fieldErrors.title}</span>}
                         </label>
                         <label className="block">
                             <span className="mb-1 block font-semibold text-foreground">Chương <OptionalMark /></span>
-                            <input className={inputClass} value={draft.sectionTitle} placeholder="Nội dung" onChange={event => set({sectionTitle: event.target.value})} />
+                            <input className={inputClass} value={draft.sectionTitle} placeholder="Nội dung" onChange={event => set({sectionTitle: event.target.value})} aria-invalid={Boolean(fieldErrors?.sectionTitle)} />
+                            {fieldErrors?.sectionTitle && <span className="mt-1 block text-[11px] text-danger">{fieldErrors.sectionTitle}</span>}
                         </label>
                         <div className="grid grid-cols-2 gap-3">
                             <label className="block">
                                 <span className="mb-1 block font-semibold text-foreground">Thời lượng (phút)</span>
-                                <input type="number" min={0} className={inputClass} value={draft.durationMinutes} onChange={event => set({durationMinutes: Number(event.target.value)})} />
+                                <input type="number" className={inputClass} value={draft.durationMinutes} onChange={event => set({durationMinutes: Number(event.target.value)})} aria-invalid={Boolean(fieldErrors?.durationMinutes)} />
+                                {fieldErrors?.durationMinutes && <span className="mt-1 block text-[11px] text-danger">{fieldErrors.durationMinutes}</span>}
                             </label>
                             <label className="block">
                                 <span className="mb-1 block font-semibold text-foreground">Thứ tự</span>
@@ -507,10 +391,11 @@ function LessonDialog({courseId, lesson, nextSortOrder, lastSection, onClose, on
                                         className={inputClass}
                                         value={draft.videoUrl}
                                         placeholder="https://youtu.be/…"
+                                        aria-invalid={Boolean(fieldErrors?.videoUrl)}
                                         onChange={event => set({videoUrl: event.target.value})}
                                     />
-                                    {draft.videoUrl.trim() && !isSupportedVideoLink(draft.videoUrl) && (
-                                        <span className="mt-1 block text-[11px] text-danger">Chỉ nhận liên kết youtube.com, youtu.be hoặc vimeo.com.</span>
+                                    {fieldErrors?.videoUrl && (
+                                        <span className="mt-1 block text-[11px] text-danger">{fieldErrors.videoUrl}</span>
                                     )}
                                 </label>
                             )}
@@ -638,12 +523,11 @@ function LessonDialog({courseId, lesson, nextSortOrder, lastSection, onClose, on
                                         className={inputClass}
                                         value={draft.documentUrl}
                                         placeholder="https://docs.google.com/document/d/…"
+                                        aria-invalid={Boolean(fieldErrors?.documentUrl)}
                                         onChange={event => set({documentUrl: event.target.value})}
                                     />
-                                    {draft.documentUrl.trim() && !isSupportedDocumentLink(draft.documentUrl) ? (
-                                        <span className="mt-1 block text-[11px] text-danger">
-                                            Chỉ nhận liên kết https://docs.google.com/… (Docs, Slides, Sheets) hoặc https://drive.google.com/file/d/….
-                                        </span>
+                                    {fieldErrors?.documentUrl ? (
+                                        <span className="mt-1 block text-[11px] text-danger">{fieldErrors.documentUrl}</span>
                                     ) : (
                                         <span className="mt-1 block text-[11px] text-muted-foreground">
                                             Chia sẻ tài liệu ở chế độ “Bất kỳ ai có đường liên kết đều xem được” để học viên mở được.
@@ -738,7 +622,7 @@ function LessonDialog({courseId, lesson, nextSortOrder, lastSection, onClose, on
                         disabled={locked}
                         onClick={() => {
                             setAttempted(true);
-                            if (!problem) save.mutate(payloadFrom(draft, courseId));
+                            if (!problem) save.mutate(toUpsertTrainingLessonPayload(draft, courseId));
                         }}
                         className="h-8 rounded-control bg-primary px-4 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
                     >

@@ -58,8 +58,8 @@ class AuthRateLimitServiceTest {
     }
 
     @Test
-    void accountLimitBlocksTheSixthCodeRequestInFifteenMinutes() {
-        for (int i = 0; i < 5; i++)
+    void accountLimitBlocksTheFourthCodeRequestInFifteenMinutes() {
+        for (int i = 0; i < 3; i++)
             limiter.checkAccount(AuthRateLimitAction.OTP_ISSUE, "Victim@X.vn");
         SystemException e =
                 limited(() -> limiter.checkAccount(AuthRateLimitAction.OTP_ISSUE, "victim@x.vn"));
@@ -71,7 +71,7 @@ class AuthRateLimitServiceTest {
 
     @Test
     void windowSlidesOpenAgain() {
-        for (int i = 0; i < 5; i++) limiter.checkAccount(AuthRateLimitAction.OTP_ISSUE, "a@x.vn");
+        for (int i = 0; i < 3; i++) limiter.checkAccount(AuthRateLimitAction.OTP_ISSUE, "a@x.vn");
         clock.advance(Duration.ofMinutes(14));
         limited(() -> limiter.checkAccount(AuthRateLimitAction.OTP_ISSUE, "a@x.vn"));
         clock.advance(Duration.ofMinutes(1).plusSeconds(1));
@@ -80,10 +80,35 @@ class AuthRateLimitServiceTest {
 
     @Test
     void clientLimitCountsEveryAccountFromOneAddress() {
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 8; i++)
             limiter.checkClient(AuthRateLimitAction.OTP_ISSUE, "203.0.113.7");
         limited(() -> limiter.checkClient(AuthRateLimitAction.OTP_ISSUE, "203.0.113.7"));
         limiter.checkClient(AuthRateLimitAction.OTP_ISSUE, "203.0.113.8");
+    }
+
+    @Test
+    void anAnonymousFloodCannotUseUpTheSignedInLoginCodeBudget() {
+        for (int i = 0; i < 15; i++) limiter.checkGlobalEmailBudget(false);
+        limited(() -> limiter.checkGlobalEmailBudget(false));
+        // Staff signing in with email 2FA still get their codes.
+        for (int i = 0; i < AuthRateLimitServiceImpl.DEFAULT_SIGNED_IN_EMAILS_PER_MINUTE; i++)
+            assertDoesNotThrow(() -> limiter.checkGlobalEmailBudget(true));
+        limited(() -> limiter.checkGlobalEmailBudget(true));
+    }
+
+    @Test
+    void globalEmailBudgetCapsOutboundSmtpAcrossDistributedClientsPerMinute() {
+        for (int i = 0; i < 15; i++) {
+            limiter.checkGlobalEmailBudget();
+        }
+        SystemException ex = limited(() -> limiter.checkGlobalEmailBudget());
+        assertEquals(AuthRateLimitServiceImpl.CODE_RATE_LIMITED, ex.getCode());
+
+        clock.advance(Duration.ofSeconds(59));
+        limited(() -> limiter.checkGlobalEmailBudget());
+
+        clock.advance(Duration.ofSeconds(2));
+        assertDoesNotThrow(() -> limiter.checkGlobalEmailBudget());
     }
 
     @Test
@@ -145,10 +170,11 @@ class AuthRateLimitServiceTest {
     @Test
     void purgeDropsExpiredWindows() {
         limiter.checkAccount(AuthRateLimitAction.OTP_ISSUE, "a@x.vn");
+        limiter.checkGlobalEmailBudget();
         limiter.startResendCooldown("k");
         clock.advance(Duration.ofMinutes(16));
         limiter.purgeExpired();
-        for (int i = 0; i < 5; i++) limiter.checkAccount(AuthRateLimitAction.OTP_ISSUE, "a@x.vn");
+        for (int i = 0; i < 3; i++) limiter.checkAccount(AuthRateLimitAction.OTP_ISSUE, "a@x.vn");
         limiter.checkResendCooldown("k");
     }
 }

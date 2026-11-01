@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import {useSidebarController} from '@/hooks/useSidebarController';
 import {AssistantWidget} from '@/components/assistant/AssistantWidget';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
@@ -64,7 +65,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
     const pathname = usePathname();
     const {can, permissionsReady} = useAuth();
     const {t} = useI18n();
-    const {open, setOpen, railCollapsed, toggleCollapsed, shortcut, menuButton, rail, navList} =
+    const {open, setOpen, railCollapsed, peeking, peekProps, toggleCollapsed, shortcut, menuButton, rail, navList} =
         useSidebarController('uav_sidebar_collapsed');
 
     // Opts the admin portal into its own shape and surface scale (see globals.css).
@@ -105,13 +106,16 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
             >
                 {t('shell.skipToContent')}
             </a>
+            {peeking && <div aria-hidden="true" className="hidden w-[60px] shrink-0 lg:block"/>}
             <aside
                 ref={rail}
                 id="portal-navigation"
+                {...peekProps}
                 className={cn(
                     'fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-all duration-200 lg:sticky lg:top-0 lg:z-40 lg:h-screen',
                     railCollapsed ? 'w-[60px]' : 'w-[min(280px,85vw)] lg:w-[220px]',
-                    open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
+                    open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0',
+                    peeking && 'lg:fixed lg:z-[61] lg:shadow-2xl'
                 )}
             >
                 <div className={cn("mb-2 flex items-center border-b border-slate-100 pb-2", railCollapsed ? "flex-col justify-center gap-1.5" : "justify-between gap-1.5")}>
@@ -122,7 +126,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                         title={`UAV PAS · ${t('shell.adminTitle')}`}
                     >
                         <span className="flex items-center justify-center bg-white p-0.5 rounded-lg border border-rose-100 shadow-xs overflow-hidden shrink-0">
-                            <img src="/vju-logo.svg" alt={t('shell.vjuUniversity')} width={26} height={26} className="w-[26px] h-[26px] object-contain"/>
+                            <Image src="/vju-logo.svg" alt={t('shell.vjuUniversity')} width={26} height={26} className="w-[26px] h-[26px] object-contain"/>
                         </span>
                         {!railCollapsed && (
                             <span className="flex flex-col leading-tight truncate">
@@ -135,11 +139,11 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                         type="button"
                         className="hidden lg:inline-flex items-center justify-center w-7 h-7 shrink-0 rounded-lg border border-slate-200/80 bg-slate-50/80 text-slate-500 hover:border-primary/30 hover:bg-uav-red-light hover:text-primary transition-colors cursor-pointer"
                         onClick={toggleCollapsed}
-                        aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                        aria-label={(railCollapsed || peeking) ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
                         aria-keyshortcuts="Control+B Meta+B"
-                        title={`${railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')} (${shortcut})`}
+                        title={`${(railCollapsed || peeking) ? t('shell.expandSidebar') : t('shell.collapseSidebar')} (${shortcut})`}
                     >
-                        {railCollapsed ? <PanelLeftOpen size={14}/> : <PanelLeftClose size={14}/>}
+                        {(railCollapsed || peeking) ? <PanelLeftOpen size={14}/> : <PanelLeftClose size={14}/>}
                     </button>
                     {/* The drawer's own close button, in the slot the desktop collapse toggle uses. */}
                     <button

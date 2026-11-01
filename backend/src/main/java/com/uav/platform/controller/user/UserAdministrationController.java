@@ -46,7 +46,7 @@ public class UserAdministrationController {
     }
 
     @Operation(summary = "Set a new password and revoke the user's sessions")
-    @PostMapping(ApiRoutes.Users.USER_ID + "/reset-password")
+    @PostMapping(ApiRoutes.Users.RESET_PASSWORD)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<Void> resetPassword(
             @PathVariable Long id,
@@ -57,7 +57,7 @@ public class UserAdministrationController {
     }
 
     @Operation(summary = "Lock or unlock several accounts")
-    @PostMapping("/bulk-lock")
+    @PostMapping(ApiRoutes.Users.BULK_LOCK)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<BulkActionResponse> bulkLock(
             @Valid @RequestBody BulkLockRequest request, Authentication authentication) {
@@ -65,7 +65,7 @@ public class UserAdministrationController {
     }
 
     @Operation(summary = "Export the filtered user list as CSV")
-    @GetMapping(value = "/export", produces = "text/csv")
+    @GetMapping(value = ApiRoutes.Users.EXPORT, produces = "text/csv")
     @PreAuthorize("@permissionService.has(authentication, 'USER_READ')")
     public ResponseEntity<byte[]> export(
             @RequestParam(required = false) String keyword,

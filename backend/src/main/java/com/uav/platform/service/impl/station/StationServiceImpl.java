@@ -43,7 +43,7 @@ public class StationServiceImpl implements StationService {
     @Override
     public StationResponse create(StationRequest request, String actor) {
         if (repository.existsByCode(request.code()))
-            throw SystemException.conflict("Station code already exists");
+            throw SystemException.conflict("Station code already exists").at("code");
         Station saved =
                 repository.save(
                         StationOperations.create(
