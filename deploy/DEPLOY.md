@@ -121,14 +121,27 @@ nginx -t && systemctl reload nginx
 certbot --nginx -d uav.all1.vn --redirect      # tự thêm HTTPS, tự gia hạn
 ```
 
+API chạy ở tên miền riêng `api.uav.all1.vn` (frontend gọi API qua địa chỉ này):
+
+```bash
+cp /opt/uav-pas/deploy/nginx/api.uav.all1.vn.conf /etc/nginx/sites-available/api.uav.all1.vn
+ln -sf /etc/nginx/sites-available/api.uav.all1.vn /etc/nginx/sites-enabled/api.uav.all1.vn
+nginx -t && systemctl reload nginx
+certbot --nginx -d api.uav.all1.vn --redirect
+```
+
+Đi kèm trong `.env.production`: `NEXT_PUBLIC_API_URL=https://api.uav.all1.vn` (phải build lại frontend) và
+`APP_COOKIE_DOMAIN=uav.all1.vn` để cookie phiên và `XSRF-TOKEN` dùng chung giữa hai host. `uav.all1.vn/api/**` vẫn
+được giữ cho các liên kết cũ.
+
 Không có server block này thì `uav.all1.vn` rơi vào site `banquyenviet.vn` (site đó khai báo `server_name … _` để bắt mọi domain).
 Khi chạy lại `cp` sau này, các dòng HTTPS do certbot thêm sẽ mất: chạy lại lệnh `certbot --nginx -d uav.all1.vn --redirect`.
 
 ## 6. Kiểm tra
 
 ```bash
-curl -s https://uav.all1.vn/actuator/health        # {"status":"UP"...}
-curl -s -o /dev/null -w "%{http_code}\n" https://uav.all1.vn/api/v1/auth/me   # 401 khi chưa đăng nhập
+curl -s https://api.uav.all1.vn/actuator/health    # {"status":"UP"...}
+curl -s -o /dev/null -w "%{http_code}\n" https://api.uav.all1.vn/api/v1/auth/me   # 401 khi chưa đăng nhập
 curl -s -o /dev/null -w "%{http_code}\n" https://uav.all1.vn/customer/login   # 200
 ```
 
