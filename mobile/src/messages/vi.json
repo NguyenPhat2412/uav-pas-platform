@@ -1,0 +1,164 @@
+{
+  "mobile": {
+    "auth": {
+      "fillCredentials": "Nhập tên đăng nhập hoặc email và mật khẩu.",
+      "pendingApproval": "Email đã được xác thực. Tài khoản đang chờ quản trị viên duyệt.",
+      "confirmPassword": "Nhập lại mật khẩu",
+      "codeLength": "Mã gồm 6 chữ số.",
+      "welcome": "Xin chào {name}!",
+      "totpHint": "Nhập mã 6 chữ số trong ứng dụng xác thực (Google Authenticator).",
+      "emailHint": "Mã 6 chữ số đã gửi tới {email}.",
+      "verifyEmailTitle": "Xác thực email",
+      "twoFactorTitle": "Xác thực 2 bước",
+      "code": "Mã xác thực",
+      "verify": "Xác nhận",
+      "useEmailCode": "Nhận mã qua email",
+      "resendIn": "Gửi lại sau {seconds}s",
+      "resend": "Gửi lại mã",
+      "passwordReset": "Đã đặt lại mật khẩu. Hãy đăng nhập.",
+      "forgotTitle": "Quên mật khẩu",
+      "forgotHint": "Nhập email của tài khoản để nhận mã đặt lại mật khẩu.",
+      "sendCode": "Gửi mã",
+      "newPasswordTitle": "Đặt mật khẩu mới",
+      "newPassword": "Mật khẩu mới",
+      "savePassword": "Lưu mật khẩu"
+    },
+    "status": {
+      "offlineTitle": "Chưa kết nối được máy chủ",
+      "offlineHint": "Kiểm tra mạng rồi thử lại. Phiên đăng nhập của bạn vẫn được giữ."
+    },
+    "nav": {
+      "missionDetail": "Chi tiết nhiệm vụ",
+      "missions": "Nhiệm vụ",
+      "weather": "Thời tiết"
+    },
+    "home": {
+      "greeting": "Xin chào,"
+    },
+    "account": {
+      "profile": "Hồ sơ cá nhân",
+      "security": "Bảo mật & mật khẩu",
+      "logoutQuestion": "Đăng xuất khỏi ứng dụng trên điện thoại này? Phiên trên web không bị ảnh hưởng.",
+      "textSize": "Cỡ chữ",
+      "textSizes": {
+        "small": "Nhỏ",
+        "normal": "Vừa",
+        "large": "Lớn",
+        "xlarge": "Rất lớn"
+      }
+    },
+    "missions": {
+      "edit": "Sửa",
+      "history": "Lịch sử",
+      "noHistory": "Chưa có hoạt động.",
+      "openMaps": "Mở trong Bản đồ",
+      "saveDraft": "Lưu nháp",
+      "saved": "Đã lưu yêu cầu.",
+      "submitted": "Đã gửi yêu cầu để điều phối xác nhận.",
+      "tapMap": "Chạm vào bản đồ để chọn điểm bay.",
+      "filters": {
+        "all": "Tất cả",
+        "draft": "Bản nháp",
+        "waiting": "Chờ xác nhận",
+        "scheduled": "Đã lên lịch",
+        "active": "Đang bay",
+        "done": "Hoàn thành",
+        "stopped": "Đã dừng"
+      }
+    },
+    "files": {
+      "title": "Tệp & ảnh",
+      "camera": "Chụp ảnh",
+      "library": "Chọn ảnh",
+      "empty": "Chưa có tệp nào.",
+      "permissionDenied": "Chưa được cấp quyền. Bật trong Cài đặt > UAV PAS.",
+      "uploaded": "Đã tải ảnh lên.",
+      "uploadFailed": "Chưa tải được ảnh lên. Hãy thử lại."
+    },
+    "notifications": {
+      "markAll": "Đọc tất cả"
+    },
+    "billing": {
+      "payTitle": "Thanh toán hóa đơn",
+      "choosePlan": "Chọn gói này",
+      "subscribeQuestion": "Đăng ký gói với giá {price}? Hóa đơn sẽ được tạo để bạn thanh toán.",
+      "planApplied": "Đã áp dụng gói mới.",
+      "copied": "Đã sao chép {label}.",
+      "copy": "Chạm để sao chép",
+      "qrLabel": "Mã VietQR để quét bằng ứng dụng ngân hàng",
+      "scanHint": "Mở ứng dụng ngân hàng và quét mã VietQR, hoặc sao chép thông tin bên dưới.",
+      "bank": "Ngân hàng",
+      "accountNumber": "Số tài khoản",
+      "accountName": "Chủ tài khoản",
+      "content": "Nội dung chuyển khoản",
+      "reportTitle": "Đã chuyển khoản?",
+      "reportHint": "Nhập mã giao dịch trên biên lai ngân hàng để kế toán đối soát nhanh hơn.",
+      "reference": "Mã giao dịch ngân hàng",
+      "reportButton": "Gửi xác nhận thanh toán",
+      "confirmSent": "Đã gửi xác nhận. Hóa đơn sẽ cập nhật khi kế toán đối soát."
+    },
+    "security": {
+      "twoFactor": "Xác thực 2 bước",
+      "on": "Đang bật",
+      "off": "Đang tắt",
+      "methodTotp": "Dùng ứng dụng xác thực (Google Authenticator).",
+      "methodEmail": "Mã gửi qua email {email}.",
+      "manageOnWeb": "Bật, tắt hoặc đổi cách xác thực 2 bước trong trang Tài khoản trên web.",
+      "changePassword": "Đổi mật khẩu",
+      "currentPassword": "Mật khẩu hiện tại",
+      "signOutNote": "Sau khi đổi, mọi thiết bị sẽ đăng xuất và bạn cần đăng nhập lại.",
+      "passwordChanged": "Đã đổi mật khẩu. Hãy đăng nhập lại bằng mật khẩu mới."
+    },
+    "training": {
+      "completedCount": "Đã hoàn thành {done}/{total} khóa",
+      "search": "Tìm khóa học",
+      "all": "Tất cả",
+      "empty": "Chưa có khóa học. Khóa học mới sẽ hiện ở đây.",
+      "noMatch": "Không có khóa học phù hợp. Thử bỏ bộ lọc hoặc đổi từ khóa.",
+      "loading": "Đang tải khóa học…",
+      "loadError": "Không tải được khóa học.",
+      "mandatory": "Bắt buộc",
+      "meta": "{lessons} bài · {minutes} phút",
+      "documents": "{count} tài liệu",
+      "start": "Bắt đầu",
+      "continue": "Tiếp tục học",
+      "done": "Đã hoàn thành",
+      "noLessons": "Chưa có bài học. Nội dung sẽ sớm được cập nhật.",
+      "curriculum": "Nội dung khóa học",
+      "lessonsDone": "{done}/{total} bài",
+      "checklist": "Checklist thực hành",
+      "lessonLoading": "Đang tải bài học…",
+      "lessonLoadError": "Không tải được bài học.",
+      "minutes": "{minutes} phút",
+      "markWatched": "Đánh dấu đã xem",
+      "markRead": "Đánh dấu đã đọc",
+      "markDone": "Đánh dấu hoàn thành",
+      "completed": "Đã hoàn thành bài này",
+      "autoVideo": "Hoàn thành khi xem 90% video",
+      "autoSlides": "Hoàn thành khi xem đến slide cuối",
+      "prev": "Bài trước",
+      "next": "Bài tiếp",
+      "openVideo": "Mở video",
+      "openDocument": "Mở tài liệu",
+      "resources": "Tài liệu đính kèm",
+      "noContent": "Bài học này chưa có nội dung.",
+      "saveError": "Chưa lưu được tiến độ. Thử lại sau.",
+      "types": {
+        "VIDEO": "Video",
+        "SLIDES": "Slide",
+        "ARTICLE": "Bài đọc",
+        "DOCUMENT": "Tài liệu"
+      },
+      "categories": {
+        "SITE_PREP": "Khảo sát & chuẩn bị bãi đáp",
+        "SENSOR_GSD": "Cảm biến & độ phân giải GSD",
+        "DATA_DELIVERY": "Nghiệm thu dữ liệu & AI",
+        "EMERGENCY_SAFETY": "An toàn & khẩn cấp",
+        "MISSION_PLANNING": "Khởi tạo & tọa độ bay",
+        "SAFETY_COMPLIANCE": "An toàn bãi đáp & hành lang",
+        "DATA_DELIVERABLES": "Nghiệm thu dữ liệu & AI",
+        "BILLING_SLA": "Hạn mức & đối soát SLA"
+      }
+    }
+  }
+}

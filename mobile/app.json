@@ -1,0 +1,70 @@
+{
+  "expo": {
+    "name": "UAV PAS",
+    "slug": "uav-pas",
+    "scheme": "uavpas",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "vn.all1.uavpas",
+      "supportsTablet": true,
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "vn.all1.uavpas",
+      "adaptiveIcon": {
+        "backgroundColor": "#7e1513",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      "expo-status-bar",
+      "expo-localization",
+      "expo-web-browser",
+      "expo-font",
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "UAV PAS dùng vị trí của bạn để xem thời tiết bay và chọn điểm bay cho nhiệm vụ."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "UAV PAS cần truy cập ảnh để đổi ảnh đại diện và đính kèm ảnh hiện trường vào nhiệm vụ.",
+          "cameraPermission": "UAV PAS cần dùng camera để chụp ảnh đại diện và ảnh hiện trường cho nhiệm vụ."
+        }
+      ],
+      "@react-native-community/datetimepicker",
+      "expo-video"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

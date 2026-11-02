@@ -1,0 +1,164 @@
+{
+  "mobile": {
+    "auth": {
+      "fillCredentials": "Enter your username or email and password.",
+      "pendingApproval": "Email verified. The account is waiting for an administrator's approval.",
+      "confirmPassword": "Confirm password",
+      "codeLength": "The code has 6 digits.",
+      "welcome": "Welcome, {name}!",
+      "totpHint": "Enter the 6-digit code from your authenticator app (Google Authenticator).",
+      "emailHint": "A 6-digit code was sent to {email}.",
+      "verifyEmailTitle": "Verify your email",
+      "twoFactorTitle": "Two-step verification",
+      "code": "Verification code",
+      "verify": "Verify",
+      "useEmailCode": "Get a code by email",
+      "resendIn": "Resend in {seconds}s",
+      "resend": "Resend code",
+      "passwordReset": "Password reset. Please sign in.",
+      "forgotTitle": "Forgot password",
+      "forgotHint": "Enter your account email to receive a reset code.",
+      "sendCode": "Send code",
+      "newPasswordTitle": "Set a new password",
+      "newPassword": "New password",
+      "savePassword": "Save password"
+    },
+    "status": {
+      "offlineTitle": "Can't reach the server",
+      "offlineHint": "Check your connection and try again. You are still signed in."
+    },
+    "nav": {
+      "missionDetail": "Mission details",
+      "missions": "Missions",
+      "weather": "Weather"
+    },
+    "home": {
+      "greeting": "Hello,"
+    },
+    "account": {
+      "profile": "Profile",
+      "security": "Security & password",
+      "logoutQuestion": "Sign out of the app on this phone? Your web session is not affected.",
+      "textSize": "Text size",
+      "textSizes": {
+        "small": "Small",
+        "normal": "Default",
+        "large": "Large",
+        "xlarge": "Extra large"
+      }
+    },
+    "missions": {
+      "edit": "Edit",
+      "history": "History",
+      "noHistory": "No activity yet.",
+      "openMaps": "Open in Maps",
+      "saveDraft": "Save draft",
+      "saved": "Request saved.",
+      "submitted": "Request sent for confirmation.",
+      "tapMap": "Tap the map to pick the flight point.",
+      "filters": {
+        "all": "All",
+        "draft": "Drafts",
+        "waiting": "Waiting",
+        "scheduled": "Scheduled",
+        "active": "Flying",
+        "done": "Completed",
+        "stopped": "Stopped"
+      }
+    },
+    "files": {
+      "title": "Files & photos",
+      "camera": "Take photo",
+      "library": "Choose photo",
+      "empty": "No files yet.",
+      "permissionDenied": "Permission not granted. Enable it in Settings > UAV PAS.",
+      "uploaded": "Photo uploaded.",
+      "uploadFailed": "The photo could not be uploaded. Please try again."
+    },
+    "notifications": {
+      "markAll": "Read all"
+    },
+    "billing": {
+      "payTitle": "Pay invoice",
+      "choosePlan": "Choose this plan",
+      "subscribeQuestion": "Subscribe for {price}? An invoice will be created for you to pay.",
+      "planApplied": "The new plan is active.",
+      "copied": "{label} copied.",
+      "copy": "Tap to copy",
+      "qrLabel": "VietQR code to scan in a banking app",
+      "scanHint": "Open your banking app and scan the VietQR code, or copy the details below.",
+      "bank": "Bank",
+      "accountNumber": "Account number",
+      "accountName": "Account holder",
+      "content": "Transfer note",
+      "reportTitle": "Already paid?",
+      "reportHint": "Enter the transaction reference from your bank receipt so accounting can match it faster.",
+      "reference": "Bank transaction reference",
+      "reportButton": "Report payment",
+      "confirmSent": "Reported. The invoice updates once accounting has matched the payment."
+    },
+    "security": {
+      "twoFactor": "Two-step verification",
+      "on": "On",
+      "off": "Off",
+      "methodTotp": "Uses an authenticator app (Google Authenticator).",
+      "methodEmail": "Codes are emailed to {email}.",
+      "manageOnWeb": "Turn two-step verification on or off, or change its method, on the web Account page.",
+      "changePassword": "Change password",
+      "currentPassword": "Current password",
+      "signOutNote": "After the change every device is signed out and you sign in again.",
+      "passwordChanged": "Password changed. Please sign in with the new password."
+    },
+    "training": {
+      "completedCount": "{done}/{total} courses completed",
+      "search": "Search courses",
+      "all": "All",
+      "empty": "No courses yet. New courses will appear here.",
+      "noMatch": "No matching courses. Try clearing the filter or another keyword.",
+      "loading": "Loading courses…",
+      "loadError": "Couldn't load the courses.",
+      "mandatory": "Required",
+      "meta": "{lessons} lessons · {minutes} min",
+      "documents": "{count} documents",
+      "start": "Start",
+      "continue": "Continue",
+      "done": "Completed",
+      "noLessons": "No lessons yet. Content is coming soon.",
+      "curriculum": "Course content",
+      "lessonsDone": "{done}/{total} lessons",
+      "checklist": "Practical checklist",
+      "lessonLoading": "Loading lesson…",
+      "lessonLoadError": "Couldn't load the lesson.",
+      "minutes": "{minutes} min",
+      "markWatched": "Mark as watched",
+      "markRead": "Mark as read",
+      "markDone": "Mark as complete",
+      "completed": "Lesson completed",
+      "autoVideo": "Completes at 90% of the video",
+      "autoSlides": "Completes on the last slide",
+      "prev": "Previous",
+      "next": "Next",
+      "openVideo": "Open video",
+      "openDocument": "Open document",
+      "resources": "Attachments",
+      "noContent": "This lesson has no content yet.",
+      "saveError": "Couldn't save your progress. Try again later.",
+      "types": {
+        "VIDEO": "Video",
+        "SLIDES": "Slides",
+        "ARTICLE": "Article",
+        "DOCUMENT": "Document"
+      },
+      "categories": {
+        "SITE_PREP": "Site survey & landing zone",
+        "SENSOR_GSD": "Sensors & GSD",
+        "DATA_DELIVERY": "Data acceptance & AI",
+        "EMERGENCY_SAFETY": "Safety & emergencies",
+        "MISSION_PLANNING": "Mission setup & coordinates",
+        "SAFETY_COMPLIANCE": "Landing zone & corridor safety",
+        "DATA_DELIVERABLES": "Data acceptance & AI",
+        "BILLING_SLA": "Quotas & SLA reconciliation"
+      }
+    }
+  }
+}

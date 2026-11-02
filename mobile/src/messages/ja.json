@@ -1,0 +1,164 @@
+{
+  "mobile": {
+    "auth": {
+      "fillCredentials": "ユーザー名またはメールとパスワードを入力してください。",
+      "pendingApproval": "メールが確認されました。管理者の承認待ちです。",
+      "confirmPassword": "パスワード（確認）",
+      "codeLength": "コードは6桁です。",
+      "welcome": "ようこそ、{name}さん！",
+      "totpHint": "認証アプリ（Google Authenticator）の6桁のコードを入力してください。",
+      "emailHint": "{email} に6桁のコードを送信しました。",
+      "verifyEmailTitle": "メール認証",
+      "twoFactorTitle": "2段階認証",
+      "code": "認証コード",
+      "verify": "確認",
+      "useEmailCode": "メールでコードを受け取る",
+      "resendIn": "{seconds}秒後に再送信",
+      "resend": "コードを再送信",
+      "passwordReset": "パスワードを再設定しました。ログインしてください。",
+      "forgotTitle": "パスワードをお忘れの方",
+      "forgotHint": "アカウントのメールを入力すると再設定コードが届きます。",
+      "sendCode": "コードを送信",
+      "newPasswordTitle": "新しいパスワード",
+      "newPassword": "新しいパスワード",
+      "savePassword": "パスワードを保存"
+    },
+    "status": {
+      "offlineTitle": "サーバーに接続できません",
+      "offlineHint": "接続を確認して再試行してください。ログイン状態は保持されています。"
+    },
+    "nav": {
+      "missionDetail": "ミッション詳細",
+      "missions": "ミッション",
+      "weather": "天気"
+    },
+    "home": {
+      "greeting": "こんにちは、"
+    },
+    "account": {
+      "profile": "プロフィール",
+      "security": "セキュリティとパスワード",
+      "logoutQuestion": "この端末のアプリからログアウトしますか？Webのセッションには影響しません。",
+      "textSize": "文字サイズ",
+      "textSizes": {
+        "small": "小",
+        "normal": "標準",
+        "large": "大",
+        "xlarge": "特大"
+      }
+    },
+    "missions": {
+      "edit": "編集",
+      "history": "履歴",
+      "noHistory": "まだ履歴はありません。",
+      "openMaps": "マップで開く",
+      "saveDraft": "下書き保存",
+      "saved": "依頼を保存しました。",
+      "submitted": "確認のため依頼を送信しました。",
+      "tapMap": "地図をタップして飛行地点を選択します。",
+      "filters": {
+        "all": "すべて",
+        "draft": "下書き",
+        "waiting": "確認待ち",
+        "scheduled": "予定済み",
+        "active": "飛行中",
+        "done": "完了",
+        "stopped": "中止"
+      }
+    },
+    "files": {
+      "title": "ファイルと写真",
+      "camera": "写真を撮る",
+      "library": "写真を選ぶ",
+      "empty": "ファイルはまだありません。",
+      "permissionDenied": "許可されていません。設定 > UAV PAS で有効にしてください。",
+      "uploaded": "写真をアップロードしました。",
+      "uploadFailed": "写真をアップロードできませんでした。もう一度お試しください。"
+    },
+    "notifications": {
+      "markAll": "すべて既読"
+    },
+    "billing": {
+      "payTitle": "請求書の支払い",
+      "choosePlan": "このプランを選ぶ",
+      "subscribeQuestion": "{price}で申し込みますか？支払い用の請求書が作成されます。",
+      "planApplied": "新しいプランが適用されました。",
+      "copied": "{label}をコピーしました。",
+      "copy": "タップしてコピー",
+      "qrLabel": "銀行アプリで読み取るVietQRコード",
+      "scanHint": "銀行アプリでVietQRコードを読み取るか、下の情報をコピーしてください。",
+      "bank": "銀行",
+      "accountNumber": "口座番号",
+      "accountName": "口座名義",
+      "content": "振込内容",
+      "reportTitle": "振込済みですか？",
+      "reportHint": "銀行の控えにある取引番号を入力すると、照合が早くなります。",
+      "reference": "銀行取引番号",
+      "reportButton": "支払いを報告",
+      "confirmSent": "報告しました。照合後に請求書が更新されます。"
+    },
+    "security": {
+      "twoFactor": "2段階認証",
+      "on": "有効",
+      "off": "無効",
+      "methodTotp": "認証アプリ（Google Authenticator）を使用します。",
+      "methodEmail": "コードは{email}に送信されます。",
+      "manageOnWeb": "2段階認証の有効化・無効化や方法の変更はWebのアカウントページで行います。",
+      "changePassword": "パスワード変更",
+      "currentPassword": "現在のパスワード",
+      "signOutNote": "変更後はすべての端末からログアウトされ、再ログインが必要です。",
+      "passwordChanged": "パスワードを変更しました。新しいパスワードでログインしてください。"
+    },
+    "training": {
+      "completedCount": "{done}/{total} コース修了",
+      "search": "コースを検索",
+      "all": "すべて",
+      "empty": "コースはまだありません。新しいコースはここに表示されます。",
+      "noMatch": "該当するコースがありません。フィルターやキーワードを変えてください。",
+      "loading": "コースを読み込み中…",
+      "loadError": "コースを読み込めませんでした。",
+      "mandatory": "必須",
+      "meta": "{lessons} レッスン · {minutes} 分",
+      "documents": "資料 {count} 件",
+      "start": "開始",
+      "continue": "続きから",
+      "done": "修了",
+      "noLessons": "レッスンはまだありません。近日公開予定です。",
+      "curriculum": "コース内容",
+      "lessonsDone": "{done}/{total} レッスン",
+      "checklist": "実践チェックリスト",
+      "lessonLoading": "レッスンを読み込み中…",
+      "lessonLoadError": "レッスンを読み込めませんでした。",
+      "minutes": "{minutes} 分",
+      "markWatched": "視聴済みにする",
+      "markRead": "読了にする",
+      "markDone": "完了にする",
+      "completed": "このレッスンは完了しました",
+      "autoVideo": "動画の90%で完了",
+      "autoSlides": "最後のスライドで完了",
+      "prev": "前へ",
+      "next": "次へ",
+      "openVideo": "動画を開く",
+      "openDocument": "資料を開く",
+      "resources": "添付資料",
+      "noContent": "このレッスンにはまだ内容がありません。",
+      "saveError": "進捗を保存できませんでした。後でもう一度お試しください。",
+      "types": {
+        "VIDEO": "動画",
+        "SLIDES": "スライド",
+        "ARTICLE": "記事",
+        "DOCUMENT": "資料"
+      },
+      "categories": {
+        "SITE_PREP": "現場調査と離着陸場",
+        "SENSOR_GSD": "センサーとGSD",
+        "DATA_DELIVERY": "データ検収とAI",
+        "EMERGENCY_SAFETY": "安全と緊急時対応",
+        "MISSION_PLANNING": "ミッション作成と座標",
+        "SAFETY_COMPLIANCE": "離着陸場と飛行回廊の安全",
+        "DATA_DELIVERABLES": "データ検収とAI",
+        "BILLING_SLA": "利用枠とSLA照合"
+      }
+    }
+  }
+}

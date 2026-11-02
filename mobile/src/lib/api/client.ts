@@ -1,0 +1,43 @@
+import {Platform} from 'react-native';
+import {API_BASE_URL} from '@/config/env';
+import {apiMessageCodes, apiMessages, clientText} from '@/shared/lib/api/messages';
+import {API_ROUTES} from '@/shared/lib/api/routes';
+import {getPresentationLocale} from '@/shared/lib/presentation';
+import {sessionStore} from '@/lib/api/session';
+import {ApiError, createApiClient} from '@/lib/api/core';
+
+export {API_ROUTES, ApiError};
+
+/** The only place the app talks HTTP; the architecture check forbids fetch() anywhere else. */
+export const apiClient = createApiClient({
+    baseUrl: API_BASE_URL,
+    fetch: (input, init) => fetch(input, init),
+    session: sessionStore,
+    refreshPath: API_ROUTES.auth.refresh,
+    // X-Client gives the phone its own refresh token, so signing in here never signs the web portal out.
+    headers: () => ({'accept-language': getPresentationLocale(), 'x-client': Platform.OS === 'android' ? 'android' : 'ios'}),
+    text: () => clientText[getPresentationLocale()],
+    localize: message => (message ? apiMessages[getPresentationLocale()][message] ?? message : message),
+    codeOf: message => (message ? apiMessageCodes[message] : undefined),
+});
+
+/** PUTs a local file (camera or photo library URI) to a signed storage URL, as the web does with a File. */
+export async function uploadToSignedUrl(signedUrl: string, fileUri: string, contentType: string): Promise<void> {
+    const file = await (await fetch(fileUri)).blob();
+    await apiClient.request<void>(signedUrl, {
+        method: 'PUT',
+        headers: {'If-None-Match': '*', 'Content-Type': contentType},
+        body: file,
+    });
+}
+
+/**
+ * An <Image> source for an API image such as the avatar (stored as /api/v1/users/{id}/avatar?v=…): the API origin is
+ * added and the Bearer token sent, as the web's cookie would be; the API answers with a redirect to signed storage.
+ */
+export function apiImageSource(url?: string | null): { uri: string; headers?: Record<string, string> } | undefined {
+    if (!url) return undefined;
+    if (!url.startsWith('/api/')) return {uri: url};
+    const token = sessionStore.read()?.accessToken;
+    return {uri: `${API_BASE_URL}${url}`, headers: token ? {Authorization: `Bearer ${token}`} : undefined};
+}
