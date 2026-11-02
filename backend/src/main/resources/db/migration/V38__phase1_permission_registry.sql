@@ -7,15 +7,51 @@
 --   * MEDIA_VIEW seeds MEDIA_DOWNLOAD and each area's VIEW code seeds its dashboard code, because the
 --     download URL and the dashboard figures used to follow those codes.
 
-UPDATE permissions SET code = 'USER_VIEW', description = 'USER_VIEW' WHERE code = 'USER_READ';
-UPDATE permissions SET code = 'USER_PERMISSION_MANAGE', description = 'USER_PERMISSION_MANAGE'
-    WHERE code = 'PERMISSION_MANAGE';
-UPDATE permissions SET code = 'STATION_VIEW', description = 'STATION_VIEW' WHERE code = 'STATION_READ';
-UPDATE permissions SET code = 'UAV_VIEW', description = 'UAV_VIEW' WHERE code = 'UAV_READ';
-UPDATE permissions SET code = 'INVENTORY_VIEW', description = 'INVENTORY_VIEW' WHERE code = 'INVENTORY_READ';
-UPDATE permissions SET code = 'MEDIA_VIEW', description = 'MEDIA_VIEW' WHERE code = 'MEDIA_READ';
-UPDATE permissions SET code = 'DASHBOARD_VIEW', description = 'DASHBOARD_VIEW' WHERE code = 'DASHBOARD_READ';
-UPDATE permissions SET code = 'AUDIT_VIEW', description = 'AUDIT_VIEW' WHERE code = 'AUDIT_READ';
+-- Renames merge rather than UPDATE the code: a server that already started with the new code base has
+-- inserted the new codes (PermissionDataInitializer), and a plain rename would then hit the unique key.
+CREATE TEMPORARY TABLE permission_rename (source VARCHAR(40) NOT NULL, target VARCHAR(40) NOT NULL);
+INSERT INTO permission_rename (source, target) VALUES
+    ('USER_READ', 'USER_VIEW'),
+    ('PERMISSION_MANAGE', 'USER_PERMISSION_MANAGE'),
+    ('STATION_READ', 'STATION_VIEW'),
+    ('UAV_READ', 'UAV_VIEW'),
+    ('INVENTORY_READ', 'INVENTORY_VIEW'),
+    ('MEDIA_READ', 'MEDIA_VIEW'),
+    ('DASHBOARD_READ', 'DASHBOARD_VIEW'),
+    ('AUDIT_READ', 'AUDIT_VIEW');
+
+INSERT INTO permissions (code, description, created_at, updated_at)
+SELECT r.target, r.target, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+FROM permission_rename r
+WHERE EXISTS (SELECT 1 FROM permissions p WHERE p.code = r.source)
+  AND NOT EXISTS (SELECT 1 FROM permissions p WHERE p.code = r.target);
+
+INSERT INTO role_template_permissions (role_template_id, permission_id, created_at, updated_at)
+SELECT x.role_template_id, target.id, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+FROM role_template_permissions x
+JOIN permissions source ON source.id = x.permission_id
+JOIN permission_rename r ON r.source = source.code
+JOIN permissions target ON target.code = r.target
+WHERE NOT EXISTS (
+    SELECT 1 FROM role_template_permissions y
+    WHERE y.role_template_id = x.role_template_id AND y.permission_id = target.id);
+
+-- A user override already set on the new code wins over the one carried over from the old code.
+INSERT INTO user_permissions (user_id, permission_id, granted, created_at, updated_at)
+SELECT u.user_id, target.id, u.granted, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+FROM user_permissions u
+JOIN permissions source ON source.id = u.permission_id
+JOIN permission_rename r ON r.source = source.code
+JOIN permissions target ON target.code = r.target
+WHERE NOT EXISTS (
+    SELECT 1 FROM user_permissions v WHERE v.user_id = u.user_id AND v.permission_id = target.id);
+
+DELETE FROM role_template_permissions WHERE permission_id IN (
+    SELECT p.id FROM permissions p JOIN permission_rename r ON r.source = p.code);
+DELETE FROM user_permissions WHERE permission_id IN (
+    SELECT p.id FROM permissions p JOIN permission_rename r ON r.source = p.code);
+DELETE FROM permissions WHERE code IN (SELECT source FROM permission_rename);
+DROP TABLE permission_rename;
 
 CREATE TEMPORARY TABLE permission_split (source VARCHAR(40) NOT NULL, target VARCHAR(40) NOT NULL);
 INSERT INTO permission_split (source, target) VALUES
