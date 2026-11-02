@@ -11,7 +11,7 @@ import java.util.List;
  * (equirectangular projection around the polygon centroid), which is accurate to well under a metre
  * for survey areas of a few kilometres.
  */
-public final class SurveyPatternPlanner {
+public final class SurveyPatternOperations {
     static final double EARTH_RADIUS_M = 6_371_008.8;
 
     /**
@@ -20,7 +20,7 @@ public final class SurveyPatternPlanner {
      */
     static final double CAMERA_HFOV_DEG = 73.7;
 
-    private SurveyPatternPlanner() {}
+    private SurveyPatternOperations() {}
 
     /** Line spacing that gives the requested side overlap at this altitude (metres). */
     public static double lineSpacingFor(double altitudeMeters, int sideOverlapPercent) {

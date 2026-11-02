@@ -2,6 +2,7 @@ package com.uav.platform.service.impl.simulation;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.uav.platform.dto.record.simulation.SimFlightSettings;
 import com.uav.platform.dto.request.uav.TelemetryReportRequest;
 import com.uav.platform.enums.simulation.SimCommand;
 import com.uav.platform.enums.simulation.SimEventLevel;
@@ -14,16 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-class SimulatedFlightTest {
+class SimulatedFlightOperationsTest {
     static final double HOME_LAT = 21.0100, HOME_LNG = 105.5200;
     static final LocalDateTime T0 = LocalDateTime.of(2026, 11, 2, 9, 0);
 
-    static SimulatedFlight flight(List<List<Double>> waypoints, double battery, double loss, int latency, double fence) {
-        return new SimulatedFlight(7L, null, waypoints, HOME_LAT, HOME_LNG, battery,
-                new SimulatedFlight.Settings(30, 10, loss, latency, 0, fence), new Random(42), T0);
+    static SimulatedFlightOperations flight(List<List<Double>> waypoints, double battery, double loss, int latency, double fence) {
+        return new SimulatedFlightOperations(7L, null, waypoints, HOME_LAT, HOME_LNG, battery,
+                new SimFlightSettings(30, 10, loss, latency, 0, fence), new Random(42), T0);
     }
 
-    static List<TelemetryReportRequest> run(SimulatedFlight f, int seconds) {
+    static List<TelemetryReportRequest> run(SimulatedFlightOperations f, int seconds) {
         List<TelemetryReportRequest> delivered = new ArrayList<>();
         for (int s = 1; s <= seconds && !f.finished(); s++) {
             LocalDateTime now = T0.plusSeconds(s);

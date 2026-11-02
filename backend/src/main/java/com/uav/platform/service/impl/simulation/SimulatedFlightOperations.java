@@ -1,5 +1,9 @@
 package com.uav.platform.service.impl.simulation;
 
+import com.uav.platform.dto.record.simulation.SimFlightEvent;
+import com.uav.platform.dto.record.simulation.SimFlightSettings;
+import com.uav.platform.dto.record.simulation.SimLinkStats;
+import com.uav.platform.dto.record.simulation.SimPendingSample;
 import com.uav.platform.dto.request.uav.TelemetryReportRequest;
 import com.uav.platform.enums.simulation.SimCommand;
 import com.uav.platform.enums.simulation.SimEventLevel;
@@ -21,7 +25,7 @@ import java.util.Random;
  * produces the same {@link TelemetryReportRequest} a real gateway posts to the platform, so the rest of
  * the system cannot tell the difference. Not thread-safe; the owning service serialises access.
  */
-public final class SimulatedFlight {
+public final class SimulatedFlightOperations {
     static final double CLIMB_RATE_MS = 3.0;
     static final double DESCENT_RATE_MS = 1.5;
     static final double BATTERY_WARN_PCT = 30;
@@ -30,27 +34,11 @@ public final class SimulatedFlight {
     static final int MAX_TRACK_POINTS = 900;
     static final int MAX_EVENTS = 60;
 
-    /** Flight and link parameters chosen when the simulation starts. */
-    public record Settings(
-            double altitudeMeters,
-            double cruiseSpeedMs,
-            double packetLossPct,
-            int latencyMs,
-            int jitterMs,
-            double geofenceRadiusMeters) {}
-
-    public record Event(LocalDateTime at, SimEventLevel level, String message) {}
-
-    /** Link counters: what the vehicle sent and what reached the platform, with delivery latency. */
-    public record LinkStats(long sent, long delivered, long lost, double averageLatencyMs, long maxLatencyMs) {}
-
-    private record Pending(TelemetryReportRequest report, LocalDateTime deliverAt, long latencyMs) {}
-
     private final long uavId;
     private final Long missionId;
     private final List<List<Double>> waypoints;
     private final double homeLat, homeLng;
-    private final Settings settings;
+    private final SimFlightSettings settings;
     private final Random random;
     private final LocalDateTime startedAt;
 
@@ -61,19 +49,19 @@ public final class SimulatedFlight {
     private double distanceFlown, elapsedSeconds;
     private boolean batteryWarned, geofenceTripped;
 
-    private final Deque<Pending> outbox = new ArrayDeque<>();
+    private final Deque<SimPendingSample> outbox = new ArrayDeque<>();
     private final Deque<List<Double>> track = new ArrayDeque<>();
-    private final Deque<Event> events = new ArrayDeque<>();
+    private final Deque<SimFlightEvent> events = new ArrayDeque<>();
     private long sent, delivered, lost, latencyTotal, latencyMax;
 
-    public SimulatedFlight(
+    public SimulatedFlightOperations(
             long uavId,
             Long missionId,
             List<List<Double>> waypoints,
             double homeLat,
             double homeLng,
             double batteryPct,
-            Settings settings,
+            SimFlightSettings settings,
             Random random,
             LocalDateTime now) {
         this.uavId = uavId;
@@ -112,7 +100,7 @@ public final class SimulatedFlight {
     public List<TelemetryReportRequest> due(LocalDateTime now) {
         List<TelemetryReportRequest> ready = new ArrayList<>();
         while (!outbox.isEmpty() && !outbox.peekFirst().deliverAt().isAfter(now)) {
-            Pending p = outbox.pollFirst();
+            SimPendingSample p = outbox.pollFirst();
             delivered++;
             latencyTotal += p.latencyMs();
             latencyMax = Math.max(latencyMax, p.latencyMs());
@@ -199,7 +187,7 @@ public final class SimulatedFlight {
 
     /** Moves toward the target at cruise speed; true once it is reached within this step. */
     private boolean moveToward(double targetLat, double targetLng, double dt) {
-        double distance = SurveyPatternPlanner.haversine(lat, lng, targetLat, targetLng);
+        double distance = SurveyPatternOperations.haversine(lat, lng, targetLat, targetLng);
         double step = settings.cruiseSpeedMs() * dt;
         if (distance > 0.01) heading = bearing(lat, lng, targetLat, targetLng);
         if (distance <= step) {
@@ -211,9 +199,9 @@ public final class SimulatedFlight {
             return true;
         }
         double rad = Math.toRadians(heading);
-        lat += Math.toDegrees(step * Math.cos(rad) / SurveyPatternPlanner.EARTH_RADIUS_M);
+        lat += Math.toDegrees(step * Math.cos(rad) / SurveyPatternOperations.EARTH_RADIUS_M);
         lng += Math.toDegrees(step * Math.sin(rad)
-                / (SurveyPatternPlanner.EARTH_RADIUS_M * Math.cos(Math.toRadians(lat))));
+                / (SurveyPatternOperations.EARTH_RADIUS_M * Math.cos(Math.toRadians(lat))));
         distanceFlown += step;
         speed = settings.cruiseSpeedMs();
         addTrack();
@@ -242,7 +230,7 @@ public final class SimulatedFlight {
             log(now, SimEventLevel.CRITICAL, "Pin còn " + Math.round(battery) + "%: tự quay về (RTH)");
             return;
         }
-        double fromHome = SurveyPatternPlanner.haversine(lat, lng, homeLat, homeLng);
+        double fromHome = SurveyPatternOperations.haversine(lat, lng, homeLat, homeLng);
         if (airborne && !geofenceTripped && fromHome > settings.geofenceRadiusMeters()) {
             geofenceTripped = true;
             mode = SimFlightMode.RETURN_TO_HOME;
@@ -272,7 +260,7 @@ public final class SimulatedFlight {
                         fixed ? "FIXED" : "FLOAT",
                         14 + random.nextInt(6),
                         missionId);
-        outbox.addLast(new Pending(report, now.plusNanos(latency * 1_000_000), latency));
+        outbox.addLast(new SimPendingSample(report, now.plusNanos(latency * 1_000_000), latency));
     }
 
     private void addTrack() {
@@ -281,7 +269,7 @@ public final class SimulatedFlight {
     }
 
     private void log(LocalDateTime at, SimEventLevel level, String message) {
-        events.addFirst(new Event(at, level, message));
+        events.addFirst(new SimFlightEvent(at, level, message));
         while (events.size() > MAX_EVENTS) events.pollLast();
     }
 
@@ -302,7 +290,7 @@ public final class SimulatedFlight {
     public List<List<Double>> waypoints() { return waypoints; }
     public double homeLat() { return homeLat; }
     public double homeLng() { return homeLng; }
-    public Settings settings() { return settings; }
+    public SimFlightSettings settings() { return settings; }
     public LocalDateTime startedAt() { return startedAt; }
     public double latitude() { return lat; }
     public double longitude() { return lng; }
@@ -314,13 +302,13 @@ public final class SimulatedFlight {
     public int nextWaypoint() { return nextWaypoint; }
     public double distanceFlown() { return distanceFlown; }
     public double elapsedSeconds() { return elapsedSeconds; }
-    public double distanceToHome() { return SurveyPatternPlanner.haversine(lat, lng, homeLat, homeLng); }
+    public double distanceToHome() { return SurveyPatternOperations.haversine(lat, lng, homeLat, homeLng); }
     public List<List<Double>> track() { return List.copyOf(track); }
-    public List<Event> events() { return List.copyOf(events); }
+    public List<SimFlightEvent> events() { return List.copyOf(events); }
     public boolean finished() { return mode == SimFlightMode.LANDED && outbox.isEmpty(); }
 
-    public LinkStats linkStats() {
-        return new LinkStats(sent, delivered, lost,
+    public SimLinkStats linkStats() {
+        return new SimLinkStats(sent, delivered, lost,
                 delivered == 0 ? 0 : (double) latencyTotal / delivered, latencyMax);
     }
 }

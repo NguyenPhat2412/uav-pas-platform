@@ -1,5 +1,6 @@
 package com.uav.platform.service.impl.simulation;
 
+import com.uav.platform.dto.record.simulation.SimFlightSettings;
 import com.uav.platform.dto.request.simulation.SimulationStartRequest;
 import com.uav.platform.dto.request.simulation.SurveyPlanRequest;
 import com.uav.platform.dto.request.uav.TelemetryReportRequest;
@@ -57,7 +58,7 @@ public class SimulationServiceImpl implements SimulationService {
     private final TelemetryService telemetry;
     private final AuditLogService audit;
 
-    private final Map<Long, SimulatedFlight> flights = new ConcurrentHashMap<>();
+    private final Map<Long, SimulatedFlightOperations> flights = new ConcurrentHashMap<>();
     private final Map<Long, String> labels = new ConcurrentHashMap<>();
     private final Random random = new Random();
 
@@ -65,7 +66,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Transactional(readOnly = true)
     public SimulationStateResponse start(SimulationStartRequest r, String operator) {
         Uav uav = uavs.findById(r.uavId()).orElseThrow(() -> SystemException.notFound("UAV not found"));
-        SimulatedFlight running = flights.get(uav.getId());
+        SimulatedFlightOperations running = flights.get(uav.getId());
         if (running != null && !running.finished())
             throw SystemException.conflict("UAV đang có chuyến bay mô phỏng.", "SIM_ALREADY_RUNNING");
         if (running == null && flights.size() >= MAX_SESSIONS)
@@ -87,7 +88,7 @@ public class SimulationServiceImpl implements SimulationService {
         List<List<Double>> waypoints = r.waypoints() != null ? r.waypoints() : List.of();
         if (waypoints.isEmpty() && plan != null && "POLYGON".equals(plan.areaType()) && plan.vertices().size() >= 3) {
             int overlap = plan.sideOverlap() != null ? plan.sideOverlap() : DEFAULT_SIDE_OVERLAP;
-            waypoints = SurveyPatternPlanner.plan(plan.vertices(), SurveyPatternPlanner.lineSpacingFor(altitude, overlap));
+            waypoints = SurveyPatternOperations.plan(plan.vertices(), SurveyPatternOperations.lineSpacingFor(altitude, overlap));
         }
         for (List<Double> p : waypoints)
             if (Math.abs(p.get(0)) > 90 || Math.abs(p.get(1)) > 180)
@@ -96,17 +97,17 @@ public class SimulationServiceImpl implements SimulationService {
         double[] home = home(r, plan, uav, waypoints);
         double farthest = 0;
         for (List<Double> p : waypoints)
-            farthest = Math.max(farthest, SurveyPatternPlanner.haversine(home[0], home[1], p.get(0), p.get(1)));
+            farthest = Math.max(farthest, SurveyPatternOperations.haversine(home[0], home[1], p.get(0), p.get(1)));
         double geofence = r.geofenceRadiusMeters() != null ? r.geofenceRadiusMeters() : Math.max(500, farthest + GEOFENCE_MARGIN_M);
 
-        var settings = new SimulatedFlight.Settings(
+        var settings = new SimFlightSettings(
                 altitude,
                 speed,
                 r.packetLossPct() != null ? r.packetLossPct() : 0,
                 r.latencyMs() != null ? r.latencyMs() : DEFAULT_LATENCY_MS,
                 r.jitterMs() != null ? r.jitterMs() : DEFAULT_JITTER_MS,
                 geofence);
-        var flight = new SimulatedFlight(
+        var flight = new SimulatedFlightOperations(
                 uav.getId(), r.missionId(), waypoints, home[0], home[1],
                 r.batteryPct() != null ? r.batteryPct() : 100, settings, new Random(random.nextLong()),
                 LocalDateTime.now());
@@ -119,7 +120,7 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public SimulationStateResponse command(Long uavId, SimCommand command, String operator) {
-        SimulatedFlight flight = require(uavId);
+        SimulatedFlightOperations flight = require(uavId);
         synchronized (flight) {
             try {
                 flight.command(command, LocalDateTime.now());
@@ -146,7 +147,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     public List<SimulationStateResponse> list() {
         List<SimulationStateResponse> all = new ArrayList<>();
-        for (SimulatedFlight f : flights.values()) all.add(toResponse(f));
+        for (SimulatedFlightOperations f : flights.values()) all.add(toResponse(f));
         all.sort(Comparator.comparing(SimulationStateResponse::uavId));
         return all;
     }
@@ -154,15 +155,15 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     public SurveyPlanResponse surveyPlan(SurveyPlanRequest r) {
         double altitude = r.altitudeMeters() != null ? r.altitudeMeters() : DEFAULT_ALTITUDE_M;
-        double spacing = SurveyPatternPlanner.lineSpacingFor(
+        double spacing = SurveyPatternOperations.lineSpacingFor(
                 altitude, r.sideOverlapPercent() != null ? r.sideOverlapPercent() : DEFAULT_SIDE_OVERLAP);
         List<List<Double>> waypoints;
         try {
-            waypoints = SurveyPatternPlanner.plan(r.vertices(), spacing);
+            waypoints = SurveyPatternOperations.plan(r.vertices(), spacing);
         } catch (IllegalArgumentException e) {
             throw SystemException.badRequest("Vùng khảo sát không hợp lệ.", "SIM_SURVEY_AREA_INVALID");
         }
-        double length = SurveyPatternPlanner.pathLength(waypoints);
+        double length = SurveyPatternOperations.pathLength(waypoints);
         double speed = r.cruiseSpeedMs() != null ? r.cruiseSpeedMs() : DEFAULT_SPEED_MS;
         return new SurveyPlanResponse(waypoints, round(spacing), round(length), round(length / speed / 60));
     }
@@ -171,7 +172,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Scheduled(fixedRate = 1000, initialDelay = 1000)
     public void tick() {
         LocalDateTime now = LocalDateTime.now();
-        for (SimulatedFlight flight : flights.values()) {
+        for (SimulatedFlightOperations flight : flights.values()) {
             List<TelemetryReportRequest> ready;
             synchronized (flight) {
                 flight.step(1.0, now);
@@ -191,8 +192,8 @@ public class SimulationServiceImpl implements SimulationService {
         }
     }
 
-    private SimulatedFlight require(Long uavId) {
-        SimulatedFlight flight = flights.get(uavId);
+    private SimulatedFlightOperations require(Long uavId) {
+        SimulatedFlightOperations flight = flights.get(uavId);
         if (flight == null) throw SystemException.notFound("Không có chuyến bay mô phỏng.", "SIM_NOT_FOUND");
         return flight;
     }
@@ -208,7 +209,7 @@ public class SimulationServiceImpl implements SimulationService {
         throw SystemException.badRequest("Chọn điểm xuất phát hoặc ít nhất một điểm bay.", "SIM_HOME_REQUIRED");
     }
 
-    private SimulationStateResponse toResponse(SimulatedFlight f) {
+    private SimulationStateResponse toResponse(SimulatedFlightOperations f) {
         synchronized (f) {
             var link = f.linkStats();
             var s = f.settings();

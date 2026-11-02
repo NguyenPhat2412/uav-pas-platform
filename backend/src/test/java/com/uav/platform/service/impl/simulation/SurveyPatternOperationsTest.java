@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-class SurveyPatternPlannerTest {
+class SurveyPatternOperationsTest {
     // About 400 m east-west by 220 m north-south near Hoa Lac.
     static final List<List<Double>> RECTANGLE =
             List.of(List.of(21.0100, 105.5200), List.of(21.0100, 105.5239),
@@ -15,14 +15,14 @@ class SurveyPatternPlannerTest {
     @Test
     void lineSpacingFollowsAltitudeAndSideOverlap() {
         // Footprint at 50 m is about 75 m; 65 % overlap leaves about 26 m between lines.
-        assertEquals(26.3, SurveyPatternPlanner.lineSpacingFor(50, 65), 0.5);
-        assertTrue(SurveyPatternPlanner.lineSpacingFor(100, 65) > SurveyPatternPlanner.lineSpacingFor(50, 65));
-        assertTrue(SurveyPatternPlanner.lineSpacingFor(50, 80) < SurveyPatternPlanner.lineSpacingFor(50, 65));
+        assertEquals(26.3, SurveyPatternOperations.lineSpacingFor(50, 65), 0.5);
+        assertTrue(SurveyPatternOperations.lineSpacingFor(100, 65) > SurveyPatternOperations.lineSpacingFor(50, 65));
+        assertTrue(SurveyPatternOperations.lineSpacingFor(50, 80) < SurveyPatternOperations.lineSpacingFor(50, 65));
     }
 
     @Test
     void sweepsTheRectangleAlongItsLongSideWithAlternatingDirections() {
-        List<List<Double>> path = SurveyPatternPlanner.plan(RECTANGLE, 30);
+        List<List<Double>> path = SurveyPatternOperations.plan(RECTANGLE, 30);
         // 222 m wide / 30 m spacing: 7 lines, two points each.
         assertEquals(14, path.size());
         for (int i = 0; i < path.size(); i += 2)
@@ -43,7 +43,7 @@ class SurveyPatternPlannerTest {
                 List.of(21.0100, 105.5200), List.of(21.0100, 105.5240), List.of(21.0130, 105.5240),
                 List.of(21.0130, 105.5228), List.of(21.0110, 105.5228), List.of(21.0110, 105.5212),
                 List.of(21.0130, 105.5212), List.of(21.0130, 105.5200));
-        List<List<Double>> path = SurveyPatternPlanner.plan(u, 25);
+        List<List<Double>> path = SurveyPatternOperations.plan(u, 25);
         assertTrue(path.size() > 12);
         // No waypoint lies inside the notch.
         for (List<Double> p : path)
@@ -55,18 +55,18 @@ class SurveyPatternPlannerTest {
     void narrowAreaGetsOneCentrePass() {
         List<List<Double>> strip = List.of(List.of(21.0100, 105.5200), List.of(21.0100, 105.5240),
                 List.of(21.01005, 105.5240), List.of(21.01005, 105.5200));
-        assertEquals(2, SurveyPatternPlanner.plan(strip, 30).size());
+        assertEquals(2, SurveyPatternOperations.plan(strip, 30).size());
     }
 
     @Test
     void rejectsDegenerateInput() {
-        assertThrows(IllegalArgumentException.class, () -> SurveyPatternPlanner.plan(List.of(List.of(21.0, 105.0)), 30));
-        assertThrows(IllegalArgumentException.class, () -> SurveyPatternPlanner.plan(RECTANGLE, 0));
+        assertThrows(IllegalArgumentException.class, () -> SurveyPatternOperations.plan(List.of(List.of(21.0, 105.0)), 30));
+        assertThrows(IllegalArgumentException.class, () -> SurveyPatternOperations.plan(RECTANGLE, 0));
     }
 
     @Test
     void pathLengthAddsHaversineLegs() {
-        double oneDegreeLatitude = SurveyPatternPlanner.pathLength(List.of(List.of(21.0, 105.0), List.of(22.0, 105.0)));
+        double oneDegreeLatitude = SurveyPatternOperations.pathLength(List.of(List.of(21.0, 105.0), List.of(22.0, 105.0)));
         assertEquals(111_195, oneDegreeLatitude, 50);
     }
 }
