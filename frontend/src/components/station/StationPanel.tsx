@@ -1,6 +1,6 @@
 'use client';
 import {useMemo, useState} from 'react';
-import {Edit3, Plus} from 'lucide-react';
+import {Edit3, Plus, Trash2} from 'lucide-react';
 import {Button, Input, StatusBadge} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
 import {useStation, useStationMutations} from '@/hooks/station/useStations';
@@ -17,6 +17,7 @@ import {
     toStationPayload,
 } from '@/forms/station/station-form';
 import type {Station} from "@/types/resources";
+import {displayLabel} from "@/lib/presentation";
 import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {resolveStationIdFromParam, toStationSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/providers/I18nContext';
@@ -39,7 +40,9 @@ export function StationPanel() {
     const [isEditing, setIsEditing] = useState(false);
     const [editForm, setEditForm] = useState(emptyStationDraft);
 
-    const {create, update} = useStationMutations();
+    const {create, update, setStatus, remove} = useStationMutations();
+    const [removing, setRemoving] = useState(false);
+    const [notice, setNotice] = useState('');
     const createFieldErrors = stationFieldErrors(create.error);
     const updateFieldErrors = stationFieldErrors(update.error);
     const rows = useMemo(() => query.data ?? [], [query.data]);
@@ -129,7 +132,7 @@ export function StationPanel() {
     ];
 
     return <div className="space-y-5">
-        {can('STATION_MANAGE') && <div className="flex justify-end"><Button size="sm" leftIcon={<Plus size={15}/>}
+        {can('STATION_CREATE') && <div className="flex justify-end"><Button size="sm" leftIcon={<Plus size={15}/>}
                                                                             onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.shared.closeForm') : t('opsAssets.station.create')}</Button>
         </div>}
         {openCreate &&
@@ -163,6 +166,9 @@ export function StationPanel() {
                     <div className="col-span-full flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="station-address">{t('opsAssets.station.address')}<OptionalMark/></label><Input
                         id="station-address" error={createFieldErrors?.address} value={form.address}
                         onChange={e => setForm({...form, address: e.target.value})}/></div>
+                    <div className="col-span-full flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="station-description">{t('opsAssets.station.description')}<OptionalMark/></label><Input
+                        id="station-description" maxLength={500} error={createFieldErrors?.description} value={form.description}
+                        onChange={e => setForm({...form, description: e.target.value})}/></div>
                     <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-semibold text-slate-700" htmlFor="station-lat">{t('opsAssets.station.latitude')}<OptionalMark/></label>
                         <Input id="station-lat" type="number" step="any" placeholder="e.g. 21.0285"
@@ -204,14 +210,64 @@ export function StationPanel() {
                             [t('opsAssets.station.code'), detail.data.code],
                             [t('opsAssets.station.address'), detail.data.address || t('opsAssets.shared.notUpdated')],
                             [t('opsAssets.shared.status'), <StatusBadge key="detail-status" status={detail.data.status}/>],
-                            [t('opsAssets.station.coordinates'), detail.data.latitude != null && detail.data.longitude != null ? `${detail.data.latitude}, ${detail.data.longitude}` : t('opsAssets.shared.notUpdated')]
+                            [t('opsAssets.station.coordinates'), detail.data.latitude != null && detail.data.longitude != null ? `${detail.data.latitude}, ${detail.data.longitude}` : t('opsAssets.shared.notUpdated')],
+                            [t('opsAssets.station.description'), detail.data.description || t('opsAssets.shared.notUpdated')]
                         ]}
                     />
-                    {can('STATION_MANAGE') && (
-                        <div className="flex justify-end pt-2">
+                    {can('STATION_STATUS_UPDATE') && (
+                        <label className="flex max-w-xs flex-col gap-1.5 text-xs font-semibold text-slate-700">{t('opsAssets.station.statusLabel')}
+                            <select className="min-h-11 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm font-normal" value={detail.data.status}
+                                    disabled={setStatus.isPending}
+                                    onChange={async event => {
+                                        setNotice('');
+                                        try {
+                                            await setStatus.mutateAsync({id: detail.data!.id, status: event.target.value as 'ACTIVE' | 'INACTIVE' | 'MAINTENANCE'});
+                                            await detail.refetch();
+                                        } catch { /* Error notice below */ }
+                                    }}>
+                                {(['ACTIVE', 'INACTIVE', 'MAINTENANCE'] as const).map(status => <option key={status} value={status}>{displayLabel(status)}</option>)}
+                            </select>
+                        </label>
+                    )}
+                    {setStatus.error && <ErrorNotice error={setStatus.error}/>}
+                    {notice && <p role="status" className="text-sm text-slate-700">{t(notice)}</p>}
+                    <div className="flex flex-wrap justify-end gap-2 pt-2">
+                        {can('STATION_STATUS_UPDATE') && (
+                            <Button size="sm" variant="ghost" leftIcon={<Trash2 size={14}/>} onClick={() => {
+                                remove.reset();
+                                setRemoving(true);
+                            }}>
+                                {t('opsAssets.station.remove')}
+                            </Button>
+                        )}
+                        {can('STATION_UPDATE') && (
                             <Button size="sm" variant="outline" leftIcon={<Edit3 size={14}/>} onClick={startEditing}>
                                 {t('opsAssets.station.edit')}
                             </Button>
+                        )}
+                    </div>
+                    {removing && (
+                        <div role="alertdialog" aria-label={t('opsAssets.station.removeTitle')} className="space-y-3 rounded-panel border border-border bg-slate-50 p-4">
+                            <p className="text-sm font-semibold text-slate-800">{t('opsAssets.station.removeTitle')}</p>
+                            <p className="text-sm text-slate-600">{t('opsAssets.station.removeNote')}</p>
+                            {remove.error && <ErrorNotice error={remove.error}/>}
+                            <div className="flex justify-end gap-2">
+                                <Button size="sm" variant="ghost" onClick={() => setRemoving(false)}>{t('opsAssets.station.cancel')}</Button>
+                                <Button size="sm" variant="danger" isLoading={remove.isPending} onClick={async () => {
+                                    try {
+                                        const kept = await remove.mutateAsync(detail.data!.id);
+                                        setRemoving(false);
+                                        if (kept) {
+                                            setNotice('opsAssets.station.deactivated');
+                                            await detail.refetch();
+                                        } else {
+                                            setSelected(undefined);
+                                            syncStationUrl(undefined);
+                                        }
+                                        await query.refetch();
+                                    } catch { /* Error notice above */ }
+                                }}>{t('opsAssets.station.confirmRemove')}</Button>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -241,6 +297,10 @@ export function StationPanel() {
                         <div className="col-span-full flex flex-col gap-1.5">
                             <label className="text-xs font-semibold text-slate-700" htmlFor="edit-station-address">{t('opsAssets.station.address')}<OptionalMark/></label>
                             <Input id="edit-station-address" error={updateFieldErrors?.address} value={editForm.address} onChange={e => setEditForm({...editForm, address: e.target.value})}/>
+                        </div>
+                        <div className="col-span-full flex flex-col gap-1.5">
+                            <label className="text-xs font-semibold text-slate-700" htmlFor="edit-station-description">{t('opsAssets.station.description')}<OptionalMark/></label>
+                            <Input id="edit-station-description" maxLength={500} error={updateFieldErrors?.description} value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})}/>
                         </div>
                         <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-semibold text-slate-700" htmlFor="edit-station-lat">{t('opsAssets.station.latitude')}<OptionalMark/></label>

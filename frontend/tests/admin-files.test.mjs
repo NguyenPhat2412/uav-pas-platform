@@ -101,11 +101,11 @@ test('Admin files: every module, kind and status has a label in vi, en and ja', 
     assert.equal(vi.files.title, 'Quản lý tệp');
 });
 
-test('Admin files: the page sits in the infrastructure group behind PERMISSION_MANAGE', async () => {
+test('Admin files: the page sits in the infrastructure group behind USER_PERMISSION_MANAGE', async () => {
     const routes = await readFile(new URL('../src/config/sidebar-routes.ts', import.meta.url), 'utf8');
-    assert.match(routes, /href: '\/admin\/files',\s*key: 'files',\s*group: 'infrastructure',\s*icon: FolderOpen,\s*permission: 'PERMISSION_MANAGE'/);
+    assert.match(routes, /href: '\/admin\/files',\s*key: 'files',\s*group: 'infrastructure',\s*icon: FolderOpen,\s*permission: 'USER_PERMISSION_MANAGE'/);
     const page = await readFile(new URL('../src/app/(admin)/admin/(portal)/files/page.tsx', import.meta.url), 'utf8');
-    assert.match(page, /permission="PERMISSION_MANAGE"/);
+    assert.match(page, /permission="USER_PERMISSION_MANAGE"/);
     for (const locale of ['vi', 'en', 'ja']) {
         const root = JSON.parse(await readFile(new URL(`../src/messages/${locale}.json`, import.meta.url), 'utf8'));
         assert.ok(root.adminNav.files, `adminNav.files in ${locale}`);

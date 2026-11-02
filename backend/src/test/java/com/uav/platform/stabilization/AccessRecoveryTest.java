@@ -59,7 +59,7 @@ class AccessRecoveryTest {
                                 UserStatus.ACTIVE));
         permissions.setUserPermission(manager.getId(), PermissionCode.USER_MANAGE, true, "setup");
         permissions.setUserPermission(
-                manager.getId(), PermissionCode.PERMISSION_MANAGE, true, "setup");
+                manager.getId(), PermissionCode.USER_PERMISSION_MANAGE, true, "setup");
     }
 
     @Test
@@ -75,14 +75,14 @@ class AccessRecoveryTest {
                 () ->
                         permissions.setUserPermission(
                                 manager.getId(),
-                                PermissionCode.PERMISSION_MANAGE,
+                                PermissionCode.USER_PERMISSION_MANAGE,
                                 false,
                                 "manager"));
         assertThrows(
                 SystemException.class,
                 () ->
                         permissions.removeUserPermission(
-                                manager.getId(), PermissionCode.PERMISSION_MANAGE, "manager"));
+                                manager.getId(), PermissionCode.USER_PERMISSION_MANAGE, "manager"));
     }
 
     @Test
@@ -96,7 +96,7 @@ class AccessRecoveryTest {
                                 null,
                                 UserStatus.ACTIVE));
         permissions.setUserPermission(
-                replacement.getId(), PermissionCode.PERMISSION_MANAGE, true, "setup");
+                replacement.getId(), PermissionCode.USER_PERMISSION_MANAGE, true, "setup");
         permissions.setUserPermission(
                 replacement.getId(), PermissionCode.USER_MANAGE, true, "setup");
         userService.lockUser(manager.getId(), "manager");

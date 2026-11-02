@@ -11,6 +11,14 @@ try {
 }
 
 process.env.NEXT_PUBLIC_API_URL = 'http://localhost:18080';
+// index.ts imports its message catalog by alias; load the transpiled catalog in its place.
+const messages = ts.transpileModule(await readFile(new URL('../src/lib/api/messages.ts', import.meta.url), 'utf8'), {
+    compilerOptions: {
+        module: ts.ModuleKind.ESNext,
+        target: ts.ScriptTarget.ES2022
+    }
+}).outputText;
+const messagesUrl = 'data:text/javascript;base64,' + Buffer.from(messages).toString('base64');
 for (const [name, path] of [['application', '../src/lib/api/index.ts']]) {
     const source = (await readFile(new URL(path, import.meta.url), 'utf8')).replace(/^export \{ API_ROUTES.*?from [\'"](?:\.\/routes|@\/lib\/api\/routes)[\'"];$/m, '');
     const compiled = ts.transpileModule(source, {
@@ -18,7 +26,7 @@ for (const [name, path] of [['application', '../src/lib/api/index.ts']]) {
             module: ts.ModuleKind.ESNext,
             target: ts.ScriptTarget.ES2022
         }
-    }).outputText;
+    }).outputText.replace(/(['"])@\/lib\/api\/messages\1/, `'${messagesUrl}'`);
     const api = await import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
     test(`${name}: credentials and session recovery stay on the configured API origin`, async () => {
         const original = {fetch: globalThis.fetch, window: globalThis.window, localStorage: globalThis.localStorage};
@@ -86,9 +94,9 @@ for (const [name, path] of [['application', '../src/lib/api/index.ts']]) {
             module: ts.ModuleKind.ESNext,
             target: ts.ScriptTarget.ES2022
         }
-    }).outputText;
+    }).outputText.replace(/(['"])@\/lib\/api\/messages\1/, `'${messagesUrl}'`);
     const api = await import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
-    test(`${name}: browser upload never sends API cookies or CSRF tokens to storage`, async () => {
+    test(`${name}:browser upload never sends API cookies or CSRF tokens to storage`, async () => {
         const original = {fetch: globalThis.fetch, window: globalThis.window, document: globalThis.document};
         globalThis.window = Object.assign(new EventTarget(), {
             localStorage: {

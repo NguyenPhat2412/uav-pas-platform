@@ -125,7 +125,7 @@ export default function AdminReportsPage() {
     return (
         <AdminPage
             title="admin.pages.reports.title"
-            permission="DASHBOARD_READ"
+            permission="DASHBOARD_VIEW"
             activeResource="reports"
         >
             <AdminReportsContent/>

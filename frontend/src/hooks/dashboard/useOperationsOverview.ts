@@ -7,7 +7,7 @@ import {missionService} from '@/api/mission/missions.api';
 import {dashboardKeys} from '@/hooks/dashboard/query-keys';
 
 /**
- * Resource summary (DASHBOARD_READ) and mission board (DASHBOARD_MISSION) for the operations overview.
+ * Resource summary (DASHBOARD_VIEW) and mission board (DASHBOARD_MISSION) for the operations overview.
  * Either may fail alone; the page shows a partial-data notice instead of an error toast.
  */
 export function useOperationsOverview() {
@@ -15,7 +15,7 @@ export function useOperationsOverview() {
     const summary = useQuery({
         queryKey: dashboardKeys.operationsSummary(user?.id),
         queryFn: () => dashboardService.getSummary(),
-        enabled: permissionsReady && can('DASHBOARD_READ'),
+        enabled: permissionsReady && can('DASHBOARD_VIEW'),
         meta: QUIET,
     });
     const missions = useQuery({

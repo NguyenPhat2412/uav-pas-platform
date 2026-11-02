@@ -45,7 +45,7 @@ export function AdminAnalytics() {
     const query = useAdminAnalytics(days);
     const numberLocale = locale === 'vi' ? 'vi-VN' : locale === 'ja' ? 'ja-JP' : 'en-US';
     const money = useMemo(() => new Intl.NumberFormat(numberLocale, {notation: 'compact', maximumFractionDigits: 1}), [numberLocale]);
-    if (!can('DASHBOARD_READ')) return null;
+    if (!can('DASHBOARD_VIEW')) return null;
 
     return <section className="space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-rose-200 bg-white px-4 py-3">
@@ -89,7 +89,7 @@ function AnalyticsBody({data, money}: { data: Analytics; money: Intl.NumberForma
     }));
     const fleetTotal = Object.values(data.fleet).reduce((a, b) => a + b, 0);
     const missionsVisible = can('MISSION_VIEW_ALL');
-    const billingVisible = can('PERMISSION_MANAGE');
+    const billingVisible = can('USER_PERMISSION_MANAGE');
 
     // Daily summary metrics for the header strip
     const totalDailyCompleted = data.daily.reduce((sum, d) => sum + d.completed, 0);
@@ -138,7 +138,7 @@ function AnalyticsBody({data, money}: { data: Analytics; money: Intl.NumberForma
         {key: 'successRate', value: `${data.current.successRate}%`, delta: <Delta current={data.current.successRate} previous={data.previous.successRate} suffix={t('admin.analytics.points')} label={vs}/>, show: missionsVisible},
         {key: 'flightHours', value: t('admin.analytics.hours', {value: data.current.flightHours}), delta: <Delta current={data.current.flightHours} previous={data.previous.flightHours} label={vs}/>, show: missionsVisible},
         {key: 'revenue', value: `${money.format(data.current.revenue)} đ`, delta: <Delta current={data.current.revenue} previous={data.previous.revenue} label={vs}/>, show: billingVisible},
-        {key: 'newUsers', value: String(data.current.newUsers), delta: <Delta current={data.current.newUsers} previous={data.previous.newUsers} label={vs}/>, show: can('USER_READ')},
+        {key: 'newUsers', value: String(data.current.newUsers), delta: <Delta current={data.current.newUsers} previous={data.previous.newUsers} label={vs}/>, show: can('USER_VIEW')},
     ].filter(k => k.show);
 
     return <>

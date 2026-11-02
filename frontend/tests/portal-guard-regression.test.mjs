@@ -200,7 +200,7 @@ for (const [search, storedDemo] of [['', null], ['?demo=true', null], ['', 'true
         const {AdminPage} = h.load('src/components/layout/AdminPage.tsx');
         const rendered = content(AdminPage({
             title: 'Users',
-            permission: 'USER_READ',
+            permission: 'USER_VIEW',
             activeResource: 'users',
             children: 'PROTECTED_USER_DATA'
         }));
@@ -209,7 +209,7 @@ for (const [search, storedDemo] of [['', null], ['?demo=true', null], ['', 'true
         // (path and query; `?`/`=` are escaped so the query survives as part of `next`).
         const next = '/admin/users' + (search ? encodeURIComponent(search) : '');
         assert.deepEqual(h.redirects, state.redirect ? [`/?auth=login&next=${next}`] : []);
-        if (state.visible) assert.ok(h.permissions.includes('USER_READ'));
+        if (state.visible) assert.ok(h.permissions.includes('USER_VIEW'));
     });
 
     for (const [role, home] of [['ROLE_PILOT', '/customer/dashboard'], ['ROLE_OPERATOR', '/operations'], ['ROLE_COMMANDER', '/operations']]) {
@@ -220,7 +220,7 @@ for (const [search, storedDemo] of [['', null], ['?demo=true', null], ['', 'true
             const {AdminPage} = h.load('src/components/layout/AdminPage.tsx');
             const rendered = content(AdminPage({
                 title: 'Users',
-                permission: 'USER_READ',
+                permission: 'USER_VIEW',
                 activeResource: 'users',
                 children: 'PROTECTED_USER_DATA'
             }));
@@ -230,18 +230,18 @@ for (const [search, storedDemo] of [['', null], ['?demo=true', null], ['', 'true
     }
 
     for (const [ready, allowed] of [[false, false], [false, true], [true, false], [true, true]]) {
-        test(`admin user query requires ready USER_READ (${ready}/${allowed}) with ${mode}`, () => {
+        test(`admin user query requires ready USER_VIEW (${ready}/${allowed}) with ${mode}`, () => {
             const h = harness({isAuthenticated: true, permissionsReady: ready, allowed}, search, storedDemo);
             const {useAdminUsers} = h.load('src/hooks/user/useAdminUsers.ts');
             assert.equal(useAdminUsers(0, '').enabled, ready && allowed);
         });
     }
     for (const [enabled, allowed] of [[false, false], [false, true], [true, false], [true, true]]) {
-        test(`operations collection honors MEDIA_READ and caller enable (${enabled}/${allowed}) with ${mode}`, () => {
+        test(`operations collection honors MEDIA_VIEW and caller enable (${enabled}/${allowed}) with ${mode}`, () => {
             const h = harness({isAuthenticated: true, permissionsReady: true, allowed}, search, storedDemo);
             const {useCollection} = h.load('src/hooks/useCollection.ts');
             assert.equal(useCollection('media', enabled).enabled, enabled && allowed);
-            if (enabled) assert.ok(h.permissions.includes('MEDIA_READ'));
+            if (enabled) assert.ok(h.permissions.includes('MEDIA_VIEW'));
         });
     }
 }

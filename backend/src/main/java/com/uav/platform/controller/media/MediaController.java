@@ -23,7 +23,7 @@ public class MediaController {
     private final MediaService service;
 
     @GetMapping
-    @PreAuthorize("@permissionService.has(authentication, 'MEDIA_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'MEDIA_VIEW')")
     public ResponseEntity<PageResponse<MediaAssetResponse>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -31,33 +31,33 @@ public class MediaController {
     }
 
     @PostMapping
-    @PreAuthorize("@permissionService.has(authentication, 'MEDIA_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'MEDIA_UPLOAD')")
     public ResponseEntity<MediaAssetResponse> register(
             @Valid @RequestBody MediaUploadRequest request, Authentication auth) {
         return ResponseEntity.status(201).body(service.register(request, auth.getName()));
     }
 
     @GetMapping(ApiRoutes.Media.UPLOAD_URL)
-    @PreAuthorize("@permissionService.has(authentication, 'MEDIA_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'MEDIA_UPLOAD')")
     public ResponseEntity<SignedMediaUrlResponse> uploadUrl(@PathVariable Long id) {
         return ResponseEntity.ok(service.uploadUrl(id));
     }
 
     @GetMapping(ApiRoutes.Media.DOWNLOAD_URL)
-    @PreAuthorize("@permissionService.has(authentication, 'MEDIA_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'MEDIA_DOWNLOAD')")
     public ResponseEntity<SignedMediaUrlResponse> downloadUrl(
             @PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(service.downloadUrl(id, auth.getName()));
     }
 
     @PostMapping(ApiRoutes.Media.CONFIRM)
-    @PreAuthorize("@permissionService.has(authentication, 'MEDIA_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'MEDIA_UPLOAD')")
     public ResponseEntity<MediaAssetResponse> confirm(@PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(service.confirm(id, auth.getName()));
     }
 
     @DeleteMapping(ApiRoutes.Media.BY_ID)
-    @PreAuthorize("@permissionService.has(authentication, 'MEDIA_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'MEDIA_DELETE')")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
         service.delete(id, auth.getName());
         return ResponseEntity.noContent().build();

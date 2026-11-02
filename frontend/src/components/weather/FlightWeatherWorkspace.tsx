@@ -59,7 +59,7 @@ function FilterGroup({icon, title, children}: { icon: ReactNode; title: string; 
  * The "Flight weather" page shared by the three portals. Filters sit in one column (place, then hour);
  * the map shows every place as its sky icon and temperature at that hour, so sunny and rainy areas read
  * at a glance; the card gives the full take-off assessment for the picked point. Crews and admins with
- * STATION_READ also see their ground stations.
+ * STATION_VIEW also see their ground stations.
  */
 export function FlightWeatherWorkspace({showStations = false}: { showStations?: boolean }) {
     const {t} = useI18n();
@@ -71,7 +71,7 @@ export function FlightWeatherWorkspace({showStations = false}: { showStations?: 
     const [locating, setLocating] = useState(false);
     const [locateError, setLocateError] = useState<string | null>(null);
 
-    const stationsAllowed = showStations && permissionsReady && can('STATION_READ');
+    const stationsAllowed = showStations && permissionsReady && can('STATION_VIEW');
     const stations = useStationsWeather(stationsAllowed);
     const presetPlaces = PRESETS.map(preset => preset.key === 'home'
         ? {key: 'home', lat: config.defaultCenter[0], lng: config.defaultCenter[1], label: t('weather.workspace.presets.home')}

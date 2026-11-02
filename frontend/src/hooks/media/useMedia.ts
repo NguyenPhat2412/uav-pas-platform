@@ -17,7 +17,7 @@ export function useMedia(page = 0) {
     return useQuery({
         queryKey: queryKeys.list(user?.id, 'media', page),
         queryFn: ({signal}) => mediaService.listMedia(page, signal),
-        enabled: can('MEDIA_READ')
+        enabled: can('MEDIA_VIEW')
     });
 }
 

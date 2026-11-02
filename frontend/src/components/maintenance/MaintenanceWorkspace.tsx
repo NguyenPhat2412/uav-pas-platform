@@ -96,7 +96,7 @@ export function MaintenanceWorkspace() {
                                                     onClick={() => tab === 'schedules' ? setScheduleForm('new') : setOrderForm('new')}>{tab === 'schedules' ? t('opsAssets.maintenance.workspace.createSchedule') : t('opsAssets.maintenance.workspace.createOrder')}</Button>
             </div>
         </div>
-        {uavs.error && can('UAV_READ') && <div className="space-y-2"><Feedback
+        {uavs.error && can('UAV_VIEW') && <div className="space-y-2"><Feedback
             error={t('opsAssets.maintenance.workspace.uavsError')}/><Button
             type="button" variant="outline" onClick={() => void uavs.refetch()}>{t('opsAssets.maintenance.workspace.reloadUavs')}</Button></div>}
         {query.error ? <div className="space-y-3"><Feedback error={maintenanceError(query.error, t)}/><Button type="button"
@@ -168,11 +168,11 @@ export function MaintenanceWorkspace() {
                     <Pagination page={orderPage} pages={orders.data?.totalPages} onPage={setOrderPage}/></section>}
         </>}
         {scheduleForm && <ScheduleForm schedule={scheduleForm === 'new' ? undefined : scheduleForm} uavId={uavId}
-                                       uavs={uavs.data || []} canRead={can('UAV_READ')}
+                                       uavs={uavs.data || []} canRead={can('UAV_VIEW')}
                                        onClose={() => setScheduleForm(null)} refresh={refresh}/>}
         {orderForm &&
             <OrderCreate schedule={orderForm === 'new' ? undefined : orderForm} uavId={uavId} uavs={uavs.data || []}
-                         canRead={can('UAV_READ')} onClose={() => setOrderForm(null)} onCreated={order => {
+                         canRead={can('UAV_VIEW')} onClose={() => setOrderForm(null)} onCreated={order => {
                 setOrderForm(null);
                 setTab('orders');
                 setSelectedOrder(order.id);

@@ -83,6 +83,7 @@ export const API_ROUTES = {
     stations: {
         list: '/api/v1/stations',
         detail: (id: string | number) => `/api/v1/stations/${id}`,
+        status: (id: string | number) => `/api/v1/stations/${id}/status`,
     },
     uavs: {
         list: '/api/v1/uavs',
@@ -128,6 +129,9 @@ export const API_ROUTES = {
         detail: (id: string | number) => `/api/v1/missions/${id}`,
         timeline: (id: string | number) => `/api/v1/missions/${id}/timeline`,
         media: (id: string | number) => `/api/v1/missions/${id}/media`,
+        /** Signed upload of a file that belongs to the mission (registered as linked to it), then its confirmation. */
+        mediaUploadUrl: (id: string | number) => `/api/v1/missions/${id}/media/upload-url`,
+        mediaConfirm: (id: string | number, mediaId: string | number) => `/api/v1/missions/${id}/media/${mediaId}/confirm`,
         latestTelemetry: (id: string | number) => `/api/v1/missions/${id}/telemetry/latest`,
         submit: (id: string | number) => `/api/v1/missions/${id}/submit`,
         confirm: (id: string | number) => `/api/v1/missions/${id}/confirm`,

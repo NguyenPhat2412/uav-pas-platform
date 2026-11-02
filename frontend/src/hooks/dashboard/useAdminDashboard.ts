@@ -9,7 +9,7 @@ export function useAdminDashboardSummary() {
     return useQuery({
         queryKey: dashboardKeys.adminSummary(user?.id),
         queryFn: ({signal}) => adminDashboardService.dashboard(signal),
-        enabled: permissionsReady && can('DASHBOARD_READ')
+        enabled: permissionsReady && can('DASHBOARD_VIEW')
     });
 }
 
@@ -18,7 +18,7 @@ export function useAdminAnalytics(days: number) {
     return useQuery({
         queryKey: dashboardKeys.adminAnalytics(user?.id, days),
         queryFn: ({signal}) => adminDashboardService.analytics(days, signal),
-        enabled: permissionsReady && can('DASHBOARD_READ'),
+        enabled: permissionsReady && can('DASHBOARD_VIEW'),
         staleTime: 60_000
     });
 }

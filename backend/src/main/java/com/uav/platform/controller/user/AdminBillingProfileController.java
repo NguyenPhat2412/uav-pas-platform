@@ -19,7 +19,7 @@ public class AdminBillingProfileController {
     private final BillingProfileService profiles;
 
     @GetMapping
-    @PreAuthorize("@permissionService.has(authentication, 'USER_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_VIEW')")
     public ResponseEntity<BillingProfileResponse> get(@PathVariable Long id) {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.noStore())

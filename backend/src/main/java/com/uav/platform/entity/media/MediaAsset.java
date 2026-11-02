@@ -42,6 +42,10 @@ public class MediaAsset extends BaseEntity {
     @Column(name = "uploaded_by", length = 100)
     private String uploadedBy;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'PRIVATE'")
+    private MediaVisibility visibility = MediaVisibility.PRIVATE;
+
     @Column(nullable = false, length = 30)
     private String storageProvider;
 

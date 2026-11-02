@@ -185,7 +185,7 @@ test('redispatch requires existing UAV, preflight state, existing assignment and
         assert.equal(controls.replaceUav, allowed, status);
         assert.equal(controls.unassignUav, allowed, status);
         assert.equal(missionControls({status}, 7, () => true).replaceUav, false);
-        assert.equal(missionControls(mission, 7, code => code !== 'UAV_READ').replaceUav, false);
+        assert.equal(missionControls(mission, 7, code => code !== 'UAV_VIEW').replaceUav, false);
         assert.equal(missionControls(mission, 7, code => code !== 'MISSION_ASSIGN_UAV').unassignUav, false);
     }
 });

@@ -37,9 +37,9 @@ export default function HomePage() {
     const {user, isAuthenticated, isLoading, can} = useAuth();
     const {t, formatNumber} = useI18n();
     const count = (value?: number) => value == null ? '—' : formatNumber(value);
-    const canReadSummary = can('DASHBOARD_READ');
+    const canReadSummary = can('DASHBOARD_VIEW');
     const canReadMissions = can('DASHBOARD_MISSION');
-    const canReadUavs = can('UAV_READ');
+    const canReadUavs = can('UAV_VIEW');
     const {summary, missions, error} = useOperationsOverview();
     const uavsQuery = useCollection('uavs');
     const stationsQuery = useCollection('stations');
@@ -69,11 +69,12 @@ export default function HomePage() {
                 className="rounded-panel border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{t('opsMissions.overview.partialError')}</div>}
             {canReadSummary && (
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5" aria-label={t('opsMissions.overview.summary.label')}>
-                    <KpiCard label={t('opsMissions.overview.summary.users')} value={count(summary?.totalUsers)} icon={<Users size={18}/>} tone="blue"/>
-                    <KpiCard label={t('opsMissions.overview.summary.stations')} value={count(summary?.totalStations)} icon={<MapPinned size={18}/>} tone="red"/>
-                    <KpiCard label={t('opsMissions.overview.summary.availableUavs')} value={count(summary?.availableUavs)} icon={<PlaneTakeoff size={18}/>} tone="blue"/>
-                    <KpiCard label={t('opsMissions.overview.summary.equipment')} value={count(summary?.totalEquipmentUnits)} icon={<Boxes size={18}/>} tone="amber"/>
-                    <KpiCard label={t('opsMissions.overview.summary.auditEvents')} value={count(summary?.totalAuditEvents)} icon={<Activity size={18}/>} tone="slate"/>
+                    {/* One widget per dashboard area (BR-23): a card shows only with its own permission. */}
+                    {can('DASHBOARD_USER') && <KpiCard label={t('opsMissions.overview.summary.users')} value={count(summary?.totalUsers)} icon={<Users size={18}/>} tone="blue"/>}
+                    {can('DASHBOARD_STATION') && <KpiCard label={t('opsMissions.overview.summary.stations')} value={count(summary?.totalStations)} icon={<MapPinned size={18}/>} tone="red"/>}
+                    {can('DASHBOARD_UAV') && <KpiCard label={t('opsMissions.overview.summary.availableUavs')} value={count(summary?.availableUavs)} icon={<PlaneTakeoff size={18}/>} tone="blue"/>}
+                    {can('DASHBOARD_INVENTORY') && <KpiCard label={t('opsMissions.overview.summary.equipment')} value={count(summary?.totalEquipmentUnits)} icon={<Boxes size={18}/>} tone="amber"/>}
+                    {can('AUDIT_VIEW') && <KpiCard label={t('opsMissions.overview.summary.auditEvents')} value={count(summary?.totalAuditEvents)} icon={<Activity size={18}/>} tone="slate"/>}
                 </div>
             )}
             <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(340px,1fr)]">

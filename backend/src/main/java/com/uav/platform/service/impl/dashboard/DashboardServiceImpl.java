@@ -104,16 +104,20 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     @Transactional(readOnly = true)
     public DashboardResponse summary(Authentication authentication) {
-        boolean usersVisible = visible(authentication, "USER_READ");
-        boolean stationsVisible = visible(authentication, "STATION_READ");
-        boolean uavsVisible = visible(authentication, "UAV_READ");
-        boolean inventoryVisible = visible(authentication, "INVENTORY_READ");
-        boolean mediaVisible = visible(authentication, "MEDIA_READ");
-        boolean auditVisible = visible(authentication, "AUDIT_READ");
+        boolean usersVisible = visible(authentication, "DASHBOARD_USER");
+        boolean stationsVisible = visible(authentication, "DASHBOARD_STATION");
+        boolean uavsVisible = visible(authentication, "DASHBOARD_UAV");
+        boolean inventoryVisible = visible(authentication, "DASHBOARD_INVENTORY");
+        boolean mediaVisible = visible(authentication, "MEDIA_VIEW");
+        boolean auditVisible = visible(authentication, "AUDIT_VIEW");
+        // A hidden area is not even queried (BR-23): its figures stay 0 and the widget is not
+        // shown.
         long units = 0, reserved = 0;
-        for (Equipment item : equipment.findAll(EquipmentSpecifications.isActive())) {
-            units += item.getQuantity();
-            reserved += item.getReservedQuantity();
+        if (inventoryVisible) {
+            for (Equipment item : equipment.findAll(EquipmentSpecifications.isActive())) {
+                units += item.getQuantity();
+                reserved += item.getReservedQuantity();
+            }
         }
         return dashboardMapper.toResponse(
                 usersVisible ? users.count() : 0,

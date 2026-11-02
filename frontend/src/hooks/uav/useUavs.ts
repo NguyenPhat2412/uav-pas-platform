@@ -10,7 +10,7 @@ export function useUavs(page = 0) {
     return useQuery({
         queryKey: queryKeys.list(user?.id, 'uavs', page),
         queryFn: ({signal}) => uavsService.listUavs(page, 20, signal),
-        enabled: can('UAV_READ')
+        enabled: can('UAV_VIEW')
     });
 }
 
@@ -19,7 +19,7 @@ export function useUav(id?: number) {
     return useQuery({
         queryKey: queryKeys.detail(user?.id, 'uavs', id),
         queryFn: ({signal}) => uavsService.uav(id!, signal),
-        enabled: !!id && can('UAV_READ')
+        enabled: !!id && can('UAV_VIEW')
     });
 }
 
@@ -28,7 +28,7 @@ export function useUavHistory(id?: number, page = 0) {
     return useQuery({
         queryKey: [...queryKeys.history(user?.id, 'uavs', id), page],
         queryFn: ({signal}) => uavsService.uavHistory(id!, page, signal),
-        enabled: !!id && can('UAV_READ')
+        enabled: !!id && can('UAV_VIEW')
     });
 }
 

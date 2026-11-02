@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(ApiRoutes.RoleTemplates.BASE)
-@PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+@PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
 @RequiredArgsConstructor
 public class RoleTemplateController {
     private final RoleTemplateService service;

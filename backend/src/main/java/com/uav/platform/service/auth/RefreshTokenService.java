@@ -2,6 +2,7 @@ package com.uav.platform.service.auth;
 
 import com.uav.platform.entity.auth.RefreshToken;
 import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.auth.ClientKind;
 
 import java.util.Optional;
 
@@ -10,7 +11,11 @@ import java.util.Optional;
  */
 public interface RefreshTokenService {
 
+    /** Issues a token for the client kind the current request announced (X-Client header, default WEB). */
     RefreshToken createRefreshToken(AppUser user);
+
+    /** Issues a token for {@code client}, replacing only that client's previous token for the user. */
+    RefreshToken createRefreshToken(AppUser user, ClientKind client);
 
     Optional<RefreshToken> findByToken(String token);
 

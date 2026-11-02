@@ -6,18 +6,23 @@ import static org.mockito.Mockito.*;
 
 import com.uav.platform.entity.auth.RefreshToken;
 import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.auth.ClientKind;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.auth.RefreshTokenRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.impl.auth.RefreshTokenServiceImpl;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -45,7 +50,7 @@ class RefreshTokenServiceTest {
     }
 
     @Test
-    @DisplayName("createRefreshToken should delete existing tokens and persist new one")
+    @DisplayName("createRefreshToken replaces only the web session when no X-Client header is sent")
     void createRefreshToken_Success() {
         AppUser user = new AppUser("user1", "u1@uav.vn", "h", "0900000001", UserStatus.ACTIVE);
         when(jwtTokenProvider.getRefreshExpirationMs()).thenReturn(604800000L);
@@ -57,8 +62,61 @@ class RefreshTokenServiceTest {
         assertNotNull(token);
         assertNotNull(token.getToken());
         assertEquals(user, token.getUser());
-        verify(refreshTokenRepository).deleteByUser(user);
+        assertEquals(ClientKind.WEB, token.getClient());
+        verify(refreshTokenRepository).deleteByUserAndClient(user, ClientKind.WEB);
+        verify(refreshTokenRepository, never()).deleteByUser(any());
         verify(refreshTokenRepository).save(any(RefreshToken.class));
+    }
+
+    @AfterEach
+    void clearRequest() {
+        RequestContextHolder.resetRequestAttributes();
+    }
+
+    @Test
+    @DisplayName(
+            "an iOS sign-in (X-Client: ios) replaces the iOS session and leaves the web one alone")
+    void createRefreshToken_IosHeaderKeepsWebSession() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(ClientKind.HEADER, "ios");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        AppUser user = new AppUser("user9", "u9@uav.vn", "h", "0900000009", UserStatus.ACTIVE);
+        when(jwtTokenProvider.getRefreshExpirationMs()).thenReturn(604800000L);
+        when(refreshTokenRepository.save(any(RefreshToken.class)))
+                .thenAnswer(i -> i.getArgument(0));
+
+        RefreshToken token = refreshTokenService.createRefreshToken(user);
+
+        assertEquals(ClientKind.IOS, token.getClient());
+        verify(refreshTokenRepository).deleteByUserAndClient(user, ClientKind.IOS);
+        verify(refreshTokenRepository, never()).deleteByUserAndClient(user, ClientKind.WEB);
+    }
+
+    @Test
+    @DisplayName("an explicit client wins over the header (rotation keeps the token's own client)")
+    void createRefreshToken_ExplicitClientWins() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(ClientKind.HEADER, "ios");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        AppUser user = new AppUser("user10", "u10@uav.vn", "h", "0900000010", UserStatus.ACTIVE);
+        when(jwtTokenProvider.getRefreshExpirationMs()).thenReturn(604800000L);
+        when(refreshTokenRepository.save(any(RefreshToken.class)))
+                .thenAnswer(i -> i.getArgument(0));
+
+        RefreshToken token = refreshTokenService.createRefreshToken(user, ClientKind.WEB);
+
+        assertEquals(ClientKind.WEB, token.getClient());
+        verify(refreshTokenRepository).deleteByUserAndClient(user, ClientKind.WEB);
+    }
+
+    @Test
+    @DisplayName("unknown or missing X-Client values count as web")
+    void clientKind_FromHeader() {
+        assertEquals(ClientKind.WEB, ClientKind.fromHeader(null));
+        assertEquals(ClientKind.WEB, ClientKind.fromHeader("  "));
+        assertEquals(ClientKind.WEB, ClientKind.fromHeader("desktop"));
+        assertEquals(ClientKind.IOS, ClientKind.fromHeader(" IOS "));
+        assertEquals(ClientKind.ANDROID, ClientKind.fromHeader("android"));
     }
 
     @Test

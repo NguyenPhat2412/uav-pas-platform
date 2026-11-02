@@ -15,19 +15,19 @@ interface ListFilters {
     onPages: (pages: { schedulePage?: (current: number) => number; orderPage?: (current: number) => number }) => void;
 }
 
-/** Schedule and repair-order pages (UAV_MANAGE), plus `refresh` for after a write; it resolves false when a reload failed. */
+/** Schedule and repair-order pages (UAV_MAINTENANCE_VIEW), plus `refresh` for after a write; it resolves false when a reload failed. */
 export function useMaintenanceLists({uavId, dueStatus, status, schedulePage, orderPage, onPages}: ListFilters) {
     const {user, can} = useAuth();
     const client = useQueryClient();
     const schedules = useQuery({
         queryKey: maintenanceKeys.schedules(user?.id, uavId, dueStatus, schedulePage),
         queryFn: ({signal}) => maintenanceService.schedules(schedulePage, uavId, dueStatus, signal),
-        enabled: can('UAV_MANAGE'),
+        enabled: can('UAV_MAINTENANCE_VIEW'),
     });
     const orders = useQuery({
         queryKey: maintenanceKeys.orders(user?.id, uavId, status, orderPage),
         queryFn: ({signal}) => maintenanceService.orders(orderPage, uavId, status, signal),
-        enabled: can('UAV_MANAGE'),
+        enabled: can('UAV_MAINTENANCE_VIEW'),
     });
     const refresh = async () => {
         // A write can remove a row from a filtered page. Mark every cached list page stale
@@ -51,7 +51,7 @@ export function useMaintenanceOrder(id: number) {
     return useQuery({
         queryKey: maintenanceKeys.order(user?.id, id),
         queryFn: ({signal}) => maintenanceService.order(id, signal),
-        enabled: can('UAV_MANAGE'),
+        enabled: can('UAV_MAINTENANCE_VIEW'),
         refetchOnWindowFocus: false
     });
 }

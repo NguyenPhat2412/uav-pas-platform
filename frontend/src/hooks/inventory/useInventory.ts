@@ -10,7 +10,7 @@ export function useEquipment(page = 0) {
     return useQuery({
         queryKey: queryKeys.list(user?.id, 'equipment', page),
         queryFn: ({signal}) => inventoryService.listEquipment(page, 20, signal),
-        enabled: can('INVENTORY_READ')
+        enabled: can('INVENTORY_VIEW')
     });
 }
 
@@ -19,7 +19,7 @@ export function useInventoryHistory(page = 0) {
     return useQuery({
         queryKey: [...queryKeys.history(user?.id, 'equipment'), page],
         queryFn: ({signal}) => inventoryService.inventoryHistory(page, signal),
-        enabled: can('INVENTORY_READ')
+        enabled: can('INVENTORY_HISTORY_VIEW')
     });
 }
 

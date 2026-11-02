@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * USER_MANAGE lets staff run ordinary accounts. Anything that grants, removes or takes over
  * administrator power (assigning ROLE_ADMIN, changing one's own role, resetting or locking an
- * administrator) additionally needs an administrator: ROLE_ADMIN or the PERMISSION_MANAGE grant.
+ * administrator) additionally needs an administrator: ROLE_ADMIN or the USER_PERMISSION_MANAGE grant.
  */
 public final class AdminPrivilegeOperations {
 
@@ -32,7 +32,7 @@ public final class AdminPrivilegeOperations {
         return permissions != null
                 && permissions.has(
                         UsernamePasswordAuthenticationToken.authenticated(actor, null, List.of()),
-                        "PERMISSION_MANAGE");
+                        "USER_PERMISSION_MANAGE");
     }
 
     public static void requireAdministrator(

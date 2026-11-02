@@ -9,7 +9,7 @@ import com.uav.platform.dto.response.training.TrainingLessonAdminResponse;
 
 import java.util.List;
 
-/** Course authoring: lessons, cover and uploaded media. Callers hold PERMISSION_MANAGE. */
+/** Course authoring: lessons, cover and uploaded media. Callers hold USER_PERMISSION_MANAGE. */
 public interface TrainingCourseAdminService {
 
     List<TrainingLessonAdminResponse> listLessons(Long courseId);

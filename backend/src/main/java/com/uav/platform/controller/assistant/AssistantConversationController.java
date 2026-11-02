@@ -21,7 +21,7 @@ public class AssistantConversationController {
     private final AssistantConversationService service;
 
     @GetMapping
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<PageResponse<AssistantConversationResponse>> list(
             @RequestParam(required = false) String portal,
             @RequestParam(required = false) String q,
@@ -31,13 +31,13 @@ public class AssistantConversationController {
     }
 
     @GetMapping(ApiRoutes.Admin.ASSISTANT_CONVERSATIONS_BY_ID)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<AssistantConversationDetailResponse> detail(@PathVariable Long id) {
         return ResponseEntity.ok(service.detail(id));
     }
 
     @DeleteMapping(ApiRoutes.Admin.ASSISTANT_CONVERSATIONS_BY_ID)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
         service.delete(id, auth);
         return ResponseEntity.noContent().build();

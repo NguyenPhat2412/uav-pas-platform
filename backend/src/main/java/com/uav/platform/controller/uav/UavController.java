@@ -25,7 +25,7 @@ public class UavController {
     private final UavService service;
 
     @GetMapping
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_VIEW')")
     public ResponseEntity<PageResponse<UavResponse>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -33,34 +33,34 @@ public class UavController {
     }
 
     @GetMapping(ApiRoutes.Uavs.BY_ID)
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_VIEW')")
     public ResponseEntity<UavResponse> get(@PathVariable Long id) {
         return ResponseEntity.ok(service.get(id));
     }
 
     @PostMapping
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_CREATE')")
     public ResponseEntity<UavResponse> create(
             @Valid @RequestBody UavRequest request, Authentication auth) {
         return ResponseEntity.status(201).body(service.create(request, auth.getName()));
     }
 
     @PutMapping(ApiRoutes.Uavs.BY_ID)
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_UPDATE')")
     public ResponseEntity<UavResponse> update(
             @PathVariable Long id, @Valid @RequestBody UavRequest request, Authentication auth) {
         return ResponseEntity.ok(service.update(id, request, auth.getName()));
     }
 
     @PutMapping(ApiRoutes.Uavs.ASSIGN_STATION)
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_UPDATE')")
     public ResponseEntity<UavResponse> assign(
             @PathVariable Long id, @PathVariable Long stationId, Authentication auth) {
         return ResponseEntity.ok(service.assign(id, stationId, auth.getName()));
     }
 
     @PutMapping(ApiRoutes.Uavs.STATUS)
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_STATUS_UPDATE')")
     public ResponseEntity<UavResponse> status(
             @PathVariable Long id,
             @RequestParam UavStatus status,
@@ -72,7 +72,7 @@ public class UavController {
     }
 
     @PostMapping(ApiRoutes.Uavs.MAINTENANCE)
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_CREATE')")
     public ResponseEntity<UavResponse> maintenance(
             @PathVariable Long id,
             @RequestParam(required = false) String reason,
@@ -82,7 +82,7 @@ public class UavController {
     }
 
     @GetMapping(ApiRoutes.Uavs.HISTORY)
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_VIEW')")
     public ResponseEntity<PageResponse<UavStatusHistoryResponse>> history(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,

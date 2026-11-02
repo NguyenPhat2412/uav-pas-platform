@@ -7,7 +7,7 @@ export default function AdminTrainingOperationsRoutePage() {
     return (
         <AdminPage
             title="SOP Điều hành & Tác chiến"
-            permission="DASHBOARD_READ"
+            permission="DASHBOARD_VIEW"
             activeResource="/admin/training/operations"
         >
             <TrainingAcademyWorkspace defaultPortal="OPERATIONS" manage />

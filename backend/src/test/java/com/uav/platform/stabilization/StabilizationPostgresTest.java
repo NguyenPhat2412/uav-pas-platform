@@ -666,11 +666,11 @@ class StabilizationPostgresTest {
     void concurrentTransferReplayAndChangedPayloadAreStable() throws Exception {
         var a =
                 stations.create(
-                        new StationRequest("TRANSFER-A", "Source", null, null, null, null),
+                        new StationRequest("TRANSFER-A", "Source", null, null, null, null, null),
                         "sample");
         var b =
                 stations.create(
-                        new StationRequest("TRANSFER-B", "Target", null, null, null, null),
+                        new StationRequest("TRANSFER-B", "Target", null, null, null, null, null),
                         "sample");
         var item =
                 inventory.create(
@@ -755,10 +755,12 @@ class StabilizationPostgresTest {
     void fullAndPartialTransfersPreservePerStationStock() {
         var a =
                 stations.create(
-                        new StationRequest("SAMPLE-A", "Source", null, null, null, null), "sample");
+                        new StationRequest("SAMPLE-A", "Source", null, null, null, null, null),
+                        "sample");
         var b =
                 stations.create(
-                        new StationRequest("SAMPLE-B", "Target", null, null, null, null), "sample");
+                        new StationRequest("SAMPLE-B", "Target", null, null, null, null, null),
+                        "sample");
         var source =
                 inventory.create(
                         new EquipmentRequest("Batteries", EquipmentType.BATTERY, null, a.id()),
@@ -808,7 +810,7 @@ class StabilizationPostgresTest {
                                 "manager_b", "b@example.test", "hash", null, UserStatus.ACTIVE));
         for (var u : List.of(a, b)) {
             permissions.setUserPermission(
-                    u.getId(), PermissionCode.PERMISSION_MANAGE, true, "setup");
+                    u.getId(), PermissionCode.USER_PERMISSION_MANAGE, true, "setup");
             permissions.setUserPermission(u.getId(), PermissionCode.USER_MANAGE, true, "setup");
         }
         var pool = Executors.newFixedThreadPool(2);
@@ -823,7 +825,7 @@ class StabilizationPostgresTest {
                                     try {
                                         permissions.setUserPermission(
                                                 u.getId(),
-                                                PermissionCode.PERMISSION_MANAGE,
+                                                PermissionCode.USER_PERMISSION_MANAGE,
                                                 false,
                                                 "sample");
                                         return true;

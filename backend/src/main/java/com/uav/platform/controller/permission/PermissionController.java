@@ -29,19 +29,19 @@ public class PermissionController {
     }
 
     @GetMapping
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<List<PermissionResponse>> list() {
         return ResponseEntity.ok(permissionService.list());
     }
 
     @GetMapping(ApiRoutes.Permissions.BY_USER)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<List<UserPermissionResponse>> listUser(@PathVariable Long userId) {
         return ResponseEntity.ok(permissionService.listUserPermissions(userId));
     }
 
     @PutMapping(ApiRoutes.Permissions.BY_USER_CODE)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<Void> set(
             @PathVariable Long userId,
             @PathVariable PermissionCode code,
@@ -52,7 +52,7 @@ public class PermissionController {
     }
 
     @DeleteMapping(ApiRoutes.Permissions.BY_USER_CODE)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<Void> reset(
             @PathVariable Long userId,
             @PathVariable PermissionCode code,

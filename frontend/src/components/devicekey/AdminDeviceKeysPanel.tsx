@@ -225,7 +225,7 @@ function ShowKeyDialog({created, onClose}: { created: CreatedDeviceKey; onClose:
 }
 
 export default function AdminDeviceKeysPage() {
-    return <AdminPage title="adminPlatform.deviceKeys.title" permission="PERMISSION_MANAGE" activeResource="device-keys">
+    return <AdminPage title="adminPlatform.deviceKeys.title" permission="USER_PERMISSION_MANAGE" activeResource="device-keys">
         <AdminDeviceKeysContent/>
     </AdminPage>;
 }

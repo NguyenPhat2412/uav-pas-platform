@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(ApiRoutes.Maintenance.BASE)
-@PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
 @RequiredArgsConstructor
 public class MaintenanceController {
     private final MaintenanceService service;
 
     @GetMapping(ApiRoutes.Maintenance.SCHEDULES)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_VIEW')")
     public ResponseEntity<PageResponse<MaintenanceScheduleResponse>> schedules(
             @RequestParam(required = false) Long uavId,
             @RequestParam(required = false) DueStatus dueStatus,
@@ -38,12 +38,14 @@ public class MaintenanceController {
     }
 
     @PostMapping(ApiRoutes.Maintenance.SCHEDULES)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_CREATE')")
     public ResponseEntity<MaintenanceScheduleResponse> createSchedule(
             @Valid @RequestBody CreateMaintenanceScheduleRequest r, Authentication auth) {
         return ResponseEntity.status(201).body(service.createSchedule(r, auth.getName()));
     }
 
     @PutMapping(ApiRoutes.Maintenance.SCHEDULES_BY_ID)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_UPDATE')")
     public ResponseEntity<MaintenanceScheduleResponse> updateSchedule(
             @PathVariable Long id,
             @Valid @RequestBody UpdateMaintenanceScheduleRequest r,
@@ -52,6 +54,7 @@ public class MaintenanceController {
     }
 
     @GetMapping(ApiRoutes.Maintenance.ORDERS)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_VIEW')")
     public ResponseEntity<PageResponse<RepairOrderResponse>> orders(
             @RequestParam(required = false) Long uavId,
             @RequestParam(required = false) RepairStatus status,
@@ -64,17 +67,20 @@ public class MaintenanceController {
     }
 
     @GetMapping(ApiRoutes.Maintenance.ORDERS_BY_ID)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_VIEW')")
     public ResponseEntity<RepairOrderResponse> order(@PathVariable Long id) {
         return ResponseEntity.ok(service.order(id));
     }
 
     @PostMapping(ApiRoutes.Maintenance.ORDERS)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_CREATE')")
     public ResponseEntity<RepairOrderResponse> createOrder(
             @Valid @RequestBody CreateRepairOrderRequest r, Authentication auth) {
         return ResponseEntity.status(201).body(service.createOrder(r, auth.getName()));
     }
 
     @PutMapping(ApiRoutes.Maintenance.ORDERS_BY_ID)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_UPDATE')")
     public ResponseEntity<RepairOrderResponse> updateOrder(
             @PathVariable Long id,
             @Valid @RequestBody UpdateRepairOrderRequest r,
@@ -83,6 +89,7 @@ public class MaintenanceController {
     }
 
     @PostMapping(ApiRoutes.Maintenance.ORDERS_START)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_UPDATE')")
     public ResponseEntity<RepairOrderResponse> start(
             @PathVariable Long id,
             @Valid @RequestBody RepairOrderVersionRequest r,
@@ -91,6 +98,7 @@ public class MaintenanceController {
     }
 
     @PutMapping(ApiRoutes.Maintenance.ORDERS_MATERIALS)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_UPDATE')")
     public ResponseEntity<RepairOrderResponse> materials(
             @PathVariable Long id,
             @Valid @RequestBody UpdateRepairMaterialsRequest r,
@@ -99,6 +107,7 @@ public class MaintenanceController {
     }
 
     @PostMapping(ApiRoutes.Maintenance.ORDERS_COMPLETE)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_UPDATE')")
     public ResponseEntity<RepairOrderResponse> complete(
             @PathVariable Long id,
             @Valid @RequestBody CompleteRepairOrderRequest r,
@@ -107,6 +116,7 @@ public class MaintenanceController {
     }
 
     @PostMapping(ApiRoutes.Maintenance.ORDERS_CANCEL)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_UPDATE')")
     public ResponseEntity<RepairOrderResponse> cancel(
             @PathVariable Long id,
             @Valid @RequestBody CancelRepairOrderRequest r,

@@ -69,6 +69,7 @@ class AvatarServiceImplTest {
                 linkedType,
                 linkedType == null ? null : "1",
                 "alice",
+                com.uav.platform.enums.media.MediaVisibility.PRIVATE,
                 "s3",
                 true,
                 LocalDateTime.now(),
@@ -156,7 +157,7 @@ class AvatarServiceImplTest {
     }
 
     @Test
-    @DisplayName("image: the owner and USER_READ holders get a signed URL; others get not-found")
+    @DisplayName("image: the owner and USER_VIEW holders get a signed URL; others get not-found")
     void imageVisibility() {
         alice.setAvatarUrl("/api/v1/users/7/avatar?v=11");
         MediaAsset stored =
@@ -177,11 +178,11 @@ class AvatarServiceImplTest {
         assertThat(service.signedUrl(7L, as("alice"))).isEqualTo("https://get");
 
         Authentication admin = as("admin");
-        when(permissions.has(admin, "USER_READ")).thenReturn(true);
+        when(permissions.has(admin, "USER_VIEW")).thenReturn(true);
         assertThat(service.signedUrl(7L, admin)).isEqualTo("https://get");
 
         Authentication stranger = as("mallory");
-        when(permissions.has(stranger, "USER_READ")).thenReturn(false);
+        when(permissions.has(stranger, "USER_VIEW")).thenReturn(false);
         assertThatThrownBy(() -> service.signedUrl(7L, stranger))
                 .isInstanceOf(SystemException.class);
     }

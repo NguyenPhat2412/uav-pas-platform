@@ -35,7 +35,7 @@ test('permissions gate every action; assignment stops after resources are ready'
         ...mission,
         status
     }, 10, () => false)).every(v => v === false));
-    const allowed = code => ['MISSION_ASSIGN_OPERATOR', 'USER_READ'].includes(code);
+    const allowed = code => ['MISSION_ASSIGN_OPERATOR', 'USER_VIEW'].includes(code);
     assert.equal(missionControls({...mission, status: 'CONFIRMED', operatorId: undefined}, 10, allowed).operator, true);
     assert.equal(missionControls({...mission, status: 'CONFIRMED'}, 10, allowed).operator, false);
     assert.equal(missionControls({...mission, status: 'READY', operatorId: undefined}, 10, allowed).operator, false);

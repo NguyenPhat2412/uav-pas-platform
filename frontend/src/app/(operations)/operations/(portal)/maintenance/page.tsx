@@ -6,6 +6,6 @@ import {MaintenanceWorkspace} from '@/components/maintenance/MaintenanceWorkspac
 
 export default function MaintenancePage() {
     return <OperationsPage
-                           permission="UAV_MANAGE" activeResource="maintenance"><Suspense
+                           permission="UAV_MAINTENANCE_VIEW" activeResource="maintenance"><Suspense
         fallback={<LoadingRows/>}><MaintenanceWorkspace/></Suspense></OperationsPage>;
 }

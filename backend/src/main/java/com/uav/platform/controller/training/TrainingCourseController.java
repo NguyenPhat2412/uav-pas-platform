@@ -47,7 +47,7 @@ import java.util.List;
 public class TrainingCourseController {
 
     private static final String MANAGE =
-            "@permissionService.has(authentication, 'PERMISSION_MANAGE') or hasAnyRole('SUPER_ADMIN','SYSTEM_ADMIN')";
+            "@permissionService.has(authentication, 'USER_PERMISSION_MANAGE') or hasAnyRole('SUPER_ADMIN','SYSTEM_ADMIN')";
 
     private final TrainingCourseService courses;
     private final TrainingCourseAdminService admin;

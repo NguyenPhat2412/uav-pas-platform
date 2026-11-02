@@ -102,7 +102,7 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
                             {t('shell.portalSwitcher.customerPortal')}
                         </Link>
                     )}
-                    {portal === 'admin' && can('PERMISSION_MANAGE') && (
+                    {portal === 'admin' && can('USER_PERMISSION_MANAGE') && (
                         <Link
                             role="menuitem"
                             href="/admin/settings"

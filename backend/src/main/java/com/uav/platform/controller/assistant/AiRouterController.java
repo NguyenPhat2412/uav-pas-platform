@@ -26,20 +26,20 @@ public class AiRouterController {
     private final AiRouterService service;
 
     @GetMapping(ApiRoutes.Assistant.ADMIN_AI_ROUTER)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<AiRouterSettingsResponse> settings() {
         return ResponseEntity.ok(service.settings());
     }
 
     @PutMapping(ApiRoutes.Assistant.ADMIN_AI_ROUTER)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<AiRouterSettingsResponse> update(
             @Valid @RequestBody AiRouterSettingsRequest request, Authentication auth) {
         return ResponseEntity.ok(service.update(request, auth));
     }
 
     @GetMapping(ApiRoutes.Assistant.ADMIN_AI_ROUTER_STATUS)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<AiRouterStatusResponse> status() {
         return ResponseEntity.ok(service.status());
     }

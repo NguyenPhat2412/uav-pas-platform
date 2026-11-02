@@ -15,6 +15,6 @@ public interface AvatarService {
 
     void remove(String username);
 
-    /** Short-lived storage URL for a user's avatar; visible to the user themselves and to USER_READ holders. */
+    /** Short-lived storage URL for a user's avatar; visible to the user themselves and to USER_VIEW holders. */
     String signedUrl(Long userId, Authentication viewer);
 }

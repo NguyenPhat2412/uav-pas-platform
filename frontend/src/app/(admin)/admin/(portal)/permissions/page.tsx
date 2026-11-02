@@ -3,5 +3,5 @@ import {AccessHub} from "@/components/access/AccessHub";
 
 export default function Page() {
     return <AdminPage title="admin.pages.access.title"
-                      permission="PERMISSION_MANAGE" activeResource="access-control"><AccessHub tab="registry"/></AdminPage>;
+                      permission="USER_PERMISSION_MANAGE" activeResource="access-control"><AccessHub tab="registry"/></AdminPage>;
 }

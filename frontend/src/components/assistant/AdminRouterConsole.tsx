@@ -17,7 +17,7 @@ export function consoleUrl(baseUrl: string) {
 }
 
 export default function AdminRouterConsole() {
-    return <AdminPage title="adminNav.aiRouter" permission="PERMISSION_MANAGE" activeResource="/admin/ai-router">
+    return <AdminPage title="adminNav.aiRouter" permission="USER_PERMISSION_MANAGE" activeResource="/admin/ai-router">
         <AssistantTabs/>
     </AdminPage>;
 }
@@ -27,7 +27,7 @@ export function AdminAiConversationsWorkspace() {
     return (
         <AdminPage
             title="adminNav.aiConversations"
-            permission="PERMISSION_MANAGE"
+            permission="USER_PERMISSION_MANAGE"
             activeResource="/admin/ai-router/conversations"
         >
             <AssistantConversations actions={<>

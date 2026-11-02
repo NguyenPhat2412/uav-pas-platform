@@ -32,7 +32,7 @@ public class UserController {
 
     @Operation(summary = "Get paginated, sorted, and filtered list of users")
     @GetMapping
-    @PreAuthorize("@permissionService.has(authentication, 'USER_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_VIEW')")
     public ResponseEntity<PageResponse<UserResponse>> getUsers(
             @Parameter(description = "Page number (0-based index)", example = "0")
                     @RequestParam(defaultValue = "0")
@@ -63,7 +63,7 @@ public class UserController {
 
     @Operation(summary = "Get user details by ID")
     @GetMapping(ApiRoutes.Users.USER_ID)
-    @PreAuthorize("@permissionService.has(authentication, 'USER_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_VIEW')")
     public ResponseEntity<UserResponse> getUserById(
             @Parameter(description = "User unique ID", example = "1") @PathVariable Long id) {
         UserResponse response = userService.getUserById(id);
@@ -71,21 +71,21 @@ public class UserController {
     }
 
     @PostMapping(ApiRoutes.Users.LOCK)
-    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_LOCK')")
     public ResponseEntity<Void> lock(@PathVariable Long id, Authentication authentication) {
         userService.lockUser(id, authentication.getName());
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping(ApiRoutes.Users.UNLOCK)
-    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_UNLOCK')")
     public ResponseEntity<Void> unlock(@PathVariable Long id, Authentication authentication) {
         userService.unlockUser(id, authentication.getName());
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping(ApiRoutes.Users.ROLE)
-    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<UserResponse> updateRole(
             @PathVariable Long id,
             @Valid @RequestBody RoleUpdateRequest request,

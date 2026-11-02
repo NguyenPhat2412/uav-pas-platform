@@ -4,5 +4,5 @@ import {OperationsPage} from '@/components/layout/OperationsPage';
 
 export default function UavsPage() {
     return <OperationsPage
-                           permission="UAV_READ" activeResource="uavs"><UavPanel/></OperationsPage>;
+                           permission="UAV_VIEW" activeResource="uavs"><UavPanel/></OperationsPage>;
 }

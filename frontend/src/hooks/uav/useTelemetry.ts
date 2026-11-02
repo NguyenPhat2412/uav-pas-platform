@@ -4,13 +4,13 @@ import {useAuth} from '@/providers/AuthContext';
 import {fleetMapService, TELEMETRY_POLL_MS, telemetryService} from '@/api/uav/telemetry.api';
 import {fleetMapKeys, telemetryKeys} from '@/hooks/uav/query-keys';
 
-/** Latest fix of every UAV, polled while the view is open (UAV_READ). */
+/** Latest fix of every UAV, polled while the view is open (UAV_VIEW). */
 export function useFleetTelemetry() {
     const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: telemetryKeys.fleet(user?.id),
         queryFn: ({signal}) => telemetryService.fleet(signal),
-        enabled: permissionsReady && can('UAV_READ'),
+        enabled: permissionsReady && can('UAV_VIEW'),
         refetchInterval: TELEMETRY_POLL_MS,
     });
 }

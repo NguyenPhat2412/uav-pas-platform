@@ -128,8 +128,8 @@ class DtoWireContractTest {
                 json.readTree("{\"unreadCount\":7}"),
                 json.readTree(json.writeValueAsString(new UnreadCountResponse(7))));
         assertEquals(
-                json.readTree("[\"MISSION_VIEW\",\"MEDIA_MANAGE\"]"),
+                json.readTree("[\"MISSION_VIEW\",\"MEDIA_DELETE\"]"),
                 json.valueToTree(
-                        new PermissionCodesResponse(List.of("MISSION_VIEW", "MEDIA_MANAGE"))));
+                        new PermissionCodesResponse(List.of("MISSION_VIEW", "MEDIA_DELETE"))));
     }
 }

@@ -111,7 +111,7 @@ public class AvatarServiceImpl implements AvatarService {
                 users.findById(userId)
                         .orElseThrow(() -> SystemException.notFound("Avatar not found"));
         boolean self = viewer != null && user.getUsername().equals(viewer.getName());
-        if (!self && !permissions.has(viewer, "USER_READ"))
+        if (!self && !permissions.has(viewer, "USER_VIEW"))
             throw SystemException.notFound("Avatar not found");
         Long mediaId = versionOf(user.getAvatarUrl());
         if (mediaId == null) throw SystemException.notFound("Avatar not found");

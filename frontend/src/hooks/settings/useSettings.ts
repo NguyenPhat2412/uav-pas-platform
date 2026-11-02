@@ -38,13 +38,13 @@ export function useSaveSetting() {
     return {save, refresh};
 }
 
-/** Service health, refreshed every 30 s (PERMISSION_MANAGE). */
+/** Service health, refreshed every 30 s (USER_PERMISSION_MANAGE). */
 export function useSystemHealth() {
     const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: settingsKeys.systemHealth(user?.id),
         queryFn: ({signal}) => systemHealthService.get(signal),
-        enabled: permissionsReady && can('PERMISSION_MANAGE'),
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE'),
         refetchInterval: 30_000,
     });
 }

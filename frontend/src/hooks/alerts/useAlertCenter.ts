@@ -4,13 +4,13 @@ import {useAuth} from '@/providers/AuthContext';
 import {alertsService} from '@/api/alerts/alerts.api';
 import {alertKeys} from '@/hooks/alerts/query-keys';
 
-/** Current platform alerts (GET /api/v1/admin/alerts), refreshed every minute for accounts with DASHBOARD_READ. */
+/** Current platform alerts (GET /api/v1/admin/alerts), refreshed every minute for accounts with DASHBOARD_VIEW. */
 export function useAlertCenter() {
     const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: alertKeys.center(user?.id),
         queryFn: ({signal}) => alertsService.current(signal),
-        enabled: permissionsReady && can('DASHBOARD_READ'),
+        enabled: permissionsReady && can('DASHBOARD_VIEW'),
         refetchInterval: 60_000,
     });
 }

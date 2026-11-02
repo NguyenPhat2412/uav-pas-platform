@@ -2,6 +2,7 @@ package com.uav.platform.service.impl.media;
 
 import com.uav.platform.entity.media.MediaAsset;
 import com.uav.platform.enums.media.*;
+import com.uav.platform.enums.media.MediaVisibility;
 import com.uav.platform.repository.inventory.EquipmentRepository;
 import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.station.StationRepository;
@@ -33,11 +34,13 @@ public class MediaAccessServiceImpl implements MediaAccessService {
         var auth = UsernamePasswordAuthenticationToken.authenticated(actor, null, List.of());
         var scope =
                 new com.uav.platform.dto.record.media.ReadPermissions(
-                        permissions.has(auth, "MEDIA_MANAGE"),
-                                permissions.has(auth, "MISSION_MEDIA_VIEW"),
+                        permissions.has(auth, "MEDIA_DELETE"),
+                        permissions.has(auth, "MISSION_MEDIA_VIEW"),
                         permissions.has(auth, "MISSION_VIEW_ALL"),
-                                permissions.has(auth, "STATION_READ"),
-                        permissions.has(auth, "UAV_READ"), permissions.has(auth, "INVENTORY_READ"));
+                        permissions.has(auth, "STATION_VIEW"),
+                        permissions.has(auth, "UAV_VIEW"),
+                        permissions.has(auth, "INVENTORY_VIEW"),
+                        permissions.has(auth, "MEDIA_VIEW"));
         return com.uav.platform.specification.media.MediaVisibilitySpecifications.readableBy(
                 actor, scope);
     }
@@ -71,15 +74,15 @@ public class MediaAccessServiceImpl implements MediaAccessService {
                 if (write) MissionOperations.requireMediaWritable(mission);
             }
             case "STATION" -> {
-                if (!permissions.has(auth, write ? "STATION_MANAGE" : "STATION_READ")
+                if (!permissions.has(auth, write ? "STATION_UPDATE" : "STATION_VIEW")
                         || !stations.existsById(resourceId)) throw denied();
             }
             case "UAV" -> {
-                if (!permissions.has(auth, write ? "UAV_MANAGE" : "UAV_READ")
+                if (!permissions.has(auth, write ? "UAV_UPDATE" : "UAV_VIEW")
                         || !uavs.existsById(resourceId)) throw denied();
             }
             case "EQUIPMENT" -> {
-                if (!permissions.has(auth, write ? "INVENTORY_MANAGE" : "INVENTORY_READ")
+                if (!permissions.has(auth, write ? "INVENTORY_ITEM_UPDATE" : "INVENTORY_VIEW")
                         || !equipment.existsById(resourceId)) throw denied();
             }
             default -> throw new IllegalArgumentException("Unsupported linked resource type");
@@ -89,9 +92,14 @@ public class MediaAccessServiceImpl implements MediaAccessService {
     public void requireFile(MediaAsset asset, String actor, boolean write) {
         if (actor == null) throw denied();
         var auth = UsernamePasswordAuthenticationToken.authenticated(actor, null, List.of());
+        // Reading a shared file needs no link permission (BA 13.4); writing always does.
+        if (!write && asset.getVisibility() == MediaVisibility.PUBLIC) return;
+        if (!write
+                && asset.getVisibility() == MediaVisibility.PROTECTED
+                && permissions.has(auth, "MEDIA_VIEW")) return;
         requireLink(asset.getLinkedEntityType(), asset.getLinkedEntityId(), actor, write);
         if (!java.util.Objects.equals(asset.getUploadedBy(), actor)
-                && !permissions.has(auth, "MEDIA_MANAGE")) {
+                && !permissions.has(auth, "MEDIA_DELETE")) {
             // Mission participants may view confirmed linked outputs but cannot overwrite another
             // uploader's file.
             if (write || !"MISSION".equals(asset.getLinkedEntityType())) throw denied();

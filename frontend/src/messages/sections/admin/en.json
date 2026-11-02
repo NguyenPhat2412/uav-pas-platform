@@ -276,7 +276,7 @@
       },
       "selectOverride": "{code} override",
       "selectTemplate": "{code} role template",
-      "auditLink": "Change history (requires AUDIT_READ)",
+      "auditLink": "Change history (requires AUDIT_VIEW)",
       "registry": {
         "search": "Search permissions",
         "placeholder": "Permission code or description",

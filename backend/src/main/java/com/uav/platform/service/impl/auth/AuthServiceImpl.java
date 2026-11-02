@@ -392,7 +392,9 @@ public class AuthServiceImpl implements AuthService {
         String newAccessToken =
                 jwtTokenProvider.generateToken(
                         user.getId(), user.getUsername(), user.getEmail(), user.getRole().name());
-        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
+        // Rotation keeps the session on the client that owns it, whatever the request claims.
+        RefreshToken newRefreshToken =
+                refreshTokenService.createRefreshToken(user, refreshToken.getClient());
 
         return authMapper.toResponse(
                 newAccessToken, newRefreshToken.getToken(), userMapper.toResponse(user));

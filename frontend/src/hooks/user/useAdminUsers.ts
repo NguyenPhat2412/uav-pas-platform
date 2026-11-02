@@ -10,7 +10,7 @@ export function useAdminUsers(page: number, keyword: string, role?: UserRole, st
     return useQuery({
         queryKey: ['session', user?.id, 'admin-users', page, keyword, role, status],
         queryFn: ({signal}) => usersService.users(page, keyword, role, signal, status),
-        enabled: permissionsReady && can('USER_READ')
+        enabled: permissionsReady && can('USER_VIEW')
     });
 }
 
@@ -23,7 +23,7 @@ export function useAdminUserCounts(keyword: string, role?: UserRole) {
         queries: userStatuses.map(status => ({
             queryKey: ['session', user?.id, 'admin-users', 'count', keyword, role, status],
             queryFn: ({signal}: { signal: AbortSignal }) => usersService.users(0, keyword, role, signal, status, 1),
-            enabled: permissionsReady && can('USER_READ')
+            enabled: permissionsReady && can('USER_VIEW')
         }))
     });
     return Object.fromEntries(userStatuses.map((status, i) => [status ?? 'ALL', results[i].data?.totalElements])) as Record<UserStatus | 'ALL', number | undefined>;
@@ -34,13 +34,13 @@ export function useAdminUser(id: number) {
     return useQuery({
         queryKey: ['session', user?.id, 'admin-user', id],
         queryFn: ({signal}) => usersService.user(id, signal),
-        enabled: permissionsReady && can('USER_READ') && Number.isSafeInteger(id) && id > 0
+        enabled: permissionsReady && can('USER_VIEW') && Number.isSafeInteger(id) && id > 0
     });
 }
 
 export function useAdminReferenceData() {
     const {user, can, permissionsReady} = useAuth();
-    const enabled = permissionsReady && can('PERMISSION_MANAGE');
+    const enabled = permissionsReady && can('USER_PERMISSION_MANAGE');
     const permissions = useQuery({
         queryKey: ['session', user?.id, 'admin-permissions'],
         queryFn: ({signal}) => accessService.permissions(signal),

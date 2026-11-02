@@ -21,7 +21,7 @@ export function AccessControl() {
         if (window.confirm(t('admin.access.leaveConfirm'))) setSelected(null);
     }}>{t('admin.access.chooseOtherUser')}</Button><h2
         className="text-lg font-semibold">{selected.username} · {displayLabel(selected.role)}</h2><PermissionEditor
-        key={selected.id} target={selected}/></> : can('USER_READ') ? <Users onSelect={setSelected}/> :
+        key={selected.id} target={selected}/></> : can('USER_VIEW') ? <Users onSelect={setSelected}/> :
         <Alert variant="warning">{t('admin.access.needUserRead')}</Alert>}</div>;
 }
 

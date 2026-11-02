@@ -27,6 +27,10 @@ public class Station extends BaseEntity {
     private Double latitude;
     private Double longitude;
 
+    /** Operational notes (BA 10.2). */
+    @Column(length = 500)
+    private String description;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private StationStatus status = StationStatus.ACTIVE;

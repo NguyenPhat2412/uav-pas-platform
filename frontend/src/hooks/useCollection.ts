@@ -7,13 +7,13 @@ import {API_ROUTES} from '@/lib/api/routes';
 import type {CollectionModels as Models} from '@/types/resources';
 
 const resources = {
-    stations: [API_ROUTES.stations.list, 'STATION_READ'],
-    uavs: [API_ROUTES.uavs.list, 'UAV_READ'],
-    equipment: [API_ROUTES.inventory.equipment, 'INVENTORY_READ'],
-    movements: [API_ROUTES.inventory.equipmentHistory, 'INVENTORY_READ'],
-    media: [API_ROUTES.media.list, 'MEDIA_READ'],
-    audit: [API_ROUTES.auditLogs.list, 'AUDIT_READ'],
-    users: [API_ROUTES.users.list, 'USER_READ'],
+    stations: [API_ROUTES.stations.list, 'STATION_VIEW'],
+    uavs: [API_ROUTES.uavs.list, 'UAV_VIEW'],
+    equipment: [API_ROUTES.inventory.equipment, 'INVENTORY_VIEW'],
+    movements: [API_ROUTES.inventory.equipmentHistory, 'INVENTORY_VIEW'],
+    media: [API_ROUTES.media.list, 'MEDIA_VIEW'],
+    audit: [API_ROUTES.auditLogs.list, 'AUDIT_VIEW'],
+    users: [API_ROUTES.users.list, 'USER_VIEW'],
     missions: [API_ROUTES.missions.list, 'MISSION_VIEW'],
 } as const;
 

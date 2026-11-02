@@ -70,10 +70,10 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
         LocalDateTime prevStart = start.minusDays(span);
 
         boolean missionsVisible = can(authentication, "MISSION_VIEW_ALL");
-        boolean uavsVisible = can(authentication, "UAV_READ");
-        boolean billingVisible = can(authentication, "PERMISSION_MANAGE");
-        boolean usersVisible = can(authentication, "USER_READ");
-        boolean auditVisible = can(authentication, "AUDIT_READ");
+        boolean uavsVisible = can(authentication, "DASHBOARD_UAV");
+        boolean billingVisible = can(authentication, "USER_PERMISSION_MANAGE");
+        boolean usersVisible = can(authentication, "DASHBOARD_USER");
+        boolean auditVisible = can(authentication, "AUDIT_VIEW");
         boolean webhooksVisible = can(authentication, "USER_MANAGE");
 
         List<Mission> window =

@@ -9,6 +9,6 @@ export function useAdminAudit(page: number, size: number, filters: AuditFilters,
     return useQuery({
         queryKey: ['session', user?.id, 'admin-audit', page, size, filters],
         queryFn: ({signal}) => auditService.audit(page, size, signal, filters),
-        enabled: enabled && permissionsReady && can('AUDIT_READ')
+        enabled: enabled && permissionsReady && can('AUDIT_VIEW')
     });
 }

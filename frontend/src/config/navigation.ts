@@ -86,7 +86,7 @@ export const portalSections: NavSection[] = [
                 key: 'overview',
                 defaultLabel: 'Tổng quan vận hành',
                 icon: LayoutDashboard,
-                permission: 'DASHBOARD_READ'
+                permission: 'DASHBOARD_VIEW'
             },
             {
                 href: "/operations/sar-cockpit",
@@ -114,42 +114,42 @@ export const portalSections: NavSection[] = [
                 key: 'stations',
                 defaultLabel: 'Trạm mặt đất',
                 icon: MapPinned,
-                permission: 'STATION_READ'
+                permission: 'STATION_VIEW'
             },
             {
                 href: "/operations/uavs",
                 key: 'uavs',
                 defaultLabel: 'Đội UAV',
                 icon: PlaneTakeoff,
-                permission: 'UAV_READ'
+                permission: 'UAV_VIEW'
             },
             {
                 href: "/operations/maintenance",
                 key: 'maintenance',
                 defaultLabel: 'Bảo trì và sửa chữa',
                 icon: Wrench,
-                permission: 'UAV_MANAGE'
+                permission: 'UAV_MAINTENANCE_VIEW'
             },
             {
                 href: "/operations/inventory",
                 key: 'inventory',
                 defaultLabel: 'Kho thiết bị',
                 icon: Boxes,
-                permission: 'INVENTORY_READ'
+                permission: 'INVENTORY_VIEW'
             },
             {
                 href: "/operations/media",
                 key: 'media',
                 defaultLabel: 'Tệp kết quả',
                 icon: FileKey2,
-                permission: 'MEDIA_READ'
+                permission: 'MEDIA_VIEW'
             },
             {
                 href: "/operations/audit",
                 key: 'audit',
                 defaultLabel: 'Nhật ký vận hành',
                 icon: Activity,
-                permission: 'AUDIT_READ'
+                permission: 'AUDIT_VIEW'
             },
         ],
     },
@@ -163,49 +163,49 @@ export const portalSections: NavSection[] = [
                 key: 'dashboard',
                 defaultLabel: 'Tổng quan quản trị',
                 icon: LayoutDashboard,
-                permission: 'DASHBOARD_READ'
+                permission: 'DASHBOARD_VIEW'
             },
             {
                 href: "/admin/users",
                 key: 'users',
                 defaultLabel: 'Người dùng',
                 icon: Users,
-                permission: 'USER_READ'
+                permission: 'USER_VIEW'
             },
             {
                 href: "/admin/access-control",
                 key: 'accessControl',
                 defaultLabel: 'Kiểm soát truy cập',
                 icon: ShieldCheck,
-                permission: 'PERMISSION_MANAGE'
+                permission: 'USER_PERMISSION_MANAGE'
             },
             {
                 href: "/admin/role-templates",
                 key: 'roleTemplates',
                 defaultLabel: 'Mẫu vai trò',
                 icon: KeyRound,
-                permission: 'PERMISSION_MANAGE'
+                permission: 'USER_PERMISSION_MANAGE'
             },
             {
                 href: "/admin/permissions",
                 key: 'permissions',
                 defaultLabel: 'Danh mục quyền',
                 icon: FileKey2,
-                permission: 'PERMISSION_MANAGE'
+                permission: 'USER_PERMISSION_MANAGE'
             },
             {
                 href: "/admin/billing",
                 key: 'billing',
                 defaultLabel: 'Gói cước & Hạn mức',
                 icon: CreditCard,
-                permission: 'PERMISSION_MANAGE'
+                permission: 'USER_PERMISSION_MANAGE'
             },
             {
                 href: "/admin/reports",
                 key: 'reports',
                 defaultLabel: 'Báo cáo & Thống kê',
                 icon: BarChart3,
-                permission: 'DASHBOARD_READ'
+                permission: 'DASHBOARD_VIEW'
             },
             {
                 href: "/admin/webhooks",
@@ -219,14 +219,14 @@ export const portalSections: NavSection[] = [
                 key: 'settings',
                 defaultLabel: 'Cấu hình hệ thống',
                 icon: Settings,
-                permission: 'PERMISSION_MANAGE'
+                permission: 'USER_PERMISSION_MANAGE'
             },
             {
                 href: "/admin/audit-logs",
                 key: 'auditLogs',
                 defaultLabel: 'Nhật ký quản trị',
                 icon: FileKey2,
-                permission: 'AUDIT_READ'
+                permission: 'AUDIT_VIEW'
             },
         ],
     },

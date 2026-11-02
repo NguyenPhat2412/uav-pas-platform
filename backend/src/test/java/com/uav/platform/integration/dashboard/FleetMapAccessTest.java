@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 /**
  * The fleet map lists every UAV with the active mission it serves, across all customers. Customers
- * (ROLE_PILOT) hold UAV_READ for their own assigned equipment, so the endpoint must require a
+ * (ROLE_PILOT) hold UAV_VIEW for their own assigned equipment, so the endpoint must require a
  * permission they do not get by default.
  */
 @DisplayName("GET /api/v1/dashboard/fleet-map access")
@@ -63,8 +63,8 @@ class FleetMapAccessTest {
     @DisplayName("customers (ROLE_PILOT) cannot reach it with their default permissions")
     void customersAreDenied() throws Exception {
         EnumSet<PermissionCode> customer = defaults(UserRole.ROLE_PILOT);
-        // The previous rule (UAV_READ) is part of the customer set, which is what exposed the map.
-        assertThat(customer).contains(PermissionCode.UAV_READ);
+        // The previous rule (UAV_VIEW) is part of the customer set, which is what exposed the map.
+        assertThat(customer).contains(PermissionCode.UAV_VIEW);
         assertThat(customer).doesNotContain(requiredPermission());
     }
 

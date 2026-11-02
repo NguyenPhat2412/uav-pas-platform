@@ -34,38 +34,38 @@ public class InfrastructureController {
     private final MailDiagnosticsService mail;
 
     @GetMapping(ApiRoutes.Admin.INFRASTRUCTURE_DEPLOYMENT)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<DeploymentInfoResponse> deployment() {
         return ResponseEntity.ok(infrastructure.deployment());
     }
 
     @GetMapping(ApiRoutes.Admin.INFRASTRUCTURE_BACKUPS)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<BackupStatusResponse> backups() {
         return ResponseEntity.ok(backups.status());
     }
 
     @GetMapping(ApiRoutes.Admin.INFRASTRUCTURE_STORAGE)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<StorageStatusResponse> storage() {
         return ResponseEntity.ok(infrastructure.storage());
     }
 
     @GetMapping(ApiRoutes.Admin.INFRASTRUCTURE_DATABASE)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<DatabaseStatusResponse> database() {
         return ResponseEntity.ok(infrastructure.database());
     }
 
     @GetMapping(ApiRoutes.Admin.INFRASTRUCTURE_EMAIL)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<EmailStatusResponse> email(Authentication authentication) {
         return ResponseEntity.ok(mail.status(authentication));
     }
 
     /** Recipient is always the caller; there is deliberately no request body. */
     @PostMapping(ApiRoutes.Admin.INFRASTRUCTURE_EMAIL_TEST)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<EmailTestResponse> sendTestEmail(Authentication authentication) {
         return ResponseEntity.ok(mail.sendTest(authentication));
     }

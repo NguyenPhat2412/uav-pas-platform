@@ -12,7 +12,7 @@ export function AdminWeatherPage() {
     </AdminPage>;
 }
 
-/** Operations › Thời tiết bay: open to every crew role; stations show for STATION_READ. */
+/** Operations › Thời tiết bay: open to every crew role; stations show for STATION_VIEW. */
 export function OperationsWeatherPage() {
     return <OperationsPage permission="MISSION_VIEW" activeResource="weather">
         <FlightWeatherWorkspace showStations/>

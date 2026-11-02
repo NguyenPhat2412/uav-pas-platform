@@ -276,7 +276,7 @@
       },
       "selectOverride": "{code} quyền riêng",
       "selectTemplate": "{code} theo vai trò",
-      "auditLink": "Lịch sử thay đổi (cần AUDIT_READ)",
+      "auditLink": "Lịch sử thay đổi (cần AUDIT_VIEW)",
       "registry": {
         "search": "Tìm quyền",
         "placeholder": "Mã quyền hoặc mô tả",

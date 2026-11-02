@@ -37,7 +37,7 @@ Khách hàng chỉ sửa hoặc hủy được khi nhiệm vụ còn ở DRAFT h
 - Phiếu sửa chữa ghi kỹ thuật viên, ngày dự kiến, vật tư và chi phí; phiếu đã đóng không sửa được.
 
 ## Phân quyền
-- Mỗi người dùng có một vai trò; quyền được gán theo vai trò ở trang Phân quyền (mẫu vai trò, ma trận phân quyền). Ví dụ quyền: MISSION_VIEW, MISSION_VIEW_ALL, MISSION_STATUS_UPDATE, UAV_MANAGE, USER_MANAGE, PERMISSION_MANAGE.
+- Mỗi người dùng có một vai trò; quyền được gán theo vai trò ở trang Phân quyền (mẫu vai trò, ma trận phân quyền). Ví dụ quyền: MISSION_VIEW, MISSION_VIEW_ALL, MISSION_STATUS_UPDATE, UAV_CREATE, UAV_STATUS_UPDATE, INVENTORY_RESERVE, USER_PERMISSION_MANAGE.
 
 ## Khác
 - Webhooks: đăng ký URL nhận sự kiện (SAR, geofence, pin yếu RTH, hóa đơn, thanh toán…).

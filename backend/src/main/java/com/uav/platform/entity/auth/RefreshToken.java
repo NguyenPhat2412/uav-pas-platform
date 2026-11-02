@@ -2,6 +2,7 @@ package com.uav.platform.entity.auth;
 
 import com.uav.platform.common.entity.BaseEntity;
 import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.auth.ClientKind;
 
 import jakarta.persistence.*;
 
@@ -27,9 +28,15 @@ import java.time.Instant;
 @NoArgsConstructor
 public class RefreshToken extends BaseEntity {
 
-    @OneToOne(fetch = FetchType.LAZY)
+    // One token per user and client kind (V37): the web portal and the mobile app sign in
+    // independently.
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private AppUser user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 16)
+    private ClientKind client = ClientKind.WEB;
 
     @Column(nullable = false, unique = true, length = 128)
     private String token;
@@ -41,9 +48,14 @@ public class RefreshToken extends BaseEntity {
     private boolean revoked = false;
 
     public RefreshToken(AppUser user, String token, Instant expiryDate) {
+        this(user, token, expiryDate, ClientKind.WEB);
+    }
+
+    public RefreshToken(AppUser user, String token, Instant expiryDate, ClientKind client) {
         this.user = user;
         this.token = token;
         this.expiryDate = expiryDate;
+        this.client = client;
         this.revoked = false;
     }
 }

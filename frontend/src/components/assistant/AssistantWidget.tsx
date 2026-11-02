@@ -372,8 +372,8 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
                     : !info.data?.enabled ? <div className="m-auto max-w-[280px] py-8 text-center">
                         <SuperheroLogo size={56}/>
                         <p className="mb-2 mt-3 text-sm font-semibold text-slate-800">{t('admin.assistant.offTitle')}</p>
-                        <p className="m-0 text-xs text-slate-500">{t(can('PERMISSION_MANAGE') ? 'admin.assistant.offBody' : 'admin.assistant.offBodyUser')}</p>
-                        {can('PERMISSION_MANAGE') && <Link href="/admin/settings#assistant" onClick={() => setOpen(false)}
+                        <p className="m-0 text-xs text-slate-500">{t(can('USER_PERMISSION_MANAGE') ? 'admin.assistant.offBody' : 'admin.assistant.offBodyUser')}</p>
+                        {can('USER_PERMISSION_MANAGE') && <Link href="/admin/settings#assistant" onClick={() => setOpen(false)}
                                                            className="mt-3 inline-flex h-8 items-center rounded-control bg-primary px-3 text-xs font-bold text-primary-foreground hover:bg-primary-hover">
                             {t('admin.assistant.openSettings')}</Link>}
                     </div>

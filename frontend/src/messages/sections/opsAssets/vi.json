@@ -79,7 +79,14 @@
       "cancel": "Hủy",
       "uavsNote": "Xem UAV của trạm ở mục Đội UAV.",
       "inventoryNote": "Xem thiết bị của trạm ở mục Kho thiết bị.",
-      "activityNote": "Xem hoạt động ở Nhật ký hoạt động."
+      "activityNote": "Xem hoạt động ở Nhật ký hoạt động.",
+      "description": "Mô tả",
+      "statusLabel": "Trạng thái trạm",
+      "remove": "Xóa trạm",
+      "removeTitle": "Xóa trạm?",
+      "removeNote": "Trạm chưa được dùng sẽ bị xóa. Trạm đã có UAV, thiết bị, nhiệm vụ hoặc lịch sử kho sẽ chuyển sang Ngừng hoạt động để giữ lịch sử.",
+      "confirmRemove": "Xác nhận",
+      "deactivated": "Trạm đã có lịch sử nên được chuyển sang Ngừng hoạt động."
     },
     "equipment": {
       "equipment": "Thiết bị",
@@ -164,7 +171,13 @@
       "previewTitle": "Xem tệp: {name}",
       "useDownload": "Dùng liên kết tải xuống để xem định dạng này.",
       "openDownload": "Mở / tải xuống tệp",
-      "linkValidity": "Liên kết có hiệu lực trong 15 phút."
+      "linkValidity": "Liên kết có hiệu lực trong 15 phút.",
+      "visibility": {
+        "label": "Ai được xem",
+        "PRIVATE": "Riêng tư",
+        "PROTECTED": "Người có quyền xem tệp",
+        "PUBLIC": "Mọi người dùng đã đăng nhập"
+      }
     },
     "uavLifecycle": {
       "errors": {

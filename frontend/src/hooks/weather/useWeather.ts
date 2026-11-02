@@ -60,13 +60,13 @@ export function useMissionWeather(missionId: number | undefined, enabled = true)
     });
 }
 
-/** Current conditions at every active ground station (STATION_READ), refreshed every 10 minutes. */
+/** Current conditions at every active ground station (STATION_VIEW), refreshed every 10 minutes. */
 export function useStationsWeather(enabled = true) {
     const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: weatherKeys.stations(user?.id),
         queryFn: ({signal}) => weatherService.stations(signal),
-        enabled: enabled && permissionsReady && can('STATION_READ'),
+        enabled: enabled && permissionsReady && can('STATION_VIEW'),
         staleTime: WEATHER_STALE_MS,
         refetchInterval: 10 * 60_000,
         meta: QUIET,
@@ -78,7 +78,7 @@ export function useWeatherProvider() {
     return useQuery({
         queryKey: weatherKeys.provider(user?.id),
         queryFn: ({signal}) => weatherService.providerSettings(signal),
-        enabled: permissionsReady && can('PERMISSION_MANAGE'),
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE'),
     });
 }
 

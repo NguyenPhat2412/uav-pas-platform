@@ -28,14 +28,14 @@ public class TelemetryController {
 
     /**
      * Devices authenticate with X-Device-Key (scope TELEMETRY_WRITE, bound UAV only); users need
-     * UAV_MANAGE. A device principal is never evaluated as a user.
+     * UAV_UPDATE. A device principal is never evaluated as a user.
      */
     @Operation(summary = "Report a telemetry sample (device key or gateway service account)")
     @PostMapping(ApiRoutes.Telemetry.UAVS_TELEMETRY)
     @PreAuthorize(
             "@deviceKeyService.isDevice(authentication)"
                     + " ? @deviceKeyService.canWriteTelemetry(authentication, #id)"
-                    + " : @permissionService.has(authentication, 'UAV_MANAGE')")
+                    + " : @permissionService.has(authentication, 'UAV_UPDATE')")
     public ResponseEntity<TelemetryResponse> report(
             @PathVariable Long id,
             @Valid @RequestBody TelemetryReportRequest request,
@@ -45,7 +45,7 @@ public class TelemetryController {
     }
 
     @GetMapping(ApiRoutes.Telemetry.UAVS_TELEMETRY_LATEST)
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_VIEW')")
     public ResponseEntity<TelemetryResponse> latest(@PathVariable Long id) {
         return telemetry
                 .latest(id)
@@ -54,7 +54,7 @@ public class TelemetryController {
     }
 
     @GetMapping(ApiRoutes.Telemetry.UAVS_TELEMETRY_LATEST_ALL)
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_VIEW')")
     public ResponseEntity<List<TelemetryResponse>> fleet() {
         return ResponseEntity.ok(telemetry.latestForFleet());
     }

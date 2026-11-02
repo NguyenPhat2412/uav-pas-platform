@@ -112,6 +112,7 @@ public class MediaServiceImpl implements MediaService {
                                 request.linkedEntityId(),
                                 actor,
                                 storage.provider()));
+        if (request.visibility() != null) asset.setVisibility(request.visibility());
         audit.record(null, actor, AuditAction.UPLOAD, "MEDIA", asset.getId().toString(), objectKey);
         return mediaMapper.toResponse(asset);
     }

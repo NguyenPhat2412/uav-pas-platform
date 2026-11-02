@@ -173,7 +173,7 @@ public class AiServiceImpl implements AiService {
             if (media != null
                     && authentication != null
                     && permissionService != null
-                    && !permissionService.has(authentication, "MEDIA_MANAGE")
+                    && !permissionService.has(authentication, "MEDIA_DELETE")
                     && !permissionService.has(authentication, "MISSION_VIEW_ALL")) {
                 boolean linkedToMission =
                         "MISSION".equals(media.getLinkedEntityType())

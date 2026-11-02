@@ -20,7 +20,7 @@ public class AdminAlertController {
     private final AlertCenterService service;
 
     @GetMapping
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<AlertCenterResponse> current() {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(service.current());
     }

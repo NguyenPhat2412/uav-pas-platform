@@ -97,7 +97,7 @@ export function OrderDetail({id, onClose, refreshLists}: {
         return !detail.isError && lists;
     });
     const order = query.data;
-    const controls = order ? orderControls(order.status, can('UAV_MANAGE')) : null;
+    const controls = order ? orderControls(order.status, can('UAV_MAINTENANCE_UPDATE')) : null;
     const blocked = action.blocked || query.isFetching || !!query.error;
     const submit = (request: (service: MaintenanceService) => Promise<unknown>, successKey: string) => void action.run(async service => {
         try {

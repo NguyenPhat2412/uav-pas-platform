@@ -5,7 +5,7 @@ import {AdminHome} from "@/components/dashboard/AdminHome";
 
 export default function Page() {
     return <AdminPage title="admin.pages.dashboard.title"
-                      permission="DASHBOARD_READ" activeResource="dashboard">
+                      permission="DASHBOARD_VIEW" activeResource="dashboard">
         <div className="space-y-8"><AdminHome/><AdminAnalytics/><Dashboard/></div>
     </AdminPage>;
 }

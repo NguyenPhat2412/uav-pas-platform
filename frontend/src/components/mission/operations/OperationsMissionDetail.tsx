@@ -93,10 +93,10 @@ function MissionDetail({id}: { id: string }) {
     const [resourceIds, setResourceIds] = useState({station: '', uav: '', operator: '', equipment: ''});
     const readTimeline = permissionsReady && can('MISSION_TIMELINE_VIEW');
     const readMedia = permissionsReady && can('MISSION_MEDIA_VIEW');
-    const readStations = permissionsReady && can('STATION_READ');
-    const readUavs = permissionsReady && can('UAV_READ');
-    const readEquipment = permissionsReady && can('INVENTORY_READ');
-    const readOperators = permissionsReady && can('USER_READ');
+    const readStations = permissionsReady && can('STATION_VIEW');
+    const readUavs = permissionsReady && can('UAV_VIEW');
+    const readEquipment = permissionsReady && can('INVENTORY_VIEW');
+    const readOperators = permissionsReady && can('USER_VIEW');
     const load = useCallback(async () => {
         const generation = ++loadGeneration.current;
         const isCurrent = () => generation === loadGeneration.current;
@@ -568,7 +568,7 @@ function MissionDetail({id}: { id: string }) {
                                             className="break-words text-sm font-semibold text-foreground">{item.media.originalName}</span><span
                                             className="text-xs text-muted">{displayLabel(item.mediaRole)} · {Math.max(1, Math.ceil(item.media.size / 1000))} KB</span>
                                         </div>
-                                        {can('MEDIA_READ') && <Button variant="outline" disabled={downloading !== null}
+                                        {can('MEDIA_VIEW') && <Button variant="outline" disabled={downloading !== null}
                                                                       onClick={() => void download(item.media.id)}>{downloading === item.media.id ? t('opsMissions.detail.media.downloading') : t('opsMissions.detail.media.download')}</Button>}
                                     </li>)}</ul> : <p className="m-0 px-2 py-6 text-center text-sm text-muted">{t('opsMissions.detail.media.empty')}</p>}
                             {terminalStatuses.includes(mission.status) &&

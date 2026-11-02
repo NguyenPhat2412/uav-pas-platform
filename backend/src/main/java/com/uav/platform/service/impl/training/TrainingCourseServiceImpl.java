@@ -194,7 +194,8 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
             Long courseId, Authentication authentication) {
         TrainingDocument doc =
                 documents.findById(courseId).orElseThrow(TrainingCourseServiceImpl::courseNotFound);
-        // Authoring callers already hold PERMISSION_MANAGE, so the portal rule does not apply here.
+        // Authoring callers already hold USER_PERMISSION_MANAGE, so the portal rule does not apply
+        // here.
         return summary(loadState(doc, resolveUser(authentication)), coverUrl(doc));
     }
 

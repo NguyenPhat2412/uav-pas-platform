@@ -1,0 +1,80 @@
+import type {PresentationLocale} from '@/types';
+
+// Platform-neutral (no DOM): the iPhone app syncs this file (mobile/scripts/sync-shared.mjs) so both clients word
+// backend errors the same way.
+// Backend auth and account errors are English constants; show them in the portal language.
+export const apiMessages: Record<PresentationLocale, Record<string, string>> = {
+    vi: {
+        'Service plan code already exists': "Mã gói cước này đã tồn tại.",
+        'The default BASIC plan cannot be deactivated': "Không thể tắt gói mặc định BASIC.",
+        'Service plan not found': "Không tìm thấy gói cước.",
+        'Current password is incorrect': 'Mật khẩu hiện tại không đúng.',
+        'New password must differ from the current password': 'Mật khẩu mới phải khác mật khẩu hiện tại.',
+        'Service code already exists': 'Mã dịch vụ này đã tồn tại.',
+        'Service not found': 'Không tìm thấy dịch vụ.',
+        'Invalid username/email or password': 'Tên đăng nhập, email hoặc mật khẩu không đúng.',
+        'Account is not active': 'Tài khoản chưa được kích hoạt hoặc đã bị khóa.',
+        'User not found': 'Không tìm thấy tài khoản.',
+        'Email already exists in the system': 'Email này đã được sử dụng.',
+        'Username already exists in the system': 'Tên đăng nhập này đã được sử dụng.',
+        'Phone number already exists in the system': 'Số điện thoại này đã được sử dụng.',
+        'Station code already exists': 'Mã trạm này đã tồn tại.',
+        'UAV serial number already exists': 'Số serial UAV này đã tồn tại.',
+        'Webhook URL must target a public HTTP(S) endpoint without credentials or fragments': 'Địa chỉ webhook phải là HTTP(S) công khai, không chứa thông tin đăng nhập hoặc dấu #.',
+        'INVOICE_AMOUNT_WHOLE_DONG_REQUIRED': 'Số tiền hóa đơn phải là số đồng nguyên dương (không có phần thập phân).',
+    },
+    en: {
+        'Service plan code already exists': "This plan code already exists.",
+        'The default BASIC plan cannot be deactivated': "The default BASIC plan can't be deactivated.",
+        'Service plan not found': "Plan not found.",
+        'Current password is incorrect': 'Your current password is incorrect.',
+        'New password must differ from the current password': 'Choose a new password that differs from the current one.',
+        'Service code already exists': 'This service code already exists.',
+        'Service not found': 'Service not found.',
+        'Invalid username/email or password': 'Incorrect username, email or password.',
+        'Account is not active': 'The account is not active or has been locked.',
+        'User not found': 'Account not found.',
+        'Email already exists in the system': 'This email is already in use.',
+        'Username already exists in the system': 'This username is already taken.',
+        'Phone number already exists in the system': 'This phone number is already in use.',
+        'Station code already exists': 'This station code already exists.',
+        'UAV serial number already exists': 'This UAV serial number already exists.',
+        'Webhook URL must target a public HTTP(S) endpoint without credentials or fragments': 'Webhook URL must target a public HTTP(S) endpoint without credentials or fragments.',
+        'INVOICE_AMOUNT_WHOLE_DONG_REQUIRED': 'Invoice amount must be a positive whole VND amount.',
+    },
+    ja: {
+        'Service plan code already exists': "このプランコードは既に存在します。",
+        'The default BASIC plan cannot be deactivated': "既定のBASICプランは無効にできません。",
+        'Service plan not found': "プランが見つかりません。",
+        'Current password is incorrect': '現在のパスワードが正しくありません。',
+        'New password must differ from the current password': '新しいパスワードは現在のものと異なる必要があります。',
+        'Service code already exists': 'このサービスコードは既に存在します。',
+        'Service not found': 'サービスが見つかりません。',
+        'Invalid username/email or password': 'ユーザー名、メールアドレス、またはパスワードが正しくありません。',
+        'Account is not active': 'アカウントが有効化されていないか、ロックされています。',
+        'User not found': 'アカウントが見つかりません。',
+        'Email already exists in the system': 'このメールアドレスは既に使用されています。',
+        'Username already exists in the system': 'このユーザー名は既に使用されています。',
+        'Phone number already exists in the system': 'この電話番号は既に使用されています。',
+        'Station code already exists': 'このステーションコードは既に存在します。',
+        'UAV serial number already exists': 'このUAVシリアル番号は既に存在します。',
+        'Webhook URL must target a public HTTP(S) endpoint without credentials or fragments': 'Webhook URLは認証情報やフラグメントを含まない公開HTTP(S)エンドポイントである必要があります。',
+        'INVOICE_AMOUNT_WHOLE_DONG_REQUIRED': '請求金額は正の整数（ドン）である必要があります。',
+    },
+};
+
+export const clientText: Record<PresentationLocale, { sessionExpired: string; forbidden: string; forbiddenTitle: string; tooManyRequests: string; failed: (status: number) => string }> = {
+    vi: {sessionExpired: 'Phiên đăng nhập đã hết hạn.', forbidden: 'Bạn không có quyền thực hiện thao tác này.', forbiddenTitle: 'Truy cập bị từ chối (403)', tooManyRequests: 'Bạn thử quá nhiều lần, vui lòng đợi vài phút.', failed: status => `Yêu cầu thất bại (mã ${status}).`},
+    en: {sessionExpired: 'Your session has expired.', forbidden: 'You do not have permission to do this.', forbiddenTitle: 'Access denied (403)', tooManyRequests: 'Too many attempts. Please wait a few minutes and try again.', failed: status => `Request failed (code ${status}).`},
+    ja: {sessionExpired: 'セッションの有効期限が切れました。', forbidden: 'この操作を行う権限がありません。', forbiddenTitle: 'アクセス拒否（403）', tooManyRequests: '試行回数が多すぎます。数分待ってから再度お試しください。', failed: status => `リクエストに失敗しました（コード ${status}）。`},
+};
+
+// Stable codes for those messages, so forms can translate them into the portal language.
+export const apiMessageCodes: Record<string, string> = {
+    'Invalid username/email or password': 'INVALID_CREDENTIALS',
+    'Account is not active': 'ACCOUNT_INACTIVE',
+    'User not found': 'USER_NOT_FOUND',
+    'Email already exists in the system': 'EMAIL_EXISTS',
+    'Username already exists in the system': 'USERNAME_EXISTS',
+    'Phone number already exists in the system': 'PHONE_EXISTS',
+};

@@ -6,6 +6,7 @@ import com.uav.platform.entity.media.MediaAsset;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.entity.uav.Uav;
+import com.uav.platform.enums.media.MediaVisibility;
 
 import jakarta.persistence.criteria.*;
 
@@ -94,6 +95,13 @@ public final class MediaVisibilitySpecifications {
                                 uploader,
                                 linkedResource(
                                         asset, query, cb, linkedId, "EQUIPMENT", Equipment.class)));
+            // Shared files show to other users only once the upload is confirmed.
+            var shared =
+                    permissions.viewMedia()
+                            ? asset.get("visibility")
+                                    .in(MediaVisibility.PUBLIC, MediaVisibility.PROTECTED)
+                            : cb.equal(asset.get("visibility"), MediaVisibility.PUBLIC);
+            rules.add(cb.and(shared, cb.isTrue(asset.get("confirmed"))));
             return cb.or(rules.toArray(Predicate[]::new));
         };
     }

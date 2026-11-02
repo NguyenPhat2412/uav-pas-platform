@@ -4,5 +4,5 @@ import {OperationsPage} from '@/components/layout/OperationsPage';
 
 export default function StationsPage() {
     return <OperationsPage
-                           permission="STATION_READ" activeResource="stations"><StationPanel/></OperationsPage>;
+                           permission="STATION_VIEW" activeResource="stations"><StationPanel/></OperationsPage>;
 }

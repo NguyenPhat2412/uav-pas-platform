@@ -25,13 +25,13 @@ public class ReportController {
     private final ReportService reportService;
 
     @GetMapping(ApiRoutes.Reports.OPERATIONS_SUMMARY)
-    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_VIEW')")
     public ResponseEntity<OperationsReportResponse> getOperationsSummary(Authentication auth) {
         return ResponseEntity.ok(reportService.getOperationsSummary(auth));
     }
 
     @GetMapping(value = ApiRoutes.Reports.EXPORT_CSV, produces = "text/csv")
-    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_VIEW')")
     public ResponseEntity<byte[]> exportCsv(Authentication auth) {
         String csvContent = reportService.exportOperationsCsv(auth);
         byte[] bytes = csvContent.getBytes(StandardCharsets.UTF_8);

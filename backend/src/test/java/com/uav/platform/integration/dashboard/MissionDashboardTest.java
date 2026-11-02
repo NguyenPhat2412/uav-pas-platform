@@ -82,6 +82,35 @@ class MissionDashboardTest {
         verify(equipment, never()).findAll();
     }
 
+    @Test
+    void summaryNeverQueriesAnAreaWithoutItsDashboardPermission() {
+        UserRepository users = mock(UserRepository.class);
+        UavRepository uavs = mock(UavRepository.class);
+        EquipmentRepository equipment = mock(EquipmentRepository.class);
+        PermissionService permissions = mock(PermissionService.class);
+        // DASHBOARD_UAV only (BA 14.3): UAV figures load, user and inventory figures are not
+        // requested.
+        when(permissions.has(any(), eq("DASHBOARD_UAV"))).thenReturn(true);
+        when(uavs.count()).thenReturn(4L);
+        DashboardServiceImpl service =
+                new DashboardServiceImpl(
+                        users,
+                        mock(StationRepository.class),
+                        uavs,
+                        equipment,
+                        mock(MediaAssetRepository.class),
+                        mock(AuditLogRepository.class),
+                        permissions,
+                        mock(MissionRepository.class));
+
+        var summary = service.summary(auth("operator"));
+
+        assertEquals(4L, summary.totalUavs());
+        assertEquals(0L, summary.totalUsers());
+        verify(users, never()).count();
+        verify(equipment, never()).findAll(any(Specification.class));
+    }
+
     private UsernamePasswordAuthenticationToken auth(String username) {
         return UsernamePasswordAuthenticationToken.authenticated(username, "n/a", List.of());
     }

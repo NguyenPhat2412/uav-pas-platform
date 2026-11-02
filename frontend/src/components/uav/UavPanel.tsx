@@ -75,7 +75,7 @@ export function UavPanel() {
     }
 
     const refreshUav = async () => {
-        const results = await Promise.all([query.refetch(), detail.refetch(), history.refetch(), ...(can('STATION_READ') ? [stations.refetch()] : [])]);
+        const results = await Promise.all([query.refetch(), detail.refetch(), history.refetch(), ...(can('STATION_VIEW') ? [stations.refetch()] : [])]);
         return results.every(result => !result.isError);
     };
     const openUav = (id: number, nextTab = 'overview') => {
@@ -113,16 +113,16 @@ export function UavPanel() {
             cell: ({row}: { row: { original: Uav } }) => <div className="flex flex-wrap gap-2"><Button size="sm"
                                                                                                        variant="outline"
                                                                                                        disabled={lifecycleBusy}
-                                                                                                       onClick={() => openUav(row.original.id)}>{t('opsAssets.uav.openDetail')}</Button>{can('UAV_MANAGE') && <Button size="sm" variant="outline" disabled={lifecycleBusy}
+                                                                                                       onClick={() => openUav(row.original.id)}>{t('opsAssets.uav.openDetail')}</Button>{can(row.original.status === 'MAINTENANCE' ? 'UAV_STATUS_UPDATE' : 'UAV_MAINTENANCE_CREATE') && <Button size="sm" variant="outline" disabled={lifecycleBusy}
                                                                onClick={() => openUav(row.original.id, 'maintenance')}>{row.original.status === 'MAINTENANCE' ? t('opsAssets.uav.completeMaintenance') : t('opsAssets.uav.maintenance')}</Button>}
             </div>
         },
     ];
     return <div className="space-y-5">
-        {can('UAV_MANAGE') && <div className="flex justify-end"><Button size="sm" leftIcon={<Plus size={15}/>}
+        {can('UAV_CREATE') && <div className="flex justify-end"><Button size="sm" leftIcon={<Plus size={15}/>}
                                                                         onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.uav.closeForm') : t('opsAssets.uav.add')}</Button>
         </div>}
-        {openCreate && can('UAV_MANAGE') &&
+        {openCreate && can('UAV_CREATE') &&
             <form noValidate className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 try {
@@ -194,12 +194,12 @@ export function UavPanel() {
                     syncUavUrl(selected, value);
                 }
             }}/>{tab === 'overview' &&
-            <p className="text-sm text-slate-600">{t('opsAssets.uav.overviewNote')}</p>}{(tab === 'maintenance' || tab === 'assignment') && (can('UAV_MANAGE') ? <><Link
+            <p className="text-sm text-slate-600">{t('opsAssets.uav.overviewNote')}</p>}{(tab === 'maintenance' || tab === 'assignment') && ((tab === 'maintenance' ? can('UAV_MAINTENANCE_CREATE') || can('UAV_STATUS_UPDATE') : can('UAV_UPDATE')) ? <>{can('UAV_MAINTENANCE_VIEW') && <Link
                 href={`/operations/maintenance?uav=${toUavSlug(detail.data)}`}
-                className="mb-4 inline-flex min-h-11 items-center rounded-control border border-slate-300 px-4 text-sm font-semibold text-slate-800">{t('opsAssets.uav.openMaintenance')}</Link><UavLifecyclePanel key={`${selected}-${tab}`} uav={detail.data}
+                className="mb-4 inline-flex min-h-11 items-center rounded-control border border-slate-300 px-4 text-sm font-semibold text-slate-800">{t('opsAssets.uav.openMaintenance')}</Link>}<UavLifecyclePanel key={`${selected}-${tab}`} uav={detail.data}
                                                                         mode={tab}
                                                                         stations={stations.error ? [] : stations.data || []}
-                                                                        canReadStations={can('STATION_READ')}
+                                                                        canReadStations={can('STATION_VIEW')}
                                                                         onRefresh={refreshUav}
                                                                         onBusy={setLifecycleBusy}/>{tab === 'assignment' &&
                 <ErrorNotice error={stations.error}/>}</> :

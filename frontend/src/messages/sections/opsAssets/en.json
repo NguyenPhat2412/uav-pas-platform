@@ -79,7 +79,14 @@
       "cancel": "Cancel",
       "uavsNote": "See station UAVs in UAV fleet.",
       "inventoryNote": "See station equipment in Inventory.",
-      "activityNote": "See activity in the audit log."
+      "activityNote": "See activity in the audit log.",
+      "description": "Description",
+      "statusLabel": "Station status",
+      "remove": "Delete station",
+      "removeTitle": "Delete station?",
+      "removeNote": "An unused station is deleted. A station with UAVs, equipment, missions or stock history is set Inactive instead, so its history stays.",
+      "confirmRemove": "Confirm",
+      "deactivated": "The station has history, so it was set Inactive."
     },
     "equipment": {
       "equipment": "Equipment",
@@ -164,7 +171,13 @@
       "previewTitle": "View file: {name}",
       "useDownload": "Use the download link to view this format.",
       "openDownload": "Open / download file",
-      "linkValidity": "The link is valid for 15 minutes."
+      "linkValidity": "The link is valid for 15 minutes.",
+      "visibility": {
+        "label": "Who can view",
+        "PRIVATE": "Private",
+        "PROTECTED": "Users who can view files",
+        "PUBLIC": "All signed-in users"
+      }
     },
     "uavLifecycle": {
       "errors": {

@@ -48,7 +48,7 @@ to embed URLs; only youtube.com / youtu.be / vimeo.com are accepted.
 detail. Completing every lesson (and the checklist, if any) marks the course COMPLETED in the
 existing progress record so the old overview counters stay correct.
 
-## Admin endpoints (`PERMISSION_MANAGE`, as the existing create/update)
+## Admin endpoints (`USER_PERMISSION_MANAGE`, as the existing create/update)
 
 - `GET /admin/courses/{id}/lessons` → lessons with all editable fields (below), in order.
 - `POST /admin/lessons` / `PUT /admin/lessons/{id}` body:

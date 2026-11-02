@@ -2,6 +2,7 @@ package com.uav.platform.repository.auth;
 
 import com.uav.platform.entity.auth.RefreshToken;
 import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.auth.ClientKind;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -29,11 +30,15 @@ public interface RefreshTokenRepository
     @Query("select r from RefreshToken r where r.token = :token")
     Optional<RefreshToken> findByTokenForUpdate(@Param("token") String token);
 
-    Optional<RefreshToken> findByUser(AppUser user);
+    List<RefreshToken> findByUser(AppUser user);
 
     @Modifying
     @Query("DELETE FROM RefreshToken r WHERE r.user = :user")
     int deleteByUser(@Param("user") AppUser user);
+
+    @Modifying
+    @Query("DELETE FROM RefreshToken r WHERE r.user = :user AND r.client = :client")
+    int deleteByUserAndClient(@Param("user") AppUser user, @Param("client") ClientKind client);
 
     @Query("select r from RefreshToken r where r.user.id in :userIds")
     List<RefreshToken> findByUserIdIn(@Param("userIds") Collection<Long> userIds);

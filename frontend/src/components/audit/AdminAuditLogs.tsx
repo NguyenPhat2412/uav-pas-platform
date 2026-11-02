@@ -35,7 +35,7 @@ export function AuditLogs() {
     const filterInputClass = "h-9 rounded-control border border-border-input bg-card px-2.5 text-[13px] font-normal text-foreground";
 
     return <div className="space-y-5">
-        {can('DASHBOARD_READ') && analytics.data && <section className="min-w-0 rounded-panel border border-border bg-card">
+        {can('DASHBOARD_VIEW') && analytics.data && <section className="min-w-0 rounded-panel border border-border bg-card">
             <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-foreground">{t('admin.audit.heatmapTitle')}</h2>
                 <span className="text-xs text-slate-500">{t('admin.audit.heatmapRange')}</span></header>
             <div className="p-6">

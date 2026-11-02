@@ -19,13 +19,13 @@ export function useDeviceKeys() {
     return {query, refresh};
 }
 
-/** UAVs a key can be bound to (first 100; UAV_READ). */
+/** UAVs a key can be bound to (first 100; UAV_VIEW). */
 export function useDeviceKeyUavOptions() {
     const {user, can} = useAuth();
     return useQuery({
         queryKey: deviceKeyKeys.uavOptions(user?.id),
         queryFn: ({signal}) => uavsService.listUavs(0, 100, signal),
-        enabled: can('UAV_READ'),
+        enabled: can('UAV_VIEW'),
     });
 }
 

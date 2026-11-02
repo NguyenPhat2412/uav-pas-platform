@@ -7,7 +7,7 @@ export default function AdminTrainingGovernanceRoutePage() {
     return (
         <AdminPage
             title="Quy chuẩn Quản trị & Bảo mật"
-            permission="DASHBOARD_READ"
+            permission="DASHBOARD_VIEW"
             activeResource="/admin/training/admin"
         >
             <TrainingAcademyWorkspace defaultPortal="ADMIN" manage />

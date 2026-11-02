@@ -4,5 +4,5 @@ import {OperationsPage} from '@/components/layout/OperationsPage';
 
 export default function MediaPage() {
     return <OperationsPage
-                           permission="MEDIA_READ" activeResource="media"><MediaPanel/></OperationsPage>;
+                           permission="MEDIA_VIEW" activeResource="media"><MediaPanel/></OperationsPage>;
 }

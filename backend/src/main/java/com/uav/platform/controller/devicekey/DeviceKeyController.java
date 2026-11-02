@@ -27,13 +27,13 @@ public class DeviceKeyController {
     private final DeviceKeyService deviceKeys;
 
     @GetMapping
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<List<DeviceKeyResponse>> list() {
         return ResponseEntity.ok(deviceKeys.list());
     }
 
     @PostMapping
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<CreatedDeviceKeyResponse> create(
             @Valid @RequestBody CreateDeviceKeyRequest request, Authentication auth) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -42,7 +42,7 @@ public class DeviceKeyController {
     }
 
     @PostMapping(ApiRoutes.Admin.DEVICE_KEYS_REVOKE)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<DeviceKeyResponse> revoke(@PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(deviceKeys.revoke(id, auth.getName()));
     }

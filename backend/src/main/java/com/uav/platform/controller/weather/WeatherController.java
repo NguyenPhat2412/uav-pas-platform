@@ -49,19 +49,19 @@ public class WeatherController {
     }
 
     @GetMapping(ApiRoutes.Weather.BASE + ApiRoutes.Weather.STATIONS)
-    @PreAuthorize("@permissionService.has(authentication, 'STATION_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'STATION_VIEW')")
     public ResponseEntity<List<StationWeatherSummaryResponse>> stations() {
         return ResponseEntity.ok(service.stations());
     }
 
     @GetMapping(ApiRoutes.Weather.ADMIN_PROVIDER)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<WeatherProviderSettingsResponse> provider() {
         return ResponseEntity.ok(service.providerSettings());
     }
 
     @PutMapping(ApiRoutes.Weather.ADMIN_PROVIDER)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<WeatherProviderSettingsResponse> updateProvider(
             @Valid @RequestBody WeatherProviderUpdateRequest request,
             Authentication authentication) {

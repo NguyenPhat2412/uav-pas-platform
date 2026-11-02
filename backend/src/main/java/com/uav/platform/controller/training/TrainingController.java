@@ -66,7 +66,7 @@ public class TrainingController {
 
     @Operation(summary = "Create a new UAV training / SOP document (Admin)")
     @PreAuthorize(
-            "@permissionService.has(authentication, 'PERMISSION_MANAGE') or hasAnyRole('SUPER_ADMIN','SYSTEM_ADMIN')")
+            "@permissionService.has(authentication, 'USER_PERMISSION_MANAGE') or hasAnyRole('SUPER_ADMIN','SYSTEM_ADMIN')")
     @PostMapping
     public ResponseEntity<TrainingDocumentResponse> createDocument(
             @Valid @RequestBody UpsertTrainingDocumentRequest request,
@@ -77,7 +77,7 @@ public class TrainingController {
 
     @Operation(summary = "Update an existing UAV training / SOP document (Admin)")
     @PreAuthorize(
-            "@permissionService.has(authentication, 'PERMISSION_MANAGE') or hasAnyRole('SUPER_ADMIN','SYSTEM_ADMIN')")
+            "@permissionService.has(authentication, 'USER_PERMISSION_MANAGE') or hasAnyRole('SUPER_ADMIN','SYSTEM_ADMIN')")
     @PutMapping(ApiRoutes.Training.BY_ID)
     public ResponseEntity<TrainingDocumentResponse> updateDocument(
             @PathVariable Long id,

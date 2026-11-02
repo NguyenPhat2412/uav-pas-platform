@@ -361,6 +361,46 @@ class AuthServiceTest {
     }
 
     @Test
+    void refresh_KeepsTheRotatedSessionOnItsOwnClient() {
+        // An iOS refresh token must rotate into an iOS token, or the phone would replace the web
+        // session.
+        AppUser user =
+                new AppUser("pilot", "pilot@uav.vn", "hash", "0900000000", UserStatus.ACTIVE);
+        user.setRole(com.uav.platform.enums.user.UserRole.ROLE_PILOT);
+        var token =
+                new com.uav.platform.entity.auth.RefreshToken(
+                        user,
+                        "refresh-ios",
+                        java.time.Instant.now().plusSeconds(600),
+                        com.uav.platform.enums.auth.ClientKind.IOS);
+        RefreshTokenService refresh = mock(RefreshTokenService.class);
+        when(refresh.findByTokenForUpdate("refresh-ios")).thenReturn(Optional.of(token));
+        when(refresh.verifyExpiration(token)).thenReturn(token);
+        when(refresh.createRefreshToken(user, com.uav.platform.enums.auth.ClientKind.IOS))
+                .thenReturn(
+                        new com.uav.platform.entity.auth.RefreshToken(
+                                user,
+                                "refresh-ios-2",
+                                java.time.Instant.now().plusSeconds(600),
+                                com.uav.platform.enums.auth.ClientKind.IOS));
+        AuthService service =
+                new AuthServiceImpl(
+                        userRepository,
+                        passwordEncoder,
+                        jwtTokenProvider,
+                        refresh,
+                        null,
+                        sessionLock);
+
+        var response =
+                service.refreshToken(
+                        new com.uav.platform.dto.request.auth.RefreshTokenRequest("refresh-ios"));
+
+        assertEquals("refresh-ios-2", response.refreshToken());
+        verify(refresh, never()).createRefreshToken(any());
+    }
+
+    @Test
     void register_CreatesAnUnverifiedAccount() {
         when(passwordEncoder.encode(any())).thenReturn("hashed");
         when(userRepository.save(any(AppUser.class))).thenAnswer(c -> c.getArgument(0));

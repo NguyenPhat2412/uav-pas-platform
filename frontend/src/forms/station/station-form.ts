@@ -8,6 +8,7 @@ export interface StationDraft {
     address: string;
     latitude: string;
     longitude: string;
+    description: string;
 }
 
 export type StationFieldErrors = Partial<Record<keyof StationDraft | 'status', string>>;
@@ -19,16 +20,18 @@ export function emptyStationDraft(): StationDraft {
         address: '',
         latitude: '',
         longitude: '',
+        description: '',
     };
 }
 
-export function toStationDraft(station: Pick<Station, 'code' | 'name' | 'address' | 'latitude' | 'longitude'>): StationDraft {
+export function toStationDraft(station: Pick<Station, 'code' | 'name' | 'address' | 'latitude' | 'longitude' | 'description'>): StationDraft {
     return {
         code: station.code,
         name: station.name,
         address: station.address || '',
         latitude: station.latitude != null ? String(station.latitude) : '',
         longitude: station.longitude != null ? String(station.longitude) : '',
+        description: station.description || '',
     };
 }
 
@@ -42,6 +45,7 @@ export function toStationPayload(draft: StationDraft): {
     address?: string;
     latitude?: number;
     longitude?: number;
+    description?: string;
 } {
     return {
         code: draft.code.trim(),
@@ -49,6 +53,7 @@ export function toStationPayload(draft: StationDraft): {
         address: draft.address.trim() || undefined,
         latitude: draft.latitude.trim() ? Number(draft.latitude) : undefined,
         longitude: draft.longitude.trim() ? Number(draft.longitude) : undefined,
+        description: draft.description?.trim() || undefined,
     };
 }
 

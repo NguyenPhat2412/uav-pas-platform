@@ -10,7 +10,15 @@ const compiled = ts.transpileModule(source, {
         target: ts.ScriptTarget.ES2022
     }
 }).outputText;
-const api = await import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
+// index.ts imports its message catalog by alias; load the transpiled catalog in its place.
+const messages = ts.transpileModule(await readFile(new URL('../src/lib/api/messages.ts', import.meta.url), 'utf8'), {
+    compilerOptions: {
+        module: ts.ModuleKind.ESNext,
+        target: ts.ScriptTarget.ES2022
+    }
+}).outputText;
+const messagesUrl = 'data:text/javascript;base64,' + Buffer.from(messages).toString('base64');
+const api = await import('data:text/javascript;base64,' + Buffer.from(compiled.replace(/(['"])@\/lib\/api\/messages\1/, `'${messagesUrl}'`)).toString('base64'));
 const user = {id: 1, username: 'alpha', email: 'alpha@example.test', status: 'ACTIVE'};
 const response = (body, status = 200) => new Response(JSON.stringify(body), {
     status,

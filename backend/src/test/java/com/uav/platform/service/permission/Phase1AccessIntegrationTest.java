@@ -63,12 +63,12 @@ class Phase1AccessIntegrationTest {
         pilotToken = login(pilot);
         request(
                 "PUT",
-                "/api/v1/role-templates/ROLE_PILOT/permissions/STATION_MANAGE?granted=false",
+                "/api/v1/role-templates/ROLE_PILOT/permissions/STATION_CREATE?granted=false",
                 adminToken,
                 null);
         request(
                 "PUT",
-                "/api/v1/role-templates/ROLE_PILOT/permissions/STATION_READ?granted=true",
+                "/api/v1/role-templates/ROLE_PILOT/permissions/STATION_VIEW?granted=true",
                 adminToken,
                 null);
     }
@@ -78,25 +78,25 @@ class Phase1AccessIntegrationTest {
         assertEquals(401, request("GET", "/api/v1/permissions/me", null, null).statusCode());
         var initial = request("GET", "/api/v1/permissions/me", pilotToken, null);
         assertEquals(200, initial.statusCode(), initial.body());
-        assertTrue(json.readTree(initial.body()).toString().contains("\"STATION_READ\""));
+        assertTrue(json.readTree(initial.body()).toString().contains("\"STATION_VIEW\""));
         request(
                 "PUT",
-                "/api/v1/permissions/users/" + pilot.getId() + "/STATION_READ?granted=false",
+                "/api/v1/permissions/users/" + pilot.getId() + "/STATION_VIEW?granted=false",
                 adminToken,
                 null);
         assertFalse(
                 json.readTree(request("GET", "/api/v1/permissions/me", pilotToken, null).body())
                         .toString()
-                        .contains("\"STATION_READ\""));
+                        .contains("\"STATION_VIEW\""));
         request(
                 "DELETE",
-                "/api/v1/permissions/users/" + pilot.getId() + "/STATION_READ",
+                "/api/v1/permissions/users/" + pilot.getId() + "/STATION_VIEW",
                 adminToken,
                 null);
         assertTrue(
                 json.readTree(request("GET", "/api/v1/permissions/me", pilotToken, null).body())
                         .toString()
-                        .contains("\"STATION_READ\""));
+                        .contains("\"STATION_VIEW\""));
     }
 
     @Test
@@ -109,7 +109,7 @@ class Phase1AccessIntegrationTest {
                                 "PUT",
                                 "/api/v1/permissions/users/"
                                         + pilot.getId()
-                                        + "/STATION_MANAGE?granted=true",
+                                        + "/STATION_CREATE?granted=true",
                                 adminToken,
                                 null)
                         .statusCode());
@@ -120,7 +120,7 @@ class Phase1AccessIntegrationTest {
                                 "PUT",
                                 "/api/v1/permissions/users/"
                                         + pilot.getId()
-                                        + "/STATION_MANAGE?granted=false",
+                                        + "/STATION_CREATE?granted=false",
                                 adminToken,
                                 null)
                         .statusCode());
@@ -160,7 +160,7 @@ class Phase1AccessIntegrationTest {
                                 "PUT",
                                 "/api/v1/permissions/users/"
                                         + pilot.getId()
-                                        + "/STATION_MANAGE?granted=true",
+                                        + "/STATION_CREATE?granted=true",
                                 adminToken,
                                 null)
                         .statusCode());
@@ -176,7 +176,7 @@ class Phase1AccessIntegrationTest {
                 204,
                 request(
                                 "PUT",
-                                "/api/v1/role-templates/ROLE_PILOT/permissions/STATION_MANAGE?granted=true",
+                                "/api/v1/role-templates/ROLE_PILOT/permissions/STATION_CREATE?granted=true",
                                 adminToken,
                                 null)
                         .statusCode());
@@ -185,7 +185,7 @@ class Phase1AccessIntegrationTest {
                 204,
                 request(
                                 "PUT",
-                                "/api/v1/role-templates/ROLE_PILOT/permissions/STATION_MANAGE?granted=false",
+                                "/api/v1/role-templates/ROLE_PILOT/permissions/STATION_CREATE?granted=false",
                                 adminToken,
                                 null)
                         .statusCode());
@@ -198,7 +198,7 @@ class Phase1AccessIntegrationTest {
                 204,
                 request(
                                 "PUT",
-                                "/api/v1/role-templates/ROLE_PILOT/permissions/STATION_READ?granted=false",
+                                "/api/v1/role-templates/ROLE_PILOT/permissions/STATION_VIEW?granted=false",
                                 adminToken,
                                 null)
                         .statusCode());
@@ -213,7 +213,7 @@ class Phase1AccessIntegrationTest {
                                 "PUT",
                                 "/api/v1/permissions/users/"
                                         + pilot.getId()
-                                        + "/STATION_READ?granted=false",
+                                        + "/STATION_VIEW?granted=false",
                                 adminToken,
                                 null)
                         .statusCode());
@@ -222,7 +222,7 @@ class Phase1AccessIntegrationTest {
                 204,
                 request(
                                 "DELETE",
-                                "/api/v1/permissions/users/" + pilot.getId() + "/STATION_READ",
+                                "/api/v1/permissions/users/" + pilot.getId() + "/STATION_VIEW",
                                 adminToken,
                                 null)
                         .statusCode());

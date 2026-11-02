@@ -276,7 +276,7 @@
       },
       "selectOverride": "{code} 個別設定",
       "selectTemplate": "{code} ロールテンプレート",
-      "auditLink": "変更履歴（AUDIT_READ が必要）",
+      "auditLink": "変更履歴（AUDIT_VIEW が必要）",
       "registry": {
         "search": "権限を検索",
         "placeholder": "権限コードまたは説明",

@@ -34,7 +34,7 @@ public class DashboardController {
     private final SystemHealthService systemHealth;
 
     @GetMapping(ApiRoutes.Dashboard.SUMMARY)
-    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_VIEW')")
     public ResponseEntity<DashboardResponse> summary(Authentication authentication) {
         return ResponseEntity.ok(service.summary(authentication));
     }
@@ -46,7 +46,7 @@ public class DashboardController {
     }
 
     @GetMapping(ApiRoutes.Dashboard.ANALYTICS)
-    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_READ')")
+    @PreAuthorize("@permissionService.has(authentication, 'DASHBOARD_VIEW')")
     public ResponseEntity<AdminAnalyticsResponse> analytics(
             @RequestParam(defaultValue = "30") int days, Authentication authentication) {
         return ResponseEntity.ok(analytics.analytics(days, authentication));
@@ -61,7 +61,7 @@ public class DashboardController {
     }
 
     /**
-     * Every UAV with the active mission it serves, across all customers. Customers hold UAV_READ for their own
+     * Every UAV with the active mission it serves, across all customers. Customers hold UAV_VIEW for their own
      * assigned equipment, so the fleet-wide view requires the dispatcher-level MISSION_VIEW_ALL instead.
      */
     @GetMapping(ApiRoutes.Dashboard.FLEET_MAP)
@@ -72,7 +72,7 @@ public class DashboardController {
 
     /** Admin-only health snapshot; the public actuator endpoints stay limited to health and info. */
     @GetMapping(ApiRoutes.Dashboard.SYSTEM_HEALTH)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<SystemHealthResponse> systemHealth() {
         return ResponseEntity.ok(systemHealth.check());
     }

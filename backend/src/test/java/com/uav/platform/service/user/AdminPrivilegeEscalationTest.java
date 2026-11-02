@@ -115,7 +115,7 @@ class AdminPrivilegeEscalationTest {
         userService.updateRole(3L, new RoleUpdateRequest(UserRole.ROLE_ADMIN), "root");
         assertEquals(UserRole.ROLE_ADMIN, users.findById(3L).orElseThrow().getRole());
 
-        when(permissions.has(any(), eq("PERMISSION_MANAGE"))).thenReturn(true);
+        when(permissions.has(any(), eq("USER_PERMISSION_MANAGE"))).thenReturn(true);
         userService.updateRole(1L, new RoleUpdateRequest(UserRole.ROLE_ADMIN), "staff");
         assertEquals(UserRole.ROLE_ADMIN, users.findById(1L).orElseThrow().getRole());
     }

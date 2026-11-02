@@ -22,6 +22,19 @@ import type {Equipment} from "@/types/resources";
 import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';
 
+type MovementAction = 'stock-in' | 'stock-out' | 'reserve' | 'release' | 'transfer';
+
+const MOVEMENT_ACTIONS: readonly MovementAction[] = ['stock-in', 'stock-out', 'reserve', 'release', 'transfer'];
+
+/** Each stock operation has its own permission (Phase 1 BA 8.2), so the form only offers what the user may do. */
+const MOVEMENT_PERMISSION: Record<MovementAction, string> = {
+    'stock-in': 'INVENTORY_STOCK_IN',
+    'stock-out': 'INVENTORY_STOCK_OUT',
+    reserve: 'INVENTORY_RESERVE',
+    release: 'INVENTORY_RELEASE',
+    transfer: 'INVENTORY_TRANSFER',
+};
+
 export function EquipmentPanel() {
     const {can} = useAuth();
     const {t} = useI18n();
@@ -61,10 +74,10 @@ export function EquipmentPanel() {
         {accessorKey: 'reservedQuantity', header: t('opsAssets.equipment.reserved')},
     ];
     return <div className="space-y-5">
-        {can('INVENTORY_MANAGE') && <div className="flex justify-end"><Button size="sm"
+        {can('INVENTORY_ITEM_CREATE') && <div className="flex justify-end"><Button size="sm"
                                                                               onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.shared.closeForm') : t('opsAssets.equipment.create')}</Button>
         </div>}
-        {openCreate && can('INVENTORY_MANAGE') &&
+        {openCreate && can('INVENTORY_ITEM_CREATE') &&
             <form noValidate className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 try {
@@ -91,7 +104,7 @@ export function EquipmentPanel() {
                         id="equipment-serial" error={createFieldErrors?.serialNumber} value={form.serialNumber}
                         onChange={event => setForm({...form, serialNumber: event.target.value})}/></div>
                 </div>
-                {can('STATION_READ') &&
+                {can('STATION_VIEW') &&
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-station">{t('opsAssets.equipment.storageStation')}<OptionalMark/></label><select id="equipment-station"
                                              className="min-h-11 w-full min-w-0 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm"
                                              disabled={create.isPending || stations.isPending || !!stations.error}
@@ -103,7 +116,7 @@ export function EquipmentPanel() {
                     </select><ErrorNotice error={stations.error}/></div>}
                 <div className="mt-6 flex flex-wrap justify-end"><Button size="sm" type="submit" disabled={!canSubmitEquipmentCreate(form)} isLoading={create.isPending}>{t('opsAssets.equipment.create')}</Button></div>
                 {create.error && !createFieldErrors && <ErrorNotice error={create.error}/>}</form>}
-        {can('INVENTORY_MANAGE') &&
+        {MOVEMENT_ACTIONS.some(action => can(MOVEMENT_PERMISSION[action])) &&
             <form noValidate className="rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
                 setSuccess('');
@@ -131,7 +144,7 @@ export function EquipmentPanel() {
                         action: event.target.value
                     })}>{[['stock-in', t('opsAssets.equipment.actions.stockIn')], ['stock-out', t('opsAssets.equipment.actions.stockOut')], ['reserve', t('opsAssets.equipment.actions.reserve')], ['release', t('opsAssets.equipment.actions.release')], ['transfer', t('opsAssets.equipment.actions.transfer')]].map(([value, label]) =>
                         <option key={value} value={value}
-                                disabled={value === 'transfer' && !can('STATION_READ')}>{label}</option>)}</select>
+                                disabled={!can(MOVEMENT_PERMISSION[value as MovementAction]) || (value === 'transfer' && !can('STATION_VIEW'))}>{label}</option>)}</select>
                     </div>
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-quantity">{t('opsAssets.equipment.quantity')}<RequiredMark/></label><Input
                         id="movement-quantity" aria-required type="number" step={1} error={moveFieldErrors?.quantity} value={movement.quantity}
@@ -153,7 +166,7 @@ export function EquipmentPanel() {
                         {stations.data?.filter(station => station.status === 'ACTIVE').map(station => <option
                             key={station.id} value={station.id}>{station.code}</option>)}</select></div>}
                 <div className="mt-4 flex items-center gap-3"><Button size="sm" type="submit" isLoading={move.isPending}
-                                                                      disabled={!canSubmitInventoryMovement(movement) || (movement.action === 'transfer' && (!can('STATION_READ') || stations.isPending || !!stations.error))}>{t('opsAssets.equipment.record')}</Button>{success && <span role="status" className="text-sm text-uav-blue">{t(success)}</span>}
+                                                                      disabled={!canSubmitInventoryMovement(movement) || !can(MOVEMENT_PERMISSION[movement.action as MovementAction]) || (movement.action === 'transfer' && (!can('STATION_VIEW') || stations.isPending || !!stations.error))}>{t('opsAssets.equipment.record')}</Button>{success && <span role="status" className="text-sm text-uav-blue">{t(success)}</span>}
                 </div>
                 <ErrorNotice error={move.error}/></form>}
         <QueryState query={collection}><DataTable label={t('opsAssets.equipment.tableLabel')} data={rows} columns={columns} filters={[{
@@ -161,7 +174,7 @@ export function EquipmentPanel() {
             label: t('opsAssets.equipment.type'),
             options: options(rows.map(row => row.type))
         }, {column: 'stationName', label: t('opsAssets.equipment.station'), options: options(rows.map(row => row.stationName))}]}/></QueryState>
-        <section aria-label={t('opsAssets.equipment.history')} className="space-y-3"><h3
+        {can('INVENTORY_HISTORY_VIEW') && <section aria-label={t('opsAssets.equipment.history')} className="space-y-3"><h3
             className="text-base font-semibold text-slate-800">{t('opsAssets.equipment.history')}</h3><QueryState query={history}>
             <div className="overflow-auto rounded-panel border border-border bg-card">
                 <table className="w-full min-w-[560px] border-separate border-spacing-0 text-sm">
@@ -191,6 +204,6 @@ export function EquipmentPanel() {
                 </table>
             </div>
             <Pagination page={historyPage} pages={history.data?.totalPages} onPage={setHistoryPage}/>
-        </QueryState></section>
+        </QueryState></section>}
     </div>;
 }

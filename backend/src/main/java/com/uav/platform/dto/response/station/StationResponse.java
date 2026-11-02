@@ -13,5 +13,6 @@ public record StationResponse(
         Double latitude,
         Double longitude,
         StationStatus status,
+        String description,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {}

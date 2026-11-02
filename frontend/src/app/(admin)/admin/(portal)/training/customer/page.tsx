@@ -7,7 +7,7 @@ export default function AdminTrainingCustomerRoutePage() {
     return (
         <AdminPage
             title="Đào tạo Cổng Khách hàng"
-            permission="DASHBOARD_READ"
+            permission="DASHBOARD_VIEW"
             activeResource="/admin/training/customer"
         >
             <TrainingAcademyWorkspace defaultPortal="CUSTOMER" manage />

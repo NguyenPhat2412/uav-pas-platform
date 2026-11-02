@@ -67,7 +67,8 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
     const {t} = useI18n();
     const {can, user: me} = useAuth();
     const mutations = useAdminMutations();
-    const manage = !onSelect && can('USER_MANAGE');
+    const canCreate = !onSelect && can('USER_CREATE');
+    const manage = !onSelect && can('USER_LOCK');
     const query = useAdminUsers(page, keyword, role, status);
     const counts = useAdminUserCounts(keyword, role);
     const chooseStatus = (next?: UserStatus) => {
@@ -139,7 +140,7 @@ export function Users({onSelect}: { onSelect?: (user: User) => void }) {
                 {!onSelect && <div className="flex w-full gap-2 sm:ml-auto sm:w-auto">
                     <Button type="button" size="sm" variant="outline" leftIcon={<Download size={15}/>}
                             onClick={() => void exportCsv()}>{t('admin.users.export')}</Button>
-                    {manage && <Button type="button" size="sm" leftIcon={<UserPlus size={15}/>}
+                    {canCreate && <Button type="button" size="sm" leftIcon={<UserPlus size={15}/>}
                                        onClick={() => setCreating(true)}>{t('admin.users.create.open')}</Button>}
                 </div>}</form>
             {manage && selected.size > 0 && <div className="mx-4 mt-3 flex flex-wrap items-center gap-2.5 rounded-panel bg-uav-red-light px-3.5 py-2.5 text-[13px]" role="region" aria-label={t('admin.users.bulk.region')}>
@@ -254,12 +255,12 @@ export function UserDetail({id}: { id: number }) {
                     <StatusBadge key="status"
                                  status={query.data.locked ? 'LOCKED' : query.data.status}/>], [t('admin.users.field.created'), formatDate(query.data.createdAt)]]}/>
             </section>
-            {can('USER_READ') && <CustomerBillingProfileCard userId={query.data.id}/>}
-            {can('USER_MANAGE') && <AccountActions key={`${query.data.id}:${query.data.role}:${query.data.status}`}
+            {can('USER_VIEW') && <CustomerBillingProfileCard userId={query.data.id}/>}
+            {(can('USER_LOCK') || can('USER_UNLOCK') || can('USER_PERMISSION_MANAGE')) && <AccountActions key={`${query.data.id}:${query.data.role}:${query.data.status}`}
                                                    user={query.data}/>}
-            {can('USER_MANAGE') && <PasswordReset user={query.data}/>}
-            {can('AUDIT_READ') && <UserActivity user={query.data}/>}<PermissionGate
-                code="PERMISSION_MANAGE"><PermissionEditor target={query.data}/></PermissionGate></div>}</QueryState>;
+            {can('USER_UPDATE') && <PasswordReset user={query.data}/>}
+            {can('AUDIT_VIEW') && <UserActivity user={query.data}/>}<PermissionGate
+                code="USER_PERMISSION_MANAGE"><PermissionEditor target={query.data}/></PermissionGate></div>}</QueryState>;
 }
 
 function AccountActions({user}: { user: User }) {
@@ -267,6 +268,7 @@ function AccountActions({user}: { user: User }) {
     const [message, setMessage] = useState('');
     const mutations = useAdminMutations();
     const {t} = useI18n();
+    const {can} = useAuth();
     const pending = mutations.lock.isPending || mutations.unlock.isPending || mutations.role.isPending;
     const act = async (action: () => Promise<unknown>, prompt: string) => {
         if (!window.confirm(prompt)) return;
@@ -278,7 +280,7 @@ function AccountActions({user}: { user: User }) {
         }
     };
     return <section className="min-w-0 space-y-4 rounded-panel border border-border bg-card p-5"><h2 className="font-semibold">{t('admin.users.manageAccount')}</h2>
-        <div className="flex flex-wrap items-end gap-3"><label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.role')}<select className="min-h-[44px] w-full rounded-control border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground disabled:opacity-55" value={role}
+        <div className="flex flex-wrap items-end gap-3">{can('USER_PERMISSION_MANAGE') && <><label className="flex flex-col gap-1.5 text-[13px] font-semibold text-foreground">{t('admin.users.role')}<select className="min-h-[44px] w-full rounded-control border border-border-input bg-card px-2.5 py-2 text-sm font-normal text-foreground disabled:opacity-55" value={role}
                                                                                                      onChange={e => setRole(e.target.value as UserRole)}
                                                                                                      disabled={pending}>{roles.map(r =>
             <option key={r} value={r}>{displayLabel(r)}</option>)}</select></label><Button variant="outline"
@@ -286,9 +288,9 @@ function AccountActions({user}: { user: User }) {
                                                                                            onClick={() => void act(() => mutations.role.mutateAsync({
                                                                                                id: user.id,
                                                                                                nextRole: role
-                                                                                           }), t('admin.users.changeRoleConfirm', {name: user.username, role: displayLabel(role)}))}>{t('admin.users.saveRole')}</Button><Button variant="danger" disabled={pending}
-                                    onClick={() => void act(() => mutations.lock.mutateAsync(user.id), t('admin.users.lockConfirm', {name: user.username}))}>{t('admin.users.lock')}</Button><Button variant="outline" disabled={pending}
-                                      onClick={() => void act(() => mutations.unlock.mutateAsync(user.id), t('admin.users.unlockConfirm', {name: user.username}))}>{t('admin.users.unlock')}</Button></div>
+                                                                                           }), t('admin.users.changeRoleConfirm', {name: user.username, role: displayLabel(role)}))}>{t('admin.users.saveRole')}</Button></>}{can('USER_LOCK') && <Button variant="danger" disabled={pending}
+                                    onClick={() => void act(() => mutations.lock.mutateAsync(user.id), t('admin.users.lockConfirm', {name: user.username}))}>{t('admin.users.lock')}</Button>}{can('USER_UNLOCK') && <Button variant="outline" disabled={pending}
+                                      onClick={() => void act(() => mutations.unlock.mutateAsync(user.id), t('admin.users.unlockConfirm', {name: user.username}))}>{t('admin.users.unlock')}</Button>}</div>
         <p className="text-xs text-slate-500">{t('admin.users.lockHint')}</p><ErrorNotice
             error={mutations.lock.error || mutations.unlock.error || mutations.role.error}/>{message &&
             <Alert variant="success">{message}</Alert>}</section>;

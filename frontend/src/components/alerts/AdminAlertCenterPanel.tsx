@@ -89,7 +89,7 @@ function AlertCenterContent() {
 }
 
 export default function AdminAlertCenterPage() {
-    return <AdminPage title="adminPlatform.alerts.title" permission="DASHBOARD_READ" activeResource="alerts">
+    return <AdminPage title="adminPlatform.alerts.title" permission="DASHBOARD_VIEW" activeResource="alerts">
         <AlertCenterContent/>
     </AdminPage>;
 }

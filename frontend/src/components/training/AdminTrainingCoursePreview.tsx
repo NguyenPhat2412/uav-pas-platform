@@ -21,7 +21,7 @@ export function AdminTrainingCoursePreview({slug}: {slug: string}) {
     const home = adminTrainingHome(portal);
     return (
         // activeDestination matches a resource without its leading slash.
-        <AdminPage title="Xem như học viên" permission="DASHBOARD_READ" activeResource={home.slice(1)}>
+        <AdminPage title="Xem như học viên" permission="DASHBOARD_VIEW" activeResource={home.slice(1)}>
             <TrainingCoursePlayer
                 slug={slug}
                 backHref={home}

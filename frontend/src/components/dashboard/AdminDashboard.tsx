@@ -35,7 +35,7 @@ export function Dashboard() {
             tone: 'red' as const
         },
     ] : [];
-    const auditPanel = can('AUDIT_READ') && <QueryState query={audit}>
+    const auditPanel = can('AUDIT_VIEW') && <QueryState query={audit}>
         <section className="min-w-0 overflow-hidden rounded-panel border border-rose-200 bg-white">
             <header className="flex flex-wrap items-center justify-between gap-4 border-b border-rose-200 px-[18px] py-3.5"><h2 className="text-[15px] font-bold tracking-tight text-primary">{t('admin.dashboard.audit.title')}</h2><Link
                 href="/admin/audit-logs" className="text-[13px] font-bold text-primary hover:underline">{t('admin.dashboard.audit.viewAll')}</Link>

@@ -34,7 +34,7 @@ public class AdminFileController {
     private final AdminFileService files;
 
     @GetMapping
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<PageResponse<AdminFileResponse>> list(
             @RequestParam(required = false) StoredFileModule module,
             @RequestParam(required = false) StoredFileKind type,
@@ -48,20 +48,20 @@ public class AdminFileController {
     }
 
     @GetMapping(ApiRoutes.Admin.FILES_SUMMARY)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<AdminFileSummaryResponse> summary() {
         return ResponseEntity.ok(files.summary());
     }
 
     @GetMapping(ApiRoutes.Admin.FILES_DOWNLOAD)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<AdminFileDownloadResponse> download(
             @PathVariable String id, Authentication authentication) {
         return ResponseEntity.ok(files.downloadUrl(id, authentication.getName()));
     }
 
     @DeleteMapping(ApiRoutes.Admin.FILES_BY_ID)
-    @PreAuthorize("@permissionService.has(authentication, 'PERMISSION_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'USER_PERMISSION_MANAGE')")
     public ResponseEntity<Void> delete(@PathVariable String id, Authentication authentication) {
         files.delete(id, authentication.getName());
         return ResponseEntity.noContent().build();

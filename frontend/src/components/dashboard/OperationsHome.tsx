@@ -15,8 +15,8 @@ import {HomeWeatherWidget} from '@/components/weather/HomeWeatherWidget';
 export function OperationsHome() {
     const {t} = useI18n();
     const {isAuthenticated, permissionsReady, can} = useAuth();
-    const uavsQuery = useCollection('uavs', isAuthenticated && permissionsReady && can('UAV_READ'));
-    const stationsQuery = useCollection('stations', isAuthenticated && permissionsReady && can('STATION_READ'));
+    const uavsQuery = useCollection('uavs', isAuthenticated && permissionsReady && can('UAV_VIEW'));
+    const stationsQuery = useCollection('stations', isAuthenticated && permissionsReady && can('STATION_VIEW'));
     const uavs = (uavsQuery.data ?? []).slice(0, 4);
     const stations = (stationsQuery.data ?? []).slice(0, 4);
 

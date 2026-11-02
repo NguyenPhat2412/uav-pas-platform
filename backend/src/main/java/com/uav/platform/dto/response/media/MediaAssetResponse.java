@@ -15,6 +15,7 @@ public record MediaAssetResponse(
         String linkedEntityType,
         String linkedEntityId,
         String uploadedBy,
+        MediaVisibility visibility,
         String storageProvider,
         boolean confirmed,
         LocalDateTime confirmedAt,

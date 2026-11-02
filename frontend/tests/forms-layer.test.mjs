@@ -238,6 +238,7 @@ test('asset, maintenance, billing, catalog, webhook, device-key, notification an
         address: undefined,
         latitude: 95.5,
         longitude: 105.5,
+        description: undefined,
     });
 
     const equipmentForm = await loadForm('src/forms/inventory/equipment-form.ts');

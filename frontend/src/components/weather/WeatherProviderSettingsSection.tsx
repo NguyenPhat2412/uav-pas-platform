@@ -26,7 +26,7 @@ import type {WeatherProviderSettings, WeatherProviderType} from '@/types/weather
 export function WeatherProviderSettingsSection() {
     const {can, permissionsReady} = useAuth();
     const query = useWeatherProvider();
-    if (!permissionsReady || !can('PERMISSION_MANAGE')) return null;
+    if (!permissionsReady || !can('USER_PERMISSION_MANAGE')) return null;
     return <QueryState query={query}>{query.data &&
         <ProviderForm key={`${query.data.updatedAt ?? ''}-${query.data.provider}`} settings={query.data}/>}</QueryState>;
 }

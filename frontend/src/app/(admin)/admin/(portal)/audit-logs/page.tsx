@@ -3,5 +3,5 @@ import {AuditLogs} from "@/components/audit/AdminAuditLogs";
 
 export default function Page() {
     return <AdminPage title="admin.pages.auditLogs.title"
-                      permission="AUDIT_READ" activeResource="audit-logs"><AuditLogs/></AdminPage>;
+                      permission="AUDIT_VIEW" activeResource="audit-logs"><AuditLogs/></AdminPage>;
 }

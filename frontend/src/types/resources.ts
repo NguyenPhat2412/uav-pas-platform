@@ -17,7 +17,25 @@ export interface MediaInput {
     type: string;
     linkedEntityType?: string;
     linkedEntityId?: string;
+    visibility?: MediaVisibility;
 }
+
+/** Who may read a file (Phase 1 BA 13.4); always served through short-lived signed URLs. */
+export type MediaVisibility = 'PRIVATE' | 'PROTECTED' | 'PUBLIC';
+
+export const MEDIA_VISIBILITIES: readonly MediaVisibility[] = ['PRIVATE', 'PROTECTED', 'PUBLIC'];
+
+/** Body of station create and edit; the status changes only through its own endpoint. */
+export type StationFields = {
+    code: string;
+    name: string;
+    address?: string;
+    latitude?: number;
+    longitude?: number;
+    description?: string;
+};
+
+export type StationStatus = 'ACTIVE' | 'INACTIVE' | 'MAINTENANCE';
 
 export interface Station {
     id: number;
@@ -27,6 +45,7 @@ export interface Station {
     latitude?: number;
     longitude?: number;
     status: string;
+    description?: string;
 }
 
 export interface Uav {
@@ -60,6 +79,7 @@ export interface MediaAsset {
     size: number;
     type: string;
     uploadedBy?: string;
+    visibility?: MediaVisibility;
     storageProvider: string;
     confirmed?: boolean;
     confirmedAt?: string;

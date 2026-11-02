@@ -79,7 +79,14 @@
       "cancel": "キャンセル",
       "uavsNote": "ステーションのUAVは「UAV機体」で確認できます。",
       "inventoryNote": "ステーションの機材は「在庫」で確認できます。",
-      "activityNote": "アクティビティは監査ログで確認できます。"
+      "activityNote": "アクティビティは監査ログで確認できます。",
+      "description": "説明",
+      "statusLabel": "ステーションの状態",
+      "remove": "ステーションを削除",
+      "removeTitle": "ステーションを削除しますか？",
+      "removeNote": "未使用のステーションは削除されます。UAV・機材・ミッション・在庫履歴があるステーションは履歴を残すため非稼働になります。",
+      "confirmRemove": "確認",
+      "deactivated": "履歴があるため、ステーションを非稼働にしました。"
     },
     "equipment": {
       "equipment": "機材",
@@ -164,7 +171,13 @@
       "previewTitle": "ファイル表示: {name}",
       "useDownload": "この形式はダウンロードリンクから表示してください。",
       "openDownload": "ファイルを開く / ダウンロード",
-      "linkValidity": "リンクの有効期限は15分です。"
+      "linkValidity": "リンクの有効期限は15分です。",
+      "visibility": {
+        "label": "閲覧できる人",
+        "PRIVATE": "非公開",
+        "PROTECTED": "ファイル閲覧権限のあるユーザー",
+        "PUBLIC": "ログインした全ユーザー"
+      }
     },
     "uavLifecycle": {
       "errors": {

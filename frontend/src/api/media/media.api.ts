@@ -12,13 +12,14 @@ export const mediaService = {
         apiClient.get<{ url: string; expiresInSeconds: number }>(API_ROUTES.media.downloadUrl(id), {signal}),
     deleteMedia: (id: number) => apiClient.delete<void>(API_ROUTES.media.detail(id)),
     /** Register (unless resuming), PUT the file to its signed storage URL, then confirm it. The API enforces type and size. */
-    upload: async (file: File, {existing, link, onStep}: MediaUploadOptions = {}) => {
+    upload: async (file: File, {existing, link, visibility, onStep}: MediaUploadOptions = {}) => {
         const contentType = file.type;
         onStep?.('registering');
         const asset = existing || await mediaService.registerMedia({
             originalName: file.name, contentType, size: file.size,
             type: contentType.startsWith('video/') ? 'VIDEO' : contentType.startsWith('image/') ? 'IMAGE' : 'DOCUMENT',
-            linkedEntityType: link?.type || undefined, linkedEntityId: link?.type ? link.id : undefined
+            linkedEntityType: link?.type || undefined, linkedEntityId: link?.type ? link.id : undefined,
+            visibility,
         });
         onStep?.('uploading', asset);
         const signed = await mediaService.uploadUrl(asset.id);

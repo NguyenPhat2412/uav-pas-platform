@@ -117,7 +117,7 @@ class MediaPaginationIntegrationTest {
     @Test
     void absentActorCannotListEvenUnlinkedFiles() {
         asset(null, null, owner.getUsername());
-        grants.add("MEDIA_MANAGE");
+        grants.add("MEDIA_DELETE");
         entityManager.flush();
         entityManager.clear();
         SecurityContextHolder.clearContext();
@@ -126,7 +126,7 @@ class MediaPaginationIntegrationTest {
 
     @Test
     void invalidSignsCannotMatchAnImportedNegativeResourceId() {
-        grants.add("STATION_READ");
+        grants.add("STATION_VIEW");
         db.update(
                 "INSERT INTO uav_stations(id,code,name,status) VALUES(-1,'PAGE-NEGATIVE','Test','ACTIVE')");
         var valid = asset("STATION", "-0001", owner.getUsername());
@@ -165,7 +165,7 @@ class MediaPaginationIntegrationTest {
 
     @Test
     void numericSpellingsMatchFileAuthorizationForEveryLinkedResourceType() {
-        grants.addAll(Set.of("MISSION_MEDIA_VIEW", "STATION_READ", "UAV_READ", "INVENTORY_READ"));
+        grants.addAll(Set.of("MISSION_MEDIA_VIEW", "STATION_VIEW", "UAV_VIEW", "INVENTORY_VIEW"));
         var m = mission(owner);
         var station = StationOperations.create("PAGE-NUMERIC", "Test", null, null, null, null);
         var uav = new com.uav.platform.entity.uav.Uav("Test", "PAGE-NUMERIC", "Test");
@@ -288,16 +288,16 @@ class MediaPaginationIntegrationTest {
                 List.of(
                         Set.<String>of(),
                         Set.of("MISSION_MEDIA_VIEW"),
-                        Set.of("MEDIA_MANAGE"),
+                        Set.of("MEDIA_DELETE"),
                         Set.of("MISSION_VIEW_ALL"),
-                        Set.of("MISSION_MEDIA_VIEW", "STATION_READ", "UAV_READ", "INVENTORY_READ"),
+                        Set.of("MISSION_MEDIA_VIEW", "STATION_VIEW", "UAV_VIEW", "INVENTORY_VIEW"),
                         Set.of(
-                                "MEDIA_MANAGE",
+                                "MEDIA_DELETE",
                                 "MISSION_MEDIA_VIEW",
                                 "MISSION_VIEW_ALL",
-                                "STATION_READ",
-                                "UAV_READ",
-                                "INVENTORY_READ"))) {
+                                "STATION_VIEW",
+                                "UAV_VIEW",
+                                "INVENTORY_VIEW"))) {
             grants.clear();
             grants.addAll(allowed);
             var expected =
@@ -355,7 +355,7 @@ class MediaPaginationIntegrationTest {
 
     @Test
     void paddedNumericLinksRemainVisibleButMalformedLinksNeverExposeFiles() {
-        grants.addAll(Set.of("MEDIA_MANAGE", "MISSION_MEDIA_VIEW", "MISSION_VIEW_ALL"));
+        grants.addAll(Set.of("MEDIA_DELETE", "MISSION_MEDIA_VIEW", "MISSION_VIEW_ALL"));
         var m = mission(owner);
         var padded = asset("MISSION", "+000" + m.getId(), other.getUsername());
         asset("MISSION", "not-a-number", owner.getUsername());

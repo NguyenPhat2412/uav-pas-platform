@@ -130,6 +130,7 @@ public final class ApiRoutes {
 
         public static final String BASE = API_V1_PREFIX + "/stations";
         public static final String BY_ID = "/{id}";
+        public static final String STATUS = "/{id}/status";
     }
 
     public static final class Inventory {

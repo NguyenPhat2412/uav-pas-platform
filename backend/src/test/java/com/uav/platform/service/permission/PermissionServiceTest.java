@@ -46,7 +46,7 @@ class PermissionServiceTest {
                 service.has(
                         UsernamePasswordAuthenticationToken.authenticated(
                                 "commander", "n/a", List.of()),
-                        "UAV_MANAGE"));
+                        "UAV_CREATE"));
     }
 
     @Test

@@ -52,7 +52,7 @@ public class AiController {
 
     /** Called by the KV260 edge board / cloud inference worker (gateway service account). */
     @PostMapping(ApiRoutes.Ai.TASKS_RESULTS)
-    @PreAuthorize("@permissionService.has(authentication, 'UAV_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_UPDATE')")
     public ResponseEntity<AiTaskResponse> submitResults(
             @PathVariable Long id,
             @Valid @RequestBody AiTaskResultRequest request,

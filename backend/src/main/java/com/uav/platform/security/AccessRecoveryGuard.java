@@ -35,7 +35,7 @@ public class AccessRecoveryGuard {
     }
 
     public long begin() {
-        catalog.findByCodeForUpdate(PermissionCode.PERMISSION_MANAGE)
+        catalog.findByCodeForUpdate(PermissionCode.USER_PERMISSION_MANAGE)
                 .orElseThrow(
                         () -> SystemException.conflict("Permission catalog is not initialized"));
         return countManagers();
@@ -45,7 +45,7 @@ public class AccessRecoveryGuard {
         entityManager.flush();
         if (before > 0 && countManagers() == 0)
             throw SystemException.conflict(
-                    "LAST_ACCESS_MANAGER: retain an active account with USER_MANAGE and PERMISSION_MANAGE");
+                    "LAST_ACCESS_MANAGER: retain an active account with USER_MANAGE and USER_PERMISSION_MANAGE");
     }
 
     private long countManagers() {
@@ -58,7 +58,7 @@ public class AccessRecoveryGuard {
                             var auth =
                                     UsernamePasswordAuthenticationToken.authenticated(
                                             u.getUsername(), null, List.of());
-                            return service.has(auth, "PERMISSION_MANAGE")
+                            return service.has(auth, "USER_PERMISSION_MANAGE")
                                     && service.has(auth, "USER_MANAGE");
                         })
                 .count();

@@ -19,7 +19,7 @@ const healthTone: Record<HealthStatus, MonitoringTone> = {UP: 'ok', DEGRADED: 'w
 export function AdminMonitoringCard({fleet, summaryLoaded}: { fleet: FleetSummary | null; summaryLoaded: boolean }) {
     const {can, permissionsReady} = useAuth();
     const {t, formatNumber} = useI18n();
-    const canHealth = permissionsReady && can('PERMISSION_MANAGE');
+    const canHealth = permissionsReady && can('USER_PERMISSION_MANAGE');
     const health = useSystemHealth();
     const telemetry = useFleetTelemetry();
     const sar = useSarMissions({enabled: permissionsReady && (can('MISSION_VIEW') || can('MISSION_VIEW_ALL')), refetchInterval: 30_000});
@@ -47,7 +47,7 @@ export function AdminMonitoringCard({fleet, summaryLoaded}: { fleet: FleetSummar
             tone: canHealth && health.isError ? 'down' : summaryLoaded ? 'ok' : 'idle',
         });
     }
-    if (can('UAV_READ')) rows.push({
+    if (can('UAV_VIEW')) rows.push({
         key: 'telemetry', label: t('admin.dashboard.status.realtime'),
         value: telemetry.isError ? t('admin.dashboard.status.unreachable')
             : !telemetry.data ? t('admin.dashboard.status.checking')
@@ -91,7 +91,7 @@ export function AdminMonitoringCard({fleet, summaryLoaded}: { fleet: FleetSummar
                 </li>;
             })}
         </ul>
-        {can('PERMISSION_MANAGE') && <div className="flex flex-wrap gap-2 px-[18px] pb-[18px]">
+        {can('USER_PERMISSION_MANAGE') && <div className="flex flex-wrap gap-2 px-[18px] pb-[18px]">
             <Link href="/admin/system-health" className="inline-flex min-h-[40px] items-center rounded-control bg-primary px-4 text-[13px] font-bold text-white transition hover:opacity-90">
                 {t('admin.dashboard.status.openHealth')}</Link>
             <Link href="/admin/webhooks" className="inline-flex min-h-[40px] items-center rounded-control border border-rose-200 bg-white px-4 text-[13px] font-bold text-primary transition hover:bg-uav-red-light">

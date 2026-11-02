@@ -6,4 +6,5 @@ public record ReadPermissions(
         boolean viewAllMissions,
         boolean readStations,
         boolean readUavs,
-        boolean readInventory) {}
+        boolean readInventory,
+        boolean viewMedia) {}

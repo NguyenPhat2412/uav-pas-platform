@@ -6,7 +6,7 @@ import {Badge, Button, Input} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
 import {useMediaMutations} from '@/hooks/media/useMedia';
 import {useCollection} from '@/hooks/useCollection';
-import type {MediaAsset} from "@/types/resources";
+import {MEDIA_VISIBILITIES, type MediaAsset, type MediaVisibility} from "@/types/resources";
 import {DataTable, Detail, ErrorNotice, selectClass} from "@/components/data/ResourceState";
 import {QueryState} from '@/components/data/WorkspaceState';
 import {useI18n} from '@/providers/I18nContext';
@@ -19,6 +19,7 @@ export function MediaPanel() {
     const [typeFilter, setTypeFilter] = useState('');
     const [file, setFile] = useState<File>();
     const [link, setLink] = useState({type: '', id: ''});
+    const [visibility, setVisibility] = useState<MediaVisibility>('PRIVATE');
     const [stage, setStage] = useState<{ key: string; params?: Record<string, string | number> }>();
     const [incompleteUploadId, setIncompleteUploadId] = useState<number>();
     const [preview, setPreview] = useState<{ asset: MediaAsset; url: string }>();
@@ -30,7 +31,7 @@ export function MediaPanel() {
         try {
             // The API accepts or rejects the type and size (MediaUploadPolicy) when the upload is registered.
             await upload.mutateAsync({
-                file: selected, existing, link,
+                file: selected, existing, link, visibility,
                 onStep: (step, asset) => {
                     if (step === 'registering') {
                         setIncompleteUploadId(undefined);
@@ -60,7 +61,7 @@ export function MediaPanel() {
         }
     };
     return <div className="space-y-5">
-        {can('MEDIA_MANAGE') &&
+        {can('MEDIA_UPLOAD') &&
             <form className="space-y-3 rounded-panel border border-border bg-slate-50 p-4"
                   onSubmit={event => {
                       event.preventDefault();
@@ -82,7 +83,12 @@ export function MediaPanel() {
                                                                                     value={type}>{displayLabel(type)}</option>)}
                 </select></label>{link.type &&
                     <Input id="media-resource-id" label={t('opsAssets.media.resourceId')} type="number" aria-required step={1}
-                           value={link.id} onChange={event => setLink({...link, id: event.target.value})}/>}</div>
+                           value={link.id} onChange={event => setLink({...link, id: event.target.value})}/>}<label
+                    className="flex flex-col gap-1 text-sm">{t('opsAssets.media.visibility.label')}<select className={selectClass}
+                                                                                           value={visibility}
+                                                                                           onChange={event => setVisibility(event.target.value as MediaVisibility)}>
+                    {MEDIA_VISIBILITIES.map(level => <option key={level} value={level}>{t(`opsAssets.media.visibility.${level}`)}</option>)}
+                </select></label></div>
                 <Button type="submit" disabled={upload.isPending || !file}>{t('opsAssets.media.uploadAndConfirm')}</Button><p role="status"
                                                                                                           className="text-sm text-secondary">{stage ? t(stage.key, stage.params) : mediaUploadPolicy(t) + ' ' + mediaUploadRetention(t)}</p>
             </form>}
@@ -99,15 +105,15 @@ export function MediaPanel() {
             <DataTable headers={[t('opsAssets.media.col.name'), t('opsAssets.media.col.typeSize'), t('opsAssets.media.col.status'), t('opsAssets.media.col.uploadedBy'), t('opsAssets.media.col.actions')]}
                        rows={(query.data || []).filter(asset => (!typeFilter || asset.type === typeFilter) && (!search || asset.originalName.toLowerCase().includes(search.toLowerCase()))).map(asset => [asset.originalName, asset.contentType + ' · ' + asset.size + ' B',
                            <Badge key={asset.id}
-                                  variant={asset.confirmed ? 'success' : 'warning'}>{asset.confirmed ? t('opsAssets.media.confirmed') : t('opsAssets.media.pending')}</Badge>, asset.uploadedBy || '—',
-                           <div key={asset.id} className="flex flex-wrap gap-2">{asset.confirmed &&
+                                  variant={asset.confirmed ? 'success' : 'warning'}>{asset.confirmed ? t('opsAssets.media.confirmed') : t('opsAssets.media.pending')}</Badge>, `${asset.uploadedBy || '—'} · ${t(`opsAssets.media.visibility.${asset.visibility ?? 'PRIVATE'}`)}`,
+                           <div key={asset.id} className="flex flex-wrap gap-2">{asset.confirmed && can('MEDIA_DOWNLOAD') &&
                                <Button size="sm" variant="outline" disabled={open.isPending} onClick={async () => {
                                    try {
                                        const signed = await open.mutateAsync(asset.id);
                                        setPreview({asset, url: signed.url});
                                    } catch { /* Visible error. */
                                    }
-                               }}>{t('opsAssets.media.viewDownload')}</Button>}{can('MEDIA_MANAGE') && <>{!asset.confirmed && <><Button
+                               }}>{t('opsAssets.media.viewDownload')}</Button>}{!asset.confirmed && can('MEDIA_UPLOAD') && <><Button
                                size="sm" variant="outline" disabled={confirm.isPending || upload.isPending}
                                onClick={() => void confirmAsset(asset.id)}>{t('opsAssets.media.confirm')}</Button><label
                                className="relative cursor-pointer rounded-control border border-slate-300 px-3 py-2 text-xs font-semibold">{t('opsAssets.media.reupload')}<input aria-label={t('opsAssets.media.reuploadLabel', {name: asset.originalName})} type="file" accept={MEDIA_ACCEPT}
@@ -115,10 +121,10 @@ export function MediaPanel() {
                                    const chosen = event.target.files?.[0];
                                    if (chosen) void runUpload(chosen, asset);
                                    event.target.value = '';
-                               }}/></label></>}<Button size="sm" variant="outline" onClick={() => {
+                               }}/></label></>}{can('MEDIA_DELETE') && <Button size="sm" variant="outline" onClick={() => {
                                remove.reset();
                                setDeleting(asset.id);
-                           }}>{t('opsAssets.media.delete')}</Button></>}</div>])}/></QueryState>
+                           }}>{t('opsAssets.media.delete')}</Button>}</div>])}/></QueryState>
         {deleting && <Detail title={t('opsAssets.media.deleteTitle')} onClose={() => setDeleting(undefined)}><ErrorNotice
             error={remove.error?.message === 'Media is attached to a mission' ? new Error(t('opsAssets.media.attachedToMission')) : remove.error}/>
             <p className="text-sm">{t('opsAssets.media.deleteNote')}</p><Button variant="danger"

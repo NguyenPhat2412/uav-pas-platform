@@ -9,6 +9,6 @@ export function useAudit(page = 0) {
     return useQuery({
         queryKey: queryKeys.list(user?.id, 'audit', page),
         queryFn: ({signal}) => operationsAuditService.listAudit(page, signal),
-        enabled: can('AUDIT_READ')
+        enabled: can('AUDIT_VIEW')
     });
 }

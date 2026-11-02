@@ -14,7 +14,7 @@ export function useUserPermissionOverrides(userId: number) {
     return useQuery({
         queryKey: queryKeys.of(user?.id, 'admin-user-permissions', userId),
         queryFn: ({signal}) => accessService.userPermissions(userId, signal),
-        enabled: can('PERMISSION_MANAGE')
+        enabled: can('USER_PERMISSION_MANAGE')
     });
 }
 

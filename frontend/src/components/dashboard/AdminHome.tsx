@@ -67,7 +67,7 @@ export function AdminHome() {
                 <h1 className="m-0 text-lg font-extrabold tracking-tight text-primary sm:text-xl">
                     {t('admin.dashboard.home.question')}
                 </h1>
-                {urgent > 0 && can('DASHBOARD_READ') && (
+                {urgent > 0 && can('DASHBOARD_VIEW') && (
                     <Link
                         href="/admin/alerts"
                         className="inline-flex items-center gap-2 rounded-badge bg-primary px-3 py-1 text-xs font-bold text-white transition hover:opacity-90"
@@ -98,7 +98,7 @@ export function AdminHome() {
                                                                        icon={<ClipboardList size={15} className="text-primary"/>}
                                                                        label={mission.title || mission.code} meta={formatDate(mission.startTime)}/>)}
             </HomeColumn>}
-            {can('DASHBOARD_READ') && <HomeColumn title={t('admin.dashboard.home.alerts')} count={alerts.data ? urgent : undefined} href="/admin/alerts"
+            {can('DASHBOARD_VIEW') && <HomeColumn title={t('admin.dashboard.home.alerts')} count={alerts.data ? urgent : undefined} href="/admin/alerts"
                                                   empty={alerts.isPending ? t('admin.dashboard.home.loading') : t('admin.dashboard.home.alertsEmpty')}>
                 {alertItems.map(alert => {
                     const {icon: Icon, tone} = severityIcon[alert.severity];
