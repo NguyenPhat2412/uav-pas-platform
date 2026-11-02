@@ -51,7 +51,7 @@ export const PORTAL_META: Record<
         audience: 'đội điều hành',
         categories: {
             FLIGHT_SOP: 'Quy trình Bay & BVLOS',
-            SAR_TACTICAL: 'Tác chiến SAR & AI Detection',
+            SAR_TACTICAL: 'Điều phối SAR & nhận diện AI',
             EMERGENCY_SAFETY: 'Ứng phó Khẩn cấp & Failsafe',
             MAINTENANCE: 'Bảo dưỡng & Logistics',
             PREFLIGHT_SOP: 'Kiểm tra Pre-flight & Trạm',

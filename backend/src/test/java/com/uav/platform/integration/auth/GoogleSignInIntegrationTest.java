@@ -123,7 +123,6 @@ class GoogleSignInIntegrationTest {
                         null,
                         null,
                         null,
-                        null,
                         role,
                         UserStatus.ACTIVE);
         user.setEmailVerified(emailVerified);

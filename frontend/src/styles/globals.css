@@ -51,8 +51,6 @@
     --secondary: var(--uav-color-secondary);
     --secondary-hover: var(--uav-color-secondary-hover);
     --secondary-foreground: #ffffff;
-    --brand-zalo: #475569;
-    --brand-zalo-hover: #334155;
     --danger: #dc2626;
     --danger-hover: #8b0000;
     --danger-foreground: #ffffff;
@@ -193,8 +191,6 @@
     --secondary: #94a3b8;
     --secondary-hover: #64748b;
     --secondary-foreground: #ffffff;
-    --brand-zalo: #475569;
-    --brand-zalo-hover: #334155;
     --danger: #ef4444;
     --danger-hover: #dc2626;
     --danger-foreground: #ffffff;

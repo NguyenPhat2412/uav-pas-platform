@@ -43,7 +43,6 @@ class Phase1AccessIntegrationTest {
                                 null,
                                 null,
                                 null,
-                                null,
                                 UserRole.ROLE_ADMIN,
                                 UserStatus.ACTIVE));
         pilot =

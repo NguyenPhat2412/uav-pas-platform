@@ -62,7 +62,6 @@ class MissionCodeConcurrencyIntegrationTest {
                                 null,
                                 null,
                                 null,
-                                null,
                                 UserRole.ROLE_PILOT,
                                 UserStatus.ACTIVE));
     }

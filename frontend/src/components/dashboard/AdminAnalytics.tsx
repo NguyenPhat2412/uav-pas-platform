@@ -54,7 +54,7 @@ export function AdminAnalytics() {
                     <MapPin size={12} aria-hidden="true"/>
                     Bản đồ & Thống kê Điều hành
                 </span>
-                <a href="#admin-tactical-map" className="rounded-control border border-rose-200 bg-uav-red-light px-2.5 py-1 text-xs font-bold text-primary transition hover:bg-primary hover:text-white">
+                <a href="#admin-mission-map" className="rounded-control border border-rose-200 bg-uav-red-light px-2.5 py-1 text-xs font-bold text-primary transition hover:bg-primary hover:text-white">
                     Bản đồ Nhiệm vụ ({query.data?.missionLocations.length ?? 0})
                 </a>
                 <a href="#admin-daily-trend" className="rounded-control border border-rose-200 bg-white px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-uav-red-light">
@@ -149,8 +149,8 @@ function AnalyticsBody({data, money}: { data: Analytics; money: Intl.NumberForma
         </article>)}</div>}
 
         <div className="grid grid-cols-1 gap-px border border-rose-200 bg-rose-200 [&>*]:border-0 xl:grid-cols-2 xl:[&>*:last-child:nth-child(odd)]:col-span-full">
-            {/* 1. PROMOTED INTERACTIVE TACTICAL MISSION MAP (Top of Analytics so users never miss it) */}
-            {missionsVisible && <section id="admin-tactical-map" className="col-span-full min-w-0 bg-white">
+            {/* 1. PROMOTED INTERACTIVE MISSION MAP (Top of Analytics so users never miss it) */}
+            {missionsVisible && <section id="admin-mission-map" className="col-span-full min-w-0 bg-white">
                 <header className="flex flex-wrap items-center justify-between gap-3 border-b border-rose-200 bg-uav-red-light/60 px-[18px] py-3.5">
                     <div className="flex flex-wrap items-center gap-2.5">
                         <span className="inline-flex h-7 w-7 items-center justify-center rounded-control bg-primary text-white">

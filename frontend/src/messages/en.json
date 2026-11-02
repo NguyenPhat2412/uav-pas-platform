@@ -180,7 +180,6 @@
     "loginBtn": "Sign In",
     "registerBtn": "Create Account",
     "loginWithPassword": "Sign in with Password",
-    "loginWithZalo": "Sign in with Zalo OA",
     "noAccount": "Don't have an account?",
     "haveAccount": "Already have an account?",
     "passwordMin": "Minimum 8 characters",
@@ -192,7 +191,6 @@
     "groundControl": "Ground control connected",
     "orDivider": "OR",
     "forgotPassword": "Forgot password?",
-    "zaloDescription": "Fast and secure sign-in via verified Zalo Official Account.",
     "google": {
       "signin_with": "Sign in with Google",
       "signup_with": "Sign up with Google",
@@ -394,6 +392,7 @@
     "contact": "Contact & Dispatch",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
+    "credits": "Photo credits",
     "copyright": "© {year} UAV PAS · A personal project by Nguyen Phat"
   },
   "weather": {

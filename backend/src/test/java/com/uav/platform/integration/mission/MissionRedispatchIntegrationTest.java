@@ -697,7 +697,6 @@ class MissionRedispatchIntegrationTest {
                         null,
                         null,
                         null,
-                        null,
                         role,
                         UserStatus.ACTIVE));
     }

@@ -377,7 +377,6 @@ class MediaPaginationIntegrationTest {
                         null,
                         null,
                         null,
-                        null,
                         UserRole.ROLE_PILOT,
                         UserStatus.ACTIVE);
         entityManager.persist(user);

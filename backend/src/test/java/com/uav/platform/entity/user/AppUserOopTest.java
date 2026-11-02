@@ -47,7 +47,6 @@ class AppUserOopTest {
                         "0900000000",
                         null,
                         null,
-                        null,
                         UserRole.ROLE_COMMANDER,
                         UserStatus.ACTIVE);
 
@@ -134,7 +133,6 @@ class AppUserOopTest {
                         "pilot@uav.vn",
                         "hash",
                         "0900000000",
-                        null,
                         null,
                         null,
                         null,

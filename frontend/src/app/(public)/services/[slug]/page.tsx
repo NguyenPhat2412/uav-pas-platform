@@ -49,11 +49,11 @@ export default async function ServiceDetail({params}: { params: Promise<{ slug: 
                         <span className="mt-1 block text-sm font-extrabold text-slate-900">{detail.maxWind}</span>
                     </div>
                     <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                        <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">SLA có mặt</span>
+                        <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">Thời gian chuẩn bị (minh hoạ)</span>
                         <span className="mt-1 block text-sm font-extrabold text-primary">{detail.onSiteSla}</span>
                     </div>
                     <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                        <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">SLA bàn giao</span>
+                        <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">Thời gian bàn giao (minh hoạ)</span>
                         <span className="mt-1 block text-sm font-extrabold text-uav-blue">{detail.deliverySla}</span>
                     </div>
                 </div>

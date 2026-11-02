@@ -1,6 +1,6 @@
 import type {ChatGroup, ChatMessage} from '@/types/assistant/assistant.types';
 
-/** Messages from the same sender within this window share one avatar, like Zalo. */
+/** Messages from the same sender within this window share one avatar, as in common chat apps. */
 export const GROUP_WINDOW_MS = 15 * 60 * 1000;
 
 /** Splits a conversation into sender runs; a run breaks on a new sender or a gap longer than the window. */

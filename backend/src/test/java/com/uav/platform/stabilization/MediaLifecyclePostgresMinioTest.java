@@ -103,7 +103,6 @@ class MediaLifecyclePostgresMinioTest {
                                 null,
                                 null,
                                 null,
-                                null,
                                 UserRole.ROLE_ADMIN,
                                 UserStatus.ACTIVE));
         LocalDateTime start = LocalDateTime.now().plusDays(1);

@@ -91,6 +91,9 @@ export function AuthModalPopup() {
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [showLoginPassword, setShowLoginPassword] = useState(false);
+    // Google is the main way in; email + password stays for accounts issued by an administrator.
+    const [passwordLoginOpen, setPasswordLoginOpen] = useState(false);
+    const [emailSignupOpen, setEmailSignupOpen] = useState(false);
 
     // Register state
     const [regUsername, setRegUsername] = useState('');
@@ -393,6 +396,7 @@ export function AuthModalPopup() {
             toast.success(res.message, 'Đặt lại mật khẩu thành công');
             setUsernameOrEmail(challengeEmail || forgotEmail.trim());
             setLoginPassword('');
+            setPasswordLoginOpen(true);
             setView('login');
         } catch (err) {
             showFailure(err, 'Không thể đặt lại mật khẩu.');
@@ -418,7 +422,7 @@ export function AuthModalPopup() {
             }}
         >
             <div className="relative w-full max-w-[440px] overflow-hidden rounded-overlay border border-slate-200 bg-white text-slate-900 shadow-2xl">
-                {/* Tactical Command Bar */}
+                {/* Top status bar */}
                 <div className="flex items-center justify-between border-b border-slate-200 bg-slate-900 px-5 py-3 text-white">
                     <div className="flex items-center gap-2.5">
                         <span className="inline-block h-2 w-2 rounded-badge bg-primary" aria-hidden="true" />
@@ -491,8 +495,22 @@ export function AuthModalPopup() {
                                 <h2 id="auth-modal-title" className="text-lg font-extrabold tracking-tight text-slate-900">
                                     Đăng nhập hệ thống
                                 </h2>
+                                <p className="m-0 mt-1 text-xs text-slate-500">Đăng nhập nhanh và an toàn bằng tài khoản Google.</p>
                             </div>
 
+                            <GoogleSignInButton disabled={submitting} onCredential={credential => void handleGoogleCredential(credential)}/>
+
+                            <div className="flex items-center gap-3 pt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                <span className="h-px flex-1 bg-slate-200"/>
+                                {t('auth.orDivider')}
+                                <span className="h-px flex-1 bg-slate-200"/>
+                            </div>
+
+                            {!passwordLoginOpen ? (
+                                <button type="button" disabled={submitting} onClick={() => setPasswordLoginOpen(true)} className="flex h-10 w-full items-center justify-center rounded-control border border-slate-300 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50">
+                                    Tài khoản do quản trị cấp (email &amp; mật khẩu)
+                                </button>
+                            ) : <>
                             <div>
                                 <label htmlFor="auth-login-user" className={labelClass}>
                                     Email hoặc Tên đăng nhập<RequiredMark/>
@@ -562,14 +580,7 @@ export function AuthModalPopup() {
                             >
                                 {submitting ? 'Đang xử lý...' : 'Đăng nhập'}
                             </button>
-
-                            <div className="flex items-center gap-3 pt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                                <span className="h-px flex-1 bg-slate-200"/>
-                                {t('auth.orDivider')}
-                                <span className="h-px flex-1 bg-slate-200"/>
-                            </div>
-
-                            <GoogleSignInButton disabled={submitting} onCredential={credential => void handleGoogleCredential(credential)}/>
+                            </>}
                         </form>
                     )}
 
@@ -582,12 +593,25 @@ export function AuthModalPopup() {
                                     Đăng ký tài khoản mới
                                 </h2>
                                 <p className="m-0 text-xs leading-5 text-slate-500 text-balance">
-                                    Dành cho khách hàng và doanh nghiệp đặt dịch vụ.<br/>
+                                    Tài khoản dùng thử để trải nghiệm bản demo.<br/>
                                     Nhân sự vận hành?{' '}
                                     <a href="/contact" className="whitespace-nowrap font-semibold text-primary hover:underline">Liên hệ để được cấp tài khoản</a>
                                 </p>
                             </div>
 
+                            <GoogleSignInButton text="signup_with" disabled={submitting} onCredential={credential => void handleGoogleCredential(credential)}/>
+
+                            <div className="flex items-center gap-3 pt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                <span className="h-px flex-1 bg-slate-200"/>
+                                {t('auth.orDivider')}
+                                <span className="h-px flex-1 bg-slate-200"/>
+                            </div>
+
+                            {!emailSignupOpen ? (
+                                <button type="button" disabled={submitting} onClick={() => setEmailSignupOpen(true)} className="flex h-10 w-full items-center justify-center rounded-control border border-slate-300 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50">
+                                    Đăng ký bằng email
+                                </button>
+                            ) : <>
                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 <div>
                                     <label htmlFor="auth-reg-username" className={labelClass}>
@@ -641,7 +665,7 @@ export function AuthModalPopup() {
                                     disabled={submitting}
                                     value={regEmail}
                                     onChange={(e) => setRegEmail(e.target.value)}
-                                    placeholder="ban@doanhnghiep.vn"
+                                    placeholder="ban@example.com"
                                     className={inputClass}
                                 />
                             </div>
@@ -702,14 +726,7 @@ export function AuthModalPopup() {
                             >
                                 {submitting ? 'Đang xử lý...' : 'Đăng ký tài khoản'}
                             </button>
-
-                            <div className="flex items-center gap-3 pt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                                <span className="h-px flex-1 bg-slate-200"/>
-                                {t('auth.orDivider')}
-                                <span className="h-px flex-1 bg-slate-200"/>
-                            </div>
-
-                            <GoogleSignInButton text="signup_with" disabled={submitting} onCredential={credential => void handleGoogleCredential(credential)}/>
+                            </>}
                         </form>
                     )}
 
@@ -1088,7 +1105,7 @@ export function AuthModalPopup() {
                                                     Cổng Khách hàng (Customer)
                                                 </div>
                                                 <div className="mt-0.5 text-[11px] text-slate-500">
-                                                    Đặt dịch vụ UAV, theo dõi yêu cầu nhiệm vụ &amp; hóa đơn
+                                                    Gửi yêu cầu bay mẫu và theo dõi nhiệm vụ (demo)
                                                 </div>
                                             </div>
                                         </div>

@@ -67,7 +67,6 @@ class PlatformDeviceKeyIntegrationTest {
                                 null,
                                 null,
                                 null,
-                                null,
                                 UserRole.ROLE_ADMIN,
                                 UserStatus.ACTIVE));
         uavId =

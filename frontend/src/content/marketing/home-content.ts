@@ -65,7 +65,7 @@ export const uavPlatformFeatures: UavPlatformFeature[] = [
         id: 'sar-ai-kv260',
         badge: 'Edge AI & SAR',
         title: 'Buồng lái SAR & AI biên (thử nghiệm)',
-        subtitle: 'Nhận diện mục tiêu tại biên và sinh lộ trình tìm kiếm chuẩn quốc tế IAMSAR.',
+        subtitle: 'Nhận diện mục tiêu tại biên và sinh lộ trình tìm kiếm theo mẫu IAMSAR.',
         description:
             'Hướng thử nghiệm: suy luận thị giác máy tính trên bo mạch Kria KV260 đặt tại mặt đất (không gắn trên UAV); kết quả chỉ để minh hoạ.',
         specs: [
@@ -158,7 +158,7 @@ export const portalEcosystem: PlatformPortalOverview[] = [
         cta: 'Xem quy trình điều phối',
         scene: 'field',
         imageSrc: '/images/uav-people/uav-field-team.webp',
-        imageAlt: 'Đội ngũ phi công và điều phối viên vận hành UAV tại hiện trường',
+        imageAlt: 'Ảnh minh hoạ (USGS): phi công và điều phối viên vận hành UAV tại hiện trường',
     },
     {
         id: 'admin',
@@ -176,7 +176,7 @@ export const portalEcosystem: PlatformPortalOverview[] = [
         cta: 'Liên hệ về bảo mật dữ liệu',
         scene: 'team',
         imageSrc: '/images/uav-people/uav-workshop-team.webp',
-        imageAlt: 'Đội ngũ kỹ sư và quản trị viên kiểm tra hệ thống phần cứng UAV trong xưởng kỹ thuật',
+        imageAlt: 'Ảnh minh hoạ (USGS): kỹ sư kiểm tra phần cứng UAV trong xưởng',
     },
 ];
 
@@ -186,12 +186,12 @@ export const publicPricingPlans: PublicPricingPlan[] = [
         name: 'Gói Tiêu Chuẩn (Basic)',
         subtitle: 'Khảo sát định kỳ & quay chụp tiêu chuẩn',
         monthlyVnd: '5.000.000 ₫',
-        billingCycle: '/ tháng (hỗ trợ hóa đơn VAT)',
+        billingCycle: '/ tháng (giá minh hoạ)',
         flightHoursQuota: '20 giờ bay / tháng',
         concurrentUavs: '01 UAV đồng thời',
         sarAiIncluded: false,
         badge: 'Khởi đầu tối ưu',
-        targetAudience: 'Phù hợp cho nhóm kỹ thuật công trường và doanh nghiệp nhỏ khảo sát định kỳ.',
+        targetAudience: 'Kịch bản demo: khảo sát định kỳ với một UAV.',
         highlights: [
             '20 giờ bay/tháng trên 4 nhóm dịch vụ UAV cơ bản',
             'Công cụ vẽ vùng bay GIS, tuỳ chỉnh AGL & GSD',
@@ -201,16 +201,16 @@ export const publicPricingPlans: PublicPricingPlan[] = [
     },
     {
         code: 'PRO',
-        name: 'Gói Chuyên Nghiệp (Pro)',
+        name: 'Gói Pro',
         subtitle: 'Gói minh hoạ: AI thử nghiệm & điều phối đa UAV',
         monthlyVnd: '15.000.000 ₫',
-        billingCycle: '/ tháng (hỗ trợ hóa đơn VAT)',
+        billingCycle: '/ tháng (giá minh hoạ)',
         flightHoursQuota: '80 giờ bay / tháng',
         concurrentUavs: '03 UAV đồng thời',
         sarAiIncluded: true,
         featured: true,
         badge: 'Phổ biến nhất',
-        targetAudience: 'Dành cho doanh nghiệp khảo sát hạ tầng, điện lực, nông nghiệp và khu công nghiệp.',
+        targetAudience: 'Kịch bản demo: điều phối nhiều UAV cho khảo sát hạ tầng.',
         highlights: [
             '80 giờ bay/tháng & ưu tiên xếp lịch điều phối',
             'Mở khoá mô-đun AI thử nghiệm (YOLOv8s)',
@@ -220,20 +220,20 @@ export const publicPricingPlans: PublicPricingPlan[] = [
     },
     {
         code: 'ENTERPRISE',
-        name: 'Gói Doanh nghiệp (Enterprise / SAR)',
+        name: 'Gói Enterprise (SAR)',
         subtitle: 'Đội bay quy mô lớn & cứu nạn khẩn cấp',
         monthlyVnd: '45.000.000 ₫',
-        billingCycle: '/ tháng (hợp đồng SLA riêng)',
+        billingCycle: '/ tháng (giá minh hoạ)',
         flightHoursQuota: '300 giờ bay / tháng',
         concurrentUavs: '10 UAV đồng thời',
         sarAiIncluded: true,
-        badge: 'Doanh nghiệp & SAR',
-        targetAudience: 'Thiết kế cho đơn vị quản lý hạ tầng trọng điểm, phòng chống thiên tai và cứu nạn SAR.',
+        badge: 'Kịch bản SAR',
+        targetAudience: 'Kịch bản demo: tìm kiếm cứu nạn với đội bay mô phỏng.',
         highlights: [
             '300 giờ bay/tháng, điều phối đồng thời tới 10 UAV',
-            'Toàn quyền Buồng lái SAR AI & đường bay IAMSAR 24/7',
+            'Buồng lái SAR & sinh đường bay theo mẫu IAMSAR',
             'Tích hợp Webhook sự kiện thời gian thực (SAR, RTH)',
-            'Minh hoạ cấu hình SLA & phân công phi công',
+            'Minh hoạ phân công điều phối viên'
         ],
     },
 ];
@@ -245,9 +245,9 @@ export const pricingComparisonRows: PricingComparisonRow[] = [
     {feature: 'Công cụ lập vùng bay GIS & cấu hình AGL / GSD / Overlap', basic: 'Có đầy đủ', pro: 'Có đầy đủ', enterprise: 'Có đầy đủ'},
     {feature: 'Tải trọng cảm biến hỗ trợ', basic: 'RGB 4K tiêu chuẩn', pro: 'RGB 4K · Nhiệt · LiDAR · Đa phổ', enterprise: 'Toàn bộ cảm biến + cấu hình đặc thù'},
     {feature: 'Mô-đun AI thử nghiệm (YOLOv8s)', basic: 'Không bao gồm', pro: 'Đã bao gồm', enterprise: 'Đã bao gồm'},
-    {feature: 'Buồng lái Tìm kiếm Cứu nạn (SAR) & đường bay IAMSAR', basic: 'Không bao gồm', pro: 'Hỗ trợ theo yêu cầu', enterprise: 'Toàn quyền kích hoạt 24/7'},
-    {feature: 'Tích hợp Webhook sự kiện thời gian thực & API', basic: 'Thông báo trên cổng', pro: 'Thông báo + Báo cáo nâng cao', enterprise: 'Webhook HMAC đầy đủ + SLA riêng'},
-    {feature: 'Phương thức thanh toán & kích hoạt hạn mức', basic: 'Chuyển khoản VietQR', pro: 'Chuyển khoản VietQR / Hợp đồng', enterprise: 'VietQR / Đối soát doanh nghiệp'},
+    {feature: 'Buồng lái Tìm kiếm Cứu nạn (SAR) & đường bay IAMSAR', basic: 'Không bao gồm', pro: 'Hỗ trợ theo yêu cầu', enterprise: 'Có'},
+    {feature: 'Tích hợp Webhook sự kiện thời gian thực & API', basic: 'Thông báo trên cổng', pro: 'Thông báo + Báo cáo nâng cao', enterprise: 'Webhook HMAC đầy đủ'},
+    {feature: 'Phương thức thanh toán & kích hoạt hạn mức', basic: 'Chuyển khoản VietQR', pro: 'VietQR (minh hoạ)', enterprise: 'VietQR (minh hoạ)'},
 ];
 
 export const eras: Era[] = [

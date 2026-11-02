@@ -106,7 +106,6 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
                         email,
                         passwordEncoder.encode(request.password()),
                         phone,
-                        null,
                         fullName,
                         null,
                         request.role(),

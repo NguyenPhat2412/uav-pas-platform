@@ -21,7 +21,7 @@ export default function SolutionsPage() {
 
     return (
         <div className="bg-card text-foreground">
-            {/* Dark Tactical Hero Banner (Distinct from all other pages) */}
+            {/* Dark hero banner (distinct from all other pages) */}
             <section className="relative overflow-hidden bg-slate-950 py-16 text-white sm:py-22">
                 <Image
                     src={scenes.response.src}

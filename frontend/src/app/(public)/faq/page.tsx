@@ -12,15 +12,15 @@ export const metadata = pageMetadata(
 const faqs = [
     [
         'Nền tảng UAV PAS dành cho những đối tượng nào?',
-        'UAV PAS phục vụ doanh nghiệp, khu công nghiệp, nông trường, đơn vị khảo sát trắc địa, công trường xây dựng và đội ứng phó khẩn cấp cần đặt dịch vụ bay UAV chuyên nghiệp; đồng thời cung cấp cổng điều hành chuyên biệt cho đội ngũ phi công, kỹ thuật viên bảo dưỡng và quản trị viên.',
+        'UAV PAS là đồ án cá nhân, không phục vụ khách hàng thật. Bản demo mô phỏng ba vai trò: người gửi yêu cầu bay (khách hàng), điều phối viên vận hành và quản trị viên, để minh hoạ một quy trình điều phối nhiệm vụ UAV hoàn chỉnh trên dữ liệu giả lập.',
     ],
     [
         'Chi phí và các gói thuê bao trên UAV PAS được tính như thế nào?',
-        'Bản demo có 3 gói thuê bao minh hoạ theo chu kỳ 30 ngày (không thu phí thật): Gói Cơ bản (Basic - 5.000.000đ / 10 nhiệm vụ), Gói Chuyên nghiệp (Pro - 15.000.000đ / 50 nhiệm vụ, hỗ trợ cảm biến nhiệt & RTK) và Gói Doanh nghiệp (Enterprise - 45.000.000đ / Không giới hạn nhiệm vụ, hỗ trợ buồng lái SAR IAMSAR, mô-đun AI thử nghiệm và Webhook API).',
+        'Bản demo có 3 gói thuê bao minh hoạ theo chu kỳ 30 ngày (không thu phí thật): Gói Cơ bản (Basic - 5.000.000đ / 10 nhiệm vụ), Gói Pro (15.000.000đ / 50 nhiệm vụ) và Gói Enterprise (45.000.000đ / Không giới hạn nhiệm vụ, hỗ trợ buồng lái SAR IAMSAR, mô-đun AI thử nghiệm và Webhook API).',
     ],
     [
         'Tôi thanh toán và kích hoạt gói dịch vụ bằng cách nào?',
-        'Sau khi đăng nhập cổng khách hàng và chọn gói phù hợp, hệ thống tự động tạo hóa đơn kèm mã QR chuyển khoản chuẩn EMVCo VietQR (tự động điền số tiền và mã tham chiếu hóa đơn). Ngay sau khi thanh toán được xác nhận, hạn mức nhiệm vụ sẽ được cấp tự động.',
+        'Trong bản demo, khi chọn gói hệ thống sinh một phiếu thanh toán mẫu kèm mã VietQR để minh hoạ luồng nghiệp vụ. Không có giao dịch thật; quản trị viên xác nhận thủ công để cấp hạn mức thử nghiệm.',
     ],
     [
         'Tôi có thể tự vẽ vùng bay và thiết lập thông số kỹ thuật trước khi gửi yêu cầu không?',

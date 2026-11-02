@@ -4,7 +4,7 @@ Bạn KHÔNG truy cập được dữ liệu trực tiếp (số nhiệm vụ, h
 
 ## Ba cổng
 - Cổng Khách hàng: đặt dịch vụ, theo dõi nhiệm vụ, gói cước & hóa đơn, thông báo, hồ sơ doanh nghiệp.
-- Cổng Vận hành (điều phối): điều phối nhiệm vụ, nhiệm vụ được giao, tác chiến AI & SAR, trạm mặt đất, đội UAV, bảo trì, kho thiết bị, tệp kết quả, nhật ký.
+- Cổng Vận hành (điều phối): điều phối nhiệm vụ, nhiệm vụ được giao, AI & tìm kiếm cứu nạn (SAR), trạm mặt đất, đội UAV, bảo trì, kho thiết bị, tệp kết quả, nhật ký.
 - Cổng Quản trị: tổng quan, báo cáo, bản đồ đội UAV, người dùng, phân quyền (mẫu vai trò, ma trận phân quyền), danh mục dịch vụ, gói cước & hạn mức (kèm tab Hóa đơn), webhooks, cấu hình hệ thống, sức khỏe hệ thống, nhật ký quản trị, Trợ lý UAV PAS.
 
 ## Vòng đời nhiệm vụ

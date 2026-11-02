@@ -15,12 +15,12 @@ const paymentSteps = [
     {
         step: '01',
         title: 'Chọn gói cước trên Cổng Khách hàng',
-        detail: 'Đăng nhập vào Cổng Khách hàng → mục Gói cước & Hóa đơn, lựa chọn gói Basic, Pro hoặc Enterprise phù hợp với nhu cầu giờ bay hàng tháng.',
+        detail: 'Đăng nhập Cổng Khách hàng → mục Gói cước, chọn một gói minh hoạ (Basic, Pro hoặc Enterprise) để xem luồng cấp hạn mức giờ bay.',
     },
     {
         step: '02',
-        title: 'Nhận hóa đơn & Mã QR chuyển khoản chuẩn VietQR EMVCo',
-        detail: 'Hệ thống tự động khởi tạo hóa đơn (hạn thanh toán 07 ngày, đã bao gồm VAT) kèm mã QR chuyển khoản chuẩn EMVCo (kiểm tra tổng CRC-16) và nội dung định danh UAV INV <Mã hóa đơn>.',
+        title: 'Phiếu thanh toán mẫu & mã VietQR minh hoạ',
+        detail: 'Hệ thống sinh phiếu thanh toán mẫu kèm mã QR theo định dạng VietQR (có kiểm tra CRC-16) để minh hoạ kỹ thuật. Không chuyển tiền thật.',
     },
     {
         step: '03',
@@ -82,7 +82,7 @@ export default function PricingPage() {
                             {keepVietnamesePhrases('Quy trình đăng ký gói cước & thanh toán VietQR tự động')}
                         </h2>
                         <p className="text-sm leading-relaxed text-slate-600">
-                            Toàn bộ giao dịch nâng cấp gói cước và thanh toán hóa đơn nhiệm vụ được thực hiện trực tiếp trong Cổng Khách hàng, sử dụng chuẩn VietQR EMVCo giúp loại bỏ sai sót khi nhập số tài khoản và nội dung chuyển khoản.
+                            Luồng nâng cấp gói cước được mô phỏng trong Cổng Khách hàng để minh hoạ cách sinh mã VietQR và đối soát; bản demo không kết nối ngân hàng và không thu tiền.
                         </p>
                     </div>
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">

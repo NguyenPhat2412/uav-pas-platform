@@ -189,7 +189,6 @@ public class AuthOtpServiceImpl implements AuthOtpService {
                             in.phoneNumber(),
                             null,
                             null,
-                            null,
                             in.role(),
                             in.status());
             newUser.setEmailVerified(false);

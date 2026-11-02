@@ -796,7 +796,6 @@ class MaintenancePlanningIntegrationTest {
                         null,
                         null,
                         null,
-                        null,
                         role,
                         UserStatus.ACTIVE));
     }

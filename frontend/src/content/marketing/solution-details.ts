@@ -44,7 +44,7 @@ export const solutionDetails: Record<string, SolutionDetailEntry> = {
         deliverables: ['Danh sách phát hiện AI đã xác minh kèm nhãn thời gian', 'Tọa độ mục tiêu trên bản đồ điều hành', 'Thống kê hiệu năng suy luận phần cứng biên KV260'],
     },
     'search-and-rescue': {
-        useCase: 'Hỗ trợ ban chỉ huy và đội ứng phó được cấp phép tổ chức tìm kiếm mục tiêu mất dấu trên địa hình phức tạp bằng đường bay chuẩn quốc tế IAMSAR kết hợp cảm biến nhiệt và AI.',
+        useCase: 'Hỗ trợ ban chỉ huy và đội ứng phó được cấp phép tổ chức tìm kiếm mục tiêu mất dấu trên địa hình phức tạp bằng đường bay theo mẫu IAMSAR kết hợp cảm biến nhiệt và AI.',
         workflow: 'Từ tọa độ vị trí nhìn thấy cuối cùng (Last Known Position – LKP), hệ thống tự động tính toán lộ trình bay xoắn ốc mở rộng (IAMSAR Expanding Square), giám sát telemetry UAV (mô phỏng) trên bản đồ điều hành và phát lệnh cứu nạn khẩn cấp qua Webhook khi mục tiêu được xác nhận.',
         limitation: 'Giải pháp phục vụ điều phối chuyên môn cho các đơn vị được cấp phép. Trong tình huống khẩn cấp dân sự, luôn liên hệ trực tiếp tổng đài cứu hộ địa phương.',
         techStack: ['Buồng lái SAR Cockpit', 'Bản đồ điều hành SAR', 'Màn hình thông số bay UavTelemetryHud', 'Hệ thống Webhook khẩn cấp'],

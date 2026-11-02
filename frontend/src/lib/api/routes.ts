@@ -20,8 +20,6 @@ export const API_ROUTES = {
         refresh: '/api/v1/auth/refresh',
         logout: '/api/v1/auth/logout',
         me: '/api/v1/auth/me',
-        zaloAuthorize: '/api/v1/auth/zalo/authorize',
-        zaloCallback: '/api/v1/auth/zalo/callback',
     },
     users: {
         list: '/api/v1/users',

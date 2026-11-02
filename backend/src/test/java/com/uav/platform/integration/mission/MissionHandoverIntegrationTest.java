@@ -559,7 +559,6 @@ class MissionHandoverIntegrationTest {
                         null,
                         null,
                         null,
-                        null,
                         role,
                         UserStatus.ACTIVE));
     }

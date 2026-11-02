@@ -24,8 +24,6 @@ public interface UserRepository
 
     boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id);
 
-    boolean existsByZaloId(String zaloId);
-
     Optional<AppUser> findByEmail(String email);
 
     Optional<AppUser> findFirstByEmailIgnoreCaseOrderByIdAsc(String email);
@@ -35,8 +33,6 @@ public interface UserRepository
     boolean existsByUsernameIgnoreCase(String username);
 
     Optional<AppUser> findByUsername(String username);
-
-    Optional<AppUser> findByZaloId(String zaloId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from AppUser u where u.id = :id")

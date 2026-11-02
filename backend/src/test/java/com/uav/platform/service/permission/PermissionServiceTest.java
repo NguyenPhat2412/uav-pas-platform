@@ -31,7 +31,6 @@ class PermissionServiceTest {
                         null,
                         null,
                         null,
-                        null,
                         UserRole.ROLE_COMMANDER,
                         UserStatus.ACTIVE);
         user.setId(1L);
@@ -57,7 +56,6 @@ class PermissionServiceTest {
                         "commander2",
                         "c2@uav.vn",
                         "hash",
-                        null,
                         null,
                         null,
                         null,

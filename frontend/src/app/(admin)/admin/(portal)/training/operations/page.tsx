@@ -6,7 +6,7 @@ import {TrainingAcademyWorkspace} from '@/components/training/TrainingAcademyWor
 export default function AdminTrainingOperationsRoutePage() {
     return (
         <AdminPage
-            title="SOP Điều hành & Tác chiến"
+            title="SOP Điều hành & Giám sát"
             permission="DASHBOARD_VIEW"
             activeResource="/admin/training/operations"
         >

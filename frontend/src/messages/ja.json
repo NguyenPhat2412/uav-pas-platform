@@ -180,7 +180,6 @@
     "loginBtn": "ログイン",
     "registerBtn": "アカウント作成",
     "loginWithPassword": "パスワードでログイン",
-    "loginWithZalo": "Zalo OA でログイン",
     "noAccount": "アカウントをお持ちでないですか？",
     "haveAccount": "既にアカウントをお持ちですか？",
     "passwordMin": "8文字以上",
@@ -192,7 +191,6 @@
     "groundControl": "地上管制局接続済",
     "orDivider": "または",
     "forgotPassword": "パスワードをお忘れですか？",
-    "zaloDescription": "認証済みZalo公式アカウントで素早く安全にログイン。",
     "google": {
       "signin_with": "Google でログイン",
       "signup_with": "Google で登録",
@@ -394,6 +392,7 @@
     "contact": "お問い合わせ・手配",
     "privacy": "プライバシーポリシー",
     "terms": "利用規約",
+    "credits": "画像クレジット",
     "copyright": "© {year} UAV PAS · Nguyen Phat 個人プロジェクト"
   },
   "weather": {

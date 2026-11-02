@@ -59,7 +59,6 @@ class PlatformAlertCenterIntegrationTest {
                         null,
                         null,
                         null,
-                        null,
                         role,
                         UserStatus.ACTIVE));
     }

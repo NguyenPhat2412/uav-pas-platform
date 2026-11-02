@@ -505,7 +505,6 @@ class AdminFileIntegrationTest {
                         "af_" + s + "@example.invalid",
                         "synthetic-placeholder",
                         null,
-                        null,
                         fullName,
                         null,
                         role,

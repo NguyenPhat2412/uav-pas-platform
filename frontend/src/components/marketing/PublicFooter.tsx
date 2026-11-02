@@ -108,6 +108,9 @@ export function PublicFooter() {
                     <Link className="hover:text-primary transition-colors" href="/terms">
                         {t('publicFooter.terms')}
                     </Link>
+                    <Link className="hover:text-primary transition-colors" href="/credits">
+                        {t('publicFooter.credits')}
+                    </Link>
                 </div>
             </div>
 

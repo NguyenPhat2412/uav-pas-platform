@@ -159,7 +159,6 @@ class CookieSessionIntegrationTest {
                         null,
                         null,
                         null,
-                        null,
                         null);
         user.setRole(null);
         user.setStatus(null);

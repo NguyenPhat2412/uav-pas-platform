@@ -112,7 +112,7 @@ export default async function SolutionDetail({params}: { params: Promise<{ slug:
                                 Xem gói Enterprise
                             </Link>
                             <Link className="inline-flex items-center rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50" href="/contact">
-                                Liên hệ đội ngũ R&D
+                                Gửi góp ý kỹ thuật
                             </Link>
                         </div>
                     </div>

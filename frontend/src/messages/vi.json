@@ -180,7 +180,6 @@
     "loginBtn": "Đăng nhập",
     "registerBtn": "Tạo tài khoản",
     "loginWithPassword": "Đăng nhập bằng Mật khẩu",
-    "loginWithZalo": "Đăng nhập bằng Zalo OA",
     "noAccount": "Chưa có tài khoản?",
     "haveAccount": "Đã có tài khoản?",
     "passwordMin": "Tối thiểu 8 ký tự",
@@ -192,7 +191,6 @@
     "groundControl": "Kết nối trạm kiểm soát",
     "orDivider": "HOẶC",
     "forgotPassword": "Quên mật khẩu?",
-    "zaloDescription": "Đăng nhập nhanh chóng và bảo mật thông qua tài khoản Zalo Official Account đã xác thực.",
     "google": {
       "signin_with": "Đăng nhập bằng Google",
       "signup_with": "Đăng ký bằng Google",
@@ -394,6 +392,7 @@
     "contact": "Liên hệ & Điều phối",
     "privacy": "Chính sách quyền riêng tư",
     "terms": "Điều khoản dịch vụ",
+    "credits": "Nguồn ảnh minh hoạ",
     "copyright": "© {year} UAV PAS · Đồ án cá nhân của Nguyễn Phát"
   },
   "weather": {

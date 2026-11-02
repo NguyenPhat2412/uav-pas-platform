@@ -247,7 +247,6 @@ class ResourceAssignmentValidationIntegrationTest {
                         null,
                         null,
                         null,
-                        null,
                         role,
                         UserStatus.ACTIVE));
     }

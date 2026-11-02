@@ -89,7 +89,7 @@ class AuthServiceGoogleLoginTest {
 
     private static AppUser user(UserRole role, UserStatus status) {
         AppUser user =
-                new AppUser("jane", EMAIL, "hash", "0987654321", null, "Jane", null, role, status);
+                new AppUser("jane", EMAIL, "hash", "0987654321", "Jane", null, role, status);
         user.setId(7L);
         user.setEmailVerified(true);
         return user;

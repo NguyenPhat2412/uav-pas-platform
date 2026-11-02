@@ -74,7 +74,6 @@ class MissionPhase2IntegrationTest {
                                 null,
                                 null,
                                 null,
-                                null,
                                 UserRole.ROLE_OPERATOR,
                                 UserStatus.ACTIVE));
         AppUser admin =
@@ -83,7 +82,6 @@ class MissionPhase2IntegrationTest {
                                 "admin_" + suffix,
                                 "admin_" + suffix + "@test.vn",
                                 encoder.encode("Secret123!"),
-                                null,
                                 null,
                                 null,
                                 null,

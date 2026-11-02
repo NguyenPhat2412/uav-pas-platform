@@ -152,7 +152,6 @@ public class AuthServiceImpl implements AuthService {
                         in.phoneNumber(),
                         null,
                         null,
-                        null,
                         in.role(),
                         in.status());
         // Not proven yet: the first sign-in asks for the code emailed to this address.
@@ -314,7 +313,6 @@ public class AuthServiceImpl implements AuthService {
                 UserAccountServiceImpl.createUser(
                         uniqueUsername(RegistrationOperations.usernameFromEmail(identity.email())),
                         identity.email(),
-                        null,
                         null,
                         null,
                         fullName(identity.name()),

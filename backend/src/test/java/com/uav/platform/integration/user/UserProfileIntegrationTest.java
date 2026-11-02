@@ -114,7 +114,7 @@ class UserProfileIntegrationTest {
 
     Map<String, Object> protectedFields(AppUser user) {
         return db.queryForMap(
-                "select username,email,password_hash,role,status,failed_attempts,manual_locked,lock_time,zalo_id,avatar_url from users where id=?",
+                "select username,email,password_hash,role,status,failed_attempts,manual_locked,lock_time,avatar_url from users where id=?",
                 user.getId());
     }
 

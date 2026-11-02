@@ -37,9 +37,6 @@ public class AppUser extends BaseEntity {
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
 
-    @Column(name = "zalo_id", unique = true, length = 100)
-    private String zaloId;
-
     @Column(name = "full_name", length = 100)
     private String fullName;
 
@@ -103,7 +100,6 @@ public class AppUser extends BaseEntity {
                 phoneNumber,
                 null,
                 null,
-                null,
                 UserRole.ROLE_PILOT,
                 status);
     }
@@ -113,7 +109,6 @@ public class AppUser extends BaseEntity {
             String email,
             String passwordHash,
             String phoneNumber,
-            String zaloId,
             String fullName,
             String avatarUrl,
             UserStatus status) {
@@ -122,7 +117,6 @@ public class AppUser extends BaseEntity {
                 email,
                 passwordHash,
                 phoneNumber,
-                zaloId,
                 fullName,
                 avatarUrl,
                 UserRole.ROLE_PILOT,
@@ -134,7 +128,6 @@ public class AppUser extends BaseEntity {
             String email,
             String passwordHash,
             String phoneNumber,
-            String zaloId,
             String fullName,
             String avatarUrl,
             UserRole role,
@@ -143,7 +136,6 @@ public class AppUser extends BaseEntity {
         this.email = email;
         this.passwordHash = passwordHash;
         this.phoneNumber = phoneNumber;
-        this.zaloId = zaloId;
         this.fullName = fullName;
         this.avatarUrl = avatarUrl;
         this.role = role;

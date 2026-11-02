@@ -1,6 +1,6 @@
 /**
  * UAV PAS - SAR & Autonomous Flight Navigation Algorithms
- * Bộ thuật toán toán học & hình học giải tích cho hệ thống Tác chiến Tìm kiếm Cứu nạn (SAR)
+ * Bộ thuật toán toán học & hình học giải tích cho mô-đun Tìm kiếm Cứu nạn (SAR)
  * Áp dụng theo tiêu chuẩn hướng dẫn IAMSAR (International Aeronautical and Maritime Search and Rescue)
  */
 
