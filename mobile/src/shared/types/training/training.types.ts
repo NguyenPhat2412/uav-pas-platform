@@ -72,7 +72,7 @@ export interface TrainingAcademyWorkspaceProps {
 export const TRAINING_ADMIN_HOME = '/admin/training/customer';
 
 // ---------------------------------------------------------------------------------------------
-// Courses (docs/training-courses-api.md): a training document seen as a course of lessons.
+// Courses (docs/architecture/TRAINING_COURSES_API.md): a training document seen as a course of lessons.
 // ---------------------------------------------------------------------------------------------
 
 export type TrainingLessonType = 'VIDEO' | 'SLIDES' | 'ARTICLE' | 'DOCUMENT';

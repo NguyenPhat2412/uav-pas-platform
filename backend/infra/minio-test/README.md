@@ -1,6 +1,6 @@
 # Disposable MinIO for integration tests
 
-This image is only for `docker-compose.stabilization.yml` and CI. It is not a production deployment image.
+This image is only for `backend/infra/ci/compose.test.yml` and CI. It is not a production deployment image.
 
 The previously cached `minio/minio:latest` binary reported `RELEASE.2025-09-07T16-13-09Z`, commit `07c3a429bfed433e49018cb0f78a52145d4bedeb`, built with Go 1.24.6. On the clean hosted runner, Docker Hub denied the image pull; the matching Quay manifest was unavailable and the archived binary endpoint returned HTTP 410.
 

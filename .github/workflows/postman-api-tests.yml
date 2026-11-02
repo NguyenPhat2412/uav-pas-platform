@@ -84,4 +84,4 @@ jobs:
 
       - name: Run 130 Postman API Tests
         run: |
-          postman collection run uav-pas-platform.postman_collection.json
+          postman collection run api-contract/postman_collection.json

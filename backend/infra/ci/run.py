@@ -42,7 +42,7 @@ ENV.update(COMPOSE_PROJECT_NAME=ARGS.project,UAV_VOLUME_GENERATION='source',UAV_
  NEXT_TELEMETRY_DISABLED='1',NEXT_PUBLIC_API_URL=f"http://localhost:{PORTS['backend']}",UAV_E2E_PRIVATE_DIR=str(W),UAV_E2E_RESULT_DIR=str(O))
 for key in ['db','storage','storage_console']: ENV['UAV_E2E_'+key.upper()+'_PORT']=str(PORTS[key])
 BASE=f"http://localhost:{PORTS['backend']}"; PROCESSES={}; RESULTS=[]; COMMANDS=[]; GENERATIONS=[]; CURRENT='initialization'; COUNTER=0
-COMPOSE=['docker','compose','-p',ARGS.project,'-f',str(ROOT/'backend/infra/ci/compose.yml')]
+COMPOSE=['docker','compose','-p',ARGS.project,'-f',str(ROOT/'backend/infra/ci/compose.e2e.yml')]
 
 def frontend_build_identity():
     digest=hashlib.sha256()

@@ -54,4 +54,4 @@ npm run dev              # http://localhost:3100
 node --test tests/*.test.mjs && npm run typecheck && npm run architecture:check
 ```
 
-Biến môi trường mẫu có trong `.env.example`. Hướng dẫn triển khai nằm ở `deploy/DEPLOY.md`, tài liệu chi tiết ở `docs/`.
+Biến môi trường mẫu có trong `.env.example`. Hướng dẫn triển khai nằm ở `deploy/DEPLOY.md`. Cấu trúc thư mục, quy ước đặt tên tài liệu và cách chạy kiểm thử nằm ở [docs/README.md](docs/README.md).

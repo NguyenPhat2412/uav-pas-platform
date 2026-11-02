@@ -6,7 +6,7 @@ Migration is additive and reversible. No phase moves files until the review chec
 
 ## M0 — Discovery and baseline
 
-**Files/evidence:** current `frontend/src`, `frontend/package.json`, `frontend/Dockerfile`, `frontend/next.config.ts`, auth/API/query files, backend controller annotations, `docs/handoff/*`, Drive sync reports, and the six architecture documents.
+**Files/evidence:** current `frontend/src`, `frontend/package.json`, `frontend/Dockerfile`, `frontend/next.config.ts`, auth/API/query files, backend controller annotations, `docs/reports/*`, Drive sync reports, and the six architecture documents.
 
 **Steps:** freeze the route/API/permission inventory; record branch, HEAD, worktrees and uncommitted-file hashes; run frontend lint/typecheck/test/build and backend test; capture legacy browser smoke evidence; resolve the local `main` versus historical Drive branch-name discrepancy.
 

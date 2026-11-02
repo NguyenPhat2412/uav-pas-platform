@@ -1,4 +1,0 @@
-Admin dev server: http://localhost:3103
-GET /health -> 204
-GET /login -> 200
-GET /dashboard -> 200

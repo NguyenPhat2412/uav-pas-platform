@@ -9,7 +9,7 @@ import type {
     UpdateTrainingProgressPayload,
 } from '@/shared/types/training/training.types';
 
-/** The learner half of the web trainingService (docs/training-courses-api.md); the app never edits courses. */
+/** The learner half of the web trainingService (docs/architecture/TRAINING_COURSES_API.md); the app never edits courses. */
 export const trainingService = {
     listCourses: (portal: TrainingPortalTier, signal?: AbortSignal) =>
         apiClient.get<TrainingCourseSummary[]>(`${API_ROUTES.training.courses}?portal=${portal}`, {signal}),

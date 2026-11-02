@@ -2,7 +2,7 @@
 
 ## Cập nhật 2026-10-16
 
-V4 thêm `uk_users_phone_number` trên `btrim(users.phone_number)` cho giá trị khác NULL/rỗng; không thêm bảng/cột. Xem [hồ sơ khách hàng](../handoff/m6/M6_CUSTOMER_PROFILE_2026_10_16.md) về preflight dữ liệu trùng. Nội dung kiểm kê phía dưới là baseline lịch sử; V3 bổ sung các bảng bảo trì/sửa chữa, tổng hiện tại 22 bảng nghiệp vụ.
+V4 thêm `uk_users_phone_number` trên `btrim(users.phone_number)` cho giá trị khác NULL/rỗng; không thêm bảng/cột. Xem [hồ sơ khách hàng](../reports/m6/M6_CUSTOMER_PROFILE_2026_10_16.md) về preflight dữ liệu trùng. Nội dung kiểm kê phía dưới là baseline lịch sử; V3 bổ sung các bảng bảo trì/sửa chữa, tổng hiện tại 22 bảng nghiệp vụ.
 
 Ngày kiểm kê: 2026-10-09. Product source under review: `ca8a36bbbd12742f75c3c61d2ae5045d38bde753`; documentation checkpoint: `f280943`.
 
@@ -87,6 +87,6 @@ erDiagram
 ## Mapping nguồn / evidence
 
 - Entity/repository boundary: `backend/src/main/java/com/uav/platform/{entity,repository}/*`.
-- Migration validation: `backend/src/test/java/com/uav/platform/config/MigrationBaselineTest.java` và M6 stabilization evidence trong `docs/handoff/m6/evidence/tests/backend-stabilization-current-summary.json`.
-- Runtime schema used by the isolated API flow: PostgreSQL disposable on port 55444, Flyway schema version 2; redacted business evidence: `docs/handoff/m6/evidence/tests/m6-current-isolated-runtime.json`.
-- Fresh install và V1→V2 upgrade data preservation hiện đã có evidence PostgreSQL cùng revision ở `docs/handoff/m6/evidence/tests/backend-migration-upgrade-current-summary.json` và test `backend/src/test/java/com/uav/platform/stabilization/MigrationUpgradePostgresTest.java`. Durability/restart và backup/restore synthetic DB + media object hiện có evidence riêng ở `docs/handoff/m6/evidence/tests/backend-durability-restore-current-summary.json`; full production-like concurrency vẫn là acceptance riêng.
+- Migration validation: `backend/src/test/java/com/uav/platform/config/MigrationBaselineTest.java` và M6 stabilization evidence trong `docs/reports/m6/evidence/tests/backend-stabilization-current-summary.json`.
+- Runtime schema used by the isolated API flow: PostgreSQL disposable on port 55444, Flyway schema version 2; redacted business evidence: `docs/reports/m6/evidence/tests/m6-current-isolated-runtime.json`.
+- Fresh install và V1→V2 upgrade data preservation hiện đã có evidence PostgreSQL cùng revision ở `docs/reports/m6/evidence/tests/backend-migration-upgrade-current-summary.json` và test `backend/src/test/java/com/uav/platform/stabilization/MigrationUpgradePostgresTest.java`. Durability/restart và backup/restore synthetic DB + media object hiện có evidence riêng ở `docs/reports/m6/evidence/tests/backend-durability-restore-current-summary.json`; full production-like concurrency vẫn là acceptance riêng.

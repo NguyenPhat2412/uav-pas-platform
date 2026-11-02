@@ -19,6 +19,8 @@ node_modules/
 
 # Local analysis and test artifacts
 work/
+# Test evidence (logs, JSON, screenshots) stays on disk next to its report, outside Git
+docs/reports/**/evidence/
 .codebase-memory/
 /*.png
 coverage/
@@ -35,5 +37,8 @@ backend/target/
 __pycache__/
 *.py[cod]
 
-# Agent worktrees (local only)
-.claude/worktrees/
+# Claude Code local settings and worktrees
+.claude/
+
+# Edge AI models (large binaries; checksums in edge/kv260/README.md)
+*.xmodel

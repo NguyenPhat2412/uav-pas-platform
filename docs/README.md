@@ -1,101 +1,64 @@
-# Hướng dẫn dự án UAV PAS
+# Tài liệu UAV PAS
 
-Cấu trúc hiện hành ngày 18/10/2026:
+## Cấu trúc dự án
 
 ```text
 uav-pas-platform/
-├── frontend/     # một Next app: src/app, src/{api,hooks,components,types,utils}/<tính năng>, public, tests
-├── backend/      # Spring Boot, hạ tầng và công cụ kiểm thử
-└── docs/         # architecture, handoff, tasks, work (cục bộ)
+├── backend/        # Spring Boot (Java 21): src/main/java/com/uav/platform/<tầng>/<tính năng>
+│   └── infra/ci/   # stack kiểm thử: compose.test.yml (CI, test Postgres/MinIO), compose.e2e.yml (run.py)
+├── frontend/       # Next.js: src/{api,hooks,components,types,utils,forms}/<tính năng>, src/app (route)
+├── mobile/         # Expo iPhone app cho khách hàng; src/shared/ sinh từ frontend, không sửa tay
+├── edge/kv260/     # model AI chạy trên board KV260 (không lưu .xmodel trong git)
+├── api-contract/   # openapi.json, Postman collection và script sinh collection
+├── deploy/         # docker-compose.prod.yml, nginx, hướng dẫn DEPLOY.md
+├── docs/           # tài liệu (bên dưới)
+└── docker-compose.yml  # stack chạy local đầy đủ, đọc .env ở gốc
 ```
 
-Các mục ẩn Git và cấu hình công cụ vẫn ở gốc. Cài npm trong `frontend`, không cài ở gốc. Kiến trúc frontend duy nhất được mô tả trong [FRONTEND_STRUCTURE.md](architecture/FRONTEND_STRUCTURE.md).
+## Thư mục tài liệu
 
-## Phiên localhost (18/10/2026)
+| Thư mục | Nội dung | Quy ước tên tệp |
+|---|---|---|
+| [architecture/](architecture/) | Kiến trúc và thiết kế đang áp dụng | `UPPER_SNAKE.md` |
+| [business/](business/) | Đặc tả nghiệp vụ (BA), traceability, hình minh hoạ | `UPPER_SNAKE.md` |
+| [specs/](specs/) | Bản thiết kế trước khi làm một tính năng | `YYYY-MM-DD-<tên>-design.md` |
+| [plans/](plans/) | Kế hoạch triển khai, mục tiêu, checklist | `YYYY-MM-DD-<tên>.md` |
+| [reports/](reports/) | Báo cáo bàn giao, kiểm thử theo từng đợt (M1–M6, docops) | giữ nguyên như lúc viết |
+| [screenshots/](screenshots/) | Ảnh giao diện dùng trong tài liệu | `<khu-vực>_<màn-hình>.png` |
+| `work/` | Ghi chú và log cục bộ, git bỏ qua | tự do |
 
-Tất cả máy chủ chạy mã nguồn tại `/Volumes/D/Codex/projects/uav-pas-platform`. Đường dẫn chat cũ `/Volumes/D/uav_platform` hiện là liên kết tới chính thư mục này, không phải một bản dự án khác.
+`reports/` là tài liệu lịch sử: đường dẫn, cổng và số liệu trong đó đúng tại thời điểm viết. Bằng chứng kiểm thử
+(log, JSON, ảnh) nằm trong các thư mục `reports/**/evidence/` trên máy và không lưu trong git; bản đầy đủ có trong
+lịch sử git đến commit `79d877e`.
+
+## Chạy local
 
 | Thành phần | Địa chỉ |
 |---|---|
-| Website công khai | http://localhost:3100 |
-| Khách hàng | http://localhost:3100/customer/login |
-| Vận hành | http://localhost:3100/operations/login |
-| Quản trị | http://localhost:3100/admin/login |
-| Trạng thái backend | http://localhost:18082/actuator/health |
+| Website, cổng Khách hàng, Vận hành, Quản trị | http://localhost:3100 |
+| Backend | `NEXT_PUBLIC_API_URL` trong `frontend/.env.local` (mẫu: http://localhost:18082) |
 
-Frontend hiện chạy một ứng dụng; không còn runtime legacy. Backend canonical được luồng phụ trách backend xác nhận 771 kiểm thử đạt, không bỏ qua; runtime ngày 18/10 ở `docs/work/backend-runtime-20261018/`.
-
-Cổng frontend là 3100, backend là 18082. PostgreSQL cục bộ ở 5500; MinIO ở 9034/9035. Database đang dùng là `uav_pas_integrated_20261017`, đã tiếp nhận và đối chiếu đủ 22 bảng/117 dòng gốc trước khi mở dịch vụ. Database cũ `uav_pas_dev` và volume MinIO gốc được giữ nguyên. Kho dữ liệu không chứa các nhiệm vụ/tệp thử nghiệm từ bản preview.
-
-Sao lưu mã nguồn, cấu hình, Git, PostgreSQL và toàn bộ MinIO đã được kiểm chứng phục hồi; danh mục nằm tại `docs/work/main-activation-20261017/BACKUP-INDEX.json`, hướng dẫn phục hồi tại `RECOVERY.md` cùng thư mục. Không chuyển ngược database khi đã có dữ liệu mới mà chưa sao lưu và đối chiếu phần phát sinh. Hai tài khoản quản trị/vận hành cục bộ mới nằm trong tệp riêng tư `docs/work/main-activation-20261017/local-operator-accounts.private.json`; tài khoản cũ giữ nguyên. Webhook gửi ra ngoài đang tắt cho đến khi có đích nhận thật được cấu hình.
-
-Cấu hình riêng tư nằm trong `.env`, `backend/.env` và `frontend/.env.local`, được Git bỏ qua. Máy chủ đang được giữ chạy; thông tin tiến trình nằm trong `docs/work/local-runtime/`, log của phiên hợp nhất nằm trong `docs/work/main-activation-20261017/`.
-
-Để chạy lại backend sau khi chủ động dừng phiên cũ, từ gốc dự án:
+Cấu hình riêng tư nằm trong `.env`, `backend/.env`, `frontend/.env.local` và `mobile/.env.development.local`,
+git bỏ qua. Tạo từ các tệp `.env.example` tương ứng.
 
 ```sh
+# Backend
 (cd backend; set -a; . ./.env; set +a; ./mvnw spring-boot:run)
-```
 
-## Cài và chạy frontend
+# Frontend
+cd frontend && npm ci && npm run dev
 
-Từ gốc dự án:
-
-```sh
-cd frontend
-npm ci
-# Tạo .env.local theo .env.example nếu chưa có.
-npm run dev
-```
-
-Bản production: `npm run build` rồi `npm start`. Chỉ cần một terminal cho frontend. Tất cả khu vực dùng cùng origin 3100; không chạy lại các cổng 3101, 3102, 3103, 3300.
-
-`frontend/.env.local` chứa `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_ENVIRONMENT`. Với máy hiện tại, API là `http://localhost:18082`; website là `http://localhost:3100`.
-
-## Chạy backend và Docker
-
-Backend giữ nguyên đường dẫn và lệnh:
-
-```sh
-cd backend
-./mvnw spring-boot:run
-```
-
-`docker-compose.yml` nằm ở gốc dự án, cạnh `.env`, nên từ gốc dự án chỉ cần:
-
-```sh
+# Toàn bộ stack bằng Docker, từ gốc dự án
 docker compose up -d --build
 ```
-
-Chuẩn bị `.env` ở gốc và `backend/.env` từ các mẫu tương ứng như trước khi dùng Compose. Compose build frontend một ứng dụng từ `frontend/Dockerfile`. Tên Compose project mặc định được giữ là `uav-pas-platform` để tiếp tục dùng đúng volume PostgreSQL và MinIO. Nếu trước đây dùng `-p <tên-riêng>`, tiếp tục dùng tên đó.
-
-Build một ứng dụng mới từ gốc dự án:
-
-```sh
-docker build -f frontend/Dockerfile -t uav-frontend frontend
-```
-
-Stack kiểm thử cô lập nằm tại `backend/docker-compose.stabilization.yml`; tiếp tục truyền các biến `UAV_TEST_*` và tên project kiểm thử riêng như trước.
 
 ## Kiểm tra
 
 ```sh
-cd frontend
-npm run lint
-npm run typecheck
-npm test
-npm run build
-npm run architecture:check
-cd ../backend
-./mvnw test
+cd backend  && ./mvnw -B -Duav.build.directory=/tmp/uav-verify test
+cd frontend && npm run lint && npm run typecheck && npm test && npm run architecture:check
+cd mobile   && npm run typecheck && npm test
 ```
 
-Đã sửa bộ lệnh `node`, `npm`, `npx` trong `/Volumes/D/Codex/tools/bin` để dùng Node 22.23.2 và npm 10.9.8 có sẵn. Không cần chỉnh PATH mỗi lần. Terminal tương tác vẫn dùng Node 20.20.2 qua NVM theo cấu hình hiện có; cả hai môi trường đã được kiểm tra chạy npm/npx thành công.
-
-## Phối hợp và tài liệu lịch sử
-
-Mọi luồng làm việc trên `/Volumes/D/Codex/projects/uav-pas-platform`. Mã frontend mới chỉ nằm trong `frontend/src`; xem [ánh xạ route](architecture/FRONTEND_ROUTE_MIGRATION.md). Không khôi phục `apps`, `packages`, `legacy`, không sửa management-shop.
-
-Bản sao frontend trước hợp nhất và patch Git nằm ở `docs/work/frontend-unification-20261018/`; mã cũ đã đưa vào `retired/`, không thuộc source/build. Dữ liệu backend và object storage không được thay đổi bởi đợt sắp xếp frontend.
-
-Các báo cáo trước 18/10 có thể ghi đường dẫn/cổng cũ. Chúng là tài liệu lịch sử; không chạy script lịch sử mà chưa đối chiếu cấu trúc mới. Bộ E2E tạo dữ liệu chỉ chạy trên stack cô lập qua `python3 backend/infra/ci/run.py`, không dùng DB chính.
+Stack kiểm thử cô lập: `backend/infra/ci/compose.test.yml` (project `uav-pas-test`, cần các biến `UAV_TEST_*`).
+Bộ E2E tạo dữ liệu chỉ chạy trên stack cô lập qua `python3 backend/infra/ci/run.py`, không dùng database chính.

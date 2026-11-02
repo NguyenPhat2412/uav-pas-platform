@@ -48,10 +48,10 @@ Run the full backend verify with disposable PostgreSQL and MinIO, with zero fail
 
 ## Latest local verification — 2026-10-18
 
-The current backend passed two complete Maven runs with disposable PostgreSQL/MinIO: 763 tests, zero failures/errors/skips and Maven exit code 0. The strict runner now uses a fresh isolated build directory to reject stale test evidence. The persistence workflow also provisions MinIO and uses the zero-skip gate; hosted execution remains unverified. See [the dated verification report](../handoff/m6/M6_BACKEND_VERIFICATION_2026_10_18.md).
+The current backend passed two complete Maven runs with disposable PostgreSQL/MinIO: 763 tests, zero failures/errors/skips and Maven exit code 0. The strict runner now uses a fresh isolated build directory to reject stale test evidence. The persistence workflow also provisions MinIO and uses the zero-skip gate; hosted execution remains unverified. See [the dated verification report](../reports/m6/M6_BACKEND_VERIFICATION_2026_10_18.md).
 
 ## Module DTO standardization — 2026-10-18
 
 Compound user and maintenance list inputs now use typed query request records at the service boundary; HTTP parameter binding stays explicit and unchanged. `RoleUpdateRequest` belongs to `user/dto/request`. The profile's validated internal data is `UserProfileUpdateCommand` in `user/dto/record`; the public patch DTO is unchanged. DTO role names are guarded by `ModuleDtoStructureTest`.
 
-Full Maven verification after these changes passed 771 tests, zero failures/errors/skips, with disposable PostgreSQL/MinIO; 154 frontend contract checks also passed. See [the module matrix](BACKEND_MODULE_MATRIX.md) and [the dated report](../handoff/m6/M6_MODULE_STRUCTURE_2026_10_18.md).
+Full Maven verification after these changes passed 771 tests, zero failures/errors/skips, with disposable PostgreSQL/MinIO; 154 frontend contract checks also passed. See [the module matrix](BACKEND_MODULE_MATRIX.md) and [the dated report](../reports/m6/M6_MODULE_STRUCTURE_2026_10_18.md).

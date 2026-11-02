@@ -6,7 +6,7 @@ Giữ nguyên cơ chế cookie/bearer/CSRF đã tích hợp. Bản backend sau c
 
 Sau backup và chuyển localhost, readiness cùng kiểm tra anonymous/invalid bearer/CORS và năm frontend đều PASS. Các portal sử dụng cùng hostname/backend có thể dùng lại cookie phiên qua các port; bộ nhớ/cache UI của từng origin vẫn riêng. Điều này không chứng minh SSO trên các hostname hoặc registrable domain khác nhau. Lượt browser hết hạn tự nhiên với TTL 5 giây là evidence ngày 15/10, không được gắn thành một lượt chạy lại trên artifact cuối.
 
-Không đổi auth contract trong gói ưu tiên này. Các yêu cầu HTTPS, cookie scope, CSRF coverage đầy đủ và SSO bên dưới vẫn cần kiểm chứng tại staging thật. Xem [báo cáo ngày 17/10 và evidence](../handoff/m6/M6_FULL_PRIORITIES_2026_10_17.md).
+Không đổi auth contract trong gói ưu tiên này. Các yêu cầu HTTPS, cookie scope, CSRF coverage đầy đủ và SSO bên dưới vẫn cần kiểm chứng tại staging thật. Xem [báo cáo ngày 17/10 và evidence](../reports/m6/M6_FULL_PRIORITIES_2026_10_17.md).
 
 ## Trạng thái sau tích hợp main — 16/10/2026
 
@@ -38,4 +38,4 @@ Trước cutover phải chọn phạm vi cookie đủ hẹp, bật HTTPS/Secure,
 4. Kiểm cookie flags/domain/path, CORS, redirect allowlist, storage credential isolation và không lộ token trong URL/log/evidence.
 5. Hosted CI, full security coverage và kiểm trên browser/thiết bị hỗ trợ trước kết luận production-ready.
 
-Xem [báo cáo tích hợp và evidence](../handoff/m6/M6_MAIN_INTEGRATION_2026_10_16.md). Rollback là quay về artifact đã biết tốt và cấu hình tương ứng; không giả định có cờ tắt cookie chưa được triển khai, không xóa dữ liệu/refresh rows hoặc sửa migration đã xuất bản.
+Xem [báo cáo tích hợp và evidence](../reports/m6/M6_MAIN_INTEGRATION_2026_10_16.md). Rollback là quay về artifact đã biết tốt và cấu hình tương ứng; không giả định có cờ tắt cookie chưa được triển khai, không xóa dữ liệu/refresh rows hoặc sửa migration đã xuất bản.

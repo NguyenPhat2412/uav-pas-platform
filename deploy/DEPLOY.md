@@ -78,7 +78,7 @@ rsync -az --delete \
   --exclude .DS_Store --exclude .idea --exclude .vscode \
   --exclude '/.env' --exclude '/backend/.env' --exclude '/frontend/.env' --exclude '.env.local' \
   --exclude 'deploy/.env.production' --exclude 'deploy/build.log' \
-  --exclude 'docs/handoff' --exclude 'docs/screenshots' --exclude '/backups' \
+  --exclude 'docs/reports' --exclude 'docs/screenshots' --exclude '/backups' \
   ./ root@160.22.123.184:/opt/uav-pas/
 scp deploy/.env.production root@160.22.123.184:/opt/uav-pas/deploy/.env.production
 ssh root@160.22.123.184 'chmod 600 /opt/uav-pas/deploy/.env.production'

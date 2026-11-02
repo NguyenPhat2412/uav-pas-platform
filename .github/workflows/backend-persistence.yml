@@ -35,7 +35,7 @@ jobs:
           echo "UAV_TEST_STORAGE_USER=uav_ci" >> "$GITHUB_ENV"
           echo "UAV_TEST_STORAGE_PASSWORD=$storage_password" >> "$GITHUB_ENV"
       - name: Start disposable PostgreSQL and MinIO
-        run: docker compose -p uav-ci -f backend/docker-compose.stabilization.yml up -d --wait --wait-timeout 90
+        run: docker compose -p uav-ci -f backend/infra/ci/compose.test.yml up -d --wait --wait-timeout 90
       - name: Wait for real object storage readiness
         run: curl --fail --silent --retry 30 --retry-connrefused --retry-delay 1 --max-time 2 http://127.0.0.1:9014/minio/health/ready
       - name: Run complete backend suite including PostgreSQL and MinIO
@@ -51,7 +51,7 @@ jobs:
         run: python3 infra/ci/backend_tests.py
       - name: Remove disposable services
         if: always()
-        run: docker compose -p uav-ci -f backend/docker-compose.stabilization.yml down --volumes
+        run: docker compose -p uav-ci -f backend/infra/ci/compose.test.yml down --volumes
       - uses: actions/upload-artifact@v4
         if: always()
         with:

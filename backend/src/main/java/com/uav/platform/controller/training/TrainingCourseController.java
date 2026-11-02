@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/** Udemy-style training courses: lessons, learner progress and admin authoring (docs/training-courses-api.md). */
+/** Udemy-style training courses: lessons, learner progress and admin authoring (docs/architecture/TRAINING_COURSES_API.md). */
 @RestController
 @RequestMapping(ApiRoutes.Training.BASE)
 @RequiredArgsConstructor

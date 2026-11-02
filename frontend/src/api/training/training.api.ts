@@ -28,7 +28,7 @@ export const trainingService = {
     updateDocument: (id: number, payload: UpsertTrainingDocumentPayload) =>
         apiClient.put<TrainingDocument>(API_ROUTES.training.byId(id), payload),
 
-    // Courses (docs/training-courses-api.md)
+    // Courses (docs/architecture/TRAINING_COURSES_API.md)
     listCourses: (portal: TrainingPortalTier, signal?: AbortSignal) =>
         apiClient.get<TrainingCourseSummary[]>(`${API_ROUTES.training.courses}?portal=${portal}`, {signal}),
 
