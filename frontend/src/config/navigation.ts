@@ -5,6 +5,7 @@ import {
     ClipboardList,
     CreditCard,
     Crosshair,
+    Gamepad2,
     FileKey2,
     KeyRound,
     LayoutDashboard,
@@ -79,7 +80,7 @@ export const portalSections: NavSection[] = [
     {
         id: 'operations',
         key: 'operationsSection',
-        defaultTitle: 'TÁC CHIẾN & VẬN HÀNH',
+        defaultTitle: 'ĐIỀU HÀNH & VẬN HÀNH',
         items: [
             {
                 href: "/operations/overview",
@@ -91,9 +92,16 @@ export const portalSections: NavSection[] = [
             {
                 href: "/operations/sar-cockpit",
                 key: 'sar',
-                defaultLabel: 'Tác chiến AI & SAR',
+                defaultLabel: 'AI & Tìm kiếm cứu nạn',
                 icon: Crosshair,
                 permission: 'MISSION_VIEW'
+            },
+            {
+                href: "/operations/simulation",
+                key: 'simulation',
+                defaultLabel: 'Mô phỏng bay',
+                icon: Gamepad2,
+                permission: 'UAV_VIEW'
             },
             {
                 href: "/operations/dispatch/missions",

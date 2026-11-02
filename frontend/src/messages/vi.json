@@ -95,7 +95,8 @@
     "notifications": "Thông báo",
     "audit": "Nhật ký",
     "training": "Đào tạo & SOP UAV",
-    "weather": "Thời tiết bay"
+    "weather": "Thời tiết bay",
+    "simulation": "Mô phỏng bay"
   },
   "adminNavGroups": {
     "overview": "Tổng quan",
@@ -601,5 +602,61 @@
     "retry": "Thử lại",
     "reload": "Tải lại trang",
     "home": "Về trang chủ"
+  },
+  "simulation": {
+    "title": "Mô phỏng bay",
+    "subtitle": "UAV giả lập gửi telemetry qua đúng đường dữ liệu của trạm mặt đất thật",
+    "running": "Đang bay mô phỏng",
+    "noUav": "Chưa có UAV. Tạo UAV ở mục Đội UAV trước.",
+    "route": "Điểm bay",
+    "area": "Vùng khảo sát",
+    "drawRouteHint": "Bấm lên bản đồ để thêm điểm bay theo thứ tự.",
+    "drawAreaHint": "Bấm lên bản đồ để vẽ các đỉnh vùng khảo sát (ít nhất 3), rồi sinh lộ trình quét.",
+    "undo": "Bỏ điểm cuối",
+    "clear": "Xoá hết",
+    "points": "{count} điểm",
+    "vertices": "{count} đỉnh",
+    "generateSweep": "Sinh lộ trình",
+    "sweepInfo": "{count} điểm · cách {spacing} m · {length} km · ~{minutes} phút",
+    "altitude": "Độ cao (m)",
+    "speed": "Tốc độ (m/s)",
+    "loss": "Mất gói (%)",
+    "latency": "Độ trễ (ms)",
+    "battery": "Pin (%)",
+    "overlap": "Chồng ngang (%)",
+    "start": "Bắt đầu bay",
+    "needRoute": "Thêm điểm bay hoặc sinh lộ trình quét trước.",
+    "started": "Đã bắt đầu chuyến bay mô phỏng",
+    "failed": "Không thực hiện được lệnh mô phỏng.",
+    "pause": "Dừng",
+    "resume": "Tiếp",
+    "rth": "Về nhà",
+    "land": "Hạ cánh",
+    "stop": "Kết thúc",
+    "events": "Nhật ký chuyến bay",
+    "disclaimer": "Dữ liệu mô phỏng: không điều khiển UAV thật. Có thể thay bằng PX4 SITL qua cùng API telemetry.",
+    "modes": {
+      "TAKEOFF": "Cất cánh",
+      "MISSION": "Theo lộ trình",
+      "HOLD": "Dừng tại chỗ",
+      "RETURN_TO_HOME": "Quay về",
+      "LANDING": "Hạ cánh",
+      "LANDED": "Đã hạ cánh"
+    },
+    "hud": {
+      "altitude": "Độ cao",
+      "speed": "Tốc độ",
+      "battery": "Pin",
+      "heading": "Hướng",
+      "waypoint": "Điểm",
+      "toHome": "Về nhà"
+    },
+    "link": {
+      "title": "Đường truyền",
+      "delivered": "Nhận/Gửi",
+      "lost": "Mất gói",
+      "latency": "Trễ TB",
+      "config": "Cấu hình: mất {loss}% · trễ {latency} ms · rào {fence} m"
+    }
   }
 }

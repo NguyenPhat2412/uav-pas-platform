@@ -95,7 +95,8 @@
     "notifications": "Notifications",
     "audit": "Activity Log",
     "training": "UAV Training & SOP",
-    "weather": "Flight weather"
+    "weather": "Flight weather",
+    "simulation": "Flight simulation"
   },
   "adminNavGroups": {
     "overview": "Overview & Analytics",
@@ -601,5 +602,61 @@
     "retry": "Try again",
     "reload": "Reload page",
     "home": "Go to home"
+  },
+  "simulation": {
+    "title": "Flight simulation",
+    "subtitle": "A simulated UAV sends telemetry through the same path as a real ground station",
+    "running": "Simulated flights",
+    "noUav": "No UAV yet. Create one under UAV fleet first.",
+    "route": "Waypoints",
+    "area": "Survey area",
+    "drawRouteHint": "Click the map to add waypoints in order.",
+    "drawAreaHint": "Click the map to draw the survey area (at least 3 vertices), then generate the sweep.",
+    "undo": "Remove last",
+    "clear": "Clear all",
+    "points": "{count} points",
+    "vertices": "{count} vertices",
+    "generateSweep": "Generate path",
+    "sweepInfo": "{count} points · {spacing} m apart · {length} km · ~{minutes} min",
+    "altitude": "Altitude (m)",
+    "speed": "Speed (m/s)",
+    "loss": "Packet loss (%)",
+    "latency": "Latency (ms)",
+    "battery": "Battery (%)",
+    "overlap": "Side overlap (%)",
+    "start": "Start flight",
+    "needRoute": "Add waypoints or generate a survey path first.",
+    "started": "Simulated flight started",
+    "failed": "The simulation command failed.",
+    "pause": "Hold",
+    "resume": "Resume",
+    "rth": "Home",
+    "land": "Land",
+    "stop": "End",
+    "events": "Flight log",
+    "disclaimer": "Simulated data: no real UAV is controlled. PX4 SITL can replace it through the same telemetry API.",
+    "modes": {
+      "TAKEOFF": "Take-off",
+      "MISSION": "Mission",
+      "HOLD": "Holding",
+      "RETURN_TO_HOME": "Returning",
+      "LANDING": "Landing",
+      "LANDED": "Landed"
+    },
+    "hud": {
+      "altitude": "Altitude",
+      "speed": "Speed",
+      "battery": "Battery",
+      "heading": "Heading",
+      "waypoint": "Waypoint",
+      "toHome": "To home"
+    },
+    "link": {
+      "title": "Telemetry link",
+      "delivered": "Recv/Sent",
+      "lost": "Loss",
+      "latency": "Avg delay",
+      "config": "Settings: {loss}% loss · {latency} ms delay · {fence} m fence"
+    }
   }
 }

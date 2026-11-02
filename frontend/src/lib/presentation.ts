@@ -346,17 +346,17 @@ const planNames: Record<PresentationLocale, Record<string, string>> = {
     vi: {
         'Gói Tiêu Chuẩn (Basic)': 'Gói tiêu chuẩn',
         'Gói Chuyên Nghiệp (Pro)': 'Gói chuyên nghiệp',
-        'Gói Tác Chiến Đặc Biệt (Enterprise/SAR)': 'Gói tác chiến đặc biệt'
+        'Gói Enterprise (SAR)': 'Gói Enterprise (SAR)'
     },
     en: {
         'Gói Tiêu Chuẩn (Basic)': 'Standard plan',
         'Gói Chuyên Nghiệp (Pro)': 'Professional plan',
-        'Gói Tác Chiến Đặc Biệt (Enterprise/SAR)': 'Special operations plan'
+        'Gói Enterprise (SAR)': 'Enterprise plan (SAR)'
     },
     ja: {
         'Gói Tiêu Chuẩn (Basic)': 'スタンダードプラン',
         'Gói Chuyên Nghiệp (Pro)': 'プロフェッショナルプラン',
-        'Gói Tác Chiến Đặc Biệt (Enterprise/SAR)': '特別作戦プラン'
+        'Gói Enterprise (SAR)': 'エンタープライズプラン（SAR）'
     },
 };
 

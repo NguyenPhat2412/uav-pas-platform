@@ -10,6 +10,7 @@ import {
     ClipboardList,
     CreditCard,
     Crosshair,
+    Gamepad2,
     Database,
     FileCheck2,
     FileKey2,
@@ -380,7 +381,7 @@ export const OPERATIONS_SIDEBAR_GROUPS: readonly OperationsNavGroup[] = [
 ] as const;
 
 export const OPERATIONS_SIDEBAR_ROUTES: SidebarRouteItem<OperationsNavGroup>[] = [
-    // Nhóm: Chỉ huy & Tác chiến (command)
+    // Nhóm: Điều hành & Giám sát (command)
     {
         href: '/operations/overview',
         key: 'overview',
@@ -395,6 +396,13 @@ export const OPERATIONS_SIDEBAR_ROUTES: SidebarRouteItem<OperationsNavGroup>[] =
         icon: Crosshair,
         permission: 'MISSION_VIEW',
         aliases: ['/operations/flight-ops'],
+    },
+    {
+        href: '/operations/simulation',
+        key: 'simulation',
+        group: 'command',
+        icon: Gamepad2,
+        permission: 'UAV_VIEW',
     },
     {
         href: '/operations/weather',

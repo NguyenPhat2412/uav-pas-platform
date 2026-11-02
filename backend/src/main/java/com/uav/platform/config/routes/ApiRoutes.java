@@ -512,6 +512,17 @@ public final class ApiRoutes {
         public static final String MISSIONS_TELEMETRY_LATEST = "/missions/{id}/telemetry/latest";
     }
 
+    /** Simulated UAV flights that feed the telemetry pipeline (stand-in for PX4 SITL). */
+    public static final class Simulation {
+        private Simulation() {}
+
+        public static final String BASE = API_V1_PREFIX + "/simulation";
+        public static final String SESSIONS = "/sessions";
+        public static final String SESSION = "/sessions/{uavId}";
+        public static final String SESSION_COMMANDS = "/sessions/{uavId}/commands";
+        public static final String SURVEY_PLAN = "/survey-plan";
+    }
+
     public static final String[] SWAGGER_WHITELIST = {
         Docs.API_DOCS, Docs.SWAGGER_UI, Docs.SWAGGER_HTML
     };

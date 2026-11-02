@@ -94,6 +94,12 @@ export const API_ROUTES = {
         latestTelemetry: (uavId: string | number) => `/api/v1/uavs/${uavId}/telemetry/latest`,
         fleetTelemetry: '/api/v1/uavs/telemetry/latest',
     },
+    simulation: {
+        sessions: '/api/v1/simulation/sessions',
+        session: (uavId: string | number) => `/api/v1/simulation/sessions/${uavId}`,
+        commands: (uavId: string | number) => `/api/v1/simulation/sessions/${uavId}/commands`,
+        surveyPlan: '/api/v1/simulation/survey-plan',
+    },
     inventory: {
         equipment: '/api/v1/inventory/equipment',
         equipmentHistory: '/api/v1/inventory/equipment/history',

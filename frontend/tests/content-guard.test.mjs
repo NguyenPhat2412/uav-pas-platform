@@ -49,14 +49,7 @@ const PUBLIC_CLAIMS = [
 const SOURCES = ['.ts', '.tsx', '.json'];
 
 test('no school branding or military wording in any catalog, page or component', () => {
-    const paths = [
-        ...files('src/messages', ['.json']),
-        ...files('src/app', SOURCES),
-        ...files('src/components', SOURCES),
-        ...files('src/content', SOURCES),
-        ...files('src/utils', SOURCES),
-    ];
-    assert.deepEqual(offences(paths, EVERYWHERE), []);
+    assert.deepEqual(offences(files('src', SOURCES), EVERYWHERE), []);
 });
 
 test('public site and sign-in copy makes no claims the demo cannot back up', () => {
