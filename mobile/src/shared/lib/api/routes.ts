@@ -22,8 +22,6 @@ export const API_ROUTES = {
         refresh: '/api/v1/auth/refresh',
         logout: '/api/v1/auth/logout',
         me: '/api/v1/auth/me',
-        zaloAuthorize: '/api/v1/auth/zalo/authorize',
-        zaloCallback: '/api/v1/auth/zalo/callback',
     },
     users: {
         list: '/api/v1/users',
@@ -97,6 +95,12 @@ export const API_ROUTES = {
         telemetry: (uavId: string | number) => `/api/v1/uavs/${uavId}/telemetry`,
         latestTelemetry: (uavId: string | number) => `/api/v1/uavs/${uavId}/telemetry/latest`,
         fleetTelemetry: '/api/v1/uavs/telemetry/latest',
+    },
+    simulation: {
+        sessions: '/api/v1/simulation/sessions',
+        session: (uavId: string | number) => `/api/v1/simulation/sessions/${uavId}`,
+        commands: (uavId: string | number) => `/api/v1/simulation/sessions/${uavId}/commands`,
+        surveyPlan: '/api/v1/simulation/survey-plan',
     },
     inventory: {
         equipment: '/api/v1/inventory/equipment',

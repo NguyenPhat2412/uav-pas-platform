@@ -95,7 +95,8 @@
     "notifications": "通知",
     "audit": "監査ログ",
     "training": "UAV研修・SOP手順書",
-    "weather": "飛行気象"
+    "weather": "飛行気象",
+    "simulation": "飛行シミュレーション"
   },
   "adminNavGroups": {
     "overview": "概要・統計",
@@ -180,7 +181,6 @@
     "loginBtn": "ログイン",
     "registerBtn": "アカウント作成",
     "loginWithPassword": "パスワードでログイン",
-    "loginWithZalo": "Zalo OA でログイン",
     "noAccount": "アカウントをお持ちでないですか？",
     "haveAccount": "既にアカウントをお持ちですか？",
     "passwordMin": "8文字以上",
@@ -192,7 +192,6 @@
     "groundControl": "地上管制局接続済",
     "orDivider": "または",
     "forgotPassword": "パスワードをお忘れですか？",
-    "zaloDescription": "認証済みZalo公式アカウントで素早く安全にログイン。",
     "google": {
       "signin_with": "Google でログイン",
       "signup_with": "Google で登録",
@@ -394,6 +393,7 @@
     "contact": "お問い合わせ・手配",
     "privacy": "プライバシーポリシー",
     "terms": "利用規約",
+    "credits": "画像クレジット",
     "copyright": "© {year} UAV PAS · Nguyen Phat 個人プロジェクト"
   },
   "weather": {
@@ -602,5 +602,61 @@
     "retry": "再試行",
     "reload": "ページを再読み込み",
     "home": "ホームへ"
+  },
+  "simulation": {
+    "title": "飛行シミュレーション",
+    "subtitle": "仮想UAVが実際の地上局と同じ経路でテレメトリを送信します",
+    "running": "シミュレーション中",
+    "noUav": "UAVがありません。先にUAV機隊で作成してください。",
+    "route": "ウェイポイント",
+    "area": "測量エリア",
+    "drawRouteHint": "地図をクリックして順番にウェイポイントを追加します。",
+    "drawAreaHint": "地図をクリックして測量エリアの頂点（3つ以上）を描き、経路を生成します。",
+    "undo": "最後を削除",
+    "clear": "すべて消去",
+    "points": "{count} 点",
+    "vertices": "{count} 頂点",
+    "generateSweep": "経路を生成",
+    "sweepInfo": "{count} 点 · 間隔 {spacing} m · {length} km · 約 {minutes} 分",
+    "altitude": "高度 (m)",
+    "speed": "速度 (m/s)",
+    "loss": "パケット損失 (%)",
+    "latency": "遅延 (ms)",
+    "battery": "バッテリー (%)",
+    "overlap": "サイドラップ (%)",
+    "start": "飛行開始",
+    "needRoute": "先にウェイポイントを追加するか測量経路を生成してください。",
+    "started": "シミュレーション飛行を開始しました",
+    "failed": "シミュレーション操作に失敗しました。",
+    "pause": "停止",
+    "resume": "再開",
+    "rth": "帰還",
+    "land": "着陸",
+    "stop": "終了",
+    "events": "飛行ログ",
+    "disclaimer": "シミュレーションデータです。実機は制御しません。同じテレメトリAPIでPX4 SITLに置き換えられます。",
+    "modes": {
+      "TAKEOFF": "離陸",
+      "MISSION": "ミッション",
+      "HOLD": "ホバリング",
+      "RETURN_TO_HOME": "帰還中",
+      "LANDING": "着陸中",
+      "LANDED": "着陸済み"
+    },
+    "hud": {
+      "altitude": "高度",
+      "speed": "速度",
+      "battery": "電池",
+      "heading": "方位",
+      "waypoint": "地点",
+      "toHome": "帰還距離"
+    },
+    "link": {
+      "title": "通信リンク",
+      "delivered": "受信/送信",
+      "lost": "損失",
+      "latency": "平均遅延",
+      "config": "設定: 損失 {loss}% · 遅延 {latency} ms · ジオフェンス {fence} m"
+    }
   }
 }
