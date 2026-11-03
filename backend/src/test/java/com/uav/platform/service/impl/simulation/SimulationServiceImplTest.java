@@ -21,6 +21,7 @@ import com.uav.platform.service.uav.TelemetryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -106,6 +107,15 @@ class SimulationServiceImplTest {
         service.start(request(null, List.of(List.of(21.011, 105.521))), "operator");
         service.tick();
         assertTrue(service.list().isEmpty());
+    }
+
+    @Test
+    void startRunsInAWritableTransactionBecauseItWritesTheAuditLog() throws Exception {
+        Transactional tx = SimulationServiceImpl.class
+                .getMethod("start", SimulationStartRequest.class, String.class)
+                .getAnnotation(Transactional.class);
+        assertNotNull(tx);
+        assertFalse(tx.readOnly(), "a read-only transaction rejects the audit INSERT (HTTP 500)");
     }
 
     @Test

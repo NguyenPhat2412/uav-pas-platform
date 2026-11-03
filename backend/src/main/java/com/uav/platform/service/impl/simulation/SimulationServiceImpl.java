@@ -63,7 +63,8 @@ public class SimulationServiceImpl implements SimulationService {
     private final Random random = new Random();
 
     @Override
-    @Transactional(readOnly = true)
+    // Read-write: the audit entry is written in this transaction.
+    @Transactional
     public SimulationStateResponse start(SimulationStartRequest r, String operator) {
         Uav uav = uavs.findById(r.uavId()).orElseThrow(() -> SystemException.notFound("UAV not found"));
         SimulatedFlightOperations running = flights.get(uav.getId());
@@ -111,10 +112,11 @@ public class SimulationServiceImpl implements SimulationService {
                 uav.getId(), r.missionId(), waypoints, home[0], home[1],
                 r.batteryPct() != null ? r.batteryPct() : 100, settings, new Random(random.nextLong()),
                 LocalDateTime.now());
-        flights.put(uav.getId(), flight);
-        labels.put(uav.getId(), uav.getSerialNumber() + " · " + uav.getModel());
+        // Audit first: if it fails the request fails without leaving a flight running behind it.
         audit.record(null, operator, AuditAction.CREATE, "UAV", uav.getId().toString(),
                 "Bắt đầu bay mô phỏng: " + waypoints.size() + " điểm, mất gói " + settings.packetLossPct() + "%");
+        flights.put(uav.getId(), flight);
+        labels.put(uav.getId(), uav.getSerialNumber() + " · " + uav.getModel());
         return toResponse(flight);
     }
 
