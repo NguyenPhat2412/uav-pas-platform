@@ -4,6 +4,7 @@ import {Link, useRouter} from 'expo-router';
 import {LogIn} from 'lucide-react-native';
 import {AppText, Button, TextField} from '@/components/ui';
 import {AuthLayout} from '@/components/auth/AuthLayout';
+import {GoogleSignInButton} from '@/components/auth/GoogleSignInButton';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
@@ -41,6 +42,7 @@ export function LoginScreen() {
 
     return (
         <AuthLayout title={t('customerAuth.loginHeading')} subtitle={t('customerAuth.loginIntro')}>
+            <GoogleSignInButton/>
             <TextField label={t('authShared.identity')} value={identity} onChangeText={setIdentity} autoCapitalize="none"
                        autoCorrect={false} autoComplete="username" textContentType="username" returnKeyType="next"/>
             <TextField label={t('authShared.password')} value={password} onChangeText={setPassword} secureTextEntry

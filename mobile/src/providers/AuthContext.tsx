@@ -17,6 +17,7 @@ interface AuthValue {
     can: (code: string) => boolean;
     /** Resolves to the response; when mfaRequired is set the caller continues with the code screen. */
     login: (usernameOrEmail: string, password: string) => Promise<AuthResponse>;
+    loginWithGoogle: (idToken: string) => Promise<AuthResponse>;
     /** Stores the tokens of a finished sign-in (password, 2FA or email verification) and opens the portal. */
     completeAuth: (response: AuthResponse) => Promise<void>;
     logout: () => Promise<void>;
@@ -97,6 +98,12 @@ export function AuthProvider({children}: { children: ReactNode }) {
         return response;
     }, [completeAuth]);
 
+    const loginWithGoogle = useCallback(async (idToken: string) => {
+        const response = await authService.google(idToken);
+        if (!response.mfaRequired) await completeAuth(response);
+        return response;
+    }, [completeAuth]);
+
     const logout = useCallback(async () => {
         const refreshToken = sessionStore.read()?.refreshToken;
         // Leave locally first: a failed network call must not keep private data on screen.
@@ -118,13 +125,13 @@ export function AuthProvider({children}: { children: ReactNode }) {
             status, user, permissions,
             permissionsReady: permissionQuery.data !== undefined && !revoked,
             can: code => permissions.includes(code),
-            login, completeAuth, logout, refreshUser,
+            login, loginWithGoogle, completeAuth, logout, refreshUser,
             retry: () => {
                 setStatus('loading');
                 setAttempt(count => count + 1);
             },
         };
-    }, [status, user, permissionQuery.data, permissionQuery.error, login, completeAuth, logout, refreshUser]);
+    }, [status, user, permissionQuery.data, permissionQuery.error, login, loginWithGoogle, completeAuth, logout, refreshUser]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -4,6 +4,8 @@ import type {AuthResponse, ForgotPasswordRequest, LoginRequest, OtpChallengeResp
 /** Same endpoints as the web authService; tokens come back in the body and are kept in the Keychain. */
 export const authService = {
     login: (credentials: LoginRequest) => apiClient.post<AuthResponse>(API_ROUTES.auth.login, credentials),
+    /** Exchanges a Google ID token (audience: the web client ID) for this app's own tokens. */
+    google: (credential: string) => apiClient.post<AuthResponse>(API_ROUTES.auth.google, {credential}),
     registerWithOtp: (data: RegisterRequest) => apiClient.post<OtpChallengeResponse>(API_ROUTES.auth.registerOtp, data),
     verifyEmail: (data: VerifyOtpRequest) => apiClient.post<AuthResponse>(API_ROUTES.auth.verifyEmail, data),
     verify2fa: (data: VerifyOtpRequest) => apiClient.post<AuthResponse>(API_ROUTES.auth.verify2fa, data),
