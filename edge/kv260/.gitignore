@@ -1,0 +1,9 @@
+# Runtime SQLite WAL offline spool & local secrets
+data/
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+.env
+__pycache__/
+*.py[cod]

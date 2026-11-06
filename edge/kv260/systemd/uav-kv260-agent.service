@@ -1,0 +1,30 @@
+[Unit]
+Description=UAV-PAS Kria KV260 Edge AI & MAVLink Gateway Agent
+Documentation=https://github.com/Xilinx/Vitis-AI
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+SupplementaryGroups=video render dialout
+WorkingDirectory=/opt/uav-pas/edge/kv260
+EnvironmentFile=-/etc/uav-kv260/agent.env
+Environment=PYTHONUNBUFFERED=1
+ExecStartPre=/usr/bin/python3 -m agent.main --verify-models
+ExecStart=/usr/bin/python3 -m agent.main --log-level INFO
+Restart=always
+RestartSec=3
+TimeoutStopSec=15
+KillSignal=SIGTERM
+
+# Hardening suitable for KV260 Vitis AI (/dev/dri, /dev/dpu) & UART (/dev/ttyPS1)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+StateDirectory=uav-kv260
+ReadWritePaths=-/var/lib/uav-kv260 -/opt/uav-pas/edge/kv260/data
+
+[Install]
+WantedBy=multi-user.target
