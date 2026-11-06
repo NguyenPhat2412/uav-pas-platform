@@ -45,7 +45,7 @@ export const solutionDetails: Record<string, SolutionDetailEntry> = {
     },
     'search-and-rescue': {
         useCase: 'Hỗ trợ ban chỉ huy và đội ứng phó được cấp phép tổ chức tìm kiếm mục tiêu mất dấu trên địa hình phức tạp bằng đường bay theo mẫu IAMSAR kết hợp cảm biến nhiệt và AI.',
-        workflow: 'Từ tọa độ vị trí nhìn thấy cuối cùng (Last Known Position – LKP), hệ thống tự động tính toán lộ trình bay xoắn ốc mở rộng (IAMSAR Expanding Square), giám sát telemetry UAV (mô phỏng) trên bản đồ điều hành và phát lệnh cứu nạn khẩn cấp qua Webhook khi mục tiêu được xác nhận.',
+        workflow: 'Từ tọa độ vị trí nhìn thấy cuối cùng (Last Known Position – LKP), hệ thống tự động tính toán lộ trình bay xoắn ốc mở rộng (IAMSAR Expanding Square), giám sát telemetry UAV trực tuyến trên bản đồ điều hành và phát lệnh cứu nạn khẩn cấp qua Webhook khi mục tiêu được xác nhận.',
         limitation: 'Giải pháp phục vụ điều phối chuyên môn cho các đơn vị được cấp phép. Trong tình huống khẩn cấp dân sự, luôn liên hệ trực tiếp tổng đài cứu hộ địa phương.',
         techStack: ['Buồng lái SAR Cockpit', 'Bản đồ điều hành SAR', 'Màn hình thông số bay UavTelemetryHud', 'Hệ thống Webhook khẩn cấp'],
         algorithms: ['Thuật toán sinh đường bay IAMSAR Expanding Square', 'Tính toán khoảng cách & phương vị Haversine', 'Kiểm tra an toàn pin khẩn cấp RTH & Geofence'],

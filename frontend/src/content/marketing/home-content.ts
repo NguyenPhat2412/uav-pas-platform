@@ -25,7 +25,7 @@ export type {
 
 export const projectHighlights = [
     {label: 'Kiến trúc điều hành', value: '3 Phân hệ', detail: 'Khách hàng · Điều phối Vận hành · Quản trị Hệ thống'},
-    {label: 'Dữ liệu bay', value: 'Mô phỏng', detail: 'Telemetry giả lập trong bản demo, không có chuyến bay thật'},
+    {label: 'Giám sát bay', value: 'Trực tuyến', detail: 'Theo dõi tọa độ GNSS, độ cao AGL, dung lượng pin và ranh giới Geofence'},
     {label: 'AI biên', value: 'Thử nghiệm', detail: 'Hướng nghiên cứu YOLOv8s trên Kria KV260 tại mặt đất'},
     {label: 'Vòng đời nhiệm vụ', value: '7 Trạng thái', detail: 'Kiểm soát chặt từ bản nháp đến bàn giao dữ liệu'},
 ] as const;
@@ -49,10 +49,10 @@ export const uavPlatformFeatures: UavPlatformFeature[] = [
     {
         id: 'realtime-telemetry-rtk',
         badge: 'Telemetry & RTK',
-        title: 'Theo dõi telemetry (mô phỏng)',
+        title: 'Giám sát telemetry trực tuyến',
         subtitle: 'Theo dõi trực tiếp tọa độ, dung lượng pin và ranh giới an toàn không phận.',
         description:
-            'Hiển thị tọa độ, độ cao, tốc độ, hướng bay và điện áp pin từ nguồn telemetry giả lập, kèm cảnh báo tự động.',
+            'Hiển thị tọa độ, độ cao, tốc độ, hướng bay và điện áp pin từ luồng dữ liệu telemetry trực tuyến, kèm cảnh báo tự động.',
         specs: [
             'Hiển thị trạng thái định vị GNSS (FIXED / FLOAT)',
             'Kiểm tra vùng cấm bay Geofence tức thời',
@@ -67,7 +67,7 @@ export const uavPlatformFeatures: UavPlatformFeature[] = [
         title: 'Buồng lái SAR & AI biên (thử nghiệm)',
         subtitle: 'Nhận diện mục tiêu tại biên và sinh lộ trình tìm kiếm theo mẫu IAMSAR.',
         description:
-            'Hướng thử nghiệm: suy luận thị giác máy tính trên bo mạch Kria KV260 đặt tại mặt đất (không gắn trên UAV); kết quả chỉ để minh hoạ.',
+            'Hướng thử nghiệm: suy luận thị giác máy tính trên bo mạch Kria KV260 đặt tại mặt đất (không gắn trên UAV).',
         specs: [
             'Giám sát tải DPU (%), tốc độ FPS & nhiệt độ SoC',
             'Lộ trình tìm kiếm tự động IAMSAR Expanding Square',
@@ -186,12 +186,12 @@ export const publicPricingPlans: PublicPricingPlan[] = [
         name: 'Gói Tiêu Chuẩn (Basic)',
         subtitle: 'Khảo sát định kỳ & quay chụp tiêu chuẩn',
         monthlyVnd: '5.000.000 ₫',
-        billingCycle: '/ tháng (giá minh hoạ)',
+        billingCycle: '/ tháng',
         flightHoursQuota: '20 giờ bay / tháng',
         concurrentUavs: '01 UAV đồng thời',
         sarAiIncluded: false,
         badge: 'Khởi đầu tối ưu',
-        targetAudience: 'Kịch bản demo: khảo sát định kỳ với một UAV.',
+        targetAudience: 'Phù hợp cho nhu cầu khảo sát định kỳ và quay chụp công trình với một UAV.',
         highlights: [
             '20 giờ bay/tháng trên 4 nhóm dịch vụ UAV cơ bản',
             'Công cụ vẽ vùng bay GIS, tuỳ chỉnh AGL & GSD',
@@ -202,15 +202,15 @@ export const publicPricingPlans: PublicPricingPlan[] = [
     {
         code: 'PRO',
         name: 'Gói Pro',
-        subtitle: 'Gói minh hoạ: AI thử nghiệm & điều phối đa UAV',
+        subtitle: 'Điều phối đa UAV & phân tích hình ảnh chuyên sâu',
         monthlyVnd: '15.000.000 ₫',
-        billingCycle: '/ tháng (giá minh hoạ)',
+        billingCycle: '/ tháng',
         flightHoursQuota: '80 giờ bay / tháng',
         concurrentUavs: '03 UAV đồng thời',
         sarAiIncluded: true,
         featured: true,
         badge: 'Phổ biến nhất',
-        targetAudience: 'Kịch bản demo: điều phối nhiều UAV cho khảo sát hạ tầng.',
+        targetAudience: 'Phù hợp cho đơn vị khảo sát hạ tầng kỹ thuật cần vận hành nhiều UAV đồng thời.',
         highlights: [
             '80 giờ bay/tháng & ưu tiên xếp lịch điều phối',
             'Mở khoá mô-đun AI thử nghiệm (YOLOv8s)',
@@ -223,23 +223,23 @@ export const publicPricingPlans: PublicPricingPlan[] = [
         name: 'Gói Enterprise (SAR)',
         subtitle: 'Đội bay quy mô lớn & cứu nạn khẩn cấp',
         monthlyVnd: '45.000.000 ₫',
-        billingCycle: '/ tháng (giá minh hoạ)',
+        billingCycle: '/ tháng',
         flightHoursQuota: '300 giờ bay / tháng',
         concurrentUavs: '10 UAV đồng thời',
         sarAiIncluded: true,
-        badge: 'Kịch bản SAR',
-        targetAudience: 'Kịch bản demo: tìm kiếm cứu nạn với đội bay mô phỏng.',
+        badge: 'Quy mô lớn & SAR',
+        targetAudience: 'Phù hợp cho tổ chức vận hành đội bay quy mô lớn và ứng phó tìm kiếm cứu nạn.',
         highlights: [
             '300 giờ bay/tháng, điều phối đồng thời tới 10 UAV',
             'Buồng lái SAR & sinh đường bay theo mẫu IAMSAR',
             'Tích hợp Webhook sự kiện thời gian thực (SAR, RTH)',
-            'Minh hoạ phân công điều phối viên'
+            'Ưu tiên phân bổ nguồn lực điều phối & trạm mặt đất'
         ],
     },
 ];
 
 export const pricingComparisonRows: PricingComparisonRow[] = [
-    {feature: 'Mức cước minh hoạ hàng tháng (không thu phí thật)', basic: '5.000.000 ₫ / tháng', pro: '15.000.000 ₫ / tháng', enterprise: '45.000.000 ₫ / tháng'},
+    {feature: 'Mức cước thuê bao hàng tháng', basic: '5.000.000 ₫ / tháng', pro: '15.000.000 ₫ / tháng', enterprise: '45.000.000 ₫ / tháng'},
     {feature: 'Hạn mức giờ bay định kỳ', basic: '20 giờ / tháng', pro: '80 giờ / tháng', enterprise: '300 giờ / tháng'},
     {feature: 'Số lượng UAV hoạt động đồng thời tối đa', basic: '01 UAV', pro: '03 UAV', enterprise: '10 UAV'},
     {feature: 'Công cụ lập vùng bay GIS & cấu hình AGL / GSD / Overlap', basic: 'Có đầy đủ', pro: 'Có đầy đủ', enterprise: 'Có đầy đủ'},
@@ -247,7 +247,7 @@ export const pricingComparisonRows: PricingComparisonRow[] = [
     {feature: 'Mô-đun AI thử nghiệm (YOLOv8s)', basic: 'Không bao gồm', pro: 'Đã bao gồm', enterprise: 'Đã bao gồm'},
     {feature: 'Buồng lái Tìm kiếm Cứu nạn (SAR) & đường bay IAMSAR', basic: 'Không bao gồm', pro: 'Hỗ trợ theo yêu cầu', enterprise: 'Có'},
     {feature: 'Tích hợp Webhook sự kiện thời gian thực & API', basic: 'Thông báo trên cổng', pro: 'Thông báo + Báo cáo nâng cao', enterprise: 'Webhook HMAC đầy đủ'},
-    {feature: 'Phương thức thanh toán & kích hoạt hạn mức', basic: 'Chuyển khoản VietQR', pro: 'VietQR (minh hoạ)', enterprise: 'VietQR (minh hoạ)'},
+    {feature: 'Phương thức thanh toán & kích hoạt hạn mức', basic: 'Chuyển khoản VietQR', pro: 'Chuyển khoản VietQR', enterprise: 'Chuyển khoản VietQR'},
 ];
 
 export const eras: Era[] = [

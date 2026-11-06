@@ -104,7 +104,7 @@ public class AuthMailService {
         return """
                 <div style="font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; max-width: 520px; margin: 0 auto; border: 1px solid #e2e8f0; background: #ffffff;">
                   <div style="background: #ab2523; color: #ffffff; padding: 14px 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;">
-                    UAV PAS · NỀN TẢNG ĐIỀU PHỐI NHIỆM VỤ UAV (BẢN DEMO)
+                    UAV PAS · HỆ THỐNG ĐIỀU PHỐI VẬN HÀNH BAY
                   </div>
                   <div style="padding: 24px 20px; color: #0f172a;">
                     <p style="margin: 0 0 8px; font-size: 13px; color: #475569; text-transform: uppercase; font-weight: 600;">

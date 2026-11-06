@@ -10,7 +10,7 @@ import {scenes, solutionScenes} from "@/components/marketing/UavPhoto";
 
 export const metadata = pageMetadata(
     "Giải pháp UAV & Edge AI",
-    "Tìm hiểu các giải pháp chuyên sâu trên UAV PAS: vận hành UAV theo yêu cầu, khảo sát hạ tầng kỹ thuật, tìm kiếm cứu nạn SAR theo mẫu IAMSAR và mô-đun nhận diện AI thử nghiệm (bản demo).",
+    "Tìm hiểu các giải pháp chuyên sâu trên UAV PAS: vận hành UAV theo yêu cầu, khảo sát hạ tầng kỹ thuật, tìm kiếm cứu nạn SAR theo mẫu IAMSAR và mô-đun nhận diện AI thử nghiệm.",
     "/solutions",
     true
 );

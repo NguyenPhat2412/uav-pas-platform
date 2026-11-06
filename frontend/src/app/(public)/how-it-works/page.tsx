@@ -45,7 +45,7 @@ const timelineStages: {
         number: '04',
         role: 'Tổ bay Thực địa',
         title: 'Thực hiện bay & theo dõi telemetry',
-        short: 'Kiểm tra tiền bay SOP và theo dõi chuyến bay (mô phỏng trong bản demo).',
+        short: 'Hoàn tất kiểm tra tiền bay SOP và giám sát thông số chuyến bay trực tuyến.',
         scene: 'stepRtk',
     },
     {

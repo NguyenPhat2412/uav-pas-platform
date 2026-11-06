@@ -6,7 +6,7 @@ import {PlanCards} from "@/components/marketing/PlanCards";
 
 export const metadata = pageMetadata(
     "Bảng giá & Gói dịch vụ UAV",
-    "Bảng giá minh hoạ trong bản demo UAV PAS (Basic, Pro, Enterprise): mô phỏng hạn mức giờ bay, số UAV đồng thời và luồng thanh toán. Không thu phí thật.",
+    "Bảng giá các gói thuê bao UAV PAS (Basic, Pro, Enterprise): hạn mức giờ bay, số UAV đồng thời và thanh toán kích hoạt nhanh qua VietQR.",
     "/pricing",
     true
 );
@@ -15,12 +15,12 @@ const paymentSteps = [
     {
         step: '01',
         title: 'Chọn gói cước trên Cổng Khách hàng',
-        detail: 'Đăng nhập Cổng Khách hàng → mục Gói cước, chọn một gói minh hoạ (Basic, Pro hoặc Enterprise) để xem luồng cấp hạn mức giờ bay.',
+        detail: 'Đăng nhập Cổng Khách hàng → mục Gói cước, chọn gói thuê bao phù hợp (Basic, Pro hoặc Enterprise) theo nhu cầu giờ bay và thiết bị.',
     },
     {
         step: '02',
-        title: 'Phiếu thanh toán mẫu & mã VietQR minh hoạ',
-        detail: 'Hệ thống sinh phiếu thanh toán mẫu kèm mã QR theo định dạng VietQR (có kiểm tra CRC-16) để minh hoạ kỹ thuật. Không chuyển tiền thật.',
+        title: 'Tạo phiếu thanh toán & mã VietQR EMVCo',
+        detail: 'Hệ thống tự động sinh phiếu thanh toán kèm mã QR theo định dạng VietQR (có kiểm tra CRC-16) với nội dung đối soát định danh.',
     },
     {
         step: '03',
@@ -32,9 +32,9 @@ const paymentSteps = [
 export default function PricingPage() {
     return (
         <PublicPage
-            eyebrow="Bảng giá minh hoạ · Bản demo"
+            eyebrow="Bảng giá & Gói dịch vụ"
             title="Minh bạch chi phí theo hạn mức giờ bay và năng lực công nghệ."
-            intro="Đây là bảng giá minh hoạ để demo luồng gói cước, hạn mức giờ bay và thanh toán VietQR trong đồ án. UAV PAS không phải dịch vụ thương mại: không nhận đặt bay thật và không thu tiền."
+            intro="Các gói thuê bao theo tháng với hạn mức giờ bay, số lượng UAV đồng thời và năng lực cảm biến rõ ràng, hỗ trợ thanh toán nhanh qua mã VietQR trong Cổng Khách hàng."
             scene="landing"
         >
             <div className="space-y-14">
@@ -82,7 +82,7 @@ export default function PricingPage() {
                             {keepVietnamesePhrases('Quy trình đăng ký gói cước & thanh toán VietQR tự động')}
                         </h2>
                         <p className="text-sm leading-relaxed text-slate-600">
-                            Luồng nâng cấp gói cước được mô phỏng trong Cổng Khách hàng để minh hoạ cách sinh mã VietQR và đối soát; bản demo không kết nối ngân hàng và không thu tiền.
+                            Quá trình đăng ký và gia hạn gói cước được thực hiện trực tiếp trong Cổng Khách hàng thông qua mã VietQR tự động sinh theo từng giao dịch và đối soát minh bạch.
                         </p>
                     </div>
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">

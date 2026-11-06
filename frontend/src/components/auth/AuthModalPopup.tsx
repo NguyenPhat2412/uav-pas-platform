@@ -91,7 +91,7 @@ export function AuthModalPopup() {
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [showLoginPassword, setShowLoginPassword] = useState(false);
-    // Google is the main way in; email + password stays for accounts issued by an administrator.
+    // Google is the main way in; email + password works for both customer and staff accounts.
     const [passwordLoginOpen, setPasswordLoginOpen] = useState(false);
     const [emailSignupOpen, setEmailSignupOpen] = useState(false);
 
@@ -427,7 +427,7 @@ export function AuthModalPopup() {
                     <div className="flex items-center gap-2.5">
                         <span className="inline-block h-2 w-2 rounded-badge bg-primary" aria-hidden="true" />
                         <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-slate-200">
-                            UAV PAS · CỔNG XÁC THỰC · BẢN DEMO
+                            UAV PAS · CỔNG XÁC THỰC
                         </span>
                     </div>
                     <button
@@ -508,7 +508,7 @@ export function AuthModalPopup() {
 
                             {!passwordLoginOpen ? (
                                 <button type="button" disabled={submitting} onClick={() => setPasswordLoginOpen(true)} className="flex h-10 w-full items-center justify-center rounded-control border border-slate-300 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50">
-                                    Tài khoản do quản trị cấp (email &amp; mật khẩu)
+                                    Đăng nhập bằng email &amp; mật khẩu
                                 </button>
                             ) : <>
                             <div>
@@ -525,7 +525,7 @@ export function AuthModalPopup() {
                                     disabled={submitting}
                                     value={usernameOrEmail}
                                     onChange={(e) => setUsernameOrEmail(e.target.value)}
-                                    placeholder="operator@example.com hoặc username"
+                                    placeholder="ban@gmail.com hoặc username"
                                     className={inputClass}
                                 />
                             </div>
@@ -593,7 +593,7 @@ export function AuthModalPopup() {
                                     Đăng ký tài khoản mới
                                 </h2>
                                 <p className="m-0 text-xs leading-5 text-slate-500 text-balance">
-                                    Tài khoản dùng thử để trải nghiệm bản demo.<br/>
+                                    Tạo tài khoản khách hàng để đặt lịch và theo dõi nhiệm vụ bay.<br/>
                                     Nhân sự vận hành?{' '}
                                     <a href="/contact" className="whitespace-nowrap font-semibold text-primary hover:underline">Liên hệ để được cấp tài khoản</a>
                                 </p>
@@ -627,7 +627,7 @@ export function AuthModalPopup() {
                                         disabled={submitting}
                                         value={regUsername}
                                         onChange={(e) => setRegUsername(e.target.value)}
-                                        placeholder="pilot_demo"
+                                        placeholder="khachhang_01"
                                         className={inputClass}
                                     />
                                 </div>
@@ -1105,7 +1105,7 @@ export function AuthModalPopup() {
                                                     Cổng Khách hàng (Customer)
                                                 </div>
                                                 <div className="mt-0.5 text-[11px] text-slate-500">
-                                                    Gửi yêu cầu bay mẫu và theo dõi nhiệm vụ (demo)
+                                                    Gửi yêu cầu bay và theo dõi tiến độ nhiệm vụ
                                                 </div>
                                             </div>
                                         </div>

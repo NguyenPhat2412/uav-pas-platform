@@ -80,7 +80,7 @@ export function NotFoundView({title, detail, homeHref, homeLabel, backLabel, lin
                     </nav>
                 )}
             </div>
-            {fullScreen && <p className="mx-auto mt-auto pt-8 text-xs text-slate-400">UAV PAS · Đồ án cá nhân · Bản demo</p>}
+            {fullScreen && <p className="mx-auto mt-auto pt-8 text-xs text-slate-400">UAV PAS · Điều phối &amp; Vận hành Bay</p>}
         </main>
     );
 }

@@ -7,8 +7,8 @@ import {CustomerCta} from "@/components/marketing/PublicPage";
 import {portalEcosystem, projectHighlights} from "@/content/marketing/home-content";
 
 export const metadata = pageMetadata(
-    "Giới thiệu dự án UAV PAS",
-    "Tìm hiểu UAV PAS, đồ án cá nhân của Nguyễn Phát: bản demo nền tảng web điều phối nhiệm vụ UAV, lập kế hoạch bay GIS, theo dõi telemetry mô phỏng và quản lý dữ liệu nhiệm vụ.",
+    "Giới thiệu nền tảng UAV PAS",
+    "Tìm hiểu nền tảng điều phối và vận hành nhiệm vụ UAV dân sự UAV PAS: lập kế hoạch bay GIS, giám sát telemetry, an toàn tiền bay SOP và bàn giao dữ liệu nhiệm vụ.",
     "/about",
     true
 );
@@ -25,7 +25,7 @@ const photoMosaic = [
         src: scenes.aboutGnssBase.src,
         alt: scenes.aboutGnssBase.alt,
         tag: 'Định vị GNSS/RTK',
-        caption: 'Hiển thị trạng thái định vị từ dữ liệu telemetry (mô phỏng trong bản demo).',
+        caption: 'Theo dõi trạng thái định vị GNSS và thông số chuyến bay từ luồng dữ liệu telemetry.',
         span: 'md:col-span-5',
     },
     {
@@ -67,7 +67,7 @@ export default function AboutPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/20"/>
                 <div className="relative z-10 mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12 space-y-3">
                     <p className="text-xs font-extrabold uppercase tracking-widest text-rose-400">
-                        Đồ án cá nhân · Bản demo
+                        Về nền tảng UAV PAS
                     </p>
                     <h1 className="max-w-3xl text-3xl font-black tracking-tight text-white sm:text-5xl leading-tight">
                         {keepVietnamesePhrases('Nền tảng web điều phối nhiệm vụ UAV dân sự.')}
@@ -91,9 +91,9 @@ export default function AboutPage() {
                     <div className="space-y-6">
                         <div className="flex flex-wrap items-baseline justify-between gap-2">
                             <h2 className="text-2xl font-black tracking-tight text-foreground">
-                                Các mảng chức năng của bản demo
+                                Các mảng năng lực vận hành cốt lõi
                             </h2>
-                            <span className="text-xs font-bold text-uav-blue">Ảnh minh hoạ từ USGS (Public Domain), không phải ảnh của dự án</span>
+                            <span className="text-xs font-bold text-uav-blue">Ảnh tư liệu thực địa từ USGS (Public Domain)</span>
                         </div>
 
                         <div className="grid grid-cols-1 gap-5 md:grid-cols-12">

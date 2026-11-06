@@ -23,8 +23,8 @@ import {PlanCards} from "@/components/marketing/PlanCards";
 const capabilitiesBackdrop = {src: '/images/people/usgs-everglades-tracking-test.jpg'};
 
 export const metadata = pageMetadata(
-    "UAV PAS | Bản demo nền tảng điều phối nhiệm vụ UAV",
-    "Khám phá UAV PAS, đồ án cá nhân: bản demo lập kế hoạch bay GIS, theo dõi telemetry mô phỏng, buồng lái SAR và quản lý nhiệm vụ cùng bảng giá gói dịch vụ minh bạch.",
+    "UAV PAS | Nền tảng Điều phối & Vận hành Nhiệm vụ UAV",
+    "Nền tảng điều phối và vận hành nhiệm vụ UAV: lập kế hoạch bay GIS, giám sát telemetry, buồng lái SAR và quản lý dữ liệu nhiệm vụ cùng bảng giá gói cước minh bạch.",
     "/",
     true
 );
@@ -60,7 +60,7 @@ export default function Page() {
                     <div className="max-w-[720px] text-white">
                         <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#e2c18b]">
                             <span className="h-px w-12 bg-[#e2c18b]" aria-hidden="true"/>
-                            Đồ án cá nhân · Bản demo
+                            Nền tảng Điều phối &amp; Vận hành Bay
                         </p>
                         <h1 id="home-hero-title" className="mt-7 text-[38px] font-medium leading-[1.13] tracking-[-0.025em] text-white sm:text-[58px] lg:text-[72px]">
                             {keepVietnamesePhrases('Mỗi chuyến bay UAV')}<br/>
@@ -68,7 +68,7 @@ export default function Page() {
                             <em className="font-medium italic text-[#e2c18b]">một yêu cầu {keepTogether('rõ ràng.')}</em>
                         </h1>
                         <p className="mt-6 max-w-[520px] text-[15px] leading-7 text-white/80">
-                            Bản demo luồng tạo yêu cầu bay, điều phối và theo dõi nhiệm vụ UAV trên một nền tảng web. Không phải dịch vụ thương mại.
+                            Khởi tạo yêu cầu bay trên bản đồ GIS, điều phối phi công – trạm mặt đất và theo dõi tiến độ nhiệm vụ UAV xuyên suốt trên một nền tảng hợp nhất.
                         </p>
                         <div className="mt-9 flex flex-wrap items-center gap-3">
                             <Link
@@ -97,7 +97,7 @@ export default function Page() {
                 <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12 space-y-8">
                     <SectionHead
                         id="home-project-title"
-                        eyebrow="Giới thiệu Dự án UAV PAS"
+                        eyebrow="Giới thiệu Nền tảng UAV PAS"
                         jp="プロジェクト概要"
                         title="Hệ sinh thái điều hành UAV hợp nhất từ lập kế hoạch đến thực địa."
                         text="Chuẩn hoá chuỗi nghiệp vụ UAV từ vẽ vùng bay GIS, điều phối phi công và trạm mặt đất đến bàn giao dữ liệu."
@@ -136,7 +136,7 @@ export default function Page() {
                         eyebrow="Chức năng UAV cốt lõi"
                         jp="主要機能"
                         title="Sáu năng lực công nghệ UAV trên nền tảng."
-                        text="Tích hợp lập kế hoạch đường bay GIS, theo dõi telemetry (mô phỏng), quản lý nhiệm vụ và tài liệu an toàn bay."
+                        text="Tích hợp lập kế hoạch đường bay GIS, giám sát telemetry trực tuyến, quản lý nhiệm vụ và tài liệu an toàn bay."
                     />
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                         {uavPlatformFeatures.map((feature, index) => (

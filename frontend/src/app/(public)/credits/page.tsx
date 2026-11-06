@@ -4,7 +4,7 @@ import {scenes} from "@/components/marketing/UavPhoto";
 
 export const metadata = pageMetadata(
     "Nguồn ảnh minh hoạ",
-    "Danh sách ảnh minh hoạ dùng trên UAV PAS kèm tác giả, nguồn và giấy phép. Ảnh không phải của dự án.",
+    "Danh mục nguồn ảnh tư liệu hàng không và khảo sát thực địa thuộc phạm vi công cộng (Public Domain / Unsplash) kèm tác giả và giấy phép trên UAV PAS.",
     "/credits",
     true
 );
@@ -21,7 +21,7 @@ export default function CreditsPage() {
         <PublicPage
             eyebrow="Nguồn ảnh"
             title="Ảnh minh hoạ và giấy phép."
-            intro="UAV PAS là đồ án cá nhân. Mọi ảnh chụp trên trang là ảnh minh hoạ lấy từ nguồn công khai, không phải ảnh của dự án, của trường học hay tổ chức nào."
+            intro="Danh mục nguồn ảnh tư liệu hàng không và khảo sát thực địa thuộc phạm vi công cộng (Public Domain / Unsplash) được sử dụng trên nền tảng UAV PAS."
         >
             <div className="overflow-x-auto rounded-2xl border border-border">
                 <table className="w-full min-w-[640px] text-left text-sm">

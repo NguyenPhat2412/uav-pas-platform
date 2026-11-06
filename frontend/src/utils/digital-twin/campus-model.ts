@@ -138,8 +138,8 @@ function crownTexture() {
     ctx.font = 'bold 96px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('UAV PAS · DEMO', 512, 84);
-    ctx.fillText('UAV PAS · DEMO', 1536, 84);
+    ctx.fillText('UAV PAS', 512, 84);
+    ctx.fillText('UAV PAS', 1536, 84);
     return texture(element);
 }
 

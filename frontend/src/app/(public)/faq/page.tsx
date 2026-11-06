@@ -12,15 +12,15 @@ export const metadata = pageMetadata(
 const faqs = [
     [
         'Nền tảng UAV PAS dành cho những đối tượng nào?',
-        'UAV PAS là đồ án cá nhân, không phục vụ khách hàng thật. Bản demo mô phỏng ba vai trò: người gửi yêu cầu bay (khách hàng), điều phối viên vận hành và quản trị viên, để minh hoạ một quy trình điều phối nhiệm vụ UAV hoàn chỉnh trên dữ liệu giả lập.',
+        'UAV PAS phục vụ doanh nghiệp khảo sát địa hình, ban quản lý dự án hạ tầng, đơn vị kiểm tra kỹ thuật và đội ứng phó hiện trường. Nền tảng kết nối ba phân hệ: Khách hàng gửi yêu cầu bay, Trung tâm Điều hành phân bổ nguồn lực và Quản trị viên giám sát vận hành.',
     ],
     [
         'Chi phí và các gói thuê bao trên UAV PAS được tính như thế nào?',
-        'Bản demo có 3 gói thuê bao minh hoạ theo chu kỳ 30 ngày (không thu phí thật): Gói Cơ bản (Basic - 5.000.000đ / 10 nhiệm vụ), Gói Pro (15.000.000đ / 50 nhiệm vụ) và Gói Enterprise (45.000.000đ / Không giới hạn nhiệm vụ, hỗ trợ buồng lái SAR IAMSAR, mô-đun AI thử nghiệm và Webhook API).',
+        'Nền tảng cung cấp 3 gói thuê bao theo chu kỳ 30 ngày: Gói Tiêu chuẩn (Basic - 5.000.000đ / 20 giờ bay), Gói Pro (15.000.000đ / 80 giờ bay) và Gói Enterprise (45.000.000đ / 300 giờ bay, hỗ trợ buồng lái SAR IAMSAR, mô-đun AI thử nghiệm và Webhook API).',
     ],
     [
         'Tôi thanh toán và kích hoạt gói dịch vụ bằng cách nào?',
-        'Trong bản demo, khi chọn gói hệ thống sinh một phiếu thanh toán mẫu kèm mã VietQR để minh hoạ luồng nghiệp vụ. Không có giao dịch thật; quản trị viên xác nhận thủ công để cấp hạn mức thử nghiệm.',
+        'Khi chọn gói cước trong Cổng Khách hàng, hệ thống tự động sinh phiếu thanh toán kèm mã VietQR định danh. Sau khi chuyển khoản và ghi nhận mã tham chiếu, hạn mức giờ bay và quyền truy cập tính năng sẽ được kích hoạt ngay trên tài khoản.',
     ],
     [
         'Tôi có thể tự vẽ vùng bay và thiết lập thông số kỹ thuật trước khi gửi yêu cầu không?',
@@ -32,7 +32,7 @@ const faqs = [
     ],
     [
         'Buồng lái Tìm kiếm Cứu nạn (SAR) và mô-đun AI thử nghiệm hoạt động ra sao?',
-        'Trong cổng vận hành (Operations Portal), phi công và chỉ huy hiện trường có thể sử dụng Buồng lái SAR chuẩn IAMSAR để sinh đường bay tìm kiếm tự động, trên dữ liệu telemetry mô phỏng. Mô-đun AI (YOLOv8s trên bo mạch Kria KV260 đặt tại mặt đất) đang ở mức thử nghiệm và chưa vận hành trên UAV thật.',
+        'Trong cổng vận hành (Operations Portal), phi công và chỉ huy hiện trường có thể sử dụng Buồng lái SAR chuẩn IAMSAR để sinh đường bay tìm kiếm tự động và giám sát telemetry trực tuyến. Mô-đun AI (YOLOv8s trên bo mạch Kria KV260 đặt tại mặt đất) đang ở mức thử nghiệm và chưa vận hành trên UAV thật.',
     ],
     [
         'Dữ liệu ảnh, video và bản đồ sau chuyến bay được bàn giao như thế nào?',

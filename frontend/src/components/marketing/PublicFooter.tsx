@@ -19,7 +19,7 @@ export function PublicFooter() {
     return (
         <footer className="border-t border-border bg-slate-50/80 pt-14 pb-8 text-sm text-slate-600">
             <div className="mx-auto grid w-full max-w-[1380px] grid-cols-1 gap-8 px-5 sm:grid-cols-2 sm:px-8 lg:grid-cols-12 lg:px-12">
-                {/* Col 1: Brand & project disclaimer (4 cols) */}
+                {/* Col 1: Brand & platform overview (5 cols) */}
                 <div className="space-y-3.5 lg:col-span-5">
                     <Link className="inline-flex items-center gap-2.5 text-base font-extrabold tracking-wider text-foreground" href="/">
                         <Image
@@ -41,7 +41,6 @@ export function PublicFooter() {
                     </p>
                     <div className="space-y-1 text-xs text-slate-500">
                         <p>{t('publicFooter.disclaimer')}</p>
-                        <p className="font-semibold text-slate-700">{t('publicFooter.demoNotice')}</p>
                     </div>
                     <div className="flex flex-wrap gap-1.5 pt-1">
                         <span className="rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-bold text-slate-700">
@@ -51,7 +50,7 @@ export function PublicFooter() {
                             Spring Boot
                         </span>
                         <span className="rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-bold text-slate-700">
-                            Demo
+                            PostGIS / R2
                         </span>
                     </div>
                 </div>

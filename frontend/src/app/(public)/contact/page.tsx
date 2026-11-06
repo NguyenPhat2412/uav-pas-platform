@@ -7,7 +7,7 @@ import {ContactQuickForm} from "@/components/marketing/ContactQuickForm";
 
 export const metadata = pageMetadata(
     "Liên hệ & Hỗ trợ điều phối UAV",
-    "Liên hệ về UAV PAS, đồ án cá nhân của Nguyễn Phát: góp ý, câu hỏi kỹ thuật hoặc yêu cầu xem demo. Đây không phải dịch vụ thương mại.",
+    "Liên hệ đội ngũ điều phối UAV PAS: tư vấn dịch vụ khảo sát GIS, gói cước vận hành đội bay, tích hợp kỹ thuật và cấp tài khoản nhân sự vận hành.",
     "/contact",
     true
 );
@@ -37,20 +37,20 @@ export default function ContactPage() {
 
                         <div className="relative z-10 space-y-6">
                             <p className="text-xs font-extrabold uppercase tracking-widest text-rose-400">
-                                Liên hệ · Bản demo
+                                Liên hệ &amp; Hỗ trợ điều phối
                             </p>
                             <h1 className="text-2xl font-black tracking-tight text-white sm:text-4xl leading-tight">
-                                {keepVietnamesePhrases('Góp ý và câu hỏi về dự án UAV PAS.')}
+                                {keepVietnamesePhrases('Tư vấn dịch vụ bay và hỗ trợ điều phối nhiệm vụ.')}
                             </h1>
 
                             <div className="space-y-4 border-t border-white/15 pt-5 text-xs">
                                 <div>
-                                    <p className="font-bold text-rose-300">Đồ án cá nhân</p>
-                                    <p className="mt-0.5 text-slate-300">UAV PAS do Nguyễn Phát thực hiện, không đại diện và không liên kết với bất kỳ trường học hay tổ chức nào.</p>
+                                    <p className="font-bold text-rose-300">Điều phối nhiệm vụ &amp; Gói cước</p>
+                                    <p className="mt-0.5 text-slate-300">Tư vấn cấu hình cảm biến, độ phân giải GSD, hạn mức giờ bay và phương án triển khai phù hợp cho khu vực khảo sát của bạn.</p>
                                 </div>
                                 <div>
-                                    <p className="font-bold text-rose-300">Không phải dịch vụ thương mại</p>
-                                    <p className="mt-0.5 text-slate-300">Không nhận đặt bay thật, không báo giá và không thu phí. Biểu mẫu bên cạnh chỉ dùng để góp ý hoặc hẹn xem demo.</p>
+                                    <p className="font-bold text-rose-300">Cấp tài khoản vận hành nội bộ</p>
+                                    <p className="mt-0.5 text-slate-300">Tài khoản khách hàng có thể tự đăng ký trực tuyến. Tài khoản Phi công và Điều phối viên do Quản trị hệ thống xét duyệt và cấp phát.</p>
                                 </div>
                             </div>
                         </div>
@@ -80,10 +80,10 @@ export default function ContactPage() {
                                 Gửi yêu cầu nhanh
                             </span>
                             <h2 className="text-2xl font-black tracking-tight text-slate-900">
-                                Góp ý hoặc hẹn xem demo
+                                Gửi yêu cầu tư vấn &amp; điều phối
                             </h2>
                             <p className="text-xs text-slate-500">
-                                Để lại câu hỏi hoặc góp ý; bạn cũng có thể đăng nhập để thử vẽ vùng bay mẫu trên bản đồ GIS.
+                                Để lại nhu cầu khảo sát hoặc câu hỏi kỹ thuật; bạn cũng có thể đăng nhập Cổng Khách hàng để khởi tạo vùng bay trực tiếp trên bản đồ GIS.
                             </p>
                         </div>
 

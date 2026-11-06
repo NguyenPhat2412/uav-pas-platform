@@ -3,8 +3,8 @@ import {readdirSync, readFileSync, statSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
-// UAV PAS is a personal project demo: no school branding, no military wording and no
-// commercial or technical claims the project cannot back up may reach a screen.
+// UAV PAS content safety guard: no school branding, no military wording, no unverified
+// commercial/technical claims, and no demo-only banners or disclaimers may reach a screen.
 const root = fileURLToPath(new URL('../', import.meta.url));
 
 function files(dir, extensions) {
@@ -34,7 +34,7 @@ const EVERYWHERE = [
     ['military wording', /tác chiến|chiến đấu|sĩ quan|chiến thuật|\btactical\b|\bcombat\b|作戦|戦闘/i],
 ];
 
-/** Claims the demo cannot back up; checked on the public site, auth screens and their copy. */
+/** Unverified technical or commercial claims; checked on the public site, auth screens and their copy. */
 const PUBLIC_CLAIMS = [
     ['unverified RTK accuracy', /\d\s*[–-]\s*\d\s*cm\s*RTK|RTK\s*\d\s*[–-]\s*\d\s*cm|<\s*1[.,]5\s*cm/i],
     ['AI on board claim', /khoang bay|on[- ]board|gắn trên UAV,/i],
@@ -52,7 +52,7 @@ test('no school branding or military wording in any catalog, page or component',
     assert.deepEqual(offences(files('src', SOURCES), EVERYWHERE), []);
 });
 
-test('public site and sign-in copy makes no claims the demo cannot back up', () => {
+test('public site and sign-in copy makes no unverified technical or commercial claims', () => {
     const paths = [
         ...files('src/app/(public)', SOURCES),
         ...files('src/components/marketing', SOURCES),
@@ -62,11 +62,23 @@ test('public site and sign-in copy makes no claims the demo cannot back up', () 
     assert.deepEqual(offences(paths, PUBLIC_CLAIMS), []);
 });
 
-test('public footer states the project is a personal, non-commercial demo', () => {
+const DEMO_BANNERS = [
+    ['Vietnamese demo label', /bản demo/i],
+    ['English demo edition badge', /demo edition/i],
+    ['personal project demo label', /personal project\s*[·-]?\s*demo/i],
+    ['personal project label (VI)', /đồ án cá nhân/i],
+    ['personal project label (JA)', /個人プロジェクト/],
+    ['parenthetical simulation or demo disclaimer', /\(\s*(minh hoạ|minh họa|mô phỏng|giả lập)\s*\)/i],
+    ['no real payments disclaimer', /Không thu phí thật|No real payments|商用サービスではありません/i],
+];
+
+test('public site and auth screens contain no demo-only banners or disclaimers', () => {
+    assert.deepEqual(offences(files('src', SOURCES), DEMO_BANNERS), []);
     for (const locale of ['vi', 'en', 'ja']) {
         const catalog = JSON.parse(readFileSync(`${root}src/messages/${locale}.json`, 'utf8'));
-        assert.ok(catalog.publicFooter.disclaimer, `${locale}: footer disclaimer`);
-        assert.ok(catalog.publicFooter.demoNotice, `${locale}: footer demo notice`);
-        assert.ok(catalog.publicHeader.demoNotice, `${locale}: header demo notice`);
+        assert.ok(catalog.publicHeader.tagline, `${locale}: header tagline`);
+        assert.ok(catalog.publicFooter.description, `${locale}: footer description`);
+        assert.equal(catalog.publicHeader.demoNotice, undefined, `${locale}: header demoNotice removed`);
+        assert.equal(catalog.publicFooter.demoNotice, undefined, `${locale}: footer demoNotice removed`);
     }
 });
