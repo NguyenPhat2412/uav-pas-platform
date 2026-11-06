@@ -98,7 +98,7 @@ class GoogleSignInIntegrationTest {
     }
 
     @Test
-    void staffWithout2faIsRejected() throws Exception {
+    void staffWithout2faSignsInDirectly() throws Exception {
         var mvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
         AppUser staff = account(UserRole.ROLE_OPERATOR, true);
         when(google.isEnabled()).thenReturn(true);
@@ -109,8 +109,9 @@ class GoogleSignInIntegrationTest {
                         post("/api/v1/auth/google")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{\"credential\":\"id-token\"}"))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.code").value("GOOGLE_STAFF_REQUIRES_2FA"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user.role").value("ROLE_OPERATOR"))
+                .andExpect(jsonPath("$.mfaRequired").value(false));
     }
 
     private AppUser account(UserRole role, boolean emailVerified) {

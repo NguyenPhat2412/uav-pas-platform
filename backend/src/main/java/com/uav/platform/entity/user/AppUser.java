@@ -93,15 +93,7 @@ public class AppUser extends BaseEntity {
             String passwordHash,
             String phoneNumber,
             UserStatus status) {
-        this(
-                username,
-                email,
-                passwordHash,
-                phoneNumber,
-                null,
-                null,
-                UserRole.ROLE_PILOT,
-                status);
+        this(username, email, passwordHash, phoneNumber, null, null, UserRole.ROLE_PILOT, status);
     }
 
     public AppUser(

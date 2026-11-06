@@ -88,8 +88,7 @@ class AuthServiceGoogleLoginTest {
     }
 
     private static AppUser user(UserRole role, UserStatus status) {
-        AppUser user =
-                new AppUser("jane", EMAIL, "hash", "0987654321", "Jane", null, role, status);
+        AppUser user = new AppUser("jane", EMAIL, "hash", "0987654321", "Jane", null, role, status);
         user.setId(7L);
         user.setEmailVerified(true);
         return user;
@@ -212,7 +211,7 @@ class AuthServiceGoogleLoginTest {
     }
 
     @Test
-    void staffWithout2fa_IsRejected() {
+    void staffWithout2fa_SignsInDirectlyAndKeepsRoleAndPassword() {
         for (UserRole role :
                 new UserRole[] {
                     UserRole.ROLE_OPERATOR, UserRole.ROLE_COMMANDER, UserRole.ROLE_ADMIN
@@ -222,22 +221,17 @@ class AuthServiceGoogleLoginTest {
             user.setFailedAttempts(2);
             existing(user);
 
-            SystemException ex =
-                    assertThrows(SystemException.class, () -> authService.loginWithGoogle(REQUEST));
+            AuthResponse response = authService.loginWithGoogle(REQUEST);
 
-            assertEquals(HttpStatus.FORBIDDEN, ex.getStatus());
-            assertEquals("GOOGLE_STAFF_REQUIRES_2FA", ex.getCode());
-            assertEquals(
-                    "Tài khoản nhân sự cần bật xác thực 2 lớp để đăng nhập bằng Google. Vui lòng đăng nhập bằng mật khẩu.",
-                    ex.getMessage());
-            // Nothing about the account changes.
+            assertEquals("access-token", response.accessToken());
+            assertEquals(role, user.getRole());
             assertEquals("hash", user.getPasswordHash());
-            assertFalse(user.isEmailVerified());
-            assertEquals(2, user.getFailedAttempts());
+            assertTrue(user.isEmailVerified());
+            assertEquals(0, user.getFailedAttempts());
         }
-        verify(userRepository, never()).save(any());
-        verifyNoInteractions(refreshTokenService, authOtpService);
-        verify(jwtTokenProvider, never()).generateToken(any(), any(), any(), any());
+        verify(userRepository, times(3)).save(any());
+        verify(refreshTokenService, never()).deleteByUser(any());
+        verify(authOtpService, never()).createLoginChallenge(any(), any());
     }
 
     @Test

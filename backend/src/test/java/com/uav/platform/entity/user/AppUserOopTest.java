@@ -129,14 +129,7 @@ class AppUserOopTest {
     void userCreationAndServiceAssignmentsPreserveNullDefaults() {
         AppUser user =
                 UserAccountServiceImpl.createUser(
-                        "pilot",
-                        "pilot@uav.vn",
-                        "hash",
-                        "0900000000",
-                        null,
-                        null,
-                        null,
-                        null);
+                        "pilot", "pilot@uav.vn", "hash", "0900000000", null, null, null, null);
         assertEquals(UserRole.ROLE_PILOT, user.getRole());
         assertEquals(UserStatus.ACTIVE, user.getStatus());
         user.setRole(UserRole.ROLE_COMMANDER);

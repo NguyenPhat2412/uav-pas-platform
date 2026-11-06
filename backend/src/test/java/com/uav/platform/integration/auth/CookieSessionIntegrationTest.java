@@ -151,15 +151,7 @@ class CookieSessionIntegrationTest {
     void repositoryInsertNormalizesExplicitNullDefaultsOutsideServiceFactory() {
         String name = "defaults_" + UUID.randomUUID().toString().substring(0, 8);
         AppUser user =
-                new AppUser(
-                        name,
-                        name + "@example.invalid",
-                        "hash",
-                        null,
-                        null,
-                        null,
-                        null,
-                        null);
+                new AppUser(name, name + "@example.invalid", "hash", null, null, null, null, null);
         user.setRole(null);
         user.setStatus(null);
         assertNull(user.getRole());
