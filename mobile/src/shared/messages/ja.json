@@ -152,7 +152,8 @@
     "files": "ファイル管理",
     "infrastructureDatabase": "データベース",
     "infrastructureEmail": "メール",
-    "weather": "飛行気象"
+    "weather": "飛行気象",
+    "airspace": "空域ゾーン"
   },
   "sidebar": {
     "title": "UAV PAS",
@@ -256,7 +257,7 @@
   },
   "preview": {
     "title": "UAV PAS ミッション運用センター",
-    "edition": "DEMO EDITION",
+    "edition": "運用センター",
     "realtimeBadge": "24時間監視",
     "syncRtk": "RTK同期",
     "openMap": "運用マップを開く",
@@ -273,7 +274,7 @@
     "kpiStationEnergy": "基地局蓄電残量",
     "kpiSolar": "太陽光発電中",
     "kpiLatency": "通信遅延",
-    "kpiRtkPrecision": "RTK (mô phỏng)",
+    "kpiRtkPrecision": "RTK測位精度",
     "fleetTableTitle": "待撃UAV機隊 稼働状況",
     "activeDevices": "5機 稼働中",
     "thDevice": "機体 / モデル",
@@ -342,12 +343,12 @@
     "identity": "ユーザー名またはメールアドレス",
     "password": "パスワード",
     "home": "UAV PAS — ホーム",
-    "university": "個人プロジェクト・デモ版",
+    "university": "ドローン運航管理基盤",
     "backHome": "ホームへ戻る",
     "eyebrow": "UAVミッション調整プラットフォーム",
     "photoAlt": "マサチューセッツ州プラム島でUAVを操作し飛行を監視する調査チーム。",
     "formLabel": "アカウントフォーム",
-    "footer": "UAV PAS · 個人プロジェクト・デモ版",
+    "footer": "UAV PAS · ドローン運航管理基盤",
     "hidePassword": "パスワードを隠す",
     "showPassword": "パスワードを表示",
     "loggedOutSecure": "安全にログアウトしました。",
@@ -355,11 +356,12 @@
     "logoutTitle": "ログアウト"
   },
   "publicHeader": {
+    "tagline": "ドローン運航管理基盤",
     "services": "サービス",
     "solutions": "ソリューション",
     "pricing": "料金プラン",
     "howItWorks": "運用フロー",
-    "about": "プロジェクト概要",
+    "about": "プラットフォーム概要",
     "contact": "お問い合わせ",
     "login": "ログイン",
     "start": "はじめる",
@@ -368,15 +370,12 @@
     "customerPortal": "顧客",
     "customerPortalUser": "顧客ポータル ({username})",
     "register": "新規登録",
-    "demoNotice": "個人プロジェクトのデモ",
-    "demoNoticeDetail": "商用サービスではありません・実際の課金なし",
     "digitalTwin": "デジタルツイン"
   },
   "publicFooter": {
-    "university": "個人プロジェクト・デモ版",
-    "description": "UAVミッション調整のデモWebプラットフォーム：飛行計画、シミュレーションによるテレメトリ監視、ミッションデータ管理。",
-    "disclaimer": "Nguyen Phat による個人プロジェクトであり、いかなる学校・団体も代表せず、提携もしていません。",
-    "demoNotice": "料金・決済・数値は説明用であり、実際の取引は行われません。",
+    "university": "ドローン運航管理基盤",
+    "description": "UAVミッション運航管理プラットフォーム：GIS飛行計画、テレメトリ監視、安全なミッションデータ納品を一元化。",
+    "disclaimer": "顧客・運用センター・管理コンソール間のロールベース権限管理と、SOPに基づく飛行前安全点検を標準搭載。",
     "exploreHeading": "製品・サービス",
     "services": "UAV飛行サービス",
     "solutions": "ソリューション",
@@ -388,13 +387,13 @@
     "adminPortal": "管理コンソール",
     "trainingAcademy": "飛行安全・SOPアカデミー",
     "supportHeading": "サポート・規約",
-    "about": "プロジェクトについて",
+    "about": "プラットフォーム概要",
     "faq": "よくある質問",
     "contact": "お問い合わせ・手配",
     "privacy": "プライバシーポリシー",
     "terms": "利用規約",
     "credits": "画像クレジット",
-    "copyright": "© {year} UAV PAS · Nguyen Phat 個人プロジェクト"
+    "copyright": "© {year} UAV PAS · ドローン運航管理基盤"
   },
   "weather": {
     "preflight": {
@@ -657,6 +656,168 @@
       "lost": "損失",
       "latency": "平均遅延",
       "config": "設定: 損失 {loss}% · 遅延 {latency} ms · ジオフェンス {fence} m"
+    }
+  },
+  "airspace": {
+    "zoneType": {
+      "PROHIBITED": "飛行禁止空域 (NFZ)",
+      "RESTRICTED": "制限空域",
+      "WARNING": "注意・警戒空域"
+    },
+    "geometry": {
+      "CIRCLE": "円形",
+      "POLYGON": "多角形"
+    },
+    "clearance": {
+      "CLEAR": "クリア",
+      "CAUTION": "空域注意",
+      "PERMIT_REQUIRED": "飛行許可証必須",
+      "BLOCKED": "飛行禁止"
+    },
+    "legend": {
+      "label": "空域安全ゾーン凡例",
+      "title": "空域 ({count} 件):"
+    },
+    "tooltip": {
+      "authority": "管理機関: {authority}",
+      "ceilingLimit": "上限高度: {meters} m AGL",
+      "ceilingUnlimited": "地上から全高度制限"
+    },
+    "advisor": {
+      "title": "空域安全クリアランス判定",
+      "pickLocation": "離陸地点を選択するか飛行範囲を描画すると、飛行禁止空域および許可証要件を確認できます。",
+      "loadError": "現在空域クリアランスを取得できません。送信時にサーバーで再検証されます。",
+      "summary": {
+        "CLEAR": "選択された飛行範囲に交差する飛行禁止空域や制限空域はありません。",
+        "CAUTION": "飛行範囲が注意空域と交差しています。高度制限と目視監視手順を遵守してください。",
+        "PERMIT_REQUIRED": "飛行範囲が制限空域に含まれています。準備完了または離陸前に承認済みの飛行許可証が必要です。",
+        "BLOCKED": "選択された範囲または高度が飛行禁止空域に入っています。赤色ゾーンの外側へ飛行範囲を調整してください。"
+      },
+      "enablePermitSupport": "飛行許可サポートを依頼",
+      "intersectingZones": "交差する空域ゾーン ({count})",
+      "authority": "管理機関: {authority}",
+      "ceilingLimit": "上限高度: {meters} m AGL",
+      "ceilingUnlimited": "全高度制限",
+      "insideZone": "空域境界内",
+      "distance": "距離: {meters} m",
+      "disclaimer": "空域オーバーレイは事前計画の安全確認を支援するものであり、運航者は航空法規を遵守する必要があります。"
+    },
+    "admin": {
+      "intro": "飛行計画マップに表示される飛行禁止空域・制限空域・注意空域を管理します。",
+      "summaryCounts": "合計 {total} 件 · 飛行禁止: {prohibited} · 制限: {restricted} · 注意: {warning}",
+      "create": "空域ゾーンを追加",
+      "createTitle": "空域ゾーンの新規作成",
+      "editTitle": "空域ゾーンの編集",
+      "deleteTitle": "空域ゾーンを削除しますか？",
+      "deleteConfirm": "空域ゾーン {code} ({name}) を安全チェックから完全に削除します。",
+      "filterType": "空域区分で絞り込み",
+      "filterAll": "すべて",
+      "searchPlaceholder": "コード・名称・管理機関を検索...",
+      "showInactive": "無効なゾーンも表示",
+      "empty": "現在の条件に一致する空域ゾーンはありません。",
+      "verticesUnit": "頂点",
+      "columns": {
+        "zone": "コード・名称",
+        "type": "区分",
+        "geometry": "形状",
+        "ceiling": "上限高度",
+        "authority": "管理機関",
+        "status": "状態",
+        "actions": "操作"
+      },
+      "status": {
+        "active": "有効",
+        "inactive": "無効"
+      },
+      "actions": {
+        "activate": "有効化",
+        "deactivate": "無効化",
+        "edit": "編集",
+        "delete": "削除",
+        "saveChanges": "変更を保存"
+      },
+      "form": {
+        "code": "空域コード",
+        "zoneType": "空域区分",
+        "name": "空域ゾーン名",
+        "namePlaceholder": "例: ノイバイ国際空港周辺管制圏",
+        "authority": "管理機関",
+        "authorityPlaceholder": "民間航空局・空域管理機関",
+        "maxAltitudeAglM": "許可上限高度 (m AGL)",
+        "ceilingPlaceholder": "空欄の場合は地上から全高度制限",
+        "geometryType": "形状タイプ",
+        "centerLat": "中心緯度",
+        "centerLng": "中心経度",
+        "radiusMeters": "半径 (m)",
+        "vertices": "多角形の頂点座標リスト",
+        "verticesHint": "3点以上の緯度, 経度ペアを1行ずつ入力（例: 21.0325, 105.8310）、またはJSON配列を入力してください。",
+        "description": "規制メモ",
+        "descriptionPlaceholder": "適用条件や飛行許可申請の案内を入力...",
+        "activeLabel": "飛行計画マップと安全チェックですぐに有効化する"
+      },
+      "errors": {
+        "saveFailed": "空域ゾーンの状態を更新できませんでした。"
+      }
+    }
+  },
+  "permit": {
+    "title": "飛行許可証",
+    "status": {
+      "NOT_REQUIRED": "不要",
+      "PENDING": "提出待ち",
+      "SUBMITTED": "審査待ち",
+      "VERIFIED": "承認済み",
+      "REJECTED": "差し戻し"
+    },
+    "guidance": {
+      "PENDING": "このミッションは制限空域に入るか、許可サポートが指定されています。離陸前に審査できるよう飛行許可証情報を提出してください。",
+      "REJECTED": "提出された飛行許可証が却下または再提出扱いとなりました。下記のメモを確認し、内容を更新してください。"
+    },
+    "empty": {
+      "notRequired": "このミッションに必須の飛行許可証要件はありませんが、必要に応じて許可記録を登録できます。",
+      "pending": "このミッションの飛行許可証情報はまだ提出されていません。"
+    },
+    "fields": {
+      "permitNumber": "許可証番号",
+      "permitAuthority": "発行機関",
+      "validFrom": "有効開始日時",
+      "validUntil": "有効終了日時",
+      "validityWindow": "有効期間",
+      "maxAltitudeMeters": "許可上限高度 (m AGL)",
+      "verifiedBy": "審査担当者",
+      "attachment": "許可証スキャン添付",
+      "note": "許可証・審査メモ"
+    },
+    "placeholders": {
+      "permitNumber": "GPB-2026-00128",
+      "permitAuthority": "航空局・飛行許可発行機関",
+      "noAttachment": "添付ファイルなし",
+      "note": "申請番号、高度条件、許可時間帯など..."
+    },
+    "values": {
+      "planDefault": "飛行計画に準拠",
+      "awaitingVerification": "未審査",
+      "documentId": "添付ファイル #{id}"
+    },
+    "actions": {
+      "submitNew": "飛行許可証を提出",
+      "edit": "許可証を更新",
+      "saveSubmit": "保存して審査へ送信",
+      "downloadScan": "スキャンをダウンロード",
+      "uploadScan": "新しい許可証スキャンをアップロード",
+      "uploadingScan": "アップロード中..."
+    },
+    "verify": {
+      "title": "飛行許可証の審査・承認",
+      "noteLabel": "審査メモまたは却下理由",
+      "notePlaceholder": "許可番号・有効期間・上限高度を照合...",
+      "approve": "有効として承認",
+      "reject": "却下・差し戻し"
+    },
+    "errors": {
+      "saveFailed": "飛行許可証情報を保存できませんでした。入力内容を確認してください。",
+      "uploadFailed": "許可証スキャンファイルをアップロードできませんでした。",
+      "verifyFailed": "飛行許可証の審査結果を保存できませんでした。"
     }
   }
 }

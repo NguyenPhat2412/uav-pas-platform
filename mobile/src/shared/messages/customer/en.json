@@ -109,7 +109,7 @@
         "time": "Time",
         "loadingMissions": "Loading missions…",
         "noMissions": "No missions yet.",
-        "quotaTitle": "Flight quota & plan (demo)",
+        "quotaTitle": "Flight quota & plan",
         "loadingQuota": "Loading quota…",
         "quotaError": "Could not load quota information.",
         "viewPlans": "View plans",
@@ -223,7 +223,11 @@
             "save403": "You can't save this request.",
             "save404": "Request or service not found. Please reload.",
             "save409": "The request changed. Reload the latest version, then save.",
-            "saveUnknown": "Save not confirmed. Check your list before retrying."
+            "saveUnknown": "Save not confirmed. Check your list before retrying.",
+            "AIRSPACE_PROHIBITED_ZONE": "The planned flight area intersects a prohibited no-fly zone. Adjust the boundary or altitude outside the prohibited zone.",
+            "MISSION_PERMIT_REQUIRED": "The flight area intersects restricted airspace. A verified flight permit is required before execution.",
+            "MISSION_PERMIT_EXPIRED": "The flight permit does not cover the scheduled mission timeframe.",
+            "MISSION_PERMIT_ALTITUDE_EXCEEDED": "Planned flight altitude exceeds the authorized permit ceiling or airspace limit."
         }
     },
     "missionForm": {
@@ -398,7 +402,10 @@
         "noInvoices": "No invoices yet.",
         "paymentInfo": "Payment information",
         "closePayment": "Close payment information",
-        "invoiceAmount": "Invoice {code}: {amount}."
+        "invoiceAmount": "Invoice {code}: {amount}.",
+        "downloadPdf": "PDF",
+        "downloadPdfAria": "Download PDF invoice {code}",
+        "downloadPdfError": "Could not download the invoice PDF."
     },
     "notificationsPage": {
         "urgent": "Urgent",

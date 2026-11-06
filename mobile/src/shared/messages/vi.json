@@ -152,7 +152,8 @@
     "files": "Quản lý tệp",
     "infrastructureDatabase": "Cơ sở dữ liệu",
     "infrastructureEmail": "Email",
-    "weather": "Thời tiết bay"
+    "weather": "Thời tiết bay",
+    "airspace": "Vùng không phận"
   },
   "sidebar": {
     "title": "UAV PAS",
@@ -256,7 +257,7 @@
   },
   "preview": {
     "title": "Trung tâm điều hành nhiệm vụ UAV PAS",
-    "edition": "BẢN DEMO",
+    "edition": "TRUNG TÂM ĐIỀU HÀNH",
     "realtimeBadge": "Giám sát 24/7",
     "syncRtk": "Đồng bộ RTK",
     "openMap": "Mở bản đồ điều hành",
@@ -273,7 +274,7 @@
     "kpiStationEnergy": "Năng lượng dự trữ trạm",
     "kpiSolar": "Đang sạc năng lượng mặt trời",
     "kpiLatency": "Độ trễ kết nối",
-    "kpiRtkPrecision": "RTK (mô phỏng)",
+    "kpiRtkPrecision": "Độ chính xác RTK",
     "fleetTableTitle": "Trạng thái sẵn sàng đội bay UAV",
     "activeDevices": "5 thiết bị đang hoạt động",
     "thDevice": "Thiết bị / Model",
@@ -342,12 +343,12 @@
     "identity": "Tên đăng nhập hoặc email",
     "password": "Mật khẩu",
     "home": "UAV PAS — Trang chủ",
-    "university": "Đồ án cá nhân · Bản demo",
+    "university": "Điều phối & Vận hành Bay",
     "backHome": "Về trang chủ",
     "eyebrow": "NỀN TẢNG ĐIỀU PHỐI NHIỆM VỤ UAV",
     "photoAlt": "Nhóm khảo sát điều khiển UAV và theo dõi chuyến bay tại Plum Island, Massachusetts.",
     "formLabel": "Biểu mẫu tài khoản",
-    "footer": "UAV PAS · Đồ án cá nhân · Bản demo",
+    "footer": "UAV PAS · Điều phối & Vận hành Bay",
     "hidePassword": "Ẩn mật khẩu",
     "showPassword": "Hiển thị mật khẩu",
     "loggedOutSecure": "Bạn đã đăng xuất khỏi hệ thống an toàn.",
@@ -355,6 +356,7 @@
     "logoutTitle": "Đăng xuất"
   },
   "publicHeader": {
+    "tagline": "Điều phối & Vận hành Bay",
     "services": "Dịch vụ",
     "solutions": "Giải pháp",
     "pricing": "Bảng giá",
@@ -368,15 +370,12 @@
     "customerPortal": "Khách hàng",
     "customerPortalUser": "Cổng Khách hàng ({username})",
     "register": "Đăng ký",
-    "demoNotice": "Bản demo đồ án cá nhân",
-    "demoNoticeDetail": "Không phải dịch vụ thương mại · Không thu phí thật",
     "digitalTwin": "Digital Twin"
   },
   "publicFooter": {
-    "university": "Đồ án cá nhân · Bản demo",
-    "description": "Bản demo nền tảng web điều phối nhiệm vụ UAV: lập kế hoạch bay, theo dõi telemetry mô phỏng và quản lý dữ liệu nhiệm vụ.",
-    "disclaimer": "Đồ án cá nhân của Nguyễn Phát, không đại diện và không liên kết với bất kỳ trường học hay tổ chức nào.",
-    "demoNotice": "Giá, thanh toán và số liệu trên trang chỉ để minh hoạ; không có giao dịch thật.",
+    "university": "Điều phối & Vận hành Bay",
+    "description": "Nền tảng điều phối và vận hành nhiệm vụ UAV: lập kế hoạch bay GIS, giám sát telemetry và bàn giao dữ liệu nhiệm vụ an toàn.",
+    "disclaimer": "Phân quyền độc lập giữa Khách hàng, Trung tâm Điều hành và Quản trị hệ thống; kiểm soát an toàn tiền bay theo quy trình SOP.",
     "exploreHeading": "Sản phẩm & Dịch vụ",
     "services": "Dịch vụ bay UAV",
     "solutions": "Giải pháp",
@@ -388,13 +387,13 @@
     "adminPortal": "Cổng Quản trị (Admin)",
     "trainingAcademy": "Học viện An toàn bay & SOP",
     "supportHeading": "Hỗ trợ & Pháp lý",
-    "about": "Giới thiệu dự án",
+    "about": "Giới thiệu nền tảng",
     "faq": "Câu hỏi thường gặp",
     "contact": "Liên hệ & Điều phối",
     "privacy": "Chính sách quyền riêng tư",
     "terms": "Điều khoản dịch vụ",
     "credits": "Nguồn ảnh minh hoạ",
-    "copyright": "© {year} UAV PAS · Đồ án cá nhân của Nguyễn Phát"
+    "copyright": "© {year} UAV PAS · Nền tảng Điều phối & Vận hành Bay"
   },
   "weather": {
     "preflight": {
@@ -657,6 +656,168 @@
       "lost": "Mất gói",
       "latency": "Trễ TB",
       "config": "Cấu hình: mất {loss}% · trễ {latency} ms · rào {fence} m"
+    }
+  },
+  "airspace": {
+    "zoneType": {
+      "PROHIBITED": "Cấm bay (NFZ)",
+      "RESTRICTED": "Hạn chế bay",
+      "WARNING": "Cảnh báo lưu ý"
+    },
+    "geometry": {
+      "CIRCLE": "Vùng tròn",
+      "POLYGON": "Đa giác"
+    },
+    "clearance": {
+      "CLEAR": "THÔNG THOÁNG",
+      "CAUTION": "LƯU Ý KHÔNG PHẬN",
+      "PERMIT_REQUIRED": "CẦN GIẤY PHÉP BAY",
+      "BLOCKED": "CẤM BAY"
+    },
+    "legend": {
+      "label": "Chú giải vùng an toàn không phận",
+      "title": "Không phận ({count} vùng):"
+    },
+    "tooltip": {
+      "authority": "Cơ quan quản lý: {authority}",
+      "ceilingLimit": "Trần bay tối đa: {meters} m AGL",
+      "ceilingUnlimited": "Giới hạn từ mặt đất"
+    },
+    "advisor": {
+      "title": "Kiểm tra an toàn không phận",
+      "pickLocation": "Chọn điểm cất cánh hoặc vẽ vùng bay trên bản đồ để kiểm tra vùng cấm bay và yêu cầu giấy phép.",
+      "loadError": "Chưa thể kiểm tra không phận lúc này. Hệ thống sẽ xác thực lại khi gửi yêu cầu.",
+      "summary": {
+        "CLEAR": "Không phát hiện vùng cấm bay hay vùng hạn chế giao cắt với khu vực bay đã chọn.",
+        "CAUTION": "Khu vực bay giao cắt vùng lưu ý không phận. Hãy tuân thủ trần độ cao và quy tắc quan sát an toàn.",
+        "PERMIT_REQUIRED": "Khu vực bay nằm trong vùng hạn chế. Nhiệm vụ cần hồ sơ giấy phép bay được xác minh trước khi sẵn sàng hoặc cất cánh.",
+        "BLOCKED": "Khu vực hoặc độ cao đã chọn xâm phạm vùng cấm bay. Hãy di chuyển vùng bay ra ngoài ranh giới đỏ."
+      },
+      "enablePermitSupport": "Bật yêu cầu hỗ trợ giấy phép",
+      "intersectingZones": "Vùng không phận liên quan ({count})",
+      "authority": "Đơn vị quản lý: {authority}",
+      "ceilingLimit": "Trần tối đa: {meters} m AGL",
+      "ceilingUnlimited": "Giới hạn toàn bộ độ cao",
+      "insideZone": "Nằm trong ranh giới vùng",
+      "distance": "Khoảng cách: {meters} m",
+      "disclaimer": "Dữ liệu không phận giúp cảnh báo sớm khi lập kế hoạch; người vận hành vẫn phải tuân thủ quy định hàng không hiện hành."
+    },
+    "admin": {
+      "intro": "Quản lý danh mục vùng cấm bay, vùng hạn chế và vùng cảnh báo hiển thị trực tiếp trên bản đồ lập kế hoạch bay.",
+      "summaryCounts": "Tổng {total} vùng · Cấm bay: {prohibited} · Hạn chế: {restricted} · Cảnh báo: {warning}",
+      "create": "Thêm vùng không phận",
+      "createTitle": "Tạo vùng không phận mới",
+      "editTitle": "Cập nhật vùng không phận",
+      "deleteTitle": "Xóa vùng không phận?",
+      "deleteConfirm": "Vùng không phận {code} ({name}) sẽ bị xóa vĩnh viễn khỏi bản đồ kiểm tra an toàn.",
+      "filterType": "Lọc theo phân loại không phận",
+      "filterAll": "Tất cả",
+      "searchPlaceholder": "Tìm mã vùng, tên hoặc cơ quan...",
+      "showInactive": "Hiện cả vùng đang tắt",
+      "empty": "Chưa có vùng không phận nào khớp bộ lọc hiện tại.",
+      "verticesUnit": "đỉnh",
+      "columns": {
+        "zone": "Mã & Tên vùng",
+        "type": "Phân loại",
+        "geometry": "Hình học",
+        "ceiling": "Trần độ cao",
+        "authority": "Cơ quan quản lý",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "status": {
+        "active": "Đang áp dụng",
+        "inactive": "Tạm ngưng"
+      },
+      "actions": {
+        "activate": "Bật",
+        "deactivate": "Tắt",
+        "edit": "Sửa",
+        "delete": "Xóa",
+        "saveChanges": "Lưu thay đổi"
+      },
+      "form": {
+        "code": "Mã vùng",
+        "zoneType": "Phân loại vùng",
+        "name": "Tên vùng không phận",
+        "namePlaceholder": "Ví dụ: Khu vực cảng hàng không Nội Bài",
+        "authority": "Cơ quan quản lý",
+        "authorityPlaceholder": "Cục Hàng không dân dụng / Cơ quan quản lý không phận",
+        "maxAltitudeAglM": "Trần độ cao cho phép (m AGL)",
+        "ceilingPlaceholder": "Để trống nếu giới hạn toàn bộ độ cao",
+        "geometryType": "Dạng hình học",
+        "centerLat": "Vĩ độ tâm",
+        "centerLng": "Kinh độ tâm",
+        "radiusMeters": "Bán kính (m)",
+        "vertices": "Danh sách tọa độ đỉnh đa giác",
+        "verticesHint": "Nhập tối thiểu 3 đỉnh, mỗi dòng một cặp vĩ độ, kinh độ (ví dụ: 21.0325, 105.8310) hoặc mảng JSON.",
+        "description": "Ghi chú quy định",
+        "descriptionPlaceholder": "Mô tả phạm vi áp dụng hoặc hướng dẫn xin phép bay...",
+        "activeLabel": "Kích hoạt kiểm tra và hiển thị trên bản đồ ngay"
+      },
+      "errors": {
+        "saveFailed": "Không thể cập nhật trạng thái vùng không phận."
+      }
+    }
+  },
+  "permit": {
+    "title": "Giấy phép bay",
+    "status": {
+      "NOT_REQUIRED": "Không bắt buộc",
+      "PENDING": "Chờ nộp giấy phép",
+      "SUBMITTED": "Chờ xác minh",
+      "VERIFIED": "Đã xác minh",
+      "REJECTED": "Cần bổ sung"
+    },
+    "guidance": {
+      "PENDING": "Nhiệm vụ này đi vào vùng không phận hạn chế hoặc có yêu cầu hỗ trợ phép bay. Hãy nộp thông tin giấy phép bay để điều độ viên xác minh trước khi cất cánh.",
+      "REJECTED": "Hồ sơ giấy phép bay đã bị từ chối hoặc yêu cầu chỉnh sửa. Vui lòng kiểm tra ghi chú bên dưới và cập nhật lại."
+    },
+    "empty": {
+      "notRequired": "Chưa có yêu cầu giấy phép bay bắt buộc cho nhiệm vụ này. Bạn vẫn có thể lưu thông tin giấy phép nếu có.",
+      "pending": "Chưa có thông tin giấy phép bay được nộp cho nhiệm vụ này."
+    },
+    "fields": {
+      "permitNumber": "Số giấy phép bay",
+      "permitAuthority": "Cơ quan cấp phép",
+      "validFrom": "Hiệu lực từ",
+      "validUntil": "Hiệu lực đến",
+      "validityWindow": "Thời hạn hiệu lực",
+      "maxAltitudeMeters": "Trần bay cấp phép (m AGL)",
+      "verifiedBy": "Người xác minh",
+      "attachment": "Bản quét giấy phép",
+      "note": "Ghi chú giấy phép / thẩm định"
+    },
+    "placeholders": {
+      "permitNumber": "GPB-2026-00128",
+      "permitAuthority": "Cơ quan cấp phép bay có thẩm quyền",
+      "noAttachment": "Chưa chọn tệp đính kèm",
+      "note": "Số văn bản tham chiếu, điều kiện độ cao hoặc khung giờ cấp phép..."
+    },
+    "values": {
+      "planDefault": "Theo kế hoạch bay",
+      "awaitingVerification": "Chưa xác minh",
+      "documentId": "Tệp đính kèm #{id}"
+    },
+    "actions": {
+      "submitNew": "Nộp giấy phép bay",
+      "edit": "Cập nhật giấy phép",
+      "saveSubmit": "Lưu & gửi xác minh",
+      "downloadScan": "Tải bản quét",
+      "uploadScan": "Tải tệp bản quét mới lên nhiệm vụ",
+      "uploadingScan": "Đang tải bản quét lên..."
+    },
+    "verify": {
+      "title": "Thẩm định hồ sơ giấy phép bay",
+      "noteLabel": "Ghi chú xác minh hoặc lý do từ chối",
+      "notePlaceholder": "Đối chiếu số giấy phép, thời hạn và trần độ cao...",
+      "approve": "Xác minh hợp lệ",
+      "reject": "Từ chối hồ sơ"
+    },
+    "errors": {
+      "saveFailed": "Không thể lưu thông tin giấy phép bay. Vui lòng kiểm tra lại.",
+      "uploadFailed": "Không thể tải tệp bản quét lên nhiệm vụ.",
+      "verifyFailed": "Không thể cập nhật kết quả thẩm định giấy phép bay."
     }
   }
 }

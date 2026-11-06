@@ -4,7 +4,7 @@ import {apiMessageCodes, apiMessages, clientText} from '@/shared/lib/api/message
 import {API_ROUTES} from '@/shared/lib/api/routes';
 import {getPresentationLocale} from '@/shared/lib/presentation';
 import {sessionStore} from '@/lib/api/session';
-import {ApiError, createApiClient} from '@/lib/api/core';
+import {ApiError, bytesToBase64, createApiClient} from '@/lib/api/core';
 
 export {API_ROUTES, ApiError};
 
@@ -40,4 +40,13 @@ export function apiImageSource(url?: string | null): { uri: string; headers?: Re
     if (!url.startsWith('/api/')) return {uri: url};
     const token = sessionStore.read()?.accessToken;
     return {uri: `${API_BASE_URL}${url}`, headers: token ? {Authorization: `Bearer ${token}`} : undefined};
+}
+
+/** Downloads an authenticated API binary (e.g. invoice PDF) and encodes it as a Base64 data: URI for native sharing. */
+export async function fetchApiBase64DataUri(path: string, mimeType = 'application/pdf', signal?: AbortSignal): Promise<string> {
+    const bytes = await apiClient.getBytes(path, {
+        signal,
+        headers: {Accept: mimeType},
+    });
+    return `data:${mimeType};base64,${bytesToBase64(bytes)}`;
 }

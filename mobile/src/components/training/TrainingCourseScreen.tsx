@@ -1,6 +1,6 @@
 import React from 'react';
 import {Image, Pressable, StyleSheet, View} from 'react-native';
-import {useLocalSearchParams, useRouter} from 'expo-router';
+import {useLocalSearchParams, usePathname, useRouter} from 'expo-router';
 import {CheckSquare, ChevronRight, CircleCheck, GraduationCap, Play, Square} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
 import {categoryLabel, LESSON_ICONS, ProgressBar} from '@/components/training/TrainingBits';
@@ -50,6 +50,8 @@ function Checklist({course, slug, allLessonsDone}: { course: TrainingCourseDetai
 export function TrainingCourseScreen() {
     const {t} = useI18n();
     const router = useRouter();
+    const pathname = usePathname();
+    const lessonPathname = pathname.startsWith('/operations') ? '/operations/training/lesson/[id]' : '/customer/training/lesson/[id]';
     const {slug = ''} = useLocalSearchParams<{ slug: string }>();
     const query = useTrainingCourse(slug);
     const course = query.data;
@@ -63,7 +65,7 @@ export function TrainingCourseScreen() {
     const progress = courseLessonProgress(sections);
     const startId = pickStartLesson(sections, null);
     const cta = courseCallToAction(course.status, progress.done);
-    const openLesson = (id: number) => router.push({pathname: '/customer/training/lesson/[id]', params: {id: String(id), slug}});
+    const openLesson = (id: number) => router.push({pathname: lessonPathname, params: {id: String(id), slug}});
 
     return (
         <Screen onRefresh={() => void query.refetch()} refreshing={query.isRefetching}>

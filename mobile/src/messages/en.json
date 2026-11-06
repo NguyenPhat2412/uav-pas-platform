@@ -47,6 +47,64 @@
         "xlarge": "Extra large"
       }
     },
+    "workspace": {
+      "title": "Workspace",
+      "toOperationsHint": "Switch to the Field Operations portal to execute assigned flights, run SAR rescue cockpits, and inspect fleet maintenance.",
+      "toCustomerHint": "Switch to the Customer portal to review service requests, invoices, and deliverables.",
+      "switchToOperations": "Open Field Operations Portal",
+      "switchToCustomer": "Open Customer Portal"
+    },
+    "push": {
+      "title": "Device push notifications",
+      "active": "Enabled",
+      "inactive": "Not registered",
+      "hint": "Receive mission updates, flight permit approvals, SAR target alerts, and invoice confirmations on this iPhone.",
+      "endpointLabel": "Device Expo push endpoint",
+      "enableButton": "Enable push on this device",
+      "customButton": "Enter manually",
+      "disableButton": "Disable push on this device",
+      "registered": "Push notifications registered for this device.",
+      "unregistered": "Push notifications disabled on this device."
+    },
+    "permit": {
+      "title": "Flight permit",
+      "number": "Permit number",
+      "authority": "Issuing authority",
+      "validity": "Valid timeframe",
+      "validFrom": "Valid from",
+      "validUntil": "Valid until",
+      "ceiling": "Approved ceiling",
+      "note": "Verification note",
+      "verifiedBy": "Verified by {actor}",
+      "emptyHint": "No flight permit details recorded yet. Submit permit number and validity dates for pre-flight verification.",
+      "submitAction": "Submit flight permit",
+      "updateAction": "Update flight permit",
+      "saveAction": "Save permit record",
+      "verifyNoteLabel": "Reviewer note (optional)",
+      "approveAction": "Verify permit",
+      "rejectAction": "Reject permit",
+      "savedToast": "Flight permit details saved.",
+      "approvedToast": "Flight permit verified.",
+      "rejectedToast": "Flight permit rejected.",
+      "status": {
+        "NOT_REQUIRED": "Not required",
+        "PENDING": "Permit needed",
+        "SUBMITTED": "Pending review",
+        "VERIFIED": "Verified",
+        "REJECTED": "Rejected"
+      }
+    },
+    "airspace": {
+      "title": "Airspace check",
+      "weatherAndAirspaceTitle": "Site weather & airspace clearance",
+      "noViolations": "Flight coordinates and altitude are clear of prohibited and restricted zones.",
+      "clearance": {
+        "CLEAR": "Clear",
+        "CAUTION": "Advisory zone",
+        "PERMIT_REQUIRED": "Permit required",
+        "BLOCKED": "Prohibited zone"
+      }
+    },
     "missions": {
       "edit": "Edit",
       "history": "History",
@@ -91,11 +149,16 @@
       "accountNumber": "Account number",
       "accountName": "Account holder",
       "content": "Transfer note",
-      "reportTitle": "Already paid?",
-      "reportHint": "Enter the transaction reference from your bank receipt so accounting can match it faster.",
-      "reference": "Bank transaction reference",
-      "reportButton": "Report payment",
-      "confirmSent": "Reported. The invoice updates once accounting has matched the payment."
+      "autoReconcileTitle": "Automatic bank reconciliation",
+      "autoReconcileHint": "Your invoice reconciles automatically within seconds once the bank transfer with exact note {content} completes. Contact support if the note had a typo.",
+      "checkStatus": "Check payment status",
+      "paidConfirmed": "Payment confirmed for invoice {code}!",
+      "stillPending": "No matching transfer recorded yet. Wait a few seconds after paying and check again.",
+      "receiptTitle": "PDF invoice & receipt",
+      "receiptPendingHint": "Save or share the pro-forma PDF invoice for your records or payment approval.",
+      "receiptPaidHint": "Invoice paid. Save or share your PDF payment receipt for accounting records.",
+      "shareReceiptPdf": "Share / Save PDF Receipt",
+      "receiptShareTitle": "Invoice receipt {code}"
     },
     "security": {
       "twoFactor": "Two-step verification",
@@ -158,6 +221,155 @@
         "SAFETY_COMPLIANCE": "Landing zone & corridor safety",
         "DATA_DELIVERABLES": "Data acceptance & AI",
         "BILLING_SLA": "Quotas & SLA reconciliation"
+      }
+    },
+    "ops": {
+      "nav": {
+        "missions": "Field Ops",
+        "sar": "SAR Rescue",
+        "fleet": "Fleet & Maint."
+      },
+      "missions": {
+        "acceptedBadge": "Accepted",
+        "filters": {
+          "assigned": "Assigned",
+          "ready": "Ready & Active",
+          "pending": "Pending review",
+          "completed": "Closed",
+          "all": "All"
+        }
+      },
+      "map": {
+        "title": "Flight corridor & airspace map",
+        "legend": "Dark red: prohibited · Amber: restricted · Slate: advisory · Brand red outline: mission corridor."
+      },
+      "telemetry": {
+        "title": "Live flight telemetry (5s)"
+      },
+      "preflight": {
+        "title": "Pre-flight safety checklist",
+        "subtitle": "Confirm all 4 field safety checks below to unlock takeoff.",
+        "readyForTakeoff": "All pre-flight checks cleared — ready for takeoff.",
+        "items": {
+          "batteryAndPropellersSafe": "Battery above safe threshold; propellers & airframe intact",
+          "gnssRtkLocked": "GNSS / RTK positioning locked and IMU/compass calibrated",
+          "weatherCleared": "Wind, visibility, and ceiling at launch site within safe limits",
+          "airspaceAndPermitCleared": "Launch pad clear; airspace corridor & flight permit verified"
+        },
+        "blockers": {
+          "notReady": "Advance the mission to Ready status before initiating takeoff.",
+          "acceptanceRequired": "The assigned operator must accept the mission before takeoff.",
+          "airspaceBlocked": "Flight corridor intersects a prohibited airspace zone — takeoff blocked.",
+          "permitUnverified": "A verified flight permit is required before takeoff for this mission.",
+          "checklistIncomplete": "Complete every pre-flight safety check above before takeoff."
+        }
+      },
+      "actions": {
+        "startFlight": "Take Off (Start Flight)",
+        "confirmedToast": "Mission confirmed and resources reserved.",
+        "acceptedToast": "Field assignment accepted.",
+        "readyToast": "Mission marked Ready for takeoff.",
+        "startedToast": "Takeoff recorded — mission is now In Progress.",
+        "completedToast": "Mission completed and handover logged.",
+        "failedToast": "Mission incident report recorded.",
+        "rejectedToast": "Mission request rejected.",
+        "conflictToast": "Field conflict reported to dispatch."
+      },
+      "sar": {
+        "cockpitTitle": "SAR Rescue Cockpit",
+        "loading": "Loading SAR rescue missions…",
+        "loadError": "Couldn't load SAR mission data.",
+        "empty": "No search-and-rescue missions match this view.",
+        "lkpLabel": "Last Known Position (LKP)",
+        "victimsCount": "~{count} persons",
+        "openMissionDetail": "Open parent mission record",
+        "mapTitle": "Search area & AI detections map",
+        "mapLegend": "Red pin: LKP / UAV / verified target · Amber circle: drift radius · Slate polygon: search sector.",
+        "homeStation": "Home station",
+        "hudTitle": "UAV telemetry & Edge AI node",
+        "aiNodeLine": "AI node: {node} · {fps} FPS · {latency} ms inference",
+        "detectionsTitle": "AI target detections",
+        "noDetections": "No AI detections recorded from the UAV stream yet.",
+        "verifiedBadge": "Verified",
+        "pendingBadge": "Unverified",
+        "verifyTarget": "Verify target",
+        "falseAlarm": "False alarm",
+        "verifiedToast": "Target verified for rescue coordination.",
+        "dismissedToast": "Detection marked as false alarm.",
+        "commandTitle": "Rescue dispatch & Return To Home",
+        "dispatchTargetHint": "Dispatching coordinates from verified/selected {label} ({confidence}% confidence).",
+        "dispatchDatumHint": "No AI detection selected — dispatch uses Last Known Position (LKP) coordinates.",
+        "coordinatorNoteLabel": "Field rescue team instructions",
+        "coordinatorNotePlaceholder": "Terrain approach notes, medical gear required…",
+        "dispatchButton": "Dispatch Rescue Team",
+        "dispatchedToast": "Rescue team dispatch alert sent.",
+        "rthButton": "Return To Home (RTH)",
+        "rthConfirmTitle": "Trigger Return To Home (RTH)?",
+        "rthConfirmBody": "The UAV will abort its current sweep and return directly to its home station at safe altitude.",
+        "rthSentToast": "Return To Home command sent to UAV.",
+        "filters": {
+          "active": "Active searches",
+          "all": "Include rescued"
+        },
+        "status": {
+          "SEARCHING": "Searching",
+          "TARGET_LOCATED": "Target located",
+          "RESCUED": "Rescued",
+          "SUSPENDED": "Suspended"
+        }
+      },
+      "fleet": {
+        "summaryTitle": "Fleet readiness",
+        "loading": "Loading fleet & ground stations…",
+        "loadError": "Couldn't load fleet overview.",
+        "emptyUavs": "No UAVs registered in the fleet.",
+        "emptyStations": "No ground stations registered.",
+        "stationUavCount": "{count} UAVs",
+        "tabs": {
+          "uavs": "UAV Fleet",
+          "stations": "Stations",
+          "maintenance": "Maintenance"
+        },
+        "stats": {
+          "total": "Total UAVs",
+          "available": "Available",
+          "active": "Assigned / Flying",
+          "maintenance": "In maintenance"
+        },
+        "uavStatus": {
+          "AVAILABLE": "Available",
+          "ASSIGNED": "Assigned",
+          "IN_USE": "Flying",
+          "MAINTENANCE": "Maintenance",
+          "INACTIVE": "Inactive"
+        }
+      },
+      "maintenance": {
+        "loading": "Loading repair & inspection orders…",
+        "loadError": "Couldn't load maintenance orders.",
+        "empty": "No repair orders match this filter.",
+        "noPermission": "Your role does not include maintenance order access.",
+        "technician": "Technician",
+        "plannedDate": "Planned date",
+        "materialCost": "Material cost",
+        "undeterminedCost": "TBD",
+        "inspectionNotesLabel": "Technical inspection notes",
+        "inspectionNotesPlaceholder": "Record motor, battery, sensor, and test-hover checks…",
+        "inspectionPassedCheck": "UAV passed safety inspection and is cleared for service",
+        "startRepair": "Start repair",
+        "completeInspection": "Complete inspection",
+        "submitInspection": "Confirm inspection passed",
+        "startedToast": "Repair order moved to In Progress.",
+        "completedToast": "Maintenance inspection completed.",
+        "filters": {
+          "all": "All"
+        },
+        "status": {
+          "OPEN": "Open",
+          "IN_PROGRESS": "In repair",
+          "COMPLETED": "Completed",
+          "CANCELLED": "Cancelled"
+        }
       }
     }
   }

@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, Image, Pressable, StyleSheet, View} from 'react-native';
-import {useLocalSearchParams, useRouter} from 'expo-router';
+import {useLocalSearchParams, usePathname, useRouter} from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import {useEventListener} from 'expo';
 import {useVideoPlayer, VideoView, type VideoPlayer} from 'expo-video';
@@ -150,6 +150,8 @@ export function TrainingLessonScreen() {
     const {t} = useI18n();
     const toast = useToast();
     const router = useRouter();
+    const pathname = usePathname();
+    const lessonPathname = pathname.startsWith('/operations') ? '/operations/training/lesson/[id]' : '/customer/training/lesson/[id]';
     const params = useLocalSearchParams<{ id: string; slug?: string }>();
     const lessonId = Number(params.id);
     const query = useTrainingLesson(lessonId);
@@ -170,7 +172,7 @@ export function TrainingLessonScreen() {
     const Icon = LESSON_ICONS[lesson.type] ?? LESSON_ICONS.ARTICLE;
     const automatic = (lesson.type === 'VIDEO' && lesson.video?.kind === 'FILE') || lesson.type === 'SLIDES';
     const resources = (lesson.resources ?? []).filter(resource => !!resource.url);
-    const openLesson = (id: number) => router.replace({pathname: '/customer/training/lesson/[id]', params: {id: String(id), slug: params.slug ?? lesson.courseSlug}});
+    const openLesson = (id: number) => router.replace({pathname: lessonPathname, params: {id: String(id), slug: params.slug ?? lesson.courseSlug}});
 
     return (
         <Screen>

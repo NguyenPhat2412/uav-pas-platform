@@ -2,6 +2,7 @@ import {apiClient, API_ROUTES} from '@/lib/api/client';
 import {buildQueryString} from '@/shared/lib/format';
 import {missionDraftUpdatePayload} from '@/shared/forms/mission/mission-form';
 import type {Mission, MissionAvailability, MissionEvent, MissionInput, MissionMedia, MissionStatus, PageResponse, UavService} from '@/shared/types/customer';
+import type {MissionPermitUpsertInput} from '@/shared/types/mission/mission.types';
 
 /** Same requests as the web customerMissionService; the backend scopes every list to the signed-in customer. */
 export const customerMissionService = {
@@ -16,6 +17,8 @@ export const customerMissionService = {
         apiClient.patch<Mission>(API_ROUTES.missions.detail(id), missionDraftUpdatePayload(data, expectedVersion)),
     submit: (id: number) => apiClient.post<Mission>(API_ROUTES.missions.submit(id)),
     cancel: (id: number) => apiClient.post<Mission>(API_ROUTES.missions.cancel(id)),
+    upsertPermit: (id: number, data: MissionPermitUpsertInput) =>
+        apiClient.put<Mission>(API_ROUTES.missions.permit(id), data),
     timeline: (id: number, signal?: AbortSignal) => apiClient.get<MissionEvent[]>(API_ROUTES.missions.timeline(id), {signal}),
     media: (id: number, signal?: AbortSignal) => apiClient.get<MissionMedia[]>(API_ROUTES.missions.media(id), {signal}),
 };

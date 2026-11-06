@@ -66,8 +66,9 @@ export function BillingScreen() {
                     : !invoices.data?.content.length ? <EmptyState icon={Receipt} message={t('billingPage.noInvoices')}/>
                         : invoices.data.content.map(invoice => {
                             const tone = INVOICE_TONE[invoice.status];
+                            const canOpen = invoice.status === 'PENDING' || invoice.status === 'PAID';
                             return (
-                                <Card key={invoice.id} onPress={invoice.status === 'PENDING' ? () => router.push({pathname: '/customer/invoices/[id]', params: {id: String(invoice.id)}}) : undefined}>
+                                <Card key={invoice.id} onPress={canOpen ? () => router.push({pathname: '/customer/invoices/[id]', params: {id: String(invoice.id)}}) : undefined}>
                                     <View style={styles.row}>
                                         <AppText variant="caption" style={styles.code}>{invoice.code}</AppText>
                                         <Badge label={t(`billingPage.status.${invoice.status}`)} background={tone.background} color={tone.color}/>
@@ -78,7 +79,7 @@ export function BillingScreen() {
                                             <AppText variant="caption">{t('billingPage.dueDate')}: {formatDate(invoice.dueDate, {dateStyle: 'medium'})}</AppText>
                                         </View>
                                         <AppText variant="title">{formatCurrency(invoice.amount)}</AppText>
-                                        {invoice.status === 'PENDING' && <ChevronRight size={18} color={colors.muted}/>}
+                                        {canOpen && <ChevronRight size={18} color={colors.muted}/>}
                                     </View>
                                 </Card>
                             );

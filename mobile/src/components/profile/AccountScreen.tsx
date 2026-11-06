@@ -2,8 +2,9 @@ import React from 'react';
 import {ActivityIndicator, Alert, Pressable, StyleSheet, View} from 'react-native';
 import {useRouter} from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import {ALargeSmall, Camera, ChevronRight, CreditCard, GraduationCap, Languages, Layers, LogOut, ShieldCheck, UserRound, type LucideIcon} from 'lucide-react-native';
-import {AppText, Card, ChipGroup, Screen} from '@/components/ui';
+import {ALargeSmall, ArrowRightLeft, Camera, ChevronRight, CreditCard, GraduationCap, Languages, Layers, LogOut, ShieldCheck, UserRound, type LucideIcon} from 'lucide-react-native';
+import {AppText, Button, Card, ChipGroup, Screen, SectionTitle} from '@/components/ui';
+import {PushDeviceCard} from '@/components/profile/PushDeviceCard';
 import {UserAvatar} from '@/components/profile/UserAvatar';
 import {useAvatarMutations} from '@/hooks/profile/useProfile';
 import {useAuth} from '@/providers/AuthContext';
@@ -12,14 +13,22 @@ import {TEXT_SIZES, useTextSize, type TextSize} from '@/providers/TextSizeContex
 import {useToast} from '@/providers/ToastContext';
 import {localeMetaMap, supportedLocales, type SupportedLocale} from '@/shared/i18n/config';
 import {displayLabel} from '@/shared/lib/presentation';
+import {canUsePortal} from '@/shared/utils/auth/portal';
 import {API_BASE_URL} from '@/config/env';
 import {colors, radius, spacing} from '@/styles/tokens';
 
-function Row({icon: Icon, label, onPress, danger = false}: { icon: LucideIcon; label: string; onPress: () => void; danger?: boolean }) {
+export function AccountRow({icon: Icon, label, onPress, danger = false, right}: {
+    icon: LucideIcon;
+    label: string;
+    onPress: () => void;
+    danger?: boolean;
+    right?: React.ReactNode;
+}) {
     return (
         <Pressable onPress={onPress} accessibilityRole="button" style={({pressed}) => [styles.row, pressed && styles.pressed]}>
             <View style={[styles.rowIcon, danger && styles.rowIconDanger]}><Icon size={18} color={danger ? colors.danger : colors.slateDark}/></View>
             <AppText style={[styles.flex, danger ? styles.danger : undefined]}>{label}</AppText>
+            {right}
             {!danger && <ChevronRight size={18} color={colors.muted}/>}
         </Pressable>
     );
@@ -29,7 +38,7 @@ const AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const AVATAR_MAX_BYTES = 5_000_000;
 
 /** The avatar at the top of the tab: tap to take a photo, pick one (cropped square) or remove it; same 5 MB rule as the web. */
-function AvatarButton() {
+export function AvatarButton() {
     const {t} = useI18n();
     const {user} = useAuth();
     const toast = useToast();
@@ -87,15 +96,21 @@ function AvatarButton() {
 
 export function AccountScreen() {
     const {t, locale, setLocale} = useI18n();
-    const {user, logout} = useAuth();
+    const {user, logout, switchPortal} = useAuth();
     const {size, setSize} = useTextSize();
     const router = useRouter();
     const name = user?.fullName || user?.username || '';
+    const canSwitchToOps = canUsePortal(user?.role, 'operations');
 
     const confirmLogout = () => Alert.alert(t('common.logout'), t('mobile.account.logoutQuestion'), [
         {text: t('common.cancel'), style: 'cancel'},
         {text: t('common.logout'), style: 'destructive', onPress: () => void logout()},
     ]);
+
+    const enterOperationsPortal = async () => {
+        await switchPortal('operations');
+        router.replace('/operations/missions');
+    };
 
     return (
         <Screen>
@@ -108,13 +123,27 @@ export function AccountScreen() {
                 </View>
             </View>
 
+            {canSwitchToOps && (
+                <Card style={styles.workspaceCard}>
+                    <SectionTitle title={t('mobile.workspace.title')}/>
+                    <AppText variant="small">{t('mobile.workspace.toOperationsHint')}</AppText>
+                    <Button
+                        label={t('mobile.workspace.switchToOperations')}
+                        icon={ArrowRightLeft}
+                        onPress={() => void enterOperationsPortal()}
+                    />
+                </Card>
+            )}
+
             <Card>
-                <Row icon={UserRound} label={t('mobile.account.profile')} onPress={() => router.push('/customer/profile')}/>
-                <Row icon={ShieldCheck} label={t('mobile.account.security')} onPress={() => router.push('/customer/security')}/>
-                <Row icon={CreditCard} label={t('nav.billing')} onPress={() => router.push('/customer/billing')}/>
-                <Row icon={Layers} label={t('nav.services')} onPress={() => router.push('/customer/services')}/>
-                <Row icon={GraduationCap} label={t('nav.training')} onPress={() => router.push('/customer/training')}/>
+                <AccountRow icon={UserRound} label={t('mobile.account.profile')} onPress={() => router.push('/customer/profile')}/>
+                <AccountRow icon={ShieldCheck} label={t('mobile.account.security')} onPress={() => router.push('/customer/security')}/>
+                <AccountRow icon={CreditCard} label={t('nav.billing')} onPress={() => router.push('/customer/billing')}/>
+                <AccountRow icon={Layers} label={t('nav.services')} onPress={() => router.push('/customer/services')}/>
+                <AccountRow icon={GraduationCap} label={t('nav.training')} onPress={() => router.push('/customer/training')}/>
             </Card>
+
+            <PushDeviceCard/>
 
             <Card>
                 <View style={styles.languageTitle}>
@@ -136,7 +165,7 @@ export function AccountScreen() {
             </Card>
 
             <Card>
-                <Row icon={LogOut} label={t('common.logout')} onPress={confirmLogout} danger/>
+                <AccountRow icon={LogOut} label={t('common.logout')} onPress={confirmLogout} danger/>
             </Card>
 
             <AppText variant="caption" style={styles.version}>
@@ -149,6 +178,7 @@ export function AccountScreen() {
 const styles = StyleSheet.create({
     flex: {flex: 1},
     identity: {flexDirection: 'row', alignItems: 'center', gap: spacing.lg},
+    workspaceCard: {borderColor: colors.primary, backgroundColor: colors.primaryLight},
     avatarBusy: {...StyleSheet.absoluteFill, borderRadius: 32, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center'},
     cameraBadge: {
         position: 'absolute', right: -2, bottom: -2, width: 26, height: 26, borderRadius: 13, backgroundColor: colors.surface,

@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
-import {useLocalSearchParams, useRouter} from 'expo-router';
+import React, {useEffect, useRef, useState} from 'react';
+import {Pressable, Share, StyleSheet, View} from 'react-native';
+import {useLocalSearchParams} from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import QRCode from 'react-native-qrcode-svg';
-import {CheckCircle2, Copy} from 'lucide-react-native';
-import {AppText, Button, Card, ErrorState, LoadingState, Screen, SectionTitle, TextField} from '@/components/ui';
+import {CheckCircle2, Copy, Download, RefreshCw} from 'lucide-react-native';
+import {AppText, Button, Card, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
 import {useBankTransferInstructions, useBillingActions} from '@/hooks/billing/useCustomerBilling';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
@@ -31,31 +31,80 @@ function CopyLine({label, value, display}: { label: string; value: string; displ
     );
 }
 
-/** VietQR / NAPAS 247: scan or copy the details in a banking app, then report the bank reference for confirmation. */
+/** VietQR / NAPAS 247 payment with live webhook auto-reconciliation and native PDF invoice/receipt sharing. */
 export function InvoicePaymentScreen() {
     const {t, formatCurrency} = useI18n();
     const toast = useToast();
-    const router = useRouter();
     const {id} = useLocalSearchParams<{ id: string }>();
-    const instructions = useBankTransferInstructions(Number(id));
-    const {confirm} = useBillingActions();
-    const [reference, setReference] = useState('');
+    const invoiceId = Number(id);
+    const instructions = useBankTransferInstructions(invoiceId);
+    const {refresh, downloadReceipt} = useBillingActions();
+    const [checkingStatus, setCheckingStatus] = useState(false);
     const data = instructions.data;
+    const previousStatus = useRef<string | undefined>(undefined);
+
+    useEffect(() => {
+        if (previousStatus.current === 'PENDING' && data?.status === 'PAID') {
+            toast.show(t('mobile.billing.paidConfirmed', {code: data.invoiceCode}), 'success');
+        }
+        previousStatus.current = data?.status;
+    }, [data?.invoiceCode, data?.status, t, toast]);
+
+    const shareReceipt = async (targetInvoiceId: number, code: string) => {
+        try {
+            const dataUri = await downloadReceipt.mutateAsync(targetInvoiceId);
+            const shareTitle = t('mobile.billing.receiptShareTitle', {code});
+            await Share.share({title: shareTitle, url: dataUri, message: shareTitle});
+        } catch (error) {
+            toast.show(signInErrorText(error, t), 'error');
+        }
+    };
 
     if (instructions.isPending) return <Screen><LoadingState/></Screen>;
-    if (!data) return <Screen><ErrorState message={t('billingPage.loadError')} retryLabel={t('common.retry')} onRetry={() => void instructions.refetch()}/></Screen>;
+    if (instructions.isError || !data) {
+        return (
+            <Screen onRefresh={() => void instructions.refetch()} refreshing={instructions.isRefetching}>
+                <ErrorState message={t('billingPage.loadError')} retryLabel={t('common.retry')} onRetry={() => void instructions.refetch()}/>
+                {Number.isSafeInteger(invoiceId) && invoiceId > 0 && (
+                    <Card>
+                        <SectionTitle title={t('mobile.billing.receiptTitle')}/>
+                        <AppText variant="small">{t('mobile.billing.receiptPendingHint')}</AppText>
+                        <Button
+                            label={t('mobile.billing.shareReceiptPdf')}
+                            tone="secondary"
+                            icon={Download}
+                            loading={downloadReceipt.isPending}
+                            onPress={() => void shareReceipt(invoiceId, `#${invoiceId}`)}
+                        />
+                    </Card>
+                )}
+            </Screen>
+        );
+    }
 
     const paid = data.status === 'PAID';
-    const submit = () => confirm.mutate({invoiceId: data.invoiceId, reference}, {
-        onSuccess: () => {
-            toast.show(t('mobile.billing.confirmSent'), 'success');
-            router.back();
-        },
-        onError: error => toast.show(signInErrorText(error, t), 'error'),
-    });
+
+    const checkPaymentStatus = async () => {
+        setCheckingStatus(true);
+        try {
+            const result = await instructions.refetch();
+            await refresh();
+            if (result.error) {
+                toast.show(signInErrorText(result.error, t), 'error');
+                return;
+            }
+            if (result.data?.status === 'PAID') {
+                toast.show(t('mobile.billing.paidConfirmed', {code: data.invoiceCode}), 'success');
+            } else {
+                toast.show(t('mobile.billing.stillPending'), 'info');
+            }
+        } finally {
+            setCheckingStatus(false);
+        }
+    };
 
     return (
-        <Screen>
+        <Screen refreshing={instructions.isRefetching && !checkingStatus} onRefresh={() => void checkPaymentStatus()}>
             <Card style={styles.center}>
                 <AppText variant="caption">{t('billingPage.invoiceAmount', {code: data.invoiceCode, amount: ''})}</AppText>
                 <AppText variant="display">{formatCurrency(data.total)}</AppText>
@@ -81,13 +130,24 @@ export function InvoicePaymentScreen() {
                         <CopyLine label={t('mobile.billing.content')} value={data.transferContent}/>
                     </Card>
                     <Card>
-                        <SectionTitle title={t('mobile.billing.reportTitle')}/>
-                        <AppText variant="small">{t('mobile.billing.reportHint')}</AppText>
-                        <TextField label={t('mobile.billing.reference')} value={reference} onChangeText={setReference} autoCapitalize="characters" autoCorrect={false}/>
-                        <Button label={t('mobile.billing.reportButton')} disabled={!reference.trim()} loading={confirm.isPending} onPress={submit}/>
+                        <SectionTitle title={t('mobile.billing.autoReconcileTitle')}/>
+                        <AppText variant="small">{t('mobile.billing.autoReconcileHint', {content: data.transferContent})}</AppText>
+                        <Button label={t('mobile.billing.checkStatus')} icon={RefreshCw} loading={checkingStatus} onPress={() => void checkPaymentStatus()}/>
                     </Card>
                 </>
             )}
+
+            <Card>
+                <SectionTitle title={t('mobile.billing.receiptTitle')}/>
+                <AppText variant="small">{paid ? t('mobile.billing.receiptPaidHint') : t('mobile.billing.receiptPendingHint')}</AppText>
+                <Button
+                    label={t('mobile.billing.shareReceiptPdf')}
+                    tone={paid ? 'primary' : 'secondary'}
+                    icon={Download}
+                    loading={downloadReceipt.isPending}
+                    onPress={() => void shareReceipt(data.invoiceId, data.invoiceCode)}
+                />
+            </Card>
         </Screen>
     );
 }

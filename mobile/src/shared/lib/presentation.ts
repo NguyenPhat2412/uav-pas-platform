@@ -42,6 +42,8 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         STATION_UNASSIGNED: 'Station removed', EQUIPMENT_CHANGED: 'Equipment or quantity changed',
         EQUIPMENT_RELEASED: 'Equipment returned', UAV_REPLACED: 'UAV replaced', UAV_UNASSIGNED: 'UAV removed from mission',
         OPERATOR_ACCEPTED: 'Mission accepted', OPERATOR_CONFLICT: 'Issue reported',
+        PERMIT_SUBMITTED: 'Flight permit submitted', PERMIT_VERIFIED: 'Flight permit verified',
+        PERMIT_REJECTED: 'Flight permit rejected',
         MAINTENANCE_SCHEDULE: 'Maintenance schedule', REPAIR_ORDER: 'Repair order', MONTHLY: 'month', YEARLY: 'year',
         CREATED: 'Created', UPDATED: 'Updated', PAUSED: 'Paused', STARTED: 'Repair started',
         AVATAR_UPDATED: 'Profile picture updated', AVATAR_REMOVED: 'Profile picture removed',
@@ -69,7 +71,8 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         OPERATOR_REPLACED: 'オペレーター交代', OPERATOR_UNASSIGNED: 'オペレーター解除', STATION_REPLACED: 'ステーション変更',
         STATION_UNASSIGNED: 'ステーション解除', EQUIPMENT_CHANGED: '機材または数量の変更', EQUIPMENT_RELEASED: '機材返却',
         UAV_REPLACED: 'UAV交換', UAV_UNASSIGNED: 'UAVをミッションから解除', OPERATOR_ACCEPTED: 'ミッション受諾',
-        OPERATOR_CONFLICT: '問題の報告', MAINTENANCE_SCHEDULE: 'メンテナンス計画', REPAIR_ORDER: '修理票', MONTHLY: 'か月',
+        OPERATOR_CONFLICT: '問題の報告', PERMIT_SUBMITTED: '飛行許可証を提出', PERMIT_VERIFIED: '飛行許可証を承認',
+        PERMIT_REJECTED: '飛行許可証を却下', MAINTENANCE_SCHEDULE: 'メンテナンス計画', REPAIR_ORDER: '修理票', MONTHLY: 'か月',
         YEARLY: '年', CREATED: '作成済み', UPDATED: '更新済み', PAUSED: '一時停止', STARTED: '修理開始',
         AVATAR_UPDATED: 'プロフィール画像を更新', AVATAR_REMOVED: 'プロフィール画像を削除',
     },
@@ -171,6 +174,9 @@ const labels: Record<string, string> = {
     UAV_UNASSIGNED: 'Gỡ UAV khỏi nhiệm vụ',
     OPERATOR_ACCEPTED: 'Đã nhận nhiệm vụ',
     OPERATOR_CONFLICT: 'Báo vướng mắc',
+    PERMIT_SUBMITTED: 'Nộp giấy phép bay',
+    PERMIT_VERIFIED: 'Xác minh giấy phép bay',
+    PERMIT_REJECTED: 'Từ chối giấy phép bay',
     MAINTENANCE_SCHEDULE: 'Lịch bảo trì',
     REPAIR_ORDER: 'Phiếu sửa chữa',
     MONTHLY: 'tháng',
@@ -305,6 +311,9 @@ const eventLabels: Record<string, string> = {
     OPERATOR_CONFLICT: 'Người vận hành báo vướng mắc',
     EQUIPMENT_RESERVED: 'Giữ thiết bị',
     MEDIA_ATTACHED: 'Bổ sung tệp',
+    PERMIT_SUBMITTED: 'Nộp giấy phép bay',
+    PERMIT_VERIFIED: 'Xác minh giấy phép bay',
+    PERMIT_REJECTED: 'Từ chối giấy phép bay',
     CANCELLED: 'Hủy nhiệm vụ',
     REJECTED: 'Từ chối yêu cầu',
     COMPLETED: 'Hoàn tất nhiệm vụ',
@@ -319,7 +328,9 @@ const eventTranslations: Record<'en' | 'ja', Record<string, string>> = {
         UPDATED: 'Request updated', STATION_ASSIGNED: 'Station assigned', UAV_ASSIGNED: 'UAV assigned',
         UAV_REPLACED: 'UAV replaced', UAV_UNASSIGNED: 'UAV removed from mission', OPERATOR_ASSIGNED: 'Operator assigned',
         OPERATOR_ACCEPTED: 'Operator accepted the mission', OPERATOR_CONFLICT: 'Operator reported an issue',
-        EQUIPMENT_RESERVED: 'Equipment reserved', MEDIA_ATTACHED: 'File added', CANCELLED: 'Mission cancelled',
+        EQUIPMENT_RESERVED: 'Equipment reserved', MEDIA_ATTACHED: 'File added',
+        PERMIT_SUBMITTED: 'Flight permit submitted', PERMIT_VERIFIED: 'Flight permit verified',
+        PERMIT_REJECTED: 'Flight permit rejected', CANCELLED: 'Mission cancelled',
         REJECTED: 'Request rejected', COMPLETED: 'Mission completed', FAILED: 'Marked unsuccessful'
     },
     ja: {
@@ -328,7 +339,9 @@ const eventTranslations: Record<'en' | 'ja', Record<string, string>> = {
         CREATED: '依頼作成', SUBMITTED: '確認依頼を送信', UPDATED: '依頼を更新', STATION_ASSIGNED: 'ステーション手配',
         UAV_ASSIGNED: 'UAV手配', UAV_REPLACED: 'UAV交換', UAV_UNASSIGNED: 'UAVをミッションから解除',
         OPERATOR_ASSIGNED: 'オペレーター割り当て', OPERATOR_ACCEPTED: 'オペレーターが受諾', OPERATOR_CONFLICT: 'オペレーターが問題を報告',
-        EQUIPMENT_RESERVED: '機材確保', MEDIA_ATTACHED: 'ファイル追加', CANCELLED: 'ミッションをキャンセル',
+        EQUIPMENT_RESERVED: '機材確保', MEDIA_ATTACHED: 'ファイル追加',
+        PERMIT_SUBMITTED: '飛行許可証を提出', PERMIT_VERIFIED: '飛行許可証を承認',
+        PERMIT_REJECTED: '飛行許可証を却下', CANCELLED: 'ミッションをキャンセル',
         REJECTED: '依頼を却下', COMPLETED: 'ミッション完了', FAILED: '未完了として記録'
     },
 };
@@ -341,7 +354,7 @@ export function eventTitle(event: TimelineEvent): string {
 
 export function eventNote(event: TimelineEvent): string | undefined {
     // Preserve user-authored reasons, while keeping generated backend messages out of the interface.
-    return ['REJECTED', 'FAILED', 'COMPLETED', 'OPERATOR_CONFLICT', 'UAV_REPLACED', 'UAV_UNASSIGNED', 'OPERATOR_REPLACED', 'OPERATOR_UNASSIGNED', 'STATION_REPLACED', 'STATION_UNASSIGNED', 'EQUIPMENT_CHANGED', 'EQUIPMENT_RELEASED'].includes(event.eventType) ? event.description : undefined;
+    return ['REJECTED', 'FAILED', 'COMPLETED', 'OPERATOR_CONFLICT', 'PERMIT_REJECTED', 'UAV_REPLACED', 'UAV_UNASSIGNED', 'OPERATOR_REPLACED', 'OPERATOR_UNASSIGNED', 'STATION_REPLACED', 'STATION_UNASSIGNED', 'EQUIPMENT_CHANGED', 'EQUIPMENT_RELEASED'].includes(event.eventType) ? event.description : undefined;
 }
 
 const planNames: Record<PresentationLocale, Record<string, string>> = {

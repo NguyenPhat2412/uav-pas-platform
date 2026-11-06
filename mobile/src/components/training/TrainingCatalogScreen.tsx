@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import {Image, StyleSheet, View} from 'react-native';
-import {useRouter} from 'expo-router';
+import {usePathname, useRouter} from 'expo-router';
 import {CircleCheck, GraduationCap} from 'lucide-react-native';
 import {AppText, Badge, Card, ChipGroup, EmptyState, ErrorState, LoadingState, Screen, TextField} from '@/components/ui';
 import {categoryLabel, clampPercent, ProgressBar} from '@/components/training/TrainingBits';
@@ -53,6 +53,8 @@ function CourseCard({course, onPress}: { course: TrainingCourseSummary; onPress:
 export function TrainingCatalogScreen() {
     const {t} = useI18n();
     const router = useRouter();
+    const pathname = usePathname();
+    const coursePathname = pathname.startsWith('/operations') ? '/operations/training/[slug]' : '/customer/training/[slug]';
     const query = useTrainingCourses();
     const [search, setSearch] = useState('');
     const [category, setCategory] = useState('ALL');
@@ -79,7 +81,7 @@ export function TrainingCatalogScreen() {
                     : visible.length === 0 ? <EmptyState icon={GraduationCap} message={t(courses.length === 0 ? 'mobile.training.empty' : 'mobile.training.noMatch')}/>
                         : visible.map(course => (
                             <CourseCard key={course.id} course={course}
-                                        onPress={() => router.push({pathname: '/customer/training/[slug]', params: {slug: course.slug}})}/>
+                                        onPress={() => router.push({pathname: coursePathname, params: {slug: course.slug}})}/>
                         ))}
         </Screen>
     );

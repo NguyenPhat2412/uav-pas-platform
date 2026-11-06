@@ -5,7 +5,9 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ChevronLeft, X, type LucideIcon} from 'lucide-react-native';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {ScaledText} from '@/components/ui';
+import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
+import {resolvePortalEntryHref} from '@/utils/operations/portal-routing';
 import {colors, font} from '@/styles/tokens';
 
 const SHEETS = new Set(['modal', 'formSheet', 'pageSheet', 'fullScreenModal']);
@@ -35,6 +37,7 @@ export function HeaderIconButton({icon: Icon, label, onPress, dot = false, loadi
  */
 export function AppHeader({back, options, route, navigation}: NativeStackHeaderProps) {
     const insets = useSafeAreaInsets();
+    const {activePortal} = useAuth();
     const {t} = useI18n();
     const sheet = SHEETS.has(options.presentation ?? '');
     const title = typeof options.headerTitle === 'string' ? options.headerTitle : options.title ?? route.name;
@@ -46,7 +49,7 @@ export function AppHeader({back, options, route, navigation}: NativeStackHeaderP
 
     const leave = () => {
         if (navigation.canGoBack()) navigation.goBack();
-        else router.replace('/customer/home');
+        else router.replace(resolvePortalEntryHref(activePortal));
     };
     const Icon = sheet ? X : ChevronLeft;
     const label = sheet ? t('common.close') : t('common.back');

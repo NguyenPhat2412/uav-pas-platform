@@ -47,6 +47,64 @@
         "xlarge": "特大"
       }
     },
+    "workspace": {
+      "title": "ワークスペース",
+      "toOperationsHint": "現場運用ポータルに切り替えて、担当フライトの実施、SAR救助指揮、機体保守を行います。",
+      "toCustomerHint": "顧客ポータルに切り替えて、依頼状況、請求書、納品データを確認します。",
+      "switchToOperations": "現場運用ポータルを開く",
+      "switchToCustomer": "顧客ポータルを開く"
+    },
+    "push": {
+      "title": "端末のプッシュ通知",
+      "active": "有効",
+      "inactive": "未登録",
+      "hint": "ミッション更新、飛行許可の承認、SAR目標検知、入金確認をこのiPhoneで受け取ります。",
+      "endpointLabel": "Expoプッシュ識別子",
+      "enableButton": "この端末の通知を有効化",
+      "customButton": "手動入力",
+      "disableButton": "この端末の通知を解除",
+      "registered": "この端末のプッシュ通知を登録しました。",
+      "unregistered": "この端末のプッシュ通知を解除しました。"
+    },
+    "permit": {
+      "title": "飛行許可証",
+      "number": "許可番号",
+      "authority": "許可機関",
+      "validity": "有効期間",
+      "validFrom": "有効開始",
+      "validUntil": "有効終了",
+      "ceiling": "許可高度上限",
+      "note": "審査メモ",
+      "verifiedBy": "{actor} が確認済み",
+      "emptyHint": "飛行許可情報が未登録です。離陸前の審査のため、許可番号と有効期間を入力してください。",
+      "submitAction": "飛行許可を登録",
+      "updateAction": "飛行許可を更新",
+      "saveAction": "許可情報を保存",
+      "verifyNoteLabel": "確認コメント（任意）",
+      "approveAction": "許可を承認",
+      "rejectAction": "許可を却下",
+      "savedToast": "飛行許可情報を保存しました。",
+      "approvedToast": "飛行許可を承認しました。",
+      "rejectedToast": "飛行許可を却下しました。",
+      "status": {
+        "NOT_REQUIRED": "許可不要",
+        "PENDING": "未提出",
+        "SUBMITTED": "確認待ち",
+        "VERIFIED": "確認済み",
+        "REJECTED": "却下"
+      }
+    },
+    "airspace": {
+      "title": "空域チェック",
+      "weatherAndAirspaceTitle": "現地気象と空域クリアランス",
+      "noViolations": "飛行経路および高度は禁止空域・制限空域に抵触していません。",
+      "clearance": {
+        "CLEAR": "クリア",
+        "CAUTION": "注意空域",
+        "PERMIT_REQUIRED": "飛行許可が必要",
+        "BLOCKED": "禁止空域に抵触"
+      }
+    },
     "missions": {
       "edit": "編集",
       "history": "履歴",
@@ -91,11 +149,16 @@
       "accountNumber": "口座番号",
       "accountName": "口座名義",
       "content": "振込内容",
-      "reportTitle": "振込済みですか？",
-      "reportHint": "銀行の控えにある取引番号を入力すると、照合が早くなります。",
-      "reference": "銀行取引番号",
-      "reportButton": "支払いを報告",
-      "confirmSent": "報告しました。照合後に請求書が更新されます。"
+      "autoReconcileTitle": "銀行振込の自動照合",
+      "autoReconcileHint": "振込内容に {content} を正確に入力して送金が完了すると、数秒以内に自動で入金確認されます。入力ミスの場合はサポートへご連絡ください。",
+      "checkStatus": "支払い状況を確認",
+      "paidConfirmed": "請求書 {code} のお支払いが確認されました！",
+      "stillPending": "まだ入金が確認されていません。振込完了から数秒待って再度ご確認ください。",
+      "receiptTitle": "PDF請求書・領収書",
+      "receiptPendingHint": "記録や支払い承認用に、仮請求書（PDF）を保存・共有できます。",
+      "receiptPaidHint": "お支払い済みです。経理記録用にPDF領収書を保存・共有できます。",
+      "shareReceiptPdf": "PDF領収書を保存・共有",
+      "receiptShareTitle": "請求書・領収書 {code}"
     },
     "security": {
       "twoFactor": "2段階認証",
@@ -158,6 +221,155 @@
         "SAFETY_COMPLIANCE": "離着陸場と飛行回廊の安全",
         "DATA_DELIVERABLES": "データ検収とAI",
         "BILLING_SLA": "利用枠とSLA照合"
+      }
+    },
+    "ops": {
+      "nav": {
+        "missions": "現場運用",
+        "sar": "SAR救助",
+        "fleet": "機体・保守"
+      },
+      "missions": {
+        "acceptedBadge": "受領済み",
+        "filters": {
+          "assigned": "担当分",
+          "ready": "準備完了・飛行中",
+          "pending": "承認待ち",
+          "completed": "終了分",
+          "all": "すべて"
+        }
+      },
+      "map": {
+        "title": "飛行回廊と空域マップ",
+        "legend": "濃赤：飛行禁止 · 琥珀：制限空域 · グレー：注意空域 · 赤枠：飛行回廊。"
+      },
+      "telemetry": {
+        "title": "リアルタイム飛行テレメトリ（5秒更新）"
+      },
+      "preflight": {
+        "title": "離陸前安全チェックリスト",
+        "subtitle": "以下の現場安全確認4項目をすべて完了すると離陸操作が有効になります。",
+        "readyForTakeoff": "離陸前の安全条件をすべて満たしています。",
+        "items": {
+          "batteryAndPropellersSafe": "バッテリー残量が安全基準以上であり、プロペラと機体に異常がない",
+          "gnssRtkLocked": "GNSS / RTK測位が安定し、コンパス・IMUが校正済みである",
+          "weatherCleared": "離着陸地点の風速・視程・雲底高度が許容範囲内である",
+          "airspaceAndPermitCleared": "離着陸帯の安全が確保され、空域および飛行許可が確認済みである"
+        },
+        "blockers": {
+          "notReady": "離陸前にミッションの状態を「準備完了」に進めてください。",
+          "acceptanceRequired": "離陸前に担当オペレーターによるミッション受領が必要です。",
+          "airspaceBlocked": "飛行経路が飛行禁止空域と重複しているため離陸できません。",
+          "permitUnverified": "このミッションの離陸には承認済みの飛行許可証が必要です。",
+          "checklistIncomplete": "離陸前に上の安全チェック項目をすべて確認してください。"
+        }
+      },
+      "actions": {
+        "startFlight": "離陸開始（フライト開始）",
+        "confirmedToast": "ミッションを承認し、機材を確保しました。",
+        "acceptedToast": "現場アサインを受領しました。",
+        "readyToast": "ミッションを離陸準備完了に更新しました。",
+        "startedToast": "離陸を記録しました。ミッションは飛行中です。",
+        "completedToast": "ミッション完了と引き渡しを記録しました。",
+        "failedToast": "ミッションのトラブル報告を記録しました。",
+        "rejectedToast": "ミッション依頼を却下しました。",
+        "conflictToast": "現場の支障報告を送信しました。"
+      },
+      "sar": {
+        "cockpitTitle": "SAR捜索救助コックピット",
+        "loading": "SAR救助ミッションを読み込み中…",
+        "loadError": "SARミッション情報を読み込めませんでした。",
+        "empty": "該当する捜索救助ミッションはありません。",
+        "lkpLabel": "最終確認位置（LKP）",
+        "victimsCount": "推定{count}名",
+        "openMissionDetail": "元のミッション記録を開く",
+        "mapTitle": "捜索エリアとAI検知マップ",
+        "mapLegend": "赤ピン：LKP / UAV / 確認済み目標 · 琥珀円：漂流半径 · グレー枠：捜索区域。",
+        "homeStation": "帰還ステーション",
+        "hudTitle": "UAVテレメトリとエッジAIノード",
+        "aiNodeLine": "AIノード: {node} · {fps} FPS · 推論遅延 {latency} ms",
+        "detectionsTitle": "AI目標検知リスト",
+        "noDetections": "UAV映像からのAI目標検知はまだありません。",
+        "verifiedBadge": "確認済み",
+        "pendingBadge": "未確認",
+        "verifyTarget": "目標として確定",
+        "falseAlarm": "誤検知",
+        "verifiedToast": "救助目標として確定しました。",
+        "dismissedToast": "誤検知として記録しました。",
+        "commandTitle": "救助隊派遣と帰還指示（RTH）",
+        "dispatchTargetHint": "選択中の検知目標 {label}（信頼度 {confidence}%）の座標へ派遣します。",
+        "dispatchDatumHint": "AI検知が未選択のため、最終確認位置（LKP）の座標へ派遣します。",
+        "coordinatorNoteLabel": "現地救助隊への指示メモ",
+        "coordinatorNotePlaceholder": "進入経路、地形の注意点、必要な医療資機材など…",
+        "dispatchButton": "救助隊を派遣",
+        "dispatchedToast": "救助隊の派遣指示を送信しました。",
+        "rthButton": "帰還指示（RTH）",
+        "rthConfirmTitle": "帰還指示（RTH）を送信しますか？",
+        "rthConfirmBody": "UAVは現在の捜索ルートを中断し、安全高度で帰還ステーションへ直行します。",
+        "rthSentToast": "UAVへ帰還指示（RTH）を送信しました。",
+        "filters": {
+          "active": "捜索中のみ",
+          "all": "救助完了を含む"
+        },
+        "status": {
+          "SEARCHING": "捜索中",
+          "TARGET_LOCATED": "目標特定",
+          "RESCUED": "救助完了",
+          "SUSPENDED": "一時中断"
+        }
+      },
+      "fleet": {
+        "summaryTitle": "機体稼働サマリー",
+        "loading": "機体と地上ステーションを読み込み中…",
+        "loadError": "機体一覧を読み込めませんでした。",
+        "emptyUavs": "登録されているUAVはありません。",
+        "emptyStations": "登録されている地上ステーションはありません。",
+        "stationUavCount": "{count} 機",
+        "tabs": {
+          "uavs": "UAV機体",
+          "stations": "地上局",
+          "maintenance": "保守オーダー"
+        },
+        "stats": {
+          "total": "総機体数",
+          "available": "待機可能",
+          "active": "割当・飛行中",
+          "maintenance": "保守中"
+        },
+        "uavStatus": {
+          "AVAILABLE": "待機可能",
+          "ASSIGNED": "割当済み",
+          "IN_USE": "飛行中",
+          "MAINTENANCE": "保守中",
+          "INACTIVE": "休止中"
+        }
+      },
+      "maintenance": {
+        "loading": "修理・点検オーダーを読み込み中…",
+        "loadError": "保守オーダーを読み込めませんでした。",
+        "empty": "条件に一致する修理オーダーはありません。",
+        "noPermission": "現在のロールには保守オーダーの閲覧権限がありません。",
+        "technician": "担当技術者",
+        "plannedDate": "予定日",
+        "materialCost": "部品費用",
+        "undeterminedCost": "未定",
+        "inspectionNotesLabel": "技術点検記録",
+        "inspectionNotesPlaceholder": "モーター、バッテリー、センサー、試験飛行の結果を記録…",
+        "inspectionPassedCheck": "安全点検に合格し、運用復帰可能であることを確認しました",
+        "startRepair": "修理を開始",
+        "completeInspection": "点検完了を記録",
+        "submitInspection": "点検合格を確定",
+        "startedToast": "修理オーダーを「修理中」に更新しました。",
+        "completedToast": "機体の保守点検完了を記録しました。",
+        "filters": {
+          "all": "すべて"
+        },
+        "status": {
+          "OPEN": "受付済み",
+          "IN_PROGRESS": "修理中",
+          "COMPLETED": "完了",
+          "CANCELLED": "キャンセル"
+        }
       }
     }
   }

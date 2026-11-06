@@ -4,10 +4,12 @@ import {useLocalSearchParams, useRouter} from 'expo-router';
 import MapView, {Marker} from 'react-native-maps';
 import * as ImagePicker from 'expo-image-picker';
 import * as WebBrowser from 'expo-web-browser';
-import {Camera, CalendarClock, Download, FileText, ImagePlus, MapPin, Pencil, Send, XCircle} from 'lucide-react-native';
-import {AppText, Button, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
+import {Camera, CalendarClock, Download, FileText, ImagePlus, MapPin, Pencil, Send, ShieldAlert, XCircle} from 'lucide-react-native';
+import {AppText, Badge, Button, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
 import {MissionStatusBadge} from '@/components/mission/MissionBits';
+import {MissionPermitCard} from '@/components/mission/MissionPermitCard';
 import {Verdict} from '@/components/weather/WeatherCard';
+import {useMissionAirspaceCheck} from '@/hooks/airspace/useAirspace';
 import {useMissionActions, useMissionDetail} from '@/hooks/mission/useCustomerMissions';
 import {useMediaDownload, useMissionUpload} from '@/hooks/media/useMissionUpload';
 import {useMissionWeather} from '@/hooks/weather/useWeather';
@@ -19,6 +21,7 @@ import {eventNote, eventTitle, missionHint, terminalStatuses} from '@/shared/lib
 import {formatFileSize} from '@/shared/lib/format';
 import type {Mission} from '@/shared/types/mission/mission.types';
 import {canCancel, progressStep} from '@/utils/mission/status';
+import {isFinitePoint} from '@/utils/operations/map-shapes';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 const STEPS = ['draft', 'pending', 'confirmed', 'completed'] as const;
@@ -76,6 +79,7 @@ export function MissionDetailScreen() {
     const upload = useMissionUpload(missionId);
     const download = useMediaDownload();
     const mission = detail.data;
+    const airspace = useMissionAirspaceCheck(mission);
 
     if (detail.isPending) return <Screen><LoadingState label={t('missionDetail.loading')}/></Screen>;
     if (detail.isError || !mission) {
@@ -91,7 +95,11 @@ export function MissionDetailScreen() {
     const cancellable = owned && canCancel(mission.status) && can('MISSION_CANCEL');
     const finished = terminalStatuses.includes(mission.status);
     const canUpload = owned && !finished && can('MISSION_MEDIA_UPLOAD');
-    const hasPoint = mission.latitude != null && mission.longitude != null;
+    const hasPoint = isFinitePoint(mission.latitude, mission.longitude);
+    const showPermitCard =
+        (mission.permit != null && mission.permit.status !== 'NOT_REQUIRED') ||
+        !!mission.flightPlan?.permitSupport ||
+        !!airspace.data?.requiresPermit;
 
     const fail = (error: unknown) => toast.show(missionFormError(error, t), 'error');
     const submit = () => actions.submit.mutate(mission.id, {onSuccess: () => toast.show(t('mobile.missions.submitted'), 'success'), onError: fail});
@@ -136,7 +144,7 @@ export function MissionDetailScreen() {
     };
 
     return (
-        <Screen onRefresh={() => void Promise.all([detail.refetch(), timeline.refetch(), media.refetch()])} refreshing={detail.isRefetching}>
+        <Screen onRefresh={() => void Promise.all([detail.refetch(), timeline.refetch(), media.refetch(), airspace.refetch()])} refreshing={detail.isRefetching}>
             <Card>
                 <View style={styles.row}>
                     <AppText variant="caption" style={styles.code}>{mission.code}</AppText>
@@ -181,6 +189,52 @@ export function MissionDetailScreen() {
                 )}
                 {mission.description ? <AppText variant="small">{mission.description}</AppText> : null}
             </Card>
+
+            {airspace.data && airspace.data.violations.length > 0 && (
+                <Card>
+                    <SectionTitle
+                        title={t('mobile.airspace.title')}
+                        action={
+                            <Badge
+                                icon={ShieldAlert}
+                                label={
+                                    airspace.data.blocked
+                                        ? t('mobile.airspace.clearance.BLOCKED')
+                                        : airspace.data.requiresPermit
+                                          ? t('mobile.airspace.clearance.PERMIT_REQUIRED')
+                                          : t('mobile.airspace.clearance.CAUTION')
+                                }
+                                background={airspace.data.blocked ? colors.dangerLight : colors.warningLight}
+                                color={airspace.data.blocked ? colors.danger : colors.warning}
+                            />
+                        }
+                    />
+                    {airspace.data.violations.map(violation => (
+                        <AppText key={violation.zoneId} variant="small">
+                            • {violation.code} ({violation.name}): {violation.message}
+                        </AppText>
+                    ))}
+                </Card>
+            )}
+
+            {showPermitCard && (
+                <MissionPermitCard
+                    mission={mission}
+                    upsertLoading={actions.upsertPermit.isPending}
+                    onUpsert={(data, onDone) =>
+                        actions.upsertPermit.mutate(
+                            {id: mission.id, data},
+                            {
+                                onSuccess: () => {
+                                    onDone();
+                                    toast.show(t('mobile.permit.savedToast'), 'success');
+                                },
+                                onError: fail,
+                            },
+                        )
+                    }
+                />
+            )}
 
             {!finished && <SiteWeather mission={mission}/>}
 

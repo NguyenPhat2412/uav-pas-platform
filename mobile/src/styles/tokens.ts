@@ -54,3 +54,24 @@ export const clearanceTone = {
     NO_GO: {background: colors.dangerLight, text: colors.danger},
     UNAVAILABLE: {background: colors.slateLight, text: colors.textSecondary},
 } as const;
+
+/** Apple MapView polygon/circle/marker tones for airspace zones and flight corridors (no hex literals in components). */
+export const airspaceMapTone = {
+    PROHIBITED: {stroke: '#b42318', fill: 'rgba(180, 35, 24, 0.22)'},
+    RESTRICTED: {stroke: '#b54708', fill: 'rgba(181, 71, 8, 0.18)'},
+    WARNING: {stroke: '#475569', fill: 'rgba(71, 85, 105, 0.14)'},
+    CORRIDOR: {stroke: '#ab2523', fill: 'rgba(171, 37, 35, 0.14)'},
+} as const;
+
+/** Apple MapView pins and search rings for the SAR field cockpit. */
+export const sarMapTone = {
+    lkpPin: '#ab2523',
+    driftStroke: '#b54708',
+    driftFill: 'rgba(181, 71, 8, 0.14)',
+    searchStroke: '#334155',
+    searchFill: 'rgba(51, 65, 85, 0.12)',
+    stationPin: '#334155',
+    uavPin: '#ab2523',
+    detectionVerifiedPin: '#ab2523',
+    detectionPendingPin: '#b54708',
+} as const;

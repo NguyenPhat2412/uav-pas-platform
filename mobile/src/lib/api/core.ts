@@ -65,6 +65,37 @@ interface ErrorBody {
 
 // Sign-in commands answer 401 for wrong credentials; that is not an expired session to refresh.
 const AUTH_COMMAND = /\/auth\/(login|google|register|register-otp|verify-email|verify-2fa|refresh|logout|forgot-password|reset-password|resend-otp)$/;
+const BASE64_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+/** Pure RFC 4648 Base64 encoder safe for Hermes (no Node Buffer, no spread-argument call stack limit). */
+export function bytesToBase64(bytes: Uint8Array): string {
+    const chunks: string[] = [];
+    const len = bytes.length;
+    let i = 0;
+    for (; i + 2 < len; i += 3) {
+        const triplet = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
+        chunks.push(
+            BASE64_ALPHABET[(triplet >> 18) & 63] +
+            BASE64_ALPHABET[(triplet >> 12) & 63] +
+            BASE64_ALPHABET[(triplet >> 6) & 63] +
+            BASE64_ALPHABET[triplet & 63],
+        );
+    }
+    const remaining = len - i;
+    if (remaining === 1) {
+        const n = bytes[i] << 16;
+        chunks.push(BASE64_ALPHABET[(n >> 18) & 63] + BASE64_ALPHABET[(n >> 12) & 63] + '==');
+    } else if (remaining === 2) {
+        const n = (bytes[i] << 16) | (bytes[i + 1] << 8);
+        chunks.push(
+            BASE64_ALPHABET[(n >> 18) & 63] +
+            BASE64_ALPHABET[(n >> 12) & 63] +
+            BASE64_ALPHABET[(n >> 6) & 63] +
+            '=',
+        );
+    }
+    return chunks.join('');
+}
 
 export function createApiClient(options: ApiClientOptions) {
     const {baseUrl, session} = options;
@@ -131,7 +162,7 @@ export function createApiClient(options: ApiClientOptions) {
         );
     }
 
-    async function request<T>(endpoint: string, init: RequestInit = {}): Promise<T> {
+    async function sendAuthenticated(endpoint: string, init: RequestInit = {}): Promise<Response> {
         const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint}`;
         // Signed storage URLs authenticate with their signature: no token, no extra headers that could break it.
         const isApi = new URL(url).origin === apiOrigin;
@@ -151,9 +182,19 @@ export function createApiClient(options: ApiClientOptions) {
             if (response.status === 401) await session.clear('expired');
         }
         if (!response.ok) throw await toError(response, endpoint);
+        return response;
+    }
+
+    async function request<T>(endpoint: string, init: RequestInit = {}): Promise<T> {
+        const response = await sendAuthenticated(endpoint, init);
         if (response.status === 204) return undefined as T;
         const type = response.headers.get('content-type') ?? '';
         return (type.includes('application/json') ? await response.json() : await response.text()) as T;
+    }
+
+    async function getBytes(endpoint: string, init: RequestInit = {}): Promise<Uint8Array> {
+        const response = await sendAuthenticated(endpoint, {...init, method: 'GET'});
+        return new Uint8Array(await response.arrayBuffer());
     }
 
     const json = (method: string) => <T>(endpoint: string, data?: unknown, init?: RequestInit) =>
@@ -161,6 +202,7 @@ export function createApiClient(options: ApiClientOptions) {
 
     return {
         request,
+        getBytes,
         get: <T>(endpoint: string, init?: RequestInit) => request<T>(endpoint, {...init, method: 'GET'}),
         post: json('POST'),
         put: json('PUT'),

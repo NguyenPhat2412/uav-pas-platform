@@ -9,6 +9,9 @@ import jaCustomerPro from '@/shared/messages/sections/customerPro/ja.json';
 import viAdmin from '@/shared/messages/sections/admin/vi.json';
 import enAdmin from '@/shared/messages/sections/admin/en.json';
 import jaAdmin from '@/shared/messages/sections/admin/ja.json';
+import viOpsMissions from '@/shared/messages/sections/opsMissions/vi.json';
+import enOpsMissions from '@/shared/messages/sections/opsMissions/en.json';
+import jaOpsMissions from '@/shared/messages/sections/opsMissions/ja.json';
 import viCustomer from '@/shared/messages/customer/vi.json';
 import enCustomer from '@/shared/messages/customer/en.json';
 import jaCustomer from '@/shared/messages/customer/ja.json';
@@ -29,15 +32,15 @@ export function deepMerge(target: MessageRecord, source: MessageRecord): Message
     return output;
 }
 
-// The web customer portal's catalog (root + sections, customer overrides), then the app's own `mobile.*` keys.
+// The web customer & field operations catalog (root + sections, customer overrides), then the app's own `mobile.*` keys.
 // The admin section is included because the assistant's texts (admin.assistant.*) live there on the web too.
 const build = (root: unknown, sections: unknown[], customer: unknown, mobile: unknown) =>
     deepMerge(deepMerge(Object.assign({}, root, ...sections) as MessageRecord, customer as MessageRecord), mobile as MessageRecord);
 
 export const catalogs: Record<SupportedLocale, MessageRecord> = {
-    vi: build(viRoot, [viAdmin, viCustomerPro], viCustomer, viMobile),
-    en: build(enRoot, [enAdmin, enCustomerPro], enCustomer, enMobile),
-    ja: build(jaRoot, [jaAdmin, jaCustomerPro], jaCustomer, jaMobile),
+    vi: build(viRoot, [viAdmin, viCustomerPro, viOpsMissions], viCustomer, viMobile),
+    en: build(enRoot, [enAdmin, enCustomerPro, enOpsMissions], enCustomer, enMobile),
+    ja: build(jaRoot, [jaAdmin, jaCustomerPro, jaOpsMissions], jaCustomer, jaMobile),
 };
 
 function lookup(catalog: MessageRecord, key: string): unknown {

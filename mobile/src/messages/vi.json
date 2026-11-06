@@ -47,6 +47,64 @@
         "xlarge": "Rất lớn"
       }
     },
+    "workspace": {
+      "title": "Không gian làm việc",
+      "toOperationsHint": "Chuyển sang cổng Điều hành hiện trường để nhận nhiệm vụ bay, giám sát cứu hộ SAR và kiểm tra đội bay.",
+      "toCustomerHint": "Chuyển sang cổng Khách hàng để xem yêu cầu dịch vụ, hóa đơn và tiến độ nghiệm thu.",
+      "switchToOperations": "Mở cổng Điều hành hiện trường",
+      "switchToCustomer": "Mở cổng Khách hàng"
+    },
+    "push": {
+      "title": "Thông báo đẩy trên thiết bị",
+      "active": "Đang bật",
+      "inactive": "Chưa đăng ký",
+      "hint": "Nhận cảnh báo nhiệm vụ, phê duyệt phép bay, phát hiện mục tiêu SAR và thanh toán ngay trên iPhone này.",
+      "endpointLabel": "Định danh đẩy Expo của thiết bị",
+      "enableButton": "Bật thông báo thiết bị này",
+      "customButton": "Nhập thủ công",
+      "disableButton": "Ngắt thông báo trên thiết bị này",
+      "registered": "Đã đăng ký nhận thông báo đẩy trên thiết bị này.",
+      "unregistered": "Đã hủy nhận thông báo đẩy trên thiết bị này."
+    },
+    "permit": {
+      "title": "Hồ sơ phép bay",
+      "number": "Số phép bay",
+      "authority": "Cơ quan cấp phép",
+      "validity": "Hiệu lực",
+      "validFrom": "Hiệu lực từ",
+      "validUntil": "Hiệu lực đến",
+      "ceiling": "Trần bay được cấp",
+      "note": "Ghi chú thẩm định",
+      "verifiedBy": "Xác minh bởi {actor}",
+      "emptyHint": "Chưa có thông tin giấy phép bay. Bổ sung số giấy phép và thời hạn để điều phối thẩm định trước khi cất cánh.",
+      "submitAction": "Khai báo giấy phép bay",
+      "updateAction": "Cập nhật giấy phép bay",
+      "saveAction": "Lưu hồ sơ phép bay",
+      "verifyNoteLabel": "Nhận xét xác minh (tùy chọn)",
+      "approveAction": "Xác nhận hợp lệ",
+      "rejectAction": "Từ chối phép bay",
+      "savedToast": "Đã lưu thông tin giấy phép bay.",
+      "approvedToast": "Đã xác minh giấy phép bay hợp lệ.",
+      "rejectedToast": "Đã từ chối hồ sơ giấy phép bay.",
+      "status": {
+        "NOT_REQUIRED": "Không yêu cầu",
+        "PENDING": "Chờ nộp phép",
+        "SUBMITTED": "Chờ xác minh",
+        "VERIFIED": "Đã xác minh",
+        "REJECTED": "Bị từ chối"
+      }
+    },
+    "airspace": {
+      "title": "Kiểm tra vùng trời",
+      "weatherAndAirspaceTitle": "An toàn vùng trời & thời tiết điểm bay",
+      "noViolations": "Tọa độ và độ cao bay không giao cắt vùng cấm hay vùng hạn chế.",
+      "clearance": {
+        "CLEAR": "Thông thoáng",
+        "CAUTION": "Lưu ý vùng cảnh báo",
+        "PERMIT_REQUIRED": "Cần giấy phép bay",
+        "BLOCKED": "Vi phạm vùng cấm"
+      }
+    },
     "missions": {
       "edit": "Sửa",
       "history": "Lịch sử",
@@ -91,11 +149,16 @@
       "accountNumber": "Số tài khoản",
       "accountName": "Chủ tài khoản",
       "content": "Nội dung chuyển khoản",
-      "reportTitle": "Đã chuyển khoản?",
-      "reportHint": "Nhập mã giao dịch trên biên lai ngân hàng để kế toán đối soát nhanh hơn.",
-      "reference": "Mã giao dịch ngân hàng",
-      "reportButton": "Gửi xác nhận thanh toán",
-      "confirmSent": "Đã gửi xác nhận. Hóa đơn sẽ cập nhật khi kế toán đối soát."
+      "autoReconcileTitle": "Đối soát tự động qua ngân hàng",
+      "autoReconcileHint": "Hệ thống tự động xác nhận trong vài giây ngay khi giao dịch chuyển khoản ghi đúng nội dung {content} hoàn tất. Nếu ghi nhầm nội dung, vui lòng liên hệ bộ phận hỗ trợ.",
+      "checkStatus": "Kiểm tra trạng thái thanh toán",
+      "paidConfirmed": "Đã nhận thanh toán cho hóa đơn {code}!",
+      "stillPending": "Hệ thống chưa ghi nhận giao dịch. Vui lòng đợi vài giây sau khi chuyển khoản rồi kiểm tra lại.",
+      "receiptTitle": "Chứng từ & biên lai PDF",
+      "receiptPendingHint": "Tải hoặc chia sẻ bản hóa đơn tạm tính (PDF) để lưu trữ hoặc trình duyệt thanh toán.",
+      "receiptPaidHint": "Hóa đơn đã thanh toán. Tải hoặc chia sẻ biên lai thu tiền PDF cho mục đích đối chiếu.",
+      "shareReceiptPdf": "Tải / Chia sẻ biên lai PDF",
+      "receiptShareTitle": "Biên lai hóa đơn {code}"
     },
     "security": {
       "twoFactor": "Xác thực 2 bước",
@@ -158,6 +221,155 @@
         "SAFETY_COMPLIANCE": "An toàn bãi đáp & hành lang",
         "DATA_DELIVERABLES": "Nghiệm thu dữ liệu & AI",
         "BILLING_SLA": "Hạn mức & đối soát SLA"
+      }
+    },
+    "ops": {
+      "nav": {
+        "missions": "Hiện trường",
+        "sar": "Cứu hộ SAR",
+        "fleet": "Đội bay & bảo trì"
+      },
+      "missions": {
+        "acceptedBadge": "Đã nhận phân công",
+        "filters": {
+          "assigned": "Được giao",
+          "ready": "Sẵn sàng & đang bay",
+          "pending": "Chờ duyệt",
+          "completed": "Đã kết thúc",
+          "all": "Tất cả"
+        }
+      },
+      "map": {
+        "title": "Bản đồ hành lang & vùng trời",
+        "legend": "Đỏ đậm: vùng cấm bay · Vàng cam: vùng hạn chế · Xám: vùng cảnh báo · Viền đỏ thương hiệu: hành lang bay."
+      },
+      "telemetry": {
+        "title": "Thông số bay trực tiếp (5 giây)"
+      },
+      "preflight": {
+        "title": "Kiểm tra an toàn trước cất cánh",
+        "subtitle": "Xác nhận đủ 4 hạng mục an toàn hiện trường để mở khóa lệnh cất cánh.",
+        "readyForTakeoff": "Đủ điều kiện an toàn để bắt đầu bay.",
+        "items": {
+          "batteryAndPropellersSafe": "Pin đạt ngưỡng an toàn, cánh quạt & khung thân nguyên vẹn",
+          "gnssRtkLocked": "Tín hiệu định vị GNSS / RTK ổn định và cảm biến đã hiệu chuẩn",
+          "weatherCleared": "Gió, tầm nhìn và trần mây tại bãi đáp nằm trong ngưỡng cho phép",
+          "airspaceAndPermitCleared": "Bãi đáp thông thoáng, hành lang bay & giấy phép bay hợp lệ"
+        },
+        "blockers": {
+          "notReady": "Nhiệm vụ cần được chuyển sang trạng thái Sẵn sàng bay trước khi cất cánh.",
+          "acceptanceRequired": "Người vận hành được phân công phải xác nhận nhận nhiệm vụ trước khi cất cánh.",
+          "airspaceBlocked": "Hành lang bay đang vi phạm vùng cấm bay — không được cất cánh.",
+          "permitUnverified": "Nhiệm vụ này bắt buộc có giấy phép bay đã được xác minh hợp lệ.",
+          "checklistIncomplete": "Hoàn tất đầy đủ các mục kiểm tra an toàn bên trên trước khi cất cánh."
+        }
+      },
+      "actions": {
+        "startFlight": "Cất cánh (Bắt đầu bay)",
+        "confirmedToast": "Đã xác nhận nhiệm vụ và giữ tài nguyên bay.",
+        "acceptedToast": "Đã xác nhận nhận phân công hiện trường.",
+        "readyToast": "Đã chuyển nhiệm vụ sang trạng thái Sẵn sàng bay.",
+        "startedToast": "UAV đã cất cánh — nhiệm vụ chuyển sang Đang bay.",
+        "completedToast": "Đã ghi nhận hoàn thành nhiệm vụ và bàn giao dữ liệu.",
+        "failedToast": "Đã ghi nhận báo cáo sự cố nhiệm vụ.",
+        "rejectedToast": "Đã từ chối yêu cầu nhiệm vụ.",
+        "conflictToast": "Đã gửi báo cáo vướng mắc hiện trường tới điều phối."
+      },
+      "sar": {
+        "cockpitTitle": "Buồng điều phối cứu hộ SAR",
+        "loading": "Đang tải nhiệm vụ cứu hộ SAR…",
+        "loadError": "Không tải được dữ liệu cứu hộ SAR.",
+        "empty": "Hiện không có nhiệm vụ tìm kiếm cứu nạn nào trong danh sách này.",
+        "lkpLabel": "Điểm mất dấu (LKP)",
+        "victimsCount": "~{count} nạn nhân",
+        "openMissionDetail": "Xem hồ sơ nhiệm vụ gốc",
+        "mapTitle": "Bản đồ tìm kiếm & phát hiện AI",
+        "mapLegend": "Ghim đỏ: LKP / UAV / mục tiêu đã xác minh · Vòng cam: bán kính trôi dạt · Vùng xám: khu vực quét.",
+        "homeStation": "Trạm căn cứ",
+        "hudTitle": "Thông số UAV & nút xử lý AI biên",
+        "aiNodeLine": "Nút AI: {node} · {fps} FPS · độ trễ suy luận {latency} ms",
+        "detectionsTitle": "Mục tiêu do AI phát hiện",
+        "noDetections": "Chưa ghi nhận phát hiện mục tiêu nào từ luồng ảnh UAV.",
+        "verifiedBadge": "Đã xác minh",
+        "pendingBadge": "Chờ kiểm chứng",
+        "verifyTarget": "Xác nhận mục tiêu",
+        "falseAlarm": "Báo nhầm",
+        "verifiedToast": "Đã xác nhận mục tiêu cứu hộ trên hiện trường.",
+        "dismissedToast": "Đã đánh dấu phát hiện là cảnh báo nhầm.",
+        "commandTitle": "Điều động đội cứu hộ & lệnh quay về trạm",
+        "dispatchTargetHint": "Tọa độ điều động lấy theo mục tiêu {label} ({confidence}% độ tin cậy).",
+        "dispatchDatumHint": "Chưa chọn mục tiêu AI — lệnh điều động sẽ gửi theo tọa độ LKP ban đầu.",
+        "coordinatorNoteLabel": "Hướng dẫn cho đội cứu hộ hiện trường",
+        "coordinatorNotePlaceholder": "Mô tả địa hình tiếp cận, trang bị y tế cần mang theo…",
+        "dispatchButton": "Điều động đội cứu hộ",
+        "dispatchedToast": "Đã phát lệnh điều động đội cứu hộ tới tọa độ mục tiêu.",
+        "rthButton": "Quay về trạm (RTH)",
+        "rthConfirmTitle": "Gửi lệnh quay về trạm (RTH)?",
+        "rthConfirmBody": "UAV sẽ ngắt lộ trình quét hiện tại và bay thẳng về trạm xuất phát ở độ cao an toàn.",
+        "rthSentToast": "Đã gửi lệnh RTH cho UAV.",
+        "filters": {
+          "active": "Đang triển khai",
+          "all": "Kể cả đã kết thúc"
+        },
+        "status": {
+          "SEARCHING": "Đang tìm kiếm",
+          "TARGET_LOCATED": "Đã định vị mục tiêu",
+          "RESCUED": "Đã cứu hộ xong",
+          "SUSPENDED": "Tạm dừng quét"
+        }
+      },
+      "fleet": {
+        "summaryTitle": "Tổng quan đội bay",
+        "loading": "Đang tải trạng thái đội bay & trạm…",
+        "loadError": "Không tải được dữ liệu đội bay.",
+        "emptyUavs": "Chưa có thiết bị bay nào được khai báo.",
+        "emptyStations": "Chưa có trạm mặt đất nào được khai báo.",
+        "stationUavCount": "{count} UAV",
+        "tabs": {
+          "uavs": "Đội UAV",
+          "stations": "Trạm mặt đất",
+          "maintenance": "Phiếu bảo trì"
+        },
+        "stats": {
+          "total": "Tổng số UAV",
+          "available": "Sẵn sàng",
+          "active": "Đang làm nhiệm vụ",
+          "maintenance": "Đang bảo trì"
+        },
+        "uavStatus": {
+          "AVAILABLE": "Sẵn sàng",
+          "ASSIGNED": "Đã phân công",
+          "IN_USE": "Đang bay",
+          "MAINTENANCE": "Đang bảo trì",
+          "INACTIVE": "Ngưng hoạt động"
+        }
+      },
+      "maintenance": {
+        "loading": "Đang tải phiếu sửa chữa & bảo dưỡng…",
+        "loadError": "Không tải được danh sách phiếu bảo trì.",
+        "empty": "Không có phiếu sửa chữa nào khớp bộ lọc.",
+        "noPermission": "Tài khoản hiện tại không có quyền tra cứu phiếu bảo trì kỹ thuật.",
+        "technician": "Kỹ thuật viên",
+        "plannedDate": "Ngày dự kiến",
+        "materialCost": "Chi phí vật tư",
+        "undeterminedCost": "Chưa xác định",
+        "inspectionNotesLabel": "Biên bản nghiệm thu kỹ thuật",
+        "inspectionNotesPlaceholder": "Ghi kết quả đo kiểm động cơ, pin, cảm biến và bay thử…",
+        "inspectionPassedCheck": "Thiết bị đạt chuẩn an toàn và sẵn sàng đưa trở lại đội bay",
+        "startRepair": "Bắt đầu sửa chữa",
+        "completeInspection": "Nghiệm thu hoàn tất",
+        "submitInspection": "Xác nhận đạt nghiệm thu",
+        "startedToast": "Đã chuyển phiếu sang trạng thái Đang sửa chữa.",
+        "completedToast": "Đã hoàn tất nghiệm thu bảo trì UAV.",
+        "filters": {
+          "all": "Tất cả"
+        },
+        "status": {
+          "OPEN": "Đã lập phiếu",
+          "IN_PROGRESS": "Đang sửa chữa",
+          "COMPLETED": "Đã hoàn tất",
+          "CANCELLED": "Đã hủy"
+        }
       }
     }
   }

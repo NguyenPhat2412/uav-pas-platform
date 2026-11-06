@@ -21,6 +21,35 @@ export type MissionStatus =
 export type MissionPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
 export type MediaRole = 'INPUT' | 'FLIGHT_DATA' | 'OUTPUT' | 'DOCUMENT' | 'OTHER';
 export type MediaType = 'IMAGE' | 'VIDEO' | 'DOCUMENT';
+export type FlightPermitStatus = 'NOT_REQUIRED' | 'PENDING' | 'SUBMITTED' | 'VERIFIED' | 'REJECTED';
+
+export interface MissionPermit {
+    status: FlightPermitStatus;
+    permitNumber?: string | null;
+    permitAuthority?: string | null;
+    validFrom?: string | null;
+    validUntil?: string | null;
+    maxAltitudeMeters?: number | null;
+    permitMediaId?: number | null;
+    verifiedBy?: string | null;
+    verifiedAt?: string | null;
+    note?: string | null;
+}
+
+export interface MissionPermitUpsertInput {
+    permitNumber: string;
+    permitAuthority: string;
+    validFrom: string;
+    validUntil: string;
+    maxAltitudeMeters?: number | null;
+    permitMediaId?: number | null;
+    note?: string | null;
+}
+
+export interface MissionPermitVerifyInput {
+    approved: boolean;
+    note?: string | null;
+}
 
 export interface Mission {
     id: number;
@@ -50,6 +79,7 @@ export interface Mission {
     updatedAt?: string;
     billingStatus?: string;
     flightPlan?: FlightPlan | null;
+    permit?: MissionPermit | null;
     completionNote?: string;
     equipmentCondition?: string;
     failureReason?: string;

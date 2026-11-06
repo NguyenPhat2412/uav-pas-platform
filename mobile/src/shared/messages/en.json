@@ -152,7 +152,8 @@
     "files": "File manager",
     "infrastructureDatabase": "Database",
     "infrastructureEmail": "Email",
-    "weather": "Flight weather"
+    "weather": "Flight weather",
+    "airspace": "Airspace zones"
   },
   "sidebar": {
     "title": "UAV PAS",
@@ -256,7 +257,7 @@
   },
   "preview": {
     "title": "UAV PAS Mission Operations Center",
-    "edition": "DEMO EDITION",
+    "edition": "OPERATIONS CENTER",
     "realtimeBadge": "24/7 Monitoring",
     "syncRtk": "RTK Synchronized",
     "openMap": "Open Operations Map",
@@ -273,7 +274,7 @@
     "kpiStationEnergy": "Station Energy Reserve",
     "kpiSolar": "Solar charging active",
     "kpiLatency": "Latency",
-    "kpiRtkPrecision": "RTK (mô phỏng)",
+    "kpiRtkPrecision": "RTK precision",
     "fleetTableTitle": "Ready UAV Fleet Status",
     "activeDevices": "5 units operational",
     "thDevice": "UAV / Model",
@@ -342,12 +343,12 @@
     "identity": "Username or email",
     "password": "Password",
     "home": "UAV PAS — Home",
-    "university": "Personal project · Demo",
+    "university": "Flight Operations Platform",
     "backHome": "Back to home",
     "eyebrow": "UAV MISSION COORDINATION PLATFORM",
     "photoAlt": "A survey team flying a UAV and monitoring the flight at Plum Island, Massachusetts.",
     "formLabel": "Account form",
-    "footer": "UAV PAS · Personal project · Demo",
+    "footer": "UAV PAS · Flight Operations Platform",
     "hidePassword": "Hide password",
     "showPassword": "Show password",
     "loggedOutSecure": "You have been signed out securely.",
@@ -355,6 +356,7 @@
     "logoutTitle": "Signed out"
   },
   "publicHeader": {
+    "tagline": "Flight Operations Platform",
     "services": "Services",
     "solutions": "Solutions",
     "pricing": "Pricing",
@@ -368,15 +370,12 @@
     "customerPortal": "Customer",
     "customerPortalUser": "Customer Portal ({username})",
     "register": "Sign up",
-    "demoNotice": "Personal project demo",
-    "demoNoticeDetail": "Not a commercial service · No real payments",
     "digitalTwin": "Digital Twin"
   },
   "publicFooter": {
-    "university": "Personal project · Demo",
-    "description": "Demo web platform for UAV mission coordination: flight planning, simulated telemetry monitoring and mission data management.",
-    "disclaimer": "A personal project by Nguyen Phat; it does not represent and is not affiliated with any school or organization.",
-    "demoNotice": "Prices, payments and figures on this site are illustrative only; no real transactions take place.",
+    "university": "Flight Operations Platform",
+    "description": "UAV flight operations platform for GIS flight planning, telemetry monitoring and secure mission data delivery.",
+    "disclaimer": "Role-based access across Customer, Operations and Admin portals with standardized SOP pre-flight safety checks.",
     "exploreHeading": "Products & Services",
     "services": "UAV Flight Services",
     "solutions": "Solutions",
@@ -388,13 +387,13 @@
     "adminPortal": "Admin Console",
     "trainingAcademy": "Flight Safety & SOP Academy",
     "supportHeading": "Support & Legal",
-    "about": "About Project",
+    "about": "About Platform",
     "faq": "FAQ",
     "contact": "Contact & Dispatch",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "credits": "Photo credits",
-    "copyright": "© {year} UAV PAS · A personal project by Nguyen Phat"
+    "copyright": "© {year} UAV PAS · Flight Operations Platform"
   },
   "weather": {
     "preflight": {
@@ -657,6 +656,168 @@
       "lost": "Loss",
       "latency": "Avg delay",
       "config": "Settings: {loss}% loss · {latency} ms delay · {fence} m fence"
+    }
+  },
+  "airspace": {
+    "zoneType": {
+      "PROHIBITED": "Prohibited (NFZ)",
+      "RESTRICTED": "Restricted",
+      "WARNING": "Warning / Advisory"
+    },
+    "geometry": {
+      "CIRCLE": "Circle",
+      "POLYGON": "Polygon"
+    },
+    "clearance": {
+      "CLEAR": "CLEAR",
+      "CAUTION": "AIRSPACE CAUTION",
+      "PERMIT_REQUIRED": "PERMIT REQUIRED",
+      "BLOCKED": "NO-FLY BLOCKED"
+    },
+    "legend": {
+      "label": "Airspace safety zone legend",
+      "title": "Airspace ({count} zones):"
+    },
+    "tooltip": {
+      "authority": "Authority: {authority}",
+      "ceilingLimit": "Max ceiling: {meters} m AGL",
+      "ceilingUnlimited": "Surface to unlimited"
+    },
+    "advisor": {
+      "title": "Airspace safety clearance",
+      "pickLocation": "Pick a takeoff point or draw a flight boundary on the map to check no-fly and restricted airspace zones.",
+      "loadError": "Unable to evaluate airspace clearance right now. The server will re-validate on submission.",
+      "summary": {
+        "CLEAR": "No prohibited or restricted airspace zones intersect the selected flight area.",
+        "CAUTION": "The flight area intersects an advisory warning zone. Maintain visual observer procedures and altitude limits.",
+        "PERMIT_REQUIRED": "The flight area intersects restricted airspace. A verified flight permit will be required before ready or launch.",
+        "BLOCKED": "The selected boundary or altitude enters a prohibited no-fly zone. Move the flight area outside the red zone."
+      },
+      "enablePermitSupport": "Request permit assistance",
+      "intersectingZones": "Intersecting airspace zones ({count})",
+      "authority": "Authority: {authority}",
+      "ceilingLimit": "Ceiling: {meters} m AGL",
+      "ceilingUnlimited": "All altitudes restricted",
+      "insideZone": "Intersects zone boundary",
+      "distance": "Distance: {meters} m",
+      "disclaimer": "Airspace overlays provide pre-flight planning awareness; operators remain responsible for aviation regulatory compliance."
+    },
+    "admin": {
+      "intro": "Manage prohibited no-fly zones, restricted corridors, and advisory zones rendered on mission planning maps.",
+      "summaryCounts": "{total} total zones · Prohibited: {prohibited} · Restricted: {restricted} · Warning: {warning}",
+      "create": "Add airspace zone",
+      "createTitle": "Create airspace zone",
+      "editTitle": "Edit airspace zone",
+      "deleteTitle": "Delete airspace zone?",
+      "deleteConfirm": "Airspace zone {code} ({name}) will be permanently removed from safety checks.",
+      "filterType": "Filter by airspace classification",
+      "filterAll": "All",
+      "searchPlaceholder": "Search code, name, or authority...",
+      "showInactive": "Show inactive zones",
+      "empty": "No airspace zones match the current filters.",
+      "verticesUnit": "vertices",
+      "columns": {
+        "zone": "Code & Name",
+        "type": "Classification",
+        "geometry": "Geometry",
+        "ceiling": "Ceiling",
+        "authority": "Authority",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "actions": {
+        "activate": "Enable",
+        "deactivate": "Disable",
+        "edit": "Edit",
+        "delete": "Delete",
+        "saveChanges": "Save changes"
+      },
+      "form": {
+        "code": "Zone code",
+        "zoneType": "Zone classification",
+        "name": "Zone name",
+        "namePlaceholder": "e.g. Noi Bai International Airport CTR",
+        "authority": "Managing authority",
+        "authorityPlaceholder": "Civil Aviation Authority / Airspace Control Office",
+        "maxAltitudeAglM": "Authorized ceiling (m AGL)",
+        "ceilingPlaceholder": "Leave blank if restricted from surface",
+        "geometryType": "Geometry type",
+        "centerLat": "Center latitude",
+        "centerLng": "Center longitude",
+        "radiusMeters": "Radius (m)",
+        "vertices": "Polygon vertex coordinates",
+        "verticesHint": "Enter at least 3 vertices, one lat, lng pair per line (e.g. 21.0325, 105.8310) or a JSON array.",
+        "description": "Regulatory notes",
+        "descriptionPlaceholder": "Applicable restrictions or permit application instructions...",
+        "activeLabel": "Enable immediately on flight planning maps and safety checks"
+      },
+      "errors": {
+        "saveFailed": "Could not update airspace zone status."
+      }
+    }
+  },
+  "permit": {
+    "title": "Flight permit",
+    "status": {
+      "NOT_REQUIRED": "Not required",
+      "PENDING": "Permit pending",
+      "SUBMITTED": "Awaiting review",
+      "VERIFIED": "Verified",
+      "REJECTED": "Rejected"
+    },
+    "guidance": {
+      "PENDING": "This mission enters restricted airspace or requested permit support. Submit permit details so dispatch can verify clearance before launch.",
+      "REJECTED": "The submitted permit was rejected or needs revision. Review the note below and submit updated details."
+    },
+    "empty": {
+      "notRequired": "No mandatory flight permit is flagged for this mission. You may still attach an authorization record if applicable.",
+      "pending": "No flight permit details have been submitted for this mission yet."
+    },
+    "fields": {
+      "permitNumber": "Permit number",
+      "permitAuthority": "Issuing authority",
+      "validFrom": "Valid from",
+      "validUntil": "Valid until",
+      "validityWindow": "Validity window",
+      "maxAltitudeMeters": "Authorized ceiling (m AGL)",
+      "verifiedBy": "Verified by",
+      "attachment": "Permit scan document",
+      "note": "Permit / review notes"
+    },
+    "placeholders": {
+      "permitNumber": "GPB-2026-00128",
+      "permitAuthority": "Civil Aviation / Airspace Licensing Authority",
+      "noAttachment": "No document attached",
+      "note": "Reference dossier number, altitude conditions, or operating hours..."
+    },
+    "values": {
+      "planDefault": "Per flight plan",
+      "awaitingVerification": "Pending review",
+      "documentId": "Document #{id}"
+    },
+    "actions": {
+      "submitNew": "Submit flight permit",
+      "edit": "Update permit",
+      "saveSubmit": "Save & submit for review",
+      "downloadScan": "Download scan",
+      "uploadScan": "Upload new permit scan to mission",
+      "uploadingScan": "Uploading scan..."
+    },
+    "verify": {
+      "title": "Verify flight permit authorization",
+      "noteLabel": "Verification note or rejection reason",
+      "notePlaceholder": "Confirm permit number, validity window, and altitude ceiling...",
+      "approve": "Approve permit",
+      "reject": "Reject permit"
+    },
+    "errors": {
+      "saveFailed": "Unable to save flight permit details. Please check your inputs.",
+      "uploadFailed": "Unable to upload the permit scan file.",
+      "verifyFailed": "Unable to record flight permit verification."
     }
   }
 }

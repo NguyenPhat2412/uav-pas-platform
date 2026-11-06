@@ -1,3 +1,4 @@
+import {useEffect, useRef} from 'react';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {billingKeys} from '@/shared/hooks/billing/query-keys';
 import {bankTransferService, customerBillingService} from '@/api/billing/customer-billing.api';
@@ -17,11 +18,22 @@ export function useBilling() {
 
 export function useBankTransferInstructions(invoiceId: number) {
     const {user} = useAuth();
-    return useQuery({
+    const client = useQueryClient();
+    const previous = useRef<{ invoiceId: number; status?: string }>({invoiceId});
+    const query = useQuery({
         queryKey: billingKeys.customer(user?.id, 'bank-transfer', invoiceId),
         queryFn: ({signal}) => bankTransferService.instructions(invoiceId, signal),
         enabled: !!user && Number.isSafeInteger(invoiceId) && invoiceId > 0,
+        refetchInterval: q => (q.state.data?.status === 'PENDING' ? 5000 : false),
     });
+    const status = query.data?.status;
+    useEffect(() => {
+        if (previous.current.invoiceId === invoiceId && previous.current.status === 'PENDING' && status === 'PAID') {
+            void client.invalidateQueries({queryKey: billingKeys.customer(user?.id)});
+        }
+        previous.current = {invoiceId, status};
+    }, [client, invoiceId, status, user?.id]);
+    return query;
 }
 
 export function useBillingActions() {
@@ -29,10 +41,10 @@ export function useBillingActions() {
     const client = useQueryClient();
     const refresh = () => client.invalidateQueries({queryKey: billingKeys.customer(user?.id)});
     return {
+        refresh,
         subscribe: useMutation<Invoice | undefined, Error, string>({mutationFn: code => bankTransferService.subscribe(code), onSuccess: refresh, retry: false}),
-        confirm: useMutation({
-            mutationFn: ({invoiceId, reference}: { invoiceId: number; reference: string }) => bankTransferService.confirm(invoiceId, reference.trim()),
-            onSuccess: refresh,
+        downloadReceipt: useMutation<string, Error, number>({
+            mutationFn: (invoiceId: number) => customerBillingService.receiptDataUri(invoiceId),
             retry: false,
         }),
     };

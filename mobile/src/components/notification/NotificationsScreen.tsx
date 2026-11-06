@@ -1,11 +1,14 @@
 import React, {useState} from 'react';
 import {FlatList, Pressable, RefreshControl, StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
-import {AlertTriangle, Bell, CheckCheck, Info} from 'lucide-react-native';
+import {AlertTriangle, Bell, CheckCheck, ChevronRight, Info} from 'lucide-react-native';
 import {AppText, Button, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState, styles as ui} from '@/components/ui';
 import {useNotifications} from '@/hooks/notification/useNotifications';
+import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
+import {canUsePortal} from '@/shared/utils/auth/portal';
 import type {NotificationRecord} from '@/shared/types/notification/notification.types';
+import {resolveNotificationTarget, type MobilePortal} from '@/utils/operations/portal-routing';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {colors, radius, spacing} from '@/styles/tokens';
 
@@ -15,8 +18,9 @@ function isAlert(item: NotificationRecord) {
     return item.type === 'SAR_TARGET_FOUND' || item.type === 'QUOTA_WARNING';
 }
 
-export function NotificationsScreen() {
+export function NotificationsScreen({portal = 'customer'}: { portal?: MobilePortal }) {
     const {t, formatDate} = useI18n();
+    const {user, switchPortal} = useAuth();
     const router = useRouter();
     const {list, unreadCount, markOne, markAll} = useNotifications();
     const [filter, setFilter] = useState<Filter>('all');
@@ -24,10 +28,25 @@ export function NotificationsScreen() {
 
     const open = (item: NotificationRecord) => {
         if (!item.isRead) markOne.mutate(item.id);
-        // Mission notifications lead to the mission.
-        if (item.referenceType === 'MISSION' && item.referenceId) {
-            router.push({pathname: '/customer/mission/[id]', params: {id: String(item.referenceId)}});
+        const target = resolveNotificationTarget(item, portal, user?.role);
+        if (!target) return;
+        if (target.pathname === '/customer/invoices/[id]') {
+            if (portal !== 'customer') void switchPortal('customer');
+            router.push({pathname: '/customer/invoices/[id]', params: target.params});
+            return;
         }
+        if (target.pathname === '/operations/sar/[missionId]') {
+            if (portal === 'operations' || canUsePortal(user?.role, 'operations')) {
+                if (portal !== 'operations') void switchPortal('operations');
+                router.push({pathname: '/operations/sar/[missionId]', params: target.params});
+            }
+            return;
+        }
+        if (target.pathname === '/operations/mission/[id]') {
+            router.push({pathname: '/operations/mission/[id]', params: target.params});
+            return;
+        }
+        router.push({pathname: '/customer/mission/[id]', params: target.params});
     };
 
     return (
@@ -54,6 +73,7 @@ export function NotificationsScreen() {
                             ListEmptyComponent={<EmptyState icon={Bell} message={t('notificationsPage.empty')}/>}
                             renderItem={({item}) => {
                                 const Icon = isAlert(item) ? AlertTriangle : Info;
+                                const target = resolveNotificationTarget(item, portal, user?.role);
                                 return (
                                     <Pressable onPress={() => open(item)} accessibilityRole="button"
                                                accessibilityLabel={`${item.isRead ? '' : t('notificationsPage.unreadDot') + '. '}${item.title}`}
@@ -66,7 +86,10 @@ export function NotificationsScreen() {
                                             <AppText variant="small" numberOfLines={3}>{item.content}</AppText>
                                             <AppText variant="caption">{formatDate(item.createdAt)}</AppText>
                                         </View>
-                                        {!item.isRead && <View style={styles.dot}/>}
+                                        <View style={styles.end}>
+                                            {!item.isRead && <View style={styles.dot}/>}
+                                            {target && <ChevronRight size={16} color={colors.muted}/>}
+                                        </View>
                                     </Pressable>
                                 );
                             }}
@@ -88,5 +111,6 @@ const styles = StyleSheet.create({
     iconAlert: {backgroundColor: colors.dangerLight},
     body: {flex: 1, gap: 2},
     title: {fontSize: 15},
-    dot: {width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary, marginTop: 6},
+    end: {alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4},
+    dot: {width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary},
 });

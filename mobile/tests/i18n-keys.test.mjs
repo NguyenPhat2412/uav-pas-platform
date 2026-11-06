@@ -12,8 +12,12 @@ const merge = (a, b) => {
     for (const [key, value] of Object.entries(b)) out[key] = isObject(value) && isObject(out[key]) ? merge(out[key], value) : value;
     return out;
 };
-const catalog = locale => merge(merge({...read(`shared/messages/${locale}.json`), ...read(`shared/messages/sections/admin/${locale}.json`), ...read(`shared/messages/sections/customerPro/${locale}.json`)},
-    read(`shared/messages/customer/${locale}.json`)), read(`messages/${locale}.json`));
+const catalog = locale => merge(merge({
+    ...read(`shared/messages/${locale}.json`),
+    ...read(`shared/messages/sections/admin/${locale}.json`),
+    ...read(`shared/messages/sections/customerPro/${locale}.json`),
+    ...read(`shared/messages/sections/opsMissions/${locale}.json`),
+}, read(`shared/messages/customer/${locale}.json`)), read(`messages/${locale}.json`));
 const lookup = (tree, key) => key.split('.').reduce((node, part) => (isObject(node) ? node[part] : undefined), tree);
 
 function sources(dir) {

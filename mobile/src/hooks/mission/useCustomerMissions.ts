@@ -3,6 +3,7 @@ import {queryKeys} from '@/shared/lib/query';
 import {customerMissionService} from '@/api/mission/customer-missions.api';
 import {useAuth} from '@/providers/AuthContext';
 import type {MissionInput, MissionStatus} from '@/shared/types/customer';
+import type {MissionPermitUpsertInput} from '@/shared/types/mission/mission.types';
 
 /** Same cache keys as the web customer portal: ['session', userId, 'customer', ...]. */
 function useCustomerKey() {
@@ -55,10 +56,12 @@ export function useMissionDetail(id: number) {
 
 export function useMissionActions() {
     const client = useQueryClient();
-    const {key} = useCustomerKey();
+    const {key, user} = useCustomerKey();
+    const opsKey = queryKeys.feature(user?.id, 'operations');
     const refresh = (id?: number) => Promise.all([
         client.invalidateQueries({queryKey: [...key, 'missions']}),
         id ? client.invalidateQueries({queryKey: [...key, 'mission', id]}) : undefined,
+        client.invalidateQueries({queryKey: opsKey}),
     ]);
     return {
         create: useMutation({mutationFn: (data: MissionInput) => customerMissionService.create(data), onSuccess: data => refresh(data.id), retry: false}),
@@ -70,6 +73,12 @@ export function useMissionActions() {
         }),
         submit: useMutation({mutationFn: (id: number) => customerMissionService.submit(id), onSettled: (_d, _e, id) => refresh(id), retry: false}),
         cancel: useMutation({mutationFn: (id: number) => customerMissionService.cancel(id), onSettled: (_d, _e, id) => refresh(id), retry: false}),
+        upsertPermit: useMutation({
+            mutationFn: ({id, data}: { id: number; data: MissionPermitUpsertInput }) =>
+                customerMissionService.upsertPermit(id, data),
+            onSettled: (_d, _e, {id}) => refresh(id),
+            retry: false,
+        }),
         availability: useMutation({
             mutationFn: ({startTime, endTime}: { startTime: string; endTime: string }) => customerMissionService.availability(startTime, endTime),
             retry: false,
