@@ -18,6 +18,8 @@ import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -79,6 +81,22 @@ public class BillingController {
     @GetMapping(ApiRoutes.Billing.INVOICE_BY_ID)
     public ResponseEntity<InvoiceResponse> getInvoice(@PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(billingService.getInvoice(id, auth));
+    }
+
+    @GetMapping(
+            value = ApiRoutes.Billing.INVOICE_RECEIPT,
+            produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> downloadInvoiceReceipt(
+            @PathVariable Long id, Authentication auth) {
+        InvoiceResponse invoice = billingService.getInvoice(id, auth);
+        byte[] pdf = billingService.renderInvoiceReceiptPdf(id, auth);
+        String safeCode = invoice.code().replaceAll("[^A-Za-z0-9_-]", "_");
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"invoice-" + safeCode + ".pdf\"")
+                .body(pdf);
     }
 
     @PostMapping(ApiRoutes.Billing.INVOICES)

@@ -229,7 +229,7 @@ async function refreshAccess(generation: number) {
     }
 }
 
-export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+async function sendRequest(endpoint: string, options: RequestInit = {}): Promise<{ response: Response; generation: number }> {
     const generation = sessionGeneration;
     const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint}`;
     // Storage URLs authenticate with their signature, not the API session.
@@ -285,14 +285,32 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
             detail.fields && Object.fromEntries(Object.entries(detail.fields).map(([name, text]) => [name, localizeApiMessage(text) ?? text])),
         );
     }
+    return {response, generation};
+}
+
+export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const {response, generation} = await sendRequest(endpoint, options);
     if (response.status === 204) return undefined as T;
-    const result = response.headers.get('content-type')?.includes('application/json') ? await response.json() : await response.text();
+    const contentType = response.headers.get('content-type') ?? '';
+    const result = contentType.includes('application/json')
+        ? await response.json()
+        : contentType.includes('application/pdf')
+            ? await response.blob()
+            : await response.text();
     requireCurrent(generation);
     return result as T;
 }
 
 export const apiClient = {
     get: <T>(endpoint: string, options?: RequestInit) => apiRequest<T>(endpoint, {...options, method: 'GET'}),
+    getBlob: async (endpoint: string, options?: RequestInit): Promise<Blob> => {
+        const headers = new Headers(options?.headers);
+        if (!headers.has('accept')) headers.set('accept', 'application/pdf, application/octet-stream, */*');
+        const {response, generation} = await sendRequest(endpoint, {...options, method: 'GET', headers});
+        const blob = await response.blob();
+        requireCurrent(generation);
+        return blob;
+    },
     post: <T>(endpoint: string, data?: unknown, options?: RequestInit) => apiRequest<T>(endpoint, {
         ...options,
         method: 'POST',

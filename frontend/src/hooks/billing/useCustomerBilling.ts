@@ -1,10 +1,12 @@
 'use client';
+import {useEffect, useRef} from 'react';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
-import {afterSuccess, type MutationOptions} from '@/lib/query';
+import {afterSuccess, QUIET, type MutationOptions} from '@/lib/query';
 import {customerBillingService} from '@/api/billing/customer-billing.api';
 import {bankTransferService} from '@/api/billing/billing.api';
 import {billingKeys} from '@/hooks/billing/query-keys';
+import {triggerReceiptDownload} from '@/utils/billing/receipt-download';
 import type {Invoice} from '@/types';
 
 /** The signed-in customer's quota, invoices and the plans they can switch to. */
@@ -43,10 +45,21 @@ export function useBankTransferStatus() {
 
 export function useBankTransferInstructions(invoiceId: number) {
     const {user} = useAuth();
-    return useQuery({
+    const client = useQueryClient();
+    const previous = useRef<{ invoiceId: number; status?: string }>({invoiceId});
+    const query = useQuery({
         queryKey: billingKeys.customer(user?.id, 'bank-transfer', invoiceId),
         queryFn: ({signal}) => bankTransferService.instructions(invoiceId, signal),
+        refetchInterval: q => (q.state.data?.status === 'PENDING' ? 5000 : false),
     });
+    const status = query.data?.status;
+    useEffect(() => {
+        if (previous.current.invoiceId === invoiceId && previous.current.status === 'PENDING' && status === 'PAID') {
+            void client.invalidateQueries({queryKey: billingKeys.customer(user?.id)});
+        }
+        previous.current = {invoiceId, status};
+    }, [client, invoiceId, status, user?.id]);
+    return query;
 }
 
 /** Subscribes to a plan: resolves to the plan invoice to pay, or undefined when a free plan applied at once. */
@@ -56,5 +69,16 @@ export function useSubscribePlan(options?: MutationOptions<Invoice | undefined, 
         ...options,
         mutationFn: (code: string) => bankTransferService.subscribe(code),
         onSuccess: afterSuccess(options, refresh),
+    });
+}
+
+/** Downloads an invoice or payment receipt PDF and saves it in the browser. */
+export function useDownloadInvoiceReceipt(options?: MutationOptions<Blob, { id: number; code: string }>) {
+    return useMutation<Blob, Error, { id: number; code: string }>({
+        meta: options?.onError ? QUIET : undefined,
+        ...options,
+        mutationFn: ({id}) => customerBillingService.downloadReceipt(id),
+        onSuccess: afterSuccess(options, (blob, {code}) => triggerReceiptDownload(blob, code)),
+        retry: false,
     });
 }

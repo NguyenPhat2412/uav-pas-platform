@@ -1,7 +1,7 @@
 'use client';
 
 import {useState, type FormEvent} from 'react';
-import {AlertTriangle, FilePlus2, X} from 'lucide-react';
+import {AlertTriangle, Download, FilePlus2, X} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {planName} from '@/lib/presentation';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
@@ -10,7 +10,7 @@ import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {formatShortDate} from '@/lib/format';
 import {cn} from '@/lib/utils';
-import {useAdminInvoices, useBillingPlans, useConfirmBankTransfer, useCreateInvoice, useInvoiceCustomerSearch} from '@/hooks/billing/useBillingAdmin';
+import {useAdminInvoices, useBillingPlans, useConfirmBankTransfer, useCreateInvoice, useDownloadAdminInvoiceReceipt, useInvoiceCustomerSearch} from '@/hooks/billing/useBillingAdmin';
 import {
     canSubmitCreateInvoice,
     emptyCreateInvoiceDraft,
@@ -45,6 +45,9 @@ export function AdminInvoicesPanel() {
             toast.success(t('admin.invoices.confirmed', {code: inv.code}));
         },
         onError: error => toast.error(error instanceof Error ? error.message : t('admin.invoices.confirmFailed')),
+    });
+    const downloadReceipt = useDownloadAdminInvoiceReceipt({
+        onError: error => toast.error(error instanceof Error ? error.message : t('admin.invoices.downloadPdfFailed')),
     });
     const askConfirm = (inv: Invoice) => {
         const reference = window.prompt(t('admin.invoices.confirmPrompt', {code: inv.code, amount: formatCurrency(inv.amount)}));
@@ -102,10 +105,21 @@ export function AdminInvoicesPanel() {
                             </td>
                             <td className={cn('whitespace-nowrap px-4 py-3', isOverdue(inv) ? 'font-semibold text-red-700' : 'text-slate-500')}>{date(inv.dueDate)}</td>
                             <td className="whitespace-nowrap px-4 py-3 text-slate-500">{date(inv.paidAt)}</td>
-                            <td className="px-4 py-3 text-right">{inv.status === 'PENDING' &&
-                                <button type="button" disabled={confirm.isPending} onClick={() => askConfirm(inv)}
-                                        className="whitespace-nowrap px-2 py-1 text-xs font-semibold text-primary hover:bg-uav-red-light disabled:opacity-50">
-                                    {t('admin.invoices.confirm')}</button>}</td>
+                            <td className="px-4 py-3 text-right">
+                                <div className="inline-flex items-center justify-end gap-1.5">
+                                    {inv.status === 'PENDING' &&
+                                        <button type="button" disabled={confirm.isPending} onClick={() => askConfirm(inv)}
+                                                className="whitespace-nowrap px-2 py-1 text-xs font-semibold text-primary hover:bg-uav-red-light disabled:opacity-50">
+                                            {t('admin.invoices.confirm')}</button>}
+                                    <button type="button"
+                                            disabled={downloadReceipt.isPending && downloadReceipt.variables?.id === inv.id}
+                                            onClick={() => downloadReceipt.mutate({id: inv.id, code: inv.code})}
+                                            aria-label={t('admin.invoices.downloadPdfAria', {code: inv.code})}
+                                            title={t('admin.invoices.downloadPdfAria', {code: inv.code})}
+                                            className="inline-flex items-center gap-1 whitespace-nowrap border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary disabled:opacity-50">
+                                        <Download size={13} aria-hidden="true"/>{t('admin.invoices.downloadPdf')}</button>
+                                </div>
+                            </td>
                         </tr>)}</tbody>
                     </table>
                 </div> : <p className="px-6 py-12 text-center text-[13px] text-slate-500">{t(filter === 'ALL' ? 'admin.invoices.empty' : 'admin.invoices.emptyFilter')}</p>}

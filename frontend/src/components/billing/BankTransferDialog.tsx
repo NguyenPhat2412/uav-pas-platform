@@ -2,10 +2,10 @@
 
 import {useEffect, useState} from 'react';
 import QRCode from 'qrcode';
-import {Copy, Landmark, Printer, X} from 'lucide-react';
+import {Copy, Download, Landmark, Printer, X} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import {useBankTransferInstructions} from '@/hooks/billing/useCustomerBilling';
+import {useBankTransferInstructions, useDownloadInvoiceReceipt} from '@/hooks/billing/useCustomerBilling';
 import {type BankTransferInstructions} from '@/types/billing/billing.types';
 import {formatShortDate} from '@/lib/format';
 
@@ -33,6 +33,9 @@ export function BankTransferDialog({invoiceId, onClose}: { invoiceId: number; on
 
 function Body({data}: { data: BankTransferInstructions }) {
     const {t, formatCurrency, formatDate} = useI18n();
+    const downloadReceipt = useDownloadInvoiceReceipt({
+        onError: error => toast.error(error instanceof Error ? error.message : t('payment.downloadPdfError')),
+    });
     const [qr, setQr] = useState<string | null>(null);
     useEffect(() => {
         let alive = true;
@@ -100,15 +103,22 @@ function Body({data}: { data: BankTransferInstructions }) {
             </section>
 
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
-                <p className="m-0 text-xs text-slate-500">{t('payment.confirmation')}</p>
-                <button type="button" onClick={() => printInvoice(data, {
-                    title: t('payment.printTitle'), bank: t('payment.bank'), accountName: t('payment.accountName'),
-                    accountNumber: t('payment.accountNumber'), content: t('payment.content'), item: t('payment.item'),
-                    serviceFee: t('payment.serviceFee'), vat: t('payment.vat', {rate: vatPct}), total: t('payment.total'),
-                    issued: t('payment.issuedOn'), due: t('payment.dueOn'),
-                }, formatCurrency, date)}
-                        className="inline-flex h-9 items-center gap-1.5 border border-border bg-card px-3 text-[13px] font-semibold text-slate-700 hover:bg-slate-50">
-                    <Printer size={15} aria-hidden="true"/>{t('payment.print')}</button>
+                <p className="m-0 flex-1 min-w-[220px] text-xs leading-relaxed text-slate-500">{t('payment.confirmation')}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                    <button type="button"
+                            disabled={downloadReceipt.isPending}
+                            onClick={() => downloadReceipt.mutate({id: data.invoiceId, code: data.invoiceCode})}
+                            className="inline-flex h-9 items-center gap-1.5 border border-primary/30 bg-uav-red-light px-3 text-[13px] font-semibold text-primary hover:bg-rose-100 disabled:opacity-50">
+                        <Download size={15} aria-hidden="true"/>{t('payment.downloadPdf')}</button>
+                    <button type="button" onClick={() => printInvoice(data, {
+                        title: t('payment.printTitle'), bank: t('payment.bank'), accountName: t('payment.accountName'),
+                        accountNumber: t('payment.accountNumber'), content: t('payment.content'), item: t('payment.item'),
+                        serviceFee: t('payment.serviceFee'), vat: t('payment.vat', {rate: vatPct}), total: t('payment.total'),
+                        issued: t('payment.issuedOn'), due: t('payment.dueOn'),
+                    }, formatCurrency, date)}
+                            className="inline-flex h-9 items-center gap-1.5 border border-border bg-card px-3 text-[13px] font-semibold text-slate-700 hover:bg-slate-50">
+                        <Printer size={15} aria-hidden="true"/>{t('payment.print')}</button>
+                </div>
             </div>
         </div>
     </div>;

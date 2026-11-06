@@ -4,9 +4,11 @@ import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.dto.request.billing.CreateInvoiceRequest;
 import com.uav.platform.dto.request.billing.PayInvoiceRequest;
 import com.uav.platform.dto.request.billing.PaymentIpnRequest;
+import com.uav.platform.dto.request.billing.SepayWebhookRequest;
 import com.uav.platform.dto.response.billing.InvoiceResponse;
 import com.uav.platform.dto.response.billing.PaymentIpnResponse;
 import com.uav.platform.dto.response.billing.PaymentResponse;
+import com.uav.platform.dto.response.billing.SepayWebhookResponse;
 import com.uav.platform.dto.response.billing.ServicePlanResponse;
 import com.uav.platform.enums.billing.InvoiceStatus;
 
@@ -34,6 +36,13 @@ public interface BillingService {
 
     PaymentIpnResponse processPaymentIpn(
             PaymentIpnRequest request, String signatureHeader, Authentication auth);
+
+    /** Auto-reconciles an incoming Vietnamese bank-transfer webhook (SePay / Casso format). */
+    SepayWebhookResponse processSepayWebhook(
+            SepayWebhookRequest request, String authorizationHeader, String webhookSecretHeader);
+
+    /** Renders a standards-compliant ISO-32000 PDF invoice / payment receipt for an accessible invoice. */
+    byte[] renderInvoiceReceiptPdf(Long id, Authentication auth);
 
     /** Settles a PENDING invoice after an admin has matched the transfer on the bank statement. */
     InvoiceResponse confirmBankTransfer(Long id, String bankReference, Authentication auth);

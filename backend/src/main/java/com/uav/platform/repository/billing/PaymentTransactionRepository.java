@@ -21,6 +21,9 @@ public interface PaymentTransactionRepository
 
     Optional<PaymentTransaction> findByInvoiceId(Long invoiceId);
 
+    Optional<PaymentTransaction> findFirstByInvoiceIdAndStatusOrderByCompletedAtDescIdDesc(
+            Long invoiceId, String status);
+
     /** Admin listing loads invoice and customer in the same query to avoid N+1 lookups. */
     @Override
     @EntityGraph(attributePaths = {"invoice", "user"})

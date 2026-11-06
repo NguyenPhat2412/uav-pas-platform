@@ -1,9 +1,10 @@
 'use client';
 import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
-import {afterSuccess, type MutationOptions} from '@/lib/query';
+import { afterSuccess, QUIET, type MutationOptions } from '@/lib/query';
 import {bankTransferService, invoicesService, plansService} from '@/api/billing/billing.api';
 import {billingAdminService} from '@/api/billing/billing-admin.api';
+import {triggerReceiptDownload} from '@/utils/billing/receipt-download';
 import type {FinancialOutboxEvent, TransactionFilters} from '@/types/billing/billing-admin.types';
 import {quotasService} from '@/api/billing/quotas.api';
 import {usersService} from '@/api/user/users.api';
@@ -142,5 +143,16 @@ export function useUserBillingProfile(customerId: number) {
     return useQuery({
         queryKey: billingKeys.userProfile(user?.id, customerId),
         queryFn: ({signal}) => billingAdminService.userBillingProfile(customerId, signal),
+    });
+}
+
+/** Downloads any customer's invoice or payment receipt PDF from the admin console. */
+export function useDownloadAdminInvoiceReceipt(options?: MutationOptions<Blob, { id: number; code: string }>) {
+    return useMutation<Blob, Error, { id: number; code: string }>({
+        meta: options?.onError ? QUIET : undefined,
+        ...options,
+        mutationFn: ({id}) => billingAdminService.downloadReceipt(id),
+        onSuccess: afterSuccess(options, (blob, {code}) => triggerReceiptDownload(blob, code)),
+        retry: false,
     });
 }

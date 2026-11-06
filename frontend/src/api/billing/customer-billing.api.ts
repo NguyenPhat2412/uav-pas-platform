@@ -7,4 +7,5 @@ export const customerBillingService = {
     invoices: (page = 0, signal?: AbortSignal) =>
         apiClient.get<PageResponse<Invoice>>(`${API_ROUTES.billing.invoices}?page=${page}&size=20`, {signal}),
     payInvoice: (id: number) => apiClient.post(API_ROUTES.billing.payInvoice(id)),
+    downloadReceipt: (id: number) => apiClient.getBlob(API_ROUTES.billing.invoiceReceipt(id)),
 };

@@ -20,6 +20,9 @@ public interface InvoiceRepository
         extends JpaRepository<Invoice, Long>, JpaSpecificationExecutor<Invoice> {
     Optional<Invoice> findByCode(String code);
 
+    @Query("select i from Invoice i where upper(replace(i.code, '-', '')) = :normalizedCode")
+    Optional<Invoice> findByNormalizedCode(@Param("normalizedCode") String normalizedCode);
+
     Page<Invoice> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
     List<Invoice> findByUserId(Long userId);

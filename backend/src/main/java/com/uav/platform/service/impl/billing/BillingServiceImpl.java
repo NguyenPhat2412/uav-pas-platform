@@ -1,20 +1,27 @@
 package com.uav.platform.service.impl.billing;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dto.record.billing.InvoiceReceiptData;
 import com.uav.platform.dto.record.billing.IpnSignaturePayload;
+import com.uav.platform.dto.record.billing.PaymentAccountSettings;
 import com.uav.platform.dto.request.billing.CreateInvoiceRequest;
 import com.uav.platform.dto.request.billing.PayInvoiceRequest;
 import com.uav.platform.dto.request.billing.PaymentIpnRequest;
+import com.uav.platform.dto.request.billing.SepayWebhookRequest;
+import com.uav.platform.dto.request.notification.CreateNotificationRequest;
 import com.uav.platform.dto.response.billing.InvoiceResponse;
 import com.uav.platform.dto.response.billing.PaymentIpnResponse;
 import com.uav.platform.dto.response.billing.PaymentResponse;
+import com.uav.platform.dto.response.billing.SepayWebhookResponse;
 import com.uav.platform.dto.response.billing.ServicePlanResponse;
 import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.billing.PaymentTransaction;
 import com.uav.platform.entity.billing.ServicePlan;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.entity.user.CustomerBillingProfile;
 import com.uav.platform.enums.billing.InvoiceStatus;
+import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.billing.BillingMapper;
 import com.uav.platform.repository.billing.InvoiceRepository;
@@ -22,14 +29,18 @@ import com.uav.platform.repository.billing.PaymentTransactionRepository;
 import com.uav.platform.repository.billing.ServicePlanRepository;
 import com.uav.platform.repository.billing.UserQuotaRepository;
 import com.uav.platform.repository.mission.MissionRepository;
+import com.uav.platform.repository.user.CustomerBillingProfileRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.billing.BillingService;
+import com.uav.platform.service.billing.PaymentSettingsService;
 import com.uav.platform.service.impl.user.UserAccountServiceImpl;
+import com.uav.platform.service.notification.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.webhook.WebhookService;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -71,6 +82,19 @@ public class BillingServiceImpl implements BillingService {
     /** Writes rejected-payment evidence in its own transaction so it survives the rejection. */
     @Autowired(required = false)
     private org.springframework.transaction.PlatformTransactionManager transactionManager;
+
+    @Autowired(required = false)
+    private PaymentSettingsService paymentSettingsService;
+
+    @Autowired(required = false)
+    private CustomerBillingProfileRepository billingProfileRepository;
+
+    @Autowired(required = false)
+    private ObjectProvider<NotificationService> notifications;
+
+    public void setNotifications(ObjectProvider<NotificationService> notifications) {
+        this.notifications = notifications;
+    }
 
     public BillingServiceImpl(
             ServicePlanRepository planRepository,
@@ -252,6 +276,92 @@ public class BillingServiceImpl implements BillingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public byte[] renderInvoiceReceiptPdf(Long id, Authentication auth) {
+        Invoice invoice = accessibleInvoice(id, auth);
+        AppUser customer = invoice.getUser();
+        CustomerBillingProfile profile =
+                (billingProfileRepository != null && customer != null && customer.getId() != null)
+                        ? billingProfileRepository.findById(customer.getId()).orElse(null)
+                        : null;
+        PaymentTransaction settledTxn = resolveSettledTransaction(invoice.getId());
+        PaymentAccountSettings settings =
+                paymentSettingsService != null ? paymentSettingsService.current() : null;
+
+        String itemTitle;
+        String itemReference;
+        if (invoice.getMission() != null) {
+            itemTitle = "Flight Mission: " + invoice.getMission().getTitle();
+            itemReference =
+                    invoice.getMission().getCode() != null
+                            ? invoice.getMission().getCode()
+                            : "MISSION-" + invoice.getMission().getId();
+        } else if (invoice.getPlan() != null) {
+            itemTitle = "Service Plan: " + invoice.getPlan().getName();
+            itemReference =
+                    invoice.getPlan().getCode() != null
+                            ? invoice.getPlan().getCode()
+                            : "PLAN-" + invoice.getPlan().getId();
+        } else {
+            itemTitle = "UAV PAS Platform Service Charge";
+            itemReference = invoice.getCode();
+        }
+
+        boolean bankConfigured = settings != null && settings.configured();
+        InvoiceReceiptData receiptData =
+                new InvoiceReceiptData(
+                        invoice.getId(),
+                        invoice.getCode(),
+                        invoice.getStatus(),
+                        invoice.getAmount(),
+                        settings != null ? settings.vatRate() : new BigDecimal("0.10"),
+                        invoice.getCreatedAt(),
+                        invoice.getDueDate(),
+                        invoice.getPaidAt(),
+                        invoice.getNotes(),
+                        customer != null ? customer.getUsername() : null,
+                        customer != null ? customer.getFullName() : null,
+                        customer != null ? customer.getEmail() : null,
+                        customer != null ? customer.getPhoneNumber() : null,
+                        profile != null ? profile.getOrganizationName() : null,
+                        profile != null ? profile.getTaxCode() : null,
+                        profile != null ? profile.getBillingAddress() : null,
+                        itemTitle,
+                        itemReference,
+                        settledTxn != null ? settledTxn.getGatewayName() : null,
+                        settledTxn != null ? settledTxn.getTransactionCode() : null,
+                        settledTxn != null ? settledTxn.getCompletedAt() : null,
+                        bankConfigured ? settings.bankName() : null,
+                        bankConfigured ? settings.bankBin() : null,
+                        bankConfigured ? settings.accountNumber() : null,
+                        bankConfigured ? settings.accountName() : null,
+                        invoice.getCode() != null
+                                ? BankTransferServiceImpl.transferContent(invoice.getCode())
+                                : null);
+        return InvoiceReceiptOperations.renderPdf(receiptData);
+    }
+
+    private PaymentTransaction resolveSettledTransaction(Long invoiceId) {
+        if (paymentRepository == null || invoiceId == null) {
+            return null;
+        }
+        var settled =
+                paymentRepository.findFirstByInvoiceIdAndStatusOrderByCompletedAtDescIdDesc(
+                        invoiceId, "SUCCESS");
+        if (settled != null && settled.isPresent()) {
+            return settled.get();
+        }
+        try {
+            var single = paymentRepository.findByInvoiceId(invoiceId);
+            return single != null
+                    ? single.filter(t -> "SUCCESS".equals(t.getStatus())).orElse(null)
+                    : null;
+        } catch (RuntimeException ex) {
+            return null;
+        }
+    }
+
+    @Override
     public InvoiceResponse createInvoice(CreateInvoiceRequest request, Authentication auth) {
         getCurrentUser(auth);
         if (!permissions.has(auth, "USER_MANAGE")) {
@@ -406,6 +516,126 @@ public class BillingServiceImpl implements BillingService {
         return paymentResult(invoice, transactionCode);
     }
 
+    @Override
+    public SepayWebhookResponse processSepayWebhook(
+            SepayWebhookRequest request, String authorizationHeader, String webhookSecretHeader) {
+        if (!providerEnabled || ipnSecret.length() < 32) {
+            throw SystemException.serviceUnavailable(
+                    "Payment gateway is not configured", "PAYMENT_UNAVAILABLE");
+        }
+        if (!SepayReconciliationOperations.isValidWebhookSecret(
+                this.ipnSecret, authorizationHeader, webhookSecretHeader)) {
+            throw SystemException.unauthorized(
+                    "Invalid or missing webhook API key", "WEBHOOK_SECRET_INVALID");
+        }
+        if (request == null) {
+            throw SystemException.badRequest("SePay webhook payload is required");
+        }
+        if (request.transferType() == null
+                || !"in".equalsIgnoreCase(request.transferType().trim())) {
+            return new SepayWebhookResponse(
+                    true, "IGNORED_OUTGOING", "Outgoing transfer ignored", null, null);
+        }
+
+        PaymentAccountSettings accountSettings =
+                paymentSettingsService != null ? paymentSettingsService.current() : null;
+        if (!SepayReconciliationOperations.matchesReceivingAccount(accountSettings, request)) {
+            return new SepayWebhookResponse(
+                    true,
+                    "IGNORED_ACCOUNT",
+                    "Account number does not match configured receiving account",
+                    null,
+                    null);
+        }
+
+        String transactionCode = SepayReconciliationOperations.deriveTransactionCode(request);
+
+        if (billingJdbc != null) {
+            billingJdbc.queryForObject(
+                    "SELECT id FROM billing_payment_guard WHERE id=1 FOR UPDATE", Long.class);
+        }
+
+        var existing = paymentRepository.findByTransactionCode(transactionCode).orElse(null);
+        if (existing != null) {
+            String existingInvoiceCode =
+                    existing.getInvoice() != null ? existing.getInvoice().getCode() : null;
+            return new SepayWebhookResponse(
+                    true,
+                    "DUPLICATE_IGNORED",
+                    "Transaction already processed",
+                    existingInvoiceCode,
+                    transactionCode);
+        }
+
+        Invoice invoice =
+                SepayReconciliationOperations.resolveInvoice(request, invoiceRepository)
+                        .orElse(null);
+        if (invoice == null) {
+            return new SepayWebhookResponse(
+                    true,
+                    "UNMATCHED_MEMO",
+                    "No matching invoice code found in transfer content",
+                    null,
+                    transactionCode);
+        }
+
+        String rawSummary = SepayReconciliationOperations.summarizePayload(request);
+        BigDecimal paidAmount =
+                request.transferAmount() != null ? request.transferAmount() : BigDecimal.ZERO;
+
+        if (invoice.getStatus() != InvoiceStatus.PENDING) {
+            recordRejectedTransfer(
+                    invoice,
+                    transactionCode,
+                    paidAmount,
+                    "VIETQR_SEPAY_AUTO",
+                    request.accountNumber(),
+                    rawSummary,
+                    "UNMATCHED");
+            return new SepayWebhookResponse(
+                    true,
+                    "INVOICE_NOT_PENDING",
+                    "Invoice is not pending payment; recorded as unmatched transfer",
+                    invoice.getCode(),
+                    transactionCode);
+        }
+
+        BigDecimal requiredAmount =
+                wholeDong(invoice.getAmount() != null ? invoice.getAmount() : BigDecimal.ZERO);
+        if (request.transferAmount() == null
+                || paidAmount.signum() <= 0
+                || paidAmount.compareTo(requiredAmount) != 0) {
+            recordRejectedTransfer(
+                    invoice,
+                    transactionCode,
+                    paidAmount,
+                    "VIETQR_SEPAY_AUTO",
+                    request.accountNumber(),
+                    rawSummary,
+                    "MISMATCH");
+            return new SepayWebhookResponse(
+                    true,
+                    "AMOUNT_MISMATCH",
+                    "Transfer amount does not match invoice; recorded for admin review",
+                    invoice.getCode(),
+                    transactionCode);
+        }
+
+        completePayment(
+                invoice,
+                transactionCode,
+                wholeDong(paidAmount),
+                "VIETQR_SEPAY_AUTO",
+                request.accountNumber(),
+                rawSummary);
+        return new SepayWebhookResponse(
+                true,
+                "PAID",
+                "Đã đối soát tự động giao dịch chuyển khoản ngân hàng.",
+                invoice.getCode(),
+                transactionCode);
+    }
+
     /** Invoice amounts are whole Vietnamese đồng; fractions are rounded half-up once, at creation. */
     static BigDecimal wholeDong(BigDecimal amount) {
         return amount == null ? null : amount.setScale(0, java.math.RoundingMode.HALF_UP);
@@ -417,20 +647,44 @@ public class BillingServiceImpl implements BillingService {
      * separate transaction, so admins see it under Billing > Transactions after the IPN is refused.
      */
     private void recordRejectedPayment(Invoice invoice, PaymentIpnRequest request, String status) {
+        recordRejectedTransfer(
+                invoice,
+                request.transactionCode(),
+                request.amount() != null ? request.amount() : BigDecimal.ZERO,
+                "VIETQR_NAPAS_247",
+                null,
+                request.toString(),
+                status);
+    }
+
+    private void recordRejectedTransfer(
+            Invoice invoice,
+            String transactionCode,
+            BigDecimal amount,
+            String gateway,
+            String bankAccountNumber,
+            String rawCallback,
+            String status) {
         Runnable write =
                 () -> {
-                    if (paymentRepository
-                            .findByTransactionCode(request.transactionCode())
-                            .isPresent()) return;
+                    if (paymentRepository.findByTransactionCode(transactionCode).isPresent())
+                        return;
                     PaymentTransaction txn =
                             PaymentTransactionOperations.create(
                                     invoice,
                                     invoice.getUser(),
-                                    request.transactionCode(),
-                                    request.amount() != null ? request.amount() : BigDecimal.ZERO);
-                    txn.setGatewayName("VIETQR_NAPAS_247");
+                                    transactionCode,
+                                    amount != null ? amount : BigDecimal.ZERO);
+                    txn.setGatewayName(gateway);
+                    if (bankAccountNumber != null && !bankAccountNumber.isBlank()) {
+                        String trimmedAcct = bankAccountNumber.trim();
+                        txn.setBankAccountNumber(
+                                trimmedAcct.length() > 50
+                                        ? trimmedAcct.substring(0, 50)
+                                        : trimmedAcct);
+                    }
                     txn.setStatus(status);
-                    txn.setRawIpnCallback(request.toString());
+                    txn.setRawIpnCallback(rawCallback);
                     paymentRepository.save(txn);
                 };
         try {
@@ -460,11 +714,26 @@ public class BillingServiceImpl implements BillingService {
             BigDecimal amount,
             String gateway,
             String raw) {
+        completePayment(invoice, transactionCode, amount, gateway, null, raw);
+    }
+
+    private void completePayment(
+            Invoice invoice,
+            String transactionCode,
+            BigDecimal amount,
+            String gateway,
+            String bankAccountNumber,
+            String raw) {
         invoice.setStatus(InvoiceStatus.PAID);
         invoice.setPaidAt(LocalDateTime.now());
         invoiceRepository.save(invoice);
 
-        if (invoice.getMission() == null && invoice.getPlan() != null) {
+        if (invoice.getMission() != null) {
+            invoice.getMission().setBillingStatus("PAID");
+            if (missionRepository != null) {
+                missionRepository.save(invoice.getMission());
+            }
+        } else if (invoice.getPlan() != null && quotaService != null) {
             // The customer paid for the invoiced plan: apply it even if it was deactivated since.
             quotaService.applyPaidPlan(invoice.getUser().getId(), invoice.getPlan());
         }
@@ -473,11 +742,49 @@ public class BillingServiceImpl implements BillingService {
                 PaymentTransactionOperations.create(
                         invoice, invoice.getUser(), transactionCode, amount);
         txn.setGatewayName(gateway);
+        if (bankAccountNumber != null && !bankAccountNumber.isBlank()) {
+            String trimmedAcct = bankAccountNumber.trim();
+            txn.setBankAccountNumber(
+                    trimmedAcct.length() > 50 ? trimmedAcct.substring(0, 50) : trimmedAcct);
+        }
         txn.setStatus("SUCCESS");
         txn.setCompletedAt(LocalDateTime.now());
         txn.setRawIpnCallback(raw);
         paymentRepository.save(txn);
-        financialEvents.recordPaymentCompleted(invoice);
+        if (financialEvents != null) {
+            financialEvents.recordPaymentCompleted(invoice);
+        }
+        if (financialEvents == null || !financialEvents.handlesPaymentNotification()) {
+            notifyInvoiceSettled(invoice);
+        }
+    }
+
+    private void notifyInvoiceSettled(Invoice invoice) {
+        if (invoice == null
+                || invoice.getUser() == null
+                || invoice.getUser().getId() == null
+                || notifications == null) {
+            return;
+        }
+        NotificationService notificationService = notifications.getIfAvailable();
+        if (notificationService == null) {
+            return;
+        }
+        try {
+            notificationService.sendNotification(
+                    new CreateNotificationRequest(
+                            invoice.getUser().getId(),
+                            "Đã ghi nhận thanh toán",
+                            "Hóa đơn: " + invoice.getCode(),
+                            NotificationType.PAYMENT,
+                            "INVOICE",
+                            invoice.getId()));
+        } catch (RuntimeException ex) {
+            log.warn(
+                    "Unable to dispatch payment notification for invoice {}: {}",
+                    invoice.getCode(),
+                    ex.getMessage());
+        }
     }
 
     @Override

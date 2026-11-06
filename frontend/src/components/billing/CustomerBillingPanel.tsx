@@ -5,9 +5,9 @@ import React, {useState} from 'react';
 import {BankTransferDialog} from '@/components/billing/BankTransferDialog';
 import {toast} from '@/providers/ToastContext';
 import {displayLabel, planName} from "@/lib/presentation";
-import {AlertCircle, CheckCircle, Clock, FileText, Radar} from 'lucide-react';
+import {AlertCircle, CheckCircle, Clock, Download, FileText, Radar} from 'lucide-react';
 import {PageGuard} from "@/components/customer/CustomerLayout";
-import {useBankTransferStatus, useBilling, useRefreshCustomerBilling, useSubscribePlan} from '@/hooks/billing/useCustomerBilling';
+import {useBankTransferStatus, useBilling, useDownloadInvoiceReceipt, useRefreshCustomerBilling, useSubscribePlan} from '@/hooks/billing/useCustomerBilling';
 import {ServicePlanCards} from '@/components/billing/ServicePlanCard';
 import type {Invoice} from "@/types/customer";
 import {useI18n} from '@/providers/I18nContext';
@@ -31,6 +31,9 @@ export default function CustomerBillingPage() {
         onError: error => toast.error(error instanceof Error ? error.message : t('plans.subscribeFailed')),
     });
     const {t, formatDate: formatLocalDate, formatCurrency} = useI18n();
+    const downloadReceipt = useDownloadInvoiceReceipt({
+        onError: error => toast.error(error instanceof Error ? error.message : t('billingPage.downloadPdfError')),
+    });
     const formatDate = (value?: string) => value ? formatLocalDate(value, {dateStyle: 'short'}) : '—';
     const quota = quotaQuery.data;
     const invoices = invoicesQuery.data?.content ?? [];
@@ -233,21 +236,34 @@ export default function CustomerBillingPage() {
                                         </span>
                                     </td>
                                     <td className="px-5 py-4 text-right">
-                                        {inv.status === 'PENDING' && transfer.data?.enabled ? (
+                                        <div className="inline-flex items-center justify-end gap-2">
+                                            {inv.status === 'PENDING' && transfer.data?.enabled ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setPayingInvoice(inv)}
+                                                    className="bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-bold px-3.5 py-1.5 rounded-control border-0 cursor-pointer transition-colors"
+                                                >
+                                                    {t('billingPage.viewPayment')}
+                                                </button>
+                                            ) : inv.status === 'PENDING' ? (
+                                                <span className="text-xs text-slate-500" title={t('payment.awaitingTransferHint')}>{t('payment.awaitingTransfer')}</span>
+                                            ) : (
+                                                <span className="text-xs text-slate-400">
+                                                    {formatDate(inv.paidAt)}
+                                                </span>
+                                            )}
                                             <button
                                                 type="button"
-                                                onClick={() => setPayingInvoice(inv)}
-                                                className="bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-bold px-3.5 py-1.5 rounded-control border-0 cursor-pointer transition-colors"
+                                                disabled={downloadReceipt.isPending && downloadReceipt.variables?.id === inv.id}
+                                                onClick={() => downloadReceipt.mutate({id: inv.id, code: inv.code})}
+                                                aria-label={t('billingPage.downloadPdfAria', {code: inv.code})}
+                                                title={t('billingPage.downloadPdfAria', {code: inv.code})}
+                                                className="inline-flex items-center gap-1 rounded-control border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-primary disabled:opacity-50 cursor-pointer"
                                             >
-                                                {t('billingPage.viewPayment')}
+                                                <Download size={13} aria-hidden="true"/>
+                                                <span>{t('billingPage.downloadPdf')}</span>
                                             </button>
-                                        ) : inv.status === 'PENDING' ? (
-                                            <span className="text-xs text-slate-500" title={t('payment.awaitingTransferHint')}>{t('payment.awaitingTransfer')}</span>
-                                        ) : (
-                                            <span className="text-xs text-slate-400">
-                                                {formatDate(inv.paidAt)}
-                                            </span>
-                                        )}
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

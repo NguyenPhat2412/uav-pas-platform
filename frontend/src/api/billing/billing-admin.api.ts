@@ -23,4 +23,5 @@ export const billingAdminService = {
         apiClient.post<FinancialOutboxEvent>(`${BASE}/outbox/${encodeURIComponent(id)}/retry`),
     userBillingProfile: (userId: number, signal?: AbortSignal) =>
         apiClient.get<AdminBillingProfile>(API_ROUTES.admin.userBillingProfile(userId), {signal}),
+    downloadReceipt: (id: number) => apiClient.getBlob(API_ROUTES.billing.invoiceReceipt(id)),
 };
