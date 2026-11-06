@@ -48,7 +48,8 @@ class SimulationServiceImplTest {
     }
 
     static SimulationStartRequest request(Long missionId, List<List<Double>> waypoints) {
-        return new SimulationStartRequest(3L, missionId, waypoints, null, null, null, 10.0, 0.0, 0, 0, null, null);
+        return new SimulationStartRequest(
+                3L, missionId, waypoints, null, null, null, 10.0, 0.0, 0, 0, null, null);
     }
 
     @Test
@@ -61,8 +62,14 @@ class SimulationServiceImplTest {
 
         var started = service.start(request(9L, null), "operator");
         assertEquals(List.of(21.0095, 105.5195), started.home());
-        assertTrue(started.waypointCount() >= 10, "a sweep of the polygon, got " + started.waypointCount());
-        assertEquals(50, started.settings().altitudeMeters(), 1e-9, "altitude comes from the flight plan");
+        assertTrue(
+                started.waypointCount() >= 10,
+                "a sweep of the polygon, got " + started.waypointCount());
+        assertEquals(
+                50,
+                started.settings().altitudeMeters(),
+                1e-9,
+                "altitude comes from the flight plan");
 
         service.tick();
         service.tick();
@@ -83,15 +90,33 @@ class SimulationServiceImplTest {
         assertThrows(SystemException.class, () -> service.start(request(9L, null), "operator"));
 
         service.start(request(null, List.of(List.of(21.011, 105.521))), "operator");
-        assertThrows(SystemException.class, () -> service.start(request(null, List.of(List.of(21.011, 105.521))), "operator"));
+        assertThrows(
+                SystemException.class,
+                () -> service.start(request(null, List.of(List.of(21.011, 105.521))), "operator"));
     }
 
     @Test
     void commandsFollowTheFlightAndStopDiscardsIt() {
         // Home 1.1 km south of the only waypoint, so the flight is still on its way after take-off.
-        service.start(new SimulationStartRequest(3L, null, List.of(List.of(21.02, 105.52)), 21.01, 105.52,
-                null, 10.0, 0.0, 0, 0, null, null), "operator");
-        assertThrows(SystemException.class, () -> service.command(3L, SimCommand.PAUSE, "operator"), "still taking off");
+        service.start(
+                new SimulationStartRequest(
+                        3L,
+                        null,
+                        List.of(List.of(21.02, 105.52)),
+                        21.01,
+                        105.52,
+                        null,
+                        10.0,
+                        0.0,
+                        0,
+                        0,
+                        null,
+                        null),
+                "operator");
+        assertThrows(
+                SystemException.class,
+                () -> service.command(3L, SimCommand.PAUSE, "operator"),
+                "still taking off");
         for (int i = 0; i < 20; i++) service.tick();
         assertEquals(SimFlightMode.MISSION, service.state(3L).mode());
         assertEquals(SimFlightMode.HOLD, service.command(3L, SimCommand.PAUSE, "operator").mode());
@@ -103,7 +128,8 @@ class SimulationServiceImplTest {
 
     @Test
     void ingestFailureEndsTheSimulationInsteadOfRepeatingTheError() {
-        when(telemetry.ingest(eq(3L), any(), any())).thenThrow(SystemException.notFound("UAV not found"));
+        when(telemetry.ingest(eq(3L), any(), any()))
+                .thenThrow(SystemException.notFound("UAV not found"));
         service.start(request(null, List.of(List.of(21.011, 105.521))), "operator");
         service.tick();
         assertTrue(service.list().isEmpty());
@@ -111,18 +137,27 @@ class SimulationServiceImplTest {
 
     @Test
     void startRunsInAWritableTransactionBecauseItWritesTheAuditLog() throws Exception {
-        Transactional tx = SimulationServiceImpl.class
-                .getMethod("start", SimulationStartRequest.class, String.class)
-                .getAnnotation(Transactional.class);
+        Transactional tx =
+                SimulationServiceImpl.class
+                        .getMethod("start", SimulationStartRequest.class, String.class)
+                        .getAnnotation(Transactional.class);
         assertNotNull(tx);
         assertFalse(tx.readOnly(), "a read-only transaction rejects the audit INSERT (HTTP 500)");
     }
 
     @Test
     void surveyPlanReportsSpacingLengthAndTime() {
-        var plan = service.surveyPlan(new SurveyPlanRequest(
-                List.of(List.of(21.01, 105.52), List.of(21.01, 105.5239), List.of(21.012, 105.5239), List.of(21.012, 105.52)),
-                50.0, 65, 8.0));
+        var plan =
+                service.surveyPlan(
+                        new SurveyPlanRequest(
+                                List.of(
+                                        List.of(21.01, 105.52),
+                                        List.of(21.01, 105.5239),
+                                        List.of(21.012, 105.5239),
+                                        List.of(21.012, 105.52)),
+                                50.0,
+                                65,
+                                8.0));
         assertEquals(26.3, plan.lineSpacingMeters(), 0.5);
         assertTrue(plan.lengthMeters() > 2000);
         assertEquals(plan.lengthMeters() / 8 / 60, plan.estimatedMinutes(), 0.1);

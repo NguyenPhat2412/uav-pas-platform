@@ -37,7 +37,8 @@ public final class SurveyPatternOperations {
     public static List<List<Double>> plan(List<List<Double>> polygon, double spacingMeters) {
         if (polygon == null || polygon.size() < 3)
             throw new IllegalArgumentException("A survey area needs at least three vertices");
-        if (!(spacingMeters > 0)) throw new IllegalArgumentException("Line spacing must be positive");
+        if (!(spacingMeters > 0))
+            throw new IllegalArgumentException("Line spacing must be positive");
 
         double[] ref = centroid(polygon);
         double[][] xy = project(polygon, ref);
@@ -160,7 +161,8 @@ public final class SurveyPatternOperations {
 
     private static List<Double> unproject(double x, double y, double[] ref) {
         double lat = ref[0] + Math.toDegrees(y / EARTH_RADIUS_M);
-        double lng = ref[1] + Math.toDegrees(x / (EARTH_RADIUS_M * Math.cos(Math.toRadians(ref[0]))));
+        double lng =
+                ref[1] + Math.toDegrees(x / (EARTH_RADIUS_M * Math.cos(Math.toRadians(ref[0]))));
         return List.of(round(lat), round(lng));
     }
 

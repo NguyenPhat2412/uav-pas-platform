@@ -76,7 +76,10 @@ public final class SimulatedFlightOperations {
         this.lng = homeLng;
         this.battery = batteryPct;
         track.add(List.of(lat, lng));
-        log(now, SimEventLevel.INFO, "Cất cánh tới độ cao " + Math.round(settings.altitudeMeters()) + " m");
+        log(
+                now,
+                SimEventLevel.INFO,
+                "Cất cánh tới độ cao " + Math.round(settings.altitudeMeters()) + " m");
     }
 
     /** Advances the model by {@code dt} seconds and queues the telemetry sample of this instant. */
@@ -120,14 +123,18 @@ public final class SimulatedFlightOperations {
                 log(now, SimEventLevel.INFO, "Dừng tại chỗ (HOLD) theo lệnh điều hành");
             }
             case RESUME -> {
-                if (mode != SimFlightMode.HOLD) throw new IllegalStateException("SIM_COMMAND_NOT_ALLOWED");
-                mode = nextWaypoint < waypoints.size() || resumeMode == SimFlightMode.RETURN_TO_HOME
-                        ? resumeMode
-                        : SimFlightMode.RETURN_TO_HOME;
+                if (mode != SimFlightMode.HOLD)
+                    throw new IllegalStateException("SIM_COMMAND_NOT_ALLOWED");
+                mode =
+                        nextWaypoint < waypoints.size()
+                                        || resumeMode == SimFlightMode.RETURN_TO_HOME
+                                ? resumeMode
+                                : SimFlightMode.RETURN_TO_HOME;
                 log(now, SimEventLevel.INFO, "Tiếp tục bay");
             }
             case RETURN_TO_HOME -> {
-                if (mode == SimFlightMode.LANDING || mode == SimFlightMode.LANDED
+                if (mode == SimFlightMode.LANDING
+                        || mode == SimFlightMode.LANDED
                         || mode == SimFlightMode.RETURN_TO_HOME)
                     throw new IllegalStateException("SIM_COMMAND_NOT_ALLOWED");
                 mode = SimFlightMode.RETURN_TO_HOME;
@@ -164,7 +171,10 @@ public final class SimulatedFlightOperations {
                 mode = SimFlightMode.RETURN_TO_HOME;
                 log(now, SimEventLevel.INFO, "Hoàn tất lộ trình, quay về điểm xuất phát");
             } else if (nextWaypoint % 5 == 0 || nextWaypoint == 1) {
-                log(now, SimEventLevel.INFO, "Đã qua điểm " + nextWaypoint + "/" + waypoints.size());
+                log(
+                        now,
+                        SimEventLevel.INFO,
+                        "Đã qua điểm " + nextWaypoint + "/" + waypoints.size());
             }
         }
     }
@@ -200,8 +210,12 @@ public final class SimulatedFlightOperations {
         }
         double rad = Math.toRadians(heading);
         lat += Math.toDegrees(step * Math.cos(rad) / SurveyPatternOperations.EARTH_RADIUS_M);
-        lng += Math.toDegrees(step * Math.sin(rad)
-                / (SurveyPatternOperations.EARTH_RADIUS_M * Math.cos(Math.toRadians(lat))));
+        lng +=
+                Math.toDegrees(
+                        step
+                                * Math.sin(rad)
+                                / (SurveyPatternOperations.EARTH_RADIUS_M
+                                        * Math.cos(Math.toRadians(lat))));
         distanceFlown += step;
         speed = settings.cruiseSpeedMs();
         addTrack();
@@ -218,24 +232,37 @@ public final class SimulatedFlightOperations {
         boolean airborne = mode != SimFlightMode.LANDING && mode != SimFlightMode.LANDED;
         if (!batteryWarned && battery <= BATTERY_WARN_PCT) {
             batteryWarned = true;
-            log(now, SimEventLevel.WARNING, "Pin còn " + Math.round(battery) + "%: chuẩn bị thu hồi");
+            log(
+                    now,
+                    SimEventLevel.WARNING,
+                    "Pin còn " + Math.round(battery) + "%: chuẩn bị thu hồi");
         }
         if (airborne && battery <= BATTERY_LAND_PCT) {
             mode = SimFlightMode.LANDING;
-            log(now, SimEventLevel.CRITICAL, "Pin nguy hiểm (" + Math.round(battery) + "%): tự hạ cánh tại chỗ");
+            log(
+                    now,
+                    SimEventLevel.CRITICAL,
+                    "Pin nguy hiểm (" + Math.round(battery) + "%): tự hạ cánh tại chỗ");
             return;
         }
         if (airborne && mode != SimFlightMode.RETURN_TO_HOME && battery <= BATTERY_RETURN_PCT) {
             mode = SimFlightMode.RETURN_TO_HOME;
-            log(now, SimEventLevel.CRITICAL, "Pin còn " + Math.round(battery) + "%: tự quay về (RTH)");
+            log(
+                    now,
+                    SimEventLevel.CRITICAL,
+                    "Pin còn " + Math.round(battery) + "%: tự quay về (RTH)");
             return;
         }
         double fromHome = SurveyPatternOperations.haversine(lat, lng, homeLat, homeLng);
         if (airborne && !geofenceTripped && fromHome > settings.geofenceRadiusMeters()) {
             geofenceTripped = true;
             mode = SimFlightMode.RETURN_TO_HOME;
-            log(now, SimEventLevel.CRITICAL,
-                    "Vượt rào địa lý " + Math.round(settings.geofenceRadiusMeters()) + " m: tự quay về (RTH)");
+            log(
+                    now,
+                    SimEventLevel.CRITICAL,
+                    "Vượt rào địa lý "
+                            + Math.round(settings.geofenceRadiusMeters())
+                            + " m: tự quay về (RTH)");
         }
     }
 
@@ -245,7 +272,10 @@ public final class SimulatedFlightOperations {
             lost++;
             return;
         }
-        int jitter = settings.jitterMs() > 0 ? random.nextInt(2 * settings.jitterMs() + 1) - settings.jitterMs() : 0;
+        int jitter =
+                settings.jitterMs() > 0
+                        ? random.nextInt(2 * settings.jitterMs() + 1) - settings.jitterMs()
+                        : 0;
         long latency = Math.max(0, settings.latencyMs() + jitter);
         boolean fixed = random.nextDouble() > 0.1;
         TelemetryReportRequest report =
@@ -274,7 +304,9 @@ public final class SimulatedFlightOperations {
     }
 
     static double bearing(double lat1, double lng1, double lat2, double lng2) {
-        double p1 = Math.toRadians(lat1), p2 = Math.toRadians(lat2), dl = Math.toRadians(lng2 - lng1);
+        double p1 = Math.toRadians(lat1),
+                p2 = Math.toRadians(lat2),
+                dl = Math.toRadians(lng2 - lng1);
         double y = Math.sin(dl) * Math.cos(p2);
         double x = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl);
         return (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
@@ -285,30 +317,96 @@ public final class SimulatedFlightOperations {
         return Math.round(v * f) / f;
     }
 
-    public long uavId() { return uavId; }
-    public Long missionId() { return missionId; }
-    public List<List<Double>> waypoints() { return waypoints; }
-    public double homeLat() { return homeLat; }
-    public double homeLng() { return homeLng; }
-    public SimFlightSettings settings() { return settings; }
-    public LocalDateTime startedAt() { return startedAt; }
-    public double latitude() { return lat; }
-    public double longitude() { return lng; }
-    public double altitude() { return altitude; }
-    public double speed() { return speed; }
-    public double heading() { return heading; }
-    public double battery() { return battery; }
-    public SimFlightMode mode() { return mode; }
-    public int nextWaypoint() { return nextWaypoint; }
-    public double distanceFlown() { return distanceFlown; }
-    public double elapsedSeconds() { return elapsedSeconds; }
-    public double distanceToHome() { return SurveyPatternOperations.haversine(lat, lng, homeLat, homeLng); }
-    public List<List<Double>> track() { return List.copyOf(track); }
-    public List<SimFlightEvent> events() { return List.copyOf(events); }
-    public boolean finished() { return mode == SimFlightMode.LANDED && outbox.isEmpty(); }
+    public long uavId() {
+        return uavId;
+    }
+
+    public Long missionId() {
+        return missionId;
+    }
+
+    public List<List<Double>> waypoints() {
+        return waypoints;
+    }
+
+    public double homeLat() {
+        return homeLat;
+    }
+
+    public double homeLng() {
+        return homeLng;
+    }
+
+    public SimFlightSettings settings() {
+        return settings;
+    }
+
+    public LocalDateTime startedAt() {
+        return startedAt;
+    }
+
+    public double latitude() {
+        return lat;
+    }
+
+    public double longitude() {
+        return lng;
+    }
+
+    public double altitude() {
+        return altitude;
+    }
+
+    public double speed() {
+        return speed;
+    }
+
+    public double heading() {
+        return heading;
+    }
+
+    public double battery() {
+        return battery;
+    }
+
+    public SimFlightMode mode() {
+        return mode;
+    }
+
+    public int nextWaypoint() {
+        return nextWaypoint;
+    }
+
+    public double distanceFlown() {
+        return distanceFlown;
+    }
+
+    public double elapsedSeconds() {
+        return elapsedSeconds;
+    }
+
+    public double distanceToHome() {
+        return SurveyPatternOperations.haversine(lat, lng, homeLat, homeLng);
+    }
+
+    public List<List<Double>> track() {
+        return List.copyOf(track);
+    }
+
+    public List<SimFlightEvent> events() {
+        return List.copyOf(events);
+    }
+
+    public boolean finished() {
+        return mode == SimFlightMode.LANDED && outbox.isEmpty();
+    }
 
     public SimLinkStats linkStats() {
-        return new SimLinkStats(sent, delivered, lost,
-                delivered == 0 ? 0 : (double) latencyTotal / delivered, latencyMax);
+        return new SimLinkStats(
+                sent,
+                delivered,
+                lost,
+                delivered == 0 ? 0 : (double) latencyTotal / delivered,
+                latencyMax);
     }
 }

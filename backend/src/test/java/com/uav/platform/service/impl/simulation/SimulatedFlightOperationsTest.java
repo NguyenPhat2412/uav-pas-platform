@@ -19,9 +19,18 @@ class SimulatedFlightOperationsTest {
     static final double HOME_LAT = 21.0100, HOME_LNG = 105.5200;
     static final LocalDateTime T0 = LocalDateTime.of(2026, 11, 2, 9, 0);
 
-    static SimulatedFlightOperations flight(List<List<Double>> waypoints, double battery, double loss, int latency, double fence) {
-        return new SimulatedFlightOperations(7L, null, waypoints, HOME_LAT, HOME_LNG, battery,
-                new SimFlightSettings(30, 10, loss, latency, 0, fence), new Random(42), T0);
+    static SimulatedFlightOperations flight(
+            List<List<Double>> waypoints, double battery, double loss, int latency, double fence) {
+        return new SimulatedFlightOperations(
+                7L,
+                null,
+                waypoints,
+                HOME_LAT,
+                HOME_LNG,
+                battery,
+                new SimFlightSettings(30, 10, loss, latency, 0, fence),
+                new Random(42),
+                T0);
     }
 
     static List<TelemetryReportRequest> run(SimulatedFlightOperations f, int seconds) {
@@ -37,13 +46,20 @@ class SimulatedFlightOperationsTest {
     @Test
     void fliesTheRouteReturnsHomeAndLands() {
         // Two points about 110 m and 150 m away.
-        var f = flight(List.of(List.of(21.0110, 105.5200), List.of(21.0110, 105.5213)), 100, 0, 0, 2000);
+        var f =
+                flight(
+                        List.of(List.of(21.0110, 105.5200), List.of(21.0110, 105.5213)),
+                        100,
+                        0,
+                        0,
+                        2000);
         run(f, 600);
         assertEquals(SimFlightMode.LANDED, f.mode());
         assertEquals(2, f.nextWaypoint());
         assertTrue(f.distanceToHome() < 1, "lands at home");
         assertEquals(0, f.altitude(), 1e-9);
-        assertTrue(f.distanceFlown() > 400 && f.distanceFlown() < 440, "flew about 111 + 135 + 175 m");
+        assertTrue(
+                f.distanceFlown() > 400 && f.distanceFlown() < 440, "flew about 111 + 135 + 175 m");
         assertTrue(f.battery() < 100);
     }
 
@@ -62,7 +78,12 @@ class SimulatedFlightOperationsTest {
     void lowBatteryForcesReturnToHome() {
         var f = flight(List.of(List.of(21.0300, 105.5200)), 21, 0, 0, 5000);
         run(f, 30);
-        assertTrue(f.events().stream().anyMatch(e -> e.level() == SimEventLevel.CRITICAL && e.message().contains("RTH")));
+        assertTrue(
+                f.events().stream()
+                        .anyMatch(
+                                e ->
+                                        e.level() == SimEventLevel.CRITICAL
+                                                && e.message().contains("RTH")));
         // It had barely left home, so the return is short and it is already coming down.
         assertNotEquals(SimFlightMode.MISSION, f.mode());
         assertTrue(f.distanceToHome() < 50);
@@ -87,7 +108,10 @@ class SimulatedFlightOperationsTest {
     @Test
     void operatorCommandsFollowThePhaseRules() {
         var f = flight(List.of(List.of(21.0130, 105.5200)), 100, 0, 0, 5000);
-        assertThrows(IllegalStateException.class, () -> f.command(SimCommand.PAUSE, T0), "cannot pause during take-off");
+        assertThrows(
+                IllegalStateException.class,
+                () -> f.command(SimCommand.PAUSE, T0),
+                "cannot pause during take-off");
         run(f, 15);
         assertEquals(SimFlightMode.MISSION, f.mode());
         f.command(SimCommand.PAUSE, T0);
@@ -108,8 +132,12 @@ class SimulatedFlightOperationsTest {
         List<TelemetryReportRequest> delivered = run(f, 200);
         var link = f.linkStats();
         assertEquals(200, link.sent());
-        assertEquals(link.sent(), link.delivered() + link.lost() + 2, "with 1.5 s delay the last two samples are in flight");
-        assertTrue(link.lost() > 25 && link.lost() < 55, "about 20 % of 200 lost, got " + link.lost());
+        assertEquals(
+                link.sent(),
+                link.delivered() + link.lost() + 2,
+                "with 1.5 s delay the last two samples are in flight");
+        assertTrue(
+                link.lost() > 25 && link.lost() < 55, "about 20 % of 200 lost, got " + link.lost());
         assertEquals(1500, link.averageLatencyMs(), 1e-9);
         assertEquals(delivered.size(), link.delivered());
         for (TelemetryReportRequest r : delivered) {

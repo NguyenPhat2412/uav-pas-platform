@@ -42,7 +42,12 @@ public record SimulationStateResponse(
 
     /** sent = samples produced, delivered = ingested by the platform, lost = dropped by the link. */
     public record Link(
-            long sent, long delivered, long lost, double lossPct, double averageLatencyMs, long maxLatencyMs) {}
+            long sent,
+            long delivered,
+            long lost,
+            double lossPct,
+            double averageLatencyMs,
+            long maxLatencyMs) {}
 
     public record Event(LocalDateTime at, SimEventLevel level, String message) {}
 }

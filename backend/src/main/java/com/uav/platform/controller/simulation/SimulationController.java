@@ -42,19 +42,23 @@ public class SimulationController {
         return ResponseEntity.ok(simulation.state(uavId));
     }
 
-    @Operation(summary = "Start a simulated flight; its telemetry is ingested like a real gateway's")
+    @Operation(
+            summary = "Start a simulated flight; its telemetry is ingested like a real gateway's")
     @PostMapping(ApiRoutes.Simulation.SESSIONS)
     @PreAuthorize("@permissionService.has(authentication, 'UAV_UPDATE')")
     public ResponseEntity<SimulationStateResponse> start(
             @Valid @RequestBody SimulationStartRequest request, Authentication auth) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(simulation.start(request, auth.getName()));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(simulation.start(request, auth.getName()));
     }
 
     @Operation(summary = "Send PAUSE, RESUME, RETURN_TO_HOME or LAND to a simulated UAV")
     @PostMapping(ApiRoutes.Simulation.SESSION_COMMANDS)
     @PreAuthorize("@permissionService.has(authentication, 'UAV_UPDATE')")
     public ResponseEntity<SimulationStateResponse> command(
-            @PathVariable Long uavId, @Valid @RequestBody SimulationCommandRequest request, Authentication auth) {
+            @PathVariable Long uavId,
+            @Valid @RequestBody SimulationCommandRequest request,
+            Authentication auth) {
         return ResponseEntity.ok(simulation.command(uavId, request.command(), auth.getName()));
     }
 
@@ -69,7 +73,8 @@ public class SimulationController {
     @Operation(summary = "Generate a lawnmower survey path for a polygon")
     @PostMapping(ApiRoutes.Simulation.SURVEY_PLAN)
     @PreAuthorize("@permissionService.has(authentication, 'UAV_VIEW')")
-    public ResponseEntity<SurveyPlanResponse> surveyPlan(@Valid @RequestBody SurveyPlanRequest request) {
+    public ResponseEntity<SurveyPlanResponse> surveyPlan(
+            @Valid @RequestBody SurveyPlanRequest request) {
         return ResponseEntity.ok(simulation.surveyPlan(request));
     }
 }
