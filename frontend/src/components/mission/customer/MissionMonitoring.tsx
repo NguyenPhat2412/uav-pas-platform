@@ -1,7 +1,7 @@
 'use client';
 
 import 'leaflet/dist/leaflet.css';
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import type {Control, LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
 import {Battery, Gauge, Mountain, Navigation, Radio, Timer} from 'lucide-react';
 import {MapLayerToolbar} from '@/components/shared/MapLayerToolbar';
@@ -13,6 +13,8 @@ import type {Mission} from '@/types/mission/mission.types';
 import {formatTelemetryNumber} from '@/lib/format';
 import {MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
+import {useAirspaceZones} from '@/hooks/airspace/useAirspace';
+import {renderAirspaceZonesLayer} from '@/utils/airspace/map-overlays';
 
 const LIVE_STATUSES = ['READY', 'IN_PROGRESS'];
 // Leaflet styles vectors through options, so the theme colours are spelled out here.
@@ -84,11 +86,14 @@ export function MissionMonitoring({mission}: { mission: Mission }) {
 }
 
 function FlightMap({mission, fix, center}: { mission: Mission; fix: UavTelemetry | null; center: [number, number] | null }) {
-    const {t} = useI18n();
+    const {t, formatNumber} = useI18n();
     const {config, basemap, setBasemap} = useMapConfig();
+    const airspaceZonesQuery = useAirspaceZones(true);
+    const activeAirspaceZones = useMemo(() => airspaceZonesQuery.data ?? [], [airspaceZonesQuery.data]);
     const container = useRef<HTMLDivElement | null>(null);
     const map = useRef<LeafletMap | null>(null);
     const tiles = useRef<TileLayer | null>(null);
+    const airspaceLayer = useRef<LayerGroup | null>(null);
     const planLayer = useRef<LayerGroup | null>(null);
     const uavLayer = useRef<LayerGroup | null>(null);
     const scaleControl = useRef<Control.Scale | null>(null);
@@ -104,6 +109,7 @@ function FlightMap({mission, fix, center}: { mission: Mission; fix: UavTelemetry
             if (disposed || !container.current || map.current) return;
             leaflet.current = L;
             map.current = L.map(container.current, {scrollWheelZoom: false}).setView(effectiveCenter, center ? 15 : config.defaultZoom);
+            airspaceLayer.current = L.layerGroup().addTo(map.current);
             planLayer.current = L.layerGroup().addTo(map.current);
             uavLayer.current = L.layerGroup().addTo(map.current);
             setReady(true);
@@ -121,6 +127,9 @@ function FlightMap({mission, fix, center}: { mission: Mission; fix: UavTelemetry
             disposed = true;
             resizeObserver?.disconnect();
             scaleControl.current = null;
+            airspaceLayer.current = null;
+            planLayer.current = null;
+            uavLayer.current = null;
             tiles.current = null;
             map.current?.remove();
             map.current = null;
@@ -142,6 +151,13 @@ function FlightMap({mission, fix, center}: { mission: Mission; fix: UavTelemetry
         if (!ready || !L || !map.current) return;
         syncScaleControl(L, map.current, scaleControl, config.showScaleBar);
     }, [ready, config.showScaleBar]);
+
+    useEffect(() => {
+        const L = leaflet.current;
+        const group = airspaceLayer.current;
+        if (!ready || !L || !group) return;
+        renderAirspaceZonesLayer(L, group, activeAirspaceZones, t, formatNumber);
+    }, [ready, activeAirspaceZones, t, formatNumber]);
 
     useEffect(() => {
         const L = leaflet.current;

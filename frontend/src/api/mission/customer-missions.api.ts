@@ -1,5 +1,20 @@
-import {apiClient, API_ROUTES} from '@/lib/api';
-import type {Mission, MissionAvailability, MissionEvent, MissionInput, MissionMedia, MissionStatus, MissionType, PageResponse, UavService} from '@/types/customer';
+import {apiClient, apiRequest, API_ROUTES} from '@/lib/api';
+import type {
+    MediaRole,
+    MediaType,
+    Mission,
+    MissionAvailability,
+    MissionEvent,
+    MissionInput,
+    MissionMedia,
+    MissionPermitUpsertInput,
+    MissionPermitVerifyInput,
+    MissionStatus,
+    MissionType,
+    PageResponse,
+    SignedMediaUrl,
+    UavService,
+} from '@/types/customer';
 import {missionDraftUpdatePayload} from '@/forms/mission/mission-form';
 
 export const customerMissionService = {
@@ -24,6 +39,31 @@ export const customerMissionService = {
         apiClient.get<MissionEvent[]>(API_ROUTES.missions.timeline(id), {signal}),
     media: (id: number, signal?: AbortSignal) =>
         apiClient.get<MissionMedia[]>(API_ROUTES.missions.media(id), {signal}),
+    requestMediaUpload: (id: number, file: File) =>
+        apiClient.post<SignedMediaUrl>(API_ROUTES.missions.mediaUploadUrl(id), {
+            originalName: file.name,
+            contentType: file.type || 'application/octet-stream',
+            size: file.size,
+            type: file.type.startsWith('video/')
+                ? ('VIDEO' as MediaType)
+                : file.type.startsWith('image/')
+                  ? ('IMAGE' as MediaType)
+                  : ('DOCUMENT' as MediaType),
+        }),
+    uploadFile: (url: string, file: File) =>
+        apiRequest<void>(url, {
+            method: 'PUT',
+            headers: {'If-None-Match': '*', 'Content-Type': file.type || 'application/octet-stream'},
+            body: file,
+        }),
+    confirmMedia: (id: number, mediaId: number) =>
+        apiClient.post(API_ROUTES.missions.mediaConfirm(id, mediaId)),
+    attachMedia: (id: number, mediaId: number, mediaRole: MediaRole) =>
+        apiClient.post<MissionMedia>(API_ROUTES.missions.media(id), {mediaId, mediaRole}),
+    upsertPermit: (id: number, payload: MissionPermitUpsertInput) =>
+        apiClient.put<Mission>(API_ROUTES.missions.permit(id), payload),
+    verifyPermit: (id: number, payload: MissionPermitVerifyInput) =>
+        apiClient.post<Mission>(API_ROUTES.missions.permitVerify(id), payload),
     download: (id: number) =>
         apiClient.get<{ url: string; expiresInSeconds: number }>(API_ROUTES.media.downloadUrl(id)),
 };

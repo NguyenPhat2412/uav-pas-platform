@@ -20,5 +20,9 @@ public interface MissionMapper {
             target = "flightPlan",
             expression =
                     "java(com.uav.platform.service.impl.mission.FlightPlanOperations.read(mission.getFlightPlan()))")
+    @Mapping(
+            target = "permit",
+            expression =
+                    "java(com.uav.platform.service.impl.mission.MissionPermitOperations.toResponse(mission))")
     MissionResponse toResponse(Mission mission);
 }

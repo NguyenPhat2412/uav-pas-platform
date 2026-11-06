@@ -68,6 +68,7 @@ public class MissionEventServiceImpl implements MissionEventService {
                 || recipient.getUsername().equals(actorName)) return;
         NotificationType notificationType =
                 type == MissionEventType.OPERATOR_ASSIGNED
+                                || type == MissionEventType.OPERATOR_REPLACED
                         ? NotificationType.MISSION_ASSIGNED
                         : NotificationType.MISSION_STATUS_CHANGED;
         String title =
@@ -84,5 +85,10 @@ public class MissionEventServiceImpl implements MissionEventService {
                             mission.getId()));
         } catch (RuntimeException ignored) {
         }
+    }
+
+    @Override
+    public boolean deliversNotifications() {
+        return notifications != null;
     }
 }

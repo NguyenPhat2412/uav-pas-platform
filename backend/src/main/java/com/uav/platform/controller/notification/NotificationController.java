@@ -5,7 +5,10 @@ import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
 import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.request.notification.RegisterPushTokenRequest;
+import com.uav.platform.dto.request.notification.UnregisterPushTokenRequest;
 import com.uav.platform.dto.response.notification.NotificationResponse;
+import com.uav.platform.dto.response.notification.PushTokenResponse;
 import com.uav.platform.dto.response.notification.UnreadCountResponse;
 import com.uav.platform.service.notification.NotificationService;
 
@@ -49,6 +52,22 @@ public class NotificationController {
     public ResponseEntity<MessageResponse> markAllAsRead(Authentication auth) {
         notificationService.markAllAsRead(auth);
         return ResponseEntity.ok(new MessageResponse("All notifications marked as read"));
+    }
+
+    @PostMapping(ApiRoutes.Notifications.PUSH_TOKENS)
+    public ResponseEntity<PushTokenResponse> registerPushToken(
+            @Valid @RequestBody RegisterPushTokenRequest request, Authentication auth) {
+        return ResponseEntity.ok(notificationService.registerPushToken(request, auth));
+    }
+
+    @DeleteMapping(ApiRoutes.Notifications.PUSH_TOKENS)
+    public ResponseEntity<MessageResponse> unregisterPushToken(
+            @Valid @RequestBody(required = false) UnregisterPushTokenRequest request,
+            @RequestParam(required = false) String token,
+            Authentication auth) {
+        String rawToken = request != null && request.token() != null ? request.token() : token;
+        notificationService.unregisterPushToken(rawToken, auth);
+        return ResponseEntity.ok(new MessageResponse("Push device token unregistered"));
     }
 
     @PostMapping

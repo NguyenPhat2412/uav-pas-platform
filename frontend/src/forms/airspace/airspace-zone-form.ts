@@ -1,0 +1,264 @@
+import type {
+    AirspaceCheckInput,
+    AirspaceGeometryType,
+    AirspaceZone,
+    AirspaceZoneType,
+    AirspaceZoneUpsertInput,
+} from '@/types/airspace/airspace.types';
+import type {FlightPlanInput} from '@/types/mission/flight-plan.types';
+
+export const AIRSPACE_ZONE_TYPES: readonly AirspaceZoneType[] = ['PROHIBITED', 'RESTRICTED', 'WARNING'];
+export const AIRSPACE_GEOMETRY_TYPES: readonly AirspaceGeometryType[] = ['CIRCLE', 'POLYGON'];
+
+export interface AirspaceZoneDraft {
+    code: string;
+    name: string;
+    zoneType: AirspaceZoneType;
+    geometryType: AirspaceGeometryType;
+    centerLat: string;
+    centerLng: string;
+    radiusMeters: string;
+    verticesText: string;
+    maxAltitudeAglM: string;
+    authority: string;
+    active: boolean;
+    description: string;
+}
+
+export type AirspaceZoneFieldErrors = Partial<Record<keyof AirspaceZoneDraft | 'vertices', string>> &
+    Record<string, string | undefined>;
+
+export function emptyAirspaceZoneDraft(): AirspaceZoneDraft {
+    return {
+        code: '',
+        name: '',
+        zoneType: 'RESTRICTED',
+        geometryType: 'CIRCLE',
+        centerLat: '21.0285',
+        centerLng: '105.8542',
+        radiusMeters: '1000',
+        verticesText: '',
+        maxAltitudeAglM: '120',
+        authority: '',
+        active: true,
+        description: '',
+    };
+}
+
+export function formatPolygonVerticesText(vertices?: number[][] | null): string {
+    if (!vertices?.length) return '';
+    return vertices
+        .filter(pair => Array.isArray(pair) && pair.length >= 2)
+        .map(pair => `${pair[0]}, ${pair[1]}`)
+        .join('\n');
+}
+
+/** Parses polygon vertices from `lat, lng` lines or a JSON `[[lat, lng], ...]` array. */
+export function parsePolygonVerticesText(raw: string): number[][] | null {
+    const trimmed = raw.trim();
+    if (!trimmed) return null;
+    if (trimmed.startsWith('[')) {
+        try {
+            const parsed: unknown = JSON.parse(trimmed);
+            if (!Array.isArray(parsed) || parsed.length < 3) return null;
+            const points: number[][] = [];
+            for (const item of parsed) {
+                if (!Array.isArray(item) || item.length < 2) return null;
+                const lat = Number(item[0]);
+                const lng = Number(item[1]);
+                if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+                    return null;
+                }
+                points.push([Math.round(lat * 1e6) / 1e6, Math.round(lng * 1e6) / 1e6]);
+            }
+            return points;
+        } catch {
+            return null;
+        }
+    }
+
+    const lines = trimmed
+        .split(/[\r\n;]+/)
+        .map(line => line.trim())
+        .filter(Boolean);
+    if (lines.length < 3) return null;
+
+    const points: number[][] = [];
+    for (const line of lines) {
+        const parts = line.split(/[,\s]+/).filter(Boolean);
+        if (parts.length !== 2) return null;
+        const lat = Number(parts[0]);
+        const lng = Number(parts[1]);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+            return null;
+        }
+        points.push([Math.round(lat * 1e6) / 1e6, Math.round(lng * 1e6) / 1e6]);
+    }
+    return points;
+}
+
+export function airspaceZoneDraftFromZone(zone: AirspaceZone): AirspaceZoneDraft {
+    return {
+        code: zone.code,
+        name: zone.name,
+        zoneType: zone.zoneType,
+        geometryType: zone.geometryType,
+        centerLat: String(zone.centerLat),
+        centerLng: String(zone.centerLng),
+        radiusMeters: zone.radiusMeters != null ? String(zone.radiusMeters) : '1000',
+        verticesText: formatPolygonVerticesText(zone.vertices),
+        maxAltitudeAglM: zone.maxAltitudeAglM != null ? String(zone.maxAltitudeAglM) : '',
+        authority: zone.authority,
+        active: zone.active,
+        description: zone.description ?? '',
+    };
+}
+
+export function canSubmitAirspaceZoneDraft(draft: AirspaceZoneDraft): boolean {
+    if (!draft.code.trim() || !draft.name.trim() || !draft.authority.trim()) return false;
+    const rawAlt = draft.maxAltitudeAglM.trim();
+    if (rawAlt && (!Number.isFinite(Number(rawAlt)) || Number(rawAlt) < 0)) return false;
+    if (draft.geometryType === 'CIRCLE') {
+        const lat = Number(draft.centerLat);
+        const lng = Number(draft.centerLng);
+        const radius = Number(draft.radiusMeters);
+        return (
+            draft.centerLat.trim().length > 0 &&
+            draft.centerLng.trim().length > 0 &&
+            draft.radiusMeters.trim().length > 0 &&
+            Number.isFinite(lat) &&
+            Number.isFinite(lng) &&
+            Number.isFinite(radius) &&
+            radius >= 10
+        );
+    }
+    return parsePolygonVerticesText(draft.verticesText) !== null;
+}
+
+export function toAirspaceZoneUpsertPayload(draft: AirspaceZoneDraft): AirspaceZoneUpsertInput {
+    const rawAlt = draft.maxAltitudeAglM.trim();
+    const maxAltitudeAglM = rawAlt ? Math.round(Number(rawAlt)) : null;
+    const description = draft.description.trim() || null;
+
+    if (draft.geometryType === 'CIRCLE') {
+        return {
+            code: draft.code.trim().toUpperCase(),
+            name: draft.name.trim(),
+            zoneType: draft.zoneType,
+            geometryType: 'CIRCLE',
+            centerLat: Number(draft.centerLat),
+            centerLng: Number(draft.centerLng),
+            radiusMeters: Number(draft.radiusMeters),
+            vertices: null,
+            maxAltitudeAglM,
+            authority: draft.authority.trim(),
+            active: draft.active,
+            description,
+        };
+    }
+
+    const vertices = parsePolygonVerticesText(draft.verticesText) ?? [];
+    const centroid = vertices.length
+        ? [
+              Math.round((vertices.reduce((sum, p) => sum + p[0], 0) / vertices.length) * 1e6) / 1e6,
+              Math.round((vertices.reduce((sum, p) => sum + p[1], 0) / vertices.length) * 1e6) / 1e6,
+          ]
+        : undefined;
+
+    return {
+        code: draft.code.trim().toUpperCase(),
+        name: draft.name.trim(),
+        zoneType: draft.zoneType,
+        geometryType: 'POLYGON',
+        centerLat: centroid ? centroid[0] : draft.centerLat.trim() ? Number(draft.centerLat) : undefined,
+        centerLng: centroid ? centroid[1] : draft.centerLng.trim() ? Number(draft.centerLng) : undefined,
+        radiusMeters: null,
+        vertices,
+        maxAltitudeAglM,
+        authority: draft.authority.trim(),
+        active: draft.active,
+        description,
+    };
+}
+
+export function toAirspaceZoneTogglePayload(zone: AirspaceZone, active: boolean): AirspaceZoneUpsertInput {
+    return {
+        code: zone.code,
+        name: zone.name,
+        zoneType: zone.zoneType,
+        geometryType: zone.geometryType,
+        centerLat: zone.centerLat,
+        centerLng: zone.centerLng,
+        radiusMeters: zone.geometryType === 'CIRCLE' ? (zone.radiusMeters ?? null) : null,
+        vertices:
+            zone.geometryType === 'POLYGON'
+                ? (zone.vertices?.map(pair => [pair[0], pair[1]]) ?? [])
+                : null,
+        maxAltitudeAglM: zone.maxAltitudeAglM ?? null,
+        authority: zone.authority,
+        active,
+        description: zone.description ?? null,
+    };
+}
+
+export function airspaceZoneFieldErrors(error: unknown): AirspaceZoneFieldErrors | null {
+    const fields = (error as { fields?: Record<string, string> } | null)?.fields;
+    return fields && Object.keys(fields).length ? (fields as AirspaceZoneFieldErrors) : null;
+}
+
+/**
+ * Builds a valid live airspace check payload from the current mission draft or flight plan.
+ * Returns null until at least one usable coordinate or area has been chosen.
+ */
+export function toAirspaceCheckInput(
+    plan?: FlightPlanInput | null,
+    fallbackLatitude?: number,
+    fallbackLongitude?: number,
+): AirspaceCheckInput | null {
+    const altitudeAglMeters = plan?.altitudeAglMeters ?? 80;
+    const takeoffLat = plan?.takeoffLatitude ?? fallbackLatitude;
+    const takeoffLng = plan?.takeoffLongitude ?? fallbackLongitude;
+
+    if (plan?.areaType === 'POLYGON' && plan.vertices.length >= 3) {
+        return {
+            areaType: 'POLYGON',
+            vertices: plan.vertices.map(([lat, lng]) => [lat, lng]),
+            ...(takeoffLat != null && takeoffLng != null
+                ? {takeoffLatitude: takeoffLat, takeoffLongitude: takeoffLng}
+                : {}),
+            altitudeAglMeters,
+        };
+    }
+
+    if (plan?.areaType === 'CIRCLE' && plan.vertices.length >= 1 && (plan.radiusMeters ?? 0) > 0) {
+        return {
+            areaType: 'CIRCLE',
+            vertices: [[plan.vertices[0][0], plan.vertices[0][1]]],
+            radiusMeters: plan.radiusMeters,
+            ...(takeoffLat != null && takeoffLng != null
+                ? {takeoffLatitude: takeoffLat, takeoffLongitude: takeoffLng}
+                : {}),
+            altitudeAglMeters,
+        };
+    }
+
+    if (takeoffLat != null && takeoffLng != null) {
+        return {
+            areaType: 'POINT',
+            takeoffLatitude: takeoffLat,
+            takeoffLongitude: takeoffLng,
+            altitudeAglMeters,
+        };
+    }
+
+    if (plan?.vertices && plan.vertices.length >= 1) {
+        return {
+            areaType: 'POINT',
+            takeoffLatitude: plan.vertices[0][0],
+            takeoffLongitude: plan.vertices[0][1],
+            altitudeAglMeters,
+        };
+    }
+
+    return null;
+}

@@ -2,7 +2,9 @@ package com.uav.platform.service.notification;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.request.notification.RegisterPushTokenRequest;
 import com.uav.platform.dto.response.notification.NotificationResponse;
+import com.uav.platform.dto.response.notification.PushTokenResponse;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -17,4 +19,8 @@ public interface NotificationService {
     void markAllAsRead(Authentication auth);
 
     NotificationResponse sendNotification(CreateNotificationRequest request);
+
+    PushTokenResponse registerPushToken(RegisterPushTokenRequest request, Authentication auth);
+
+    void unregisterPushToken(String token, Authentication auth);
 }

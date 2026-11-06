@@ -128,6 +128,9 @@
       "fleetMap": {
         "title": "Bản đồ đội UAV"
       },
+      "airspace": {
+        "title": "Quản lý vùng không phận"
+      },
       "services": {
         "title": "Danh mục dịch vụ"
       },
@@ -807,7 +810,10 @@
       "confirm": "Xác nhận đã nhận tiền",
       "confirmPrompt": "Đã nhận {amount} cho {code}?\nNhập mã giao dịch ngân hàng:",
       "confirmed": "Đã xác nhận thanh toán hóa đơn {code}.",
-      "confirmFailed": "Không xác nhận được thanh toán."
+      "confirmFailed": "Không xác nhận được thanh toán.",
+      "downloadPdf": "PDF",
+      "downloadPdfAria": "Tải PDF hóa đơn {code}",
+      "downloadPdfFailed": "Chưa tải được tệp PDF hóa đơn."
     },
     "services": {
       "filter": {

@@ -17,6 +17,8 @@ import type {
     MissionEvent,
     MissionInput,
     MissionMedia,
+    MissionPermitUpsertInput,
+    MissionPermitVerifyInput,
     MissionStatus,
     MissionType,
     PageResponse,
@@ -96,6 +98,10 @@ export const missionService = {
         body: file
     }),
     confirmMedia: (id: number, mediaId: number) => apiClient.post(`${base}/${id}/media/${mediaId}/confirm`),
+    upsertPermit: (id: number, payload: MissionPermitUpsertInput) =>
+        apiClient.put<Mission>(API_ROUTES.missions.permit(id), payload),
+    verifyPermit: (id: number, payload: MissionPermitVerifyInput) =>
+        apiClient.post<Mission>(API_ROUTES.missions.permitVerify(id), payload),
     timeline: (id: number) => apiClient.get<MissionEvent[]>(`${base}/${id}/timeline`),
     dashboard: () => apiClient.get<MissionDashboard>(API_ROUTES.dashboard.missions),
     availability: (startTime: string, endTime: string) => apiClient.get<MissionAvailability>(`${base}/availability?startTime=${encodeURIComponent(startTime)}&endTime=${encodeURIComponent(endTime)}`),

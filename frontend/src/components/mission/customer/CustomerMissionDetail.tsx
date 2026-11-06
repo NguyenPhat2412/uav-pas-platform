@@ -15,6 +15,7 @@ import {MissionProgress} from "@/components/mission/customer/MissionProgress";
 import {MediaPreview} from "@/components/mission/customer/MediaPreview";
 import {MissionFiles} from "@/components/mission/customer/MissionFiles";
 import {MissionResources} from "@/components/mission/customer/MissionResources";
+import {MissionPermitCard} from "@/components/mission/MissionPermitCard";
 import {SiteWeather} from "@/components/mission/customer/SiteWeather";
 import {MissionMonitoring} from "@/components/mission/customer/MissionMonitoring";
 import {parseEntityId, toMissionSlug} from "@/lib/url-slugs";
@@ -127,6 +128,15 @@ function MissionDetail() {
         {actionError && <div className={errorBoxClass}
                              role="alert">{actionError.message === 'MISSION_INVALID_STATUS' ? t('missionDetail.statusChanged') : t('missionDetail.actionFailed')}</div>}
         <MissionResources mission={mission}/>
+        <MissionPermitCard
+            className="rounded-none border-x-0 border-t-0"
+            mission={mission}
+            mediaItems={q.media.data ?? []}
+            downloadingMediaId={downloading}
+            onUpsertPermit={payload => actions.upsertPermit.mutateAsync({id: mission.id, payload})}
+            onUploadScan={file => actions.uploadPermitDocument.mutateAsync({id: mission.id, file})}
+            onDownloadMedia={mediaId => void download(mediaId)}
+        />
         <section className={`${panelClass} flex-1 border-b-0`} aria-label={t('missionTabs.label')}>
             <div role="tablist" aria-label={t('missionTabs.label')} className="flex gap-1 overflow-x-auto border-b border-border bg-slate-50/50 px-3 md:px-5">
                 {tabs.map(key => <button key={key} type="button" role="tab" id={`mission-tab-${key}`} aria-controls={`mission-panel-${key}`}

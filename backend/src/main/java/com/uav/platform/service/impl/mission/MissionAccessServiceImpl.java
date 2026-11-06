@@ -71,6 +71,37 @@ public class MissionAccessServiceImpl implements MissionAccessService {
     }
 
     @Override
+    public void requirePermitEditor(Mission mission, Authentication authentication) {
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || (!isCustomerOrOperator(mission, authentication.getName())
+                        && !permissions.has(authentication, "MISSION_CONFIRM")
+                        && !permissions.has(authentication, "USER_MANAGE"))) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Flight permit update requires mission owner, assigned operator, or commander permission");
+        }
+    }
+
+    @Override
+    public void requirePermitVerifier(Authentication authentication) {
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || (!permissions.has(authentication, "MISSION_CONFIRM")
+                        && !permissions.has(authentication, "USER_MANAGE"))) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Flight permit verification requires MISSION_CONFIRM permission");
+        }
+    }
+
+    @Override
+    public boolean hasAuthority(Authentication authentication, String permissionCode) {
+        return authentication != null
+                && authentication.isAuthenticated()
+                && (permissions.has(authentication, permissionCode)
+                        || permissions.has(authentication, "USER_MANAGE"));
+    }
+
+    @Override
     public Mission find(Long id) {
         return missions.findById(id)
                 .orElseThrow(() -> SystemException.notFound("MISSION_NOT_FOUND"));

@@ -145,9 +145,14 @@ export const API_ROUTES = {
         complete: (id: string | number) => `/api/v1/missions/${id}/complete`,
         cancel: (id: string | number) => `/api/v1/missions/${id}/cancel`,
         fail: (id: string | number) => `/api/v1/missions/${id}/fail`,
+        forceFail: (id: string | number) => `/api/v1/missions/${id}/force-fail`,
+        accept: (id: string | number) => `/api/v1/missions/${id}/accept`,
+        reportConflict: (id: string | number) => `/api/v1/missions/${id}/report-conflict`,
         assignUav: (id: string | number) => `/api/v1/missions/${id}/assign-uav`,
         assignOperator: (id: string | number) => `/api/v1/missions/${id}/assign-operator`,
         assignStation: (id: string | number) => `/api/v1/missions/${id}/assign-station`,
+        permit: (id: string | number) => `/api/v1/missions/${id}/permit`,
+        permitVerify: (id: string | number) => `/api/v1/missions/${id}/permit/verify`,
     },
     media: {
         list: '/api/v1/media',
@@ -178,6 +183,7 @@ export const API_ROUTES = {
         unreadCount: '/api/v1/notifications/unread-count',
         markRead: (id: string | number) => `/api/v1/notifications/${id}/read`,
         markAllRead: '/api/v1/notifications/read-all',
+        pushTokens: '/api/v1/notifications/push-tokens',
     },
     billing: {
         plans: '/api/v1/billing/plans',
@@ -189,6 +195,7 @@ export const API_ROUTES = {
         subscription: '/api/v1/billing/quota',
         subscriptions: '/api/v1/billing/subscriptions',
         invoices: '/api/v1/billing/invoices',
+        invoiceReceipt: (id: string | number) => `/api/v1/billing/invoices/${id}/receipt`,
         payInvoice: (id: string | number) => `/api/v1/billing/invoices/${id}/pay`,
         bankTransferStatus: '/api/v1/billing/bank-transfer',
         bankTransferInstructions: (invoiceId: string | number) =>
@@ -198,6 +205,7 @@ export const API_ROUTES = {
         adminQuotas: '/api/v1/billing/admin/quotas',
         adminQuotaByUser: (userId: string | number) => `/api/v1/billing/admin/quotas/${userId}`,
         paymentIpn: '/api/v1/billing/webhook/payment-ipn',
+        sepayWebhook: '/api/v1/billing/webhook/sepay',
         admin: '/api/v1/billing/admin',
     },
     reports: {
@@ -252,6 +260,11 @@ export const API_ROUTES = {
         byMission: (missionId: string | number) => `/api/v1/weather/missions/${missionId}`,
         stations: '/api/v1/weather/stations',
         adminProvider: '/api/v1/admin/weather/provider',
+    },
+    airspace: {
+        zones: '/api/v1/airspace/zones',
+        check: '/api/v1/airspace/check',
+        zoneById: (id: string | number) => `/api/v1/airspace/zones/${id}`,
     },
 } as const;
 

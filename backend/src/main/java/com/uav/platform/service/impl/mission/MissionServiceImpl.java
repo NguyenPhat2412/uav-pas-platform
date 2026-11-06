@@ -207,4 +207,16 @@ public class MissionServiceImpl implements MissionService {
             Long id, String note, Authentication authentication) {
         return lifecycle.reportOperatorConflict(id, note, authentication);
     }
+
+    @Override
+    public MissionResponse upsertPermit(
+            Long id, MissionPermitUpsertRequest request, Authentication authentication) {
+        return lifecycle.upsertPermit(id, request, authentication);
+    }
+
+    @Override
+    public MissionResponse verifyPermit(
+            Long id, MissionPermitVerifyRequest request, Authentication authentication) {
+        return lifecycle.verifyPermit(id, request, authentication);
+    }
 }

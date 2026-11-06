@@ -2,6 +2,7 @@ package com.uav.platform.service.impl.mission;
 
 import com.uav.platform.dto.request.inventory.QuantityRequest;
 import com.uav.platform.dto.request.mission.*;
+import com.uav.platform.dto.request.notification.CreateNotificationRequest;
 import com.uav.platform.dto.response.mission.*;
 import com.uav.platform.entity.inventory.Equipment;
 import com.uav.platform.entity.mission.*;
@@ -11,6 +12,7 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.inventory.EquipmentStatus;
 import com.uav.platform.enums.mission.*;
+import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.enums.station.StationStatus;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.error.SystemException;
@@ -25,11 +27,14 @@ import com.uav.platform.service.mission.MissionAccessService;
 import com.uav.platform.service.mission.MissionDispatchService;
 import com.uav.platform.service.mission.MissionEventService;
 import com.uav.platform.service.mission.MissionResourceService;
+import com.uav.platform.service.notification.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.specification.mission.MissionSpecifications;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +58,13 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
     private final MissionEventService missionEvents;
     private final MissionResourceService resources;
     private final MissionMapper missionMapper;
+
+    @Autowired(required = false)
+    private ObjectProvider<NotificationService> notifications;
+
+    public void setNotifications(ObjectProvider<NotificationService> notifications) {
+        this.notifications = notifications;
+    }
 
     @Override
     public MissionResponse assignStation(
@@ -325,6 +337,14 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
                 mission.getStatus(),
                 mission.getStatus(),
                 "Operator assigned");
+        if (missionEvents == null || !missionEvents.deliversNotifications()) {
+            notifyAssignedOperator(
+                    operator,
+                    authentication,
+                    mission,
+                    "Bạn được phân công điều khiển nhiệm vụ " + mission.getCode(),
+                    mission.getTitle() != null ? mission.getTitle() : "Operator assigned");
+        }
         maybeMarkResourcesReserved(mission, authentication);
         audit.record(
                 operator.getId(),
@@ -433,7 +453,58 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
                 request.replacementId(),
                 reason,
                 authentication);
+        if (replacement != null) {
+            boolean sent =
+                    notifyAssignedOperator(
+                            replacement,
+                            authentication,
+                            mission,
+                            "Bạn được điều phối thay thế cho nhiệm vụ " + mission.getCode(),
+                            (mission.getTitle() != null ? mission.getTitle() + " — " : "")
+                                    + reason);
+            if (!sent && missionEvents != null && missionEvents.deliversNotifications()) {
+                missionEvents.notifyUser(
+                        replacement,
+                        authentication == null ? null : authentication.getName(),
+                        mission,
+                        MissionEventType.OPERATOR_REPLACED,
+                        reason);
+            }
+        }
         return missionMapper.toResponse(mission);
+    }
+
+    private boolean notifyAssignedOperator(
+            AppUser operator,
+            Authentication authentication,
+            Mission mission,
+            String title,
+            String content) {
+        if (operator == null
+                || operator.getId() == null
+                || notifications == null
+                || (authentication != null
+                        && operator.getUsername() != null
+                        && operator.getUsername().equals(authentication.getName()))) {
+            return false;
+        }
+        NotificationService notificationService = notifications.getIfAvailable();
+        if (notificationService == null) {
+            return false;
+        }
+        try {
+            notificationService.sendNotification(
+                    new CreateNotificationRequest(
+                            operator.getId(),
+                            title,
+                            content,
+                            NotificationType.MISSION_ASSIGNED,
+                            "MISSION",
+                            mission.getId()));
+            return true;
+        } catch (RuntimeException ignored) {
+            return false;
+        }
     }
 
     @Override

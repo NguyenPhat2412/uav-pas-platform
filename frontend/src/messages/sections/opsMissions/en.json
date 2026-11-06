@@ -36,7 +36,15 @@
       "UAV_TIME_CONFLICT": "The UAV is already scheduled in this time slot.",
       "OPERATOR_TIME_CONFLICT": "The operator is already scheduled in this time slot.",
       "INVENTORY_NOT_AVAILABLE": "Not enough equipment is available.",
-      "MISSION_WEATHER_UNSAFE": "The weather at the site is NO-GO and an administrator has enabled the take-off block. Wait for a safer window."
+      "MISSION_WEATHER_UNSAFE": "The weather at the site is NO-GO and an administrator has enabled the take-off block. Wait for a safer window.",
+      "AIRSPACE_PROHIBITED_ZONE": "The flight area intersects a prohibited no-fly zone. Adjust the boundary or altitude outside the prohibited zone.",
+      "MISSION_PERMIT_REQUIRED": "The flight area intersects restricted airspace. A verified flight permit is required before marking ready or starting.",
+      "MISSION_PERMIT_EXPIRED": "The flight permit does not cover the scheduled mission timeframe.",
+      "MISSION_PERMIT_ALTITUDE_EXCEEDED": "Planned flight altitude exceeds the authorized permit ceiling or airspace limit.",
+      "MISSION_PERMIT_NOT_SUBMITTED": "No submitted flight permit is on file to verify.",
+      "PERMIT_VALIDITY_RANGE_INVALID": "Permit expiration time must be after its effective start time.",
+      "PERMIT_MEDIA_NOT_FOUND": "Attached permit document was not found.",
+      "PERMIT_MEDIA_NOT_CONFIRMED": "Attached permit document upload is not yet confirmed."
     },
     "detail": {
       "confirm": {

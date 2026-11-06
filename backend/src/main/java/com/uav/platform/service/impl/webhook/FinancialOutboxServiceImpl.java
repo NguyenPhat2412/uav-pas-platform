@@ -17,6 +17,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.*;
 import org.springframework.transaction.annotation.*;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
@@ -58,6 +60,24 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
     @Transactional(propagation = Propagation.MANDATORY)
     public void recordPaymentCompleted(Invoice invoice) {
         record("PAYMENT_COMPLETED", invoice);
+        if (workerEnabled
+                && invoice != null
+                && invoice.getId() != null
+                && TransactionSynchronizationManager.isSynchronizationActive()) {
+            String eventId = "PAYMENT_COMPLETED:" + invoice.getId();
+            TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            process(eventId);
+                        }
+                    });
+        }
+    }
+
+    @Override
+    public boolean handlesPaymentNotification() {
+        return true;
     }
 
     private void record(String type, Invoice invoice) {

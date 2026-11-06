@@ -10,4 +10,8 @@ public interface FinancialOutboxService {
     void retryDue();
 
     void process(String id);
+
+    default boolean handlesPaymentNotification() {
+        return false;
+    }
 }

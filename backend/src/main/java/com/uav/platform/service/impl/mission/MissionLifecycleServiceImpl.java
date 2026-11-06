@@ -1,26 +1,34 @@
 package com.uav.platform.service.impl.mission;
 
+import com.uav.platform.dto.request.airspace.AirspaceCheckRequest;
 import com.uav.platform.dto.request.mission.*;
+import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.response.airspace.AirspaceCheckResponse;
 import com.uav.platform.dto.response.mission.*;
 import com.uav.platform.dto.response.weather.WeatherAssessmentResponse;
+import com.uav.platform.entity.media.MediaAsset;
 import com.uav.platform.entity.mission.*;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.mission.*;
+import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.weather.FlightClearanceLevel;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.mission.MissionMapper;
+import com.uav.platform.repository.media.MediaAssetRepository;
 import com.uav.platform.repository.mission.MissionEventRepository;
 import com.uav.platform.repository.mission.MissionMediaRepository;
 import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.mission.ServiceOfferingRepository;
+import com.uav.platform.service.airspace.AirspaceService;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.mission.MissionAccessService;
 import com.uav.platform.service.mission.MissionBillingService;
 import com.uav.platform.service.mission.MissionEventService;
 import com.uav.platform.service.mission.MissionLifecycleService;
 import com.uav.platform.service.mission.MissionResourceService;
+import com.uav.platform.service.notification.NotificationService;
 import com.uav.platform.service.weather.WeatherService;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -47,6 +55,27 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
 
     /** Optional: without a weather module (or in focused tests) missions start as before. */
     private final ObjectProvider<WeatherService> weather;
+
+    @Autowired(required = false)
+    private ObjectProvider<AirspaceService> airspace;
+
+    @Autowired(required = false)
+    private ObjectProvider<MediaAssetRepository> mediaAssets;
+
+    @Autowired(required = false)
+    private ObjectProvider<NotificationService> notifications;
+
+    public void setAirspace(ObjectProvider<AirspaceService> airspace) {
+        this.airspace = airspace;
+    }
+
+    public void setMediaAssets(ObjectProvider<MediaAssetRepository> mediaAssets) {
+        this.mediaAssets = mediaAssets;
+    }
+
+    public void setNotifications(ObjectProvider<NotificationService> notifications) {
+        this.notifications = notifications;
+    }
 
     public MissionLifecycleServiceImpl(
             MissionRepository missions,
@@ -128,6 +157,16 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                         request.notes());
         mission.setCode(nextCode(request.requestedDate().getYear()));
         applyFlightPlan(mission, request.flightPlan());
+        AirspaceCheckResponse airspaceCheck =
+                checkAirspace(
+                        MissionPermitOperations.toCheckRequest(
+                                request.flightPlan(),
+                                mission.getLatitude(),
+                                mission.getLongitude()));
+        boolean needsPermit =
+                (airspaceCheck != null && airspaceCheck.requiresPermit())
+                        || (request.flightPlan() != null && request.flightPlan().permitSupport());
+        MissionPermitOperations.updatePermitRequirement(mission, needsPermit, false);
         if (request.serviceId() != null) mission.setService(activeService(request.serviceId()));
         Mission saved = missions.save(mission);
         events.save(
@@ -156,6 +195,9 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         // alone.
         MissionInputOperations.checkSchedule(request.startTime(), request.expectedEndTime());
         if (request.flightPlan() != null) FlightPlanOperations.resolve(request.flightPlan());
+        checkAirspace(
+                MissionPermitOperations.toCheckRequest(
+                        request.flightPlan(), request.latitude(), request.longitude()));
         if (request.serviceId() != null) activeService(request.serviceId());
     }
 
@@ -200,7 +242,29 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 request.longitude(),
                 request.priority(),
                 request.notes());
-        if (request.flightPlan() != null) applyFlightPlan(mission, request.flightPlan());
+        if (request.flightPlan() != null) {
+            applyFlightPlan(mission, request.flightPlan());
+            AirspaceCheckResponse check =
+                    checkAirspace(
+                            MissionPermitOperations.toCheckRequest(
+                                    request.flightPlan(),
+                                    mission.getLatitude(),
+                                    mission.getLongitude()));
+            boolean needsPermit =
+                    (check != null && check.requiresPermit())
+                            || request.flightPlan().permitSupport();
+            MissionPermitOperations.invalidateOnDraftEdit(mission, needsPermit);
+        } else {
+            FlightPlanResponse storedPlan = FlightPlanOperations.read(mission.getFlightPlan());
+            AirspaceCheckResponse check =
+                    checkAirspace(
+                            MissionPermitOperations.toCheckRequest(
+                                    storedPlan, mission.getLatitude(), mission.getLongitude()));
+            boolean needsPermit =
+                    (check != null && check.requiresPermit())
+                            || (storedPlan != null && storedPlan.permitSupport());
+            MissionPermitOperations.invalidateOnDraftEdit(mission, needsPermit);
+        }
         events.save(
                 new MissionEvent(
                         mission,
@@ -236,6 +300,15 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                     mission.getExpectedEndTime(),
                     mission.getId());
         }
+        FlightPlanResponse storedPlan = FlightPlanOperations.read(mission.getFlightPlan());
+        AirspaceCheckResponse airspaceCheck =
+                checkAirspace(
+                        MissionPermitOperations.toCheckRequest(
+                                storedPlan, mission.getLatitude(), mission.getLongitude()));
+        boolean needsPermit =
+                (airspaceCheck != null && airspaceCheck.requiresPermit())
+                        || (storedPlan != null && storedPlan.permitSupport());
+        MissionPermitOperations.updatePermitRequirement(mission, needsPermit, false);
         MissionOperations.transitionTo(mission, MissionStatus.PENDING_CONFIRMATION);
         missionEvents.record(
                 mission,
@@ -316,6 +389,12 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "MISSION",
                 id.toString(),
                 "CONFIRMED");
+        fallbackNotifyCustomer(
+                mission,
+                authentication,
+                "Mission " + missionLabel(mission),
+                "Mission confirmed",
+                "MISSION");
         return missionMapper.toResponse(mission);
     }
 
@@ -341,6 +420,12 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "MISSION",
                 id.toString(),
                 "REJECTED:" + reason);
+        fallbackNotifyCustomer(
+                mission,
+                authentication,
+                "Mission " + missionLabel(mission),
+                reason == null || reason.isBlank() ? "Mission rejected" : reason,
+                "MISSION");
         return missionMapper.toResponse(mission);
     }
 
@@ -376,21 +461,33 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         access.requireAssignedOperator(mission, authentication);
         if (mission.getStatus() != MissionStatus.READY)
             throw new IllegalStateException("MISSION_INVALID_STATUS");
-        requireStartWindow(mission, java.time.LocalDateTime.now());
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        requireStartWindow(mission, now);
         resources.validatePreflightResources(mission);
         requireAcceptance(mission);
+        FlightPlanResponse storedPlan = FlightPlanOperations.read(mission.getFlightPlan());
+        AirspaceCheckResponse airspaceCheck =
+                checkAirspace(
+                        MissionPermitOperations.toCheckRequest(
+                                storedPlan, mission.getLatitude(), mission.getLongitude()));
+        boolean airspaceRequiresPermit =
+                (airspaceCheck != null && airspaceCheck.requiresPermit())
+                        || (storedPlan != null && storedPlan.permitSupport());
+        MissionPermitOperations.enforcePreflightPermit(mission, airspaceRequiresPermit, now);
         String weatherNote = preflightWeather(mission);
         MissionStatus old = mission.getStatus();
         MissionOperations.transitionTo(mission, MissionStatus.IN_PROGRESS);
         resources.changeUavStatus(
                 mission.getUav(), UavStatus.IN_USE, "Mission started", authentication.getName());
+        String startDetail =
+                weatherNote == null ? "Mission started" : "Mission started · " + weatherNote;
         missionEvents.record(
                 mission,
                 MissionEventType.STATUS_CHANGED,
                 authentication,
                 old,
                 mission.getStatus(),
-                weatherNote == null ? "Mission started" : "Mission started · " + weatherNote);
+                startDetail);
         audit.record(
                 null,
                 authentication.getName(),
@@ -398,6 +495,12 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "MISSION",
                 id.toString(),
                 "IN_PROGRESS");
+        fallbackNotifyCustomer(
+                mission,
+                authentication,
+                "Mission " + missionLabel(mission),
+                startDetail,
+                "MISSION");
         return missionMapper.toResponse(mission);
     }
 
@@ -450,6 +553,12 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "MISSION",
                 id.toString(),
                 "COMPLETED");
+        fallbackNotifyCustomer(
+                mission,
+                authentication,
+                "Mission " + missionLabel(mission),
+                request.completionNote().trim(),
+                "MISSION");
         return missionMapper.toResponse(mission);
     }
 
@@ -475,6 +584,12 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "MISSION",
                 id.toString(),
                 "FAILED");
+        fallbackNotifyCustomer(
+                mission,
+                authentication,
+                "Mission " + missionLabel(mission),
+                request.failureReason(),
+                "MISSION");
         return missionMapper.toResponse(mission);
     }
 
@@ -598,6 +713,154 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 id.toString(),
                 "OPERATOR_CONFLICT");
         return missionMapper.toResponse(mission);
+    }
+
+    @Override
+    public MissionResponse upsertPermit(
+            Long id, MissionPermitUpsertRequest request, Authentication authentication) {
+        Mission mission = access.accessibleForUpdate(id, authentication);
+        access.requirePermitEditor(mission, authentication);
+        if (request.permitMediaId() != null) {
+            validatePermitMedia(mission, request.permitMediaId(), authentication);
+        }
+        MissionPermitOperations.applyUpsert(mission, request);
+        missionEvents.record(
+                mission,
+                MissionEventType.PERMIT_SUBMITTED,
+                authentication,
+                mission.getStatus(),
+                mission.getStatus(),
+                "Flight permit submitted: " + mission.getPermitNumber());
+        audit.record(
+                null,
+                authentication.getName(),
+                AuditAction.UPDATE,
+                "MISSION",
+                id.toString(),
+                "PERMIT_SUBMITTED:" + mission.getPermitNumber());
+        return missionMapper.toResponse(mission);
+    }
+
+    @Override
+    public MissionResponse verifyPermit(
+            Long id, MissionPermitVerifyRequest request, Authentication authentication) {
+        Mission mission = access.accessibleForUpdate(id, authentication);
+        access.requirePermitVerifier(authentication);
+        MissionPermitOperations.applyVerification(mission, request, authentication.getName());
+        boolean approved = mission.getPermitStatus() == FlightPermitStatus.VERIFIED;
+        MissionEventType eventType =
+                approved ? MissionEventType.PERMIT_VERIFIED : MissionEventType.PERMIT_REJECTED;
+        String detail =
+                approved
+                        ? "Giấy phép bay " + mission.getPermitNumber() + " đã được xác minh hợp lệ."
+                        : "Giấy phép bay "
+                                + mission.getPermitNumber()
+                                + " bị từ chối thẩm định"
+                                + (mission.getPermitNote() != null
+                                        ? ": " + mission.getPermitNote()
+                                        : ".");
+        missionEvents.record(
+                mission,
+                eventType,
+                authentication,
+                mission.getStatus(),
+                mission.getStatus(),
+                detail);
+        audit.record(
+                null,
+                authentication.getName(),
+                AuditAction.STATUS_CHANGE,
+                "MISSION",
+                id.toString(),
+                mission.getPermitStatus() + ":" + mission.getPermitNumber());
+        fallbackNotifyCustomer(
+                mission,
+                authentication,
+                approved ? "Giấy phép bay đã được phê duyệt" : "Giấy phép bay bị từ chối",
+                detail,
+                "PERMIT");
+        return missionMapper.toResponse(mission);
+    }
+
+    private AirspaceCheckResponse checkAirspace(AirspaceCheckRequest checkRequest) {
+        if (checkRequest == null) return null;
+        AirspaceService service = airspace == null ? null : airspace.getIfAvailable();
+        if (service == null) return null;
+        AirspaceCheckResponse result = service.check(checkRequest);
+        MissionPermitOperations.rejectIfBlocked(result);
+        return result;
+    }
+
+    private void validatePermitMedia(
+            Mission mission, Long permitMediaId, Authentication authentication) {
+        MediaAssetRepository repo = mediaAssets == null ? null : mediaAssets.getIfAvailable();
+        if (repo == null) return;
+        MediaAsset asset =
+                repo.findById(permitMediaId)
+                        .orElseThrow(
+                                () ->
+                                        SystemException.notFound(
+                                                        "Tệp đính kèm giấy phép không tồn tại.",
+                                                        "PERMIT_MEDIA_NOT_FOUND")
+                                                .at("permitMediaId"));
+        String missionIdStr = mission.getId() == null ? null : mission.getId().toString();
+        String actorName = authentication == null ? null : authentication.getName();
+        boolean linkedToMission =
+                "MISSION".equals(asset.getLinkedEntityType())
+                        && missionIdStr != null
+                        && missionIdStr.equals(asset.getLinkedEntityId());
+        boolean unlinkedAndAuthorized =
+                asset.getLinkedEntityType() == null
+                        && ((actorName != null
+                                        && java.util.Objects.equals(
+                                                asset.getUploadedBy(), actorName))
+                                || access.hasAuthority(authentication, "MISSION_CONFIRM"));
+        if (!linkedToMission && !unlinkedAndAuthorized) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Not authorized to attach this media asset to mission permit");
+        }
+        if (asset.isDeleted() || !asset.isConfirmed()) {
+            throw SystemException.conflict(
+                            "Tệp đính kèm giấy phép chưa được xác nhận tải lên hoặc đã bị xóa.",
+                            "PERMIT_MEDIA_NOT_CONFIRMED")
+                    .at("permitMediaId");
+        }
+        if (unlinkedAndAuthorized && missionIdStr != null) {
+            asset.setLinkedEntityType("MISSION");
+            asset.setLinkedEntityId(missionIdStr);
+            repo.save(asset);
+        }
+    }
+
+    private void fallbackNotifyCustomer(
+            Mission mission,
+            Authentication actor,
+            String title,
+            String content,
+            String referenceType) {
+        if (missionEvents != null && missionEvents.deliversNotifications()) return;
+        NotificationService service = notifications == null ? null : notifications.getIfAvailable();
+        AppUser customer = mission == null ? null : mission.getCustomer();
+        String actorName = actor == null ? null : actor.getName();
+        if (service == null
+                || customer == null
+                || customer.getId() == null
+                || customer.getUsername().equals(actorName)) return;
+        try {
+            service.sendNotification(
+                    new CreateNotificationRequest(
+                            customer.getId(),
+                            title,
+                            content == null || content.isBlank() ? title : content,
+                            NotificationType.MISSION_STATUS_CHANGED,
+                            referenceType,
+                            mission.getId()));
+        } catch (RuntimeException ignored) {
+        }
+    }
+
+    private static String missionLabel(Mission mission) {
+        return mission.getCode() != null ? mission.getCode() : String.valueOf(mission.getId());
     }
 
     @Override

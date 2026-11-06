@@ -28,6 +28,7 @@ import {useI18n} from '@/providers/I18nContext';
 import {defaultFlightPlan} from "@/types/mission/flight-plan.types";
 import {flightGeometry} from "@/utils/mission/flight-geometry";
 import {MissionWeatherAdvisor} from '@/components/weather/MissionWeatherAdvisor';
+import {MissionAirspaceAdvisor} from '@/components/airspace/MissionAirspaceAdvisor';
 
 const initial: MissionInput = {
     missionType: 'AREA_INSPECTION',
@@ -182,6 +183,7 @@ function CreateMission() {
                                                                                    onChange={event => setMissionTypeOverride(event.target.value as MissionType)}>{missionTypes.map(type =>
                             <option key={type} value={type}>{displayLabel(type)}</option>)}</select></label>
                         <MissionFields form={form} onChange={setForm} errors={errors}/>
+                        <MissionAirspaceAdvisor className="col-span-full" form={form} onChange={setForm}/>
                         <MissionWeatherAdvisor className="col-span-full" form={form} onChange={setForm}/>
                         <div className="col-span-full mt-5 flex flex-wrap justify-end gap-3"><Button type="submit"
                                                                         disabled={checking || (form.serviceId != null && services.isLoading)}>{checking ? t('missionCreate.checking') : t('missionCreate.review')}</Button>

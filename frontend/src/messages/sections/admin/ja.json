@@ -128,6 +128,9 @@
       "fleetMap": {
         "title": "UAV機体マップ"
       },
+      "airspace": {
+        "title": "空域安全ゾーン管理"
+      },
       "services": {
         "title": "サービスカタログ"
       },
@@ -807,7 +810,10 @@
       "confirm": "入金を確認",
       "confirmPrompt": "{code} の {amount} を受領しましたか？\n銀行取引コードを入力:",
       "confirmed": "請求書{code}の入金を確認しました。",
-      "confirmFailed": "入金を確認できませんでした。"
+      "confirmFailed": "入金を確認できませんでした。",
+      "downloadPdf": "PDF",
+      "downloadPdfAria": "請求書 {code} のPDFをダウンロード",
+      "downloadPdfFailed": "請求書PDFをダウンロードできませんでした。"
     },
     "services": {
       "filter": {

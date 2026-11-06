@@ -3,7 +3,13 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
 import {queryKeys} from '@/lib/query';
 import {customerMissionService} from '@/api/mission/customer-missions.api';
-import type {MissionInput, MissionStatus, MissionType} from '@/types/customer';
+import type {
+    MissionInput,
+    MissionPermitUpsertInput,
+    MissionPermitVerifyInput,
+    MissionStatus,
+    MissionType,
+} from '@/types/customer';
 
 export function useCustomerScope() {
     const auth = useAuth();
@@ -40,7 +46,7 @@ export function useMission(id: number) {
 export function useMissionDetail(id: number) {
     const {key, can, permissionsReady, user} = useCustomerScope();
     const detail = useMission(id);
-    const owned = (detail.isSuccess && detail.data.customerId === user?.id);
+    const owned = detail.isSuccess && (detail.data.customerId === user?.id || can('MISSION_VIEW_ALL'));
     const timeline = useQuery({
         queryKey: [...key, 'mission', id, 'timeline'],
         queryFn: ({signal}) => customerMissionService.timeline(id, signal),
@@ -84,5 +90,27 @@ export function useMissionActions() {
         onSettled: (_data, _error, {id}) => refresh(id),
         retry: false
     });
-    return {submit, cancel, create, update};
+    const upsertPermit = useMutation({
+        mutationFn: ({id, payload}: { id: number; payload: MissionPermitUpsertInput }) =>
+            customerMissionService.upsertPermit(id, payload),
+        onSettled: (_data, _error, {id}) => refresh(id),
+        retry: false,
+    });
+    const verifyPermit = useMutation({
+        mutationFn: ({id, payload}: { id: number; payload: MissionPermitVerifyInput }) =>
+            customerMissionService.verifyPermit(id, payload),
+        onSettled: (_data, _error, {id}) => refresh(id),
+        retry: false,
+    });
+    const uploadPermitDocument = useMutation({
+        mutationFn: async ({id, file}: { id: number; file: File }) => {
+            const signed = await customerMissionService.requestMediaUpload(id, file);
+            await customerMissionService.uploadFile(signed.url, file);
+            await customerMissionService.confirmMedia(id, signed.mediaId);
+            return customerMissionService.attachMedia(id, signed.mediaId, 'DOCUMENT');
+        },
+        onSettled: (_data, _error, {id}) => refresh(id),
+        retry: false,
+    });
+    return {submit, cancel, create, update, upsertPermit, verifyPermit, uploadPermitDocument};
 }

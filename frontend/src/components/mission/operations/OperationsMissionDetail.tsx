@@ -42,6 +42,7 @@ import {parseEntityId} from "@/lib/url-slugs";
 import {useI18n} from '@/providers/I18nContext';
 import {useMissionWeather} from '@/hooks/weather/useWeather';
 import {PreflightWeatherCard} from '@/components/weather/PreflightWeatherCard';
+import {MissionPermitCard} from '@/components/mission/MissionPermitCard';
 
 // Backend error codes (including 'MISSION_WEATHER_UNSAFE') are mapped via operationsMissionNotice.
 export default function MissionDetailPage() {
@@ -420,6 +421,7 @@ function MissionDetail({id}: { id: string }) {
                                                                                             }}>{t('opsMissions.detail.retry')}</button></Alert>}
             <nav className="flex flex-wrap gap-2" aria-label={t('opsMissions.detail.nav.label')}>
                 <a className={navPillClass} href="#flight-map">{t('missionMonitor.mapTitle')}</a>
+                <a className={navPillClass} href="#permit">{t('permit.title')}</a>
                 <a className={navPillClass} href="#resources">{t('opsMissions.detail.nav.resources')}</a>
                 <a className={navPillClass} href="#media">{t('opsMissions.detail.nav.media')}</a>
                 <a className={navPillClass} href="#timeline">{t('opsMissions.detail.nav.timeline')}</a>
@@ -509,6 +511,32 @@ function MissionDetail({id}: { id: string }) {
                                         station: controls.redispatchStation,
                                         equipment: controls.redispatchEquipment
                                     }} action={action}/>}
+            <MissionPermitCard
+                id="permit"
+                mission={mission}
+                mediaItems={media}
+                disabled={disabled}
+                downloadingMediaId={downloading}
+                onUpsertPermit={async payload => {
+                    const updated = await missions.upsertPermit(mission.id, payload);
+                    setMission(updated);
+                    await load().catch(() => setStale(true));
+                }}
+                onVerifyPermit={async payload => {
+                    const updated = await missions.verifyPermit(mission.id, payload);
+                    setMission(updated);
+                    await load().catch(() => setStale(true));
+                }}
+                onUploadScan={async file => {
+                    const signed = await missions.requestMediaUpload(mission.id, file);
+                    await missions.uploadFile(signed.url, file);
+                    await missions.confirmMedia(mission.id, signed.mediaId);
+                    const attached = await missions.attachMedia(mission.id, signed.mediaId, 'DOCUMENT');
+                    await load().catch(() => setStale(true));
+                    return attached;
+                }}
+                onDownloadMedia={mediaId => void download(mediaId)}
+            />
             <div className="grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
                 <div className="grid gap-5">
                     <section className={panelClass} id="resources">

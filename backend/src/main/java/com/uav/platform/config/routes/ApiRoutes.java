@@ -221,6 +221,8 @@ public final class ApiRoutes {
         public static final String ACCEPT = "/{id}/accept";
         public static final String REPORT_CONFLICT = "/{id}/report-conflict";
         public static final String FORCE_FAIL = "/{id}/force-fail";
+        public static final String PERMIT = "/{id}/permit";
+        public static final String PERMIT_VERIFY = "/{id}/permit/verify";
         public static final String MEDIA_UPLOAD_URL = "/{id}/media/upload-url";
         public static final String MEDIA_CONFIRM = "/{id}/media/{mediaId}/confirm";
     }
@@ -280,6 +282,7 @@ public final class ApiRoutes {
         public static final String ADMIN_QUOTA_BY_USER = "/admin/quotas/{userId}";
         public static final String INVOICES = "/invoices";
         public static final String INVOICE_BY_ID = "/invoices/{id}";
+        public static final String INVOICE_RECEIPT = "/invoices/{id}/receipt";
         public static final String PAY_INVOICE = "/invoices/{id}/pay";
 
         public static final String ADMIN = BASE + "/admin";
@@ -304,6 +307,7 @@ public final class ApiRoutes {
 
         public static final String BASE = API_V1_PREFIX + "/billing/webhook";
         public static final String PAYMENT_IPN = "/payment-ipn";
+        public static final String SEPAY = "/sepay";
         public static final String WILDCARD = BASE + "/**";
     }
 
@@ -334,6 +338,7 @@ public final class ApiRoutes {
         public static final String UNREAD_COUNT = "/unread-count";
         public static final String MARK_READ = "/{id}/read";
         public static final String MARK_ALL_READ = "/read-all";
+        public static final String PUSH_TOKENS = "/push-tokens";
     }
 
     public static final class Settings {
@@ -428,6 +433,18 @@ public final class ApiRoutes {
         public static final String ADMIN_PROVIDER = API_V1_PREFIX + "/admin/weather/provider";
 
         private Weather() {}
+    }
+
+    /**
+     * Nhóm route quản lý không phận, vùng cấm/hạn chế bay & kiểm tra tiền bay (Airspace & No-Fly Zones)
+     */
+    public static final class Airspace {
+        private Airspace() {}
+
+        public static final String BASE = API_V1_PREFIX + "/airspace";
+        public static final String ZONES = "/zones";
+        public static final String ZONE_BY_ID = "/zones/{id}";
+        public static final String CHECK = "/check";
     }
 
     public static final class Dashboard {

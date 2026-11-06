@@ -109,7 +109,7 @@
         "time": "Thời gian",
         "loadingMissions": "Đang tải nhiệm vụ…",
         "noMissions": "Chưa có nhiệm vụ.",
-        "quotaTitle": "Hạn mức bay & Gói cước (demo)",
+        "quotaTitle": "Hạn mức bay & Gói cước",
         "loadingQuota": "Đang tải hạn mức…",
         "quotaError": "Chưa tải được thông tin hạn mức.",
         "viewPlans": "Xem gói cước",
@@ -223,7 +223,11 @@
             "save403": "Bạn không có quyền lưu yêu cầu này.",
             "save404": "Không tìm thấy yêu cầu hoặc dịch vụ. Hãy tải lại.",
             "save409": "Yêu cầu vừa thay đổi. Tải bản mới nhất rồi lưu lại.",
-            "saveUnknown": "Chưa rõ đã lưu chưa. Kiểm tra danh sách trước khi thử lại."
+            "saveUnknown": "Chưa rõ đã lưu chưa. Kiểm tra danh sách trước khi thử lại.",
+            "AIRSPACE_PROHIBITED_ZONE": "Khu vực bay giao cắt vùng cấm bay. Vui lòng điều chỉnh lộ trình hoặc độ cao ra ngoài vùng cấm.",
+            "MISSION_PERMIT_REQUIRED": "Khu vực bay nằm trong vùng hạn chế. Cần giấy phép bay đã được xác minh trước khi thực hiện.",
+            "MISSION_PERMIT_EXPIRED": "Giấy phép bay không còn hiệu lực cho khung giờ thực hiện nhiệm vụ.",
+            "MISSION_PERMIT_ALTITUDE_EXCEEDED": "Độ cao kế hoạch bay vượt quá trần bay được cấp trong giấy phép hoặc giới hạn không phận."
         }
     },
     "missionForm": {
@@ -398,7 +402,10 @@
         "noInvoices": "Chưa có hóa đơn nào.",
         "paymentInfo": "Thông tin thanh toán",
         "closePayment": "Đóng thông tin thanh toán",
-        "invoiceAmount": "Hóa đơn {code}: {amount}."
+        "invoiceAmount": "Hóa đơn {code}: {amount}.",
+        "downloadPdf": "Tải PDF",
+        "downloadPdfAria": "Tải hóa đơn PDF {code}",
+        "downloadPdfError": "Chưa tải được tệp PDF hóa đơn."
     },
     "notificationsPage": {
         "urgent": "Khẩn cấp",

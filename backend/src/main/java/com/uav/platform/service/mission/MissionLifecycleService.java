@@ -5,6 +5,8 @@ import com.uav.platform.dto.request.mission.MissionCompletionRequest;
 import com.uav.platform.dto.request.mission.MissionCreateRequest;
 import com.uav.platform.dto.request.mission.MissionFailureRequest;
 import com.uav.platform.dto.request.mission.MissionForceFailRequest;
+import com.uav.platform.dto.request.mission.MissionPermitUpsertRequest;
+import com.uav.platform.dto.request.mission.MissionPermitVerifyRequest;
 import com.uav.platform.dto.request.mission.MissionUpdateRequest;
 import com.uav.platform.dto.response.mission.MissionResponse;
 import com.uav.platform.entity.mission.Mission;
@@ -53,6 +55,12 @@ public interface MissionLifecycleService {
     void requireAcceptance(Mission mission);
 
     MissionResponse reportOperatorConflict(Long id, String note, Authentication authentication);
+
+    MissionResponse upsertPermit(
+            Long id, MissionPermitUpsertRequest request, Authentication authentication);
+
+    MissionResponse verifyPermit(
+            Long id, MissionPermitVerifyRequest request, Authentication authentication);
 
     String nextCode(int year);
 }

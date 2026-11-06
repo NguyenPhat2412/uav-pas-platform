@@ -1,6 +1,6 @@
 'use client';
 import 'leaflet/dist/leaflet.css';
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import type {Control, LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
 import {Circle as CircleIcon, Crosshair, Hexagon, MapPin, Trash2, Undo2} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
@@ -10,6 +10,8 @@ import {defaultFlightPlan, radiusLimits, type FlightPlanInput} from '@/types/mis
 import type {PlannerTool} from '@/types/mission/mission.types';
 import type {Basemap} from '@/types';
 import {flightGeometry} from '@/utils/mission/flight-geometry';
+import {useAirspaceZones} from '@/hooks/airspace/useAirspace';
+import {renderAirspaceZonesLayer} from '@/utils/airspace/map-overlays';
 
 const round = (value: number) => Math.round(value * 1e6) / 1e6;
 
@@ -25,9 +27,12 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
 }) {
     const {t, formatNumber} = useI18n();
     const {config, basemap, setBasemap} = useMapConfig();
+    const airspaceZonesQuery = useAirspaceZones(true);
+    const activeAirspaceZones = useMemo(() => airspaceZonesQuery.data ?? [], [airspaceZonesQuery.data]);
     const container = useRef<HTMLDivElement>(null);
     const map = useRef<LeafletMap | null>(null);
     const tiles = useRef<TileLayer | null>(null);
+    const airspaceLayer = useRef<LayerGroup | null>(null);
     const overlay = useRef<LayerGroup | null>(null);
     const scaleControl = useRef<Control.Scale | null>(null);
     const leaflet = useRef<typeof import('leaflet') | null>(null);
@@ -54,6 +59,7 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
             leaflet.current = L;
             const start = geometry.center ?? config.defaultCenter;
             const instance = L.map(container.current, {scrollWheelZoom: false}).setView(start, geometry.center ? 15 : config.defaultZoom);
+            airspaceLayer.current = L.layerGroup().addTo(instance);
             overlay.current = L.layerGroup().addTo(instance);
             instance.on('click', event => {
                 const point: [number, number] = [round(event.latlng.lat), round(event.latlng.lng)];
@@ -79,6 +85,8 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
             disposed = true;
             resizeObserver?.disconnect();
             scaleControl.current = null;
+            airspaceLayer.current = null;
+            overlay.current = null;
             map.current?.remove();
             map.current = null;
             tiles.current = null;
@@ -100,6 +108,13 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
         if (!ready || !L || !map.current) return;
         syncScaleControl(L, map.current, scaleControl, config.showScaleBar);
     }, [ready, config.showScaleBar]);
+
+    useEffect(() => {
+        const L = leaflet.current;
+        const group = airspaceLayer.current;
+        if (!ready || !L || !group) return;
+        renderAirspaceZonesLayer(L, group, activeAirspaceZones, t, formatNumber);
+    }, [ready, activeAirspaceZones, t, formatNumber]);
 
     useEffect(() => {
         const L = leaflet.current;
@@ -194,6 +209,14 @@ export function LocationPicker({plan, fallbackLatitude, fallbackLongitude, onCha
             <span className="w-16 text-right tabular-nums text-foreground">{current.radiusMeters ?? 300} m</span>
         </label>}
         <div ref={container} className="z-0 h-72 w-full border border-border-input sm:h-96" role="application" aria-label={t('planner.ariaLabel')}/>
+        {activeAirspaceZones.length > 0 && (
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border border-border bg-slate-50/70 px-3 py-2 text-xs text-slate-600" aria-label={t('airspace.legend.label')}>
+                <span className="font-semibold text-foreground">{t('airspace.legend.title', {count: activeAirspaceZones.length})}</span>
+                <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-badge border border-red-700 bg-red-600/30" aria-hidden="true"/>{t('airspace.zoneType.PROHIBITED')}</span>
+                <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-badge border border-amber-600 bg-amber-500/30" aria-hidden="true"/>{t('airspace.zoneType.RESTRICTED')}</span>
+                <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-badge border border-blue-600 bg-blue-500/25" aria-hidden="true"/>{t('airspace.zoneType.WARNING')}</span>
+            </div>
+        )}
         <dl className="m-0 grid grid-cols-2 gap-px border border-border bg-border text-xs sm:grid-cols-4">
             <Stat label={t('planner.area')} value={area != null
                 ? `${formatNumber(Math.round(area))} m² · ${formatNumber(Math.round(area / 100) / 100)} ha` : '—'}/>

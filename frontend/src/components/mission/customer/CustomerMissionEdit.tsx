@@ -23,6 +23,7 @@ import type {Mission} from "@/types/customer";
 import {parseEntityId, toMissionSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/providers/I18nContext';
 import {MissionWeatherAdvisor} from '@/components/weather/MissionWeatherAdvisor';
+import {MissionAirspaceAdvisor} from '@/components/airspace/MissionAirspaceAdvisor';
 
 export default function EditMissionPage() {
     return <PageGuard><EditMission/></PageGuard>;
@@ -125,6 +126,7 @@ function DraftEditor({mission, reload}: { mission: Mission; reload: () => Promis
                 <fieldset className="m-0 border-0 p-0 disabled:opacity-65" disabled={actions.update.isPending || mustReload || reloading}>
                     <legend className="sr-only">{t('missionEdit.legend')}</legend>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2"><MissionFields form={form} onChange={setForm} errors={errors}/>
+                        <MissionAirspaceAdvisor className="col-span-full" form={form} onChange={setForm}/>
                         <MissionWeatherAdvisor className="col-span-full" form={form} onChange={setForm}/></div>
                     <div className="mt-5 flex flex-wrap justify-end gap-3"><Link href={`/customer/missions/${toMissionSlug(mission)}`}
                                                         className="inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-control border border-border bg-card px-4 text-sm font-bold text-foreground transition-colors hover:bg-background">{t('missionEdit.backToDetail')}</Link><Button

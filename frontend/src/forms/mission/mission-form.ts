@@ -92,7 +92,24 @@ export function missionListFilters(search: string, status: MissionStatus | '') {
     return {search, status, page: 0};
 }
 
+const MISSION_AIRSPACE_ERROR_FALLBACKS: Record<string, string> = {
+    AIRSPACE_PROHIBITED_ZONE: 'Khu vực bay giao cắt vùng cấm bay. Vui lòng điều chỉnh lộ trình hoặc độ cao ra ngoài vùng cấm.',
+    MISSION_PERMIT_REQUIRED: 'Khu vực bay nằm trong vùng hạn chế. Cần giấy phép bay đã được xác minh trước khi thực hiện.',
+    MISSION_PERMIT_EXPIRED: 'Giấy phép bay không còn hiệu lực cho khung giờ thực hiện nhiệm vụ.',
+    MISSION_PERMIT_ALTITUDE_EXCEEDED: 'Độ cao kế hoạch bay vượt quá trần bay được cấp trong giấy phép hoặc giới hạn không phận.',
+};
+
 export function missionFormError(error: unknown, t?: Translate): string {
+    const structured = error as { status?: unknown; code?: unknown; message?: unknown } | null;
+    const rawCode =
+        typeof structured?.code === 'string' && structured.code in MISSION_AIRSPACE_ERROR_FALLBACKS
+            ? structured.code
+            : typeof structured?.message === 'string' && structured.message in MISSION_AIRSPACE_ERROR_FALLBACKS
+              ? structured.message
+              : undefined;
+    if (rawCode) {
+        return message(t, rawCode, MISSION_AIRSPACE_ERROR_FALLBACKS[rawCode]);
+    }
     const status = error && typeof error === 'object' && 'status' in error ? error.status : undefined;
     if (status === 400) return message(t, 'save400', 'Thông tin chưa hợp lệ. Kiểm tra các trường và ngày yêu cầu rồi thử lại.');
     if (status === 401) return message(t, 'save401', 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');

@@ -26,4 +26,8 @@ public interface MissionEventService {
             Mission mission,
             MissionEventType type,
             String description);
+
+    default boolean deliversNotifications() {
+        return false;
+    }
 }

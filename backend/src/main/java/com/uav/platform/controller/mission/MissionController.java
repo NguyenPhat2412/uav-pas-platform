@@ -291,6 +291,24 @@ public class MissionController {
         return ResponseEntity.ok(service.forceFail(id, request, authentication));
     }
 
+    @PutMapping(ApiRoutes.Missions.PERMIT)
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    public ResponseEntity<MissionResponse> upsertPermit(
+            @PathVariable Long id,
+            @Valid @RequestBody MissionPermitUpsertRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(service.upsertPermit(id, request, authentication));
+    }
+
+    @PostMapping(ApiRoutes.Missions.PERMIT_VERIFY)
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_CONFIRM')")
+    public ResponseEntity<MissionResponse> verifyPermit(
+            @PathVariable Long id,
+            @Valid @RequestBody MissionPermitVerifyRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(service.verifyPermit(id, request, authentication));
+    }
+
     @GetMapping(ApiRoutes.Missions.MEDIA)
     @PreAuthorize("@permissionService.has(authentication, 'MISSION_MEDIA_VIEW')")
     public ResponseEntity<List<MissionMediaResponse>> media(

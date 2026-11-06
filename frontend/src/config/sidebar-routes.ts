@@ -37,6 +37,7 @@ import {
     ScrollText,
     Server,
     Settings,
+    ShieldAlert,
     ShieldCheck,
     Siren,
     TableProperties,
@@ -124,6 +125,14 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         group: 'overview',
         icon: CloudSun,
         permission: 'MISSION_VIEW_ALL',
+    },
+    {
+        href: '/admin/airspace',
+        key: 'airspace',
+        defaultLabel: 'Vùng không phận',
+        group: 'overview',
+        icon: ShieldAlert,
+        permission: 'USER_MANAGE',
     },
 
     // 5. Nhóm: Tài chính & Hạn mức (commerce) — Đã tách riêng 3 trang con chuyên biệt

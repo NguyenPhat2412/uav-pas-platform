@@ -128,6 +128,9 @@
       "fleetMap": {
         "title": "Fleet map"
       },
+      "airspace": {
+        "title": "Airspace safety zones"
+      },
       "services": {
         "title": "Service catalog"
       },
@@ -807,7 +810,10 @@
       "confirm": "Confirm payment received",
       "confirmPrompt": "Received {amount} for {code}?\nEnter the bank transaction code:",
       "confirmed": "Payment for invoice {code} confirmed.",
-      "confirmFailed": "Couldn't confirm the payment."
+      "confirmFailed": "Couldn't confirm the payment.",
+      "downloadPdf": "PDF",
+      "downloadPdfAria": "Download PDF for invoice {code}",
+      "downloadPdfFailed": "Couldn't download the invoice PDF."
     },
     "services": {
       "filter": {

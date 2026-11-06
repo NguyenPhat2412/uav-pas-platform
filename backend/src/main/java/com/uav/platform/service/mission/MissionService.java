@@ -98,4 +98,10 @@ public interface MissionService {
             Long id, MissionAcceptanceRequest request, Authentication authentication);
 
     MissionResponse reportOperatorConflict(Long id, String note, Authentication authentication);
+
+    MissionResponse upsertPermit(
+            Long id, MissionPermitUpsertRequest request, Authentication authentication);
+
+    MissionResponse verifyPermit(
+            Long id, MissionPermitVerifyRequest request, Authentication authentication);
 }

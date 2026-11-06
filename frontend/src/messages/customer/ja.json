@@ -109,7 +109,7 @@
         "time": "日時",
         "loadingMissions": "ミッションを読み込み中…",
         "noMissions": "ミッションはまだありません。",
-        "quotaTitle": "飛行上限とプラン（デモ）",
+        "quotaTitle": "飛行上限とプラン",
         "loadingQuota": "上限を読み込み中…",
         "quotaError": "上限情報を読み込めませんでした。",
         "viewPlans": "プランを見る",
@@ -223,7 +223,11 @@
             "save403": "この依頼を保存する権限がありません。",
             "save404": "依頼またはサービスが見つかりません。再読み込みしてください。",
             "save409": "依頼が更新されました。最新版を読み込んで保存し直してください。",
-            "saveUnknown": "保存を確認できません。一覧を確認してから再試行してください。"
+            "saveUnknown": "保存を確認できません。一覧を確認してから再試行してください。",
+            "AIRSPACE_PROHIBITED_ZONE": "飛行計画エリアが飛行禁止空域と交差しています。禁止空域の外側へ経路または高度を調整してください。",
+            "MISSION_PERMIT_REQUIRED": "飛行エリアが制限空域に含まれています。実施前に承認済みの飛行許可証が必要です。",
+            "MISSION_PERMIT_EXPIRED": "飛行許可証の有効期間がミッション予定時間帯をカバーしていません。",
+            "MISSION_PERMIT_ALTITUDE_EXCEEDED": "計画飛行高度が許可証または空域の上限高度を超えています。"
         }
     },
     "missionForm": {
@@ -398,7 +402,10 @@
         "noInvoices": "請求書はまだありません。",
         "paymentInfo": "支払い情報",
         "closePayment": "支払い情報を閉じる",
-        "invoiceAmount": "請求書 {code}：{amount}。"
+        "invoiceAmount": "請求書 {code}：{amount}。",
+        "downloadPdf": "PDF",
+        "downloadPdfAria": "請求書 {code} のPDFをダウンロード",
+        "downloadPdfError": "請求書PDFをダウンロードできませんでした。"
     },
     "notificationsPage": {
         "urgent": "緊急",

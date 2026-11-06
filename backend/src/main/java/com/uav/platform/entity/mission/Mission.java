@@ -120,4 +120,35 @@ public class Mission extends BaseEntity {
 
     @Column(name = "operator_conflict_note", length = 1000)
     private String operatorConflictNote;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "permit_status", nullable = false, length = 20)
+    private FlightPermitStatus permitStatus = FlightPermitStatus.NOT_REQUIRED;
+
+    @Column(name = "permit_number", length = 80)
+    private String permitNumber;
+
+    @Column(name = "permit_authority", length = 180)
+    private String permitAuthority;
+
+    @Column(name = "permit_valid_from")
+    private LocalDateTime permitValidFrom;
+
+    @Column(name = "permit_valid_until")
+    private LocalDateTime permitValidUntil;
+
+    @Column(name = "permit_max_altitude_m")
+    private Integer permitMaxAltitudeM;
+
+    @Column(name = "permit_media_id")
+    private Long permitMediaId;
+
+    @Column(name = "permit_verified_by", length = 100)
+    private String permitVerifiedBy;
+
+    @Column(name = "permit_verified_at")
+    private LocalDateTime permitVerifiedAt;
+
+    @Column(name = "permit_note", length = 1000)
+    private String permitNote;
 }

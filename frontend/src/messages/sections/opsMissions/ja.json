@@ -36,7 +36,15 @@
       "UAV_TIME_CONFLICT": "このUAVはこの時間帯にすでに予定があります。",
       "OPERATOR_TIME_CONFLICT": "このオペレーターはこの時間帯にすでに予定があります。",
       "INVENTORY_NOT_AVAILABLE": "機材の数量が不足しています。",
-      "MISSION_WEATHER_UNSAFE": "飛行地点の気象がNO-GOで、管理者が離陸ブロックを有効にしています。より安全な時間帯をお待ちください。"
+      "MISSION_WEATHER_UNSAFE": "飛行地点の気象がNO-GOで、管理者が離陸ブロックを有効にしています。より安全な時間帯をお待ちください。",
+      "AIRSPACE_PROHIBITED_ZONE": "飛行エリアが飛行禁止空域と交差しています。禁止空域の外側へ境界または高度を調整してください。",
+      "MISSION_PERMIT_REQUIRED": "飛行エリアが制限空域に含まれています。準備完了または開始前に承認済みの飛行許可証が必要です。",
+      "MISSION_PERMIT_EXPIRED": "飛行許可証の有効期間がミッション予定時間帯をカバーしていません。",
+      "MISSION_PERMIT_ALTITUDE_EXCEEDED": "計画飛行高度が許可証または空域の上限高度を超えています。",
+      "MISSION_PERMIT_NOT_SUBMITTED": "審査対象の飛行許可証が提出されていません。",
+      "PERMIT_VALIDITY_RANGE_INVALID": "許可証の有効期限は開始日時より後である必要があります。",
+      "PERMIT_MEDIA_NOT_FOUND": "添付された許可証ファイルが見つかりません。",
+      "PERMIT_MEDIA_NOT_CONFIRMED": "添付された許可証ファイルのアップロードが未完了です。"
     },
     "detail": {
       "confirm": {

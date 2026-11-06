@@ -17,6 +17,14 @@ public interface MissionAccessService {
 
     boolean isCustomerOrOperator(Mission mission, String username);
 
+    default void requirePermitEditor(Mission mission, Authentication authentication) {}
+
+    default void requirePermitVerifier(Authentication authentication) {}
+
+    default boolean hasAuthority(Authentication authentication, String permissionCode) {
+        return false;
+    }
+
     Mission find(Long id);
 
     AppUser user(String username);
