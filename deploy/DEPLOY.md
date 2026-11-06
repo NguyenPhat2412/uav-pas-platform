@@ -18,11 +18,15 @@ Các file trong thư mục này:
 
 | File | Dùng để |
 |---|---|
-| `docker-compose.prod.yml` | postgres + backend + frontend, cổng chỉ mở trên 127.0.0.1 |
-| `.env.production` | cấu hình thật (R2, mật khẩu DB, JWT). **Không commit, không gửi qua chat.** |
-| `.env.production.example` | bản mẫu không có bí mật |
-| `nginx/uav.all1.vn.conf` | server block cho nginx trên VPS |
-| mục 10 bên dưới | giám sát uptime, log, chứng chỉ; những việc chỉ làm qua SSH |
+| `docker-compose.ghcr.yml` | stack chạy bằng image bất biến từ GitHub Container Registry (dùng cho cả `staging` & `production`) |
+| `docker-compose.prod.yml` | stack build trực tiếp từ mã nguồn trên VPS (dự phòng khi chạy tay) |
+| `scripts/remote-deploy.sh` | script cập nhật không gián đoạn, sao lưu DB trước migration, kiểm tra `/actuator/health` và tự động rollback |
+| `.env.production` | cấu hình thật Production (R2, mật khẩu DB, JWT). **Không commit, không gửi qua chat.** |
+| `.env.production.example` | bản mẫu Production không có bí mật |
+| `.env.staging.example` | bản mẫu Staging cô lập (`uav-staging.all1.vn`, cổng `28080` / `23100`, DB `uav_pas_staging`) |
+| `nginx/uav.all1.vn.conf` | server block Production cho nginx trên VPS |
+| `nginx/uav-staging.all1.vn.conf` | server block Staging cho nginx trên VPS (chặn index tìm kiếm) |
+| mục 10 & 11 bên dưới | giám sát uptime, log, chứng chỉ và quy trình tự động CI/CD `Staging → Production` trên GitHub |
 
 ---
 
@@ -321,4 +325,59 @@ Trang **Hạ tầng → Sao lưu** đọc `LAST_SUCCESS` và danh sách `*.sql.g
 | Tải ảnh lên báo lỗi | CORS của bucket R2 thiếu `https://uav.all1.vn` |
 | Build bị dừng giữa chừng (killed) | Thiếu RAM; thêm swap ở bước 1 |
 | Trang Hạ tầng → Sao lưu báo "Thiếu" | `ls -l /opt/uav-pas/backups`; script ở mục 9.3 đã chạy chưa; container backend đã được tạo lại sau khi thêm volume chưa |
-| Trang Triển khai hiện `unknown` | Build không qua lệnh ở mục 8 (thiếu `APP_GIT_COMMIT`…); không ảnh hưởng hoạt động |
+| Trang Triển khai hiện `unknown` | Build không qua lệnh ở mục 8 hoặc qua GHCR CI/CD (thiếu `APP_GIT_COMMIT`…); không ảnh hưởng hoạt động |
+
+---
+
+## 11. Tự động hóa CI/CD `Staging → Production` trên GitHub Actions
+
+Kho mã nguồn đã tích hợp sẵn 2 workflow triển khai tự động dùng **GitHub Container Registry (GHCR)** để VPS không tốn RAM biên dịch Maven/Next.js:
+
+- `.github/workflows/cd-staging-production.yml`: Tự động kiểm thử (`frontend`, `mobile`, `edge/kv260`, `backend`) → đóng gói image `ghcr.io/<owner>/uav-pas-backend:sha-<commit>` → tự động triển khai & kiểm tra sức khỏe lên **Staging** (`uav-pas-staging`) → dừng chờ người quản trị bấm **Approve** → sao lưu PostgreSQL tự động và nâng cấp **Production** (`uav-pas`). Nếu cổng `/actuator/health` hoặc web không phản hồi, `scripts/remote-deploy.sh` tự động quay lui về bản `.last-good-release`.
+- `.github/workflows/rollback.yml`: Khôi phục khẩn cấp 1 cú nhấp chuột trên tab **Actions → Rollback Release** về `previous` (bản chạy tốt liền trước) hoặc bất kỳ mã commit 8 ký tự nào trên GHCR mà không đụng chạm dữ liệu database.
+
+### 11.1. Chuẩn bị thư mục Staging trên VPS (làm một lần)
+
+Nếu chạy Staging chung trên VPS hiện tại (cô lập hoàn toàn ở cổng `127.0.0.1:28080`, `127.0.0.1:23100` và volume `uav-pas-staging_postgres_data`):
+
+```bash
+mkdir -p /opt/uav-pas-staging/deploy /opt/uav-pas-staging/backups
+chmod 700 /opt/uav-pas-staging/deploy /opt/uav-pas-staging/backups
+cp /opt/uav-pas/deploy/.env.staging.example /opt/uav-pas-staging/deploy/.env.staging
+chmod 600 /opt/uav-pas-staging/deploy/.env.staging
+nano /opt/uav-pas-staging/deploy/.env.staging    # điền mật khẩu DB staging, JWT secret riêng và R2 bucket uavpas-staging
+```
+
+Cấu hình DNS bản ghi `uav-staging` trỏ về IP VPS (tên miền một cấp dưới `*.all1.vn` tương thích sẵn với SSL miễn phí của Cloudflare) và bật Nginx:
+
+```bash
+cp /opt/uav-pas/deploy/nginx/uav-staging.all1.vn.conf /etc/nginx/sites-available/uav-staging.all1.vn
+ln -sf /etc/nginx/sites-available/uav-staging.all1.vn /etc/nginx/sites-enabled/uav-staging.all1.vn
+nginx -t && systemctl reload nginx
+certbot --nginx -d uav-staging.all1.vn --redirect
+```
+
+### 11.2. Cấu hình GitHub Environments (`Settings → Environments`)
+
+Trên trang GitHub của repository, mở **Settings → Environments** và tạo hai môi trường:
+
+1. **Môi trường `staging`** (triển khai tự động mỗi khi merge vào `main`):
+   - **Environment Secrets:**
+     - `DEPLOY_SSH_HOST`: IP máy chủ Staging (ví dụ `160.22.123.184`)
+     - `DEPLOY_SSH_KEY`: Nội dung khóa riêng SSH (`~/.ssh/id_ed25519` chuyên dụng cho deploy)
+     - `DEPLOY_SSH_USER` *(tuỳ chọn, mặc định `root`)* và `DEPLOY_SSH_PORT` *(mặc định `22`)*
+   - **Environment Variables:**
+     - `NEXT_PUBLIC_APP_URL`: `https://uav-staging.all1.vn`
+     - `NEXT_PUBLIC_API_URL`: `https://uav-staging.all1.vn`
+     - `DEPLOY_PATH`: `/opt/uav-pas-staging/deploy`
+
+2. **Môi trường `production`** (chỉ chạy sau khi Staging xanh & được duyệt):
+   - Bật **Required reviewers** (chọn tài khoản GitHub của bạn để bắt buộc bấm **Review deployments → Approve and deploy** trước khi lên bản thật) và giới hạn **Deployment branches = `main` only**.
+   - **Environment Secrets:**
+     - `DEPLOY_SSH_HOST`: `160.22.123.184`
+     - `DEPLOY_SSH_KEY`: Nội dung khóa riêng SSH
+     - `DEPLOY_SSH_USER` *(mặc định `root`)* và `DEPLOY_SSH_PORT` *(mặc định `22`)*
+   - **Environment Variables:**
+     - `NEXT_PUBLIC_APP_URL`: `https://uav.all1.vn`
+     - `NEXT_PUBLIC_API_URL`: `https://api.uav.all1.vn`
+     - `DEPLOY_PATH`: `/opt/uav-pas/deploy`

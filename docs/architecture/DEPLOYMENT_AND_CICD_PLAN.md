@@ -1,16 +1,24 @@
 # Deployment and CI/CD Plan
 
-## Trạng thái thực tế — 17/10/2026
+## Trạng thái thực tế — 06/11/2026
 
-Workflow `.github/workflows/ci.yml` hiện có năm job: workspace, legacy, backend, audit và browser. Backend dùng PostgreSQL/MinIO riêng, từ chối test bị skip; browser chạy bản dựng production và chỉ xuất evidence đã lọc bí mật. Cleanup lỗi giữ dấu sở hữu để bước dự phòng tiếp tục dọn. Hai nhánh lỗi này đã có 8 kiểm thử mock PASS và review PASS/APPROVE. Đây là cấu hình đã triển khai trong source, **chưa phải hosted CI thành công cho các thay đổi chưa commit**.
+Hệ thống CI/CD trên GitHub Actions đã được thiết lập đầy đủ gồm 5 workflow:
 
-Portable run5 đã thực thi 16 browser checks và 12 runner checks, gồm restart vật lý, retry bền vững, named-volume persistence, restore database/object có kiểm hash và rollback về artifact cũ. Nguồn run5 là frozen725 trước refactor; bằng chứng 726 test/445 hash và browser cuối sau refactor được giữ riêng. Không thực hiện down-migration hoặc coi rollback artifact là quyền xóa dữ liệu.
+1. **`.github/workflows/ci.yml`** — Cổng kiểm thử toàn diện trên `pull_request` và `push` vào `main`:
+   - `frontend-foundation`: ESLint, TypeScript, Architecture Check, API Contract Tests, Production Build.
+   - `mobile-foundation`: Kiểm tra đồng bộ hợp đồng chia sẻ (`sync:shared -- --check`), kiến trúc 6 lớp React Native, ESLint, TypeScript và bộ test Mobile.
+   - `edge-kv260-foundation`: Kiểm tra cú pháp Python và 14 bài test đơn vị/tích hợp cho cổng Kria KV260 Vitis AI DPU & hàng đợi ngoại tuyến SQLite WAL.
+   - `backend-ci`: Spotless formatting + toàn bộ test tích hợp Spring Boot Java 21 trên PostgreSQL & MinIO thật (không cho phép skip test).
+   - `dependency-audit` & `browser-e2e`: Kiểm toán lỗ hổng npm không ẩn lỗi và kiểm thử trình duyệt Playwright.
+2. **`.github/workflows/backend-persistence.yml`** — Kiểm chứng chuyên sâu tầng lưu trữ Backend.
+3. **`.github/workflows/postman-api-tests.yml`** — Kiểm thử hợp đồng 130 API Postman trên PostgreSQL 16.
+4. **`.github/workflows/cd-staging-production.yml`** — Quy trình CD hai giai đoạn qua **GitHub Container Registry (GHCR)**:
+   - Đóng gói image bất biến `ghcr.io/<owner>/uav-pas-backend:sha-<commit>` kèm metadata phiên bản (`APP_VERSION`, `APP_GIT_COMMIT`, `APP_BUILD_TIME`).
+   - Triển khai tự động lên GitHub Environment `staging` (`deploy/docker-compose.ghcr.yml` + `deploy/scripts/remote-deploy.sh`), kiểm tra `/actuator/health` và giao diện web, tự động rollback về `.last-good-release` nếu không đạt.
+   - Tạm dừng tại cổng phê duyệt (**Required Reviewers**) của GitHub Environment `production`; sau khi phê duyệt mới chụp bản sao lưu `pg_dump` trước migration và nâng cấp Production (`https://uav.all1.vn`).
+5. **`.github/workflows/rollback.yml`** — Công cụ khôi phục khẩn cấp (`workflow_dispatch`) cho `staging` hoặc `production` về bản `previous` hoặc mã commit bất kỳ trên GHCR mà không thực hiện down-migration xóa dữ liệu.
 
-Bản hiện tại đã chạy trên localhost sau backup toàn bộ và restore verification, giữ database gốc. Production dependency audit là 0 cho cả root và legacy; full audit còn 5 HIGH mỗi cây ở dev toolchain. Không bỏ qua finding hoặc nâng major tùy ý. HTTPS staging chưa có, full security coverage và hosted CI còn thiếu; trạng thái sản xuất **NOT_READY**. Các mục image publishing, staging promotion, CDN và domain bên dưới là kế hoạch, không phải hạng mục đã nghiệm thu.
-
-Xem [báo cáo kiểm chứng hiện tại](../reports/m6/M6_FULL_PRIORITIES_2026_10_17.md) và [portable CI/recovery](../reports/m6/PORTABLE_CI_AND_RECOVERY.md).
-
-> Cập nhật 16/10/2026: main đã có cookie auth. Workflow hiện kiểm bốn apps/shared, legacy và đầy đủ Maven Java 21 với PostgreSQL/MinIO disposable. Các bước staging/promotion/image publish bên dưới vẫn là kế hoạch, chưa triển khai production trong lượt tích hợp. Xem [báo cáo tích hợp](../reports/m6/M6_MAIN_INTEGRATION_2026_10_16.md); không giả định đã có cờ rollback tắt cookie.
+> **Lưu ý kích hoạt hạ tầng:** Các file workflow, Docker Compose GHCR và script tự khôi phục đã có sẵn trên nhánh `main`; quản trị viên cần khai báo khóa `DEPLOY_SSH_HOST` và `DEPLOY_SSH_KEY` trong **GitHub Settings → Environments (`staging`, `production`)** theo mục 11 của [`deploy/DEPLOY.md`](../../deploy/DEPLOY.md) để runner kết nối tới VPS thật.
 
 ## Build units
 

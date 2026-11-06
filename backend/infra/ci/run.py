@@ -38,6 +38,7 @@ ENV.update(COMPOSE_PROJECT_NAME=ARGS.project,UAV_VOLUME_GENERATION='source',UAV_
  APP_STORAGE_ENDPOINT=f"http://127.0.0.1:{PORTS['storage']}",APP_STORAGE_PUBLIC_ENDPOINT=f"http://127.0.0.1:{PORTS['storage']}",APP_STORAGE_ACCESS_KEY='uav_e2e',APP_STORAGE_SECRET_KEY=ENV['UAV_TEST_STORAGE_PASSWORD'],APP_STORAGE_BUCKET='uav-e2e',APP_STORAGE_ENSURE_BUCKET='true',
  APP_CORS_ALLOWED_ORIGINS=f"http://localhost:{PORTS['web']}",APP_STORAGE_CORS_ORIGIN=f"http://localhost:{PORTS['web']}",
  APP_WEBHOOK_ENABLED='false',APP_WEBHOOK_APPROVED_URLS='',APP_BILLING_PROVIDER_ENABLED='false',APP_COOKIE_SECURE='false',APP_COOKIE_DOMAIN='',APP_COOKIE_SAME_SITE='Lax',
+ APP_AUTH_RATE_LIMIT_ENABLED='false',
  APP_BILLING_INVOICE_WORKER_ENABLED='false',APP_FINANCIAL_OUTBOX_WORKER_ENABLED='false',APP_FINANCIAL_OUTBOX_RETRY_DELAY_MS='1000',
  NEXT_TELEMETRY_DISABLED='1',NEXT_PUBLIC_API_URL=f"http://localhost:{PORTS['backend']}",UAV_E2E_PRIVATE_DIR=str(W),UAV_E2E_RESULT_DIR=str(O))
 for key in ['db','storage','storage_console']: ENV['UAV_E2E_'+key.upper()+'_PORT']=str(PORTS[key])
@@ -258,9 +259,9 @@ try:
     suffix=secrets.token_hex(5);users={}
     for role in ['customer','customer_b','operator','operator_b','admin']:
         username='e2e_'+role+'_'+suffix
-        data=api('/api/v1/auth/register',{'username':username,'email':username+'@example.invalid','password':password,'phoneNumber':'09'+str(secrets.randbelow(100000000)).zfill(8)},expected=201)
+        data=api('/api/v1/auth/register',{'username':username,'email':username+'@gmail.com','password':password,'phoneNumber':'09'+str(secrets.randbelow(100000000)).zfill(8)},expected=201)
         users[role]={'username':username,'id':int(data['id'])}
-    sql(f"UPDATE users SET role='ROLE_ADMIN' WHERE id={users['admin']['id']}; UPDATE users SET role='ROLE_OPERATOR' WHERE id IN ({users['operator']['id']},{users['operator_b']['id']}); INSERT INTO user_permissions(user_id,permission_id,granted,created_at,updated_at) SELECT {users['admin']['id']},id,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP FROM permissions;")
+    sql(f"UPDATE users SET email_verified=true WHERE id IN ({','.join(str(u['id']) for u in users.values())}); UPDATE users SET role='ROLE_ADMIN' WHERE id={users['admin']['id']}; UPDATE users SET role='ROLE_OPERATOR' WHERE id IN ({users['operator']['id']},{users['operator_b']['id']}); INSERT INTO user_permissions(user_id,permission_id,granted,created_at,updated_at) SELECT {users['admin']['id']},id,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP FROM permissions;")
     FIXTURE={'base':BASE,'password':password,'users':users,'ports':PORTS,'storagePort':PORTS['storage']};token=login('admin')
     station=api('/api/v1/stations',{'code':'E2E-ST-'+suffix,'name':'Synthetic station','address':'Synthetic','status':'ACTIVE'},token,expected=201)
     uav=api('/api/v1/uavs',{'serialNumber':'E2E-UAV-'+suffix,'model':'Synthetic','manufacturer':'Synthetic'},token,expected=201)

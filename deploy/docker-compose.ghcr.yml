@@ -1,0 +1,62 @@
+# UAV PAS GHCR image-based stack for automated Staging & Production CD (.github/workflows/cd-staging-production.yml).
+# Zero Maven / Next.js compilation happens on the VPS; immutable images are built on GitHub Actions and pulled from GHCR.
+# Supports running Staging and Production side-by-side on one VPS or across separate servers via COMPOSE_PROJECT_NAME & ENV_FILE.
+name: ${COMPOSE_PROJECT_NAME:-uav-pas}
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "5"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    logging: *default-logging
+
+  backend:
+    image: ${BACKEND_IMAGE:?Set BACKEND_IMAGE}
+    env_file:
+      - ${ENV_FILE:-./.env.production}
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-${NEXT_PUBLIC_APP_URL}}
+      APP_BACKUP_DIR: /backups
+      APP_VERSION: ${APP_VERSION:-unknown}
+      APP_GIT_COMMIT: ${APP_GIT_COMMIT:-unknown}
+      APP_BUILD_TIME: ${APP_BUILD_TIME:-unknown}
+    volumes:
+      - ${BACKUP_HOST_DIR:-/opt/uav-pas/backups}:/backups:ro
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-18080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    logging: *default-logging
+
+  frontend:
+    image: ${FRONTEND_IMAGE:?Set FRONTEND_IMAGE}
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-13100}:3100"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    logging: *default-logging
+
+volumes:
+  postgres_data:

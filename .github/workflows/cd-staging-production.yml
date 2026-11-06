@@ -1,0 +1,507 @@
+name: CD Pipeline (Staging -> Production)
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - ".gitignore"
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: "Phạm vi triển khai (Luồng chuẩn: Staging -> Duyệt -> Production)"
+        required: true
+        type: choice
+        default: staging-then-production
+        options:
+          - staging-then-production
+          - staging-only
+          - production-hotfix
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  verify-clients-and-edge:
+    name: Release Gate — Web, Mobile & KV260 Edge
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+            mobile/package-lock.json
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify Web Frontend Contracts, Types & Lint
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run lint
+          npm run typecheck
+          npm run architecture:check
+          npm run test:contracts
+
+      - name: Verify Mobile Shared Sync, Architecture, Types & Tests
+        working-directory: mobile
+        run: |
+          npm ci
+          npm run sync:shared -- --check
+          npm run architecture:check
+          npm run lint
+          npm run typecheck
+          npm test
+
+      - name: Verify Edge KV260 Runtime & Spool Suite
+        working-directory: edge/kv260
+        run: |
+          python3 -m compileall -q agent tests
+          python3 -m unittest discover -s tests -v
+
+  verify-backend:
+    name: Release Gate — Spring Boot Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Verify Spotless Formatting & Unit/Slice Tests
+        working-directory: backend
+        run: |
+          ./mvnw -B spotless:check
+          ./mvnw -B test
+
+  build-backend-image:
+    name: Build & Publish Immutable Backend Image (GHCR)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs:
+      - verify-clients-and-edge
+      - verify-backend
+    outputs:
+      image_owner: ${{ steps.meta.outputs.image_owner }}
+      short_sha: ${{ steps.meta.outputs.short_sha }}
+      app_version: ${{ steps.meta.outputs.app_version }}
+      build_time: ${{ steps.meta.outputs.build_time }}
+      backend_image: ${{ steps.meta.outputs.backend_image }}
+      backend_digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute Release Metadata
+        id: meta
+        shell: bash
+        run: |
+          owner="$(printf '%s' "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+          short_sha="$(git rev-parse --short=8 HEAD)"
+          version="$(git describe --tags --always 2>/dev/null || echo "sha-${short_sha}")"
+          build_time="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          backend_image="ghcr.io/${owner}/uav-pas-backend:sha-${short_sha}"
+          {
+            echo "image_owner=${owner}"
+            echo "short_sha=${short_sha}"
+            echo "app_version=${version}"
+            echo "build_time=${build_time}"
+            echo "backend_image=${backend_image}"
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Backend Image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.backend_image }}
+            ghcr.io/${{ steps.meta.outputs.image_owner }}/uav-pas-backend:latest
+          build-args: |
+            APP_VERSION=${{ steps.meta.outputs.app_version }}
+            APP_GIT_COMMIT=${{ steps.meta.outputs.short_sha }}
+            APP_BUILD_TIME=${{ steps.meta.outputs.build_time }}
+          cache-from: type=gha,scope=uav-pas-backend
+          cache-to: type=gha,mode=max,scope=uav-pas-backend
+
+      - name: Record Backend Artifact Summary
+        shell: bash
+        run: |
+          {
+            echo "### Backend Release Image Published"
+            echo "- **Image:** \`${{ steps.meta.outputs.backend_image }}\`"
+            echo "- **Digest:** \`${{ steps.build.outputs.digest }}\`"
+            echo "- **Version / Commit:** \`${{ steps.meta.outputs.app_version }}\` (\`${{ steps.meta.outputs.short_sha }}\`)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy-staging:
+    name: Deploy & Smoke Test — Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs:
+      - build-backend-image
+    if: github.event_name != 'workflow_dispatch' || inputs.deploy_target != 'production-hotfix'
+    environment:
+      name: staging
+      url: ${{ vars.NEXT_PUBLIC_APP_URL || 'https://uav-staging.all1.vn' }}
+    concurrency:
+      group: uav-pas-deploy-staging
+      cancel-in-progress: false
+    outputs:
+      staging_verified: ${{ steps.result.outputs.staging_verified }}
+      frontend_staging_image: ${{ steps.img.outputs.frontend_image }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve Staging Frontend Image Tag
+        id: img
+        shell: bash
+        run: |
+          frontend_image="ghcr.io/${{ needs.build-backend-image.outputs.image_owner }}/uav-pas-frontend:staging-sha-${{ needs.build-backend-image.outputs.short_sha }}"
+          echo "frontend_image=${frontend_image}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Staging Frontend Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.img.outputs.frontend_image }}
+            ghcr.io/${{ needs.build-backend-image.outputs.image_owner }}/uav-pas-frontend:staging-latest
+          build-args: |
+            NEXT_PUBLIC_ENVIRONMENT=staging
+            NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL || 'https://uav-staging.all1.vn' }}
+            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL || vars.NEXT_PUBLIC_APP_URL || 'https://uav-staging.all1.vn' }}
+            NEXT_PUBLIC_DISPATCH_HOTLINE=${{ vars.NEXT_PUBLIC_DISPATCH_HOTLINE || '' }}
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ vars.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '' }}
+          cache-from: type=gha,scope=uav-pas-frontend-staging
+          cache-to: type=gha,mode=max,scope=uav-pas-frontend-staging
+
+      - name: Check Staging SSH Secrets Configuration
+        id: check_secrets
+        shell: bash
+        env:
+          SSH_HOST_CONFIGURED: ${{ secrets.DEPLOY_SSH_HOST != '' && 'true' || 'false' }}
+          SSH_KEY_CONFIGURED: ${{ secrets.DEPLOY_SSH_KEY != '' && 'true' || 'false' }}
+        run: |
+          if [ "$SSH_HOST_CONFIGURED" = "true" ] && [ "$SSH_KEY_CONFIGURED" = "true" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+          {
+            echo "### ⚠️ Chưa cấu hình SSH Secrets cho môi trường \`staging\`"
+            echo "Image Backend & Staging Frontend đã được build và đẩy lên GHCR thành công, nhưng bước SSH lên VPS tạm dừng (và **chặn tự động lên \`production\`**) vì thiếu khóa kết nối."
+            echo ""
+            echo "Vào **Settings -> Environments -> staging** trên GitHub và thêm:"
+            echo "- Secret \`DEPLOY_SSH_HOST\`: IP máy chủ Staging (ví dụ \`160.22.123.184\`)"
+            echo "- Secret \`DEPLOY_SSH_KEY\`: Private SSH key (\`ed25519\`)"
+            echo "- Secret \`DEPLOY_SSH_USER\` *(tuỳ chọn, mặc định \`root\`)* & \`DEPLOY_SSH_PORT\` *(mặc định \`22\`)*"
+            echo "- Variables *(tuỳ chọn)*: \`NEXT_PUBLIC_APP_URL\`, \`NEXT_PUBLIC_API_URL\`, \`DEPLOY_PATH\` (mặc định \`/opt/uav-pas-staging/deploy\`)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "::error::Missing DEPLOY_SSH_HOST or DEPLOY_SSH_KEY in GitHub Environment 'staging'."
+            exit 1
+          fi
+          echo "::warning::Skipping Staging SSH deployment until DEPLOY_SSH_HOST and DEPLOY_SSH_KEY are added in GitHub Environment 'staging'."
+
+      - name: Prepare SSH Credentials
+        if: steps.check_secrets.outputs.ready == 'true'
+        shell: bash
+        env:
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT || '22' }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          if [ -n "$DEPLOY_SSH_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$DEPLOY_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -p "$DEPLOY_SSH_PORT" -H "$DEPLOY_SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          fi
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy GHCR Stack to Staging VPS & Verify Local Readiness
+        if: steps.check_secrets.outputs.ready == 'true'
+        shell: bash
+        env:
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT || '22' }}
+          DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER || 'root' }}
+          REMOTE_DEPLOY_DIR: ${{ vars.DEPLOY_PATH || '/opt/uav-pas-staging/deploy' }}
+          REMOTE_ENV_FILE: ${{ vars.ENV_FILE || '.env.staging' }}
+          BACKEND_IMAGE: ${{ needs.build-backend-image.outputs.backend_image }}
+          FRONTEND_IMAGE: ${{ steps.img.outputs.frontend_image }}
+          APP_VERSION: ${{ needs.build-backend-image.outputs.app_version }}
+          APP_GIT_COMMIT: ${{ needs.build-backend-image.outputs.short_sha }}
+          APP_BUILD_TIME: ${{ needs.build-backend-image.outputs.build_time }}
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GHCR_READ_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          SSH_OPTS=(-i ~/.ssh/deploy_key -p "$DEPLOY_SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15)
+          ssh "${SSH_OPTS[@]}" "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}" "mkdir -p '${REMOTE_DEPLOY_DIR}/scripts' && chmod 700 '${REMOTE_DEPLOY_DIR}'"
+          scp -P "$DEPLOY_SSH_PORT" -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            deploy/docker-compose.ghcr.yml "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}:${REMOTE_DEPLOY_DIR}/docker-compose.ghcr.yml"
+          scp -P "$DEPLOY_SSH_PORT" -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            deploy/scripts/remote-deploy.sh "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}:${REMOTE_DEPLOY_DIR}/scripts/remote-deploy.sh"
+
+          # Stream escaped deployment variables via SSH stdin so tokens never appear in remote process arguments (ps aux).
+          {
+            printf 'export DEPLOY_ENV=%q\n' "staging"
+            printf 'export DEPLOY_DIR=%q\n' "$REMOTE_DEPLOY_DIR"
+            printf 'export ENV_FILE=%q\n' "${REMOTE_DEPLOY_DIR}/${REMOTE_ENV_FILE}"
+            printf 'export COMPOSE_PROJECT_NAME=%q\n' "uav-pas-staging"
+            printf 'export BACKEND_IMAGE=%q\n' "$BACKEND_IMAGE"
+            printf 'export FRONTEND_IMAGE=%q\n' "$FRONTEND_IMAGE"
+            printf 'export APP_VERSION=%q\n' "$APP_VERSION"
+            printf 'export APP_GIT_COMMIT=%q\n' "$APP_GIT_COMMIT"
+            printf 'export APP_BUILD_TIME=%q\n' "$APP_BUILD_TIME"
+            printf 'export GHCR_USERNAME=%q\n' "$GHCR_USERNAME"
+            printf 'export GHCR_TOKEN=%q\n' "$GHCR_TOKEN"
+            cat <<'REMOTE_SCRIPT'
+          set -euo pipefail
+          chmod +x "$DEPLOY_DIR/scripts/remote-deploy.sh"
+          cd "$DEPLOY_DIR"
+          ./scripts/remote-deploy.sh deploy
+          REMOTE_SCRIPT
+          } | ssh "${SSH_OPTS[@]}" "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}" bash -s
+
+      - name: Public HTTPS Smoke Check (Staging)
+        if: steps.check_secrets.outputs.ready == 'true'
+        shell: bash
+        env:
+          STAGING_URL: ${{ vars.PUBLIC_HEALTHCHECK_URL || vars.NEXT_PUBLIC_APP_URL || 'https://uav-staging.all1.vn' }}
+          REQUIRE_PUBLIC_SMOKE: ${{ vars.PUBLIC_SMOKE_CHECK || 'auto' }}
+        run: |
+          host="$(python3 -c 'import sys, urllib.parse; print(urllib.parse.urlparse(sys.argv[1]).hostname or "")' "$STAGING_URL")"
+          if python3 -c 'import socket, sys; socket.getaddrinfo(sys.argv[1], 443)' "$host" 2>/dev/null; then
+            echo "Running public HTTPS smoke checks against ${STAGING_URL}..."
+            health="$(curl -fsS --retry 6 --retry-delay 5 --max-time 10 "${STAGING_URL%/}/actuator/health")"
+            printf '%s' "$health" | grep -Eq '"status"[[:space:]]*:[[:space:]]*"UP"'
+            code="$(curl -fsS -o /dev/null -w '%{http_code}' --retry 4 --retry-delay 3 --max-time 10 "${STAGING_URL%/}/customer/login")"
+            test "$code" = "200"
+            echo "Public HTTPS Staging smoke check passed (${STAGING_URL})."
+          elif [ "$REQUIRE_PUBLIC_SMOKE" = "true" ]; then
+            echo "::error::DNS for ${host} did not resolve while PUBLIC_SMOKE_CHECK=true."
+            exit 1
+          else
+            echo "::notice::DNS for ${host} is not pointed yet; internal VPS 127.0.0.1 health & HTTP probes already passed."
+          fi
+
+      - name: Clean Up SSH Key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key ~/.ssh/known_hosts
+
+      - name: Export Staging Verification Status
+        id: result
+        shell: bash
+        run: |
+          if [ "${{ steps.check_secrets.outputs.ready }}" = "true" ]; then
+            echo "staging_verified=true" >> "$GITHUB_OUTPUT"
+            {
+              echo "### ✅ Staging Verified"
+              echo "- **Backend:** \`${{ needs.build-backend-image.outputs.backend_image }}\`"
+              echo "- **Frontend (Staging):** \`${{ steps.img.outputs.frontend_image }}\`"
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "staging_verified=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy-production:
+    name: Promote & Deploy — Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs:
+      - build-backend-image
+      - deploy-staging
+    if: |
+      always() &&
+      needs.build-backend-image.result == 'success' &&
+      (
+        (github.event_name == 'push' && needs.deploy-staging.result == 'success' && needs.deploy-staging.outputs.staging_verified == 'true') ||
+        (github.event_name == 'workflow_dispatch' && inputs.deploy_target == 'staging-then-production' && needs.deploy-staging.result == 'success' && needs.deploy-staging.outputs.staging_verified == 'true') ||
+        (github.event_name == 'workflow_dispatch' && inputs.deploy_target == 'production-hotfix')
+      )
+    environment:
+      name: production
+      url: ${{ vars.NEXT_PUBLIC_APP_URL || 'https://uav.all1.vn' }}
+    concurrency:
+      group: uav-pas-deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Production SSH Secrets
+        shell: bash
+        env:
+          SSH_HOST_CONFIGURED: ${{ secrets.DEPLOY_SSH_HOST != '' && 'true' || 'false' }}
+          SSH_KEY_CONFIGURED: ${{ secrets.DEPLOY_SSH_KEY != '' && 'true' || 'false' }}
+        run: |
+          if [ "$SSH_HOST_CONFIGURED" != "true" ] || [ "$SSH_KEY_CONFIGURED" != "true" ]; then
+            echo "::error::Missing DEPLOY_SSH_HOST or DEPLOY_SSH_KEY in GitHub Environment 'production'."
+            exit 1
+          fi
+
+      - name: Resolve Production Frontend Image Tag
+        id: img
+        shell: bash
+        run: |
+          frontend_image="ghcr.io/${{ needs.build-backend-image.outputs.image_owner }}/uav-pas-frontend:production-sha-${{ needs.build-backend-image.outputs.short_sha }}"
+          echo "frontend_image=${frontend_image}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Production Frontend Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.img.outputs.frontend_image }}
+            ghcr.io/${{ needs.build-backend-image.outputs.image_owner }}/uav-pas-frontend:production-latest
+          build-args: |
+            NEXT_PUBLIC_ENVIRONMENT=production
+            NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL || 'https://uav.all1.vn' }}
+            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL || 'https://api.uav.all1.vn' }}
+            NEXT_PUBLIC_DISPATCH_HOTLINE=${{ vars.NEXT_PUBLIC_DISPATCH_HOTLINE || '' }}
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ vars.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '' }}
+          cache-from: type=gha,scope=uav-pas-frontend-production
+          cache-to: type=gha,mode=max,scope=uav-pas-frontend-production
+
+      - name: Prepare SSH Credentials
+        shell: bash
+        env:
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT || '22' }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          if [ -n "$DEPLOY_SSH_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$DEPLOY_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -p "$DEPLOY_SSH_PORT" -H "$DEPLOY_SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          fi
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Backup DB, Promote Images to Production VPS & Verify Readiness
+        shell: bash
+        env:
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT || '22' }}
+          DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER || 'root' }}
+          REMOTE_DEPLOY_DIR: ${{ vars.DEPLOY_PATH || '/opt/uav-pas/deploy' }}
+          REMOTE_ENV_FILE: ${{ vars.ENV_FILE || '.env.production' }}
+          BACKEND_IMAGE: ${{ needs.build-backend-image.outputs.backend_image }}
+          FRONTEND_IMAGE: ${{ steps.img.outputs.frontend_image }}
+          APP_VERSION: ${{ needs.build-backend-image.outputs.app_version }}
+          APP_GIT_COMMIT: ${{ needs.build-backend-image.outputs.short_sha }}
+          APP_BUILD_TIME: ${{ needs.build-backend-image.outputs.build_time }}
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GHCR_READ_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          SSH_OPTS=(-i ~/.ssh/deploy_key -p "$DEPLOY_SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15)
+          ssh "${SSH_OPTS[@]}" "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}" "mkdir -p '${REMOTE_DEPLOY_DIR}/scripts' && chmod 700 '${REMOTE_DEPLOY_DIR}'"
+          scp -P "$DEPLOY_SSH_PORT" -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            deploy/docker-compose.ghcr.yml "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}:${REMOTE_DEPLOY_DIR}/docker-compose.ghcr.yml"
+          scp -P "$DEPLOY_SSH_PORT" -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            deploy/scripts/remote-deploy.sh "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}:${REMOTE_DEPLOY_DIR}/scripts/remote-deploy.sh"
+
+          {
+            printf 'export DEPLOY_ENV=%q\n' "production"
+            printf 'export DEPLOY_DIR=%q\n' "$REMOTE_DEPLOY_DIR"
+            printf 'export ENV_FILE=%q\n' "${REMOTE_DEPLOY_DIR}/${REMOTE_ENV_FILE}"
+            printf 'export COMPOSE_PROJECT_NAME=%q\n' "uav-pas"
+            printf 'export PRE_DEPLOY_BACKUP=%q\n' "true"
+            printf 'export BACKEND_IMAGE=%q\n' "$BACKEND_IMAGE"
+            printf 'export FRONTEND_IMAGE=%q\n' "$FRONTEND_IMAGE"
+            printf 'export APP_VERSION=%q\n' "$APP_VERSION"
+            printf 'export APP_GIT_COMMIT=%q\n' "$APP_GIT_COMMIT"
+            printf 'export APP_BUILD_TIME=%q\n' "$APP_BUILD_TIME"
+            printf 'export GHCR_USERNAME=%q\n' "$GHCR_USERNAME"
+            printf 'export GHCR_TOKEN=%q\n' "$GHCR_TOKEN"
+            cat <<'REMOTE_SCRIPT'
+          set -euo pipefail
+          chmod +x "$DEPLOY_DIR/scripts/remote-deploy.sh"
+          cd "$DEPLOY_DIR"
+          ./scripts/remote-deploy.sh deploy
+          REMOTE_SCRIPT
+          } | ssh "${SSH_OPTS[@]}" "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}" bash -s
+
+      - name: Public HTTPS Smoke Check (Production)
+        if: ${{ (vars.PUBLIC_SMOKE_CHECK || 'true') == 'true' }}
+        shell: bash
+        env:
+          PROD_WEB_URL: ${{ vars.NEXT_PUBLIC_APP_URL || 'https://uav.all1.vn' }}
+          PROD_HEALTH_URL: ${{ vars.PUBLIC_HEALTHCHECK_URL || 'https://uav.all1.vn/actuator/health' }}
+        run: |
+          health="$(curl -fsS --retry 6 --retry-delay 5 --max-time 10 "$PROD_HEALTH_URL")"
+          printf '%s' "$health" | grep -Eq '"status"[[:space:]]*:[[:space:]]*"UP"'
+          code="$(curl -fsS -o /dev/null -w '%{http_code}' --retry 4 --retry-delay 3 --max-time 10 "${PROD_WEB_URL%/}/customer/login")"
+          test "$code" = "200"
+          echo "Production HTTPS smoke check passed (${PROD_WEB_URL})."
+
+      - name: Clean Up SSH Key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key ~/.ssh/known_hosts
+
+      - name: Record Production Release Summary
+        shell: bash
+        run: |
+          {
+            echo "### 🚀 Production Release Live"
+            echo "- **URL:** ${{ vars.NEXT_PUBLIC_APP_URL || 'https://uav.all1.vn' }}"
+            echo "- **Backend Image:** \`${{ needs.build-backend-image.outputs.backend_image }}\` (\`${{ needs.build-backend-image.outputs.backend_digest }}\`)"
+            echo "- **Frontend Image:** \`${{ steps.img.outputs.frontend_image }}\`"
+            echo "- **Pre-deploy PostgreSQL Snapshot:** Verified (\`uav_pas-production-predeploy-*.sql.gz\`)"
+          } >> "$GITHUB_STEP_SUMMARY"

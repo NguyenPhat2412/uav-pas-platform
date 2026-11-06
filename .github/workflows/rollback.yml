@@ -1,0 +1,155 @@
+name: Rollback Release (Staging / Production)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Môi trường cần khôi phục (Rollback)"
+        required: true
+        type: choice
+        default: production
+        options:
+          - staging
+          - production
+      target_revision:
+        description: "Nhập 'previous' (bản ổn định liền trước trên VPS) hoặc mã commit 8 ký tự trên GHCR (ví dụ: 9152f166)"
+        required: true
+        type: string
+        default: previous
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  rollback:
+    name: Rollback ${{ inputs.environment }} -> ${{ inputs.target_revision }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: ${{ inputs.environment }}
+    concurrency:
+      group: uav-pas-deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Target & SSH Secrets
+        id: target
+        shell: bash
+        env:
+          SSH_HOST_CONFIGURED: ${{ secrets.DEPLOY_SSH_HOST != '' && 'true' || 'false' }}
+          SSH_KEY_CONFIGURED: ${{ secrets.DEPLOY_SSH_KEY != '' && 'true' || 'false' }}
+          RAW_TARGET: ${{ inputs.target_revision }}
+          TARGET_ENV: ${{ inputs.environment }}
+          REPO_OWNER: ${{ github.repository_owner }}
+        run: |
+          if [ "$SSH_HOST_CONFIGURED" != "true" ] || [ "$SSH_KEY_CONFIGURED" != "true" ]; then
+            echo "::error::Missing DEPLOY_SSH_HOST or DEPLOY_SSH_KEY in GitHub Environment '${TARGET_ENV}'."
+            exit 1
+          fi
+
+          owner="$(printf '%s' "$REPO_OWNER" | tr '[:upper:]' '[:lower:]')"
+          trimmed="$(printf '%s' "$RAW_TARGET" | tr -d '[:space:]')"
+          if [ "$trimmed" = "previous" ]; then
+            {
+              echo "mode=previous"
+              echo "backend_image="
+              echo "frontend_image="
+              echo "short_sha=previous"
+            } >> "$GITHUB_OUTPUT"
+          elif printf '%s' "$trimmed" | grep -Eq '^[0-9a-fA-F]{7,40}$'; then
+            short_sha="$(printf '%s' "$trimmed" | cut -c1-8 | tr '[:upper:]' '[:lower:]')"
+            {
+              echo "mode=sha-${short_sha}"
+              echo "backend_image=ghcr.io/${owner}/uav-pas-backend:sha-${short_sha}"
+              echo "frontend_image=ghcr.io/${owner}/uav-pas-frontend:${TARGET_ENV}-sha-${short_sha}"
+              echo "short_sha=${short_sha}"
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::Invalid target_revision '${RAW_TARGET}'. Use 'previous' or a 7..40 character git commit SHA."
+            exit 1
+          fi
+
+      - name: Prepare SSH Credentials
+        shell: bash
+        env:
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT || '22' }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          if [ -n "$DEPLOY_SSH_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$DEPLOY_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -p "$DEPLOY_SSH_PORT" -H "$DEPLOY_SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          fi
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Execute Rollback & Verify Health on VPS
+        shell: bash
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT || '22' }}
+          DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER || 'root' }}
+          CUSTOM_DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          CUSTOM_ENV_FILE: ${{ vars.ENV_FILE }}
+          ROLLBACK_MODE: ${{ steps.target.outputs.mode }}
+          BACKEND_IMAGE: ${{ steps.target.outputs.backend_image }}
+          FRONTEND_IMAGE: ${{ steps.target.outputs.frontend_image }}
+          SHORT_SHA: ${{ steps.target.outputs.short_sha }}
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GHCR_READ_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "$TARGET_ENV" = "staging" ]; then
+            REMOTE_DIR="${CUSTOM_DEPLOY_PATH:-/opt/uav-pas-staging/deploy}"
+            REMOTE_ENV="${CUSTOM_ENV_FILE:-.env.staging}"
+            PROJECT_NAME="uav-pas-staging"
+          else
+            REMOTE_DIR="${CUSTOM_DEPLOY_PATH:-/opt/uav-pas/deploy}"
+            REMOTE_ENV="${CUSTOM_ENV_FILE:-.env.production}"
+            PROJECT_NAME="uav-pas"
+          fi
+
+          SSH_OPTS=(-i ~/.ssh/deploy_key -p "$DEPLOY_SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15)
+          scp -P "$DEPLOY_SSH_PORT" -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            deploy/docker-compose.ghcr.yml "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}:${REMOTE_DIR}/docker-compose.ghcr.yml"
+          scp -P "$DEPLOY_SSH_PORT" -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            deploy/scripts/remote-deploy.sh "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}:${REMOTE_DIR}/scripts/remote-deploy.sh"
+
+          {
+            printf 'export DEPLOY_ENV=%q\n' "$TARGET_ENV"
+            printf 'export DEPLOY_DIR=%q\n' "$REMOTE_DIR"
+            printf 'export ENV_FILE=%q\n' "${REMOTE_DIR}/${REMOTE_ENV}"
+            printf 'export COMPOSE_PROJECT_NAME=%q\n' "$PROJECT_NAME"
+            printf 'export ROLLBACK_TARGET=%q\n' "$ROLLBACK_MODE"
+            printf 'export BACKEND_IMAGE=%q\n' "$BACKEND_IMAGE"
+            printf 'export FRONTEND_IMAGE=%q\n' "$FRONTEND_IMAGE"
+            printf 'export APP_VERSION=%q\n' "rollback-${SHORT_SHA}"
+            printf 'export APP_GIT_COMMIT=%q\n' "$SHORT_SHA"
+            printf 'export GHCR_USERNAME=%q\n' "$GHCR_USERNAME"
+            printf 'export GHCR_TOKEN=%q\n' "$GHCR_TOKEN"
+            cat <<'REMOTE_SCRIPT'
+          set -euo pipefail
+          chmod +x "$DEPLOY_DIR/scripts/remote-deploy.sh"
+          cd "$DEPLOY_DIR"
+          ./scripts/remote-deploy.sh rollback
+          REMOTE_SCRIPT
+          } | ssh "${SSH_OPTS[@]}" "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}" bash -s
+
+      - name: Clean Up SSH Key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key ~/.ssh/known_hosts
+
+      - name: Record Rollback Summary
+        shell: bash
+        run: |
+          {
+            echo "### ⏪ Rollback Completed (${{ inputs.environment }})"
+            echo "- **Target:** \`${{ steps.target.outputs.mode }}\`"
+            echo "- **Note:** Database schema & named volumes were preserved untouched (zero destructive down-migration)."
+          } >> "$GITHUB_STEP_SUMMARY"

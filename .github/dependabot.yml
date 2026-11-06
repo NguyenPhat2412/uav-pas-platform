@@ -10,6 +10,16 @@ updates:
       - "dependencies"
       - "frontend"
 
+  - package-ecosystem: "npm"
+    directory: "/mobile"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "mobile"
+
   - package-ecosystem: "maven"
     directory: "/backend"
     schedule:

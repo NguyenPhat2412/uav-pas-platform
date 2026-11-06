@@ -50,6 +50,7 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: change-me-local
           APP_JWT_SECRET: uav-pas-platform-jwt-secret-key-32-chars-long-minimum-local-dev
           APP_STORAGE_PROVIDER: test
+          APP_AUTH_RATE_LIMIT_ENABLED: "false"
         run: |
           ./mvnw spring-boot:run &
           echo "Waiting for Spring Boot to start on port 8080..."
@@ -63,10 +64,17 @@ jobs:
 
       - name: Initialize Admin Test Account
         run: |
-          curl -s -X POST http://localhost:8080/api/v1/auth/register \
+          curl -s -f -X POST http://localhost:8080/api/v1/auth/register \
             -H "Content-Type: application/json" \
-            -d '{"username":"admin","email":"admin@uav-platform.com","password":"Password123@","phoneNumber":"0987654321"}' || true
-          PGPASSWORD=change-me-local psql -h localhost -p 5500 -U postgres -d uav_pas_dev -c "UPDATE users SET role = 'ROLE_ADMIN' WHERE username = 'admin';"
+            -d '{"username":"admin","email":"admin.ci@gmail.com","password":"Password123@","phoneNumber":"0987654321"}' || true
+          PGPASSWORD=change-me-local psql -h localhost -p 5500 -U postgres -d uav_pas_dev -v ON_ERROR_STOP=1 -c "
+            UPDATE users SET role = 'ROLE_ADMIN', email_verified = true, status = 'ACTIVE' WHERE username = 'admin';
+            INSERT INTO user_permissions(user_id, permission_id, granted, created_at, updated_at)
+            SELECT u.id, p.id, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+            FROM users u CROSS JOIN permissions p
+            WHERE u.username = 'admin'
+            ON CONFLICT DO NOTHING;
+          "
 
       - name: Install Postman CLI
         run: curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh

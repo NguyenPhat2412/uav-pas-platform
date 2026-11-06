@@ -6,6 +6,8 @@
 .env.*
 !.env.example
 !.env.*.example
+.current-release
+.last-good-release
 .DS_Store
 .idea/
 .vscode/
