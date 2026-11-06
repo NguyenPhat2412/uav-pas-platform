@@ -318,7 +318,7 @@ jobs:
             echo "Running public HTTPS smoke checks against ${STAGING_URL}..."
             health="$(curl -fsS --retry 6 --retry-delay 5 --max-time 10 "${STAGING_URL%/}/actuator/health")"
             printf '%s' "$health" | grep -Eq '"status"[[:space:]]*:[[:space:]]*"UP"'
-            code="$(curl -fsS -o /dev/null -w '%{http_code}' --retry 4 --retry-delay 3 --max-time 10 "${STAGING_URL%/}/customer/login")"
+            code="$(curl -fsSL -o /dev/null -w '%{http_code}' --retry 4 --retry-delay 3 --max-time 10 "${STAGING_URL%/}/customer/login")"
             test "$code" = "200"
             echo "Public HTTPS Staging smoke check passed (${STAGING_URL})."
           elif [ "$REQUIRE_PUBLIC_SMOKE" = "true" ]; then
@@ -487,7 +487,7 @@ jobs:
         run: |
           health="$(curl -fsS --retry 6 --retry-delay 5 --max-time 10 "$PROD_HEALTH_URL")"
           printf '%s' "$health" | grep -Eq '"status"[[:space:]]*:[[:space:]]*"UP"'
-          code="$(curl -fsS -o /dev/null -w '%{http_code}' --retry 4 --retry-delay 3 --max-time 10 "${PROD_WEB_URL%/}/customer/login")"
+          code="$(curl -fsSL -o /dev/null -w '%{http_code}' --retry 4 --retry-delay 3 --max-time 10 "${PROD_WEB_URL%/}/customer/login")"
           test "$code" = "200"
           echo "Production HTTPS smoke check passed (${PROD_WEB_URL})."
 

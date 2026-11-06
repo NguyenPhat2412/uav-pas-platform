@@ -497,46 +497,90 @@ def decode_yolo_output_tensor(
 ) -> list[RawBoxCandidate]:
     """
     Decode YOLOv8 / YOLO11 raw head tensor of shape (1, 4+C, N) or (1, N, 4+C) into RawBoxCandidates.
+    Uses NumPy vectorization when installed and falls back to pure Python stdlib sequences otherwise.
     """
-    import numpy as np
+    try:
+        import numpy as np  # type: ignore[import-not-found]
+    except ModuleNotFoundError:
+        np = None  # type: ignore[assignment]
 
-    arr = np.asarray(output_tensor, dtype=np.float32)
-    if arr.ndim == 3 and arr.shape[0] == 1:
-        arr = arr[0]
-    if arr.ndim != 2:
-        raise ValueError(f"Unsupported YOLO head tensor shape: {arr.shape}")
+    if np is not None:
+        arr = np.asarray(output_tensor, dtype=np.float32)
+        if arr.ndim == 3 and arr.shape[0] == 1:
+            arr = arr[0]
+        if arr.ndim != 2:
+            raise ValueError(f"Unsupported YOLO head tensor shape: {arr.shape}")
 
-    # YOLOv8/YOLO11 default head is (4 + num_classes, num_anchors), e.g. (5, 8400) or (84, 8400)
-    if arr.shape[1] < 5 <= arr.shape[0] or (arr.shape[0] < arr.shape[1] and arr.shape[0] <= 256):
-        arr = arr.T  # -> (num_anchors, 4 + num_classes)
+        # YOLOv8/YOLO11 default head is (4 + num_classes, num_anchors), e.g. (5, 8400) or (84, 8400)
+        if arr.shape[1] < 5 <= arr.shape[0] or (arr.shape[0] < arr.shape[1] and arr.shape[0] <= 256):
+            arr = arr.T  # -> (num_anchors, 4 + num_classes)
 
-    if arr.shape[1] < 5:
-        raise ValueError(f"Expected >= 5 columns [cx, cy, w, h, cls...], got {arr.shape}")
+        if arr.shape[1] < 5:
+            raise ValueError(f"Expected >= 5 columns [cx, cy, w, h, cls...], got {arr.shape}")
 
-    boxes_xywh = arr[:, :4]
-    class_scores = arr[:, 4:]
-    best_class_ids = np.argmax(class_scores, axis=1)
-    best_scores = class_scores[np.arange(class_scores.shape[0]), best_class_ids]
+        boxes_xywh = arr[:, :4]
+        class_scores = arr[:, 4:]
+        best_class_ids = np.argmax(class_scores, axis=1)
+        best_scores = class_scores[np.arange(class_scores.shape[0]), best_class_ids]
 
-    keep_indices = np.nonzero(best_scores >= confidence_threshold)[0]
-    candidates: list[RawBoxCandidate] = []
-    for idx in keep_indices:
-        cx, cy, w, h = (float(v) for v in boxes_xywh[idx])
-        score = float(_clamp(float(best_scores[idx]), 0.0, 1.0))
-        cls_id = int(best_class_ids[idx])
-        label = class_labels[cls_id] if 0 <= cls_id < len(class_labels) else f"class_{cls_id}"
-        candidates.append(
+        keep_indices = np.nonzero(best_scores >= confidence_threshold)[0]
+        candidates: list[RawBoxCandidate] = []
+        for idx in keep_indices:
+            cx, cy, w, h = (float(v) for v in boxes_xywh[idx])
+            score = float(_clamp(float(best_scores[idx]), 0.0, 1.0))
+            cls_id = int(best_class_ids[idx])
+            label = class_labels[cls_id] if 0 <= cls_id < len(class_labels) else f"class_{cls_id}"
+            candidates.append(
+                RawBoxCandidate(
+                    x1=cx - w / 2.0,
+                    y1=cy - h / 2.0,
+                    x2=cx + w / 2.0,
+                    y2=cy + h / 2.0,
+                    confidence=score,
+                    class_id=cls_id,
+                    label=label,
+                )
+            )
+        return candidates
+
+    data = output_tensor
+    if isinstance(data, Sequence) and len(data) == 1 and isinstance(data[0], Sequence) and isinstance(data[0][0], Sequence):
+        data = data[0]
+    if not (isinstance(data, Sequence) and len(data) > 0 and isinstance(data[0], Sequence)):
+        raise ValueError("Unsupported YOLO head tensor shape")
+
+    rows = len(data)
+    cols = len(data[0])
+    if cols < 5 <= rows or (rows < cols and rows <= 256):
+        matrix = [[float(data[r][c]) for r in range(rows)] for c in range(cols)]
+    else:
+        matrix = [[float(v) for v in row] for row in data]
+
+    if not matrix or len(matrix[0]) < 5:
+        raise ValueError(f"Expected >= 5 columns [cx, cy, w, h, cls...], got ({len(matrix)}, {len(matrix[0]) if matrix else 0})")
+
+    py_candidates: list[RawBoxCandidate] = []
+    for row in matrix:
+        cx, cy, w, h = row[0], row[1], row[2], row[3]
+        scores = row[4:]
+        best_cls_id = max(range(len(scores)), key=scores.__getitem__)
+        best_score = scores[best_cls_id]
+        if best_score < confidence_threshold:
+            continue
+        clamped_score = _clamp(best_score, 0.0, 1.0)
+        label = class_labels[best_cls_id] if 0 <= best_cls_id < len(class_labels) else f"class_{best_cls_id}"
+        py_candidates.append(
             RawBoxCandidate(
                 x1=cx - w / 2.0,
                 y1=cy - h / 2.0,
                 x2=cx + w / 2.0,
                 y2=cy + h / 2.0,
-                confidence=score,
-                class_id=cls_id,
+                confidence=clamped_score,
+                class_id=best_cls_id,
                 label=label,
             )
         )
-    return candidates
+    return py_candidates
 
 
 class VitisAiDpuEngine:
