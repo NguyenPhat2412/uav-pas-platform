@@ -12,6 +12,8 @@ import com.uav.platform.enums.media.*;
 import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
+import com.uav.platform.repository.maintenance.RepairOrderRepository;
+import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.station.StationRepository;
 import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.repository.uav.UavStatusHistoryRepository;
@@ -24,11 +26,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 @ExtendWith(MockitoExtension.class)
 class UavServiceTest {
     @Mock UavRepository repository;
     @Mock StationRepository stations;
     @Mock UavStatusHistoryRepository history;
+    @Mock MissionRepository missions;
+    @Mock RepairOrderRepository repairOrders;
     @Mock AuditLogService audit;
 
     @org.mockito.Spy
@@ -47,5 +53,24 @@ class UavServiceTest {
                 "AVAILABLE",
                 service.create(new UavRequest("Mavic", "SN-01", "Acme"), "admin").status().name());
         verify(history).save(any());
+    }
+
+    @Test
+    void healthAnalyticsClassifiesMultiAirframeAndComputesSoh() {
+        Uav quad = new Uav("Matrice 350 RTK", "UAV-350-RTK", "DJI");
+        quad.setId(1L);
+        Uav hexa = new Uav("Matrice 600 SAR Heavy", "SAR-600-01", "DJI");
+        hexa.setId(2L);
+        Uav vtol = new Uav("DeltaQuad VTOL Fixed-Wing", "VTOL-LR-01", "DeltaQuad");
+        vtol.setId(3L);
+        when(repository.findAllWithStation()).thenReturn(List.of(quad, hexa, vtol));
+        when(missions.findAllNonDraftWithAssociations()).thenReturn(List.of());
+        when(repairOrders.findAllWithUav()).thenReturn(List.of());
+
+        var analytics = service.healthAnalytics();
+        assertEquals(3, analytics.totalFleetCount());
+        assertEquals("QUADCOPTER_RTK", analytics.profiles().get(0).airframeClass());
+        assertEquals("HEXACOPTER_SAR", analytics.profiles().get(1).airframeClass());
+        assertEquals("VTOL_FIXED_WING", analytics.profiles().get(2).airframeClass());
     }
 }

@@ -905,7 +905,54 @@
           "response": []
         },
         {
-          "name": "04. Xác nhận tải xong media của nhiệm vụ",
+          "name": "04. Phát lại hành trình 3D & Mặt cắt địa hình (3D Telemetry Replay)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/missions/:id/telemetry/replay",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "missions",
+                ":id",
+                "telemetry",
+                "replay"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Phát lại hành trình 3D & Mặt cắt địa hình (3D Telemetry Replay)\n\nLấy toàn bộ chuỗi mẫu góc nghiêng 3D (pitch/roll/yaw/gimbal), quãng đường tích luỹ và độ cao địa hình ASL/AGL.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/missions/{id}/telemetry/replay`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "05. Xác nhận tải xong media của nhiệm vụ",
           "request": {
             "method": "POST",
             "header": [],
@@ -958,7 +1005,7 @@
           "response": []
         },
         {
-          "name": "05. Điều phối lại thiết bị (Redispatch Equipment)",
+          "name": "06. Điều phối lại thiết bị (Redispatch Equipment)",
           "request": {
             "method": "POST",
             "header": [
@@ -1019,7 +1066,7 @@
           "response": []
         },
         {
-          "name": "06. Đính kèm media vào nhiệm vụ (Attach Media)",
+          "name": "07. Đính kèm media vào nhiệm vụ (Attach Media)",
           "request": {
             "method": "POST",
             "header": [
@@ -1080,7 +1127,7 @@
           "response": []
         },
         {
-          "name": "07. Đặt giữ trước thiết bị (Reserve Equipment)",
+          "name": "08. Đặt giữ trước thiết bị (Reserve Equipment)",
           "request": {
             "method": "POST",
             "header": [
@@ -1141,7 +1188,7 @@
           "response": []
         },
         {
-          "name": "08. Danh sách nhiệm vụ bay (Get All Missions)",
+          "name": "09. Danh sách nhiệm vụ bay (Get All Missions)",
           "request": {
             "method": "GET",
             "header": [],
@@ -1234,7 +1281,7 @@
           "response": []
         },
         {
-          "name": "09. Kiểm tra khả dụng tài nguyên (Check Availability)",
+          "name": "10. Kiểm tra khả dụng tài nguyên (Check Availability)",
           "request": {
             "method": "GET",
             "header": [],
@@ -1304,7 +1351,7 @@
           "response": []
         },
         {
-          "name": "10. Chi tiết nhiệm vụ bay (Get Mission By ID)",
+          "name": "11. Chi tiết nhiệm vụ bay (Get Mission By ID)",
           "request": {
             "method": "GET",
             "header": [],
@@ -1349,7 +1396,53 @@
           "response": []
         },
         {
-          "name": "11. Tài nguyên điều phối của nhiệm vụ",
+          "name": "12. Chứng nhận nghiệm thu & Tệp bàn giao Geotag (Inspection Report)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/missions/:id/inspection-report",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "missions",
+                ":id",
+                "inspection-report"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Chứng nhận nghiệm thu & Tệp bàn giao Geotag (Inspection Report)\n\nTổng hợp chứng chỉ nghiệm thu tự động, điểm chất lượng RTK và danh sách tệp bàn giao gắn toạ độ GPS.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/missions/{id}/inspection-report`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "13. Tài nguyên điều phối của nhiệm vụ",
           "request": {
             "method": "GET",
             "header": [],
@@ -1395,7 +1488,7 @@
           "response": []
         },
         {
-          "name": "12. Tạo mới nhiệm vụ bay (Create Mission)",
+          "name": "14. Tạo mới nhiệm vụ bay (Create Mission)",
           "request": {
             "method": "POST",
             "header": [
@@ -1448,7 +1541,7 @@
           "response": []
         },
         {
-          "name": "13. Báo cáo nhiệm vụ thất bại (Report Failure)",
+          "name": "15. Báo cáo nhiệm vụ thất bại (Report Failure)",
           "request": {
             "method": "POST",
             "header": [
@@ -1509,7 +1602,7 @@
           "response": []
         },
         {
-          "name": "14. Báo cáo xung đột tài nguyên (Report Conflict)",
+          "name": "16. Báo cáo xung đột tài nguyên (Report Conflict)",
           "request": {
             "method": "POST",
             "header": [],
@@ -1562,7 +1655,7 @@
           "response": []
         },
         {
-          "name": "15. Bắt đầu thực hiện bay (Start Mission)",
+          "name": "17. Bắt đầu thực hiện bay (Start Mission)",
           "request": {
             "method": "POST",
             "header": [],
@@ -1608,7 +1701,7 @@
           "response": []
         },
         {
-          "name": "16. Chấp nhận nhiệm vụ (Accept Mission)",
+          "name": "18. Chấp nhận nhiệm vụ (Accept Mission)",
           "request": {
             "method": "POST",
             "header": [
@@ -1669,7 +1762,7 @@
           "response": []
         },
         {
-          "name": "17. Gán UAV cho nhiệm vụ (Assign UAV)",
+          "name": "19. Gán UAV cho nhiệm vụ (Assign UAV)",
           "request": {
             "method": "POST",
             "header": [
@@ -1730,7 +1823,7 @@
           "response": []
         },
         {
-          "name": "18. Gán phi công/nhân sự (Assign Operator)",
+          "name": "20. Gán phi công/nhân sự (Assign Operator)",
           "request": {
             "method": "POST",
             "header": [
@@ -1791,7 +1884,7 @@
           "response": []
         },
         {
-          "name": "19. Gán trạm docking (Assign Station)",
+          "name": "21. Gán trạm docking (Assign Station)",
           "request": {
             "method": "POST",
             "header": [
@@ -1852,7 +1945,7 @@
           "response": []
         },
         {
-          "name": "20. Gỡ gán UAV (Unassign UAV)",
+          "name": "22. Gỡ gán UAV (Unassign UAV)",
           "request": {
             "method": "POST",
             "header": [
@@ -1913,7 +2006,7 @@
           "response": []
         },
         {
-          "name": "21. Gửi duyệt nhiệm vụ (Submit Mission)",
+          "name": "23. Gửi duyệt nhiệm vụ (Submit Mission)",
           "request": {
             "method": "POST",
             "header": [],
@@ -1959,7 +2052,7 @@
           "response": []
         },
         {
-          "name": "22. Hoàn thành nhiệm vụ (Complete Mission)",
+          "name": "24. Hoàn thành nhiệm vụ (Complete Mission)",
           "request": {
             "method": "POST",
             "header": [
@@ -2020,7 +2113,7 @@
           "response": []
         },
         {
-          "name": "23. Huỷ bỏ nhiệm vụ (Cancel Mission)",
+          "name": "25. Huỷ bỏ nhiệm vụ (Cancel Mission)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2066,7 +2159,7 @@
           "response": []
         },
         {
-          "name": "24. Khách hàng xác nhận nghiệm thu (Confirm Mission)",
+          "name": "26. Khách hàng xác nhận nghiệm thu (Confirm Mission)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2112,7 +2205,7 @@
           "response": []
         },
         {
-          "name": "25. Thay thế UAV dự phòng (Replace UAV)",
+          "name": "27. Thay thế UAV dự phòng (Replace UAV)",
           "request": {
             "method": "POST",
             "header": [
@@ -2173,7 +2266,7 @@
           "response": []
         },
         {
-          "name": "26. Từ chối nhiệm vụ (Reject Mission)",
+          "name": "28. Từ chối nhiệm vụ (Reject Mission)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2226,7 +2319,7 @@
           "response": []
         },
         {
-          "name": "27. Xác nhận sẵn sàng bay (Mark Ready)",
+          "name": "29. Xác nhận sẵn sàng bay (Mark Ready)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2272,7 +2365,7 @@
           "response": []
         },
         {
-          "name": "28. Điều phối lại nhân sự (Redispatch Operator)",
+          "name": "30. Điều phối lại nhân sự (Redispatch Operator)",
           "request": {
             "method": "POST",
             "header": [
@@ -2333,7 +2426,7 @@
           "response": []
         },
         {
-          "name": "29. Điều phối lại trạm bay (Redispatch Station)",
+          "name": "31. Điều phối lại trạm bay (Redispatch Station)",
           "request": {
             "method": "POST",
             "header": [
@@ -2394,7 +2487,7 @@
           "response": []
         },
         {
-          "name": "30. Cập nhật nhiệm vụ bay (Update Mission)",
+          "name": "32. Cập nhật nhiệm vụ bay (Update Mission)",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2608,7 +2701,46 @@
           "response": []
         },
         {
-          "name": "02. Chi tiết máy bay UAV (Get UAV By ID)",
+          "name": "02. Phân tích dự báo bảo trì, SOH Pin & Khung thân 3D (Fleet Health Analytics)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/uavs/health-analytics",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "uavs",
+                "health-analytics"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Phân tích dự báo bảo trì, SOH Pin & Khung thân 3D (Fleet Health Analytics)\n\nThống kê sức khoẻ đội bay, tuổi thọ chu kỳ pin (SOH), hiệu suất động cơ và phân lớp khung thân 3D.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/uavs/health-analytics`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "03. Chi tiết máy bay UAV (Get UAV By ID)",
           "request": {
             "method": "GET",
             "header": [],
@@ -2653,7 +2785,7 @@
           "response": []
         },
         {
-          "name": "03. Lịch sử hoạt động của UAV (Get UAV History)",
+          "name": "04. Lịch sử hoạt động của UAV (Get UAV History)",
           "request": {
             "method": "GET",
             "header": [],
@@ -2712,7 +2844,7 @@
           "response": []
         },
         {
-          "name": "04. Chuyển UAV vào bảo dưỡng (Send to Maintenance)",
+          "name": "05. Chuyển UAV vào bảo dưỡng (Send to Maintenance)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2771,7 +2903,7 @@
           "response": []
         },
         {
-          "name": "05. Đăng ký máy bay UAV mới (Create UAV)",
+          "name": "06. Đăng ký máy bay UAV mới (Create UAV)",
           "request": {
             "method": "POST",
             "header": [
@@ -2824,7 +2956,7 @@
           "response": []
         },
         {
-          "name": "06. Chuyển UAV về trạm docking (Assign Station)",
+          "name": "07. Chuyển UAV về trạm docking (Assign Station)",
           "request": {
             "method": "PUT",
             "header": [],
@@ -2876,7 +3008,7 @@
           "response": []
         },
         {
-          "name": "07. Cập nhật thông tin UAV (Update UAV)",
+          "name": "08. Cập nhật thông tin UAV (Update UAV)",
           "request": {
             "method": "PUT",
             "header": [
@@ -2936,7 +3068,7 @@
           "response": []
         },
         {
-          "name": "08. Đổi trạng thái hoạt động của UAV (Update Status)",
+          "name": "09. Đổi trạng thái hoạt động của UAV (Update Status)",
           "request": {
             "method": "PUT",
             "header": [],

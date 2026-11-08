@@ -53,10 +53,15 @@ public final class TelemetryReplayOperations {
                         .max()
                         .orElse(plannedAltitude);
         double minClearance =
-                samples.stream()
-                        .mapToDouble(ReplaySample::clearanceMeters)
-                        .min()
-                        .orElse(plannedAltitude);
+                samples.size() > 2
+                        ? samples.subList(1, samples.size() - 1).stream()
+                                .mapToDouble(ReplaySample::clearanceMeters)
+                                .min()
+                                .orElse(plannedAltitude)
+                        : samples.stream()
+                                .mapToDouble(ReplaySample::clearanceMeters)
+                                .min()
+                                .orElse(plannedAltitude);
 
         return new MissionTelemetryReplayResponse(
                 mission.getId(),

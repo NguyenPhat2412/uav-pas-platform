@@ -81,9 +81,12 @@ Tên test dưới đây là điểm tra cứu theo mốc evidence. Tất cả t�
 | FR-46; UC21; AT-29,34 | X; PaymentProofTest, BillingConfigurationTest, StabilizationPostgresTest | E13,E17,E18; PASS local failure/replay; BLOCKED tiền thật và giá |
 | FR-47; UC22; AT-30 | M; MediaLifecyclePostgresMinioTest, StabilizationMinioTest | E14,E15,E17; PASS local; cleanup eventual, không antivirus |
 | FR-48; UC23; AT-35 | X; FinancialOutboxPostgresTest, WebhookSafetyTest, WebhookTransportTest | E15,E17,E18; PASS local; PARTIAL public TLS và bên nhận xử lý thật |
+| FR-49; UC04,09,13; AT-36 | R,O,C; UavModelViewer, Mission3DReplayAndTerrainCard, TelemetryServiceTest | E24; PASS unit test & Postman CLI (`GET /api/v1/missions/{id}/telemetry/replay` 200 OK) trên cả 3 cổng Web |
+| FR-50; UC13,19,20; AT-37 | R,O; UavHealthAnalyticsSection, UavServiceTest (`healthAnalyticsClassifiesMultiAirframeAndComputesSoh`) | E24; PASS unit test, tối ưu `@EntityGraph` không N+1 & Postman CLI (`GET /api/v1/uavs/health-analytics` 200 OK) |
+| FR-51; UC04,09,12; AT-38 | C,O,M; MissionInspectionReportCard, MissionInspectionReportOperations, ApiRoutesTest | E24; PASS unit test & Postman CLI (`GET /api/v1/missions/{id}/inspection-report` 200 OK) |
 
 ## 30 5 Quản lý khoảng trống bao phủ
 
-FR-01 đến FR-42 giữ nguyên ID từ báo cáo trước. FR-43 đến FR-48 tách rõ vòng đời hỗ trợ đã triển khai mà FR cũ mô tả chưa đủ. Mỗi thay đổi phải cập nhật UC, BR, dữ liệu và AT liên quan; không tăng số FR để làm đẹp tỷ lệ hoàn thành. Tổng 48 FR là số yêu cầu tổng hợp, không phải 48 tiêu chí nguyên tử có trọng số bằng nhau.
+FR-01 đến FR-42 giữ nguyên ID từ báo cáo trước. FR-43 đến FR-48 tách rõ vòng đời hỗ trợ đã triển khai mà FR cũ mô tả chưa đủ. FR-49 đến FR-51 bổ sung các năng lực trực quan hóa 3D đa khung thân, phát lại quỹ đạo 3D kèm độ cao địa hình, phân tích dự báo sức khỏe đội bay (SOH) và biên bản nghiệm thu nhiệm vụ tự động, được kiểm chứng bằng bộ 133 kịch bản Postman CLI (264/264 assertions PASS). Mỗi thay đổi phải cập nhật UC, BR, dữ liệu và AT liên quan; không tăng số FR để làm đẹp tỷ lệ hoàn thành. Tổng 51 FR là số yêu cầu tổng hợp, không phải 51 tiêu chí nguyên tử có trọng số bằng nhau.
 
 Theo dõi riêng đặc tả đã rõ, tiêu chí đã thực thi và tiêu chí đã PASS trên nguồn phát hành. Mẫu số và ngoại lệ phải được duyệt trước khi tính tỷ lệ. Giữ evidence lỗi cùng lần chạy lại; tham chiếu cũ được đánh dấu lịch sử, không bị xóa hoặc gán sang nguồn mới.

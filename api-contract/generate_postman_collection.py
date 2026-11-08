@@ -66,6 +66,8 @@ ENDPOINT_METADATA = {
     ("POST", "/api/v1/missions/:id/media"): ("Đính kèm media vào nhiệm vụ (Attach Media)", "Liên kết tệp media đã tải lên với nhiệm vụ bay."),
     ("POST", "/api/v1/missions/:id/media/upload-url"): ("Lấy Presigned URL tải media cho nhiệm vụ", "Xin link upload trực tiếp lên cloud storage (S3/MinIO)."),
     ("POST", "/api/v1/missions/:id/media/:mediaId/confirm"): ("Xác nhận tải xong media của nhiệm vụ", "Xác nhận tệp media nhiệm vụ đã upload thành công."),
+    ("GET", "/api/v1/missions/:id/telemetry/replay"): ("Phát lại hành trình 3D & Mặt cắt địa hình (3D Telemetry Replay)", "Lấy toàn bộ chuỗi mẫu góc nghiêng 3D (pitch/roll/yaw/gimbal), quãng đường tích luỹ và độ cao địa hình ASL/AGL."),
+    ("GET", "/api/v1/missions/:id/inspection-report"): ("Chứng nhận nghiệm thu & Tệp bàn giao Geotag (Inspection Report)", "Tổng hợp chứng chỉ nghiệm thu tự động, điểm chất lượng RTK và danh sách tệp bàn giao gắn toạ độ GPS."),
 
     # 05. Services
     ("GET", "/api/v1/uav-services"): ("Danh mục dịch vụ bay (Get Service Offerings)", "Lấy danh sách các gói dịch vụ UAV cung cấp cho khách hàng."),
@@ -73,6 +75,7 @@ ENDPOINT_METADATA = {
 
     # 06. UAV
     ("GET", "/api/v1/uavs"): ("Danh sách máy bay UAV (Get All UAVs)", "Lấy danh sách phi đội máy bay không người lái trong hệ thống."),
+    ("GET", "/api/v1/uavs/health-analytics"): ("Phân tích dự báo bảo trì, SOH Pin & Khung thân 3D (Fleet Health Analytics)", "Thống kê sức khoẻ đội bay, tuổi thọ chu kỳ pin (SOH), hiệu suất động cơ và phân lớp khung thân 3D."),
     ("POST", "/api/v1/uavs"): ("Đăng ký máy bay UAV mới (Create UAV)", "Khai báo thêm một máy bay UAV vào phi đội."),
     ("GET", "/api/v1/uavs/:id"): ("Chi tiết máy bay UAV (Get UAV By ID)", "Xem thông số kỹ thuật, hãng sản xuất, số serial, pin, trạng thái."),
     ("PUT", "/api/v1/uavs/:id"): ("Cập nhật thông tin UAV (Update UAV)", "Chỉnh sửa model, serial, nhà sản xuất máy bay."),
@@ -427,6 +430,7 @@ TAG_NAMES = {
     'Users': '02. User Accounts Management',
     'user-profile-controller': '03. User Profile',
     'mission-controller': '04. Flight Missions & Operations',
+    'telemetry-controller': '04. Flight Missions & Operations',
     'service-offering-controller': '05. Mission Service Offerings',
     'uav-controller': '06. UAV Fleet Management',
     'station-controller': '07. Docking Stations',

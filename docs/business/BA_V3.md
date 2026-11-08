@@ -12,15 +12,15 @@ Người sử dụng gồm chủ dự án, người phân tích nghiệp vụ, n
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Mã tài liệu | UAVPAS BA 3.0 |
+| Mã tài liệu | UAVPAS BA 3.1 |
 | Tên dự án | UAV PAS |
 | Tên đầy đủ trong đặc tả | Low-Altitude Economy UAV Platform-as-a-Service |
 | Sinh viên thực hiện | Nguyễn Xuân Phát |
 | Mã sinh viên | 23110209 |
 | Đơn vị | Đồ án cá nhân (không liên kết với trường hay tổ chức nào) |
-| Ngày tổng hợp | 17 tháng 10 năm 2026 |
-| Phạm vi phiên bản | Phase 1, Phase 2, M1–M6 và các ưu tiên đã duyệt đến ngày 17 tháng 10 năm 2026 |
-| Trạng thái nghiệp vụ | Bản phân tích để rà soát và thống nhất phạm vi; chưa có biên bản phê duyệt nghiệp vụ |
+| Ngày tổng hợp | 08 tháng 11 năm 2026 (cập nhật từ baseline 17 tháng 10 năm 2026) |
+| Phạm vi phiên bản | Phase 1, Phase 2, M1–M6, kiến trúc 3 cổng Web độc lập (`customer`, `operations`, `admin`) + `mobile`, Mô hình 3D Đa khung thân (`QUADCOPTER_RTK`, `HEXACOPTER_SAR`, `VTOL_FIXED_WING`), Replay Quỹ đạo 3D & Độ cao Địa hình, Phân tích Dự báo Sức khỏe Đội bay (SOH), Chứng nhận Nghiệm thu Nhiệm vụ Tự động & Bàn giao Geotagged, tối ưu hóa truy vấn `@EntityGraph`/`@Query` và 133 kiểm thử API Postman CLI |
+| Trạng thái nghiệp vụ | Bản phân tích cập nhật đồng bộ mã nguồn thực tế, hợp đồng OpenAPI 3.0.3 và bộ kiểm thử tự động Postman CLI |
 
 ## 1 3 Mốc đối chiếu và cách đọc
 
@@ -2333,3 +2333,75 @@ Nguồn S10, S12 và S09. Mũi tên từ users sang refresh_tokens ghi đúng r�
 ![Hình 7 Trình tự đăng ký upload xác nhận và gắn media](figures/07-media-sequence.png)
 
 Nguồn MediaController và MediaServiceImpl trong S13, cùng luồng nghiệp vụ S03. Confirm kiểm tra object tồn tại, kích thước và MIME khớp metadata đã đăng ký. Sơ đồ chỉ hiển thị các phản hồi chính; thao tác nào lỗi phải được xử lý tại bước đó, không mặc nhiên tiếp tục gắn tệp hoặc báo hoàn thành. Giai đoạn download cần yêu cầu quyền mới tại thời điểm cấp URL.
+
+<!-- pagebreak -->
+
+# 34 Phụ lục cập nhật phiên bản 3.1 (08/11/2026): Mô hình 3D Đa khung thân, Replay Quỹ đạo 3D, Phân tích Sức khỏe Đội bay, Chứng nhận Nghiệm thu Tự động và Kiểm thử Postman CLI
+
+## 34 1 Tổng quan kiến trúc 3 cổng Web độc lập và ứng dụng Mobile
+
+Trong phiên bản 3.1, toàn bộ nền tảng giao diện đã được đồng bộ hóa theo kiến trúc **3 cổng Web độc lập** (`customer/`, `operations/`, `admin/`) và **ứng dụng di động vận hành thực địa** (`mobile/`), kết nối thống nhất tới backend Spring Boot (`backend/`) thông qua hợp đồng OpenAPI 3.0.3 (`api-contract/openapi.json`):
+
+| Cổng / Ứng dụng | Thư mục nguồn | Trách nhiệm cốt lõi và phạm vi phân quyền |
+|---|---|---|
+| Cổng Khách hàng (`customer`) | `customer/` | Đặt dịch vụ UAV, cấu hình lộ trình bay trên bản đồ tương tác (OSM / Vệ tinh / Địa hình), giám sát trực tuyến, xem mô hình 3D UAV, phát lại quỹ đạo 3D và tải chứng nhận nghiệm thu nhiệm vụ |
+| Cổng Điều phối & Vận hành (`operations`) | `operations/` | Duyệt yêu cầu, điều phối trạm/UAV/operator/thiết bị, giám sát telemetry trực tiếp, kiểm tra độ cao an toàn địa hình, phân tích dự báo sức khỏe đội bay (SOH) và xử lý bảo trì |
+| Cổng Quản trị (`admin`) | `admin/` | Quản trị toàn diện người dùng, ma trận phân quyền RBAC (31 mã quyền), mẫu vai trò, cấu hình hệ thống, hóa đơn/hạn mức, nhật ký kiểm toán và đầy đủ công cụ giám sát 3D/phân tích đội bay |
+| Ứng dụng Di động (`mobile`) | `mobile/` | Ứng dụng React Native / Expo chia sẻ trực tiếp 64/64 mô-đun API, kiểu dữ liệu và quy tắc xác thực với các cổng Web (`mobile/scripts/sync-shared.mjs --check`) |
+
+Nguyên tắc phân quyền RBAC xuyên suốt: giao diện ở cả 3 cổng Web đều mở khóa đầy đủ chức năng khi tài khoản đăng nhập có mã quyền tương ứng (như `ROLE_ADMIN` sở hữu toàn bộ 31 mã quyền trên mọi cổng), đồng thời backend luôn là chốt chặn xác thực quyền và phạm vi dữ liệu cuối cùng.
+
+## 34 2 Ba nhóm chức năng chuyên sâu bổ sung (FR-49 đến FR-51)
+
+### 34 2 1 FR-49 — Mô hình 3D Đa khung thân (Multi-Airframe 3D Viewer) và Replay Quỹ đạo Bay 3D kèm Cảnh báo Độ cao Địa hình
+
+1. **Hỗ trợ 3 chủng loại khung thân 3D thực tế (`UavModelViewer.tsx`)**:
+   - `QUADCOPTER_RTK`: UAV 4 cánh quạt khảo sát trắc địa độ chính xác cao kèm ăng-ten RTK kép và cụm gimbal quang-nhiệt.
+   - `HEXACOPTER_SAR`: UAV 6 cánh quạt tải trọng lớn phục vụ tìm kiếm cứu nạn (SAR), trang bị đèn pha cường độ cao, cảm biến tầm nhiệt FLIR và khoang thả phao cứu sinh.
+   - `VTOL_FIXED_WING`: UAV cánh bằng cất/hạ cánh thẳng đứng (VTOL) gồm 4 motor nâng dọc và 1 motor đẩy đuôi phục vụ tuần tra hành lang dài.
+2. **Chế độ X-Ray / Exploded View & Điểm nóng Linh kiện (Interactive Component Hotspots)**:
+   - Cho phép bật chế độ **Tách lớp linh kiện (Exploded View)** và **X-Ray Khung thân** để kiểm tra trực quan 6 cụm linh kiện chính (GNSS RTK, Gimbal AI 4K/Thermal, Động cơ Brushless, Pin LiPo Thông minh, Khung Carbon, Đèn pha SAR).
+3. **Đồng bộ Góc nghiêng 3D (3D Attitude HUD — Pitch / Roll / Yaw) & Phát lại Quỹ đạo 3D (`Mission3DReplayAndTerrainCard.tsx`)**:
+   - Tích hợp thanh trượt phát lại lịch sử chuyến bay (Timeline Scrubber, tốc độ `1x` / `2x` / `4x`), đồng bộ thời gian thực góc nghiêng `pitchDeg`, `rollDeg`, `yawDeg` lên mô hình 3D.
+   - Biểu đồ mặt cắt độ cao chuyến bay so với mặt cắt địa hình (`altitudeM` so với `terrainElevationM` và ngưỡng an toàn tối thiểu `safeMinimumAltitudeM`), tự động cảnh báo khi khoảng cách an toàn địa hình trong giai đoạn bay hành trình thấp hơn ngưỡng quy định.
+   - Toàn bộ phép tính góc nghiêng khí động học, mặt cắt địa hình, khoảng cách lũy kế và tốc độ cực đại được tính toán hoàn toàn tại backend qua lớp `TelemetryReplayOperations` và cung cấp tại endpoint `GET /api/v1/missions/{id}/telemetry/replay`.
+
+### 34 2 2 FR-50 — Phân tích Dự báo Sức khỏe Đội bay (Fleet Predictive Health Analytics & SOH)
+
+1. **Chỉ số Sức khỏe Tổng thể (Overall Health Score) và Linh kiện (`UavHealthAnalyticsSection.tsx`)**:
+   - Backend (`UavServiceImpl.healthAnalytics()`) tổng hợp dữ liệu đội bay, lịch sử nhiệm vụ hoàn thành và hồ sơ lệnh sửa chữa (`RepairOrder`) để tính toán:
+     - **Độ khỏe Pin (`batteryStateOfHealthPct`)**: suy hao theo chu kỳ sạc/bay thực tế.
+     - **Hiệu suất Động cơ (`motorEfficiencyPct`)**: đánh giá mức hao mòn cơ điện.
+     - **Độ ổn định Gimbal & Cảm biến (`gimbalIntegrityPct`)**: đánh giá độ chuẩn trực quang học.
+     - **Mức rủi ro bảo trì (`riskLevel`)**: phân loại tự động `LOW`, `MEDIUM`, `HIGH`, `CRITICAL` cùng số giờ bay ước tính còn lại trước kỳ bảo dưỡng (`estimatedHoursToNextService`) và khuyến nghị kỹ thuật cụ thể (`recommendation`).
+2. **Phân bổ chủng loại khung thân và đề xuất ưu tiên bảo dưỡng**:
+   - Cung cấp thống kê tổng hợp toàn đội bay (`totalFleet`, `readyForFlightCount`, `maintenanceWarningCount`, `criticalRiskCount`, `averageHealthScore`, `airframeDistribution`) tại endpoint `GET /api/v1/uavs/health-analytics`.
+
+### 34 2 3 FR-51 — Chứng nhận Nghiệm thu Nhiệm vụ Tự động & Bàn giao Dữ liệu Geotagged (`MissionInspectionReportCard.tsx`)
+
+1. **Tổng hợp Biên bản Nghiệm thu Tự động (`MissionInspectionReportOperations`)**:
+   - Endpoint `GET /api/v1/missions/{id}/inspection-report` tự động đối soát trạng thái nhiệm vụ, thời lượng thực hiện, khoảng cách đường bay 3D, số điểm lộ trình (`waypointCount`), số phát hiện AI (`aiDetectionCount`), số phát hiện đã xác minh (`verifiedDetectionCount`), mức tiêu hao pin ước tính và danh sách tệp media bàn giao.
+2. **Đánh giá Mức đạt chuẩn Chất lượng (`qualityStatus`) & Mã băm Chứng nhận (`certificateHash`)**:
+   - Tự động xếp hạng `CERTIFIED_PASS`, `CONDITIONAL_PASS` hoặc `INCOMPLETE_REVIEW` kèm mã chứng nhận duy nhất (`SHA256-...`) để khách hàng, điều phối viên và kiểm toán viên in ấn hoặc xuất tệp chứng nhận bàn giao.
+
+## 34 3 Tối ưu hóa Truy vấn Cơ sở Dữ liệu Backend (Loại bỏ N+1 Queries)
+
+Toàn bộ các lớp Repository và Service trong `backend/src/main/java/com/uav/platform/` đã được rà soát để đảm bảo các tệp truy vấn ngắn gọn, tường minh và sử dụng `@EntityGraph` / `@Query` nhằm nạp trước (eager fetch) các quan hệ cần thiết trong một câu lệnh SQL duy nhất:
+
+| Repository / Service | Phương thức truy vấn tối ưu | Tác dụng tối ưu hóa |
+|---|---|---|
+| `UavRepository` | `@EntityGraph(attributePaths = {"station"}) findAllWithStation()` và `findByIdWithStation(Long id)` | Nạp toàn bộ danh sách UAV kèm thông tin Trạm (`Station`) trong 1 câu truy vấn, loại bỏ N+1 khi hiển thị đội bay và tính toán SOH |
+| `MissionRepository` | `@EntityGraph(attributePaths = {"customer", "serviceOffering", "station", "uav", "assignedOperator"}) findAllNonDraftWithAssociations()` | Nạp toàn bộ nhiệm vụ (ngoài nháp) kèm 5 thực thể liên kết trong 1 truy vấn duy nhất phục vụ điều phối, báo cáo và phân tích sức khỏe đội bay |
+| `RepairOrderRepository` | `@EntityGraph(attributePaths = {"uav"}) findAllWithUav()` và `@EntityGraph(attributePaths = {"uav", "schedule", "materials"}) findAll(Specification, Pageable)` | Loại bỏ hoàn toàn truy vấn lặp theo từng UAV khi tổng hợp lịch sử sửa chữa trong `UavServiceImpl.healthAnalytics()` |
+| `EquipmentRepository` | `@Lock(PESSIMISTIC_WRITE) findByIdForUpdate(Long id)` và `@EntityGraph(attributePaths = {"station"})` | Đảm bảo tính nhất quán tồn kho tuyệt đối dưới tải đồng thời và nạp kèm trạm lưu kho |
+| `TelemetrySampleRepository` | `findByMissionIdOrderByTimestampAsc(Long missionId)` và `findFirstByMissionIdOrderByTimestampDesc(Long missionId)` | Truy vấn trực tiếp chuỗi thời gian telemetry theo chỉ mục nhiệm vụ phục vụ phát lại quỹ đạo 3D |
+
+## 34 4 Kết quả Kiểm thử Tự động Backend, Frontend và Postman CLI (E24)
+
+| Hạng mục kiểm chứng | Công cụ và lệnh thực thi | Kết quả đạt được |
+|---|---|---|
+| Kiểm thử Kiến trúc & Đơn vị Backend | `./mvnw test -Dtest=ArchitecturePackageTest,ModuleDtoStructureTest,EntityDtoBoundaryTest,ApiRoutesTest,TelemetryServiceTest,UavServiceTest` | **24 / 24 bài kiểm thử PASS** (`0 lỗi, 0 thất bại`), đảm bảo ranh giới DTO-Entity và logic 3D Replay / SOH / Inspection Report |
+| Kiểm thử Hợp đồng API trực tiếp bằng Postman CLI | `/opt/homebrew/bin/postman collection run api-contract/postman_collection.json` (chạy trực tiếp với backend đang hoạt động tại `http://localhost:8080` và PostgreSQL `localhost:5500`) | **22 nhóm nghiệp vụ, 134 request thực thi (133 kịch bản kiểm thử), 264 / 264 assertions PASS (0 thất bại)**; thời gian phản hồi trung bình **29 ms** |
+| Kiểm tra Kiến trúc, Typecheck, Lint & Unit Test 3 Cổng Web | `npm run architecture:check && npm run typecheck && npm run lint && npm test` trên `customer/`, `operations/`, `admin/` | **PASS 100%** trên cả 3 cổng (`customer`: 138/138 tests, `operations`: 138/138 tests, `admin`: 143/143 tests) |
+| Đồng bộ Mô-đun Dùng chung Mobile | `node mobile/scripts/sync-shared.mjs --check` | **64 / 64 tệp chia sẻ đồng bộ tuyệt đối (PASS)** |
+

@@ -250,10 +250,19 @@ public class UavServiceImpl implements UavService {
     @Override
     @Transactional(readOnly = true)
     public UavHealthAnalyticsResponse healthAnalytics() {
+        java.util.List<Uav> fleet = repository.findAllWithStation();
+        if (fleet == null || fleet.isEmpty()) {
+            fleet = repository.findAll();
+        }
+        java.util.List<com.uav.platform.entity.maintenance.RepairOrder> repairs =
+                repairOrders == null ? java.util.List.of() : repairOrders.findAllWithUav();
+        if ((repairs == null || repairs.isEmpty()) && repairOrders != null) {
+            repairs = repairOrders.findAll();
+        }
         return UavHealthOperations.analyzeFleet(
-                repository.findAll(),
-                missions.findAllNonDraftWithAssociations(),
-                repairOrders == null ? java.util.List.of() : repairOrders.findAll());
+                fleet == null ? java.util.List.of() : fleet,
+                missions == null ? java.util.List.of() : missions.findAllNonDraftWithAssociations(),
+                repairs == null ? java.util.List.of() : repairs);
     }
 
     private Uav find(Long id) {

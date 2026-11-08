@@ -9,11 +9,16 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public interface RepairOrderRepository
         extends JpaRepository<RepairOrder, Long>, JpaSpecificationExecutor<RepairOrder> {
+    @EntityGraph(attributePaths = {"uav"})
+    @Query("select o from RepairOrder o")
+    List<RepairOrder> findAllWithUav();
+
     @Query("select o.uav.id from RepairOrder o where o.id = :id")
     Optional<Long> findUavId(@Param("id") Long id);
 
