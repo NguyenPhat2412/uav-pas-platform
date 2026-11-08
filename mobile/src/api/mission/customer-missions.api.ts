@@ -3,12 +3,14 @@ import {buildQueryString} from '@/shared/lib/format';
 import {missionDraftUpdatePayload} from '@/shared/forms/mission/mission-form';
 import type {Mission, MissionAvailability, MissionEvent, MissionInput, MissionMedia, MissionStatus, PageResponse, UavService} from '@/shared/types/customer';
 import type {
+    MissionInspectionReport,
     MissionPermitUpsertInput,
     MissionReview,
     MissionReviewUpsertInput,
     SavedFlightSite,
     SavedFlightSiteUpsertInput,
 } from '@/shared/types/mission/mission.types';
+import type {MissionTelemetryReplay} from '@/shared/types/uav/telemetry.types';
 
 /** Same requests as the web customerMissionService; the backend scopes every list to the signed-in customer. */
 export const customerMissionService = {
@@ -16,6 +18,10 @@ export const customerMissionService = {
     missions: (page = 0, status?: MissionStatus, search = '', signal?: AbortSignal) =>
         apiClient.get<PageResponse<Mission>>(`${API_ROUTES.missions.list}?${buildQueryString({size: 20, page, status, search: search || undefined})}`, {signal}),
     mission: (id: number, signal?: AbortSignal) => apiClient.get<Mission>(API_ROUTES.missions.detail(id), {signal}),
+    telemetryReplay: (id: number, signal?: AbortSignal) =>
+        apiClient.get<MissionTelemetryReplay>(API_ROUTES.missions.telemetryReplay(id), {signal}),
+    inspectionReport: (id: number, signal?: AbortSignal) =>
+        apiClient.get<MissionInspectionReport>(API_ROUTES.missions.inspectionReport(id), {signal}),
     availability: (startTime: string, endTime: string) =>
         apiClient.get<MissionAvailability>(`${API_ROUTES.missions.availability}?${buildQueryString({startTime, endTime})}`),
     create: (data: MissionInput) => apiClient.post<Mission>(API_ROUTES.missions.list, data),

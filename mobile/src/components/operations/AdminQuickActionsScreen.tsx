@@ -1,7 +1,11 @@
 import React, {useState} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
-import {CheckCircle2, Clock, CreditCard, Lock, Power, ShieldAlert, Unlock, Users, Wrench} from 'lucide-react-native';
+import {CheckCircle2, CreditCard, Lock, ShieldAlert, Unlock, Users} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, ChipGroup, EmptyState, ErrorState, LoadingState, Screen, SectionTitle, TextField} from '@/components/ui';
+import {
+    AdminAirspaceTabContent,
+    AdminSlaTabContent,
+} from '@/components/operations/AdminQuickAirspaceAndSlaCards';
 import {signInErrorText} from '@/forms/auth/sign-in-flow';
 import {
     useAdminAirspaceZones,
@@ -14,21 +18,14 @@ import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {displayLabel} from '@/shared/lib/presentation';
-import {businessToday} from '@/shared/utils/maintenance/workflows';
 import type {User} from '@/shared/types/admin';
 import type {AirspaceZone} from '@/shared/types/airspace/airspace.types';
-import {colors, radius, spacing} from '@/styles/tokens';
+import {colors, spacing} from '@/styles/tokens';
 
 type AdminTab = 'users' | 'invoices' | 'airspace' | 'sla';
 
-function nextPreventiveDate(): string {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return businessToday(tomorrow);
-}
-
 export function AdminQuickActionsScreen() {
-    const {t, formatCurrency, formatDate, formatNumber} = useI18n();
+    const {t, formatCurrency, formatDate} = useI18n();
     const {user: currentUser, can} = useAuth();
     const toast = useToast();
 
@@ -284,230 +281,41 @@ export function AdminQuickActionsScreen() {
             )}
 
             {effectiveTab === 'airspace' && canAirspace && (
-                <>
-                    {airspaceQuery.isPending ? (
-                        <LoadingState/>
-                    ) : airspaceQuery.isError ? (
-                        <ErrorState
-                            message={signInErrorText(airspaceQuery.error, t)}
-                            retryLabel={t('common.retry')}
-                            onRetry={() => void airspaceQuery.refetch()}
-                        />
-                    ) : !(airspaceQuery.data?.length) ? (
-                        <EmptyState icon={ShieldAlert} message={t('mobile.adminQuick.airspace.empty')}/>
-                    ) : (
-                        airspaceQuery.data.map(zone => {
-                            const toggling =
-                                mutations.toggleZone.isPending && mutations.toggleZone.variables?.zone.id === zone.id;
-                            const isProhibited = zone.zoneType === 'PROHIBITED';
-                            return (
-                                <Card key={zone.id}>
-                                    <View style={styles.rowBetween}>
-                                        <AppText variant="title" style={styles.flex} numberOfLines={1}>
-                                            {zone.code} · {zone.name}
-                                        </AppText>
-                                        <Badge
-                                            label={
-                                                zone.active
-                                                    ? t('mobile.adminQuick.airspace.activeBadge')
-                                                    : t('mobile.adminQuick.airspace.inactiveBadge')
-                                            }
-                                            background={zone.active ? colors.slateDark : colors.slateLight}
-                                            color={zone.active ? colors.white : colors.textSecondary}
-                                        />
-                                    </View>
-                                    <View style={styles.pills}>
-                                        <Badge
-                                            label={zone.zoneType}
-                                            background={isProhibited ? colors.dangerLight : colors.warningLight}
-                                            color={isProhibited ? colors.danger : colors.warning}
-                                        />
-                                        {zone.maxAltitudeAglM != null && (
-                                            <Badge label={`≤ ${zone.maxAltitudeAglM} m AGL`}/>
-                                        )}
-                                        {(zone.effectiveFrom || zone.effectiveUntil) && (
-                                            <Badge
-                                                icon={Clock}
-                                                label={t('capabilities.notam.scheduledBadge')}
-                                                background={colors.warningLight}
-                                                color={colors.warning}
-                                            />
-                                        )}
-                                    </View>
-                                    {(zone.effectiveFrom || zone.effectiveUntil) && (
-                                        <AppText variant="caption">
-                                            {t('capabilities.notam.windowSummary', {
-                                                from: zone.effectiveFrom ? formatDate(zone.effectiveFrom) : '—',
-                                                until: zone.effectiveUntil ? formatDate(zone.effectiveUntil) : '—',
-                                            })}
-                                        </AppText>
-                                    )}
-                                    <AppText variant="small">{zone.authority}</AppText>
-                                    {zone.description ? <AppText variant="caption">{zone.description}</AppText> : null}
-                                    <Button
-                                        label={
-                                            zone.active
-                                                ? t('mobile.adminQuick.airspace.deactivate')
-                                                : t('mobile.adminQuick.airspace.activate')
-                                        }
-                                        icon={Power}
-                                        tone={zone.active ? 'secondary' : 'primary'}
-                                        loading={toggling}
-                                        onPress={() => handleToggleZone(zone)}
-                                    />
-                                </Card>
-                            );
-                        })
-                    )}
-                </>
+                <AdminAirspaceTabContent
+                    isPending={airspaceQuery.isPending}
+                    isError={airspaceQuery.isError}
+                    error={airspaceQuery.error}
+                    zones={airspaceQuery.data}
+                    togglingZoneId={mutations.toggleZone.isPending ? mutations.toggleZone.variables?.zone.id : undefined}
+                    onRetry={() => void airspaceQuery.refetch()}
+                    onToggleZone={handleToggleZone}
+                />
             )}
 
             {effectiveTab === 'sla' && canSla && (
-                <>
-                    {slaQuery.isPending ? (
-                        <LoadingState/>
-                    ) : slaQuery.isError || !slaQuery.data ? (
-                        <ErrorState
-                            message={signInErrorText(slaQuery.error, t)}
-                            retryLabel={t('common.retry')}
-                            onRetry={() => void slaQuery.refetch()}
-                        />
-                    ) : (
-                        <>
-                            <Card>
-                                <SectionTitle title={t('capabilities.sla.title')}/>
-                                <AppText variant="caption">{t('capabilities.sla.subtitle')}</AppText>
-                                <View style={styles.kpiGrid}>
-                                    <View style={styles.kpiCell}>
-                                        <AppText variant="caption">{t('capabilities.sla.kpis.confirmTurnaround')}</AppText>
-                                        <AppText variant="title">
-                                            {t('capabilities.sla.kpis.minutesUnit', {
-                                                min: formatNumber(slaQuery.data.avgConfirmationMinutes),
-                                            })}
-                                        </AppText>
-                                    </View>
-                                    <View style={styles.kpiCell}>
-                                        <AppText variant="caption">{t('capabilities.sla.kpis.onTimeRate')}</AppText>
-                                        <AppText variant="title">{formatNumber(slaQuery.data.onTimeCompletionRate)}%</AppText>
-                                    </View>
-                                    <View style={styles.kpiCell}>
-                                        <AppText variant="caption">{t('capabilities.sla.kpis.preflightRate')}</AppText>
-                                        <AppText variant="title">{formatNumber(slaQuery.data.preflightComplianceRate)}%</AppText>
-                                    </View>
-                                    <View style={styles.kpiCell}>
-                                        <AppText variant="caption">{t('capabilities.sla.kpis.customerRating')}</AppText>
-                                        <AppText variant="title">
-                                            {slaQuery.data.avgCustomerRating != null
-                                                ? `★ ${slaQuery.data.avgCustomerRating.toFixed(1)}/5`
-                                                : '—'}
-                                        </AppText>
-                                    </View>
-                                </View>
-                            </Card>
-
-                            <Card>
-                                <SectionTitle
-                                    title={t('capabilities.sla.riskTitle')}
-                                    action={
-                                        <Badge
-                                            label={t('capabilities.sla.riskSummary', {
-                                                overdue: slaQuery.data.overdueUavCount,
-                                                dueSoon: slaQuery.data.dueSoonUavCount,
-                                            })}
-                                            background={colors.warningLight}
-                                            color={colors.warning}
-                                        />
-                                    }
-                                />
-                                {slaQuery.data.fleetMaintenanceRisks.map(row => {
-                                    const riskKey =
-                                        row.riskLevel === 'OVERDUE' ||
-                                        row.riskLevel === 'DUE_SOON' ||
-                                        row.riskLevel === 'NORMAL'
-                                            ? row.riskLevel
-                                            : 'NORMAL';
-                                    const isOverdue = riskKey === 'OVERDUE';
-                                    const isDueSoon = riskKey === 'DUE_SOON';
-                                    const creating =
-                                        mutations.createPreventiveOrder.isPending &&
-                                        mutations.createPreventiveOrder.variables?.uavId === row.uavId;
-                                    return (
-                                        <View key={row.uavId} style={styles.riskRow}>
-                                            <View style={styles.rowBetween}>
-                                                <AppText variant="title" style={styles.flex}>
-                                                    {row.serialNumber} · {row.model}
-                                                </AppText>
-                                                <Badge
-                                                    label={`${t(`capabilities.sla.riskLevels.${riskKey}`)} (${row.riskScore})`}
-                                                    background={
-                                                        isOverdue
-                                                            ? colors.dangerLight
-                                                            : isDueSoon
-                                                              ? colors.warningLight
-                                                              : colors.slateLight
-                                                    }
-                                                    color={
-                                                        isOverdue
-                                                            ? colors.danger
-                                                            : isDueSoon
-                                                              ? colors.warning
-                                                              : colors.slateDark
-                                                    }
-                                                />
-                                            </View>
-                                            <AppText variant="caption">{row.recommendation}</AppText>
-                                            {row.hasOpenRepairOrder ? (
-                                                <Badge
-                                                    label={t('capabilities.sla.openOrderExists')}
-                                                    background={colors.slateLight}
-                                                    color={colors.slateDark}
-                                                />
-                                            ) : riskKey !== 'NORMAL' && can('UAV_MAINTENANCE_CREATE') ? (
-                                                <Button
-                                                    label={
-                                                        creating
-                                                            ? t('capabilities.sla.creatingOrder')
-                                                            : t('capabilities.sla.createPreventiveOrder')
-                                                    }
-                                                    icon={Wrench}
-                                                    tone="secondary"
-                                                    loading={creating}
-                                                    onPress={() =>
-                                                        mutations.createPreventiveOrder.mutate(
-                                                            {
-                                                                uavId: row.uavId,
-                                                                fields: {
-                                                                    title: `${t('capabilities.sla.createPreventiveOrder')} — ${row.serialNumber}`.slice(0, 160),
-                                                                    description: row.recommendation.slice(0, 2000),
-                                                                    plannedDate: nextPreventiveDate(),
-                                                                    technicianName: (
-                                                                        currentUser?.fullName ||
-                                                                        currentUser?.username ||
-                                                                        'Maintenance Team'
-                                                                    ).slice(0, 120),
-                                                                },
-                                                            },
-                                                            {
-                                                                onSuccess: () =>
-                                                                    toast.show(
-                                                                        t('capabilities.sla.orderCreatedToast', {
-                                                                            serial: row.serialNumber,
-                                                                        }),
-                                                                        'success',
-                                                                    ),
-                                                                onError: showError,
-                                                            },
-                                                        )
-                                                    }
-                                                />
-                                            ) : null}
-                                        </View>
-                                    );
-                                })}
-                            </Card>
-                        </>
-                    )}
-                </>
+                <AdminSlaTabContent
+                    isPending={slaQuery.isPending}
+                    isError={slaQuery.isError}
+                    error={slaQuery.error}
+                    data={slaQuery.data}
+                    canCreateMaintenance={can('UAV_MAINTENANCE_CREATE')}
+                    creatingUavId={mutations.createPreventiveOrder.isPending ? mutations.createPreventiveOrder.variables?.uavId : undefined}
+                    defaultTechnicianName={currentUser?.fullName || currentUser?.username || 'Maintenance Team'}
+                    onRetry={() => void slaQuery.refetch()}
+                    onCreatePreventiveOrder={(uavId, serialNumber, fields) =>
+                        mutations.createPreventiveOrder.mutate(
+                            {uavId, fields},
+                            {
+                                onSuccess: () =>
+                                    toast.show(
+                                        t('capabilities.sla.orderCreatedToast', {serial: serialNumber}),
+                                        'success',
+                                    ),
+                                onError: showError,
+                            },
+                        )
+                    }
+                />
             )}
         </Screen>
     );
@@ -517,21 +325,4 @@ const styles = StyleSheet.create({
     flex: {flex: 1},
     rowBetween: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing.sm},
     pills: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs},
-    kpiGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm},
-    kpiCell: {
-        flexBasis: '47%',
-        flexGrow: 1,
-        borderRadius: radius.control,
-        borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.slateLight,
-        padding: spacing.sm,
-        gap: 2,
-    },
-    riskRow: {
-        gap: spacing.xs,
-        paddingTop: spacing.sm,
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: colors.border,
-    },
 });

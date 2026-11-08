@@ -55,6 +55,13 @@ for (const file of files(src)) {
         && rel !== 'components/assistant/AssistantMascot.tsx') {
         fail(file, 'use colours from styles/tokens.ts');
     }
+    const lineCount = text.trim().split('\n').length;
+    if (lineCount < 15) {
+        fail(file, `too short (${lineCount} lines < 15 min): avoid bare stubs; include full module contract`);
+    }
+    if (lineCount > 360) {
+        fail(file, `too long (${lineCount} lines > 360 max): split into focused feature subcomponents`);
+    }
 }
 
 if (problems.length) {

@@ -5,6 +5,7 @@ import type {
     Mission,
     MissionDispatchCandidates,
     MissionEvent,
+    MissionInspectionReport,
     MissionMedia,
     MissionPermitUpsertInput,
     MissionPermitVerifyInput,
@@ -17,7 +18,7 @@ import type {
     PageResponse,
 } from '@/shared/types/mission/mission.types';
 import type {Operator} from '@/shared/types/resources';
-import type {UavTelemetry} from '@/shared/types/uav/telemetry.types';
+import type {MissionTelemetryReplay, UavTelemetry} from '@/shared/types/uav/telemetry.types';
 
 export interface OperationsMissionListParams {
     status?: MissionStatus;
@@ -95,4 +96,8 @@ export const operationsMissionService = {
         apiClient.get<OperatorLogbook>(API_ROUTES.missions.operatorLogbook, {signal}),
     getReview: (id: number, signal?: AbortSignal) =>
         apiClient.get<MissionReview>(API_ROUTES.missions.review(id), {signal}),
+    telemetryReplay: (id: number, signal?: AbortSignal) =>
+        apiClient.get<MissionTelemetryReplay>(API_ROUTES.missions.telemetryReplay(id), {signal}),
+    inspectionReport: (id: number, signal?: AbortSignal) =>
+        apiClient.get<MissionInspectionReport>(API_ROUTES.missions.inspectionReport(id), {signal}),
 };

@@ -63,6 +63,26 @@ export function useOperationsMissionReview(id: number, enabled = true) {
     });
 }
 
+export function useOperationsMissionTelemetryReplay(id: number, enabled = true) {
+    const {key, can, permissionsReady} = useOperationsKey();
+    const valid = Number.isSafeInteger(id) && id > 0;
+    return useQuery({
+        queryKey: [...key, 'mission', id, 'telemetry-replay'],
+        queryFn: ({signal}) => operationsMissionService.telemetryReplay(id, signal),
+        enabled: valid && enabled && permissionsReady && can('MISSION_VIEW'),
+    });
+}
+
+export function useOperationsMissionInspectionReport(id: number, enabled = true) {
+    const {key, can, permissionsReady} = useOperationsKey();
+    const valid = Number.isSafeInteger(id) && id > 0;
+    return useQuery({
+        queryKey: [...key, 'mission', id, 'inspection-report'],
+        queryFn: ({signal}) => operationsMissionService.inspectionReport(id, signal),
+        enabled: valid && enabled && permissionsReady && can('MISSION_VIEW'),
+    });
+}
+
 export function useOperationsMissionList(params?: { status?: MissionStatus; missionType?: MissionType; search?: string }) {
     const {key, can, permissionsReady} = useOperationsKey();
     return useQuery({

@@ -78,6 +78,17 @@ export function useFleetOverview() {
     return {overview, telemetry, telemetryByUavId};
 }
 
+export function useUavHealthAnalytics() {
+    const {user, can, permissionsReady} = useAuth();
+    const key = queryKeys.feature(user?.id, 'fleet');
+    return useQuery({
+        queryKey: [...key, 'health-analytics'],
+        queryFn: ({signal}) => fleetService.healthAnalytics(signal),
+        enabled: permissionsReady && can('UAV_VIEW'),
+        staleTime: 30_000,
+    });
+}
+
 export function useMaintenanceOrders(status = '') {
     const {user, can, permissionsReady} = useAuth();
     const key = queryKeys.feature(user?.id, 'maintenance');

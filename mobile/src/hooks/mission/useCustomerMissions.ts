@@ -34,6 +34,26 @@ export function useMissionReview(id: number, enabled = true) {
     });
 }
 
+export function useMissionTelemetryReplay(id: number, enabled = true) {
+    const {key, can, permissionsReady} = useCustomerKey();
+    const valid = Number.isSafeInteger(id) && id > 0;
+    return useQuery({
+        queryKey: [...key, 'mission', id, 'telemetry-replay'],
+        queryFn: ({signal}) => customerMissionService.telemetryReplay(id, signal),
+        enabled: valid && enabled && permissionsReady && can('MISSION_VIEW'),
+    });
+}
+
+export function useMissionInspectionReport(id: number, enabled = true) {
+    const {key, can, permissionsReady} = useCustomerKey();
+    const valid = Number.isSafeInteger(id) && id > 0;
+    return useQuery({
+        queryKey: [...key, 'mission', id, 'inspection-report'],
+        queryFn: ({signal}) => customerMissionService.inspectionReport(id, signal),
+        enabled: valid && enabled && permissionsReady && can('MISSION_VIEW'),
+    });
+}
+
 export function useServices() {
     const {key, can, permissionsReady} = useCustomerKey();
     return useQuery({

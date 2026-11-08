@@ -4,7 +4,7 @@ import {closingNote} from '@/shared/utils/maintenance/workflows';
 import type {RepairOrder} from '@/shared/types/maintenance/maintenance.types';
 import type {PageResponse, Station, Uav} from '@/shared/types/resources';
 import type {FleetMap} from '@/shared/types/uav/fleet-map.types';
-import type {UavTelemetry} from '@/shared/types/uav/telemetry.types';
+import type {UavHealthAnalytics, UavTelemetry} from '@/shared/types/uav/telemetry.types';
 
 export const fleetService = {
     fleetMap: (signal?: AbortSignal) =>
@@ -15,6 +15,8 @@ export const fleetService = {
         apiClient.get<PageResponse<Station>>(`${API_ROUTES.stations.list}?${buildQueryString({size: 50})}`, {signal}),
     fleetTelemetry: (signal?: AbortSignal) =>
         apiClient.get<UavTelemetry[]>(API_ROUTES.uavs.fleetTelemetry, {signal}),
+    healthAnalytics: (signal?: AbortSignal) =>
+        apiClient.get<UavHealthAnalytics>(API_ROUTES.uavs.healthAnalytics, {signal}),
     orders: (page = 0, status = '', signal?: AbortSignal) =>
         apiClient.get<PageResponse<RepairOrder>>(
             `${API_ROUTES.maintenance.orders}?${buildQueryString({page, size: 20, status: status || undefined})}`,

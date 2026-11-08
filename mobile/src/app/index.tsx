@@ -4,7 +4,16 @@ import {useAuth} from '@/providers/AuthContext';
 import {AppSplash, AppUnreachable} from '@/components/shared/AppStatusViews';
 import {resolvePortalEntryHref} from '@/utils/operations/portal-routing';
 
-/** Entry: the Keychain session and active workspace decide between sign-in, Customer, and Operations. */
+export const ROUTE_META = {
+    id: 'root.index',
+    portal: 'root',
+    section: 'entry',
+    requiresAuth: false,
+} as const;
+
+/**
+ * Entry: the Keychain session and active workspace decide between sign-in, Customer, and Operations.
+ */
 export default function Index() {
     const {status, activePortal, retry, logout} = useAuth();
     if (status === 'loading') return <AppSplash/>;
