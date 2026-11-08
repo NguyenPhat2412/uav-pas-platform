@@ -502,6 +502,8 @@ public final class ApiRoutes {
         public static final String ADMIN_LESSON_BY_ID = "/admin/lessons/{id}";
         public static final String ADMIN_ASSETS = "/admin/assets";
         public static final String ADMIN_ASSET_CONFIRM = "/admin/assets/{id}/confirm";
+        public static final String ASSET_CONTENT = "/assets/{id}/content";
+        public static final String FULL_ASSET_CONTENT = BASE + "/assets/*/content";
     }
 
     /**

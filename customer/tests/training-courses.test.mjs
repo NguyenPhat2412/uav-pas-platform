@@ -208,6 +208,16 @@ test('the PDF reader zooms in steps around fit width and keeps page numbers in r
     assert.equal(h.clampPdfPage(null, 12), null);
     assert.equal(h.clampPdfPage('abc', 12), null);
     assert.equal(h.clampPdfPage(3, 0), null);
+    assert.deepEqual(h.pdfBookSpread(1, 8, true), [1, 2]);
+    assert.deepEqual(h.pdfBookSpread(4, 8, true), [3, 4]);
+    assert.deepEqual(h.pdfBookSpread(8, 8, true), [7, 8]);
+    assert.deepEqual(h.pdfBookSpread(7, 7, true), [7]);
+    assert.deepEqual(h.pdfBookSpread(3, 8, false), [3]);
+    assert.equal(h.pdfPageStep(true, 8), 2);
+    assert.equal(h.pdfPageStep(true, 1), 1);
+    assert.equal(h.pdfPageStep(false, 8), 1);
+    assert.equal(h.pdfSpreadLabel([1, 2]), '1–2');
+    assert.equal(h.pdfSpreadLabel([5]), '5');
 });
 
 test('file sizes read in decimal units and bad input prints nothing', () => {

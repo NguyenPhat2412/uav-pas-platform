@@ -2,6 +2,7 @@ package com.uav.platform.service.impl.training;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dto.record.media.ObjectStream;
 import com.uav.platform.dto.record.training.TrainingCourseState;
 import com.uav.platform.dto.request.training.UpdateLessonProgressRequest;
 import com.uav.platform.dto.response.training.TrainingCourseDetailResponse;
@@ -15,6 +16,7 @@ import com.uav.platform.entity.training.TrainingLessonResource;
 import com.uav.platform.entity.training.TrainingLessonSlide;
 import com.uav.platform.entity.training.UserTrainingProgress;
 import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.training.TrainingAssetStatus;
 import com.uav.platform.enums.training.TrainingLessonType;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
@@ -25,6 +27,8 @@ import com.uav.platform.repository.training.TrainingLessonRepository;
 import com.uav.platform.repository.training.UserTrainingProgressRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.AuthCookieHelper;
+import com.uav.platform.service.media.ObjectStorageService;
+import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.training.TrainingCourseProgress;
 import com.uav.platform.service.training.TrainingCourseRecords;
 import com.uav.platform.service.training.TrainingCourseService;
@@ -32,13 +36,23 @@ import com.uav.platform.service.training.TrainingDocumentUrls;
 import com.uav.platform.service.training.TrainingMediaUrls;
 import com.uav.platform.service.training.TrainingVideoUrls;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,12 +67,13 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
-@RequiredArgsConstructor
 public class TrainingCourseServiceImpl implements TrainingCourseService {
 
     static final String DEFAULT_SECTION = "Nội dung";
     private static final Set<String> VALID_PORTALS = Set.of("CUSTOMER", "OPERATIONS", "ADMIN");
+    private static final int STREAM_BUFFER_SIZE = 65_536;
 
     private final TrainingDocumentRepository documents;
     private final TrainingLessonRepository lessons;
@@ -67,20 +82,72 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
     private final TrainingAssetRepository assets;
     private final UserRepository users;
     private final TrainingMediaUrls mediaUrls;
+    private final PermissionService permissionService;
+    private final ObjectStorageService storage;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public TrainingCourseServiceImpl(
+            TrainingDocumentRepository documents,
+            TrainingLessonRepository lessons,
+            TrainingLessonProgressRepository lessonProgress,
+            UserTrainingProgressRepository courseProgress,
+            TrainingAssetRepository assets,
+            UserRepository users,
+            TrainingMediaUrls mediaUrls) {
+        this(
+                documents,
+                lessons,
+                lessonProgress,
+                courseProgress,
+                assets,
+                users,
+                mediaUrls,
+                null,
+                null);
+    }
+
+    @Autowired
+    public TrainingCourseServiceImpl(
+            TrainingDocumentRepository documents,
+            TrainingLessonRepository lessons,
+            TrainingLessonProgressRepository lessonProgress,
+            UserTrainingProgressRepository courseProgress,
+            TrainingAssetRepository assets,
+            UserRepository users,
+            TrainingMediaUrls mediaUrls,
+            PermissionService permissionService,
+            ObjectStorageService storage) {
+        this.documents = documents;
+        this.lessons = lessons;
+        this.lessonProgress = lessonProgress;
+        this.courseProgress = courseProgress;
+        this.assets = assets;
+        this.users = users;
+        this.mediaUrls = mediaUrls;
+        this.permissionService = permissionService;
+        this.storage = storage;
+    }
 
     @Override
     @Transactional(readOnly = true)
     public List<TrainingCourseSummaryResponse> listCourses(
             String portal, Authentication authentication) {
         AppUser user = resolveUser(authentication);
+        boolean manager = canManage(user, authentication);
         String requested = normalizePortal(portal);
         String resolved =
-                TrainingServiceImpl.portalsFor(user).contains(requested)
+                TrainingServiceImpl.portalsFor(user, manager).contains(requested)
                         ? requested
                         : TrainingServiceImpl.defaultPortal(user);
-        List<TrainingDocument> docs =
-                documents.findByTargetPortalAndActiveTrueOrderBySortOrderAscIdAsc(resolved);
+        List<TrainingDocument> docs;
+        if (manager) {
+            docs = documents.findByTargetPortalOrderBySortOrderAscIdAsc(resolved);
+            if (docs == null || docs.isEmpty()) {
+                docs = documents.findByTargetPortalAndActiveTrueOrderBySortOrderAscIdAsc(resolved);
+            }
+        } else {
+            docs = documents.findByTargetPortalAndActiveTrueOrderBySortOrderAscIdAsc(resolved);
+        }
         if (docs.isEmpty()) return List.of();
 
         List<Long> docIds = docs.stream().map(TrainingDocument::getId).toList();
@@ -132,7 +199,8 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
                         .findByCodeIgnoreCaseOrSlugIgnoreCase(key, key)
                         .orElseThrow(TrainingCourseServiceImpl::courseNotFound);
         AppUser user = resolveUser(authentication);
-        if (!readable(doc, user)) throw courseNotFound();
+        boolean manager = canManage(user, authentication);
+        if (!readable(doc, user, manager)) throw courseNotFound();
         TrainingCourseState state = loadState(doc, user);
         TrainingCourseSummaryResponse s = summary(state, coverUrl(doc));
         Map<Long, Integer> resourceCounts =
@@ -203,7 +271,8 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
     @Transactional(readOnly = true)
     public TrainingLessonDetailResponse getLesson(Long lessonId, Authentication authentication) {
         AppUser user = resolveUser(authentication);
-        TrainingLesson lesson = readableLesson(lessonId, user);
+        boolean manager = canManage(user, authentication);
+        TrainingLesson lesson = readableLesson(lessonId, user, manager);
         TrainingLessonProgress progress =
                 user == null
                         ? null
@@ -218,7 +287,8 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
     public TrainingLessonDetailResponse updateLessonProgress(
             Long lessonId, UpdateLessonProgressRequest request, Authentication authentication) {
         AppUser user = resolveUserRequired(authentication);
-        TrainingLesson lesson = readableLesson(lessonId, user);
+        boolean manager = canManage(user, authentication);
+        TrainingLesson lesson = readableLesson(lessonId, user, manager);
         Integer position = request == null ? null : request.positionSeconds();
         if (position != null && position < 0)
             throw SystemException.badRequest(
@@ -283,13 +353,129 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
         courseProgress.save(record);
     }
 
-    private TrainingLesson readableLesson(Long lessonId, AppUser user) {
-        TrainingLesson lesson =
-                lessons.findById(lessonId).orElseThrow(TrainingCourseServiceImpl::lessonNotFound);
-        TrainingDocument doc = lesson.getDocument();
-        if (doc == null || !readable(doc, user)) throw lessonNotFound();
-        if (!Boolean.TRUE.equals(lesson.getActive()) && !isAdmin(user)) throw lessonNotFound();
-        return lesson;
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<StreamingResponseBody> streamAsset(
+            Long assetId,
+            String range,
+            boolean headOnly,
+            Long exp,
+            String sig,
+            Authentication authentication) {
+        boolean validSignature = mediaUrls.verifySignature("GET", assetId, exp, sig);
+        AppUser user = resolveUser(authentication);
+        boolean authenticated =
+                (authentication != null && authentication.isAuthenticated()) || user != null;
+        if (!validSignature && !authenticated) {
+            throw SystemException.forbidden(
+                    "Liên kết tệp đào tạo không hợp lệ hoặc đã hết hạn.",
+                    "TRAINING_ASSET_FORBIDDEN");
+        }
+        TrainingAsset asset =
+                assets.findById(assetId)
+                        .orElseThrow(
+                                () ->
+                                        SystemException.notFound(
+                                                "Không tìm thấy tệp đào tạo.",
+                                                "TRAINING_ASSET_NOT_FOUND"));
+        if (asset.getStatus() != TrainingAssetStatus.READY) {
+            throw SystemException.notFound(
+                    "Không tìm thấy tệp đào tạo.", "TRAINING_ASSET_NOT_FOUND");
+        }
+        if (storage == null) {
+            throw SystemException.serviceUnavailable(
+                    "Kho lưu trữ tệp chưa sẵn sàng.", "TRAINING_STORAGE_UNAVAILABLE");
+        }
+
+        String normalizedRange = StringUtils.hasText(range) ? range.trim() : null;
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.ACCEPT_RANGES, "bytes");
+        headers.set(HttpHeaders.CACHE_CONTROL, "private, max-age=3600");
+        headers.setContentDisposition(
+                ContentDisposition.inline()
+                        .filename(asset.getFileName(), StandardCharsets.UTF_8)
+                        .build());
+
+        if (headOnly && normalizedRange == null) {
+            headers.setContentType(parseMediaType(asset.getContentType()));
+            if (asset.getSizeBytes() != null && asset.getSizeBytes() >= 0) {
+                headers.setContentLength(asset.getSizeBytes());
+            }
+            return new ResponseEntity<>(out -> {}, headers, HttpStatus.OK);
+        }
+
+        ObjectStream objectStream;
+        try {
+            objectStream = storage.openStream(asset.getObjectKey(), normalizedRange);
+        } catch (RuntimeException ex) {
+            log.warn("Cannot stream training asset {}: {}", asset.getObjectKey(), ex.getMessage());
+            throw SystemException.serviceUnavailable(
+                    "Không thể đọc tệp đào tạo từ kho lưu trữ.", "TRAINING_STORAGE_UNAVAILABLE");
+        }
+
+        String contentType =
+                StringUtils.hasText(objectStream.contentType())
+                        ? objectStream.contentType()
+                        : asset.getContentType();
+        headers.setContentType(parseMediaType(contentType));
+        if (StringUtils.hasText(objectStream.eTag())) {
+            headers.setETag(objectStream.eTag());
+        }
+
+        HttpStatus status = HttpStatus.OK;
+        if (StringUtils.hasText(objectStream.contentRange())) {
+            status = HttpStatus.PARTIAL_CONTENT;
+            headers.set(HttpHeaders.CONTENT_RANGE, objectStream.contentRange());
+        }
+        if (objectStream.contentLength() >= 0) {
+            headers.setContentLength(objectStream.contentLength());
+        } else if (normalizedRange == null
+                && asset.getSizeBytes() != null
+                && asset.getSizeBytes() >= 0) {
+            headers.setContentLength(asset.getSizeBytes());
+        }
+
+        if (headOnly) {
+            try {
+                objectStream.close();
+            } catch (Exception ignored) {
+                // ignore
+            }
+            return new ResponseEntity<>(out -> {}, headers, status);
+        }
+
+        StreamingResponseBody body =
+                outputStream -> {
+                    try (ObjectStream stream = objectStream;
+                            InputStream in = stream.body()) {
+                        byte[] buffer = new byte[STREAM_BUFFER_SIZE];
+                        int read;
+                        while ((read = in.read(buffer)) != -1) {
+                            outputStream.write(buffer, 0, read);
+                        }
+                        outputStream.flush();
+                    } catch (IOException clientAbort) {
+                        // Browser pdf.js / video players commonly close initial probe streams early
+                        // once headers are read to switch to HTTP Range requests.
+                        log.debug(
+                                "Client closed training asset {} stream early: {}",
+                                assetId,
+                                clientAbort.getMessage());
+                    }
+                };
+
+        return new ResponseEntity<>(body, headers, status);
+    }
+
+    private static MediaType parseMediaType(String raw) {
+        if (StringUtils.hasText(raw)) {
+            try {
+                return MediaType.parseMediaType(raw);
+            } catch (Exception ignored) {
+                // falls through
+            }
+        }
+        return MediaType.APPLICATION_OCTET_STREAM;
     }
 
     /**
@@ -508,10 +694,33 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
         return map;
     }
 
-    /** Same rule as the document endpoints: admins see drafts; everyone else needs an active course. */
+    private TrainingLesson readableLesson(Long lessonId, AppUser user, boolean canManage) {
+        TrainingLesson lesson =
+                lessons.findById(lessonId).orElseThrow(TrainingCourseServiceImpl::lessonNotFound);
+        TrainingDocument doc = lesson.getDocument();
+        boolean manager = canManage || isAdmin(user);
+        if (doc == null || !readable(doc, user, manager)) throw lessonNotFound();
+        if (!Boolean.TRUE.equals(lesson.getActive()) && !manager) throw lessonNotFound();
+        return lesson;
+    }
+
+    boolean canManage(AppUser user, Authentication auth) {
+        if (isAdmin(user)) return true;
+        if (auth == null || permissionService == null) return false;
+        return permissionService.has(auth, "USER_PERMISSION_MANAGE")
+                || permissionService.has(auth, "USER_MANAGE");
+    }
+
+    /** Same rule as the document endpoints: admins and authorized managers see drafts; everyone else needs an active course. */
     static boolean readable(TrainingDocument doc, AppUser user) {
-        boolean visible = isAdmin(user) || Boolean.TRUE.equals(doc.getActive());
-        return visible && TrainingServiceImpl.portalsFor(user).contains(doc.getTargetPortal());
+        return readable(doc, user, false);
+    }
+
+    static boolean readable(TrainingDocument doc, AppUser user, boolean canManage) {
+        boolean manager = canManage || isAdmin(user);
+        boolean visible = manager || Boolean.TRUE.equals(doc.getActive());
+        return visible
+                && TrainingServiceImpl.portalsFor(user, manager).contains(doc.getTargetPortal());
     }
 
     static String sectionTitle(TrainingLesson lesson) {

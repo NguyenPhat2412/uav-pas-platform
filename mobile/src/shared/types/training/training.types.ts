@@ -66,6 +66,8 @@ export interface TrainingAcademyWorkspaceProps {
     defaultPortal: TrainingPortalTier;
     /** Admin view: add and edit documents instead of tracking the reader's own progress. */
     manage?: boolean;
+    /** Optional base path for learner course player links (e.g. `/operations/training`). */
+    learnerBasePath?: string;
 }
 
 /** Where /admin/training lands: the sidebar lists the customer, operations and admin catalogues separately. */
@@ -229,7 +231,9 @@ export interface AdminTrainingLesson extends Omit<UpsertTrainingLessonPayload, '
     sectionTitle: string | null;
     /** The server may also send a signed `url` for each slide, used for thumbnails when present. */
     slides: Array<TrainingLessonSlideInput & {url?: string | null}>;
+    videoFileName?: string | null;
     documentAssetId?: number | null;
+    documentFileName?: string | null;
     documentUrl?: string | null;
     /** Present when the server sends it; used to show the PDF's name in the editor. */
     document?: TrainingLessonDocument | null;

@@ -116,7 +116,9 @@ export function lessonDraftFromDetail(
         videoSource: lesson.videoUrl ? 'LINK' : 'FILE',
         videoUrl: lesson.videoUrl ?? '',
         videoAssetId: lesson.videoAssetId,
-        videoFileName: lesson.videoAssetId ? `Tệp đã tải lên #${lesson.videoAssetId}` : null,
+        videoFileName:
+            lesson.videoFileName ??
+            (lesson.videoAssetId ? `Tệp đã tải lên #${lesson.videoAssetId}` : null),
         bodyMarkdown: lesson.bodyMarkdown ?? '',
         slides: (lesson.slides ?? []).map((slide, index) => ({
             key: `existing-${slide.assetId}-${index}`,
@@ -127,6 +129,7 @@ export function lessonDraftFromDetail(
         documentSource: lesson.documentUrl ? 'LINK' : 'FILE',
         documentAssetId: lesson.documentAssetId ?? null,
         documentFileName:
+            lesson.documentFileName ??
             (lesson.document?.kind !== 'EMBED' ? lesson.document?.fileName : null) ??
             (lesson.documentAssetId ? `Tệp PDF đã tải lên #${lesson.documentAssetId}` : null),
         documentUrl: lesson.documentUrl ?? '',

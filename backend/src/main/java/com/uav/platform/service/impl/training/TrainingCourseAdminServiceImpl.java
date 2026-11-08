@@ -7,6 +7,7 @@ import com.uav.platform.dto.request.training.UpsertTrainingLessonRequest;
 import com.uav.platform.dto.response.training.TrainingAssetResponse;
 import com.uav.platform.dto.response.training.TrainingAssetUploadResponse;
 import com.uav.platform.dto.response.training.TrainingLessonAdminResponse;
+import com.uav.platform.dto.response.training.TrainingLessonDetailResponse;
 import com.uav.platform.entity.training.TrainingAsset;
 import com.uav.platform.entity.training.TrainingDocument;
 import com.uav.platform.entity.training.TrainingLesson;
@@ -29,10 +30,12 @@ import com.uav.platform.service.training.TrainingVideoUrls;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -172,9 +175,7 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
 
         String uploadUrl;
         try {
-            uploadUrl =
-                    storage.createSignedUploadUrl(
-                            asset.getObjectKey(), contentType, size, UPLOAD_VALIDITY);
+            uploadUrl = mediaUrls.signedPut(asset, UPLOAD_VALIDITY);
         } catch (RuntimeException ex) {
             log.warn("Cannot sign training upload {}: {}", asset.getObjectKey(), ex.getMessage());
             throw storageUnavailable();
@@ -185,6 +186,39 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
         headers.put("Content-Type", contentType);
         headers.put("If-None-Match", "*");
         return new TrainingAssetUploadResponse(asset.getId(), uploadUrl, "PUT", headers);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void uploadAssetContent(
+            Long assetId, Long exp, String sig, InputStream body, Authentication authentication) {
+        boolean validSignature = mediaUrls.verifySignature("PUT", assetId, exp, sig);
+        boolean authenticated = authentication != null && authentication.isAuthenticated();
+        if (!validSignature && !authenticated) {
+            throw SystemException.forbidden(
+                    "Liên kết tải tệp không hợp lệ hoặc đã hết hạn.",
+                    "TRAINING_ASSET_UPLOAD_FORBIDDEN");
+        }
+        TrainingAsset asset =
+                assets.findById(assetId)
+                        .orElseThrow(
+                                () ->
+                                        SystemException.notFound(
+                                                "Không tìm thấy tệp đào tạo.",
+                                                "TRAINING_ASSET_NOT_FOUND"));
+        if (asset.getStatus() == TrainingAssetStatus.READY) {
+            throw SystemException.conflict(
+                    "Tệp đào tạo đã được xác nhận, không thể ghi đè.",
+                    "TRAINING_ASSET_ALREADY_CONFIRMED");
+        }
+        TrainingAssetPolicy.validate(asset.getContentType(), asset.getSizeBytes());
+        try {
+            storage.uploadObject(
+                    asset.getObjectKey(), asset.getContentType(), asset.getSizeBytes(), body);
+        } catch (RuntimeException ex) {
+            log.warn("Cannot upload training asset {}: {}", asset.getObjectKey(), ex.getMessage());
+            throw storageUnavailable();
+        }
     }
 
     @Override
@@ -457,6 +491,8 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
 
     private static List<Long> referencedAssets(TrainingLesson lesson) {
         List<Long> ids = new ArrayList<>();
+        if (lesson.getVideoAssetId() != null) ids.add(lesson.getVideoAssetId());
+        if (lesson.getDocumentAssetId() != null) ids.add(lesson.getDocumentAssetId());
         lesson.getSlides().forEach(s -> ids.add(s.getAssetId()));
         lesson.getResources().forEach(r -> ids.add(r.getAssetId()));
         return ids;
@@ -471,6 +507,18 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
 
     private TrainingLessonAdminResponse toResponse(
             TrainingLesson lesson, Map<Long, TrainingAsset> byId) {
+        TrainingAsset videoAsset =
+                lesson.getVideoAssetId() == null ? null : byId.get(lesson.getVideoAssetId());
+        TrainingAsset docAsset =
+                lesson.getDocumentAssetId() == null ? null : byId.get(lesson.getDocumentAssetId());
+        String videoSignedUrl = videoAsset == null ? null : mediaUrls.signedGet(videoAsset);
+        String docSignedUrl = docAsset == null ? null : mediaUrls.signedGet(docAsset);
+        TrainingLessonDetailResponse.Document documentPreview =
+                docAsset == null
+                        ? null
+                        : TrainingLessonDetailResponse.Document.file(
+                                docSignedUrl, docAsset.getFileName(), docAsset.getSizeBytes());
+
         return TrainingLessonAdminResponse.builder()
                 .id(lesson.getId())
                 .courseId(lesson.getDocument().getId())
@@ -482,8 +530,13 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
                 .active(lesson.getActive())
                 .videoUrl(lesson.getVideoUrl())
                 .videoAssetId(lesson.getVideoAssetId())
+                .videoFileName(videoAsset == null ? null : videoAsset.getFileName())
+                .videoSignedUrl(videoSignedUrl)
                 .documentAssetId(lesson.getDocumentAssetId())
+                .documentFileName(docAsset == null ? null : docAsset.getFileName())
+                .documentSignedUrl(docSignedUrl)
                 .documentUrl(lesson.getDocumentUrl())
+                .document(documentPreview)
                 .bodyMarkdown(lesson.getBodyMarkdown())
                 .slides(
                         lesson.getSlides().stream()
@@ -498,12 +551,15 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
                 .resources(
                         lesson.getResources().stream()
                                 .map(
-                                        r ->
-                                                new TrainingLessonAdminResponse.Resource(
-                                                        r.getAssetId(),
-                                                        r.getTitle(),
-                                                        mediaUrls.signedGet(
-                                                                byId.get(r.getAssetId()))))
+                                        r -> {
+                                            TrainingAsset ra = byId.get(r.getAssetId());
+                                            return new TrainingLessonAdminResponse.Resource(
+                                                    r.getAssetId(),
+                                                    r.getTitle(),
+                                                    mediaUrls.signedGet(ra),
+                                                    ra == null ? null : ra.getContentType(),
+                                                    ra == null ? null : ra.getSizeBytes());
+                                        })
                                 .toList())
                 .build();
     }

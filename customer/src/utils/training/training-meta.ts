@@ -149,7 +149,17 @@ export function adminTrainingHome(portal: TrainingPortalTier): string {
     return `/admin/training/${portal.toLowerCase()}`;
 }
 
-/** Link from the admin pages to the learner view of a course; `portal` keeps the right sidebar item lit while it loads. */
-export function adminTrainingPreviewHref(slug: string, portal: TrainingPortalTier): string {
-    return `/admin/training/learn/${encodeURIComponent(slug)}?portal=${portal}`;
+/** Link from the admin/operations management pages to the learner view of a course or specific lesson. */
+export function adminTrainingPreviewHref(
+    slug: string,
+    portal: TrainingPortalTier,
+    lessonId?: number | null,
+    learnerBasePath?: string,
+): string {
+    if (learnerBasePath) {
+        const base = `${learnerBasePath.replace(/\/$/, '')}/${encodeURIComponent(slug)}`;
+        return lessonId != null ? `${base}?lesson=${lessonId}` : base;
+    }
+    const base = `/admin/training/learn/${encodeURIComponent(slug)}?portal=${portal}`;
+    return lessonId != null ? `${base}&lesson=${lessonId}` : base;
 }

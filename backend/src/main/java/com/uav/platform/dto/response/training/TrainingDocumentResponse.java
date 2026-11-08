@@ -1,5 +1,7 @@
 package com.uav.platform.dto.response.training;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ public record TrainingDocumentResponse(
         String title,
         String summary,
         String contentMarkdown,
+        @JsonInclude(JsonInclude.Include.NON_NULL) String coverUrl,
         List<String> checklistSteps,
         String progressStatus,
         List<Integer> checkedSteps,
@@ -82,6 +85,10 @@ public record TrainingDocumentResponse(
 
     public String getContentMarkdown() {
         return contentMarkdown();
+    }
+
+    public String getCoverUrl() {
+        return coverUrl();
     }
 
     public List<String> getChecklistSteps() {

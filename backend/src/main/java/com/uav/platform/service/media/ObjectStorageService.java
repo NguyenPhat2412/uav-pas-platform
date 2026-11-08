@@ -1,6 +1,7 @@
 package com.uav.platform.service.media;
 
 import com.uav.platform.dto.record.media.ObjectMetadata;
+import com.uav.platform.dto.record.media.ObjectStream;
 import com.uav.platform.enums.media.*;
 
 public interface ObjectStorageService {
@@ -25,6 +26,20 @@ public interface ObjectStorageService {
     ObjectMetadata metadata(String objectKey);
 
     void deleteObject(String objectKey);
+
+    /**
+     * Opens an object stream (optionally for an HTTP byte {@code range}, e.g. {@code "bytes=0-65535"}).
+     * Callers must close the returned {@link ObjectStream}.
+     */
+    default ObjectStream openStream(String objectKey, String range) {
+        throw new UnsupportedOperationException("Object streaming not supported");
+    }
+
+    /** Uploads an object body of exact {@code size} bytes directly through server-side storage credentials. */
+    default void uploadObject(
+            String objectKey, String contentType, long size, java.io.InputStream body) {
+        throw new UnsupportedOperationException("Direct object upload not supported");
+    }
 
     /**
      * Whether the configured bucket answers right now; used by the admin health page. Implementations that cannot

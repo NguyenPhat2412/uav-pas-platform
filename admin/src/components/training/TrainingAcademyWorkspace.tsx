@@ -3,6 +3,7 @@
 import {useMemo, useState} from 'react';
 import {Eye, Plus, RefreshCw} from 'lucide-react';
 import {Button} from '@/components/ui';
+import {useAuth} from '@/providers/AuthContext';
 import {
     useSaveTrainingDocument,
     useTrainingDocumentProgress,
@@ -25,13 +26,41 @@ import {TrainingDocumentMasterDetail} from '@/components/training/TrainingDocume
 import {TrainingEnrollmentStatsStrip} from '@/components/training/TrainingEnrollmentStatsStrip';
 
 /**
+ * Operations training entry: when an operator is granted `USER_PERMISSION_MANAGE`, they can add
+ * courses, upload PDF/video/slide lessons, view them inline and toggle to the learner catalogue.
+ * Operators without management permission see the learner course catalogue directly.
+ */
+export function OperationsTrainingWorkspace() {
+    const {can} = useAuth();
+    const canManage = can('USER_PERMISSION_MANAGE');
+
+    if (!canManage) {
+        return (
+            <TrainingCourseCatalog
+                portal="OPERATIONS"
+                courseHref={slug => `/operations/training/${encodeURIComponent(slug)}`}
+            />
+        );
+    }
+
+    return (
+        <TrainingAcademyWorkspace
+            defaultPortal="OPERATIONS"
+            manage
+            learnerBasePath="/operations/training"
+        />
+    );
+}
+
+/**
  * Training for one portal. Customers and operations staff read lessons and tick off checklists;
- * with `manage` (admin pages) the same catalogue is shown read-only with add and edit actions.
- * Each page fixes its portal, so there is no in-page switch between portals.
+ * with `manage` (admin or authorised operations pages) the catalogue is shown with add/edit and
+ * inline PDF/video lesson management.
  */
 export function TrainingAcademyWorkspace({
     defaultPortal,
     manage = false,
+    learnerBasePath,
 }: TrainingAcademyWorkspaceProps) {
     const activePortal = defaultPortal;
 
@@ -159,7 +188,7 @@ export function TrainingAcademyWorkspace({
                     </h1>
                     <p className="max-w-3xl text-sm text-muted">
                         {manage
-                            ? `Thêm, sửa hoặc ẩn tài liệu mà ${portalInfo.audience} thấy trong mục Đào tạo.`
+                            ? `Thêm, sửa hoặc ẩn khóa học, tải tệp PDF và video đào tạo mà ${portalInfo.audience} thấy trong mục Đào tạo.`
                             : portalInfo.subtitle}
                     </p>
                 </div>
@@ -179,7 +208,7 @@ export function TrainingAcademyWorkspace({
                             aria-pressed={learnerPreview}
                         >
                             <Eye className="h-3.5 w-3.5" />
-                            Xem như học viên
+                            {learnerPreview ? 'Quản lý đào tạo' : 'Xem như học viên'}
                         </Button>
                     )}
 
@@ -197,7 +226,7 @@ export function TrainingAcademyWorkspace({
                     portal={activePortal}
                     embedded
                     manage
-                    courseHref={slug => adminTrainingPreviewHref(slug, activePortal)}
+                    courseHref={slug => adminTrainingPreviewHref(slug, activePortal, null, learnerBasePath)}
                 />
             ) : (
                 <>
@@ -224,6 +253,7 @@ export function TrainingAcademyWorkspace({
                         isLoading={isLoading}
                         manage={manage}
                         activePortal={activePortal}
+                        learnerBasePath={learnerBasePath}
                         filteredDocuments={filteredDocuments}
                         activeDocument={activeDocument}
                         isProgressPending={progressMutation.isPending}

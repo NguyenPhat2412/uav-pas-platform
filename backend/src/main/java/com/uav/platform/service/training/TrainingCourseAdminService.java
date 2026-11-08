@@ -7,6 +7,9 @@ import com.uav.platform.dto.response.training.TrainingAssetResponse;
 import com.uav.platform.dto.response.training.TrainingAssetUploadResponse;
 import com.uav.platform.dto.response.training.TrainingLessonAdminResponse;
 
+import org.springframework.security.core.Authentication;
+
+import java.io.InputStream;
 import java.util.List;
 
 /** Course authoring: lessons, cover and uploaded media. Callers hold USER_PERMISSION_MANAGE. */
@@ -24,6 +27,9 @@ public interface TrainingCourseAdminService {
     void setCover(Long courseId, UpdateCourseCoverRequest request);
 
     TrainingAssetUploadResponse createAsset(CreateTrainingAssetRequest request, String actor);
+
+    void uploadAssetContent(
+            Long assetId, Long exp, String sig, InputStream body, Authentication authentication);
 
     TrainingAssetResponse confirmAsset(Long assetId);
 }

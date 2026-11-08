@@ -368,6 +368,29 @@ export function clampPdfPage(value: number | string | null | undefined, pageCoun
     return Math.min(Math.max(Math.trunc(page), 1), pageCount);
 }
 
+/**
+ * Pages shown at once in the PDF reader: a 2-page open-book spread (`[1, 2]`, `[3, 4]`, …) when
+ * `bookMode` is on and the document has at least two pages, or `[page]` in single-page mode.
+ */
+export function pdfBookSpread(page: number, pageCount: number, bookMode: boolean): number[] {
+    const clamped = clampPdfPage(page, pageCount);
+    if (clamped === null) return [];
+    if (!bookMode || pageCount <= 1) return [clamped];
+    const left = clamped % 2 === 0 ? clamped - 1 : clamped;
+    return left + 1 <= pageCount ? [left, left + 1] : [left];
+}
+
+/** How many pages one turn advances: 2 in open-book mode, 1 in single-page mode. */
+export function pdfPageStep(bookMode: boolean, pageCount: number): number {
+    return bookMode && pageCount > 1 ? 2 : 1;
+}
+
+/** Human-readable spread label ("1–2" or "5") for the PDF book toolbar. */
+export function pdfSpreadLabel(spread: readonly number[]): string {
+    if (spread.length === 0) return '—';
+    return spread.length === 1 ? String(spread[0]) : `${spread[0]}–${spread[spread.length - 1]}`;
+}
+
 /** Move one item up or down; out-of-range moves return the list unchanged (same reference). */
 export function moveItem<T>(items: readonly T[], from: number, to: number): T[] {
     if (from === to || from < 0 || to < 0 || from >= items.length || to >= items.length) return items as T[];

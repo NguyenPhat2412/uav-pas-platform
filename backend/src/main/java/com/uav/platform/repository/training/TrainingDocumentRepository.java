@@ -16,6 +16,8 @@ public interface TrainingDocumentRepository
     List<TrainingDocument> findByTargetPortalAndActiveTrueOrderBySortOrderAscIdAsc(
             String targetPortal);
 
+    List<TrainingDocument> findByTargetPortalOrderBySortOrderAscIdAsc(String targetPortal);
+
     List<TrainingDocument> findByActiveTrueOrderByTargetPortalAscSortOrderAscIdAsc();
 
     Optional<TrainingDocument> findByCodeIgnoreCase(String code);

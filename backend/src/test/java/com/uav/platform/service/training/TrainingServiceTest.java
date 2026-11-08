@@ -20,6 +20,7 @@ import com.uav.platform.repository.training.TrainingLessonRepository;
 import com.uav.platform.repository.training.UserTrainingProgressRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.training.TrainingServiceImpl;
+import com.uav.platform.service.permission.PermissionService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -296,5 +297,40 @@ class TrainingServiceTest {
                         6L, new UpdateTrainingProgressRequest(List.of(0), false), customer);
         assertEquals("COMPLETED", unticked.progressStatus());
         assertEquals(complete.completedAt(), unticked.completedAt());
+    }
+
+    @Test
+    @DisplayName(
+            "operations user granted USER_PERMISSION_MANAGE can read ADMIN portal and inactive drafts")
+    void operationsManagerWithPermissionCanReadAllPortalsAndDrafts() {
+        PermissionService permissionService = mock(PermissionService.class);
+        TrainingServiceImpl managedService =
+                new TrainingServiceImpl(
+                        trainingDocumentRepository,
+                        userTrainingProgressRepository,
+                        userRepository,
+                        lessonRepository,
+                        lessonProgressRepository,
+                        permissionService,
+                        null,
+                        null);
+        var operator = signedIn("ops_manager", UserRole.ROLE_OPERATOR);
+        when(permissionService.has(operator, "USER_PERMISSION_MANAGE")).thenReturn(true);
+
+        TrainingDocument draftAdminDoc = doc(88, "ADMIN", false, "[]");
+        when(trainingDocumentRepository.findByTargetPortalOrderBySortOrderAscIdAsc("ADMIN"))
+                .thenReturn(List.of(draftAdminDoc));
+        when(trainingDocumentRepository.findByCodeIgnoreCaseOrSlugIgnoreCase("TRN-88", "TRN-88"))
+                .thenReturn(Optional.of(draftAdminDoc));
+
+        TrainingOverviewResponse overview =
+                managedService.getOverview("ADMIN", null, null, operator);
+        assertEquals("ADMIN", overview.getPortal());
+        assertEquals(1, overview.getDocuments().size());
+        assertEquals("TRN-88", overview.getDocuments().get(0).getCode());
+
+        TrainingDocumentResponse detail = managedService.getByCodeOrSlug("TRN-88", operator);
+        assertEquals("TRN-88", detail.getCode());
+        assertFalse(detail.getActive());
     }
 }

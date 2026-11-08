@@ -5,6 +5,8 @@ import Link from 'next/link';
 import {
     ArrowDown,
     ArrowUp,
+    BookOpen,
+    ExternalLink,
     Eye,
     EyeOff,
     FileText,
@@ -19,6 +21,7 @@ import {
     useRefreshTrainingCourse,
     useSetTrainingCover,
     useTrainingCourses,
+    useTrainingLesson,
     useUpdateTrainingLessons,
 } from '@/hooks/training/useTraining';
 import {confirmDialog} from '@/providers/ConfirmContext';
@@ -36,6 +39,7 @@ import {
     TRAINING_LESSON_TYPE_ICONS,
     TrainingLessonEditorModal,
 } from '@/components/training/TrainingLessonEditorModal';
+import {isDarkStage, TrainingPlayerStage} from '@/components/training/TrainingPlayerStage';
 import {adminTrainingPreviewHref} from '@/utils/training/training-meta';
 import {
     LESSON_TYPE_LABELS,
@@ -46,18 +50,22 @@ import {
 const iconBtnClass = 'h-7 w-7 px-0';
 
 /**
- * Admin side of a course: its cover image, a link to the learner view, the lesson list with add,
- * edit, reorder (sort order + up/down) and hide/show, and a drop area that turns files into lessons.
+ * Admin / Operations management side of a course: its cover image, a link to the learner view,
+ * the lesson list with add, edit, reorder (sort order + up/down), hide/show, an inline book-PDF
+ * and video lesson viewer right inside the course panel, and a drop area that turns files into lessons.
  */
 export function TrainingCourseAdminPanel({
     document,
     portal,
+    learnerBasePath,
 }: {
     document: TrainingDocument;
     portal: TrainingPortalTier;
+    learnerBasePath?: string;
 }) {
     const {t} = useI18n();
     const [editing, setEditing] = useState<AdminTrainingLesson | 'new' | null>(null);
+    const [previewLessonId, setPreviewLessonId] = useState<number | null>(null);
     const lessonsQuery = useAdminTrainingLessons(document.id);
     const coursesQuery = useTrainingCourses(portal);
     const summary = coursesQuery.data?.find(course => course.id === document.id);
@@ -73,6 +81,14 @@ export function TrainingCourseAdminPanel({
               : summary?.coverUrl;
 
     const lessons = [...(lessonsQuery.data ?? [])].sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
+    const activeLessons = lessons.filter(lesson => lesson.active);
+    const activePreviewLesson =
+        (previewLessonId !== null ? lessons.find(lesson => lesson.id === previewLessonId) : null) ??
+        activeLessons[0] ??
+        lessons[0] ??
+        null;
+
+    const previewLessonQuery = useTrainingLesson(activePreviewLesson?.id ?? 0, activePreviewLesson !== null);
 
     const refresh = useRefreshTrainingCourse(document.id);
     const reorder = useUpdateTrainingLessons(document.id);
@@ -102,6 +118,7 @@ export function TrainingCourseAdminPanel({
     const actionError = reorder.error ?? toggleActive.error ?? cover.error;
     const nextSortOrder = (lessons.at(-1)?.sortOrder ?? 0) + 10;
     const lastSection = lessons.at(-1)?.sectionTitle ?? '';
+    const courseSlug = document.slug || document.code;
 
     return (
         <div className="space-y-4 bg-card p-5">
@@ -142,7 +159,7 @@ export function TrainingCourseAdminPanel({
                             </Button>
                         )}
                         <Link
-                            href={adminTrainingPreviewHref(document.slug || document.code, portal)}
+                            href={adminTrainingPreviewHref(courseSlug, portal, activePreviewLesson?.id ?? null, learnerBasePath)}
                             className="inline-flex h-8 items-center gap-1.5 rounded-control border border-border bg-card px-3 text-xs font-medium text-foreground hover:bg-surface-variant"
                         >
                             <Eye className="h-3.5 w-3.5" />
@@ -176,14 +193,29 @@ export function TrainingCourseAdminPanel({
                     <ol className="divide-y divide-border">
                         {lessons.map((lesson, index) => {
                             const Icon = TRAINING_LESSON_TYPE_ICONS[lesson.type] ?? FileText;
+                            const isPreviewed = activePreviewLesson?.id === lesson.id;
                             return (
-                                <li key={lesson.id} className={`flex items-center gap-3 px-4 py-2 ${lesson.active ? '' : 'bg-surface-variant/40'}`}>
+                                <li
+                                    key={lesson.id}
+                                    className={`flex items-center gap-3 px-4 py-2 ${
+                                        isPreviewed
+                                            ? 'bg-slate-100/80'
+                                            : lesson.active
+                                              ? ''
+                                              : 'bg-surface-variant/40'
+                                    }`}
+                                >
                                     <span className="w-8 shrink-0 text-right text-[11px] text-muted-foreground tabular-nums" title="Thứ tự">
                                         {lesson.sortOrder}
                                     </span>
                                     <Icon className="h-4 w-4 shrink-0 text-muted" aria-label={LESSON_TYPE_LABELS[lesson.type]} />
-                                    <div className="min-w-0 flex-1">
-                                        <p className={`truncate text-sm ${lesson.active ? 'text-foreground' : 'text-muted-foreground line-through'}`}>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPreviewLessonId(lesson.id)}
+                                        className="min-w-0 flex-1 text-left"
+                                        title="Bấm để xem trực tiếp bài học này bên dưới"
+                                    >
+                                        <p className={`truncate text-sm font-medium ${lesson.active ? 'text-foreground' : 'text-muted-foreground line-through'}`}>
                                             {lesson.title}
                                         </p>
                                         <p className="truncate text-[11px] text-muted-foreground">
@@ -191,8 +223,28 @@ export function TrainingCourseAdminPanel({
                                             {(lesson.resources?.length ?? 0) > 0 && ` · ${lesson.resources?.length} tài liệu đính kèm`}
                                             {!lesson.active && ' · Đang ẩn'}
                                         </p>
-                                    </div>
-                                    <div className="flex shrink-0 items-center">
+                                    </button>
+                                    <div className="flex shrink-0 items-center gap-0.5">
+                                        <Button
+                                            type="button"
+                                            variant={isPreviewed ? 'secondary' : 'ghost'}
+                                            size="sm"
+                                            onClick={() => setPreviewLessonId(lesson.id)}
+                                            aria-pressed={isPreviewed}
+                                            title="Xem trực tiếp PDF / Video ngay bên dưới"
+                                            className="h-7 gap-1 px-2 text-xs"
+                                        >
+                                            <BookOpen className="h-3.5 w-3.5" />
+                                            <span className="hidden sm:inline">Xem bài</span>
+                                        </Button>
+                                        <Link
+                                            href={adminTrainingPreviewHref(courseSlug, portal, lesson.id, learnerBasePath)}
+                                            aria-label={`Mở bài ${lesson.title} trong trình phát`}
+                                            title="Mở trong trình phát khóa học"
+                                            className="inline-flex h-7 w-7 items-center justify-center rounded-control text-muted-foreground hover:bg-surface-variant hover:text-foreground"
+                                        >
+                                            <ExternalLink className="h-3.5 w-3.5" />
+                                        </Link>
                                         <Button type="button" variant="ghost" size="sm" className={iconBtnClass} disabled={busy || index === 0} onClick={() => moveLesson(index, index - 1)} aria-label="Lên trên" title="Lên trên">
                                             <ArrowUp className="h-3.5 w-3.5" />
                                         </Button>
@@ -229,6 +281,41 @@ export function TrainingCourseAdminPanel({
                 )}
             </Card>
             {actionError && <ErrorNotice error={actionError} />}
+
+            {activePreviewLesson && (
+                <Card className="overflow-hidden p-0">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface-variant/60 px-4 py-2.5">
+                        <div className="min-w-0">
+                            <p className="truncate text-xs font-semibold text-foreground">
+                                Xem trực tiếp: {activePreviewLesson.title}
+                            </p>
+                            <p className="text-[11px] text-muted-foreground">
+                                {LESSON_TYPE_LABELS[activePreviewLesson.type]} · {activePreviewLesson.durationMinutes} phút
+                            </p>
+                        </div>
+                        <Link
+                            href={adminTrainingPreviewHref(courseSlug, portal, activePreviewLesson.id, learnerBasePath)}
+                            className="inline-flex h-7 items-center gap-1 rounded-control border border-border bg-card px-2.5 text-xs font-medium text-foreground hover:bg-surface-variant"
+                        >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            Mở toàn trình phát
+                        </Link>
+                    </div>
+                    <div className={isDarkStage(activePreviewLesson.type) ? 'bg-black' : 'bg-white'}>
+                        <TrainingPlayerStage
+                            lessonId={activePreviewLesson.id}
+                            expectedType={activePreviewLesson.type}
+                            lesson={
+                                previewLessonQuery.data && previewLessonQuery.data.id === activePreviewLesson.id
+                                    ? previewLessonQuery.data
+                                    : undefined
+                            }
+                            error={previewLessonQuery.error}
+                            onSave={() => undefined}
+                        />
+                    </div>
+                </Card>
+            )}
 
             <TrainingBulkLessonUpload
                 courseId={document.id}

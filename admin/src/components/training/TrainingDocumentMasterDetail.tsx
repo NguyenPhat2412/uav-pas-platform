@@ -11,6 +11,7 @@ export interface TrainingDocumentMasterDetailProps {
     isLoading: boolean;
     manage: boolean;
     activePortal: TrainingPortalTier;
+    learnerBasePath?: string;
     filteredDocuments: TrainingDocument[];
     activeDocument: TrainingDocument | null;
     isProgressPending: boolean;
@@ -26,6 +27,7 @@ export function TrainingDocumentMasterDetail({
     isLoading,
     manage,
     activePortal,
+    learnerBasePath,
     filteredDocuments,
     activeDocument,
     isProgressPending,
@@ -194,19 +196,19 @@ export function TrainingDocumentMasterDetail({
                             <p className="text-sm leading-relaxed text-muted">{activeDocument.summary}</p>
                         </div>
 
-                        {/* Course: cover, learner preview and lessons */}
-                        {manage && (
+                        {/* Course: cover, learner preview, lessons and inline PDF/video viewer */}
+                        {manage ? (
                             <TrainingCourseAdminPanel
                                 key={activeDocument.id}
                                 document={activeDocument}
                                 portal={activePortal}
+                                learnerBasePath={learnerBasePath}
                             />
+                        ) : (
+                            <div className="bg-card p-5">
+                                <MarkdownSopRenderer markdown={activeDocument.contentMarkdown} />
+                            </div>
                         )}
-
-                        {/* Content */}
-                        <div className="bg-card p-5">
-                            <MarkdownSopRenderer markdown={activeDocument.contentMarkdown} />
-                        </div>
 
                         {/* Checklist: learners tick it off; admins see it read-only */}
                         {(activeDocument.checklistSteps ?? []).length > 0 && (

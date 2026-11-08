@@ -6,6 +6,7 @@ import com.uav.platform.dto.request.training.UpdateTrainingProgressRequest;
 import com.uav.platform.dto.request.training.UpsertTrainingDocumentRequest;
 import com.uav.platform.dto.response.training.TrainingDocumentResponse;
 import com.uav.platform.dto.response.training.TrainingOverviewResponse;
+import com.uav.platform.entity.training.TrainingAsset;
 import com.uav.platform.entity.training.TrainingDocument;
 import com.uav.platform.entity.training.TrainingLesson;
 import com.uav.platform.entity.training.TrainingLessonProgress;
@@ -13,18 +14,20 @@ import com.uav.platform.entity.training.UserTrainingProgress;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.repository.training.TrainingAssetRepository;
 import com.uav.platform.repository.training.TrainingDocumentRepository;
 import com.uav.platform.repository.training.TrainingLessonProgressRepository;
 import com.uav.platform.repository.training.TrainingLessonRepository;
 import com.uav.platform.repository.training.UserTrainingProgressRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.AuthCookieHelper;
+import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.training.TrainingCourseProgress;
 import com.uav.platform.service.training.TrainingCourseRecords;
+import com.uav.platform.service.training.TrainingMediaUrls;
 import com.uav.platform.service.training.TrainingService;
 
-import lombok.RequiredArgsConstructor;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,15 +38,16 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class TrainingServiceImpl implements TrainingService {
 
     private static final Set<String> VALID_PORTALS = Set.of("CUSTOMER", "OPERATIONS", "ADMIN");
@@ -53,7 +57,47 @@ public class TrainingServiceImpl implements TrainingService {
     private final UserRepository userRepository;
     private final TrainingLessonRepository lessonRepository;
     private final TrainingLessonProgressRepository lessonProgressRepository;
+    private final PermissionService permissionService;
+    private final TrainingAssetRepository assetRepository;
+    private final TrainingMediaUrls mediaUrls;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public TrainingServiceImpl(
+            TrainingDocumentRepository trainingDocumentRepository,
+            UserTrainingProgressRepository userTrainingProgressRepository,
+            UserRepository userRepository,
+            TrainingLessonRepository lessonRepository,
+            TrainingLessonProgressRepository lessonProgressRepository) {
+        this(
+                trainingDocumentRepository,
+                userTrainingProgressRepository,
+                userRepository,
+                lessonRepository,
+                lessonProgressRepository,
+                null,
+                null,
+                null);
+    }
+
+    @Autowired
+    public TrainingServiceImpl(
+            TrainingDocumentRepository trainingDocumentRepository,
+            UserTrainingProgressRepository userTrainingProgressRepository,
+            UserRepository userRepository,
+            TrainingLessonRepository lessonRepository,
+            TrainingLessonProgressRepository lessonProgressRepository,
+            PermissionService permissionService,
+            TrainingAssetRepository assetRepository,
+            TrainingMediaUrls mediaUrls) {
+        this.trainingDocumentRepository = trainingDocumentRepository;
+        this.userTrainingProgressRepository = userTrainingProgressRepository;
+        this.userRepository = userRepository;
+        this.lessonRepository = lessonRepository;
+        this.lessonProgressRepository = lessonProgressRepository;
+        this.permissionService = permissionService;
+        this.assetRepository = assetRepository;
+        this.mediaUrls = mediaUrls;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -61,17 +105,33 @@ public class TrainingServiceImpl implements TrainingService {
             String portal, String category, String search, Authentication authentication) {
         AppUser user = resolveUser(authentication);
         Long userId = user != null ? user.getId() : null;
+        boolean manager = canManage(user, authentication);
         // A caller only sees documents for portals their role may use; anything else falls back to
         // their own.
         String requested = normalizePortal(portal);
         String resolvedPortal =
-                portalsFor(user).contains(requested) ? requested : defaultPortal(user);
+                portalsFor(user, manager).contains(requested) ? requested : defaultPortal(user);
 
-        List<TrainingDocument> allDocs =
-                trainingDocumentRepository.findByTargetPortalAndActiveTrueOrderBySortOrderAscIdAsc(
-                        resolvedPortal);
+        List<TrainingDocument> allDocs;
+        if (manager) {
+            allDocs =
+                    trainingDocumentRepository.findByTargetPortalOrderBySortOrderAscIdAsc(
+                            resolvedPortal);
+            if (allDocs == null || allDocs.isEmpty()) {
+                allDocs =
+                        trainingDocumentRepository
+                                .findByTargetPortalAndActiveTrueOrderBySortOrderAscIdAsc(
+                                        resolvedPortal);
+            }
+        } else {
+            allDocs =
+                    trainingDocumentRepository
+                            .findByTargetPortalAndActiveTrueOrderBySortOrderAscIdAsc(
+                                    resolvedPortal);
+        }
 
         Map<Long, UserTrainingProgress> progressByDocId = loadProgressMap(userId);
+        Map<Long, TrainingAsset> covers = loadCoverAssets(allDocs);
 
         int totalDocs = allDocs.size();
         int completedDocs = 0;
@@ -114,7 +174,12 @@ public class TrainingServiceImpl implements TrainingService {
                                                 || normalizedCategory.equalsIgnoreCase(
                                                         doc.getCategory()))
                         .filter(doc -> matchesSearch(doc, normalizedSearch))
-                        .map(doc -> toResponse(doc, progressByDocId.get(doc.getId())))
+                        .map(
+                                doc ->
+                                        toResponse(
+                                                doc,
+                                                progressByDocId.get(doc.getId()),
+                                                coverUrl(doc, covers)))
                         .collect(Collectors.toList());
 
         return TrainingOverviewResponse.builder()
@@ -146,7 +211,7 @@ public class TrainingServiceImpl implements TrainingService {
                                                 "Training document not found: " + key));
 
         AppUser user = resolveUser(authentication);
-        requireReadable(doc, user);
+        requireReadable(doc, user, authentication);
         UserTrainingProgress progress =
                 user != null
                         ? userTrainingProgressRepository
@@ -168,7 +233,7 @@ public class TrainingServiceImpl implements TrainingService {
                                 () ->
                                         SystemException.notFound(
                                                 "Training document not found: " + documentId));
-        requireReadable(doc, user);
+        requireReadable(doc, user, authentication);
 
         List<String> totalChecklist = parseStringList(doc.getChecklistJson());
         List<Integer> rawSteps =
@@ -374,6 +439,11 @@ public class TrainingServiceImpl implements TrainingService {
 
     /** Portals a role may read training for; mirrors the frontend portal guards. */
     static Set<String> portalsFor(AppUser user) {
+        return portalsFor(user, false);
+    }
+
+    static Set<String> portalsFor(AppUser user, boolean canManage) {
+        if (canManage) return VALID_PORTALS;
         UserRole role = user == null ? null : user.getRole();
         if (role == UserRole.ROLE_ADMIN) return VALID_PORTALS;
         if (role == UserRole.ROLE_COMMANDER || role == UserRole.ROLE_OPERATOR)
@@ -388,14 +458,21 @@ public class TrainingServiceImpl implements TrainingService {
         return "CUSTOMER";
     }
 
+    boolean canManage(AppUser user, Authentication auth) {
+        if (user != null && user.getRole() == UserRole.ROLE_ADMIN) return true;
+        if (auth == null || permissionService == null) return false;
+        return permissionService.has(auth, "USER_PERMISSION_MANAGE")
+                || permissionService.has(auth, "USER_MANAGE");
+    }
+
     /**
      * Hidden documents and documents for a portal the caller may not use answer 404, so their codes are not
-     * confirmed to exist. Administrators can still open inactive drafts.
+     * confirmed to exist. Administrators and authorized training managers can still open inactive drafts.
      */
-    private void requireReadable(TrainingDocument doc, AppUser user) {
-        boolean admin = user != null && user.getRole() == UserRole.ROLE_ADMIN;
-        boolean visible = admin || Boolean.TRUE.equals(doc.getActive());
-        if (!visible || !portalsFor(user).contains(doc.getTargetPortal()))
+    private void requireReadable(TrainingDocument doc, AppUser user, Authentication auth) {
+        boolean manager = canManage(user, auth);
+        boolean visible = manager || Boolean.TRUE.equals(doc.getActive());
+        if (!visible || !portalsFor(user, manager).contains(doc.getTargetPortal()))
             throw SystemException.notFound("Training document not found");
     }
 
@@ -458,8 +535,43 @@ public class TrainingServiceImpl implements TrainingService {
                 .orElseThrow(() -> SystemException.notFound("Authenticated user not found"));
     }
 
+    private Map<Long, TrainingAsset> loadCoverAssets(List<TrainingDocument> docs) {
+        if (assetRepository == null || docs == null || docs.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Long> ids =
+                docs.stream()
+                        .map(TrainingDocument::getCoverAssetId)
+                        .filter(Objects::nonNull)
+                        .toList();
+        if (ids.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<Long, TrainingAsset> byId = new HashMap<>();
+        assetRepository.findAllById(new HashSet<>(ids)).forEach(a -> byId.put(a.getId(), a));
+        return byId;
+    }
+
+    private String coverUrl(TrainingDocument doc, Map<Long, TrainingAsset> covers) {
+        if (mediaUrls == null || doc == null || doc.getCoverAssetId() == null) {
+            return null;
+        }
+        TrainingAsset asset =
+                covers != null
+                        ? covers.get(doc.getCoverAssetId())
+                        : (assetRepository != null
+                                ? assetRepository.findById(doc.getCoverAssetId()).orElse(null)
+                                : null);
+        return mediaUrls.signedGet(asset);
+    }
+
     private TrainingDocumentResponse toResponse(
             TrainingDocument doc, UserTrainingProgress progress) {
+        return toResponse(doc, progress, coverUrl(doc, null));
+    }
+
+    private TrainingDocumentResponse toResponse(
+            TrainingDocument doc, UserTrainingProgress progress, String resolvedCoverUrl) {
         List<String> checklistSteps = parseStringList(doc.getChecklistJson());
         List<Integer> checkedSteps =
                 progress != null
@@ -482,6 +594,7 @@ public class TrainingServiceImpl implements TrainingService {
                 .title(doc.getTitle())
                 .summary(doc.getSummary())
                 .contentMarkdown(doc.getContentMarkdown())
+                .coverUrl(resolvedCoverUrl)
                 .checklistSteps(checklistSteps)
                 .progressStatus(progressStatus)
                 .checkedSteps(checkedSteps)

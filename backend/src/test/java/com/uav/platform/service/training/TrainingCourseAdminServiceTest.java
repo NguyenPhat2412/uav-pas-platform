@@ -713,4 +713,31 @@ class TrainingCourseAdminServiceTest {
             assertTrue(batch.size() >= 20, field);
         }
     }
+
+    @Test
+    void adminLessonResponseIncludesVideoAndDocumentFileNamesAndPreviewMetadata() {
+        TrainingAsset pdf = asset(20, "application/pdf", TrainingAssetStatus.READY);
+        pdf.setFileName("So_tay_an_toan_bay.pdf");
+        pdf.setSizeBytes(456_789L);
+        when(storage.createSignedDownloadUrl(eq(pdf.getObjectKey()), any(Duration.class)))
+                .thenReturn("https://signed/so-tay.pdf");
+
+        TrainingLessonAdminResponse docLesson =
+                service.createLesson(lesson("DOCUMENT").documentAssetId(20L).build());
+        assertEquals("So_tay_an_toan_bay.pdf", docLesson.documentFileName());
+        assertEquals("https://signed/so-tay.pdf", docLesson.documentSignedUrl());
+        assertNotNull(docLesson.document());
+        assertEquals("So_tay_an_toan_bay.pdf", docLesson.document().fileName());
+        assertEquals(456_789L, docLesson.document().size());
+
+        TrainingAsset mp4 = asset(25, "video/mp4", TrainingAssetStatus.READY);
+        mp4.setFileName("Demo_cat_canh.mp4");
+        when(storage.createSignedDownloadUrl(eq(mp4.getObjectKey()), any(Duration.class)))
+                .thenReturn("https://signed/demo.mp4");
+
+        TrainingLessonAdminResponse videoLesson =
+                service.createLesson(lesson("VIDEO").videoAssetId(25L).build());
+        assertEquals("Demo_cat_canh.mp4", videoLesson.videoFileName());
+        assertEquals("https://signed/demo.mp4", videoLesson.videoSignedUrl());
+    }
 }

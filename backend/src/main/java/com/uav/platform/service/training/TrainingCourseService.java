@@ -5,7 +5,9 @@ import com.uav.platform.dto.response.training.TrainingCourseDetailResponse;
 import com.uav.platform.dto.response.training.TrainingCourseSummaryResponse;
 import com.uav.platform.dto.response.training.TrainingLessonDetailResponse;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.util.List;
 
@@ -29,4 +31,12 @@ public interface TrainingCourseService {
 
     TrainingLessonDetailResponse updateLessonProgress(
             Long lessonId, UpdateLessonProgressRequest request, Authentication authentication);
+
+    ResponseEntity<StreamingResponseBody> streamAsset(
+            Long assetId,
+            String range,
+            boolean headOnly,
+            Long exp,
+            String sig,
+            Authentication authentication);
 }

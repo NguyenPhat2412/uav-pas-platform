@@ -23,6 +23,30 @@ export function loadPdfjs(): Promise<PdfJs> {
     return pdfjsPromise;
 }
 
+/**
+ * Routes cross-origin R2 signed URLs through our same-origin `/api/training-pdf-proxy` endpoint so
+ * pdf.js can stream 64 KB HTTP Range chunks per page without hitting storage CORS restrictions.
+ */
+export function resolvePdfDocumentUrl(url: string): string {
+    try {
+        const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
+        const parsed = new URL(url, origin);
+        const host = parsed.hostname.toLowerCase();
+        const isR2 = parsed.protocol === 'https:' && host.endsWith('.r2.cloudflarestorage.com');
+        const isLocalBackendAsset =
+            (parsed.protocol === 'http:' || parsed.protocol === 'https:') &&
+            (host === 'localhost' || host === '127.0.0.1') &&
+            parsed.origin !== origin &&
+            parsed.pathname.includes('/api/v1/training/assets/');
+        if (isR2 || isLocalBackendAsset) {
+            return `/api/training-pdf-proxy?url=${encodeURIComponent(parsed.toString())}`;
+        }
+    } catch {
+        // Keep the original URL if parsing fails.
+    }
+    return url;
+}
+
 const PAGE_STORAGE_PREFIX = 'uav-training-pdf-page:';
 
 export function readStoredPage(storageKey: string, pageCount: number): number | null {
@@ -43,8 +67,12 @@ export function storePage(storageKey: string, page: number) {
 
 /** Browsers refuse canvases much past ~16 megapixels (iOS especially); stay under that when zoomed. */
 export const MAX_CANVAS_PIXELS = 16_000_000;
-/** Horizontal padding around the page inside the stage (p-3 on both sides). */
-export const STAGE_PADDING = 24;
+/** Horizontal padding around the book/page inside the stage. */
+export const STAGE_PADDING = 32;
+/** Spine width between left and right pages in 2-page book mode. */
+export const BOOK_SPINE_GAP = 16;
+/** 64 KB range chunks so pdf.js loads only the current page on demand instead of the whole PDF. */
+export const PDF_RANGE_CHUNK_SIZE = 65_536;
 /** Width of lazy-rendered page thumbnails in the PDF strip. */
 export const THUMB_WIDTH = 56;
 

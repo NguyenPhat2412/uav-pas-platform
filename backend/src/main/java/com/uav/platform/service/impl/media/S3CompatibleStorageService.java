@@ -1,31 +1,41 @@
 package com.uav.platform.service.impl.media;
 
 import com.uav.platform.dto.record.media.ObjectMetadata;
+import com.uav.platform.dto.record.media.ObjectStream;
 import com.uav.platform.enums.media.*;
 import com.uav.platform.service.media.ObjectStorageService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.time.Duration;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * S3-compatible signed URLs for MinIO in development and AWS S3 in production.
@@ -42,6 +52,30 @@ public class S3CompatibleStorageService implements ObjectStorageService {
     private final String corsOrigin;
 
     public S3CompatibleStorageService(
+            String provider,
+            String endpoint,
+            String bucket,
+            String accessKey,
+            String secretKey,
+            String region,
+            String publicEndpoint,
+            boolean ensureBucket,
+            String corsOrigin) {
+        this(
+                provider,
+                endpoint,
+                bucket,
+                accessKey,
+                secretKey,
+                region,
+                publicEndpoint,
+                ensureBucket,
+                corsOrigin,
+                "");
+    }
+
+    @Autowired
+    public S3CompatibleStorageService(
             @Value("${app.storage.provider:minio}") String provider,
             @Value("${app.storage.endpoint:http://localhost:9000}") String endpoint,
             @Value("${app.storage.bucket:uav-pas}") String bucket,
@@ -50,11 +84,17 @@ public class S3CompatibleStorageService implements ObjectStorageService {
             @Value("${app.storage.region:us-east-1}") String region,
             @Value("${app.storage.public-endpoint:}") String publicEndpoint,
             @Value("${app.storage.ensure-bucket:false}") boolean ensureBucket,
-            @Value("${app.storage.cors-origin:http://localhost:3000}") String corsOrigin) {
+            @Value("${app.storage.cors-origin:http://localhost:3000}") String corsOrigin,
+            @Value("${app.cors.allowed-origins:}") String appCorsAllowedOrigins) {
         this.provider = provider;
         this.bucket = bucket;
         this.publicEndpoint = publicEndpoint;
-        this.corsOrigin = corsOrigin;
+        this.corsOrigin =
+                appCorsAllowedOrigins != null && !appCorsAllowedOrigins.isBlank()
+                        ? (corsOrigin == null || corsOrigin.isBlank()
+                                ? appCorsAllowedOrigins
+                                : corsOrigin + "," + appCorsAllowedOrigins)
+                        : corsOrigin;
         this.ensureBucket = ensureBucket;
         var credentials =
                 StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
@@ -126,7 +166,16 @@ public class S3CompatibleStorageService implements ObjectStorageService {
 
     @PostConstruct
     void initializeBucket() {
-        if (!ensureBucket) return;
+        if (!ensureBucket) {
+            if (!"test".equalsIgnoreCase(provider)) {
+                try {
+                    applyCors();
+                } catch (RuntimeException ignored) {
+                    // Best-effort CORS application when bucket creation is disabled.
+                }
+            }
+            return;
+        }
         try {
             client.headBucket(HeadBucketRequest.builder().bucket(bucket).build());
             applyCors();
@@ -141,6 +190,12 @@ public class S3CompatibleStorageService implements ObjectStorageService {
 
     private void applyCors() {
         if (corsOrigin == null || corsOrigin.isBlank()) return;
+        Set<String> origins = new LinkedHashSet<>();
+        for (String part : corsOrigin.split(",")) {
+            String trimmed = part.trim();
+            if (!trimmed.isEmpty()) origins.add(trimmed);
+        }
+        if (origins.isEmpty()) return;
         try {
             client.putBucketCors(
                     software.amazon.awssdk.services.s3.model.PutBucketCorsRequest.builder()
@@ -151,16 +206,23 @@ public class S3CompatibleStorageService implements ObjectStorageService {
                                             .corsRules(
                                                     software.amazon.awssdk.services.s3.model
                                                             .CORSRule.builder()
-                                                            .allowedOrigins(corsOrigin)
+                                                            .allowedOrigins(origins)
                                                             .allowedMethods("GET", "PUT", "HEAD")
                                                             .allowedHeaders("*")
+                                                            .exposeHeaders(
+                                                                    List.of(
+                                                                            "Accept-Ranges",
+                                                                            "Content-Range",
+                                                                            "Content-Length",
+                                                                            "ETag"))
                                                             .maxAgeSeconds(900)
                                                             .build())
                                             .build())
                             .build());
         } catch (S3Exception ex) {
-            // Some MinIO builds do not implement bucket CORS; proxy-level CORS remains available.
-            if (ex.statusCode() != 501) throw ex;
+            // Some MinIO builds or scoped S3 tokens do not implement bucket CORS; proxy-level CORS
+            // remains available.
+            if (ex.statusCode() != 501 && ex.statusCode() != 403) throw ex;
         }
     }
 
@@ -263,5 +325,90 @@ public class S3CompatibleStorageService implements ObjectStorageService {
     @Override
     public void deleteObject(String objectKey) {
         client.deleteObject(DeleteObjectRequest.builder().bucket(bucket).key(objectKey).build());
+    }
+
+    @Override
+    public ObjectStream openStream(String objectKey, String range) {
+        GetObjectRequest.Builder builder = GetObjectRequest.builder().bucket(bucket).key(objectKey);
+        if (range != null && !range.isBlank()) {
+            builder.range(range.trim());
+        }
+        ResponseInputStream<GetObjectResponse> stream = client.getObject(builder.build());
+        GetObjectResponse response = stream.response();
+        long expected = response.contentLength() != null ? response.contentLength() : -1L;
+        String acceptRanges =
+                response.acceptRanges() != null && !response.acceptRanges().isBlank()
+                        ? response.acceptRanges()
+                        : "bytes";
+        return new ObjectStream(
+                new AbortOnEarlyCloseInputStream(stream, expected),
+                response.contentType(),
+                expected,
+                response.contentRange(),
+                acceptRanges,
+                response.eTag());
+    }
+
+    @Override
+    public void uploadObject(String objectKey, String contentType, long size, InputStream body) {
+        PutObjectRequest request =
+                PutObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(objectKey)
+                        .contentType(contentType)
+                        .contentLength(size)
+                        .build();
+        client.putObject(request, RequestBody.fromInputStream(body, size));
+    }
+
+    /**
+     * Aborts the S3 response stream if closed before reaching EOF or the expected byte count, so a browser aborting
+     * an initial GET to switch to Range requests never drains the remainder of a large PDF or video.
+     */
+    private static final class AbortOnEarlyCloseInputStream extends InputStream {
+        private final ResponseInputStream<GetObjectResponse> delegate;
+        private final long expectedLength;
+        private long bytesRead;
+        private boolean eof;
+        private boolean closed;
+
+        AbortOnEarlyCloseInputStream(
+                ResponseInputStream<GetObjectResponse> delegate, long expectedLength) {
+            this.delegate = delegate;
+            this.expectedLength = expectedLength;
+        }
+
+        @Override
+        public int read() throws IOException {
+            int b = delegate.read();
+            if (b == -1) {
+                eof = true;
+            } else {
+                bytesRead++;
+            }
+            return b;
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            int n = delegate.read(b, off, len);
+            if (n == -1) {
+                eof = true;
+            } else if (n > 0) {
+                bytesRead += n;
+            }
+            return n;
+        }
+
+        @Override
+        public void close() throws IOException {
+            if (closed) return;
+            closed = true;
+            if (eof || (expectedLength >= 0 && bytesRead >= expectedLength)) {
+                delegate.close();
+            } else {
+                delegate.abort();
+            }
+        }
     }
 }

@@ -126,7 +126,7 @@ function PdfEmbedFallback({url, title, links}: {url: string; title: string; link
             data={url}
             type="application/pdf"
             aria-label={title}
-            className="block h-[75vh] w-full rounded-panel border border-border bg-white"
+            className="block min-h-[85vh] h-[1180px] w-full rounded-panel border border-border bg-white"
         >
             <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
                 <FileText className="h-8 w-8 text-slate-400" strokeWidth={1.5} />
@@ -169,7 +169,7 @@ export function DocumentEmbedLesson({url, title}: {url: string; title: string}) 
                 allow="fullscreen"
                 allowFullScreen
                 referrerPolicy="strict-origin-when-cross-origin"
-                className="block h-[75vh] w-full rounded-panel border border-border bg-white"
+                className="block min-h-[85vh] h-[1180px] w-full rounded-panel border border-border bg-white"
             />
         </div>
     );

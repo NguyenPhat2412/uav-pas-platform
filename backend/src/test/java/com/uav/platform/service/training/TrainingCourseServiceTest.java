@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dto.record.media.ObjectStream;
 import com.uav.platform.dto.request.training.UpdateLessonProgressRequest;
 import com.uav.platform.dto.response.training.TrainingCourseDetailResponse;
 import com.uav.platform.dto.response.training.TrainingCourseSummaryResponse;
@@ -34,15 +35,23 @@ import com.uav.platform.repository.training.UserTrainingProgressRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.training.TrainingCourseServiceImpl;
 import com.uav.platform.service.media.ObjectStorageService;
+import com.uav.platform.service.permission.PermissionService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -573,5 +582,100 @@ class TrainingCourseServiceTest {
         asset.setStatus(TrainingAssetStatus.READY);
         when(assets.findById(id)).thenReturn(Optional.of(asset));
         return asset;
+    }
+
+    @Test
+    void operationsUserWithManagePermissionCanPreviewAdminAndInactiveLessons() {
+        PermissionService permissionService = mock(PermissionService.class);
+        TrainingCourseServiceImpl managedService =
+                new TrainingCourseServiceImpl(
+                        documents,
+                        lessons,
+                        lessonProgress,
+                        courseProgress,
+                        assets,
+                        users,
+                        new TrainingMediaUrls(storage),
+                        permissionService,
+                        storage);
+
+        user(55L, "ops_author", UserRole.ROLE_OPERATOR);
+        Authentication opsAuth =
+                new UsernamePasswordAuthenticationToken("ops_author", "x", List.of());
+        when(permissionService.has(opsAuth, "USER_PERMISSION_MANAGE")).thenReturn(true);
+
+        TrainingDocument adminDraft = course(9, "ADMIN", "[]");
+        adminDraft.setActive(false);
+        when(documents.findByTargetPortalOrderBySortOrderAscIdAsc("ADMIN"))
+                .thenReturn(List.of(adminDraft));
+        TrainingLesson draftPdfLesson = lesson(90, adminDraft, TrainingLessonType.DOCUMENT, null);
+        draftPdfLesson.setActive(false);
+        TrainingAsset pdf = readyAsset(200L, "application/pdf");
+        pdf.setFileName("Quy_trinh_bay_noi_bo.pdf");
+        draftPdfLesson.setDocumentAssetId(200L);
+        when(storage.createSignedDownloadUrl(eq("training/200"), any(Duration.class)))
+                .thenReturn("https://signed/quy-trinh.pdf");
+
+        List<TrainingCourseSummaryResponse> adminCourses =
+                managedService.listCourses("ADMIN", opsAuth);
+        assertEquals(1, adminCourses.size());
+        assertEquals("TRN-9", adminCourses.get(0).code());
+
+        TrainingCourseDetailResponse detail = managedService.getCourse("TRN-9", opsAuth);
+        assertEquals("ADMIN", detail.targetPortal());
+
+        TrainingLessonDetailResponse lessonDetail = managedService.getLesson(90L, opsAuth);
+        assertEquals(90L, lessonDetail.id());
+        assertEquals("Quy_trinh_bay_noi_bo.pdf", lessonDetail.document().fileName());
+        assertEquals("https://signed/quy-trinh.pdf", lessonDetail.document().url());
+    }
+
+    @Test
+    void streamAssetSupportsProgressiveByteRangeForPdfViewer() throws Exception {
+        TrainingMediaUrls signedMediaUrls =
+                new TrainingMediaUrls(storage, "unit-test-secret-key-for-hmac-256");
+        TrainingCourseServiceImpl streamingService =
+                new TrainingCourseServiceImpl(
+                        documents,
+                        lessons,
+                        lessonProgress,
+                        courseProgress,
+                        assets,
+                        users,
+                        signedMediaUrls,
+                        null,
+                        storage);
+
+        TrainingAsset pdf = readyAsset(300L, "application/pdf");
+        pdf.setFileName("Sach_huong_dan.pdf");
+        pdf.setSizeBytes(100_000L);
+
+        byte[] chunkBytes = "%PDF-1.7-chunk-0-65535".getBytes(StandardCharsets.UTF_8);
+        when(storage.openStream("training/300", "bytes=0-65535"))
+                .thenReturn(
+                        new ObjectStream(
+                                new ByteArrayInputStream(chunkBytes),
+                                "application/pdf",
+                                chunkBytes.length,
+                                "bytes 0-65535/100000",
+                                "bytes",
+                                "\"etag-300\""));
+
+        long exp = Instant.now().plusSeconds(600).getEpochSecond();
+        String sig = signedMediaUrls.sign("GET", 300L, exp);
+
+        ResponseEntity<StreamingResponseBody> response =
+                streamingService.streamAsset(300L, "bytes=0-65535", false, exp, sig, null);
+
+        assertEquals(HttpStatus.PARTIAL_CONTENT, response.getStatusCode());
+        assertEquals("bytes", response.getHeaders().getFirst(HttpHeaders.ACCEPT_RANGES));
+        assertEquals(
+                "bytes 0-65535/100000", response.getHeaders().getFirst(HttpHeaders.CONTENT_RANGE));
+        assertEquals(chunkBytes.length, response.getHeaders().getContentLength());
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        assertNotNull(response.getBody());
+        response.getBody().writeTo(out);
+        assertArrayEquals(chunkBytes, out.toByteArray());
     }
 }

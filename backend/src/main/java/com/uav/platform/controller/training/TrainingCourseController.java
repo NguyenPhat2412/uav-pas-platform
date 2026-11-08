@@ -17,10 +17,12 @@ import com.uav.platform.service.training.TrainingCourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,10 +33,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.IOException;
 import java.util.List;
 
 /** Udemy-style training courses: lessons, learner progress and admin authoring (docs/architecture/TRAINING_COURSES_API.md). */
@@ -47,7 +53,7 @@ import java.util.List;
 public class TrainingCourseController {
 
     private static final String MANAGE =
-            "@permissionService.has(authentication, 'USER_PERMISSION_MANAGE') or hasAnyRole('SUPER_ADMIN','SYSTEM_ADMIN')";
+            "@permissionService.has(authentication, 'USER_PERMISSION_MANAGE') or @permissionService.has(authentication, 'USER_MANAGE') or hasAnyRole('SUPER_ADMIN','SYSTEM_ADMIN')";
 
     private final TrainingCourseService courses;
     private final TrainingCourseAdminService admin;
@@ -141,5 +147,36 @@ public class TrainingCourseController {
     @PostMapping(ApiRoutes.Training.ADMIN_ASSET_CONFIRM)
     public ResponseEntity<TrainingAssetResponse> confirmAsset(@PathVariable Long id) {
         return ResponseEntity.ok(admin.confirmAsset(id));
+    }
+
+    @Operation(
+            summary =
+                    "Stream a training asset (PDF, video, slide or resource) with HTTP Range support")
+    @RequestMapping(
+            value = ApiRoutes.Training.ASSET_CONTENT,
+            method = {RequestMethod.GET, RequestMethod.HEAD})
+    public ResponseEntity<StreamingResponseBody> streamAssetContent(
+            @PathVariable Long id,
+            @RequestHeader(value = HttpHeaders.RANGE, required = false) String range,
+            @RequestParam(required = false) Long exp,
+            @RequestParam(required = false) String sig,
+            HttpServletRequest request,
+            Authentication authentication) {
+        boolean headOnly =
+                request != null && RequestMethod.HEAD.name().equalsIgnoreCase(request.getMethod());
+        return courses.streamAsset(id, range, headOnly, exp, sig, authentication);
+    }
+
+    @Operation(summary = "Upload training asset bytes via signed backend PUT URL")
+    @PutMapping(ApiRoutes.Training.ASSET_CONTENT)
+    public ResponseEntity<Void> uploadAssetContent(
+            @PathVariable Long id,
+            @RequestParam(required = false) Long exp,
+            @RequestParam(required = false) String sig,
+            HttpServletRequest request,
+            Authentication authentication)
+            throws IOException {
+        admin.uploadAssetContent(id, exp, sig, request.getInputStream(), authentication);
+        return ResponseEntity.ok().eTag("\"" + id + "\"").build();
     }
 }
