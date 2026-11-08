@@ -1,0 +1,252 @@
+{
+  "adminSecurity": {
+    "pages": {
+      "sessions": "Phiên đăng nhập & 2FA",
+      "policy": "Chính sách đăng nhập",
+      "secrets": "Bí mật & khóa"
+    },
+    "nav": {
+      "label": "Bảo mật",
+      "sessions": "Phiên đăng nhập & 2FA",
+      "policy": "Chính sách đăng nhập",
+      "secrets": "Bí mật & khóa"
+    },
+    "common": {
+      "on": "Bật",
+      "off": "Tắt",
+      "yes": "Có",
+      "no": "Không",
+      "notSet": "Chưa đặt",
+      "minutes": "{count} phút",
+      "hours": "{count} giờ",
+      "days": "{count} ngày"
+    },
+    "severity": {
+      "CRITICAL": "Nghiêm trọng",
+      "WARNING": "Cảnh báo",
+      "INFO": "Thông tin"
+    },
+    "warnings": {
+      "title": "Phát hiện {count} vấn đề cấu hình",
+      "criticalCount": "{count} nghiêm trọng",
+      "codes": {
+        "OTP_DEV_PREVIEW_ENABLED": {
+          "title": "Đang bật xem trước OTP",
+          "fix": "OTP lộ trong API và log. Đặt APP_AUTH_OTP_DEV_PREVIEW=false."
+        },
+        "COOKIE_SAMESITE_NONE_INSECURE": {
+          "title": "SameSite=None thiếu Secure",
+          "fix": "Cookie bị từ chối. Đặt APP_COOKIE_SECURE=true hoặc SameSite=Lax."
+        },
+        "COOKIE_NOT_SECURE": {
+          "title": "Cookie chưa bật Secure",
+          "fix": "Cookie có thể đi qua HTTP. Đặt APP_COOKIE_SECURE=true."
+        },
+        "CORS_WILDCARD": {
+          "title": "CORS cho phép mọi nguồn (*)",
+          "fix": "Liệt kê đúng tên miền trong APP_CORS_ALLOWED_ORIGINS."
+        },
+        "CORS_LOCALHOST": {
+          "title": "CORS còn cho phép localhost",
+          "fix": "Xóa localhost khỏi APP_CORS_ALLOWED_ORIGINS."
+        },
+        "CORS_PLAIN_HTTP": {
+          "title": "CORS cho phép nguồn HTTP",
+          "fix": "Chỉ dùng nguồn https:// trong APP_CORS_ALLOWED_ORIGINS."
+        },
+        "MAIL_DISABLED": {
+          "title": "Chưa bật gửi email",
+          "fix": "Email OTP không gửi được. Cấu hình SMTP, đặt APP_MAIL_ENABLED=true."
+        },
+        "ACCESS_TOKEN_LONG_LIVED": {
+          "title": "Access token quá 24 giờ",
+          "fix": "Giảm APP_JWT_EXPIRATION_MS xuống 15–60 phút."
+        },
+        "REFRESH_TOKEN_LONG_LIVED": {
+          "title": "Refresh token quá 30 ngày",
+          "fix": "Cân nhắc giảm app.jwt.refresh-expiration-ms."
+        },
+        "NOT_PRODUCTION_PROFILE": {
+          "title": "Chưa nhận diện môi trường thật",
+          "fix": "Nếu là máy chủ thật, kiểm tra deploy/.env.production."
+        },
+        "SECRET_MISSING": {
+          "title": "Thiếu bí mật bắt buộc",
+          "fix": "Đặt giá trị ngẫu nhiên dài rồi khởi động lại."
+        },
+        "SECRET_KNOWN_DEFAULT": {
+          "title": "Bí mật dùng giá trị mặc định",
+          "fix": "Coi như đã lộ. Thay giá trị ngẫu nhiên mới ngay."
+        },
+        "SECRET_TOO_SHORT": {
+          "title": "Bí mật quá ngắn",
+          "fix": "Tạo mới: openssl rand -base64 48."
+        }
+      }
+    },
+    "sessions": {
+      "revokeAll": {
+        "title": "Đăng xuất tất cả người dùng",
+        "description": "Thu hồi phiên của mọi tài khoản, trừ bạn.",
+        "action": "Đăng xuất tất cả"
+      },
+      "filters": {
+        "search": "Tìm tài khoản",
+        "searchPlaceholder": "Tên, email hoặc họ tên",
+        "searchButton": "Tìm",
+        "role": "Vai trò",
+        "allRoles": "Tất cả vai trò",
+        "activeOnly": "Chỉ phiên hoạt động"
+      },
+      "empty": "Không có tài khoản phù hợp.",
+      "columns": {
+        "user": "Tài khoản",
+        "role": "Vai trò",
+        "session": "Phiên",
+        "twoFactor": "2FA",
+        "lastRevoked": "Thu hồi gần nhất",
+        "actions": "Thao tác"
+      },
+      "you": "Bạn",
+      "state": {
+        "ACTIVE": "Đang hoạt động",
+        "EXPIRED": "Đã hết hạn",
+        "REVOKED": "Đã thu hồi",
+        "NONE": "Chưa có phiên"
+      },
+      "signedIn": "Đăng nhập: {time}",
+      "expires": "Hết hạn: {time}",
+      "twoFactorMethod": {
+        "EMAIL": "Email OTP",
+        "TOTP": "Ứng dụng xác thực"
+      },
+      "twoFactorOff": "Chưa bật",
+      "revokedBy": "{time} bởi {name}",
+      "selfWarning": "Tài khoản của bạn: bạn sẽ bị đăng xuất.",
+      "actions": {
+        "revoke": "Thu hồi phiên",
+        "reset2fa": "Đặt lại 2FA"
+      },
+      "confirm": {
+        "revokeUser": "Thu hồi mọi phiên của {name}?",
+        "revokeSelf": "Tài khoản của bạn. Bạn sẽ bị đăng xuất ngay. Tiếp tục?",
+        "revokeAll": "Đăng xuất mọi người dùng khác? Không thể hoàn tác.",
+        "reset2fa": "Tắt 2FA của {name}? Chỉ làm khi đã xác minh danh tính.",
+        "reset2faSelf": "Tài khoản của bạn.",
+        "reset2faRevoke": "Đăng xuất luôn {name} trên mọi thiết bị?"
+      },
+      "done": {
+        "REVOKE_USER_SESSIONS": "Đã thu hồi phiên đăng nhập.",
+        "REVOKE_ALL_SESSIONS": "Đã đăng xuất {count} tài khoản ({tokens} token).",
+        "RESET_2FA": "Đã đặt lại 2FA.",
+        "selfSignedOut": "Phiên của bạn đã bị thu hồi."
+      }
+    },
+    "policy": {
+      "readOnlyNote": "Chỉ đọc. Sửa deploy/.env.production rồi khởi động lại.",
+      "allGood": "Không có vấn đề.",
+      "groups": {
+        "tokens": "Token đăng nhập",
+        "otp": "OTP & 2FA",
+        "cookie": "Cookie phiên",
+        "mail": "Email",
+        "cors": "CORS",
+        "runtime": "Môi trường"
+      },
+      "fields": {
+        "accessToken": "Thời hạn access token",
+        "refreshToken": "Thời hạn refresh token",
+        "otpTtl": "Thời hạn mã OTP",
+        "totpIssuer": "Tên trong app xác thực",
+        "otpDevPreview": "Xem trước OTP",
+        "cookieSecure": "Cookie Secure",
+        "cookieSameSite": "Cookie SameSite",
+        "cookieDomain": "Tên miền cookie",
+        "mailEnabled": "Gửi email",
+        "corsOrigins": "Nguồn được phép",
+        "profiles": "Profile Spring",
+        "productionLike": "Môi trường thật"
+      },
+      "defaultProfile": "default"
+    },
+    "secrets": {
+      "notice": {
+        "title": "Bí mật không hiển thị trên web",
+        "body": "Quản lý trong deploy/.env.production trên VPS."
+      },
+      "allGood": "Tất cả bí mật đạt.",
+      "columns": {
+        "secret": "Bí mật",
+        "status": "Trạng thái",
+        "configured": "Đã đặt",
+        "length": "Độ dài",
+        "default": "Giá trị mặc định",
+        "managedIn": "Quản lý tại"
+      },
+      "names": {
+        "app_jwt_secret": "Khóa ký JWT",
+        "app_billing_ipn_secret": "Bí mật IPN thanh toán",
+        "app_ai_router_secret": "Khóa mã hóa AI router",
+        "app_storage_access_key": "Access key lưu trữ",
+        "app_storage_secret_key": "Secret key lưu trữ",
+        "spring_mail_password": "Mật khẩu SMTP",
+        "spring_datasource_password": "Mật khẩu cơ sở dữ liệu"
+      },
+      "notes": {
+        "DERIVED_FROM_JWT_SECRET": "Chưa đặt: dẫn xuất từ khóa JWT.",
+        "REQUIRED_WHEN_BILLING_PROVIDER_ENABLED": "Bắt buộc khi bật thanh toán.",
+        "REQUIRED_WHEN_SMTP_AUTH_ENABLED": "Bắt buộc khi bật xác thực SMTP."
+      },
+      "status": {
+        "OK": "Đạt",
+        "MISSING": "Thiếu",
+        "NOT_REQUIRED": "Không bắt buộc",
+        "TOO_SHORT": "Quá ngắn",
+        "KNOWN_DEFAULT": "Giá trị mặc định"
+      },
+      "required": "Bắt buộc",
+      "optional": "Tùy chọn",
+      "lengthOk": "Đủ (≥ {min})",
+      "lengthShort": "Ngắn hơn {min}",
+      "defaultYes": "Đang dùng mặc định",
+      "defaultNo": "Không",
+      "aiKey": {
+        "title": "Khóa API nhà cung cấp AI",
+        "configured": "Đã cấu hình (lưu mã hóa).",
+        "configuredAt": "Đã cấu hình, {time} bởi {name}.",
+        "missing": "Chưa cấu hình. Trợ lý AI không chạy.",
+        "manage": "Quản lý tại AI Router"
+      },
+      "rotation": {
+        "title": "Xoay vòng bí mật",
+        "general": "Sửa deploy/.env.production, chạy lại docker compose. Tạo: openssl rand -base64 48.",
+        "items": {
+          "jwt": {
+            "title": "Khóa JWT (APP_JWT_SECRET)",
+            "body": "Mọi phiên hết hiệu lực. Nhập lại khóa AI nếu chưa đặt APP_AI_ROUTER_SECRET."
+          },
+          "billingIpn": {
+            "title": "Bí mật IPN (APP_BILLING_IPN_SECRET)",
+            "body": "Cập nhật đồng thời ở cổng thanh toán và máy chủ."
+          },
+          "aiRouter": {
+            "title": "Khóa AI router (APP_AI_ROUTER_SECRET)",
+            "body": "Sau khi đổi, nhập lại khóa API tại AI Router."
+          },
+          "storage": {
+            "title": "Khóa lưu trữ (APP_STORAGE_ACCESS_KEY / APP_STORAGE_SECRET_KEY)",
+            "body": "Tạo cặp khóa mới, cập nhật, thử tải lên, rồi xóa cặp cũ."
+          },
+          "mail": {
+            "title": "Mật khẩu SMTP (SMTP_PASSWORD)",
+            "body": "Đổi ở nhà cung cấp, cập nhật máy chủ, thử gửi OTP."
+          },
+          "database": {
+            "title": "Mật khẩu cơ sở dữ liệu (POSTGRES_PASSWORD)",
+            "body": "Chạy ALTER USER trước, rồi cập nhật máy chủ và khởi động lại."
+          }
+        }
+      }
+    }
+  }
+}

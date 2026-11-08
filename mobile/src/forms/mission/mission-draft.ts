@@ -49,7 +49,22 @@ export function withEnd(form: MissionInput, end: Date): MissionInput {
     return {...form, expectedEndTime: toLocalIso(end)};
 }
 
-/** Sets the place picked on the map; coordinates rounded to ~1 m like the web picker. */
+/** Sets the place picked on the map; coordinates rounded to ~1 m like the web picker, preserving any POLYGON/CIRCLE corridor. */
 export function withPoint(form: MissionInput, latitude: number, longitude: number): MissionInput {
-    return {...form, latitude: Math.round(latitude * 1e5) / 1e5, longitude: Math.round(longitude * 1e5) / 1e5};
+    const lat = Math.round(latitude * 1e5) / 1e5;
+    const lng = Math.round(longitude * 1e5) / 1e5;
+    return {
+        ...form,
+        latitude: lat,
+        longitude: lng,
+        ...(form.flightPlan
+            ? {
+                  flightPlan: {
+                      ...form.flightPlan,
+                      takeoffLatitude: lat,
+                      takeoffLongitude: lng,
+                  },
+              }
+            : {}),
+    };
 }

@@ -1,6 +1,4 @@
-# Full local stack (postgres, minio, backend, frontend). Compose reads ./.env beside this file:
-#   docker compose up -d --build
-# Backend secrets come from backend/.env; production uses deploy/docker-compose.prod.yml.
+# Full local stack (postgres, minio, backend, customer, operations, admin).
 name: uav-pas-platform
 
 services:
@@ -53,7 +51,7 @@ services:
       APP_STORAGE_PUBLIC_ENDPOINT: http://localhost:9000
       APP_STORAGE_ENSURE_BUCKET: "true"
       APP_STORAGE_CORS_ORIGIN: ${NEXT_PUBLIC_APP_URL:-http://localhost:3100}
-      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost:3100}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost:3100,http://localhost:3200,http://localhost:3300}
       APP_STORAGE_BUCKET: ${MINIO_BUCKET:-uav-pas}
       APP_STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
       APP_STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-change-me-minio}
@@ -66,18 +64,50 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  frontend:
+  customer:
     build:
-      context: ./frontend
+      context: ./customer
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3100}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_CUSTOMER_URL:-http://localhost:3100}
         NEXT_PUBLIC_ENVIRONMENT: ${NEXT_PUBLIC_ENVIRONMENT:-local}
     env_file:
       - ./.env
     ports:
-      - "${FRONTEND_PORT:-3100}:3100"
+      - "${CUSTOMER_PORT:-3100}:3100"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  operations:
+    build:
+      context: ./operations
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_OPERATIONS_URL:-http://localhost:3200}
+        NEXT_PUBLIC_ENVIRONMENT: ${NEXT_PUBLIC_ENVIRONMENT:-local}
+    env_file:
+      - ./.env
+    ports:
+      - "${OPERATIONS_PORT:-3200}:3200"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_ADMIN_URL:-http://localhost:3300}
+        NEXT_PUBLIC_ENVIRONMENT: ${NEXT_PUBLIC_ENVIRONMENT:-local}
+    env_file:
+      - ./.env
+    ports:
+      - "${ADMIN_PORT:-3300}:3300"
     depends_on:
       - backend
     restart: unless-stopped

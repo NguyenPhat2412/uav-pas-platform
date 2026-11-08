@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 public interface RepairOrderRepository
         extends JpaRepository<RepairOrder, Long>, JpaSpecificationExecutor<RepairOrder> {
@@ -21,6 +22,9 @@ public interface RepairOrderRepository
     Optional<RepairOrder> findForUpdate(@Param("id") Long id);
 
     boolean existsByUavIdAndStatusIn(Long uavId, Collection<RepairStatus> statuses);
+
+    @Query("select distinct o.uav.id from RepairOrder o where o.status in :statuses")
+    Set<Long> findUavIdsWithStatusIn(@Param("statuses") Collection<RepairStatus> statuses);
 
     boolean existsByUavIdAndStatus(Long uavId, RepairStatus status);
 

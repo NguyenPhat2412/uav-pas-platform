@@ -37,6 +37,23 @@ test('mission draft: tomorrow 08:00 for the service duration, moving the start k
     assert.equal(moved.requestedDate, '2026-11-05');
     assert.equal(withEnd(moved, new Date(2026, 10, 6, 2, 0)).expectedEndTime, '2026-11-06T02:00');
     assert.deepEqual([withPoint(draft, 21.0136789, 105.5259123).latitude, withPoint(draft, 21.0136789, 105.5259123).longitude], [21.01368, 105.52591]);
+    const polygonDraft = {
+        ...draft,
+        flightPlan: {
+            areaType: 'POLYGON',
+            vertices: [[21.01, 105.51], [21.02, 105.52], [21.03, 105.51]],
+            altitudeAglMeters: 80,
+            targetGsdCm: 3,
+            forwardOverlap: 80,
+            sideOverlap: 70,
+            sensors: ['RGB_4K'],
+            permitSupport: false,
+        },
+    };
+    const updatedPolygonDraft = withPoint(polygonDraft, 21.015555, 105.519999);
+    assert.deepEqual(updatedPolygonDraft.flightPlan.vertices, polygonDraft.flightPlan.vertices, 'POLYGON vertices drawn on web stay intact');
+    assert.equal(updatedPolygonDraft.flightPlan.takeoffLatitude, 21.01556);
+    assert.equal(updatedPolygonDraft.flightPlan.takeoffLongitude, 105.52);
     assert.equal(toLocalIso(fromLocalIso('2026-01-09T07:05')), '2026-01-09T07:05');
     assert.equal(fromLocalIso('not a date'), null);
 });

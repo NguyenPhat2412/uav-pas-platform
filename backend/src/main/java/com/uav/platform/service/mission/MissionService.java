@@ -104,4 +104,40 @@ public interface MissionService {
 
     MissionResponse verifyPermit(
             Long id, MissionPermitVerifyRequest request, Authentication authentication);
+
+    default MissionResponse cloneMission(Long id, Authentication authentication) {
+        throw new UnsupportedOperationException("cloneMission not configured");
+    }
+
+    default MissionReviewResponse getReview(Long id, Authentication authentication) {
+        throw new UnsupportedOperationException("getReview not configured");
+    }
+
+    default MissionReviewResponse upsertReview(
+            Long id, MissionReviewUpsertRequest request, Authentication authentication) {
+        throw new UnsupportedOperationException("upsertReview not configured");
+    }
+
+    default MissionPreflightResponse getPreflight(Long id, Authentication authentication) {
+        throw new UnsupportedOperationException("getPreflight not configured");
+    }
+
+    default MissionPreflightResponse upsertPreflight(
+            Long id, MissionPreflightUpsertRequest request, Authentication authentication) {
+        throw new UnsupportedOperationException("upsertPreflight not configured");
+    }
+
+    default OperatorLogbookResponse operatorLogbook(
+            Long operatorId, Authentication authentication) {
+        throw new UnsupportedOperationException("operatorLogbook not configured");
+    }
+
+    default MissionDispatchCandidatesResponse dispatchCandidates(
+            Long id, Authentication authentication) {
+        throw new UnsupportedOperationException("dispatchCandidates not configured");
+    }
+
+    default MissionResponse autoAssign(Long id, Authentication authentication) {
+        throw new UnsupportedOperationException("autoAssign not configured");
+    }
 }

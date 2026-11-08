@@ -1,6 +1,7 @@
 package com.uav.platform.repository.user;
 
 import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.user.UserRole;
 
 import jakarta.persistence.LockModeType;
 
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -33,6 +35,8 @@ public interface UserRepository
     boolean existsByUsernameIgnoreCase(String username);
 
     Optional<AppUser> findByUsername(String username);
+
+    List<AppUser> findByRole(UserRole role);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from AppUser u where u.id = :id")

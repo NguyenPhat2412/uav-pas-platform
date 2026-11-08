@@ -1,0 +1,130 @@
+import type {AuditLog, PageResponse} from '@/types';
+import type {User} from '@/types/admin';
+import type {Mission} from '@/types/mission/mission.types';
+
+export type {AuditLog, PageResponse};
+
+export interface QuantityInput {
+    quantity: number;
+    note?: string;
+    requestId: string;
+}
+
+export interface MediaInput {
+    originalName: string;
+    contentType: string;
+    size: number;
+    type: string;
+    linkedEntityType?: string;
+    linkedEntityId?: string;
+    visibility?: MediaVisibility;
+}
+
+/** Who may read a file (Phase 1 BA 13.4); always served through short-lived signed URLs. */
+export type MediaVisibility = 'PRIVATE' | 'PROTECTED' | 'PUBLIC';
+
+export const MEDIA_VISIBILITIES: readonly MediaVisibility[] = ['PRIVATE', 'PROTECTED', 'PUBLIC'];
+
+/** Body of station create and edit; the status changes only through its own endpoint. */
+export type StationFields = {
+    code: string;
+    name: string;
+    address?: string;
+    latitude?: number;
+    longitude?: number;
+    description?: string;
+};
+
+export type StationStatus = 'ACTIVE' | 'INACTIVE' | 'MAINTENANCE';
+
+export interface Station {
+    id: number;
+    code: string;
+    name: string;
+    address?: string;
+    latitude?: number;
+    longitude?: number;
+    status: string;
+    description?: string;
+}
+
+export interface Uav {
+    id: number;
+    model: string;
+    serialNumber: string;
+    manufacturer: string;
+    status: string;
+    stationId?: number;
+    stationName?: string;
+}
+
+export interface Equipment {
+    id: number;
+    name: string;
+    type: string;
+    serialNumber?: string;
+    quantity: number;
+    availableQuantity: number;
+    reservedQuantity: number;
+    status: string;
+    stationId?: number;
+    stationName?: string;
+}
+
+export interface MediaAsset {
+    id: number;
+    originalName: string;
+    objectKey?: string;
+    contentType: string;
+    size: number;
+    type: string;
+    uploadedBy?: string;
+    visibility?: MediaVisibility;
+    storageProvider: string;
+    confirmed?: boolean;
+    confirmedAt?: string;
+    createdAt?: string;
+}
+
+export interface Operator {
+    id: number;
+    username: string;
+    fullName?: string;
+    status: string;
+    role?: string;
+}
+
+export interface UavHistory {
+    id: number;
+    uavId: number;
+    fromStatus?: string;
+    toStatus: string;
+    reason?: string;
+    changedBy?: string;
+    createdAt?: string;
+}
+
+export interface InventoryMovement {
+    id: number;
+    equipmentId: number;
+    equipmentName: string;
+    type: string;
+    quantity: number;
+    fromStationId?: number;
+    toStationId?: number;
+    actor?: string;
+    note?: string;
+    createdAt?: string;
+}
+
+export interface CollectionModels {
+    stations: Station;
+    uavs: Uav;
+    equipment: Equipment;
+    movements: InventoryMovement;
+    media: MediaAsset;
+    audit: AuditLog;
+    users: User;
+    missions: Mission;
+}
+

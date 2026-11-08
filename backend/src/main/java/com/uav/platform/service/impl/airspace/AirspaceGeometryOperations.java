@@ -15,6 +15,7 @@ import com.uav.platform.error.SystemException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -36,7 +37,12 @@ public final class AirspaceGeometryOperations {
         List<AirspaceViolationResponse> violations = new ArrayList<>();
         if (activeZones != null) {
             for (AirspaceZone zone : activeZones) {
-                if (zone == null || !zone.isActive()) continue;
+                if (zone == null
+                        || !zone.isActive()
+                        || !isEffectiveDuringWindow(
+                                zone, request.plannedStartTime(), request.plannedEndTime())) {
+                    continue;
+                }
                 SpatialIntersection hit = intersectFlightPlanWithZone(request, zone);
                 if (hit.intersects()) {
                     violations.add(classifyViolation(zone, request.altitudeAglMeters(), hit));
@@ -312,13 +318,56 @@ public final class AirspaceGeometryOperations {
         return 2.0 * EARTH_RADIUS_M * Math.atan2(Math.sqrt(a), Math.sqrt(Math.max(0.0, 1.0 - a)));
     }
 
+    public static boolean isEffectiveDuringWindow(
+            AirspaceZone zone, LocalDateTime plannedStart, LocalDateTime plannedEnd) {
+        if (zone == null) return false;
+        LocalDateTime from = zone.getEffectiveFrom();
+        LocalDateTime until = zone.getEffectiveUntil();
+        if (from == null && until == null) {
+            return true;
+        }
+        LocalDateTime windowStart;
+        LocalDateTime windowEnd;
+        if (plannedStart != null) {
+            windowStart = plannedStart;
+            windowEnd =
+                    plannedEnd != null && !plannedEnd.isBefore(plannedStart)
+                            ? plannedEnd
+                            : plannedStart;
+        } else if (plannedEnd != null) {
+            windowStart = plannedEnd;
+            windowEnd = plannedEnd;
+        } else {
+            LocalDateTime now = LocalDateTime.now();
+            windowStart = now;
+            windowEnd = now;
+        }
+        if (from != null && windowEnd.isBefore(from)) {
+            return false;
+        }
+        if (until != null && windowStart.isAfter(until)) {
+            return false;
+        }
+        return true;
+    }
+
     public static void applyUpsert(AirspaceZone target, AirspaceZoneUpsertRequest request) {
+        if (request.effectiveFrom() != null
+                && request.effectiveUntil() != null
+                && !request.effectiveUntil().isAfter(request.effectiveFrom())) {
+            throw SystemException.badRequest(
+                            "Thời điểm kết thúc hiệu lực NOTAM phải sau thời điểm bắt đầu.",
+                            "AIRSPACE_EFFECTIVE_WINDOW_INVALID")
+                    .at("effectiveUntil");
+        }
         target.setCode(request.code().trim().toUpperCase(Locale.ROOT));
         target.setName(request.name().trim());
         target.setZoneType(request.zoneType());
         target.setGeometryType(request.geometryType());
         target.setAuthority(request.authority().trim());
         target.setActive(request.active() == null || request.active());
+        target.setEffectiveFrom(request.effectiveFrom());
+        target.setEffectiveUntil(request.effectiveUntil());
         target.setDescription(
                 request.description() == null || request.description().isBlank()
                         ? null
@@ -432,6 +481,14 @@ public final class AirspaceGeometryOperations {
             }
             validateLatLng(
                     request.takeoffLatitude(), request.takeoffLongitude(), "takeoffLatitude");
+        }
+        if (request.plannedStartTime() != null
+                && request.plannedEndTime() != null
+                && request.plannedEndTime().isBefore(request.plannedStartTime())) {
+            throw SystemException.badRequest(
+                            "Thời điểm kết thúc dự kiến phải sau thời điểm bắt đầu.",
+                            "AIRSPACE_PLANNED_WINDOW_INVALID")
+                    .at("plannedEndTime");
         }
     }
 

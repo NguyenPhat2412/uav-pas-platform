@@ -5,12 +5,15 @@ import com.uav.platform.enums.mission.*;
 
 import jakarta.persistence.LockModeType;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface MissionRepository
@@ -36,4 +39,18 @@ public interface MissionRepository
 
     boolean existsByUavIdAndIdNotAndStatusNotIn(
             Long uavId, Long missionId, Collection<MissionStatus> terminalStatuses);
+
+    @EntityGraph(attributePaths = {"uav", "operator", "station"})
+    @Query("select m from Mission m where m.status not in :excludedStatuses")
+    List<Mission> findActiveWithResourcesNotIn(
+            @Param("excludedStatuses") Collection<MissionStatus> excludedStatuses);
+
+    @Query(
+            "select m.operator.id, count(m) from Mission m where m.status = com.uav.platform.enums.mission.MissionStatus.COMPLETED and m.operator is not null group by m.operator.id")
+    List<Object[]> countCompletedByOperator();
+
+    @EntityGraph(attributePaths = {"uav", "operator", "station", "customer"})
+    @Query(
+            "select m from Mission m where m.status <> com.uav.platform.enums.mission.MissionStatus.DRAFT")
+    List<Mission> findAllNonDraftWithAssociations();
 }

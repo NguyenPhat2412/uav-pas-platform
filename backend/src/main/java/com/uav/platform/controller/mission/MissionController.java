@@ -351,4 +351,68 @@ public class MissionController {
             @PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(service.timeline(id, authentication));
     }
+
+    @PostMapping(ApiRoutes.Missions.CLONE)
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_CREATE')")
+    public ResponseEntity<MissionResponse> cloneMission(
+            @PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.status(201).body(service.cloneMission(id, authentication));
+    }
+
+    @GetMapping(ApiRoutes.Missions.REVIEW)
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    public ResponseEntity<MissionReviewResponse> getReview(
+            @PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(service.getReview(id, authentication));
+    }
+
+    @PutMapping(ApiRoutes.Missions.REVIEW)
+    @PreAuthorize(
+            "@permissionService.has(authentication, 'MISSION_CREATE') or @permissionService.has(authentication, 'MISSION_UPDATE') or @permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<MissionReviewResponse> upsertReview(
+            @PathVariable Long id,
+            @Valid @RequestBody MissionReviewUpsertRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(service.upsertReview(id, request, authentication));
+    }
+
+    @GetMapping(ApiRoutes.Missions.PREFLIGHT)
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    public ResponseEntity<MissionPreflightResponse> getPreflight(
+            @PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(service.getPreflight(id, authentication));
+    }
+
+    @PutMapping(ApiRoutes.Missions.PREFLIGHT)
+    @PreAuthorize(
+            "@permissionService.has(authentication, 'MISSION_STATUS_UPDATE') or @permissionService.has(authentication, 'MISSION_CONFIRM')")
+    public ResponseEntity<MissionPreflightResponse> upsertPreflight(
+            @PathVariable Long id,
+            @Valid @RequestBody MissionPreflightUpsertRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(service.upsertPreflight(id, request, authentication));
+    }
+
+    @GetMapping(ApiRoutes.Missions.OPERATOR_LOGBOOK)
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    public ResponseEntity<OperatorLogbookResponse> operatorLogbook(
+            @RequestParam(required = false) Long operatorId, Authentication authentication) {
+        return ResponseEntity.ok(service.operatorLogbook(operatorId, authentication));
+    }
+
+    @GetMapping(ApiRoutes.Missions.DISPATCH_CANDIDATES)
+    @PreAuthorize(
+            "@permissionService.has(authentication, 'MISSION_VIEW_ALL') or @permissionService.has(authentication, 'MISSION_CONFIRM') or @permissionService.has(authentication, 'MISSION_ASSIGN_STATION') or @permissionService.has(authentication, 'MISSION_ASSIGN_UAV') or @permissionService.has(authentication, 'MISSION_ASSIGN_OPERATOR') or @permissionService.has(authentication, 'MISSION_RESERVE_EQUIPMENT')")
+    public ResponseEntity<MissionDispatchCandidatesResponse> dispatchCandidates(
+            @PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(service.dispatchCandidates(id, authentication));
+    }
+
+    @PostMapping(ApiRoutes.Missions.AUTO_ASSIGN)
+    @PreAuthorize(
+            "@permissionService.has(authentication, 'MISSION_ASSIGN_STATION') or @permissionService.has(authentication, 'MISSION_ASSIGN_UAV') or @permissionService.has(authentication, 'MISSION_ASSIGN_OPERATOR') or @permissionService.has(authentication, 'MISSION_RESERVE_EQUIPMENT')")
+    public ResponseEntity<MissionResponse> autoAssign(
+            @PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(service.autoAssign(id, authentication));
+    }
 }

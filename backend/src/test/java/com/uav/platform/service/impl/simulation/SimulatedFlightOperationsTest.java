@@ -7,6 +7,7 @@ import com.uav.platform.dto.request.uav.TelemetryReportRequest;
 import com.uav.platform.enums.simulation.SimCommand;
 import com.uav.platform.enums.simulation.SimEventLevel;
 import com.uav.platform.enums.simulation.SimFlightMode;
+import com.uav.platform.enums.simulation.SimRunStatus;
 
 import org.junit.jupiter.api.Test;
 
@@ -144,5 +145,68 @@ class SimulatedFlightOperationsTest {
             assertTrue(r.batteryPct() >= 0 && r.batteryPct() <= 100);
             assertTrue(r.headingDeg() >= 0 && r.headingDeg() <= 360);
         }
+    }
+
+    @Test
+    void windVectorAdjustsGroundSpeedAndBatteryConsumption() {
+        // Flying due North toward 21.0300, 105.5200:
+        // Northerly wind (from 0 deg) is headwind; Southerly wind (from 180 deg) is tailwind.
+        var headwindFlight =
+                new SimulatedFlightOperations(
+                        7L,
+                        null,
+                        List.of(List.of(21.0300, 105.5200)),
+                        HOME_LAT,
+                        HOME_LNG,
+                        100,
+                        new SimFlightSettings(30, 10, 0, 0, 0, 5000, 10.0, 0.0, 1.0),
+                        new Random(42),
+                        T0);
+        var tailwindFlight =
+                new SimulatedFlightOperations(
+                        8L,
+                        null,
+                        List.of(List.of(21.0300, 105.5200)),
+                        HOME_LAT,
+                        HOME_LNG,
+                        100,
+                        new SimFlightSettings(30, 10, 0, 0, 0, 5000, 10.0, 180.0, 1.0),
+                        new Random(42),
+                        T0);
+        run(headwindFlight, 20);
+        run(tailwindFlight, 20);
+        assertTrue(headwindFlight.speed() < 10.0, "headwind slows ground speed");
+        assertTrue(tailwindFlight.speed() > 10.0, "tailwind increases ground speed");
+        assertTrue(tailwindFlight.distanceFlown() > headwindFlight.distanceFlown());
+    }
+
+    @Test
+    void faultInjectionCommandsDegradeGpsAndDropBatteryIntoFailsafe() {
+        var f = flight(List.of(List.of(21.0300, 105.5200)), 32, 0, 0, 5000);
+        run(f, 15);
+        assertEquals(SimFlightMode.MISSION, f.mode());
+        f.command(SimCommand.SIMULATE_GPS_DEGRADE, T0.plusSeconds(16));
+        assertTrue(f.gpsDegraded());
+        f.step(1.0, T0.plusSeconds(17));
+        assertEquals("SINGLE", f.rtkStatus());
+        assertTrue(f.satelliteCount() <= 8);
+
+        f.command(SimCommand.SIMULATE_BATTERY_DROP, T0.plusSeconds(18));
+        assertTrue(f.battery() <= 20.0);
+        assertEquals(SimFlightMode.RETURN_TO_HOME, f.mode());
+        assertEquals(SimRunStatus.FAILSAFE_RTH, f.terminalRunStatus(false));
+    }
+
+    @Test
+    void blockingAirspaceViolationForcesAutomaticReturnToHomeOncePerZone() {
+        var f = flight(List.of(List.of(21.0300, 105.5200)), 100, 0, 0, 5000);
+        run(f, 15);
+        assertEquals(SimFlightMode.MISSION, f.mode());
+        f.notifyAirspaceViolation(99L, "NFZ-NB", "Sân bay Nội Bài", true, T0.plusSeconds(16));
+        f.notifyAirspaceViolation(99L, "NFZ-NB", "Sân bay Nội Bài", true, T0.plusSeconds(17));
+        assertEquals(1, f.airspaceBreaches(), "deduplicates repeated ticks inside same zone");
+        assertEquals(SimFlightMode.RETURN_TO_HOME, f.mode());
+        assertEquals(SimRunStatus.FAILSAFE_RTH, f.terminalRunStatus(false));
+        assertTrue(f.outcomeSummary(false).contains("không phận/NOTAM"));
     }
 }

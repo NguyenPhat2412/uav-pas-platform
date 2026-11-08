@@ -1,57 +1,85 @@
-# Frontend: một ứng dụng, chia theo tầng rồi theo tính năng
+# Kiến trúc 3 Cổng Web Độc lập: `customer/`, `operations/`, `admin/`
 
-Kiến trúc hiện hành từ 31/10/2026, giống bố cục backend (`controller/<tính năng>`, `service/<tính năng>`...). Bản 18/10/2026 dùng `src/features/<tính năng>/<tầng>` đã được thay thế. Tham khảo cách tổ chức của `management-shop`; không sao chép nghiệp vụ hoặc sửa dự án tham khảo.
+Kiến trúc hiện hành tách hoàn toàn phần giao diện Web thành **3 thư mục ứng dụng độc lập ở cấp cao nhất** (`customer/`, `operations/`, `admin/`), khớp trực tiếp với 3 nhánh dịch vụ trên GitHub (`customer`, `operations`, `admin`) và mỗi ứng dụng chỉ giữ đúng các route cùng tập phụ thuộc (`api`, `hooks`, `components`, `types`, `utils`, `forms`, `content`) của riêng cổng đó.
 
 ```text
-frontend/
-├── src/
-│   ├── app/                 # định tuyến và layout; page chỉ chuyển tới feature
-│   │   ├── (public)/        # website công khai ở /
-│   │   ├── (customer)/customer/
-│   │   ├── (operations)/operations/
-│   │   ├── (admin)/admin/
-│   │   └── health/
-│   ├── api/<tính năng>/        # <tính năng>.api.ts: request tới backend qua @/lib/api
-│   ├── hooks/<tính năng>/      # query-keys.ts và useXxx.ts (React Query); hook dùng chung ở hooks/
-│   ├── components/<tính năng>/ # giao diện theo tính năng; dùng chung: ui, data, layout, shared, customer, visuals
-│   ├── types/<tính năng>/      # <tính năng>.types.ts; types/index.ts dùng chung
-│   ├── utils/<tính năng>/      # hàm thuần theo tính năng
-│   ├── forms/<tính năng>/      # schema form (missions, profile)
-│   ├── content/<tính năng>/    # nội dung tĩnh (marketing)
-│   ├── providers/           # AuthContext, I18nContext, ToastContext, QueryProvider, PortalProviders
-│   ├── lib/                # API client, routes.ts, queryKeys, presentation (nhãn hiển thị), navigation, recent-pages
-│   ├── config/              # env, navigation, sidebar-routes (menu ba cổng)
-│   ├── i18n/
-│   ├── messages/
-│   └── styles/
-├── public/                  # ảnh và tài nguyên phục vụ trực tiếp
-├── assets/                  # ảnh gốc, nguồn và giấy phép
-├── tests/                   # kiểm thử hợp đồng và trình duyệt
-├── scripts/check-architecture.mjs
-├── Dockerfile
-└── package.json             # một dependency tree, một lockfile, một tiến trình
+uav-pas-platform/
+├── customer/                    # Cổng Khách hàng & Trang công khai (:3100, nhánh customer)
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── (public)/        # Website công khai ở /
+│   │   │   ├── (customer)/customer/
+│   │   │   └── health/
+│   │   ├── api/<tính năng>/     # Chỉ chứa API client dùng bởi Customer & Public
+│   │   ├── hooks/<tính năng>/   # Chỉ chứa React Query hooks của Customer & Public
+│   │   ├── components/<tính năng>/ # Chỉ chứa UI của Customer & Public + base ui/layout/shared
+│   │   ├── types/<tính năng>/
+│   │   ├── utils/<tính năng>/
+│   │   ├── forms/<tính năng>/
+│   │   ├── content/marketing/   # Nội dung tĩnh trang chủ & giải pháp
+│   │   ├── providers/
+│   │   ├── lib/
+│   │   ├── config/
+│   │   ├── i18n/
+│   │   ├── messages/
+│   │   └── styles/
+│   ├── scripts/check-architecture.mjs
+│   └── package.json             # uav-pas-customer (next dev -p 3100)
+│
+├── operations/                  # Cổng Vận hành & Mô phỏng bay (:3200, nhánh operations)
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── (operations)/operations/
+│   │   │   ├── health/
+│   │   │   └── page.tsx         # Cổng đăng nhập trực tiếp tại :3200/
+│   │   ├── api/<tính năng>/     # Chỉ chứa API client của Operations (mission, uav, station, simulation, sar...)
+│   │   ├── hooks/<tính năng>/
+│   │   ├── components/<tính năng>/
+│   │   ├── types/<tính năng>/
+│   │   ├── utils/<tính năng>/
+│   │   ├── forms/<tính năng>/
+│   │   ├── providers/
+│   │   ├── lib/
+│   │   ├── config/
+│   │   ├── i18n/
+│   │   ├── messages/
+│   │   └── styles/
+│   ├── scripts/check-architecture.mjs
+│   └── package.json             # uav-pas-operations (next dev -p 3200)
+│
+└── admin/                       # Cổng Quản trị hệ thống (:3300, nhánh admin)
+    ├── src/
+    │   ├── app/
+    │   │   ├── (admin)/admin/
+    │   │   ├── health/
+    │   │   └── page.tsx         # Cổng đăng nhập trực tiếp tại :3300/
+    │   ├── api/<tính năng>/     # Chỉ chứa API client của Admin (access, audit, dashboard, reporting, settings...)
+    │   ├── hooks/<tính năng>/
+    │   ├── components/<tính năng>/
+    │   ├── types/<tính năng>/
+    │   ├── utils/<tính năng>/
+    │   ├── forms/<tính năng>/
+    │   ├── providers/
+    │   ├── lib/
+    │   ├── config/
+    │   ├── i18n/
+    │   ├── messages/
+    │   └── styles/
+    ├── scripts/check-architecture.mjs
+    └── package.json             # uav-pas-admin (next dev -p 3300)
 ```
 
-## Quy tắc phát triển
+## Quy tắc phát triển và cô lập mã nguồn
 
-- Chức năng mới chia vào đúng tầng: `src/api/<tính năng>`, `src/hooks/<tính năng>`, `src/components/<tính năng>`, `src/types/<tính năng>`, `src/utils/<tính năng>`. Không tạo lại `src/features` (bị `architecture:check` chặn). Luồng dữ liệu: component → `hooks/<tính năng>` → `api/<tính năng>` → `@/lib/api`.
-- Tên thư mục tính năng trùng tên package backend: `mission`, `station`, `uav`, `user`, `notification`, `webhook`, `reporting`, `devicekey`, `storage`, `weather`, `training`... Các nhóm chỉ có ở frontend: `access` (backend `permission` + `role`), `catalog` (gói dịch vụ trong `mission`), `profile` (trong `user`), `marketing` (website).
-- `components/` chỉ chứa component. Hàm, hằng và cấu hình dùng chung đặt ở `lib/` hoặc `config/`.
-- Không còn danh sách ngoại lệ tầng dữ liệu: mọi component lấy dữ liệu qua `hooks/<tính năng>`. Luồng nhiều bước tuần tự (upload từng tệp, đăng nhập nhiều bước, điều phối nhiệm vụ) dùng hook trả về hàm request ổn định (`useTrainingUploads`, `useAuthFlow`, `useMissionWorkflow`), không gọi `api/*` trực tiếp.
-- `src/app/**/page.tsx` chỉ dựng trang từ một tầng của tính năng (thường là `components/<tính năng>`). Các biến thể UI của customer, operations, admin nằm trong feature tương ứng; không tái tạo ba ứng dụng riêng.
-- Thành phần dùng chung đặt trong `src/components`. Biến thể hình thức theo khu vực được giữ khi cần để không làm thay đổi giao diện hiện hành.
-- Truy cập mạng qua `src/lib/api/index.ts`; registry endpoint ở `src/lib/api/routes.ts`. Dịch vụ đặc thù mới đặt trong feature. Các adapter liên nhiều nghiệp vụ được chuyển nguyên trạng vào `lib/api` và `lib/query` để giữ hợp đồng hiện tại.
-- Một `AuthContext` quản lý phiên cookie, quyền chi tiết, làm mới quyền và xóa cache khi đổi tài khoản. Quyền vẫn kiểm tra theo từng trang/từng thao tác; đường dẫn khu vực không thay thế việc kiểm tra quyền.
-- Root layout riêng của từng nhóm route cô lập CSS nhưng cùng một Next app và runtime. Chuyển giữa nhóm có thể tải lại trang theo cơ chế nhiều root layout của Next; đăng nhập tiếp tục dùng cookie hiện tại.
-- Toàn bộ import nội bộ dùng `@/`. Không thêm workspace `@uav/*`, thư mục `apps`, `packages`, `legacy` hoặc script đồng bộ bản sao mã nguồn.
-- Mỗi thay đổi phải qua `npm run architecture:check`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`. Bộ trình duyệt nghiệp vụ thật chạy qua runner CI cô lập.
-
-## Bảo toàn tính năng và dữ liệu
-
-56 trang từ website và ba khu vực được chuyển sang feature. Đường dẫn công khai giữ nguyên; đường dẫn khu vực thêm prefix `/customer`, `/operations`, `/admin`. Xem bảng đầy đủ trong `FRONTEND_ROUTE_MIGRATION.md`.
-
-Các màn hình legacy trước đây: missions/create/list/detail tương ứng customer missions; operations/admin missions/operator missions tương ứng operations overview/dispatch/assigned missions; access-control tương ứng admin access-control; đăng nhập/đăng ký tương ứng khu vực phù hợp. Trang preview chỉ trình diễn cũ được loại khỏi runtime, không phải chức năng nghiệp vụ. Không còn máy chủ legacy ở cổng 3300.
-
-Ảnh thực tế và nguồn ảnh được giữ trong `public/images` và `assets/uav-photos`. Khi tài nguyên cũ trùng tên nhưng khác nội dung, bản riêng được giữ dưới `public/areas/<area>` và đường dẫn sử dụng được cập nhật.
-
-Không thay schema, dữ liệu DB, object storage hoặc logic backend trong đợt tái cấu trúc. Bản sao nguồn frontend trước khi sửa (gồm thay đổi chưa commit), SHA-256 và patch trạng thái Git nằm trong `docs/work/frontend-unification-20261018/`. Các thư mục đã nghỉ được chuyển vào `retired/` tại đây, ngoài source/build và được Git bỏ qua. Không nạp lại kiến trúc cũ từ bản sao này vào frontend đang phát triển.
+- **Cô lập tuyệt đối theo cổng (`check-architecture.mjs`):**
+  - `customer/` chỉ chứa `(public)` và `(customer)` (31 route, 373 file nguồn); cấm tồn tại `(operations)` hoặc `(admin)`.
+  - `operations/` chỉ chứa `(operations)` (25 route, 354 file nguồn); cấm tồn tại `(public)`, `(customer)` hoặc `(admin)`.
+  - `admin/` chỉ chứa `(admin)` (51 route, 438 file nguồn); cấm tồn tại `(public)`, `(customer)` hoặc `(operations)`.
+- **Chia theo tầng rồi theo tính năng bên trong mỗi cổng:** `src/api/<tính năng>`, `src/hooks/<tính năng>`, `src/components/<tính năng>`, `src/types/<tính năng>`, `src/utils/<tính năng>`, `src/forms/<tính năng>`. Không tạo lại `src/features`. Luồng dữ liệu: component → `hooks/<tính năng>` → `api/<tính năng>` → `@/lib/api`.
+- **Liên kết xuyên cổng (Cross-Portal Redirects):**
+  - Mỗi cổng định nghĩa `redirects()` trong `next.config.ts` thông qua các biến môi trường `NEXT_PUBLIC_CUSTOMER_URL` (`http://localhost:3100`), `NEXT_PUBLIC_OPERATIONS_URL` (`http://localhost:3200`) và `NEXT_PUBLIC_ADMIN_URL` (`http://localhost:3300`).
+  - Khi người dùng chuyển cổng qua `PortalSwitcher` hoặc đăng nhập với vai trò thuộc cổng khác, trình duyệt tự động điều hướng sang đúng cổng tương ứng và dùng chung phiên cookie xác thực với Backend (`:8080`).
+- **Đồng bộ với Mobile (`mobile/scripts/sync-shared.mjs`):**
+  - Ứng dụng React Native (`mobile/`) tự động tra cứu các tệp dùng chung (`lib/`, `types/`, `utils/`, `forms/`, `messages/`) từ 3 thư mục `customer/`, `operations/`, `admin/`.
+- **Kiểm chứng bắt buộc trên mỗi cổng:**
+  - Mỗi thay đổi phải vượt qua `npm run architecture:check`, `npm run typecheck`, `npm run lint`, `npm test` trên cả 3 cổng `customer`, `operations`, `admin` và `mobile`.

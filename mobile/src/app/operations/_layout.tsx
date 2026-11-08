@@ -25,6 +25,7 @@ export default function OperationsLayout() {
                     <Stack.Screen name="notifications" options={{title: t('nav.notifications')}}/>
                     <Stack.Screen name="profile" options={{title: t('mobile.account.profile')}}/>
                     <Stack.Screen name="security" options={{title: t('mobile.account.security')}}/>
+                    <Stack.Screen name="admin-quick" options={{title: t('mobile.adminQuick.title')}}/>
                     <Stack.Screen name="training/index" options={{title: t('nav.training')}}/>
                     <Stack.Screen name="training/[slug]" options={{title: t('nav.training')}}/>
                     <Stack.Screen name="training/lesson/[id]" options={{title: t('nav.training')}}/>

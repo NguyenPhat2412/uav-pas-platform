@@ -2,18 +2,18 @@ import React, {useMemo, useState} from 'react';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
 import {Bell, CalendarClock, ChevronRight, ClipboardList, Cpu, MapPin, ShieldCheck} from 'lucide-react-native';
-import {AppText, Badge, Card, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState, TextField} from '@/components/ui';
+import {AppText, Badge, Card, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState, SectionTitle, TextField} from '@/components/ui';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {MissionStatusBadge} from '@/components/mission/MissionBits';
 import {PermitStatusBadge} from '@/components/mission/MissionPermitCard';
 import {useNotifications} from '@/hooks/notification/useNotifications';
-import {useOperationsMissionList} from '@/hooks/operations/useOperationsMissions';
+import {useOperationsMissionList, useOperatorLogbook} from '@/hooks/operations/useOperationsMissions';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {displayLabel} from '@/shared/lib/presentation';
 import type {Mission} from '@/shared/types/mission/mission.types';
-import {colors, spacing} from '@/styles/tokens';
+import {colors, radius, spacing} from '@/styles/tokens';
 
 type OpsMissionFilter = 'assigned' | 'ready' | 'pending' | 'completed' | 'all';
 
@@ -102,7 +102,7 @@ function OpsMissionCard({mission, onPress}: { mission: Mission; onPress: () => v
 }
 
 export function OperationsMissionsScreen() {
-    const {t} = useI18n();
+    const {t, formatNumber} = useI18n();
     const {user} = useAuth();
     const router = useRouter();
     const {unreadCount} = useNotifications();
@@ -110,6 +110,7 @@ export function OperationsMissionsScreen() {
     const [search, setSearch] = useState('');
 
     const list = useOperationsMissionList({search});
+    const logbook = useOperatorLogbook();
 
     const missions = useMemo(() => {
         const rows = list.data?.content ?? [];
@@ -161,6 +162,38 @@ export function OperationsMissionsScreen() {
                     keyboardShouldPersistTaps="handled"
                     ListHeaderComponent={
                         <View style={styles.headerBlock}>
+                            {logbook.data && (
+                                <Card>
+                                    <SectionTitle
+                                        title={t('capabilities.logbook.title')}
+                                        action={<AppText variant="caption" style={styles.code}>{logbook.data.operatorFullName}</AppText>}
+                                    />
+                                    <View style={styles.kpiGrid}>
+                                        <View style={styles.kpiCell}>
+                                            <AppText variant="caption">{t('capabilities.logbook.totalHours')}</AppText>
+                                            <AppText variant="title">{formatNumber(logbook.data.totalFlightHours)} h</AppText>
+                                        </View>
+                                        <View style={styles.kpiCell}>
+                                            <AppText variant="caption">{t('capabilities.logbook.completedMissions')}</AppText>
+                                            <AppText variant="title">
+                                                {logbook.data.completedMissions}/{logbook.data.totalAssignedMissions}
+                                            </AppText>
+                                        </View>
+                                        <View style={styles.kpiCell}>
+                                            <AppText variant="caption">{t('capabilities.logbook.preflightCompliance')}</AppText>
+                                            <AppText variant="title">{formatNumber(logbook.data.preflightComplianceRate)}%</AppText>
+                                        </View>
+                                        <View style={styles.kpiCell}>
+                                            <AppText variant="caption">{t('capabilities.logbook.customerRating')}</AppText>
+                                            <AppText variant="title">
+                                                {logbook.data.averageCustomerRating != null
+                                                    ? `★ ${logbook.data.averageCustomerRating.toFixed(1)}`
+                                                    : '—'}
+                                            </AppText>
+                                        </View>
+                                    </View>
+                                </Card>
+                            )}
                             <TextField
                                 label={t('opsMissions.list.search')}
                                 placeholder={t('opsMissions.list.search')}
@@ -182,7 +215,7 @@ export function OperationsMissionsScreen() {
                     refreshControl={
                         <RefreshControl
                             refreshing={list.isRefetching}
-                            onRefresh={() => void list.refetch()}
+                            onRefresh={() => void Promise.all([list.refetch(), logbook.refetch()])}
                             tintColor={colors.primary}
                         />
                     }
@@ -198,6 +231,17 @@ const styles = StyleSheet.create({
     centerState: {flex: 1, justifyContent: 'center'},
     list: {padding: spacing.lg, gap: spacing.md, flexGrow: 1, width: '100%', maxWidth: CONTENT_WIDTH, alignSelf: 'center'},
     headerBlock: {gap: spacing.sm},
+    kpiGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm},
+    kpiCell: {
+        flexBasis: '47%',
+        flexGrow: 1,
+        borderRadius: radius.control,
+        borderWidth: 1,
+        borderColor: colors.border,
+        backgroundColor: colors.slateLight,
+        padding: spacing.sm,
+        gap: 2,
+    },
     topRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing.sm},
     badges: {flexDirection: 'row', alignItems: 'center', gap: spacing.xs, flexWrap: 'wrap'},
     code: {fontWeight: '700', letterSpacing: 0.5},

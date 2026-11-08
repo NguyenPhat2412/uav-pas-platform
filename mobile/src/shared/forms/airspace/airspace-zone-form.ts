@@ -25,6 +25,8 @@ export interface AirspaceZoneDraft {
     authority: string;
     active: boolean;
     description: string;
+    effectiveFrom: string;
+    effectiveUntil: string;
 }
 
 export type AirspaceZoneFieldErrors = Partial<Record<keyof AirspaceZoneDraft | 'vertices', string>> &
@@ -44,7 +46,24 @@ export function emptyAirspaceZoneDraft(): AirspaceZoneDraft {
         authority: '',
         active: true,
         description: '',
+        effectiveFrom: '',
+        effectiveUntil: '',
     };
+}
+
+export function toDatetimeLocalValue(iso?: string | null): string {
+    if (!iso) return '';
+    const trimmed = iso.trim();
+    return trimmed.length >= 16 ? trimmed.slice(0, 16) : trimmed;
+}
+
+export function normalizeOptionalLocalDateTime(raw?: string | null): string | null {
+    const trimmed = raw?.trim();
+    if (!trimmed) return null;
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(trimmed)) {
+        return `${trimmed}:00`;
+    }
+    return trimmed;
 }
 
 export function formatPolygonVerticesText(vertices?: number[][] | null): string {
@@ -62,7 +81,7 @@ export function parsePolygonVerticesText(raw: string): number[][] | null {
     if (trimmed.startsWith('[')) {
         try {
             const parsed: unknown = JSON.parse(trimmed);
-            if (!Array.isArray(parsed) || parsed.length < 3) return null;
+            if (!Array.isArray(parsed) || parsed.length < 3 || parsed.length > 200) return null;
             const points: number[][] = [];
             for (const item of parsed) {
                 if (!Array.isArray(item) || item.length < 2) return null;
@@ -83,7 +102,7 @@ export function parsePolygonVerticesText(raw: string): number[][] | null {
         .split(/[\r\n;]+/)
         .map(line => line.trim())
         .filter(Boolean);
-    if (lines.length < 3) return null;
+    if (lines.length < 3 || lines.length > 200) return null;
 
     const points: number[][] = [];
     for (const line of lines) {
@@ -113,13 +132,23 @@ export function airspaceZoneDraftFromZone(zone: AirspaceZone): AirspaceZoneDraft
         authority: zone.authority,
         active: zone.active,
         description: zone.description ?? '',
+        effectiveFrom: toDatetimeLocalValue(zone.effectiveFrom),
+        effectiveUntil: toDatetimeLocalValue(zone.effectiveUntil),
     };
 }
 
 export function canSubmitAirspaceZoneDraft(draft: AirspaceZoneDraft): boolean {
-    if (!draft.code.trim() || !draft.name.trim() || !draft.authority.trim()) return false;
+    const code = draft.code.trim();
+    const name = draft.name.trim();
+    const authority = draft.authority.trim();
+    const description = draft.description.trim();
+    if (!code || code.length > 40 || !name || name.length > 180 || !authority || authority.length > 180) return false;
+    if (description.length > 1000) return false;
     const rawAlt = draft.maxAltitudeAglM.trim();
-    if (rawAlt && (!Number.isFinite(Number(rawAlt)) || Number(rawAlt) < 0)) return false;
+    if (rawAlt && (!Number.isFinite(Number(rawAlt)) || Number(rawAlt) < 0 || Number(rawAlt) > 10000)) return false;
+    const fromIso = normalizeOptionalLocalDateTime(draft.effectiveFrom);
+    const untilIso = normalizeOptionalLocalDateTime(draft.effectiveUntil);
+    if (fromIso && untilIso && untilIso <= fromIso) return false;
     if (draft.geometryType === 'CIRCLE') {
         const lat = Number(draft.centerLat);
         const lng = Number(draft.centerLng);
@@ -129,9 +158,14 @@ export function canSubmitAirspaceZoneDraft(draft: AirspaceZoneDraft): boolean {
             draft.centerLng.trim().length > 0 &&
             draft.radiusMeters.trim().length > 0 &&
             Number.isFinite(lat) &&
+            lat >= -90 &&
+            lat <= 90 &&
             Number.isFinite(lng) &&
+            lng >= -180 &&
+            lng <= 180 &&
             Number.isFinite(radius) &&
-            radius >= 10
+            radius >= 10 &&
+            radius <= 100000
         );
     }
     return parsePolygonVerticesText(draft.verticesText) !== null;
@@ -141,6 +175,8 @@ export function toAirspaceZoneUpsertPayload(draft: AirspaceZoneDraft): AirspaceZ
     const rawAlt = draft.maxAltitudeAglM.trim();
     const maxAltitudeAglM = rawAlt ? Math.round(Number(rawAlt)) : null;
     const description = draft.description.trim() || null;
+    const effectiveFrom = normalizeOptionalLocalDateTime(draft.effectiveFrom);
+    const effectiveUntil = normalizeOptionalLocalDateTime(draft.effectiveUntil);
 
     if (draft.geometryType === 'CIRCLE') {
         return {
@@ -156,6 +192,8 @@ export function toAirspaceZoneUpsertPayload(draft: AirspaceZoneDraft): AirspaceZ
             authority: draft.authority.trim(),
             active: draft.active,
             description,
+            effectiveFrom,
+            effectiveUntil,
         };
     }
 
@@ -180,6 +218,8 @@ export function toAirspaceZoneUpsertPayload(draft: AirspaceZoneDraft): AirspaceZ
         authority: draft.authority.trim(),
         active: draft.active,
         description,
+        effectiveFrom,
+        effectiveUntil,
     };
 }
 
@@ -200,6 +240,8 @@ export function toAirspaceZoneTogglePayload(zone: AirspaceZone, active: boolean)
         authority: zone.authority,
         active,
         description: zone.description ?? null,
+        effectiveFrom: zone.effectiveFrom ?? null,
+        effectiveUntil: zone.effectiveUntil ?? null,
     };
 }
 
@@ -214,33 +256,66 @@ export function airspaceZoneFieldErrors(error: unknown): AirspaceZoneFieldErrors
  */
 export function toAirspaceCheckInput(
     plan?: FlightPlanInput | null,
-    fallbackLatitude?: number,
-    fallbackLongitude?: number,
+    fallbackLatitude?: number | null,
+    fallbackLongitude?: number | null,
+    plannedStartTime?: string | null,
+    plannedEndTime?: string | null,
 ): AirspaceCheckInput | null {
-    const altitudeAglMeters = plan?.altitudeAglMeters ?? 80;
-    const takeoffLat = plan?.takeoffLatitude ?? fallbackLatitude;
-    const takeoffLng = plan?.takeoffLongitude ?? fallbackLongitude;
+    const rawAlt = plan?.altitudeAglMeters ?? 80;
+    const altitudeAglMeters = Number.isFinite(rawAlt) ? Math.max(0, Math.min(10000, Math.round(rawAlt))) : 80;
+    const rawTakeoffLat = plan?.takeoffLatitude ?? fallbackLatitude;
+    const rawTakeoffLng = plan?.takeoffLongitude ?? fallbackLongitude;
+    const validCoord = (lat?: number | null, lng?: number | null): lat is number =>
+        typeof lat === 'number' &&
+        typeof lng === 'number' &&
+        Number.isFinite(lat) &&
+        Number.isFinite(lng) &&
+        lat >= -90 &&
+        lat <= 90 &&
+        lng >= -180 &&
+        lng <= 180;
+    const hasValidTakeoff = validCoord(rawTakeoffLat, rawTakeoffLng);
+    const takeoffLat = hasValidTakeoff ? rawTakeoffLat : undefined;
+    const takeoffLng = hasValidTakeoff ? (rawTakeoffLng as number) : undefined;
+    const startIso = normalizeOptionalLocalDateTime(plannedStartTime);
+    const endIso = normalizeOptionalLocalDateTime(plannedEndTime);
+    const windowFields =
+        startIso && endIso && endIso >= startIso
+            ? {plannedStartTime: startIso, plannedEndTime: endIso}
+            : startIso && !endIso
+              ? {plannedStartTime: startIso}
+              : !startIso && endIso
+                ? {plannedEndTime: endIso}
+                : {};
 
-    if (plan?.areaType === 'POLYGON' && plan.vertices.length >= 3) {
+    const validVertices = (plan?.vertices ?? [])
+        .filter(v => Array.isArray(v) && validCoord(v[0], v[1]))
+        .slice(0, 100)
+        .map(([lat, lng]): [number, number] => [lat, lng]);
+
+    if (plan?.areaType === 'POLYGON' && validVertices.length >= 3) {
         return {
             areaType: 'POLYGON',
-            vertices: plan.vertices.map(([lat, lng]) => [lat, lng]),
+            vertices: validVertices,
             ...(takeoffLat != null && takeoffLng != null
                 ? {takeoffLatitude: takeoffLat, takeoffLongitude: takeoffLng}
                 : {}),
             altitudeAglMeters,
+            ...windowFields,
         };
     }
 
-    if (plan?.areaType === 'CIRCLE' && plan.vertices.length >= 1 && (plan.radiusMeters ?? 0) > 0) {
+    if (plan?.areaType === 'CIRCLE' && validVertices.length >= 1 && (plan.radiusMeters ?? 0) > 0) {
+        const clampedRadius = Math.max(1, Math.min(50000, Math.round(plan.radiusMeters!)));
         return {
             areaType: 'CIRCLE',
-            vertices: [[plan.vertices[0][0], plan.vertices[0][1]]],
-            radiusMeters: plan.radiusMeters,
+            vertices: [[validVertices[0][0], validVertices[0][1]]],
+            radiusMeters: clampedRadius,
             ...(takeoffLat != null && takeoffLng != null
                 ? {takeoffLatitude: takeoffLat, takeoffLongitude: takeoffLng}
                 : {}),
             altitudeAglMeters,
+            ...windowFields,
         };
     }
 
@@ -250,15 +325,17 @@ export function toAirspaceCheckInput(
             takeoffLatitude: takeoffLat,
             takeoffLongitude: takeoffLng,
             altitudeAglMeters,
+            ...windowFields,
         };
     }
 
-    if (plan?.vertices && plan.vertices.length >= 1) {
+    if (validVertices.length >= 1) {
         return {
             areaType: 'POINT',
-            takeoffLatitude: plan.vertices[0][0],
-            takeoffLongitude: plan.vertices[0][1],
+            takeoffLatitude: validVertices[0][0],
+            takeoffLongitude: validVertices[0][1],
             altitudeAglMeters,
+            ...windowFields,
         };
     }
 

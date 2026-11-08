@@ -227,3 +227,174 @@ export type MissionConfirmationKind = 'reject' | 'conflict' | 'complete' | 'canc
 export type MissionNoticeMessage = { key: string; params?: Record<string, string | number> } | { text: string };
 export type MissionDetailSection = 'timeline' | 'media' | 'stations' | 'uavs' | 'equipment' | 'operators';
 
+export interface SavedFlightSite {
+    id: number;
+    name: string;
+    locationName: string;
+    latitude?: number | null;
+    longitude?: number | null;
+    defaultMissionType: MissionType;
+    flightPlan?: FlightPlan | null;
+    notes?: string | null;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface SavedFlightSiteUpsertInput {
+    name: string;
+    locationName: string;
+    latitude?: number | null;
+    longitude?: number | null;
+    defaultMissionType: MissionType;
+    flightPlan?: FlightPlanInput | null;
+    notes?: string | null;
+}
+
+export interface MissionReview {
+    reviewed: boolean;
+    id?: number | null;
+    missionId: number;
+    missionCode?: string | null;
+    customerId?: number | null;
+    customerUsername?: string | null;
+    customerFullName?: string | null;
+    overallRating?: number | null;
+    dataQualityRating?: number | null;
+    timelinessRating?: number | null;
+    deliverablesAccepted: boolean;
+    comment?: string | null;
+    createdAt?: string | null;
+    updatedAt?: string | null;
+}
+
+export interface MissionReviewUpsertInput {
+    overallRating: number;
+    dataQualityRating: number;
+    timelinessRating: number;
+    deliverablesAccepted?: boolean;
+    comment?: string | null;
+}
+
+export interface MissionPreflight {
+    recorded: boolean;
+    id?: number | null;
+    missionId: number;
+    signedByUsername?: string | null;
+    signedAt?: string | null;
+    airframeAndPropellersSafe: boolean;
+    batteryHealthy: boolean;
+    gnssRtkLocked: boolean;
+    weatherWithinLimits: boolean;
+    airspaceAndPermitCleared: boolean;
+    measuredBatteryPct?: number | null;
+    satelliteCount?: number | null;
+    measuredWindMs?: number | null;
+    clearedForTakeoff: boolean;
+    notes?: string | null;
+    updatedAt?: string | null;
+}
+
+export interface MissionPreflightUpsertInput {
+    airframeAndPropellersSafe: boolean;
+    batteryHealthy: boolean;
+    gnssRtkLocked: boolean;
+    weatherWithinLimits: boolean;
+    airspaceAndPermitCleared: boolean;
+    measuredBatteryPct?: number | null;
+    satelliteCount?: number | null;
+    measuredWindMs?: number | null;
+    notes?: string | null;
+}
+
+export interface LoggedFlightEntry {
+    missionId: number;
+    code: string;
+    title: string;
+    missionType: MissionType;
+    status: MissionStatus;
+    locationName?: string | null;
+    uavSerialNumber?: string | null;
+    startTime?: string | null;
+    completedAt?: string | null;
+    durationHours: number;
+    preflightCleared: boolean;
+    customerRating?: number | null;
+}
+
+export interface OperatorLogbook {
+    operatorUsername: string;
+    operatorFullName: string;
+    totalAssignedMissions: number;
+    completedMissions: number;
+    totalFlightHours: number;
+    preflightSignedCount: number;
+    preflightComplianceRate: number;
+    averageCustomerRating?: number | null;
+    reviewedMissionsCount: number;
+    recentFlights: LoggedFlightEntry[];
+}
+
+export interface StationCandidate {
+    id: number;
+    code: string;
+    name: string;
+    distanceKm?: number | null;
+    availableUavCount: number;
+    availableEquipmentCount: number;
+    score: number;
+    eligible: boolean;
+    reason?: string | null;
+}
+
+export interface UavCandidate {
+    id: number;
+    serialNumber: string;
+    model: string;
+    stationId?: number | null;
+    stationName?: string | null;
+    distanceKm?: number | null;
+    batteryPct?: number | null;
+    daysSinceMaintenance?: number | null;
+    score: number;
+    eligible: boolean;
+    conflictReason?: string | null;
+}
+
+export interface OperatorCandidate {
+    id: number;
+    username: string;
+    fullName: string;
+    sameDayMissionCount: number;
+    completedMissionCount: number;
+    averageRating?: number | null;
+    score: number;
+    eligible: boolean;
+    conflictReason?: string | null;
+}
+
+export interface EquipmentCandidate {
+    id: number;
+    name: string;
+    category: string;
+    stationId?: number | null;
+    availableQuantity: number;
+    score: number;
+    eligible: boolean;
+    reason?: string | null;
+}
+
+export interface MissionDispatchCandidates {
+    missionId: number;
+    missionCode: string;
+    missionStatus: MissionStatus;
+    recommendedStationId?: number | null;
+    recommendedUavId?: number | null;
+    recommendedOperatorId?: number | null;
+    recommendedEquipmentId?: number | null;
+    canAutoAssign: boolean;
+    stations: StationCandidate[];
+    uavs: UavCandidate[];
+    operators: OperatorCandidate[];
+    equipment: EquipmentCandidate[];
+}
+

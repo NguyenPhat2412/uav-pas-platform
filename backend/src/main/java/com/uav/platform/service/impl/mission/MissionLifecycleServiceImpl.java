@@ -19,6 +19,7 @@ import com.uav.platform.mapper.mission.MissionMapper;
 import com.uav.platform.repository.media.MediaAssetRepository;
 import com.uav.platform.repository.mission.MissionEventRepository;
 import com.uav.platform.repository.mission.MissionMediaRepository;
+import com.uav.platform.repository.mission.MissionPreflightLogRepository;
 import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.mission.ServiceOfferingRepository;
 import com.uav.platform.service.airspace.AirspaceService;
@@ -65,6 +66,13 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     @Autowired(required = false)
     private ObjectProvider<NotificationService> notifications;
 
+    @Autowired(required = false)
+    private ObjectProvider<MissionPreflightLogRepository> preflightLogs;
+
+    @org.springframework.beans.factory.annotation.Value(
+            "${app.mission.preflight-signoff-required:false}")
+    private boolean preflightSignoffRequired;
+
     public void setAirspace(ObjectProvider<AirspaceService> airspace) {
         this.airspace = airspace;
     }
@@ -75,6 +83,14 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
 
     public void setNotifications(ObjectProvider<NotificationService> notifications) {
         this.notifications = notifications;
+    }
+
+    public void setPreflightLogs(ObjectProvider<MissionPreflightLogRepository> preflightLogs) {
+        this.preflightLogs = preflightLogs;
+    }
+
+    public void setPreflightSignoffRequired(boolean preflightSignoffRequired) {
+        this.preflightSignoffRequired = preflightSignoffRequired;
     }
 
     public MissionLifecycleServiceImpl(
@@ -162,7 +178,9 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                         MissionPermitOperations.toCheckRequest(
                                 request.flightPlan(),
                                 mission.getLatitude(),
-                                mission.getLongitude()));
+                                mission.getLongitude(),
+                                mission.getStartTime(),
+                                mission.getExpectedEndTime()));
         boolean needsPermit =
                 (airspaceCheck != null && airspaceCheck.requiresPermit())
                         || (request.flightPlan() != null && request.flightPlan().permitSupport());
@@ -197,7 +215,11 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         if (request.flightPlan() != null) FlightPlanOperations.resolve(request.flightPlan());
         checkAirspace(
                 MissionPermitOperations.toCheckRequest(
-                        request.flightPlan(), request.latitude(), request.longitude()));
+                        request.flightPlan(),
+                        request.latitude(),
+                        request.longitude(),
+                        request.startTime(),
+                        request.expectedEndTime()));
         if (request.serviceId() != null) activeService(request.serviceId());
     }
 
@@ -249,7 +271,9 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                             MissionPermitOperations.toCheckRequest(
                                     request.flightPlan(),
                                     mission.getLatitude(),
-                                    mission.getLongitude()));
+                                    mission.getLongitude(),
+                                    mission.getStartTime(),
+                                    mission.getExpectedEndTime()));
             boolean needsPermit =
                     (check != null && check.requiresPermit())
                             || request.flightPlan().permitSupport();
@@ -259,7 +283,11 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
             AirspaceCheckResponse check =
                     checkAirspace(
                             MissionPermitOperations.toCheckRequest(
-                                    storedPlan, mission.getLatitude(), mission.getLongitude()));
+                                    storedPlan,
+                                    mission.getLatitude(),
+                                    mission.getLongitude(),
+                                    mission.getStartTime(),
+                                    mission.getExpectedEndTime()));
             boolean needsPermit =
                     (check != null && check.requiresPermit())
                             || (storedPlan != null && storedPlan.permitSupport());
@@ -304,7 +332,11 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         AirspaceCheckResponse airspaceCheck =
                 checkAirspace(
                         MissionPermitOperations.toCheckRequest(
-                                storedPlan, mission.getLatitude(), mission.getLongitude()));
+                                storedPlan,
+                                mission.getLatitude(),
+                                mission.getLongitude(),
+                                mission.getStartTime(),
+                                mission.getExpectedEndTime()));
         boolean needsPermit =
                 (airspaceCheck != null && airspaceCheck.requiresPermit())
                         || (storedPlan != null && storedPlan.permitSupport());
@@ -465,11 +497,35 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         requireStartWindow(mission, now);
         resources.validatePreflightResources(mission);
         requireAcceptance(mission);
+        requirePreflightClearance(mission);
         FlightPlanResponse storedPlan = FlightPlanOperations.read(mission.getFlightPlan());
+        long plannedMinutes =
+                mission.getStartTime() != null && mission.getExpectedEndTime() != null
+                        ? Math.max(
+                                30L,
+                                java.time.Duration.between(
+                                                mission.getStartTime(),
+                                                mission.getExpectedEndTime())
+                                        .toMinutes())
+                        : 60L;
+        java.time.LocalDateTime effectiveStart =
+                mission.getStartTime() != null && mission.getStartTime().isBefore(now)
+                        ? mission.getStartTime()
+                        : now;
+        java.time.LocalDateTime actualEnd = now.plusMinutes(plannedMinutes);
+        java.time.LocalDateTime effectiveEnd =
+                mission.getExpectedEndTime() != null
+                                && mission.getExpectedEndTime().isAfter(actualEnd)
+                        ? mission.getExpectedEndTime()
+                        : actualEnd;
         AirspaceCheckResponse airspaceCheck =
                 checkAirspace(
                         MissionPermitOperations.toCheckRequest(
-                                storedPlan, mission.getLatitude(), mission.getLongitude()));
+                                storedPlan,
+                                mission.getLatitude(),
+                                mission.getLongitude(),
+                                effectiveStart,
+                                effectiveEnd));
         boolean airspaceRequiresPermit =
                 (airspaceCheck != null && airspaceCheck.requiresPermit())
                         || (storedPlan != null && storedPlan.permitSupport());
@@ -686,6 +742,30 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     public void requireAcceptance(Mission mission) {
         if (!mission.isOperatorAccepted())
             throw SystemException.conflict("MISSION_ACCEPTANCE_REQUIRED");
+    }
+
+    private void requirePreflightClearance(Mission mission) {
+        MissionPreflightLogRepository repo =
+                preflightLogs == null ? null : preflightLogs.getIfAvailable();
+        if (repo == null || mission.getId() == null) {
+            if (preflightSignoffRequired) {
+                throw SystemException.conflict(
+                        "Nhiệm vụ phải hoàn tất biên bản kiểm tra an toàn tiền bay trước khi cất cánh.",
+                        "MISSION_PREFLIGHT_NOT_CLEARED");
+            }
+            return;
+        }
+        java.util.Optional<MissionPreflightLog> existing = repo.findByMissionId(mission.getId());
+        if (existing.isPresent() && !existing.get().isClearedForTakeoff()) {
+            throw SystemException.conflict(
+                    "Biên bản tiền bay chưa đạt đủ điều kiện an toàn để cất cánh hoặc cần ký lại sau khi thay đổi thiết bị.",
+                    "MISSION_PREFLIGHT_NOT_CLEARED");
+        }
+        if (existing.isEmpty() && preflightSignoffRequired) {
+            throw SystemException.conflict(
+                    "Nhiệm vụ phải hoàn tất biên bản kiểm tra an toàn tiền bay trước khi cất cánh.",
+                    "MISSION_PREFLIGHT_NOT_CLEARED");
+        }
     }
 
     @Override

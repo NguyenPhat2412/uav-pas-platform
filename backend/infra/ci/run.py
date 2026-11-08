@@ -4,7 +4,7 @@ import argparse, concurrent.futures, hashlib, json, os, pathlib, re, secrets, sh
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 PARSER = argparse.ArgumentParser()
-PARSER.add_argument('--frontend', type=pathlib.Path, default=ROOT/'frontend')
+PARSER.add_argument('--frontend', type=pathlib.Path, default=ROOT/'customer')
 PARSER.add_argument('--work-dir', type=pathlib.Path, default=ROOT/'docs/work/e2e-private')
 PARSER.add_argument('--result-dir', type=pathlib.Path, default=ROOT/'docs/work/e2e-safe')
 PARSER.add_argument('--project', default='uav-e2e-'+secrets.token_hex(6))

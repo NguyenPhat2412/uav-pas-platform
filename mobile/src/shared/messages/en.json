@@ -19,7 +19,10 @@
     "phone": "Phone Number",
     "username": "Username",
     "fullName": "Full Name",
-    "actions": "Actions"
+    "actions": "Actions",
+    "hideLesson": "Hide lesson",
+    "showLesson": "Restore lesson",
+    "hideLessonConfirm": "Hide lesson \"{title}\"? Learners will no longer see it; you can restore it anytime."
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -258,7 +261,7 @@
   "preview": {
     "title": "UAV PAS Mission Operations Center",
     "edition": "OPERATIONS CENTER",
-    "realtimeBadge": "24/7 Monitoring",
+    "realtimeBadge": "Live Monitoring",
     "syncRtk": "RTK Synchronized",
     "openMap": "Open Operations Map",
     "officers": "Operators",
@@ -604,7 +607,7 @@
   },
   "simulation": {
     "title": "Flight simulation",
-    "subtitle": "A simulated UAV sends telemetry through the same path as a real ground station",
+    "subtitle": "Simulate routes and real-time flight metrics along the same data path as a ground station",
     "running": "Simulated flights",
     "noUav": "No UAV yet. Create one under UAV fleet first.",
     "route": "Waypoints",
@@ -627,13 +630,13 @@
     "needRoute": "Add waypoints or generate a survey path first.",
     "started": "Simulated flight started",
     "failed": "The simulation command failed.",
-    "pause": "Hold",
+    "pause": "Pause",
     "resume": "Resume",
-    "rth": "Home",
+    "rth": "Return",
     "land": "Land",
     "stop": "End",
     "events": "Flight log",
-    "disclaimer": "Simulated data: no real UAV is controlled. PX4 SITL can replace it through the same telemetry API.",
+    "disclaimer": "Safe rehearsal mode: routes and flight metrics are simulated for pre-flight verification and do not control physical aircraft.",
     "modes": {
       "TAKEOFF": "Take-off",
       "MISSION": "Mission",
@@ -648,14 +651,48 @@
       "battery": "Battery",
       "heading": "Heading",
       "waypoint": "Waypoint",
-      "toHome": "To home"
+      "toHome": "Distance to home",
+      "rtk": "RTK GNSS",
+      "airspace": "Airspace alerts",
+      "wind": "Wind / Speed"
     },
     "link": {
-      "title": "Telemetry link",
+      "title": "Data link",
       "delivered": "Recv/Sent",
       "lost": "Loss",
       "latency": "Avg delay",
       "config": "Settings: {loss}% loss · {latency} ms delay · {fence} m fence"
+    },
+    "windSpeed": "Wind (m/s)",
+    "windDirection": "Wind dir (°)",
+    "timeScale": "Simulation speed",
+    "rehearseTitle": "Quick mission rehearsal",
+    "rehearseSelectPlaceholder": "Select a mission to rehearse...",
+    "rehearseAction": "Run flight rehearsal",
+    "rehearseStarted": "Started flight rehearsal for {code}",
+    "openSimulation": "Open simulation console",
+    "faultInjection": "Safety scenario testing",
+    "faultGps": "Weak GPS/RTK signal",
+    "faultGpsRestore": "Restore positioning",
+    "faultBattery": "Battery drop (-15%)",
+    "airspaceZonesOverlay": "Showing {count} airspace & NOTAM zones",
+    "history": {
+      "title": "Flight rehearsal history",
+      "empty": "No flight rehearsals recorded yet.",
+      "uav": "UAV",
+      "mission": "Mission",
+      "environment": "Environment",
+      "progress": "Progress & Battery",
+      "status": "Status",
+      "outcome": "Safety outcome",
+      "freeFlight": "Free flight"
+    },
+    "runStatus": {
+      "RUNNING": "Running",
+      "COMPLETED": "Completed",
+      "FAILSAFE_RTH": "Fail-safe RTH",
+      "EMERGENCY_LANDED": "Emergency land",
+      "ABORTED": "Stopped"
     }
   },
   "airspace": {
@@ -757,6 +794,17 @@
       },
       "errors": {
         "saveFailed": "Could not update airspace zone status."
+      },
+      "map": {
+        "overviewTitle": "Airspace zones overview map",
+        "overviewHint": "Click a zone on the map to inspect details or open quick edit.",
+        "fitAll": "Fit all zones",
+        "builderTitle": "Interactive geometry map",
+        "circleHint": "Click anywhere on the map to set the circle center, then adjust the radius.",
+        "polygonHint": "Click points on the map to place polygon vertices (minimum 3). The coordinate list below syncs both ways.",
+        "undoVertex": "Undo last vertex",
+        "clearVertices": "Clear vertices",
+        "vertexCount": "{count} vertices placed"
       }
     }
   },
@@ -818,6 +866,154 @@
       "saveFailed": "Unable to save flight permit details. Please check your inputs.",
       "uploadFailed": "Unable to upload the permit scan file.",
       "verifyFailed": "Unable to record flight permit verification."
+    }
+  },
+  "capabilities": {
+    "flightSites": {
+      "title": "Saved Flight Sites & Corridors",
+      "subtitle": "Apply saved survey geometries, altitude ceilings, and sensor presets in one click.",
+      "empty": "No saved flight site presets yet. Click \"Save current site\" after picking coordinates or drawing a corridor.",
+      "apply": "Apply",
+      "appliedToast": "Loaded site preset \"{name}\" into the form.",
+      "saveCurrent": "Save current site",
+      "saveFromMission": "Save as site preset",
+      "savedToast": "Saved flight site \"{name}\" to your personal presets.",
+      "deletedToast": "Removed saved flight site.",
+      "nameLabel": "Preset name",
+      "namePlaceholder": "e.g., Hoa Lac Solar Farm - Sector B",
+      "saveConfirm": "Save preset",
+      "cancel": "Close",
+      "deleteTitle": "Remove saved flight site?",
+      "deleteDescription": "Preset \"{name}\" will be removed from your saved list without affecting existing missions.",
+      "deleteConfirm": "Remove preset",
+      "missingCoords": "Select a takeoff point or draw a survey corridor on the map before saving."
+    },
+    "clone": {
+      "action": "Clone mission",
+      "cloning": "Cloning...",
+      "successToast": "Created draft {code} scheduled for the next available window."
+    },
+    "review": {
+      "title": "Handover Sign-Off & Quality Rating",
+      "subtitle": "Confirm deliverable acceptance and rate service quality for this completed mission.",
+      "opsTitle": "Customer Handover Feedback",
+      "acceptedBadge": "Deliverables accepted",
+      "pendingBadge": "Awaiting sign-off",
+      "overallRating": "Overall rating",
+      "dataQuality": "Imagery / mapping quality",
+      "timeliness": "Delivery timeliness",
+      "acceptDeliverables": "I confirm that I have inspected and accepted the handover deliverables for this mission",
+      "commentLabel": "Detailed remarks",
+      "commentPlaceholder": "Orthophoto clarity, georeferencing accuracy, or workflow feedback...",
+      "submit": "Save sign-off & rating",
+      "update": "Update rating",
+      "saving": "Saving...",
+      "savedToast": "Saved handover sign-off and quality rating.",
+      "emptyOps": "The customer has not submitted a handover review for this mission yet."
+    },
+    "smartDispatch": {
+      "title": "Smart Auto-Dispatch & Conflict Scoring",
+      "subtitle": "Multi-factor ranking by station distance, battery level, UAV maintenance cycle, operator schedule, and available equipment.",
+      "autoAssign": "Optimal Auto-Assign (1-Click)",
+      "autoAssigning": "Auto-assigning...",
+      "autoAssignedToast": "Automatically assigned the optimal conflict-free resource bundle.",
+      "allAssigned": "Core resources assigned",
+      "recommended": "Recommended · {score} pts",
+      "stationLabel": "Optimal station",
+      "uavLabel": "Aircraft (UAV)",
+      "operatorLabel": "Operator",
+      "equipmentLabel": "Support equipment",
+      "distanceKm": "{km} km away",
+      "batteryPct": "{pct}% battery",
+      "maintDays": "{days}d since service",
+      "sameDayLoad": "{count} same-day",
+      "completedCount": "{count} completed",
+      "stockCount": "{count} available",
+      "noCandidate": "No conflict-free candidate available"
+    },
+    "preflight": {
+      "title": "Digital Pre-Flight Safety Checklist",
+      "subtitle": "Record pre-takeoff technical checks for civil aviation safety verification.",
+      "clearedBadge": "Cleared for takeoff",
+      "pendingBadge": "Pending clearance",
+      "signedMeta": "Signed by {user} · {time}",
+      "checks": {
+        "airframe": "Airframe, landing gear & propellers intact and securely locked",
+        "battery": "Battery cell voltage balanced and temperature nominal (≥ 25%)",
+        "gnss": "GNSS / RTK position locked cleanly with zero compass interference",
+        "weather": "Field wind speed, visibility, and precipitation within safe limits",
+        "airspace": "Flight corridor clear and permit / temporary NOTAM verified"
+      },
+      "batteryPct": "Measured battery (%)",
+      "satellites": "GNSS satellites",
+      "windMs": "Field wind (m/s)",
+      "notes": "Field inspection notes",
+      "notesPlaceholder": "RTK fix status, new local obstacles, or takeoff remarks...",
+      "signButton": "Sign pre-flight safety log",
+      "signing": "Saving log...",
+      "savedToast": "Saved auditable pre-flight safety checklist."
+    },
+    "logbook": {
+      "title": "Operator Flight Logbook",
+      "subtitle": "Cumulative flight hours, pre-flight safety compliance, and customer handover ratings.",
+      "totalHours": "Logged flight hours",
+      "completedMissions": "Completed missions",
+      "preflightCompliance": "Pre-flight compliance",
+      "customerRating": "Customer rating",
+      "noRating": "No ratings yet"
+    },
+    "notam": {
+      "effectiveFrom": "Effective from (Temporary NOTAM - optional)",
+      "effectiveUntil": "Effective until (Temporary NOTAM - optional)",
+      "hint": "Leave both blank for permanent long-term restricted/prohibited zones.",
+      "permanent": "Permanent",
+      "scheduledBadge": "Scheduled NOTAM",
+      "windowSummary": "{from} → {until}"
+    },
+    "sla": {
+      "title": "Operations Quality & Predictive Fleet Maintenance",
+      "subtitle": "Real turnaround analytics, operator quality leaderboard, and predictive UAV service risk matrix.",
+      "kpis": {
+        "confirmTurnaround": "Avg confirmation time",
+        "minutesUnit": "{min} min",
+        "onTimeRate": "On-time completion",
+        "preflightRate": "Pre-flight compliance",
+        "customerRating": "Customer handover rating",
+        "reviewsSub": "{accepted}/{total} accepted"
+      },
+      "leaderboardTitle": "Operator Performance Leaderboard",
+      "leaderboardEmpty": "No operator records available.",
+      "cols": {
+        "operator": "Operator",
+        "completed": "Completed",
+        "hours": "Flight hrs",
+        "onTime": "On-time",
+        "preflight": "Pre-flight",
+        "rating": "Rating"
+      },
+      "riskTitle": "Predictive UAV Preventive Maintenance Matrix",
+      "riskSummary": "{overdue} overdue · {dueSoon} due soon",
+      "riskLevels": {
+        "OVERDUE": "Overdue cycle",
+        "DUE_SOON": "Due soon",
+        "NORMAL": "Nominal"
+      },
+      "uavCols": {
+        "uav": "UAV / Station",
+        "usage": "Usage since service",
+        "telemetry": "Battery / Last service",
+        "risk": "Risk level",
+        "action": "Preventive action"
+      },
+      "missionsHours": "{missions} missions · {hours} hrs",
+      "daysAgo": "{days}d ago",
+      "neverMaintained": "No service logged",
+      "openOrderExists": "Open repair order",
+      "createPreventiveOrder": "Create preventive order",
+      "creatingOrder": "Creating...",
+      "orderCreatedToast": "Created preventive repair order for UAV {serial}.",
+      "recentReviewsTitle": "Recent Customer Handover Sign-Offs",
+      "recentReviewsEmpty": "No customer handover reviews recorded yet."
     }
   }
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import {ActivityIndicator, Alert, Pressable, StyleSheet, View} from 'react-native';
 import {useRouter} from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import {ALargeSmall, ArrowRightLeft, Camera, ChevronRight, CreditCard, GraduationCap, Languages, Layers, LogOut, ShieldCheck, UserRound, type LucideIcon} from 'lucide-react-native';
+import {ALargeSmall, ArrowRightLeft, Camera, ChevronRight, CreditCard, GraduationCap, Languages, Layers, LogOut, ShieldAlert, ShieldCheck, UserRound, type LucideIcon} from 'lucide-react-native';
 import {AppText, Button, Card, ChipGroup, Screen, SectionTitle} from '@/components/ui';
 import {PushDeviceCard} from '@/components/profile/PushDeviceCard';
 import {UserAvatar} from '@/components/profile/UserAvatar';
@@ -96,11 +96,16 @@ export function AvatarButton() {
 
 export function AccountScreen() {
     const {t, locale, setLocale} = useI18n();
-    const {user, logout, switchPortal} = useAuth();
+    const {user, can, logout, switchPortal} = useAuth();
     const {size, setSize} = useTextSize();
     const router = useRouter();
     const name = user?.fullName || user?.username || '';
     const canSwitchToOps = canUsePortal(user?.role, 'operations');
+    const canAdminQuick =
+        canSwitchToOps &&
+        (can('USER_MANAGE') ||
+            can('USER_VIEW') ||
+            (can('DASHBOARD_VIEW') && can('MISSION_VIEW_ALL')));
 
     const confirmLogout = () => Alert.alert(t('common.logout'), t('mobile.account.logoutQuestion'), [
         {text: t('common.cancel'), style: 'cancel'},
@@ -110,6 +115,12 @@ export function AccountScreen() {
     const enterOperationsPortal = async () => {
         await switchPortal('operations');
         router.replace('/operations/missions');
+    };
+
+    const openAdminQuick = async () => {
+        await switchPortal('operations');
+        router.replace('/operations/missions');
+        setTimeout(() => router.push('/operations/admin-quick'), 50);
     };
 
     return (
@@ -138,6 +149,13 @@ export function AccountScreen() {
             <Card>
                 <AccountRow icon={UserRound} label={t('mobile.account.profile')} onPress={() => router.push('/customer/profile')}/>
                 <AccountRow icon={ShieldCheck} label={t('mobile.account.security')} onPress={() => router.push('/customer/security')}/>
+                {canAdminQuick && (
+                    <AccountRow
+                        icon={ShieldAlert}
+                        label={t('mobile.adminQuick.entryLabel')}
+                        onPress={() => void openAdminQuick()}
+                    />
+                )}
                 <AccountRow icon={CreditCard} label={t('nav.billing')} onPress={() => router.push('/customer/billing')}/>
                 <AccountRow icon={Layers} label={t('nav.services')} onPress={() => router.push('/customer/services')}/>
                 <AccountRow icon={GraduationCap} label={t('nav.training')} onPress={() => router.push('/customer/training')}/>

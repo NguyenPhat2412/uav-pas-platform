@@ -25,6 +25,22 @@ export function useForecastTimeline(point: { lat: number; lng: number } | null, 
     });
 }
 
+export function usePointForecast(
+    point: { lat: number; lng: number } | null,
+    at?: string,
+    serviceId?: number,
+) {
+    const {user} = useAuth();
+    const query: ForecastQuery = {lat: point?.lat ?? 0, lng: point?.lng ?? 0, at, serviceId};
+    return useQuery({
+        queryKey: weatherKeys.forecast(user?.id, query),
+        queryFn: ({signal}) => weatherService.forecast(query, signal),
+        enabled: !!user && point !== null,
+        staleTime: WEATHER_STALE_MS,
+        meta: QUIET,
+    });
+}
+
 export function useMissionWeather(missionId: number | undefined, enabled = true) {
     const {user} = useAuth();
     return useQuery({

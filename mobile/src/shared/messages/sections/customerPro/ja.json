@@ -26,7 +26,7 @@
     "vat": "付加価値税（{rate}%）",
     "total": "お支払い合計",
     "dates": "発行日 {issued} · 支払期限 {due}",
-    "confirmation": "振込内容が一致すると銀行Webhookにより数秒で自動照合されます。入力ミスの場合はサポートへご連絡ください（手動照合）。",
+    "confirmation": "振込内容が一致すると数秒で自動照合されます。入力ミスの場合はサポートへご連絡ください（手動照合）。",
     "downloadPdf": "PDFをダウンロード",
     "downloadPdfError": "請求書PDFをダウンロードできませんでした。",
     "print": "印刷 / PDF保存",
@@ -34,7 +34,13 @@
     "issuedOn": "発行日",
     "dueOn": "支払期限",
     "awaitingTransfer": "支払い待ち",
-    "awaitingTransferHint": "経理から案内が届きます。入金確認後に更新されます。"
+    "awaitingTransferHint": "経理から案内が届きます。入金確認後に更新されます。",
+    "pollingLive": "5秒ごとに振込状況を自動確認しています…",
+    "checkNow": "今すぐ確認",
+    "checking": "確認中…",
+    "stillPending": "まだ入金が確認されていません。自動確認を継続します。",
+    "paidSuccess": "入金が確認されました！",
+    "popupBlocked": "印刷ウィンドウがブロックされました。ポップアップを許可するか、PDFダウンロードをご利用ください。"
   },
   "plans": {
     "subscribe": "このプランを選ぶ",
@@ -81,11 +87,15 @@
     "controls": {
       "stationRadius": "基地局カバー圏",
       "resetView": "初期表示に戻す"
-    }
+    },
+    "latitude": "離陸地点の緯度",
+    "longitude": "離陸地点の経度",
+    "coordHint": "十進座標（例: 21.0285, 105.8542）を入力または貼り付けると地図がその地点へ移動します。"
   },
   "flightSpec": {
     "title": "飛行設定",
     "altitude": "飛行高度",
+    "customAltitude": "任意の高度を入力 (m)",
     "altitudeHint": "地上高、最大 120 m。",
     "gsd": "画像解像度（GSD）",
     "gsdOption": {

@@ -15,13 +15,20 @@ import {
     Download,
     ExternalLink,
     FileText,
+    Home,
     ImagePlus,
     MapPin,
     Navigation,
+    Pause,
     Play,
+    Radio,
+    RadioTower,
     ShieldAlert,
     ShieldCheck,
+    Sparkles,
     Square,
+    Star,
+    UserCheck,
     XCircle,
 } from 'lucide-react-native';
 import {AppText, Badge, Button, Card, ChipGroup, EmptyState, ErrorState, LoadingState, Screen, SectionTitle, TextField} from '@/components/ui';
@@ -30,7 +37,16 @@ import {MissionPermitCard} from '@/components/mission/MissionPermitCard';
 import {Verdict} from '@/components/weather/WeatherCard';
 import {useAirspaceZones, useMissionAirspaceCheck} from '@/hooks/airspace/useAirspace';
 import {useMediaDownload, useMissionUpload} from '@/hooks/media/useMissionUpload';
-import {useOperationsMissionActions, useOperationsMissionDetail} from '@/hooks/operations/useOperationsMissions';
+import {
+    useOperationsDispatchCandidates,
+    useOperationsMissionActions,
+    useOperationsMissionDetail,
+    useOperationsMissionPreflight,
+    useOperationsMissionReview,
+    useOperatorsList,
+} from '@/hooks/operations/useOperationsMissions';
+import {useFleetOverview} from '@/hooks/uav/useFleetAndMaintenance';
+import {useSimulationActions, useSimulationRuns, useSimulations} from '@/hooks/simulation/useSimulation';
 import {useMissionWeather} from '@/hooks/weather/useWeather';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
@@ -55,7 +71,7 @@ import {displayLabel, eventNote, eventTitle, terminalStatuses} from '@/shared/li
 import {missionControls} from '@/shared/utils/mission/presentation';
 import {handoverEvidence} from '@/shared/utils/mission/workflows';
 import type {AirspaceClearance} from '@/shared/types/airspace/airspace.types';
-import type {MediaRole, Mission} from '@/shared/types/mission/mission.types';
+import type {MediaRole, Mission, MissionPreflight} from '@/shared/types/mission/mission.types';
 import {isFinitePoint, verticesToMapCoordinates} from '@/utils/operations/map-shapes';
 import {airspaceMapTone, colors, radius, sarMapTone, spacing} from '@/styles/tokens';
 
@@ -96,13 +112,21 @@ function PreflightSafetyCard({
     checklist,
     onToggle,
     airspaceClearance,
+    preflightRecord,
+    canSign,
+    signing,
+    onSign,
 }: {
     mission: Mission;
     checklist: PreflightChecklistState;
     onToggle: (key: PreflightChecklistKey) => void;
     airspaceClearance?: AirspaceClearance | null;
+    preflightRecord?: MissionPreflight | null;
+    canSign: boolean;
+    signing: boolean;
+    onSign: () => void;
 }) {
-    const {t} = useI18n();
+    const {t, formatDate} = useI18n();
     const progress = preflightProgressCount(checklist);
     const gate = canTakeoffMission(mission, checklist, airspaceClearance);
 
@@ -129,6 +153,15 @@ function PreflightSafetyCard({
             />
             <AppText variant="small">{t('mobile.ops.preflight.subtitle')}</AppText>
 
+            {preflightRecord?.recorded && preflightRecord.signedByUsername && (
+                <AppText variant="caption">
+                    {t('capabilities.preflight.signedMeta', {
+                        user: preflightRecord.signedByUsername,
+                        time: preflightRecord.signedAt ? formatDate(preflightRecord.signedAt) : '—',
+                    })}
+                </AppText>
+            )}
+
             {PREFLIGHT_CHECKLIST_KEYS.map(key => {
                 const checked = checklist[key];
                 const Icon = checked ? CheckSquare : Square;
@@ -144,6 +177,16 @@ function PreflightSafetyCard({
                     </Pressable>
                 );
             })}
+
+            {canSign && (
+                <Button
+                    label={signing ? t('capabilities.preflight.signing') : t('capabilities.preflight.signButton')}
+                    icon={ShieldCheck}
+                    tone="secondary"
+                    loading={signing}
+                    onPress={onSign}
+                />
+            )}
 
             <View style={[styles.gateBanner, gate.allowed ? styles.gateReady : styles.gateBlocked]}>
                 {gate.allowed ? (
@@ -162,22 +205,65 @@ function PreflightSafetyCard({
 }
 
 export function OperationsMissionDetailScreen() {
+    const {id} = useLocalSearchParams<{ id: string }>();
+    const missionId = Number(id);
+    return <OperationsMissionDetailContent key={missionId} missionId={missionId}/>;
+}
+
+function OperationsMissionDetailContent({missionId}: { missionId: number }) {
     const {t, formatDate, formatNumber} = useI18n();
     const {user, can} = useAuth();
     const toast = useToast();
-    const {id} = useLocalSearchParams<{ id: string }>();
-    const missionId = Number(id);
 
     const {detail, timeline, media, telemetry} = useOperationsMissionDetail(missionId);
     const actions = useOperationsMissionActions();
+    const fleet = useFleetOverview();
+    const operatorsQuery = useOperatorsList();
     const mission = detail.data;
 
     const zonesQuery = useAirspaceZones(true);
     const airspaceCheck = useMissionAirspaceCheck(mission);
     const hasPoint = isFinitePoint(mission?.latitude, mission?.longitude);
     const weather = useMissionWeather(missionId, hasPoint && !terminalStatuses.includes(mission?.status ?? 'DRAFT'));
+    const isAssignedOrSupervisor =
+        (user?.id !== undefined && user.id === mission?.operatorId) ||
+        can('MISSION_CONFIRM') ||
+        can('MISSION_VIEW_ALL');
+    const preflightQuery = useOperationsMissionPreflight(
+        missionId,
+        !!mission &&
+            isAssignedOrSupervisor &&
+            !['DRAFT', 'PENDING_CONFIRMATION', 'CANCELLED', 'REJECTED'].includes(mission.status),
+    );
+    const dispatchCandidatesQuery = useOperationsDispatchCandidates(
+        missionId,
+        !!mission && ['CONFIRMED', 'RESOURCE_RESERVED'].includes(mission.status),
+    );
+    const reviewQuery = useOperationsMissionReview(missionId, mission?.status === 'COMPLETED');
+    const simulationsQuery = useSimulations(Boolean(mission));
+    const missionRunsQuery = useSimulationRuns({missionId}, Boolean(mission));
+    const simActions = useSimulationActions();
 
-    const [checklist, setChecklist] = useState<PreflightChecklistState>(INITIAL_PREFLIGHT_CHECKLIST);
+    const [checklistOverrides, setChecklistOverrides] = useState<Partial<PreflightChecklistState>>({});
+    const preflightData = preflightQuery.data;
+    const checklist: PreflightChecklistState = {
+        batteryAndPropellersSafe:
+            checklistOverrides.batteryAndPropellersSafe ??
+            (preflightData?.recorded
+                ? preflightData.airframeAndPropellersSafe && preflightData.batteryHealthy
+                : INITIAL_PREFLIGHT_CHECKLIST.batteryAndPropellersSafe),
+        gnssRtkLocked:
+            checklistOverrides.gnssRtkLocked ??
+            (preflightData?.recorded ? preflightData.gnssRtkLocked : INITIAL_PREFLIGHT_CHECKLIST.gnssRtkLocked),
+        weatherCleared:
+            checklistOverrides.weatherCleared ??
+            (preflightData?.recorded ? preflightData.weatherWithinLimits : INITIAL_PREFLIGHT_CHECKLIST.weatherCleared),
+        airspaceAndPermitCleared:
+            checklistOverrides.airspaceAndPermitCleared ??
+            (preflightData?.recorded
+                ? preflightData.airspaceAndPermitCleared
+                : INITIAL_PREFLIGHT_CHECKLIST.airspaceAndPermitCleared),
+    };
     const [uploadRole, setUploadRole] = useState<UploadRoleOption>('OUTPUT');
     const [activeForm, setActiveForm] = useState<'none' | 'reject' | 'conflict' | 'complete' | 'fail' | 'forceFail'>('none');
     const [reasonText, setReasonText] = useState('');
@@ -185,6 +271,9 @@ export function OperationsMissionDetailScreen() {
     const [equipmentCondition, setEquipmentCondition] = useState('');
     const [failureReason, setFailureReason] = useState('');
     const [failureNotes, setFailureNotes] = useState('');
+    const [selectedStationId, setSelectedStationId] = useState<string>('');
+    const [selectedUavId, setSelectedUavId] = useState<string>('');
+    const [selectedOperatorId, setSelectedOperatorId] = useState<string>('');
 
     const upload = useMissionUpload(missionId, uploadRole);
     const download = useMediaDownload();
@@ -220,7 +309,9 @@ export function OperationsMissionDetailScreen() {
         controls.fail ||
         controls.forceFail ||
         controls.conflict;
-    const preflightApplicable = assigned && ['CONFIRMED', 'RESOURCE_RESERVED', 'READY'].includes(mission.status);
+    const preflightApplicable =
+        (assigned || can('MISSION_CONFIRM') || can('MISSION_VIEW_ALL')) &&
+        ['CONFIRMED', 'RESOURCE_RESERVED', 'READY', 'IN_PROGRESS'].includes(mission.status);
     const takeoffGate = canTakeoffMission(mission, checklist, airspaceCheck.data?.clearance);
     const evidence = handoverEvidence(mission.missionType, media.data ?? []);
     const liveTelemetry = telemetry.data;
@@ -247,7 +338,60 @@ export function OperationsMissionDetailScreen() {
 
     const showError = (error: unknown) => toast.show(opsErrorMessage(error, t), 'error');
 
-    const pickMedia = async (source: 'camera' | 'library') => {
+    const stations = fleet.overview.data?.stations ?? [];
+    const uavs = fleet.overview.data?.uavs ?? [];
+    const operators = operatorsQuery.data?.content ?? [];
+
+    const assignedStationObj = mission.stationId != null ? stations.find(item => item.id === mission.stationId) : undefined;
+    const assignedUavObj = mission.uavId != null ? uavs.find(item => item.id === mission.uavId) : undefined;
+    const assignedOperatorObj = mission.operatorId != null ? operators.find(item => item.id === mission.operatorId) : undefined;
+
+    const assignedStationLabel =
+        mission.stationId != null
+            ? assignedStationObj
+                ? `${assignedStationObj.code} · ${assignedStationObj.name}`
+                : `#${mission.stationId}`
+            : null;
+    const assignedUavLabel =
+        mission.uavId != null
+            ? assignedUavObj
+                ? `${assignedUavObj.serialNumber} · ${assignedUavObj.model}`
+                : t('opsMissions.detail.assigned.uavFallback', {id: mission.uavId})
+            : null;
+    const assignedOperatorLabel =
+        mission.operatorId != null
+            ? mission.operatorId === user?.id
+                ? t('opsMissions.detail.assigned.you')
+                : assignedOperatorObj
+                  ? `${assignedOperatorObj.fullName || assignedOperatorObj.username} (@${assignedOperatorObj.username})`
+                  : t('opsMissions.detail.assigned.operatorFallback', {id: mission.operatorId})
+            : null;
+
+    const effectiveStationChoice = selectedStationId || (mission.stationId != null ? String(mission.stationId) : '');
+    const effectiveUavChoice = selectedUavId || (mission.uavId != null ? String(mission.uavId) : '');
+    const effectiveOperatorChoice = selectedOperatorId || (mission.operatorId != null ? String(mission.operatorId) : '');
+
+    const assignableStations = stations.filter(s => s.status !== 'INACTIVE' || s.id === mission.stationId);
+    const assignableUavs = uavs.filter(u => {
+        if (u.id === mission.uavId) return true;
+        if (u.status !== 'AVAILABLE') return false;
+        const filterStationId = effectiveStationChoice ? Number(effectiveStationChoice) : mission.stationId;
+        return filterStationId == null || u.stationId == null || u.stationId === filterStationId;
+    });
+    const assignableOperators = operators.filter(op => op.status === 'ACTIVE' || op.id === mission.operatorId);
+    const canDispatchResources =
+        !finished &&
+        (can('MISSION_ASSIGN_STATION') ||
+            can('MISSION_ASSIGN_UAV') ||
+            can('MISSION_ASSIGN_OPERATOR') ||
+            can('MISSION_RESERVE_EQUIPMENT')) &&
+        ['CONFIRMED', 'RESOURCE_RESERVED', 'READY'].includes(mission.status);
+
+    const pickMedia = async (
+        source: 'camera' | 'library',
+        roleOverride?: MediaRole,
+        onUploaded?: (mediaId: number) => void,
+    ) => {
         const permission =
             source === 'camera'
                 ? await ImagePicker.requestCameraPermissionsAsync()
@@ -256,25 +400,34 @@ export function OperationsMissionDetailScreen() {
             toast.show(t('mobile.files.permissionDenied'), 'error');
             return;
         }
+        const targetRole = roleOverride ?? (uploadRole as MediaRole);
+        const allowVideos = source === 'library' && roleOverride !== 'DOCUMENT';
         const result =
             source === 'camera'
                 ? await ImagePicker.launchCameraAsync({mediaTypes: ['images'], quality: 0.85})
-                : await ImagePicker.launchImageLibraryAsync({mediaTypes: ['images'], quality: 0.85});
+                : await ImagePicker.launchImageLibraryAsync({
+                      mediaTypes: allowVideos ? ['images', 'videos'] : ['images'],
+                      quality: 0.85,
+                  });
         const asset = result.canceled ? null : result.assets[0];
         if (!asset) return;
-        const contentType = asset.mimeType ?? 'image/jpeg';
+        const contentType = asset.mimeType ?? (asset.type === 'video' ? 'video/mp4' : 'image/jpeg');
+        const ext = contentType.split('/')[1]?.replace(/[^a-zA-Z0-9]/g, '') || (asset.type === 'video' ? 'mp4' : 'jpg');
         upload.mutate(
             {
                 file: {
                     uri: asset.uri,
-                    name: asset.fileName ?? `${mission.code}-${uploadRole.toLowerCase()}-${Date.now()}.${contentType.split('/')[1] ?? 'jpg'}`,
+                    name: asset.fileName ?? `${mission.code}-${targetRole.toLowerCase()}-${Date.now()}.${ext}`,
                     contentType,
                     size: asset.fileSize ?? 0,
                 },
-                mediaRole: uploadRole as MediaRole,
+                mediaRole: targetRole,
             },
             {
-                onSuccess: () => toast.show(t('mobile.files.uploaded'), 'success'),
+                onSuccess: created => {
+                    onUploaded?.(created.media.id);
+                    toast.show(t('mobile.files.uploadedMedia'), 'success');
+                },
                 onError: showError,
             },
         );
@@ -324,6 +477,8 @@ export function OperationsMissionDetailScreen() {
                     media.refetch(),
                     airspaceCheck.refetch(),
                     zonesQuery.refetch(),
+                    fleet.overview.refetch(),
+                    operatorsQuery.refetch(),
                 ])
             }
             refreshing={detail.isRefetching}>
@@ -341,8 +496,11 @@ export function OperationsMissionDetailScreen() {
                         background={mission.priority === 'URGENT' ? colors.dangerLight : colors.slateLight}
                         color={mission.priority === 'URGENT' ? colors.danger : colors.slateDark}
                     />
-                    {mission.uavId != null && (
-                        <Badge icon={Cpu} label={t('opsMissions.detail.assigned.uavFallback', {id: mission.uavId})}/>
+                    {assignedStationLabel && (
+                        <Badge icon={RadioTower} label={assignedStationLabel}/>
+                    )}
+                    {assignedUavLabel && (
+                        <Badge icon={Cpu} label={assignedUavLabel}/>
                     )}
                 </View>
                 <View style={styles.metaRow}>
@@ -355,12 +513,9 @@ export function OperationsMissionDetailScreen() {
                     <MapPin size={16} color={colors.muted}/>
                     <AppText variant="small" style={styles.flex}>{mission.locationName || '—'}</AppText>
                 </View>
-                {mission.operatorId != null && (
+                {assignedOperatorLabel && (
                     <AppText variant="caption">
-                        {mission.operatorId === user?.id
-                            ? `${t('opsMissions.detail.resources.operator')}: ${t('opsMissions.detail.assigned.you')}`
-                            : t('opsMissions.detail.assigned.operatorFallback', {id: mission.operatorId})}{' '}
-                        ·{' '}
+                        {t('opsMissions.detail.resources.operator')}: {assignedOperatorLabel} ·{' '}
                         {mission.operatorAccepted
                             ? t('opsMissions.detail.assigned.accepted')
                             : t('opsMissions.detail.assigned.notAccepted')}
@@ -463,7 +618,7 @@ export function OperationsMissionDetailScreen() {
                             {hasLiveTelemetryPoint && (
                                 <Marker
                                     coordinate={{latitude: liveTelemetry.latitude, longitude: liveTelemetry.longitude}}
-                                    title={`UAV #${liveTelemetry.uavId}`}
+                                    title={assignedUavLabel ?? `UAV #${liveTelemetry.uavId}`}
                                     pinColor={sarMapTone.uavPin}
                                 />
                             )}
@@ -530,10 +685,18 @@ export function OperationsMissionDetailScreen() {
                 </Card>
             )}
 
-            {/* Flight Permit Card (Upsert + Commander Approve/Reject) */}
+            {/* Flight Permit Card (Upsert + Scan + Commander Approve/Reject) */}
             <MissionPermitCard
                 mission={mission}
                 allowVerify
+                mediaItems={media.data}
+                onOpenScan={openFile}
+                uploadScanLoading={upload.isPending}
+                onUploadScan={
+                    !finished && can('MISSION_MEDIA_UPLOAD')
+                        ? onUploaded => void pickMedia('library', 'DOCUMENT', onUploaded)
+                        : undefined
+                }
                 upsertLoading={actions.upsertPermit.isPending}
                 verifyLoading={actions.verifyPermit.isPending}
                 onUpsert={(data, onDone) =>
@@ -565,15 +728,432 @@ export function OperationsMissionDetailScreen() {
                 }
             />
 
+            {/* Dispatcher Resource Assignment (Station, UAV, Operator) */}
+            {canDispatchResources && (
+                <Card>
+                    <SectionTitle title={t('mobile.ops.dispatch.title')}/>
+
+                    {dispatchCandidatesQuery.data && (
+                        <View style={styles.smartBox}>
+                            <AppText variant="small" style={styles.dispatchLabel}>
+                                {t('capabilities.smartDispatch.title')}
+                            </AppText>
+                            <AppText variant="caption">{t('capabilities.smartDispatch.subtitle')}</AppText>
+                            {(() => {
+                                const cands = dispatchCandidatesQuery.data;
+                                const topStation = cands.stations.find(s => s.id === cands.recommendedStationId);
+                                const topUav = cands.uavs.find(u => u.id === cands.recommendedUavId);
+                                const topOp = cands.operators.find(o => o.id === cands.recommendedOperatorId);
+                                return (
+                                    <View style={styles.pills}>
+                                        {topStation && (
+                                            <Badge
+                                                label={`${topStation.code} (${topStation.score})`}
+                                                background={colors.surface}
+                                                color={colors.slateDark}
+                                            />
+                                        )}
+                                        {topUav && (
+                                            <Badge
+                                                label={`${topUav.serialNumber} (${topUav.score})`}
+                                                background={colors.surface}
+                                                color={colors.slateDark}
+                                            />
+                                        )}
+                                        {topOp && (
+                                            <Badge
+                                                label={`@${topOp.username} (${topOp.score})`}
+                                                background={colors.surface}
+                                                color={colors.slateDark}
+                                            />
+                                        )}
+                                    </View>
+                                );
+                            })()}
+                            {dispatchCandidatesQuery.data.canAutoAssign &&
+                                (can('MISSION_ASSIGN_STATION') ||
+                                    can('MISSION_ASSIGN_UAV') ||
+                                    can('MISSION_ASSIGN_OPERATOR') ||
+                                    can('MISSION_RESERVE_EQUIPMENT')) && (
+                                    <Button
+                                        label={
+                                            actions.autoAssign.isPending
+                                                ? t('capabilities.smartDispatch.autoAssigning')
+                                                : t('capabilities.smartDispatch.autoAssign')
+                                        }
+                                        icon={Sparkles}
+                                        loading={actions.autoAssign.isPending}
+                                        onPress={() =>
+                                            actions.autoAssign.mutate(mission.id, {
+                                                onSuccess: () =>
+                                                    toast.show(
+                                                        t('capabilities.smartDispatch.autoAssignedToast'),
+                                                        'success',
+                                                    ),
+                                                onError: showError,
+                                            })
+                                        }
+                                    />
+                                )}
+                        </View>
+                    )}
+
+                    <View style={styles.dispatchSection}>
+                        <AppText variant="small" style={styles.dispatchLabel}>
+                            {t('mobile.ops.dispatch.station')}: {assignedStationLabel ?? t('mobile.ops.dispatch.unassigned')}
+                        </AppText>
+                        {can('MISSION_ASSIGN_STATION') && assignableStations.length > 0 && (
+                            <>
+                                <ChipGroup
+                                    value={effectiveStationChoice}
+                                    onChange={setSelectedStationId}
+                                    options={assignableStations.map(st => ({
+                                        value: String(st.id),
+                                        label: `${st.code} · ${st.name}`,
+                                    }))}
+                                />
+                                <Button
+                                    label={t('mobile.ops.dispatch.assignStation')}
+                                    icon={RadioTower}
+                                    tone="secondary"
+                                    disabled={
+                                        !effectiveStationChoice ||
+                                        Number(effectiveStationChoice) === mission.stationId
+                                    }
+                                    loading={actions.assignStation.isPending}
+                                    onPress={() =>
+                                        actions.assignStation.mutate(
+                                            {id: mission.id, resourceId: Number(effectiveStationChoice)},
+                                            {
+                                                onSuccess: () => {
+                                                    setSelectedStationId('');
+                                                    toast.show(t('mobile.ops.dispatch.assignedToast'), 'success');
+                                                },
+                                                onError: showError,
+                                            },
+                                        )
+                                    }
+                                />
+                            </>
+                        )}
+                    </View>
+
+                    <View style={styles.dispatchSection}>
+                        <AppText variant="small" style={styles.dispatchLabel}>
+                            {t('mobile.ops.dispatch.uav')}: {assignedUavLabel ?? t('mobile.ops.dispatch.unassigned')}
+                        </AppText>
+                        {can('MISSION_ASSIGN_UAV') && assignableUavs.length > 0 && (
+                            <>
+                                <ChipGroup
+                                    value={effectiveUavChoice}
+                                    onChange={setSelectedUavId}
+                                    options={assignableUavs.map(u => ({
+                                        value: String(u.id),
+                                        label: `${u.serialNumber} · ${u.model}`,
+                                    }))}
+                                />
+                                <Button
+                                    label={t('mobile.ops.dispatch.assignUav')}
+                                    icon={Cpu}
+                                    tone="secondary"
+                                    disabled={!effectiveUavChoice || Number(effectiveUavChoice) === mission.uavId}
+                                    loading={actions.assignUav.isPending}
+                                    onPress={() =>
+                                        actions.assignUav.mutate(
+                                            {id: mission.id, resourceId: Number(effectiveUavChoice)},
+                                            {
+                                                onSuccess: () => {
+                                                    setSelectedUavId('');
+                                                    toast.show(t('mobile.ops.dispatch.assignedToast'), 'success');
+                                                },
+                                                onError: showError,
+                                            },
+                                        )
+                                    }
+                                />
+                            </>
+                        )}
+                    </View>
+
+                    <View style={styles.dispatchSection}>
+                        <AppText variant="small" style={styles.dispatchLabel}>
+                            {t('mobile.ops.dispatch.operator')}: {assignedOperatorLabel ?? t('mobile.ops.dispatch.unassigned')}
+                        </AppText>
+                        {can('MISSION_ASSIGN_OPERATOR') && assignableOperators.length > 0 && (
+                            <>
+                                <ChipGroup
+                                    value={effectiveOperatorChoice}
+                                    onChange={setSelectedOperatorId}
+                                    options={assignableOperators.map(op => ({
+                                        value: String(op.id),
+                                        label: `${op.fullName || op.username} (@${op.username})`,
+                                    }))}
+                                />
+                                <Button
+                                    label={t('mobile.ops.dispatch.assignOperator')}
+                                    icon={UserCheck}
+                                    tone="secondary"
+                                    disabled={
+                                        !effectiveOperatorChoice ||
+                                        Number(effectiveOperatorChoice) === mission.operatorId
+                                    }
+                                    loading={actions.assignOperator.isPending}
+                                    onPress={() =>
+                                        actions.assignOperator.mutate(
+                                            {id: mission.id, resourceId: Number(effectiveOperatorChoice)},
+                                            {
+                                                onSuccess: () => {
+                                                    setSelectedOperatorId('');
+                                                    toast.show(t('mobile.ops.dispatch.assignedToast'), 'success');
+                                                },
+                                                onError: showError,
+                                            },
+                                        )
+                                    }
+                                />
+                            </>
+                        )}
+                    </View>
+                </Card>
+            )}
+
             {/* Interactive Pre-flight Safety Checklist */}
             {preflightApplicable && (
                 <PreflightSafetyCard
                     mission={mission}
                     checklist={checklist}
-                    onToggle={key => setChecklist(prev => togglePreflightItem(prev, key))}
+                    onToggle={key => setChecklistOverrides(prev => togglePreflightItem({...checklist, ...prev}, key))}
                     airspaceClearance={airspaceCheck.data?.clearance}
+                    preflightRecord={preflightData}
+                    canSign={(assigned && can('MISSION_STATUS_UPDATE')) || can('MISSION_CONFIRM')}
+                    signing={actions.upsertPreflight.isPending}
+                    onSign={() =>
+                        actions.upsertPreflight.mutate(
+                            {
+                                id: mission.id,
+                                data: {
+                                    airframeAndPropellersSafe: checklist.batteryAndPropellersSafe,
+                                    batteryHealthy: checklist.batteryAndPropellersSafe,
+                                    gnssRtkLocked: checklist.gnssRtkLocked,
+                                    weatherWithinLimits: checklist.weatherCleared,
+                                    airspaceAndPermitCleared: checklist.airspaceAndPermitCleared,
+                                    measuredBatteryPct:
+                                        liveTelemetry?.batteryPct != null
+                                            ? Math.round(liveTelemetry.batteryPct)
+                                            : (preflightData?.measuredBatteryPct ?? null),
+                                    satelliteCount: preflightData?.satelliteCount ?? null,
+                                    measuredWindMs: preflightData?.measuredWindMs ?? null,
+                                },
+                            },
+                            {
+                                onSuccess: () => toast.show(t('capabilities.preflight.savedToast'), 'success'),
+                                onError: showError,
+                            },
+                        )
+                    }
                 />
             )}
+
+            {/* Read-only Customer Handover Review on Completed Missions */}
+            {mission.status === 'COMPLETED' && (
+                <Card>
+                    <SectionTitle
+                        title={t('capabilities.review.opsTitle')}
+                        action={
+                            reviewQuery.data?.reviewed ? (
+                                <Badge
+                                    icon={reviewQuery.data.deliverablesAccepted ? CheckCircle2 : undefined}
+                                    label={
+                                        reviewQuery.data.deliverablesAccepted
+                                            ? t('capabilities.review.acceptedBadge')
+                                            : t('capabilities.review.pendingBadge')
+                                    }
+                                    background={
+                                        reviewQuery.data.deliverablesAccepted ? colors.slateLight : colors.warningLight
+                                    }
+                                    color={
+                                        reviewQuery.data.deliverablesAccepted ? colors.slateDark : colors.warning
+                                    }
+                                />
+                            ) : undefined
+                        }
+                    />
+                    {!reviewQuery.data?.reviewed ? (
+                        <AppText variant="small">{t('capabilities.review.emptyOps')}</AppText>
+                    ) : (
+                        <>
+                            <View style={styles.pills}>
+                                <Badge
+                                    icon={Star}
+                                    label={`${t('capabilities.review.overallRating')}: ${reviewQuery.data.overallRating ?? 5}/5`}
+                                    background={colors.warningLight}
+                                    color={colors.warning}
+                                />
+                                <Badge
+                                    label={`${t('capabilities.review.dataQuality')}: ${reviewQuery.data.dataQualityRating ?? 5}/5`}
+                                />
+                                <Badge
+                                    label={`${t('capabilities.review.timeliness')}: ${reviewQuery.data.timelinessRating ?? 5}/5`}
+                                />
+                            </View>
+                            {reviewQuery.data.comment ? (
+                                <AppText variant="small">“{reviewQuery.data.comment}”</AppText>
+                            ) : null}
+                        </>
+                    )}
+                </Card>
+            )}
+
+            {/* Digital Flight Rehearsal & Remote Simulation Controls */}
+            {can('UAV_VIEW') && (hasPoint || mission.flightPlan != null) && (() => {
+                const activeSim = (simulationsQuery.data ?? []).find(
+                    s =>
+                        s.missionId === mission.id ||
+                        s.missionCode === mission.code ||
+                        (mission.uavId != null && s.uavId === mission.uavId),
+                );
+                const latestRun = missionRunsQuery.data?.[0];
+                const canFlySim = can('UAV_UPDATE');
+                const simBusy =
+                    simActions.rehearseMission.isPending ||
+                    simActions.command.isPending ||
+                    simActions.stop.isPending;
+
+                return (
+                    <Card>
+                        <SectionTitle
+                            title={t('simulation.rehearseTitle')}
+                            action={
+                                activeSim ? (
+                                    <Badge
+                                        icon={Radio}
+                                        label={t(`simulation.modes.${activeSim.mode}`)}
+                                        background={colors.primaryLight}
+                                        color={colors.primary}
+                                    />
+                                ) : latestRun ? (
+                                    <Badge
+                                        label={t(`simulation.runStatus.${latestRun.status}`)}
+                                        background={colors.slateLight}
+                                        color={colors.slateDark}
+                                    />
+                                ) : undefined
+                            }
+                        />
+                        {activeSim ? (
+                            <>
+                                <AppText variant="small" style={styles.code}>
+                                    {activeSim.uavCode}
+                                </AppText>
+                                <View style={styles.hudGrid}>
+                                    <View style={styles.hudItem}>
+                                        <AppText variant="caption">{t('simulation.hud.altitude')}</AppText>
+                                        <AppText variant="title">{Math.round(activeSim.altitudeMeters)} m</AppText>
+                                    </View>
+                                    <View style={styles.hudItem}>
+                                        <AppText variant="caption">{t('simulation.hud.speed')}</AppText>
+                                        <AppText variant="title">{activeSim.groundSpeedMs.toFixed(1)} m/s</AppText>
+                                    </View>
+                                    <View style={styles.hudItem}>
+                                        <AppText variant="caption">{t('simulation.hud.battery')}</AppText>
+                                        <AppText variant="title">{Math.round(activeSim.batteryPct)}%</AppText>
+                                    </View>
+                                    <View style={styles.hudItem}>
+                                        <AppText variant="caption">{t('simulation.hud.waypoint')}</AppText>
+                                        <AppText variant="title">
+                                            {Math.min(activeSim.nextWaypoint, activeSim.waypointCount)}/{activeSim.waypointCount}
+                                        </AppText>
+                                    </View>
+                                </View>
+                                {canFlySim && (
+                                    <View style={styles.actions}>
+                                        {activeSim.mode === 'HOLD' ? (
+                                            <Button
+                                                label={t('simulation.resume')}
+                                                icon={Play}
+                                                disabled={simBusy}
+                                                onPress={() =>
+                                                    simActions.command.mutate(
+                                                        {uavId: activeSim.uavId, command: 'RESUME'},
+                                                        {onError: showError},
+                                                    )
+                                                }
+                                            />
+                                        ) : (
+                                            <Button
+                                                label={t('simulation.pause')}
+                                                icon={Pause}
+                                                tone="secondary"
+                                                disabled={simBusy || !['MISSION', 'RETURN_TO_HOME'].includes(activeSim.mode)}
+                                                onPress={() =>
+                                                    simActions.command.mutate(
+                                                        {uavId: activeSim.uavId, command: 'PAUSE'},
+                                                        {onError: showError},
+                                                    )
+                                                }
+                                            />
+                                        )}
+                                        <Button
+                                            label={t('simulation.rth')}
+                                            icon={Home}
+                                            tone="secondary"
+                                            disabled={simBusy || ['RETURN_TO_HOME', 'LANDING', 'LANDED'].includes(activeSim.mode)}
+                                            onPress={() =>
+                                                simActions.command.mutate(
+                                                    {uavId: activeSim.uavId, command: 'RETURN_TO_HOME'},
+                                                    {onError: showError},
+                                                )
+                                            }
+                                        />
+                                        <Button
+                                            label={t('simulation.stop')}
+                                            tone="ghost"
+                                            disabled={simBusy}
+                                            onPress={() =>
+                                                simActions.stop.mutate(activeSim.uavId, {onError: showError})
+                                            }
+                                        />
+                                    </View>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <AppText variant="small">{t('simulation.subtitle')}</AppText>
+                                {latestRun?.outcomeSummary ? (
+                                    <View style={styles.smartBox}>
+                                        <AppText variant="caption" style={styles.code}>{latestRun.uavCode}</AppText>
+                                        <AppText variant="small">{latestRun.outcomeSummary}</AppText>
+                                    </View>
+                                ) : null}
+                                {canFlySim && (
+                                    <Button
+                                        label={t('simulation.rehearseAction')}
+                                        icon={Radio}
+                                        tone="secondary"
+                                        loading={simActions.rehearseMission.isPending}
+                                        disabled={simBusy}
+                                        onPress={() =>
+                                            simActions.rehearseMission.mutate(
+                                                {missionId: mission.id},
+                                                {
+                                                    onSuccess: started =>
+                                                        toast.show(
+                                                            t('simulation.rehearseStarted', {
+                                                                code: started.missionCode ?? mission.code,
+                                                            }),
+                                                            'success',
+                                                        ),
+                                                    onError: showError,
+                                                },
+                                            )
+                                        }
+                                    />
+                                )}
+                            </>
+                        )}
+                    </Card>
+                );
+            })()}
 
             {/* Lifecycle Action Controls (gated by shared missionControls ownership + status + permission rules) */}
             {!finished && hasQuickActions && (
@@ -895,7 +1475,7 @@ export function OperationsMissionDetailScreen() {
                                     style={styles.flex}
                                 />
                                 <Button
-                                    label={t('mobile.files.library')}
+                                    label={t('mobile.files.libraryMedia')}
                                     icon={ImagePlus}
                                     tone="secondary"
                                     loading={upload.isPending}
@@ -967,6 +1547,16 @@ const styles = StyleSheet.create({
     hudGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md},
     hudItem: {flexBasis: '45%', flexGrow: 1, backgroundColor: colors.slateLight, borderRadius: radius.control, padding: spacing.sm, gap: 2},
     weatherBlock: {gap: 4},
+    smartBox: {
+        gap: spacing.xs,
+        padding: spacing.md,
+        borderRadius: radius.control,
+        borderWidth: 1,
+        borderColor: colors.border,
+        backgroundColor: colors.slateLight,
+    },
+    dispatchSection: {gap: spacing.xs, paddingTop: spacing.xs, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border},
+    dispatchLabel: {fontWeight: '600', color: colors.text},
     checkRow: {flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md, paddingVertical: spacing.xs},
     checkDone: {fontWeight: '600', color: colors.text},
     gateBanner: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.control, marginTop: spacing.xs},

@@ -25,7 +25,8 @@
     },
     "status": {
       "offlineTitle": "Can't reach the server",
-      "offlineHint": "Check your connection and try again. You are still signed in."
+      "offlineHint": "Check your connection and try again. You are still signed in.",
+      "offlineBanner": "You are offline — check your field network connection."
     },
     "nav": {
       "missionDetail": "Mission details",
@@ -55,16 +56,20 @@
       "switchToCustomer": "Open Customer Portal"
     },
     "push": {
-      "title": "Device push notifications",
+      "title": "Device notifications",
       "active": "Enabled",
       "inactive": "Not registered",
-      "hint": "Receive mission updates, flight permit approvals, SAR target alerts, and invoice confirmations on this iPhone.",
-      "endpointLabel": "Device Expo push endpoint",
-      "enableButton": "Enable push on this device",
+      "hint": "Receive mission updates, flight permit approvals, rescue target alerts, and payment confirmations on this phone.",
+      "endpointLabel": "Device notification identifier",
+      "endpointPlaceholder": "Enter device notification identifier...",
+      "enableButton": "Enable notifications on this device",
       "customButton": "Enter manually",
-      "disableButton": "Disable push on this device",
-      "registered": "Push notifications registered for this device.",
-      "unregistered": "Push notifications disabled on this device."
+      "disableButton": "Disable notifications on this device",
+      "registered": "Notifications enabled on this device.",
+      "unregistered": "Notifications disabled on this device.",
+      "permissionDenied": "Notification permission is turned off. Enable it in Settings to receive timely alerts.",
+      "openSettings": "Open Settings",
+      "simulatorNotice": "Simulator mode — using a temporary session notification identifier."
     },
     "permit": {
       "title": "Flight permit",
@@ -75,6 +80,10 @@
       "validUntil": "Valid until",
       "ceiling": "Approved ceiling",
       "note": "Verification note",
+      "scanAttachment": "Permit scan attachment",
+      "noScan": "No file attached",
+      "uploadScan": "Upload permit scan",
+      "openScan": "Open permit scan",
       "verifiedBy": "Verified by {actor}",
       "emptyHint": "No flight permit details recorded yet. Submit permit number and validity dates for pre-flight verification.",
       "submitAction": "Submit flight permit",
@@ -113,7 +122,11 @@
       "saveDraft": "Save draft",
       "saved": "Request saved.",
       "submitted": "Request sent for confirmation.",
+      "submitDraftSavedWarning": "Saved as draft, but could not submit yet:",
       "tapMap": "Tap the map to pick the flight point.",
+      "preservedGeometry": "Flight area geometry drawn on the web is preserved. Tap the map to move the takeoff point.",
+      "safeWindowsTitle": "Recommended safe flight windows",
+      "windowApplied": "Applied recommended flight window.",
       "filters": {
         "all": "All",
         "draft": "Drafts",
@@ -128,9 +141,11 @@
       "title": "Files & photos",
       "camera": "Take photo",
       "library": "Choose photo",
+      "libraryMedia": "Photo / video library",
       "empty": "No files yet.",
       "permissionDenied": "Permission not granted. Enable it in Settings > UAV PAS.",
       "uploaded": "Photo uploaded.",
+      "uploadedMedia": "Field media uploaded.",
       "uploadFailed": "The photo could not be uploaded. Please try again."
     },
     "notifications": {
@@ -220,7 +235,7 @@
         "MISSION_PLANNING": "Mission setup & coordinates",
         "SAFETY_COMPLIANCE": "Landing zone & corridor safety",
         "DATA_DELIVERABLES": "Data acceptance & AI",
-        "BILLING_SLA": "Quotas & SLA reconciliation"
+        "BILLING_SLA": "Quotas & service quality"
       }
     },
     "ops": {
@@ -370,6 +385,57 @@
           "COMPLETED": "Completed",
           "CANCELLED": "Cancelled"
         }
+      },
+      "dispatch": {
+        "title": "Resource dispatch (Station, UAV & Operator)",
+        "station": "Ground station",
+        "uav": "Assigned UAV",
+        "operator": "Field operator",
+        "unassigned": "Unassigned",
+        "assignStation": "Assign station",
+        "assignUav": "Assign UAV",
+        "assignOperator": "Assign operator",
+        "assignedToast": "Mission resource assignment updated."
+      }
+    },
+    "adminQuick": {
+      "title": "Quick Admin Console",
+      "entryLabel": "Quick Admin (Accounts · Billing · Airspace)",
+      "noPermission": "Your account does not have quick admin permissions.",
+      "tabs": {
+        "users": "Accounts",
+        "invoices": "Pending Invoices",
+        "airspace": "Airspace Zones",
+        "sla": "Performance"
+      },
+      "users": {
+        "searchPlaceholder": "Search by name, username, or email…",
+        "empty": "No matching user accounts found.",
+        "lock": "Lock account",
+        "unlock": "Unlock account",
+        "lockedBadge": "Locked",
+        "activeBadge": "Active",
+        "lockConfirmTitle": "Lock account {username}?",
+        "lockConfirmBody": "Active sessions for this user will be revoked immediately.",
+        "unlockConfirmTitle": "Unlock account {username}?",
+        "unlockConfirmBody": "The user will be able to sign in again.",
+        "lockedToast": "Locked account {username}.",
+        "unlockedToast": "Unlocked account {username}."
+      },
+      "invoices": {
+        "empty": "No pending invoices awaiting reconciliation.",
+        "refLabel": "Bank transfer reference",
+        "refPlaceholder": "e.g. FT26310...",
+        "confirmButton": "Confirm bank payment",
+        "confirmedToast": "Confirmed payment for invoice {code}."
+      },
+      "airspace": {
+        "empty": "No airspace zones configured.",
+        "activeBadge": "Active",
+        "inactiveBadge": "Inactive",
+        "activate": "Activate zone",
+        "deactivate": "Deactivate zone",
+        "toggledToast": "Updated airspace zone {code}."
       }
     }
   }

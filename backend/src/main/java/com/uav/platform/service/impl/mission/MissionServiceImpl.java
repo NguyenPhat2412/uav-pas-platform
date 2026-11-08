@@ -6,8 +6,7 @@ import com.uav.platform.dto.request.mission.*;
 import com.uav.platform.dto.response.mission.*;
 import com.uav.platform.service.mission.*;
 
-import lombok.RequiredArgsConstructor;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -18,12 +17,34 @@ import java.util.List;
 /** Stable application facade; workflows join its transaction. */
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class MissionServiceImpl implements MissionService {
     private final MissionLifecycleService lifecycle;
     private final MissionQueryService queries;
     private final MissionDispatchService dispatch;
     private final MissionMediaService media;
+    private final MissionExtendedWorkflowService extended;
+
+    public MissionServiceImpl(
+            MissionLifecycleService lifecycle,
+            MissionQueryService queries,
+            MissionDispatchService dispatch,
+            MissionMediaService media) {
+        this(lifecycle, queries, dispatch, media, null);
+    }
+
+    @Autowired
+    public MissionServiceImpl(
+            MissionLifecycleService lifecycle,
+            MissionQueryService queries,
+            MissionDispatchService dispatch,
+            MissionMediaService media,
+            MissionExtendedWorkflowService extended) {
+        this.lifecycle = lifecycle;
+        this.queries = queries;
+        this.dispatch = dispatch;
+        this.media = media;
+        this.extended = extended;
+    }
 
     @Override
     public MissionResponse create(MissionCreateRequest request, String actorUsername) {
@@ -218,5 +239,59 @@ public class MissionServiceImpl implements MissionService {
     public MissionResponse verifyPermit(
             Long id, MissionPermitVerifyRequest request, Authentication authentication) {
         return lifecycle.verifyPermit(id, request, authentication);
+    }
+
+    @Override
+    public MissionResponse cloneMission(Long id, Authentication authentication) {
+        return requireExtended().cloneMission(id, authentication);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MissionReviewResponse getReview(Long id, Authentication authentication) {
+        return requireExtended().getReview(id, authentication);
+    }
+
+    @Override
+    public MissionReviewResponse upsertReview(
+            Long id, MissionReviewUpsertRequest request, Authentication authentication) {
+        return requireExtended().upsertReview(id, request, authentication);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MissionPreflightResponse getPreflight(Long id, Authentication authentication) {
+        return requireExtended().getPreflight(id, authentication);
+    }
+
+    @Override
+    public MissionPreflightResponse upsertPreflight(
+            Long id, MissionPreflightUpsertRequest request, Authentication authentication) {
+        return requireExtended().upsertPreflight(id, request, authentication);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OperatorLogbookResponse operatorLogbook(Long operatorId, Authentication authentication) {
+        return requireExtended().operatorLogbook(operatorId, authentication);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MissionDispatchCandidatesResponse dispatchCandidates(
+            Long id, Authentication authentication) {
+        return requireExtended().dispatchCandidates(id, authentication);
+    }
+
+    @Override
+    public MissionResponse autoAssign(Long id, Authentication authentication) {
+        return requireExtended().autoAssign(id, authentication);
+    }
+
+    private MissionExtendedWorkflowService requireExtended() {
+        if (extended == null) {
+            throw new IllegalStateException("MissionExtendedWorkflowService is not configured");
+        }
+        return extended;
     }
 }

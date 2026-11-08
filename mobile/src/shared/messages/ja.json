@@ -19,7 +19,10 @@
     "phone": "電話番号",
     "username": "ユーザー名",
     "fullName": "氏名",
-    "actions": "操作"
+    "actions": "操作",
+    "hideLesson": "レッスンを非表示",
+    "showLesson": "レッスンを再表示",
+    "hideLessonConfirm": "「{title}」を非表示にしますか？受講者には表示されなくなりますが、いつでも再表示できます。"
   },
   "shell": {
     "skipToContent": "本文へスキップ",
@@ -258,7 +261,7 @@
   "preview": {
     "title": "UAV PAS ミッション運用センター",
     "edition": "運用センター",
-    "realtimeBadge": "24時間監視",
+    "realtimeBadge": "リアルタイム監視",
     "syncRtk": "RTK同期",
     "openMap": "運用マップを開く",
     "officers": "管制要員",
@@ -604,7 +607,7 @@
   },
   "simulation": {
     "title": "飛行シミュレーション",
-    "subtitle": "仮想UAVが実際の地上局と同じ経路でテレメトリを送信します",
+    "subtitle": "地上局と同じデータ経路で飛行ルートとリアルタイム計測値をシミュレーションします",
     "running": "シミュレーション中",
     "noUav": "UAVがありません。先にUAV機隊で作成してください。",
     "route": "ウェイポイント",
@@ -627,13 +630,13 @@
     "needRoute": "先にウェイポイントを追加するか測量経路を生成してください。",
     "started": "シミュレーション飛行を開始しました",
     "failed": "シミュレーション操作に失敗しました。",
-    "pause": "停止",
+    "pause": "一時停止",
     "resume": "再開",
     "rth": "帰還",
     "land": "着陸",
     "stop": "終了",
     "events": "飛行ログ",
-    "disclaimer": "シミュレーションデータです。実機は制御しません。同じテレメトリAPIでPX4 SITLに置き換えられます。",
+    "disclaimer": "安全リハーサルモード：経路と飛行データは事前検証用のシミュレーションであり、実機は制御しません。",
     "modes": {
       "TAKEOFF": "離陸",
       "MISSION": "ミッション",
@@ -648,7 +651,10 @@
       "battery": "電池",
       "heading": "方位",
       "waypoint": "地点",
-      "toHome": "帰還距離"
+      "toHome": "帰還距離",
+      "rtk": "RTK測位",
+      "airspace": "空域警報",
+      "wind": "風速 / 倍率"
     },
     "link": {
       "title": "通信リンク",
@@ -656,6 +662,37 @@
       "lost": "損失",
       "latency": "平均遅延",
       "config": "設定: 損失 {loss}% · 遅延 {latency} ms · ジオフェンス {fence} m"
+    },
+    "windSpeed": "風速 (m/s)",
+    "windDirection": "風向 (°)",
+    "timeScale": "再生速度",
+    "rehearseTitle": "ミッション飛行リハーサル",
+    "rehearseSelectPlaceholder": "リハーサルする任務を選択...",
+    "rehearseAction": "飛行リハーサルを実行",
+    "rehearseStarted": "任務 {code} のリハーサルを開始しました",
+    "openSimulation": "シミュレーション画面を開く",
+    "faultInjection": "安全シナリオ試験",
+    "faultGps": "測位信号低下",
+    "faultGpsRestore": "測位信号復旧",
+    "faultBattery": "バッテリー急減 (-15%)",
+    "airspaceZonesOverlay": "空域・NOTAM {count} 件を表示中",
+    "history": {
+      "title": "飛行リハーサル履歴",
+      "empty": "リハーサル履歴はまだありません。",
+      "uav": "UAV",
+      "mission": "ミッション",
+      "environment": "環境設定",
+      "progress": "進捗・電池",
+      "status": "結果",
+      "outcome": "安全サマリー",
+      "freeFlight": "自由飛行"
+    },
+    "runStatus": {
+      "RUNNING": "実行中",
+      "COMPLETED": "安全完了",
+      "FAILSAFE_RTH": "自動帰還 (RTH)",
+      "EMERGENCY_LANDED": "緊急着陸",
+      "ABORTED": "手動終了"
     }
   },
   "airspace": {
@@ -757,6 +794,17 @@
       },
       "errors": {
         "saveFailed": "空域ゾーンの状態を更新できませんでした。"
+      },
+      "map": {
+        "overviewTitle": "空域ゾーン全体マップ",
+        "overviewHint": "地図上のゾーンをクリックすると詳細確認や編集ができます。",
+        "fitAll": "全体を表示",
+        "builderTitle": "インタラクティブ描画マップ",
+        "circleHint": "地図上をクリックして円の中心を指定し、半径を調整します。",
+        "polygonHint": "地図上を順にクリックして多角形の頂点を追加します（3点以上）。下の座標欄と双方向同期されます。",
+        "undoVertex": "最後の頂点を戻す",
+        "clearVertices": "頂点をすべて消去",
+        "vertexCount": "{count} 頂点を設定済み"
       }
     }
   },
@@ -818,6 +866,154 @@
       "saveFailed": "飛行許可証情報を保存できませんでした。入力内容を確認してください。",
       "uploadFailed": "許可証スキャンファイルをアップロードできませんでした。",
       "verifyFailed": "飛行許可証の審査結果を保存できませんでした。"
+    }
+  },
+  "capabilities": {
+    "flightSites": {
+      "title": "保存済みフライト地点・回廊プリセット",
+      "subtitle": "よく利用する測量エリア形状・高度上限・センサー設定を1クリックで適用します。",
+      "empty": "保存済みのフライト地点はまだありません。地図上で座標またはエリアを指定した後に保存できます。",
+      "apply": "適用",
+      "appliedToast": "プリセット「{name}」をフォームに読み込みました。",
+      "saveCurrent": "現在の地点を保存",
+      "saveFromMission": "地点プリセットとして保存",
+      "savedToast": "フライト地点「{name}」を保存しました。",
+      "deletedToast": "保存済みフライト地点を削除しました。",
+      "nameLabel": "プリセット名",
+      "namePlaceholder": "例：ホアラック太陽光発電所 B区画",
+      "saveConfirm": "プリセットを保存",
+      "cancel": "閉じる",
+      "deleteTitle": "保存済みフライト地点を削除しますか？",
+      "deleteDescription": "「{name}」をプリセット一覧から削除します（既存のミッションには影響しません）。",
+      "deleteConfirm": "削除する",
+      "missingCoords": "保存する前に地図上で離陸地点または測量エリアを選択してください。"
+    },
+    "clone": {
+      "action": "ミッションを複製",
+      "cloning": "複製中...",
+      "successToast": "次回利用可能な時間帯で下書き {code} を作成しました。"
+    },
+    "review": {
+      "title": "成果物検収・品質評価",
+      "subtitle": "完了したミッションの納品データ受領確認とサービス品質評価を記録します。",
+      "opsTitle": "顧客からの検収・品質フィードバック",
+      "acceptedBadge": "検収完了",
+      "pendingBadge": "検収待ち",
+      "overallRating": "総合評価",
+      "dataQuality": "撮影・マッピング品質",
+      "timeliness": "納期の正確さ",
+      "acceptDeliverables": "本ミッションの納品成果物を確認し、検収を承認します",
+      "commentLabel": "詳細コメント",
+      "commentPlaceholder": "オルソ画像の鮮明さ、座標精度、運用プロセスへのご意見など...",
+      "submit": "検収・評価を保存",
+      "update": "評価を更新",
+      "saving": "保存中...",
+      "savedToast": "成果物の検収と品質評価を保存しました。",
+      "emptyOps": "このミッションに対する顧客の検収評価はまだ登録されていません。"
+    },
+    "smartDispatch": {
+      "title": "スマート自動手配・競合スコアリング",
+      "subtitle": "ステーション距離、バッテリー残量、UAV整備周期、オペレーター稼働予定、利用可能機材を多角的に評価します。",
+      "autoAssign": "最適リソース一括手配（1クリック）",
+      "autoAssigning": "自動手配中...",
+      "autoAssignedToast": "競合のない最適なリソース構成を自動手配しました。",
+      "allAssigned": "主要リソース手配済み",
+      "recommended": "推奨 · {score}点",
+      "stationLabel": "最適ステーション",
+      "uavLabel": "機体 (UAV)",
+      "operatorLabel": "オペレーター",
+      "equipmentLabel": "付帯機材",
+      "distanceKm": "距離 {km} km",
+      "batteryPct": "残量 {pct}%",
+      "maintDays": "整備後 {days}日",
+      "sameDayLoad": "同日 {count}件",
+      "completedCount": "完了 {count}件",
+      "stockCount": "利用可能 {count}",
+      "noCandidate": "競合のない候補がありません"
+    },
+    "preflight": {
+      "title": "デジタル飛行前安全チェックリスト",
+      "subtitle": "離陸前の技術点検結果を航空安全の確認記録として保存します。",
+      "clearedBadge": "離陸許可基準クリア",
+      "pendingBadge": "基準未達・確認中",
+      "signedMeta": "署名者: {user} · {time}",
+      "checks": {
+        "airframe": "機体フレーム・ランディングギア・プロペラに損傷がなく確実に固定されている",
+        "battery": "バッテリーセル電圧・温度が正常範囲内（残量25%以上）",
+        "gnss": "GNSS / RTK測位が安定ロックし、コンパスの磁気干渉がない",
+        "weather": "現地の風速・視程・降水状況が安全運航基準内である",
+        "airspace": "飛行回廊の安全および飛行許可証・一時NOTAMを照合済み"
+      },
+      "batteryPct": "実測バッテリー残量 (%)",
+      "satellites": "GNSS衛星数",
+      "windMs": "現地風速 (m/s)",
+      "notes": "現地点検メモ",
+      "notesPlaceholder": "RTKステータス、新規障害物、離陸時の注意事項など...",
+      "signButton": "飛行前安全記録に署名して保存",
+      "signing": "保存中...",
+      "savedToast": "飛行前安全チェックリストを保存しました。"
+    },
+    "logbook": {
+      "title": "オペレーター飛行ログブック",
+      "subtitle": "累積飛行時間、飛行前点検遵守率、顧客検収評価のサマリーです。",
+      "totalHours": "累積飛行時間",
+      "completedMissions": "完了ミッション",
+      "preflightCompliance": "飛行前点検遵守率",
+      "customerRating": "顧客評価平均",
+      "noRating": "評価なし"
+    },
+    "notam": {
+      "effectiveFrom": "有効開始日時（一時NOTAM・任意）",
+      "effectiveUntil": "有効終了日時（一時NOTAM・任意）",
+      "hint": "恒久的な飛行制限区域の場合は両方とも空欄のままにしてください。",
+      "permanent": "常設区域",
+      "scheduledBadge": "期間指定NOTAM",
+      "windowSummary": "{from} → {until}"
+    },
+    "sla": {
+      "title": "運航品質・機体予防保全分析",
+      "subtitle": "承認リードタイム実績、オペレーター品質ランキング、UAV予防整備リスクマトリクスを可視化します。",
+      "kpis": {
+        "confirmTurnaround": "平均承認時間",
+        "minutesUnit": "{min} 分",
+        "onTimeRate": "定刻完了率",
+        "preflightRate": "飛行前点検遵守率",
+        "customerRating": "顧客検収スコア",
+        "reviewsSub": "{accepted}/{total} 件検収済み"
+      },
+      "leaderboardTitle": "オペレーター実績ランキング",
+      "leaderboardEmpty": "オペレーター実績データがありません。",
+      "cols": {
+        "operator": "オペレーター",
+        "completed": "完了数",
+        "hours": "飛行時間",
+        "onTime": "定刻率",
+        "preflight": "点検率",
+        "rating": "顧客評価"
+      },
+      "riskTitle": "UAV予防整備リスク予測マトリクス",
+      "riskSummary": "期限超過 {overdue}機 · 期限間近 {dueSoon}機",
+      "riskLevels": {
+        "OVERDUE": "整備周期超過",
+        "DUE_SOON": "整備時期接近",
+        "NORMAL": "正常範囲"
+      },
+      "uavCols": {
+        "uav": "UAV / 拠点",
+        "usage": "前回整備後の稼働",
+        "telemetry": "残量 / 前回整備",
+        "risk": "リスク判定",
+        "action": "予防措置"
+      },
+      "missionsHours": "{missions}件 · {hours}時間",
+      "daysAgo": "{days}日前",
+      "neverMaintained": "整備記録なし",
+      "openOrderExists": "整備オーダー進行中",
+      "createPreventiveOrder": "予防整備オーダー作成",
+      "creatingOrder": "作成中...",
+      "orderCreatedToast": "機体 {serial} の予防整備オーダーを作成しました。",
+      "recentReviewsTitle": "最新の顧客検収・品質レビュー",
+      "recentReviewsEmpty": "顧客からの検収レビューはまだありません。"
     }
   }
 }

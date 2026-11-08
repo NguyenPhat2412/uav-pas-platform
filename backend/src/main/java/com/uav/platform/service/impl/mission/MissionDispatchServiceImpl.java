@@ -19,6 +19,7 @@ import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.mission.MissionMapper;
 import com.uav.platform.repository.mission.MissionEquipmentReservationRepository;
 import com.uav.platform.repository.mission.MissionEventRepository;
+import com.uav.platform.repository.mission.MissionPreflightLogRepository;
 import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.station.StationRepository;
 import com.uav.platform.service.audit.AuditLogService;
@@ -62,8 +63,36 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
     @Autowired(required = false)
     private ObjectProvider<NotificationService> notifications;
 
+    @Autowired(required = false)
+    private ObjectProvider<MissionPreflightLogRepository> preflightLogs;
+
     public void setNotifications(ObjectProvider<NotificationService> notifications) {
         this.notifications = notifications;
+    }
+
+    public void setPreflightLogs(ObjectProvider<MissionPreflightLogRepository> preflightLogs) {
+        this.preflightLogs = preflightLogs;
+    }
+
+    private void invalidatePreflightClearance(Long missionId, boolean uavChanged) {
+        if (preflightLogs == null || missionId == null) {
+            return;
+        }
+        MissionPreflightLogRepository repo = preflightLogs.getIfAvailable();
+        if (repo == null) {
+            return;
+        }
+        repo.findByMissionId(missionId)
+                .ifPresent(
+                        log -> {
+                            if (uavChanged) {
+                                log.setAirframeAndPropellersSafe(false);
+                            }
+                            if (log.isClearedForTakeoff() || uavChanged) {
+                                log.setClearedForTakeoff(false);
+                                repo.save(log);
+                            }
+                        });
     }
 
     @Override
@@ -93,6 +122,7 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
         }
         MissionOperations.assignStation(mission, station);
         MissionOperations.invalidateAcceptance(mission);
+        invalidatePreflightClearance(id, false);
         missionEvents.record(
                 mission,
                 MissionEventType.STATION_ASSIGNED,
@@ -139,6 +169,7 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
         }
         MissionOperations.assignUav(mission, uav);
         MissionOperations.invalidateAcceptance(mission);
+        invalidatePreflightClearance(id, true);
         resources.changeUavStatus(
                 uav, UavStatus.ASSIGNED, "Mission UAV assigned", authentication.getName());
         missionEvents.record(
@@ -298,6 +329,7 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
             Long replacementId,
             String reason,
             Authentication authentication) {
+        invalidatePreflightClearance(mission.getId(), true);
         String metadata =
                 "{\"previousUavId\":" + previousId + ",\"replacementUavId\":" + replacementId + "}";
         events.save(
@@ -330,6 +362,7 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
         resources.requireOperatorAvailable(operator, mission);
         MissionOperations.assignOperator(mission, operator);
         MissionOperations.invalidateAcceptance(mission);
+        invalidatePreflightClearance(id, false);
         missionEvents.record(
                 mission,
                 MissionEventType.OPERATOR_ASSIGNED,
@@ -376,6 +409,7 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
                 MissionEquipmentReservationOperations.create(
                         mission, item, request.quantity(), authentication.getName()));
         MissionOperations.invalidateAcceptance(mission);
+        invalidatePreflightClearance(id, false);
         bumpDispatchVersion(mission);
         missionEvents.record(
                 mission,
@@ -749,6 +783,7 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
             Authentication authentication) {
         MissionOperations.resetDispatch(
                 mission, reservations.existsByMissionIdAndReleasedFalse(mission.getId()));
+        invalidatePreflightClearance(mission.getId(), false);
         bumpDispatchVersion(mission);
         events.save(
                 new MissionEvent(

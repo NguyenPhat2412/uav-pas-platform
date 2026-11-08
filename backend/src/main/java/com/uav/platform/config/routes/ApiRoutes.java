@@ -223,8 +223,21 @@ public final class ApiRoutes {
         public static final String FORCE_FAIL = "/{id}/force-fail";
         public static final String PERMIT = "/{id}/permit";
         public static final String PERMIT_VERIFY = "/{id}/permit/verify";
+        public static final String CLONE = "/{id}/clone";
+        public static final String REVIEW = "/{id}/review";
+        public static final String PREFLIGHT = "/{id}/preflight";
+        public static final String DISPATCH_CANDIDATES = "/{id}/dispatch-candidates";
+        public static final String AUTO_ASSIGN = "/{id}/auto-assign";
+        public static final String OPERATOR_LOGBOOK = "/operator-logbook";
         public static final String MEDIA_UPLOAD_URL = "/{id}/media/upload-url";
         public static final String MEDIA_CONFIRM = "/{id}/media/{mediaId}/confirm";
+    }
+
+    public static final class FlightSites {
+        private FlightSites() {}
+
+        public static final String BASE = API_V1_PREFIX + "/flight-sites";
+        public static final String BY_ID = "/{id}";
     }
 
     public static final class UavServices {
@@ -401,6 +414,7 @@ public final class ApiRoutes {
         public static final String INFRASTRUCTURE = BASE + "/infrastructure";
         public static final String ASSISTANT_CONVERSATIONS = BASE + "/assistant/conversations";
         public static final String USER_BILLING_PROFILE = BASE + "/users/{id}/billing-profile";
+        public static final String SLA_INTELLIGENCE = BASE + "/sla-intelligence";
 
         // Method-level paths, relative to the controller mapping.
         public static final String ASSISTANT_CONVERSATIONS_BY_ID = "/{id}";
@@ -538,6 +552,8 @@ public final class ApiRoutes {
         public static final String SESSION = "/sessions/{uavId}";
         public static final String SESSION_COMMANDS = "/sessions/{uavId}/commands";
         public static final String SURVEY_PLAN = "/survey-plan";
+        public static final String RUNS = "/runs";
+        public static final String REHEARSE_MISSION = "/rehearse-mission/{missionId}";
     }
 
     public static final String[] SWAGGER_WHITELIST = {

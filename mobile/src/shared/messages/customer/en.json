@@ -559,7 +559,7 @@
     },
     "hotline": {
         "label": "Dispatch hotline",
-        "call": "Call the 24/7 dispatch centre: {number}"
+        "call": "Call the dispatch centre: {number}"
     },
     "account": {
         "open": "Open account menu for {name}",

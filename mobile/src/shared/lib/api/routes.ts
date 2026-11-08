@@ -101,6 +101,8 @@ export const API_ROUTES = {
         session: (uavId: string | number) => `/api/v1/simulation/sessions/${uavId}`,
         commands: (uavId: string | number) => `/api/v1/simulation/sessions/${uavId}/commands`,
         surveyPlan: '/api/v1/simulation/survey-plan',
+        runs: '/api/v1/simulation/runs',
+        rehearseMission: (missionId: string | number) => `/api/v1/simulation/rehearse-mission/${missionId}`,
     },
     inventory: {
         equipment: '/api/v1/inventory/equipment',
@@ -155,6 +157,16 @@ export const API_ROUTES = {
         assignStation: (id: string | number) => `/api/v1/missions/${id}/assign-station`,
         permit: (id: string | number) => `/api/v1/missions/${id}/permit`,
         permitVerify: (id: string | number) => `/api/v1/missions/${id}/permit/verify`,
+        clone: (id: string | number) => `/api/v1/missions/${id}/clone`,
+        review: (id: string | number) => `/api/v1/missions/${id}/review`,
+        preflight: (id: string | number) => `/api/v1/missions/${id}/preflight`,
+        dispatchCandidates: (id: string | number) => `/api/v1/missions/${id}/dispatch-candidates`,
+        autoAssign: (id: string | number) => `/api/v1/missions/${id}/auto-assign`,
+        operatorLogbook: '/api/v1/missions/operator-logbook',
+    },
+    flightSites: {
+        list: '/api/v1/flight-sites',
+        detail: (id: string | number) => `/api/v1/flight-sites/${id}`,
     },
     media: {
         list: '/api/v1/media',
@@ -252,6 +264,7 @@ export const API_ROUTES = {
         files: '/api/v1/admin/files',
         infrastructure: '/api/v1/admin/infrastructure',
         security: '/api/v1/admin/security',
+        slaIntelligence: '/api/v1/admin/sla-intelligence',
         userBillingProfile: (userId: string | number) => `/api/v1/admin/users/${userId}/billing-profile`,
     },
     public: {

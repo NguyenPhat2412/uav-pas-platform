@@ -1,0 +1,127 @@
+{
+  "adminCommerce": {
+    "pages": {
+      "transactions": "Payment transactions & IPN",
+      "outbox": "Financial event outbox"
+    },
+    "common": {
+      "all": "All"
+    },
+    "txStatus": {
+      "SUCCESS": "Succeeded",
+      "PENDING": "Pending",
+      "FAILED": "Failed"
+    },
+    "gateway": {
+      "VIETQR_NAPAS_247": "VietQR NAPAS 247 (IPN)",
+      "VIETQR_NAPAS": "VietQR NAPAS",
+      "BANK_TRANSFER_MANUAL": "Bank transfer – manual confirmation"
+    },
+    "tx": {
+      "filters": "Transaction filters",
+      "keyword": "Search",
+      "keywordPlaceholder": "Transaction code, invoice code, customer, email…",
+      "status": "Status",
+      "gateway": "Payment channel",
+      "from": "From",
+      "to": "To",
+      "invoiceId": "Invoice ID",
+      "apply": "Filter",
+      "reset": "Clear filters",
+      "table": "Payment transactions table",
+      "empty": "No transactions match these filters.",
+      "open": "Open transaction {code}",
+      "col": {
+        "time": "Time",
+        "code": "Transaction code",
+        "invoice": "Invoice",
+        "customer": "Customer",
+        "gateway": "Channel",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "detail": {
+        "title": "Transaction {code}",
+        "transactionCode": "Transaction code / reference",
+        "status": "Status",
+        "gateway": "Payment channel",
+        "amount": "Amount received",
+        "invoice": "Invoice",
+        "invoiceStatus": "Invoice status",
+        "invoiceAmount": "Invoice amount",
+        "customer": "Customer",
+        "email": "Email",
+        "bank": "Receiving bank (BIN · account)",
+        "created": "Recorded at",
+        "completed": "Completed at",
+        "amountMismatch": "Amount differs from invoice — reconcile.",
+        "raw": "Raw callback data",
+        "rawHint": "Signatures, tokens and keys are masked.",
+        "noRaw": "No callback data."
+      }
+    },
+    "outboxStatus": {
+      "PENDING": "Pending",
+      "WAITING_SUBSCRIBERS": "Waiting for webhook targets",
+      "FAILED": "Failed",
+      "LOCAL_COMPLETED": "Processed"
+    },
+    "outbox": {
+      "intro": "The worker runs every minute; \"Retry\" requeues failed events now.",
+      "filterLabel": "Filter by status",
+      "table": "Financial events table",
+      "empty": "No events.",
+      "customer": "Customer (ID)",
+      "notification": "Customer notification",
+      "notificationDone": "Created",
+      "notificationPending": "Not created",
+      "payload": "Event payload",
+      "detailTitle": "Event {type}",
+      "retry": "Retry",
+      "retryConfirm": "Requeue event {id} now?",
+      "retried": "Event {id} requeued; runs within a minute.",
+      "retryHint": "Retrying never duplicates notifications or webhooks.",
+      "notRetryable": "Already processed or awaiting its first run.",
+      "col": {
+        "event": "Event",
+        "invoice": "Invoice",
+        "status": "Status",
+        "attempts": "Attempts",
+        "lastError": "Last error",
+        "nextAttempt": "Next attempt",
+        "created": "Created",
+        "actions": "Actions"
+      }
+    },
+    "webhooks": {
+      "retry": "Resend",
+      "retryConfirm": "Resend {event} to {name} (3 fresh attempts)?",
+      "retried": "Resend queued.",
+      "rotate": "Rotate signing secret for {name}",
+      "rotateConfirm": "Rotate {name}'s signing secret? The old one stops working now.",
+      "maskedSecret": "Signing secret (masked)",
+      "createSecretHint": "Copy before creating; only a masked value shows afterwards.",
+      "secret": {
+        "title": "New webhook signing secret",
+        "intro": "New HMAC-SHA256 signing secret for \"{name}\".",
+        "label": "New signing secret",
+        "copy": "Copy",
+        "copied": "Copied",
+        "copyFailed": "Couldn't copy; copy it manually.",
+        "warning": "Shown only once; rotate again if lost.",
+        "done": "I have saved it"
+      }
+    },
+    "profile": {
+      "title": "Billing profile",
+      "readOnly": "Read-only — maintained by the customer",
+      "empty": "The customer has not filled in a billing profile.",
+      "organizationName": "Organization",
+      "taxCode": "Tax code",
+      "billingAddress": "Billing address",
+      "emergencyContactName": "Emergency contact",
+      "emergencyContactPhone": "Emergency contact phone",
+      "updatedAt": "Last updated: {date}"
+    }
+  }
+}

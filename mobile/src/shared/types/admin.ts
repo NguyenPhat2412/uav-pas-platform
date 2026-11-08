@@ -144,3 +144,63 @@ export interface WebhookDeliveryLogItem {
 
 export type MissionOutcome = 'active' | 'completed' | 'stopped';
 
+export interface OperatorSlaRow {
+    operatorId: number;
+    username: string;
+    fullName: string;
+    completedMissions: number;
+    totalFlightHours: number;
+    onTimeRate: number;
+    preflightComplianceRate: number;
+    avgRating?: number | null;
+    reviewCount: number;
+}
+
+export interface UavMaintenanceRiskRow {
+    uavId: number;
+    serialNumber: string;
+    model: string;
+    status: string;
+    stationName?: string | null;
+    lastMaintenanceAt?: string | null;
+    daysSinceMaintenance?: number | null;
+    missionsSinceMaintenance: number;
+    flightHoursSinceMaintenance: number;
+    latestBatteryPct?: number | null;
+    hasOpenRepairOrder: boolean;
+    riskLevel: 'NORMAL' | 'DUE_SOON' | 'OVERDUE' | string;
+    riskScore: number;
+    recommendation: string;
+}
+
+export interface CustomerReviewRow {
+    reviewId: number;
+    missionId?: number | null;
+    missionCode?: string | null;
+    missionTitle?: string | null;
+    customerName?: string | null;
+    operatorName?: string | null;
+    overallRating: number;
+    dataQualityRating: number;
+    timelinessRating: number;
+    deliverablesAccepted: boolean;
+    comment?: string | null;
+    updatedAt?: string | null;
+}
+
+export interface SlaIntelligenceData {
+    totalEvaluatedMissions: number;
+    completedMissions: number;
+    avgConfirmationMinutes: number;
+    onTimeCompletionRate: number;
+    preflightComplianceRate: number;
+    avgCustomerRating?: number | null;
+    acceptedDeliverablesCount: number;
+    totalReviewsCount: number;
+    dueSoonUavCount: number;
+    overdueUavCount: number;
+    operatorLeaderboard: OperatorSlaRow[];
+    fleetMaintenanceRisks: UavMaintenanceRiskRow[];
+    recentReviews: CustomerReviewRow[];
+}
+

@@ -20,6 +20,8 @@ export interface AirspaceZone {
     authority: string;
     active: boolean;
     description?: string | null;
+    effectiveFrom?: string | null;
+    effectiveUntil?: string | null;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -44,6 +46,8 @@ export interface AirspaceCheckInput {
     takeoffLatitude?: number;
     takeoffLongitude?: number;
     altitudeAglMeters?: number;
+    plannedStartTime?: string;
+    plannedEndTime?: string;
 }
 
 export interface AirspaceCheckResult {
@@ -67,4 +71,6 @@ export interface AirspaceZoneUpsertInput {
     authority: string;
     active?: boolean;
     description?: string | null;
+    effectiveFrom?: string | null;
+    effectiveUntil?: string | null;
 }

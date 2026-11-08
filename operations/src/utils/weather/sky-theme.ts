@@ -1,0 +1,45 @@
+import type {WeatherCondition} from '@/utils/weather/conditions';
+
+/** Animated layer drawn behind a weather card (see WeatherBackdrop). */
+export type SkyEffect = 'sun' | 'clouds' | 'fog' | 'drizzle' | 'rain' | 'showers' | 'storm' | 'snow' | 'stars' | 'none';
+
+export interface SkyTheme {
+    /** Tailwind gradient classes for the card background. */
+    background: string;
+    /** Light text and controls are needed on this background. */
+    dark: boolean;
+    effect: SkyEffect;
+}
+
+// Soft gradients that sit beside the portal's white cards: warm for sun, cool greys for cloud and rain,
+// deep slate for night and storms. Hex values, so the portal's grey overrides of blue utilities do not apply.
+const DAY: Record<WeatherCondition, SkyTheme> = {
+    clear: {background: 'bg-gradient-to-br from-[#fff8e6] via-[#ffecc2] to-[#ffd98f]', dark: false, effect: 'sun'},
+    partly: {background: 'bg-gradient-to-br from-[#fff6e2] via-[#f3eee6] to-[#dfe4ea]', dark: false, effect: 'clouds'},
+    cloudy: {background: 'bg-gradient-to-br from-[#f0f2f5] to-[#d6dce3]', dark: false, effect: 'clouds'},
+    fog: {background: 'bg-gradient-to-br from-[#f3f4f5] to-[#d9dde1]', dark: false, effect: 'fog'},
+    drizzle: {background: 'bg-gradient-to-br from-[#e8edf2] to-[#cad4de]', dark: false, effect: 'drizzle'},
+    rain: {background: 'bg-gradient-to-br from-[#dce3ea] to-[#aebccb]', dark: false, effect: 'rain'},
+    showers: {background: 'bg-gradient-to-br from-[#dce3ea] to-[#a9b7c6]', dark: false, effect: 'showers'},
+    thunder: {background: 'bg-gradient-to-br from-[#454c5c] to-[#1f2430]', dark: true, effect: 'storm'},
+    snow: {background: 'bg-gradient-to-br from-[#f6f8fb] to-[#dde5ee]', dark: false, effect: 'snow'},
+    unknown: {background: 'bg-gradient-to-br from-[#f7f8fa] to-[#e9edf1]', dark: false, effect: 'none'},
+};
+
+const NIGHT_CLEAR = 'bg-gradient-to-br from-[#25304a] via-[#1a2338] to-[#0f1626]';
+const NIGHT_GREY = 'bg-gradient-to-br from-[#323a48] to-[#171c25]';
+
+/** The card look for a sky condition; any condition at night gets a dark sky with its own effect. */
+export function skyTheme(condition: WeatherCondition, night: boolean): SkyTheme {
+    if (!night || condition === 'thunder') return DAY[condition];
+    switch (condition) {
+        case 'clear':
+            return {background: NIGHT_CLEAR, dark: true, effect: 'stars'};
+        case 'partly':
+            return {background: NIGHT_CLEAR, dark: true, effect: 'clouds'};
+        case 'unknown':
+            return {background: NIGHT_GREY, dark: true, effect: 'none'};
+        default:
+            return {background: NIGHT_GREY, dark: true, effect: DAY[condition].effect};
+    }
+}

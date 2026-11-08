@@ -3,14 +3,20 @@ import {buildQueryString} from '@/shared/lib/format';
 import {acceptanceInput, completionInput, failureInput, missionEventNote} from '@/shared/utils/mission/workflows';
 import type {
     Mission,
+    MissionDispatchCandidates,
     MissionEvent,
     MissionMedia,
     MissionPermitUpsertInput,
     MissionPermitVerifyInput,
+    MissionPreflight,
+    MissionPreflightUpsertInput,
+    MissionReview,
     MissionStatus,
     MissionType,
+    OperatorLogbook,
     PageResponse,
 } from '@/shared/types/mission/mission.types';
+import type {Operator} from '@/shared/types/resources';
 import type {UavTelemetry} from '@/shared/types/uav/telemetry.types';
 
 export interface OperationsMissionListParams {
@@ -64,6 +70,29 @@ export const operationsMissionService = {
         apiClient.put<Mission>(API_ROUTES.missions.permit(id), data),
     verifyPermit: (id: number, data: MissionPermitVerifyInput) =>
         apiClient.post<Mission>(API_ROUTES.missions.permitVerify(id), data),
+    assignStation: (id: number, resourceId: number) =>
+        apiClient.post<Mission>(API_ROUTES.missions.assignStation(id), {resourceId, quantity: 1}),
+    assignUav: (id: number, resourceId: number) =>
+        apiClient.post<Mission>(API_ROUTES.missions.assignUav(id), {resourceId, quantity: 1}),
+    assignOperator: (id: number, resourceId: number) =>
+        apiClient.post<Mission>(API_ROUTES.missions.assignOperator(id), {resourceId, quantity: 1}),
+    operators: (signal?: AbortSignal) =>
+        apiClient.get<PageResponse<Operator>>(
+            `${API_ROUTES.users.list}?${buildQueryString({role: 'ROLE_OPERATOR', page: 0, size: 100})}`,
+            {signal},
+        ),
     latestTelemetry: (id: number, signal?: AbortSignal) =>
         apiClient.get<UavTelemetry | undefined>(API_ROUTES.missions.latestTelemetry(id), {signal}),
+    getPreflight: (id: number, signal?: AbortSignal) =>
+        apiClient.get<MissionPreflight>(API_ROUTES.missions.preflight(id), {signal}),
+    upsertPreflight: (id: number, data: MissionPreflightUpsertInput) =>
+        apiClient.put<MissionPreflight>(API_ROUTES.missions.preflight(id), data),
+    dispatchCandidates: (id: number, signal?: AbortSignal) =>
+        apiClient.get<MissionDispatchCandidates>(API_ROUTES.missions.dispatchCandidates(id), {signal}),
+    autoAssign: (id: number) =>
+        apiClient.post<Mission>(API_ROUTES.missions.autoAssign(id)),
+    operatorLogbook: (signal?: AbortSignal) =>
+        apiClient.get<OperatorLogbook>(API_ROUTES.missions.operatorLogbook, {signal}),
+    getReview: (id: number, signal?: AbortSignal) =>
+        apiClient.get<MissionReview>(API_ROUTES.missions.review(id), {signal}),
 };

@@ -1,16 +1,16 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Alert, Linking, Platform, Pressable, StyleSheet, View} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 import MapView, {Marker} from 'react-native-maps';
 import * as ImagePicker from 'expo-image-picker';
 import * as WebBrowser from 'expo-web-browser';
-import {Camera, CalendarClock, Download, FileText, ImagePlus, MapPin, Pencil, Send, ShieldAlert, XCircle} from 'lucide-react-native';
-import {AppText, Badge, Button, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
+import {Camera, CalendarClock, CheckCircle2, CheckSquare, Copy, Download, FileText, ImagePlus, MapPin, Pencil, Send, ShieldAlert, Square, Star, XCircle} from 'lucide-react-native';
+import {AppText, Badge, Button, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle, TextField} from '@/components/ui';
 import {MissionStatusBadge} from '@/components/mission/MissionBits';
 import {MissionPermitCard} from '@/components/mission/MissionPermitCard';
 import {Verdict} from '@/components/weather/WeatherCard';
 import {useMissionAirspaceCheck} from '@/hooks/airspace/useAirspace';
-import {useMissionActions, useMissionDetail} from '@/hooks/mission/useCustomerMissions';
+import {useMissionActions, useMissionDetail, useMissionReview} from '@/hooks/mission/useCustomerMissions';
 import {useMediaDownload, useMissionUpload} from '@/hooks/media/useMissionUpload';
 import {useMissionWeather} from '@/hooks/weather/useWeather';
 import {useAuth} from '@/providers/AuthContext';
@@ -67,6 +67,156 @@ function SiteWeather({mission}: { mission: Mission }) {
     );
 }
 
+function StarRow({
+    label,
+    value,
+    disabled,
+    onChange,
+}: {
+    label: string;
+    value: number;
+    disabled?: boolean;
+    onChange: (next: number) => void;
+}) {
+    return (
+        <View style={styles.starGroup}>
+            <AppText variant="small" style={styles.stepDone}>{label}</AppText>
+            <View style={styles.starRow}>
+                {[1, 2, 3, 4, 5].map(score => {
+                    const active = score <= value;
+                    return (
+                        <Pressable
+                            key={score}
+                            disabled={disabled}
+                            accessibilityRole="button"
+                            accessibilityLabel={`${label} ${score}/5`}
+                            onPress={() => onChange(score)}
+                            style={({pressed}) => [styles.starBtn, pressed && styles.pressed]}>
+                            <Star
+                                size={18}
+                                color={active ? colors.warning : colors.inputBorder}
+                                fill={active ? colors.warning : 'transparent'}
+                            />
+                        </Pressable>
+                    );
+                })}
+                <AppText variant="small" style={styles.stepDone}>{value}/5</AppText>
+            </View>
+        </View>
+    );
+}
+
+function CustomerHandoverReviewCard({missionId}: { missionId: number }) {
+    const {t} = useI18n();
+    const toast = useToast();
+    const query = useMissionReview(missionId, true);
+    const actions = useMissionActions();
+    const review = query.data;
+
+    const [overrides, setOverrides] = useState<{
+        overall?: number;
+        dataQuality?: number;
+        timeliness?: number;
+        accepted?: boolean;
+        comment?: string;
+    }>({});
+
+    const overall = overrides.overall ?? (review?.reviewed ? (review.overallRating ?? 5) : 5);
+    const dataQuality =
+        overrides.dataQuality ?? (review?.reviewed ? (review.dataQualityRating ?? review.overallRating ?? 5) : 5);
+    const timeliness =
+        overrides.timeliness ?? (review?.reviewed ? (review.timelinessRating ?? review.overallRating ?? 5) : 5);
+    const accepted = overrides.accepted ?? (review?.reviewed ? review.deliverablesAccepted : true);
+    const comment = overrides.comment ?? (review?.reviewed ? (review.comment ?? '') : '');
+    const AcceptIcon = accepted ? CheckSquare : Square;
+
+    const saveReview = () => {
+        actions.upsertReview.mutate(
+            {
+                id: missionId,
+                data: {
+                    overallRating: overall,
+                    dataQualityRating: dataQuality,
+                    timelinessRating: timeliness,
+                    deliverablesAccepted: accepted,
+                    comment: comment.trim() || undefined,
+                },
+            },
+            {
+                onSuccess: () => toast.show(t('capabilities.review.savedToast'), 'success'),
+                onError: error => toast.show(missionFormError(error, t), 'error'),
+            },
+        );
+    };
+
+    return (
+        <Card>
+            <SectionTitle
+                title={t('capabilities.review.title')}
+                action={
+                    <Badge
+                        icon={review?.reviewed && review.deliverablesAccepted ? CheckCircle2 : undefined}
+                        label={
+                            review?.reviewed && review.deliverablesAccepted
+                                ? t('capabilities.review.acceptedBadge')
+                                : t('capabilities.review.pendingBadge')
+                        }
+                        background={
+                            review?.reviewed && review.deliverablesAccepted ? colors.slateLight : colors.warningLight
+                        }
+                        color={review?.reviewed && review.deliverablesAccepted ? colors.slateDark : colors.warning}
+                    />
+                }
+            />
+            <AppText variant="caption">{t('capabilities.review.subtitle')}</AppText>
+
+            <StarRow
+                label={t('capabilities.review.overallRating')}
+                value={overall}
+                disabled={actions.upsertReview.isPending}
+                onChange={val => setOverrides(prev => ({...prev, overall: val}))}
+            />
+            <StarRow
+                label={t('capabilities.review.dataQuality')}
+                value={dataQuality}
+                disabled={actions.upsertReview.isPending}
+                onChange={val => setOverrides(prev => ({...prev, dataQuality: val}))}
+            />
+            <StarRow
+                label={t('capabilities.review.timeliness')}
+                value={timeliness}
+                disabled={actions.upsertReview.isPending}
+                onChange={val => setOverrides(prev => ({...prev, timeliness: val}))}
+            />
+
+            <Pressable
+                accessibilityRole="checkbox"
+                accessibilityState={{checked: accepted}}
+                onPress={() => setOverrides(prev => ({...prev, accepted: !accepted}))}
+                style={({pressed}) => [styles.acceptRow, pressed && styles.pressed]}>
+                <AcceptIcon size={20} color={accepted ? colors.primary : colors.slate}/>
+                <AppText variant="small" style={styles.flex}>{t('capabilities.review.acceptDeliverables')}</AppText>
+            </Pressable>
+
+            <TextField
+                label={t('capabilities.review.commentLabel')}
+                placeholder={t('capabilities.review.commentPlaceholder')}
+                value={comment}
+                onChangeText={val => setOverrides(prev => ({...prev, comment: val}))}
+                multiline
+                maxLength={1500}
+            />
+
+            <Button
+                label={review?.reviewed ? t('capabilities.review.update') : t('capabilities.review.submit')}
+                icon={CheckCircle2}
+                loading={actions.upsertReview.isPending}
+                onPress={saveReview}
+            />
+        </Card>
+    );
+}
+
 export function MissionDetailScreen() {
     const {t, formatDate, formatNumber} = useI18n();
     const {user, can} = useAuth();
@@ -108,7 +258,7 @@ export function MissionDetailScreen() {
         {text: t('missionDetail.confirmCancel'), style: 'destructive', onPress: () => actions.cancel.mutate(mission.id, {onError: fail})},
     ]);
 
-    const pick = async (source: 'camera' | 'library') => {
+    const pick = async (source: 'camera' | 'library', role: 'INPUT' | 'DOCUMENT' = 'INPUT', onUploaded?: (mediaId: number) => void) => {
         const permission = source === 'camera' ? await ImagePicker.requestCameraPermissionsAsync() : await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permission.granted) {
             toast.show(t('mobile.files.permissionDenied'), 'error');
@@ -120,12 +270,18 @@ export function MissionDetailScreen() {
         if (!asset) return;
         const contentType = asset.mimeType ?? 'image/jpeg';
         upload.mutate({
-            uri: asset.uri,
-            name: asset.fileName ?? `${mission.code}-${Date.now()}.${contentType.split('/')[1] ?? 'jpg'}`,
-            contentType,
-            size: asset.fileSize ?? 0,
+            file: {
+                uri: asset.uri,
+                name: asset.fileName ?? `${mission.code}-${Date.now()}.${contentType.split('/')[1] ?? 'jpg'}`,
+                contentType,
+                size: asset.fileSize ?? 0,
+            },
+            mediaRole: role,
         }, {
-            onSuccess: () => toast.show(t('mobile.files.uploaded'), 'success'),
+            onSuccess: created => {
+                onUploaded?.(created.media.id);
+                toast.show(t('mobile.files.uploaded'), 'success');
+            },
             onError: error => toast.show(error instanceof Error ? error.message : t('mobile.files.uploadFailed'), 'error'),
         });
     };
@@ -155,11 +311,29 @@ export function MissionDetailScreen() {
                 <AppText variant="small">{missionHint(mission.status)}</AppText>
             </Card>
 
-            {(editable || cancellable) && (
+            {(editable || cancellable || (owned && can('MISSION_CREATE'))) && (
                 <View style={styles.actions}>
                     {editable && <Button label={t('missionDetail.submit')} icon={Send} loading={actions.submit.isPending} onPress={submit} style={styles.flex}/>}
                     {editable && <Button label={t('mobile.missions.edit')} icon={Pencil} tone="secondary"
                                          onPress={() => router.push({pathname: '/customer/mission/[id]/edit', params: {id: String(mission.id)}})} style={styles.flex}/>}
+                    {owned && can('MISSION_CREATE') && (
+                        <Button
+                            label={actions.clone.isPending ? t('capabilities.clone.cloning') : t('capabilities.clone.action')}
+                            icon={Copy}
+                            tone="secondary"
+                            loading={actions.clone.isPending}
+                            onPress={() =>
+                                actions.clone.mutate(mission.id, {
+                                    onSuccess: cloned => {
+                                        toast.show(t('capabilities.clone.successToast', {code: cloned.code}), 'success');
+                                        router.push({pathname: '/customer/mission/[id]', params: {id: String(cloned.id)}});
+                                    },
+                                    onError: fail,
+                                })
+                            }
+                            style={styles.flex}
+                        />
+                    )}
                     {cancellable && <Button label={t('missionDetail.cancelRequest')} icon={XCircle} tone="ghost" loading={actions.cancel.isPending} onPress={cancel}/>}
                 </View>
             )}
@@ -220,6 +394,10 @@ export function MissionDetailScreen() {
             {showPermitCard && (
                 <MissionPermitCard
                     mission={mission}
+                    mediaItems={media.data}
+                    onOpenScan={open}
+                    uploadScanLoading={upload.isPending}
+                    onUploadScan={canUpload ? onUploaded => void pick('library', 'DOCUMENT', onUploaded) : undefined}
                     upsertLoading={actions.upsertPermit.isPending}
                     onUpsert={(data, onDone) =>
                         actions.upsertPermit.mutate(
@@ -237,6 +415,10 @@ export function MissionDetailScreen() {
             )}
 
             {!finished && <SiteWeather mission={mission}/>}
+
+            {owned && mission.status === 'COMPLETED' && (
+                <CustomerHandoverReviewCard key={mission.id} missionId={mission.id}/>
+            )}
 
             {owned && can('MISSION_MEDIA_VIEW') && (
                 <Card>
@@ -299,4 +481,18 @@ const styles = StyleSheet.create({
     file: {flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.sm},
     event: {flexDirection: 'row', gap: spacing.md, paddingVertical: spacing.xs},
     dot: {width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary, marginTop: 6},
+    starGroup: {gap: spacing.xs},
+    starRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.xs},
+    starBtn: {
+        width: 34,
+        height: 34,
+        borderRadius: radius.control,
+        borderWidth: 1,
+        borderColor: colors.inputBorder,
+        backgroundColor: colors.surface,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    acceptRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xs},
+    pressed: {opacity: 0.75},
 });

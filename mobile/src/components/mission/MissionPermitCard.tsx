@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
-import {CheckCircle2, FileCheck2, Pencil, Save, XCircle} from 'lucide-react-native';
-import {AppText, Badge, Button, Card, SectionTitle, TextField} from '@/components/ui';
+import {Platform, StyleSheet, View} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import {CheckCircle2, ExternalLink, FileCheck2, ImagePlus, Pencil, Save, XCircle} from 'lucide-react-native';
+import {AppText, Badge, Button, Card, ChipGroup, SectionTitle, TextField} from '@/components/ui';
+import {fromLocalIso, toLocalIso} from '@/forms/mission/mission-draft';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {
@@ -17,6 +19,7 @@ import {
 import type {
     FlightPermitStatus,
     Mission,
+    MissionMedia,
     MissionPermitUpsertInput,
     MissionPermitVerifyInput,
 } from '@/shared/types/mission/mission.types';
@@ -49,6 +52,33 @@ export function PermitStatusBadge({status}: { status: FlightPermitStatus }) {
     return <Badge label={labelMap[status]} background={tone.background} color={tone.color}/>;
 }
 
+function PermitDatePickerRow({
+    label,
+    value,
+    onChange,
+}: {
+    label: string;
+    value: string;
+    onChange: (nextLocalIso: string) => void;
+}) {
+    const date = fromLocalIso(value) ?? new Date();
+    return (
+        <View style={styles.dateRow}>
+            <AppText variant="small" style={styles.strong}>{label}</AppText>
+            <DateTimePicker
+                value={date}
+                mode="datetime"
+                display={Platform.OS === 'ios' ? 'compact' : 'default'}
+                minuteInterval={5}
+                accentColor={colors.primary}
+                onChange={(_event, selected) => {
+                    if (selected) onChange(toLocalIso(selected));
+                }}
+            />
+        </View>
+    );
+}
+
 export function MissionPermitCard({
     mission,
     onUpsert,
@@ -56,6 +86,10 @@ export function MissionPermitCard({
     onVerify,
     verifyLoading = false,
     allowVerify = false,
+    mediaItems,
+    onUploadScan,
+    uploadScanLoading = false,
+    onOpenScan,
 }: {
     mission: Mission;
     onUpsert: (data: MissionPermitUpsertInput, onDone: () => void) => void;
@@ -63,6 +97,10 @@ export function MissionPermitCard({
     onVerify?: (data: MissionPermitVerifyInput, onDone: () => void) => void;
     verifyLoading?: boolean;
     allowVerify?: boolean;
+    mediaItems?: readonly MissionMedia[];
+    onUploadScan?: (onUploaded?: (mediaId: number) => void) => void;
+    uploadScanLoading?: boolean;
+    onOpenScan?: (mediaId: number) => void;
 }) {
     const {t, formatDate} = useI18n();
     const {user, can} = useAuth();
@@ -82,13 +120,19 @@ export function MissionPermitCard({
     const [verifyNote, setVerifyNote] = useState('');
 
     const startEdit = () => {
-        setDraft(
-            permitDraftFromMission(permit, {
-                startTime: mission.startTime,
-                expectedEndTime: mission.expectedEndTime,
-                altitudeAglMeters: mission.flightPlan?.altitudeAglMeters ?? null,
-            }),
-        );
+        const seeded = permitDraftFromMission(permit, {
+            startTime: mission.startTime,
+            expectedEndTime: mission.expectedEndTime,
+            altitudeAglMeters: mission.flightPlan?.altitudeAglMeters ?? null,
+        });
+        const now = new Date();
+        const fallbackFrom = seeded.validFrom || toLocalIso(now);
+        const fallbackUntil = seeded.validUntil || toLocalIso(new Date(now.getTime() + 2 * 3_600_000));
+        setDraft({
+            ...seeded,
+            validFrom: fallbackFrom,
+            validUntil: fallbackUntil,
+        });
         setEditing(true);
     };
 
@@ -96,6 +140,19 @@ export function MissionPermitCard({
         if (!canSubmitPermitDraft(draft)) return;
         onUpsert(toPermitUpsertPayload(draft), () => setEditing(false));
     };
+
+    const attachedMediaName =
+        permit?.permitMediaId != null
+            ? mediaItems?.find(item => item.media.id === permit.permitMediaId)?.media.originalName ?? `#${permit.permitMediaId}`
+            : null;
+
+    const scanChipOptions = [
+        {value: '', label: t('mobile.permit.noScan')},
+        ...(mediaItems ?? []).map(item => ({
+            value: String(item.media.id),
+            label: item.media.originalName,
+        })),
+    ];
 
     return (
         <Card>
@@ -126,6 +183,12 @@ export function MissionPermitCard({
                             {permit.maxAltitudeMeters} m AGL
                         </AppText>
                     ) : null}
+                    {attachedMediaName ? (
+                        <AppText variant="small">
+                            <AppText variant="small" style={styles.strong}>{t('mobile.permit.scanAttachment')}: </AppText>
+                            {attachedMediaName}
+                        </AppText>
+                    ) : null}
                     {permit.verifiedBy ? (
                         <AppText variant="caption">
                             {t('mobile.permit.verifiedBy', {actor: permit.verifiedBy})}
@@ -133,6 +196,14 @@ export function MissionPermitCard({
                         </AppText>
                     ) : null}
                     {permit.note ? <AppText variant="small">{permit.note}</AppText> : null}
+                    {permit.permitMediaId != null && onOpenScan ? (
+                        <Button
+                            label={t('mobile.permit.openScan')}
+                            icon={ExternalLink}
+                            tone="secondary"
+                            onPress={() => onOpenScan(permit.permitMediaId!)}
+                        />
+                    ) : null}
                 </View>
             ) : (
                 <AppText variant="small">{t('mobile.permit.emptyHint')}</AppText>
@@ -160,19 +231,15 @@ export function MissionPermitCard({
                         value={draft.permitAuthority}
                         onChangeText={permitAuthority => setDraft(prev => ({...prev, permitAuthority}))}
                     />
-                    <TextField
+                    <PermitDatePickerRow
                         label={t('mobile.permit.validFrom')}
-                        placeholder="YYYY-MM-DDTHH:mm"
                         value={draft.validFrom}
-                        onChangeText={validFrom => setDraft(prev => ({...prev, validFrom}))}
-                        autoCapitalize="none"
+                        onChange={validFrom => setDraft(prev => ({...prev, validFrom}))}
                     />
-                    <TextField
+                    <PermitDatePickerRow
                         label={t('mobile.permit.validUntil')}
-                        placeholder="YYYY-MM-DDTHH:mm"
                         value={draft.validUntil}
-                        onChangeText={validUntil => setDraft(prev => ({...prev, validUntil}))}
-                        autoCapitalize="none"
+                        onChange={validUntil => setDraft(prev => ({...prev, validUntil}))}
                     />
                     <TextField
                         label={t('mobile.permit.ceiling')}
@@ -181,6 +248,25 @@ export function MissionPermitCard({
                         value={draft.maxAltitudeMeters}
                         onChangeText={maxAltitudeMeters => setDraft(prev => ({...prev, maxAltitudeMeters}))}
                     />
+                    <View style={styles.scanSection}>
+                        <AppText variant="small" style={styles.strong}>{t('mobile.permit.scanAttachment')}</AppText>
+                        <ChipGroup
+                            options={scanChipOptions}
+                            value={draft.permitMediaId}
+                            onChange={permitMediaId => setDraft(prev => ({...prev, permitMediaId}))}
+                        />
+                        {onUploadScan ? (
+                            <Button
+                                label={t('mobile.permit.uploadScan')}
+                                icon={ImagePlus}
+                                tone="secondary"
+                                loading={uploadScanLoading}
+                                onPress={() =>
+                                    onUploadScan(mediaId => setDraft(prev => ({...prev, permitMediaId: String(mediaId)})))
+                                }
+                            />
+                        ) : null}
+                    </View>
                     <TextField
                         label={t('mobile.permit.note')}
                         value={draft.note}
@@ -233,9 +319,11 @@ export function MissionPermitCard({
 
 const styles = StyleSheet.create({
     flex: {flex: 1},
-    details: {gap: 4},
+    details: {gap: 6},
     strong: {fontWeight: '600', color: colors.text},
     form: {gap: spacing.sm, marginTop: spacing.xs},
+    dateRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: spacing.sm},
+    scanSection: {gap: spacing.xs},
     verifyBox: {gap: spacing.sm, marginTop: spacing.sm, paddingTop: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border},
     actions: {flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap'},
 });

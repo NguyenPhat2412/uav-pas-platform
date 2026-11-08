@@ -55,6 +55,15 @@ public final class MissionPermitOperations {
 
     public static AirspaceCheckRequest toCheckRequest(
             FlightPlanRequest plan, BigDecimal fallbackLat, BigDecimal fallbackLng) {
+        return toCheckRequest(plan, fallbackLat, fallbackLng, null, null);
+    }
+
+    public static AirspaceCheckRequest toCheckRequest(
+            FlightPlanRequest plan,
+            BigDecimal fallbackLat,
+            BigDecimal fallbackLng,
+            LocalDateTime plannedStartTime,
+            LocalDateTime plannedEndTime) {
         if (plan != null) {
             return new AirspaceCheckRequest(
                     plan.areaType(),
@@ -62,7 +71,9 @@ public final class MissionPermitOperations {
                     plan.radiusMeters(),
                     plan.takeoffLatitude(),
                     plan.takeoffLongitude(),
-                    plan.altitudeAglMeters());
+                    plan.altitudeAglMeters(),
+                    plannedStartTime,
+                    plannedEndTime);
         }
         if (fallbackLat != null && fallbackLng != null) {
             return new AirspaceCheckRequest(
@@ -71,13 +82,24 @@ public final class MissionPermitOperations {
                     null,
                     fallbackLat.doubleValue(),
                     fallbackLng.doubleValue(),
-                    null);
+                    null,
+                    plannedStartTime,
+                    plannedEndTime);
         }
         return null;
     }
 
     public static AirspaceCheckRequest toCheckRequest(
             FlightPlanResponse storedPlan, BigDecimal fallbackLat, BigDecimal fallbackLng) {
+        return toCheckRequest(storedPlan, fallbackLat, fallbackLng, null, null);
+    }
+
+    public static AirspaceCheckRequest toCheckRequest(
+            FlightPlanResponse storedPlan,
+            BigDecimal fallbackLat,
+            BigDecimal fallbackLng,
+            LocalDateTime plannedStartTime,
+            LocalDateTime plannedEndTime) {
         if (storedPlan != null && storedPlan.areaType() != null) {
             Double takeoffLat =
                     storedPlan.takeoffLatitude() != null
@@ -93,7 +115,9 @@ public final class MissionPermitOperations {
                     storedPlan.radiusMeters(),
                     takeoffLat,
                     takeoffLng,
-                    storedPlan.altitudeAglMeters());
+                    storedPlan.altitudeAglMeters(),
+                    plannedStartTime,
+                    plannedEndTime);
         }
         if (fallbackLat != null && fallbackLng != null) {
             return new AirspaceCheckRequest(
@@ -102,7 +126,9 @@ public final class MissionPermitOperations {
                     null,
                     fallbackLat.doubleValue(),
                     fallbackLng.doubleValue(),
-                    null);
+                    null,
+                    plannedStartTime,
+                    plannedEndTime);
         }
         return null;
     }

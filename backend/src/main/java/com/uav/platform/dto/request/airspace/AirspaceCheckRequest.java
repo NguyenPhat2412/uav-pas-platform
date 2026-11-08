@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record AirspaceCheckRequest(
@@ -27,4 +28,25 @@ public record AirspaceCheckRequest(
                 Double takeoffLongitude,
         @Min(value = 0, message = "Độ cao bay không hợp lệ.")
                 @Max(value = 10000, message = "Độ cao bay tối đa 10.000 m.")
-                Integer altitudeAglMeters) {}
+                Integer altitudeAglMeters,
+        LocalDateTime plannedStartTime,
+        LocalDateTime plannedEndTime) {
+
+    public AirspaceCheckRequest(
+            String areaType,
+            List<List<Double>> vertices,
+            Integer radiusMeters,
+            Double takeoffLatitude,
+            Double takeoffLongitude,
+            Integer altitudeAglMeters) {
+        this(
+                areaType,
+                vertices,
+                radiusMeters,
+                takeoffLatitude,
+                takeoffLongitude,
+                altitudeAglMeters,
+                null,
+                null);
+    }
+}

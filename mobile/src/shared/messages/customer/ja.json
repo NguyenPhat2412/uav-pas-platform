@@ -559,7 +559,7 @@
     },
     "hotline": {
         "label": "配車ホットライン",
-        "call": "24時間配車センターに電話：{number}"
+        "call": "配車・運航センターに電話：{number}"
     },
     "account": {
         "open": "{name} のアカウントメニューを開く",

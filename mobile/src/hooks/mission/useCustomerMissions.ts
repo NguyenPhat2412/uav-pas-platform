@@ -3,12 +3,35 @@ import {queryKeys} from '@/shared/lib/query';
 import {customerMissionService} from '@/api/mission/customer-missions.api';
 import {useAuth} from '@/providers/AuthContext';
 import type {MissionInput, MissionStatus} from '@/shared/types/customer';
-import type {MissionPermitUpsertInput} from '@/shared/types/mission/mission.types';
+import type {
+    MissionPermitUpsertInput,
+    MissionReviewUpsertInput,
+    SavedFlightSiteUpsertInput,
+} from '@/shared/types/mission/mission.types';
 
 /** Same cache keys as the web customer portal: ['session', userId, 'customer', ...]. */
 function useCustomerKey() {
     const auth = useAuth();
     return {...auth, key: queryKeys.feature(auth.user?.id, 'customer')};
+}
+
+export function useSavedFlightSites() {
+    const {key, can, permissionsReady} = useCustomerKey();
+    return useQuery({
+        queryKey: [...key, 'flight-sites'],
+        queryFn: ({signal}) => customerMissionService.flightSites(signal),
+        enabled: permissionsReady && can('MISSION_VIEW'),
+    });
+}
+
+export function useMissionReview(id: number, enabled = true) {
+    const {key, can, permissionsReady} = useCustomerKey();
+    const valid = Number.isSafeInteger(id) && id > 0;
+    return useQuery({
+        queryKey: [...key, 'mission', id, 'review'],
+        queryFn: ({signal}) => customerMissionService.getReview(id, signal),
+        enabled: valid && enabled && permissionsReady && can('MISSION_VIEW'),
+    });
 }
 
 export function useServices() {
@@ -73,6 +96,27 @@ export function useMissionActions() {
         }),
         submit: useMutation({mutationFn: (id: number) => customerMissionService.submit(id), onSettled: (_d, _e, id) => refresh(id), retry: false}),
         cancel: useMutation({mutationFn: (id: number) => customerMissionService.cancel(id), onSettled: (_d, _e, id) => refresh(id), retry: false}),
+        clone: useMutation({
+            mutationFn: (id: number) => customerMissionService.clone(id),
+            onSuccess: data => refresh(data.id),
+            retry: false,
+        }),
+        createFlightSite: useMutation({
+            mutationFn: (data: SavedFlightSiteUpsertInput) => customerMissionService.createFlightSite(data),
+            onSettled: () => client.invalidateQueries({queryKey: [...key, 'flight-sites']}),
+            retry: false,
+        }),
+        deleteFlightSite: useMutation({
+            mutationFn: (id: number) => customerMissionService.deleteFlightSite(id),
+            onSettled: () => client.invalidateQueries({queryKey: [...key, 'flight-sites']}),
+            retry: false,
+        }),
+        upsertReview: useMutation({
+            mutationFn: ({id, data}: { id: number; data: MissionReviewUpsertInput }) =>
+                customerMissionService.upsertReview(id, data),
+            onSettled: (_d, _e, {id}) => refresh(id),
+            retry: false,
+        }),
         upsertPermit: useMutation({
             mutationFn: ({id, data}: { id: number; data: MissionPermitUpsertInput }) =>
                 customerMissionService.upsertPermit(id, data),

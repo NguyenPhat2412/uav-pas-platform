@@ -597,12 +597,12 @@
       "title": "Không thể hiển thị trang",
       "detail": "Vui lòng thử lại.",
       "retry": "Thử lại",
-      "toDashboard": "Về Dashboard"
+      "toDashboard": "Về trang tổng quan"
     },
     "notFound": {
       "title": "Không tìm thấy trang quản trị",
       "detail": "Không tìm thấy trang hoặc tài nguyên.",
-      "back": "Quay về Bảng điều khiển Admin"
+      "back": "Quay về trang tổng quan quản trị"
     },
     "loading": "Đang tải quản trị…",
     "analytics": {
@@ -809,6 +809,9 @@
       "submit": "Phát hành",
       "confirm": "Xác nhận đã nhận tiền",
       "confirmPrompt": "Đã nhận {amount} cho {code}?\nNhập mã giao dịch ngân hàng:",
+      "referenceLabel": "Mã giao dịch ngân hàng / tham chiếu",
+      "referencePlaceholder": "Ví dụ: FT26310998812 hoặc SEPAY-4210",
+      "missionPlaceholder": "Chọn từ nhiệm vụ gần đây hoặc nhập ID",
       "confirmed": "Đã xác nhận thanh toán hóa đơn {code}.",
       "confirmFailed": "Không xác nhận được thanh toán.",
       "downloadPdf": "PDF",

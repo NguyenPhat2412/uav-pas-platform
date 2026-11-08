@@ -309,10 +309,41 @@ test('push registration, forceFail & operations portal routes are wired end to e
         '../src/app/operations/training/[slug].tsx',
         '../src/app/operations/training/lesson/[id].tsx',
         '../src/app/operations/assistant.tsx',
+        '../src/app/operations/admin-quick.tsx',
     ];
     for (const rel of requiredRoutes) {
         assert.equal(existsSync(new URL(rel, import.meta.url)), true, `missing route ${rel}`);
     }
+
+    const uiSource = readFileSync(new URL('../src/components/ui/index.tsx', import.meta.url), 'utf8');
+    assert.match(uiSource, /<OfflineBanner\/>/);
+    assert.match(uiSource, /<KeyboardAvoidingView/);
+
+    const useNotificationsSource = readFileSync(new URL('../src/hooks/notification/useNotifications.ts', import.meta.url), 'utf8');
+    assert.match(useNotificationsSource, /requireOptionalNativeModule/);
+    assert.match(useNotificationsSource, /PUSH_PERMISSION_DENIED/);
+
+    const permitCardSource = readFileSync(new URL('../src/components/mission/MissionPermitCard.tsx', import.meta.url), 'utf8');
+    assert.match(permitCardSource, /@react-native-community\/datetimepicker/);
+    assert.doesNotMatch(permitCardSource, /YYYY-MM-DDTHH:mm/);
+    assert.match(permitCardSource, /onUploadScan/);
+    assert.match(permitCardSource, /onOpenScan/);
+
+    const missionFormSource = readFileSync(new URL('../src/components/mission/MissionFormScreen.tsx', import.meta.url), 'utf8');
+    assert.doesNotMatch(missionFormSource, /\.catch\(\(\)\s*=>\s*undefined\)/);
+    assert.match(missionFormSource, /submitDraftSavedWarning/);
+    assert.match(missionFormSource, /applyFlightWindow/);
+
+    assert.match(opsDetailScreen, /assignStation/);
+    assert.match(opsDetailScreen, /assignUav/);
+    assert.match(opsDetailScreen, /assignOperator/);
+    assert.match(opsDetailScreen, /\['images',\s*'videos'\]/);
+
+    const adminQuickApiSource = readFileSync(new URL('../src/api/admin/admin-quick.api.ts', import.meta.url), 'utf8');
+    assert.match(adminQuickApiSource, /API_ROUTES\.users\.lock/);
+    assert.match(adminQuickApiSource, /API_ROUTES\.users\.unlock/);
+    assert.match(adminQuickApiSource, /API_ROUTES\.billing\.confirmPayment/);
+    assert.match(adminQuickApiSource, /toAirspaceZoneTogglePayload/);
 
     const bannedPattern = /\b(VJU|VNU|tactical|combat)\b|Việt Nhật|ĐHQG|tác chiến|chiến đấu|sĩ quan|chiến thuật|Bản Demo/i;
     for (const locale of ['vi', 'en', 'ja']) {

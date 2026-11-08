@@ -19,7 +19,10 @@
     "phone": "Số điện thoại",
     "username": "Tên đăng nhập",
     "fullName": "Họ và tên",
-    "actions": "Thao tác"
+    "actions": "Thao tác",
+    "hideLesson": "Ẩn bài",
+    "showLesson": "Hiện lại bài",
+    "hideLessonConfirm": "Ẩn bài \"{title}\"? Học viên sẽ không thấy bài này nữa; bạn có thể hiện lại bất cứ lúc nào."
   },
   "shell": {
     "skipToContent": "Bỏ qua tới nội dung",
@@ -258,7 +261,7 @@
   "preview": {
     "title": "Trung tâm điều hành nhiệm vụ UAV PAS",
     "edition": "TRUNG TÂM ĐIỀU HÀNH",
-    "realtimeBadge": "Giám sát 24/7",
+    "realtimeBadge": "Giám sát trực tuyến",
     "syncRtk": "Đồng bộ RTK",
     "openMap": "Mở bản đồ điều hành",
     "officers": "Điều hành viên",
@@ -374,7 +377,7 @@
   },
   "publicFooter": {
     "university": "Điều phối & Vận hành Bay",
-    "description": "Nền tảng điều phối và vận hành nhiệm vụ UAV: lập kế hoạch bay GIS, giám sát telemetry và bàn giao dữ liệu nhiệm vụ an toàn.",
+    "description": "Nền tảng điều phối và vận hành nhiệm vụ UAV: lập kế hoạch bay trên bản đồ số, giám sát thông số chuyến bay và bàn giao dữ liệu nhiệm vụ an toàn.",
     "disclaimer": "Phân quyền độc lập giữa Khách hàng, Trung tâm Điều hành và Quản trị hệ thống; kiểm soát an toàn tiền bay theo quy trình SOP.",
     "exploreHeading": "Sản phẩm & Dịch vụ",
     "services": "Dịch vụ bay UAV",
@@ -384,7 +387,7 @@
     "portalsHeading": "Hệ sinh thái & Đào tạo",
     "customerPortal": "Cổng Khách hàng",
     "operationsPortal": "Trung tâm Điều hành",
-    "adminPortal": "Cổng Quản trị (Admin)",
+    "adminPortal": "Cổng Quản trị",
     "trainingAcademy": "Học viện An toàn bay & SOP",
     "supportHeading": "Hỗ trợ & Pháp lý",
     "about": "Giới thiệu nền tảng",
@@ -604,7 +607,7 @@
   },
   "simulation": {
     "title": "Mô phỏng bay",
-    "subtitle": "UAV giả lập gửi telemetry qua đúng đường dữ liệu của trạm mặt đất thật",
+    "subtitle": "Mô phỏng lộ trình và thông số chuyến bay theo thời gian thực như dữ liệu từ trạm mặt đất",
     "running": "Đang bay mô phỏng",
     "noUav": "Chưa có UAV. Tạo UAV ở mục Đội UAV trước.",
     "route": "Điểm bay",
@@ -627,17 +630,17 @@
     "needRoute": "Thêm điểm bay hoặc sinh lộ trình quét trước.",
     "started": "Đã bắt đầu chuyến bay mô phỏng",
     "failed": "Không thực hiện được lệnh mô phỏng.",
-    "pause": "Dừng",
-    "resume": "Tiếp",
-    "rth": "Về nhà",
+    "pause": "Tạm dừng",
+    "resume": "Tiếp tục",
+    "rth": "Về điểm xuất phát",
     "land": "Hạ cánh",
     "stop": "Kết thúc",
     "events": "Nhật ký chuyến bay",
-    "disclaimer": "Dữ liệu mô phỏng: không điều khiển UAV thật. Có thể thay bằng PX4 SITL qua cùng API telemetry.",
+    "disclaimer": "Chế độ bay diễn tập an toàn: lộ trình và thông số chỉ phục vụ kiểm tra phương án trước chuyến bay, không tác động tới thiết bị bay thực tế.",
     "modes": {
       "TAKEOFF": "Cất cánh",
       "MISSION": "Theo lộ trình",
-      "HOLD": "Dừng tại chỗ",
+      "HOLD": "Tạm dừng giữ vị trí",
       "RETURN_TO_HOME": "Quay về",
       "LANDING": "Hạ cánh",
       "LANDED": "Đã hạ cánh"
@@ -648,7 +651,10 @@
       "battery": "Pin",
       "heading": "Hướng",
       "waypoint": "Điểm",
-      "toHome": "Về nhà"
+      "toHome": "Cách điểm xuất phát",
+      "rtk": "Định vị RTK",
+      "airspace": "Cảnh báo vùng trời",
+      "wind": "Gió / Tốc độ"
     },
     "link": {
       "title": "Đường truyền",
@@ -656,6 +662,37 @@
       "lost": "Mất gói",
       "latency": "Trễ TB",
       "config": "Cấu hình: mất {loss}% · trễ {latency} ms · rào {fence} m"
+    },
+    "windSpeed": "Gió (m/s)",
+    "windDirection": "Hướng gió (°)",
+    "timeScale": "Tốc độ mô phỏng",
+    "rehearseTitle": "Diễn tập nhanh theo nhiệm vụ",
+    "rehearseSelectPlaceholder": "Chọn nhiệm vụ cần bay thử...",
+    "rehearseAction": "Bay diễn tập mô phỏng",
+    "rehearseStarted": "Đã khởi chạy diễn tập cho nhiệm vụ {code}",
+    "openSimulation": "Mở buồng lái mô phỏng",
+    "faultInjection": "Thử nghiệm tình huống sự cố",
+    "faultGps": "Giảm tín hiệu định vị",
+    "faultGpsRestore": "Khôi phục định vị",
+    "faultBattery": "Giảm nhanh 15% pin",
+    "airspaceZonesOverlay": "Hiển thị {count} vùng không phận & NOTAM",
+    "history": {
+      "title": "Nhật ký các phiên bay diễn tập",
+      "empty": "Chưa có phiên diễn tập nào được ghi nhận.",
+      "uav": "UAV",
+      "mission": "Nhiệm vụ",
+      "environment": "Môi trường",
+      "progress": "Tiến độ & Pin",
+      "status": "Kết quả",
+      "outcome": "Tổng kết an toàn",
+      "freeFlight": "Bay tự do"
+    },
+    "runStatus": {
+      "RUNNING": "Đang diễn tập",
+      "COMPLETED": "Hoàn tất an toàn",
+      "FAILSAFE_RTH": "Tự quay về (RTH)",
+      "EMERGENCY_LANDED": "Hạ cánh khẩn",
+      "ABORTED": "Dừng chủ động"
     }
   },
   "airspace": {
@@ -757,6 +794,17 @@
       },
       "errors": {
         "saveFailed": "Không thể cập nhật trạng thái vùng không phận."
+      },
+      "map": {
+        "overviewTitle": "Bản đồ tổng quan vùng không phận",
+        "overviewHint": "Bấm vào vùng trên bản đồ để xem thông tin hoặc mở chỉnh sửa nhanh.",
+        "fitAll": "Thu phóng toàn bộ",
+        "builderTitle": "Bản đồ chấm vẽ trực quan",
+        "circleHint": "Bấm vào bất kỳ vị trí nào trên bản đồ để chọn tâm vùng tròn, sau đó điều chỉnh bán kính.",
+        "polygonHint": "Bấm lần lượt lên bản đồ để chấm các đỉnh đa giác (tối thiểu 3 đỉnh). Danh sách tọa độ bên dưới tự động đồng bộ hai chiều.",
+        "undoVertex": "Xóa đỉnh cuối",
+        "clearVertices": "Xóa toàn bộ đỉnh",
+        "vertexCount": "Đã chấm {count} đỉnh"
       }
     }
   },
@@ -818,6 +866,154 @@
       "saveFailed": "Không thể lưu thông tin giấy phép bay. Vui lòng kiểm tra lại.",
       "uploadFailed": "Không thể tải tệp bản quét lên nhiệm vụ.",
       "verifyFailed": "Không thể cập nhật kết quả thẩm định giấy phép bay."
+    }
+  },
+  "capabilities": {
+    "flightSites": {
+      "title": "Địa điểm & hành lang bay thường dùng",
+      "subtitle": "Áp dụng nhanh khu vực khảo sát, trần độ cao và cấu hình cảm biến đã lưu chỉ bằng 1 chạm.",
+      "empty": "Chưa có địa điểm bay mẫu nào. Nhấn \"Lưu địa điểm hiện tại\" sau khi chọn tọa độ hoặc vẽ vùng bay.",
+      "apply": "Áp dụng",
+      "appliedToast": "Đã nạp cấu hình địa điểm \"{name}\" vào biểu mẫu.",
+      "saveCurrent": "Lưu địa điểm hiện tại",
+      "saveFromMission": "Lưu làm địa điểm mẫu",
+      "savedToast": "Đã lưu địa điểm bay \"{name}\" vào danh mục cá nhân.",
+      "deletedToast": "Đã xóa địa điểm bay đã lưu.",
+      "nameLabel": "Tên gợi nhớ địa điểm",
+      "namePlaceholder": "VD: Điện mặt trời Hòa Lạc - Phân khu B",
+      "saveConfirm": "Lưu mẫu bay",
+      "cancel": "Đóng",
+      "deleteTitle": "Xóa địa điểm bay đã lưu?",
+      "deleteDescription": "Địa điểm \"{name}\" sẽ bị gỡ khỏi danh sách mẫu cá nhân nhưng không ảnh hưởng các nhiệm vụ đã tạo.",
+      "deleteConfirm": "Xóa mẫu",
+      "missingCoords": "Vui lòng chọn điểm cất cánh hoặc vẽ vùng khảo sát trên bản đồ trước khi lưu."
+    },
+    "clone": {
+      "action": "Nhân bản nhiệm vụ",
+      "cloning": "Đang nhân bản...",
+      "successToast": "Đã tạo bản nháp mới {code} cho khung giờ tiếp theo."
+    },
+    "review": {
+      "title": "Nghiệm thu bàn giao & đánh giá chất lượng",
+      "subtitle": "Xác nhận tiếp nhận bộ dữ liệu khảo sát và chấm điểm chất lượng phục vụ cho nhiệm vụ đã hoàn tất.",
+      "opsTitle": "Phản hồi nghiệm thu từ khách hàng",
+      "acceptedBadge": "Đã nghiệm thu bàn giao",
+      "pendingBadge": "Chưa nghiệm thu",
+      "overallRating": "Đánh giá tổng thể",
+      "dataQuality": "Chất lượng dữ liệu ảnh / bản đồ",
+      "timeliness": "Độ đúng hạn bàn giao",
+      "acceptDeliverables": "Tôi xác nhận đã kiểm tra và nghiệm thu bộ dữ liệu bàn giao của nhiệm vụ này",
+      "commentLabel": "Nhận xét chi tiết",
+      "commentPlaceholder": "Độ nét ảnh orthophoto, sai số tọa độ hoặc góp ý quy trình...",
+      "submit": "Lưu nghiệm thu & đánh giá",
+      "update": "Cập nhật đánh giá",
+      "saving": "Đang lưu...",
+      "savedToast": "Đã ghi nhận biên bản nghiệm thu và đánh giá chất lượng.",
+      "emptyOps": "Khách hàng chưa gửi đánh giá nghiệm thu cho nhiệm vụ này."
+    },
+    "smartDispatch": {
+      "title": "Gợi ý điều phối thông minh & chấm điểm xung đột",
+      "subtitle": "Đánh giá tổng hợp theo khoảng cách trạm, dung lượng pin, chu kỳ bảo dưỡng UAV, lịch làm việc của người vận hành và thiết bị sẵn có.",
+      "autoAssign": "Tự động phân bổ tối ưu (1 chạm)",
+      "autoAssigning": "Đang phân bổ tự động...",
+      "autoAssignedToast": "Đã tự động phân bổ tổ hợp nguồn lực tối ưu cho nhiệm vụ.",
+      "allAssigned": "Đã đủ nguồn lực cốt lõi",
+      "recommended": "Đề xuất · {score} điểm",
+      "stationLabel": "Trạm khai thác tối ưu",
+      "uavLabel": "Thiết bị bay (UAV)",
+      "operatorLabel": "Người vận hành",
+      "equipmentLabel": "Thiết bị đi kèm",
+      "distanceKm": "Cách {km} km",
+      "batteryPct": "Pin {pct}%",
+      "maintDays": "{days} ngày từ lần bảo dưỡng",
+      "sameDayLoad": "{count} ca cùng ngày",
+      "completedCount": "{count} ca hoàn tất",
+      "stockCount": "Sẵn có {count} thiết bị",
+      "noCandidate": "Chưa có ứng viên khả dụng không trùng lịch"
+    },
+    "preflight": {
+      "title": "Biên bản an toàn tiền bay số hóa",
+      "subtitle": "Ghi nhận kết quả kiểm tra kỹ thuật trước khi cất cánh phục vụ đối chiếu an toàn bay.",
+      "clearedBadge": "Đủ điều kiện cất cánh",
+      "pendingBadge": "Chưa ký đủ tiêu chuẩn",
+      "signedMeta": "Người ký: {user} · {time}",
+      "checks": {
+        "airframe": "Khung thân, càng đáp & cánh quạt nguyên vẹn, khóa chặt",
+        "battery": "Điện áp các cell pin cân bằng, nhiệt độ ổn định (≥ 25%)",
+        "gnss": "Tín hiệu GNSS / RTK đạt trạng thái khóa ổn định, la bàn không nhiễu",
+        "weather": "Tốc độ gió, tầm nhìn và lượng mưa tại hiện trường nằm trong ngưỡng an toàn",
+        "airspace": "Hành lang bay thông thoáng, giấy phép bay / NOTAM đã đối chiếu hợp lệ"
+      },
+      "batteryPct": "Mức pin đo thực tế (%)",
+      "satellites": "Số vệ tinh GNSS",
+      "windMs": "Gió hiện trường (m/s)",
+      "notes": "Ghi chú kiểm tra hiện trường",
+      "notesPlaceholder": "Tình trạng RTK, chướng ngại vật mới phát sinh hoặc lưu ý cất cánh...",
+      "signButton": "Ký xác nhận biên bản tiền bay",
+      "signing": "Đang lưu biên bản...",
+      "savedToast": "Đã lưu biên bản kiểm tra an toàn tiền bay."
+    },
+    "logbook": {
+      "title": "Sổ nhật ký giờ bay cá nhân",
+      "subtitle": "Tổng hợp thời lượng bay tích lũy, tỷ lệ tuân thủ tiền bay và điểm nghiệm thu từ khách hàng.",
+      "totalHours": "Giờ bay tích lũy",
+      "completedMissions": "Nhiệm vụ hoàn tất",
+      "preflightCompliance": "Tuân thủ tiền bay",
+      "customerRating": "Điểm khách hàng",
+      "noRating": "Chưa có đánh giá"
+    },
+    "notam": {
+      "effectiveFrom": "Hiệu lực từ (NOTAM tạm thời - tùy chọn)",
+      "effectiveUntil": "Hiệu lực đến (NOTAM tạm thời - tùy chọn)",
+      "hint": "Để trống cả hai mốc nếu là vùng cấm/hạn chế bay cố định dài hạn.",
+      "permanent": "Cố định dài hạn",
+      "scheduledBadge": "NOTAM theo lịch",
+      "windowSummary": "{from} → {until}"
+    },
+    "sla": {
+      "title": "Chất lượng điều hành & dự báo bảo trì đội bay",
+      "subtitle": "Phân tích thời gian phản hồi thực tế, bảng xếp hạng chất lượng người vận hành và ma trận rủi ro kỹ thuật UAV.",
+      "kpis": {
+        "confirmTurnaround": "Thời gian duyệt TB",
+        "minutesUnit": "{min} phút",
+        "onTimeRate": "Hoàn tất đúng hạn",
+        "preflightRate": "Tuân thủ tiền bay",
+        "customerRating": "Điểm nghiệm thu KH",
+        "reviewsSub": "{accepted}/{total} ca đã nghiệm thu"
+      },
+      "leaderboardTitle": "Bảng xếp hạng hiệu suất người vận hành",
+      "leaderboardEmpty": "Chưa có dữ liệu người vận hành.",
+      "cols": {
+        "operator": "Người vận hành",
+        "completed": "Hoàn tất",
+        "hours": "Giờ bay",
+        "onTime": "Đúng hạn",
+        "preflight": "Tiền bay",
+        "rating": "Đánh giá"
+      },
+      "riskTitle": "Ma trận dự báo bảo trì phòng ngừa UAV",
+      "riskSummary": "{overdue} quá hạn · {dueSoon} sắp đến hạn",
+      "riskLevels": {
+        "OVERDUE": "Quá ngưỡng chu kỳ",
+        "DUE_SOON": "Sắp đến kỳ bảo dưỡng",
+        "NORMAL": "Ổn định"
+      },
+      "uavCols": {
+        "uav": "UAV / Trạm",
+        "usage": "Khai thác từ kỳ trước",
+        "telemetry": "Pin / Lần cuối",
+        "risk": "Mức rủi ro",
+        "action": "Xử lý phòng ngừa"
+      },
+      "missionsHours": "{missions} ca · {hours} giờ",
+      "daysAgo": "{days} ngày trước",
+      "neverMaintained": "Chưa ghi nhận bảo dưỡng",
+      "openOrderExists": "Đang có phiếu bảo trì",
+      "createPreventiveOrder": "Tạo lệnh bảo trì phòng ngừa",
+      "creatingOrder": "Đang tạo...",
+      "orderCreatedToast": "Đã tạo lệnh bảo trì phòng ngừa cho UAV {serial}.",
+      "recentReviewsTitle": "Biên bản nghiệm thu bàn giao gần đây",
+      "recentReviewsEmpty": "Chưa có biên bản nghiệm thu nào từ khách hàng."
     }
   }
 }

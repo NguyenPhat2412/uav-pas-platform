@@ -1,0 +1,285 @@
+{
+  "adminInfra": {
+    "title": "Hạ tầng",
+    "pages": {
+      "overview": "Tổng quan hạ tầng",
+      "deployment": "Triển khai",
+      "backups": "Sao lưu",
+      "storage": "Lưu trữ tệp",
+      "database": "Cơ sở dữ liệu",
+      "email": "Email"
+    },
+    "nav": {
+      "overview": "Tổng quan",
+      "deployment": "Triển khai",
+      "backups": "Sao lưu",
+      "storage": "Lưu trữ",
+      "database": "Cơ sở dữ liệu",
+      "email": "Email",
+      "health": "Sức khỏe hệ thống"
+    },
+    "common": {
+      "checkedAt": "Kiểm tra lúc {time}",
+      "refresh": "Làm mới",
+      "yes": "Có",
+      "no": "Không",
+      "error": "Lỗi",
+      "notConfigured": "Chưa cấu hình",
+      "durationDays": "{days} ngày {hours} giờ",
+      "durationHours": "{hours} giờ {minutes} phút"
+    },
+    "deployment": {
+      "note": "Chỉ đọc. Triển khai lại qua SSH (DEPLOY.md mục 8).",
+      "banner": "Đang chạy phiên bản {version}",
+      "bannerDetail": "Commit {commit} · Schema Flyway {flyway}",
+      "failedMigrations": "{count} migration thất bại. Kiểm tra log ngay.",
+      "build": "Bản build",
+      "runtime": "Môi trường chạy",
+      "unknownBuildHint": "Chưa gắn phiên bản. Build theo DEPLOY.md mục 8.",
+      "version": "Phiên bản",
+      "commit": "Commit",
+      "buildTime": "Thời điểm build",
+      "profiles": "Profile Spring",
+      "defaultProfile": "mặc định",
+      "java": "Java",
+      "startedAt": "Khởi động lúc",
+      "uptime": "Thời gian chạy",
+      "timeZone": "Múi giờ máy chủ",
+      "publicUrl": "Địa chỉ công khai",
+      "migrations": "Lịch sử migration ({count})",
+      "noMigrations": "Không đọc được lịch sử Flyway.",
+      "colVersion": "Phiên bản",
+      "colDescription": "Mô tả",
+      "colInstalled": "Áp dụng lúc",
+      "colDuration": "Thời gian",
+      "colResult": "Kết quả",
+      "ok": "Thành công",
+      "failed": "Thất bại"
+    },
+    "tls": {
+      "title": "Chứng chỉ HTTPS",
+      "status": {
+        "OK": "Còn hạn",
+        "EXPIRING": "Sắp hết hạn",
+        "EXPIRED": "Đã hết hạn",
+        "NOT_HTTPS": "Không dùng HTTPS",
+        "NOT_CONFIGURED": "Chưa cấu hình",
+        "UNREACHABLE": "Không kết nối được"
+      },
+      "hint": {
+        "OK": "Kiểm tra mỗi giờ. VPS: certbot certificates.",
+        "EXPIRING": "Dưới 14 ngày. Chạy certbot renew --dry-run (mục 10.3).",
+        "EXPIRED": "Đã hết hạn. Gia hạn ngay bằng certbot.",
+        "NOT_HTTPS": "APP_PUBLIC_URL không dùng https.",
+        "NOT_CONFIGURED": "Chưa đặt APP_PUBLIC_URL.",
+        "UNREACHABLE": "Lỗi TLS tới địa chỉ công khai. Thử lại sau 10 phút."
+      },
+      "notAfter": "Hết hạn lúc",
+      "daysLeft": "Số ngày còn lại",
+      "issuer": "Tổ chức cấp",
+      "trusted": "Được tin cậy",
+      "checkedAt": "Kiểm tra lúc"
+    },
+    "backups": {
+      "note": "Chỉ đọc. Không tạo, xóa hay khôi phục từ đây.",
+      "status": {
+        "OK": "Sao lưu đúng hạn",
+        "STALE": "Sao lưu quá hạn",
+        "MISSING": "Không tìm thấy bản sao lưu",
+        "NOT_CONFIGURED": "Chưa cấu hình thư mục sao lưu"
+      },
+      "hint": {
+        "OK": "Bản gần nhất trong {hours} giờ.",
+        "STALE": "Quá {hours} giờ. Kiểm tra cron uav-pas-backup.",
+        "MISSING": "Không có *.sql.gz. Xem DEPLOY.md mục 9, 10.4.",
+        "NOT_CONFIGURED": "Chưa đặt APP_BACKUP_DIR."
+      },
+      "lastSuccess": "Thành công gần nhất",
+      "hoursAgo": "{hours} giờ trước",
+      "fileCount": "Số bản trên VPS",
+      "totalSize": "Tổng dung lượng",
+      "staleAfter": "Ngưỡng quá hạn",
+      "hours": "{hours} giờ",
+      "files": "Bản sao lưu trên VPS",
+      "noFiles": "Chưa có tệp sao lưu nào.",
+      "colName": "Tệp",
+      "colSize": "Dung lượng",
+      "colModified": "Thời điểm",
+      "offsite": "Bản sao ngoài VPS",
+      "offsiteUnknown": "Ứng dụng không thấy",
+      "offsiteTarget": "Nơi lưu",
+      "offsiteHint": "Kiểm tra: rclone ls r2backup:uavpas-backups/db/.",
+      "restore": "Khôi phục",
+      "restoreHint": "Chỉ qua SSH, thử DB tạm trước (mục 9.4)."
+    },
+    "storage": {
+      "note": "Ẩn endpoint và khóa. Số liệu đệm 10 phút.",
+      "reachable": {
+        "UP": "Kho tệp {provider} hoạt động",
+        "DOWN": "Không kết nối được kho tệp {provider}",
+        "UNKNOWN": "Không xác định được trạng thái kho tệp {provider}"
+      },
+      "usageError": "Không liệt kê được bucket ({error}).",
+      "cleanupWarn": "Có tệp dọn quá hạn hoặc đang thử lại.",
+      "provider": "Nhà cung cấp: {provider}",
+      "bucket": "Dung lượng bucket",
+      "truncated": "Quá nhiều đối tượng; số liệu là tối thiểu.",
+      "cacheHint": "Tính cả tệp chưa xác nhận.",
+      "objects": "Số đối tượng",
+      "totalSize": "Tổng dung lượng",
+      "mediaBytes": "Tệp đã xác nhận",
+      "mediaBytesHint": "theo cơ sở dữ liệu",
+      "providerLabel": "Nhà cung cấp",
+      "media": "Vòng đời tệp media",
+      "attention": "Cần chú ý",
+      "mediaHint": "Quá hạn: trễ hơn 1 giờ so với lịch dọn.",
+      "confirmed": "Đã xác nhận",
+      "awaitingUpload": "Đang chờ tải lên",
+      "expiredUploads": "Tải lên hết hạn",
+      "purged": "Đã dọn khỏi kho",
+      "pendingCleanup": "Chờ dọn",
+      "cleanupOverdue": "Dọn quá hạn",
+      "cleanupRetrying": "Đang thử dọn lại"
+    },
+    "database": {
+      "note": "Làm mới mỗi 30 giây. Ẩn chuỗi kết nối.",
+      "banner": "PostgreSQL {version}",
+      "bannerDetail": "Dung lượng {size} · {used}/{max} kết nối",
+      "connections": "Kết nối",
+      "active": "Đang chạy truy vấn",
+      "idle": "Rảnh",
+      "idleInTransaction": "Treo trong giao dịch",
+      "usage": "Đã dùng / tối đa",
+      "pool": "Pool kết nối (Hikari)",
+      "poolHint": "Có luồng chờ: pool đầy hoặc truy vấn chậm.",
+      "poolUnavailable": "Không đọc được số liệu pool.",
+      "poolActive": "Đang dùng / tối đa",
+      "poolIdle": "Rảnh",
+      "poolTotal": "Tổng",
+      "poolWaiting": "Luồng đang chờ",
+      "tables": "10 bảng lớn nhất",
+      "rowsHint": "Số dòng ước tính, cập nhật theo autovacuum.",
+      "colTable": "Bảng",
+      "colSize": "Dung lượng (gồm index)",
+      "colRows": "Số dòng (ước tính)"
+    },
+    "email": {
+      "note": "Ẩn SMTP. Sửa .env.production rồi tạo lại backend.",
+      "connection": {
+        "UP": "Máy chủ gửi thư kết nối được",
+        "DOWN": "Không kết nối được máy chủ gửi thư",
+        "DISABLED": "Gửi email đang tắt",
+        "UNKNOWN": "Chưa xác định được kết nối gửi thư"
+      },
+      "enabledDetail": "Gửi OTP, 2FA và đặt lại mật khẩu.",
+      "disabledDetail": "APP_MAIL_ENABLED=false: không gửi OTP.",
+      "config": "Cấu hình",
+      "configHint": "Máy chủ và tài khoản chỉ hiện có/không.",
+      "enabled": "Bật gửi email",
+      "hostConfigured": "Đã đặt máy chủ SMTP",
+      "usernameConfigured": "Đã đặt tài khoản SMTP",
+      "port": "Cổng",
+      "from": "Địa chỉ gửi",
+      "connectionTitle": "Kiểm tra kết nối",
+      "connectionStatus": {
+        "UP": "Kết nối được",
+        "DOWN": "Lỗi",
+        "DISABLED": "Đang tắt",
+        "UNKNOWN": "Không rõ"
+      },
+      "connectionHint": "Chỉ đăng nhập SMTP, không gửi. Đệm 5 phút.",
+      "lastProbe": "Kiểm tra gần nhất",
+      "testTitle": "Gửi email thử",
+      "testHint": "Gửi tới email của bạn; mỗi {seconds} giây một lần.",
+      "testRecipient": "Người nhận: {email}",
+      "noRecipient": "Tài khoản của bạn chưa có email.",
+      "sending": "Đang gửi…",
+      "send": "Gửi email thử",
+      "testDisabled": "Bật APP_MAIL_ENABLED để gửi thử.",
+      "testSent": "Đã gửi tới {email} lúc {time}. Xem cả spam.",
+      "testFailed": "Gửi thất bại ({error}). Xem log backend."
+    },
+    "overview": {
+      "deploymentSummary": "{version} · {commit} · HTTPS: {tls}",
+      "cards": {
+        "deployment": "Phiên bản, migration, chứng chỉ HTTPS.",
+        "backups": "Bản pg_dump hằng ngày, lần gần nhất.",
+        "storage": "Dung lượng R2, hàng đợi dọn media.",
+        "database": "Kết nối, pool, bảng lớn nhất.",
+        "email": "Cấu hình SMTP, kiểm tra, gửi thử.",
+        "health": "Sức khỏe mọi thành phần, mỗi 30 giây."
+      },
+      "runbookTitle": "Chỉ làm qua SSH",
+      "runbook": {
+        "restart": {
+          "title": "Khởi động lại / triển khai",
+          "how": "docker compose … up -d --build (mục 8)"
+        },
+        "logs": {
+          "title": "Xem log",
+          "how": "docker compose … logs --tail 200 backend"
+        },
+        "restore": {
+          "title": "Khôi phục database",
+          "how": "Thử DB tạm trước (mục 9.4)"
+        },
+        "certbot": {
+          "title": "Gia hạn chứng chỉ",
+          "how": "certbot renew --dry-run (mục 10.3)"
+        },
+        "secrets": {
+          "title": "Đổi bí mật",
+          "how": "Sửa .env.production, tạo lại container"
+        },
+        "uptime": {
+          "title": "Cảnh báo sập",
+          "how": "Giám sát ngoài /actuator/health (mục 10.1)"
+        }
+      }
+    },
+    "health": {
+      "component": {
+        "mail": "Email",
+        "backups": "Sao lưu",
+        "tls": "Chứng chỉ HTTPS"
+      },
+      "status": {
+        "DISABLED": "Đang tắt"
+      },
+      "detail": {
+        "error": "Lỗi",
+        "checkedAt": "Kiểm tra lúc",
+        "backupState": "Trạng thái",
+        "files": "Số bản",
+        "hoursSinceLast": "Giờ kể từ lần cuối",
+        "certificate": "Chứng chỉ",
+        "daysLeft": "Ngày còn lại",
+        "trusted": "Được tin cậy",
+        "bankTransfer": "Chuyển khoản ngân hàng",
+        "bank": "Ngân hàng nhận"
+      },
+      "hint": {
+        "mail": {
+          "DOWN": "Lỗi SMTP: không gửi được OTP. Xem Hạ tầng → Email.",
+          "DISABLED": "Email đang tắt (APP_MAIL_ENABLED=false).",
+          "UNKNOWN": "Không kiểm tra được SMTP."
+        },
+        "backups": {
+          "DEGRADED": "Sao lưu quá hạn hoặc thiếu. Xem Hạ tầng → Sao lưu.",
+          "DOWN": "Không đọc được thư mục sao lưu.",
+          "UNKNOWN": "Chưa đặt APP_BACKUP_DIR."
+        },
+        "tls": {
+          "DEGRADED": "Chứng chỉ dưới 14 ngày hoặc không tin cậy. Kiểm tra certbot.",
+          "DOWN": "Chứng chỉ HTTPS đã hết hạn.",
+          "UNKNOWN": "Không kiểm tra được chứng chỉ (APP_PUBLIC_URL, https)."
+        },
+        "payments": {
+          "DEGRADED": "Chưa có tài khoản nhận. Nhập ở Cấu hình → Thanh toán.",
+          "DOWN": "Không đọc được cấu hình thanh toán.",
+          "UNKNOWN": "Chưa kiểm tra được cấu hình thanh toán."
+        }
+      }
+    }
+  }
+}

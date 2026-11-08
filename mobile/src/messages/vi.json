@@ -25,7 +25,8 @@
     },
     "status": {
       "offlineTitle": "Chưa kết nối được máy chủ",
-      "offlineHint": "Kiểm tra mạng rồi thử lại. Phiên đăng nhập của bạn vẫn được giữ."
+      "offlineHint": "Kiểm tra mạng rồi thử lại. Phiên đăng nhập của bạn vẫn được giữ.",
+      "offlineBanner": "Đang ngoại tuyến — kiểm tra kết nối mạng thực địa."
     },
     "nav": {
       "missionDetail": "Chi tiết nhiệm vụ",
@@ -55,16 +56,20 @@
       "switchToCustomer": "Mở cổng Khách hàng"
     },
     "push": {
-      "title": "Thông báo đẩy trên thiết bị",
+      "title": "Thông báo trên thiết bị",
       "active": "Đang bật",
       "inactive": "Chưa đăng ký",
-      "hint": "Nhận cảnh báo nhiệm vụ, phê duyệt phép bay, phát hiện mục tiêu SAR và thanh toán ngay trên iPhone này.",
-      "endpointLabel": "Định danh đẩy Expo của thiết bị",
+      "hint": "Nhận cảnh báo nhiệm vụ, phê duyệt phép bay, phát hiện mục tiêu cứu nạn và thanh toán ngay trên điện thoại này.",
+      "endpointLabel": "Mã nhận thông báo của thiết bị",
+      "endpointPlaceholder": "Nhập mã nhận thông báo của thiết bị...",
       "enableButton": "Bật thông báo thiết bị này",
       "customButton": "Nhập thủ công",
       "disableButton": "Ngắt thông báo trên thiết bị này",
-      "registered": "Đã đăng ký nhận thông báo đẩy trên thiết bị này.",
-      "unregistered": "Đã hủy nhận thông báo đẩy trên thiết bị này."
+      "registered": "Đã đăng ký nhận thông báo trên thiết bị này.",
+      "unregistered": "Đã tắt thông báo trên thiết bị này.",
+      "permissionDenied": "Quyền thông báo đang tắt. Hãy bật trong Cài đặt để nhận cảnh báo kịp thời.",
+      "openSettings": "Mở Cài đặt",
+      "simulatorNotice": "Thiết bị đang ở chế độ mô phỏng nên sử dụng mã nhận thông báo tạm thời."
     },
     "permit": {
       "title": "Hồ sơ phép bay",
@@ -75,6 +80,10 @@
       "validUntil": "Hiệu lực đến",
       "ceiling": "Trần bay được cấp",
       "note": "Ghi chú thẩm định",
+      "scanAttachment": "Bản scan giấy phép",
+      "noScan": "Chưa đính kèm tệp",
+      "uploadScan": "Tải ảnh / bản scan lên",
+      "openScan": "Xem bản scan giấy phép",
       "verifiedBy": "Xác minh bởi {actor}",
       "emptyHint": "Chưa có thông tin giấy phép bay. Bổ sung số giấy phép và thời hạn để điều phối thẩm định trước khi cất cánh.",
       "submitAction": "Khai báo giấy phép bay",
@@ -113,7 +122,11 @@
       "saveDraft": "Lưu nháp",
       "saved": "Đã lưu yêu cầu.",
       "submitted": "Đã gửi yêu cầu để điều phối xác nhận.",
+      "submitDraftSavedWarning": "Đã lưu bản nháp nhưng chưa gửi duyệt được:",
       "tapMap": "Chạm vào bản đồ để chọn điểm bay.",
+      "preservedGeometry": "Hành lang vùng bay đã vẽ trên web được giữ nguyên. Chạm bản đồ để cập nhật điểm cất cánh.",
+      "safeWindowsTitle": "Khung giờ bay an toàn gợi ý",
+      "windowApplied": "Đã áp dụng khung giờ bay an toàn.",
       "filters": {
         "all": "Tất cả",
         "draft": "Bản nháp",
@@ -128,9 +141,11 @@
       "title": "Tệp & ảnh",
       "camera": "Chụp ảnh",
       "library": "Chọn ảnh",
+      "libraryMedia": "Chọn ảnh / video",
       "empty": "Chưa có tệp nào.",
       "permissionDenied": "Chưa được cấp quyền. Bật trong Cài đặt > UAV PAS.",
       "uploaded": "Đã tải ảnh lên.",
+      "uploadedMedia": "Đã tải tệp hiện trường lên.",
       "uploadFailed": "Chưa tải được ảnh lên. Hãy thử lại."
     },
     "notifications": {
@@ -220,7 +235,7 @@
         "MISSION_PLANNING": "Khởi tạo & tọa độ bay",
         "SAFETY_COMPLIANCE": "An toàn bãi đáp & hành lang",
         "DATA_DELIVERABLES": "Nghiệm thu dữ liệu & AI",
-        "BILLING_SLA": "Hạn mức & đối soát SLA"
+        "BILLING_SLA": "Hạn mức & chất lượng dịch vụ"
       }
     },
     "ops": {
@@ -286,8 +301,8 @@
         "mapTitle": "Bản đồ tìm kiếm & phát hiện AI",
         "mapLegend": "Ghim đỏ: LKP / UAV / mục tiêu đã xác minh · Vòng cam: bán kính trôi dạt · Vùng xám: khu vực quét.",
         "homeStation": "Trạm căn cứ",
-        "hudTitle": "Thông số UAV & nút xử lý AI biên",
-        "aiNodeLine": "Nút AI: {node} · {fps} FPS · độ trễ suy luận {latency} ms",
+        "hudTitle": "Thông số UAV & thiết bị xử lý AI",
+        "aiNodeLine": "Thiết bị AI: {node} · {fps} khung hình/giây · độ trễ {latency} ms",
         "detectionsTitle": "Mục tiêu do AI phát hiện",
         "noDetections": "Chưa ghi nhận phát hiện mục tiêu nào từ luồng ảnh UAV.",
         "verifiedBadge": "Đã xác minh",
@@ -370,6 +385,57 @@
           "COMPLETED": "Đã hoàn tất",
           "CANCELLED": "Đã hủy"
         }
+      },
+      "dispatch": {
+        "title": "Điều phối trạm, UAV & người vận hành",
+        "station": "Trạm mặt đất",
+        "uav": "Thiết bị bay UAV",
+        "operator": "Người vận hành",
+        "unassigned": "Chưa phân công",
+        "assignStation": "Gán trạm",
+        "assignUav": "Gán UAV",
+        "assignOperator": "Gán người vận hành",
+        "assignedToast": "Đã cập nhật phân công tài nguyên bay."
+      }
+    },
+    "adminQuick": {
+      "title": "Quản trị nhanh",
+      "entryLabel": "Quản trị nhanh (Tài khoản · Hóa đơn · Vùng trời)",
+      "noPermission": "Tài khoản này không có quyền quản trị nhanh.",
+      "tabs": {
+        "users": "Tài khoản",
+        "invoices": "Hóa đơn chờ",
+        "airspace": "Vùng trời",
+        "sla": "Hiệu suất"
+      },
+      "users": {
+        "searchPlaceholder": "Tìm theo họ tên, tên đăng nhập hoặc email…",
+        "empty": "Không tìm thấy tài khoản phù hợp.",
+        "lock": "Khóa tài khoản",
+        "unlock": "Mở khóa",
+        "lockedBadge": "Đã khóa",
+        "activeBadge": "Hoạt động",
+        "lockConfirmTitle": "Khóa tài khoản {username}?",
+        "lockConfirmBody": "Người dùng sẽ bị thu hồi phiên đăng nhập ngay lập tức.",
+        "unlockConfirmTitle": "Mở khóa tài khoản {username}?",
+        "unlockConfirmBody": "Người dùng sẽ có thể đăng nhập trở lại hệ thống.",
+        "lockedToast": "Đã khóa tài khoản {username}.",
+        "unlockedToast": "Đã mở khóa tài khoản {username}."
+      },
+      "invoices": {
+        "empty": "Không có hóa đơn nào đang chờ đối soát.",
+        "refLabel": "Mã giao dịch ngân hàng",
+        "refPlaceholder": "VD: FT26310...",
+        "confirmButton": "Xác nhận đã thu tiền",
+        "confirmedToast": "Đã xác nhận thanh toán hóa đơn {code}."
+      },
+      "airspace": {
+        "empty": "Chưa có vùng trời nào được cấu hình.",
+        "activeBadge": "Đang hiệu lực",
+        "inactiveBadge": "Tạm tắt",
+        "activate": "Bật hiệu lực vùng trời",
+        "deactivate": "Tạm ngắt hiệu lực",
+        "toggledToast": "Đã cập nhật trạng thái vùng trời {code}."
       }
     }
   }

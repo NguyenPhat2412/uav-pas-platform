@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run production and complete npm audits without suppressions or automatic fixes."""
 import argparse,json,pathlib,subprocess,sys
-p=argparse.ArgumentParser();p.add_argument('--frontend',type=pathlib.Path,default=pathlib.Path('frontend'));p.add_argument('--output',type=pathlib.Path,required=True);a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
+p=argparse.ArgumentParser();p.add_argument('--frontend',type=pathlib.Path,default=pathlib.Path('customer'));p.add_argument('--output',type=pathlib.Path,required=True);a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
 summary=[]
 for tree,folder in [('application',a.frontend)]:
     for scope,flags in [('production',['--omit=dev']),('all',[])]:

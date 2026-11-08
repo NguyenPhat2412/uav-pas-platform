@@ -25,7 +25,8 @@
     },
     "status": {
       "offlineTitle": "サーバーに接続できません",
-      "offlineHint": "接続を確認して再試行してください。ログイン状態は保持されています。"
+      "offlineHint": "接続を確認して再試行してください。ログイン状態は保持されています。",
+      "offlineBanner": "オフラインです — 現場のネットワーク接続を確認してください。"
     },
     "nav": {
       "missionDetail": "ミッション詳細",
@@ -55,16 +56,20 @@
       "switchToCustomer": "顧客ポータルを開く"
     },
     "push": {
-      "title": "端末のプッシュ通知",
+      "title": "端末の通知設定",
       "active": "有効",
       "inactive": "未登録",
-      "hint": "ミッション更新、飛行許可の承認、SAR目標検知、入金確認をこのiPhoneで受け取ります。",
-      "endpointLabel": "Expoプッシュ識別子",
+      "hint": "ミッション更新、飛行許可の承認、救助目標の検知、入金確認をこの端末で受け取ります。",
+      "endpointLabel": "端末の通知識別コード",
+      "endpointPlaceholder": "端末の通知識別コードを入力...",
       "enableButton": "この端末の通知を有効化",
       "customButton": "手動入力",
       "disableButton": "この端末の通知を解除",
-      "registered": "この端末のプッシュ通知を登録しました。",
-      "unregistered": "この端末のプッシュ通知を解除しました。"
+      "registered": "この端末の通知を登録しました。",
+      "unregistered": "この端末の通知を解除しました。",
+      "permissionDenied": "通知許可がオフになっています。設定から通知を有効にしてください。",
+      "openSettings": "設定を開く",
+      "simulatorNotice": "シミュレータ環境のため、一時的な通知識別コードを使用しています。"
     },
     "permit": {
       "title": "飛行許可証",
@@ -75,6 +80,10 @@
       "validUntil": "有効終了",
       "ceiling": "許可高度上限",
       "note": "審査メモ",
+      "scanAttachment": "許可証スキャン添付",
+      "noScan": "添付ファイルなし",
+      "uploadScan": "許可証画像をアップロード",
+      "openScan": "許可証スキャンを開く",
       "verifiedBy": "{actor} が確認済み",
       "emptyHint": "飛行許可情報が未登録です。離陸前の審査のため、許可番号と有効期間を入力してください。",
       "submitAction": "飛行許可を登録",
@@ -113,7 +122,11 @@
       "saveDraft": "下書き保存",
       "saved": "依頼を保存しました。",
       "submitted": "確認のため依頼を送信しました。",
+      "submitDraftSavedWarning": "下書きとして保存しましたが、送信できませんでした:",
       "tapMap": "地図をタップして飛行地点を選択します。",
+      "preservedGeometry": "Webで描画した飛行エリア形状は保持されます。地図をタップすると離陸地点を更新します。",
+      "safeWindowsTitle": "推奨される安全な飛行時間帯",
+      "windowApplied": "推奨される飛行時間帯を適用しました。",
       "filters": {
         "all": "すべて",
         "draft": "下書き",
@@ -128,9 +141,11 @@
       "title": "ファイルと写真",
       "camera": "写真を撮る",
       "library": "写真を選ぶ",
+      "libraryMedia": "写真・動画を選ぶ",
       "empty": "ファイルはまだありません。",
       "permissionDenied": "許可されていません。設定 > UAV PAS で有効にしてください。",
       "uploaded": "写真をアップロードしました。",
+      "uploadedMedia": "現場メディアをアップロードしました。",
       "uploadFailed": "写真をアップロードできませんでした。もう一度お試しください。"
     },
     "notifications": {
@@ -220,7 +235,7 @@
         "MISSION_PLANNING": "ミッション作成と座標",
         "SAFETY_COMPLIANCE": "離着陸場と飛行回廊の安全",
         "DATA_DELIVERABLES": "データ検収とAI",
-        "BILLING_SLA": "利用枠とSLA照合"
+        "BILLING_SLA": "利用枠とサービス品質"
       }
     },
     "ops": {
@@ -370,6 +385,57 @@
           "COMPLETED": "完了",
           "CANCELLED": "キャンセル"
         }
+      },
+      "dispatch": {
+        "title": "リソース手配（地上局・UAV・オペレーター）",
+        "station": "地上ステーション",
+        "uav": "担当UAV機体",
+        "operator": "担当オペレーター",
+        "unassigned": "未割当",
+        "assignStation": "地上局を割当",
+        "assignUav": "UAVを割当",
+        "assignOperator": "オペレーターを割当",
+        "assignedToast": "ミッションのリソース割当を更新しました。"
+      }
+    },
+    "adminQuick": {
+      "title": "クイック管理コンソール",
+      "entryLabel": "クイック管理（アカウント・請求・空域）",
+      "noPermission": "このアカウントにはクイック管理権限がありません。",
+      "tabs": {
+        "users": "アカウント",
+        "invoices": "未入金請求書",
+        "airspace": "空域ゾーン",
+        "sla": "運航品質"
+      },
+      "users": {
+        "searchPlaceholder": "氏名・ユーザー名・メールで検索…",
+        "empty": "一致するアカウントが見つかりません。",
+        "lock": "アカウントをロック",
+        "unlock": "ロック解除",
+        "lockedBadge": "ロック中",
+        "activeBadge": "有効",
+        "lockConfirmTitle": "アカウント {username} をロックしますか？",
+        "lockConfirmBody": "このユーザーの有効なセッションは直ちに失効します。",
+        "unlockConfirmTitle": "アカウント {username} のロックを解除しますか？",
+        "unlockConfirmBody": "ユーザーは再びシステムにログインできるようになります。",
+        "lockedToast": "アカウント {username} をロックしました。",
+        "unlockedToast": "アカウント {username} のロックを解除しました。"
+      },
+      "invoices": {
+        "empty": "照合待ちの未入金請求書はありません。",
+        "refLabel": "銀行振込参照番号",
+        "refPlaceholder": "例: FT26310...",
+        "confirmButton": "入金を確認",
+        "confirmedToast": "請求書 {code} の入金を確認しました。"
+      },
+      "airspace": {
+        "empty": "設定された空域ゾーンはありません。",
+        "activeBadge": "有効",
+        "inactiveBadge": "無効",
+        "activate": "空域を有効化",
+        "deactivate": "空域を無効化",
+        "toggledToast": "空域ゾーン {code} の状態を更新しました。"
       }
     }
   }

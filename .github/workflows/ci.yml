@@ -14,25 +14,29 @@ permissions:
 
 jobs:
   frontend-foundation:
-    name: Web Frontend (Lint, Types, Architecture & Build)
+    name: Web Portal (${{ matrix.portal }}) — Lint, Types, Architecture & Build
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        portal: [customer, operations, admin]
     defaults:
       run:
-        working-directory: frontend
+        working-directory: ${{ matrix.portal }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: ${{ matrix.portal }}/package-lock.json
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run architecture:check
       - name: Run Architecture & API Contract Tests
-        run: npm run test:contracts
+        run: npm test
       - run: npm run build
 
   mobile-foundation:
@@ -137,10 +141,10 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: |
-            frontend/package-lock.json
-      - run: npm ci --prefix frontend
-      - name: Audit the single application; full dev findings fail visibly
-        run: python3 backend/infra/ci/audit.py --output docs/work/audit-safe
+            customer/package-lock.json
+      - run: npm ci --prefix customer
+      - name: Audit the application; full dev findings fail visibly
+        run: python3 backend/infra/ci/audit.py --frontend customer --output docs/work/audit-safe
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -159,17 +163,17 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: |
-            frontend/package-lock.json
+            customer/package-lock.json
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
           cache: maven
-      - run: npm ci --prefix frontend
+      - run: npm ci --prefix customer
       - run: npx --no-install playwright install --with-deps chromium
-        working-directory: frontend
+        working-directory: customer
       - name: Build and run isolated browser suite
-        run: python3 backend/infra/ci/run.py --project uav-ci-browser --work-dir docs/work/browser-private --result-dir docs/work/browser-safe
+        run: python3 backend/infra/ci/run.py --frontend customer --project uav-ci-browser --work-dir docs/work/browser-private --result-dir docs/work/browser-safe
       - name: Cleanup owned resources even if the runner is interrupted
         if: always()
         run: |

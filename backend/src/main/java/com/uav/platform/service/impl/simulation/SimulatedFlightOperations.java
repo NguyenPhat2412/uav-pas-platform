@@ -8,22 +8,21 @@ import com.uav.platform.dto.request.uav.TelemetryReportRequest;
 import com.uav.platform.enums.simulation.SimCommand;
 import com.uav.platform.enums.simulation.SimEventLevel;
 import com.uav.platform.enums.simulation.SimFlightMode;
+import com.uav.platform.enums.simulation.SimRunStatus;
 
 import java.time.LocalDateTime;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
- * One simulated UAV: a point-mass flight model with a flight-mode state machine, a battery model,
- * the usual fail-safes (low battery return, critical battery landing, geofence breach return) and a
- * lossy, delayed telemetry link.
- *
- * <p>It plays the part a PX4 SITL vehicle and its ground-station bridge would play: every step it
- * produces the same {@link TelemetryReportRequest} a real gateway posts to the platform, so the rest of
- * the system cannot tell the difference. Not thread-safe; the owning service serialises access.
+ * One simulated UAV: a point-mass flight model with wind resistance, flight-mode state machine,
+ * battery discharge model, civil airspace / geofence fail-safes, fault injection, and a lossy,
+ * delayed telemetry link.
  */
 public final class SimulatedFlightOperations {
     static final double CLIMB_RATE_MS = 3.0;
@@ -38,16 +37,25 @@ public final class SimulatedFlightOperations {
     private final Long missionId;
     private final List<List<Double>> waypoints;
     private final double homeLat, homeLng;
+    private final double startBatteryPct;
     private final SimFlightSettings settings;
     private final Random random;
     private final LocalDateTime startedAt;
 
+    private Long runLogId;
+    private String missionCode;
     private double lat, lng, altitude, speed, heading, battery;
     private SimFlightMode mode = SimFlightMode.TAKEOFF;
     private SimFlightMode resumeMode = SimFlightMode.MISSION;
     private int nextWaypoint;
     private double distanceFlown, elapsedSeconds;
     private boolean batteryWarned, geofenceTripped;
+    private boolean failsafeRthTriggered, emergencyLandTriggered;
+    private boolean gpsDegraded;
+    private int airspaceBreaches;
+    private String lastRtkStatus = "FIXED";
+    private int lastSatelliteCount = 18;
+    private final Set<Long> breachedZoneIds = new HashSet<>();
 
     private final Deque<SimPendingSample> outbox = new ArrayDeque<>();
     private final Deque<List<Double>> track = new ArrayDeque<>();
@@ -69,6 +77,7 @@ public final class SimulatedFlightOperations {
         this.waypoints = List.copyOf(waypoints);
         this.homeLat = homeLat;
         this.homeLng = homeLng;
+        this.startBatteryPct = batteryPct;
         this.settings = settings;
         this.random = random;
         this.startedAt = now;
@@ -76,10 +85,18 @@ public final class SimulatedFlightOperations {
         this.lng = homeLng;
         this.battery = batteryPct;
         track.add(List.of(lat, lng));
+        String windNote =
+                settings.windSpeedMs() > 0
+                        ? " · gió "
+                                + Math.round(settings.windSpeedMs() * 10) / 10.0
+                                + " m/s ("
+                                + Math.round(settings.windDirectionDeg())
+                                + "°)"
+                        : "";
         log(
                 now,
                 SimEventLevel.INFO,
-                "Cất cánh tới độ cao " + Math.round(settings.altitudeMeters()) + " m");
+                "Cất cánh tới độ cao " + Math.round(settings.altitudeMeters()) + " m" + windNote);
     }
 
     /** Advances the model by {@code dt} seconds and queues the telemetry sample of this instant. */
@@ -112,7 +129,7 @@ public final class SimulatedFlightOperations {
         return ready;
     }
 
-    /** Applies an operator command; throws {@link IllegalStateException} when the phase does not allow it. */
+    /** Applies an operator command or fault injection trigger. */
     public void command(SimCommand command, LocalDateTime now) {
         switch (command) {
             case PAUSE -> {
@@ -120,7 +137,7 @@ public final class SimulatedFlightOperations {
                     throw new IllegalStateException("SIM_COMMAND_NOT_ALLOWED");
                 resumeMode = mode;
                 mode = SimFlightMode.HOLD;
-                log(now, SimEventLevel.INFO, "Dừng tại chỗ (HOLD) theo lệnh điều hành");
+                log(now, SimEventLevel.INFO, "Tạm dừng giữ vị trí theo lệnh điều hành");
             }
             case RESUME -> {
                 if (mode != SimFlightMode.HOLD)
@@ -146,6 +163,61 @@ public final class SimulatedFlightOperations {
                 mode = SimFlightMode.LANDING;
                 log(now, SimEventLevel.WARNING, "Hạ cánh tại chỗ theo lệnh điều hành");
             }
+            case SIMULATE_GPS_DEGRADE -> {
+                if (mode == SimFlightMode.LANDED)
+                    throw new IllegalStateException("SIM_COMMAND_NOT_ALLOWED");
+                gpsDegraded = !gpsDegraded;
+                if (gpsDegraded) {
+                    lastRtkStatus = "SINGLE";
+                    lastSatelliteCount = 6;
+                    log(
+                            now,
+                            SimEventLevel.WARNING,
+                            "Thử nghiệm suy giảm tín hiệu định vị: mất khóa chính xác cao (RTK)");
+                } else {
+                    lastRtkStatus = "FIXED";
+                    lastSatelliteCount = 18;
+                    log(
+                            now,
+                            SimEventLevel.INFO,
+                            "Đã khôi phục tín hiệu định vị chính xác cao (RTK)");
+                }
+            }
+            case SIMULATE_BATTERY_DROP -> {
+                if (mode == SimFlightMode.LANDED)
+                    throw new IllegalStateException("SIM_COMMAND_NOT_ALLOWED");
+                battery = Math.max(5.0, battery - 15.0);
+                log(
+                        now,
+                        SimEventLevel.WARNING,
+                        "Thử nghiệm giảm nhanh 15% pin: dung lượng còn "
+                                + Math.round(battery)
+                                + "%");
+                checkFailsafes(now);
+            }
+        }
+    }
+
+    /** Records an airspace / NOTAM violation and triggers automatic RTH if blocking while airborne. */
+    public void notifyAirspaceViolation(
+            long zoneId, String code, String name, boolean blocking, LocalDateTime now) {
+        if (!breachedZoneIds.add(zoneId)) return;
+        airspaceBreaches++;
+        boolean airborne = mode != SimFlightMode.LANDING && mode != SimFlightMode.LANDED;
+        if (blocking && airborne) {
+            failsafeRthTriggered = true;
+            if (mode != SimFlightMode.RETURN_TO_HOME) {
+                mode = SimFlightMode.RETURN_TO_HOME;
+            }
+            log(
+                    now,
+                    SimEventLevel.CRITICAL,
+                    "Xâm phạm vùng cấm/NOTAM " + code + " (" + name + "): tự động quay về (RTH)");
+        } else {
+            log(
+                    now,
+                    SimEventLevel.WARNING,
+                    "Đi vào vùng lưu ý không phận " + code + " (" + name + ")");
         }
     }
 
@@ -195,11 +267,12 @@ public final class SimulatedFlightOperations {
         }
     }
 
-    /** Moves toward the target at cruise speed; true once it is reached within this step. */
+    /** Moves toward the target accounting for wind headwind/tailwind component when configured. */
     private boolean moveToward(double targetLat, double targetLng, double dt) {
         double distance = SurveyPatternOperations.haversine(lat, lng, targetLat, targetLng);
-        double step = settings.cruiseSpeedMs() * dt;
         if (distance > 0.01) heading = bearing(lat, lng, targetLat, targetLng);
+        double effectiveSpeed = effectiveGroundSpeed(heading);
+        double step = effectiveSpeed * dt;
         if (distance <= step) {
             distanceFlown += distance;
             lat = targetLat;
@@ -217,14 +290,27 @@ public final class SimulatedFlightOperations {
                                 / (SurveyPatternOperations.EARTH_RADIUS_M
                                         * Math.cos(Math.toRadians(lat))));
         distanceFlown += step;
-        speed = settings.cruiseSpeedMs();
+        speed = effectiveSpeed;
         addTrack();
         return false;
     }
 
-    /** Hover costs about 3 %/min; forward flight and climbing add to it (a 15–20 min multirotor). */
+    private double effectiveGroundSpeed(double trackBearingDeg) {
+        if (settings.windSpeedMs() <= 0) return settings.cruiseSpeedMs();
+        // Wind direction is meteorological (blowing FROM windDirectionDeg -> TOWARD +180 deg).
+        double windToDeg = (settings.windDirectionDeg() + 180.0) % 360.0;
+        double alongTrackWind =
+                0.45
+                        * settings.windSpeedMs()
+                        * Math.cos(Math.toRadians(windToDeg - trackBearingDeg));
+        double minForward = Math.max(1.5, settings.cruiseSpeedMs() * 0.35);
+        return Math.max(minForward, Math.min(28.0, settings.cruiseSpeedMs() + alongTrackWind));
+    }
+
+    /** Hover costs ~3 %/min; forward flight, climbing, and fighting wind add realistic current draw. */
     private void drainBattery(double dt) {
-        double rate = 0.05 + 0.006 * speed + (mode == SimFlightMode.TAKEOFF ? 0.03 : 0);
+        double windLoad = settings.windSpeedMs() > 0 ? 0.004 * settings.windSpeedMs() : 0;
+        double rate = 0.05 + 0.006 * speed + windLoad + (mode == SimFlightMode.TAKEOFF ? 0.03 : 0);
         battery = Math.max(0, battery - rate * dt);
     }
 
@@ -238,6 +324,7 @@ public final class SimulatedFlightOperations {
                     "Pin còn " + Math.round(battery) + "%: chuẩn bị thu hồi");
         }
         if (airborne && battery <= BATTERY_LAND_PCT) {
+            emergencyLandTriggered = true;
             mode = SimFlightMode.LANDING;
             log(
                     now,
@@ -246,6 +333,7 @@ public final class SimulatedFlightOperations {
             return;
         }
         if (airborne && mode != SimFlightMode.RETURN_TO_HOME && battery <= BATTERY_RETURN_PCT) {
+            failsafeRthTriggered = true;
             mode = SimFlightMode.RETURN_TO_HOME;
             log(
                     now,
@@ -256,6 +344,7 @@ public final class SimulatedFlightOperations {
         double fromHome = SurveyPatternOperations.haversine(lat, lng, homeLat, homeLng);
         if (airborne && !geofenceTripped && fromHome > settings.geofenceRadiusMeters()) {
             geofenceTripped = true;
+            failsafeRthTriggered = true;
             mode = SimFlightMode.RETURN_TO_HOME;
             log(
                     now,
@@ -277,7 +366,14 @@ public final class SimulatedFlightOperations {
                         ? random.nextInt(2 * settings.jitterMs() + 1) - settings.jitterMs()
                         : 0;
         long latency = Math.max(0, settings.latencyMs() + jitter);
-        boolean fixed = random.nextDouble() > 0.1;
+        if (gpsDegraded) {
+            lastRtkStatus = "SINGLE";
+            lastSatelliteCount = 6 + random.nextInt(3);
+        } else {
+            boolean fixed = random.nextDouble() > 0.1;
+            lastRtkStatus = fixed ? "FIXED" : "FLOAT";
+            lastSatelliteCount = 14 + random.nextInt(6);
+        }
         TelemetryReportRequest report =
                 new TelemetryReportRequest(
                         now,
@@ -287,8 +383,8 @@ public final class SimulatedFlightOperations {
                         round(speed, 1),
                         round(heading % 360, 1),
                         (int) Math.round(battery),
-                        fixed ? "FIXED" : "FLOAT",
-                        14 + random.nextInt(6),
+                        lastRtkStatus,
+                        lastSatelliteCount,
                         missionId);
         outbox.addLast(new SimPendingSample(report, now.plusNanos(latency * 1_000_000), latency));
     }
@@ -317,6 +413,22 @@ public final class SimulatedFlightOperations {
         return Math.round(v * f) / f;
     }
 
+    public Long runLogId() {
+        return runLogId;
+    }
+
+    public void setRunLogId(Long runLogId) {
+        this.runLogId = runLogId;
+    }
+
+    public String missionCode() {
+        return missionCode;
+    }
+
+    public void setMissionCode(String missionCode) {
+        this.missionCode = missionCode;
+    }
+
     public long uavId() {
         return uavId;
     }
@@ -335,6 +447,10 @@ public final class SimulatedFlightOperations {
 
     public double homeLng() {
         return homeLng;
+    }
+
+    public double startBatteryPct() {
+        return startBatteryPct;
     }
 
     public SimFlightSettings settings() {
@@ -369,6 +485,22 @@ public final class SimulatedFlightOperations {
         return battery;
     }
 
+    public String rtkStatus() {
+        return lastRtkStatus;
+    }
+
+    public int satelliteCount() {
+        return lastSatelliteCount;
+    }
+
+    public int airspaceBreaches() {
+        return airspaceBreaches;
+    }
+
+    public boolean gpsDegraded() {
+        return gpsDegraded;
+    }
+
     public SimFlightMode mode() {
         return mode;
     }
@@ -399,6 +531,60 @@ public final class SimulatedFlightOperations {
 
     public boolean finished() {
         return mode == SimFlightMode.LANDED && outbox.isEmpty();
+    }
+
+    public SimRunStatus terminalRunStatus(boolean abortedByOperator) {
+        if (abortedByOperator && mode != SimFlightMode.LANDED) return SimRunStatus.ABORTED;
+        if (emergencyLandTriggered) return SimRunStatus.EMERGENCY_LANDED;
+        if (failsafeRthTriggered) return SimRunStatus.FAILSAFE_RTH;
+        return SimRunStatus.COMPLETED;
+    }
+
+    public static String modeLabelVi(SimFlightMode currentMode) {
+        if (currentMode == null) return "bay mô phỏng";
+        return switch (currentMode) {
+            case TAKEOFF -> "cất cánh";
+            case MISSION -> "bay theo lộ trình";
+            case HOLD -> "tạm dừng giữ vị trí";
+            case RETURN_TO_HOME -> "quay về điểm xuất phát";
+            case LANDING -> "hạ cánh";
+            case LANDED -> "đã hạ cánh";
+        };
+    }
+
+    public String outcomeSummary(boolean abortedByOperator) {
+        if (abortedByOperator && mode != SimFlightMode.LANDED) {
+            return "Dừng diễn tập theo lệnh điều hành khi đang "
+                    + modeLabelVi(mode)
+                    + " (đã bay "
+                    + Math.round(distanceFlown)
+                    + " m, pin còn "
+                    + Math.round(battery)
+                    + "%).";
+        }
+        if (emergencyLandTriggered) {
+            return "Hạ cánh khẩn cấp tự động do dung lượng pin xuống ngưỡng nguy hiểm ("
+                    + Math.round(battery)
+                    + "%).";
+        }
+        if (failsafeRthTriggered) {
+            return "Kích hoạt tự động quay về (RTH) an toàn ("
+                    + (airspaceBreaches > 0
+                            ? airspaceBreaches + " cảnh báo không phận/NOTAM"
+                            : "vượt ngưỡng pin/rào địa lý")
+                    + "), pin còn "
+                    + Math.round(battery)
+                    + "%.";
+        }
+        return "Hoàn tất diễn tập "
+                + Math.min(nextWaypoint, waypoints.size())
+                + "/"
+                + waypoints.size()
+                + " điểm ("
+                + Math.round(distanceFlown)
+                + " m), hạ cánh an toàn với "
+                + Math.round(battery)
+                + "% pin.";
     }
 
     public SimLinkStats linkStats() {

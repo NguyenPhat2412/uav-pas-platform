@@ -26,7 +26,7 @@
     "vat": "VAT ({rate}%)",
     "total": "Total due",
     "dates": "Issued {issued} · Due {due}",
-    "confirmation": "Payments reconcile automatically via bank webhook within seconds when the transfer reference matches; if there is a typo, contact support for manual verification.",
+    "confirmation": "Bank transfers reconcile automatically within seconds when the payment reference matches; if there is a typo, contact support for manual verification.",
     "downloadPdf": "Download PDF",
     "downloadPdfError": "Could not download the invoice PDF.",
     "print": "Print / Save PDF",
@@ -34,7 +34,13 @@
     "issuedOn": "Issued",
     "dueOn": "Due",
     "awaitingTransfer": "Awaiting payment",
-    "awaitingTransferHint": "Accounting will send instructions; status updates on receipt."
+    "awaitingTransferHint": "Accounting will send instructions; status updates on receipt.",
+    "pollingLive": "Automatically checking bank transfer every 5 seconds…",
+    "checkNow": "Check status now",
+    "checking": "Checking…",
+    "stillPending": "Payment not yet received. Auto-checking continues.",
+    "paidSuccess": "Payment has been confirmed!",
+    "popupBlocked": "Your browser blocked the print window. Please allow pop-ups or use Download PDF instead."
   },
   "plans": {
     "subscribe": "Choose this plan",
@@ -81,11 +87,15 @@
     "controls": {
       "stationRadius": "Station range",
       "resetView": "Reset view"
-    }
+    },
+    "latitude": "Takeoff latitude",
+    "longitude": "Takeoff longitude",
+    "coordHint": "Type or paste decimal coordinates (e.g. 21.0285, 105.8542) to pan the map directly to your survey point."
   },
   "flightSpec": {
     "title": "Flight settings",
     "altitude": "Flight altitude",
+    "customAltitude": "Custom altitude (m)",
     "altitudeHint": "Above ground, up to 120 m.",
     "gsd": "Image detail (GSD)",
     "gsdOption": {

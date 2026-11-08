@@ -8,9 +8,13 @@ import {
     ChevronRight,
     Cpu,
     ExternalLink,
+    History,
+    Home,
     MapPin,
+    Pause,
     Play,
     Radio,
+    ShieldAlert,
     Square,
     Wrench,
 } from 'lucide-react-native';
@@ -30,6 +34,7 @@ import {
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {useNotifications} from '@/hooks/notification/useNotifications';
+import {useSimulationActions, useSimulationRuns, useSimulations} from '@/hooks/simulation/useSimulation';
 import {useFleetOverview, useMaintenanceOrderActions, useMaintenanceOrders} from '@/hooks/uav/useFleetAndMaintenance';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
@@ -37,13 +42,14 @@ import {useToast} from '@/providers/ToastContext';
 import {buildMaintenanceCompletionPayload, canSubmitMaintenanceCompletion} from '@/forms/operations/field-report-form';
 import {missionFormError} from '@/shared/forms/mission/mission-form';
 import type {OrderStatus, RepairOrder} from '@/shared/types/maintenance/maintenance.types';
+import type {SimCommand, SimulationRunLog, SimulationState} from '@/shared/types/simulation/simulation.types';
 import type {FleetStation, FleetUav, UavStatus} from '@/shared/types/uav/fleet-map.types';
 import type {UavTelemetry} from '@/shared/types/uav/telemetry.types';
 import {calendarDate, formatVnd, orderControls} from '@/shared/utils/maintenance/workflows';
 import {isFinitePoint} from '@/utils/operations/map-shapes';
 import {colors, radius, spacing} from '@/styles/tokens';
 
-type FleetTab = 'uavs' | 'stations' | 'maintenance';
+type FleetTab = 'uavs' | 'stations' | 'maintenance' | 'simulation';
 type OrderFilter = '' | 'OPEN' | 'IN_PROGRESS' | 'COMPLETED';
 
 function UavStatusBadge({status}: { status: UavStatus }) {
@@ -302,6 +308,175 @@ function RepairOrderCard({
     );
 }
 
+function SimulationSessionCard({
+    state,
+    canFly,
+    busy,
+    onCommand,
+    onStop,
+    onOpenMission,
+}: {
+    state: SimulationState;
+    canFly: boolean;
+    busy: boolean;
+    onCommand: (command: SimCommand) => void;
+    onStop: () => void;
+    onOpenMission: (missionId: number) => void;
+}) {
+    const {t} = useI18n();
+    const airborne = state.mode !== 'LANDED';
+    const isWarn = ['HOLD', 'RETURN_TO_HOME', 'LANDING'].includes(state.mode);
+    return (
+        <Card>
+            <View style={styles.rowBetween}>
+                <View style={styles.titleStack}>
+                    <AppText variant="title">{state.uavCode}</AppText>
+                    <AppText variant="caption" style={styles.code}>
+                        {Math.floor(state.elapsedSeconds / 60)}:{String(Math.floor(state.elapsedSeconds % 60)).padStart(2, '0')}
+                    </AppText>
+                </View>
+                <Badge
+                    label={t(`simulation.modes.${state.mode}`)}
+                    background={isWarn ? colors.warningLight : colors.primaryLight}
+                    color={isWarn ? colors.warning : colors.primary}
+                />
+            </View>
+
+            {state.missionId != null && state.missionCode ? (
+                <Pressable
+                    onPress={() => onOpenMission(state.missionId!)}
+                    accessibilityRole="button"
+                    style={styles.missionBanner}>
+                    <View style={styles.flex}>
+                        <AppText variant="caption" style={styles.code}>{state.missionCode}</AppText>
+                    </View>
+                    <ChevronRight size={16} color={colors.primary}/>
+                </Pressable>
+            ) : null}
+
+            <View style={styles.telemetryStrip}>
+                <AppText variant="caption">
+                    {t('simulation.hud.altitude')}: {Math.round(state.altitudeMeters)} m
+                </AppText>
+                <AppText variant="caption">
+                    {t('simulation.hud.speed')}: {state.groundSpeedMs.toFixed(1)} m/s
+                </AppText>
+                <AppText variant="caption">
+                    {t('simulation.hud.battery')}: {Math.round(state.batteryPct)}%
+                </AppText>
+                <AppText variant="caption">
+                    {t('simulation.hud.waypoint')}: {Math.min(state.nextWaypoint, state.waypointCount)}/{state.waypointCount}
+                </AppText>
+                <AppText variant="caption">
+                    {t('simulation.hud.rtk')}: {state.rtkStatus} ({state.satelliteCount})
+                </AppText>
+                <AppText variant="caption">
+                    {t('simulation.hud.wind')}: {state.settings.windSpeedMs.toFixed(1)} m/s · {state.settings.timeScale}x
+                </AppText>
+            </View>
+
+            {state.airspaceBreaches > 0 && (
+                <Badge
+                    icon={ShieldAlert}
+                    label={`${t('simulation.hud.airspace')}: ${state.airspaceBreaches}`}
+                    background={colors.dangerLight}
+                    color={colors.danger}
+                />
+            )}
+
+            {canFly && (
+                <View style={styles.actions}>
+                    {state.mode === 'HOLD' ? (
+                        <Button
+                            label={t('simulation.resume')}
+                            icon={Play}
+                            disabled={busy}
+                            onPress={() => onCommand('RESUME')}
+                        />
+                    ) : (
+                        <Button
+                            label={t('simulation.pause')}
+                            icon={Pause}
+                            tone="secondary"
+                            disabled={busy || !['MISSION', 'RETURN_TO_HOME'].includes(state.mode)}
+                            onPress={() => onCommand('PAUSE')}
+                        />
+                    )}
+                    <Button
+                        label={t('simulation.rth')}
+                        icon={Home}
+                        tone="secondary"
+                        disabled={busy || ['RETURN_TO_HOME', 'LANDING', 'LANDED'].includes(state.mode)}
+                        onPress={() => onCommand('RETURN_TO_HOME')}
+                    />
+                    <Button
+                        label={state.gpsDegraded ? t('simulation.faultGpsRestore') : t('simulation.faultGps')}
+                        tone="secondary"
+                        disabled={busy || !airborne}
+                        onPress={() => onCommand('SIMULATE_GPS_DEGRADE')}
+                    />
+                    <Button
+                        label={t('simulation.stop')}
+                        tone="ghost"
+                        disabled={busy}
+                        onPress={onStop}
+                    />
+                </View>
+            )}
+        </Card>
+    );
+}
+
+function SimulationRunLogCard({
+    run,
+    onOpenMission,
+}: {
+    run: SimulationRunLog;
+    onOpenMission: (missionId: number) => void;
+}) {
+    const {t, formatDate} = useI18n();
+    const isDanger = run.status === 'EMERGENCY_LANDED';
+    const isWarn = run.status === 'FAILSAFE_RTH' || run.status === 'RUNNING';
+    return (
+        <Card>
+            <View style={styles.rowBetween}>
+                <View style={styles.titleStack}>
+                    <AppText variant="title">{run.uavCode}</AppText>
+                    <AppText variant="caption">{formatDate(run.startedAt)}</AppText>
+                </View>
+                <Badge
+                    label={t(`simulation.runStatus.${run.status}`)}
+                    background={isDanger ? colors.dangerLight : isWarn ? colors.warningLight : colors.slateLight}
+                    color={isDanger ? colors.danger : isWarn ? colors.warning : colors.slateDark}
+                />
+            </View>
+            <View style={styles.pills}>
+                <Badge
+                    label={run.missionCode ?? t('simulation.history.freeFlight')}
+                    background={colors.slateLight}
+                    color={colors.slateDark}
+                />
+                <Badge
+                    label={`${Math.round(run.altitudeMeters)} m · ${run.windSpeedMs.toFixed(1)} m/s · ${run.timeScale}x`}
+                />
+                <Badge
+                    label={`${run.waypointsReached}/${run.waypointCount} · ${Math.round(run.startBatteryPct)}% → ${run.endBatteryPct != null ? `${Math.round(run.endBatteryPct)}%` : '—'}`}
+                />
+            </View>
+            {run.outcomeSummary ? <AppText variant="small">{run.outcomeSummary}</AppText> : null}
+            {run.missionId != null && run.missionCode ? (
+                <Pressable
+                    onPress={() => onOpenMission(run.missionId!)}
+                    accessibilityRole="button"
+                    style={styles.missionBanner}>
+                    <AppText variant="caption" style={[styles.code, styles.flex]}>{run.missionCode}</AppText>
+                    <ChevronRight size={16} color={colors.primary}/>
+                </Pressable>
+            ) : null}
+        </Card>
+    );
+}
+
 export function FleetMaintenanceScreen() {
     const {t} = useI18n();
     const {can} = useAuth();
@@ -315,10 +490,20 @@ export function FleetMaintenanceScreen() {
     const {overview, telemetry, telemetryByUavId} = useFleetOverview();
     const ordersQuery = useMaintenanceOrders(orderFilter);
     const orderActions = useMaintenanceOrderActions();
+    const simulationsQuery = useSimulations(tab === 'simulation');
+    const simulationRunsQuery = useSimulationRuns(undefined, tab === 'simulation');
+    const simulationActions = useSimulationActions();
+    const canFlySim = can('UAV_UPDATE');
+    const simBusy =
+        simulationActions.command.isPending ||
+        simulationActions.stop.isPending ||
+        simulationActions.rehearseMission.isPending;
 
     const uavs = useMemo(() => overview.data?.uavs ?? [], [overview.data?.uavs]);
     const stations = overview.data?.stations ?? [];
     const orders = ordersQuery.data?.content ?? [];
+    const activeSimulations = simulationsQuery.data ?? [];
+    const simulationRuns = simulationRunsQuery.data ?? [];
 
     const fleetStats = useMemo(() => {
         let available = 0;
@@ -337,11 +522,15 @@ export function FleetMaintenanceScreen() {
     const refreshing =
         tab === 'maintenance'
             ? ordersQuery.isRefetching
-            : overview.isRefetching || telemetry.isRefetching;
+            : tab === 'simulation'
+                ? simulationsQuery.isRefetching || simulationRunsQuery.isRefetching
+                : overview.isRefetching || telemetry.isRefetching;
 
     const handleRefresh = () => {
         if (tab === 'maintenance') {
             void ordersQuery.refetch();
+        } else if (tab === 'simulation') {
+            void Promise.all([simulationsQuery.refetch(), simulationRunsQuery.refetch()]);
         } else {
             void Promise.all([overview.refetch(), telemetry.refetch()]);
         }
@@ -375,6 +564,7 @@ export function FleetMaintenanceScreen() {
                         {value: 'uavs', label: t('mobile.ops.fleet.tabs.uavs')},
                         {value: 'stations', label: t('mobile.ops.fleet.tabs.stations')},
                         {value: 'maintenance', label: t('mobile.ops.fleet.tabs.maintenance')},
+                        ...(can('UAV_VIEW') ? [{value: 'simulation' as const, label: t('operationsNav.simulation')}] : []),
                     ]}
                 />
 
@@ -507,6 +697,59 @@ export function FleetMaintenanceScreen() {
                                 )}
                             </>
                         )}
+                    </>
+                )}
+
+                {tab === 'simulation' && (
+                    <>
+                        <Card>
+                            <SectionTitle title={t('simulation.running')}/>
+                            <AppText variant="small">{t('simulation.subtitle')}</AppText>
+                        </Card>
+
+                        {simulationsQuery.isPending ? (
+                            <LoadingState label={t('mobile.ops.fleet.loading')}/>
+                        ) : activeSimulations.length > 0 ? (
+                            activeSimulations.map(sim => (
+                                <SimulationSessionCard
+                                    key={sim.uavId}
+                                    state={sim}
+                                    canFly={canFlySim}
+                                    busy={simBusy}
+                                    onCommand={cmd =>
+                                        simulationActions.command.mutate(
+                                            {uavId: sim.uavId, command: cmd},
+                                            {onError: showError},
+                                        )
+                                    }
+                                    onStop={() =>
+                                        simulationActions.stop.mutate(sim.uavId, {onError: showError})
+                                    }
+                                    onOpenMission={missionId =>
+                                        router.push({pathname: '/operations/mission/[id]', params: {id: String(missionId)}})
+                                    }
+                                />
+                            ))
+                        ) : null}
+
+                        <Card>
+                            <SectionTitle title={t('simulation.history.title')}/>
+                            {simulationRunsQuery.isPending ? (
+                                <LoadingState label={t('mobile.ops.fleet.loading')}/>
+                            ) : simulationRuns.length === 0 ? (
+                                <EmptyState icon={History} message={t('simulation.history.empty')}/>
+                            ) : null}
+                        </Card>
+
+                        {simulationRuns.slice(0, 10).map(run => (
+                            <SimulationRunLogCard
+                                key={run.id}
+                                run={run}
+                                onOpenMission={missionId =>
+                                    router.push({pathname: '/operations/mission/[id]', params: {id: String(missionId)}})
+                                }
+                            />
+                        ))}
                     </>
                 )}
             </ScrollView>

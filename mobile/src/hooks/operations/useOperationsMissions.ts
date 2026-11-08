@@ -3,6 +3,7 @@ import {queryKeys} from '@/shared/lib/query';
 import type {
     MissionPermitUpsertInput,
     MissionPermitVerifyInput,
+    MissionPreflightUpsertInput,
     MissionStatus,
     MissionType,
 } from '@/shared/types/mission/mission.types';
@@ -16,12 +17,67 @@ function useOperationsKey() {
     return {...auth, key: queryKeys.feature(auth.user?.id, 'operations')};
 }
 
+export function useOperatorLogbook() {
+    const {key, can, permissionsReady} = useOperationsKey();
+    return useQuery({
+        queryKey: [...key, 'operator-logbook'],
+        queryFn: ({signal}) => operationsMissionService.operatorLogbook(signal),
+        enabled: permissionsReady && can('MISSION_VIEW'),
+    });
+}
+
+export function useOperationsMissionPreflight(id: number, enabled = true) {
+    const {key, can, permissionsReady} = useOperationsKey();
+    const valid = Number.isSafeInteger(id) && id > 0;
+    return useQuery({
+        queryKey: [...key, 'mission', id, 'preflight'],
+        queryFn: ({signal}) => operationsMissionService.getPreflight(id, signal),
+        enabled: valid && enabled && permissionsReady && can('MISSION_VIEW'),
+    });
+}
+
+export function useOperationsDispatchCandidates(id: number, enabled = true) {
+    const {key, can, permissionsReady} = useOperationsKey();
+    const valid = Number.isSafeInteger(id) && id > 0;
+    const canViewDispatch =
+        can('MISSION_VIEW_ALL') ||
+        can('MISSION_CONFIRM') ||
+        can('MISSION_ASSIGN_STATION') ||
+        can('MISSION_ASSIGN_UAV') ||
+        can('MISSION_ASSIGN_OPERATOR') ||
+        can('MISSION_RESERVE_EQUIPMENT');
+    return useQuery({
+        queryKey: [...key, 'mission', id, 'dispatch-candidates'],
+        queryFn: ({signal}) => operationsMissionService.dispatchCandidates(id, signal),
+        enabled: valid && enabled && permissionsReady && canViewDispatch,
+    });
+}
+
+export function useOperationsMissionReview(id: number, enabled = true) {
+    const {key, can, permissionsReady} = useOperationsKey();
+    const valid = Number.isSafeInteger(id) && id > 0;
+    return useQuery({
+        queryKey: [...key, 'mission', id, 'review'],
+        queryFn: ({signal}) => operationsMissionService.getReview(id, signal),
+        enabled: valid && enabled && permissionsReady && can('MISSION_VIEW'),
+    });
+}
+
 export function useOperationsMissionList(params?: { status?: MissionStatus; missionType?: MissionType; search?: string }) {
     const {key, can, permissionsReady} = useOperationsKey();
     return useQuery({
         queryKey: [...key, 'missions', params ?? {}],
         queryFn: ({signal}) => operationsMissionService.list({...params, size: 50}, signal),
         enabled: permissionsReady && can('MISSION_VIEW'),
+    });
+}
+
+export function useOperatorsList() {
+    const {key, can, permissionsReady} = useOperationsKey();
+    return useQuery({
+        queryKey: [...key, 'operators'],
+        queryFn: ({signal}) => operationsMissionService.operators(signal),
+        enabled: permissionsReady && can('USER_VIEW'),
     });
 }
 
@@ -61,11 +117,14 @@ export function useOperationsMissionActions() {
     const client = useQueryClient();
     const {key, user} = useOperationsKey();
     const customerKey = queryKeys.feature(user?.id, 'customer');
+    const fleetKey = queryKeys.feature(user?.id, 'fleet');
 
     const refresh = (id?: number) => Promise.all([
         client.invalidateQueries({queryKey: [...key, 'missions']}),
+        client.invalidateQueries({queryKey: [...key, 'operator-logbook']}),
         id ? client.invalidateQueries({queryKey: [...key, 'mission', id]}) : undefined,
         client.invalidateQueries({queryKey: customerKey}),
+        client.invalidateQueries({queryKey: fleetKey}),
     ]);
 
     return {
@@ -130,6 +189,35 @@ export function useOperationsMissionActions() {
             mutationFn: ({id, data}: { id: number; data: MissionPermitVerifyInput }) =>
                 operationsMissionService.verifyPermit(id, data),
             onSettled: (_d, _e, {id}) => refresh(id),
+            retry: false,
+        }),
+        assignStation: useMutation({
+            mutationFn: ({id, resourceId}: { id: number; resourceId: number }) =>
+                operationsMissionService.assignStation(id, resourceId),
+            onSettled: (_d, _e, {id}) => refresh(id),
+            retry: false,
+        }),
+        assignUav: useMutation({
+            mutationFn: ({id, resourceId}: { id: number; resourceId: number }) =>
+                operationsMissionService.assignUav(id, resourceId),
+            onSettled: (_d, _e, {id}) => refresh(id),
+            retry: false,
+        }),
+        assignOperator: useMutation({
+            mutationFn: ({id, resourceId}: { id: number; resourceId: number }) =>
+                operationsMissionService.assignOperator(id, resourceId),
+            onSettled: (_d, _e, {id}) => refresh(id),
+            retry: false,
+        }),
+        upsertPreflight: useMutation({
+            mutationFn: ({id, data}: { id: number; data: MissionPreflightUpsertInput }) =>
+                operationsMissionService.upsertPreflight(id, data),
+            onSettled: (_d, _e, {id}) => refresh(id),
+            retry: false,
+        }),
+        autoAssign: useMutation({
+            mutationFn: (id: number) => operationsMissionService.autoAssign(id),
+            onSettled: (_d, _e, id) => refresh(id),
             retry: false,
         }),
     };

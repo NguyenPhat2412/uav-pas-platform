@@ -7,19 +7,30 @@ import {airspaceService} from '@/api/airspace/airspace.api';
 import {useAuth} from '@/providers/AuthContext';
 
 export function useAirspaceZones(activeOnly = true) {
-    const {user, status} = useAuth();
+    const {user, status, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: airspaceKeys.zones(user?.id, activeOnly),
         queryFn: ({signal}) => airspaceService.zones(activeOnly, signal),
-        enabled: status === 'signed-in',
+        enabled: status === 'signed-in' && (activeOnly || (permissionsReady && can('USER_MANAGE'))),
         staleTime: 60_000,
     });
 }
 
-export function useMissionAirspaceCheck(mission?: Pick<Mission, 'flightPlan' | 'latitude' | 'longitude'> | null) {
+export function useMissionAirspaceCheck(
+    mission?: Pick<Mission, 'flightPlan' | 'latitude' | 'longitude' | 'startTime' | 'expectedEndTime'> | null,
+) {
     const {user, status} = useAuth();
     const input = useMemo(
-        () => (mission ? toAirspaceCheckInput(mission.flightPlan, mission.latitude, mission.longitude) : null),
+        () =>
+            mission
+                ? toAirspaceCheckInput(
+                      mission.flightPlan,
+                      mission.latitude,
+                      mission.longitude,
+                      mission.startTime,
+                      mission.expectedEndTime,
+                  )
+                : null,
         [mission],
     );
     return useQuery({

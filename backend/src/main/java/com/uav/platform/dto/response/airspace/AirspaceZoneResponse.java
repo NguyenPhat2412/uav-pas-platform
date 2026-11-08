@@ -21,5 +21,7 @@ public record AirspaceZoneResponse(
         String authority,
         boolean active,
         String description,
+        LocalDateTime effectiveFrom,
+        LocalDateTime effectiveUntil,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {}

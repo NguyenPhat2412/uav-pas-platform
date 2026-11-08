@@ -26,7 +26,7 @@
     "vat": "Thuế GTGT ({rate}%)",
     "total": "Tổng thanh toán",
     "dates": "Ngày lập {issued} · Hạn thanh toán {due}",
-    "confirmation": "Hệ thống tự động đối soát qua webhook ngân hàng trong vài giây khi chuyển đúng nội dung; nếu ghi nhầm nội dung, liên hệ bộ phận hỗ trợ để đối soát thủ công.",
+    "confirmation": "Hệ thống tự động ghi nhận giao dịch ngân hàng trong vài giây khi chuyển đúng nội dung; nếu ghi nhầm nội dung, liên hệ bộ phận hỗ trợ để đối soát thủ công.",
     "downloadPdf": "Tải hóa đơn PDF",
     "downloadPdfError": "Chưa tải được tệp PDF hóa đơn.",
     "print": "In / Lưu PDF",
@@ -34,7 +34,13 @@
     "issuedOn": "Ngày lập",
     "dueOn": "Hạn thanh toán",
     "awaitingTransfer": "Chờ thanh toán",
-    "awaitingTransferHint": "Kế toán sẽ gửi hướng dẫn; trạng thái cập nhật khi nhận tiền."
+    "awaitingTransferHint": "Kế toán sẽ gửi hướng dẫn; trạng thái cập nhật khi nhận tiền.",
+    "pollingLive": "Đang tự động kiểm tra giao dịch mỗi 5 giây…",
+    "checkNow": "Kiểm tra ngay",
+    "checking": "Đang kiểm tra…",
+    "stillPending": "Chưa ghi nhận giao dịch mới. Hệ thống tiếp tục tự động kiểm tra.",
+    "paidSuccess": "Thanh toán đã được xác nhận thành công!",
+    "popupBlocked": "Trình duyệt đã chặn cửa sổ in. Hãy cho phép mở cửa sổ bật lên hoặc dùng nút Tải hóa đơn PDF."
   },
   "plans": {
     "subscribe": "Đăng ký gói này",
@@ -81,11 +87,15 @@
     "controls": {
       "stationRadius": "Vùng phủ trạm",
       "resetView": "Về tâm"
-    }
+    },
+    "latitude": "Vĩ độ điểm cất cánh",
+    "longitude": "Kinh độ điểm cất cánh",
+    "coordHint": "Nhập hoặc dán tọa độ thập phân (ví dụ 21.0285, 105.8542) để nhảy bản đồ tới đúng vị trí khảo sát."
   },
   "flightSpec": {
     "title": "Thông số bay",
     "altitude": "Độ cao bay",
+    "customAltitude": "Nhập độ cao cụ thể (m)",
     "altitudeHint": "Tính từ mặt đất, tối đa 120 m.",
     "gsd": "Độ nét ảnh (GSD)",
     "gsdOption": {

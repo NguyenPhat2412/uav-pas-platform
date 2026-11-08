@@ -1,7 +1,7 @@
 import React from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
 import {useRouter} from 'expo-router';
-import {ALargeSmall, ArrowRightLeft, Bell, GraduationCap, Languages, LogOut, ShieldCheck, UserRound} from 'lucide-react-native';
+import {ALargeSmall, ArrowRightLeft, Bell, GraduationCap, Languages, LogOut, ShieldAlert, ShieldCheck, UserRound} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, ChipGroup, Screen, SectionTitle} from '@/components/ui';
 import {AccountRow, AvatarButton} from '@/components/profile/AccountScreen';
 import {PushDeviceCard} from '@/components/profile/PushDeviceCard';
@@ -16,11 +16,15 @@ import {colors, spacing} from '@/styles/tokens';
 
 export function OperationsAccountScreen() {
     const {t, locale, setLocale} = useI18n();
-    const {user, logout, switchPortal} = useAuth();
+    const {user, can, logout, switchPortal} = useAuth();
     const {unreadCount} = useNotifications();
     const {size, setSize} = useTextSize();
     const router = useRouter();
     const name = user?.fullName || user?.username || '';
+    const canAdminQuick =
+        can('USER_MANAGE') ||
+        can('USER_VIEW') ||
+        (can('DASHBOARD_VIEW') && can('MISSION_VIEW_ALL'));
 
     const confirmLogout = () =>
         Alert.alert(t('common.logout'), t('mobile.account.logoutQuestion'), [
@@ -76,6 +80,13 @@ export function OperationsAccountScreen() {
                 />
                 <AccountRow icon={UserRound} label={t('mobile.account.profile')} onPress={() => router.push('/operations/profile')}/>
                 <AccountRow icon={ShieldCheck} label={t('mobile.account.security')} onPress={() => router.push('/operations/security')}/>
+                {canAdminQuick && (
+                    <AccountRow
+                        icon={ShieldAlert}
+                        label={t('mobile.adminQuick.entryLabel')}
+                        onPress={() => router.push('/operations/admin-quick')}
+                    />
+                )}
                 <AccountRow icon={GraduationCap} label={t('nav.training')} onPress={() => router.push('/operations/training')}/>
             </Card>
 

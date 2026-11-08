@@ -1,6 +1,8 @@
 import React, {ReactNode} from 'react';
 import {
     ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
     Pressable,
     RefreshControl,
     ScrollView,
@@ -18,6 +20,7 @@ import {SafeAreaView, type Edge} from 'react-native-safe-area-context';
 import {AlertTriangle, Inbox, type LucideIcon} from 'lucide-react-native';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 import {AppBackground} from '@/components/layout/AppBackground';
+import {OfflineBanner} from '@/components/shared/OfflineBanner';
 import {useTextScale} from '@/providers/TextSizeContext';
 
 /** Widest a content column grows (phones use the full width; iPad and landscape centre it). */
@@ -74,20 +77,27 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
     contentStyle?: StyleProp<ViewStyle>;
     maxWidth?: number;
 }) {
-    const column = <View style={[styles.column, {maxWidth}, contentStyle]}>{children}</View>;
+    const column = (
+        <View style={[styles.column, {maxWidth}, contentStyle]}>
+            <OfflineBanner/>
+            {children}
+        </View>
+    );
     return (
         <SafeAreaView edges={edges} style={styles.screen}>
             <AppBackground/>
-            {scroll ? (
-                <ScrollView
-                    contentInsetAdjustmentBehavior="automatic"
-                    automaticallyAdjustKeyboardInsets
-                    contentContainerStyle={styles.content}
-                    keyboardShouldPersistTaps="handled"
-                    refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary}/> : undefined}>
-                    {column}
-                </ScrollView>
-            ) : column}
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
+                {scroll ? (
+                    <ScrollView
+                        contentInsetAdjustmentBehavior="automatic"
+                        automaticallyAdjustKeyboardInsets
+                        contentContainerStyle={styles.content}
+                        keyboardShouldPersistTaps="handled"
+                        refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary}/> : undefined}>
+                        {column}
+                    </ScrollView>
+                ) : column}
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }

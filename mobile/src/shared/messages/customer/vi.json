@@ -559,7 +559,7 @@
     },
     "hotline": {
         "label": "Hotline điều phối",
-        "call": "Gọi trung tâm điều phối 24/7: {number}"
+        "call": "Gọi tổng đài điều phối: {number}"
     },
     "account": {
         "open": "Mở menu tài khoản của {name}",

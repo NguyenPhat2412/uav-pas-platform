@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(
@@ -60,6 +61,12 @@ public class AirspaceZone extends BaseEntity {
 
     @Column(nullable = false)
     private boolean active = true;
+
+    @Column(name = "effective_from")
+    private LocalDateTime effectiveFrom;
+
+    @Column(name = "effective_until")
+    private LocalDateTime effectiveUntil;
 
     @Column(length = 1000)
     private String description;

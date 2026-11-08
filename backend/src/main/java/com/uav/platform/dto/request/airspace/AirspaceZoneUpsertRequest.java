@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record AirspaceZoneUpsertRequest(
@@ -34,4 +35,37 @@ public record AirspaceZoneUpsertRequest(
                 @Size(max = 180, message = "Tên cơ quan quản lý tối đa 180 ký tự.")
                 String authority,
         Boolean active,
-        @Size(max = 1000, message = "Mô tả tối đa 1.000 ký tự.") String description) {}
+        @Size(max = 1000, message = "Mô tả tối đa 1.000 ký tự.") String description,
+        LocalDateTime effectiveFrom,
+        LocalDateTime effectiveUntil) {
+
+    public AirspaceZoneUpsertRequest(
+            String code,
+            String name,
+            AirspaceZoneType zoneType,
+            AirspaceGeometryType geometryType,
+            Double centerLat,
+            Double centerLng,
+            Integer radiusMeters,
+            List<List<Double>> vertices,
+            Integer maxAltitudeAglM,
+            String authority,
+            Boolean active,
+            String description) {
+        this(
+                code,
+                name,
+                zoneType,
+                geometryType,
+                centerLat,
+                centerLng,
+                radiusMeters,
+                vertices,
+                maxAltitudeAglM,
+                authority,
+                active,
+                description,
+                null,
+                null);
+    }
+}

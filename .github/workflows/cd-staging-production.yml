@@ -36,21 +36,21 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: |
-            frontend/package-lock.json
+            customer/package-lock.json
+            operations/package-lock.json
+            admin/package-lock.json
             mobile/package-lock.json
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Verify Web Frontend Contracts, Types & Lint
-        working-directory: frontend
+      - name: Verify Web Portals (customer, operations, admin) Contracts, Types & Lint
         run: |
-          npm ci
-          npm run lint
-          npm run typecheck
-          npm run architecture:check
-          npm run test:contracts
+          for portal in customer operations admin; do
+            echo "=== Verifying $portal ==="
+            (cd "$portal" && npm ci && npm run lint && npm run typecheck && npm run architecture:check && npm test)
+          done
 
       - name: Verify Mobile Shared Sync, Architecture, Types & Tests
         working-directory: mobile
@@ -197,8 +197,8 @@ jobs:
       - name: Build and Push Staging Frontend Image
         uses: docker/build-push-action@v6
         with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
+          context: ./customer
+          file: ./customer/Dockerfile
           push: true
           tags: |
             ${{ steps.img.outputs.frontend_image }}
@@ -401,8 +401,8 @@ jobs:
       - name: Build and Push Production Frontend Image
         uses: docker/build-push-action@v6
         with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
+          context: ./customer
+          file: ./customer/Dockerfile
           push: true
           tags: |
             ${{ steps.img.outputs.frontend_image }}
