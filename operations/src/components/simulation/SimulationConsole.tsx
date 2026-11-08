@@ -9,6 +9,7 @@ import {SimulationRunHistoryCard} from '@/components/simulation/SimulationRunHis
 import {type SimulationParams, SimulationSetupCard} from '@/components/simulation/SimulationSetupCard';
 import {SimulationTargetCard} from '@/components/simulation/SimulationTargetCard';
 import {SimulationTelemetryHud} from '@/components/simulation/SimulationTelemetryHud';
+import {UavModelViewer} from '@/components/visuals/UavModelViewer';
 import {useAirspaceZones} from '@/hooks/airspace/useAirspace';
 import {useMissions} from '@/hooks/mission/useOperationsMissions';
 import {useSimulationMutations, useSimulationRuns, useSimulations} from '@/hooks/simulation/useSimulation';
@@ -71,6 +72,7 @@ export function SimulationConsole() {
     const [selectedMissionId, setSelectedMissionId] = useState<number | ''>('');
 
     const uavId = picked ?? sims.data?.[0]?.uavId ?? fleet[0]?.id ?? null;
+    const selectedUav = fleet.find(u => u.id === uavId) ?? null;
     const active: SimulationState | null = sims.data?.find(s => s.uavId === uavId) ?? null;
 
     const [drawMode, setDrawMode] = useState<DrawMode>('waypoints');
@@ -244,6 +246,11 @@ export function SimulationConsole() {
                             onPick={pick}
                         />
                     </div>
+                    <UavModelViewer
+                        serial={selectedUav?.serialNumber ?? active?.uavCode ?? 'UAV-350-RTK'}
+                        model={selectedUav?.model ?? 'Enterprise RTK Quadcopter'}
+                        status={active && active.mode !== 'LANDED' ? 'IN_USE' : (selectedUav?.status ?? 'AVAILABLE')}
+                    />
                     {active && (
                         <Card>
                             <CardHeader className="px-4 py-2.5">

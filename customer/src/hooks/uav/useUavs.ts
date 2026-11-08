@@ -1,7 +1,7 @@
 'use client';
 import {useQuery} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
-import {queryKeys} from '@/lib/query';
+import {queryKeys, QUIET} from '@/lib/query';
 import {uavsService} from '@/api/uav/uavs.api';
 import {useOperationMutation} from '@/hooks/useOperationMutation';
 
@@ -29,6 +29,16 @@ export function useUavHistory(id?: number, page = 0) {
         queryKey: [...queryKeys.history(user?.id, 'uavs', id), page],
         queryFn: ({signal}) => uavsService.uavHistory(id!, page, signal),
         enabled: !!id && can('UAV_VIEW')
+    });
+}
+
+export function useUavHealthAnalytics(enabled = true) {
+    const {user, can, permissionsReady} = useAuth();
+    return useQuery({
+        queryKey: queryKeys.of(user?.id, 'uavs', 'health-analytics'),
+        queryFn: ({signal}) => uavsService.healthAnalytics(signal),
+        enabled: enabled && permissionsReady && can('UAV_VIEW'),
+        meta: QUIET,
     });
 }
 

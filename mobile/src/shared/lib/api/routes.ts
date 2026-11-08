@@ -95,6 +95,7 @@ export const API_ROUTES = {
         telemetry: (uavId: string | number) => `/api/v1/uavs/${uavId}/telemetry`,
         latestTelemetry: (uavId: string | number) => `/api/v1/uavs/${uavId}/telemetry/latest`,
         fleetTelemetry: '/api/v1/uavs/telemetry/latest',
+        healthAnalytics: '/api/v1/uavs/health-analytics',
     },
     simulation: {
         sessions: '/api/v1/simulation/sessions',
@@ -141,6 +142,8 @@ export const API_ROUTES = {
         mediaUploadUrl: (id: string | number) => `/api/v1/missions/${id}/media/upload-url`,
         mediaConfirm: (id: string | number, mediaId: string | number) => `/api/v1/missions/${id}/media/${mediaId}/confirm`,
         latestTelemetry: (id: string | number) => `/api/v1/missions/${id}/telemetry/latest`,
+        telemetryReplay: (id: string | number) => `/api/v1/missions/${id}/telemetry/replay`,
+        inspectionReport: (id: string | number) => `/api/v1/missions/${id}/inspection-report`,
         submit: (id: string | number) => `/api/v1/missions/${id}/submit`,
         confirm: (id: string | number) => `/api/v1/missions/${id}/confirm`,
         reject: (id: string | number) => `/api/v1/missions/${id}/reject`,

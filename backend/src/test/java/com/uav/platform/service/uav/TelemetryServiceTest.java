@@ -177,4 +177,19 @@ class TelemetryServiceTest {
         TelemetryResponse r = service.ingest(1L, sample(LocalDateTime.now(), null), "gcs-01");
         assertEquals(40L, r.missionId());
     }
+
+    @Test
+    void replayForMissionBuilds3DTrajectoryAndTerrainClearance() {
+        Authentication customer = auth("customer");
+        Mission finished = mission(MissionStatus.COMPLETED, "pilot");
+        when(missionAccess.accessible(40L, customer)).thenReturn(finished);
+        when(telemetry.findByMissionIdOrderByRecordedAtAsc(40L)).thenReturn(List.of());
+
+        var replay = service.replayForMission(40L, customer);
+        assertEquals(40L, replay.missionId());
+        assertEquals("QUADCOPTER_RTK", replay.airframeClass());
+        assertFalse(replay.samples().isEmpty());
+        assertTrue(replay.totalDistanceMeters() > 0);
+        assertTrue(replay.terrainClearanceSafe());
+    }
 }

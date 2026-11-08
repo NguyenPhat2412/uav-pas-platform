@@ -140,4 +140,9 @@ public interface MissionService {
     default MissionResponse autoAssign(Long id, Authentication authentication) {
         throw new UnsupportedOperationException("autoAssign not configured");
     }
+
+    default MissionInspectionReportResponse inspectionReport(
+            Long id, Authentication authentication) {
+        throw new UnsupportedOperationException("inspectionReport not configured");
+    }
 }

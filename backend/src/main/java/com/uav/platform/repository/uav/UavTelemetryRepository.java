@@ -17,6 +17,9 @@ public interface UavTelemetryRepository
     Optional<UavTelemetry> findFirstByUavIdAndMissionIdOrderByRecordedAtDesc(
             Long uavId, Long missionId);
 
+    /** Chronological telemetry samples recorded for a mission. */
+    List<UavTelemetry> findByMissionIdOrderByRecordedAtAsc(Long missionId);
+
     /** The newest sample of every UAV that has reported at least once. */
     @Query(
             value =

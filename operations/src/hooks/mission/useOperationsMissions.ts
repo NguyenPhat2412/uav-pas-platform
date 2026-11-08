@@ -51,6 +51,16 @@ export function useOperationsMissionReview(id: number, enabled = true) {
     });
 }
 
+export function useOperationsMissionInspectionReport(id: number, enabled = true) {
+    const {can, permissionsReady} = useAuth();
+    return useQuery({
+        queryKey: ['missions', 'inspection-report', id],
+        queryFn: ({signal}) => missionService.inspectionReport(id, signal),
+        enabled: enabled && Number.isSafeInteger(id) && id > 0 && permissionsReady && can('MISSION_VIEW'),
+        meta: QUIET,
+    });
+}
+
 export function useDispatchCandidates(id: number, enabled = true) {
     const {can, permissionsReady} = useAuth();
     const canViewDispatch =

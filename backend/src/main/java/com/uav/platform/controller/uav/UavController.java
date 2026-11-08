@@ -4,6 +4,7 @@ import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
 import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.dto.request.uav.UavRequest;
+import com.uav.platform.dto.response.uav.UavHealthAnalyticsResponse;
 import com.uav.platform.dto.response.uav.UavResponse;
 import com.uav.platform.dto.response.uav.UavStatusHistoryResponse;
 import com.uav.platform.enums.uav.UavStatus;
@@ -88,5 +89,11 @@ public class UavController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size) {
         return ResponseEntity.ok(service.history(id, Pageables.desc(page, size, "createdAt")));
+    }
+
+    @GetMapping(ApiRoutes.Uavs.HEALTH_ANALYTICS)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_VIEW')")
+    public ResponseEntity<UavHealthAnalyticsResponse> healthAnalytics() {
+        return ResponseEntity.ok(service.healthAnalytics());
     }
 }

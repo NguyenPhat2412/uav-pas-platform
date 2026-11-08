@@ -27,4 +27,6 @@ export type {
     SavedFlightSiteUpsertInput,
     MissionReview,
     MissionReviewUpsertInput,
+    DeliverableGeoPin,
+    MissionInspectionReport,
 } from '@/types/mission/mission.types';

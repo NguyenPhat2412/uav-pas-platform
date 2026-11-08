@@ -15,6 +15,7 @@ import {MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
 import {useAirspaceZones} from '@/hooks/airspace/useAirspace';
 import {renderAirspaceZonesLayer} from '@/utils/airspace/map-overlays';
+import {Mission3DReplayAndTerrainCard} from '@/components/mission/Mission3DReplayAndTerrainCard';
 
 const LIVE_STATUSES = ['READY', 'IN_PROGRESS'];
 // Leaflet styles vectors through options, so the theme colours are spelled out here.
@@ -82,6 +83,12 @@ export function MissionMonitoring({mission}: { mission: Mission }) {
                 <div><dt>{t('missionMonitor.sensors')}</dt><dd>{plan.sensors.map(s => t(`flightSpec.sensor.${s}.name`)).join(', ')}</dd></div>
             </dl>
         </div>}
+
+        <Mission3DReplayAndTerrainCard
+            missionId={mission.id}
+            missionCode={mission.code}
+            status={mission.status}
+        />
     </div>;
 }
 

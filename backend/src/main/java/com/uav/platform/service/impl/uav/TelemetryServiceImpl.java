@@ -1,6 +1,7 @@
 package com.uav.platform.service.impl.uav;
 
 import com.uav.platform.dto.request.uav.TelemetryReportRequest;
+import com.uav.platform.dto.response.uav.MissionTelemetryReplayResponse;
 import com.uav.platform.dto.response.uav.TelemetryResponse;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.uav.UavTelemetry;
@@ -105,6 +106,14 @@ public class TelemetryServiceImpl implements TelemetryService {
                 .findFirstByUavIdAndMissionIdOrderByRecordedAtDesc(
                         mission.getUav().getId(), mission.getId())
                 .map(t -> toResponse(t, now));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MissionTelemetryReplayResponse replayForMission(Long missionId, Authentication auth) {
+        Mission mission = missionAccess.accessible(missionId, auth);
+        List<UavTelemetry> rows = telemetry.findByMissionIdOrderByRecordedAtAsc(mission.getId());
+        return TelemetryReplayOperations.buildReplay(mission, rows);
     }
 
     private boolean isStaffFor(Mission mission, Authentication auth) {

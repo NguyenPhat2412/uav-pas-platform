@@ -19,6 +19,7 @@ import {
     Workflow,
 } from 'lucide-react';
 import {UavLoader} from '@/components/ui/UavLoader';
+import {UavModelViewer} from '@/components/visuals/UavModelViewer';
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
 import type {DigitalTwinHandle} from '@/components/digital-twin/DigitalTwinViewer';
@@ -127,8 +128,10 @@ export function DigitalTwinShowcase() {
             </section>
 
             <section className="bg-background px-4 py-14 sm:px-6">
-                <div className="mx-auto max-w-5xl">
-                    <h2 className="m-0 text-center text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">{t('digitalTwin.explainer.title')}</h2>
+                <div className="mx-auto max-w-5xl space-y-10">
+                    <UavModelViewer serial="UAV-350-RTK" model="Enterprise RTK Quadcopter" status="IN_USE"/>
+                    <div>
+                        <h2 className="m-0 text-center text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">{t('digitalTwin.explainer.title')}</h2>
                     <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-6 text-slate-600">{t('digitalTwin.explainer.subtitle')}</p>
                     <ol className="mt-10 grid gap-4 p-0 sm:grid-cols-3">
                         {steps.map(([Icon, key], index) => (
@@ -143,6 +146,7 @@ export function DigitalTwinShowcase() {
                         <Link href="/contact" className="inline-flex h-11 items-center rounded-control bg-primary px-6 text-sm font-bold text-white transition-colors hover:bg-primary-hover">
                             {t('digitalTwin.explainer.cta')}
                         </Link>
+                    </div>
                     </div>
                 </div>
             </section>

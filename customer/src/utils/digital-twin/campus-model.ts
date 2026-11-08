@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {buildEnterpriseUav3D} from '@/utils/uav/uav-3d-model';
 
 /**
  * A procedurally built sample digital twin: the "UAV PAS" sample district with an operations tower, city
@@ -164,32 +165,14 @@ interface Uav {
 }
 
 function makeUav(accent: number): Uav {
-    const group = new THREE.Group();
-    const dark = new THREE.MeshStandardMaterial({color: 0x1f2937, roughness: 0.5, metalness: 0.3});
-    const body = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.5, 1.8), dark);
-    body.castShadow = true;
-    group.add(body);
-    const shell = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.2, 1.1), new THREE.MeshStandardMaterial({color: accent, roughness: 0.4}));
-    shell.position.y = 0.33;
+    const detailed = buildEnterpriseUav3D(accent);
+    const group = detailed.root;
+    const shell = new THREE.Mesh(
+        new THREE.BoxGeometry(0.68, 0.08, 0.92),
+        new THREE.MeshStandardMaterial({color: accent, roughness: 0.35, metalness: 0.4}),
+    );
+    shell.position.set(0, 0.56, -0.05);
     group.add(shell);
-    const rotors: THREE.Object3D[] = [];
-    const blade = new THREE.MeshStandardMaterial({color: 0xe5e7eb, transparent: true, opacity: 0.85});
-    const disc = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false});
-    for (const [x, z] of [[1.6, 1.6], [-1.6, 1.6], [1.6, -1.6], [-1.6, -1.6]]) {
-        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.16, 2.3), dark);
-        arm.position.set(x / 2, 0, z / 2);
-        arm.rotation.y = Math.atan2(x, z);
-        group.add(arm);
-        const hub = new THREE.Group();
-        hub.position.set(x, 0.3, z);
-        const blades = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.04, 0.22), blade);
-        hub.add(blades);
-        const blur = new THREE.Mesh(new THREE.CircleGeometry(1.15, 24), disc);
-        blur.rotation.x = -Math.PI / 2;
-        hub.add(blur);
-        group.add(hub);
-        rotors.push(hub);
-    }
     const leds = [0xef4444, 0xef4444, 0x22c55e, 0x22c55e].map((color, i) => {
         const led = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), new THREE.MeshBasicMaterial({color}));
         led.position.set(i % 2 ? -0.6 : 0.6, -0.1, i < 2 ? -0.95 : 0.95);
@@ -198,7 +181,7 @@ function makeUav(accent: number): Uav {
     });
     // Drawn about 3x true size so it reads from the district view.
     group.scale.setScalar(1.6);
-    return {group, rotors, leds};
+    return {group, rotors: detailed.rotors, leds};
 }
 
 function animateUav(uav: Uav, elapsed: number, spin: number) {

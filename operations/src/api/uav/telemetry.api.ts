@@ -1,7 +1,7 @@
 import {apiClient} from '@/lib/api';
 import {API_ROUTES} from '@/lib/api/routes';
 import type {FleetMap} from '@/types/uav/fleet-map.types';
-import type {UavTelemetry} from '@/types/uav/telemetry.types';
+import type {MissionTelemetryReplay, UavTelemetry} from '@/types/uav/telemetry.types';
 
 export const fleetMapService = {
     get: (signal?: AbortSignal) => apiClient.get<FleetMap>(API_ROUTES.dashboard.fleetMap, {signal}),
@@ -15,6 +15,8 @@ export const telemetryService = {
         apiClient.get<UavTelemetry[]>(API_ROUTES.uavs.fleetTelemetry, {signal}),
     forMission: (missionId: number, signal?: AbortSignal) =>
         apiClient.get<UavTelemetry | undefined>(API_ROUTES.missions.latestTelemetry(missionId), {signal}),
+    replayForMission: (missionId: number, signal?: AbortSignal) =>
+        apiClient.get<MissionTelemetryReplay>(API_ROUTES.missions.telemetryReplay(missionId), {signal}),
 };
 
 /** Telemetry is polled; device gateways push at roughly 1 Hz, the UI refreshes every few seconds. */

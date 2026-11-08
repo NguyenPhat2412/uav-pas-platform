@@ -123,6 +123,7 @@ public final class ApiRoutes {
         public static final String STATUS = "/{id}/status";
         public static final String MAINTENANCE = "/{id}/maintenance";
         public static final String HISTORY = "/{id}/history";
+        public static final String HEALTH_ANALYTICS = "/health-analytics";
     }
 
     public static final class Stations {
@@ -229,6 +230,7 @@ public final class ApiRoutes {
         public static final String DISPATCH_CANDIDATES = "/{id}/dispatch-candidates";
         public static final String AUTO_ASSIGN = "/{id}/auto-assign";
         public static final String OPERATOR_LOGBOOK = "/operator-logbook";
+        public static final String INSPECTION_REPORT = "/{id}/inspection-report";
         public static final String MEDIA_UPLOAD_URL = "/{id}/media/upload-url";
         public static final String MEDIA_CONFIRM = "/{id}/media/{mediaId}/confirm";
     }
@@ -541,6 +543,7 @@ public final class ApiRoutes {
         public static final String UAVS_TELEMETRY_LATEST = "/uavs/{id}/telemetry/latest";
         public static final String UAVS_TELEMETRY_LATEST_ALL = "/uavs/telemetry/latest";
         public static final String MISSIONS_TELEMETRY_LATEST = "/missions/{id}/telemetry/latest";
+        public static final String MISSIONS_TELEMETRY_REPLAY = "/missions/{id}/telemetry/replay";
     }
 
     /** Simulated UAV flights that feed the telemetry pipeline (stand-in for PX4 SITL). */

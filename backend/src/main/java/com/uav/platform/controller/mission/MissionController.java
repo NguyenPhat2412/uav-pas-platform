@@ -415,4 +415,11 @@ public class MissionController {
             @PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(service.autoAssign(id, authentication));
     }
+
+    @GetMapping(ApiRoutes.Missions.INSPECTION_REPORT)
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    public ResponseEntity<MissionInspectionReportResponse> inspectionReport(
+            @PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(service.inspectionReport(id, authentication));
+    }
 }

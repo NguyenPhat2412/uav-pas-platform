@@ -4,6 +4,8 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import {useParams, useRouter} from 'next/navigation';
 import {AppShell} from '@/components/layout/AppShell';
 import {MissionHandoverReviewCard} from '@/components/mission/customer/MissionHandoverReviewCard';
+import {Mission3DReplayAndTerrainCard} from '@/components/mission/Mission3DReplayAndTerrainCard';
+import {MissionInspectionReportCard} from '@/components/mission/MissionInspectionReportCard';
 import {MissionPermitCard} from '@/components/mission/MissionPermitCard';
 import {MissionPreflightCard} from '@/components/mission/operations/MissionPreflightCard';
 import {OperationsMissionConfirmSection} from '@/components/mission/operations/OperationsMissionConfirmSection';
@@ -246,6 +248,20 @@ function MissionDetail({id}: {id: string}) {
                     canSign={(mission.operatorId === user?.id && can('MISSION_STATUS_UPDATE')) || can('MISSION_CONFIRM')}
                     disabled={disabled}
                     onSigned={() => { if (readTimeline) void missions.timeline(missionId).then(events => setData(s => ({...s, events}))).catch(() => undefined); }}
+                />
+
+                <Mission3DReplayAndTerrainCard
+                    key={`replay-${mission.id}`}
+                    missionId={mission.id}
+                    missionCode={mission.code}
+                    status={mission.status}
+                />
+
+                <MissionInspectionReportCard
+                    key={`inspection-${mission.id}`}
+                    missionId={mission.id}
+                    downloadingMediaId={downloading}
+                    onDownloadMedia={mediaId => void download(mediaId)}
                 />
 
                 {mission.status === 'COMPLETED' && <MissionHandoverReviewCard key={`review-${mission.id}`} missionId={mission.id} readOnly externalReview={reviewQuery.data} />}

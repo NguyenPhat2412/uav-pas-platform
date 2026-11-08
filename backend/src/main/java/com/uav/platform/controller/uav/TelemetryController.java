@@ -2,6 +2,7 @@ package com.uav.platform.controller.uav;
 
 import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.dto.request.uav.TelemetryReportRequest;
+import com.uav.platform.dto.response.uav.MissionTelemetryReplayResponse;
 import com.uav.platform.dto.response.uav.TelemetryResponse;
 import com.uav.platform.service.uav.TelemetryService;
 
@@ -68,5 +69,13 @@ public class TelemetryController {
                 .latestForMission(id, auth)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.noContent().build());
+    }
+
+    /** Full 3D flight trajectory, attitude HUD and terrain clearance replay for a mission. */
+    @GetMapping(ApiRoutes.Telemetry.MISSIONS_TELEMETRY_REPLAY)
+    @PreAuthorize("@permissionService.has(authentication, 'MISSION_VIEW')")
+    public ResponseEntity<MissionTelemetryReplayResponse> replayForMission(
+            @PathVariable Long id, Authentication auth) {
+        return ResponseEntity.ok(telemetry.replayForMission(id, auth));
     }
 }

@@ -2,6 +2,7 @@
 import type {ReactNode} from 'react';
 import {MapPin, UserCheck} from 'lucide-react';
 import {UavIcon} from '@/components/shared/UavIcon';
+import {UavModelViewer} from '@/components/visuals/UavModelViewer';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 import {useUav} from '@/hooks/uav/useUavs';
@@ -44,6 +45,11 @@ export function MissionResources({mission}: { mission: Mission }) {
                 </>}
             </Resource>
         </ul>
+        {uav.data && (
+            <div className="border-t border-border bg-slate-50/40 p-4 md:p-5">
+                <UavModelViewer compact serial={uav.data.serialNumber} model={uav.data.model} status={uav.data.status}/>
+            </div>
+        )}
     </section>;
 }
 

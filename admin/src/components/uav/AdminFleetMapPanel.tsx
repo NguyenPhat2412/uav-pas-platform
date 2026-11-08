@@ -14,6 +14,9 @@ import {cn} from '@/lib/utils';
 import {useFleetMap} from '@/hooks/uav/useTelemetry';
 import {uavStatuses, type FleetStation, type FleetUav, type UavStatus} from '@/types/uav/fleet-map.types';
 import {uavStatusColor} from '@/components/uav/FleetMap';
+import {UavModelViewer} from '@/components/visuals/UavModelViewer';
+import {Mission3DReplayAndTerrainCard} from '@/components/mission/Mission3DReplayAndTerrainCard';
+import {MissionInspectionReportCard} from '@/components/mission/MissionInspectionReportCard';
 
 const FleetMap = dynamic(() => import('@/components/uav/FleetMap').then(m => m.FleetMap), {ssr: false});
 
@@ -153,6 +156,9 @@ function UavDetail({uav, where, onClose, formatDate}: {
                     <p className="m-0 mt-0.5 text-xs text-primary/70">
                         {[uav.activeMission.locationName, formatDate(uav.activeMission.startTime)].filter(Boolean).join(' · ')}</p>
                 </div> : <p className="m-0 text-[13px] text-primary/70">{t('admin.fleetMap.noActiveMission')}</p>}
+                <div className="mt-4">
+                    <UavModelViewer compact serial={uav.serialNumber} model={uav.model} status={uav.status}/>
+                </div>
             </div>
             <div className="p-4">
                 <h3 className="mb-2 mt-0 text-xs font-bold uppercase tracking-wide text-primary">{t('admin.fleetMap.history')}</h3>
@@ -172,5 +178,17 @@ function UavDetail({uav, where, onClose, formatDate}: {
                 </> : <p className="m-0 text-[13px] text-primary/70">{t('admin.fleetMap.noHistory')}</p>}</QueryState>
             </div>
         </div>
+        {uav.activeMission && (
+            <div className="grid gap-4 border-t border-rose-100 p-4">
+                <Mission3DReplayAndTerrainCard
+                    missionId={uav.activeMission.id}
+                    missionCode={uav.activeMission.code}
+                    uavSerial={uav.serialNumber}
+                    uavModel={uav.model}
+                    status={uav.activeMission.status}
+                />
+                <MissionInspectionReportCard missionId={uav.activeMission.id} />
+            </div>
+        )}
     </section>;
 }

@@ -6,6 +6,7 @@ import type {
     MissionAvailability,
     MissionEvent,
     MissionInput,
+    MissionInspectionReport,
     MissionMedia,
     MissionPermitUpsertInput,
     MissionPermitVerifyInput,
@@ -48,6 +49,8 @@ export const customerMissionService = {
     cancel: (id: number) => apiClient.post<Mission>(API_ROUTES.missions.cancel(id)),
     getReview: (id: number, signal?: AbortSignal) =>
         apiClient.get<MissionReview>(API_ROUTES.missions.review(id), {signal}),
+    inspectionReport: (id: number, signal?: AbortSignal) =>
+        apiClient.get<MissionInspectionReport>(API_ROUTES.missions.inspectionReport(id), {signal}),
     upsertReview: (id: number, payload: MissionReviewUpsertInput) =>
         apiClient.put<MissionReview>(API_ROUTES.missions.review(id), payload),
     timeline: (id: number, signal?: AbortSignal) =>

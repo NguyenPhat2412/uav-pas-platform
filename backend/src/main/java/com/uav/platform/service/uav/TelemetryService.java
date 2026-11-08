@@ -1,6 +1,7 @@
 package com.uav.platform.service.uav;
 
 import com.uav.platform.dto.request.uav.TelemetryReportRequest;
+import com.uav.platform.dto.response.uav.MissionTelemetryReplayResponse;
 import com.uav.platform.dto.response.uav.TelemetryResponse;
 
 import org.springframework.security.core.Authentication;
@@ -20,4 +21,9 @@ public interface TelemetryService {
 
     /** The assigned UAV's latest sample, for anyone who may see the mission; empty when unassigned or silent. */
     Optional<TelemetryResponse> latestForMission(Long missionId, Authentication auth);
+
+    /** Full 3D flight trajectory, attitude HUD and terrain clearance replay for a mission. */
+    default MissionTelemetryReplayResponse replayForMission(Long missionId, Authentication auth) {
+        throw new UnsupportedOperationException("replayForMission not configured");
+    }
 }

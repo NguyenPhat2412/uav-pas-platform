@@ -18,3 +18,73 @@ export interface UavTelemetry {
     ageSeconds: number;
     stale: boolean;
 }
+
+export interface MissionTelemetryReplaySample {
+    index: number;
+    recordedAt: string;
+    latitude: number;
+    longitude: number;
+    altitudeAglMeters: number;
+    terrainElevationMeters: number;
+    clearanceMeters: number;
+    groundSpeedMs: number;
+    headingDeg: number;
+    pitchDeg: number;
+    rollDeg: number;
+    gimbalPitchDeg: number;
+    batteryPct: number;
+    rtkStatus: string;
+    satellites: number;
+    distanceFromStartMeters: number;
+    source: string;
+}
+
+export interface MissionTelemetryReplay {
+    missionId: number;
+    missionCode: string;
+    uavId: number | null;
+    uavSerialNumber: string;
+    uavModel: string;
+    airframeClass: 'QUADCOPTER_RTK' | 'HEXACOPTER_SAR' | 'VTOL_FIXED_WING';
+    totalDistanceMeters: number;
+    maxAltitudeMeters: number;
+    minClearanceMeters: number;
+    terrainClearanceSafe: boolean;
+    samples: MissionTelemetryReplaySample[];
+}
+
+export interface UavHealthProfile {
+    uavId: number;
+    serialNumber: string;
+    model: string;
+    manufacturer: string;
+    status: string;
+    stationName: string | null;
+    airframeClass: 'QUADCOPTER_RTK' | 'HEXACOPTER_SAR' | 'VTOL_FIXED_WING';
+    rotorCount: number;
+    maxSpeedMs: number;
+    maxWindKnots: number;
+    maxEnduranceMinutes: number;
+    maxPayloadKg: number;
+    healthScore: number;
+    healthTier: 'OPTIMAL' | 'ATTENTION' | 'CRITICAL';
+    completedMissionsCount: number;
+    totalFlightHours: number;
+    openRepairCount: number;
+    totalRepairCount: number;
+    motorHealthPct: number;
+    batteryStateOfHealthPct: number;
+    estimatedBatteryCycles: number;
+    predictedRemainingHours: number;
+    lastMaintenanceAt: string | null;
+    recommendation: string;
+}
+
+export interface UavHealthAnalytics {
+    totalFleetCount: number;
+    optimalCount: number;
+    attentionCount: number;
+    criticalCount: number;
+    averageHealthScore: number;
+    profiles: UavHealthProfile[];
+}

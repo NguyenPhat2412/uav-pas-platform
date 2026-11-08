@@ -288,6 +288,15 @@ public class MissionServiceImpl implements MissionService {
         return requireExtended().autoAssign(id, authentication);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public MissionInspectionReportResponse inspectionReport(
+            Long id, Authentication authentication) {
+        List<MissionMediaResponse> mediaItems =
+                media == null ? List.of() : media.listMedia(id, authentication);
+        return requireExtended().inspectionReport(id, mediaItems, authentication);
+    }
+
     private MissionExtendedWorkflowService requireExtended() {
         if (extended == null) {
             throw new IllegalStateException("MissionExtendedWorkflowService is not configured");

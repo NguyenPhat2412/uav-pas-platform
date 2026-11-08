@@ -1,6 +1,7 @@
 import {apiClient, API_ROUTES} from '@/lib/api';
 import {uavChangeReason} from '@/utils/uav/workflows';
 import type {PageResponse, Uav, UavHistory} from '@/types/resources';
+import type {UavHealthAnalytics} from '@/types/uav/telemetry.types';
 
 export const uavsService = {
     listUavs: (page = 0, size = 100, signal?: AbortSignal) =>
@@ -8,6 +9,8 @@ export const uavsService = {
     uav: (id: number, signal?: AbortSignal) => apiClient.get<Uav>(API_ROUTES.uavs.detail(id), {signal}),
     uavHistory: (id: number, page = 0, signal?: AbortSignal) =>
         apiClient.get<PageResponse<UavHistory>>(`${API_ROUTES.uavs.history(id)}?page=${page}&size=20`, {signal}),
+    healthAnalytics: (signal?: AbortSignal) =>
+        apiClient.get<UavHealthAnalytics>(API_ROUTES.uavs.healthAnalytics, {signal}),
     createUav: (data: {
         model: string;
         serialNumber: string;

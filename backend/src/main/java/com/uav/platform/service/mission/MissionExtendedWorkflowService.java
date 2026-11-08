@@ -3,12 +3,16 @@ package com.uav.platform.service.mission;
 import com.uav.platform.dto.request.mission.MissionPreflightUpsertRequest;
 import com.uav.platform.dto.request.mission.MissionReviewUpsertRequest;
 import com.uav.platform.dto.response.mission.MissionDispatchCandidatesResponse;
+import com.uav.platform.dto.response.mission.MissionInspectionReportResponse;
+import com.uav.platform.dto.response.mission.MissionMediaResponse;
 import com.uav.platform.dto.response.mission.MissionPreflightResponse;
 import com.uav.platform.dto.response.mission.MissionResponse;
 import com.uav.platform.dto.response.mission.MissionReviewResponse;
 import com.uav.platform.dto.response.mission.OperatorLogbookResponse;
 
 import org.springframework.security.core.Authentication;
+
+import java.util.List;
 
 public interface MissionExtendedWorkflowService {
 
@@ -29,4 +33,9 @@ public interface MissionExtendedWorkflowService {
     MissionDispatchCandidatesResponse dispatchCandidates(Long id, Authentication authentication);
 
     MissionResponse autoAssign(Long id, Authentication authentication);
+
+    default MissionInspectionReportResponse inspectionReport(
+            Long id, List<MissionMediaResponse> mediaItems, Authentication authentication) {
+        throw new UnsupportedOperationException("inspectionReport not configured");
+    }
 }

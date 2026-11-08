@@ -17,6 +17,7 @@ import type {
     MissionDispatchCandidates,
     MissionEvent,
     MissionInput,
+    MissionInspectionReport,
     MissionMedia,
     MissionPermitUpsertInput,
     MissionPermitVerifyInput,
@@ -127,4 +128,6 @@ export const missionService = {
     dispatchCandidates: (id: number, signal?: AbortSignal) =>
         apiClient.get<MissionDispatchCandidates>(API_ROUTES.missions.dispatchCandidates(id), {signal}),
     autoAssign: (id: number) => apiClient.post<Mission>(API_ROUTES.missions.autoAssign(id)),
+    inspectionReport: (id: number, signal?: AbortSignal) =>
+        apiClient.get<MissionInspectionReport>(API_ROUTES.missions.inspectionReport(id), {signal}),
 };

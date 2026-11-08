@@ -19,6 +19,7 @@ import {MissionPermitCard} from "@/components/mission/MissionPermitCard";
 import {SiteWeather} from "@/components/mission/customer/SiteWeather";
 import {MissionMonitoring} from "@/components/mission/customer/MissionMonitoring";
 import {MissionHandoverReviewCard} from "@/components/mission/customer/MissionHandoverReviewCard";
+import {MissionInspectionReportCard} from "@/components/mission/MissionInspectionReportCard";
 import {parseEntityId, toMissionSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/providers/I18nContext';
 import type {MissionTab} from '@/types/mission/mission.types';
@@ -231,6 +232,11 @@ function MissionDetail() {
                 {tab === 'monitoring' && <MissionMonitoring mission={mission}/>}
                 {tab === 'weather' && <SiteWeather mission={mission}/>}
                 {tab === 'delivery' && <div className="grid gap-5">
+        <MissionInspectionReportCard
+            missionId={mission.id}
+            downloadingMediaId={downloading}
+            onDownloadMedia={mediaId => void download(mediaId)}
+        />
         {mission.status === 'COMPLETED' && <section className="min-w-0 overflow-hidden rounded-panel border border-border" aria-labelledby="handover-title">
             <header className={panelHeaderClass}><h2 id="handover-title" className={panelTitleClass}>{t('missionDetail.handover')}</h2></header>
             <div className={panelBodyClass}>

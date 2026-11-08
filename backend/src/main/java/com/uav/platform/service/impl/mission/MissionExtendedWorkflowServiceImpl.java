@@ -7,6 +7,8 @@ import com.uav.platform.dto.request.notification.CreateNotificationRequest;
 import com.uav.platform.dto.response.airspace.AirspaceCheckResponse;
 import com.uav.platform.dto.response.mission.FlightPlanResponse;
 import com.uav.platform.dto.response.mission.MissionDispatchCandidatesResponse;
+import com.uav.platform.dto.response.mission.MissionInspectionReportResponse;
+import com.uav.platform.dto.response.mission.MissionMediaResponse;
 import com.uav.platform.dto.response.mission.MissionPreflightResponse;
 import com.uav.platform.dto.response.mission.MissionResponse;
 import com.uav.platform.dto.response.mission.MissionReviewResponse;
@@ -894,5 +896,15 @@ public class MissionExtendedWorkflowServiceImpl implements MissionExtendedWorkfl
                             mission.getId()));
         } catch (RuntimeException ignored) {
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MissionInspectionReportResponse inspectionReport(
+            Long id, List<MissionMediaResponse> mediaItems, Authentication authentication) {
+        Mission mission = access.accessible(id, authentication);
+        MissionPreflightLog preflight = preflightLogs.findByMissionId(id).orElse(null);
+        MissionReview review = reviews.findByMissionId(id).orElse(null);
+        return MissionInspectionOperations.buildReport(mission, mediaItems, preflight, review);
     }
 }

@@ -10,6 +10,7 @@ import {DataTable, options} from '@/components/data/DataTable';
 import {Drawer, Metadata, Tabs} from '@/components/data/Drawer';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {UavModelViewer} from '@/components/visuals/UavModelViewer';
+import {UavHealthAnalyticsSection} from '@/components/uav/UavHealthAnalyticsSection';
 import {Pagination} from "@/components/data/ResourceState";
 import {UavLifecyclePanel} from "@/components/uav/UavLifecyclePanel";
 import {
@@ -37,7 +38,8 @@ export function UavPanel() {
     const [historyPage, setHistoryPage] = useState(0);
     const history = useUavHistory(selected, historyPage);
     const [tab, setTab] = useState('overview');
-    const [show3d, setShow3d] = useState(false);
+    const [show3d, setShow3d] = useState(true);
+    const [showFleet3d, setShowFleet3d] = useState(true);
     const [openCreate, setOpenCreate] = useState(false);
     const [form, setForm] = useState(emptyUavCreateDraft);
     const {create} = useUavMutations();
@@ -83,7 +85,7 @@ export function UavPanel() {
         setSelected(id);
         setHistoryPage(0);
         setTab(nextTab);
-        setShow3d(false);
+        setShow3d(true);
         syncUavUrl(id, nextTab);
     };
     const columns = [
@@ -119,9 +121,21 @@ export function UavPanel() {
         },
     ];
     return <div className="space-y-5">
-        {can('UAV_CREATE') && <div className="flex justify-end"><Button size="sm" leftIcon={<Plus size={15}/>}
-                                                                        onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.uav.closeForm') : t('opsAssets.uav.add')}</Button>
-        </div>}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+            <Button size="sm" variant="outline" onClick={() => setShowFleet3d(value => !value)}>
+                {showFleet3d ? t('opsAssets.uav.close3d') : t('opsAssets.uav.view3d')}
+            </Button>
+            {can('UAV_CREATE') && <Button size="sm" leftIcon={<Plus size={15}/>}
+                                          onClick={() => setOpenCreate(value => !value)}>{openCreate ? t('opsAssets.uav.closeForm') : t('opsAssets.uav.add')}</Button>}
+        </div>
+        {showFleet3d && (
+            <UavModelViewer
+                serial={rows[0]?.serialNumber ?? 'UAV-350-RTK'}
+                model={rows[0]?.model ?? 'Enterprise RTK Quadcopter'}
+                status={rows[0]?.status ?? 'AVAILABLE'}
+            />
+        )}
+        <UavHealthAnalyticsSection onSelectUav={(id, nextTab) => openUav(id, nextTab)} />
         {openCreate && can('UAV_CREATE') &&
             <form noValidate className="space-y-4 rounded-panel border border-border bg-slate-50 p-4" onSubmit={async event => {
                 event.preventDefault();
@@ -178,7 +192,7 @@ export function UavPanel() {
                                                                                                         variant="outline"
                                                                                                         onClick={() => setShow3d(value => !value)}>{show3d ? t('opsAssets.uav.close3d') : t('opsAssets.uav.view3d')}</Button>
                     </div>
-                    {show3d ? <UavModelViewer serial={detail.data.serialNumber} status={detail.data.status}/> : <div
+                    {show3d ? <UavModelViewer serial={detail.data.serialNumber} model={detail.data.model} status={detail.data.status}/> : <div
                         className="flex min-h-[180px] items-center justify-center rounded-panel border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">{t('opsAssets.uav.modelOnDemand')}</div>}</div>
                 <Metadata
                     items={[[t('opsAssets.uav.model'), detail.data.model], [t('opsAssets.uav.serial'), detail.data.serialNumber], [t('opsAssets.uav.manufacturer'), detail.data.manufacturer], [t('opsAssets.uav.status'),

@@ -396,3 +396,50 @@ export interface MissionDispatchCandidates {
     equipment: EquipmentCandidate[];
 }
 
+export interface DeliverableGeoPin {
+    mediaId: number;
+    fileName: string;
+    mediaType: string;
+    fileUrl: string;
+    latitude: number;
+    longitude: number;
+    altitudeMeters: number;
+    waypointIndex: number;
+    phaseLabel: string;
+    uploadedAt: string;
+}
+
+export interface MissionInspectionReport {
+    missionId: number;
+    missionCode: string;
+    title: string;
+    missionType: string;
+    status: string;
+    priority: string;
+    customerName: string | null;
+    locationName: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    startTime: string | null;
+    expectedEndTime: string | null;
+    actualStartTime: string | null;
+    actualEndTime: string | null;
+    stationName: string | null;
+    operatorName: string | null;
+    uavSerialNumber: string;
+    uavModel: string;
+    airframeClass: 'QUADCOPTER_RTK' | 'HEXACOPTER_SAR' | 'VTOL_FIXED_WING';
+    permitStatus: string;
+    permitReference: string | null;
+    preflightPassed: boolean;
+    totalDistanceMeters: number;
+    maxAltitudeMeters: number;
+    waypointCount: number;
+    mediaCount: number;
+    customerRating: number | null;
+    customerReviewComment: string | null;
+    certificateCode: string;
+    generatedAt: string;
+    deliverablePins: DeliverableGeoPin[];
+}
+

@@ -2,6 +2,7 @@ package com.uav.platform.service.impl.uav;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.dto.request.uav.UavRequest;
+import com.uav.platform.dto.response.uav.UavHealthAnalyticsResponse;
 import com.uav.platform.dto.response.uav.UavResponse;
 import com.uav.platform.dto.response.uav.UavStatusHistoryResponse;
 import com.uav.platform.entity.station.Station;
@@ -244,6 +245,15 @@ public class UavServiceImpl implements UavService {
                                         .belongsToUav(id)),
                         pageable),
                 uavMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UavHealthAnalyticsResponse healthAnalytics() {
+        return UavHealthOperations.analyzeFleet(
+                repository.findAll(),
+                missions.findAllNonDraftWithAssociations(),
+                repairOrders == null ? java.util.List.of() : repairOrders.findAll());
     }
 
     private Uav find(Long id) {

@@ -2,6 +2,7 @@ package com.uav.platform.service.uav;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.dto.request.uav.UavRequest;
+import com.uav.platform.dto.response.uav.UavHealthAnalyticsResponse;
 import com.uav.platform.dto.response.uav.UavResponse;
 import com.uav.platform.dto.response.uav.UavStatusHistoryResponse;
 import com.uav.platform.enums.uav.UavStatus;
@@ -32,4 +33,8 @@ public interface UavService {
     UavResponse maintenance(Long id, String reason, UavStatus expectedStatus, String actor);
 
     PageResponse<UavStatusHistoryResponse> history(Long id, Pageable pageable);
+
+    default UavHealthAnalyticsResponse healthAnalytics() {
+        throw new UnsupportedOperationException("healthAnalytics not configured");
+    }
 }

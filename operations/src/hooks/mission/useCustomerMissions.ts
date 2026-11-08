@@ -45,6 +45,15 @@ export function useMissionReview(id: number, enabled = true) {
     });
 }
 
+export function useMissionInspectionReport(id: number, enabled = true) {
+    const {key, can, permissionsReady} = useCustomerScope();
+    return useQuery({
+        queryKey: [...key, 'mission', id, 'inspection-report'],
+        queryFn: ({signal}) => customerMissionService.inspectionReport(id, signal),
+        enabled: enabled && Number.isSafeInteger(id) && id > 0 && permissionsReady && can('MISSION_VIEW'),
+    });
+}
+
 export function useMissions(search = '', page = 0, status?: MissionStatus, missionType?: MissionType) {
     const {key, user, can, permissionsReady} = useCustomerScope();
     return useQuery({

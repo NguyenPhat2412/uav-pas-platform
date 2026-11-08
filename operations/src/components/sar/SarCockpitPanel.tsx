@@ -8,6 +8,7 @@ import {AiViewfinder} from '@/components/sar/AiViewfinder';
 import {SarTacticalMap} from '@/components/sar/SarTacticalMap';
 import {UavTelemetryHud} from '@/components/sar/UavTelemetryHud';
 import {Kv260EdgeStatusCard} from '@/components/sar/Kv260EdgeStatusCard';
+import {UavModelViewer} from '@/components/visuals/UavModelViewer';
 import {useSarDetections, useSarDispatchRescue, useSarMissions, useSarReturnToHome, useSarTasks} from '@/hooks/sar/useSar';
 import {useMissionTelemetry} from '@/hooks/uav/useTelemetry';
 import type {SarCockpitMission, SarDispatchResult} from '@/types/sar/sar.types';
@@ -154,6 +155,12 @@ function MissionCockpit({mission, missions, onChoose, canOperate}: {
                 <Kv260EdgeStatusCard task={latestTask} loading={tasksQuery.isPending}/>
             </ErrorBoundary>
         </div>
+
+        <UavModelViewer
+            serial={mission.uavSerialNumber ?? 'UAV-350-RTK'}
+            model={mission.uavModel ?? 'Enterprise RTK Quadcopter'}
+            status="IN_USE"
+        />
     </div>;
 }
 
