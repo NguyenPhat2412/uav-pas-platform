@@ -85,7 +85,6 @@ export function TrainingCourseAdminPanel({
     const activePreviewLesson =
         (previewLessonId !== null ? lessons.find(lesson => lesson.id === previewLessonId) : null) ??
         activeLessons[0] ??
-        lessons[0] ??
         null;
 
     const previewLessonQuery = useTrainingLesson(activePreviewLesson?.id ?? 0, activePreviewLesson !== null);
