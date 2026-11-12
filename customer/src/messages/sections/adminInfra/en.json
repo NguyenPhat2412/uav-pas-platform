@@ -1,0 +1,285 @@
+{
+  "adminInfra": {
+    "title": "Infrastructure",
+    "pages": {
+      "overview": "Infrastructure overview",
+      "deployment": "Deployment",
+      "backups": "Backups",
+      "storage": "File storage",
+      "database": "Database",
+      "email": "Email"
+    },
+    "nav": {
+      "overview": "Overview",
+      "deployment": "Deployment",
+      "backups": "Backups",
+      "storage": "Storage",
+      "database": "Database",
+      "email": "Email",
+      "health": "System health"
+    },
+    "common": {
+      "checkedAt": "Checked at {time}",
+      "refresh": "Refresh",
+      "yes": "Yes",
+      "no": "No",
+      "error": "Error",
+      "notConfigured": "Not configured",
+      "durationDays": "{days} d {hours} h",
+      "durationHours": "{hours} h {minutes} min"
+    },
+    "deployment": {
+      "note": "Read-only. Redeploy over SSH (DEPLOY.md §8).",
+      "banner": "Running version {version}",
+      "bannerDetail": "Commit {commit} · Flyway schema {flyway}",
+      "failedMigrations": "{count} migrations failed. Check logs now.",
+      "build": "Build",
+      "runtime": "Runtime",
+      "unknownBuildHint": "No version info. Build per DEPLOY.md §8.",
+      "version": "Version",
+      "commit": "Commit",
+      "buildTime": "Build time",
+      "profiles": "Spring profiles",
+      "defaultProfile": "default",
+      "java": "Java",
+      "startedAt": "Started at",
+      "uptime": "Uptime",
+      "timeZone": "Server time zone",
+      "publicUrl": "Public URL",
+      "migrations": "Migration history ({count})",
+      "noMigrations": "Cannot read Flyway history.",
+      "colVersion": "Version",
+      "colDescription": "Description",
+      "colInstalled": "Applied at",
+      "colDuration": "Duration",
+      "colResult": "Result",
+      "ok": "Success",
+      "failed": "Failed"
+    },
+    "tls": {
+      "title": "HTTPS certificate",
+      "status": {
+        "OK": "Valid",
+        "EXPIRING": "Expiring soon",
+        "EXPIRED": "Expired",
+        "NOT_HTTPS": "Not HTTPS",
+        "NOT_CONFIGURED": "Not configured",
+        "UNREACHABLE": "Unreachable"
+      },
+      "hint": {
+        "OK": "Checked hourly. On VPS: certbot certificates.",
+        "EXPIRING": "Under 14 days. Run certbot renew --dry-run (§10.3).",
+        "EXPIRED": "Expired. Renew now with certbot.",
+        "NOT_HTTPS": "APP_PUBLIC_URL is not https.",
+        "NOT_CONFIGURED": "APP_PUBLIC_URL not set.",
+        "UNREACHABLE": "TLS to public URL failed. Retrying in 10 min."
+      },
+      "notAfter": "Expires at",
+      "daysLeft": "Days left",
+      "issuer": "Issuer",
+      "trusted": "Trusted",
+      "checkedAt": "Checked at"
+    },
+    "backups": {
+      "note": "Read-only. No create, delete or restore here.",
+      "status": {
+        "OK": "Backups are current",
+        "STALE": "Backups are overdue",
+        "MISSING": "No backups found",
+        "NOT_CONFIGURED": "Backup folder not configured"
+      },
+      "hint": {
+        "OK": "Latest backup within {hours} h.",
+        "STALE": "Over {hours} h old. Check uav-pas-backup cron.",
+        "MISSING": "No *.sql.gz found. See DEPLOY.md §9, §10.4.",
+        "NOT_CONFIGURED": "APP_BACKUP_DIR not set."
+      },
+      "lastSuccess": "Last success",
+      "hoursAgo": "{hours} h ago",
+      "fileCount": "Copies on the VPS",
+      "totalSize": "Total size",
+      "staleAfter": "Overdue after",
+      "hours": "{hours} h",
+      "files": "Backups on the VPS",
+      "noFiles": "No backup files yet.",
+      "colName": "File",
+      "colSize": "Size",
+      "colModified": "Time",
+      "offsite": "Off-site copy",
+      "offsiteUnknown": "Not visible to the app",
+      "offsiteTarget": "Location",
+      "offsiteHint": "Check: rclone ls r2backup:uavpas-backups/db/.",
+      "restore": "Restore",
+      "restoreHint": "SSH only; test on a scratch DB first (§9.4)."
+    },
+    "storage": {
+      "note": "Endpoint and keys hidden. Cached 10 min.",
+      "reachable": {
+        "UP": "{provider} storage is reachable",
+        "DOWN": "{provider} storage is unreachable",
+        "UNKNOWN": "{provider} storage status is unknown"
+      },
+      "usageError": "Could not list the bucket ({error}).",
+      "cleanupWarn": "Some cleanups are overdue or retrying.",
+      "provider": "Provider: {provider}",
+      "bucket": "Bucket usage",
+      "truncated": "Too many objects; figures are minimums.",
+      "cacheHint": "Includes unconfirmed files.",
+      "objects": "Objects",
+      "totalSize": "Total size",
+      "mediaBytes": "Confirmed files",
+      "mediaBytesHint": "according to the database",
+      "providerLabel": "Provider",
+      "media": "Media file lifecycle",
+      "attention": "Needs attention",
+      "mediaHint": "Overdue: over 1 h past schedule.",
+      "confirmed": "Confirmed",
+      "awaitingUpload": "Awaiting upload",
+      "expiredUploads": "Expired uploads",
+      "purged": "Removed from storage",
+      "pendingCleanup": "Pending cleanup",
+      "cleanupOverdue": "Cleanup overdue",
+      "cleanupRetrying": "Cleanup retrying"
+    },
+    "database": {
+      "note": "Refreshes every 30 s. Credentials hidden.",
+      "banner": "PostgreSQL {version}",
+      "bannerDetail": "Size {size} · {used}/{max} connections",
+      "connections": "Connections",
+      "active": "Running queries",
+      "idle": "Idle",
+      "idleInTransaction": "Idle in transaction",
+      "usage": "Used / max",
+      "pool": "Connection pool (Hikari)",
+      "poolHint": "Waiting threads: pool full or slow queries.",
+      "poolUnavailable": "Pool figures are not available.",
+      "poolActive": "In use / max",
+      "poolIdle": "Idle",
+      "poolTotal": "Total",
+      "poolWaiting": "Waiting threads",
+      "tables": "10 largest tables",
+      "rowsHint": "Row counts are estimates (autovacuum).",
+      "colTable": "Table",
+      "colSize": "Size (incl. indexes)",
+      "colRows": "Rows (estimate)"
+    },
+    "email": {
+      "note": "SMTP hidden. Edit .env.production, recreate backend.",
+      "connection": {
+        "UP": "Mail server is reachable",
+        "DOWN": "Mail server is unreachable",
+        "DISABLED": "Outbound email is off",
+        "UNKNOWN": "Mail connection status unknown"
+      },
+      "enabledDetail": "Sends OTP, 2FA and password resets.",
+      "disabledDetail": "APP_MAIL_ENABLED=false: no OTP sent.",
+      "config": "Configuration",
+      "configHint": "Host and user shown as yes/no only.",
+      "enabled": "Email enabled",
+      "hostConfigured": "SMTP host set",
+      "usernameConfigured": "SMTP account set",
+      "port": "Port",
+      "from": "From address",
+      "connectionTitle": "Connection check",
+      "connectionStatus": {
+        "UP": "Reachable",
+        "DOWN": "Failing",
+        "DISABLED": "Off",
+        "UNKNOWN": "Unknown"
+      },
+      "connectionHint": "SMTP login only, no send. Cached 5 min.",
+      "lastProbe": "Last check",
+      "testTitle": "Send a test email",
+      "testHint": "To your own email; once per {seconds} s.",
+      "testRecipient": "Recipient: {email}",
+      "noRecipient": "Your account has no email address.",
+      "sending": "Sending…",
+      "send": "Send test email",
+      "testDisabled": "Enable APP_MAIL_ENABLED to test.",
+      "testSent": "Sent to {email} at {time}. Check spam.",
+      "testFailed": "Send failed ({error}). See backend logs."
+    },
+    "overview": {
+      "deploymentSummary": "{version} · {commit} · HTTPS: {tls}",
+      "cards": {
+        "deployment": "Version, migrations, HTTPS certificate.",
+        "backups": "Daily pg_dump, latest success.",
+        "storage": "R2 usage, media cleanup queue.",
+        "database": "Connections, pool, largest tables.",
+        "email": "SMTP config, probe, test send.",
+        "health": "All components, every 30 s."
+      },
+      "runbookTitle": "SSH only",
+      "runbook": {
+        "restart": {
+          "title": "Restart / deploy",
+          "how": "docker compose … up -d --build (§8)"
+        },
+        "logs": {
+          "title": "View logs",
+          "how": "docker compose … logs --tail 200 backend"
+        },
+        "restore": {
+          "title": "Restore database",
+          "how": "Scratch DB first (§9.4)"
+        },
+        "certbot": {
+          "title": "Renew certificate",
+          "how": "certbot renew --dry-run (§10.3)"
+        },
+        "secrets": {
+          "title": "Rotate secrets",
+          "how": "Edit .env.production, recreate container"
+        },
+        "uptime": {
+          "title": "Downtime alerts",
+          "how": "External monitor on /actuator/health (§10.1)"
+        }
+      }
+    },
+    "health": {
+      "component": {
+        "mail": "Email",
+        "backups": "Backups",
+        "tls": "HTTPS certificate"
+      },
+      "status": {
+        "DISABLED": "Off"
+      },
+      "detail": {
+        "error": "Error",
+        "checkedAt": "Checked at",
+        "backupState": "State",
+        "files": "Copies",
+        "hoursSinceLast": "Hours since last",
+        "certificate": "Certificate",
+        "daysLeft": "Days left",
+        "trusted": "Trusted",
+        "bankTransfer": "Bank transfer",
+        "bank": "Receiving bank"
+      },
+      "hint": {
+        "mail": {
+          "DOWN": "SMTP down: OTP not delivered. See Infrastructure → Email.",
+          "DISABLED": "Email off (APP_MAIL_ENABLED=false).",
+          "UNKNOWN": "Cannot check SMTP."
+        },
+        "backups": {
+          "DEGRADED": "Backups stale or missing. See Infrastructure → Backups.",
+          "DOWN": "The backup folder could not be read.",
+          "UNKNOWN": "APP_BACKUP_DIR not set."
+        },
+        "tls": {
+          "DEGRADED": "Cert under 14 days or untrusted. Check certbot.",
+          "DOWN": "The HTTPS certificate has expired.",
+          "UNKNOWN": "Cannot check cert (APP_PUBLIC_URL, https)."
+        },
+        "payments": {
+          "DEGRADED": "No payee account. Set in Settings → Payments.",
+          "DOWN": "Payment configuration could not be read.",
+          "UNKNOWN": "Payment configuration has not been checked yet."
+        }
+      }
+    }
+  }
+}

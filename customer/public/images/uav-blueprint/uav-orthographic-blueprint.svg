@@ -1,0 +1,250 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 850" width="1200" height="850" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace">
+  <defs>
+    <pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+      <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+    </pattern>
+    <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+      <rect width="50" height="50" fill="url(#smallGrid)"/>
+      <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#334155" stroke-width="1"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="850" fill="#0f172a"/>
+  <rect x="25" y="25" width="1150" height="800" fill="url(#grid)" stroke="#475569" stroke-width="2"/>
+
+  <!-- Projection Alignment Guides across Views -->
+  <g stroke="#0284c7" stroke-width="0.75" stroke-dasharray="4 4" opacity="0.45">
+    <!-- Vertical alignment between TOP VIEW (center X=325) and FRONT VIEW (center X=325) -->
+    <line x1="325" y1="60" x2="325" y2="780"/>
+    <line x1="175" y1="115" x2="175" y2="700"/>
+    <line x1="475" y1="115" x2="475" y2="700"/>
+    <line x1="265" y1="265" x2="265" y2="700"/>
+    <line x1="385" y1="265" x2="385" y2="700"/>
+    <!-- Horizontal alignment between FRONT VIEW (center Y=600) and SIDE VIEW (center Y=600) -->
+    <line x1="100" y1="535" x2="1100" y2="535"/>
+    <line x1="100" y1="565" x2="1100" y2="565"/>
+    <line x1="100" y1="610" x2="1100" y2="610"/>
+    <line x1="100" y1="650" x2="1100" y2="650"/>
+    <line x1="100" y1="715" x2="1100" y2="715"/>
+  </g>
+
+  <!-- ==================== 1. TOP VIEW (Orthographic Z-Axis) ==================== -->
+  <!-- Center: (325, 265), Scale: 1px = 2mm -->
+  <g id="top-view" transform="translate(325, 265)">
+    <text x="-210" y="-190" fill="#38bdf8" font-size="14" font-weight="bold" letter-spacing="1.5">01 // TOP VIEW (HÌNH CHIẾU BẰNG - Z AXIS)</text>
+    <text x="-210" y="-172" fill="#94a3b8" font-size="11">Wheelbase: 895mm | Arm Angle: 45° X-Config | Prop: 21 inch (533mm)</text>
+
+    <!-- Center Crosshair -->
+    <line x1="-220" y1="0" x2="220" y2="0" stroke="#475569" stroke-width="1" stroke-dasharray="6 3"/>
+    <line x1="0" y1="-165" x2="0" y2="185" stroke="#475569" stroke-width="1" stroke-dasharray="6 3"/>
+
+    <!-- 4 Carbon Arms (to X=±150, Y=±150 -> Diagonal 424px = 848mm) -->
+    <g stroke="#e2e8f0" stroke-width="2" fill="#1e293b">
+      <path d="M -35 -25 L -155 -145 L -145 -155 L -25 -35 Z"/>
+      <path d="M 35 -25 L 155 -145 L 145 -155 L 25 -35 Z"/>
+      <path d="M -35 25 L -155 145 L -145 155 L -25 35 Z"/>
+      <path d="M 35 25 L 155 145 L 145 155 L 25 35 Z"/>
+    </g>
+
+    <!-- Landing Gear Skids (Top Projection) -->
+    <rect x="-95" y="-110" width="8" height="220" rx="4" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+    <rect x="87" y="-110" width="8" height="220" rx="4" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+
+    <!-- Central Fuselage Body (Width: 120px=240mm, Length: 160px=320mm) -->
+    <polygon points="-42,-80 42,-80 60,-45 60,55 40,85 -40,85 -60,55 -60,-45" fill="#1e293b" stroke="#f8fafc" stroke-width="2.5"/>
+    <!-- Inner Avionics & KV260 Edge AI Bay -->
+    <rect x="-36" y="-42" width="72" height="84" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+    <line x1="-28" y1="-25" x2="28" y2="-25" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
+    <line x1="-28" y1="-10" x2="28" y2="-10" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
+    <line x1="-28" y1="5" x2="28" y2="5" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
+    <text x="0" y="28" fill="#38bdf8" font-size="9" text-anchor="middle">KRIA KV260 AI</text>
+
+    <!-- Front Direction Nose Cone / FPV Camera -->
+    <polygon points="-18,-80 18,-80 10,-94 -10,-94" fill="#f43f5e" opacity="0.85" stroke="#fda4af" stroke-width="1.5"/>
+    <text x="0" y="-102" fill="#fda4af" font-size="10" font-weight="bold" text-anchor="middle">FRONT (MŨI)</text>
+
+    <!-- Dual RTK GNSS Antennas (Rear-Top) -->
+    <circle cx="-26" cy="64" r="9" fill="#0f172a" stroke="#22d3ee" stroke-width="2"/>
+    <circle cx="26" cy="64" r="9" fill="#0f172a" stroke="#22d3ee" stroke-width="2"/>
+    <circle cx="-26" cy="64" r="2.5" fill="#22d3ee"/>
+    <circle cx="26" cy="64" r="2.5" fill="#22d3ee"/>
+
+    <!-- 4 Motors & Propeller Discs (Radius: 85px) -->
+    <g>
+      <!-- Front-Left Motor (CCW) -->
+      <circle cx="-150" cy="-150" r="82" fill="#38bdf8" fill-opacity="0.06" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="5 3"/>
+      <circle cx="-150" cy="-150" r="14" fill="#1e293b" stroke="#f8fafc" stroke-width="2"/>
+      <circle cx="-150" cy="-150" r="5" fill="#f43f5e"/>
+      <text x="-150" y="-172" fill="#cbd5e1" font-size="9" text-anchor="middle">M1 (CCW)</text>
+
+      <!-- Front-Right Motor (CW) -->
+      <circle cx="150" cy="-150" r="82" fill="#38bdf8" fill-opacity="0.06" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="5 3"/>
+      <circle cx="150" cy="-150" r="14" fill="#1e293b" stroke="#f8fafc" stroke-width="2"/>
+      <circle cx="150" cy="-150" r="5" fill="#f43f5e"/>
+      <text x="150" y="-172" fill="#cbd5e1" font-size="9" text-anchor="middle">M2 (CW)</text>
+
+      <!-- Rear-Left Motor (CW) -->
+      <circle cx="-150" cy="150" r="82" fill="#38bdf8" fill-opacity="0.06" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="5 3"/>
+      <circle cx="-150" cy="150" r="14" fill="#1e293b" stroke="#f8fafc" stroke-width="2"/>
+      <circle cx="-150" cy="150" r="5" fill="#22c55e"/>
+      <text x="-150" y="178" fill="#cbd5e1" font-size="9" text-anchor="middle">M3 (CW)</text>
+
+      <!-- Rear-Right Motor (CCW) -->
+      <circle cx="150" cy="150" r="82" fill="#38bdf8" fill-opacity="0.06" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="5 3"/>
+      <circle cx="150" cy="150" r="14" fill="#1e293b" stroke="#f8fafc" stroke-width="2"/>
+      <circle cx="150" cy="150" r="5" fill="#22c55e"/>
+      <text x="150" y="178" fill="#cbd5e1" font-size="9" text-anchor="middle">M4 (CCW)</text>
+    </g>
+
+    <!-- Dimension Lines (Top View) -->
+    <g stroke="#38bdf8" stroke-width="1">
+      <line x1="-150" y1="205" x2="150" y2="205" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+      <line x1="-150" y1="150" x2="-150" y2="212" stroke-dasharray="2 2"/>
+      <line x1="150" y1="150" x2="150" y2="212" stroke-dasharray="2 2"/>
+      <rect x="-55" y="195" width="110" height="18" fill="#0f172a"/>
+      <text x="0" y="208" fill="#38bdf8" font-size="10" text-anchor="middle">600 mm (Center-X)</text>
+    </g>
+  </g>
+
+  <!-- ==================== 2. FRONT VIEW (Orthographic Y-Axis) ==================== -->
+  <!-- Center: (325, 610) -->
+  <g id="front-view" transform="translate(325, 610)">
+    <text x="-210" y="-95" fill="#38bdf8" font-size="14" font-weight="bold" letter-spacing="1.5">02 // FRONT VIEW (HÌNH CHIẾU ĐỨNG - Y AXIS)</text>
+
+    <!-- Ground Line -->
+    <line x1="-220" y1="105" x2="220" y2="105" stroke="#64748b" stroke-width="1.5"/>
+    <text x="225" y="108" fill="#64748b" font-size="9">GROUND (0mm)</text>
+
+    <!-- Dual RTK Antennas (Top) -->
+    <rect x="-30" y="-75" width="8" height="30" rx="3" fill="#1e293b" stroke="#22d3ee" stroke-width="1.5"/>
+    <rect x="22" y="-75" width="8" height="30" rx="3" fill="#1e293b" stroke="#22d3ee" stroke-width="1.5"/>
+    <ellipse cx="-26" cy="-75" rx="9" ry="4" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+    <ellipse cx="26" cy="-75" rx="9" ry="4" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+
+    <!-- Arms with 5-degree Dihedral Angle -->
+    <path d="M -55 -20 L -150 -42 L -150 -32 L -55 -8 Z" fill="#1e293b" stroke="#e2e8f0" stroke-width="2"/>
+    <path d="M 55 -20 L 150 -42 L 150 -32 L 55 -8 Z" fill="#1e293b" stroke="#e2e8f0" stroke-width="2"/>
+
+    <!-- Motors & Propeller Planes -->
+    <rect x="-162" y="-58" width="24" height="16" rx="2" fill="#334155" stroke="#f8fafc" stroke-width="2"/>
+    <rect x="138" y="-58" width="24" height="16" rx="2" fill="#334155" stroke="#f8fafc" stroke-width="2"/>
+    <!-- Propellers thin profile -->
+    <line x1="-232" y1="-63" x2="-68" y2="-63" stroke="#38bdf8" stroke-width="2.5"/>
+    <line x1="68" y1="-63" x2="232" y2="-63" stroke="#38bdf8" stroke-width="2.5"/>
+    <rect x="-153" y="-68" width="6" height="10" fill="#f43f5e"/>
+    <rect x="147" y="-68" width="6" height="10" fill="#f43f5e"/>
+
+    <!-- Central Fuselage -->
+    <polygon points="-45,-45 45,-45 60,-15 48,18 -48,18 -60,-15" fill="#1e293b" stroke="#f8fafc" stroke-width="2.5"/>
+    <!-- Front Stereo Vision Sensors & FPV Cam -->
+    <circle cx="-24" cy="-16" r="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+    <circle cx="24" cy="-16" r="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="-10" y="-8" width="20" height="12" rx="2" fill="#f43f5e" stroke="#fda4af" stroke-width="1"/>
+
+    <!-- 3-Axis Gimbal & Thermal/EO Payload (Underneath) -->
+    <line x1="-12" y1="18" x2="-12" y2="34" stroke="#cbd5e1" stroke-width="3"/>
+    <line x1="12" y1="18" x2="12" y2="34" stroke="#cbd5e1" stroke-width="3"/>
+    <rect x="-24" y="34" width="48" height="36" rx="8" fill="#0f172a" stroke="#f8fafc" stroke-width="2"/>
+    <circle cx="-8" cy="52" r="10" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+    <circle cx="11" cy="52" r="6" fill="#1e293b" stroke="#f43f5e" stroke-width="1.5"/>
+
+    <!-- Landing Gear Legs -->
+    <path d="M -46 15 L -91 100 L -83 100 L -38 15 Z" fill="#334155" stroke="#cbd5e1" stroke-width="1.5"/>
+    <path d="M 46 15 L 91 100 L 83 100 L 38 15 Z" fill="#334155" stroke="#cbd5e1" stroke-width="1.5"/>
+    <!-- Skid tubes cross-section -->
+    <circle cx="-91" cy="100" r="5" fill="#f8fafc"/>
+    <circle cx="91" cy="100" r="5" fill="#f8fafc"/>
+
+    <!-- Height Dimension -->
+    <g stroke="#38bdf8" stroke-width="1">
+      <line x1="-205" y1="-75" x2="-205" y2="105" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+      <text x="-212" y="15" fill="#38bdf8" font-size="10" text-anchor="end">360 mm</text>
+    </g>
+  </g>
+
+  <!-- ==================== 3. SIDE VIEW (Orthographic X-Axis) ==================== -->
+  <!-- Center: (860, 610) -->
+  <g id="side-view" transform="translate(860, 610)">
+    <text x="-230" y="-95" fill="#38bdf8" font-size="14" font-weight="bold" letter-spacing="1.5">03 // SIDE VIEW (HÌNH CHIẾU CẠNH - X AXIS)</text>
+
+    <!-- Ground Line -->
+    <line x1="-230" y1="105" x2="230" y2="105" stroke="#64748b" stroke-width="1.5"/>
+
+    <!-- RTK Antenna Mast (Rear) -->
+    <rect x="52" y="-75" width="8" height="32" rx="3" fill="#1e293b" stroke="#22d3ee" stroke-width="1.5"/>
+    <ellipse cx="56" cy="-75" rx="10" ry="4" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+
+    <!-- Front & Rear Arms (Side projection) -->
+    <path d="M -45 -18 L -150 -42 L -150 -32 L -45 -8 Z" fill="#1e293b" stroke="#e2e8f0" stroke-width="2"/>
+    <path d="M 45 -18 L 150 -40 L 150 -30 L 45 -8 Z" fill="#1e293b" stroke="#e2e8f0" stroke-width="2"/>
+
+    <!-- Front & Rear Motors + Props -->
+    <rect x="-162" y="-58" width="24" height="16" rx="2" fill="#334155" stroke="#f8fafc" stroke-width="2"/>
+    <rect x="138" y="-56" width="24" height="16" rx="2" fill="#334155" stroke="#f8fafc" stroke-width="2"/>
+    <line x1="-225" y1="-63" x2="-75" y2="-63" stroke="#38bdf8" stroke-width="2.5"/>
+    <line x1="75" y1="-61" x2="225" y2="-61" stroke="#22c55e" stroke-width="2.5"/>
+
+    <!-- Fuselage Side Profile (Length: 160px = 320mm) -->
+    <polygon points="-85,-12 -55,-45 65,-45 80,-20 75,18 -68,18" fill="#1e293b" stroke="#f8fafc" stroke-width="2.5"/>
+    <!-- KV260 Top Heatsink Fins -->
+    <rect x="-30" y="-51" width="60" height="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+    <!-- Smart LiPo Battery Bay (Rear Insert) -->
+    <rect x="5" y="-32" width="62" height="38" rx="4" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="36" y="-10" fill="#94a3b8" font-size="8" text-anchor="middle">TB65 BAT</text>
+    <!-- Nose Cone -->
+    <polygon points="-85,-12 -68,-28 -68,4" fill="#f43f5e" opacity="0.85"/>
+    <text x="-105" y="-8" fill="#fda4af" font-size="9" text-anchor="end">FRONT</text>
+
+    <!-- Gimbal Camera Side Profile -->
+    <path d="M -20 18 L -28 36 L 4 36 L 4 18 Z" fill="#334155" stroke="#cbd5e1" stroke-width="1.5"/>
+    <rect x="-42" y="34" width="46" height="34" rx="6" fill="#0f172a" stroke="#f8fafc" stroke-width="2"/>
+    <rect x="-52" y="42" width="10" height="18" rx="2" fill="#38bdf8" opacity="0.5" stroke="#38bdf8" stroke-width="1.5"/>
+
+    <!-- Landing Gear Struts & Horizontal Skid Bar -->
+    <line x1="-42" y1="18" x2="-65" y2="98" stroke="#cbd5e1" stroke-width="5"/>
+    <line x1="42" y1="18" x2="65" y2="98" stroke="#cbd5e1" stroke-width="5"/>
+    <rect x="-110" y="96" width="220" height="8" rx="4" fill="#334155" stroke="#f8fafc" stroke-width="2"/>
+
+    <!-- Length Dimension -->
+    <g stroke="#38bdf8" stroke-width="1">
+      <line x1="-110" y1="130" x2="110" y2="130" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+      <text x="0" y="145" fill="#38bdf8" font-size="10" text-anchor="middle">440 mm (Skid Base)</text>
+    </g>
+  </g>
+
+  <!-- ==================== 4. 3D MODELING SPECIFICATIONS & BOM BOX ==================== -->
+  <g transform="translate(620, 75)">
+    <rect x="0" y="0" width="520" height="360" rx="8" fill="#0f172a" fill-opacity="0.9" stroke="#334155" stroke-width="2"/>
+    <rect x="0" y="0" width="520" height="36" rx="8" fill="#1e293b"/>
+    <text x="18" y="23" fill="#f8fafc" font-size="13" font-weight="bold" letter-spacing="1">04 // THÔNG SỐ KỸ THUẬT DỰNG HÌNH 3D (CAD / BLENDER SPECS)</text>
+
+    <g fill="#cbd5e1" font-size="11.5" transform="translate(20, 62)">
+      <text x="0" y="0" fill="#38bdf8" font-weight="bold">1. KÍCH THƯỚC CHUẨN (SCALE 1:1 TRONG BLENDER / CAD):</text>
+      <text x="12" y="22">• Sải trục chéo (Diagonal Wheelbase): 895 mm (X-Frame 45°)</text>
+      <text x="12" y="42">• Khoảng cách tâm 2 motor ngang/dọc: 600 mm × 600 mm</text>
+      <text x="12" y="62">• Kích thước thân chính (Fuselage): Dài 320 mm × Rộng 240 mm × Cao 125 mm</text>
+      <text x="12" y="82">• Tổng chiều cao (từ chân đáp tới đỉnh RTK): 360 mm</text>
+      <text x="12" y="102">• Đường kính cánh quạt (Propeller Disc): 533 mm (21 inch) | Góc nghiêng tay đòn: 5°</text>
+
+      <text x="0" y="138" fill="#38bdf8" font-weight="bold">2. PHÂN TÁCH MESH &amp; PIVOT POINTS (ĐỂ ANIMATE TRONG THREE.JS):</text>
+      <text x="12" y="160">• <tspan fill="#f8fafc">uav_body</tspan>: Khung thân chính + tay đòn carbon + chân đáp (Origin tại trọng tâm 0,0,0)</text>
+      <text x="12" y="180">• <tspan fill="#f8fafc">prop_fl, prop_fr, prop_rl, prop_rr</tspan>: 4 cánh quạt riêng biệt (Pivot tại tâm từng motor)</text>
+      <text x="12" y="200">• <tspan fill="#f8fafc">gimbal_yaw / gimbal_pitch</tspan>: Cụm camera nhiệt/quang học dưới bụng</text>
+      <text x="12" y="220">• <tspan fill="#f8fafc">led_front_red, led_rear_green</tspan>: Vật liệu Emissive để điều khiển trạng thái bay</text>
+
+      <text x="0" y="255" fill="#38bdf8" font-weight="bold">3. ĐỊNH DẠNG XUẤT CHO WEB (UAV-PAS PLATFORM):</text>
+      <text x="12" y="276">• Format: <tspan fill="#22d3ee">glTF 2.0 Binary (.glb)</tspan> (Draco compression, &lt; 5MB, PBR Metallic-Roughness)</text>
+    </g>
+  </g>
+
+  <!-- Title Block Footer -->
+  <g transform="translate(620, 770)">
+    <rect x="0" y="0" width="530" height="40" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <text x="15" y="25" fill="#f8fafc" font-size="12" font-weight="bold">VJU UAV-PAS PLATFORM // INDUSTRIAL SAR QUADCOPTER BLUEPRINT</text>
+    <text x="415" y="25" fill="#38bdf8" font-size="11">SCALE: 1px = 2mm</text>
+  </g>
+</svg>

@@ -1,0 +1,252 @@
+{
+  "adminSecurity": {
+    "pages": {
+      "sessions": "Sessions & 2FA",
+      "policy": "Sign-in policy",
+      "secrets": "Secrets & keys"
+    },
+    "nav": {
+      "label": "Security",
+      "sessions": "Sessions & 2FA",
+      "policy": "Sign-in policy",
+      "secrets": "Secrets & keys"
+    },
+    "common": {
+      "on": "On",
+      "off": "Off",
+      "yes": "Yes",
+      "no": "No",
+      "notSet": "Not set",
+      "minutes": "{count} min",
+      "hours": "{count} h",
+      "days": "{count} days"
+    },
+    "severity": {
+      "CRITICAL": "Critical",
+      "WARNING": "Warning",
+      "INFO": "Info"
+    },
+    "warnings": {
+      "title": "{count} configuration findings",
+      "criticalCount": "{count} critical",
+      "codes": {
+        "OTP_DEV_PREVIEW_ENABLED": {
+          "title": "OTP preview is on",
+          "fix": "OTP leaks in API and logs. Set APP_AUTH_OTP_DEV_PREVIEW=false."
+        },
+        "COOKIE_SAMESITE_NONE_INSECURE": {
+          "title": "SameSite=None without Secure",
+          "fix": "Cookie gets rejected. Set APP_COOKIE_SECURE=true or SameSite=Lax."
+        },
+        "COOKIE_NOT_SECURE": {
+          "title": "Cookie not Secure",
+          "fix": "Cookie may travel over HTTP. Set APP_COOKIE_SECURE=true."
+        },
+        "CORS_WILDCARD": {
+          "title": "CORS allows any origin (*)",
+          "fix": "List exact domains in APP_CORS_ALLOWED_ORIGINS."
+        },
+        "CORS_LOCALHOST": {
+          "title": "CORS allows localhost",
+          "fix": "Remove localhost from APP_CORS_ALLOWED_ORIGINS."
+        },
+        "CORS_PLAIN_HTTP": {
+          "title": "CORS allows HTTP origins",
+          "fix": "Use only https:// in APP_CORS_ALLOWED_ORIGINS."
+        },
+        "MAIL_DISABLED": {
+          "title": "Email sending off",
+          "fix": "OTP emails won't send. Configure SMTP, set APP_MAIL_ENABLED=true."
+        },
+        "ACCESS_TOKEN_LONG_LIVED": {
+          "title": "Access token over 24 hours",
+          "fix": "Lower APP_JWT_EXPIRATION_MS to 15–60 minutes."
+        },
+        "REFRESH_TOKEN_LONG_LIVED": {
+          "title": "Refresh token over 30 days",
+          "fix": "Consider lowering app.jwt.refresh-expiration-ms."
+        },
+        "NOT_PRODUCTION_PROFILE": {
+          "title": "Not detected as production",
+          "fix": "If this is production, check deploy/.env.production."
+        },
+        "SECRET_MISSING": {
+          "title": "Required secret missing",
+          "fix": "Set a long random value, then restart."
+        },
+        "SECRET_KNOWN_DEFAULT": {
+          "title": "Secret uses a default value",
+          "fix": "Treat as leaked. Replace with a new random value."
+        },
+        "SECRET_TOO_SHORT": {
+          "title": "Secret too short",
+          "fix": "Generate: openssl rand -base64 48."
+        }
+      }
+    },
+    "sessions": {
+      "revokeAll": {
+        "title": "Sign out all users",
+        "description": "Revokes every account's sessions except yours.",
+        "action": "Sign out everyone"
+      },
+      "filters": {
+        "search": "Search accounts",
+        "searchPlaceholder": "Username, email or name",
+        "searchButton": "Search",
+        "role": "Role",
+        "allRoles": "All roles",
+        "activeOnly": "Active only"
+      },
+      "empty": "No matching accounts.",
+      "columns": {
+        "user": "Account",
+        "role": "Role",
+        "session": "Session",
+        "twoFactor": "2FA",
+        "lastRevoked": "Last revoked",
+        "actions": "Actions"
+      },
+      "you": "You",
+      "state": {
+        "ACTIVE": "Active",
+        "EXPIRED": "Expired",
+        "REVOKED": "Revoked",
+        "NONE": "No session"
+      },
+      "signedIn": "Signed in: {time}",
+      "expires": "Expires: {time}",
+      "twoFactorMethod": {
+        "EMAIL": "Email OTP",
+        "TOTP": "Authenticator app"
+      },
+      "twoFactorOff": "Off",
+      "revokedBy": "{time} by {name}",
+      "selfWarning": "Your account: you will be signed out.",
+      "actions": {
+        "revoke": "Revoke sessions",
+        "reset2fa": "Reset 2FA"
+      },
+      "confirm": {
+        "revokeUser": "Revoke all sessions of {name}?",
+        "revokeSelf": "Your own account. You'll be signed out now. Continue?",
+        "revokeAll": "Sign out all other users? This cannot be undone.",
+        "reset2fa": "Turn off 2FA for {name}? Verify their identity first.",
+        "reset2faSelf": "Your own account.",
+        "reset2faRevoke": "Also sign {name} out everywhere?"
+      },
+      "done": {
+        "REVOKE_USER_SESSIONS": "Sessions revoked.",
+        "REVOKE_ALL_SESSIONS": "Signed out {count} accounts ({tokens} tokens).",
+        "RESET_2FA": "2FA reset.",
+        "selfSignedOut": "Your session was revoked."
+      }
+    },
+    "policy": {
+      "readOnlyNote": "Read-only. Edit deploy/.env.production, then restart.",
+      "allGood": "No issues.",
+      "groups": {
+        "tokens": "Sign-in tokens",
+        "otp": "OTP & 2FA",
+        "cookie": "Session cookie",
+        "mail": "Email",
+        "cors": "CORS",
+        "runtime": "Environment"
+      },
+      "fields": {
+        "accessToken": "Access token lifetime",
+        "refreshToken": "Refresh token lifetime",
+        "otpTtl": "OTP code lifetime",
+        "totpIssuer": "Authenticator name",
+        "otpDevPreview": "OTP preview",
+        "cookieSecure": "Cookie Secure",
+        "cookieSameSite": "Cookie SameSite",
+        "cookieDomain": "Cookie domain",
+        "mailEnabled": "Email sending",
+        "corsOrigins": "Allowed origins",
+        "profiles": "Spring profiles",
+        "productionLike": "Production"
+      },
+      "defaultProfile": "default"
+    },
+    "secrets": {
+      "notice": {
+        "title": "Secrets are never shown here",
+        "body": "Managed in deploy/.env.production on the VPS."
+      },
+      "allGood": "All secrets OK.",
+      "columns": {
+        "secret": "Secret",
+        "status": "Status",
+        "configured": "Set",
+        "length": "Length",
+        "default": "Default value",
+        "managedIn": "Managed in"
+      },
+      "names": {
+        "app_jwt_secret": "JWT signing key",
+        "app_billing_ipn_secret": "Payment IPN secret",
+        "app_ai_router_secret": "AI router encryption key",
+        "app_storage_access_key": "Storage access key",
+        "app_storage_secret_key": "Storage secret key",
+        "spring_mail_password": "SMTP password",
+        "spring_datasource_password": "Database password"
+      },
+      "notes": {
+        "DERIVED_FROM_JWT_SECRET": "Not set: derived from JWT key.",
+        "REQUIRED_WHEN_BILLING_PROVIDER_ENABLED": "Required when payments are on.",
+        "REQUIRED_WHEN_SMTP_AUTH_ENABLED": "Required when SMTP auth is on."
+      },
+      "status": {
+        "OK": "OK",
+        "MISSING": "Missing",
+        "NOT_REQUIRED": "Not required",
+        "TOO_SHORT": "Too short",
+        "KNOWN_DEFAULT": "Default value"
+      },
+      "required": "Required",
+      "optional": "Optional",
+      "lengthOk": "OK (≥ {min})",
+      "lengthShort": "Shorter than {min}",
+      "defaultYes": "Uses a default",
+      "defaultNo": "No",
+      "aiKey": {
+        "title": "AI provider API key",
+        "configured": "Configured (encrypted).",
+        "configuredAt": "Configured {time} by {name}.",
+        "missing": "Not configured. AI assistant is off.",
+        "manage": "Manage in AI Router"
+      },
+      "rotation": {
+        "title": "Secret rotation",
+        "general": "Edit deploy/.env.production, re-run docker compose. Generate: openssl rand -base64 48.",
+        "items": {
+          "jwt": {
+            "title": "JWT key (APP_JWT_SECRET)",
+            "body": "Ends all sessions. Re-enter AI key if APP_AI_ROUTER_SECRET is unset."
+          },
+          "billingIpn": {
+            "title": "IPN secret (APP_BILLING_IPN_SECRET)",
+            "body": "Update at the provider and server together."
+          },
+          "aiRouter": {
+            "title": "AI router key (APP_AI_ROUTER_SECRET)",
+            "body": "After changing, re-enter the API key in AI Router."
+          },
+          "storage": {
+            "title": "Storage keys (APP_STORAGE_ACCESS_KEY / APP_STORAGE_SECRET_KEY)",
+            "body": "Create a new pair, update, test uploads, delete the old pair."
+          },
+          "mail": {
+            "title": "SMTP password (SMTP_PASSWORD)",
+            "body": "Change at provider, update server, test an OTP."
+          },
+          "database": {
+            "title": "Database password (POSTGRES_PASSWORD)",
+            "body": "Run ALTER USER first, then update server and restart."
+          }
+        }
+      }
+    }
+  }
+}

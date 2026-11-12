@@ -1,0 +1,285 @@
+{
+  "adminInfra": {
+    "title": "インフラ",
+    "pages": {
+      "overview": "インフラ概要",
+      "deployment": "デプロイ",
+      "backups": "バックアップ",
+      "storage": "ファイルストレージ",
+      "database": "データベース",
+      "email": "メール"
+    },
+    "nav": {
+      "overview": "概要",
+      "deployment": "デプロイ",
+      "backups": "バックアップ",
+      "storage": "ストレージ",
+      "database": "データベース",
+      "email": "メール",
+      "health": "システム状態"
+    },
+    "common": {
+      "checkedAt": "{time} に確認",
+      "refresh": "更新",
+      "yes": "はい",
+      "no": "いいえ",
+      "error": "エラー",
+      "notConfigured": "未設定",
+      "durationDays": "{days}日 {hours}時間",
+      "durationHours": "{hours}時間 {minutes}分"
+    },
+    "deployment": {
+      "note": "読み取り専用。再デプロイは SSH で(DEPLOY.md 8章)。",
+      "banner": "稼働中のバージョン {version}",
+      "bannerDetail": "コミット {commit} · Flyway スキーマ {flyway}",
+      "failedMigrations": "{count} 件のマイグレーション失敗。すぐログを確認。",
+      "build": "ビルド",
+      "runtime": "実行環境",
+      "unknownBuildHint": "バージョン情報なし。DEPLOY.md 8章でビルド。",
+      "version": "バージョン",
+      "commit": "コミット",
+      "buildTime": "ビルド日時",
+      "profiles": "Spring プロファイル",
+      "defaultProfile": "デフォルト",
+      "java": "Java",
+      "startedAt": "起動日時",
+      "uptime": "稼働時間",
+      "timeZone": "サーバーのタイムゾーン",
+      "publicUrl": "公開 URL",
+      "migrations": "マイグレーション履歴（{count}）",
+      "noMigrations": "Flyway 履歴を読めません。",
+      "colVersion": "バージョン",
+      "colDescription": "説明",
+      "colInstalled": "適用日時",
+      "colDuration": "所要時間",
+      "colResult": "結果",
+      "ok": "成功",
+      "failed": "失敗"
+    },
+    "tls": {
+      "title": "HTTPS 証明書",
+      "status": {
+        "OK": "有効",
+        "EXPIRING": "まもなく期限切れ",
+        "EXPIRED": "期限切れ",
+        "NOT_HTTPS": "HTTPS ではない",
+        "NOT_CONFIGURED": "未設定",
+        "UNREACHABLE": "接続できません"
+      },
+      "hint": {
+        "OK": "毎時チェック。VPS: certbot certificates。",
+        "EXPIRING": "残り14日未満。certbot renew --dry-run(10.3章)。",
+        "EXPIRED": "期限切れ。certbot で今すぐ更新。",
+        "NOT_HTTPS": "APP_PUBLIC_URL が https ではありません。",
+        "NOT_CONFIGURED": "APP_PUBLIC_URL 未設定。",
+        "UNREACHABLE": "公開 URL への TLS 失敗。10分後に再試行。"
+      },
+      "notAfter": "有効期限",
+      "daysLeft": "残り日数",
+      "issuer": "発行者",
+      "trusted": "信頼済み",
+      "checkedAt": "確認日時"
+    },
+    "backups": {
+      "note": "読み取り専用。作成・削除・復元は不可。",
+      "status": {
+        "OK": "バックアップは最新です",
+        "STALE": "バックアップが遅れています",
+        "MISSING": "バックアップが見つかりません",
+        "NOT_CONFIGURED": "バックアップフォルダー未設定"
+      },
+      "hint": {
+        "OK": "最新バックアップは {hours} 時間以内。",
+        "STALE": "{hours} 時間超過。uav-pas-backup の cron を確認。",
+        "MISSING": "*.sql.gz なし。DEPLOY.md 9章・10.4章参照。",
+        "NOT_CONFIGURED": "APP_BACKUP_DIR 未設定。"
+      },
+      "lastSuccess": "最終成功",
+      "hoursAgo": "{hours} 時間前",
+      "fileCount": "VPS 上の世代数",
+      "totalSize": "合計サイズ",
+      "staleAfter": "遅延とみなす時間",
+      "hours": "{hours} 時間",
+      "files": "VPS 上のバックアップ",
+      "noFiles": "バックアップファイルはまだありません。",
+      "colName": "ファイル",
+      "colSize": "サイズ",
+      "colModified": "日時",
+      "offsite": "VPS 外のコピー",
+      "offsiteUnknown": "アプリからは確認不可",
+      "offsiteTarget": "保存先",
+      "offsiteHint": "確認: rclone ls r2backup:uavpas-backups/db/。",
+      "restore": "復元",
+      "restoreHint": "SSH のみ。まず一時 DB で試す(9.4章)。"
+    },
+    "storage": {
+      "note": "エンドポイントと鍵は非表示。10分キャッシュ。",
+      "reachable": {
+        "UP": "{provider} ストレージに接続できます",
+        "DOWN": "{provider} ストレージに接続できません",
+        "UNKNOWN": "{provider} ストレージの状態が不明です"
+      },
+      "usageError": "バケットを一覧できませんでした（{error}）。",
+      "cleanupWarn": "削除が遅延中または再試行中のファイルあり。",
+      "provider": "プロバイダー: {provider}",
+      "bucket": "バケット使用量",
+      "truncated": "オブジェクト過多。数値は最小値です。",
+      "cacheHint": "未確認ファイルを含みます。",
+      "objects": "オブジェクト数",
+      "totalSize": "合計サイズ",
+      "mediaBytes": "確定済みファイル",
+      "mediaBytesHint": "データベース上の値",
+      "providerLabel": "プロバイダー",
+      "media": "メディアファイルのライフサイクル",
+      "attention": "要確認",
+      "mediaHint": "遅延: 予定より1時間超過。",
+      "confirmed": "確定済み",
+      "awaitingUpload": "アップロード待ち",
+      "expiredUploads": "期限切れアップロード",
+      "purged": "ストレージから削除済み",
+      "pendingCleanup": "削除待ち",
+      "cleanupOverdue": "削除遅延",
+      "cleanupRetrying": "削除再試行中"
+    },
+    "database": {
+      "note": "30秒ごとに更新。接続情報は非表示。",
+      "banner": "PostgreSQL {version}",
+      "bannerDetail": "サイズ {size} · 接続 {used}/{max}",
+      "connections": "接続",
+      "active": "クエリ実行中",
+      "idle": "アイドル",
+      "idleInTransaction": "トランザクション内でアイドル",
+      "usage": "使用中 / 上限",
+      "pool": "接続プール(Hikari)",
+      "poolHint": "待機スレッドあり: プール満杯か遅いクエリ。",
+      "poolUnavailable": "プールの数値を取得できません。",
+      "poolActive": "使用中 / 上限",
+      "poolIdle": "アイドル",
+      "poolTotal": "合計",
+      "poolWaiting": "待機スレッド",
+      "tables": "サイズ上位10テーブル",
+      "rowsHint": "行数は推定値(autovacuum 更新)。",
+      "colTable": "テーブル",
+      "colSize": "サイズ（インデックス含む）",
+      "colRows": "行数（推定）"
+    },
+    "email": {
+      "note": "SMTP は非表示。.env.production を編集し backend を再作成。",
+      "connection": {
+        "UP": "メールサーバーに接続できます",
+        "DOWN": "メールサーバーに接続できません",
+        "DISABLED": "メール送信はオフです",
+        "UNKNOWN": "メール接続の状態が不明です"
+      },
+      "enabledDetail": "OTP・2FA・パスワード再設定を送信。",
+      "disabledDetail": "APP_MAIL_ENABLED=false: OTP は送信されません。",
+      "config": "設定",
+      "configHint": "ホストとユーザーは有無のみ表示。",
+      "enabled": "メール送信",
+      "hostConfigured": "SMTP ホスト設定済み",
+      "usernameConfigured": "SMTP アカウント設定済み",
+      "port": "ポート",
+      "from": "送信元アドレス",
+      "connectionTitle": "接続確認",
+      "connectionStatus": {
+        "UP": "接続可",
+        "DOWN": "失敗",
+        "DISABLED": "オフ",
+        "UNKNOWN": "不明"
+      },
+      "connectionHint": "SMTP ログインのみ、送信なし。5分キャッシュ。",
+      "lastProbe": "最終確認",
+      "testTitle": "テストメール送信",
+      "testHint": "自分宛てのみ。{seconds} 秒に1回。",
+      "testRecipient": "宛先: {email}",
+      "noRecipient": "アカウントにメールアドレスがありません。",
+      "sending": "送信中…",
+      "send": "テストメールを送信",
+      "testDisabled": "テストには APP_MAIL_ENABLED を有効化。",
+      "testSent": "{time} に {email} へ送信。迷惑メールも確認。",
+      "testFailed": "送信失敗({error})。backend ログ参照。"
+    },
+    "overview": {
+      "deploymentSummary": "{version} · {commit} · HTTPS: {tls}",
+      "cards": {
+        "deployment": "バージョン、マイグレーション、HTTPS 証明書。",
+        "backups": "日次 pg_dump と最新成功。",
+        "storage": "R2 使用量、メディア削除キュー。",
+        "database": "接続、プール、最大テーブル。",
+        "email": "SMTP 設定、接続確認、テスト送信。",
+        "health": "全コンポーネント、30秒ごと。"
+      },
+      "runbookTitle": "SSH のみ",
+      "runbook": {
+        "restart": {
+          "title": "再起動 / デプロイ",
+          "how": "docker compose … up -d --build(8章)"
+        },
+        "logs": {
+          "title": "ログ確認",
+          "how": "docker compose … logs --tail 200 backend"
+        },
+        "restore": {
+          "title": "DB 復元",
+          "how": "まず一時 DB で(9.4章)"
+        },
+        "certbot": {
+          "title": "証明書更新",
+          "how": "certbot renew --dry-run(10.3章)"
+        },
+        "secrets": {
+          "title": "シークレット変更",
+          "how": ".env.production 編集、コンテナ再作成"
+        },
+        "uptime": {
+          "title": "ダウン通知",
+          "how": "外部監視 /actuator/health(10.1章)"
+        }
+      }
+    },
+    "health": {
+      "component": {
+        "mail": "メール",
+        "backups": "バックアップ",
+        "tls": "HTTPS 証明書"
+      },
+      "status": {
+        "DISABLED": "オフ"
+      },
+      "detail": {
+        "error": "エラー",
+        "checkedAt": "確認日時",
+        "backupState": "状態",
+        "files": "世代数",
+        "hoursSinceLast": "前回からの時間",
+        "certificate": "証明書",
+        "daysLeft": "残り日数",
+        "trusted": "信頼済み",
+        "bankTransfer": "銀行振込",
+        "bank": "受取銀行"
+      },
+      "hint": {
+        "mail": {
+          "DOWN": "SMTP 障害: OTP 未送信。インフラ → メール参照。",
+          "DISABLED": "メール無効(APP_MAIL_ENABLED=false)。",
+          "UNKNOWN": "SMTP を確認できません。"
+        },
+        "backups": {
+          "DEGRADED": "バックアップ遅延・欠落。インフラ → バックアップ参照。",
+          "DOWN": "バックアップフォルダーを読み取れませんでした。",
+          "UNKNOWN": "APP_BACKUP_DIR 未設定。"
+        },
+        "tls": {
+          "DEGRADED": "証明書が14日未満か信頼されていません。certbot を確認。",
+          "DOWN": "HTTPS 証明書の期限が切れています。",
+          "UNKNOWN": "証明書を確認できません(APP_PUBLIC_URL、https)。"
+        },
+        "payments": {
+          "DEGRADED": "受取口座未設定。設定 → 支払いで入力。",
+          "DOWN": "決済設定を読み込めませんでした。",
+          "UNKNOWN": "決済設定はまだ確認されていません。"
+        }
+      }
+    }
+  }
+}
