@@ -33,6 +33,7 @@ const typeTone: Record<NotificationType, string> = {
 
 /** Where a notification's reference opens; unknown reference types are shown as text only. */
 function referenceHref(n: NotificationRecord) {
+    if (n.referenceType === 'SUPPORT') return '/admin/support';
     if (!n.referenceId) return null;
     switch (n.referenceType) {
         case 'MISSION':
@@ -41,6 +42,8 @@ function referenceHref(n: NotificationRecord) {
             return '/admin/billing';
         case 'USER':
             return `/admin/users/${n.referenceId}`;
+        case 'SUPPORT':
+            return '/admin/support';
         default:
             return null;
     }

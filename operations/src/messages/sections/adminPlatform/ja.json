@@ -62,6 +62,7 @@
         "billing_bank_account_name": "口座名義",
         "billing_vat_rate": "VAT税率",
         "contact_dispatch_hotline": "運航手配ホットライン",
+        "contact_zalo_phone": "オンラインサポート Zalo",
         "contact_email": "連絡先メール",
         "contact_address": "連絡先住所",
         "map_default_basemap": "デフォルト背景地図レイヤー",

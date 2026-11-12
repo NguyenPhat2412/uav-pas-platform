@@ -1,0 +1,26 @@
+import {queryKeys} from '@/lib/query';
+import type {SupportThreadFilter} from '@/types/support/support.types';
+
+type UserId = number | undefined;
+
+export const supportKeys = {
+    siteInfo: () => ['public-site-info'] as const,
+    publicSession: (visitorToken: string | null) => ['public-support-session', visitorToken ?? 'none'] as const,
+    all: (userId: UserId) => queryKeys.feature(userId, 'admin-support'),
+    summary: (userId: UserId) => queryKeys.of(userId, 'admin-support', 'summary'),
+    threadsAll: (userId: UserId) => queryKeys.of(userId, 'admin-support', 'threads'),
+    threads: (userId: UserId, filter: SupportThreadFilter) =>
+        queryKeys.of(
+            userId,
+            'admin-support',
+            'threads',
+            filter.status ?? '',
+            filter.topic ?? '',
+            Boolean(filter.unreadOnly),
+            filter.q?.trim() ?? '',
+            filter.page ?? 0,
+            filter.size ?? 20,
+        ),
+    thread: (userId: UserId, id: number | null) => queryKeys.of(userId, 'admin-support', 'thread', id),
+    quickReplies: (userId: UserId) => queryKeys.of(userId, 'admin-support', 'quick-replies'),
+};

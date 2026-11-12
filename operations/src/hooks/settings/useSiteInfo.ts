@@ -33,8 +33,10 @@ export function useSiteInfo() {
         };
     }, []);
     const envHotline = process.env.NEXT_PUBLIC_DISPATCH_HOTLINE?.trim() || undefined;
+    const envZalo = process.env.NEXT_PUBLIC_ZALO_PHONE?.trim() || undefined;
     return {
         dispatchHotline: info?.dispatchHotline?.trim() || envHotline,
+        zaloPhone: info?.zaloPhone?.trim() || envZalo,
         email: info?.email?.trim() || undefined,
         address: info?.address?.trim() || undefined,
         loaded: info !== undefined,

@@ -62,6 +62,7 @@
         "billing_bank_account_name": "Account holder name",
         "billing_vat_rate": "VAT rate",
         "contact_dispatch_hotline": "Dispatch hotline",
+        "contact_zalo_phone": "Direct support Zalo",
         "contact_email": "Contact email",
         "contact_address": "Contact address",
         "map_default_basemap": "Default basemap layer",

@@ -13,6 +13,11 @@ import {
     X,
     type LucideIcon,
 } from 'lucide-react';
+import {
+    CollapsedNavFlyoutPortal,
+    CollapsedNavGroupTrigger,
+    useCollapsedNavFlyout,
+} from '@/components/layout/CollapsedNavFlyout';
 import {FoldingNavGroup, foldedLinkClass, useFoldedNavGroups} from '@/components/layout/FoldingNavGroup';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
@@ -54,8 +59,9 @@ export function CustomerNavSidebar({
 }: CustomerNavSidebarProps) {
     const {t} = useI18n();
     const counts = useSidebarCounts();
-    const {open, setOpen, railCollapsed, peeking, peekProps, toggleCollapsed, shortcut, rail, navList} = sidebar;
+    const {open, setOpen, railCollapsed, toggleCollapsed, shortcut, rail, navList} = sidebar;
     const {openGroups, toggleGroup} = useFoldedNavGroups('uav_customer_nav_open_groups', activeNav?.group);
+    const flyout = useCollapsedNavFlyout(railCollapsed);
 
     const renderBadge = (count: number, compact: boolean) =>
         count > 0 ? (
@@ -73,18 +79,18 @@ export function CustomerNavSidebar({
             </Badge>
         ) : null;
 
+    const brandLabel = `UAV PAS · ${t('shell.customerTitle')}`;
+    const toggleLabel = `${railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')} (${shortcut})`;
+
     return (
         <>
-            {peeking && <div aria-hidden="true" className="hidden w-[60px] shrink-0 lg:block"/>}
             <aside
                 ref={rail}
                 id="customer-navigation"
-                {...peekProps}
                 className={cn(
-                    'fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-all duration-200 lg:sticky lg:top-0 lg:z-40 lg:h-screen',
+                    'fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-[width,transform] duration-200 lg:sticky lg:top-0 lg:z-40 lg:h-screen',
                     railCollapsed ? 'w-[60px]' : 'w-[min(280px,85vw)] lg:w-[220px]',
                     open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0',
-                    peeking && 'lg:fixed lg:z-[61] lg:shadow-2xl',
                 )}
             >
                 <div className={cn('mb-2 flex items-center border-b border-slate-100 pb-2', railCollapsed ? 'flex-col justify-center gap-1.5' : 'justify-between gap-1.5')}>
@@ -93,7 +99,8 @@ export function CustomerNavSidebar({
                         className={cn('flex min-w-0 items-center gap-2 text-foreground', railCollapsed && 'justify-center')}
                         onClick={() => setOpen(false)}
                         aria-label="UAV PAS"
-                        title={`UAV PAS · ${t('shell.customerTitle')}`}
+                        title={railCollapsed ? undefined : brandLabel}
+                        {...flyout.tooltipTriggerProps('customer-brand', brandLabel)}
                     >
                         <span className="flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-rose-100 bg-white p-0.5 shadow-xs">
                             <Image src="/uav-pas-logo.svg" alt={t('shell.brandName')} width={26} height={26} className="h-[26px] w-[26px] object-contain"/>
@@ -109,15 +116,15 @@ export function CustomerNavSidebar({
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="hidden h-7 w-7 shrink-0 rounded-lg border-slate-200/80 bg-slate-50/80 p-0 text-slate-500 hover:border-primary/30 hover:bg-uav-red-light hover:text-primary lg:inline-flex"
+                        className="hidden h-7 w-7 shrink-0 rounded-lg border-[#ab2523]/20 bg-[#ab2523]/5 p-0 text-[#ab2523] hover:border-[#ab2523]/40 hover:bg-[#ab2523]/12 hover:text-[#ab2523] lg:inline-flex"
                         onClick={toggleCollapsed}
-                        aria-label={(railCollapsed || peeking) ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                        aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
                         aria-keyshortcuts="Control+B Meta+B"
-                        title={`${(railCollapsed || peeking) ? t('shell.expandSidebar') : t('shell.collapseSidebar')} (${shortcut})`}
+                        title={railCollapsed ? undefined : toggleLabel}
+                        {...flyout.tooltipTriggerProps('customer-toggle', toggleLabel)}
                     >
-                        {(railCollapsed || peeking) ? <PanelLeftOpen size={14}/> : <PanelLeftClose size={14}/>}
+                        {railCollapsed ? <PanelLeftOpen size={14}/> : <PanelLeftClose size={14}/>}
                     </Button>
-                    {/* The drawer's own close button, in the slot the desktop collapse toggle uses. */}
                     <Button
                         type="button"
                         variant="outline"
@@ -134,53 +141,55 @@ export function CustomerNavSidebar({
                     <HeaderSearch variant="drawer" items={searchItems}/>
                     <LanguageSwitcher variant="compact" className="sm:hidden"/>
                 </div>
-                <nav ref={navList} aria-label={t('shell.customerSection')} className={cn('flex flex-1 flex-col overflow-y-auto', railCollapsed ? 'gap-2.5' : 'gap-0.5')}>
-                    {CUSTOMER_SIDEBAR_GROUPS.map((group, idx) => {
+                <nav ref={navList} aria-label={t('shell.customerSection')} className={cn('flex flex-1 flex-col overflow-y-auto', railCollapsed ? 'gap-1.5 py-0.5' : 'gap-0.5')}>
+                    {CUSTOMER_SIDEBAR_GROUPS.map(group => {
                         const items = visibleNav.filter(item => item.group === group);
                         if (!items.length) return null;
-                        // The collapsed rail shows every page as an icon; groups fold only in the full sidebar.
+                        const GroupIcon = GROUP_ICONS[group] ?? BellIcon;
+                        const groupLabel = t(`nav.groups.${group}`);
+                        const groupActive = items.some(item => item.href === activeNav?.href);
                         if (railCollapsed) {
+                            const groupBadgeTotal = items.reduce((sum, item) => sum + (item.badge ? counts[item.badge] : 0), 0);
                             return (
-                                <div key={group} role="group" aria-label={t(`nav.groups.${group}`)} className="space-y-0.5">
-                                    {idx > 0 && <hr className="my-1.5 border-slate-100"/>}
-                                    {items.map(({href, key, defaultLabel, icon: Icon, badge}) => {
-                                        const label = t(`nav.${key}`) || defaultLabel || key;
+                                <CollapsedNavGroupTrigger
+                                    key={group}
+                                    id={`customer-flyout-${group}`}
+                                    label={groupLabel}
+                                    icon={GroupIcon}
+                                    active={groupActive}
+                                    controller={flyout}
+                                    onNavigate={() => setOpen(false)}
+                                    badge={renderBadge(groupBadgeTotal, true)}
+                                    items={items.map(({href, key, defaultLabel, badge}) => {
+                                        const translated = t(`nav.${key}`);
+                                        const label = (translated && translated !== `nav.${key}` ? translated : defaultLabel) || key;
                                         const active = href === activeNav?.href;
                                         const count = badge ? counts[badge] : 0;
                                         const accessibleLabel = count ? t(`nav.badges.${badge}`, {label, count}) : label;
-                                        return (
-                                            <Link
-                                                key={href}
-                                                href={href}
-                                                aria-current={active ? 'page' : undefined}
-                                                aria-label={accessibleLabel}
-                                                title={accessibleLabel}
-                                                onClick={() => setOpen(false)}
-                                                className={cn(
-                                                    'relative mx-auto flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
-                                                    active ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-                                                )}
-                                            >
-                                                <Icon size={16} className="shrink-0"/>
-                                                {renderBadge(count, true)}
-                                            </Link>
-                                        );
+                                        return {
+                                            href,
+                                            label,
+                                            active,
+                                            accessibleLabel,
+                                            badge: renderBadge(count, false),
+                                        };
                                     })}
-                                </div>
+                                />
                             );
                         }
                         return (
                             <FoldingNavGroup
                                 key={group}
                                 id={`customer-nav-${group}`}
-                                label={t(`nav.groups.${group}`)}
-                                icon={GROUP_ICONS[group] ?? BellIcon}
+                                label={groupLabel}
+                                icon={GroupIcon}
                                 expanded={!!openGroups[group]}
-                                active={items.some(item => item.href === activeNav?.href)}
+                                active={groupActive}
                                 onToggle={() => toggleGroup(group)}
                             >
                                 {items.map(({href, key, defaultLabel, badge}) => {
-                                    const label = t(`nav.${key}`) || defaultLabel || key;
+                                    const translated = t(`nav.${key}`);
+                                    const label = (translated && translated !== `nav.${key}` ? translated : defaultLabel) || key;
                                     const active = href === activeNav?.href;
                                     const count = badge ? counts[badge] : 0;
                                     const accessibleLabel = count ? t(`nav.badges.${badge}`, {label, count}) : label;
@@ -190,6 +199,7 @@ export function CustomerNavSidebar({
                                                 href={href}
                                                 aria-current={active ? 'page' : undefined}
                                                 aria-label={accessibleLabel}
+                                                title={label}
                                                 onClick={() => setOpen(false)}
                                                 className={cn(foldedLinkClass(active), 'flex items-center justify-between gap-2')}
                                             >
@@ -203,6 +213,7 @@ export function CustomerNavSidebar({
                         );
                     })}
                 </nav>
+                <CollapsedNavFlyoutPortal controller={flyout} onNavigate={() => setOpen(false)}/>
             </aside>
             {open && (
                 <Button

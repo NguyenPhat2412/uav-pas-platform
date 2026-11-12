@@ -131,6 +131,7 @@
     "settings": "System Settings",
     "auditLogs": "Admin Audit Logs",
     "notifications": "Notifications",
+    "supportInbox": "Support Inbox",
     "fleetMap": "Fleet Map",
     "uavs": "UAV Fleet",
     "services": "Service Catalog",

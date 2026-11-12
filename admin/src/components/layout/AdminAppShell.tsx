@@ -3,6 +3,8 @@
 import Image from 'next/image';
 import {useSidebarController} from '@/hooks/useSidebarController';
 import {AssistantWidget} from '@/components/assistant/AssistantWidget';
+import {AdminSupportQuickDock} from '@/components/support/AdminSupportQuickDock';
+import {useSupportSummary} from '@/hooks/support/useAdminSupport';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
@@ -26,6 +28,11 @@ import {useI18n} from '@/providers/I18nContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
 import {AccountMenu} from '@/components/layout/AccountMenu';
 import {AdminAlertsPopover} from '@/components/layout/AdminAlertsPopover';
+import {
+    CollapsedNavFlyoutPortal,
+    CollapsedNavGroupTrigger,
+    useCollapsedNavFlyout,
+} from '@/components/layout/CollapsedNavFlyout';
 import {NotificationBell} from '@/components/notification/NotificationBell';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
@@ -59,14 +66,14 @@ const OPEN_GROUPS_KEY = 'uav_admin_nav_open_groups';
 const TABS_KEY = 'uav_admin_workspace_tabs';
 const HOME = '/admin/dashboard';
 
-
 /** pageTitle names pages that have no sidebar entry (e.g. the profile) in the breadcrumb. */
 export function AppShell({children, activeResource, pageTitle}: { children: React.ReactNode; activeResource?: string; pageTitle?: string }) {
     const pathname = usePathname();
     const {can, permissionsReady} = useAuth();
     const {t} = useI18n();
-    const {open, setOpen, railCollapsed, peeking, peekProps, toggleCollapsed, shortcut, menuButton, rail, navList} =
+    const {open, setOpen, railCollapsed, toggleCollapsed, shortcut, menuButton, rail, navList} =
         useSidebarController('uav_sidebar_collapsed');
+    const flyout = useCollapsedNavFlyout(railCollapsed);
 
     // Opts the admin portal into its own shape and surface scale (see globals.css).
     useEffect(() => {
@@ -78,6 +85,8 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
     }, []);
 
     const visibleNav = nav.filter(item => !item.permission || (permissionsReady && can(item.permission)));
+    const supportSummary = useSupportSummary(permissionsReady && can('DASHBOARD_VIEW'));
+    const unreadSupport = supportSummary.data?.unreadMessages ?? 0;
     const activeNav = resolveSidebarActiveItem(visibleNav, pathname, activeResource);
     // Feeds "Truy cập gần đây" on the dashboard; only sidebar destinations are remembered.
     const activeHref = activeNav?.href;
@@ -97,6 +106,8 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
         const item = visibleNav.find(entry => entry.href === href);
         return item && {label: getNavLabel(item), icon: item.icon};
     };
+    const brandLabel = `UAV PAS · ${t('shell.adminTitle')}`;
+    const toggleLabel = `${railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')} (${shortcut})`;
 
     return (
         <div className="flex min-h-screen bg-background text-foreground">
@@ -106,24 +117,22 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
             >
                 {t('shell.skipToContent')}
             </a>
-            {peeking && <div aria-hidden="true" className="hidden w-[60px] shrink-0 lg:block"/>}
             <aside
                 ref={rail}
                 id="portal-navigation"
-                {...peekProps}
                 className={cn(
-                    'fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-all duration-200 lg:sticky lg:top-0 lg:z-40 lg:h-screen',
+                    'fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-[width,transform] duration-200 lg:sticky lg:top-0 lg:z-40 lg:h-screen',
                     railCollapsed ? 'w-[60px]' : 'w-[min(280px,85vw)] lg:w-[220px]',
                     open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0',
-                    peeking && 'lg:fixed lg:z-[61] lg:shadow-2xl'
                 )}
             >
-                <div className={cn("mb-2 flex items-center border-b border-slate-100 pb-2", railCollapsed ? "flex-col justify-center gap-1.5" : "justify-between gap-1.5")}>
+                <div className={cn('mb-2 flex items-center border-b border-slate-100 pb-2', railCollapsed ? 'flex-col justify-center gap-1.5' : 'justify-between gap-1.5')}>
                     <Link
                         href="/admin/dashboard"
                         className={cn('flex items-center gap-2 p-0 min-w-0', railCollapsed && 'justify-center')}
                         onClick={() => setOpen(false)}
-                        title={`UAV PAS · ${t('shell.adminTitle')}`}
+                        title={railCollapsed ? undefined : brandLabel}
+                        {...flyout.tooltipTriggerProps('admin-brand', brandLabel)}
                     >
                         <span className="flex items-center justify-center bg-white p-0.5 rounded-lg border border-rose-100 shadow-xs overflow-hidden shrink-0">
                             <Image src="/uav-pas-logo.svg" alt={t('shell.brandName')} width={26} height={26} className="w-[26px] h-[26px] object-contain"/>
@@ -137,15 +146,15 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                     </Link>
                     <button
                         type="button"
-                        className="hidden lg:inline-flex items-center justify-center w-7 h-7 shrink-0 rounded-lg border border-slate-200/80 bg-slate-50/80 text-slate-500 hover:border-primary/30 hover:bg-uav-red-light hover:text-primary transition-colors cursor-pointer"
+                        className="hidden lg:inline-flex items-center justify-center w-7 h-7 shrink-0 rounded-lg border border-[#ab2523]/20 bg-[#ab2523]/5 text-[#ab2523] hover:border-[#ab2523]/40 hover:bg-[#ab2523]/12 transition-colors cursor-pointer"
                         onClick={toggleCollapsed}
-                        aria-label={(railCollapsed || peeking) ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
+                        aria-label={railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')}
                         aria-keyshortcuts="Control+B Meta+B"
-                        title={`${(railCollapsed || peeking) ? t('shell.expandSidebar') : t('shell.collapseSidebar')} (${shortcut})`}
+                        title={railCollapsed ? undefined : toggleLabel}
+                        {...flyout.tooltipTriggerProps('admin-toggle', toggleLabel)}
                     >
-                        {(railCollapsed || peeking) ? <PanelLeftOpen size={14}/> : <PanelLeftClose size={14}/>}
+                        {railCollapsed ? <PanelLeftOpen size={14}/> : <PanelLeftClose size={14}/>}
                     </button>
-                    {/* The drawer's own close button, in the slot the desktop collapse toggle uses. */}
                     <button
                         type="button"
                         className="rail-close lg:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border text-slate-600 hover:bg-slate-100"
@@ -160,45 +169,68 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                     <HeaderSearch variant="drawer" items={visibleNav.map(item => ({href: item.href, label: getNavLabel(item), group: t(`adminNavGroups.${item.group}`)}))}/>
                     <LanguageSwitcher variant="compact" className="sm:hidden"/>
                 </div>
-                <nav ref={navList} aria-label={t('shell.adminSection')} className={cn('flex flex-1 flex-col overflow-y-auto', railCollapsed ? 'gap-2.5' : 'gap-0.5')}>
-                    {navGroups.map((group, idx) => {
+                <nav ref={navList} aria-label={t('shell.adminSection')} className={cn('flex flex-1 flex-col overflow-y-auto', railCollapsed ? 'gap-1.5 py-0.5' : 'gap-0.5')}>
+                    {navGroups.map(group => {
                         const items = visibleNav.filter(item => item.group === group);
                         if (!items.length) return null;
                         const GroupIcon = GROUP_ICONS[group] ?? LayoutDashboard;
+                        const groupLabel = t(`adminNavGroups.${group}`);
                         const expanded = !!openGroups[group];
                         const groupActive = items.some(item => item.href === activeNav?.href);
-                        // The collapsed rail shows every page as an icon; groups fold only in the full sidebar.
-                        if (railCollapsed) return (
-                            <div key={group} className="space-y-0.5">
-                                {idx > 0 && <hr className="my-1.5 border-slate-100"/>}
-                                {items.map(item => {
-                                    const {href, icon: Icon} = item;
-                                    const label = getNavLabel(item);
-                                    const active = href === activeNav?.href;
-                                    return <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined}
-                                                 aria-label={label} title={label}
-                                                 className={cn('mx-auto flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
-                                                     active ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')}>
-                                        <Icon size={16} className="shrink-0"/>
-                                    </Link>;
-                                })}
-                            </div>
-                        );
+                        if (railCollapsed) {
+                            const groupHasUnreadSupport = items.some(item => item.key === 'supportInbox') && unreadSupport > 0;
+                            return (
+                                <CollapsedNavGroupTrigger
+                                    key={group}
+                                    id={`admin-flyout-${group}`}
+                                    label={groupLabel}
+                                    icon={GroupIcon}
+                                    active={groupActive}
+                                    controller={flyout}
+                                    onNavigate={() => setOpen(false)}
+                                    badge={groupHasUnreadSupport ? (
+                                        <span className="absolute -right-0.5 -top-0.5 flex h-2.5 w-2.5">
+                                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"/>
+                                            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary"/>
+                                        </span>
+                                    ) : undefined}
+                                    items={items.map(item => {
+                                        const showBadge = item.key === 'supportInbox' && unreadSupport > 0;
+                                        return {
+                                            href: item.href,
+                                            label: getNavLabel(item),
+                                            active: item.href === activeNav?.href,
+                                            badge: showBadge ? (
+                                                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-white">
+                                                    <span className="h-1.5 w-1.5 animate-ping rounded-full bg-white"/>
+                                                    {unreadSupport > 99 ? '99+' : unreadSupport}
+                                                </span>
+                                            ) : undefined,
+                                        };
+                                    })}
+                                />
+                            );
+                        }
                         return (
-                            <FoldingNavGroup key={group} id={`admin-nav-${group}`} label={t(`adminNavGroups.${group}`)} icon={GroupIcon}
+                            <FoldingNavGroup key={group} id={`admin-nav-${group}`} label={groupLabel} icon={GroupIcon}
                                              expanded={expanded} active={groupActive} onToggle={() => toggleGroup(group)}>
                                 {items.map(item => {
                                     const active = item.href === activeNav?.href;
                                     const label = getNavLabel(item);
+                                    const showBadge = item.key === 'supportInbox' && unreadSupport > 0;
                                     return <li key={item.href}>
                                         <Link href={item.href} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined}
-                                              aria-label={label} className={foldedLinkClass(active)}>{label}</Link>
+                                              aria-label={label} title={label} className={cn(foldedLinkClass(active), showBadge && 'flex items-center justify-between gap-1.5')}>
+                                            <span className="truncate">{label}</span>
+                                            {showBadge && <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-white"><span className="h-1.5 w-1.5 animate-ping rounded-full bg-white"/>{unreadSupport > 99 ? '99+' : unreadSupport}</span>}
+                                        </Link>
                                     </li>;
                                 })}
                             </FoldingNavGroup>
                         );
                     })}
                 </nav>
+                <CollapsedNavFlyoutPortal controller={flyout} onNavigate={() => setOpen(false)}/>
             </aside>
             {open && (
                 <button
@@ -249,6 +281,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                 <main id="workspace" className="flex w-full flex-1 flex-col gap-4 outline-none" tabIndex={-1}>
                     <UnsavedChangesContext.Provider value={workspaceTabs.reportDirty}>{children}</UnsavedChangesContext.Provider>
                 </main>
+                <AdminSupportQuickDock/>
                 <AssistantWidget portal="ADMIN"/>
             </div>
         </div>

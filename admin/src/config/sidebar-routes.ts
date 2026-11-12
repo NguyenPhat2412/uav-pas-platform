@@ -111,6 +111,14 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         permission: 'DASHBOARD_VIEW',
     },
     {
+        href: '/admin/support',
+        key: 'supportInbox',
+        defaultLabel: 'Tin nhắn hỗ trợ',
+        group: 'overview',
+        icon: MessagesSquare,
+        permission: 'DASHBOARD_VIEW',
+    },
+    {
         href: '/admin/fleet-map',
         key: 'fleetMap',
         defaultLabel: 'Bản đồ đội bay',

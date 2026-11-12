@@ -125,6 +125,9 @@
       "notifications": {
         "title": "通知"
       },
+      "support": {
+        "title": "カスタマーサポート・メッセージセンター"
+      },
       "fleetMap": {
         "title": "UAV機体マップ"
       },

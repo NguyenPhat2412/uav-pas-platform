@@ -2,17 +2,18 @@
 
 import {useCallback, useEffect, useRef, useState, useSyncExternalStore} from 'react';
 import {useBrowserStorage, writeBrowserStorage} from '@/hooks/useBrowserStorage';
+import {useSidebarShortcut} from '@/hooks/useSidebarShortcut';
 
 /** The URL does not change under a mounted shell, so its read needs no subscription. */
 const noSubscribe = () => () => {};
-import {useSidebarShortcut} from '@/hooks/useSidebarShortcut';
+const EMPTY_PEEK_PROPS: Record<string, never> = {};
 
 /**
  * Custom hook dùng chung cho cả 3 cổng (Admin, Operations, Customer) để quản lý:
  * - Trạng thái mở/đóng ngăn kéo (drawer) trên thiết bị di động (`open`, `setOpen`)
  * - Trạng thái thu gọn/mở rộng thanh Sidebar trên màn hình lớn (`collapsed`, `railCollapsed`, `toggleCollapsed`)
  * - Phím tắt bàn phím (`shortcut`, Ctrl+B) để đóng/mở nhanh Sidebar
- * - Rê chuột vào thanh đang thu gọn thì nó tạm mở rộng nổi trên nội dung (`peeking`, `peekProps`) để đọc tên mục
+ * - Khi thu gọn (`railCollapsed`), thanh Sidebar giữ nguyên dạng cột icon gọn gàng để hiển thị popover nhóm bên cạnh khi hover
  * - Bẫy tiêu điểm bàn phím (Focus Trap `Tab` / `Shift+Tab`), phím `Escape`, và tự động đóng drawer khi mở rộng màn hình.
  */
 export function useSidebarController(storageKey = 'uav_sidebar_collapsed') {
@@ -22,8 +23,6 @@ export function useSidebarController(storageKey = 'uav_sidebar_collapsed') {
     const [collapsedChoice, setCollapsedChoice] = useState<boolean | null>(null);
     const collapsedByUrl = useSyncExternalStore(noSubscribe, () => window.location.search.includes('collapsed=true'), () => false);
     const collapsed = collapsedChoice ?? (collapsedByUrl || savedCollapsed === 'true');
-    const [peek, setPeek] = useState(false);
-    const peekTimer = useRef<number | undefined>(undefined);
     const menuButton = useRef<HTMLButtonElement>(null);
     const rail = useRef<HTMLElement>(null);
 
@@ -69,32 +68,15 @@ export function useSidebarController(storageKey = 'uav_sidebar_collapsed') {
         };
     }, [open]);
 
-
     const toggleCollapsed = () => {
-        window.clearTimeout(peekTimer.current);
-        setPeek(false);
         const next = !collapsed;
         setCollapsedChoice(next);
         writeBrowserStorage(storageKey, String(next));
     };
 
     const shortcut = useSidebarShortcut(toggleCollapsed);
-    // While peeking the rail shows full labels but floats over the page (the shell keeps a 60px spacer).
-    const peeking = collapsed && peek && !open;
-    const railCollapsed = collapsed && !open && !peek;
-    const peekProps = {
-        onMouseEnter: () => {
-            if (!collapsed || !window.matchMedia('(min-width: 1024px)').matches) return;
-            window.clearTimeout(peekTimer.current);
-            // A short delay so a pointer merely crossing the rail does not flash it open.
-            peekTimer.current = window.setTimeout(() => setPeek(true), 120);
-        },
-        onMouseLeave: () => {
-            window.clearTimeout(peekTimer.current);
-            setPeek(false);
-        },
-    };
-    useEffect(() => () => window.clearTimeout(peekTimer.current), []);
+    const peeking = false;
+    const railCollapsed = collapsed && !open;
 
     // Admin and operations pages each mount their own shell, so the nav list would jump back to the
     // top on every click. Keep its scroll offset for the tab and restore it when the next page mounts.
@@ -124,7 +106,7 @@ export function useSidebarController(storageKey = 'uav_sidebar_collapsed') {
         collapsed,
         railCollapsed,
         peeking,
-        peekProps,
+        peekProps: EMPTY_PEEK_PROPS,
         toggleCollapsed,
         shortcut,
         menuButton,
