@@ -1,6 +1,7 @@
-import React, {ReactNode} from 'react';
+import React, {type ComponentType, createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {
     ActivityIndicator,
+    Keyboard,
     KeyboardAvoidingView,
     Platform,
     Pressable,
@@ -16,11 +17,12 @@ import {
     View,
     ViewStyle,
 } from 'react-native';
-import {SafeAreaView, type Edge} from 'react-native-safe-area-context';
-import {AlertTriangle, Inbox, type LucideIcon} from 'lucide-react-native';
+import {SafeAreaView, useSafeAreaInsets, type Edge} from 'react-native-safe-area-context';
+import {AlertTriangle, Eye, EyeOff, Inbox, type LucideIcon} from 'lucide-react-native';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {OfflineBanner} from '@/components/shared/OfflineBanner';
+import {useI18n} from '@/providers/I18nContext';
 import {useTextScale} from '@/providers/TextSizeContext';
 
 /** Widest a content column grows (phones use the full width; iPad and landscape centre it). */
@@ -68,6 +70,18 @@ export function AppText({variant = 'body', style, children, numberOfLines, selec
  * (contentInsetAdjustmentBehavior), with pull-to-refresh when onRefresh is given. Content sits in one centred column
  * (maxWidth) so it never stretches across an iPad. Screens without a header (sign-in) pass edges for the safe area.
  */
+/** What a Screen offers the form inside it: a way to re-check the keyboard, and the slot for the element to keep in view. */
+const KeyboardReveal = createContext<{ reveal: () => void; anchor: React.RefObject<React.ComponentRef<typeof View> | null> } | null>(null);
+
+/**
+ * Wrap a form's submit button: while the keyboard is up the Screen scrolls it into view above the keyboard,
+ * whichever field is being typed in, as long as that field itself stays visible.
+ */
+export function KeyboardAnchor({children}: { children: ReactNode }) {
+    const screen = useContext(KeyboardReveal);
+    return <View ref={screen?.anchor} collapsable={false}>{children}</View>;
+}
+
 export function Screen({children, onRefresh, refreshing = false, scroll = true, edges = [], contentStyle, maxWidth = CONTENT_WIDTH}: {
     children: ReactNode;
     onRefresh?: () => void;
@@ -77,6 +91,32 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
     contentStyle?: StyleProp<ViewStyle>;
     maxWidth?: number;
 }) {
+    const scrollRef = useRef<React.ComponentRef<typeof ScrollView>>(null);
+    const anchor = useRef<React.ComponentRef<typeof View>>(null);
+    const scrolled = useRef(0);
+    const insets = useSafeAreaInsets();
+    const top = edges.includes('top') ? insets.top : 0;
+    const reveal = useCallback(() => {
+        // Next frame: on focus the field is not yet the first responder.
+        requestAnimationFrame(() => {
+            const field = TextInput.State.currentlyFocusedInput();
+            const keyboard = Keyboard.metrics();
+            const target = anchor.current;
+            if (!field || !keyboard || !target || !Keyboard.isVisible()) return;
+            target.measureInWindow((_x, y, _width, height) => field.measureInWindow((_fx, fieldY) => {
+                const hidden = y + height + spacing.md - keyboard.screenY;
+                // Never so far that the field being typed in (and its label above it) leaves the top of the screen.
+                const room = fieldY - 28 - top - spacing.sm;
+                const by = Math.min(hidden, room);
+                if (by > 0) scrollRef.current?.scrollTo({y: scrolled.current + by, animated: true});
+            }));
+        });
+    }, [top]);
+    useEffect(() => {
+        const shown = Keyboard.addListener('keyboardDidShow', reveal);
+        return () => shown.remove();
+    }, [reveal]);
+    const keyboardReveal = useMemo(() => ({reveal, anchor}), [reveal]);
     const column = (
         <View style={[styles.column, {maxWidth}, contentStyle]}>
             <OfflineBanner/>
@@ -86,15 +126,21 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
     return (
         <SafeAreaView edges={edges} style={styles.screen}>
             <AppBackground/>
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
+            {/* A scroll view already insets itself for the keyboard; padding here as well would lift the form twice. */}
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' && !scroll ? 'padding' : undefined} style={styles.flex}>
                 {scroll ? (
                     <ScrollView
+                        ref={scrollRef}
+                        onScroll={event => {
+                            scrolled.current = event.nativeEvent.contentOffset.y;
+                        }}
+                        scrollEventThrottle={16}
                         contentInsetAdjustmentBehavior="automatic"
                         automaticallyAdjustKeyboardInsets
                         contentContainerStyle={styles.content}
                         keyboardShouldPersistTaps="handled"
                         refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary}/> : undefined}>
-                        {column}
+                        <KeyboardReveal.Provider value={keyboardReveal}>{column}</KeyboardReveal.Provider>
                     </ScrollView>
                 ) : column}
             </KeyboardAvoidingView>
@@ -132,7 +178,7 @@ export function Button({label, onPress, tone = 'primary', loading = false, disab
     tone?: ButtonTone;
     loading?: boolean;
     disabled?: boolean;
-    icon?: LucideIcon;
+    icon?: ComponentType<{ size?: number; color?: string }>;
     style?: StyleProp<ViewStyle>;
 }) {
     const palette = BUTTON[tone];
@@ -157,15 +203,34 @@ export function TextField({label, error, hint, style, ...input}: TextInputProps 
     hint?: string;
 }) {
     const scale = useTextScale();
+    const {t} = useI18n();
+    const screen = useContext(KeyboardReveal);
+    const secure = !!input.secureTextEntry;
+    const [hidden, setHidden] = useState(true);
+    const EyeIcon = hidden ? Eye : EyeOff;
     return (
         <View style={[styles.field, style as StyleProp<ViewStyle>]}>
             <ScaledText style={styles.label}>{label}</ScaledText>
-            <TextInput
-                placeholderTextColor={colors.muted}
-                accessibilityLabel={label}
-                {...input}
-                style={[styles.input, scaledFont(styles.input, scale), input.multiline && styles.multiline, !!error && styles.inputError]}
-            />
+            <View>
+                <TextInput
+                    placeholderTextColor={colors.muted}
+                    accessibilityLabel={label}
+                    {...input}
+                    secureTextEntry={secure && hidden}
+                    onFocus={event => {
+                        input.onFocus?.(event);
+                        screen?.reveal();
+                    }}
+                    style={[styles.input, scaledFont(styles.input, scale), input.multiline && styles.multiline,
+                        secure && styles.inputSecure, !!error && styles.inputError]}
+                />
+                {secure && (
+                    <Pressable onPress={() => setHidden(value => !value)} style={styles.eye} accessibilityRole="button"
+                               accessibilityLabel={t(hidden ? 'authShared.showPassword' : 'authShared.hidePassword')}>
+                        <EyeIcon size={20} color={colors.muted}/>
+                    </Pressable>
+                )}
+            </View>
             {error ? <ScaledText style={styles.error} accessibilityRole="alert">{error}</ScaledText>
                 : hint ? <ScaledText style={styles.hint}>{hint}</ScaledText> : null}
         </View>
@@ -266,9 +331,11 @@ export const styles = StyleSheet.create({
     field: {gap: 6},
     label: {fontSize: font.small, fontWeight: '600', color: colors.text},
     input: {
-        minHeight: 48, borderRadius: radius.control, borderWidth: 1, borderColor: colors.inputBorder, backgroundColor: colors.surface,
+        minHeight: 48, borderRadius: radius.control, borderWidth: 1, borderColor: colors.primary, backgroundColor: colors.surface,
         paddingHorizontal: spacing.md, fontSize: font.body, color: colors.text,
     },
+    inputSecure: {paddingRight: 48},
+    eye: {position: 'absolute', right: 0, top: 0, bottom: 0, width: 48, alignItems: 'center', justifyContent: 'center'},
     multiline: {minHeight: 96, paddingTop: spacing.md, textAlignVertical: 'top'},
     inputError: {borderColor: colors.danger},
     error: {fontSize: font.caption, color: colors.danger},

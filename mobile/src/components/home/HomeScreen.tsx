@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
-import {Bell, Clock3, CreditCard, FilePenLine, Layers, Plane, Plus, Receipt, type LucideIcon} from 'lucide-react-native';
+import {Bell, CalendarCheck, Clock3, CreditCard, FilePenLine, GraduationCap, Layers, Plane, Plus, Receipt, type LucideIcon} from 'lucide-react-native';
 import {AppText, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {UserAvatar} from '@/components/profile/UserAvatar';
@@ -15,14 +15,14 @@ import {useI18n} from '@/providers/I18nContext';
 import type {MissionStatus} from '@/shared/types/mission/mission.types';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
-/** Big number, icon and two words; tapping opens the list behind it. */
-function Tile({icon: Icon, value, label, onPress, accent = false}: { icon: LucideIcon; value: string; label: string; onPress: () => void; accent?: boolean }) {
+/** Icon, number and one short word, four to a row; tapping opens the list behind it. The full name is read to VoiceOver. */
+function Tile({icon: Icon, value, label, name, onPress, accent = false}: { icon: LucideIcon; value: string; label: string; name: string; onPress: () => void; accent?: boolean }) {
     return (
-        <Card onPress={onPress} accessibilityLabel={`${label}: ${value}`} style={[styles.tile, accent && styles.tileAccent]}>
+        <Card onPress={onPress} accessibilityLabel={`${name}: ${value}`} style={[styles.tile, accent && styles.tileAccent]}>
             <View style={[styles.tileIcon, accent && styles.tileIconAccent]}>
                 <Icon size={18} color={accent ? colors.white : colors.slateDark}/>
             </View>
-            <AppText variant="heading" style={accent ? styles.light : undefined}>{value}</AppText>
+            <AppText variant="title" style={accent ? styles.light : undefined}>{value}</AppText>
             <AppText variant="caption" numberOfLines={1} style={accent ? styles.lightMuted : undefined}>{label}</AppText>
         </Card>
     );
@@ -45,11 +45,11 @@ function Greeting() {
     );
 }
 
-function Action({icon: Icon, label, onPress}: { icon: LucideIcon; label: string; onPress: () => void }) {
+function Action({icon: Icon, label, name, onPress}: { icon: LucideIcon; label: string; name: string; onPress: () => void }) {
     return (
-        <Card onPress={onPress} accessibilityLabel={label} style={styles.action}>
+        <Card onPress={onPress} accessibilityLabel={name} style={styles.action}>
             <View style={styles.actionIcon}><Icon size={22} color={colors.primary}/></View>
-            <AppText variant="caption" style={styles.actionLabel} numberOfLines={2}>{label}</AppText>
+            <AppText variant="caption" style={styles.actionLabel} numberOfLines={1}>{label}</AppText>
         </Card>
     );
 }
@@ -71,12 +71,13 @@ export function HomeScreen() {
                                                      onPress={() => router.navigate('/customer/notifications')}/>,
             }}/>
 
-            <WeatherCard point={point} title={t('weather.home.title')} onOpen={() => router.navigate('/customer/weather')}/>
+            <WeatherCard compact point={point} title={t('weather.home.title')} onOpen={() => router.navigate('/customer/weather')}/>
 
             <View style={styles.actions}>
-                {can('MISSION_CREATE') && <Action icon={Plus} label={t('missions.create')} onPress={() => router.push('/customer/mission/create')}/>}
-                <Action icon={Layers} label={t('nav.services')} onPress={() => router.push('/customer/services')}/>
-                <Action icon={CreditCard} label={t('nav.billing')} onPress={() => router.push('/customer/billing')}/>
+                {can('MISSION_CREATE') && <Action icon={Plus} label={t('mobile.home.shortcuts.create')} name={t('missions.create')} onPress={() => router.push('/customer/mission/create')}/>}
+                <Action icon={Layers} label={t('mobile.home.shortcuts.services')} name={t('nav.services')} onPress={() => router.push('/customer/services')}/>
+                <Action icon={CreditCard} label={t('mobile.home.shortcuts.billing')} name={t('nav.billing')} onPress={() => router.push('/customer/billing')}/>
+                <Action icon={GraduationCap} label={t('mobile.home.shortcuts.training')} name={t('nav.training')} onPress={() => router.push('/customer/training')}/>
             </View>
 
             <SectionTitle title={t('dashboard.analytics.pipelineTitle')}/>
@@ -85,13 +86,13 @@ export function HomeScreen() {
                     : (
                         <>
                             <View style={styles.grid}>
-                                <Tile icon={Clock3} value={formatNumber(data.pipeline.waiting)} label={t('dashboard.analytics.pipeline.waiting')}
+                                <Tile icon={Clock3} value={formatNumber(data.pipeline.waiting)} label={t('mobile.home.pipeline.waiting')} name={t('dashboard.analytics.pipeline.waiting')}
                                       onPress={() => router.navigate({pathname: '/customer/missions', params: {filter: 'waiting'}})}/>
-                                <Tile icon={Plane} accent value={formatNumber(data.pipeline.active)} label={t('dashboard.analytics.pipeline.active')}
+                                <Tile icon={Plane} accent value={formatNumber(data.pipeline.active)} label={t('mobile.home.pipeline.active')} name={t('dashboard.analytics.pipeline.active')}
                                       onPress={() => router.navigate({pathname: '/customer/missions', params: {filter: 'active'}})}/>
-                                <Tile icon={Layers} value={formatNumber(data.pipeline.scheduled)} label={t('dashboard.analytics.pipeline.scheduled')}
+                                <Tile icon={CalendarCheck} value={formatNumber(data.pipeline.scheduled)} label={t('mobile.home.pipeline.scheduled')} name={t('dashboard.analytics.pipeline.scheduled')}
                                       onPress={() => router.navigate({pathname: '/customer/missions', params: {filter: 'scheduled'}})}/>
-                                <Tile icon={FilePenLine} value={formatNumber(data.pipeline.draft)} label={t('dashboard.analytics.pipeline.draft')}
+                                <Tile icon={FilePenLine} value={formatNumber(data.pipeline.draft)} label={t('mobile.home.pipeline.draft')} name={t('dashboard.analytics.pipeline.draft')}
                                       onPress={() => router.navigate({pathname: '/customer/missions', params: {filter: 'draft'}})}/>
                             </View>
 
@@ -124,15 +125,15 @@ const styles = StyleSheet.create({
     flex: {flex: 1},
     pressed: {opacity: 0.75},
     greeting: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
-    grid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md},
+    grid: {flexDirection: 'row', gap: spacing.sm},
     // White frames come from Card; only the layout differs here.
-    tile: {flexBasis: '47%', flexGrow: 1, gap: 4},
+    tile: {flex: 1, gap: 2, alignItems: 'center', paddingVertical: spacing.md, paddingHorizontal: spacing.xs},
     tileAccent: {backgroundColor: colors.primary, borderColor: colors.primary},
     tileIcon: {width: 34, height: 34, borderRadius: radius.control, backgroundColor: colors.slateLight, alignItems: 'center', justifyContent: 'center', marginBottom: 4},
     tileIconAccent: {backgroundColor: 'rgba(255,255,255,0.2)'},
     light: {color: colors.white},
     lightMuted: {color: 'rgba(255,255,255,0.85)'},
-    actions: {flexDirection: 'row', gap: spacing.md},
+    actions: {flexDirection: 'row', gap: spacing.sm},
     action: {flex: 1, alignItems: 'center', paddingVertical: spacing.md, paddingHorizontal: 0},
     actionIcon: {width: 44, height: 44, borderRadius: 22, backgroundColor: colors.primaryLight, alignItems: 'center', justifyContent: 'center'},
     actionLabel: {textAlign: 'center', color: colors.text, fontSize: font.caption, fontWeight: '600', paddingHorizontal: 4},

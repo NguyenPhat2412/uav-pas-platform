@@ -166,9 +166,9 @@ export function MissionDetailScreen() {
 
             {(editable || cancellable || (owned && can('MISSION_CREATE'))) && (
                 <View style={styles.actions}>
-                    {editable && <Button label={t('missionDetail.submit')} icon={Send} loading={actions.submit.isPending} onPress={submit} style={styles.flex}/>}
+                    {editable && <Button label={t('missionDetail.submit')} icon={Send} loading={actions.submit.isPending} onPress={submit} style={styles.action}/>}
                     {editable && <Button label={t('mobile.missions.edit')} icon={Pencil} tone="secondary"
-                                         onPress={() => router.push({pathname: '/customer/mission/[id]/edit', params: {id: String(mission.id)}})} style={styles.flex}/>}
+                                         onPress={() => router.push({pathname: '/customer/mission/[id]/edit', params: {id: String(mission.id)}})} style={styles.action}/>}
                     {owned && can('MISSION_CREATE') && (
                         <Button
                             label={actions.clone.isPending ? t('capabilities.clone.cloning') : t('capabilities.clone.action')}
@@ -184,10 +184,10 @@ export function MissionDetailScreen() {
                                     onError: fail,
                                 })
                             }
-                            style={styles.flex}
+                            style={styles.action}
                         />
                     )}
-                    {cancellable && <Button label={t('missionDetail.cancelRequest')} icon={XCircle} tone="ghost" loading={actions.cancel.isPending} onPress={cancel}/>}
+                    {cancellable && <Button label={t('missionDetail.cancelRequest')} icon={XCircle} tone="ghost" loading={actions.cancel.isPending} onPress={cancel} style={styles.action}/>}
                 </View>
             )}
 
@@ -332,6 +332,8 @@ const styles = StyleSheet.create({
     stepDone: {color: colors.text, fontWeight: '600'},
     actions: {flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap'},
     flex: {flex: 1},
+    // Grow from natural width and wrap: flex: 1 squeezed four buttons into one row and broke labels per letter.
+    action: {flexGrow: 1, minWidth: '30%'},
     meta: {flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start'},
     map: {height: 160, borderRadius: radius.control, overflow: 'hidden', marginTop: spacing.xs},
     weather: {gap: spacing.xs},

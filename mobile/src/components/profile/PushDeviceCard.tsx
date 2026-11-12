@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import {Linking, StyleSheet, View} from 'react-native';
-import {BellOff, BellRing, ExternalLink, Smartphone} from 'lucide-react-native';
-import {AppText, Badge, Button, Card, SectionTitle, TextField} from '@/components/ui';
+import {Linking, StyleSheet, Switch, View} from 'react-native';
+import {ExternalLink, Smartphone} from 'lucide-react-native';
+import {AppText, Button, Card, SectionTitle} from '@/components/ui';
 import {useNotifications} from '@/hooks/notification/useNotifications';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
@@ -13,22 +13,15 @@ export function PushDeviceCard() {
     const {t} = useI18n();
     const toast = useToast();
     const {savedPushEndpoint, isSimulatedEndpoint, registerPushDevice, unregisterPushDevice} = useNotifications();
-    const [showCustom, setShowCustom] = useState(false);
-    const [customEndpoint, setCustomEndpoint] = useState('');
     const [permissionDenied, setPermissionDenied] = useState(false);
     const active = !!savedPushEndpoint;
 
     const handleRegister = () => {
         setPermissionDenied(false);
-        const endpoint = showCustom && customEndpoint.trim() ? customEndpoint.trim() : undefined;
         registerPushDevice.mutate(
-            {endpoint},
+            {},
             {
-                onSuccess: () => {
-                    setCustomEndpoint('');
-                    setShowCustom(false);
-                    toast.show(t('mobile.push.registered'), 'success');
-                },
+                onSuccess: () => toast.show(t('mobile.push.registered'), 'success'),
                 onError: error => {
                     if ((error as { code?: string } | null)?.code === 'PUSH_PERMISSION_DENIED') {
                         setPermissionDenied(true);
@@ -53,14 +46,16 @@ export function PushDeviceCard() {
             <SectionTitle
                 title={t('mobile.push.title')}
                 action={
-                    <Badge
-                        label={active ? t('mobile.push.active') : t('mobile.push.inactive')}
-                        background={active ? colors.slateDark : colors.slateLight}
-                        color={active ? colors.white : colors.textSecondary}
+                    // The system switch: on iOS 26 it is drawn in Liquid Glass by the OS itself.
+                    <Switch
+                        value={active}
+                        onValueChange={on => (on ? handleRegister() : handleUnregister())}
+                        disabled={registerPushDevice.isPending || unregisterPushDevice.isPending}
+                        trackColor={{true: colors.primary}}
+                        accessibilityLabel={t('mobile.push.title')}
                     />
                 }
             />
-            <AppText variant="small">{t('mobile.push.hint')}</AppText>
             {savedPushEndpoint ? (
                 <View style={styles.endpointBlock}>
                     <View style={styles.endpointRow}>
@@ -87,42 +82,6 @@ export function PushDeviceCard() {
                     />
                 </View>
             )}
-            {showCustom && (
-                <TextField
-                    label={t('mobile.push.endpointLabel')}
-                    placeholder={t('mobile.push.endpointPlaceholder')}
-                    value={customEndpoint}
-                    onChangeText={setCustomEndpoint}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                />
-            )}
-            <View style={styles.actions}>
-                {!active ? (
-                    <>
-                        <Button
-                            label={t('mobile.push.enableButton')}
-                            icon={BellRing}
-                            loading={registerPushDevice.isPending}
-                            onPress={handleRegister}
-                            style={styles.flex}
-                        />
-                        <Button
-                            label={showCustom ? t('common.cancel') : t('mobile.push.customButton')}
-                            tone="ghost"
-                            onPress={() => setShowCustom(current => !current)}
-                        />
-                    </>
-                ) : (
-                    <Button
-                        label={t('mobile.push.disableButton')}
-                        icon={BellOff}
-                        tone="secondary"
-                        loading={unregisterPushDevice.isPending}
-                        onPress={handleUnregister}
-                    />
-                )}
-            </View>
         </Card>
     );
 }
@@ -140,5 +99,4 @@ const styles = StyleSheet.create({
         borderColor: colors.warning,
     },
     deniedText: {color: colors.warning},
-    actions: {flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap'},
 });

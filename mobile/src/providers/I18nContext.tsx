@@ -14,7 +14,10 @@ interface I18nValue {
     formatCurrency: (amount: number, currency?: string) => string;
 }
 
-const I18nContext = createContext<I18nValue | undefined>(undefined);
+// Fast Refresh re-runs this module when a message file changes; a fresh context object would orphan the mounted
+// provider and every screen would throw. Keeping one object per JS runtime makes that reload harmless.
+const shared = globalThis as { __uavI18nContext?: React.Context<I18nValue | undefined> };
+const I18nContext = (shared.__uavI18nContext ??= createContext<I18nValue | undefined>(undefined));
 
 function deviceLocale(): SupportedLocale {
     const code = getLocales()[0]?.languageCode;

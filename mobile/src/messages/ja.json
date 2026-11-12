@@ -26,7 +26,7 @@
     "status": {
       "offlineTitle": "サーバーに接続できません",
       "offlineHint": "接続を確認して再試行してください。ログイン状態は保持されています。",
-      "offlineBanner": "オフラインです — 現場のネットワーク接続を確認してください。"
+      "offlineBanner": "オフライン — 接続を確認してください。"
     },
     "nav": {
       "missionDetail": "ミッション詳細",
@@ -34,7 +34,9 @@
       "weather": "天気"
     },
     "home": {
-      "greeting": "こんにちは、"
+      "greeting": "こんにちは、",
+      "shortcuts": {"create": "新規", "services": "サービス", "billing": "プラン", "training": "ガイド"},
+      "pipeline": {"waiting": "待機", "active": "飛行中", "scheduled": "予定", "draft": "下書き"}
     },
     "account": {
       "profile": "プロフィール",
@@ -443,7 +445,7 @@
       "adminLauncherLabel": "カスタマーサポート受信箱",
       "publicTitle": "お問い合わせ・ライブサポート",
       "publicSubtitle": "UAV PAS 運航管理・ディスパッチセンターへ直接接続",
-      "contactSectionTitle": "直接連絡チャネル",
+      "contactSectionTitle": "連絡先",
       "zaloLabel": "Zalo オンラインサポート",
       "chatZalo": "Zaloチャット",
       "hotlineLabel": "運航ホットライン",

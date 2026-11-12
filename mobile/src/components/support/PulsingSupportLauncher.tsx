@@ -29,9 +29,11 @@ const OPERATIONS_TABS = [
 ];
 
 const glass = Platform.OS === 'ios' && isLiquidGlassAvailable() && isGlassEffectAPIAvailable();
-const SIZE = 56;
-// Stacked cleanly above AssistantLauncher (74 + 58 + 12 = 144) on tab screens; flush bottom-right on auth screens.
-const ABOVE_ASSISTANT = 144;
+const SIZE = 46;
+// On tab screens: level with AssistantLauncher (74 above the tab bar) and to its left (16 + 46 + 10), so the pair
+// covers one short strip instead of a tall column of the list. Flush bottom-right on auth screens.
+const ABOVE_TAB_BAR = 74;
+const BESIDE_ASSISTANT = 72;
 const AUTH_BOTTOM = 18;
 
 /**
@@ -96,12 +98,12 @@ export function PulsingSupportLauncher({mode}: { mode: SupportLauncherMode }) {
         inputRange: [0, 0.7, 1],
         outputRange: [unreadCount > 0 ? 0.65 : 0.42, 0.16, 0],
     });
-    const bottomOffset = insets.bottom + (mode === 'auth' ? AUTH_BOTTOM : ABOVE_ASSISTANT);
+    const bottomOffset = insets.bottom + (mode === 'auth' ? AUTH_BOTTOM : ABOVE_TAB_BAR);
 
-    const emblem = <AppLogo size={34}/>;
+    const emblem = <AppLogo size={28}/>;
 
     return (
-        <View pointerEvents="box-none" style={[styles.wrap, {bottom: bottomOffset}]}>
+        <View pointerEvents="box-none" style={[styles.wrap, {bottom: bottomOffset}, mode !== 'auth' && styles.beside]}>
             <Animated.View
                 pointerEvents="none"
                 style={[
@@ -137,6 +139,7 @@ export function PulsingSupportLauncher({mode}: { mode: SupportLauncherMode }) {
 
 const styles = StyleSheet.create({
     wrap: {position: 'absolute', right: 16, width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center'},
+    beside: {right: BESIDE_ASSISTANT},
     pulseRing: {position: 'absolute', width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 2.5},
     pulseRingIdle: {borderColor: colors.primary, backgroundColor: colors.primaryLight},
     pulseRingAlert: {borderColor: colors.danger, backgroundColor: colors.dangerLight},

@@ -17,7 +17,7 @@ export function OfflineBanner() {
     return (
         <View style={styles.banner} accessibilityRole="alert" accessibilityLiveRegion="assertive">
             <WifiOff size={16} color={colors.warning}/>
-            <Text style={[styles.text, scale !== 1 ? {fontSize: Math.round(font.small * scale)} : null]}>
+            <Text numberOfLines={1} style={[styles.text, scale !== 1 ? {fontSize: Math.round(font.small * scale)} : null]}>
                 {t('mobile.status.offlineBanner')}
             </Text>
         </View>

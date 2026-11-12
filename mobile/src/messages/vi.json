@@ -26,7 +26,7 @@
     "status": {
       "offlineTitle": "Chưa kết nối được máy chủ",
       "offlineHint": "Kiểm tra mạng rồi thử lại. Phiên đăng nhập của bạn vẫn được giữ.",
-      "offlineBanner": "Đang ngoại tuyến — kiểm tra kết nối mạng thực địa."
+      "offlineBanner": "Đang ngoại tuyến — kiểm tra mạng."
     },
     "nav": {
       "missionDetail": "Chi tiết nhiệm vụ",
@@ -34,7 +34,9 @@
       "weather": "Thời tiết"
     },
     "home": {
-      "greeting": "Xin chào,"
+      "greeting": "Xin chào,",
+      "shortcuts": {"create": "Tạo mới", "services": "Dịch vụ", "billing": "Gói cước", "training": "Hướng dẫn"},
+      "pipeline": {"waiting": "Chờ", "active": "Đang bay", "scheduled": "Lịch", "draft": "Nháp"}
     },
     "account": {
       "profile": "Hồ sơ cá nhân",
@@ -443,7 +445,7 @@
       "adminLauncherLabel": "Tin nhắn hỗ trợ khách hàng",
       "publicTitle": "Liên hệ & Hỗ trợ trực tuyến",
       "publicSubtitle": "Kết nối trực tiếp với Trung tâm Quản trị & Điều phối UAV PAS",
-      "contactSectionTitle": "Kênh liên hệ trực tiếp",
+      "contactSectionTitle": "Liên hệ",
       "zaloLabel": "Zalo hỗ trợ trực tuyến",
       "chatZalo": "Nhắn Zalo",
       "hotlineLabel": "Hotline điều phối",

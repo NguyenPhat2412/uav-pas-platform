@@ -26,7 +26,7 @@
     "status": {
       "offlineTitle": "Can't reach the server",
       "offlineHint": "Check your connection and try again. You are still signed in.",
-      "offlineBanner": "You are offline — check your field network connection."
+      "offlineBanner": "Offline — check your network."
     },
     "nav": {
       "missionDetail": "Mission details",
@@ -34,7 +34,9 @@
       "weather": "Weather"
     },
     "home": {
-      "greeting": "Hello,"
+      "greeting": "Hello,",
+      "shortcuts": {"create": "New", "services": "Services", "billing": "Plans", "training": "Guide"},
+      "pipeline": {"waiting": "Waiting", "active": "Flying", "scheduled": "Planned", "draft": "Drafts"}
     },
     "account": {
       "profile": "Profile",
@@ -443,7 +445,7 @@
       "adminLauncherLabel": "Customer Support Inbox",
       "publicTitle": "Direct Contact & Live Support",
       "publicSubtitle": "Connect directly with the UAV PAS Dispatch & Operations Desk",
-      "contactSectionTitle": "Direct Contact Channels",
+      "contactSectionTitle": "Contact",
       "zaloLabel": "Zalo Direct Support",
       "chatZalo": "Chat Zalo",
       "hotlineLabel": "Dispatch Hotline",

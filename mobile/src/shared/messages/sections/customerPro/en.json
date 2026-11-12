@@ -52,6 +52,7 @@
     "subscribeFailed": "Couldn't subscribe. Please try again."
   },
   "planner": {
+    "obstacles": "Obstacles",
     "label": "Flight area",
     "takeoffHere": "Take off from my location",
     "toolLabel": "Drawing tool",
@@ -166,6 +167,7 @@
     "history": "History"
   },
   "missionMonitor": {
+    "mapTitle": "Flight map",
     "live": "In flight · live data",
     "phase": {
       "live": "Waiting for flight data",

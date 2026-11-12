@@ -25,7 +25,7 @@ const TONE = {
     info: {background: colors.text, text: colors.white},
 } as const;
 
-/** One short message at a time at the top of the screen, dismissed by tapping or after four seconds. */
+/** One short message at a time dropping in at the top of the screen, dismissed by tapping or after four seconds. */
 export function ToastProvider({children}: { children: ReactNode }) {
     const insets = useSafeAreaInsets();
     const [toast, setToast] = useState<ToastMessage | null>(null);
@@ -39,7 +39,7 @@ export function ToastProvider({children}: { children: ReactNode }) {
 
     useEffect(() => {
         if (!toast) return;
-        Animated.timing(opacity, {toValue: 1, duration: 180, useNativeDriver: true}).start();
+        Animated.spring(opacity, {toValue: 1, friction: 6, tension: 90, useNativeDriver: true}).start();
         const timer = setTimeout(() => {
             Animated.timing(opacity, {toValue: 0, duration: 180, useNativeDriver: true}).start(() => setToast(null));
         }, 4000);
@@ -54,7 +54,10 @@ export function ToastProvider({children}: { children: ReactNode }) {
         <ToastContext.Provider value={value}>
             {children}
             {toast && (
-                <Animated.View pointerEvents="box-none" style={[styles.wrap, {top: insets.top + spacing.sm, opacity}]}>
+                <Animated.View pointerEvents="box-none" style={[styles.wrap, {
+                    top: insets.top + spacing.sm, opacity,
+                    transform: [{translateY: opacity.interpolate({inputRange: [0, 1], outputRange: [-120, 0]})}],
+                }]}>
                     <Pressable accessibilityRole="alert" onPress={() => setToast(null)} style={[styles.toast, {backgroundColor: tone.background}]}>
                         <Icon size={18} color={tone.text}/>
                         <View style={styles.body}>

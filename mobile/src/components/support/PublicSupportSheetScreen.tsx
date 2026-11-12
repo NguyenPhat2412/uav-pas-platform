@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {RotateCcw, Send} from 'lucide-react-native';
-import {BrandMark} from '@/components/shared/BrandMark';
 import {MobileSupportContactCard} from '@/components/support/MobileSupportContactCard';
 import {
     AppText,
@@ -137,12 +136,6 @@ export function PublicSupportSheetScreen() {
 
     return (
         <Screen onRefresh={() => void refetch()} refreshing={isFetching}>
-            <Card style={styles.heroCard}>
-                <BrandMark size={40}/>
-                <AppText variant="title">{t('mobile.support.publicTitle')}</AppText>
-                <AppText variant="small">{t('mobile.support.publicSubtitle')}</AppText>
-            </Card>
-
             <MobileSupportContactCard/>
 
             {!hydrated || (Boolean(visitorToken) && isLoading && !session) ? (
@@ -199,13 +192,13 @@ export function PublicSupportSheetScreen() {
 
 const styles = StyleSheet.create({
     flex: {flex: 1},
-    heroCard: {borderColor: colors.primary, backgroundColor: colors.primaryLight, gap: spacing.xs},
     topicSection: {gap: spacing.xs},
     topicLabel: {fontSize: font.small, fontWeight: '600', color: colors.text},
     errorText: {color: colors.danger},
     sessionHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm},
     sessionMeta: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
-    threadCard: {gap: spacing.md},
+    // Tall even with a single message, so the conversation reads as the main thing on the screen.
+    threadCard: {gap: spacing.md, minHeight: 360},
     bubbleWrap: {maxWidth: '88%', gap: 4},
     bubbleWrapVisitor: {alignSelf: 'flex-end', alignItems: 'flex-end'},
     bubbleWrapAdmin: {alignSelf: 'flex-start', alignItems: 'flex-start'},

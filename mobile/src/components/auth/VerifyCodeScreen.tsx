@@ -2,14 +2,14 @@ import React, {useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 import {KeyRound, RotateCw, ShieldCheck} from 'lucide-react-native';
-import {AppText, Button, TextField} from '@/components/ui';
+import {Button, KeyboardAnchor, TextField} from '@/components/ui';
 import {AuthLayout} from '@/components/auth/AuthLayout';
 import {useAuthFlows} from '@/hooks/auth/useAuthFlows';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {nextSignInStep, normalizeCode, RESEND_COOLDOWN_SECONDS, signInErrorText, type VerifyParams} from '@/forms/auth/sign-in-flow';
-import {colors, spacing} from '@/styles/tokens';
+import {spacing} from '@/styles/tokens';
 
 /** The six-digit code of a 2FA sign-in (email or authenticator app) or of a new account's email verification. */
 export function VerifyCodeScreen() {
@@ -27,7 +27,6 @@ export function VerifyCodeScreen() {
         method: initial.method === 'TOTP' ? 'TOTP' : 'EMAIL',
     });
     const [code, setCode] = useState('');
-    const [error, setError] = useState<string | null>(null);
     const [cooldown, setCooldown] = useState(params.method === 'EMAIL' ? RESEND_COOLDOWN_SECONDS : 0);
 
     useEffect(() => {
@@ -38,10 +37,9 @@ export function VerifyCodeScreen() {
 
     const submit = () => {
         if (code.length !== 6) {
-            setError(t('mobile.auth.codeLength'));
+            toast.show(t('mobile.auth.codeLength'), 'error');
             return;
         }
-        setError(null);
         verify.mutate({params, code}, {
             onSuccess: async response => {
                 const step = nextSignInStep(response, params.email);
@@ -59,12 +57,11 @@ export function VerifyCodeScreen() {
                 await completeAuth(response);
                 toast.show(t('mobile.auth.welcome', {name: response.user?.fullName || response.user?.username || ''}), 'success');
             },
-            onError: failure => setError(signInErrorText(failure, t)),
+            onError: failure => toast.show(signInErrorText(failure, t), 'error'),
         });
     };
 
     const resendCode = () => {
-        setError(null);
         resend.mutate({params, purpose: params.purpose === 'register' ? 'REGISTER_VERIFY' : 'LOGIN_2FA'}, {
             onSuccess: challenge => {
                 // Asking for an emailed code also switches an authenticator-app sign-in to email.
@@ -73,7 +70,7 @@ export function VerifyCodeScreen() {
                 setCooldown(RESEND_COOLDOWN_SECONDS);
                 toast.show(challenge.message, 'info');
             },
-            onError: failure => setError(signInErrorText(failure, t)),
+            onError: failure => toast.show(signInErrorText(failure, t), 'error'),
         });
     };
 
@@ -85,8 +82,7 @@ export function VerifyCodeScreen() {
         <AuthLayout title={params.purpose === 'register' ? t('mobile.auth.verifyEmailTitle') : t('mobile.auth.twoFactorTitle')} subtitle={subtitle}>
             <TextField label={t('mobile.auth.code')} value={code} onChangeText={value => setCode(normalizeCode(value))} keyboardType="number-pad"
                        autoComplete="one-time-code" textContentType="oneTimeCode" maxLength={6} autoFocus style={styles.code}/>
-            {error ? <AppText variant="small" style={styles.error}>{error}</AppText> : null}
-            <Button label={t('mobile.auth.verify')} icon={ShieldCheck} loading={verify.isPending} onPress={submit}/>
+            <KeyboardAnchor><Button label={t('mobile.auth.verify')} icon={ShieldCheck} loading={verify.isPending} onPress={submit}/></KeyboardAnchor>
             <View style={styles.actions}>
                 <Button tone="ghost" icon={params.method === 'TOTP' ? KeyRound : RotateCw}
                         label={params.method === 'TOTP' ? t('mobile.auth.useEmailCode')
@@ -100,6 +96,5 @@ export function VerifyCodeScreen() {
 
 const styles = StyleSheet.create({
     code: {},
-    error: {color: colors.danger},
     actions: {gap: spacing.xs},
 });

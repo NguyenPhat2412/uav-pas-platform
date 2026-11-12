@@ -52,6 +52,7 @@
     "subscribeFailed": "申し込めませんでした。再試行してください。"
   },
   "planner": {
+    "obstacles": "障害物",
     "label": "飛行エリア",
     "takeoffHere": "現在地から離陸",
     "toolLabel": "描画ツール",
@@ -166,6 +167,7 @@
     "history": "履歴"
   },
   "missionMonitor": {
+    "mapTitle": "飛行マップ",
     "live": "飛行中 · ライブデータ",
     "phase": {
       "live": "飛行データ待ち",
