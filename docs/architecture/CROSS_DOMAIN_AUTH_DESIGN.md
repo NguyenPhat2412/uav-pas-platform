@@ -1,0 +1,41 @@
+# Cross-Domain Authentication Design
+
+## Kiểm chứng hiện tại — 17/10/2026
+
+Giữ nguyên cơ chế cookie/bearer/CSRF đã tích hợp. Bản backend sau chuẩn hóa đã qua 726 test không skip và 151 frontend contract checks; 130 operation OpenAPI không đổi schema/parameter/security. Probe trên preview cuối có 15 HTTP checks PASS: login, cookie HttpOnly, `/auth/me`, refresh, logout, anonymous/invalid bearer 401, CORS allowed 200/rejected 403 và cookie write hợp lệ. Cookie write thiếu CSRF bị từ chối **401 trong probe này**; không suy rằng mọi đường đi đều phải trả 403 hoặc mọi exemption đã được kiểm.
+
+Sau backup và chuyển localhost, readiness cùng kiểm tra anonymous/invalid bearer/CORS và năm frontend đều PASS. Các portal sử dụng cùng hostname/backend có thể dùng lại cookie phiên qua các port; bộ nhớ/cache UI của từng origin vẫn riêng. Điều này không chứng minh SSO trên các hostname hoặc registrable domain khác nhau. Lượt browser hết hạn tự nhiên với TTL 5 giây là evidence ngày 15/10, không được gắn thành một lượt chạy lại trên artifact cuối.
+
+Không đổi auth contract trong gói ưu tiên này. Các yêu cầu HTTPS, cookie scope, CSRF coverage đầy đủ và SSO bên dưới vẫn cần kiểm chứng tại staging thật. Xem [báo cáo ngày 17/10 và evidence](../reports/m6/M6_FULL_PRIORITIES_2026_10_17.md).
+
+## Trạng thái sau tích hợp main — 16/10/2026
+
+Main `bbcf437` đã chuyển browser sang cookie trước lượt tích hợp. Bản tích hợp giữ contract này: login/refresh tiếp tục trả JSON `{accessToken, refreshToken, tokenType, user}` để tương thích API client; đồng thời đặt cookie HttpOnly `uav_access_token` (path `/`) và `uav_refresh_token` (path `/api/v1/auth`). JWT filter nhận bearer hoặc cookie. Browser dùng `credentials: include`, `/api/v1/auth/me`, và cache theo chủ thể; logout xóa cookie và dữ liệu phiên.
+
+`XSRF-TOKEN` là cookie đọc được từ JavaScript; lệnh nghiệp vụ gửi `X-XSRF-TOKEN`. Cách đọc token thô được sửa để tương thích cơ chế có sẵn của main. CookieSessionIntegrationTest và browser test chứng minh login, 403 khi thiếu/sai CSRF, ghi hợp lệ, refresh và logout. Những exemption của main cho auth/webhook vẫn giữ nguyên và cần đánh giá riêng; chưa tuyên bố CSRF coverage toàn diện.
+
+Shared/legacy API client không mang cookie hoặc CSRF của API tới signed storage URL. Bearer hỗ trợ client ngoài browser; không gọi localStorage bearer là SSO. Zalo đã bị loại khỏi main và không được khôi phục trong tích hợp.
+
+## Điều chưa được chứng minh
+
+Các portal local chạy cùng hostname `localhost`, khác port. Cookie chia sẻ giữa port không phải bằng chứng SSO giữa tên miền. Chưa có nghiệm thu HTTPS staging cho bốn hostname, redirect/returnTo tập trung, expiry/refresh race xuyên portal, logout đồng bộ, Safari/iOS hoặc các domain không cùng registrable domain.
+
+Các tùy chọn backend hiện có: `APP_COOKIE_SECURE` (mặc định local false), `APP_COOKIE_SAME_SITE` (Lax), `APP_COOKIE_DOMAIN` (rỗng, host-only). Không coi mặc định local là cấu hình production.
+
+## Topology dự kiến cần nghiệm thu
+
+- `www.uavpas.example`: public web.
+- `customer.uavpas.example`, `ops.uavpas.example`, `admin.uavpas.example`: ba portal.
+- `api.uavpas.example`: một Spring Boot backend và cơ sở dữ liệu chung.
+
+Trước cutover phải chọn phạm vi cookie đủ hẹp, bật HTTPS/Secure, cấu hình chính xác CORS origin/credentials và kiểm khả năng portal đọc CSRF cookie theo Domain đã chọn. Nếu dùng các registrable domain khác nhau, cần thiết kế authorization-code + PKCE/one-time exchange riêng; không truyền token qua URL hay mở rộng cookie tùy tiện. Mọi thay đổi auth contract phải được chủ dự án chốt trước.
+
+## Acceptance tiếp theo
+
+1. Đăng nhập từ từng portal, deep link, refresh sau hết hạn, đăng xuất và chuyển tài khoản trên hostname staging thật.
+2. CSRF âm/dương cho toàn bộ cookie writes; xem xét login/refresh/logout và webhook exemptions thay vì suy diễn từ profile PATCH.
+3. Quyền backend, ownership và cache isolation khi đổi vai trò hoặc tài khoản; không dựa riêng vào menu ẩn.
+4. Kiểm cookie flags/domain/path, CORS, redirect allowlist, storage credential isolation và không lộ token trong URL/log/evidence.
+5. Hosted CI, full security coverage và kiểm trên browser/thiết bị hỗ trợ trước kết luận production-ready.
+
+Xem [báo cáo tích hợp và evidence](../reports/m6/M6_MAIN_INTEGRATION_2026_10_16.md). Rollback là quay về artifact đã biết tốt và cấu hình tương ứng; không giả định có cờ tắt cookie chưa được triển khai, không xóa dữ liệu/refresh rows hoặc sửa migration đã xuất bản.
