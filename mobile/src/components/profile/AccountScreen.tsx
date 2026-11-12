@@ -2,11 +2,12 @@ import React from 'react';
 import {ActivityIndicator, Alert, Pressable, StyleSheet, View} from 'react-native';
 import {useRouter} from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import {ALargeSmall, ArrowRightLeft, Camera, ChevronRight, CreditCard, GraduationCap, Languages, Layers, LogOut, ShieldAlert, ShieldCheck, UserRound, type LucideIcon} from 'lucide-react-native';
-import {AppText, Button, Card, ChipGroup, Screen, SectionTitle} from '@/components/ui';
+import {ALargeSmall, ArrowRightLeft, Camera, ChevronRight, CreditCard, GraduationCap, Languages, Layers, LogOut, MessageSquareHeart, ShieldAlert, ShieldCheck, UserRound, type LucideIcon} from 'lucide-react-native';
+import {AppText, Badge, Button, Card, ChipGroup, Screen, SectionTitle} from '@/components/ui';
 import {PushDeviceCard} from '@/components/profile/PushDeviceCard';
 import {UserAvatar} from '@/components/profile/UserAvatar';
 import {useAvatarMutations} from '@/hooks/profile/useProfile';
+import {usePublicSupportSession} from '@/hooks/support/usePublicSupportMobile';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {TEXT_SIZES, useTextSize, type TextSize} from '@/providers/TextSizeContext';
@@ -99,6 +100,7 @@ export function AccountScreen() {
     const {user, can, logout, switchPortal} = useAuth();
     const {size, setSize} = useTextSize();
     const router = useRouter();
+    const {unreadCount} = usePublicSupportSession(false);
     const name = user?.fullName || user?.username || '';
     const canSwitchToOps = canUsePortal(user?.role, 'operations');
     const canAdminQuick =
@@ -159,6 +161,20 @@ export function AccountScreen() {
                 <AccountRow icon={CreditCard} label={t('nav.billing')} onPress={() => router.push('/customer/billing')}/>
                 <AccountRow icon={Layers} label={t('nav.services')} onPress={() => router.push('/customer/services')}/>
                 <AccountRow icon={GraduationCap} label={t('nav.training')} onPress={() => router.push('/customer/training')}/>
+                <AccountRow
+                    icon={MessageSquareHeart}
+                    label={t('mobile.support.customerAccountRow')}
+                    onPress={() => router.push('/customer/support')}
+                    right={
+                        unreadCount > 0 ? (
+                            <Badge
+                                label={t('mobile.support.unreadBadge', {count: unreadCount})}
+                                background={colors.primary}
+                                color={colors.white}
+                            />
+                        ) : undefined
+                    }
+                />
             </Card>
 
             <PushDeviceCard/>

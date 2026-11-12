@@ -43,6 +43,12 @@ registerHooks({
 });
 
 const {missionControls} = await import('../src/shared/utils/mission/presentation.ts');
+const {
+    personalizeQuickReply,
+    prioritizeQuickReplies,
+    resolveContactHref,
+} = await import('../src/shared/utils/support/support-format.ts');
+const {API_ROUTES} = await import('../src/shared/lib/api/routes.ts');
 
 const ALL_CHECKED = PREFLIGHT_CHECKLIST_KEYS.reduce(
     (acc, key) => ({...acc, [key]: true}),
@@ -97,6 +103,45 @@ test('notification deep-linking: routes INVOICE, SAR, MISSION and PERMIT to the 
         resolveNotificationTarget({type: 'PERMIT', referenceType: 'PERMIT', referenceId: 19}, 'customer', 'ROLE_PILOT'),
         {pathname: '/customer/mission/[id]', params: {id: '19'}},
     );
+
+    assert.deepEqual(
+        resolveNotificationTarget({type: 'SYSTEM', referenceType: 'SUPPORT', referenceId: 77}, 'operations', 'ROLE_ADMIN'),
+        {pathname: '/operations/support', params: {threadId: '77'}},
+    );
+    assert.deepEqual(
+        resolveNotificationTarget({type: 'SYSTEM', referenceType: 'SUPPORT_THREAD', referenceId: 77}, 'customer', 'ROLE_ADMIN'),
+        {pathname: '/operations/support', params: {threadId: '77'}},
+    );
+    assert.equal(
+        resolveNotificationTarget({type: 'SYSTEM', referenceType: 'SUPPORT', referenceId: 77}, 'customer', 'ROLE_PILOT'),
+        null,
+    );
+});
+
+test('mobile live support & admin quick-replies: routes, personalization, topic sorting and contact hrefs', () => {
+    assert.equal(API_ROUTES.public.supportThreads, '/api/v1/public/support/threads');
+    assert.equal(API_ROUTES.public.supportThread('tok-123', true), '/api/v1/public/support/threads/tok-123?markRead=true');
+    assert.equal(API_ROUTES.adminSupport.summary, '/api/v1/admin/support/summary');
+    assert.equal(API_ROUTES.adminSupport.reply(9), '/api/v1/admin/support/threads/9/reply');
+
+    assert.equal(
+        personalizeQuickReply('Xin chào {name}, cảm ơn {name}!', 'Nguyễn Minh Quân'),
+        'Xin chào Nguyễn Minh Quân, cảm ơn Nguyễn Minh Quân!',
+    );
+    assert.equal(personalizeQuickReply('Xin chào {name}!', ''), 'Xin chào Anh/Chị!');
+
+    assert.deepEqual(resolveContactHref('support@uavpas.vn'), {href: 'mailto:support@uavpas.vn', isEmail: true});
+    assert.deepEqual(resolveContactHref('024 7300 8899'), {href: 'tel:02473008899', isEmail: false});
+
+    const ranked = prioritizeQuickReplies(
+        [
+            {id: 1, title: 'Other', topic: 'PRICING_PLAN', content: 'A', sortOrder: 1, createdAt: ''},
+            {id: 2, title: 'General', topic: 'GENERAL_SUPPORT', content: 'B', sortOrder: 2, createdAt: ''},
+            {id: 3, title: 'Exact', topic: 'SURVEY_SERVICE', content: 'C', sortOrder: 3, createdAt: ''},
+        ],
+        'SURVEY_SERVICE',
+    );
+    assert.deepEqual(ranked.map(x => x.id), [3, 2, 1]);
 });
 
 test('pre-flight checklist: gates takeoff on READY status, operatorAccepted, airspace, permit verification and all 4 checks', () => {

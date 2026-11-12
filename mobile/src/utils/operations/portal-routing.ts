@@ -30,6 +30,7 @@ export function resolvePortalEntryHref(portal: MobilePortal): '/operations/missi
 export type NotificationDeepLink =
     | { pathname: '/customer/invoices/[id]'; params: { id: string } }
     | { pathname: '/operations/sar/[missionId]'; params: { missionId: string } }
+    | { pathname: '/operations/support'; params: { threadId: string } }
     | { pathname: '/operations/mission/[id]'; params: { id: string } }
     | { pathname: '/customer/mission/[id]'; params: { id: string } };
 
@@ -46,6 +47,9 @@ export function resolveNotificationTarget(
 
     if (ref === 'INVOICE') {
         return {pathname: '/customer/invoices/[id]', params: {id}};
+    }
+    if ((ref === 'SUPPORT' || ref === 'SUPPORT_THREAD') && staffAllowed) {
+        return {pathname: '/operations/support', params: {threadId: id}};
     }
     if ((ref === 'SAR' || item.type === 'SAR_TARGET_FOUND') && staffAllowed) {
         return {pathname: '/operations/sar/[missionId]', params: {missionId: id}};

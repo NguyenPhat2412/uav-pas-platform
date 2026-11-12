@@ -1,11 +1,12 @@
 import React from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
 import {useRouter} from 'expo-router';
-import {ALargeSmall, ArrowRightLeft, Bell, GraduationCap, Languages, LogOut, ShieldAlert, ShieldCheck, UserRound} from 'lucide-react-native';
+import {ALargeSmall, ArrowRightLeft, Bell, GraduationCap, Languages, LogOut, MessageSquare, ShieldAlert, ShieldCheck, UserRound} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, ChipGroup, Screen, SectionTitle} from '@/components/ui';
 import {AccountRow, AvatarButton} from '@/components/profile/AccountScreen';
 import {PushDeviceCard} from '@/components/profile/PushDeviceCard';
 import {useNotifications} from '@/hooks/notification/useNotifications';
+import {useAdminSupportSummary, useCanManageSupport} from '@/hooks/support/useAdminSupportMobile';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {TEXT_SIZES, useTextSize, type TextSize} from '@/providers/TextSizeContext';
@@ -20,6 +21,9 @@ export function OperationsAccountScreen() {
     const {unreadCount} = useNotifications();
     const {size, setSize} = useTextSize();
     const router = useRouter();
+    const canManageSupport = useCanManageSupport();
+    const supportSummary = useAdminSupportSummary(canManageSupport);
+    const supportUnread = supportSummary.data?.unreadMessages ?? supportSummary.data?.unreadThreads ?? 0;
     const name = user?.fullName || user?.username || '';
     const canAdminQuick =
         can('USER_MANAGE') ||
@@ -85,6 +89,22 @@ export function OperationsAccountScreen() {
                         icon={ShieldAlert}
                         label={t('mobile.adminQuick.entryLabel')}
                         onPress={() => router.push('/operations/admin-quick')}
+                    />
+                )}
+                {canManageSupport && (
+                    <AccountRow
+                        icon={MessageSquare}
+                        label={t('mobile.support.adminAccountRow')}
+                        onPress={() => router.push('/operations/support')}
+                        right={
+                            supportUnread > 0 ? (
+                                <Badge
+                                    label={supportUnread > 99 ? '99+' : String(supportUnread)}
+                                    background={colors.danger}
+                                    color={colors.white}
+                                />
+                            ) : undefined
+                        }
                     />
                 )}
                 <AccountRow icon={GraduationCap} label={t('nav.training')} onPress={() => router.push('/operations/training')}/>

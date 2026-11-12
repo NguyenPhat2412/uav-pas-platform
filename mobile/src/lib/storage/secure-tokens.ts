@@ -8,6 +8,7 @@ export interface StoredTokens {
 
 const ACCESS_KEY = 'uav_access_token';
 const REFRESH_KEY = 'uav_refresh_token';
+const SUPPORT_VISITOR_KEY = 'uav_support_visitor_token';
 
 // Readable only while the phone is unlocked, and never restored onto another device from a backup.
 const OPTIONS: SecureStore.SecureStoreOptions = {keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY};
@@ -37,4 +38,21 @@ export async function clearTokens(): Promise<void> {
         SecureStore.deleteItemAsync(ACCESS_KEY, OPTIONS),
         SecureStore.deleteItemAsync(REFRESH_KEY, OPTIONS),
     ]);
+}
+
+export async function readSupportVisitorToken(): Promise<string | null> {
+    try {
+        const token = await SecureStore.getItemAsync(SUPPORT_VISITOR_KEY, OPTIONS);
+        return token?.trim() || null;
+    } catch {
+        return null;
+    }
+}
+
+export async function writeSupportVisitorToken(token: string): Promise<void> {
+    await SecureStore.setItemAsync(SUPPORT_VISITOR_KEY, token.trim(), OPTIONS);
+}
+
+export async function clearSupportVisitorToken(): Promise<void> {
+    await Promise.allSettled([SecureStore.deleteItemAsync(SUPPORT_VISITOR_KEY, OPTIONS)]);
 }

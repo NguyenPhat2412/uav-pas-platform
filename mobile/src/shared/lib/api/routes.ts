@@ -272,6 +272,21 @@ export const API_ROUTES = {
     },
     public: {
         siteInfo: '/api/v1/public/site-info',
+        discovery: '/api/v1/public/discovery',
+        supportThreads: '/api/v1/public/support/threads',
+        supportThread: (visitorToken: string, markRead = false) =>
+            `/api/v1/public/support/threads/${encodeURIComponent(visitorToken)}?markRead=${markRead}`,
+        supportMessages: (visitorToken: string) =>
+            `/api/v1/public/support/threads/${encodeURIComponent(visitorToken)}/messages`,
+    },
+    adminSupport: {
+        summary: '/api/v1/admin/support/summary',
+        threads: '/api/v1/admin/support/threads',
+        thread: (id: string | number) => `/api/v1/admin/support/threads/${id}`,
+        reply: (id: string | number) => `/api/v1/admin/support/threads/${id}/reply`,
+        status: (id: string | number) => `/api/v1/admin/support/threads/${id}/status`,
+        quickReplies: '/api/v1/admin/support/quick-replies',
+        quickReply: (id: string | number) => `/api/v1/admin/support/quick-replies/${id}`,
     },
     weather: {
         forecast: '/api/v1/weather/forecast',

@@ -6,6 +6,7 @@ import {useI18n} from '@/providers/I18nContext';
 import {AssistantProvider} from '@/providers/AssistantContext';
 import {detailHeader} from '@/components/layout/TabStack';
 import {AssistantLauncher} from '@/components/assistant/AssistantLauncher';
+import {PulsingSupportLauncher} from '@/components/support/PulsingSupportLauncher';
 
 /** Signed-in area: tabs, detail screens pushed on top under AppHeader (back / close button), and the assistant over the tabs. */
 export default function CustomerLayout() {
@@ -30,8 +31,19 @@ export default function CustomerLayout() {
                     <Stack.Screen name="training/lesson/[id]" options={{title: t('nav.training')}}/>
                     {/* The chat opens as a native sheet: pull it to full height or swipe it away. */}
                     <Stack.Screen name="assistant" options={{presentation: 'formSheet', sheetAllowedDetents: [0.75, 1], sheetGrabberVisible: true, headerTransparent: false}}/>
+                    <Stack.Screen
+                        name="support"
+                        options={{
+                            title: t('mobile.support.publicTitle'),
+                            presentation: 'formSheet',
+                            sheetAllowedDetents: [0.85, 1],
+                            sheetGrabberVisible: true,
+                            headerTransparent: false,
+                        }}
+                    />
                 </Stack>
                 <AssistantLauncher/>
+                <PulsingSupportLauncher mode="customer"/>
             </View>
         </AssistantProvider>
     );

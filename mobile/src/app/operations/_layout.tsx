@@ -6,6 +6,7 @@ import {useI18n} from '@/providers/I18nContext';
 import {AssistantProvider} from '@/providers/AssistantContext';
 import {detailHeader} from '@/components/layout/TabStack';
 import {AssistantLauncher} from '@/components/assistant/AssistantLauncher';
+import {PulsingSupportLauncher} from '@/components/support/PulsingSupportLauncher';
 import {canUsePortal} from '@/shared/utils/auth/portal';
 
 /** Field Operations workspace: guarded to ROLE_OPERATOR / ROLE_COMMANDER / ROLE_ADMIN. */
@@ -26,6 +27,7 @@ export default function OperationsLayout() {
                     <Stack.Screen name="profile" options={{title: t('mobile.account.profile')}}/>
                     <Stack.Screen name="security" options={{title: t('mobile.account.security')}}/>
                     <Stack.Screen name="admin-quick" options={{title: t('mobile.adminQuick.title')}}/>
+                    <Stack.Screen name="support" options={{title: t('mobile.support.adminTitle')}}/>
                     <Stack.Screen name="training/index" options={{title: t('nav.training')}}/>
                     <Stack.Screen name="training/[slug]" options={{title: t('nav.training')}}/>
                     <Stack.Screen name="training/lesson/[id]" options={{title: t('nav.training')}}/>
@@ -39,6 +41,7 @@ export default function OperationsLayout() {
                         }}
                     />
                 </Stack>
+                <PulsingSupportLauncher mode="admin"/>
                 <AssistantLauncher/>
             </View>
         </AssistantProvider>

@@ -42,6 +42,13 @@ export function NotificationsScreen({portal = 'customer'}: { portal?: MobilePort
             }
             return;
         }
+        if (target.pathname === '/operations/support') {
+            if (portal === 'operations' || canUsePortal(user?.role, 'operations')) {
+                if (portal !== 'operations') void switchPortal('operations');
+                router.push({pathname: '/operations/support', params: target.params});
+            }
+            return;
+        }
         if (target.pathname === '/operations/mission/[id]') {
             router.push({pathname: '/operations/mission/[id]', params: target.params});
             return;
