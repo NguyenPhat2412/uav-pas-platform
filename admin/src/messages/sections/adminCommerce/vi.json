@@ -1,0 +1,127 @@
+{
+  "adminCommerce": {
+    "pages": {
+      "transactions": "Giao dịch thanh toán & IPN",
+      "outbox": "Hàng đợi sự kiện tài chính"
+    },
+    "common": {
+      "all": "Tất cả"
+    },
+    "txStatus": {
+      "SUCCESS": "Thành công",
+      "PENDING": "Đang chờ",
+      "FAILED": "Thất bại"
+    },
+    "gateway": {
+      "VIETQR_NAPAS_247": "VietQR NAPAS 247 (IPN)",
+      "VIETQR_NAPAS": "VietQR NAPAS",
+      "BANK_TRANSFER_MANUAL": "Chuyển khoản – xác nhận thủ công"
+    },
+    "tx": {
+      "filters": "Bộ lọc giao dịch",
+      "keyword": "Tìm kiếm",
+      "keywordPlaceholder": "Mã giao dịch, mã hóa đơn, khách hàng, email…",
+      "status": "Trạng thái",
+      "gateway": "Kênh thanh toán",
+      "from": "Từ ngày",
+      "to": "Đến ngày",
+      "invoiceId": "ID hóa đơn",
+      "apply": "Lọc",
+      "reset": "Xóa bộ lọc",
+      "table": "Bảng giao dịch thanh toán",
+      "empty": "Không có giao dịch nào khớp bộ lọc.",
+      "open": "Xem chi tiết giao dịch {code}",
+      "col": {
+        "time": "Thời điểm",
+        "code": "Mã giao dịch",
+        "invoice": "Hóa đơn",
+        "customer": "Khách hàng",
+        "gateway": "Kênh",
+        "amount": "Số tiền",
+        "status": "Trạng thái"
+      },
+      "detail": {
+        "title": "Giao dịch {code}",
+        "transactionCode": "Mã giao dịch / tham chiếu",
+        "status": "Trạng thái",
+        "gateway": "Kênh thanh toán",
+        "amount": "Số tiền nhận",
+        "invoice": "Hóa đơn",
+        "invoiceStatus": "Trạng thái hóa đơn",
+        "invoiceAmount": "Số tiền hóa đơn",
+        "customer": "Khách hàng",
+        "email": "Email",
+        "bank": "Ngân hàng nhận (BIN · tài khoản)",
+        "created": "Ghi nhận lúc",
+        "completed": "Hoàn tất lúc",
+        "amountMismatch": "Số tiền khác hóa đơn — cần đối soát.",
+        "raw": "Dữ liệu callback gốc",
+        "rawHint": "Chữ ký, token và khóa đã được che.",
+        "noRaw": "Không có dữ liệu callback."
+      }
+    },
+    "outboxStatus": {
+      "PENDING": "Đang chờ xử lý",
+      "WAITING_SUBSCRIBERS": "Chờ đích nhận webhook",
+      "FAILED": "Thất bại",
+      "LOCAL_COMPLETED": "Đã xử lý"
+    },
+    "outbox": {
+      "intro": "Bộ xử lý chạy mỗi phút; \"Thử lại\" xếp lại sự kiện lỗi ngay.",
+      "filterLabel": "Lọc theo trạng thái",
+      "table": "Bảng sự kiện tài chính",
+      "empty": "Không có sự kiện nào.",
+      "customer": "Khách hàng (ID)",
+      "notification": "Thông báo khách hàng",
+      "notificationDone": "Đã tạo",
+      "notificationPending": "Chưa tạo",
+      "payload": "Nội dung sự kiện",
+      "detailTitle": "Sự kiện {type}",
+      "retry": "Thử lại",
+      "retryConfirm": "Xếp lại sự kiện {id} để xử lý ngay?",
+      "retried": "Đã xếp lại sự kiện {id}; xử lý trong vòng 1 phút.",
+      "retryHint": "Thử lại không tạo trùng thông báo hay webhook.",
+      "notRetryable": "Sự kiện đã xử lý hoặc đang chờ lượt đầu.",
+      "col": {
+        "event": "Sự kiện",
+        "invoice": "Hóa đơn",
+        "status": "Trạng thái",
+        "attempts": "Số lần thử",
+        "lastError": "Lỗi gần nhất",
+        "nextAttempt": "Lần thử kế tiếp",
+        "created": "Tạo lúc",
+        "actions": "Thao tác"
+      }
+    },
+    "webhooks": {
+      "retry": "Gửi lại",
+      "retryConfirm": "Gửi lại {event} tới {name} (3 lần thử mới)?",
+      "retried": "Đã xếp hàng gửi lại.",
+      "rotate": "Đổi khóa ký cho {name}",
+      "rotateConfirm": "Tạo khóa ký mới cho {name}? Khóa cũ hết hiệu lực ngay.",
+      "maskedSecret": "Khóa ký (đã che)",
+      "createSecretHint": "Sao chép khóa trước khi tạo; sau đó chỉ hiện dạng che.",
+      "secret": {
+        "title": "Khóa ký webhook mới",
+        "intro": "Khóa ký mới của \"{name}\" (HMAC-SHA256).",
+        "label": "Khóa ký mới",
+        "copy": "Sao chép",
+        "copied": "Đã sao chép",
+        "copyFailed": "Không sao chép được; hãy sao chép thủ công.",
+        "warning": "Khóa chỉ hiện một lần; mất thì đổi khóa lại.",
+        "done": "Tôi đã lưu khóa"
+      }
+    },
+    "profile": {
+      "title": "Hồ sơ thanh toán",
+      "readOnly": "Chỉ xem — khách hàng tự cập nhật",
+      "empty": "Khách hàng chưa khai báo hồ sơ thanh toán.",
+      "organizationName": "Tên tổ chức",
+      "taxCode": "Mã số thuế",
+      "billingAddress": "Địa chỉ xuất hóa đơn",
+      "emergencyContactName": "Người liên hệ khẩn cấp",
+      "emergencyContactPhone": "SĐT liên hệ khẩn cấp",
+      "updatedAt": "Cập nhật lần cuối: {date}"
+    }
+  }
+}

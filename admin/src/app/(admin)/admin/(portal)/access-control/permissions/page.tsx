@@ -1,0 +1,7 @@
+import {AdminPage} from '@/components/layout/AdminPage';
+import {AccessHub} from "@/components/access/AccessHub";
+
+export default function AdminAccessPermissionsRegistryPage() {
+    return <AdminPage title="admin.pages.access.title"
+                      permission="USER_PERMISSION_MANAGE" activeResource="access-control"><AccessHub tab="registry"/></AdminPage>;
+}

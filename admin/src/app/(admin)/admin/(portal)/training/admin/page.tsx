@@ -1,0 +1,16 @@
+'use client';
+
+import {AdminPage} from '@/components/layout/AdminPage';
+import {TrainingAcademyWorkspace} from '@/components/training/TrainingAcademyWorkspace';
+
+export default function AdminTrainingGovernanceRoutePage() {
+    return (
+        <AdminPage
+            title="Quy chuẩn Quản trị & Bảo mật"
+            permission="DASHBOARD_VIEW"
+            activeResource="/admin/training/admin"
+        >
+            <TrainingAcademyWorkspace defaultPortal="ADMIN" manage />
+        </AdminPage>
+    );
+}

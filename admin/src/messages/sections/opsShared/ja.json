@@ -1,0 +1,209 @@
+{
+  "opsShared": {
+    "sar": {
+      "status": {
+        "SEARCHING": "捜索中",
+        "SUSPENDED": "中断",
+        "TARGET_LOCATED": "目標特定",
+        "RESCUED": "救助完了"
+      },
+      "taskType": {
+        "OBJECT_DETECTION_YOLOV8S": "YOLOv8s物体検出",
+        "PERSON_SEARCH": "人物捜索",
+        "THERMAL_ANOMALY": "熱異常"
+      },
+      "node": {
+        "KV260_EDGE": "KV260 Edge",
+        "CLOUD_GPU": "Cloud GPU"
+      },
+      "cockpit": {
+        "loading": "SAR任務を読み込み中…",
+        "loadError": "SARミッションを読み込めません。再試行してください。",
+        "emptyTitle": "進行中のSAR任務はありません",
+        "emptyBody": "LKPと捜索エリアのあるSARミッションがここに表示されます。",
+        "openDispatch": "配車一覧を開く",
+        "chooseMission": "SAR任務を選択",
+        "urgent": "緊急優先",
+        "station": "拠点:",
+        "pilot": "操縦者:",
+        "unassigned": "未割り当て",
+        "flightTime": "飛行時間:",
+        "victims": "推定要救助者 {count} 名",
+        "updated": "{at} 更新",
+        "dispatchButton": "救助座標を送信",
+        "rthButton": "RTHを要求",
+        "selectTarget": "先にGPS座標のある目標を選択してください。",
+        "dispatchQueued": "{code} の救助座標を送信しました。",
+        "dispatchConfirm": "選択した目標座標 ({coords}) を任務 {code} の救助チームへ送信しますか?",
+        "dispatchUnconfigured": "{event} を受信するWebhookがありません。救助機関に直接連絡してください。",
+        "rthConfirm": "UAV {uav} にRTHを送信しますか?",
+        "rthQueued": "{code} にRTHを送信しました。UAVの応答待ちです。",
+        "rthUnconfigured": "{event} を受信するGCSがありません。GCSで直接RTHしてください。",
+        "actionFailed": "操作に失敗しました。再試行してください。",
+        "cameraError": "AI検出を表示できません",
+        "mapError": "戦術マップを読み込めません",
+        "hudError": "テレメトリ表示エラー",
+        "kv260Error": "推論ボード表示エラー"
+      },
+      "viewfinder": {
+        "title": "AI検出",
+        "frameAlt": "AIタスク #{id} の解析フレーム",
+        "loading": "検出を読み込み中…",
+        "loadError": "AI検出を読み込めませんでした。",
+        "noTask": "この任務のAIタスクはまだありません。",
+        "noFrame": "最新のAIタスクにフレームはありません。位置はグリッドに表示します。",
+        "boxes": "検出枠 ({count})",
+        "boxAria": "{label}、信頼度 {confidence}",
+        "confidence": "信頼度:",
+        "streamTitle": "目標一覧",
+        "inView": "{count}/{total} 件",
+        "none": "まだ目標は検出されていません。",
+        "belowThreshold": "選択した信頼度に達する目標はありません。",
+        "noGps": "座標なし",
+        "verify": "確認",
+        "verified": "確認済み",
+        "verifiedBy": "{name} が確認",
+        "verifiedToast": "目標 {label}({id})を確認しました。",
+        "unverifiedToast": "目標 {label}({id})の確認を取り消しました。",
+        "verifyFailed": "確認状態を更新できませんでした。"
+      },
+      "map": {
+        "title": "SAR戦術マップ",
+        "aria": "任務 {code} の戦術マップ",
+        "generatePlan": "IAMSAR航路を生成",
+        "clearPlan": "航路を隠す",
+        "planReady": "{legs} 区間の航路を生成しました(約 {minutes} 分)。",
+        "planFailed": "航路を生成できませんでした。",
+        "planSummary": "拡大方形: {legs} 区間 · {distance} m · 約 {minutes} 分 · 掃引幅 {sweep} m",
+        "basemap": {
+          "streets": "道路地図",
+          "satellite": "衛星写真"
+        },
+        "lkp": "最終既知位置(LKP)",
+        "drift": "漂流半径",
+        "driftRadius": "漂流半径 {meters} m",
+        "toHome": "拠点まで",
+        "home": "出発拠点",
+        "searchArea": "捜索区域",
+        "areaCheck": "捜索区域",
+        "inside": "UAVは区域内",
+        "outside": "UAVは区域外"
+      },
+      "hud": {
+        "title": "UAV飛行データ",
+        "noUav": "この任務にUAVが割り当てられていません。",
+        "loading": "テレメトリを読み込み中…",
+        "waiting": "UAV {serial} からテレメトリをまだ受信していません。",
+        "stale": "テレメトリが古い({seconds}秒)。GCSリンクを確認してください。",
+        "altitude": "高度(AGL)",
+        "speed": "対地速度",
+        "battery": "バッテリー",
+        "distanceHome": "拠点まで",
+        "noHome": "拠点の座標がありません",
+        "satellites": "衛星",
+        "heading": "方位:",
+        "age": "{seconds} 秒前に更新",
+        "rtk": {
+          "FIXED": "RTK FIX",
+          "FLOAT": "RTK FLOAT",
+          "SINGLE": "単独測位",
+          "NONE": "測位なし"
+        }
+      },
+      "kv260": {
+        "title": "KV260 AIボード(Edge)",
+        "cloudTitle": "Cloud GPU 推論",
+        "loading": "AIタスクを読み込み中…",
+        "noTask": "この任務にAIタスクはまだ送信されていません。",
+        "awaiting": "ボードからの結果を待っています。",
+        "status": {
+          "PENDING": "待機中",
+          "PROCESSING": "処理中",
+          "COMPLETED": "完了",
+          "FAILED": "失敗"
+        },
+        "dpuLoad": "DPU負荷",
+        "aiSpeed": "AI速度",
+        "inference": "推論時間",
+        "socTemp": "SoC温度",
+        "tempSafe": "安全(<{limit}°C)",
+        "tempHot": "高温(≥{limit}°C)",
+        "model": "モデル:",
+        "threshold": "しきい値 {pct}%",
+        "node": "処理ノード:"
+      }
+    },
+    "state": {
+      "empty": "データがありません",
+      "loadingData": "データを読み込み中",
+      "forbiddenAction": "この操作を行う権限がありません。",
+      "errors": {
+        "equipmentReleaseRequired": "機材はミッションで引当中です。ミッション側で返却してください。",
+        "inventoryNotAvailable": "機材が稼働していないか、利用可能な数量が不足しています。",
+        "equipmentReserved": "機材は引当中です。ステーション変更前に返却してください。",
+        "missionMediaLocked": "ミッション終了。ファイルは閲覧・ダウンロードのみです。"
+      },
+      "retry": "再試行",
+      "recheckPermissions": "権限を再確認",
+      "noAccessTitle": "アクセス権がありません",
+      "noAccessDetail": "アクセスが必要な場合は管理者に連絡してください。",
+      "noMatchingData": "該当するデータがありません",
+      "noMatchingDetail": "フィルターを変更してください。",
+      "dataTable": "データテーブル",
+      "previousPage": "前のページ",
+      "nextPage": "次のページ",
+      "closeDetail": "詳細を閉じる",
+      "paginationSummary": "{total} 件 · {page}/{pages} ページ",
+      "close": "閉じる",
+      "detailTabs": "詳細",
+      "authenticating": "認証中",
+      "back": "戻る"
+    },
+    "errorBoundary": {
+      "title": "このエリアを表示できません",
+      "detail": "表示エラーが発生しました。",
+      "reset": "再試行"
+    },
+    "query": {
+      "serverError": "サーバーで処理エラーが発生しました。",
+      "serverErrorTitle": "サーバーエラー（500）",
+      "networkError": "サーバーに接続できません。ネットワークを確認してください。",
+      "networkErrorTitle": "ネットワーク接続なし",
+      "mutationFailed": "操作に失敗しました。",
+      "mutationErrorTitle": "操作エラー"
+    },
+    "auth": {
+      "toastTitle": "UAV運用",
+      "redirectingPortal": "ログインしました！{portal}ポータルへ移動しています...",
+      "welcome": "ログインしました！運用センターへようこそ。",
+      "loginFailedTitle": "ログイン失敗",
+      "noAccount": "運用アカウントをお持ちでない場合は、管理者に連絡してアクセス権を付与してもらってください。",
+      "invalidPassword": "無効なパスワード",
+      "registerSuccess": "アカウントを登録しました！ログインしてください。",
+      "registerSuccessTitle": "登録完了",
+      "registerFailed": "登録に失敗しました",
+      "loginHeroTitle": "計画からミッション完了まで。",
+      "loginHeroDescription": "指揮、リソース、ミッションの進捗を一つのワークスペースに統合します。"
+    },
+    "routes": {
+      "operations": {
+        "errorTitle": "ページを表示できません",
+        "errorDetail": "データを読み込めません。再試行するか概要に戻ってください。",
+        "reload": "再読み込み",
+        "backOverview": "概要へ戻る",
+        "notFoundTitle": "ページが見つかりません",
+        "notFoundDetail": "このリンクは存在しないか、移動されました。",
+        "notFoundBack": "概要へ戻る"
+      },
+      "customer": {
+        "errorTitle": "ページを表示できません",
+        "errorDetail": "データの読み込み中に例外が発生しました。再試行するか概要ページに戻ってください。",
+        "retry": "再試行",
+        "backOverview": "概要へ戻る →",
+        "notFoundTitle": "404 · ページが見つかりません",
+        "notFoundDetail": "お探しのページまたはサービス記録は存在しないか、URLが変更されました。",
+        "notFoundBack": "← 概要へ戻る"
+      }
+    }
+  }
+}
