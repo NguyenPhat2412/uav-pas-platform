@@ -25,6 +25,27 @@ public class MissionAccessServiceImpl implements MissionAccessService {
     private final PermissionService permissions;
 
     @Override
+    public java.util.List<AppUser> dispatchers() {
+        // shortcut: scans staff roles only, so a ROLE_PILOT user granted MISSION_CONFIRM by a
+        // per-user override is missed; query user_permissions if that is ever used.
+        return java.util.stream.Stream.of(
+                        com.uav.platform.enums.user.UserRole.ROLE_ADMIN,
+                        com.uav.platform.enums.user.UserRole.ROLE_COMMANDER,
+                        com.uav.platform.enums.user.UserRole.ROLE_OPERATOR)
+                .flatMap(role -> users.findByRole(role).stream())
+                .filter(
+                        user ->
+                                permissions.has(
+                                        org.springframework.security.authentication
+                                                .UsernamePasswordAuthenticationToken.authenticated(
+                                                        user.getUsername(),
+                                                        null,
+                                                        java.util.List.of()),
+                                        "MISSION_CONFIRM"))
+                .toList();
+    }
+
+    @Override
     public Mission accessibleForUpdate(Long id, Authentication authentication) {
         Mission mission =
                 missions.findByIdForUpdate(id)

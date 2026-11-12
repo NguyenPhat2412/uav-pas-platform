@@ -54,6 +54,14 @@ public class MissionEventServiceImpl implements MissionEventService {
         if (operator != null && (customer == null || !operator.getId().equals(customer.getId()))) {
             notifyUser(operator, actorName, mission, type, description);
         }
+        if (type == MissionEventType.SUBMITTED) {
+            // Dispatch staff must learn about a new request without polling the list.
+            for (AppUser staff : access.dispatchers()) {
+                if (customer != null && staff.getId().equals(customer.getId())) continue;
+                if (operator != null && staff.getId().equals(operator.getId())) continue;
+                notifyUser(staff, actorName, mission, type, description);
+            }
+        }
     }
 
     @Override
