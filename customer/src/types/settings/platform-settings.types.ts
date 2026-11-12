@@ -34,6 +34,7 @@ export interface SettingHistoryEntry {
 /** GET /api/v1/public/site-info — public settings only, blank values omitted. */
 export interface PublicSiteInfo {
     dispatchHotline?: string | null;
+    zaloPhone?: string | null;
     email?: string | null;
     address?: string | null;
     settings: Record<string, string>;

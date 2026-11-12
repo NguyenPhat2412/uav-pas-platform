@@ -2,7 +2,9 @@ import type {Metadata} from 'next';
 import {Suspense} from 'react';
 import {PublicFooter} from '@/components/marketing/PublicFooter';
 import {PublicHeader} from '@/components/marketing/PublicHeader';
+import {ScrollEngagementPopup} from '@/components/marketing/ScrollEngagementPopup';
 import {ScrollToTopButton} from '@/components/marketing/ScrollToTopButton';
+import {PublicSupportWidget} from '@/components/support/PublicSupportWidget';
 import {PortalProviders} from '@/providers/PortalProviders';
 import {AuthModalPopup} from '@/components/auth/AuthModalPopup';
 import {publicUrl as siteUrl} from '@/content/marketing/origins';
@@ -50,7 +52,9 @@ export default function PublicLayout({children}: { children: React.ReactNode }) 
                 <main id="main-content" tabIndex={-1}>{children}</main>
                 <PublicFooter/>
                 <ScrollToTopButton/>
+                <PublicSupportWidget/>
                 <Suspense fallback={null}>
+                    <ScrollEngagementPopup/>
                     <AuthModalPopup/>
                 </Suspense>
             </PortalProviders>

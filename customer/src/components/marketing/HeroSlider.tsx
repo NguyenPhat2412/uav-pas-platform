@@ -56,8 +56,8 @@ export function HeroSlider() {
       {/* Cinematic dark overlay gradient for readability */}
       <div className="absolute inset-0 z-10 bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-slate-900/40" />
 
-      {/* Slide pagination dots */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 pointer-events-auto">
+      {/* Slide pagination dots — aligned bottom-right on desktop so center scroll-down CTA stays unobstructed */}
+      <div className="hidden sm:flex absolute bottom-8 right-10 lg:right-16 z-20 items-center gap-2 pointer-events-auto">
         {SLIDES.map((_, index) => (
           <button
             key={index}

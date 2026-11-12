@@ -42,8 +42,8 @@ export function useFoldedNavGroups(storageKey: string, activeGroup?: string) {
 
 /** Link style for a page inside a folding group; the focus ring is drawn inside because the list clips. */
 export function foldedLinkClass(active: boolean) {
-    return cn('block truncate rounded-lg px-2.5 py-1.5 text-[13px] leading-5 outline-none transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary',
-        active ? 'bg-slate-100 font-medium text-slate-900' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900');
+    return cn('block truncate rounded-lg px-2.5 py-1.5 text-[13px] leading-5 outline-none transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#ab2523]',
+        active ? 'bg-[#ab2523]/10 font-semibold text-[#ab2523]' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900');
 }
 
 /** A sidebar group shown as one row with an icon and chevron; its pages unfold underneath. */
@@ -51,10 +51,10 @@ export function FoldingNavGroup({id, label, icon: Icon, expanded, active, onTogg
     id: string; label: string; icon: LucideIcon; expanded: boolean; active: boolean; onToggle: () => void; children: ReactNode;
 }) {
     return <div>
-        <button type="button" onClick={onToggle} aria-expanded={expanded} aria-controls={id}
-                className={cn('flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[13px] leading-5 outline-none transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary',
-                    active && !expanded ? 'font-semibold text-slate-900' : 'font-medium text-slate-800')}>
-            <Icon size={16} className="shrink-0" aria-hidden="true"/>
+        <button type="button" onClick={onToggle} aria-expanded={expanded} aria-controls={id} title={label}
+                className={cn('flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[13px] leading-5 outline-none transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#ab2523]',
+                    active && !expanded ? 'bg-[#ab2523]/10 font-semibold text-[#ab2523]' : active ? 'font-semibold text-slate-900' : 'font-medium text-slate-800')}>
+            <Icon size={16} className="shrink-0 text-[#ab2523]" aria-hidden="true"/>
             <span className="min-w-0 flex-1 truncate">{label}</span>
             <ChevronRight size={14} aria-hidden="true" className={cn('shrink-0 text-slate-400 transition-transform duration-200', expanded && 'rotate-90')}/>
         </button>

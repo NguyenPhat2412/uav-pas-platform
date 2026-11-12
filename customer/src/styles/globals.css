@@ -410,32 +410,32 @@
 }
 
 /*
- * Red is reserved for the main call-to-action buttons (bg-primary on buttons and links) and for real
- * failures (danger/red-*). Everything else that used the brand colour — links, labels, icon tiles,
- * selection borders, count badges — reads in the near-black/grey scale, as on Cloudflare.
+ * Red is reserved for the main call-to-action buttons (bg-primary on buttons and links), sidebar
+ * navigation icons/active states, and real failures (danger/red-*). Everything else inside workspace
+ * content, headers, and dialogs reads in the near-black/grey scale, as on Cloudflare.
  */
-:root[data-portal] :is(#workspace, #content, aside, header, [role="dialog"]) :is(.text-primary, [class*="text-primary/"]) {
+:root[data-portal] :is(#workspace, #content, header, [role="dialog"]) :is(.text-primary, [class*="text-primary/"]) {
     color: #1f1f1f;
 }
 
-:root[data-portal] :is(#workspace, #content, aside, header, [role="dialog"]) [class*="hover:text-primary"]:hover {
+:root[data-portal] :is(#workspace, #content, header, [role="dialog"]) [class*="hover:text-primary"]:hover {
     color: #000;
 }
 
-:root[data-portal] :is(#workspace, #content, aside, header, [role="dialog"]) :is(.border-primary, [class*="border-primary/"]) {
+:root[data-portal] :is(#workspace, #content, header, [role="dialog"]) :is(.border-primary, [class*="border-primary/"]) {
     border-color: #404040;
 }
 
-:root[data-portal] :is(#workspace, #content, aside, header, [role="dialog"]) [class*="border-l-primary"] {
+:root[data-portal] :is(#workspace, #content, header, [role="dialog"]) [class*="border-l-primary"] {
     border-left-color: #404040;
 }
 
-:root[data-portal] :is(#workspace, #content, aside, header, [role="dialog"]) [class*="bg-primary/"] {
+:root[data-portal] :is(#workspace, #content, header, [role="dialog"]) [class*="bg-primary/"] {
     background-color: #f3f3f3;
 }
 
 /* Small solid badges (counts, initials, pill links) go dark grey; full-size buttons and links keep the red. */
-:root[data-portal] :is(#workspace, #content, aside, header, [role="dialog"]) :is(span.bg-primary, strong.bg-primary, small.bg-primary, .rounded-badge.bg-primary) {
+:root[data-portal] :is(#workspace, #content, header, [role="dialog"]) :is(span.bg-primary, strong.bg-primary, small.bg-primary, .rounded-badge.bg-primary) {
     background-color: #3f3f46;
 }
 
@@ -455,4 +455,42 @@
 /* A tile grid that becomes separate cards drops its own fill border so only the cards are framed. */
 :root[data-portal] :is(#workspace, #content) :is(.grid, .flex).gap-px:not(.rounded-panel *) {
     border-width: 0;
+}
+
+@keyframes uavScrollWheel {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    70% {
+        transform: translateY(10px);
+        opacity: 0.15;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 0;
+    }
+}
+
+@keyframes uavScrollChevron {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.45;
+    }
+    50% {
+        transform: translateY(5px);
+        opacity: 1;
+    }
+}
+
+.animate-uav-scroll-wheel {
+    animation: uavScrollWheel 1.75s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-uav-scroll-chevron {
+    animation: uavScrollChevron 1.5s ease-in-out infinite;
+}
+
+.animate-uav-scroll-chevron-delay {
+    animation: uavScrollChevron 1.5s ease-in-out 0.22s infinite;
 }

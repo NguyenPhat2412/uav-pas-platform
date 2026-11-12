@@ -4,6 +4,7 @@ import {keepVietnamesePhrases} from '@/lib/typography';
 import {capabilities, readinessLabels} from '@/content/marketing/site-content';
 import {projectHighlights} from '@/content/marketing/home-content';
 import {HeroSlider} from '@/components/marketing/HeroSlider';
+import {HeroScrollDownButton} from '@/components/marketing/HeroScrollDownButton';
 import {FlatTag} from '@/components/marketing/FlatTag';
 import {HomeLandingSectionHead} from '@/components/marketing/HomeLandingSectionHead';
 
@@ -14,9 +15,9 @@ export function HomeLandingHeroSection() {
     return (
         <>
             {/* HERO */}
-            <section className="relative flex min-h-[560px] w-full items-center overflow-hidden sm:min-h-[630px] lg:min-h-[670px]" aria-labelledby="home-hero-title">
+            <section className="relative flex min-h-[580px] w-full items-center overflow-hidden sm:min-h-[650px] lg:min-h-[690px]" aria-labelledby="home-hero-title">
                 <HeroSlider/>
-                <div className="relative z-20 mx-auto w-full max-w-[1380px] px-6 py-20 sm:px-10 lg:px-16">
+                <div className="relative z-20 mx-auto w-full max-w-[1380px] px-6 pt-20 pb-32 sm:px-10 sm:pb-32 lg:px-16">
                     <div className="max-w-[720px] text-white">
                         <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#e2c18b]">
                             <span className="h-px w-12 bg-[#e2c18b]" aria-hidden="true"/>
@@ -44,16 +45,13 @@ export function HomeLandingHeroSection() {
                                 Xem bảng giá
                             </Link>
                         </div>
-                        <a href="#home-project-title" className="group mt-14 inline-flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/70 transition-colors hover:text-white">
-                            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/40 transition-transform group-hover:translate-y-0.5" aria-hidden="true">↓</span>
-                            Khám phá UAV PAS
-                        </a>
                     </div>
                 </div>
+                <HeroScrollDownButton targetId="home-overview" label="Khám phá UAV PAS" />
             </section>
 
             {/* PROJECT OVERVIEW & METRICS */}
-            <section className="border-b border-border bg-card py-16 sm:py-20" aria-labelledby="home-project-title">
+            <section id="home-overview" className="scroll-mt-20 border-b border-border bg-card py-16 sm:py-20" aria-labelledby="home-project-title">
                 <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12 space-y-8">
                     <HomeLandingSectionHead
                         id="home-project-title"

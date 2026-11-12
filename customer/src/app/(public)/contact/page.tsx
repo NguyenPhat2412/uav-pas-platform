@@ -4,6 +4,7 @@ import {keepVietnamesePhrases} from "@/lib/typography";
 import {pageMetadata} from "@/content/marketing/metadata";
 import {scenes} from "@/components/marketing/UavPhoto";
 import {ContactQuickForm} from "@/components/marketing/ContactQuickForm";
+import {ContactDirectChannels} from "@/components/marketing/ContactDirectChannels";
 
 export const metadata = pageMetadata(
     "Liên hệ & Hỗ trợ điều phối UAV",
@@ -53,6 +54,8 @@ export default function ContactPage() {
                                     <p className="mt-0.5 text-slate-300">Tài khoản khách hàng có thể tự đăng ký trực tuyến. Tài khoản Phi công và Điều phối viên do Quản trị hệ thống xét duyệt và cấp phát.</p>
                                 </div>
                             </div>
+
+                            <ContactDirectChannels/>
                         </div>
 
                         <div className="relative z-10 mt-8 border-t border-white/15 pt-5 space-y-2.5">
