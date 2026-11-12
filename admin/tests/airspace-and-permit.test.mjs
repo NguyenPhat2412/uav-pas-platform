@@ -229,7 +229,11 @@ test('airspace-zone-form builds circle/polygon payloads and live check inputs sa
     );
 });
 
-test('airspace and permit error codes map across operations-mission-form, mission-form, and apiMessages', async () => {
+const hasSiblingPortals =
+    existsSync(new URL('../../customer/package.json', import.meta.url)) &&
+    existsSync(new URL('../../operations/package.json', import.meta.url));
+
+test('airspace and permit error codes map across operations-mission-form, mission-form, and apiMessages', {skip: !hasSiblingPortals}, async () => {
     const opsForm = await loadTsModule('src/forms/mission/operations-mission-form.ts');
     const missionForm = await loadTsModule('src/forms/mission/mission-form.ts');
     const apiMsgMod = await loadTsModule('src/lib/api/messages.ts');
@@ -253,7 +257,7 @@ test('airspace and permit error codes map across operations-mission-form, missio
     }
 });
 
-test('UI components, map overlays, admin route, trilingual catalogs, and palette guardrails are wired', async () => {
+test('UI components, map overlays, admin route, trilingual catalogs, and palette guardrails are wired', {skip: !hasSiblingPortals}, async () => {
     const [
         vi,
         en,

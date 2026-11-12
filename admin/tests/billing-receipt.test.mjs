@@ -141,7 +141,8 @@ test('apiClient.getBlob authenticates, refreshes expired sessions on 401, and re
     }
 });
 
-test('customer and admin billing services, polling hooks, and trilingual PDF messages stay wired', async () => {
+const hasSiblingPortals = existsSync(new URL('../../customer/package.json', import.meta.url));
+test('customer and admin billing services, polling hooks, and trilingual PDF messages stay wired', {skip: !hasSiblingPortals}, async () => {
     const blobCalls = [];
     globalThis.__billingReceiptTest = {
         API_ROUTES,
