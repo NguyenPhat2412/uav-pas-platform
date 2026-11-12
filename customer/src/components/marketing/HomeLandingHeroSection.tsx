@@ -47,7 +47,7 @@ export function HomeLandingHeroSection() {
                         </div>
                     </div>
                 </div>
-                <HeroScrollDownButton targetId="home-overview" label="Khám phá UAV PAS" />
+                <HeroScrollDownButton targetId="home-overview" />
             </section>
 
             {/* PROJECT OVERVIEW & METRICS */}

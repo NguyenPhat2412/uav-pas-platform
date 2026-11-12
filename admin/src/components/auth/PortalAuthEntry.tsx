@@ -48,7 +48,7 @@ function PortalAuthGate({area, home}: { area: 'operations' | 'admin'; home: stri
                         type="button"
                         onClick={() => openAuthModal('login', home)}
                     >
-                        {t('auth.login.submit')}
+                        {t('auth.loginBtn')}
                     </Button>
                 </div>
             </div>

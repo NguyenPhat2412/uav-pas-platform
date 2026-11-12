@@ -52,6 +52,7 @@
     "subscribeFailed": "Chưa đăng ký được gói. Hãy thử lại."
   },
   "planner": {
+    "obstacles": "Chướng ngại vật",
     "label": "Vùng bay",
     "takeoffHere": "Cất cánh tại vị trí của tôi",
     "toolLabel": "Công cụ vẽ",
@@ -166,6 +167,7 @@
     "history": "Lịch sử"
   },
   "missionMonitor": {
+    "mapTitle": "Bản đồ bay",
     "live": "Đang bay · dữ liệu trực tiếp",
     "phase": {
       "live": "Đang chờ dữ liệu bay",
