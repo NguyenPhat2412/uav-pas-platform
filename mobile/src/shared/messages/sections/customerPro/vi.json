@@ -1,0 +1,207 @@
+{
+  "payment": {
+    "title": "Thanh toán VietQR",
+    "close": "Đóng",
+    "loading": "Đang tạo thông tin thanh toán…",
+    "loadError": "Không lấy được thông tin thanh toán.",
+    "qrError": "Không hiển thị được mã QR. Hãy chuyển khoản theo thông tin bên cạnh.",
+    "qrAlt": "Mã VietQR thanh toán hóa đơn {code}",
+    "scanHint": "Quét mã bằng ứng dụng ngân hàng; số tiền đã điền sẵn.",
+    "alreadyPaid": "Hóa đơn này đã được thanh toán.",
+    "bank": "Ngân hàng thụ hưởng",
+    "accountName": "Chủ tài khoản",
+    "accountNumber": "Số tài khoản",
+    "amount": "Số tiền",
+    "content": "Nội dung chuyển khoản",
+    "copy": "Sao chép {label}",
+    "copied": "Đã sao chép {label}.",
+    "copyFailed": "Không sao chép được. Hãy sao chép thủ công.",
+    "contentWarning": "Ghi đúng nội dung để dịch vụ được kích hoạt.",
+    "breakdown": "Chiết tính hóa đơn",
+    "invoice": "Số hóa đơn",
+    "item": "Dịch vụ",
+    "flightHours": "Giờ bay định mức",
+    "hours": "{count} giờ",
+    "serviceFee": "Phí dịch vụ (chưa VAT)",
+    "vat": "Thuế GTGT ({rate}%)",
+    "total": "Tổng thanh toán",
+    "dates": "Ngày lập {issued} · Hạn thanh toán {due}",
+    "confirmation": "Hệ thống tự động ghi nhận giao dịch ngân hàng trong vài giây khi chuyển đúng nội dung; nếu ghi nhầm nội dung, liên hệ bộ phận hỗ trợ để đối soát thủ công.",
+    "downloadPdf": "Tải hóa đơn PDF",
+    "downloadPdfError": "Chưa tải được tệp PDF hóa đơn.",
+    "print": "In / Lưu PDF",
+    "printTitle": "Hóa đơn dịch vụ UAV PAS",
+    "issuedOn": "Ngày lập",
+    "dueOn": "Hạn thanh toán",
+    "awaitingTransfer": "Chờ thanh toán",
+    "awaitingTransferHint": "Kế toán sẽ gửi hướng dẫn; trạng thái cập nhật khi nhận tiền.",
+    "pollingLive": "Đang tự động kiểm tra giao dịch mỗi 5 giây…",
+    "checkNow": "Kiểm tra ngay",
+    "checking": "Đang kiểm tra…",
+    "stillPending": "Chưa ghi nhận giao dịch mới. Hệ thống tiếp tục tự động kiểm tra.",
+    "paidSuccess": "Thanh toán đã được xác nhận thành công!",
+    "popupBlocked": "Trình duyệt đã chặn cửa sổ in. Hãy cho phép mở cửa sổ bật lên hoặc dùng nút Tải hóa đơn PDF."
+  },
+  "plans": {
+    "subscribe": "Đăng ký gói này",
+    "subscribing": "Đang tạo hóa đơn…",
+    "changePlan": "Đổi gói dịch vụ →",
+    "subscribeConfirm": "Đăng ký {name} giá {price}? Gói áp dụng khi thanh toán được xác nhận.",
+    "invoiceIssued": "Đã lập hóa đơn {code}. Thanh toán để kích hoạt gói.",
+    "appliedFree": "Đã áp dụng gói miễn phí.",
+    "subscribeFailed": "Chưa đăng ký được gói. Hãy thử lại."
+  },
+  "planner": {
+    "label": "Vùng bay",
+    "takeoffHere": "Cất cánh tại vị trí của tôi",
+    "toolLabel": "Công cụ vẽ",
+    "tool": {
+      "takeoff": "Điểm cất/hạ cánh",
+      "polygon": "Vẽ vùng đa giác",
+      "circle": "Vùng bán kính"
+    },
+    "undo": "Xóa đỉnh cuối",
+    "clearArea": "Xóa vùng bay",
+    "basemap": "Nền bản đồ",
+    "basemaps": {
+      "streets": "Đường phố (OSM)",
+      "satellite": "Vệ tinh",
+      "terrain": "Địa hình",
+      "dark": "Nền tối"
+    },
+    "radius": "Bán kính",
+    "ariaLabel": "Bản đồ lập vùng bay. Bấm để đặt điểm cất cánh hoặc thêm đỉnh vùng bay.",
+    "area": "Diện tích",
+    "perimeter": "Chu vi",
+    "center": "Tọa độ tâm",
+    "takeoff": "Điểm cất/hạ cánh (H)",
+    "hint": {
+      "takeoff": "Bấm bản đồ để đặt điểm cất/hạ cánh.",
+      "POLYGON": "Bấm lần lượt các góc khu vực, ít nhất 3 điểm.",
+      "CIRCLE": "Bấm chọn tâm, rồi kéo thanh trượt chỉnh bán kính."
+    },
+    "errors": {
+      "flightAreaIncomplete": "Hoàn tất vùng bay trên bản đồ: đặt điểm cất cánh, vẽ đa giác ít nhất 3 đỉnh hoặc chọn tâm vùng tròn.",
+      "sensorRequired": "Chọn ít nhất một tải trọng/cảm biến."
+    },
+    "controls": {
+      "stationRadius": "Vùng phủ trạm",
+      "resetView": "Về tâm"
+    },
+    "latitude": "Vĩ độ điểm cất cánh",
+    "longitude": "Kinh độ điểm cất cánh",
+    "coordHint": "Nhập hoặc dán tọa độ thập phân (ví dụ 21.0285, 105.8542) để nhảy bản đồ tới đúng vị trí khảo sát."
+  },
+  "flightSpec": {
+    "title": "Thông số bay",
+    "altitude": "Độ cao bay",
+    "customAltitude": "Nhập độ cao cụ thể (m)",
+    "altitudeHint": "Tính từ mặt đất, tối đa 120 m.",
+    "gsd": "Độ nét ảnh (GSD)",
+    "gsdOption": {
+      "1_5": "1,5 cm/px — rất chi tiết",
+      "3_0": "3,0 cm/px — tiêu chuẩn",
+      "5_0": "5,0 cm/px — phủ rộng"
+    },
+    "forwardOverlap": "Chồng ảnh dọc",
+    "sideOverlap": "Chồng ảnh ngang",
+    "sensors": "Cảm biến cần dùng",
+    "sensor": {
+      "RGB_4K": {
+        "name": "Camera RGB 4K",
+        "detail": "Ảnh, mô hình 3D, giám sát công trình"
+      },
+      "THERMAL": {
+        "name": "Camera nhiệt",
+        "detail": "Cứu nạn, kiểm tra pin mặt trời"
+      },
+      "LIDAR": {
+        "name": "Quét LiDAR 3D",
+        "detail": "Địa hình dưới tán cây, đám mây điểm"
+      },
+      "MULTISPECTRAL": {
+        "name": "Cảm biến đa phổ",
+        "detail": "Sức khỏe cây trồng, nông nghiệp"
+      }
+    },
+    "obstacles": "Chướng ngại vật tại hiện trường",
+    "obstaclesPlaceholder": "Ví dụ: dây điện cao thế, trạm BTS, hàng cây cao…",
+    "permit": "Cần hỗ trợ xin phép bay",
+    "permitDetail": "Chúng tôi chuẩn bị hồ sơ xin phép bay cho khu vực này."
+  },
+  "enterprise": {
+    "title": "Thông tin doanh nghiệp",
+    "edit": "Cập nhật",
+    "loading": "Đang tải hồ sơ doanh nghiệp…",
+    "loadError": "Không tải được hồ sơ doanh nghiệp.",
+    "field": {
+      "organizationName": "Tên tổ chức",
+      "taxCode": "Mã số thuế (MST)",
+      "billingAddress": "Địa chỉ xuất hóa đơn",
+      "emergencyContactName": "Liên hệ khẩn cấp",
+      "emergencyContactPhone": "Số điện thoại khẩn cấp"
+    },
+    "taxCodeHint": "10 chữ số, hoặc dạng 0101234567-001.",
+    "taxCodeInvalid": "Mã số thuế phải gồm 10 chữ số, hoặc dạng 0101234567-001.",
+    "phoneInvalid": "Chỉ gồm chữ số, dấu cách, chấm hoặc gạch (8–20 ký tự).",
+    "empty": "Chưa cập nhật",
+    "invoiceNote": "Dùng để in hóa đơn GTGT và liên hệ tại hiện trường.",
+    "cancel": "Hủy",
+    "save": "Lưu hồ sơ",
+    "saving": "Đang lưu…",
+    "saved": "Đã lưu hồ sơ doanh nghiệp.",
+    "saveFailed": "Không lưu được hồ sơ doanh nghiệp.",
+    "conflict": "Hồ sơ vừa được cập nhật nơi khác. Đã tải bản mới, hãy lưu lại.",
+    "accessTitle": "Gói và quyền hạn",
+    "role": "Vai trò",
+    "plan": "Gói hiện tại",
+    "hours": "Giờ bay đã dùng / hạn mức",
+    "permissions": "Quyền đang có ({count})"
+  },
+  "missionTabs": {
+    "label": "Thông tin nhiệm vụ",
+    "monitoring": "Giám sát bay",
+    "weather": "Thời tiết",
+    "delivery": "Bàn giao dữ liệu",
+    "history": "Lịch sử"
+  },
+  "missionMonitor": {
+    "live": "Đang bay · dữ liệu trực tiếp",
+    "phase": {
+      "live": "Đang chờ dữ liệu bay",
+      "planned": "Kế hoạch bay",
+      "ended": "Chuyến bay đã kết thúc"
+    },
+    "updated": "Cập nhật lúc {at}",
+    "noUav": "Chưa gán UAV. Vị trí sẽ hiện khi được phân công.",
+    "beforeFlight": "Vị trí UAV sẽ hiện khi sắp cất cánh.",
+    "loading": "Đang tải dữ liệu bay…",
+    "loadError": "Không tải được dữ liệu bay. Thử lại sau.",
+    "waiting": "UAV chưa gửi vị trí.",
+    "noTrack": "Chuyến bay không có dữ liệu vị trí.",
+    "stale": "Tín hiệu cuối cách {seconds} giây; điều phối đang theo dõi.",
+    "altitude": "Độ cao",
+    "planned": "Kế hoạch {value}",
+    "speed": "Vận tốc",
+    "battery": "Pin",
+    "toArea": "Cách tâm vùng bay",
+    "gnss": "Định vị",
+    "satellites": "{count} vệ tinh",
+    "age": "Tín hiệu cuối",
+    "seconds": "{count} giây trước",
+    "planTitle": "Thông số đã đăng ký",
+    "area": "Vùng bay",
+    "overlap": "Chồng phủ dọc / ngang",
+    "sensors": "Cảm biến",
+    "areaType": {
+      "POINT": "Điểm",
+      "POLYGON": "Đa giác",
+      "CIRCLE": "Hình tròn"
+    },
+    "flightArea": "Vùng bay",
+    "takeoff": "Điểm cất cánh",
+    "uav": "UAV",
+    "noLocation": "Nhiệm vụ chưa có vị trí trên bản đồ.",
+    "mapAria": "Bản đồ giám sát nhiệm vụ {code}"
+  }
+}
