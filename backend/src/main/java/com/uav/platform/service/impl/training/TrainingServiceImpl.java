@@ -1,0 +1,658 @@
+package com.uav.platform.service.impl.training;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dto.request.training.UpdateTrainingProgressRequest;
+import com.uav.platform.dto.request.training.UpsertTrainingDocumentRequest;
+import com.uav.platform.dto.response.training.TrainingDocumentResponse;
+import com.uav.platform.dto.response.training.TrainingOverviewResponse;
+import com.uav.platform.entity.training.TrainingAsset;
+import com.uav.platform.entity.training.TrainingDocument;
+import com.uav.platform.entity.training.TrainingLesson;
+import com.uav.platform.entity.training.TrainingLessonProgress;
+import com.uav.platform.entity.training.UserTrainingProgress;
+import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.user.UserRole;
+import com.uav.platform.error.SystemException;
+import com.uav.platform.repository.training.TrainingAssetRepository;
+import com.uav.platform.repository.training.TrainingDocumentRepository;
+import com.uav.platform.repository.training.TrainingLessonProgressRepository;
+import com.uav.platform.repository.training.TrainingLessonRepository;
+import com.uav.platform.repository.training.UserTrainingProgressRepository;
+import com.uav.platform.repository.user.UserRepository;
+import com.uav.platform.security.AuthCookieHelper;
+import com.uav.platform.service.permission.PermissionService;
+import com.uav.platform.service.training.TrainingCourseProgress;
+import com.uav.platform.service.training.TrainingCourseRecords;
+import com.uav.platform.service.training.TrainingMediaUrls;
+import com.uav.platform.service.training.TrainingService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.text.Normalizer;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+public class TrainingServiceImpl implements TrainingService {
+
+    private static final Set<String> VALID_PORTALS = Set.of("CUSTOMER", "OPERATIONS", "ADMIN");
+
+    private final TrainingDocumentRepository trainingDocumentRepository;
+    private final UserTrainingProgressRepository userTrainingProgressRepository;
+    private final UserRepository userRepository;
+    private final TrainingLessonRepository lessonRepository;
+    private final TrainingLessonProgressRepository lessonProgressRepository;
+    private final PermissionService permissionService;
+    private final TrainingAssetRepository assetRepository;
+    private final TrainingMediaUrls mediaUrls;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public TrainingServiceImpl(
+            TrainingDocumentRepository trainingDocumentRepository,
+            UserTrainingProgressRepository userTrainingProgressRepository,
+            UserRepository userRepository,
+            TrainingLessonRepository lessonRepository,
+            TrainingLessonProgressRepository lessonProgressRepository) {
+        this(
+                trainingDocumentRepository,
+                userTrainingProgressRepository,
+                userRepository,
+                lessonRepository,
+                lessonProgressRepository,
+                null,
+                null,
+                null);
+    }
+
+    @Autowired
+    public TrainingServiceImpl(
+            TrainingDocumentRepository trainingDocumentRepository,
+            UserTrainingProgressRepository userTrainingProgressRepository,
+            UserRepository userRepository,
+            TrainingLessonRepository lessonRepository,
+            TrainingLessonProgressRepository lessonProgressRepository,
+            PermissionService permissionService,
+            TrainingAssetRepository assetRepository,
+            TrainingMediaUrls mediaUrls) {
+        this.trainingDocumentRepository = trainingDocumentRepository;
+        this.userTrainingProgressRepository = userTrainingProgressRepository;
+        this.userRepository = userRepository;
+        this.lessonRepository = lessonRepository;
+        this.lessonProgressRepository = lessonProgressRepository;
+        this.permissionService = permissionService;
+        this.assetRepository = assetRepository;
+        this.mediaUrls = mediaUrls;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TrainingOverviewResponse getOverview(
+            String portal, String category, String search, Authentication authentication) {
+        AppUser user = resolveUser(authentication);
+        Long userId = user != null ? user.getId() : null;
+        boolean manager = canManage(user, authentication);
+        // A caller only sees documents for portals their role may use; anything else falls back to
+        // their own.
+        String requested = normalizePortal(portal);
+        String resolvedPortal =
+                portalsFor(user, manager).contains(requested) ? requested : defaultPortal(user);
+
+        List<TrainingDocument> allDocs;
+        if (manager) {
+            allDocs =
+                    trainingDocumentRepository.findByTargetPortalOrderBySortOrderAscIdAsc(
+                            resolvedPortal);
+            if (allDocs == null || allDocs.isEmpty()) {
+                allDocs =
+                        trainingDocumentRepository
+                                .findByTargetPortalAndActiveTrueOrderBySortOrderAscIdAsc(
+                                        resolvedPortal);
+            }
+        } else {
+            allDocs =
+                    trainingDocumentRepository
+                            .findByTargetPortalAndActiveTrueOrderBySortOrderAscIdAsc(
+                                    resolvedPortal);
+        }
+
+        Map<Long, UserTrainingProgress> progressByDocId = loadProgressMap(userId);
+        Map<Long, TrainingAsset> covers = loadCoverAssets(allDocs);
+
+        int totalDocs = allDocs.size();
+        int completedDocs = 0;
+        int mandatoryDocs = 0;
+        int mandatoryCompleted = 0;
+        int totalMinutes = 0;
+        int completedMinutes = 0;
+
+        for (TrainingDocument doc : allDocs) {
+            UserTrainingProgress progress = progressByDocId.get(doc.getId());
+            boolean isCompleted = progress != null && "COMPLETED".equals(progress.getStatus());
+            boolean isMandatory = Boolean.TRUE.equals(doc.getIsMandatory());
+            int estMinutes = doc.getEstimatedMinutes() != null ? doc.getEstimatedMinutes() : 10;
+
+            totalMinutes += estMinutes;
+            if (isCompleted) {
+                completedDocs++;
+                completedMinutes += estMinutes;
+            }
+            if (isMandatory) {
+                mandatoryDocs++;
+                if (isCompleted) {
+                    mandatoryCompleted++;
+                }
+            }
+        }
+
+        String normalizedCategory =
+                StringUtils.hasText(category) && !"ALL".equalsIgnoreCase(category.trim())
+                        ? category.trim().toUpperCase(Locale.ROOT)
+                        : null;
+        String normalizedSearch =
+                StringUtils.hasText(search) ? search.trim().toLowerCase(Locale.ROOT) : null;
+
+        List<TrainingDocumentResponse> filteredDtos =
+                allDocs.stream()
+                        .filter(
+                                doc ->
+                                        normalizedCategory == null
+                                                || normalizedCategory.equalsIgnoreCase(
+                                                        doc.getCategory()))
+                        .filter(doc -> matchesSearch(doc, normalizedSearch))
+                        .map(
+                                doc ->
+                                        toResponse(
+                                                doc,
+                                                progressByDocId.get(doc.getId()),
+                                                coverUrl(doc, covers)))
+                        .collect(Collectors.toList());
+
+        return TrainingOverviewResponse.builder()
+                .portal(resolvedPortal)
+                .totalDocuments(totalDocs)
+                .completedDocuments(completedDocs)
+                .mandatoryDocuments(mandatoryDocs)
+                .mandatoryCompleted(mandatoryCompleted)
+                .totalEstimatedMinutes(totalMinutes)
+                .completedMinutes(completedMinutes)
+                .documents(filteredDtos)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TrainingDocumentResponse getByCodeOrSlug(
+            String codeOrSlug, Authentication authentication) {
+        if (!StringUtils.hasText(codeOrSlug)) {
+            throw SystemException.badRequest("Training document code or slug is required");
+        }
+        String key = codeOrSlug.trim();
+        TrainingDocument doc =
+                trainingDocumentRepository
+                        .findByCodeIgnoreCaseOrSlugIgnoreCase(key, key)
+                        .orElseThrow(
+                                () ->
+                                        SystemException.notFound(
+                                                "Training document not found: " + key));
+
+        AppUser user = resolveUser(authentication);
+        requireReadable(doc, user, authentication);
+        UserTrainingProgress progress =
+                user != null
+                        ? userTrainingProgressRepository
+                                .findByUserIdAndDocumentId(user.getId(), doc.getId())
+                                .orElse(null)
+                        : null;
+        return toResponse(doc, progress);
+    }
+
+    @Override
+    @Transactional
+    public TrainingDocumentResponse updateProgress(
+            Long documentId, UpdateTrainingProgressRequest request, Authentication authentication) {
+        AppUser user = resolveUserRequired(authentication);
+        TrainingDocument doc =
+                trainingDocumentRepository
+                        .findById(documentId)
+                        .orElseThrow(
+                                () ->
+                                        SystemException.notFound(
+                                                "Training document not found: " + documentId));
+        requireReadable(doc, user, authentication);
+
+        List<String> totalChecklist = parseStringList(doc.getChecklistJson());
+        List<Integer> rawSteps =
+                request != null && request.getCheckedSteps() != null
+                        ? request.getCheckedSteps()
+                        : Collections.emptyList();
+
+        Set<Integer> sanitizedSteps = new LinkedHashSet<>();
+        for (Integer idx : rawSteps) {
+            if (idx != null && idx >= 0 && idx < totalChecklist.size()) {
+                sanitizedSteps.add(idx);
+            }
+        }
+        List<Integer> checkedSteps = new ArrayList<>(sanitizedSteps);
+        Collections.sort(checkedSteps);
+
+        boolean allStepsChecked =
+                !totalChecklist.isEmpty() && checkedSteps.size() >= totalChecklist.size();
+        // Documents with a checklist are completed by ticking every step; only checklist-free ones
+        // can be marked done.
+        boolean forceCompleted =
+                totalChecklist.isEmpty()
+                        && request != null
+                        && Boolean.TRUE.equals(request.getMarkCompleted());
+
+        String status;
+        if (forceCompleted || allStepsChecked) {
+            status = "COMPLETED";
+        } else if (!checkedSteps.isEmpty()) {
+            status = "IN_PROGRESS";
+        } else {
+            status = "NOT_STARTED";
+        }
+
+        UserTrainingProgress existing =
+                userTrainingProgressRepository
+                        .findByUserIdAndDocumentId(user.getId(), doc.getId())
+                        .orElse(null);
+
+        // A course with active lessons is completed by its lessons and checklist together: ticking
+        // every step
+        // alone no longer completes it (same rule as the lesson progress endpoint).
+        List<TrainingLesson> activeLessons =
+                lessonRepository.findByDocumentIdAndActiveTrueOrderBySortOrderAscIdAsc(doc.getId());
+        if (!activeLessons.isEmpty()) {
+            List<TrainingLessonProgress> rows =
+                    lessonProgressRepository.findByUserIdAndLessonIdIn(
+                            user.getId(),
+                            activeLessons.stream().map(TrainingLesson::getId).toList());
+            int completedLessons = 0;
+            boolean activity = false;
+            for (TrainingLessonProgress row : rows) {
+                if (row.getCompletedAt() != null) completedLessons++;
+                if (row.getCompletedAt() != null
+                        || (row.getPositionSeconds() != null && row.getPositionSeconds() > 0))
+                    activity = true;
+            }
+            status =
+                    TrainingCourseProgress.recordStatus(
+                            existing == null ? null : existing.getStatus(),
+                            completedLessons,
+                            activeLessons.size(),
+                            totalChecklist.size(),
+                            checkedSteps.size(),
+                            activity);
+        }
+
+        UserTrainingProgress progress = existing;
+        if (progress == null) {
+            // Created by an insert that ignores a concurrent duplicate, then loaded and updated.
+            userTrainingProgressRepository.insertIfAbsent(user.getId(), doc.getId());
+            progress =
+                    userTrainingProgressRepository
+                            .findByUserIdAndDocumentId(user.getId(), doc.getId())
+                            .orElseGet(
+                                    () -> {
+                                        UserTrainingProgress created = new UserTrainingProgress();
+                                        created.setUser(user);
+                                        created.setDocument(doc);
+                                        return created;
+                                    });
+        }
+
+        TrainingCourseRecords.apply(progress, status);
+        progress.setCheckedStepsJson(writeJson(checkedSteps));
+        progress.setLastViewedAt(OffsetDateTime.now());
+
+        UserTrainingProgress saved = userTrainingProgressRepository.save(progress);
+        return toResponse(doc, saved);
+    }
+
+    @Override
+    @Transactional
+    public TrainingDocumentResponse createDocument(
+            UpsertTrainingDocumentRequest request, Authentication authentication) {
+        String normalizedCode = request.getCode().trim().toUpperCase(Locale.ROOT);
+        trainingDocumentRepository
+                .findByCodeIgnoreCase(normalizedCode)
+                .ifPresent(
+                        existing -> {
+                            throw SystemException.conflict(
+                                            "Mã tài liệu đào tạo đã tồn tại: " + normalizedCode,
+                                            "TRAINING_DOCUMENT_CODE_EXISTS")
+                                    .at("code");
+                        });
+
+        String targetPortal = normalizePortal(request.getTargetPortal());
+        String slug = buildUniqueSlug(normalizedCode, request.getTitle(), null);
+
+        TrainingDocument doc = new TrainingDocument();
+        doc.setCode(normalizedCode);
+        doc.setSlug(slug);
+        doc.setTargetPortal(targetPortal);
+        doc.setCategory(request.getCategory().trim().toUpperCase(Locale.ROOT));
+        doc.setLevel(request.getLevel().trim().toUpperCase(Locale.ROOT));
+        doc.setVersionTag(
+                StringUtils.hasText(request.getVersionTag())
+                        ? request.getVersionTag().trim()
+                        : "SOP-2026.1");
+        doc.setEstimatedMinutes(
+                request.getEstimatedMinutes() != null
+                        ? Math.max(1, request.getEstimatedMinutes())
+                        : 10);
+        doc.setIsMandatory(Boolean.TRUE.equals(request.getIsMandatory()));
+        doc.setSortOrder(request.getSortOrder() != null ? request.getSortOrder() : 10);
+        doc.setActive(request.getActive() == null || Boolean.TRUE.equals(request.getActive()));
+        doc.setTitle(request.getTitle().trim());
+        doc.setSummary(request.getSummary().trim());
+        doc.setContentMarkdown(request.getContentMarkdown().trim());
+        doc.setChecklistJson(
+                writeJson(
+                        request.getChecklistSteps() != null
+                                ? request.getChecklistSteps()
+                                : Collections.emptyList()));
+
+        TrainingDocument saved = trainingDocumentRepository.save(doc);
+        return toResponse(saved, null);
+    }
+
+    @Override
+    @Transactional
+    public TrainingDocumentResponse updateDocument(
+            Long id, UpsertTrainingDocumentRequest request, Authentication authentication) {
+        TrainingDocument doc =
+                trainingDocumentRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        SystemException.notFound(
+                                                "Training document not found: " + id));
+
+        String normalizedCode = request.getCode().trim().toUpperCase(Locale.ROOT);
+        trainingDocumentRepository
+                .findByCodeIgnoreCase(normalizedCode)
+                .ifPresent(
+                        existing -> {
+                            if (!existing.getId().equals(id)) {
+                                throw SystemException.conflict(
+                                                "Mã tài liệu đào tạo đã tồn tại: " + normalizedCode,
+                                                "TRAINING_DOCUMENT_CODE_EXISTS")
+                                        .at("code");
+                            }
+                        });
+
+        doc.setCode(normalizedCode);
+        doc.setSlug(buildUniqueSlug(normalizedCode, request.getTitle(), id));
+        doc.setTargetPortal(normalizePortal(request.getTargetPortal()));
+        doc.setCategory(request.getCategory().trim().toUpperCase(Locale.ROOT));
+        doc.setLevel(request.getLevel().trim().toUpperCase(Locale.ROOT));
+        if (StringUtils.hasText(request.getVersionTag())) {
+            doc.setVersionTag(request.getVersionTag().trim());
+        }
+        doc.setEstimatedMinutes(
+                request.getEstimatedMinutes() != null
+                        ? Math.max(1, request.getEstimatedMinutes())
+                        : doc.getEstimatedMinutes());
+        if (request.getIsMandatory() != null) {
+            doc.setIsMandatory(request.getIsMandatory());
+        }
+        if (request.getSortOrder() != null) {
+            doc.setSortOrder(request.getSortOrder());
+        }
+        if (request.getActive() != null) {
+            doc.setActive(request.getActive());
+        }
+        doc.setTitle(request.getTitle().trim());
+        doc.setSummary(request.getSummary().trim());
+        doc.setContentMarkdown(request.getContentMarkdown().trim());
+        if (request.getChecklistSteps() != null) {
+            doc.setChecklistJson(writeJson(request.getChecklistSteps()));
+        }
+
+        TrainingDocument saved = trainingDocumentRepository.save(doc);
+        AppUser user = resolveUser(authentication);
+        UserTrainingProgress progress =
+                user != null
+                        ? userTrainingProgressRepository
+                                .findByUserIdAndDocumentId(user.getId(), saved.getId())
+                                .orElse(null)
+                        : null;
+        return toResponse(saved, progress);
+    }
+
+    /** Portals a role may read training for; mirrors the frontend portal guards. */
+    static Set<String> portalsFor(AppUser user) {
+        return portalsFor(user, false);
+    }
+
+    static Set<String> portalsFor(AppUser user, boolean canManage) {
+        if (canManage) return VALID_PORTALS;
+        UserRole role = user == null ? null : user.getRole();
+        if (role == UserRole.ROLE_ADMIN) return VALID_PORTALS;
+        if (role == UserRole.ROLE_COMMANDER || role == UserRole.ROLE_OPERATOR)
+            return Set.of("OPERATIONS", "CUSTOMER");
+        return Set.of("CUSTOMER");
+    }
+
+    static String defaultPortal(AppUser user) {
+        UserRole role = user == null ? null : user.getRole();
+        if (role == UserRole.ROLE_ADMIN) return "ADMIN";
+        if (role == UserRole.ROLE_COMMANDER || role == UserRole.ROLE_OPERATOR) return "OPERATIONS";
+        return "CUSTOMER";
+    }
+
+    boolean canManage(AppUser user, Authentication auth) {
+        if (user != null && user.getRole() == UserRole.ROLE_ADMIN) return true;
+        if (auth == null || permissionService == null) return false;
+        return permissionService.has(auth, "USER_PERMISSION_MANAGE")
+                || permissionService.has(auth, "USER_MANAGE");
+    }
+
+    /**
+     * Hidden documents and documents for a portal the caller may not use answer 404, so their codes are not
+     * confirmed to exist. Administrators and authorized training managers can still open inactive drafts.
+     */
+    private void requireReadable(TrainingDocument doc, AppUser user, Authentication auth) {
+        boolean manager = canManage(user, auth);
+        boolean visible = manager || Boolean.TRUE.equals(doc.getActive());
+        if (!visible || !portalsFor(user, manager).contains(doc.getTargetPortal()))
+            throw SystemException.notFound("Training document not found");
+    }
+
+    private String normalizePortal(String portal) {
+        if (!StringUtils.hasText(portal)) {
+            return "CUSTOMER";
+        }
+        String candidate = portal.trim().toUpperCase(Locale.ROOT);
+        return VALID_PORTALS.contains(candidate) ? candidate : "CUSTOMER";
+    }
+
+    private boolean matchesSearch(TrainingDocument doc, String searchLower) {
+        if (searchLower == null) {
+            return true;
+        }
+        return containsLower(doc.getCode(), searchLower)
+                || containsLower(doc.getTitle(), searchLower)
+                || containsLower(doc.getSummary(), searchLower)
+                || containsLower(doc.getCategory(), searchLower)
+                || containsLower(doc.getVersionTag(), searchLower);
+    }
+
+    private boolean containsLower(String value, String searchLower) {
+        return value != null && value.toLowerCase(Locale.ROOT).contains(searchLower);
+    }
+
+    private Map<Long, UserTrainingProgress> loadProgressMap(Long userId) {
+        if (userId == null) {
+            return Collections.emptyMap();
+        }
+        List<UserTrainingProgress> list = userTrainingProgressRepository.findByUserId(userId);
+        Map<Long, UserTrainingProgress> map = new HashMap<>();
+        for (UserTrainingProgress item : list) {
+            if (item.getDocument() != null && item.getDocument().getId() != null) {
+                map.put(item.getDocument().getId(), item);
+            }
+        }
+        return map;
+    }
+
+    private AppUser resolveUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+        String username = authentication.getName();
+        if (!StringUtils.hasText(username)) {
+            return null;
+        }
+        return userRepository
+                .findByUsername(username)
+                .or(() -> userRepository.findByEmail(username))
+                .orElse(null);
+    }
+
+    private AppUser resolveUserRequired(Authentication authentication) {
+        String username = AuthCookieHelper.requireAuthenticatedUsername(authentication);
+        return userRepository
+                .findByUsername(username)
+                .or(() -> userRepository.findByEmail(username))
+                .orElseThrow(() -> SystemException.notFound("Authenticated user not found"));
+    }
+
+    private Map<Long, TrainingAsset> loadCoverAssets(List<TrainingDocument> docs) {
+        if (assetRepository == null || docs == null || docs.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Long> ids =
+                docs.stream()
+                        .map(TrainingDocument::getCoverAssetId)
+                        .filter(Objects::nonNull)
+                        .toList();
+        if (ids.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<Long, TrainingAsset> byId = new HashMap<>();
+        assetRepository.findAllById(new HashSet<>(ids)).forEach(a -> byId.put(a.getId(), a));
+        return byId;
+    }
+
+    private String coverUrl(TrainingDocument doc, Map<Long, TrainingAsset> covers) {
+        if (mediaUrls == null || doc == null || doc.getCoverAssetId() == null) {
+            return null;
+        }
+        TrainingAsset asset =
+                covers != null
+                        ? covers.get(doc.getCoverAssetId())
+                        : (assetRepository != null
+                                ? assetRepository.findById(doc.getCoverAssetId()).orElse(null)
+                                : null);
+        return mediaUrls.signedGet(asset);
+    }
+
+    private TrainingDocumentResponse toResponse(
+            TrainingDocument doc, UserTrainingProgress progress) {
+        return toResponse(doc, progress, coverUrl(doc, null));
+    }
+
+    private TrainingDocumentResponse toResponse(
+            TrainingDocument doc, UserTrainingProgress progress, String resolvedCoverUrl) {
+        List<String> checklistSteps = parseStringList(doc.getChecklistJson());
+        List<Integer> checkedSteps =
+                progress != null
+                        ? parseIntegerList(progress.getCheckedStepsJson())
+                        : Collections.emptyList();
+        String progressStatus = progress != null ? progress.getStatus() : "NOT_STARTED";
+
+        return TrainingDocumentResponse.builder()
+                .id(doc.getId())
+                .code(doc.getCode())
+                .slug(doc.getSlug())
+                .targetPortal(doc.getTargetPortal())
+                .category(doc.getCategory())
+                .level(doc.getLevel())
+                .versionTag(doc.getVersionTag())
+                .estimatedMinutes(doc.getEstimatedMinutes())
+                .isMandatory(doc.getIsMandatory())
+                .sortOrder(doc.getSortOrder())
+                .active(doc.getActive())
+                .title(doc.getTitle())
+                .summary(doc.getSummary())
+                .contentMarkdown(doc.getContentMarkdown())
+                .coverUrl(resolvedCoverUrl)
+                .checklistSteps(checklistSteps)
+                .progressStatus(progressStatus)
+                .checkedSteps(checkedSteps)
+                .completedAt(progress != null ? progress.getCompletedAt() : null)
+                .updatedAt(doc.getUpdatedAt())
+                .build();
+    }
+
+    private List<String> parseStringList(String json) {
+        if (!StringUtils.hasText(json)) {
+            return Collections.emptyList();
+        }
+        try {
+            return objectMapper.readValue(json, new TypeReference<List<String>>() {});
+        } catch (Exception ex) {
+            return Collections.emptyList();
+        }
+    }
+
+    private List<Integer> parseIntegerList(String json) {
+        if (!StringUtils.hasText(json)) {
+            return Collections.emptyList();
+        }
+        try {
+            return objectMapper.readValue(json, new TypeReference<List<Integer>>() {});
+        } catch (Exception ex) {
+            return Collections.emptyList();
+        }
+    }
+
+    private String writeJson(Object value) {
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (Exception ex) {
+            return "[]";
+        }
+    }
+
+    private String buildUniqueSlug(String code, String title, Long currentId) {
+        String raw = (code + "-" + (title != null ? title : "")).toLowerCase(Locale.ROOT);
+        String normalized =
+                Normalizer.normalize(raw, Normalizer.Form.NFD)
+                        .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                        .replace('đ', 'd')
+                        .replaceAll("[^a-z0-9]+", "-")
+                        .replaceAll("(^-|-$)", "");
+        if (normalized.length() > 120) {
+            normalized = normalized.substring(0, 120).replaceAll("-$", "");
+        }
+        String candidate = normalized;
+        int suffix = 2;
+        while (true) {
+            var existing = trainingDocumentRepository.findBySlugIgnoreCase(candidate);
+            if (existing.isEmpty()
+                    || (currentId != null && existing.get().getId().equals(currentId))) {
+                return candidate;
+            }
+            candidate = normalized + "-" + suffix++;
+        }
+    }
+}

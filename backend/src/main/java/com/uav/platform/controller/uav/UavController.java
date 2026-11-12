@@ -1,0 +1,99 @@
+package com.uav.platform.controller.uav;
+
+import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.common.util.Pageables;
+import com.uav.platform.config.routes.ApiRoutes;
+import com.uav.platform.dto.request.uav.UavRequest;
+import com.uav.platform.dto.response.uav.UavHealthAnalyticsResponse;
+import com.uav.platform.dto.response.uav.UavResponse;
+import com.uav.platform.dto.response.uav.UavStatusHistoryResponse;
+import com.uav.platform.enums.uav.UavStatus;
+import com.uav.platform.service.uav.UavService;
+
+import jakarta.validation.Valid;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(ApiRoutes.Uavs.BASE)
+@RequiredArgsConstructor
+public class UavController {
+    private final UavService service;
+
+    @GetMapping
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_VIEW')")
+    public ResponseEntity<PageResponse<UavResponse>> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(service.list(Pageables.desc(page, size, "createdAt")));
+    }
+
+    @GetMapping(ApiRoutes.Uavs.BY_ID)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_VIEW')")
+    public ResponseEntity<UavResponse> get(@PathVariable Long id) {
+        return ResponseEntity.ok(service.get(id));
+    }
+
+    @PostMapping
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_CREATE')")
+    public ResponseEntity<UavResponse> create(
+            @Valid @RequestBody UavRequest request, Authentication auth) {
+        return ResponseEntity.status(201).body(service.create(request, auth.getName()));
+    }
+
+    @PutMapping(ApiRoutes.Uavs.BY_ID)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_UPDATE')")
+    public ResponseEntity<UavResponse> update(
+            @PathVariable Long id, @Valid @RequestBody UavRequest request, Authentication auth) {
+        return ResponseEntity.ok(service.update(id, request, auth.getName()));
+    }
+
+    @PutMapping(ApiRoutes.Uavs.ASSIGN_STATION)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_UPDATE')")
+    public ResponseEntity<UavResponse> assign(
+            @PathVariable Long id, @PathVariable Long stationId, Authentication auth) {
+        return ResponseEntity.ok(service.assign(id, stationId, auth.getName()));
+    }
+
+    @PutMapping(ApiRoutes.Uavs.STATUS)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_STATUS_UPDATE')")
+    public ResponseEntity<UavResponse> status(
+            @PathVariable Long id,
+            @RequestParam UavStatus status,
+            @RequestParam(required = false) String reason,
+            @RequestParam(required = false) UavStatus expectedStatus,
+            Authentication auth) {
+        return ResponseEntity.ok(
+                service.changeStatus(id, status, reason, expectedStatus, auth.getName()));
+    }
+
+    @PostMapping(ApiRoutes.Uavs.MAINTENANCE)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_MAINTENANCE_CREATE')")
+    public ResponseEntity<UavResponse> maintenance(
+            @PathVariable Long id,
+            @RequestParam(required = false) String reason,
+            @RequestParam(required = false) UavStatus expectedStatus,
+            Authentication auth) {
+        return ResponseEntity.ok(service.maintenance(id, reason, expectedStatus, auth.getName()));
+    }
+
+    @GetMapping(ApiRoutes.Uavs.HISTORY)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_VIEW')")
+    public ResponseEntity<PageResponse<UavStatusHistoryResponse>> history(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        return ResponseEntity.ok(service.history(id, Pageables.desc(page, size, "createdAt")));
+    }
+
+    @GetMapping(ApiRoutes.Uavs.HEALTH_ANALYTICS)
+    @PreAuthorize("@permissionService.has(authentication, 'UAV_VIEW')")
+    public ResponseEntity<UavHealthAnalyticsResponse> healthAnalytics() {
+        return ResponseEntity.ok(service.healthAnalytics());
+    }
+}
