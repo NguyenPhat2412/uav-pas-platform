@@ -1,0 +1,10 @@
+# Thư viện Python bổ sung khi vận hành trực tiếp với phần cứng MAVLink & Camera trên KV260.
+# Lưu ý:
+#   - Phần lõi của agent (config, offline_spool, cloud_client, kiểm định SHA-256, phép chiếu tọa độ)
+#     và toàn bộ bộ kiểm thử đơn vị chạy hoàn toàn bằng thư viện chuẩn Python 3 (không bắt buộc pip).
+#   - Các gói `vart` và `xir` đi kèm sẵn trong image hệ thống Xilinx Vitis AI 3.0 trên Ubuntu 22.04 /
+#     PetaLinux của board Kria KV260 (`python3-vart`, `python3-xir`), không cài qua PyPI.
+
+pymavlink>=2.4.41
+numpy>=1.24.0
+opencv-python-headless>=4.8.0

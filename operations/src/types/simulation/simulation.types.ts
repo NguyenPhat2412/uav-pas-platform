@@ -1,0 +1,126 @@
+/** [latitude, longitude] in decimal degrees, as the backend sends and receives points. */
+export type LatLng = [number, number];
+
+export type SimFlightMode = 'TAKEOFF' | 'MISSION' | 'HOLD' | 'RETURN_TO_HOME' | 'LANDING' | 'LANDED';
+export type SimCommand =
+    | 'PAUSE'
+    | 'RESUME'
+    | 'RETURN_TO_HOME'
+    | 'LAND'
+    | 'SIMULATE_GPS_DEGRADE'
+    | 'SIMULATE_BATTERY_DROP';
+export type SimEventLevel = 'INFO' | 'WARNING' | 'CRITICAL';
+export type SimRunStatus = 'RUNNING' | 'COMPLETED' | 'FAILSAFE_RTH' | 'EMERGENCY_LANDED' | 'ABORTED';
+
+export interface SimulationState {
+    runLogId: number | null;
+    uavId: number;
+    uavCode: string;
+    missionId: number | null;
+    missionCode: string | null;
+    mode: SimFlightMode;
+    finished: boolean;
+    startedAt: string;
+    elapsedSeconds: number;
+    latitude: number;
+    longitude: number;
+    altitudeMeters: number;
+    groundSpeedMs: number;
+    headingDeg: number;
+    batteryPct: number;
+    rtkStatus: string;
+    satelliteCount: number;
+    airspaceBreaches: number;
+    gpsDegraded: boolean;
+    nextWaypoint: number;
+    waypointCount: number;
+    distanceFlownMeters: number;
+    distanceToHomeMeters: number;
+    home: LatLng;
+    waypoints: LatLng[];
+    track: LatLng[];
+    settings: {
+        altitudeMeters: number;
+        cruiseSpeedMs: number;
+        packetLossPct: number;
+        latencyMs: number;
+        jitterMs: number;
+        geofenceRadiusMeters: number;
+        windSpeedMs: number;
+        windDirectionDeg: number;
+        timeScale: number;
+    };
+    /** sent = samples produced by the simulated UAV, delivered = ingested by the platform. */
+    link: {sent: number; delivered: number; lost: number; lossPct: number; averageLatencyMs: number; maxLatencyMs: number};
+    events: {at: string; level: SimEventLevel; message: string}[];
+}
+
+export interface SimulationStartInput {
+    uavId: number;
+    missionId?: number;
+    waypoints?: LatLng[];
+    homeLatitude?: number;
+    homeLongitude?: number;
+    altitudeMeters?: number;
+    cruiseSpeedMs?: number;
+    packetLossPct?: number;
+    latencyMs?: number;
+    jitterMs?: number;
+    batteryPct?: number;
+    geofenceRadiusMeters?: number;
+    windSpeedMs?: number;
+    windDirectionDeg?: number;
+    timeScale?: number;
+}
+
+export interface MissionRehearsalInput {
+    missionId: number;
+    windSpeedMs?: number;
+    windDirectionDeg?: number;
+    timeScale?: number;
+}
+
+export interface SimulationRunLog {
+    id: number;
+    uavId: number;
+    uavCode: string;
+    missionId: number | null;
+    missionCode: string | null;
+    startedBy: string;
+    status: SimRunStatus;
+    altitudeMeters: number;
+    cruiseSpeedMs: number;
+    windSpeedMs: number;
+    windDirectionDeg: number;
+    timeScale: number;
+    packetLossPct: number;
+    latencyMs: number;
+    startBatteryPct: number;
+    endBatteryPct: number | null;
+    waypointCount: number;
+    waypointsReached: number;
+    distanceFlownMeters: number;
+    elapsedSeconds: number;
+    samplesSent: number;
+    samplesDelivered: number;
+    samplesLost: number;
+    airspaceBreaches: number;
+    gpsDegraded: boolean;
+    outcomeSummary: string | null;
+    startedAt: string;
+    endedAt: string | null;
+}
+
+export interface SurveyPlanInput {
+    vertices: LatLng[];
+    altitudeMeters?: number;
+    sideOverlapPercent?: number;
+    cruiseSpeedMs?: number;
+}
+
+export interface SurveyPlan {
+    waypoints: LatLng[];
+    lineSpacingMeters: number;
+    lengthMeters: number;
+    estimatedMinutes: number;
+}

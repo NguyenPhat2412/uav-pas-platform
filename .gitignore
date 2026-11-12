@@ -1,0 +1,46 @@
+
+.superpowers/
+
+# Local configuration and workstation files
+.env
+.env.*
+!.env.example
+!.env.*.example
+.current-release
+.last-good-release
+.DS_Store
+.idea/
+.vscode/
+
+# Workspace build output
+node_modules/
+**/.next/
+**/out/
+**/dist/
+**/build/
+
+# Local analysis and test artifacts
+work/
+# Test evidence (logs, JSON, screenshots) stays on disk next to its report, outside Git
+docs/reports/**/evidence/
+.codebase-memory/
+/*.png
+coverage/
+*.log
+
+# Backend Maven build output
+backend/target/
+.mvn/wrapper/maven-wrapper.jar
+
+# Incremental TypeScript compilation cache
+*.tsbuildinfo
+
+# Python interpreter cache
+__pycache__/
+*.py[cod]
+
+# Claude Code local settings and worktrees
+.claude/
+
+# Edge AI models (large binaries; checksums in edge/kv260/README.md)
+*.xmodel

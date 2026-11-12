@@ -1,0 +1,458 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+@import "tailwindcss";
+
+@config "../../tailwind.config.mjs";
+
+:root {
+    --uav-color-primary: #ab2523;
+    --uav-color-primary-hover: #8f1c1a;
+    --uav-color-primary-light: #fdf2f2;
+    --uav-color-secondary: #646464;
+    --uav-color-secondary-hover: #475569;
+    --uav-color-secondary-light: #f1f5f9;
+    --uav-color-blue: #475569;
+    --uav-color-blue-hover: #334155;
+    --uav-color-blue-light: #f1f5f9;
+    --uav-color-brand: #ab2523;
+    --uav-color-surface: #ffffff;
+    --uav-color-canvas: #faf6f6;
+    --uav-color-text: #202020;
+    --uav-color-text-secondary: #646464;
+    --uav-color-muted: #7c7c7c;
+    --uav-color-border: #e5e7eb;
+    --uav-color-input-border: #d1d5db;
+    --uav-color-danger: #b42318;
+    --uav-color-danger-hover: #912018;
+    --uav-color-danger-light: #fef3f2;
+    --uav-color-success: #475569;
+    --uav-color-success-light: #eff4ff;
+    --uav-color-warning: #b54708;
+    --uav-color-warning-light: #fffaeb;
+    --uav-font-sans: var(--font-inter), 'Inter', 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-sans: var(--uav-font-sans);
+    --font-mono: var(--uav-font-sans);
+    --font-serif: var(--uav-font-sans);
+    --default-font-family: var(--uav-font-sans);
+    --default-mono-font-family: var(--uav-font-sans);
+
+    /* Semantic Design Tokens (Single Source of Truth) */
+    --background: var(--uav-color-canvas);
+    --foreground: var(--uav-color-text);
+    --card: var(--uav-color-surface);
+    --card-foreground: var(--uav-color-text);
+    --muted: var(--uav-color-text-secondary);
+    --muted-foreground: var(--uav-color-muted);
+    --border: #e2e8f0;
+    --input-border: #cbd5e1;
+    --ring: var(--uav-color-primary);
+    --primary: var(--uav-color-primary);
+    --primary-hover: var(--uav-color-primary-hover);
+    --primary-foreground: #ffffff;
+    --secondary: var(--uav-color-secondary);
+    --secondary-hover: var(--uav-color-secondary-hover);
+    --secondary-foreground: #ffffff;
+    --danger: #dc2626;
+    --danger-hover: #8b0000;
+    --danger-foreground: #ffffff;
+    --success: #475569;
+    --warning: #f59e0b;
+    --surface-variant: #f1f3f5;
+    --surface-dim: #f3f4f6;
+    --surface-container-low: #fafafa;
+    --outline: #9ca3af;
+
+    /* Toast Semantic Variables */
+    --toast-success-border: #475569;
+    --toast-success-bg: #eff4ff;
+    --toast-success-text: #334155;
+    --toast-success-icon: #475569;
+    --toast-success-progress: #475569;
+    --toast-error-border: #ab2523;
+    --toast-error-bg: #fdf2f2;
+    --toast-error-text: #991b1b;
+    --toast-error-icon: #ab2523;
+    --toast-error-progress: #ab2523;
+    --toast-warning-border: #f59e0b;
+    --toast-warning-bg: #fffbeb;
+    --toast-warning-text: #92400e;
+    --toast-warning-icon: #d97706;
+    --toast-warning-progress: #f59e0b;
+    --toast-info-border: #64748b;
+    --toast-info-bg: #f8fafc;
+    --toast-info-text: #334155;
+    --toast-info-icon: #64748b;
+    --toast-info-progress: #64748b;
+
+    /* Shape scale behind rounded-panel/control/badge/overlay. Frames stay sharp; things you press are softly rounded. */
+    --radius-panel: 0px;
+    --radius-control: 4px;
+    --radius-badge: 2px;
+    --radius-overlay: 6px;
+}
+
+/*
+ * No blue anywhere: the palette is white, greys and the soft brand red. Tailwind's blue, sky, indigo
+ * and cyan utilities read these variables, so they render as the matching grey.
+ */
+:root {
+    --color-blue-50: #f8fafc;
+    --color-blue-100: #f1f5f9;
+    --color-blue-200: #e2e8f0;
+    --color-blue-300: #cbd5e1;
+    --color-blue-400: #94a3b8;
+    --color-blue-500: #64748b;
+    --color-blue-600: #475569;
+    --color-blue-700: #334155;
+    --color-blue-800: #1e293b;
+    --color-blue-900: #0f172a;
+    --color-blue-950: #020617;
+    --color-sky-50: #f8fafc;
+    --color-sky-100: #f1f5f9;
+    --color-sky-200: #e2e8f0;
+    --color-sky-300: #cbd5e1;
+    --color-sky-400: #94a3b8;
+    --color-sky-500: #64748b;
+    --color-sky-600: #475569;
+    --color-sky-700: #334155;
+    --color-sky-800: #1e293b;
+    --color-sky-900: #0f172a;
+    --color-sky-950: #020617;
+    --color-indigo-50: #f8fafc;
+    --color-indigo-100: #f1f5f9;
+    --color-indigo-200: #e2e8f0;
+    --color-indigo-300: #cbd5e1;
+    --color-indigo-400: #94a3b8;
+    --color-indigo-500: #64748b;
+    --color-indigo-600: #475569;
+    --color-indigo-700: #334155;
+    --color-indigo-800: #1e293b;
+    --color-indigo-900: #0f172a;
+    --color-indigo-950: #020617;
+    --color-cyan-50: #f8fafc;
+    --color-cyan-100: #f1f5f9;
+    --color-cyan-200: #e2e8f0;
+    --color-cyan-300: #cbd5e1;
+    --color-cyan-400: #94a3b8;
+    --color-cyan-500: #64748b;
+    --color-cyan-600: #475569;
+    --color-cyan-700: #334155;
+    --color-cyan-800: #1e293b;
+    --color-cyan-900: #0f172a;
+    --color-cyan-950: #020617;
+}
+
+/* The signed-in portals use a softer, Apple-like scale. Set on <html> so dialogs portalled to <body> follow it too. */
+:root[data-portal] {
+    --radius-panel: 12px;
+    --radius-control: 8px;
+    --radius-badge: 4px;
+    --radius-overlay: 16px;
+}
+
+/* Operations status chips are full pills. */
+:root[data-portal="operations"] {
+    --radius-badge: 9999px;
+}
+
+/*
+ * The signed-in portals (admin, operations, customer) work in white and light greys with a soft
+ * accent taken from the brand red (#b8021e): lighter for actions and selection, a barely-there
+ * tint for highlights. Errors keep danger/red-*.
+ */
+:root[data-portal] {
+    --uav-color-primary: #c43a4a;
+    --uav-color-primary-hover: #a92e3d;
+    --uav-color-primary-light: #f3f3f3;
+    --color-rose-50: #f9fafb;
+    --color-rose-100: #f3f4f6;
+    --color-rose-200: #e5e7eb;
+}
+
+/* Continuous (squircle) corners where the browser supports them; elsewhere the plain radius above applies. */
+@supports (corner-shape: squircle) {
+    :root[data-portal] :is(.rounded-panel, .rounded-control, .rounded-overlay) {
+        corner-shape: squircle;
+    }
+}
+
+.dark {
+    --background: #0b1320;
+    --foreground: #f8fafc;
+    --card: #131d2e;
+    --card-foreground: #f8fafc;
+    --muted: #94a3b8;
+    --muted-foreground: #64748b;
+    --border: #2f3237;
+    --input-border: #3d4148;
+    --ring: #e06b78;
+    --primary: #e06b78;
+    --primary-hover: #ea8a95;
+    --primary-foreground: #ffffff;
+    --secondary: #94a3b8;
+    --secondary-hover: #64748b;
+    --secondary-foreground: #ffffff;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+    --danger-foreground: #ffffff;
+    --success: #94a3b8;
+    --warning: #f59e0b;
+}
+
+@layer base {
+    *, *::before, *::after {
+        @apply box-border;
+    }
+
+    html {
+        @apply scroll-smooth font-sans antialiased;
+    }
+
+    body {
+        @apply m-0 min-h-screen bg-background font-sans text-sm leading-relaxed text-foreground;
+    }
+
+    button, input, select, textarea, optgroup, code, kbd, samp, pre {
+        @apply font-sans;
+    }
+
+    /* Leaflet panes and controls use z-index 400–1000; keep them inside the map so floating UI stays on top. */
+    .leaflet-container {
+        @apply font-sans isolate;
+    }
+
+    h1, h2, h3, h4 {
+        @apply break-words text-balance;
+    }
+
+    a {
+        @apply text-inherit no-underline;
+    }
+
+    button {
+        @apply cursor-pointer disabled:cursor-not-allowed;
+    }
+}
+
+/* Assistant chat panel grows out of the launcher's corner. */
+@keyframes assistant-pop {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.94);
+    }
+}
+
+
+/*
+ * Signed-in portals (admin, operations, customer): white cards on a white page, set apart by a hairline edge and a soft
+ * shadow and spaced rather than ruled. Panels keep their own layout; only the frame around them changes.
+ */
+:root[data-portal] :is(#workspace, #content) {
+    background: #fff;
+    padding: 1.5rem;
+    /* Room under the last row so it can scroll clear of the floating assistant button (bottom right). */
+    padding-bottom: 6rem;
+    gap: 1rem;
+}
+
+/* The course player runs edge to edge under the app header, like a video course site. */
+:root[data-portal] :is(#workspace, #content):has([data-course-player]) {
+    padding: 0;
+}
+
+:root[data-portal] :is(#workspace, #content) .rounded-panel.border,
+:root[data-portal] :is(#workspace, #content) .rounded-panel[class*="border-"] {
+    border-color: rgb(0 0 0 / 0.08);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.05), 0 6px 20px rgb(0 0 0 / 0.05);
+}
+
+:root[data-portal] :is(#workspace, #content) .rounded-panel {
+    overflow: hidden;
+}
+
+/* Hairline tile grids (gap-px over a grey fill) and KPI rows open up into separate rounded cards. */
+:root[data-portal] :is(#workspace, #content) :is(:is(.grid, .flex).gap-px:not(.rounded-panel *), .grid:has(> article.border-t-2)) {
+    gap: 1rem;
+    background: transparent;
+    border-width: 0;
+}
+
+:root[data-portal] :is(#workspace, #content) :is(:is(.grid, .flex).gap-px:not(.rounded-panel *) > *, .grid:has(> article.border-t-2) > article) {
+    background: #fff;
+    border: 1px solid rgb(0 0 0 / 0.08);
+    border-radius: var(--radius-panel);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.05), 0 6px 20px rgb(0 0 0 / 0.05);
+    overflow: hidden;
+}
+
+/*
+ * Many panels were written as square frames (border without a radius class). In the signed-in
+ * portals every framed box, field and button takes the shared shape scale, so nothing stays square.
+ * Tabs (bottom rule only) and full-width list rows keep their straight edges.
+ */
+:root[data-portal] :is(#workspace, #content) :is(section, div, ol, ul, dl, fieldset, label, article)[class~="border"]:not([class*="rounded"]) {
+    border-radius: var(--radius-panel);
+}
+
+:root[data-portal] :is(#workspace, #content) :is(section[class~="border"]:not([class*="rounded"]), div.overflow-x-auto[class~="border"]) {
+    overflow: hidden;
+}
+
+:root[data-portal] :is(#workspace, #content) :is(input:not([type="checkbox"], [type="radio"], [type="range"]), textarea, select):not([class*="rounded"]),
+:root[data-portal] :is(#workspace, #content) button:not([class*="rounded"], [class*="border-b-2"], .w-full),
+:root[data-portal] :is(#workspace, #content) div.inline-flex[class~="border"]:not([class*="rounded"]) {
+    border-radius: var(--radius-control);
+}
+
+/* Segmented controls (a bordered strip of buttons): the strip is rounded and clips its buttons. */
+:root[data-portal] :is(#workspace, #content) div.inline-flex[class~="border"] {
+    overflow: hidden;
+}
+
+/* Fields inside a bordered wrapper (search boxes) let the wrapper carry the shape. */
+:root[data-portal] :is(#workspace, #content) label[class~="border"] > input {
+    border-radius: 0;
+}
+
+/* Native selects: regular weight (labels around them are bold) and one consistent chevron. */
+:root[data-portal] :is(#workspace, #content) select {
+    appearance: none;
+    font-weight: 400;
+    padding-right: 2.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 1rem;
+}
+
+/* A page root laid out as a column (customer and operations pages) spaces its blocks like the shell does. */
+:root[data-portal] :is(#workspace, #content) > .flex-col:not([class*="gap-"]) {
+    gap: 1rem;
+}
+
+/* A column of panels joined by divider lines becomes a stack of separate cards. */
+:root[data-portal] :is(#workspace, #content) .flex-col[class*="divide-y"]:has(> section) {
+    gap: 1rem;
+    background: transparent !important;
+    border-width: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0;
+    overflow: visible;
+}
+
+:root[data-portal] :is(#workspace, #content) .flex-col[class*="divide-y"]:has(> section) > * {
+    background: #fff;
+    border: 1px solid rgb(0 0 0 / 0.08);
+    border-radius: var(--radius-panel);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.05), 0 6px 20px rgb(0 0 0 / 0.05);
+    overflow: hidden;
+}
+
+/* Section labels read as quiet sentence-case captions instead of shouted uppercase tags. */
+:root[data-portal] :is(#workspace, #content) :is(th, .uppercase) {
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+@media (max-width: 640px) {
+    :root[data-portal] :is(#workspace, #content) {
+        padding: 1rem;
+    }
+}
+
+/* Leaflet's own attribution link and flag are blue by default; keep the map chrome in the palette. */
+.leaflet-container .leaflet-control-attribution a {
+    color: #64748b;
+}
+
+.leaflet-container .leaflet-attribution-flag {
+    display: none !important;
+}
+
+/*
+ * Cloudflare-like type in the signed-in portals: near-black text, grey secondary text, no heavy
+ * weights (bold/extra-bold/black read as semibold), and segmented tabs on a light grey track.
+ */
+:root[data-portal] {
+    --uav-color-text: #1f1f1f;
+    --uav-color-text-secondary: #5f5f5f;
+    --uav-color-muted: #7a7a7a;
+}
+
+:root[data-portal] :is(#workspace, #content, header, aside) :is(.font-bold, .font-extrabold, .font-black) {
+    font-weight: 600;
+}
+
+:root[data-portal] :is(#workspace, #content) [role="tablist"] {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    width: auto;
+    padding: 3px;
+    background: #f2f2f2;
+    border: 0;
+    border-radius: var(--radius-control);
+}
+
+:root[data-portal] :is(#workspace, #content) [role="tab"] {
+    margin: 0;
+    padding: 0.375rem 0.75rem;
+    border: 0 !important;
+    border-radius: calc(var(--radius-control) - 2px);
+    background: transparent;
+    color: #5f5f5f;
+    font-weight: 500;
+}
+
+:root[data-portal] :is(#workspace, #content) [role="tab"][aria-selected="true"] {
+    background: #fff;
+    color: #1f1f1f;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+}
+
+/*
+ * Red is reserved for the main call-to-action buttons (bg-primary on buttons and links), sidebar
+ * navigation icons/active states, and real failures (danger/red-*). Everything else inside workspace
+ * content, headers, and dialogs reads in the near-black/grey scale, as on Cloudflare.
+ */
+:root[data-portal] :is(#workspace, #content, header, [role="dialog"]) :is(.text-primary, [class*="text-primary/"]) {
+    color: #1f1f1f;
+}
+
+:root[data-portal] :is(#workspace, #content, header, [role="dialog"]) [class*="hover:text-primary"]:hover {
+    color: #000;
+}
+
+:root[data-portal] :is(#workspace, #content, header, [role="dialog"]) :is(.border-primary, [class*="border-primary/"]) {
+    border-color: #404040;
+}
+
+:root[data-portal] :is(#workspace, #content, header, [role="dialog"]) [class*="border-l-primary"] {
+    border-left-color: #404040;
+}
+
+:root[data-portal] :is(#workspace, #content, header, [role="dialog"]) [class*="bg-primary/"] {
+    background-color: #f3f3f3;
+}
+
+/* Small solid badges (counts, initials, pill links) go dark grey; full-size buttons and links keep the red. */
+:root[data-portal] :is(#workspace, #content, header, [role="dialog"]) :is(span.bg-primary, strong.bg-primary, small.bg-primary, .rounded-badge.bg-primary) {
+    background-color: #3f3f46;
+}
+
+/* Selected toggles and filter chips (period pickers, "Tất cả", chart modes) read as a selected segment, not a red button. */
+:root[data-portal] :is(#workspace, #content) :is([aria-pressed="true"], [aria-checked="true"], [aria-selected="true"])[class*="bg-primary"] {
+    background-color: #f3f3f3;
+    color: #1f1f1f;
+    border-color: #404040;
+}
+
+/* Coloured top stripes on cards (border-t-2 + a colour) give way to the plain hairline edge. */
+:root[data-portal] :is(#workspace, #content) [class*="border-t-2"]:is([class*="border-t-primary"], [class*="border-t-uav"], [class*="border-t-amber"], [class*="border-t-slate"]) {
+    border-top-width: 1px;
+    border-top-color: rgb(0 0 0 / 0.08);
+}
+
+/* A tile grid that becomes separate cards drops its own fill border so only the cards are framed. */
+:root[data-portal] :is(#workspace, #content) :is(.grid, .flex).gap-px:not(.rounded-panel *) {
+    border-width: 0;
+}
