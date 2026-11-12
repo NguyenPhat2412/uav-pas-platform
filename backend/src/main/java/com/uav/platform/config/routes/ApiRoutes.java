@@ -391,7 +391,7 @@ public final class ApiRoutes {
     }
 
     /**
-     * Nhóm route công khai không cần đăng nhập (thông tin website)
+     * Nhóm route công khai không cần đăng nhập (thông tin website & hỗ trợ trực tuyến)
      */
     public static final class Public {
         private Public() {}
@@ -400,6 +400,13 @@ public final class ApiRoutes {
 
         // Method-level paths, relative to the controller mapping.
         public static final String SITE_INFO = "/site-info";
+        public static final String DISCOVERY = "/discovery";
+        public static final String FULL_DISCOVERY = BASE + DISCOVERY;
+        public static final String SUPPORT_THREADS = "/support/threads";
+        public static final String SUPPORT_THREAD_BY_TOKEN = "/support/threads/{visitorToken}";
+        public static final String SUPPORT_THREAD_MESSAGES =
+                "/support/threads/{visitorToken}/messages";
+        public static final String FULL_SUPPORT_WILDCARD = BASE + "/support/**";
     }
 
     /**
@@ -417,6 +424,7 @@ public final class ApiRoutes {
         public static final String ASSISTANT_CONVERSATIONS = BASE + "/assistant/conversations";
         public static final String USER_BILLING_PROFILE = BASE + "/users/{id}/billing-profile";
         public static final String SLA_INTELLIGENCE = BASE + "/sla-intelligence";
+        public static final String SUPPORT = BASE + "/support";
 
         // Method-level paths, relative to the controller mapping.
         public static final String ASSISTANT_CONVERSATIONS_BY_ID = "/{id}";
@@ -436,6 +444,13 @@ public final class ApiRoutes {
         public static final String FILES_SUMMARY = "/summary";
         public static final String FILES_DOWNLOAD = "/{id}/download";
         public static final String FILES_BY_ID = "/{id}";
+        public static final String SUPPORT_SUMMARY = "/summary";
+        public static final String SUPPORT_THREADS = "/threads";
+        public static final String SUPPORT_THREAD_BY_ID = "/threads/{id}";
+        public static final String SUPPORT_THREAD_REPLY = "/threads/{id}/reply";
+        public static final String SUPPORT_THREAD_STATUS = "/threads/{id}/status";
+        public static final String SUPPORT_QUICK_REPLIES = "/quick-replies";
+        public static final String SUPPORT_QUICK_REPLY_BY_ID = "/quick-replies/{id}";
     }
 
     /**

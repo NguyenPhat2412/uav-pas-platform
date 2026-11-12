@@ -242,10 +242,21 @@ class PlatformDeviceKeyIntegrationTest {
     void publicSiteInfoIsAnonymousAndOnlyExposesPublicSettings() throws Exception {
         String s = UUID.randomUUID().toString().substring(0, 6);
         settings.findByConfigKey("contact.dispatch_hotline").ifPresent(settings::delete);
+        settings.findByConfigKey("contact.zalo_phone").ifPresent(settings::delete);
         settings.save(
                 SystemConfigurationOperations.createTyped(
                         "contact.dispatch_hotline",
                         "1900 1234",
+                        "CONTACT",
+                        SettingValueType.PHONE,
+                        null,
+                        null,
+                        null,
+                        true));
+        settings.save(
+                SystemConfigurationOperations.createTyped(
+                        "contact.zalo_phone",
+                        "0983549821",
                         "CONTACT",
                         SettingValueType.PHONE,
                         null,
@@ -276,6 +287,7 @@ class PlatformDeviceKeyIntegrationTest {
                 mvc.perform(get("/api/v1/public/site-info"))
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.dispatchHotline").value("1900 1234"))
+                        .andExpect(jsonPath("$.zaloPhone").value("0983549821"))
                         .andReturn()
                         .getResponse()
                         .getContentAsString();

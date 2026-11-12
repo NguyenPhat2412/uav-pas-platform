@@ -89,6 +89,8 @@ public class SecurityConfig {
                                         .ignoringRequestMatchers(ApiRoutes.PUBLIC_AUTH_WHITELIST)
                                         .ignoringRequestMatchers(ApiRoutes.Webhook.WILDCARD)
                                         .ignoringRequestMatchers(
+                                                ApiRoutes.Public.FULL_SUPPORT_WILDCARD)
+                                        .ignoringRequestMatchers(
                                                 ApiRoutes.Training.FULL_ASSET_CONTENT)
                                         .ignoringRequestMatchers(
                                                 ApiRoutes.Health.ENDPOINT,
@@ -140,6 +142,11 @@ public class SecurityConfig {
                                         .requestMatchers(ApiRoutes.Webhook.WILDCARD)
                                         .permitAll()
                                         .requestMatchers(HttpMethod.GET, PUBLIC_SITE_INFO)
+                                        .permitAll()
+                                        .requestMatchers(
+                                                HttpMethod.GET, ApiRoutes.Public.FULL_DISCOVERY)
+                                        .permitAll()
+                                        .requestMatchers(ApiRoutes.Public.FULL_SUPPORT_WILDCARD)
                                         .permitAll()
                                         .requestMatchers(
                                                 HttpMethod.GET,

@@ -6,9 +6,12 @@ import com.uav.platform.enums.mission.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ServiceOfferingRepository
         extends JpaRepository<ServiceOffering, Long>, JpaSpecificationExecutor<ServiceOffering> {
     Optional<ServiceOffering> findByCode(String code);
+
+    List<ServiceOffering> findByActiveTrueOrderByIdAsc();
 }

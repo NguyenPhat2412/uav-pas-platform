@@ -173,6 +173,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
         }
         return new PublicSiteInfoResponse(
                 values.get("contact.dispatch_hotline"),
+                values.get("contact.zalo_phone"),
                 values.get("contact.email"),
                 values.get("contact.address"),
                 java.util.Collections.unmodifiableMap(values));

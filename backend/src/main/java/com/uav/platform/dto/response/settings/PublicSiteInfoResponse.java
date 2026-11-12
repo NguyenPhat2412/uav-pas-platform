@@ -7,4 +7,8 @@ import java.util.Map;
  * clients fall back to their own defaults.
  */
 public record PublicSiteInfoResponse(
-        String dispatchHotline, String email, String address, Map<String, String> settings) {}
+        String dispatchHotline,
+        String zaloPhone,
+        String email,
+        String address,
+        Map<String, String> settings) {}

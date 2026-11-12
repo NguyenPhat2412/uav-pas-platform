@@ -97,6 +97,8 @@ public final class SystemConfigurationOperations {
                     new SettingRule(SettingValueType.STRING, null, BigDecimal.valueOf(120), null),
                     "contact.dispatch_hotline",
                     new SettingRule(SettingValueType.PHONE, null, null, null),
+                    "contact.zalo_phone",
+                    new SettingRule(SettingValueType.PHONE, null, null, null),
                     "contact.email",
                     new SettingRule(SettingValueType.EMAIL, null, null, null),
                     "contact.address",
