@@ -11,6 +11,19 @@ x-logging: &default-logging
     max-size: "20m"
     max-file: "5"
 
+x-portal-build-args: &portal-build-args
+  NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?Set NEXT_PUBLIC_API_URL}
+  NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:?Set NEXT_PUBLIC_APP_URL}
+  NEXT_PUBLIC_CUSTOMER_URL: ${NEXT_PUBLIC_APP_URL}
+  NEXT_PUBLIC_OPERATIONS_URL: ${NEXT_PUBLIC_APP_URL}
+  NEXT_PUBLIC_ADMIN_URL: ${NEXT_PUBLIC_APP_URL}
+  NEXT_PUBLIC_ENVIRONMENT: production
+  NEXT_PUBLIC_DISPATCH_HOTLINE: ${NEXT_PUBLIC_DISPATCH_HOTLINE:-}
+  NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-}
+  NEXT_PUBLIC_APPLE_CLIENT_ID: ${NEXT_PUBLIC_APPLE_CLIENT_ID:-}
+  NEXT_PUBLIC_APPLE_REDIRECT_URI: ${NEXT_PUBLIC_APPLE_REDIRECT_URI:-}
+  NEXT_PUBLIC_ZALO_PHONE: ${NEXT_PUBLIC_ZALO_PHONE:-}
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -57,19 +70,42 @@ services:
     restart: unless-stopped
     logging: *default-logging
 
-  frontend:
+  # The three portals share one domain (Next multi-zones): nginx sends /admin* to admin, /operations* to
+  # operations and everything else to customer, so every *_URL below is the same public origin.
+  customer:
     build:
-      context: ../frontend
+      context: ../customer
       dockerfile: Dockerfile
       # NEXT_PUBLIC_* values are compiled into the bundle, so changing them needs a rebuild.
-      args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?Set NEXT_PUBLIC_API_URL}
-        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:?Set NEXT_PUBLIC_APP_URL}
-        NEXT_PUBLIC_ENVIRONMENT: production
-        NEXT_PUBLIC_DISPATCH_HOTLINE: ${NEXT_PUBLIC_DISPATCH_HOTLINE:-}
-        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-}
+      args: *portal-build-args
     ports:
       - "127.0.0.1:${FRONTEND_PORT:-13100}:3100"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    logging: *default-logging
+
+  operations:
+    build:
+      context: ../operations
+      dockerfile: Dockerfile
+      # NEXT_PUBLIC_* values are compiled into the bundle, so changing them needs a rebuild.
+      args: *portal-build-args
+    ports:
+      - "127.0.0.1:${OPERATIONS_PORT:-13200}:3100"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    logging: *default-logging
+
+  admin:
+    build:
+      context: ../admin
+      dockerfile: Dockerfile
+      # NEXT_PUBLIC_* values are compiled into the bundle, so changing them needs a rebuild.
+      args: *portal-build-args
+    ports:
+      - "127.0.0.1:${ADMIN_PORT:-13300}:3100"
     depends_on:
       - backend
     restart: unless-stopped
