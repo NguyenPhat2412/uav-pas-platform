@@ -63,10 +63,14 @@ export function ProfileScreen() {
                 <AppText>{user?.email}</AppText>
                 <AppText variant="caption">{t('profile.readonlyNote')}</AppText>
             </Card>
+            <AppText variant="caption" style={styles.version}>
+                NguyenPhat2412 · UAV PAS
+            </AppText>
         </Screen>
     );
 }
 
 const styles = StyleSheet.create({
     error: {color: colors.danger},
+    version: {textAlign: 'center'},
 });

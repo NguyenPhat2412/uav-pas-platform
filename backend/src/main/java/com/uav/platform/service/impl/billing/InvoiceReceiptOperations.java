@@ -72,7 +72,7 @@ public final class InvoiceReceiptOperations {
                     case PAID -> "0.09 0.60 0.30";
                     case PENDING -> "0.82 0.46 0.04";
                     case FAILED -> "0.76 0.18 0.18";
-                    case CANCELLED -> "0.38 0.43 0.50";
+                    case CANCELLED, EXPIRED -> "0.38 0.43 0.50";
                 };
         fillRect(s, 430, 796, 125, 24, badgeColor);
         text(s, "F2", 10, 442, 804, "1 1 1", "STATUS: " + status.name());

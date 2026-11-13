@@ -15,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.uav.platform.enums.billing.InvoiceStatus;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
@@ -70,8 +72,10 @@ public class BankTransferServiceImpl implements BankTransferService {
                 settings.accountNumber(),
                 settings.accountName(),
                 content,
-                VietQrOperations.build(
-                        settings.bankBin(), settings.accountNumber(), total, content),
+                invoice.status() == InvoiceStatus.PENDING
+                        ? VietQrOperations.build(
+                                settings.bankBin(), settings.accountNumber(), total, content)
+                        : null,
                 split[0],
                 vatRate,
                 split[1],
@@ -79,7 +83,8 @@ public class BankTransferServiceImpl implements BankTransferService {
                 invoice.missionTitle() != null ? invoice.missionTitle() : invoice.planName(),
                 flightHours(invoice),
                 invoice.dueDate(),
-                invoice.createdAt());
+                invoice.createdAt(),
+                invoice.missionId() != null ? "MISSION" : invoice.planId() != null ? "PLAN" : "OTHER");
     }
 
     /** "UAV INV" plus the invoice code without separators, matching what VietQR keeps in the memo. */

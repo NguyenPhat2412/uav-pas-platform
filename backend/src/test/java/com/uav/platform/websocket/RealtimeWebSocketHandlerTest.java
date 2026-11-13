@@ -123,7 +123,7 @@ class RealtimeWebSocketHandlerTest {
 
         var auth = UsernamePasswordAuthenticationToken.authenticated("admin", null, List.of());
         SecurityContextHolder.getContext().setAuthentication(auth);
-        when(permissionService.has(auth, "DASHBOARD_VIEW")).thenReturn(true);
+        when(permissionService.has(auth, "SUPPORT_MANAGE")).thenReturn(true);
         when(permissionService.has(auth, "USER_MANAGE")).thenReturn(true);
 
         MockHttpServletRequest rawReq = new MockHttpServletRequest("GET", "/api/v1/ws/realtime");
@@ -141,6 +141,33 @@ class RealtimeWebSocketHandlerTest {
         assertEquals(1L, principal.userId());
         assertTrue(principal.canAdminSupport());
         assertTrue(principal.canManageBilling());
+    }
+
+    @Test
+    void customerWithDashboardViewIsNotSupportStaff() {
+        // Customers hold DASHBOARD_VIEW by default; it must not open the staff support feed.
+        AppUser customer = new AppUser();
+        customer.setId(7L);
+        customer.setUsername("pilot");
+        customer.setStatus(UserStatus.ACTIVE);
+        when(userRepository.findByUsername("pilot")).thenReturn(Optional.of(customer));
+        var auth = UsernamePasswordAuthenticationToken.authenticated("pilot", null, List.of());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        when(permissionService.has(auth, "DASHBOARD_VIEW")).thenReturn(true);
+
+        Map<String, Object> attrs = new HashMap<>();
+        assertTrue(
+                interceptor.beforeHandshake(
+                        new ServletServerHttpRequest(
+                                new MockHttpServletRequest("GET", "/api/v1/ws/realtime")),
+                        new ServletServerHttpResponse(new MockHttpServletResponse()),
+                        handler,
+                        attrs));
+        RealtimeSessionPrincipal principal =
+                (RealtimeSessionPrincipal) attrs.get(RealtimeSessionPrincipal.ATTRIBUTE_KEY);
+        assertEquals(7L, principal.userId());
+        assertFalse(principal.canAdminSupport());
+        assertFalse(principal.canManageBilling());
     }
 
     @Test
@@ -284,6 +311,29 @@ class RealtimeWebSocketHandlerTest {
         assertEquals("SUPPORT_ADMIN_TYPING", visitorReceived.path("type").asText());
         assertEquals("admin", visitorReceived.path("senderName").asText());
         assertTrue(visitorReceived.path("typing").asBoolean());
+    }
+
+    @Test
+    void notificationReachesOnlyTheRecipientsOwnSockets() throws Exception {
+        WebSocketSession recipient =
+                openSession("r", new RealtimeSessionPrincipal(7L, "pilot", false, false, null));
+        WebSocketSession otherCustomer =
+                openSession("o", new RealtimeSessionPrincipal(8L, "other", false, false, null));
+        WebSocketSession staff =
+                openSession("s", new RealtimeSessionPrincipal(1L, "admin", true, true, null));
+        for (WebSocketSession ws : List.of(recipient, otherCustomer, staff))
+            handler.afterConnectionEstablished(ws);
+        clearInvocations(recipient, otherCustomer, staff);
+
+        broadcaster.publishNotificationCreated(
+                7L, Map.of("id", 42, "title", "Nhiệm vụ đã xác nhận"), 3);
+
+        JsonNode frame = lastSentJson(recipient);
+        assertEquals("NOTIFICATION_CREATED", frame.path("type").asText());
+        assertEquals(42, frame.path("notification").path("id").asInt());
+        assertEquals(3, frame.path("unreadCount").asInt());
+        verify(otherCustomer, never()).sendMessage(any());
+        verify(staff, never()).sendMessage(any());
     }
 
     private WebSocketSession openSession(String id, RealtimeSessionPrincipal principal) {

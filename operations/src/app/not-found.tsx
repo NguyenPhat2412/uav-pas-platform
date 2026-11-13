@@ -1,29 +1,29 @@
 import type {Metadata} from 'next';
 import {NotFoundView} from '@/components/shared/NotFoundView';
 
-export const metadata: Metadata = {title: 'Không tìm thấy trang · UAV PAS'};
+export const metadata: Metadata = {title: 'Không tìm thấy trang · UAV PAS Operations'};
 
-/** Any URL outside the public site and the portals. */
-export default function RootNotFound() {
+/** Root 404 for the Operations portal (:3200), keeping every recovery destination inside Operations or resolved cross-portal. */
+export default function OperationsRootNotFound() {
     return <NotFoundView
         fullScreen
-        title="Không tìm thấy trang"
-        detail="Đường dẫn có thể đã bị đổi, bị gỡ hoặc chưa từng tồn tại. Kiểm tra lại địa chỉ, hoặc quay về trang chủ."
-        homeHref="/"
-        homeLabel="Về trang chủ"
+        title="Không tìm thấy trang điều hành"
+        detail="Đường dẫn tác nghiệp có thể đã đổi hoặc không tồn tại trên cổng Điều hành. Kiểm tra lại địa chỉ hoặc quay về trung tâm điều phối."
+        homeHref="/operations/overview"
+        homeLabel="Về cổng điều hành"
         backLabel="Quay lại"
         portalHomes={[
             {prefix: '/admin', href: '/admin/dashboard', label: 'Về trang quản trị'},
             {prefix: '/operations', href: '/operations/overview', label: 'Về cổng điều hành'},
-            {prefix: '/customer', href: '/customer/dashboard', label: 'Về trang tổng quan'},
+            {prefix: '/customer', href: '/customer/dashboard', label: 'Về trang khách hàng'},
         ]}
-        linksLabel="Có thể bạn đang tìm"
+        linksLabel="Khu vực tác nghiệp chính"
         links={[
-            {href: '/services', label: 'Dịch vụ'},
-            {href: '/pricing', label: 'Bảng giá'},
-            {href: '/how-it-works', label: 'Quy trình thực hiện'},
-            {href: '/faq', label: 'Câu hỏi thường gặp'},
-            {href: '/contact', label: 'Liên hệ'},
+            {href: '/operations/overview', label: 'Tổng quan điều hành'},
+            {href: '/operations/dispatch/missions', label: 'Điều phối nhiệm vụ'},
+            {href: '/operations/sar-cockpit', label: 'Cứu hộ SAR AI'},
+            {href: '/operations/uavs', label: 'Đội tàu bay UAV'},
+            {href: '/operations/weather', label: 'Khí tượng bay'},
         ]}
     />;
 }

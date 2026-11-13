@@ -49,6 +49,14 @@ export class ApiError extends Error {
 
 export const SESSION_EVENT = 'uav:session';
 export const PERMISSIONS_EVENT = 'uav:permissions';
+export const TRANSPORT_EVENT = 'uav:transport';
+export type TransportState = 'online' | 'server_unreachable' | 'maintenance';
+
+function emitTransportStatus(state: TransportState, status: number) {
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+        window.dispatchEvent(new CustomEvent(TRANSPORT_EVENT, {detail: {state, status}}));
+    }
+}
 /** localStorage key other tabs watch: `${userId}:${timestamp}` while signed in, absent once signed out. */
 export const SESSION_STORAGE_KEY = 'uav_session';
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
@@ -71,6 +79,7 @@ export function sessionOwnerOf(value: string | null | undefined): string | null 
  * visitors cost the API nothing. Absent (first visit, cleared storage) means "unknown": the page asks once.
  */
 const SIGNED_OUT_KEY = 'uav_signed_out';
+const SESSION_PRESENCE_COOKIE = 'uav_session_present';
 
 function writeSessionMarker(userId: number | null, force: boolean) {
     if (typeof window === 'undefined' || !window.localStorage) return;
@@ -95,14 +104,15 @@ function readStorage(key: string): string | null {
     }
 }
 
-/** True when this browser last knew it had no session and no tab has signed in since (see SIGNED_OUT_KEY). */
+/** True when this browser last knew it had no session and no tab or sibling portal has signed in since. */
 export function knownSignedOut(): boolean {
+    if (readCookie(SESSION_PRESENCE_COOKIE) === '1') return false;
     return readStorage(SIGNED_OUT_KEY) === '1' && readStorage(SESSION_STORAGE_KEY) === null;
 }
 
-/** True when some tab of this browser holds a session (the cross-tab `uav_session` marker is set). */
+/** True when some tab or sibling portal of this browser holds a session. */
 function sessionMarkerPresent(): boolean {
-    return readStorage(SESSION_STORAGE_KEY) !== null;
+    return readStorage(SESSION_STORAGE_KEY) !== null || readCookie(SESSION_PRESENCE_COOKIE) === '1';
 }
 
 /** Records the account restored from cookies on page load, telling other tabs only when it differs from theirs. */
@@ -248,7 +258,15 @@ async function sendRequest(endpoint: string, options: RequestInit = {}): Promise
         response = await fetch(url, {...options, credentials: isApiOrigin ? 'include' : 'omit', headers});
     } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') throw error;
+        if (isApiOrigin && !options.signal?.aborted) emitTransportStatus('server_unreachable', 0);
         throw new ApiError(0, 'NetworkError', error instanceof Error ? error.message : 'Network error', endpoint, 'NETWORK_ERROR');
+    }
+    if (isApiOrigin) {
+        if (response.status === 502 || response.status === 503 || response.status === 504) {
+            emitTransportStatus('maintenance', response.status);
+        } else {
+            emitTransportStatus('online', response.status);
+        }
     }
     requireCurrent(generation);
     const authCommand = /\/auth\/(login|register|refresh|logout)/.test(endpoint);
@@ -347,4 +365,20 @@ export async function request<T>(urlOrBase: string, pathOrOptions: string | Requ
     const requestBody = body === undefined || body instanceof FormData || body instanceof Blob || typeof body === 'string' ? body as BodyInit | undefined : JSON.stringify(body);
     if (requestBody !== undefined && !merged.has('content-type') && typeof requestBody === 'string') merged.set('content-type', 'application/json');
     return apiRequest<T>(urlOrBase, {...init, headers: merged, body: requestBody});
+}
+
+/** Lightweight transport probe used by connection/maintenance recovery banners without touching session state. */
+export async function probeApiHealth(): Promise<TransportState> {
+    try {
+        const response = await fetch(`${baseUrl}/api/v1/public/site-info`, {method: 'GET', cache: 'no-store'});
+        if (response.status === 502 || response.status === 503 || response.status === 504) {
+            emitTransportStatus('maintenance', response.status);
+            return 'maintenance';
+        }
+        emitTransportStatus('online', response.status);
+        return 'online';
+    } catch {
+        emitTransportStatus('server_unreachable', 0);
+        return 'server_unreachable';
+    }
 }

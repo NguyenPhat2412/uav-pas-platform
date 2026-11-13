@@ -37,7 +37,15 @@
     "status": {
       "offlineTitle": "Can't reach the server",
       "offlineHint": "Check your connection and try again. You are still signed in.",
-      "offlineBanner": "Offline — check your network."
+      "offlineBanner": "Offline — tap to check connection.",
+      "offlineBadge": "CONNECTION LOST",
+      "networkLostTitle": "No network connection",
+      "networkLostDetail": "The link to UAV PAS Dispatch Center is temporarily interrupted. Check Wi-Fi or mobile data and try again.",
+      "checkWifi": "Check Wi-Fi signal or cellular 4G / 5G data",
+      "sessionProtected": "Your session and saved drafts remain protected on this device",
+      "autoSync": "Automatically syncs as soon as connection returns",
+      "reconnectButton": "Reconnect now",
+      "viewCachedButton": "View loaded screen"
     },
     "nav": {
       "missionDetail": "Mission details",
@@ -238,7 +246,19 @@
       "receiptShareTitle": "Invoice receipt {code}",
       "liveReconcileActive": "Online · Instant reconciliation",
       "supportReconcileHint": "Need help reconciling a bank transfer or VAT invoice?",
-      "contactSupportButton": "Contact Support for payment reconciliation"
+      "contactSupportButton": "Contact Support for payment reconciliation",
+      "dueOn": "Due {date}",
+      "overdue": "Overdue — please pay soon to avoid service interruption.",
+      "closedTitle": "Invoice closed",
+      "closedExpired": "This invoice expired and can no longer be paid. Choose the plan again to get a new invoice.",
+      "closedCancelled": "This invoice was cancelled and can no longer be paid.",
+      "lateTransferHint": "Transferred money for a closed invoice? Contact support for a refund.",
+      "backToBilling": "Back to plans",
+      "saveQr": "Save QR code",
+      "qrShareTitle": "Payment QR {code}",
+      "cancelInvoice": "Cancel invoice",
+      "cancelQuestion": "Cancel invoice {code}? It can no longer be paid afterwards.",
+      "cancelled": "Invoice {code} cancelled."
     },
     "security": {
       "twoFactor": "Two-step verification",

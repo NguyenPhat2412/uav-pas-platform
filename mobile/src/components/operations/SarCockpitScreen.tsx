@@ -30,6 +30,16 @@ export function SarCockpitScreen() {
 
     const [selectedDetectionId, setSelectedDetectionId] = useState<number | null>(null);
     const [coordinatorNote, setCoordinatorNote] = useState('');
+    const [refreshing, setRefreshing] = useState(false);
+
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await refresh();
+        } finally {
+            setRefreshing(false);
+        }
+    };
 
     const searchPolygon = useMemo(
         () => parseGeoJsonPolygonCoordinates(mission?.searchAreaPolygon),
@@ -121,7 +131,7 @@ export function SarCockpitScreen() {
     const showMap = hasLkp || hasLiveTelemetry || searchPolygon.length >= 3 || hasStation;
 
     return (
-        <Screen onRefresh={() => void refresh()} refreshing={missionsQuery.isRefetching}>
+        <Screen onRefresh={() => void handleRefresh()} refreshing={refreshing}>
             <SarMissionHeaderCard
                 mission={mission}
                 hasLkp={hasLkp}

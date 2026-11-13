@@ -168,6 +168,10 @@ export interface AuthContextType {
     token: string | null;
     isLoading: boolean;
     isAuthenticated: boolean;
+    /** True when session bootstrap could not reach the API (offline, 5xx, 429) while a session may exist. */
+    isUnreachable?: boolean;
+    authError?: Error | null;
+    retryAuth?: () => void;
     permissions: string[];
     permissionsReady: boolean;
     permissionError: Error | null;

@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
-import {Bell, CalendarClock, ChevronRight, ClipboardList, Cpu, MapPin, ShieldCheck} from 'lucide-react-native';
+import {Bell, CalendarClock, CheckCircle2, ChevronRight, ClipboardList, Clock, Cpu, MapPin, ShieldCheck, Star} from 'lucide-react-native';
 import {AppText, Badge, Card, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState, SectionTitle, TextField} from '@/components/ui';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {AppBackground} from '@/components/layout/AppBackground';
@@ -176,30 +176,50 @@ export function OperationsMissionsScreen() {
                                 <Card style={styles.logbookCard}>
                                     <SectionTitle
                                         title={t('capabilities.logbook.title')}
-                                        action={<AppText variant="caption" style={styles.code}>{logbook.data.operatorFullName}</AppText>}
+                                        action={<Badge label={logbook.data.operatorFullName} background={colors.primaryLight} color={colors.primary}/>}
                                     />
                                     <View style={styles.kpiGrid}>
                                         <View style={styles.kpiCell}>
-                                            <AppText variant="title">{formatNumber(logbook.data.totalFlightHours)}h</AppText>
-                                            <AppText variant="caption" numberOfLines={1}>{t('capabilities.logbook.totalHours')}</AppText>
+                                            <View style={styles.kpiHeader}>
+                                                <View style={styles.kpiIconWrap}>
+                                                    <Clock size={15} color={colors.primary}/>
+                                                </View>
+                                                <AppText variant="title">{formatNumber(logbook.data.totalFlightHours)}h</AppText>
+                                            </View>
+                                            <AppText variant="caption" style={styles.kpiLabel}>{t('capabilities.logbook.totalHours')}</AppText>
                                         </View>
                                         <View style={styles.kpiCell}>
-                                            <AppText variant="title">
-                                                {logbook.data.completedMissions}/{logbook.data.totalAssignedMissions}
-                                            </AppText>
-                                            <AppText variant="caption" numberOfLines={1}>{t('capabilities.logbook.completedMissions')}</AppText>
+                                            <View style={styles.kpiHeader}>
+                                                <View style={styles.kpiIconWrap}>
+                                                    <CheckCircle2 size={15} color={colors.primary}/>
+                                                </View>
+                                                <AppText variant="title">
+                                                    {logbook.data.completedMissions}/{logbook.data.totalAssignedMissions}
+                                                </AppText>
+                                            </View>
+                                            <AppText variant="caption" style={styles.kpiLabel}>{t('capabilities.logbook.completedMissions')}</AppText>
                                         </View>
                                         <View style={styles.kpiCell}>
-                                            <AppText variant="title">{formatNumber(logbook.data.preflightComplianceRate)}%</AppText>
-                                            <AppText variant="caption" numberOfLines={1}>{t('capabilities.logbook.preflightCompliance')}</AppText>
+                                            <View style={styles.kpiHeader}>
+                                                <View style={styles.kpiIconWrap}>
+                                                    <ShieldCheck size={15} color={colors.primary}/>
+                                                </View>
+                                                <AppText variant="title">{formatNumber(logbook.data.preflightComplianceRate)}%</AppText>
+                                            </View>
+                                            <AppText variant="caption" style={styles.kpiLabel}>{t('capabilities.logbook.preflightCompliance')}</AppText>
                                         </View>
                                         <View style={styles.kpiCell}>
-                                            <AppText variant="title">
-                                                {logbook.data.averageCustomerRating != null
-                                                    ? `★${logbook.data.averageCustomerRating.toFixed(1)}`
-                                                    : '—'}
-                                            </AppText>
-                                            <AppText variant="caption" numberOfLines={1}>{t('capabilities.logbook.customerRating')}</AppText>
+                                            <View style={styles.kpiHeader}>
+                                                <View style={styles.kpiIconWrap}>
+                                                    <Star size={15} color={colors.warning}/>
+                                                </View>
+                                                <AppText variant="title">
+                                                    {logbook.data.averageCustomerRating != null
+                                                        ? `★${logbook.data.averageCustomerRating.toFixed(1)}`
+                                                        : '—'}
+                                                </AppText>
+                                            </View>
+                                            <AppText variant="caption" style={styles.kpiLabel}>{t('capabilities.logbook.customerRating')}</AppText>
                                         </View>
                                     </View>
                                 </Card>
@@ -239,22 +259,31 @@ const styles = StyleSheet.create({
     screen: {flex: 1, backgroundColor: colors.canvas},
     centerState: {flex: 1, justifyContent: 'center'},
     list: {padding: spacing.lg, gap: spacing.md, flexGrow: 1, width: '100%', maxWidth: CONTENT_WIDTH, alignSelf: 'center'},
-    headerBlock: {gap: spacing.xs},
-    logbookCard: {padding: spacing.md, gap: spacing.xs},
-    kpiGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs},
+    headerBlock: {gap: spacing.md},
+    logbookCard: {padding: spacing.lg, gap: spacing.md},
+    kpiGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm},
     kpiCell: {
-        flexBasis: '22%',
-        minWidth: 68,
+        flexBasis: '46%',
+        minWidth: 140,
         flexGrow: 1,
         borderRadius: radius.control,
         borderWidth: 1,
         borderColor: colors.border,
         backgroundColor: colors.slateLight,
-        paddingVertical: spacing.xs,
-        paddingHorizontal: 6,
-        alignItems: 'center',
-        gap: 2,
+        paddingVertical: spacing.sm + 2,
+        paddingHorizontal: spacing.md,
+        gap: 4,
     },
+    kpiHeader: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
+    kpiIconWrap: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: colors.surface,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    kpiLabel: {color: colors.textSecondary, fontWeight: '500'},
     topRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing.sm},
     badges: {flexDirection: 'row', alignItems: 'center', gap: spacing.xs, flexWrap: 'wrap'},
     code: {fontWeight: '700', letterSpacing: 0.5},

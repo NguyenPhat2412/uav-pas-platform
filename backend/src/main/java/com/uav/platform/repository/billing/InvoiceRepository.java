@@ -31,6 +31,28 @@ public interface InvoiceRepository
 
     long countByUserId(Long userId);
 
+    boolean existsByMissionIdAndStatusIn(Long missionId, java.util.Collection<InvoiceStatus> statuses);
+
+    List<Invoice> findByMissionIdAndStatus(Long missionId, InvoiceStatus status);
+
+    /** Plan (non-mission) invoices still waiting for payment after their due date. */
+    List<Invoice> findByStatusAndDueDateBeforeAndMissionIsNull(
+            InvoiceStatus status, LocalDateTime dueBefore);
+
+    /**
+     * Every invoice that can move a statistic in [from, to): issued or paid in the window, plus all
+     * open ones (outstanding and aging are measured now, whatever the window).
+     */
+    @Query(
+            "select i from Invoice i join fetch i.user left join fetch i.plan"
+                    + " where (i.createdAt >= :from and i.createdAt < :to)"
+                    + " or (i.paidAt >= :from and i.paidAt < :to)"
+                    + " or i.status = :pending")
+    List<Invoice> findForStatistics(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            @Param("pending") InvoiceStatus pending);
+
     /**
      * One row per plan id; mission invoices count under null even when they carry the customer's
      * plan, so plan rows hold subscriptions only. Columns: pending

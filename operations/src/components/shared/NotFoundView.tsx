@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import {usePathname, useRouter} from 'next/navigation';
 import {ArrowLeft} from 'lucide-react';
+import {navigatePortalPath, resolvePortalHref} from '@/utils/auth/auth-entry';
 
 export type NotFoundLink = { href: string; label: string };
 /** Sends a portal URL home to that portal: the first entry whose prefix matches the path wins. */
@@ -28,12 +29,13 @@ export function NotFoundView({title, detail, homeHref, homeLabel, backLabel, lin
     const router = useRouter();
     const pathname = usePathname() ?? '';
     const portal = portalHomes.find(home => pathname.startsWith(home.prefix));
-    const home = portal ? {href: portal.href, label: portal.label} : {href: homeHref, label: homeLabel};
+    const rawHome = portal ? {href: portal.href, label: portal.label} : {href: homeHref, label: homeLabel};
+    const home = {href: resolvePortalHref(rawHome.href), label: rawHome.label};
     // Inside a portal the public suggestions would be off-topic.
     const shownLinks = portal ? [] : links;
     const goBack = () => {
         if (window.history.length > 1) router.back();
-        else router.push(home.href);
+        else navigatePortalPath(rawHome.href, href => router.push(href));
     };
     return (
         <main className={fullScreen
@@ -46,13 +48,13 @@ export function NotFoundView({title, detail, homeHref, homeLabel, backLabel, lin
                     <span>UAV<span className="text-primary">PAS</span></span>
                 </Link>
             )}
-            <div className="m-auto flex w-full max-w-xl flex-col items-center text-center">
+            <div className="m-auto flex w-full max-w-2xl flex-col items-center text-center">
                 <LostDrone/>
                 <p className="mt-6 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
                     <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true"/>
                     Lỗi 404
                 </p>
-                <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">{title}</h1>
+                <h1 className="mt-2 whitespace-nowrap text-[clamp(1.05rem,4.2vw,1.5rem)] font-semibold tracking-tight text-slate-900">{title}</h1>
                 <p className="mt-3 max-w-md text-sm leading-6 text-slate-600 text-balance">{detail}</p>
                 <div className="mt-7 flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row">
                     <Link href={home.href}

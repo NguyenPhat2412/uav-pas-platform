@@ -82,7 +82,7 @@ export function PublicSupportLauncher({
                         tabIndex={zaloHovered ? 0 : -1}
                         aria-hidden={!zaloHovered}
                         className={cn(
-                            'hidden sm:inline-flex items-center gap-1.5 rounded-full border border-[#0068FF]/30 bg-white/95 px-3 py-1.5 text-xs font-bold text-[#0068FF] shadow-md backdrop-blur-xs transition-all duration-300 ease-out',
+                            'hidden sm:inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-800 shadow-md backdrop-blur-xs transition-all duration-300 ease-out hover:border-primary/40 hover:text-primary',
                             zaloHovered
                                 ? 'pointer-events-auto translate-x-0 scale-100 opacity-100'
                                 : 'pointer-events-none translate-x-2 scale-95 opacity-0',
@@ -92,10 +92,6 @@ export function PublicSupportLauncher({
                     </a>
 
                     <div className="relative flex items-center justify-center">
-                        <span
-                            aria-hidden="true"
-                            className="pointer-events-none absolute -inset-1 rounded-full bg-[#0068FF]/25 animate-pulse motion-reduce:animate-none"
-                        />
                         <a
                             href={zaloUrl}
                             target="_blank"
@@ -104,9 +100,9 @@ export function PublicSupportLauncher({
                             onBlur={() => setZaloHovered(false)}
                             aria-label={`Liên hệ Zalo ${zaloDisplay}`}
                             title={`Chat Zalo · ${zaloDisplay}`}
-                            className="relative inline-flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-[#0068FF] text-white shadow-xl ring-2 ring-[#0068FF]/20 transition-transform duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#0068FF] focus:ring-offset-2"
+                            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 shadow-lg ring-1 ring-slate-900/5 transition-all duration-200 hover:scale-105 hover:border-primary/50 hover:text-primary active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                         >
-                            <ZaloBrandIcon className="h-7 w-7" />
+                            <ZaloBrandIcon className="h-6 w-6" />
                         </a>
                     </div>
                 </div>

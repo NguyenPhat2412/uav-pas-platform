@@ -774,13 +774,15 @@
         "OVERDUE": "期限超過",
         "PAID": "支払済み",
         "FAILED": "失敗",
-        "CANCELLED": "取消"
+        "CANCELLED": "取消",
+        "EXPIRED": "期限切れ"
       },
       "status": {
         "PENDING": "未払い",
         "PAID": "支払済み",
         "FAILED": "失敗",
-        "CANCELLED": "取消"
+        "CANCELLED": "取消",
+        "EXPIRED": "期限切れ"
       },
       "overdue": "期限超過",
       "create": "請求書を発行",

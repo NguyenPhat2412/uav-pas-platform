@@ -46,6 +46,9 @@ public class BillingAdminServiceImpl implements BillingAdminService {
     private final boolean providerEnabled;
     private final String ipnSecret;
 
+    @Autowired(required = false)
+    private com.uav.platform.service.audit.AuditLogService audit;
+
     public BillingAdminServiceImpl(PaymentTransactionRepository payments) {
         this(payments, null, null, null, false, "");
     }
@@ -220,7 +223,49 @@ public class BillingAdminServiceImpl implements BillingAdminService {
                 user != null ? user.getEmail() : null,
                 redact(t.getRawIpnCallback()),
                 t.getCreatedAt(),
-                t.getCompletedAt());
+                t.getCompletedAt(),
+                t.getResolution(),
+                t.getResolutionNote(),
+                t.getResolvedAt(),
+                t.getResolvedBy());
+    }
+
+    /** Transfers that reached the account but could not settle an invoice; only these are refunded. */
+    static final java.util.Set<String> REFUNDABLE = java.util.Set.of("MISMATCH", "UNMATCHED");
+
+    @Override
+    @Transactional
+    public PaymentTransactionAdminResponse refundTransaction(
+            Long id, String bankReference, String note, Authentication auth) {
+        PaymentTransaction txn =
+                payments.findById(id)
+                        .orElseThrow(() -> SystemException.notFound("Transaction not found"));
+        if (!REFUNDABLE.contains(txn.getStatus())) {
+            throw SystemException.conflict(
+                    "Only unmatched or mismatched transfers can be refunded",
+                    "TRANSACTION_NOT_REFUNDABLE");
+        }
+        if (txn.getResolution() != null) {
+            throw SystemException.conflict(
+                    "Transaction is already resolved", "TRANSACTION_ALREADY_RESOLVED");
+        }
+        String reference = bankReference.trim();
+        String detail = note == null || note.isBlank() ? reference : reference + " · " + note.trim();
+        txn.setResolution("REFUNDED");
+        txn.setResolutionNote(detail.length() > 500 ? detail.substring(0, 500) : detail);
+        txn.setResolvedAt(java.time.LocalDateTime.now());
+        txn.setResolvedBy(auth == null ? null : auth.getName());
+        payments.save(txn);
+        if (audit != null) {
+            audit.record(
+                    null,
+                    auth == null ? null : auth.getName(),
+                    com.uav.platform.enums.audit.AuditAction.UPDATE,
+                    "PAYMENT_TRANSACTION",
+                    id.toString(),
+                    "REFUNDED " + txn.getAmount() + " ref=" + reference);
+        }
+        return toResponse(txn);
     }
 
     /** Provider callbacks are kept for audit; credential-like fields are masked before display. */

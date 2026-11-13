@@ -3,6 +3,7 @@ package com.uav.platform.controller.billing;
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
 import com.uav.platform.config.routes.ApiRoutes;
+import com.uav.platform.dto.request.billing.CancelInvoiceRequest;
 import com.uav.platform.dto.request.billing.CreateInvoiceRequest;
 import com.uav.platform.dto.request.billing.PayInvoiceRequest;
 import com.uav.platform.dto.request.billing.UpdateQuotaRequest;
@@ -112,5 +113,15 @@ public class BillingController {
             @RequestBody(required = false) PayInvoiceRequest request,
             Authentication auth) {
         return ResponseEntity.ok(billingService.payInvoice(id, request, auth));
+    }
+
+    @PostMapping(ApiRoutes.Billing.CANCEL_INVOICE)
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<InvoiceResponse> cancelInvoice(
+            @PathVariable Long id,
+            @Valid @RequestBody(required = false) CancelInvoiceRequest request,
+            Authentication auth) {
+        return ResponseEntity.ok(
+                billingService.cancelInvoice(id, request == null ? null : request.reason(), auth));
     }
 }

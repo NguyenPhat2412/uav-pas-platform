@@ -63,7 +63,8 @@ export type OperationsRealtimeFrame =
       }
     | { type: 'SUPPORT_SUMMARY_UPDATED'; timestamp: string; summary: OpsSupportSummary }
     | { type: 'SUPPORT_THREAD_DELETED'; timestamp: string; threadId: number; summary?: OpsSupportSummary }
-    | { type: 'SUPPORT_VISITOR_TYPING'; timestamp: string; threadId: number; senderName?: string; typing: boolean };
+    | { type: 'SUPPORT_VISITOR_TYPING'; timestamp: string; threadId: number; senderName?: string; typing: boolean }
+    | { type: 'NOTIFICATION_CREATED'; timestamp: string; notification: { id: number; title: string }; unreadCount: number };
 
 type FrameListener = (frame: OperationsRealtimeFrame) => void;
 type StatusListener = (connected: boolean) => void;

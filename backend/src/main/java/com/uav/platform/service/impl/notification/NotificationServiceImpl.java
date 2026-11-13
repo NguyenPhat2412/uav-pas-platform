@@ -15,6 +15,7 @@ import com.uav.platform.repository.notification.NotificationRepository;
 import com.uav.platform.repository.notification.PushDeviceTokenRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.websocket.RealtimeEventBroadcaster;
 
 import lombok.RequiredArgsConstructor;
 
@@ -41,6 +42,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired(required = false)
     private NotificationDeliveryOperations deliveryOperations;
+
+    @Autowired(required = false)
+    private RealtimeEventBroadcaster realtime;
 
     public void setPushTokenRepository(PushDeviceTokenRepository pushTokenRepository) {
         this.pushTokenRepository = pushTokenRepository;
@@ -133,7 +137,14 @@ public class NotificationServiceImpl implements NotificationService {
                             saved.getReferenceType(),
                             saved.getReferenceId()));
         }
-        return notificationMapper.toResponse(saved);
+        NotificationResponse response = notificationMapper.toResponse(saved);
+        if (realtime != null) {
+            realtime.publishNotificationCreated(
+                    user.getId(),
+                    response,
+                    notificationRepository.countByUserIdAndIsReadFalse(user.getId()));
+        }
+        return response;
     }
 
     @Override

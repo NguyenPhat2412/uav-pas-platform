@@ -24,6 +24,8 @@ export const billingAdminService = {
             invoiceId: filters.invoiceId?.trim(),
             q: filters.q?.trim(),
         })}`, {signal}),
+    refundTransaction: (id: number, body: {bankReference: string; note?: string}) =>
+        apiClient.post<AdminPaymentTransaction>(`${BASE}/transactions/${id}/refund`, body),
     paymentGateway: (signal?: AbortSignal) =>
         apiClient.get<PaymentGatewayConfig>(`${BASE}/payment-gateway`, {signal}),
     updatePaymentGateway: (body: PaymentGatewayConfigInput) =>

@@ -7,6 +7,7 @@ import {useI18n} from '@/providers/I18nContext';
 import {Avatar} from '@/components/shared/Avatar';
 import {displayLabel} from '@/lib/presentation';
 import {canUsePortal} from '@/utils/auth/portal';
+import {resolvePortalHref} from '@/utils/auth/auth-entry';
 import {useDropdownMenu} from '@/hooks/useDropdownMenu';
 import {cn} from '@/lib/utils';
 
@@ -70,37 +71,37 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
                         </Link>
                     )}
                     {portal === 'admin' && canUsePortal(user?.role, 'operations') && (
-                        <Link
+                        <a
                             role="menuitem"
-                            href="/operations/overview"
+                            href={resolvePortalHref('/operations/overview')}
                             onClick={close}
                             className="flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                         >
                             <Radar size={16} aria-hidden="true"/>
                             {t('shell.portalSwitcher.operationsPortal')}
-                        </Link>
+                        </a>
                     )}
                     {portal === 'operations' && canUsePortal(user?.role, 'admin') && (
-                        <Link
+                        <a
                             role="menuitem"
-                            href="/admin/dashboard"
+                            href={resolvePortalHref('/admin/dashboard')}
                             onClick={close}
                             className="flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                         >
                             <ShieldCheck size={16} aria-hidden="true"/>
                             {t('shell.portalSwitcher.adminPortal')}
-                        </Link>
+                        </a>
                     )}
                     {canUsePortal(user?.role, 'customer') && (
-                        <Link
+                        <a
                             role="menuitem"
-                            href="/customer/dashboard"
+                            href={resolvePortalHref('/customer/dashboard')}
                             onClick={close}
                             className="flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                         >
                             <Briefcase size={16} aria-hidden="true"/>
                             {t('shell.portalSwitcher.customerPortal')}
-                        </Link>
+                        </a>
                     )}
                     {portal === 'admin' && can('USER_PERMISSION_MANAGE') && (
                         <Link

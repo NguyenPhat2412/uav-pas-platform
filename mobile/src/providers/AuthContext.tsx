@@ -1,5 +1,6 @@
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
+import * as SplashScreen from 'expo-splash-screen';
 import {queryKeys} from '@/shared/lib/query';
 import {canUsePortal} from '@/shared/utils/auth/portal';
 import type {AuthResponse, UserResponse} from '@/shared/types/auth/auth.types';
@@ -14,6 +15,7 @@ import {
     savePushEndpoint,
     type PortalPreference,
 } from '@/lib/storage/preferences';
+import {clearQueryCache, persistQueryCache, restoreQueryCache} from '@/lib/storage/query-cache';
 import {resolveMobilePortal} from '@/utils/operations/portal-routing';
 
 /** loading: reading the Keychain / asking /auth/me. unreachable: a session exists but the API could not be reached. */
@@ -64,6 +66,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
     });
 
     const endSession = useCallback(() => {
+        void clearQueryCache(identity.current);
         identity.current = null;
         void client.cancelQueries();
         client.clear();
@@ -88,6 +91,8 @@ export function AuthProvider({children}: { children: ReactNode }) {
                 const me = await authService.me();
                 if (!active) return;
                 identity.current = me.id;
+                await restoreQueryCache(client, me.id);
+                if (!active) return;
                 setUser(me);
                 setStatus('signed-in');
             } catch (error) {
@@ -101,14 +106,31 @@ export function AuthProvider({children}: { children: ReactNode }) {
         return () => {
             active = false;
         };
-    }, [attempt]);
+    }, [attempt, client]);
+
+    // The native splash stays up until we know where to send the user; on a slow network it gives way after 1.5 s to
+    // AppSplash's 3D loader so the launch never looks frozen.
+    useEffect(() => {
+        const hide = () => void SplashScreen.hideAsync().catch(() => undefined);
+        if (status !== 'loading') return hide();
+        const timer = setTimeout(hide, 1500);
+        return () => clearTimeout(timer);
+    }, [status]);
+
+    useEffect(() => {
+        if (status !== 'signed-in' || user?.id == null) return;
+        return persistQueryCache(client, user.id);
+    }, [status, user?.id, client]);
 
     const completeAuth = useCallback(async (response: AuthResponse) => {
         if (response.mfaRequired || !response.accessToken || !response.refreshToken || !response.user) {
             throw new Error('Sign-in is not finished yet');
         }
         // Another account's cached data must never show for this one.
-        if (identity.current !== response.user.id) client.clear();
+        if (identity.current !== response.user.id) {
+            client.clear();
+            await restoreQueryCache(client, response.user.id);
+        }
         const portalPref = await readSavedPortal();
         setSavedPortal(portalPref);
         await sessionStore.save({accessToken: response.accessToken, refreshToken: response.refreshToken});

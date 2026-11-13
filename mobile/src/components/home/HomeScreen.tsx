@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
 import {Bell, CalendarCheck, Clock3, CreditCard, FilePenLine, GraduationCap, Layers, Plane, Plus, Receipt, type LucideIcon} from 'lucide-react-native';
@@ -59,12 +59,19 @@ export function HomeScreen() {
     const {can} = useAuth();
     const router = useRouter();
     const analytics = useCustomerAnalytics();
+    const [refreshing, setRefreshing] = useState(false);
     const {point} = useDeviceLocation();
     const {unreadCount} = useNotifications();
     const data = analytics.data;
 
     return (
-        <Screen onRefresh={() => void analytics.refetch()} refreshing={analytics.isRefetching}>
+        <Screen
+            onRefresh={() => {
+                setRefreshing(true);
+                void analytics.refetch().finally(() => setRefreshing(false));
+            }}
+            refreshing={refreshing}
+        >
             <Stack.Screen options={{
                 headerTitle: () => <Greeting/>,
                 headerRight: () => <HeaderIconButton icon={Bell} label={t('nav.notifications')} count={unreadCount}

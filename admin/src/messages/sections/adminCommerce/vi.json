@@ -10,12 +10,15 @@
     "txStatus": {
       "SUCCESS": "Thành công",
       "PENDING": "Đang chờ",
-      "FAILED": "Thất bại"
+      "FAILED": "Thất bại",
+      "MISMATCH": "Lệch số tiền",
+      "UNMATCHED": "Không khớp hóa đơn"
     },
     "gateway": {
       "VIETQR_NAPAS_247": "VietQR NAPAS 247 (IPN)",
       "VIETQR_NAPAS": "VietQR NAPAS",
-      "BANK_TRANSFER_MANUAL": "Chuyển khoản – xác nhận thủ công"
+      "BANK_TRANSFER_MANUAL": "Chuyển khoản – xác nhận thủ công",
+      "VIETQR_SEPAY_AUTO": "VietQR – SePay tự động"
     },
     "tx": {
       "filters": "Bộ lọc giao dịch",
@@ -122,6 +125,74 @@
       "emergencyContactName": "Người liên hệ khẩn cấp",
       "emergencyContactPhone": "SĐT liên hệ khẩn cấp",
       "updatedAt": "Cập nhật lần cuối: {date}"
+    },
+    "refund": {
+      "action": "Đánh dấu đã hoàn tiền",
+      "title": "Hoàn tiền giao dịch",
+      "reference": "Mã giao dịch hoàn tiền",
+      "referencePlaceholder": "VD: FT26318…",
+      "note": "Ghi chú",
+      "submit": "Xác nhận đã hoàn",
+      "done": "Đã ghi nhận hoàn tiền",
+      "refunded": "Đã hoàn tiền",
+      "resolvedBy": "Hoàn bởi {user} lúc {time}",
+      "hint": "Chỉ ghi nhận sau khi đã chuyển trả tiền cho khách qua ngân hàng."
+    },
+    "payments": {
+      "title": "Thanh toán & chi tiêu",
+      "anchor": "Thanh toán",
+      "range": "{from} – {to}",
+      "kpi": {
+        "collected": "Đã thu",
+        "issued": "Đã phát hành",
+        "collectionRate": "Tỷ lệ thu",
+        "avgDaysToPay": "Ngày thu TB",
+        "outstanding": "Công nợ",
+        "overdue": "Quá hạn",
+        "refunded": "Đã hoàn",
+        "payingCustomers": "Khách trả tiền",
+        "averageInvoice": "Hóa đơn TB"
+      },
+      "invoices": "{count} hóa đơn",
+      "days": "{value} ngày",
+      "trendTitle": "Dòng tiền 12 tháng",
+      "issuedSeries": "Phát hành",
+      "collectedSeries": "Đã thu",
+      "refundedSeries": "Hoàn tiền",
+      "gatewayTitle": "Theo kênh thanh toán",
+      "sourceTitle": "Theo nguồn thu",
+      "planTitle": "Theo gói",
+      "statusTitle": "Hóa đơn phát hành theo trạng thái",
+      "agingTitle": "Tuổi công nợ",
+      "reviewTitle": "Giao dịch cần xử lý",
+      "topTitle": "Khách chi tiêu nhiều nhất",
+      "source": {
+        "PLAN": "Gói dịch vụ",
+        "MISSION": "Nhiệm vụ",
+        "OTHER": "Khác"
+      },
+      "aging": {
+        "NOT_DUE": "Chưa đến hạn",
+        "D1_7": "Quá 1–7 ngày",
+        "D8_30": "Quá 8–30 ngày",
+        "D31_PLUS": "Quá trên 30 ngày"
+      },
+      "review": {
+        "pending": "Chờ hoàn tiền",
+        "mismatch": "Lệch số tiền",
+        "unmatched": "Hóa đơn đã đóng",
+        "refunded": "Đã hoàn trong kỳ",
+        "open": "Mở danh sách giao dịch"
+      },
+      "col": {
+        "customer": "Khách hàng",
+        "paid": "Đã trả",
+        "count": "Số HĐ",
+        "outstanding": "Còn nợ"
+      },
+      "empty": "Chưa có dữ liệu trong khoảng này.",
+      "noReview": "Không có giao dịch nào cần xử lý.",
+      "definitions": "Đã thu: hóa đơn thanh toán trong kỳ. Tỷ lệ thu: phần đã thu trên tổng hóa đơn phát hành trong kỳ (không tính hóa đơn đã hủy). Công nợ và tuổi nợ tính tại thời điểm hiện tại."
     }
   }
 }

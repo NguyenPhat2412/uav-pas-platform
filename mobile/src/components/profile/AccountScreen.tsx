@@ -15,7 +15,6 @@ import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {displayLabel} from '@/shared/lib/presentation';
 import {canUsePortal} from '@/shared/utils/auth/portal';
-import {API_BASE_URL} from '@/config/env';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export function AccountRow({icon: Icon, label, onPress, danger = false, right}: {
@@ -133,7 +132,7 @@ export function AccountScreen() {
             <AccountFooterActions/>
 
             <AppText variant="caption" style={styles.version}>
-                NguyenPhat2412 · {API_BASE_URL.replace(/^https?:\/\//, '')}
+                NguyenPhat2412 · UAV PAS
             </AppText>
         </Screen>
     );

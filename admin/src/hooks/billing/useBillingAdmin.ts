@@ -136,6 +136,7 @@ export function useAdminInvoices(page: number, filters: InvoiceFilters) {
     const {user} = useAuth();
     return useQuery({
         queryKey: billingKeys.invoices(user?.id, filters, page),
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => invoicesService.page(page, filters, signal),
     });
 }
@@ -174,6 +175,7 @@ export function useBillingOutbox(page: number, status: string | undefined) {
     const {user} = useAuth();
     return useQuery({
         queryKey: billingKeys.outbox(user?.id, status ?? 'ALL', page),
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => billingAdminService.outbox(page, status, signal),
     });
 }
@@ -192,6 +194,7 @@ export function useBillingTransactions(page: number, filters: TransactionFilters
     const {user} = useAuth();
     return useQuery({
         queryKey: billingKeys.transactions(user?.id, filters, page),
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => billingAdminService.transactions(page, filters, signal),
     });
 }
@@ -212,5 +215,19 @@ export function useDownloadAdminInvoiceReceipt(options?: MutationOptions<Blob, {
         mutationFn: ({id}) => billingAdminService.downloadReceipt(id),
         onSuccess: afterSuccess(options, (blob, {code}) => triggerReceiptDownload(blob, code)),
         retry: false,
+    });
+}
+
+/** Records that an unmatched or mismatched transfer was sent back to the customer. */
+export function useRefundTransaction() {
+    const client = useQueryClient();
+    const {user} = useAuth();
+    return useMutation({
+        mutationFn: ({id, bankReference, note}: {id: number; bankReference: string; note?: string}) =>
+            billingAdminService.refundTransaction(id, {bankReference, note}),
+        onSuccess: () => {
+            void client.invalidateQueries({queryKey: billingKeys.admin(user?.id)});
+            void client.invalidateQueries({predicate: q => q.queryKey.includes('payments')});
+        },
     });
 }

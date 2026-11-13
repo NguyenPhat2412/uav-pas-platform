@@ -1,3 +1,4 @@
+import {SkeletonList} from './Skeleton';
 import React, {type ComponentType, createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {
     ActivityIndicator,
@@ -19,11 +20,14 @@ import {
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets, type Edge} from 'react-native-safe-area-context';
 import {AlertTriangle, Eye, EyeOff, Inbox, type LucideIcon} from 'lucide-react-native';
+import {GlassSurface, liquidGlass} from './Glass';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {OfflineBanner} from '@/components/shared/OfflineBanner';
 import {useI18n} from '@/providers/I18nContext';
 import {useTextScale} from '@/providers/TextSizeContext';
+
+export {GlassSurface, liquidGlass};
 
 /** Widest a content column grows (phones use the full width; iPad and landscape centre it). */
 export const CONTENT_WIDTH = 640;
@@ -55,14 +59,14 @@ export function ScaledText({style, ...props}: TextProps) {
     return <Text {...props} style={[style, scaledFont(style, scale)]}/>;
 }
 
-export function AppText({variant = 'body', style, children, numberOfLines, selectable}: {
-    variant?: TextVariant;
-    style?: StyleProp<TextStyle>;
-    children: ReactNode;
-    numberOfLines?: number;
-    selectable?: boolean;
+export function AppText({variant = 'body', style, children, numberOfLines, selectable, adjustsFontSizeToFit, minimumFontScale}: {
+    variant?: TextVariant; style?: StyleProp<TextStyle>; children: ReactNode;
+    numberOfLines?: number; selectable?: boolean; adjustsFontSizeToFit?: boolean; minimumFontScale?: number;
 }) {
-    return <ScaledText style={[TEXT[variant], style]} numberOfLines={numberOfLines} selectable={selectable}>{children}</ScaledText>;
+    return (
+        <ScaledText style={[TEXT[variant], style]} numberOfLines={numberOfLines} selectable={selectable}
+                    adjustsFontSizeToFit={adjustsFontSizeToFit} minimumFontScale={minimumFontScale}>{children}</ScaledText>
+    );
 }
 
 /** Native stack screen with pull-to-refresh, centred max-width column, and keyboard auto-reveal. */
@@ -193,6 +197,7 @@ export function TextField({label, error, hint, style, ...input}: TextInputProps 
     const screen = useContext(KeyboardReveal);
     const secure = !!input.secureTextEntry;
     const [hidden, setHidden] = useState(true);
+    const [focused, setFocused] = useState(false);
     const EyeIcon = hidden ? Eye : EyeOff;
     return (
         <View style={[styles.field, style as StyleProp<ViewStyle>]}>
@@ -204,11 +209,16 @@ export function TextField({label, error, hint, style, ...input}: TextInputProps 
                     {...input}
                     secureTextEntry={secure && hidden}
                     onFocus={event => {
+                        setFocused(true);
                         input.onFocus?.(event);
                         screen?.reveal();
                     }}
+                    onBlur={event => {
+                        setFocused(false);
+                        input.onBlur?.(event);
+                    }}
                     style={[styles.input, scaledFont(styles.input, scale), input.multiline && styles.multiline,
-                        secure && styles.inputSecure, !!error && styles.inputError]}
+                        secure && styles.inputSecure, focused && styles.inputFocused, !!error && styles.inputError]}
                 />
                 {secure && (
                     <Pressable onPress={() => setHidden(value => !value)} style={styles.eye} accessibilityRole="button"
@@ -246,13 +256,11 @@ export function SectionTitle({title, action}: { title: string; action?: ReactNod
     );
 }
 
+export {Skeleton, SkeletonList} from './Skeleton';
+
+/** First-load placeholder: card-shaped skeletons instead of a spinner; the label stays for screen readers. */
 export function LoadingState({label}: { label?: string }) {
-    return (
-        <View style={styles.state} accessibilityLiveRegion="polite">
-            <ActivityIndicator color={colors.primary}/>
-            {label ? <AppText variant="small">{label}</AppText> : null}
-        </View>
-    );
+    return <SkeletonList label={label}/>;
 }
 
 export function ErrorState({message, retryLabel, onRetry}: { message: string; retryLabel?: string; onRetry?: () => void }) {
@@ -283,9 +291,12 @@ export function ChipGroup<T extends string>({options, value, onChange, wrap = fa
         const active = option.value === value;
         return (
             <Pressable key={option.value} onPress={() => onChange(option.value)} accessibilityRole="button"
-                       accessibilityState={{selected: active}}
-                       style={[styles.chip, wrap && styles.chipWrapItem, active && styles.chipActive]}>
-                <ScaledText numberOfLines={1} style={[styles.chipText, active && styles.chipTextActive]}>{option.label}</ScaledText>
+                       accessibilityState={{selected: active}}>
+                <GlassSurface interactive tint={active ? colors.slateDark : colors.slateLight}
+                              style={[styles.chip, wrap && styles.chipWrapItem, liquidGlass && styles.chipGlass]}
+                              fallback={active ? styles.chipActive : undefined}>
+                    <ScaledText numberOfLines={1} style={[styles.chipText, active && styles.chipTextActive]}>{option.label}</ScaledText>
+                </GlassSurface>
             </Pressable>
         );
     });
@@ -315,9 +326,10 @@ export const styles = StyleSheet.create({
     field: {gap: 6},
     label: {fontSize: font.small, fontWeight: '600', color: colors.text},
     input: {
-        minHeight: 48, borderRadius: radius.control, borderWidth: 1, borderColor: colors.primary, backgroundColor: colors.surface,
+        minHeight: 48, borderRadius: radius.control, borderWidth: 1, borderColor: colors.inputBorder, backgroundColor: colors.surface,
         paddingHorizontal: spacing.md, fontSize: font.body, color: colors.text,
     },
+    inputFocused: {borderColor: colors.primary},
     inputSecure: {paddingRight: 48},
     eye: {position: 'absolute', right: 0, top: 0, bottom: 0, width: 48, alignItems: 'center', justifyContent: 'center'},
     multiline: {minHeight: 96, paddingTop: spacing.md, textAlignVertical: 'top'},
@@ -341,6 +353,8 @@ export const styles = StyleSheet.create({
     },
     chipWrapItem: {paddingHorizontal: spacing.md, paddingVertical: 6},
     chipActive: {backgroundColor: colors.slateDark, borderColor: colors.slateDark},
+    // Glass draws its own edge and fill; the solid chip border would sit on top of it.
+    chipGlass: {borderWidth: 0, backgroundColor: 'transparent', borderRadius: 999},
     chipText: {fontSize: font.small, color: colors.text, fontWeight: '500', flexShrink: 1},
     chipTextActive: {color: colors.white},
 });

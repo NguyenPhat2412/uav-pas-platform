@@ -23,6 +23,7 @@ public class AuthCookieHelper {
 
     public static final String ACCESS_TOKEN_COOKIE = "uav_access_token";
     public static final String REFRESH_TOKEN_COOKIE = "uav_refresh_token";
+    public static final String SESSION_PRESENCE_COOKIE = "uav_session_present";
 
     private final boolean secure;
     private final String sameSite;
@@ -97,6 +98,36 @@ public class AuthCookieHelper {
         return builder.build();
     }
 
+    public ResponseCookie createSessionPresenceCookie(long maxAgeSeconds) {
+        ResponseCookie.ResponseCookieBuilder builder =
+                ResponseCookie.from(SESSION_PRESENCE_COOKIE, "1")
+                        .httpOnly(false)
+                        .secure(secure)
+                        .sameSite(sameSite)
+                        .path("/")
+                        .maxAge(Duration.ofSeconds(maxAgeSeconds));
+
+        if (domain != null && !domain.isBlank()) {
+            builder.domain(domain.trim());
+        }
+        return builder.build();
+    }
+
+    public ResponseCookie clearSessionPresenceCookie() {
+        ResponseCookie.ResponseCookieBuilder builder =
+                ResponseCookie.from(SESSION_PRESENCE_COOKIE, "")
+                        .httpOnly(false)
+                        .secure(secure)
+                        .sameSite(sameSite)
+                        .path("/")
+                        .maxAge(0);
+
+        if (domain != null && !domain.isBlank()) {
+            builder.domain(domain.trim());
+        }
+        return builder.build();
+    }
+
     public String resolveAccessToken(HttpServletRequest request) {
         if (request == null || request.getCookies() == null) {
             return null;
@@ -129,6 +160,9 @@ public class AuthCookieHelper {
                 builder.header(
                         HttpHeaders.SET_COOKIE,
                         helper.createAccessTokenCookie(response.accessToken(), 86400).toString());
+                builder.header(
+                        HttpHeaders.SET_COOKIE,
+                        helper.createSessionPresenceCookie(604800).toString());
             }
             if (response.refreshToken() != null) {
                 builder.header(
@@ -175,6 +209,7 @@ public class AuthCookieHelper {
         if (helper != null) {
             builder.header(HttpHeaders.SET_COOKIE, helper.clearAccessTokenCookie().toString());
             builder.header(HttpHeaders.SET_COOKIE, helper.clearRefreshTokenCookie().toString());
+            builder.header(HttpHeaders.SET_COOKIE, helper.clearSessionPresenceCookie().toString());
         }
         return builder.body(new MessageResponse(message));
     }

@@ -266,6 +266,9 @@ function Profile() {
             <div className="bg-white [&>*]:rounded-none [&>*]:border-0">
                 <AccountDeletionCard/>
             </div>
+            <p className="m-0 bg-white py-3 text-center text-xs text-slate-400">
+                NguyenPhat2412 · UAV PAS
+            </p>
         </div>
     </>;
 }

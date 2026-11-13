@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
-import {CheckCircle2, CreditCard, Lock, ShieldAlert, Unlock, Users} from 'lucide-react-native';
+import {CheckCircle2, CreditCard, Lock, Unlock, Users} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, ChipGroup, EmptyState, ErrorState, LoadingState, Screen, SectionTitle, TextField} from '@/components/ui';
+import {AppForbiddenView} from '@/components/shared/AppStatusViews';
 import {
     AdminAirspaceTabContent,
     AdminSlaTabContent,
@@ -39,6 +40,7 @@ export function AdminQuickActionsScreen() {
     );
     const [keyword, setKeyword] = useState('');
     const [bankRefs, setBankRefs] = useState<Record<number, string>>({});
+    const [refreshing, setRefreshing] = useState(false);
 
     const usersQuery = useAdminUsers(keyword);
     const invoicesQuery = useAdminPendingInvoices();
@@ -49,7 +51,7 @@ export function AdminQuickActionsScreen() {
     if (!canUsers && !canAirspace && !canBilling && !canSla) {
         return (
             <Screen>
-                <EmptyState icon={ShieldAlert} message={t('mobile.adminQuick.noPermission')}/>
+                <AppForbiddenView detail={t('mobile.adminQuick.noPermission')} fallbackHref="/operations/missions"/>
             </Screen>
         );
     }
@@ -109,40 +111,40 @@ export function AdminQuickActionsScreen() {
         );
     };
 
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await Promise.all([
+                canUsers ? usersQuery.refetch() : Promise.resolve(),
+                canBilling ? invoicesQuery.refetch() : Promise.resolve(),
+                canAirspace ? airspaceQuery.refetch() : Promise.resolve(),
+                canSla ? slaQuery.refetch() : Promise.resolve(),
+            ]);
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
     return (
         <Screen
-            onRefresh={() =>
-                void Promise.all([
-                    canUsers ? usersQuery.refetch() : Promise.resolve(),
-                    canBilling ? invoicesQuery.refetch() : Promise.resolve(),
-                    canAirspace ? airspaceQuery.refetch() : Promise.resolve(),
-                    canSla ? slaQuery.refetch() : Promise.resolve(),
-                ])
-            }
-            refreshing={
-                usersQuery.isRefetching ||
-                invoicesQuery.isRefetching ||
-                airspaceQuery.isRefetching ||
-                slaQuery.isRefetching
-            }>
+            onRefresh={() => void handleRefresh()}
+            refreshing={refreshing}>
             <Card>
                 <ChipGroup<AdminTab> options={tabs} value={effectiveTab} onChange={setActiveTab}/>
             </Card>
 
             {effectiveTab === 'users' && canUsers && (
                 <>
-                    <Card>
-                        <TextField
-                            label={t('mobile.adminQuick.tabs.users')}
-                            placeholder={t('mobile.adminQuick.users.searchPlaceholder')}
-                            value={keyword}
-                            onChangeText={setKeyword}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                        />
-                    </Card>
+                    <TextField
+                        placeholder={t('mobile.adminQuick.users.searchPlaceholder')}
+                        value={keyword}
+                        onChangeText={setKeyword}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        clearButtonMode="while-editing"
+                    />
 
-                    {usersQuery.isPending ? (
+                    {!usersQuery.data && usersQuery.isPending ? (
                         <LoadingState/>
                     ) : usersQuery.isError ? (
                         <ErrorState

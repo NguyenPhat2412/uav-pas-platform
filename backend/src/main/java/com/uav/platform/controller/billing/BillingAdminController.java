@@ -29,6 +29,7 @@ import java.time.LocalDate;
 public class BillingAdminController {
     private final BillingAdminService billingAdmin;
     private final FinancialOutboxAdminService outbox;
+    private final com.uav.platform.service.billing.PaymentStatisticsService statistics;
 
     @GetMapping(ApiRoutes.Billing.ADMIN_TRANSACTIONS)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
@@ -46,6 +47,28 @@ public class BillingAdminController {
         return ResponseEntity.ok(
                 billingAdmin.listTransactions(
                         status, gateway, from, to, invoiceId, q, Pageables.of(page, size)));
+    }
+
+    @PostMapping(ApiRoutes.Billing.ADMIN_TRANSACTION_REFUND)
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<PaymentTransactionAdminResponse> refund(
+            @PathVariable Long id,
+            @Valid @RequestBody com.uav.platform.dto.request.billing.RefundTransactionRequest request,
+            Authentication auth) {
+        return ResponseEntity.ok(
+                billingAdmin.refundTransaction(id, request.bankReference(), request.note(), auth));
+    }
+
+    /** Payment, revenue and spending figures for the admin dashboard; dates are inclusive. */
+    @GetMapping(ApiRoutes.Billing.ADMIN_STATISTICS)
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<com.uav.platform.dto.response.billing.PaymentStatisticsResponse>
+            statistics(
+                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                            LocalDate from,
+                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                            LocalDate to) {
+        return ResponseEntity.ok(statistics.statistics(from, to));
     }
 
     @GetMapping(ApiRoutes.Billing.ADMIN_PAYMENT_GATEWAY)

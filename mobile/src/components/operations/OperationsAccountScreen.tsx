@@ -27,7 +27,6 @@ import {useI18n} from '@/providers/I18nContext';
 import {TEXT_SIZES, useTextSize, type TextSize} from '@/providers/TextSizeContext';
 import {localeMetaMap, supportedLocales, type SupportedLocale} from '@/shared/i18n/config';
 import {displayLabel} from '@/shared/lib/presentation';
-import {API_BASE_URL} from '@/config/env';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 const glass = Platform.OS === 'ios' && isLiquidGlassAvailable() && isGlassEffectAPIAvailable();
@@ -216,7 +215,7 @@ export function OperationsAccountScreen() {
             <AccountFooterActions/>
 
             <AppText variant="caption" style={styles.version}>
-                NguyenPhat2412 · {API_BASE_URL.replace(/^https?:\/\//, '')}
+                NguyenPhat2412 · UAV PAS
             </AppText>
         </Screen>
     );

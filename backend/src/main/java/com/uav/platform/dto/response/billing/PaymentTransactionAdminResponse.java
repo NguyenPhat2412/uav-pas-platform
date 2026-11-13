@@ -22,4 +22,8 @@ public record PaymentTransactionAdminResponse(
         String customerEmail,
         String rawCallback,
         LocalDateTime createdAt,
-        LocalDateTime completedAt) {}
+        LocalDateTime completedAt,
+        String resolution,
+        String resolutionNote,
+        LocalDateTime resolvedAt,
+        String resolvedBy) {}

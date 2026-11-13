@@ -58,6 +58,19 @@ public class PaymentTransaction {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
+    /** How an admin closed a transfer that could not settle its invoice: REFUNDED or ACCEPTED. */
+    @Column(length = 30)
+    private String resolution;
+
+    @Column(name = "resolution_note", length = 500)
+    private String resolutionNote;
+
+    @Column(name = "resolved_at")
+    private LocalDateTime resolvedAt;
+
+    @Column(name = "resolved_by", length = 100)
+    private String resolvedBy;
+
     public PaymentTransaction() {}
 
     public PaymentTransaction(

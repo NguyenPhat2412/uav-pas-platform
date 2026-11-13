@@ -367,7 +367,8 @@
             "PAID": "支払い済み",
             "PENDING": "支払い待ち",
             "FAILED": "支払い失敗",
-            "CANCELLED": "キャンセル済み"
+            "CANCELLED": "キャンセル済み",
+            "EXPIRED": "期限切れ"
         },
         "loading": "請求データを読み込み中…",
         "loadError": "請求データを読み込めませんでした。",

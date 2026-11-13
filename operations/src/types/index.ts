@@ -116,7 +116,7 @@ export interface AuditLog {
     createdAt: string;
 }
 
-export type InvoiceStatus = 'PENDING' | 'PAID' | 'FAILED' | 'CANCELLED';
+export type InvoiceStatus = 'PENDING' | 'PAID' | 'FAILED' | 'CANCELLED' | 'EXPIRED';
 
 export interface ServicePlan {
     id: number;

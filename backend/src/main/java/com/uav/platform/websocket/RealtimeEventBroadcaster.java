@@ -231,6 +231,27 @@ public class RealtimeEventBroadcaster {
                 });
     }
 
+    /**
+     * A new in-app notification, pushed after commit to the recipient's own sockets only (web tabs
+     * and phones signed in as that user), with the fresh unread count for the bell.
+     */
+    public void publishNotificationCreated(
+            Long recipientUserId, Object notification, long unreadCount) {
+        if (recipientUserId == null) {
+            return;
+        }
+        runAfterCommit(
+                () -> {
+                    Map<String, Object> frame = new LinkedHashMap<>();
+                    frame.put("type", "NOTIFICATION_CREATED");
+                    frame.put("timestamp", Instant.now().toString());
+                    frame.put("notification", notification);
+                    frame.put("unreadCount", unreadCount);
+                    broadcastMatching(
+                            slot -> recipientUserId.equals(slot.principal().userId()), frame);
+                });
+    }
+
     private void runAfterCommit(Runnable action) {
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             TransactionSynchronizationManager.registerSynchronization(

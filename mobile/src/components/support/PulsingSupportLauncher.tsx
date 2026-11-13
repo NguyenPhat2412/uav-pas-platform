@@ -18,15 +18,13 @@ const OPERATIONS_TABS = [
     '/operations/sar',
     '/operations/fleet',
     '/operations/weather',
-    '/operations/account',
 ];
 
 const glass = Platform.OS === 'ios' && isLiquidGlassAvailable() && isGlassEffectAPIAvailable();
 const SIZE = 46;
-// On tab screens: level with AssistantLauncher (74 above the tab bar) and to its left (16 + 46 + 10), so the pair
-// covers one short strip instead of a tall column of the list. Flush bottom-right on auth screens.
+// On tab screens: level with AssistantLauncher (74 above the tab bar) and cleanly separated to its left so the pulse ring never overlaps.
 const ABOVE_TAB_BAR = 74;
-const BESIDE_ASSISTANT = 72;
+const BESIDE_ASSISTANT = 82;
 const AUTH_BOTTOM = 18;
 
 /**

@@ -214,6 +214,7 @@ export const API_ROUTES = {
         subscriptions: '/api/v1/billing/subscriptions',
         invoices: '/api/v1/billing/invoices',
         invoiceReceipt: (id: string | number) => `/api/v1/billing/invoices/${id}/receipt`,
+        invoiceCancel: (id: string | number) => `/api/v1/billing/invoices/${id}/cancel`,
         payInvoice: (id: string | number) => `/api/v1/billing/invoices/${id}/pay`,
         bankTransferStatus: '/api/v1/billing/bank-transfer',
         bankTransferInstructions: (invoiceId: string | number) =>

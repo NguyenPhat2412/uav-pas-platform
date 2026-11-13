@@ -98,7 +98,7 @@ export function HomeLandingPortalsSection() {
             </section>
 
             {/* PROCESS STEPS */}
-            <section className="border-b border-border bg-card py-16 sm:py-20" aria-labelledby="home-process-title">
+            <section className="border-b border-border bg-slate-50/70 py-16 sm:py-20" aria-labelledby="home-process-title">
                 <div className="mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12 space-y-8">
                     <HomeLandingSectionHead
                         id="home-process-title"

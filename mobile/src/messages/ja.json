@@ -37,7 +37,15 @@
     "status": {
       "offlineTitle": "サーバーに接続できません",
       "offlineHint": "接続を確認して再試行してください。ログイン状態は保持されています。",
-      "offlineBanner": "オフライン — 接続を確認してください。"
+      "offlineBanner": "オフライン — タップして接続を確認。",
+      "offlineBadge": "接続が切断されました",
+      "networkLostTitle": "ネットワーク接続がありません",
+      "networkLostDetail": "UAV PAS 運用センターへの通信が一時的に中断しています。Wi-Fi またはモバイルデータを確認して再試行してください。",
+      "checkWifi": "Wi-Fi または 4G / 5G モバイル通信を確認",
+      "sessionProtected": "ログイン状態と下書きデータはこの端末に安全に保持されています",
+      "autoSync": "接続が回復し次第、自動的に同期します",
+      "reconnectButton": "再接続する",
+      "viewCachedButton": "読み込み済み画面を見る"
     },
     "nav": {
       "missionDetail": "ミッション詳細",
@@ -238,7 +246,19 @@
       "receiptShareTitle": "請求書・領収書 {code}",
       "liveReconcileActive": "オンライン・即時自動照合",
       "supportReconcileHint": "銀行振込の照合やVAT請求書に関するサポートが必要ですか？",
-      "contactSupportButton": "支払い照合についてサポートへ連絡"
+      "contactSupportButton": "支払い照合についてサポートへ連絡",
+      "dueOn": "支払期限: {date}",
+      "overdue": "期限を過ぎています。サービス停止を避けるため早めにお支払いください。",
+      "closedTitle": "請求書は終了しました",
+      "closedExpired": "この請求書は期限切れのため支払えません。必要な場合はプランを選び直してください。",
+      "closedCancelled": "この請求書は取り消されたため支払えません。",
+      "lateTransferHint": "終了した請求書に振り込んだ場合は、サポートへ返金を依頼してください。",
+      "backToBilling": "プランに戻る",
+      "saveQr": "QR コードを保存",
+      "qrShareTitle": "支払い QR {code}",
+      "cancelInvoice": "請求書を取り消す",
+      "cancelQuestion": "請求書 {code} を取り消しますか？取り消し後は支払えません。",
+      "cancelled": "請求書 {code} を取り消しました。"
     },
     "security": {
       "twoFactor": "2段階認証",

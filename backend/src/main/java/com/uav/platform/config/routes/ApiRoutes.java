@@ -307,6 +307,7 @@ public final class ApiRoutes {
         public static final String INVOICE_BY_ID = "/invoices/{id}";
         public static final String INVOICE_RECEIPT = "/invoices/{id}/receipt";
         public static final String PAY_INVOICE = "/invoices/{id}/pay";
+        public static final String CANCEL_INVOICE = "/invoices/{id}/cancel";
 
         public static final String ADMIN = BASE + "/admin";
         public static final String ADMIN_PLANS = ADMIN + "/plans";
@@ -318,6 +319,8 @@ public final class ApiRoutes {
         public static final String ADMIN_INVOICES_CONFIRM_PAYMENT =
                 "/admin/invoices/{id}/confirm-payment";
         public static final String ADMIN_TRANSACTIONS = "/transactions";
+        public static final String ADMIN_TRANSACTION_REFUND = "/transactions/{id}/refund";
+        public static final String ADMIN_STATISTICS = "/statistics";
         public static final String ADMIN_PAYMENT_GATEWAY = "/payment-gateway";
         public static final String ADMIN_OUTBOX = "/outbox";
         public static final String ADMIN_OUTBOX_RETRY = "/outbox/{id}/retry";

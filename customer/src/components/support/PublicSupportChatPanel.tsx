@@ -151,13 +151,13 @@ export function PublicSupportChatPanel({
             </div>
 
             {zaloUrl && (
-                <div className="flex items-center justify-between gap-2 border-b border-slate-200 bg-sky-50/70 px-4 py-2 text-[11px]">
-                    <span className="font-medium text-slate-700">Cần trao đổi nhanh qua Zalo?</span>
+                <div className="flex items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-4 py-2 text-[11px]">
+                    <span className="font-medium text-slate-600">Cần trao đổi nhanh qua Zalo?</span>
                     <a
                         href={zaloUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-full bg-[#0068FF] px-2.5 py-1 text-[11px] font-bold text-white shadow-2xs transition-colors hover:bg-[#0058db]"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-800 shadow-2xs transition-colors hover:border-primary/40 hover:text-primary"
                     >
                         <ZaloBrandIcon className="h-3.5 w-3.5" />
                         <span>Zalo · {zaloDisplay} ↗</span>

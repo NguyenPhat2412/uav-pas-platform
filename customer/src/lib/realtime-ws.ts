@@ -15,7 +15,8 @@ export type RealtimeServerFrame =
     | { type: 'SUPPORT_THREAD_UPDATED'; timestamp: string; session: PublicSupportThreadSession }
     | { type: 'SUPPORT_ADMIN_TYPING'; timestamp: string; threadId: number; senderName?: string | null; typing: boolean }
     | { type: 'SUPPORT_THREAD_DELETED'; timestamp: string; threadId: number }
-    | { type: 'INVOICE_UPDATED'; timestamp: string; invoiceId: number; invoiceCode: string; status: InvoiceStatus | string };
+    | { type: 'INVOICE_UPDATED'; timestamp: string; invoiceId: number; invoiceCode: string; status: InvoiceStatus | string }
+    | { type: 'NOTIFICATION_CREATED'; timestamp: string; notification: { id: number; title: string }; unreadCount: number };
 
 export interface RealtimeAcquireOptions {
     authenticated?: boolean;

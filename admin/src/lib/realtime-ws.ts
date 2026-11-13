@@ -34,7 +34,8 @@ export type AdminRealtimeFrame =
           invoiceId: number;
           invoiceCode: string;
           status: string;
-      };
+      }
+    | { type: 'NOTIFICATION_CREATED'; timestamp: string; notification: { id: number; title: string }; unreadCount: number };
 
 type FrameListener = (frame: AdminRealtimeFrame) => void;
 type StatusListener = (connected: boolean) => void;

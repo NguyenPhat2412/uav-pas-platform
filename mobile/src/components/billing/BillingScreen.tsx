@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
 import {useRouter} from 'expo-router';
 import {CheckCircle2, ChevronRight, Gauge, MessageCircle, Radio, Receipt} from 'lucide-react-native';
@@ -16,6 +16,7 @@ const INVOICE_TONE: Record<InvoiceStatus, { background: string; color: string }>
     PENDING: {background: colors.warningLight, color: colors.warning},
     FAILED: {background: colors.dangerLight, color: colors.danger},
     CANCELLED: {background: colors.slateLight, color: colors.textSecondary},
+    EXPIRED: {background: colors.slateLight, color: colors.textSecondary},
 };
 
 export function BillingScreen() {
@@ -47,12 +48,20 @@ export function BillingScreen() {
         },
     ]);
 
-    const refreshing = quota.isRefetching || invoices.isRefetching || plans.isRefetching;
+    const [refreshing, setRefreshing] = useState(false);
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await Promise.all([quota.refetch(), invoices.refetch(), plans.refetch()]);
+        } finally {
+            setRefreshing(false);
+        }
+    };
     const current = quota.data;
     const percent = current && current.flightHoursLimit > 0 ? Math.min(100, Math.round(current.flightHoursUsed / current.flightHoursLimit * 100)) : 0;
 
     return (
-        <Screen refreshing={refreshing} onRefresh={() => void Promise.all([quota.refetch(), invoices.refetch(), plans.refetch()])}>
+        <Screen refreshing={refreshing} onRefresh={() => void handleRefresh()}>
             <Card>
                 <View style={styles.row}>
                     <Gauge size={20} color={colors.primary}/>

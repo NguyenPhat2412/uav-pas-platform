@@ -101,9 +101,11 @@ export function UavLoader3D({size = 140, label}: { size?: number; label?: string
     const mountedRef = useRef(true);
     const frame = useRef<number | null>(null);
     const cleanup = useRef<(() => void) | null>(null);
+    const slowRef = useRef(false);
 
     useEffect(() => {
         mountedRef.current = true;
+        void AccessibilityInfo.isReduceMotionEnabled().then(reduce => { slowRef.current = reduce; }).catch(() => undefined);
         if (HAS_NATIVE_GL) {
             void import('expo-gl')
                 .then(mod => {
@@ -124,9 +126,10 @@ export function UavLoader3D({size = 140, label}: { size?: number; label?: string
         };
     }, []);
 
-    const onContextCreate = async (gl: ExpoWebGLRenderingContext) => {
+    // Must stay synchronous: expo-gl calls this outside React's normal JS turn, and code after an `await` here may never
+    // run, which left the canvas blank. Reduce Motion is read ahead of time in the effect instead.
+    const onContextCreate = (gl: ExpoWebGLRenderingContext) => {
         try {
-            const slow = await AccessibilityInfo.isReduceMotionEnabled();
             if (!mountedRef.current) return;
             const {drawingBufferWidth: width, drawingBufferHeight: height} = gl;
             // three expects a canvas; expo-gl has none, so hand it a minimal stand-in around the GL context.
@@ -154,7 +157,7 @@ export function UavLoader3D({size = 140, label}: { size?: number; label?: string
                 const nowMs = performance.now();
                 const delta = Math.min(Math.max(0, (nowMs - lastMs) / 1000), 0.1);
                 lastMs = nowMs;
-                step(delta, slow);
+                step(delta, slowRef.current);
                 renderer.render(scene, camera);
                 gl.endFrameEXP();
                 if (mountedRef.current) frame.current = requestAnimationFrame(render);
@@ -170,7 +173,7 @@ export function UavLoader3D({size = 140, label}: { size?: number; label?: string
             <View style={{width: size, height: size}}>
                 {failed || !GlComponent
                     ? <View style={styles.fallback}><ActivityIndicator color={colors.primary}/></View>
-                    : <GlComponent style={StyleSheet.absoluteFill} onContextCreate={gl => void onContextCreate(gl)}/>}
+                    : <GlComponent style={{width: size, height: size}} onContextCreate={onContextCreate}/>}
             </View>
             {label ? <AppText variant="caption" style={styles.label}>{label}</AppText> : null}
         </View>

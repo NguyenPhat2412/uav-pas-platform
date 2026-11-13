@@ -4,7 +4,7 @@ import {router, type NativeStackHeaderProps} from 'expo-router';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ChevronLeft, X, type LucideIcon} from 'lucide-react-native';
 import {AppBackground} from '@/components/layout/AppBackground';
-import {ScaledText} from '@/components/ui';
+import {GlassSurface, liquidGlass, ScaledText} from '@/components/ui';
 import {useOptionalAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {resolvePortalEntryHref} from '@/utils/operations/portal-routing';
@@ -23,8 +23,10 @@ export function HeaderIconButton({icon: Icon, label, onPress, count = 0, loading
     return (
         <Pressable onPress={onPress} disabled={loading} hitSlop={8} accessibilityRole="button"
                    accessibilityLabel={count > 0 ? `${label} (${count})` : label}
-                   style={({pressed}) => [styles.round, pressed && styles.roundPressed]}>
-            {loading ? <ActivityIndicator color={colors.primary}/> : <Icon size={20} color={colors.text} strokeWidth={2}/>}
+                   style={({pressed}) => [pressed && styles.roundPressed]}>
+            <GlassSurface interactive style={styles.roundShape} fallback={styles.round}>
+                {loading ? <ActivityIndicator color={colors.primary}/> : <Icon size={20} color={colors.text} strokeWidth={2}/>}
+            </GlassSurface>
             {count > 0 && <View style={styles.count}><ScaledText style={styles.countText}>{count > 99 ? '99+' : count}</ScaledText></View>}
         </Pressable>
     );
@@ -64,8 +66,10 @@ export function AppHeader({back, options, route, navigation}: NativeStackHeaderP
                 {!root && (
                     <View style={styles.side}>
                         <Pressable onPress={leave} hitSlop={8} accessibilityRole="button" accessibilityLabel={label}
-                                   style={({pressed}) => [styles.round, pressed && styles.roundPressed]}>
-                            <Icon size={sheet ? 20 : 22} color={colors.text} strokeWidth={2.2}/>
+                                   style={({pressed}) => [pressed && styles.roundPressed]}>
+                            <GlassSurface interactive style={styles.roundShape} fallback={styles.round}>
+                                <Icon size={sheet ? 20 : 22} color={colors.text} strokeWidth={2.2}/>
+                            </GlassSurface>
                         </Pressable>
                     </View>
                 )}
@@ -84,12 +88,13 @@ const styles = StyleSheet.create({
     // Equal side slots keep the title centred whatever sits on the right.
     side: {minWidth: 44, alignItems: 'flex-start', justifyContent: 'center'},
     sideRight: {alignItems: 'flex-end'},
+    roundShape: {width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center'},
+    // Solid fallback where Liquid Glass is unavailable (older iOS, Android).
     round: {
-        width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center',
         backgroundColor: colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border,
         shadowColor: colors.text, shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: {width: 0, height: 2}, elevation: 1,
     },
-    roundPressed: {backgroundColor: colors.slateLight},
+    roundPressed: liquidGlass ? {transform: [{scale: 0.94}]} : {opacity: 0.7},
     sideAuto: {minWidth: 0},
     customTitle: {flex: 1, justifyContent: 'center', paddingLeft: 4},
     count: {

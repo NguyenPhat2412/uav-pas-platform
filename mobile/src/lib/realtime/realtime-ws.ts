@@ -23,7 +23,8 @@ export type RealtimeServerFrame =
     | { type: 'ADMIN_SUPPORT_UPDATED'; timestamp: string; thread: SupportThreadItem; messages?: SupportMessageItem[]; summary?: SupportAdminSummary }
     | { type: 'SUPPORT_SUMMARY_UPDATED'; timestamp: string; summary: SupportAdminSummary }
     | { type: 'SUPPORT_VISITOR_TYPING'; timestamp: string; threadId: number; senderName?: string; typing: boolean }
-    | { type: 'INVOICE_UPDATED'; timestamp: string; invoiceId: number; invoiceCode: string; status: InvoiceStatus | string };
+    | { type: 'INVOICE_UPDATED'; timestamp: string; invoiceId: number; invoiceCode: string; status: InvoiceStatus | string }
+    | { type: 'NOTIFICATION_CREATED'; timestamp: string; notification: { id: number; title: string }; unreadCount: number };
 
 export interface RealtimeSocketLike {
     readonly readyState: number;

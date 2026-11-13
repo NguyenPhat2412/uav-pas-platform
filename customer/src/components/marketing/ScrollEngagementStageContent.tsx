@@ -390,7 +390,7 @@ export function ScrollEngagementStageContent({
                         href={zaloUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-control bg-[#0068FF] px-3 py-2 text-xs font-bold text-white shadow-xs transition-colors hover:bg-[#0058db]"
+                        className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-control border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800 transition-colors hover:border-primary/50 hover:bg-slate-50 hover:text-primary"
                     >
                         <ZaloBrandIcon className="h-4 w-4" />
                         <span>Zalo {zaloDisplay}</span>

@@ -20,6 +20,7 @@ export function MissionListScreen() {
     const params = useLocalSearchParams<{ filter?: string }>();
     const requested = FILTERS.includes(params.filter as MissionFilter) ? params.filter as MissionFilter : 'all';
     const [chosen, setChosen] = useState<{ from: string | undefined; filter: MissionFilter }>({from: params.filter, filter: requested});
+    const [refreshing, setRefreshing] = useState(false);
     // A tile on the home screen may open this tab with a new filter; it wins over the last chip tapped.
     const filter = chosen.from === params.filter ? chosen.filter : requested;
     const statuses = MISSION_FILTERS[filter];
@@ -68,7 +69,16 @@ export function MissionListScreen() {
                     onEndReached={() => {
                         if (list.hasNextPage && !list.isFetchingNextPage) void list.fetchNextPage();
                     }}
-                    refreshControl={<RefreshControl refreshing={list.isRefetching && !list.isFetchingNextPage} onRefresh={() => void list.refetch()} tintColor={colors.primary}/>}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={() => {
+                                setRefreshing(true);
+                                void list.refetch().finally(() => setRefreshing(false));
+                            }}
+                            tintColor={colors.primary}
+                        />
+                    }
                     ListFooterComponent={list.isFetchingNextPage ? <ActivityIndicator color={colors.primary} style={styles.more}/> : undefined}
                     ListEmptyComponent={
                         <EmptyState icon={ClipboardList} message={filter === 'all' ? t('missions.empty') : t('missions.emptyFiltered')}

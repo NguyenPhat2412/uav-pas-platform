@@ -128,22 +128,23 @@ export function FleetMaintenanceScreen() {
                 {tab === 'uavs' && (
                     <>
                         <Card style={styles.summaryCard}>
+                            <SectionTitle title={t('mobile.ops.fleet.summaryTitle')}/>
                             <View style={styles.summaryGrid}>
                                 <View style={styles.summaryCell}>
                                     <AppText variant="title" style={styles.summaryValue}>{fleetStats.total}</AppText>
-                                    <AppText variant="caption" numberOfLines={1}>{t('mobile.ops.fleet.stats.total')}</AppText>
+                                    <AppText variant="caption">{t('mobile.ops.fleet.stats.total')}</AppText>
                                 </View>
                                 <View style={styles.summaryCell}>
                                     <AppText variant="title" style={styles.summaryValue}>{fleetStats.available}</AppText>
-                                    <AppText variant="caption" numberOfLines={1}>{t('mobile.ops.fleet.stats.available')}</AppText>
+                                    <AppText variant="caption">{t('mobile.ops.fleet.stats.available')}</AppText>
                                 </View>
                                 <View style={styles.summaryCell}>
                                     <AppText variant="title" style={styles.summaryValue}>{fleetStats.active}</AppText>
-                                    <AppText variant="caption" numberOfLines={1}>{t('mobile.ops.fleet.stats.active')}</AppText>
+                                    <AppText variant="caption">{t('mobile.ops.fleet.stats.active')}</AppText>
                                 </View>
                                 <View style={styles.summaryCell}>
                                     <AppText variant="title" style={styles.summaryValue}>{fleetStats.maintenance}</AppText>
-                                    <AppText variant="caption" numberOfLines={1}>{t('mobile.ops.fleet.stats.maintenance')}</AppText>
+                                    <AppText variant="caption">{t('mobile.ops.fleet.stats.maintenance')}</AppText>
                                 </View>
                             </View>
                         </Card>
@@ -334,15 +335,19 @@ export function FleetMaintenanceScreen() {
 const styles = StyleSheet.create({
     screen: {flex: 1, backgroundColor: colors.canvas},
     content: {padding: spacing.lg, gap: spacing.md, flexGrow: 1, width: '100%', maxWidth: CONTENT_WIDTH, alignSelf: 'center'},
-    summaryCard: {paddingVertical: spacing.sm, paddingHorizontal: spacing.md},
-    summaryGrid: {flexDirection: 'row', gap: spacing.xs},
+    summaryCard: {padding: spacing.lg, gap: spacing.sm},
+    summaryGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm},
     summaryCell: {
-        flex: 1,
-        alignItems: 'center',
+        flexBasis: '46%',
+        minWidth: 140,
+        flexGrow: 1,
         backgroundColor: colors.slateLight,
+        borderWidth: 1,
+        borderColor: colors.border,
         borderRadius: radius.control,
-        paddingVertical: spacing.xs,
-        paddingHorizontal: 4,
+        paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.md,
+        gap: 2,
     },
     summaryValue: {color: colors.primary},
 });

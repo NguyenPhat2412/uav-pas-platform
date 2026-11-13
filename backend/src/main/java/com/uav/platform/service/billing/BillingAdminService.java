@@ -23,6 +23,13 @@ public interface BillingAdminService {
 
     PaymentGatewayConfigResponse getPaymentGatewayConfig();
 
+    /**
+     * Records that an admin sent back a transfer that could not settle its invoice (wrong amount,
+     * late, or for a cancelled invoice). The original evidence is kept untouched.
+     */
+    PaymentTransactionAdminResponse refundTransaction(
+            Long id, String bankReference, String note, Authentication auth);
+
     PaymentGatewayConfigResponse updatePaymentGatewayConfig(
             PaymentGatewayConfigUpdateRequest request, Authentication auth);
 }

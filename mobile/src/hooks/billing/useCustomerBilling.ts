@@ -122,6 +122,11 @@ export function useBillingActions() {
     return {
         refresh,
         subscribe: useMutation<Invoice | undefined, Error, string>({mutationFn: code => bankTransferService.subscribe(code), onSuccess: refresh, retry: false}),
+        cancel: useMutation<Invoice, Error, number>({
+            mutationFn: invoiceId => customerBillingService.cancel(invoiceId),
+            onSuccess: refresh,
+            retry: false,
+        }),
         downloadReceipt: useMutation<string, Error, number>({
             mutationFn: (invoiceId: number) => customerBillingService.receiptDataUri(invoiceId),
             retry: false,

@@ -1,3 +1,4 @@
+import {useEffect} from 'react';
 import {Platform} from 'react-native';
 import Constants from 'expo-constants';
 import {requireOptionalNativeModule} from 'expo-modules-core';
@@ -5,9 +6,11 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {queryKeys} from '@/shared/lib/query';
 import {notificationsService} from '@/api/notification/notifications.api';
 import {readSavedPushEndpoint, savePushEndpoint} from '@/lib/storage/preferences';
+import {sessionStore} from '@/lib/api/session';
+import {realtimeWs} from '@/lib/realtime/realtime-ws';
 import {useAuth} from '@/providers/AuthContext';
 
-// Active field polling + native APNs/FCM or Expo Push HTTP registration when a push endpoint is enrolled.
+// Realtime NOTIFICATION_CREATED frames (own user only) + slow polling as a fallback + native APNs/FCM or Expo Push HTTP registration when a push endpoint is enrolled.
 const POLL_MS = 30_000;
 
 interface NativePermissionResponse {
@@ -93,6 +96,19 @@ export function useNotifications() {
     });
 
     const refresh = () => client.invalidateQueries({queryKey: key});
+
+    // The server pushes each new notification to this user's sockets only: bump the bell at once, refetch the list.
+    const userId = user?.id;
+    useEffect(() => {
+        if (userId == null) return;
+        const feature = queryKeys.feature(userId, 'notifications');
+        realtimeWs.syncAccessToken(sessionStore.read()?.accessToken ?? null);
+        return realtimeWs.subscribe(frame => {
+            if (frame.type !== 'NOTIFICATION_CREATED') return;
+            client.setQueryData([...feature, 'unread'], {unreadCount: frame.unreadCount});
+            void client.invalidateQueries({queryKey: [...feature, 'recent']});
+        });
+    }, [userId, client]);
 
     const markOne = useMutation({
         mutationFn: (id: number) => notificationsService.markRead(id),

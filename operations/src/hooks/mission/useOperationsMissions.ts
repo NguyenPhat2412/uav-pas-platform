@@ -1,5 +1,5 @@
 'use client';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {missionService} from '@/api/mission/missions.api';
 import {useAuth} from '@/providers/AuthContext';
 import {QUIET} from '@/lib/query';
@@ -8,6 +8,7 @@ import type {MissionPreflightUpsertInput, MissionStatus} from '@/types/mission/m
 export function useMissions(filters?: { status?: MissionStatus; search?: string }, enabled = true) {
     const query = useQuery({
         queryKey: ['missions', 'list', filters ?? {}],
+        placeholderData: keepPreviousData,
         queryFn: () => missionService.list(filters),
         enabled,
     });

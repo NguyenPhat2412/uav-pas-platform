@@ -113,7 +113,7 @@ export function ScrollEngagementPopup() {
             className="fixed bottom-5 left-5 z-40 w-[calc(100vw-2.5rem)] max-w-[388px] overflow-hidden rounded-2xl border border-slate-200/95 bg-white/98 shadow-2xl ring-1 ring-slate-900/5 backdrop-blur-md transition-all duration-300"
         >
             {/* Top accent bar */}
-            <div className="h-1 w-full bg-gradient-to-r from-primary via-rose-500 to-amber-500" aria-hidden="true" />
+            <div className="h-1 w-full bg-primary" aria-hidden="true" />
 
             {/* Header & stage switcher */}
             <div className="flex items-center justify-between gap-2 border-b border-slate-100 bg-slate-50/80 px-3.5 py-2">

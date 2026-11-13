@@ -100,7 +100,8 @@ export interface BankTransferInstructions {
     accountNumber: string;
     accountName: string;
     transferContent: string;
-    qrPayload: string;
+    /** Null once the invoice is no longer PENDING. */
+    qrPayload: string | null;
     subtotal: number;
     vatRate: number;
     vat: number;
@@ -109,6 +110,8 @@ export interface BankTransferInstructions {
     flightHours: number | null;
     dueDate: string | null;
     issuedAt: string | null;
+    /** A customer may cancel only an unpaid PLAN invoice. */
+    kind: 'MISSION' | 'PLAN' | 'OTHER';
 }
 
 export interface VietQrOptions {

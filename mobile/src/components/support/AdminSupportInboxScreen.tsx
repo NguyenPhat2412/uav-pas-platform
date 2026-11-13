@@ -1,7 +1,8 @@
 import React, {useMemo, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useLocalSearchParams} from 'expo-router';
-import {Inbox, Radio, ShieldAlert, Zap} from 'lucide-react-native';
+import {Inbox, Radio, Zap} from 'lucide-react-native';
+import {AppForbiddenView} from '@/components/shared/AppStatusViews';
 import {
     AppText,
     Badge,
@@ -87,7 +88,7 @@ export function AdminSupportInboxScreen() {
     if (!canManage) {
         return (
             <Screen>
-                <EmptyState icon={ShieldAlert} message={t('mobile.support.noPermission')}/>
+                <AppForbiddenView detail={t('mobile.support.noPermission')} fallbackHref="/operations/missions"/>
             </Screen>
         );
     }
@@ -151,7 +152,7 @@ export function AdminSupportInboxScreen() {
                             <AppText variant="title" style={kpi.alert ? styles.kpiValueAlert : undefined}>
                                 {kpi.value}
                             </AppText>
-                            <AppText variant="caption" numberOfLines={1} style={kpi.alert ? styles.kpiValueAlert : undefined}>
+                            <AppText variant="caption" style={[styles.kpiLabel, kpi.alert && styles.kpiValueAlert]}>
                                 {kpi.label}
                             </AppText>
                         </View>
@@ -242,19 +243,22 @@ export function AdminSupportInboxScreen() {
 }
 
 const styles = StyleSheet.create({
-    kpiGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs},
+    kpiGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm},
     kpiCell: {
         flexGrow: 1,
-        flexBasis: '18%',
-        minWidth: 58,
-        paddingVertical: spacing.xs,
-        paddingHorizontal: spacing.xs,
+        flexBasis: '30%',
+        minWidth: 96,
+        paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.sm,
         borderRadius: radius.control,
+        borderWidth: 1,
+        borderColor: colors.border,
         backgroundColor: colors.slateLight,
         alignItems: 'center',
         gap: 2,
     },
-    kpiCellAlert: {backgroundColor: colors.dangerLight},
+    kpiLabel: {textAlign: 'center'},
+    kpiCellAlert: {backgroundColor: colors.dangerLight, borderColor: colors.danger},
     kpiValueAlert: {color: colors.danger},
     unreadCard: {borderColor: colors.danger, backgroundColor: colors.primaryLight},
     cardHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm},

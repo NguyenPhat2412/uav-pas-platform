@@ -37,7 +37,15 @@
     "status": {
       "offlineTitle": "Chưa kết nối được máy chủ",
       "offlineHint": "Kiểm tra mạng rồi thử lại. Phiên đăng nhập của bạn vẫn được giữ.",
-      "offlineBanner": "Đang ngoại tuyến — kiểm tra mạng."
+      "offlineBanner": "Đang ngoại tuyến — chạm để kiểm tra kết nối.",
+      "offlineBadge": "ĐANG MẤT KẾT NỐI",
+      "networkLostTitle": "Đang mất kết nối mạng",
+      "networkLostDetail": "Đường truyền tới Trung tâm Điều phối UAV PAS đang tạm gián đoạn. Hãy kiểm tra Wi-Fi hoặc dữ liệu di động rồi thử lại.",
+      "checkWifi": "Kiểm tra tín hiệu Wi-Fi hoặc mạng di động 4G / 5G",
+      "sessionProtected": "Phiên đăng nhập và dữ liệu nháp vẫn được giữ an toàn",
+      "autoSync": "Tự động đồng bộ ngay khi có mạng trở lại",
+      "reconnectButton": "Thử kết nối lại",
+      "viewCachedButton": "Tạm xem dữ liệu đã tải"
     },
     "nav": {
       "missionDetail": "Chi tiết nhiệm vụ",
@@ -238,7 +246,19 @@
       "receiptShareTitle": "Biên lai hóa đơn {code}",
       "liveReconcileActive": "Trực tuyến · Đối soát tức thì",
       "supportReconcileHint": "Cần hỗ trợ đối soát chuyển khoản hoặc xuất hóa đơn VAT?",
-      "contactSupportButton": "Liên hệ Hỗ trợ đối soát thanh toán"
+      "contactSupportButton": "Liên hệ Hỗ trợ đối soát thanh toán",
+      "dueOn": "Hạn thanh toán: {date}",
+      "overdue": "Đã quá hạn — hãy thanh toán sớm để tránh gián đoạn dịch vụ.",
+      "closedTitle": "Hóa đơn đã đóng",
+      "closedExpired": "Hóa đơn này đã hết hạn và không thể thanh toán nữa. Nếu bạn vẫn cần gói, hãy chọn lại để nhận hóa đơn mới.",
+      "closedCancelled": "Hóa đơn này đã bị hủy và không thể thanh toán nữa.",
+      "lateTransferHint": "Lỡ chuyển khoản cho hóa đơn đã đóng? Liên hệ hỗ trợ để được hoàn tiền.",
+      "backToBilling": "Về Gói cước",
+      "saveQr": "Lưu mã QR",
+      "qrShareTitle": "Mã QR thanh toán {code}",
+      "cancelInvoice": "Hủy hóa đơn",
+      "cancelQuestion": "Hủy hóa đơn {code}? Bạn sẽ không thể thanh toán hóa đơn này nữa.",
+      "cancelled": "Đã hủy hóa đơn {code}."
     },
     "security": {
       "twoFactor": "Xác thực 2 bước",
