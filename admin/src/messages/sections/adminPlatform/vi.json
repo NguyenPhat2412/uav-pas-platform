@@ -24,6 +24,7 @@
         "MAP": "Bản đồ & GIS",
         "AI": "AI & xử lý biên KV260",
         "BILLING": "Thanh toán & hóa đơn",
+        "ACCOUNT": "Tài khoản & tự xóa tài khoản",
         "CONTACT": "Thông tin liên hệ công khai",
         "OTHER": "Cấu hình khác"
       },
@@ -75,7 +76,16 @@
         "uav_safety_max_wind_gust_limit": "Gió giật tối đa (m/s)",
         "uav_safety_min_visibility_meters": "Tầm nhìn ngang tối thiểu (m)",
         "uav_safety_max_precipitation_mm": "Lượng mưa tối đa mỗi giờ (mm)",
-        "uav_safety_max_kp_index": "Chỉ số bão từ Kp tối đa"
+        "uav_safety_max_kp_index": "Chỉ số bão từ Kp tối đa",
+        "account_deletion_enabled": "Cho phép người dùng tự xóa tài khoản",
+        "account_deletion_allow_staff_roles": "Cho phép tài khoản nội bộ (nhân sự / quản trị) tự xóa",
+        "account_deletion_block_active_missions": "Chặn xóa khi còn nhiệm vụ đang xử lý",
+        "account_deletion_block_unpaid_invoices": "Chặn xóa khi còn hóa đơn chưa thanh toán",
+        "account_deletion_require_password": "Yêu cầu xác nhận mật khẩu hiện tại",
+        "account_deletion_require_reason": "Bắt buộc nhập lý do xóa tài khoản",
+        "account_deletion_confirmation_phrase": "Cụm từ xác nhận xóa tài khoản",
+        "account_deletion_mode": "Chế độ xử lý dữ liệu khi xóa tài khoản",
+        "account_deletion_notice_message": "Thông báo lưu ý hiển thị trước khi xóa tài khoản"
       },
       "notes": {
         "billing_vat_rate": "Nhập dạng phân số: 0.10 = 10%",
@@ -94,7 +104,9 @@
         "streets": "Đường phố (OpenStreetMap)",
         "satellite": "Vệ tinh (Esri World Imagery)",
         "terrain": "Địa hình (OpenTopoMap)",
-        "dark": "Nền tối (Carto Dark)"
+        "dark": "Nền tối (Carto Dark)",
+        "ANONYMIZE": "Ẩn danh hóa thông tin định danh (giữ lịch sử giao dịch)",
+        "HARD_DELETE": "Xóa vĩnh viễn bản ghi tài khoản"
       }
     },
     "deviceKeys": {

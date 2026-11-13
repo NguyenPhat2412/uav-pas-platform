@@ -1,20 +1,21 @@
 import React, {useState} from 'react';
 import {Linking, StyleSheet, Switch, View} from 'react-native';
 import {ExternalLink, Smartphone} from 'lucide-react-native';
-import {AppText, Button, Card, SectionTitle} from '@/components/ui';
+import {AppText, Button, Card} from '@/components/ui';
 import {useNotifications} from '@/hooks/notification/useNotifications';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {signInErrorText} from '@/forms/auth/sign-in-flow';
 import {colors, radius, spacing} from '@/styles/tokens';
 
-/** Device push notification registration card (native iOS/Android permissions + APNs/Expo Push endpoint). */
+/** Sleek, single-row device push notification toggle (native iOS/Android permissions + APNs/Expo Push). */
 export function PushDeviceCard() {
     const {t} = useI18n();
     const toast = useToast();
-    const {savedPushEndpoint, isSimulatedEndpoint, registerPushDevice, unregisterPushDevice} = useNotifications();
+    const {savedPushEndpoint, registerPushDevice, unregisterPushDevice} = useNotifications();
     const [permissionDenied, setPermissionDenied] = useState(false);
     const active = !!savedPushEndpoint;
+    const busy = registerPushDevice.isPending || unregisterPushDevice.isPending;
 
     const handleRegister = () => {
         setPermissionDenied(false);
@@ -42,42 +43,38 @@ export function PushDeviceCard() {
     };
 
     return (
-        <Card>
-            <SectionTitle
-                title={t('mobile.push.title')}
-                action={
-                    // The system switch: on iOS 26 it is drawn in Liquid Glass by the OS itself.
-                    <Switch
-                        value={active}
-                        onValueChange={on => (on ? handleRegister() : handleUnregister())}
-                        disabled={registerPushDevice.isPending || unregisterPushDevice.isPending}
-                        trackColor={{true: colors.primary}}
-                        accessibilityLabel={t('mobile.push.title')}
-                    />
-                }
-            />
-            {savedPushEndpoint ? (
-                <View style={styles.endpointBlock}>
-                    <View style={styles.endpointRow}>
-                        <Smartphone size={16} color={colors.slateDark}/>
-                        <AppText variant="caption" numberOfLines={1} selectable style={styles.flex}>
-                            {savedPushEndpoint}
-                        </AppText>
-                    </View>
-                    {isSimulatedEndpoint && (
-                        <AppText variant="caption">{t('mobile.push.simulatorNotice')}</AppText>
-                    )}
+        <Card style={styles.card}>
+            <View style={styles.row}>
+                <View style={[styles.iconBadge, active && styles.iconBadgeActive]}>
+                    <Smartphone size={15} color={active ? colors.primary : colors.slateDark}/>
                 </View>
-            ) : null}
+                <View style={styles.textBlock}>
+                    <AppText variant="small" numberOfLines={1} style={styles.title}>
+                        {t('mobile.push.title')}
+                    </AppText>
+                    <AppText variant="caption" numberOfLines={1}>
+                        {active ? t('mobile.push.compactActive') : t('mobile.push.compactOff')}
+                    </AppText>
+                </View>
+                <Switch
+                    style={styles.compactSwitch}
+                    value={active}
+                    onValueChange={on => (on ? handleRegister() : handleUnregister())}
+                    disabled={busy}
+                    trackColor={{true: colors.primary}}
+                    accessibilityLabel={t('mobile.push.title')}
+                />
+            </View>
             {permissionDenied && !active && (
-                <View style={styles.deniedBox}>
-                    <AppText variant="small" style={styles.deniedText}>
+                <View style={styles.deniedRow}>
+                    <AppText variant="caption" style={styles.deniedText} numberOfLines={2}>
                         {t('mobile.push.permissionDenied')}
                     </AppText>
                     <Button
-                        label={t('mobile.push.openSettings')}
-                        icon={ExternalLink}
+                        size="sm"
                         tone="secondary"
+                        icon={ExternalLink}
+                        label={t('mobile.push.openSettings')}
                         onPress={() => void Linking.openSettings()}
                     />
                 </View>
@@ -87,16 +84,30 @@ export function PushDeviceCard() {
 }
 
 const styles = StyleSheet.create({
-    flex: {flex: 1},
-    endpointBlock: {gap: 4},
-    endpointRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: 2},
-    deniedBox: {
+    card: {paddingVertical: spacing.sm, paddingHorizontal: spacing.md, gap: spacing.xs},
+    row: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xs},
+    iconBadge: {
+        width: 30,
+        height: 30,
+        borderRadius: radius.control,
+        backgroundColor: colors.slateLight,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    iconBadgeActive: {backgroundColor: colors.primaryLight},
+    textBlock: {flex: 1, gap: 1},
+    title: {fontWeight: '600', color: colors.text},
+    compactSwitch: {transform: [{scaleX: 0.86}, {scaleY: 0.86}]},
+    deniedRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         gap: spacing.sm,
-        padding: spacing.md,
+        padding: spacing.sm,
         borderRadius: radius.control,
         backgroundColor: colors.warningLight,
-        borderWidth: 1,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: colors.warning,
     },
-    deniedText: {color: colors.warning},
+    deniedText: {flex: 1, color: colors.warning},
 });

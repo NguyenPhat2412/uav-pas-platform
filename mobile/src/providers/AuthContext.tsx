@@ -3,7 +3,7 @@ import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {queryKeys} from '@/shared/lib/query';
 import {canUsePortal} from '@/shared/utils/auth/portal';
 import type {AuthResponse, UserResponse} from '@/shared/types/auth/auth.types';
-import {authService, permissionService} from '@/api/auth/auth.api';
+import {authService, permissionService, type AppleLoginPayload} from '@/api/auth/auth.api';
 import {notificationsService} from '@/api/notification/notifications.api';
 import {ApiError} from '@/lib/api/client';
 import {onSessionEnded, restoreSession, sessionStore} from '@/lib/api/session';
@@ -30,6 +30,7 @@ interface AuthValue {
     /** Resolves to the response; when mfaRequired is set the caller continues with the code screen. */
     login: (usernameOrEmail: string, password: string) => Promise<AuthResponse>;
     loginWithGoogle: (idToken: string) => Promise<AuthResponse>;
+    loginWithApple: (payload: AppleLoginPayload) => Promise<AuthResponse>;
     /** Stores the tokens of a finished sign-in (password, 2FA or email verification) and opens the portal. */
     completeAuth: (response: AuthResponse) => Promise<void>;
     logout: () => Promise<void>;
@@ -37,7 +38,13 @@ interface AuthValue {
     refreshUser: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthValue | undefined>(undefined);
+// Preserve the single Context instance across Metro Fast Refresh so HMR in auth/session modules never splits Provider & consumers.
+const globalWithAuth = globalThis as typeof globalThis & {
+    __UAV_PAS_AUTH_CONTEXT__?: React.Context<AuthValue | undefined>;
+};
+const AuthContext =
+    globalWithAuth.__UAV_PAS_AUTH_CONTEXT__ ??
+    (globalWithAuth.__UAV_PAS_AUTH_CONTEXT__ = createContext<AuthValue | undefined>(undefined));
 
 export function AuthProvider({children}: { children: ReactNode }) {
     const client = useQueryClient();
@@ -124,7 +131,13 @@ export function AuthProvider({children}: { children: ReactNode }) {
 
     const loginWithGoogle = useCallback(async (idToken: string) => {
         const response = await authService.google(idToken);
-        if (!response.mfaRequired) await completeAuth(response);
+        if (!response.mfaRequired && response.mfaMethod !== 'PENDING_APPROVAL') await completeAuth(response);
+        return response;
+    }, [completeAuth]);
+
+    const loginWithApple = useCallback(async (payload: AppleLoginPayload) => {
+        const response = await authService.loginWithApple(payload);
+        if (!response.mfaRequired && response.mfaMethod !== 'PENDING_APPROVAL') await completeAuth(response);
         return response;
     }, [completeAuth]);
 
@@ -168,6 +181,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
             switchPortal,
             login,
             loginWithGoogle,
+            loginWithApple,
             completeAuth,
             logout,
             refreshUser,
@@ -176,9 +190,13 @@ export function AuthProvider({children}: { children: ReactNode }) {
                 setAttempt(count => count + 1);
             },
         };
-    }, [status, user, permissionQuery.data, permissionQuery.error, activePortal, switchPortal, login, loginWithGoogle, completeAuth, logout, refreshUser]);
+    }, [status, user, permissionQuery.data, permissionQuery.error, activePortal, switchPortal, login, loginWithGoogle, loginWithApple, completeAuth, logout, refreshUser]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useOptionalAuth(): AuthValue | undefined {
+    return useContext(AuthContext);
 }
 
 export function useAuth(): AuthValue {

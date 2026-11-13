@@ -1,26 +1,25 @@
 'use client';
 
-import {useRef, useState, type FormEvent} from 'react';
-import {AlertTriangle, Download, FilePlus2, X} from 'lucide-react';
-import {Alert, Badge, Button, Card, CardContent, FormField, Input, Select, StatusBadge, Textarea} from '@/components/ui';
-import {Pagination} from '@/components/data/Pagination';
-import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
-import {FilterSelect} from '@/components/shared/FilterSelect';
-import {canSubmitCreateInvoice, emptyCreateInvoiceDraft, invoiceFieldErrors, toCreateInvoicePayload} from '@/forms/billing/billing-form';
+import {useState} from 'react';
+import {AlertTriangle, CheckCircle2, Download, FilePlus2, Landmark, Radio, Settings2} from 'lucide-react';
 import {
+    ConfirmBankTransferDialog,
+    CreateInvoiceDialog,
+    PaymentGatewayModal,
+} from '@/components/billing/AdminInvoiceDialogs';
+import {Pagination} from '@/components/data/Pagination';
+import {QueryState} from '@/components/data/WorkspaceState';
+import {FilterSelect} from '@/components/shared/FilterSelect';
+import {Alert, Badge, Button, Card, CardContent, StatusBadge} from '@/components/ui';
+import {
+    useAdminBillingRealtime,
     useAdminInvoices,
-    useBillingPlans,
-    useConfirmBankTransfer,
-    useCreateInvoice,
     useDownloadAdminInvoiceReceipt,
-    useInvoiceCustomerSearch,
+    usePaymentGatewayConfig,
 } from '@/hooks/billing/useBillingAdmin';
-import {useMissions} from '@/hooks/mission/useCustomerMissions';
-import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {formatShortDate} from '@/lib/format';
 import {planName} from '@/lib/presentation';
 import {cn} from '@/lib/utils';
-import {promptDialog} from '@/providers/ConfirmContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import type {Invoice} from '@/types';
@@ -36,33 +35,70 @@ export function AdminInvoicesPanel() {
     const [filter, setFilter] = useState<InvoiceFilterKey>('ALL');
     const [page, setPage] = useState(0);
     const [creating, setCreating] = useState(false);
+    const [configuringGateway, setConfiguringGateway] = useState(false);
+    const [confirmingInvoice, setConfirmingInvoice] = useState<Invoice | null>(null);
     const [notice, setNotice] = useState('');
-    const confirm = useConfirmBankTransfer({
-        onSuccess: inv => toast.success(t('admin.invoices.confirmed', {code: inv.code})),
-        onError: error => toast.error(error instanceof Error ? error.message : t('admin.invoices.confirmFailed')),
-    });
+
+    const {wsConnected} = useAdminBillingRealtime(true);
+    const gatewayQuery = usePaymentGatewayConfig();
+    const gateway = gatewayQuery.data;
+
     const downloadReceipt = useDownloadAdminInvoiceReceipt({
         onError: error => toast.error(error instanceof Error ? error.message : t('admin.invoices.downloadPdfFailed')),
     });
-    const askConfirm = async (inv: Invoice) => {
-        const reference = await promptDialog({
-            title: t('admin.invoices.confirm'),
-            description: t('admin.invoices.confirmPrompt', {code: inv.code, amount: formatCurrency(inv.amount)}),
-            inputLabel: t('admin.invoices.referenceLabel'),
-            inputPlaceholder: t('admin.invoices.referencePlaceholder'),
-            confirmLabel: t('admin.invoices.confirm'),
-            variant: 'primary',
-        });
-        if (reference && reference.trim()) confirm.mutate({id: inv.id, reference: reference.trim()});
-    };
+
     const query = useAdminInvoices(page, toFilters(filter));
-    // Captured once per mount so "overdue" stays stable across re-renders.
     const [now] = useState(() => Date.now());
     const isOverdue = (inv: Invoice) => inv.status === 'PENDING' && !!inv.dueDate && new Date(inv.dueDate).getTime() < now;
     const date = (value?: string) => formatShortDate(value, formatDate);
 
     return (
         <div className="space-y-4">
+            {gateway && !gateway.bankTransferConfigured && (
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-amber-300 bg-amber-50/75 px-4 py-3 text-xs text-amber-900">
+                    <div className="flex min-w-0 items-center gap-2.5">
+                        <AlertTriangle size={17} className="shrink-0 text-amber-600"/>
+                        <div>
+                            <strong className="font-bold">Tài khoản nhận chuyển khoản VietQR chưa được thiết lập</strong>
+                            <p className="m-0 mt-0.5 text-amber-800">
+                                Thiết lập mã BIN ngân hàng, số tài khoản và chủ tài khoản để khách hàng quét mã VietQR trực tiếp trên hóa đơn.
+                            </p>
+                        </div>
+                    </div>
+                    <Button type="button" variant="primary" size="sm" leftIcon={<Landmark size={14}/>}
+                            onClick={() => setConfiguringGateway(true)}>
+                        Thiết lập VietQR ngay
+                    </Button>
+                </div>
+            )}
+
+            {gateway && gateway.bankTransferConfigured && (
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-border bg-card px-4 py-2.5 text-xs">
+                    <div className="flex flex-wrap items-center gap-2 text-slate-700">
+                        <span className="inline-flex items-center gap-1.5 font-bold text-slate-900">
+                            <CheckCircle2 size={15} className="text-uav-blue"/>
+                            VietQR / NAPAS 247:
+                        </span>
+                        <span className="font-semibold">{gateway.bankName || gateway.bankBin}</span>
+                        <span className="text-slate-300">·</span>
+                        <code className="rounded bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-900">{gateway.accountNumber}</code>
+                        <span className="text-slate-300">·</span>
+                        <span className="font-medium text-slate-600">{gateway.accountName}</span>
+                        <Badge variant="outline" size="sm">GTGT {Math.round(gateway.vatRate * 1000) / 10}%</Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500">
+                            <Radio size={12} className={cn(wsConnected ? 'text-primary' : 'text-slate-400')}/>
+                            {wsConnected ? 'Đồng bộ thời gian thực' : 'Đang kết nối lại'}
+                        </span>
+                        <Button type="button" variant="outline" size="sm" leftIcon={<Settings2 size={13}/>}
+                                onClick={() => setConfiguringGateway(true)} className="h-7 px-2.5 text-xs">
+                            Cấu hình thanh toán
+                        </Button>
+                    </div>
+                </div>
+            )}
+
             <div className="flex flex-wrap items-center gap-2">
                 <FilterSelect
                     label={t('admin.invoices.col.status')}
@@ -73,10 +109,18 @@ export function AdminInvoicesPanel() {
                     }}
                     options={filters.map(key => ({value: key, label: t(`admin.invoices.filter.${key}`)}))}
                 />
-                <Button type="button" variant="primary" size="sm" leftIcon={<FilePlus2 size={15} aria-hidden="true"/>}
-                        onClick={() => setCreating(true)} className="ml-auto">
-                    {t('admin.invoices.create')}
-                </Button>
+                <div className="ml-auto flex flex-wrap items-center gap-2">
+                    {!gateway && (
+                        <Button type="button" variant="outline" size="sm" leftIcon={<Landmark size={14}/>}
+                                onClick={() => setConfiguringGateway(true)}>
+                            Cổng thanh toán VietQR
+                        </Button>
+                    )}
+                    <Button type="button" variant="primary" size="sm" leftIcon={<FilePlus2 size={15} aria-hidden="true"/>}
+                            onClick={() => setCreating(true)}>
+                        {t('admin.invoices.create')}
+                    </Button>
+                </div>
             </div>
 
             {notice && <Alert variant="info" role="status">{notice}</Alert>}
@@ -126,8 +170,8 @@ export function AdminInvoicesPanel() {
                                             <td className="sticky right-0 bg-white px-4 py-3 text-right group-hover:bg-slate-50">
                                                 <div className="inline-flex items-center justify-end gap-1.5">
                                                     {inv.status === 'PENDING' && (
-                                                        <Button type="button" variant="ghost" size="sm" disabled={confirm.isPending}
-                                                                onClick={() => void askConfirm(inv)} className="h-7 whitespace-nowrap px-2 text-xs">
+                                                        <Button type="button" variant="primary" size="sm"
+                                                                onClick={() => setConfirmingInvoice(inv)} className="h-7 whitespace-nowrap px-2.5 text-xs">
                                                             {t('admin.invoices.confirm')}
                                                         </Button>
                                                     )}
@@ -165,100 +209,26 @@ export function AdminInvoicesPanel() {
                 </CardContent>
             </Card>
 
-            {creating && <CreateInvoiceDialog onClose={() => setCreating(false)} onCreated={code => {
-                setCreating(false);
-                setNotice(t('admin.invoices.created', {code}));
-            }}/>}
-        </div>
-    );
-}
+            {creating && (
+                <CreateInvoiceDialog
+                    onClose={() => setCreating(false)}
+                    onCreated={code => {
+                        setCreating(false);
+                        setNotice(t('admin.invoices.created', {code}));
+                    }}
+                />
+            )}
 
-function CreateInvoiceDialog({onClose, onCreated}: { onClose: () => void; onCreated: (code: string) => void }) {
-    const {t} = useI18n();
-    const dialogRef = useRef<HTMLFormElement>(null);
-    useDialogFocusTrap(dialogRef, true, onClose);
-    const [keyword, setKeyword] = useState('');
-    const [draft, setDraft] = useState(emptyCreateInvoiceDraft);
-    const users = useInvoiceCustomerSearch(keyword, !draft.customer);
-    const plans = useBillingPlans();
-    const missions = useMissions();
-    const create = useCreateInvoice();
-    const fieldErrors = invoiceFieldErrors(create.error);
-    const submit = async (e: FormEvent) => {
-        e.preventDefault();
-        if (!canSubmitCreateInvoice(draft)) return;
-        try {
-            const invoice = await create.mutateAsync(toCreateInvoicePayload(draft));
-            onCreated(invoice.code);
-        } catch {/* Shown below. */}
-    };
+            {confirmingInvoice && (
+                <ConfirmBankTransferDialog
+                    invoice={confirmingInvoice}
+                    onClose={() => setConfirmingInvoice(null)}
+                />
+            )}
 
-    return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/45 p-4" role="presentation"
-             onMouseDown={e => e.target === e.currentTarget && onClose()}>
-            <form ref={dialogRef} noValidate role="dialog" aria-modal="true" aria-labelledby="create-invoice-title" onSubmit={e => void submit(e)}
-                  className="flex max-h-[calc(100dvh-32px)] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-panel bg-white p-6 shadow-2xl">
-                <header className="flex items-center justify-between">
-                    <h2 id="create-invoice-title" className="text-lg font-bold">{t('admin.invoices.createTitle')}</h2>
-                    <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label={t('admin.invoices.cancel')} className="h-8 w-8 p-0 text-slate-400">
-                        <X size={18}/>
-                    </Button>
-                </header>
-                <FormField label={t('admin.invoices.customer')} required error={fieldErrors?.userId}>
-                    {draft.customer ? (
-                        <div className="flex items-center justify-between rounded-control bg-uav-red-light px-3 py-2 text-sm font-semibold text-primary">
-                            <span>{draft.customer.name}</span>
-                            <Button type="button" variant="ghost" size="sm" onClick={() => setDraft(f => ({...f, customer: null}))} className="h-7 px-2 text-xs">
-                                {t('admin.invoices.change')}
-                            </Button>
-                        </div>
-                    ) : <>
-                        <Input autoFocus value={keyword} onChange={e => setKeyword(e.target.value)}
-                               placeholder={t('admin.invoices.customerSearch')} aria-label={t('admin.invoices.customer')} className="h-10 text-[13px]"/>
-                        {users.data?.content.length ? (
-                            <ul className="max-h-48 overflow-y-auto rounded-control border border-slate-200">
-                                {users.data.content.map(u => (
-                                    <li key={u.id}>
-                                        <Button type="button" variant="ghost" size="sm"
-                                                onClick={() => setDraft(f => ({...f, customer: {id: u.id, name: u.fullName || u.username}}))}
-                                                className="w-full justify-between rounded-none px-3 py-2 font-normal text-slate-800">
-                                            <span>{u.fullName || u.username}</span><small className="text-slate-400">@{u.username}</small>
-                                        </Button>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : keyword.trim().length >= 2 && users.isFetched && (
-                            <p className="text-xs font-normal text-slate-500">{t('admin.invoices.noCustomer')}</p>
-                        )}
-                    </>}
-                </FormField>
-                <Input id="invoice-amount" label={t('admin.invoices.amount')} required error={fieldErrors?.amount} type="number" step="1000" inputMode="numeric"
-                       value={draft.amount} onChange={e => setDraft(f => ({...f, amount: e.target.value}))} className="h-10 text-[13px] tabular-nums"/>
-                <div className="grid gap-3 sm:grid-cols-2">
-                    <Select id="invoice-plan" label={t('admin.invoices.plan')} optional error={fieldErrors?.planId}
-                            value={draft.planId} onChange={e => setDraft(f => ({...f, planId: e.target.value}))} className="h-10 text-[13px]">
-                        <option value="">{t('admin.invoices.none')}</option>
-                        {plans.data?.map(p => <option key={p.id} value={p.id}>{planName(p.name)}</option>)}
-                    </Select>
-                    <div>
-                        <Input id="invoice-mission" label={t('admin.invoices.missionId')} optional error={fieldErrors?.missionId} type="number"
-                               list="recent-invoice-missions" placeholder={t('admin.invoices.missionPlaceholder')}
-                               value={draft.missionId} onChange={e => setDraft(f => ({...f, missionId: e.target.value}))} className="h-10 text-[13px]"/>
-                        <datalist id="recent-invoice-missions">
-                            {missions.data?.content.map(m => <option key={m.id} value={m.id}>{`${m.code} — ${m.title}`}</option>)}
-                        </datalist>
-                    </div>
-                </div>
-                <Textarea id="invoice-notes" label={t('admin.invoices.notes')} optional error={fieldErrors?.notes} rows={3}
-                          value={draft.notes} onChange={e => setDraft(f => ({...f, notes: e.target.value}))}/>
-                {create.error && !fieldErrors && <ErrorNotice error={create.error}/>}
-                <footer className="flex justify-end gap-2">
-                    <Button type="button" variant="outline" size="sm" onClick={onClose}>{t('admin.invoices.cancel')}</Button>
-                    <Button type="submit" variant="primary" size="sm" isLoading={create.isPending} disabled={!canSubmitCreateInvoice(draft)}>
-                        {t('admin.invoices.submit')}
-                    </Button>
-                </footer>
-            </form>
+            {configuringGateway && (
+                <PaymentGatewayModal onClose={() => setConfiguringGateway(false)}/>
+            )}
         </div>
     );
 }

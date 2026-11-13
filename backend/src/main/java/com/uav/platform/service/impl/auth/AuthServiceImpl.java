@@ -1,8 +1,10 @@
 package com.uav.platform.service.impl.auth;
 
 import com.uav.platform.common.constant.CoreConstants;
+import com.uav.platform.dto.record.auth.AppleIdentity;
 import com.uav.platform.dto.record.auth.GoogleIdentity;
 import com.uav.platform.dto.record.auth.RegistrationInput;
+import com.uav.platform.dto.request.auth.AppleLoginRequest;
 import com.uav.platform.dto.request.auth.GoogleLoginRequest;
 import com.uav.platform.dto.request.auth.LoginRequest;
 import com.uav.platform.dto.request.auth.RefreshTokenRequest;
@@ -19,6 +21,7 @@ import com.uav.platform.mapper.auth.AuthMapper;
 import com.uav.platform.mapper.user.UserMapper;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
+import com.uav.platform.service.auth.AppleIdTokenService;
 import com.uav.platform.service.auth.AuthRateLimitService;
 import com.uav.platform.service.auth.AuthService;
 import com.uav.platform.service.auth.EmailDomainPolicyService;
@@ -53,6 +56,7 @@ public class AuthServiceImpl implements AuthService {
     private AuthRateLimitService rateLimiter;
     private EmailDomainPolicyService emailDomainPolicy;
     private GoogleIdTokenService googleVerifier;
+    private AppleIdTokenService appleVerifier;
     private TransactionTemplate transactionTemplate;
 
     @Autowired(required = false)
@@ -73,6 +77,11 @@ public class AuthServiceImpl implements AuthService {
     @Autowired(required = false)
     public void setGoogleIdTokenService(GoogleIdTokenService googleVerifier) {
         this.googleVerifier = googleVerifier;
+    }
+
+    @Autowired(required = false)
+    public void setAppleIdTokenService(AppleIdTokenService appleVerifier) {
+        this.appleVerifier = appleVerifier;
     }
 
     @Autowired(required = false)
@@ -313,6 +322,118 @@ public class AuthServiceImpl implements AuthService {
                         null,
                         UserRole.ROLE_PILOT,
                         UserStatus.ACTIVE);
+        user.setEmailVerified(true);
+        user.setTwoFactorEnabled(false);
+        user.setTwoFactorMethod(AuthOtpServiceImpl.METHOD_EMAIL);
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public AuthResponse loginWithApple(AppleLoginRequest request) {
+        if (appleVerifier == null || !appleVerifier.isEnabled()) {
+            throw SystemException.serviceUnavailable(
+                    AppleIdTokenService.DISABLED_MESSAGE, AppleIdTokenService.DISABLED_CODE);
+        }
+        AppleIdentity identity =
+                appleVerifier.verify(
+                        request == null ? null : request.credential(),
+                        request == null ? null : request.nonce());
+        String rateLimitKey =
+                identity.email() != null ? identity.email() : "apple:" + identity.sub();
+        if (rateLimiter != null) {
+            rateLimiter.checkAccount(AuthRateLimitAction.LOGIN, rateLimitKey);
+        }
+        String requestedFullName = request == null ? null : request.fullName();
+        return transactionTemplate == null
+                ? signInWithApple(identity, requestedFullName)
+                : transactionTemplate.execute(
+                        status -> signInWithApple(identity, requestedFullName));
+    }
+
+    private AuthResponse signInWithApple(AppleIdentity identity, String requestedFullName) {
+        AppUser user = userRepository.findByAppleSub(identity.sub()).orElse(null);
+        if (user == null && identity.email() != null) {
+            String email = identity.email();
+            user =
+                    userRepository
+                            .findByEmail(email)
+                            .or(() -> userRepository.findFirstByEmailIgnoreCaseOrderByIdAsc(email))
+                            .orElse(null);
+        }
+        if (user == null) {
+            if (identity.email() == null) {
+                throw SystemException.badRequest(
+                        "Apple chưa cung cấp địa chỉ email cho lần đăng nhập đầu tiên. Vui lòng cho phép chia sẻ email hoặc thu hồi quyền ứng dụng trong Cài đặt Apple ID rồi thử lại.",
+                        "APPLE_EMAIL_REQUIRED");
+            }
+            return issueSession(createAppleCustomer(identity, requestedFullName));
+        }
+
+        user = sessionLock.lock(user);
+
+        if (user.getAppleSub() != null && !user.getAppleSub().equals(identity.sub())) {
+            throw SystemException.conflict(
+                    "Tài khoản này đã được liên kết với một Apple ID khác.",
+                    "APPLE_ACCOUNT_CONFLICT");
+        }
+        if (UserAccountServiceImpl.isAccountLocked(user)) {
+            throw SystemException.unauthorized(
+                    "Tài khoản đã bị tạm khóa do nhập sai mật khẩu quá 5 lần. Vui lòng thử lại sau 15 phút.");
+        }
+        if (RegistrationOperations.awaitsApproval(user)) {
+            throw SystemException.forbidden(
+                    RegistrationOperations.PENDING_APPROVAL, "ACCOUNT_PENDING_APPROVAL");
+        }
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw SystemException.badRequest(CoreConstants.ACCOUNT_INACTIVE);
+        }
+
+        boolean changed = false;
+        boolean dropCredentials = false;
+        if (user.getAppleSub() == null) {
+            user.setAppleSub(identity.sub());
+            changed = true;
+        }
+        String sanitizedFullName = fullName(requestedFullName);
+        if ((user.getFullName() == null || user.getFullName().isBlank())
+                && sanitizedFullName != null) {
+            user.setFullName(sanitizedFullName);
+            changed = true;
+        }
+        if (!user.isEmailVerified()) {
+            if (user.getRole() == UserRole.ROLE_PILOT) {
+                user.setPasswordHash(null);
+                dropCredentials = true;
+            }
+            user.setEmailVerified(true);
+            changed = true;
+        }
+        if (user.getFailedAttempts() > 0) {
+            UserAccountServiceImpl.resetFailedAttempts(user);
+            changed = true;
+        }
+        if (changed) userRepository.save(user);
+        if (dropCredentials && refreshTokenService != null) refreshTokenService.deleteByUser(user);
+
+        if (authOtpService != null && user.isTwoFactorEnabled()) {
+            return authOtpService.createLoginChallenge(user, null);
+        }
+        return issueSession(user);
+    }
+
+    private AppUser createAppleCustomer(AppleIdentity identity, String requestedFullName) {
+        AppUser user =
+                UserAccountServiceImpl.createUser(
+                        uniqueUsername(RegistrationOperations.usernameFromEmail(identity.email())),
+                        identity.email(),
+                        null,
+                        null,
+                        fullName(requestedFullName),
+                        null,
+                        UserRole.ROLE_PILOT,
+                        UserStatus.ACTIVE);
+        user.setAppleSub(identity.sub());
         user.setEmailVerified(true);
         user.setTwoFactorEnabled(false);
         user.setTwoFactorMethod(AuthOtpServiceImpl.METHOD_EMAIL);

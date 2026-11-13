@@ -174,7 +174,7 @@ test('customer and admin billing services, polling hooks, and trilingual PDF mes
     }
 
     const customerHookSource = read('src/hooks/billing/useCustomerBilling.ts');
-    assert.match(customerHookSource, /refetchInterval:.*status === 'PENDING' \? 5000 : false/);
+    assert.match(customerHookSource, /refetchInterval:[\s\S]*?status\s*(?:!==|===)\s*'PENDING'[\s\S]*?(?:5000|5_000)/);
     assert.match(customerHookSource, /export function useDownloadInvoiceReceipt/);
     assert.match(read('src/hooks/billing/useBillingAdmin.ts'), /export function useDownloadAdminInvoiceReceipt/);
 

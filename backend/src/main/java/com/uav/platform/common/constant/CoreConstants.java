@@ -27,5 +27,7 @@ public final class CoreConstants {
             "User login with username/email and password";
     public static final String AUTH_OP_GOOGLE_SUMMARY =
             "Sign in with a Google ID token (creates a customer account for a new email)";
+    public static final String AUTH_OP_APPLE_SUMMARY =
+            "Sign in with an Apple ID token (creates a customer account for a new email)";
     public static final String AUTH_OP_ME_SUMMARY = "Get current authenticated user profile";
 }

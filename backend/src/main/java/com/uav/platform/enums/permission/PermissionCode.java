@@ -51,6 +51,8 @@ public enum PermissionCode {
     DASHBOARD_MISSION,
     // Audit
     AUDIT_VIEW,
+    // Support inbox: read every visitor thread and reply as staff (never a customer default)
+    SUPPORT_MANAGE,
     // Mission (Phase 2)
     MISSION_VIEW,
     MISSION_VIEW_ALL,

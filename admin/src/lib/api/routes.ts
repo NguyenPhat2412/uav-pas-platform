@@ -6,6 +6,7 @@ export const API_ROUTES = {
     auth: {
         login: '/api/v1/auth/login',
         google: '/api/v1/auth/google',
+        apple: '/api/v1/auth/apple',
         register: '/api/v1/auth/register',
         registerOtp: '/api/v1/auth/register-otp',
         verifyEmail: '/api/v1/auth/verify-email',
@@ -38,6 +39,8 @@ export const API_ROUTES = {
         profile: '/api/v1/users/profile',
         profilePassword: '/api/v1/users/profile/password',
         profileBilling: '/api/v1/users/profile/billing',
+        deletionPolicy: '/api/v1/users/profile/deletion-policy',
+        deleteOwnAccount: '/api/v1/users/profile/delete',
         avatar: '/api/v1/users/profile/avatar',
         avatarUploadUrl: '/api/v1/users/profile/avatar/upload-url',
     },

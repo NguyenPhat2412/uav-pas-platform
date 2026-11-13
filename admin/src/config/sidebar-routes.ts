@@ -116,7 +116,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         defaultLabel: 'Tin nhắn hỗ trợ',
         group: 'overview',
         icon: MessagesSquare,
-        permission: 'DASHBOARD_VIEW',
+        permission: 'SUPPORT_MANAGE',
     },
     {
         href: '/admin/fleet-map',

@@ -10,6 +10,7 @@
     "ios": {
       "bundleIdentifier": "vn.all1.uavpas",
       "supportsTablet": true,
+      "usesAppleSignIn": true,
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -36,6 +37,7 @@
       ],
       "expo-status-bar",
       "expo-localization",
+      "expo-apple-authentication",
       "expo-web-browser",
       "expo-font",
       [

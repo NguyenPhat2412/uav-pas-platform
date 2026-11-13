@@ -1,4 +1,15 @@
 {
+  "auth": {
+    "google": {
+      "short": "Google"
+    },
+    "apple": {
+      "signin_with": "Sign in with Apple",
+      "signup_with": "Sign up with Apple",
+      "short": "Apple",
+      "notConfigured": "Sign in with Apple is not configured on this build."
+    }
+  },
   "mobile": {
     "auth": {
       "fillCredentials": "Enter your username or email and password.",
@@ -31,12 +42,24 @@
     "nav": {
       "missionDetail": "Mission details",
       "missions": "Missions",
-      "weather": "Weather"
+      "weather": "Weather",
+      "services": "Services",
+      "support": "Support"
     },
     "home": {
       "greeting": "Hello,",
-      "shortcuts": {"create": "New", "services": "Services", "billing": "Plans", "training": "Guide"},
-      "pipeline": {"waiting": "Waiting", "active": "Flying", "scheduled": "Planned", "draft": "Drafts"}
+      "shortcuts": {
+        "create": "New",
+        "services": "Services",
+        "billing": "Plans",
+        "training": "Guide"
+      },
+      "pipeline": {
+        "waiting": "Waiting",
+        "active": "Flying",
+        "scheduled": "Planned",
+        "draft": "Drafts"
+      }
     },
     "account": {
       "profile": "Profile",
@@ -48,6 +71,32 @@
         "normal": "Default",
         "large": "Large",
         "xlarge": "Extra large"
+      },
+      "more": "More",
+      "moreTitle": "More settings",
+      "tiles": {
+        "profile": "Profile",
+        "billing": "Billing",
+        "training": "Guides",
+        "security": "Security"
+      },
+      "accountDeletion": {
+        "trigger": "Delete account",
+        "title": "Delete account",
+        "securityHint": "Permanently delete or anonymize your account under current platform policy.",
+        "modeAnonymize": "Mode: Anonymize personal data",
+        "modeHardDelete": "Mode: Permanent deletion",
+        "disabledFallback": "Self-service account deletion is currently unavailable for this account.",
+        "activeMissionsCount": "Active missions: {count}",
+        "unpaidInvoicesCount": "Unpaid invoices: {count}",
+        "phraseLabel": "Type confirmation phrase ({phrase})",
+        "phraseHint": "Enter \"{phrase}\" exactly to unlock account deletion.",
+        "reasonRequiredLabel": "Reason for deletion (required)",
+        "reasonOptionalLabel": "Reason for deletion (optional)",
+        "reasonPlaceholder": "Tell us why you are closing your account…",
+        "confirmAction": "Confirm account deletion",
+        "deletingAction": "Deleting…",
+        "deletedToast": "Your account has been deleted."
       }
     },
     "workspace": {
@@ -59,6 +108,8 @@
     },
     "push": {
       "title": "Device notifications",
+      "compactActive": "Enabled on this device",
+      "compactOff": "Off · Enable to receive alerts",
       "active": "Enabled",
       "inactive": "Not registered",
       "hint": "Receive mission updates, flight permit approvals, rescue target alerts, and payment confirmations on this phone.",
@@ -118,6 +169,15 @@
     },
     "missions": {
       "edit": "Edit",
+      "submitAction": "Submit",
+      "cloneAction": "Duplicate",
+      "cloningAction": "Duplicating...",
+      "cancelShort": "Cancel",
+      "pastStartWarning": "Scheduled start time has passed. Please pick a future time before submitting.",
+      "pastStartTitle": "Start time has passed",
+      "pastStartPrompt": "The scheduled window has passed. Move to tomorrow at the same time and submit now, or edit manually?",
+      "rescheduleAndSubmit": "Move to tomorrow & submit",
+      "editManually": "Edit manually",
       "history": "History",
       "noHistory": "No activity yet.",
       "openMaps": "Open in Maps",
@@ -175,7 +235,10 @@
       "receiptPendingHint": "Save or share the pro-forma PDF invoice for your records or payment approval.",
       "receiptPaidHint": "Invoice paid. Save or share your PDF payment receipt for accounting records.",
       "shareReceiptPdf": "Share / Save PDF Receipt",
-      "receiptShareTitle": "Invoice receipt {code}"
+      "receiptShareTitle": "Invoice receipt {code}",
+      "liveReconcileActive": "Online · Instant reconciliation",
+      "supportReconcileHint": "Need help reconciling a bank transfer or VAT invoice?",
+      "contactSupportButton": "Contact Support for payment reconciliation"
     },
     "security": {
       "twoFactor": "Two-step verification",
@@ -398,6 +461,11 @@
         "assignUav": "Assign UAV",
         "assignOperator": "Assign operator",
         "assignedToast": "Mission resource assignment updated."
+      },
+      "tabs": {
+        "missions": "Missions",
+        "sar": "Rescue",
+        "fleet": "Fleet"
       }
     },
     "adminQuick": {
@@ -510,7 +578,12 @@
       "statusOpen": "Open",
       "statusInProgress": "In progress",
       "statusResolved": "Resolved",
-      "unreadBadge": "{count} new"
+      "unreadBadge": "{count} new",
+      "liveRealtime": "Online · Real-time",
+      "liveSyncing": "Auto-syncing",
+      "adminTyping": "Admin is typing a reply...",
+      "visitorTyping": "Visitor is typing...",
+      "threadDeletedToast": "This support thread was closed or removed."
     }
   }
 }

@@ -200,8 +200,16 @@
     "google": {
       "signin_with": "Đăng nhập bằng Google",
       "signup_with": "Đăng ký bằng Google",
+      "short": "Google",
       "loading": "Đang tải đăng nhập Google, vui lòng thử lại sau giây lát.",
       "notConfigured": "Đăng nhập Google chưa được cấu hình."
+    },
+    "apple": {
+      "signin_with": "Đăng nhập bằng Apple",
+      "signup_with": "Đăng ký bằng Apple",
+      "short": "Apple",
+      "loading": "Đang tải đăng nhập Apple, vui lòng thử lại sau giây lát.",
+      "notConfigured": "Đăng nhập Apple chưa được cấu hình."
     }
   },
   "dashboard": {

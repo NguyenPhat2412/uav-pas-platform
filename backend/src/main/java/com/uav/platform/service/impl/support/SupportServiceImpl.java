@@ -24,10 +24,11 @@ import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.notification.NotificationService;
 import com.uav.platform.service.support.SupportService;
 import com.uav.platform.specification.support.SupportThreadSpecifications;
+import com.uav.platform.websocket.RealtimeEventBroadcaster;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,6 @@ import java.util.Map;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class SupportServiceImpl implements SupportService {
 
     private final SupportThreadRepository threadRepository;
@@ -47,6 +47,38 @@ public class SupportServiceImpl implements SupportService {
     private final SupportQuickReplyRepository quickReplyRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final RealtimeEventBroadcaster realtimeBroadcaster;
+
+    public SupportServiceImpl(
+            SupportThreadRepository threadRepository,
+            SupportMessageRepository messageRepository,
+            SupportQuickReplyRepository quickReplyRepository,
+            UserRepository userRepository,
+            NotificationService notificationService) {
+        this(
+                threadRepository,
+                messageRepository,
+                quickReplyRepository,
+                userRepository,
+                notificationService,
+                null);
+    }
+
+    @Autowired
+    public SupportServiceImpl(
+            SupportThreadRepository threadRepository,
+            SupportMessageRepository messageRepository,
+            SupportQuickReplyRepository quickReplyRepository,
+            UserRepository userRepository,
+            NotificationService notificationService,
+            @Autowired(required = false) RealtimeEventBroadcaster realtimeBroadcaster) {
+        this.threadRepository = threadRepository;
+        this.messageRepository = messageRepository;
+        this.quickReplyRepository = quickReplyRepository;
+        this.userRepository = userRepository;
+        this.notificationService = notificationService;
+        this.realtimeBroadcaster = realtimeBroadcaster;
+    }
 
     @Override
     @Transactional
@@ -79,7 +111,10 @@ public class SupportServiceImpl implements SupportService {
                         + thread.getContactInfo()
                         + "): "
                         + SupportOperations.preview(content, 160));
-        return SupportOperations.toPublicSessionResponse(thread, List.of(firstMessage));
+        PublicSupportThreadSessionResponse session =
+                SupportOperations.toPublicSessionResponse(thread, List.of(firstMessage));
+        publishThreadSnapshot(thread, List.of(firstMessage));
+        return session;
     }
 
     @Override
@@ -87,13 +122,20 @@ public class SupportServiceImpl implements SupportService {
     public PublicSupportThreadSessionResponse getPublicThread(
             String visitorToken, boolean markRead) {
         SupportThread thread = findByVisitorTokenOrThrow(visitorToken);
+        boolean clearedUnread = false;
         if (markRead && thread.getUnreadForVisitor() > 0) {
             thread.setUnreadForVisitor(0);
             thread = threadRepository.save(thread);
+            clearedUnread = true;
         }
         List<SupportMessage> messages =
                 messageRepository.findByThreadIdOrderByCreatedAtAscIdAsc(thread.getId());
-        return SupportOperations.toPublicSessionResponse(thread, messages);
+        PublicSupportThreadSessionResponse session =
+                SupportOperations.toPublicSessionResponse(thread, messages);
+        if (clearedUnread) {
+            publishThreadSnapshot(thread, messages);
+        }
+        return session;
     }
 
     @Override
@@ -116,8 +158,10 @@ public class SupportServiceImpl implements SupportService {
                 thread,
                 "Tin nhắn mới từ khách [" + thread.getCode() + "]",
                 thread.getFullName() + ": " + SupportOperations.preview(content, 160));
-        return SupportOperations.toPublicSessionResponse(
-                thread, messageRepository.findByThreadIdOrderByCreatedAtAscIdAsc(thread.getId()));
+        List<SupportMessage> messages =
+                messageRepository.findByThreadIdOrderByCreatedAtAscIdAsc(thread.getId());
+        publishThreadSnapshot(thread, messages);
+        return SupportOperations.toPublicSessionResponse(thread, messages);
     }
 
     @Override
@@ -160,11 +204,17 @@ public class SupportServiceImpl implements SupportService {
     @Transactional
     public SupportThreadDetailResponse getAdminThreadDetail(Long id) {
         SupportThread thread = findByIdOrThrow(id);
+        boolean clearedAdminUnread = false;
         if (thread.getUnreadForAdmin() > 0) {
             thread.setUnreadForAdmin(0);
             thread = threadRepository.save(thread);
+            clearedAdminUnread = true;
         }
-        return buildDetailResponse(thread);
+        SupportThreadDetailResponse detail = buildDetailResponse(thread);
+        if (clearedAdminUnread && realtimeBroadcaster != null) {
+            realtimeBroadcaster.publishSupportSummaryUpdated(getAdminSummary());
+        }
+        return detail;
     }
 
     @Override
@@ -186,7 +236,13 @@ public class SupportServiceImpl implements SupportService {
                         content,
                         now));
         SupportOperations.applyAdminReply(thread, adminUsername, content, request.status(), now);
-        return buildDetailResponse(threadRepository.save(thread));
+        thread = threadRepository.save(thread);
+        List<SupportMessage> messages =
+                messageRepository.findByThreadIdOrderByCreatedAtAscIdAsc(thread.getId());
+        publishThreadSnapshot(thread, messages);
+        return new SupportThreadDetailResponse(
+                SupportOperations.toThreadResponse(thread, messages.size()),
+                messages.stream().map(SupportOperations::toMessageResponse).toList());
     }
 
     @Override
@@ -196,16 +252,22 @@ public class SupportServiceImpl implements SupportService {
         thread.setStatus(SupportOperations.requireValidStatus(request.status()));
         thread.setUpdatedAt(LocalDateTime.now());
         thread = threadRepository.save(thread);
-        return SupportOperations.toThreadResponse(
-                thread, messageRepository.countByThreadId(thread.getId()));
+        List<SupportMessage> messages =
+                messageRepository.findByThreadIdOrderByCreatedAtAscIdAsc(thread.getId());
+        publishThreadSnapshot(thread, messages);
+        return SupportOperations.toThreadResponse(thread, messages.size());
     }
 
     @Override
     @Transactional
     public void deleteThread(Long id) {
         SupportThread thread = findByIdOrThrow(id);
+        String visitorToken = thread.getVisitorToken();
         messageRepository.deleteByThreadId(thread.getId());
         threadRepository.delete(thread);
+        if (realtimeBroadcaster != null) {
+            realtimeBroadcaster.publishSupportThreadDeleted(id, visitorToken, getAdminSummary());
+        }
     }
 
     @Override
@@ -243,6 +305,18 @@ public class SupportServiceImpl implements SupportService {
     @Transactional
     public void deleteQuickReply(Long id) {
         quickReplyRepository.delete(findQuickReplyOrThrow(id));
+    }
+
+    private void publishThreadSnapshot(SupportThread thread, List<SupportMessage> messages) {
+        if (realtimeBroadcaster == null) {
+            return;
+        }
+        PublicSupportThreadSessionResponse visitorSession =
+                SupportOperations.toPublicSessionResponse(thread, messages);
+        SupportThreadResponse adminThread =
+                SupportOperations.toThreadResponse(thread, messages.size());
+        realtimeBroadcaster.publishSupportThreadUpdated(
+                thread.getVisitorToken(), visitorSession, adminThread, getAdminSummary());
     }
 
     private SupportThreadDetailResponse buildDetailResponse(SupportThread thread) {

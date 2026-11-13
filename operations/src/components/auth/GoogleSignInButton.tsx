@@ -104,7 +104,7 @@ export function GoogleSignInButton({onCredential, disabled = false, text = 'sign
                     shape: 'rectangular',
                     logo_alignment: 'center',
                     locale,
-                    width: Math.min(400, Math.max(200, Math.round(parent.getBoundingClientRect().width))),
+                    width: Math.min(400, Math.max(140, Math.round(parent.getBoundingClientRect().width))),
                 });
                 setReady(true);
             })
@@ -122,11 +122,12 @@ export function GoogleSignInButton({onCredential, disabled = false, text = 'sign
             {!ready && (
                 <button
                     type="button"
+                    aria-label={t(`auth.google.${text}`)}
                     onClick={() => toast.info(t(CLIENT_ID ? 'auth.google.loading' : 'auth.google.notConfigured'))}
-                    className="flex h-10 w-full items-center justify-center gap-2.5 rounded-control border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                    className="flex h-10 w-full items-center justify-center gap-2 rounded-control border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 cursor-pointer"
                 >
                     <GoogleMark/>
-                    {t(`auth.google.${text}`)}
+                    <span className="truncate">{t('auth.google.short')}</span>
                 </button>
             )}
         </div>

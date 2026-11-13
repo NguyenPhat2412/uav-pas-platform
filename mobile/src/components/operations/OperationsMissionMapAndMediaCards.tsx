@@ -175,6 +175,12 @@ export function OperationsMissionMediaAndTimelineCards({
         {value: 'DOCUMENT', label: t('opsMissions.detail.media.roleDocument')},
         {value: 'FLIGHT_DATA', label: t('opsMissions.detail.media.roleFlightData')},
     ];
+    const roleLabelMap: Record<string, string> = {
+        OUTPUT: t('opsMissions.detail.media.roleOutput'),
+        DOCUMENT: t('opsMissions.detail.media.roleDocument'),
+        FLIGHT_DATA: t('opsMissions.detail.media.roleFlightData'),
+        INPUT: t('mobile.files.title'),
+    };
 
     return (
         <>
@@ -193,6 +199,7 @@ export function OperationsMissionMediaAndTimelineCards({
                             <ChipGroup options={roleOptions} value={uploadRole} onChange={onUploadRoleChange}/>
                             <View style={styles.actions}>
                                 <Button
+                                    size="sm"
                                     label={t('mobile.files.camera')}
                                     icon={Camera}
                                     tone="secondary"
@@ -201,6 +208,7 @@ export function OperationsMissionMediaAndTimelineCards({
                                     style={styles.flex}
                                 />
                                 <Button
+                                    size="sm"
                                     label={t('mobile.files.libraryMedia')}
                                     icon={ImagePlus}
                                     tone="secondary"
@@ -224,7 +232,7 @@ export function OperationsMissionMediaAndTimelineCards({
                                 <View style={styles.flex}>
                                     <AppText numberOfLines={1}>{item.media.originalName}</AppText>
                                     <AppText variant="caption">
-                                        {item.mediaRole} · {formatFileSize(item.media.size, formatNumber)}
+                                        {roleLabelMap[item.mediaRole] ?? item.mediaRole} · {formatFileSize(item.media.size, formatNumber)}
                                     </AppText>
                                 </View>
                                 <Download size={18} color={colors.primary}/>
@@ -263,7 +271,7 @@ const styles = StyleSheet.create({
     flex: {flex: 1},
     mapLink: {flexDirection: 'row', alignItems: 'center', gap: 4},
     linkText: {color: colors.primary, fontWeight: '600'},
-    mapFrame: {height: 220, borderRadius: radius.control, overflow: 'hidden'},
+    mapFrame: {height: 176, borderRadius: radius.control, overflow: 'hidden'},
     actions: {flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap'},
     uploadBlock: {gap: spacing.sm},
     fileRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.sm},

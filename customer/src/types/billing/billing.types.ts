@@ -115,3 +115,10 @@ export interface VietQrOptions {
     amount: number;
     memo: string;
 }
+
+export interface SettledInvoiceEvent {
+    invoiceId: number;
+    invoiceCode: string;
+    status: string;
+    timestamp: string;
+}

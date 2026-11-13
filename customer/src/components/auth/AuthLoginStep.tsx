@@ -60,7 +60,7 @@ export function AuthLoginStep({
                     Đăng nhập hệ thống
                 </h2>
                 <p className="m-0 mt-1 text-xs text-slate-500">
-                    Đăng nhập nhanh và an toàn bằng tài khoản Google.
+                    Đăng nhập nhanh và an toàn bằng Google hoặc Apple.
                 </p>
             </div>
 

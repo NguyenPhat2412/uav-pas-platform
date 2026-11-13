@@ -65,18 +65,10 @@ export function AppText({variant = 'body', style, children, numberOfLines, selec
     return <ScaledText style={[TEXT[variant], style]} numberOfLines={numberOfLines} selectable={selectable}>{children}</ScaledText>;
 }
 
-/**
- * A page inside a native stack: the scroll view insets itself under the (glass) header, the tab bar and the keyboard
- * (contentInsetAdjustmentBehavior), with pull-to-refresh when onRefresh is given. Content sits in one centred column
- * (maxWidth) so it never stretches across an iPad. Screens without a header (sign-in) pass edges for the safe area.
- */
-/** What a Screen offers the form inside it: a way to re-check the keyboard, and the slot for the element to keep in view. */
+/** Native stack screen with pull-to-refresh, centred max-width column, and keyboard auto-reveal. */
 const KeyboardReveal = createContext<{ reveal: () => void; anchor: React.RefObject<React.ComponentRef<typeof View> | null> } | null>(null);
 
-/**
- * Wrap a form's submit button: while the keyboard is up the Screen scrolls it into view above the keyboard,
- * whichever field is being typed in, as long as that field itself stays visible.
- */
+/** Wraps a form submit button so Screen keeps it visible above the keyboard while typing. */
 export function KeyboardAnchor({children}: { children: ReactNode }) {
     const screen = useContext(KeyboardReveal);
     return <View ref={screen?.anchor} collapsable={false}>{children}</View>;
@@ -172,33 +164,27 @@ const BUTTON: Record<ButtonTone, { background: string; text: string; border: str
     danger: {background: colors.danger, text: colors.white, border: colors.danger},
 };
 
-export function Button({label, onPress, tone = 'primary', loading = false, disabled = false, icon: Icon, style}: {
-    label: string;
-    onPress: () => void;
-    tone?: ButtonTone;
-    loading?: boolean;
-    disabled?: boolean;
-    icon?: ComponentType<{ size?: number; color?: string }>;
-    style?: StyleProp<ViewStyle>;
+export function Button({label, onPress, tone = 'primary', size = 'md', loading = false, disabled = false, icon: Icon, style}: {
+    label: string; onPress: () => void; tone?: ButtonTone; size?: 'md' | 'sm';
+    loading?: boolean; disabled?: boolean; icon?: ComponentType<{ size?: number; color?: string }>; style?: StyleProp<ViewStyle>;
 }) {
     const palette = BUTTON[tone];
     const inactive = disabled || loading;
+    const compact = size === 'sm';
     return (
         <Pressable
-            onPress={onPress}
-            disabled={inactive}
-            accessibilityRole="button"
+            onPress={onPress} disabled={inactive} accessibilityRole="button"
             accessibilityState={{disabled: inactive, busy: loading}}
-            style={({pressed}) => [styles.button, {backgroundColor: palette.background, borderColor: palette.border},
+            style={({pressed}) => [styles.button, compact && styles.buttonSm, {backgroundColor: palette.background, borderColor: palette.border},
                 inactive && styles.disabled, pressed && styles.pressed, style]}>
-            {loading ? <ActivityIndicator color={palette.text}/> : Icon ? <Icon size={18} color={palette.text}/> : null}
-            <ScaledText style={[styles.buttonText, {color: palette.text}]}>{label}</ScaledText>
+            {loading ? <ActivityIndicator size="small" color={palette.text}/> : Icon ? <Icon size={compact ? 15 : 18} color={palette.text}/> : null}
+            <ScaledText numberOfLines={1} style={[styles.buttonText, compact && styles.buttonTextSm, {color: palette.text}]}>{label}</ScaledText>
         </Pressable>
     );
 }
 
 export function TextField({label, error, hint, style, ...input}: TextInputProps & {
-    label: string;
+    label?: string;
     error?: string | null;
     hint?: string;
 }) {
@@ -210,11 +196,11 @@ export function TextField({label, error, hint, style, ...input}: TextInputProps 
     const EyeIcon = hidden ? Eye : EyeOff;
     return (
         <View style={[styles.field, style as StyleProp<ViewStyle>]}>
-            <ScaledText style={styles.label}>{label}</ScaledText>
+            {label ? <ScaledText style={styles.label}>{label}</ScaledText> : null}
             <View>
                 <TextInput
                     placeholderTextColor={colors.muted}
-                    accessibilityLabel={label}
+                    accessibilityLabel={label || input.placeholder}
                     {...input}
                     secureTextEntry={secure && hidden}
                     onFocus={event => {
@@ -254,7 +240,7 @@ export function Badge({label, background = colors.slateLight, color = colors.sla
 export function SectionTitle({title, action}: { title: string; action?: ReactNode }) {
     return (
         <View style={styles.sectionTitle}>
-            <AppText variant="title">{title}</AppText>
+            <AppText variant="title" style={styles.sectionTitleText}>{title}</AppText>
             {action}
         </View>
     );
@@ -289,26 +275,22 @@ export function EmptyState({message, icon: Icon = Inbox, action}: { message: str
     );
 }
 
-/** A horizontal row of selectable chips (filters, segmented choices). */
-export function ChipGroup<T extends string>({options, value, onChange}: {
-    options: { value: T; label: string }[];
-    value: T;
-    onChange: (value: T) => void;
+/** Selectable chips (scrollable row by default, or wrapped inside cards when wrap is true). */
+export function ChipGroup<T extends string>({options, value, onChange, wrap = false}: {
+    options: { value: T; label: string }[]; value: T; onChange: (value: T) => void; wrap?: boolean;
 }) {
-    return (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
-            {options.map(option => {
-                const active = option.value === value;
-                return (
-                    <Pressable key={option.value} onPress={() => onChange(option.value)} accessibilityRole="button"
-                               accessibilityState={{selected: active}}
-                               style={[styles.chip, active && styles.chipActive]}>
-                        <ScaledText style={[styles.chipText, active && styles.chipTextActive]}>{option.label}</ScaledText>
-                    </Pressable>
-                );
-            })}
-        </ScrollView>
-    );
+    const items = options.map(option => {
+        const active = option.value === value;
+        return (
+            <Pressable key={option.value} onPress={() => onChange(option.value)} accessibilityRole="button"
+                       accessibilityState={{selected: active}}
+                       style={[styles.chip, wrap && styles.chipWrapItem, active && styles.chipActive]}>
+                <ScaledText numberOfLines={1} style={[styles.chipText, active && styles.chipTextActive]}>{option.label}</ScaledText>
+            </Pressable>
+        );
+    });
+    if (wrap) return <View style={styles.chipsWrap}>{items}</View>;
+    return <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>{items}</ScrollView>;
 }
 
 export const styles = StyleSheet.create({
@@ -319,7 +301,7 @@ export const styles = StyleSheet.create({
     column: {width: '100%', alignSelf: 'center', gap: spacing.lg},
     card: {
         backgroundColor: colors.surface, borderRadius: radius.card, padding: spacing.lg, borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border, gap: spacing.sm,
+        borderColor: colors.border, gap: spacing.sm, overflow: 'hidden',
     },
     pressed: {opacity: 0.75},
     disabled: {opacity: 0.5},
@@ -327,7 +309,9 @@ export const styles = StyleSheet.create({
         minHeight: 48, borderRadius: radius.control, borderWidth: 1, paddingHorizontal: spacing.lg,
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm,
     },
-    buttonText: {fontSize: font.body, fontWeight: '600'},
+    buttonSm: {minHeight: 36, paddingHorizontal: spacing.md, paddingVertical: 6, gap: 6},
+    buttonText: {fontSize: font.body, fontWeight: '600', flexShrink: 1},
+    buttonTextSm: {fontSize: font.small},
     field: {gap: 6},
     label: {fontSize: font.small, fontWeight: '600', color: colors.text},
     input: {
@@ -342,18 +326,21 @@ export const styles = StyleSheet.create({
     hint: {fontSize: font.caption, color: colors.muted},
     badge: {
         flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', borderRadius: radius.control,
-        paddingHorizontal: spacing.sm, paddingVertical: 3,
+        paddingHorizontal: spacing.sm, paddingVertical: 3, maxWidth: '100%', flexShrink: 1,
     },
-    badgeText: {fontSize: font.caption, fontWeight: '600'},
-    sectionTitle: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+    badgeText: {fontSize: font.caption, fontWeight: '600', flexShrink: 1},
+    sectionTitle: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: spacing.sm},
+    sectionTitleText: {flexShrink: 1},
     state: {alignItems: 'center', justifyContent: 'center', gap: spacing.md, paddingVertical: spacing.xxl},
     center: {textAlign: 'center'},
     chips: {gap: spacing.sm, paddingVertical: 2},
+    chipsWrap: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs},
     chip: {
         borderRadius: radius.control, borderWidth: 1, borderColor: colors.inputBorder, backgroundColor: colors.surface,
-        paddingHorizontal: spacing.md, paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.md, paddingVertical: spacing.sm, maxWidth: '100%',
     },
+    chipWrapItem: {paddingHorizontal: spacing.md, paddingVertical: 6},
     chipActive: {backgroundColor: colors.slateDark, borderColor: colors.slateDark},
-    chipText: {fontSize: font.small, color: colors.text, fontWeight: '500'},
+    chipText: {fontSize: font.small, color: colors.text, fontWeight: '500', flexShrink: 1},
     chipTextActive: {color: colors.white},
 });

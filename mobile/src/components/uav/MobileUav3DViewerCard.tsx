@@ -16,13 +16,19 @@ interface HotspotSpec {
 }
 
 const HOTSPOTS: HotspotSpec[] = [
-    {id: 'rtk', label: 'Module GNSS Dual-RTK', detail: 'Định vị chính xác ±1.5 cm thực địa, chống nhiễu đa tần L1/L2/L5.', x: 140, y: 42},
-    {id: 'gimbal', label: 'Cụm Gimbal AI 4K & Nhiệt', detail: 'Camera quang học 4K Zoom 30x + Cảm biến nhiệt FLIR 640×512 ổn định 3 trục.', x: 140, y: 124},
-    {id: 'motors', label: 'Động cơ Brushless FOC', detail: 'Chống nước/bụi IP55, cảm biến nhiệt cuộn dây & điều tốc ESC thông minh.', x: 64, y: 58},
-    {id: 'battery', label: 'Pin Thông minh LiPo 12S', detail: 'Dung lượng 22,000 mAh, tự sưởi ấm và giám sát độ khỏe từng cell (SOH).', x: 140, y: 84},
-    {id: 'frame', label: 'Khung Carbon Hàng không', detail: 'Sợi carbon T700 siêu nhẹ, chịu sức gió cấp 7 (15 m/s).', x: 196, y: 92},
-    {id: 'payload', label: 'Ngàm Tải trọng & Đèn SAR', detail: 'Đèn pha tìm kiếm 10,000 Lumens & cơ cấu thả phao cứu sinh khẩn cấp.', x: 92, y: 120},
+    {id: 'rtk', label: 'Định vị chính xác', detail: 'Hai ăng-ten định vị vệ tinh, sai số chỉ khoảng 1–2 cm, ít bị nhiễu sóng.', x: 140, y: 42},
+    {id: 'gimbal', label: 'Camera & Ảnh nhiệt', detail: 'Camera chụp rõ nét, phóng to xa và camera ảnh nhiệt; giá đỡ giữ hình không rung.', x: 140, y: 124},
+    {id: 'motors', label: 'Động cơ kháng nước', detail: 'Động cơ chịu nước và bụi, tự theo dõi nhiệt độ để bay an toàn.', x: 64, y: 58},
+    {id: 'battery', label: 'Pin dung lượng cao', detail: 'Pin lớn cho chuyến bay dài, tự làm ấm khi trời lạnh và báo khi pin yếu.', x: 140, y: 84},
+    {id: 'frame', label: 'Khung sợi carbon', detail: 'Khung sợi carbon nhẹ mà chắc, bay ổn định khi gió khoảng 15 m/s.', x: 196, y: 92},
+    {id: 'payload', label: 'Đèn pha & Cứu hộ', detail: 'Đèn pha rất sáng để tìm kiếm ban đêm và cơ cấu thả phao cứu sinh.', x: 92, y: 120},
 ];
+
+const AIRFRAME_NAME: Record<MobileAirframeClass, string> = {
+    QUADCOPTER_RTK: 'Máy bay 4 cánh quạt',
+    HEXACOPTER_SAR: 'Máy bay 6 cánh cứu hộ',
+    VTOL_FIXED_WING: 'Máy bay cánh bằng',
+};
 
 export interface MobileUav3DViewerProps {
     serialNumber?: string;
@@ -59,17 +65,18 @@ export function MobileUav3DViewerCard({
     return (
         <Card>
             <SectionTitle
-                title={`Mô hình 3D · ${modelName}`}
+                title={`Thiết bị bay dự kiến · ${modelName && !/RTK|Quadcopter|Enterprise/i.test(modelName) ? modelName : AIRFRAME_NAME[airframe]}`}
                 action={<Badge icon={Cpu} label={serialNumber} background={colors.slateDark} color={colors.white}/>}
             />
 
             <ChipGroup<MobileAirframeClass>
+                wrap
                 value={airframe}
                 onChange={setAirframe}
                 options={[
-                    {value: 'QUADCOPTER_RTK', label: '4 Cánh RTK'},
-                    {value: 'HEXACOPTER_SAR', label: '6 Cánh SAR'},
-                    {value: 'VTOL_FIXED_WING', label: 'VTOL Cánh bằng'},
+                    {value: 'QUADCOPTER_RTK', label: '4 cánh quạt'},
+                    {value: 'HEXACOPTER_SAR', label: '6 cánh cứu hộ'},
+                    {value: 'VTOL_FIXED_WING', label: 'Cánh bằng'},
                 ]}
             />
 
@@ -80,7 +87,7 @@ export function MobileUav3DViewerCard({
                     style={[styles.modeBtn, exploded && styles.modeBtnActive]}>
                     <Layers size={14} color={exploded ? colors.white : colors.slateDark}/>
                     <AppText variant="caption" style={exploded ? styles.modeTextActive : styles.modeText}>
-                        Tách lớp linh kiện
+                        Tách bộ phận
                     </AppText>
                 </Pressable>
                 <Pressable
@@ -89,7 +96,7 @@ export function MobileUav3DViewerCard({
                     style={[styles.modeBtn, xray && styles.modeBtnActive]}>
                     <Eye size={14} color={xray ? colors.white : colors.slateDark}/>
                     <AppText variant="caption" style={xray ? styles.modeTextActive : styles.modeText}>
-                        X-Ray khung thân
+                        Xem bên trong
                     </AppText>
                 </Pressable>
             </View>
@@ -192,10 +199,10 @@ export function MobileUav3DViewerCard({
 
                 <View style={styles.hudOverlay}>
                     <AppText variant="caption" style={styles.hudPill}>
-                        Pitch {pitchDeg.toFixed(1)}° · Roll {rollDeg.toFixed(1)}° · Yaw {Math.round(yawDeg)}°
+                        Hướng bay {Math.round(yawDeg)}° · Góc nghiêng {rollDeg.toFixed(1)}°
                     </AppText>
                     <AppText variant="caption" style={styles.hudPill}>
-                        AGL {Math.round(altitudeM)}m · {speedMps.toFixed(1)}m/s · Pin {Math.round(batteryPct)}%
+                        Độ cao {Math.round(altitudeM)} m · Tốc độ {speedMps.toFixed(1)} m/s · Pin {Math.round(batteryPct)}%
                     </AppText>
                 </View>
             </View>
@@ -231,9 +238,10 @@ export function MobileUav3DViewerCard({
 }
 
 const styles = StyleSheet.create({
-    modeRow: {flexDirection: 'row', gap: spacing.sm},
+    modeRow: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm},
     modeBtn: {
-        flex: 1,
+        flexGrow: 1,
+        flexBasis: 120,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -268,6 +276,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: spacing.xs,
     },
     hudPill: {
+        flexShrink: 1,
         fontWeight: '600',
         color: colors.slateDark,
     },
@@ -277,6 +286,7 @@ const styles = StyleSheet.create({
         gap: spacing.xs,
     },
     spotChip: {
+        maxWidth: '100%',
         paddingVertical: 4,
         paddingHorizontal: spacing.sm,
         borderRadius: radius.control,

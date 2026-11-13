@@ -67,7 +67,7 @@ export function HomeScreen() {
         <Screen onRefresh={() => void analytics.refetch()} refreshing={analytics.isRefetching}>
             <Stack.Screen options={{
                 headerTitle: () => <Greeting/>,
-                headerRight: () => <HeaderIconButton icon={Bell} label={t('nav.notifications')} dot={unreadCount > 0}
+                headerRight: () => <HeaderIconButton icon={Bell} label={t('nav.notifications')} count={unreadCount}
                                                      onPress={() => router.navigate('/customer/notifications')}/>,
             }}/>
 

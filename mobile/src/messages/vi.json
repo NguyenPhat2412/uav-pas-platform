@@ -1,4 +1,15 @@
 {
+  "auth": {
+    "google": {
+      "short": "Google"
+    },
+    "apple": {
+      "signin_with": "Đăng nhập bằng Apple",
+      "signup_with": "Đăng ký bằng Apple",
+      "short": "Apple",
+      "notConfigured": "Đăng nhập bằng Apple chưa được cấu hình trên bản dựng này."
+    }
+  },
   "mobile": {
     "auth": {
       "fillCredentials": "Nhập tên đăng nhập hoặc email và mật khẩu.",
@@ -31,12 +42,24 @@
     "nav": {
       "missionDetail": "Chi tiết nhiệm vụ",
       "missions": "Nhiệm vụ",
-      "weather": "Thời tiết"
+      "weather": "Thời tiết",
+      "services": "Dịch vụ",
+      "support": "Hỗ trợ"
     },
     "home": {
       "greeting": "Xin chào,",
-      "shortcuts": {"create": "Tạo mới", "services": "Dịch vụ", "billing": "Gói cước", "training": "Hướng dẫn"},
-      "pipeline": {"waiting": "Chờ", "active": "Đang bay", "scheduled": "Lịch", "draft": "Nháp"}
+      "shortcuts": {
+        "create": "Tạo mới",
+        "services": "Dịch vụ",
+        "billing": "Gói cước",
+        "training": "Hướng dẫn"
+      },
+      "pipeline": {
+        "waiting": "Chờ",
+        "active": "Đang bay",
+        "scheduled": "Lịch",
+        "draft": "Nháp"
+      }
     },
     "account": {
       "profile": "Hồ sơ cá nhân",
@@ -48,6 +71,32 @@
         "normal": "Vừa",
         "large": "Lớn",
         "xlarge": "Rất lớn"
+      },
+      "more": "Khác",
+      "moreTitle": "Cài đặt khác",
+      "tiles": {
+        "profile": "Hồ sơ",
+        "billing": "Hóa đơn",
+        "training": "Hướng dẫn",
+        "security": "Bảo mật"
+      },
+      "accountDeletion": {
+        "trigger": "Xoá tài khoản",
+        "title": "Xoá tài khoản",
+        "securityHint": "Gửi yêu cầu xoá hoặc ẩn danh tài khoản theo chính sách hệ thống hiện hành.",
+        "modeAnonymize": "Chế độ: Ẩn danh dữ liệu cá nhân",
+        "modeHardDelete": "Chế độ: Xoá vĩnh viễn tài khoản",
+        "disabledFallback": "Chức năng tự xoá tài khoản hiện không khả dụng đối với tài khoản này.",
+        "activeMissionsCount": "Nhiệm vụ đang xử lý: {count}",
+        "unpaidInvoicesCount": "Hóa đơn chưa thanh toán: {count}",
+        "phraseLabel": "Nhập cụm từ xác nhận ({phrase})",
+        "phraseHint": "Nhập chính xác \"{phrase}\" để mở khoá thao tác xoá tài khoản.",
+        "reasonRequiredLabel": "Lý do xoá tài khoản (bắt buộc)",
+        "reasonOptionalLabel": "Lý do xoá tài khoản (tùy chọn)",
+        "reasonPlaceholder": "Chia sẻ lý do bạn muốn đóng tài khoản…",
+        "confirmAction": "Xác nhận xoá tài khoản",
+        "deletingAction": "Đang xử lý…",
+        "deletedToast": "Tài khoản của bạn đã được xoá."
       }
     },
     "workspace": {
@@ -59,6 +108,8 @@
     },
     "push": {
       "title": "Thông báo trên thiết bị",
+      "compactActive": "Đang bật trên thiết bị này",
+      "compactOff": "Đang tắt · Bật để nhận cảnh báo",
       "active": "Đang bật",
       "inactive": "Chưa đăng ký",
       "hint": "Nhận cảnh báo nhiệm vụ, phê duyệt phép bay, phát hiện mục tiêu cứu nạn và thanh toán ngay trên điện thoại này.",
@@ -118,6 +169,15 @@
     },
     "missions": {
       "edit": "Sửa",
+      "submitAction": "Gửi yêu cầu",
+      "cloneAction": "Tạo bản sao",
+      "cloningAction": "Đang sao chép...",
+      "cancelShort": "Hủy",
+      "pastStartWarning": "Giờ bay dự kiến đã qua. Vui lòng dời sang giờ mới trước khi gửi.",
+      "pastStartTitle": "Giờ bay dự kiến đã qua",
+      "pastStartPrompt": "Khung giờ bạn chọn đã qua. Bạn muốn dời sang ngày mai cùng giờ rồi gửi ngay, hay tự chỉnh sửa?",
+      "rescheduleAndSubmit": "Dời sang ngày mai & gửi",
+      "editManually": "Tự chỉnh sửa",
       "history": "Lịch sử",
       "noHistory": "Chưa có hoạt động.",
       "openMaps": "Mở trong Bản đồ",
@@ -175,7 +235,10 @@
       "receiptPendingHint": "Tải hoặc chia sẻ bản hóa đơn tạm tính (PDF) để lưu trữ hoặc trình duyệt thanh toán.",
       "receiptPaidHint": "Hóa đơn đã thanh toán. Tải hoặc chia sẻ biên lai thu tiền PDF cho mục đích đối chiếu.",
       "shareReceiptPdf": "Tải / Chia sẻ biên lai PDF",
-      "receiptShareTitle": "Biên lai hóa đơn {code}"
+      "receiptShareTitle": "Biên lai hóa đơn {code}",
+      "liveReconcileActive": "Trực tuyến · Đối soát tức thì",
+      "supportReconcileHint": "Cần hỗ trợ đối soát chuyển khoản hoặc xuất hóa đơn VAT?",
+      "contactSupportButton": "Liên hệ Hỗ trợ đối soát thanh toán"
     },
     "security": {
       "twoFactor": "Xác thực 2 bước",
@@ -398,6 +461,11 @@
         "assignUav": "Gán UAV",
         "assignOperator": "Gán người vận hành",
         "assignedToast": "Đã cập nhật phân công tài nguyên bay."
+      },
+      "tabs": {
+        "missions": "Nhiệm vụ",
+        "sar": "Cứu hộ",
+        "fleet": "Đội bay"
       }
     },
     "adminQuick": {
@@ -510,7 +578,12 @@
       "statusOpen": "Mới tiếp nhận",
       "statusInProgress": "Đang xử lý",
       "statusResolved": "Đã hoàn tất",
-      "unreadBadge": "{count} mới"
+      "unreadBadge": "{count} mới",
+      "liveRealtime": "Trực tuyến · Thời gian thực",
+      "liveSyncing": "Đang đồng bộ tự động",
+      "adminTyping": "Admin đang nhập phản hồi...",
+      "visitorTyping": "Khách đang nhập...",
+      "threadDeletedToast": "Phiên hỗ trợ đã được đóng hoặc xóa."
     }
   }
 }

@@ -10,8 +10,7 @@ import {colors} from '@/styles/tokens';
 const TAB_ROOTS = [
     '/customer/home',
     '/customer/missions',
-    '/customer/weather',
-    '/customer/notifications',
+    '/customer/services',
     '/customer/account',
     '/operations/missions',
     '/operations/sar',

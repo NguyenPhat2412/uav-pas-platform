@@ -3,6 +3,7 @@ import Image from 'next/image';
 import {useSidebarController} from '@/hooks/useSidebarController';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import {AssistantWidget} from '@/components/assistant/AssistantWidget';
+import {OperationsSupportQuickDock} from '@/components/support/OperationsSupportQuickDock';
 import React from 'react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
@@ -253,6 +254,7 @@ function OperationsShell({children, activeResource}: { children: React.ReactNode
                 <main id="workspace" className="flex w-full flex-1 flex-col bg-white outline-none" tabIndex={-1}>
                     {children}
                 </main>
+                <OperationsSupportQuickDock/>
                 <AssistantWidget portal="OPERATIONS"/>
             </div>
         </div>

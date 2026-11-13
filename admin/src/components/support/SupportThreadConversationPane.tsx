@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useRef, useState, type KeyboardEvent} from 'react';
+import {useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent} from 'react';
 import {Building2, CheckCircle2, Clock, Mail, Phone, RotateCcw, Send, Settings2, Trash2, User, Zap} from 'lucide-react';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Button} from '@/components/ui';
@@ -27,12 +27,19 @@ import {
 interface SupportThreadConversationPaneProps {
     threadId: number;
     quickReplies: readonly SupportQuickReply[];
+    visitorTypingName?: string;
+    onAdminTyping?: (typing: boolean) => void;
     onOpenQuickReplies: () => void;
     onDeleted: () => void;
 }
 
 export function SupportThreadConversationPane({
-    threadId, quickReplies, onOpenQuickReplies, onDeleted,
+    threadId,
+    quickReplies,
+    visitorTypingName,
+    onAdminTyping,
+    onOpenQuickReplies,
+    onDeleted,
 }: SupportThreadConversationPaneProps) {
     const detailQuery = useSupportThreadDetail(threadId);
     const replyMutation = useReplySupportThread();
@@ -42,19 +49,39 @@ export function SupportThreadConversationPane({
     const [draft, setDraft] = useState('');
     const transcriptRef = useRef<HTMLDivElement>(null);
     const composerRef = useRef<HTMLTextAreaElement>(null);
+    const stopTypingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const thread = detailQuery.data?.thread;
     const messages = detailQuery.data?.messages ?? [];
 
     useEffect(() => {
         transcriptRef.current?.scrollTo({top: transcriptRef.current.scrollHeight, behavior: 'smooth'});
-    }, [threadId, messages.length]);
+    }, [threadId, messages.length, visitorTypingName]);
+
+    useEffect(() => () => {
+        if (stopTypingTimerRef.current) clearTimeout(stopTypingTimerRef.current);
+    }, []);
+
+    const handleDraftChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        const next = e.target.value;
+        setDraft(next);
+        if (!onAdminTyping) return;
+        if (stopTypingTimerRef.current) clearTimeout(stopTypingTimerRef.current);
+        if (next.trim().length > 0) {
+            onAdminTyping(true);
+            stopTypingTimerRef.current = setTimeout(() => onAdminTyping(false), 2600);
+        } else {
+            onAdminTyping(false);
+        }
+    };
 
     const sendMessage = async (rawContent: string, nextStatus?: SupportThreadStatus, clearComposer = false) => {
         const trimmed = rawContent.trim();
         if (!trimmed || !thread || replyMutation.isPending) return;
         const status = nextStatus ?? (thread.status === 'OPEN' ? 'IN_PROGRESS' : thread.status);
         try {
+            if (stopTypingTimerRef.current) clearTimeout(stopTypingTimerRef.current);
+            onAdminTyping?.(false);
             await replyMutation.mutateAsync({id: thread.id, content: trimmed, status});
             if (clearComposer) setDraft('');
             toast.success(nextStatus === 'RESOLVED' ? 'Đã gửi phản hồi & hoàn tất hội thoại.' : 'Đã gửi tin nhắn phản hồi.');
@@ -179,6 +206,16 @@ export function SupportThreadConversationPane({
                                 </div>
                             );
                         })}
+                        {visitorTypingName && (
+                            <div className="flex items-center gap-2 text-xs text-slate-500" role="status" aria-live="polite">
+                                <span className="inline-flex items-center gap-1 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-2xs">
+                                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary"/>
+                                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary [animation-delay:150ms]"/>
+                                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary [animation-delay:300ms]"/>
+                                </span>
+                                <span className="font-medium text-slate-600">{visitorTypingName} đang nhập tin nhắn...</span>
+                            </div>
+                        )}
                     </div>
 
                     <div className="border-t border-slate-200/80 bg-rose-50/35 px-4 py-2.5">
@@ -226,7 +263,7 @@ export function SupportThreadConversationPane({
 
                     <footer className="space-y-2.5 border-t border-border bg-white p-4">
                         <ErrorNotice error={replyMutation.error || statusMutation.error || deleteMutation.error}/>
-                        <textarea ref={composerRef} rows={3} value={draft} onChange={e => setDraft(e.target.value)} onKeyDown={handleComposerKeyDown}
+                        <textarea ref={composerRef} rows={3} value={draft} onChange={handleDraftChange} onKeyDown={handleComposerKeyDown}
                                   placeholder={`Nhập phản hồi tới ${thread.fullName}... (Enter để gửi, Shift+Enter xuống dòng)`}
                                   className="w-full rounded-control border border-border bg-slate-50/40 p-3 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-primary focus:bg-white focus:outline-none"/>
                         <div className="flex flex-wrap items-center justify-between gap-2">

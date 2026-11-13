@@ -13,13 +13,6 @@ import {colors, font} from '@/styles/tokens';
 export type SupportLauncherMode = 'auth' | 'customer' | 'admin';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password'];
-const CUSTOMER_TABS = [
-    '/customer/home',
-    '/customer/missions',
-    '/customer/weather',
-    '/customer/notifications',
-    '/customer/account',
-];
 const OPERATIONS_TABS = [
     '/operations/missions',
     '/operations/sar',
@@ -51,7 +44,7 @@ export function PulsingSupportLauncher({mode}: { mode: SupportLauncherMode }) {
         mode === 'auth'
             ? AUTH_PATHS.includes(pathname)
             : mode === 'customer'
-                ? CUSTOMER_TABS.includes(pathname)
+                ? false
                 : canManage && OPERATIONS_TABS.includes(pathname);
 
     const publicSession = usePublicSupportSession(false);
@@ -60,7 +53,9 @@ export function PulsingSupportLauncher({mode}: { mode: SupportLauncherMode }) {
     const unreadCount =
         mode === 'admin'
             ? adminSummary.data?.unreadMessages ?? adminSummary.data?.unreadThreads ?? 0
-            : publicSession.unreadCount;
+            : mode === 'auth'
+                ? publicSession.unreadCount
+                : 0;
 
     const [pulse] = useState(() => new Animated.Value(0));
 

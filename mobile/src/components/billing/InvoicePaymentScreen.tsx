@@ -1,11 +1,11 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Pressable, Share, StyleSheet, View} from 'react-native';
-import {useLocalSearchParams} from 'expo-router';
+import {useLocalSearchParams, useRouter} from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import QRCode from 'react-native-qrcode-svg';
-import {CheckCircle2, Copy, Download, RefreshCw} from 'lucide-react-native';
-import {AppText, Button, Card, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
-import {useBankTransferInstructions, useBillingActions} from '@/hooks/billing/useCustomerBilling';
+import {CheckCircle2, Copy, Download, MessageCircle, Radio, RefreshCw} from 'lucide-react-native';
+import {AppText, Badge, Button, Card, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
+import {useBankTransferInstructions, useBillingActions, useBillingRealtime} from '@/hooks/billing/useCustomerBilling';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {signInErrorText} from '@/forms/auth/sign-in-flow';
@@ -35,9 +35,11 @@ function CopyLine({label, value, display}: { label: string; value: string; displ
 export function InvoicePaymentScreen() {
     const {t, formatCurrency} = useI18n();
     const toast = useToast();
+    const router = useRouter();
     const {id} = useLocalSearchParams<{ id: string }>();
     const invoiceId = Number(id);
     const instructions = useBankTransferInstructions(invoiceId);
+    const {wsConnected} = useBillingRealtime(invoiceId);
     const {refresh, downloadReceipt} = useBillingActions();
     const [checkingStatus, setCheckingStatus] = useState(false);
     const data = instructions.data;
@@ -130,9 +132,25 @@ export function InvoicePaymentScreen() {
                         <CopyLine label={t('mobile.billing.content')} value={data.transferContent}/>
                     </Card>
                     <Card>
-                        <SectionTitle title={t('mobile.billing.autoReconcileTitle')}/>
+                        <SectionTitle
+                            title={t('mobile.billing.autoReconcileTitle')}
+                            action={
+                                <Badge
+                                    icon={Radio}
+                                    label={wsConnected ? t('mobile.billing.liveReconcileActive') : t('mobile.support.liveSyncing')}
+                                    background={wsConnected ? colors.primaryLight : colors.slateLight}
+                                    color={wsConnected ? colors.primary : colors.slateDark}
+                                />
+                            }
+                        />
                         <AppText variant="small">{t('mobile.billing.autoReconcileHint', {content: data.transferContent})}</AppText>
                         <Button label={t('mobile.billing.checkStatus')} icon={RefreshCw} loading={checkingStatus} onPress={() => void checkPaymentStatus()}/>
+                        <Button
+                            label={t('mobile.billing.contactSupportButton')}
+                            tone="secondary"
+                            icon={MessageCircle}
+                            onPress={() => router.push('/customer/support')}
+                        />
                     </Card>
                 </>
             )}

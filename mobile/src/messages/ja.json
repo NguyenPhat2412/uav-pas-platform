@@ -1,4 +1,15 @@
 {
+  "auth": {
+    "google": {
+      "short": "Google"
+    },
+    "apple": {
+      "signin_with": "Apple でサインイン",
+      "signup_with": "Apple で登録",
+      "short": "Apple",
+      "notConfigured": "このビルドでは Apple サインインが設定されていません。"
+    }
+  },
   "mobile": {
     "auth": {
       "fillCredentials": "ユーザー名またはメールとパスワードを入力してください。",
@@ -31,12 +42,24 @@
     "nav": {
       "missionDetail": "ミッション詳細",
       "missions": "ミッション",
-      "weather": "天気"
+      "weather": "天気",
+      "services": "サービス",
+      "support": "サポート"
     },
     "home": {
       "greeting": "こんにちは、",
-      "shortcuts": {"create": "新規", "services": "サービス", "billing": "プラン", "training": "ガイド"},
-      "pipeline": {"waiting": "待機", "active": "飛行中", "scheduled": "予定", "draft": "下書き"}
+      "shortcuts": {
+        "create": "新規",
+        "services": "サービス",
+        "billing": "プラン",
+        "training": "ガイド"
+      },
+      "pipeline": {
+        "waiting": "待機",
+        "active": "飛行中",
+        "scheduled": "予定",
+        "draft": "下書き"
+      }
     },
     "account": {
       "profile": "プロフィール",
@@ -48,6 +71,32 @@
         "normal": "標準",
         "large": "大",
         "xlarge": "特大"
+      },
+      "more": "その他",
+      "moreTitle": "その他の設定",
+      "tiles": {
+        "profile": "プロフィール",
+        "billing": "請求",
+        "training": "ガイド",
+        "security": "セキュリティ"
+      },
+      "accountDeletion": {
+        "trigger": "アカウント削除",
+        "title": "アカウントの削除",
+        "securityHint": "現在のシステムポリシーに基づき、アカウントの削除または匿名化を行います。",
+        "modeAnonymize": "モード：個人データの匿名化",
+        "modeHardDelete": "モード：完全削除",
+        "disabledFallback": "現在このアカウントでは自己削除機能を利用できません。",
+        "activeMissionsCount": "進行中のミッション：{count}",
+        "unpaidInvoicesCount": "未払いの請求書：{count}",
+        "phraseLabel": "確認フレーズを入力（{phrase}）",
+        "phraseHint": "削除を有効にするには「{phrase}」を正確に入力してください。",
+        "reasonRequiredLabel": "削除理由（必須）",
+        "reasonOptionalLabel": "削除理由（任意）",
+        "reasonPlaceholder": "退会理由をご記入ください…",
+        "confirmAction": "アカウント削除を確定",
+        "deletingAction": "処理中…",
+        "deletedToast": "アカウントを削除しました。"
       }
     },
     "workspace": {
@@ -59,6 +108,8 @@
     },
     "push": {
       "title": "端末の通知設定",
+      "compactActive": "この端末で有効",
+      "compactOff": "オフ · 有効にして通知を受信",
       "active": "有効",
       "inactive": "未登録",
       "hint": "ミッション更新、飛行許可の承認、救助目標の検知、入金確認をこの端末で受け取ります。",
@@ -118,6 +169,15 @@
     },
     "missions": {
       "edit": "編集",
+      "submitAction": "送信",
+      "cloneAction": "複製",
+      "cloningAction": "複製中...",
+      "cancelShort": "取消",
+      "pastStartWarning": "開始予定時刻を過ぎています。送信前に新しい時刻を設定してください。",
+      "pastStartTitle": "開始予定時刻を過ぎています",
+      "pastStartPrompt": "予定時刻を過ぎています。明日の同じ時刻に変更して今すぐ送信しますか、それとも手動で編集しますか？",
+      "rescheduleAndSubmit": "明日に変更して送信",
+      "editManually": "手動で編集",
       "history": "履歴",
       "noHistory": "まだ履歴はありません。",
       "openMaps": "マップで開く",
@@ -175,7 +235,10 @@
       "receiptPendingHint": "記録や支払い承認用に、仮請求書（PDF）を保存・共有できます。",
       "receiptPaidHint": "お支払い済みです。経理記録用にPDF領収書を保存・共有できます。",
       "shareReceiptPdf": "PDF領収書を保存・共有",
-      "receiptShareTitle": "請求書・領収書 {code}"
+      "receiptShareTitle": "請求書・領収書 {code}",
+      "liveReconcileActive": "オンライン・即時自動照合",
+      "supportReconcileHint": "銀行振込の照合やVAT請求書に関するサポートが必要ですか？",
+      "contactSupportButton": "支払い照合についてサポートへ連絡"
     },
     "security": {
       "twoFactor": "2段階認証",
@@ -398,6 +461,11 @@
         "assignUav": "UAVを割当",
         "assignOperator": "オペレーターを割当",
         "assignedToast": "ミッションのリソース割当を更新しました。"
+      },
+      "tabs": {
+        "missions": "任務",
+        "sar": "救助",
+        "fleet": "機体"
       }
     },
     "adminQuick": {
@@ -510,7 +578,12 @@
       "statusOpen": "新規受付",
       "statusInProgress": "対応中",
       "statusResolved": "完了",
-      "unreadBadge": "{count} 件新着"
+      "unreadBadge": "{count} 件新着",
+      "liveRealtime": "オンライン・リアルタイム",
+      "liveSyncing": "自動同期中",
+      "adminTyping": "管理者が返信を入力中...",
+      "visitorTyping": "顧客が入力中...",
+      "threadDeletedToast": "このサポートスレッドは終了または削除されました。"
     }
   }
 }

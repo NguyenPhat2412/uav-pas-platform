@@ -205,5 +205,31 @@
     "uav": "UAV",
     "noLocation": "この任務には地図上の位置がありません。",
     "mapAria": "任務 {code} の監視マップ"
+  },
+  "accountDeletion": {
+    "title": "アカウント削除",
+    "subtitle": "現在の管理ポリシーに基づき、ご自身でアカウント閉鎖を申請できます。",
+    "loading": "アカウント削除ポリシーを読み込み中...",
+    "loadError": "アカウント削除ポリシーを読み込めませんでした。再試行してください。",
+    "disabledBadge": "無効",
+    "disabledNotice": "自己操作によるアカウント削除は現在管理者により無効化されています。",
+    "ineligibleFallback": "現在このアカウントは自己削除の条件を満たしていません。",
+    "modeAnonymize": "個人データの匿名化",
+    "modeHardDelete": "完全削除",
+    "activeMissionsBadge": "進行中の任務：{count} 件",
+    "unpaidInvoicesBadge": "未払い請求書：{count} 件",
+    "openAction": "アカウントを削除する",
+    "dialogTitle": "アカウント削除の確認",
+    "phraseLabel": "確認フレーズを入力",
+    "phraseHint": "次の通りに入力してください：{phrase}",
+    "passwordLabel": "現在のパスワード",
+    "passwordPlaceholder": "本人確認のため現在のパスワードを入力",
+    "reasonLabel": "退会理由",
+    "reasonPlaceholder": "アカウントを閉鎖する理由を簡潔にご記入ください",
+    "cancel": "キャンセル",
+    "confirmDelete": "削除を確定する",
+    "deleting": "削除処理中...",
+    "deletedToast": "アカウントを削除しました。",
+    "deleteFailed": "アカウントを削除できませんでした。入力内容を確認してください。"
   }
 }

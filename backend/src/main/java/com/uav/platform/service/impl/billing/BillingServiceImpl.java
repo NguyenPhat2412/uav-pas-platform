@@ -21,6 +21,7 @@ import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.entity.user.CustomerBillingProfile;
 import com.uav.platform.enums.billing.InvoiceStatus;
+import com.uav.platform.enums.billing.PaymentMethod;
 import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.billing.BillingMapper;
@@ -92,8 +93,20 @@ public class BillingServiceImpl implements BillingService {
     @Autowired(required = false)
     private ObjectProvider<NotificationService> notifications;
 
+    @Autowired(required = false)
+    private com.uav.platform.websocket.RealtimeEventBroadcaster realtimeBroadcaster;
+
     public void setNotifications(ObjectProvider<NotificationService> notifications) {
         this.notifications = notifications;
+    }
+
+    public void setPaymentSettingsService(PaymentSettingsService paymentSettingsService) {
+        this.paymentSettingsService = paymentSettingsService;
+    }
+
+    public void setRealtimeBroadcaster(
+            com.uav.platform.websocket.RealtimeEventBroadcaster realtimeBroadcaster) {
+        this.realtimeBroadcaster = realtimeBroadcaster;
     }
 
     public BillingServiceImpl(
@@ -414,15 +427,61 @@ public class BillingServiceImpl implements BillingService {
                         dueDate,
                         request.notes());
         Invoice saved = invoiceRepository.save(invoice);
-        financialEvents.recordInvoiceIssued(saved);
+        if (financialEvents != null) {
+            financialEvents.recordInvoiceIssued(saved);
+        }
+        publishInvoiceRealtime(saved);
         return billingMapper.toInvoiceResponse(saved);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PaymentResponse payInvoice(Long id, PayInvoiceRequest request, Authentication auth) {
-        accessibleInvoice(id, auth);
-        throw SystemException.serviceUnavailable(
-                "Payment gateway is not configured", "PAYMENT_UNAVAILABLE");
+        Invoice invoice = accessibleInvoice(id, auth);
+        PaymentAccountSettings settings =
+                paymentSettingsService != null ? paymentSettingsService.current() : null;
+        if (settings == null || !settings.configured()) {
+            throw SystemException.serviceUnavailable(
+                    "Payment gateway is not configured", "PAYMENT_UNAVAILABLE");
+        }
+        PaymentMethod method =
+                request != null && request.paymentMethod() != null
+                        ? request.paymentMethod()
+                        : PaymentMethod.BANK_TRANSFER;
+        if (invoice.getStatus() == InvoiceStatus.PAID) {
+            PaymentTransaction settled = resolveSettledTransaction(invoice.getId());
+            return new PaymentResponse(
+                    settled != null ? settled.getId() : null,
+                    settled != null ? settled.getTransactionCode() : null,
+                    invoice.getId(),
+                    invoice.getCode(),
+                    invoice.getAmount(),
+                    method,
+                    "PAID",
+                    InvoiceStatus.PAID,
+                    invoice.getPaidAt(),
+                    null);
+        }
+        if (invoice.getStatus() != InvoiceStatus.PENDING) {
+            throw SystemException.conflict("Invoice is not pending payment", "INVOICE_NOT_PENDING");
+        }
+        BigDecimal totalDong =
+                wholeDong(invoice.getAmount() != null ? invoice.getAmount() : BigDecimal.ZERO);
+        String transferMemo = BankTransferServiceImpl.transferContent(invoice.getCode());
+        String qrPayload =
+                VietQrOperations.build(
+                        settings.bankBin(), settings.accountNumber(), totalDong, transferMemo);
+        return new PaymentResponse(
+                null,
+                transferMemo,
+                invoice.getId(),
+                invoice.getCode(),
+                totalDong,
+                method,
+                "AWAITING_TRANSFER",
+                InvoiceStatus.PENDING,
+                null,
+                qrPayload);
     }
 
     @Override
@@ -757,6 +816,16 @@ public class BillingServiceImpl implements BillingService {
         if (financialEvents == null || !financialEvents.handlesPaymentNotification()) {
             notifyInvoiceSettled(invoice);
         }
+        publishInvoiceRealtime(invoice);
+    }
+
+    private void publishInvoiceRealtime(Invoice invoice) {
+        if (realtimeBroadcaster == null || invoice == null || invoice.getStatus() == null) {
+            return;
+        }
+        Long customerId = invoice.getUser() != null ? invoice.getUser().getId() : null;
+        realtimeBroadcaster.publishInvoiceUpdated(
+                customerId, invoice.getId(), invoice.getCode(), invoice.getStatus().name());
     }
 
     private void notifyInvoiceSettled(Invoice invoice) {
@@ -865,7 +934,10 @@ public class BillingServiceImpl implements BillingService {
                         LocalDateTime.now().plusDays(7),
                         "PLAN_SUBSCRIPTION:" + plan.getCode());
         Invoice saved = invoiceRepository.save(invoice);
-        financialEvents.recordInvoiceIssued(saved);
+        if (financialEvents != null) {
+            financialEvents.recordInvoiceIssued(saved);
+        }
+        publishInvoiceRealtime(saved);
         return billingMapper.toInvoiceResponse(saved);
     }
 

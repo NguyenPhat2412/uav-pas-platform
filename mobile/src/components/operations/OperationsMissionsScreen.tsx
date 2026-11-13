@@ -108,9 +108,19 @@ export function OperationsMissionsScreen() {
     const {unreadCount} = useNotifications();
     const [filter, setFilter] = useState<OpsMissionFilter>('assigned');
     const [search, setSearch] = useState('');
+    const [refreshing, setRefreshing] = useState(false);
 
     const list = useOperationsMissionList({search});
     const logbook = useOperatorLogbook();
+
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await Promise.all([list.refetch(), logbook.refetch()]);
+        } finally {
+            setRefreshing(false);
+        }
+    };
 
     const missions = useMemo(() => {
         const rows = list.data?.content ?? [];
@@ -134,14 +144,14 @@ export function OperationsMissionsScreen() {
                         <HeaderIconButton
                             icon={Bell}
                             label={t('nav.notifications')}
-                            dot={unreadCount > 0}
+                            count={unreadCount}
                             onPress={() => router.push('/operations/notifications')}
                         />
                     ),
                 }}
             />
 
-            {list.isPending || list.isError ? (
+            {!list.data && (list.isPending || list.isError) ? (
                 <View style={styles.centerState}>
                     {list.isPending ? (
                         <LoadingState label={t('opsMissions.detail.loading')}/>
@@ -163,39 +173,38 @@ export function OperationsMissionsScreen() {
                     ListHeaderComponent={
                         <View style={styles.headerBlock}>
                             {logbook.data && (
-                                <Card>
+                                <Card style={styles.logbookCard}>
                                     <SectionTitle
                                         title={t('capabilities.logbook.title')}
                                         action={<AppText variant="caption" style={styles.code}>{logbook.data.operatorFullName}</AppText>}
                                     />
                                     <View style={styles.kpiGrid}>
                                         <View style={styles.kpiCell}>
-                                            <AppText variant="caption">{t('capabilities.logbook.totalHours')}</AppText>
-                                            <AppText variant="title">{formatNumber(logbook.data.totalFlightHours)} h</AppText>
+                                            <AppText variant="title">{formatNumber(logbook.data.totalFlightHours)}h</AppText>
+                                            <AppText variant="caption" numberOfLines={1}>{t('capabilities.logbook.totalHours')}</AppText>
                                         </View>
                                         <View style={styles.kpiCell}>
-                                            <AppText variant="caption">{t('capabilities.logbook.completedMissions')}</AppText>
                                             <AppText variant="title">
                                                 {logbook.data.completedMissions}/{logbook.data.totalAssignedMissions}
                                             </AppText>
+                                            <AppText variant="caption" numberOfLines={1}>{t('capabilities.logbook.completedMissions')}</AppText>
                                         </View>
                                         <View style={styles.kpiCell}>
-                                            <AppText variant="caption">{t('capabilities.logbook.preflightCompliance')}</AppText>
                                             <AppText variant="title">{formatNumber(logbook.data.preflightComplianceRate)}%</AppText>
+                                            <AppText variant="caption" numberOfLines={1}>{t('capabilities.logbook.preflightCompliance')}</AppText>
                                         </View>
                                         <View style={styles.kpiCell}>
-                                            <AppText variant="caption">{t('capabilities.logbook.customerRating')}</AppText>
                                             <AppText variant="title">
                                                 {logbook.data.averageCustomerRating != null
-                                                    ? `★ ${logbook.data.averageCustomerRating.toFixed(1)}`
+                                                    ? `★${logbook.data.averageCustomerRating.toFixed(1)}`
                                                     : '—'}
                                             </AppText>
+                                            <AppText variant="caption" numberOfLines={1}>{t('capabilities.logbook.customerRating')}</AppText>
                                         </View>
                                     </View>
                                 </Card>
                             )}
                             <TextField
-                                label={t('opsMissions.list.search')}
                                 placeholder={t('opsMissions.list.search')}
                                 value={search}
                                 onChangeText={setSearch}
@@ -214,8 +223,8 @@ export function OperationsMissionsScreen() {
                     )}
                     refreshControl={
                         <RefreshControl
-                            refreshing={list.isRefetching}
-                            onRefresh={() => void Promise.all([list.refetch(), logbook.refetch()])}
+                            refreshing={refreshing}
+                            onRefresh={() => void handleRefresh()}
                             tintColor={colors.primary}
                         />
                     }
@@ -230,16 +239,20 @@ const styles = StyleSheet.create({
     screen: {flex: 1, backgroundColor: colors.canvas},
     centerState: {flex: 1, justifyContent: 'center'},
     list: {padding: spacing.lg, gap: spacing.md, flexGrow: 1, width: '100%', maxWidth: CONTENT_WIDTH, alignSelf: 'center'},
-    headerBlock: {gap: spacing.sm},
-    kpiGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm},
+    headerBlock: {gap: spacing.xs},
+    logbookCard: {padding: spacing.md, gap: spacing.xs},
+    kpiGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs},
     kpiCell: {
-        flexBasis: '47%',
+        flexBasis: '22%',
+        minWidth: 68,
         flexGrow: 1,
         borderRadius: radius.control,
         borderWidth: 1,
         borderColor: colors.border,
         backgroundColor: colors.slateLight,
-        padding: spacing.sm,
+        paddingVertical: spacing.xs,
+        paddingHorizontal: 6,
+        alignItems: 'center',
         gap: 2,
     },
     topRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing.sm},

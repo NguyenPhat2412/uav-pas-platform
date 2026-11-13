@@ -36,6 +36,8 @@ public interface UserRepository
 
     Optional<AppUser> findByUsername(String username);
 
+    Optional<AppUser> findByAppleSub(String appleSub);
+
     List<AppUser> findByRole(UserRole role);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

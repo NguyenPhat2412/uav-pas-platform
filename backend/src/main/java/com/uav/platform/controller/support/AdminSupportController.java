@@ -41,15 +41,13 @@ public class AdminSupportController {
     private final SupportService supportService;
 
     @GetMapping(ApiRoutes.Admin.SUPPORT_SUMMARY)
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'DASHBOARD_VIEW') or @permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
     public ResponseEntity<SupportAdminSummaryResponse> summary() {
         return ResponseEntity.ok(supportService.getAdminSummary());
     }
 
     @GetMapping(ApiRoutes.Admin.SUPPORT_THREADS)
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'DASHBOARD_VIEW') or @permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
     public ResponseEntity<PageResponse<SupportThreadResponse>> listThreads(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String topic,
@@ -62,15 +60,13 @@ public class AdminSupportController {
     }
 
     @GetMapping(ApiRoutes.Admin.SUPPORT_THREAD_BY_ID)
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'DASHBOARD_VIEW') or @permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
     public ResponseEntity<SupportThreadDetailResponse> getThreadDetail(@PathVariable Long id) {
         return ResponseEntity.ok(supportService.getAdminThreadDetail(id));
     }
 
     @PostMapping(ApiRoutes.Admin.SUPPORT_THREAD_REPLY)
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'DASHBOARD_VIEW') or @permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
     public ResponseEntity<SupportThreadDetailResponse> reply(
             @PathVariable Long id,
             @Valid @RequestBody SupportAdminReplyRequest request,
@@ -79,31 +75,27 @@ public class AdminSupportController {
     }
 
     @PatchMapping(ApiRoutes.Admin.SUPPORT_THREAD_STATUS)
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'DASHBOARD_VIEW') or @permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
     public ResponseEntity<SupportThreadResponse> updateStatus(
             @PathVariable Long id, @Valid @RequestBody SupportStatusUpdateRequest request) {
         return ResponseEntity.ok(supportService.updateThreadStatus(id, request));
     }
 
     @DeleteMapping(ApiRoutes.Admin.SUPPORT_THREAD_BY_ID)
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'DASHBOARD_VIEW') or @permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
     public ResponseEntity<Void> deleteThread(@PathVariable Long id) {
         supportService.deleteThread(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping(ApiRoutes.Admin.SUPPORT_QUICK_REPLIES)
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'DASHBOARD_VIEW') or @permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
     public ResponseEntity<List<SupportQuickReplyResponse>> listQuickReplies() {
         return ResponseEntity.ok(supportService.listQuickReplies());
     }
 
     @PostMapping(ApiRoutes.Admin.SUPPORT_QUICK_REPLIES)
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'DASHBOARD_VIEW') or @permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
     public ResponseEntity<SupportQuickReplyResponse> createQuickReply(
             @Valid @RequestBody SupportQuickReplyUpsertRequest request, Authentication auth) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -111,16 +103,14 @@ public class AdminSupportController {
     }
 
     @PutMapping(ApiRoutes.Admin.SUPPORT_QUICK_REPLY_BY_ID)
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'DASHBOARD_VIEW') or @permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
     public ResponseEntity<SupportQuickReplyResponse> updateQuickReply(
             @PathVariable Long id, @Valid @RequestBody SupportQuickReplyUpsertRequest request) {
         return ResponseEntity.ok(supportService.updateQuickReply(id, request));
     }
 
     @DeleteMapping(ApiRoutes.Admin.SUPPORT_QUICK_REPLY_BY_ID)
-    @PreAuthorize(
-            "@permissionService.has(authentication, 'DASHBOARD_VIEW') or @permissionService.has(authentication, 'USER_MANAGE')")
+    @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
     public ResponseEntity<Void> deleteQuickReply(@PathVariable Long id) {
         supportService.deleteQuickReply(id);
         return ResponseEntity.noContent().build();

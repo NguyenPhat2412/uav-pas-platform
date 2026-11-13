@@ -5,26 +5,27 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ChevronLeft, X, type LucideIcon} from 'lucide-react-native';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {ScaledText} from '@/components/ui';
-import {useAuth} from '@/providers/AuthContext';
+import {useOptionalAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {resolvePortalEntryHref} from '@/utils/operations/portal-routing';
 import {colors, font} from '@/styles/tokens';
 
 const SHEETS = new Set(['modal', 'formSheet', 'pageSheet', 'fullScreenModal']);
 
-/** A round icon button for headerRight (notifications, locate…), same look as the back button; `dot` marks something new. */
-export function HeaderIconButton({icon: Icon, label, onPress, dot = false, loading = false}: {
+/** A round icon button for headerRight (notifications, locate…), same look as the back button; `count` shows unread items. */
+export function HeaderIconButton({icon: Icon, label, onPress, count = 0, loading = false}: {
     icon: LucideIcon;
     label: string;
     onPress: () => void;
-    dot?: boolean;
+    count?: number;
     loading?: boolean;
 }) {
     return (
-        <Pressable onPress={onPress} disabled={loading} hitSlop={8} accessibilityRole="button" accessibilityLabel={label}
+        <Pressable onPress={onPress} disabled={loading} hitSlop={8} accessibilityRole="button"
+                   accessibilityLabel={count > 0 ? `${label} (${count})` : label}
                    style={({pressed}) => [styles.round, pressed && styles.roundPressed]}>
             {loading ? <ActivityIndicator color={colors.primary}/> : <Icon size={20} color={colors.text} strokeWidth={2}/>}
-            {dot && <View style={styles.dot}/>}
+            {count > 0 && <View style={styles.count}><ScaledText style={styles.countText}>{count > 99 ? '99+' : count}</ScaledText></View>}
         </Pressable>
     );
 }
@@ -37,7 +38,7 @@ export function HeaderIconButton({icon: Icon, label, onPress, dot = false, loadi
  */
 export function AppHeader({back, options, route, navigation}: NativeStackHeaderProps) {
     const insets = useSafeAreaInsets();
-    const {activePortal} = useAuth();
+    const activePortal = useOptionalAuth()?.activePortal ?? 'customer';
     const {t} = useI18n();
     const sheet = SHEETS.has(options.presentation ?? '');
     const title = typeof options.headerTitle === 'string' ? options.headerTitle : options.title ?? route.name;
@@ -91,7 +92,11 @@ const styles = StyleSheet.create({
     roundPressed: {backgroundColor: colors.slateLight},
     sideAuto: {minWidth: 0},
     customTitle: {flex: 1, justifyContent: 'center', paddingLeft: 4},
-    dot: {position: 'absolute', top: 8, right: 9, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.primary, borderWidth: 1.5, borderColor: colors.surface},
+    count: {
+        position: 'absolute', top: -4, right: -6, minWidth: 20, height: 20, borderRadius: 10, paddingHorizontal: 5,
+        backgroundColor: colors.primary, borderWidth: 1.5, borderColor: colors.surface, alignItems: 'center', justifyContent: 'center',
+    },
+    countText: {color: colors.white, fontSize: 11, fontWeight: '700'},
     title: {flex: 1, textAlign: 'center', fontSize: font.title, fontWeight: '600', color: colors.text},
     titleLeft: {textAlign: 'left', fontSize: font.heading, fontWeight: '700', paddingLeft: 4},
 });

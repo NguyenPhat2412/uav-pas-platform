@@ -16,7 +16,8 @@ interface ToastValue {
     show: (message: string, kind?: ToastKind) => void;
 }
 
-const ToastContext = createContext<ToastValue | undefined>(undefined);
+const sharedToast = globalThis as { __uavToastContext?: React.Context<ToastValue | undefined> };
+const ToastContext = (sharedToast.__uavToastContext ??= createContext<ToastValue | undefined>(undefined));
 
 const ICON = {success: CheckCircle2, error: AlertTriangle, info: Info} as const;
 const TONE = {

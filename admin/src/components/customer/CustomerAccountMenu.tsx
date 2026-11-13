@@ -78,8 +78,8 @@ export function CustomerAccountMenu({name}: { name: string }) {
                         role="menuitem"
                         variant="ghost"
                         size="sm"
-                        leftIcon={<LogOut size={16} aria-hidden="true"/>}
-                        className="h-auto w-full justify-start gap-2.5 px-3 py-2 text-sm font-semibold text-danger hover:bg-red-50"
+                        leftIcon={<LogOut size={14} aria-hidden="true"/>}
+                        className="h-auto w-full justify-start gap-2 px-2.5 py-1.5 text-xs font-semibold text-danger hover:bg-red-50"
                         onClick={() => {
                             close();
                             void logout();

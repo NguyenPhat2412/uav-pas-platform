@@ -40,7 +40,13 @@
     "checking": "Checking…",
     "stillPending": "Payment not yet received. Auto-checking continues.",
     "paidSuccess": "Payment has been confirmed!",
-    "popupBlocked": "Your browser blocked the print window. Please allow pop-ups or use Download PDF instead."
+    "popupBlocked": "Your browser blocked the print window. Please allow pop-ups or use Download PDF instead.",
+    "realtimeListening": "Instant real-time confirmation via WebSocket upon transfer receipt",
+    "realtimeBadge": "Real-time sync",
+    "settledRealtimeBanner": "Paid · Your plan and flight-hour quota have been activated automatically.",
+    "contactAdminReconcile": "Contact Admin to reconcile now",
+    "notConfiguredTitle": "VietQR bank transfer account is not configured yet",
+    "notConfiguredDesc": "Automated VietQR is not active for this invoice yet. Message an Administrator directly to receive transfer details and reconcile immediately."
   },
   "plans": {
     "subscribe": "Choose this plan",
@@ -205,5 +211,31 @@
     "uav": "UAV",
     "noLocation": "This mission has no map location yet.",
     "mapAria": "Monitoring map for mission {code}"
+  },
+  "accountDeletion": {
+    "title": "Delete account",
+    "subtitle": "Request self-service account closure under the current platform policy.",
+    "loading": "Loading account deletion policy...",
+    "loadError": "Unable to load account deletion policy. Please try again.",
+    "disabledBadge": "DISABLED",
+    "disabledNotice": "Self-service account deletion is currently disabled by an administrator.",
+    "ineligibleFallback": "Your account is not currently eligible for self-service deletion.",
+    "modeAnonymize": "Anonymize personal data",
+    "modeHardDelete": "Permanent deletion",
+    "activeMissionsBadge": "Active missions: {count}",
+    "unpaidInvoicesBadge": "Unpaid invoices: {count}",
+    "openAction": "Delete my account",
+    "dialogTitle": "Confirm account deletion",
+    "phraseLabel": "Type confirmation phrase",
+    "phraseHint": "Type exactly: {phrase}",
+    "passwordLabel": "Current password",
+    "passwordPlaceholder": "Enter your current password",
+    "reasonLabel": "Reason for leaving",
+    "reasonPlaceholder": "Briefly share why you are closing your account",
+    "cancel": "Keep account",
+    "confirmDelete": "Confirm deletion",
+    "deleting": "Deleting account...",
+    "deletedToast": "Your account has been deleted.",
+    "deleteFailed": "Unable to delete account. Please check your confirmation details."
   }
 }

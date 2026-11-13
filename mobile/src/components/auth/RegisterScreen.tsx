@@ -4,7 +4,7 @@ import {Link, useRouter} from 'expo-router';
 import {UserPlus} from 'lucide-react-native';
 import {Button, KeyboardAnchor, TextField} from '@/components/ui';
 import {AuthLayout} from '@/components/auth/AuthLayout';
-import {GoogleSignInButton} from '@/components/auth/GoogleSignInButton';
+import {SocialSignInRow} from '@/components/auth/SocialSignInRow';
 import {useAuthFlows} from '@/hooks/auth/useAuthFlows';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
@@ -42,7 +42,7 @@ export function RegisterScreen() {
 
     return (
         <AuthLayout title={t('customerAuth.registerHeading')} subtitle={t('customerAuth.registerIntro')}>
-            <GoogleSignInButton mode="signup"/>
+            <SocialSignInRow mode="signup"/>
             <TextField label={t('customerAuth.username')} value={draft.username} onChangeText={set('username')} autoCapitalize="none"
                        autoCorrect={false} autoComplete="username-new" error={fields.username}/>
             <TextField label={t('auth.email')} value={draft.email} onChangeText={set('email')} autoCapitalize="none" keyboardType="email-address"

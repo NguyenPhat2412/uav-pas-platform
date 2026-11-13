@@ -200,8 +200,16 @@
     "google": {
       "signin_with": "Google でログイン",
       "signup_with": "Google で登録",
+      "short": "Google",
       "loading": "Google ログインを読み込み中です。しばらくしてからもう一度お試しください。",
       "notConfigured": "Google ログインは設定されていません。"
+    },
+    "apple": {
+      "signin_with": "Apple でログイン",
+      "signup_with": "Apple で登録",
+      "short": "Apple",
+      "loading": "Apple ログインを読み込み中です。しばらくしてからもう一度お試しください。",
+      "notConfigured": "Apple ログインは設定されていません。"
     }
   },
   "dashboard": {

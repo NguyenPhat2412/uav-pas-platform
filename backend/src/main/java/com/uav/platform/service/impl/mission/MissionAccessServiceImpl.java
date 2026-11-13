@@ -38,9 +38,7 @@ public class MissionAccessServiceImpl implements MissionAccessService {
                                 permissions.has(
                                         org.springframework.security.authentication
                                                 .UsernamePasswordAuthenticationToken.authenticated(
-                                                        user.getUsername(),
-                                                        null,
-                                                        java.util.List.of()),
+                                                user.getUsername(), null, java.util.List.of()),
                                         "MISSION_CONFIRM"))
                 .toList();
     }

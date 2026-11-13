@@ -1,74 +1,30 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Alert, Linking, Platform, Pressable, StyleSheet, View} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 import MapView, {Marker} from 'react-native-maps';
 import * as ImagePicker from 'expo-image-picker';
 import * as WebBrowser from 'expo-web-browser';
-import {Camera, CalendarClock, Copy, Download, FileText, ImagePlus, MapPin, Pencil, Send, ShieldAlert, XCircle} from 'lucide-react-native';
+import {AlertTriangle, Camera, CalendarClock, Copy, Download, FileText, ImagePlus, MapPin, Pencil, Send, ShieldAlert, XCircle} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
 import {CustomerHandoverReviewCard} from '@/components/mission/CustomerHandoverReviewCard';
 import {MissionStatusBadge} from '@/components/mission/MissionBits';
+import {MissionProgress, MissionSiteWeather} from '@/components/mission/MissionDetailBits';
 import {MissionPermitCard} from '@/components/mission/MissionPermitCard';
 import {MobileMission3DReplayCard} from '@/components/mission/MobileMission3DReplayCard';
 import {MobileMissionInspectionReportCard} from '@/components/mission/MobileMissionInspectionReportCard';
-import {Verdict} from '@/components/weather/WeatherCard';
+import {fromLocalIso, withStart} from '@/forms/mission/mission-draft';
 import {useMissionAirspaceCheck} from '@/hooks/airspace/useAirspace';
 import {useMissionActions, useMissionDetail} from '@/hooks/mission/useCustomerMissions';
 import {useMediaDownload, useMissionUpload} from '@/hooks/media/useMissionUpload';
-import {useMissionWeather} from '@/hooks/weather/useWeather';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {canEditMission, missionFormError} from '@/shared/forms/mission/mission-form';
+import {canEditMission, missionFormError, missionFormFromDetail} from '@/shared/forms/mission/mission-form';
 import {eventNote, eventTitle, missionHint, terminalStatuses} from '@/shared/lib/presentation';
 import {formatFileSize} from '@/shared/lib/format';
-import type {Mission} from '@/shared/types/mission/mission.types';
-import {canCancel, progressStep} from '@/utils/mission/status';
+import {canCancel} from '@/utils/mission/status';
 import {isFinitePoint} from '@/utils/operations/map-shapes';
 import {colors, radius, spacing} from '@/styles/tokens';
-
-const STEPS = ['draft', 'pending', 'confirmed', 'completed'] as const;
-
-function Progress({mission}: { mission: Mission }) {
-    const {t} = useI18n();
-    const step = progressStep(mission.status);
-    if (step < 0) return null;
-    return (
-        <View style={styles.steps} accessibilityLabel={t('progress.label')}>
-            {STEPS.map((key, index) => {
-                const done = index <= step;
-                const label = index === 2 && mission.status === 'IN_PROGRESS' ? t('progress.inProgress') : t(`progress.${key}`);
-                return (
-                    <View key={key} style={styles.step}>
-                        <View style={[styles.stepBar, done && styles.stepBarDone]}/>
-                        <AppText variant="caption" style={done ? styles.stepDone : undefined} numberOfLines={1}>{label}</AppText>
-                    </View>
-                );
-            })}
-        </View>
-    );
-}
-
-function SiteWeather({mission}: { mission: Mission }) {
-    const {t} = useI18n();
-    const weather = useMissionWeather(mission.id, mission.latitude != null && mission.longitude != null);
-    if (mission.latitude == null || mission.longitude == null) return null;
-    return (
-        <Card>
-            <SectionTitle title={t('weather.preflight.title')}/>
-            {weather.isPending ? <LoadingState/>
-                : weather.data ? (
-                    <View style={styles.weather}>
-                        <Verdict clearance={weather.data.clearance}/>
-                        <AppText variant="small">{t('weather.preflight.score', {score: weather.data.safetyScore})}</AppText>
-                        {weather.data.reasonCodes.map(code => (
-                            <AppText key={code} variant="small">• {t(`weather.preflight.reasons.${code}`)}</AppText>
-                        ))}
-                    </View>
-                ) : <AppText variant="small">{t('weather.preflight.loadError')}</AppText>}
-        </Card>
-    );
-}
 
 export function MissionDetailScreen() {
     const {t, formatDate, formatNumber} = useI18n();
@@ -83,6 +39,9 @@ export function MissionDetailScreen() {
     const download = useMediaDownload();
     const mission = detail.data;
     const airspace = useMissionAirspaceCheck(mission);
+    const [refreshing, setRefreshing] = useState(false);
+    // Read the clock once per mount: render must stay pure, and a pull-to-refresh remounts nothing but refetches.
+    const [openedAt] = useState(() => Date.now());
 
     if (detail.isPending) return <Screen><LoadingState label={t('missionDetail.loading')}/></Screen>;
     if (detail.isError || !mission) {
@@ -96,20 +55,63 @@ export function MissionDetailScreen() {
     const owned = mission.customerId === user?.id;
     const editable = canEditMission(mission, user?.id, can('MISSION_UPDATE'));
     const cancellable = owned && canCancel(mission.status) && can('MISSION_CANCEL');
+    const canClone = owned && can('MISSION_CREATE');
     const finished = terminalStatuses.includes(mission.status);
     const canUpload = owned && !finished && can('MISSION_MEDIA_UPLOAD');
     const hasPoint = isFinitePoint(mission.latitude, mission.longitude);
+    const parsedStart = fromLocalIso(mission.startTime);
+    const isPastSchedule = editable && !!parsedStart && parsedStart.getTime() <= openedAt;
     const showPermitCard =
         (mission.permit != null && mission.permit.status !== 'NOT_REQUIRED') ||
         !!mission.flightPlan?.permitSupport ||
         !!airspace.data?.requiresPermit;
+    const showPostFlightReport = mission.status === 'IN_PROGRESS' || mission.status === 'COMPLETED';
+    const submitting = actions.submit.isPending || actions.update.isPending;
 
     const fail = (error: unknown) => toast.show(missionFormError(error, t), 'error');
-    const submit = () => actions.submit.mutate(mission.id, {onSuccess: () => toast.show(t('mobile.missions.submitted'), 'success'), onError: fail});
+    const goEdit = () => router.push({pathname: '/customer/mission/[id]/edit', params: {id: String(mission.id)}});
+
+    const rescheduleAndSubmit = async () => {
+        try {
+            const now = new Date();
+            const nextStart = new Date(
+                now.getFullYear(), now.getMonth(), now.getDate() + 1,
+                parsedStart?.getHours() ?? 8, parsedStart?.getMinutes() ?? 0,
+            );
+            const data = withStart(missionFormFromDetail(mission), nextStart);
+            await actions.update.mutateAsync({id: mission.id, data, expectedVersion: mission.version});
+            await actions.submit.mutateAsync(mission.id);
+            toast.show(t('mobile.missions.submitted'), 'success');
+        } catch (error) {
+            fail(error);
+        }
+    };
+
+    const submit = () => {
+        if (isPastSchedule) {
+            Alert.alert(t('mobile.missions.pastStartTitle'), t('mobile.missions.pastStartPrompt'), [
+                {text: t('mobile.missions.rescheduleAndSubmit'), onPress: () => void rescheduleAndSubmit()},
+                {text: t('mobile.missions.editManually'), onPress: goEdit},
+                {text: t('common.cancel'), style: 'cancel'},
+            ]);
+            return;
+        }
+        actions.submit.mutate(mission.id, {onSuccess: () => toast.show(t('mobile.missions.submitted'), 'success'), onError: fail});
+    };
+
     const cancel = () => Alert.alert(t('missionDetail.cancelQuestion'), t('missionDetail.cancelWarning'), [
         {text: t('missionDetail.keepRequest'), style: 'cancel'},
         {text: t('missionDetail.confirmCancel'), style: 'destructive', onPress: () => actions.cancel.mutate(mission.id, {onError: fail})},
     ]);
+
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await Promise.all([detail.refetch(), timeline.refetch(), media.refetch(), airspace.refetch()]);
+        } finally {
+            setRefreshing(false);
+        }
+    };
 
     const pick = async (source: 'camera' | 'library', role: 'INPUT' | 'DOCUMENT' = 'INPUT', onUploaded?: (mediaId: number) => void) => {
         const permission = source === 'camera' ? await ImagePicker.requestCameraPermissionsAsync() : await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -153,43 +155,54 @@ export function MissionDetailScreen() {
     };
 
     return (
-        <Screen onRefresh={() => void Promise.all([detail.refetch(), timeline.refetch(), media.refetch(), airspace.refetch()])} refreshing={detail.isRefetching}>
+        <Screen onRefresh={() => void handleRefresh()} refreshing={refreshing}>
             <Card>
                 <View style={styles.row}>
                     <AppText variant="caption" style={styles.code}>{mission.code}</AppText>
                     <MissionStatusBadge status={mission.status}/>
                 </View>
                 <AppText variant="heading">{mission.title}</AppText>
-                <Progress mission={mission}/>
+                <MissionProgress mission={mission}/>
                 <AppText variant="small">{missionHint(mission.status)}</AppText>
-            </Card>
 
-            {(editable || cancellable || (owned && can('MISSION_CREATE'))) && (
-                <View style={styles.actions}>
-                    {editable && <Button label={t('missionDetail.submit')} icon={Send} loading={actions.submit.isPending} onPress={submit} style={styles.action}/>}
-                    {editable && <Button label={t('mobile.missions.edit')} icon={Pencil} tone="secondary"
-                                         onPress={() => router.push({pathname: '/customer/mission/[id]/edit', params: {id: String(mission.id)}})} style={styles.action}/>}
-                    {owned && can('MISSION_CREATE') && (
-                        <Button
-                            label={actions.clone.isPending ? t('capabilities.clone.cloning') : t('capabilities.clone.action')}
-                            icon={Copy}
-                            tone="secondary"
-                            loading={actions.clone.isPending}
-                            onPress={() =>
-                                actions.clone.mutate(mission.id, {
-                                    onSuccess: cloned => {
-                                        toast.show(t('capabilities.clone.successToast', {code: cloned.code}), 'success');
-                                        router.push({pathname: '/customer/mission/[id]', params: {id: String(cloned.id)}});
-                                    },
-                                    onError: fail,
-                                })
-                            }
-                            style={styles.action}
-                        />
-                    )}
-                    {cancellable && <Button label={t('missionDetail.cancelRequest')} icon={XCircle} tone="ghost" loading={actions.cancel.isPending} onPress={cancel} style={styles.action}/>}
-                </View>
-            )}
+                {(editable || cancellable || canClone) && (
+                    <View style={styles.actionSection}>
+                        {editable && (
+                            <View style={styles.actionRow}>
+                                <Button size="sm" label={t('mobile.missions.submitAction')} icon={Send} loading={submitting} onPress={submit} style={styles.actionPrimary}/>
+                                <Button size="sm" label={t('mobile.missions.edit')} icon={Pencil} tone="secondary" onPress={goEdit} style={styles.actionSecondary}/>
+                            </View>
+                        )}
+                        {(canClone || cancellable) && (
+                            <View style={styles.actionRow}>
+                                {canClone && (
+                                    <Button
+                                        size="sm"
+                                        label={actions.clone.isPending ? t('mobile.missions.cloningAction') : t('mobile.missions.cloneAction')}
+                                        icon={Copy}
+                                        tone="secondary"
+                                        loading={actions.clone.isPending}
+                                        onPress={() =>
+                                            actions.clone.mutate(mission.id, {
+                                                onSuccess: cloned => {
+                                                    toast.show(t('capabilities.clone.successToast', {code: cloned.code}), 'success');
+                                                    router.push({pathname: '/customer/mission/[id]', params: {id: String(cloned.id)}});
+                                                },
+                                                onError: fail,
+                                            })
+                                        }
+                                        style={styles.flex}
+                                    />
+                                )}
+                                {cancellable && (
+                                    <Button size="sm" label={t('mobile.missions.cancelShort')} icon={XCircle} tone="ghost"
+                                            loading={actions.cancel.isPending} onPress={cancel} style={styles.cancelBtn}/>
+                                )}
+                            </View>
+                        )}
+                    </View>
+                )}
+            </Card>
 
             <Card>
                 <View style={styles.meta}>
@@ -199,6 +212,12 @@ export function MissionDetailScreen() {
                         <AppText>{formatDate(mission.startTime)} → {formatDate(mission.expectedEndTime, {timeStyle: 'short'})}</AppText>
                     </View>
                 </View>
+                {isPastSchedule && (
+                    <Pressable onPress={submit} accessibilityRole="button" style={styles.pastNotice}>
+                        <AlertTriangle size={15} color={colors.warning}/>
+                        <AppText variant="caption" style={styles.pastNoticeText}>{t('mobile.missions.pastStartWarning')}</AppText>
+                    </Pressable>
+                )}
                 <View style={styles.meta}>
                     <MapPin size={16} color={colors.muted}/>
                     <View style={styles.flex}>
@@ -225,65 +244,53 @@ export function MissionDetailScreen() {
                             <Badge
                                 icon={ShieldAlert}
                                 label={
-                                    airspace.data.blocked
-                                        ? t('mobile.airspace.clearance.BLOCKED')
-                                        : airspace.data.requiresPermit
-                                          ? t('mobile.airspace.clearance.PERMIT_REQUIRED')
-                                          : t('mobile.airspace.clearance.CAUTION')
+                                    airspace.data.blocked ? t('mobile.airspace.clearance.BLOCKED')
+                                        : airspace.data.requiresPermit ? t('mobile.airspace.clearance.PERMIT_REQUIRED')
+                                            : t('mobile.airspace.clearance.CAUTION')
                                 }
                                 background={airspace.data.blocked ? colors.dangerLight : colors.warningLight}
                                 color={airspace.data.blocked ? colors.danger : colors.warning}
                             />
                         }
                     />
-                    {airspace.data.violations.map(violation => (
-                        <AppText key={violation.zoneId} variant="small">
-                            • {violation.code} ({violation.name}): {violation.message}
-                        </AppText>
+                    {airspace.data.violations.map(v => (
+                        <AppText key={v.zoneId} variant="small">• {v.name}: {v.message}</AppText>
                     ))}
                 </Card>
             )}
 
             {showPermitCard && (
                 <MissionPermitCard
-                    mission={mission}
-                    mediaItems={media.data}
-                    onOpenScan={open}
-                    uploadScanLoading={upload.isPending}
+                    mission={mission} mediaItems={media.data} onOpenScan={open} uploadScanLoading={upload.isPending}
                     onUploadScan={canUpload ? onUploaded => void pick('library', 'DOCUMENT', onUploaded) : undefined}
                     upsertLoading={actions.upsertPermit.isPending}
                     onUpsert={(data, onDone) =>
-                        actions.upsertPermit.mutate(
-                            {id: mission.id, data},
-                            {
-                                onSuccess: () => {
-                                    onDone();
-                                    toast.show(t('mobile.permit.savedToast'), 'success');
-                                },
-                                onError: fail,
+                        actions.upsertPermit.mutate({id: mission.id, data}, {
+                            onSuccess: () => {
+                                onDone();
+                                toast.show(t('mobile.permit.savedToast'), 'success');
                             },
-                        )
+                            onError: fail,
+                        })
                     }
                 />
             )}
 
-            {!finished && <SiteWeather mission={mission}/>}
+            {!finished && <MissionSiteWeather mission={mission}/>}
 
             <MobileMission3DReplayCard missionId={mission.id} portal="customer"/>
 
-            <MobileMissionInspectionReportCard missionId={mission.id} portal="customer" onOpenMedia={open}/>
+            {showPostFlightReport && <MobileMissionInspectionReportCard missionId={mission.id} portal="customer" onOpenMedia={open}/>}
 
-            {owned && mission.status === 'COMPLETED' && (
-                <CustomerHandoverReviewCard key={mission.id} missionId={mission.id}/>
-            )}
+            {owned && mission.status === 'COMPLETED' && <CustomerHandoverReviewCard key={mission.id} missionId={mission.id}/>}
 
             {owned && can('MISSION_MEDIA_VIEW') && (
                 <Card>
                     <SectionTitle title={t('mobile.files.title')}/>
                     {canUpload && (
-                        <View style={styles.actions}>
-                            <Button label={t('mobile.files.camera')} icon={Camera} tone="secondary" disabled={upload.isPending} onPress={() => void pick('camera')} style={styles.flex}/>
-                            <Button label={t('mobile.files.library')} icon={ImagePlus} tone="secondary" loading={upload.isPending} onPress={() => void pick('library')} style={styles.flex}/>
+                        <View style={styles.actionRow}>
+                            <Button size="sm" label={t('mobile.files.camera')} icon={Camera} tone="secondary" disabled={upload.isPending} onPress={() => void pick('camera')} style={styles.flex}/>
+                            <Button size="sm" label={t('mobile.files.library')} icon={ImagePlus} tone="secondary" loading={upload.isPending} onPress={() => void pick('library')} style={styles.flex}/>
                         </View>
                     )}
                     {media.isPending ? <LoadingState/>
@@ -323,20 +330,21 @@ export function MissionDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-    row: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
+    row: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap'},
     code: {fontWeight: '700', letterSpacing: 0.5},
-    steps: {flexDirection: 'row', gap: spacing.xs, marginVertical: spacing.xs},
-    step: {flex: 1, gap: 4},
-    stepBar: {height: 4, borderRadius: 2, backgroundColor: colors.border},
-    stepBarDone: {backgroundColor: colors.primary},
-    stepDone: {color: colors.text, fontWeight: '600'},
-    actions: {flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap'},
+    actionSection: {marginTop: spacing.xs, paddingTop: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border, gap: spacing.xs},
+    actionRow: {flexDirection: 'row', gap: spacing.xs, alignItems: 'center'},
+    actionPrimary: {flex: 2},
+    actionSecondary: {flex: 1},
+    cancelBtn: {borderColor: colors.border, borderWidth: 1, backgroundColor: colors.surface},
     flex: {flex: 1},
-    // Grow from natural width and wrap: flex: 1 squeezed four buttons into one row and broke labels per letter.
-    action: {flexGrow: 1, minWidth: '30%'},
     meta: {flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start'},
-    map: {height: 160, borderRadius: radius.control, overflow: 'hidden', marginTop: spacing.xs},
-    weather: {gap: spacing.xs},
+    pastNotice: {
+        flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.xs, paddingHorizontal: spacing.sm,
+        borderRadius: radius.control, backgroundColor: colors.warningLight,
+    },
+    pastNoticeText: {flex: 1, color: colors.warning, fontWeight: '600'},
+    map: {height: 152, borderRadius: radius.control, overflow: 'hidden', marginTop: spacing.xs},
     file: {flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.sm},
     event: {flexDirection: 'row', gap: spacing.md, paddingVertical: spacing.xs},
     dot: {width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary, marginTop: 6},

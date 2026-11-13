@@ -56,3 +56,26 @@ export interface AdminBillingProfile {
     version: number;
     updatedAt: string | null;
 }
+
+export interface PaymentGatewayConfig {
+    bankTransferConfigured: boolean;
+    bankBin: string;
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+    vatRate: number;
+    webhookAutoReconcileReady: boolean;
+    providerEnabled: boolean;
+    secretConfigured: boolean;
+    sepayWebhookPath: string;
+    ipnWebhookPath: string;
+    sampleQrPayload: string | null;
+}
+
+export interface PaymentGatewayConfigInput {
+    bankBin: string;
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+    vatRate: number;
+}

@@ -117,13 +117,13 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
                     <button
                         type="button"
                         role="menuitem"
-                        className="flex w-full items-center gap-2.5 rounded-control px-3 py-2 text-sm font-semibold text-danger hover:bg-red-50 transition-colors cursor-pointer"
+                        className="flex w-full items-center gap-2 rounded-control px-2.5 py-1.5 text-xs font-semibold text-danger hover:bg-red-50 transition-colors cursor-pointer"
                         onClick={() => {
                             close();
                             void logout();
                         }}
                     >
-                        <LogOut size={16} aria-hidden="true"/>
+                        <LogOut size={14} aria-hidden="true"/>
                         {t('common.logout')}
                     </button>
                 </div>

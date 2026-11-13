@@ -1,16 +1,74 @@
 'use client';
+
+import {useEffect, useState} from 'react';
 import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
-import { afterSuccess, QUIET, type MutationOptions } from '@/lib/query';
+import {afterSuccess, QUIET, type MutationOptions} from '@/lib/query';
+import {adminRealtimeClient} from '@/lib/realtime-ws';
 import {bankTransferService, invoicesService, plansService} from '@/api/billing/billing.api';
 import {billingAdminService} from '@/api/billing/billing-admin.api';
 import {triggerReceiptDownload} from '@/utils/billing/receipt-download';
-import type {FinancialOutboxEvent, TransactionFilters} from '@/types/billing/billing-admin.types';
+import type {
+    FinancialOutboxEvent,
+    PaymentGatewayConfig,
+    PaymentGatewayConfigInput,
+    TransactionFilters,
+} from '@/types/billing/billing-admin.types';
 import {quotasService} from '@/api/billing/quotas.api';
 import {usersService} from '@/api/user/users.api';
 import {billingKeys} from '@/hooks/billing/query-keys';
 import type {InvoiceFilters, PlanInput} from '@/types/billing/billing.types';
 import type {Invoice} from '@/types';
+
+/** Subscribes finance workspaces to real-time INVOICE_UPDATED WebSocket events. */
+export function useAdminBillingRealtime(enabled = true) {
+    const {user} = useAuth();
+    const client = useQueryClient();
+    const active = Boolean(user) && enabled;
+    const [wsConnected, setWsConnected] = useState<boolean>(() => adminRealtimeClient.isConnected());
+
+    useEffect(() => {
+        if (!active) return;
+        const unsubStatus = adminRealtimeClient.subscribeStatus(setWsConnected);
+        const unsubFrames = adminRealtimeClient.subscribeFrames(frame => {
+            if (frame.type === 'INVOICE_UPDATED') {
+                void client.invalidateQueries({queryKey: billingKeys.admin(user?.id)});
+            }
+        });
+        return () => {
+            unsubStatus();
+            unsubFrames();
+        };
+    }, [active, client, user?.id]);
+
+    return {wsConnected};
+}
+
+/** VietQR receiving account & automated SePay/IPN webhook readiness snapshot. */
+export function usePaymentGatewayConfig(enabled = true) {
+    const {user, can, permissionsReady} = useAuth();
+    return useQuery({
+        queryKey: billingKeys.paymentGateway(user?.id),
+        queryFn: ({signal}) => billingAdminService.paymentGateway(signal),
+        enabled: Boolean(user) && permissionsReady && can('USER_MANAGE') && enabled,
+    });
+}
+
+export function useUpdatePaymentGatewayConfig(
+    options?: MutationOptions<PaymentGatewayConfig, PaymentGatewayConfigInput>,
+) {
+    const client = useQueryClient();
+    const {user} = useAuth();
+    return useMutation({
+        ...options,
+        mutationFn: billingAdminService.updatePaymentGateway,
+        onSuccess: afterSuccess(options, updated => {
+            client.setQueryData(billingKeys.paymentGateway(user?.id), updated);
+            void client.invalidateQueries({queryKey: billingKeys.admin(user?.id)});
+            void client.invalidateQueries({predicate: q => q.queryKey.includes('settings')});
+        }),
+    });
+}
 
 /** Active plans offered to customers. */
 export function useBillingPlans() {

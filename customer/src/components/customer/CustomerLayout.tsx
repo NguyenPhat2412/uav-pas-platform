@@ -11,6 +11,7 @@ import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {NotificationBell} from '@/components/notification/NotificationBell';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
+import {PublicSupportWidget} from '@/components/support/PublicSupportWidget';
 import {Alert, Button, LanguageSwitcher, UavLoader} from '@/components/ui';
 import {CUSTOMER_SIDEBAR_ROUTES, resolveSidebarActiveItem} from '@/config/sidebar-routes';
 import {useOwnProfile} from '@/hooks/profile/useProfile';
@@ -113,6 +114,7 @@ export function AppShell({children}: { children: React.ReactNode }) {
                 <main id="content" className="flex w-full flex-1 flex-col bg-white outline-none" tabIndex={-1}>
                     {children}
                 </main>
+                <PublicSupportWidget mode="portal"/>
                 <AssistantWidget portal="CUSTOMER"/>
             </div>
         </div>

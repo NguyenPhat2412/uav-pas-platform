@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {RotateCcw, Send} from 'lucide-react-native';
+import {usePathname} from 'expo-router';
+import {Radio, RotateCcw, Send} from 'lucide-react-native';
 import {MobileSupportContactCard} from '@/components/support/MobileSupportContactCard';
 import {
     AppText,
@@ -61,8 +62,23 @@ export function PublicSupportSheetScreen() {
     const {t} = useI18n();
     const {user} = useAuth();
     const toast = useToast();
-    const {hydrated, visitorToken, session, isLoading, isFetching, refetch, startThread, sendMessage, resetSession} =
-        usePublicSupportSession(true);
+    const pathname = usePathname();
+    const isActiveRoute = pathname === '/customer/support' || pathname === '/support';
+    const {
+        hydrated,
+        visitorToken,
+        session,
+        wsConnected,
+        adminTyping,
+        notifyVisitorTyping,
+        isLoading,
+        refetch,
+        startThread,
+        sendMessage,
+        resetSession,
+    } = usePublicSupportSession(isActiveRoute);
+
+    const [refreshing, setRefreshing] = useState(false);
 
     const [topic, setTopic] = useState<SupportTopic>('GENERAL_SUPPORT');
     const [fullNameInput, setFullNameInput] = useState<string | null>(null);
@@ -108,10 +124,16 @@ export function PublicSupportSheetScreen() {
         );
     };
 
+    const handleDraftChange = (value: string) => {
+        setDraft(value);
+        notifyVisitorTyping(value.trim().length > 0);
+    };
+
     const handleSendReply = () => {
         const trimmed = draft.trim();
         if (!trimmed || sendMessage.isPending) return;
         setReplyError(null);
+        notifyVisitorTyping(false);
         sendMessage.mutate(trimmed, {
             onSuccess: () => {
                 setDraft('');
@@ -127,15 +149,25 @@ export function PublicSupportSheetScreen() {
     };
 
     const handleResetSession = async () => {
+        notifyVisitorTyping(false);
         setDraft('');
         setReplyError(null);
         await resetSession();
     };
 
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await refetch();
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
     const statusTone = session ? resolveStatusTone(session.status, t) : null;
 
     return (
-        <Screen onRefresh={() => void refetch()} refreshing={isFetching}>
+        <Screen onRefresh={() => void handleRefresh()} refreshing={refreshing}>
             <MobileSupportContactCard/>
 
             {!hydrated || (Boolean(visitorToken) && isLoading && !session) ? (
@@ -166,21 +198,33 @@ export function PublicSupportSheetScreen() {
                             {statusTone ? <Badge label={statusTone.label} background={statusTone.background} color={statusTone.color}/> : null}
                         </View>
                         <View style={styles.sessionMeta}>
+                            <Badge
+                                icon={Radio}
+                                label={wsConnected ? t('mobile.support.liveRealtime') : t('mobile.support.liveSyncing')}
+                                background={wsConnected ? colors.primaryLight : colors.slateLight}
+                                color={wsConnected ? colors.primary : colors.slateDark}
+                            />
                             <Badge label={formatSupportTopic(session.topic)} background={colors.slateLight} color={colors.slateDark}/>
                             <AppText variant="caption" numberOfLines={1} style={styles.flex}>{session.contactInfo}</AppText>
                         </View>
-                        <Button label={t('mobile.support.newSessionButton')} tone="secondary" icon={RotateCcw} onPress={() => void handleResetSession()}/>
+                        <Button size="sm" label={t('mobile.support.newSessionButton')} tone="secondary" icon={RotateCcw} onPress={() => void handleResetSession()}/>
                     </Card>
 
                     <Card style={styles.threadCard}>
                         {session.messages.map(msg => (
                             <SupportMessageBubble key={msg.id} message={msg} youLabel={t('mobile.support.youSender')} adminFallback={t('mobile.support.adminSender')}/>
                         ))}
+                        {adminTyping ? (
+                            <View style={styles.typingPill} accessibilityLiveRegion="polite">
+                                <View style={styles.typingDot}/>
+                                <ScaledText style={styles.typingText}>{t('mobile.support.adminTyping')}</ScaledText>
+                            </View>
+                        ) : null}
                     </Card>
 
                     <Card>
                         <TextField label={t('mobile.support.messageLabel')} placeholder={t('mobile.support.replyPlaceholder')}
-                                   value={draft} onChangeText={setDraft} multiline error={replyError}/>
+                                   value={draft} onChangeText={handleDraftChange} multiline error={replyError}/>
                         <Button label={t('mobile.support.sendButton')} icon={Send} loading={sendMessage.isPending}
                                 disabled={!draft.trim() || sendMessage.isPending} onPress={handleSendReply}/>
                     </Card>
@@ -196,7 +240,7 @@ const styles = StyleSheet.create({
     topicLabel: {fontSize: font.small, fontWeight: '600', color: colors.text},
     errorText: {color: colors.danger},
     sessionHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm},
-    sessionMeta: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
+    sessionMeta: {flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: spacing.sm},
     // Tall even with a single message, so the conversation reads as the main thing on the screen.
     threadCard: {gap: spacing.md, minHeight: 360},
     bubbleWrap: {maxWidth: '88%', gap: 4},
@@ -208,4 +252,16 @@ const styles = StyleSheet.create({
     bubbleAdmin: {backgroundColor: colors.slateLight, borderBottomLeftRadius: spacing.xs},
     bubbleVisitorText: {color: colors.white},
     bubbleAdminText: {color: colors.text},
+    typingPill: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        gap: spacing.xs,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.xs,
+        borderRadius: radius.control,
+        backgroundColor: colors.slateLight,
+    },
+    typingDot: {width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary},
+    typingText: {fontSize: font.caption, fontWeight: '600', color: colors.slateDark},
 });

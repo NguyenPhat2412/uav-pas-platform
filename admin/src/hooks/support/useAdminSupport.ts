@@ -1,11 +1,14 @@
 'use client';
 
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {adminSupportService} from '@/api/support/support.api';
 import {supportKeys} from '@/hooks/support/query-keys';
+import {adminRealtimeClient} from '@/lib/realtime-ws';
 import {useAuth} from '@/providers/AuthContext';
 import type {
     SupportQuickReplyInput,
+    SupportThreadDetail,
     SupportThreadFilter,
     SupportThreadStatus,
 } from '@/types/support/support.types';
@@ -15,13 +18,125 @@ export function personalizeQuickReply(template: string, fullName: string): strin
     return template.replace(/\{name\}/gi, cleanName);
 }
 
+export function useAdminSupportRealtime(enabled = true) {
+    const {user} = useAuth();
+    const client = useQueryClient();
+    const active = Boolean(user) && enabled;
+
+    const [wsConnected, setWsConnected] = useState<boolean>(() =>
+        adminRealtimeClient.isConnected(),
+    );
+    const [typingByThread, setTypingByThread] = useState<Record<number, string>>({});
+    const expiryTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+    const lastSentTypingAt = useRef<Map<number, number>>(new Map());
+
+    useEffect(() => {
+        if (!active) return;
+
+        const clearThreadTyping = (threadId: number) => {
+            const existing = expiryTimers.current.get(threadId);
+            if (existing) {
+                clearTimeout(existing);
+                expiryTimers.current.delete(threadId);
+            }
+            setTypingByThread(prev => {
+                if (!(threadId in prev)) return prev;
+                const next = {...prev};
+                delete next[threadId];
+                return next;
+            });
+        };
+
+        const unsubStatus = adminRealtimeClient.subscribeStatus(connected => {
+            setWsConnected(connected);
+            if (connected) {
+                void client.invalidateQueries({queryKey: supportKeys.summary(user?.id)});
+                void client.invalidateQueries({queryKey: supportKeys.threadsAll(user?.id)});
+            }
+        });
+
+        const unsubFrames = adminRealtimeClient.subscribeFrames(frame => {
+            if (frame.type === 'ADMIN_SUPPORT_UPDATED') {
+                if (frame.summary) {
+                    client.setQueryData(supportKeys.summary(user?.id), frame.summary);
+                }
+                const threadKey = supportKeys.thread(user?.id, frame.thread.id);
+                const isThreadMounted = (client.getQueryCache().find({queryKey: threadKey})?.getObserversCount() ?? 0) > 0;
+                if (frame.messages && client.getQueryData<SupportThreadDetail>(threadKey)) {
+                    client.setQueryData<SupportThreadDetail>(threadKey, {
+                        thread: isThreadMounted ? {...frame.thread, unreadForAdmin: 0} : frame.thread,
+                        messages: frame.messages,
+                    });
+                }
+                if (isThreadMounted && frame.thread.unreadForAdmin > 0) {
+                    void adminSupportService.thread(frame.thread.id).then(() => {
+                        void client.invalidateQueries({queryKey: supportKeys.summary(user?.id)});
+                        void client.invalidateQueries({queryKey: supportKeys.threadsAll(user?.id)});
+                    }).catch(() => undefined);
+                }
+                void client.invalidateQueries({queryKey: supportKeys.threadsAll(user?.id)});
+                if (frame.thread.lastSenderRole === 'VISITOR') {
+                    clearThreadTyping(frame.thread.id);
+                }
+            } else if (frame.type === 'SUPPORT_SUMMARY_UPDATED') {
+                client.setQueryData(supportKeys.summary(user?.id), frame.summary);
+            } else if (frame.type === 'SUPPORT_THREAD_DELETED') {
+                client.removeQueries({queryKey: supportKeys.thread(user?.id, frame.threadId)});
+                if (frame.summary) {
+                    client.setQueryData(supportKeys.summary(user?.id), frame.summary);
+                }
+                void client.invalidateQueries({queryKey: supportKeys.threadsAll(user?.id)});
+                clearThreadTyping(frame.threadId);
+            } else if (frame.type === 'SUPPORT_VISITOR_TYPING') {
+                if (!frame.typing) {
+                    clearThreadTyping(frame.threadId);
+                    return;
+                }
+                const prevTimer = expiryTimers.current.get(frame.threadId);
+                if (prevTimer) clearTimeout(prevTimer);
+                setTypingByThread(prev => ({
+                    ...prev,
+                    [frame.threadId]: frame.senderName?.trim() || 'Khách hàng',
+                }));
+                const timer = setTimeout(() => clearThreadTyping(frame.threadId), 4500);
+                expiryTimers.current.set(frame.threadId, timer);
+            }
+        });
+
+        const timersSnapshot = expiryTimers.current;
+        return () => {
+            unsubStatus();
+            unsubFrames();
+            for (const timer of timersSnapshot.values()) {
+                clearTimeout(timer);
+            }
+            timersSnapshot.clear();
+        };
+    }, [active, client, user?.id]);
+
+    const notifyAdminTyping = useCallback((threadId: number, typing: boolean) => {
+        if (!threadId || threadId <= 0) return;
+        const now = Date.now();
+        if (typing) {
+            const last = lastSentTypingAt.current.get(threadId) ?? 0;
+            if (now - last < 1800) return;
+            lastSentTypingAt.current.set(threadId, now);
+        } else {
+            lastSentTypingAt.current.delete(threadId);
+        }
+        adminRealtimeClient.send({type: 'ADMIN_TYPING', threadId, typing});
+    }, []);
+
+    return {wsConnected, typingByThread, notifyAdminTyping};
+}
+
 export function useSupportSummary(enabled = true) {
     const {user} = useAuth();
     return useQuery({
         queryKey: supportKeys.summary(user?.id),
         queryFn: ({signal}) => adminSupportService.summary(signal),
         enabled: Boolean(user) && enabled,
-        refetchInterval: 6000,
+        refetchInterval: () => (adminRealtimeClient.isConnected() ? 30_000 : 6_000),
     });
 }
 
@@ -31,7 +146,7 @@ export function useSupportThreads(filter: SupportThreadFilter, enabled = true) {
         queryKey: supportKeys.threads(user?.id, filter),
         queryFn: ({signal}) => adminSupportService.threads(filter, signal),
         enabled: Boolean(user) && enabled,
-        refetchInterval: 6000,
+        refetchInterval: () => (adminRealtimeClient.isConnected() ? 30_000 : 6_000),
     });
 }
 
@@ -47,7 +162,7 @@ export function useSupportThreadDetail(id: number | null) {
             return detail;
         },
         enabled: Boolean(user) && id !== null && id > 0,
-        refetchInterval: 4000,
+        refetchInterval: () => (adminRealtimeClient.isConnected() ? 25_000 : 4_000),
     });
 }
 

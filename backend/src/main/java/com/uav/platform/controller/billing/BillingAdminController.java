@@ -3,10 +3,14 @@ package com.uav.platform.controller.billing;
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
 import com.uav.platform.config.routes.ApiRoutes;
+import com.uav.platform.dto.request.billing.PaymentGatewayConfigUpdateRequest;
+import com.uav.platform.dto.response.billing.PaymentGatewayConfigResponse;
 import com.uav.platform.dto.response.billing.PaymentTransactionAdminResponse;
 import com.uav.platform.dto.response.webhook.FinancialOutboxEventResponse;
 import com.uav.platform.service.billing.BillingAdminService;
 import com.uav.platform.service.webhook.FinancialOutboxAdminService;
+
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
-/** Operator views over payment/IPN records and the financial event outbox. */
+/** Operator views over payment/IPN records, VietQR gateway settings, and financial event outbox. */
 @RestController
 @RequestMapping(ApiRoutes.Billing.ADMIN)
 @RequiredArgsConstructor
@@ -42,6 +46,19 @@ public class BillingAdminController {
         return ResponseEntity.ok(
                 billingAdmin.listTransactions(
                         status, gateway, from, to, invoiceId, q, Pageables.of(page, size)));
+    }
+
+    @GetMapping(ApiRoutes.Billing.ADMIN_PAYMENT_GATEWAY)
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<PaymentGatewayConfigResponse> getPaymentGatewayConfig() {
+        return ResponseEntity.ok(billingAdmin.getPaymentGatewayConfig());
+    }
+
+    @PutMapping(ApiRoutes.Billing.ADMIN_PAYMENT_GATEWAY)
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<PaymentGatewayConfigResponse> updatePaymentGatewayConfig(
+            @Valid @RequestBody PaymentGatewayConfigUpdateRequest request, Authentication auth) {
+        return ResponseEntity.ok(billingAdmin.updatePaymentGatewayConfig(request, auth));
     }
 
     @GetMapping(ApiRoutes.Billing.ADMIN_OUTBOX)

@@ -12,18 +12,18 @@ export default function OperationsTabs() {
         <NativeTabs tintColor={colors.primary} minimizeBehavior="onScrollDown">
             <NativeTabs.Trigger name="missions">
                 <NativeTabs.Trigger.Icon sf={{default: 'airplane.departure', selected: 'airplane.departure'}} md="flight_takeoff"/>
-                <NativeTabs.Trigger.Label>{t('mobile.ops.nav.missions')}</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Label>{t('mobile.ops.tabs.missions')}</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="sar">
                 <NativeTabs.Trigger.Icon sf={{default: 'scope', selected: 'scope'}} md="radar"/>
-                <NativeTabs.Trigger.Label>{t('mobile.ops.nav.sar')}</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Label>{t('mobile.ops.tabs.sar')}</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="fleet">
                 <NativeTabs.Trigger.Icon
                     sf={{default: 'wrench.and.screwdriver', selected: 'wrench.and.screwdriver.fill'}}
                     md="build"
                 />
-                <NativeTabs.Trigger.Label>{t('mobile.ops.nav.fleet')}</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Label>{t('mobile.ops.tabs.fleet')}</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="weather">
                 <NativeTabs.Trigger.Icon sf={{default: 'cloud.sun', selected: 'cloud.sun.fill'}} md="partly_cloudy_day"/>

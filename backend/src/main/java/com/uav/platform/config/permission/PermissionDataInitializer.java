@@ -62,6 +62,7 @@ public class PermissionDataInitializer implements ApplicationRunner {
         if (role == UserRole.ROLE_ADMIN) return EnumSet.allOf(PermissionCode.class);
         if (role == UserRole.ROLE_COMMANDER)
             return EnumSet.of(
+                    PermissionCode.SUPPORT_MANAGE,
                     PermissionCode.USER_VIEW,
                     PermissionCode.STATION_VIEW,
                     PermissionCode.UAV_VIEW,
@@ -96,6 +97,7 @@ public class PermissionDataInitializer implements ApplicationRunner {
                     PermissionCode.MISSION_TIMELINE_VIEW);
         if (role == UserRole.ROLE_OPERATOR)
             return EnumSet.of(
+                    PermissionCode.SUPPORT_MANAGE,
                     PermissionCode.STATION_VIEW,
                     PermissionCode.UAV_VIEW,
                     PermissionCode.INVENTORY_VIEW,

@@ -36,10 +36,14 @@ class MissionSubmitNotificationTest {
         Mission mission = mock(Mission.class);
         when(mission.getCustomer()).thenReturn(customer);
         when(mission.getId()).thenReturn(9L);
-        // The customer is also listed as staff here: they must not be notified twice (or at all, as actor).
+        // The customer is also listed as staff here: they must not be notified twice (or at all, as
+        // actor).
         when(access.dispatchers()).thenReturn(List.of(customer, dispatcher));
         service.notifyParties(
-                mission, new TestingAuthenticationToken("customer", null), type, "Mission submitted");
+                mission,
+                new TestingAuthenticationToken("customer", null),
+                type,
+                "Mission submitted");
         ArgumentCaptor<CreateNotificationRequest> sent =
                 ArgumentCaptor.forClass(CreateNotificationRequest.class);
         verify(notifications, atLeast(0)).sendNotification(sent.capture());

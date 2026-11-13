@@ -86,83 +86,93 @@ export function OperationsLifecycleActionsCard({
             <View style={styles.actions}>
                 {controls.confirm && (
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.actions.confirm')}
                         icon={CheckCircle2}
                         loading={confirmLoading}
                         onPress={onConfirm}
-                        style={styles.flex}
+                        style={styles.actionBtn}
                     />
                 )}
                 {controls.accept && (
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.actions.accept')}
                         icon={ShieldCheck}
                         loading={acceptLoading}
                         onPress={onAccept}
-                        style={styles.flex}
+                        style={styles.actionBtn}
                     />
                 )}
                 {controls.ready && (
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.actions.ready')}
                         icon={Navigation}
                         tone="secondary"
                         loading={readyLoading}
                         onPress={onReady}
-                        style={styles.flex}
+                        style={styles.actionBtn}
                     />
                 )}
                 {controls.start && (
                     <Button
+                        size="sm"
                         label={t('mobile.ops.actions.startFlight')}
                         icon={Play}
                         disabled={!takeoffAllowed}
                         loading={startLoading}
                         onPress={onStart}
-                        style={styles.flex}
+                        style={styles.actionBtn}
                     />
                 )}
                 {controls.complete && (
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.actions.complete')}
                         icon={CheckCircle2}
                         onPress={() => setActiveForm(activeForm === 'complete' ? 'none' : 'complete')}
-                        style={styles.flex}
+                        style={styles.actionBtn}
                     />
                 )}
                 {controls.fail && (
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.actions.fail')}
                         icon={AlertOctagon}
                         tone="danger"
                         onPress={() => setActiveForm(activeForm === 'fail' ? 'none' : 'fail')}
-                        style={styles.flex}
+                        style={styles.actionBtn}
                     />
                 )}
                 {controls.forceFail && (
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.actions.forceFail')}
                         icon={AlertOctagon}
                         tone="danger"
                         onPress={() => setActiveForm(activeForm === 'forceFail' ? 'none' : 'forceFail')}
-                        style={styles.flex}
+                        style={styles.actionBtn}
                     />
                 )}
                 {controls.reject && (
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.actions.reject')}
                         icon={XCircle}
                         tone="danger"
                         onPress={() => setActiveForm(activeForm === 'reject' ? 'none' : 'reject')}
-                        style={styles.flex}
+                        style={styles.actionBtn}
                     />
                 )}
                 {controls.conflict && (
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.actions.conflict')}
                         icon={AlertTriangle}
                         tone="ghost"
                         onPress={() => setActiveForm(activeForm === 'conflict' ? 'none' : 'conflict')}
+                        style={styles.conflictBtn}
                     />
                 )}
             </View>
@@ -171,6 +181,7 @@ export function OperationsLifecycleActionsCard({
                 <View style={styles.inlineForm}>
                     <TextField label={t('opsMissions.detail.note.reason')} value={reasonText} onChangeText={setReasonText} multiline/>
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.confirm.reject.submit')}
                         tone="danger"
                         disabled={!canSubmitReasonNote(reasonText)}
@@ -184,6 +195,7 @@ export function OperationsLifecycleActionsCard({
                 <View style={styles.inlineForm}>
                     <TextField label={t('opsMissions.detail.note.reason')} value={reasonText} onChangeText={setReasonText} multiline/>
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.confirm.conflict.submit')}
                         disabled={!canSubmitReasonNote(reasonText)}
                         loading={conflictLoading}
@@ -207,6 +219,7 @@ export function OperationsLifecycleActionsCard({
                         onChangeText={setEquipmentCondition}
                     />
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.confirm.complete.submit')}
                         icon={CheckCircle2}
                         disabled={!canSubmitCompletion(completionNote, equipmentCondition) || !evidence.satisfied}
@@ -225,6 +238,7 @@ export function OperationsLifecycleActionsCard({
                     <TextField label={t('opsMissions.detail.note.failureReason')} value={failureReason} onChangeText={setFailureReason}/>
                     <TextField label={t('opsMissions.detail.note.incident')} value={failureNotes} onChangeText={setFailureNotes} multiline/>
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.confirm.fail.submit')}
                         tone="danger"
                         disabled={!canSubmitFailure(failureReason, failureNotes)}
@@ -244,6 +258,7 @@ export function OperationsLifecycleActionsCard({
                     <TextField label={t('opsMissions.detail.note.failureReason')} value={failureReason} onChangeText={setFailureReason}/>
                     <TextField label={t('opsMissions.detail.note.incident')} value={failureNotes} onChangeText={setFailureNotes} multiline/>
                     <Button
+                        size="sm"
                         label={t('opsMissions.detail.confirm.forceFail.submit')}
                         tone="danger"
                         disabled={!canSubmitFailure(failureReason, failureNotes)}
@@ -261,8 +276,9 @@ export function OperationsLifecycleActionsCard({
 }
 
 const styles = StyleSheet.create({
-    flex: {flex: 1},
-    actions: {flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap'},
+    actions: {flexDirection: 'row', gap: spacing.xs, flexWrap: 'wrap'},
+    actionBtn: {flexGrow: 1, flexBasis: '45%', minWidth: 136},
+    conflictBtn: {flexGrow: 1, flexBasis: '45%', minWidth: 136, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface},
     inlineForm: {
         gap: spacing.sm,
         paddingTop: spacing.sm,

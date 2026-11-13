@@ -24,6 +24,7 @@ public final class ApiRoutes {
         public static final String VERIFY_EMAIL = "/verify-email";
         public static final String LOGIN = "/login";
         public static final String GOOGLE = "/google";
+        public static final String APPLE = "/apple";
         public static final String VERIFY_2FA = "/verify-2fa";
         public static final String RESEND_OTP = "/resend-otp";
         public static final String FORGOT_PASSWORD = "/forgot-password";
@@ -42,6 +43,7 @@ public final class ApiRoutes {
         public static final String FULL_VERIFY_EMAIL = BASE + VERIFY_EMAIL;
         public static final String FULL_LOGIN = BASE + LOGIN;
         public static final String FULL_GOOGLE = BASE + GOOGLE;
+        public static final String FULL_APPLE = BASE + APPLE;
         public static final String FULL_VERIFY_2FA = BASE + VERIFY_2FA;
         public static final String FULL_RESEND_OTP = BASE + RESEND_OTP;
         public static final String FULL_FORGOT_PASSWORD = BASE + FORGOT_PASSWORD;
@@ -66,6 +68,12 @@ public final class ApiRoutes {
         public static final String FULL_PROFILE = BASE + PROFILE;
         public static final String FULL_PROFILE_BILLING = FULL_PROFILE + "/billing";
         public static final String FULL_PROFILE_PASSWORD = FULL_PROFILE + "/password";
+        public static final String PROFILE_DELETION_POLICY = "/profile/deletion-policy";
+        public static final String PROFILE_DELETE = "/profile/delete";
+        public static final String FULL_PROFILE_DELETION_POLICY = BASE + PROFILE_DELETION_POLICY;
+        public static final String FULL_PROFILE_DELETE = BASE + PROFILE_DELETE;
+        public static final String DELETION_POLICY = "/deletion-policy";
+        public static final String DELETE = "/delete";
         public static final String FULL_USER_BY_ID = BASE + USER_ID;
 
         // Method-level paths, relative to the controller mapping.
@@ -310,6 +318,7 @@ public final class ApiRoutes {
         public static final String ADMIN_INVOICES_CONFIRM_PAYMENT =
                 "/admin/invoices/{id}/confirm-payment";
         public static final String ADMIN_TRANSACTIONS = "/transactions";
+        public static final String ADMIN_PAYMENT_GATEWAY = "/payment-gateway";
         public static final String ADMIN_OUTBOX = "/outbox";
         public static final String ADMIN_OUTBOX_RETRY = "/outbox/{id}/retry";
         public static final String ADMIN_PLANS_STATS = "/stats";
@@ -576,6 +585,15 @@ public final class ApiRoutes {
         public static final String REHEARSE_MISSION = "/rehearse-mission/{missionId}";
     }
 
+    /** Real-time WebSocket endpoint for live customer support and instant payment settlement push. */
+    public static final class Realtime {
+        private Realtime() {}
+
+        public static final String BASE = API_V1_PREFIX + "/ws";
+        public static final String ENDPOINT = BASE + "/realtime";
+        public static final String WILDCARD = BASE + "/**";
+    }
+
     public static final String[] SWAGGER_WHITELIST = {
         Docs.API_DOCS, Docs.SWAGGER_UI, Docs.SWAGGER_HTML
     };
@@ -586,6 +604,7 @@ public final class ApiRoutes {
     public static final String[] PUBLIC_AUTH_WHITELIST = {
         Auth.FULL_LOGIN,
         Auth.FULL_GOOGLE,
+        Auth.FULL_APPLE,
         Auth.FULL_REGISTER,
         Auth.FULL_REGISTER_OTP,
         Auth.FULL_VERIFY_EMAIL,

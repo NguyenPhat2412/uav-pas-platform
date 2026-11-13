@@ -3,7 +3,7 @@
 import {clearWelcomeFlags} from '@/lib/welcome-flag';
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
-import type {AuthContextType, AuthResponse, RegisterRequest, UserResponse} from "@/types/auth/auth.types";
+import type {AppleLoginInput, AuthContextType, AuthResponse, RegisterRequest, UserResponse} from "@/types/auth/auth.types";
 import {authService} from '@/api/auth/auth.api';
 import {API_ROUTES, ApiError, apiClient, knownSignedOut, PERMISSIONS_EVENT, rememberSessionUser, SESSION_EVENT, SESSION_STORAGE_KEY, sessionOwnerOf, setAuthSession} from "@/lib/api";
 import {toast} from '@/providers/ToastContext';
@@ -145,6 +145,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
         usernameOrEmail,
         password
     })), [authenticate]);
+    const loginWithApple = useCallback((payload: AppleLoginInput) => authenticate(() => authService.loginWithApple(payload)), [authenticate]);
     const register = useCallback((data: RegisterRequest) => authService.register(data), []);
     const logout = useCallback(async () => {
         clearWelcomeFlags();
@@ -180,7 +181,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
         user, token, isLoading, isAuthenticated: !!user,
         permissions, permissionsReady: hasPermissions, permissionError: hasPermissions ? null : permissionQuery.error,
         can: code => permissions.includes(code), refreshPermissions: permissionQuery.refetch, refreshUser,
-        login, register, completeAuth, logout
+        login, loginWithApple, register, completeAuth, logout
     }}>{children}</AuthContext.Provider>;
 }
 

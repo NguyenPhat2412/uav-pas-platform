@@ -1,10 +1,18 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {profileKeys} from '@/shared/hooks/profile/query-keys';
 import {authService} from '@/api/auth/auth.api';
-import {avatarService, profileService, type AvatarFile} from '@/api/profile/profile.api';
+import {
+    avatarService,
+    profileService,
+    type AccountDeletionPolicy,
+    type AvatarFile,
+    type DeleteOwnAccountPayload,
+} from '@/api/profile/profile.api';
 import {apiImageSource} from '@/lib/api/client';
 import {useAuth} from '@/providers/AuthContext';
 import type {ProfileFields} from '@/shared/types/profile/profile.types';
+
+export type {AccountDeletionPolicy, DeleteOwnAccountPayload};
 
 export function useProfile() {
     const {user, refreshUser} = useAuth();
@@ -41,4 +49,24 @@ export function useAvatarMutations() {
 export function useAvatarSource() {
     const {user} = useAuth();
     return apiImageSource(user?.avatarUrl);
+}
+
+/** Live administrator-configured self-service account deletion policy and eligibility for the signed-in user. */
+export function useAccountDeletionPolicy(enabled = true) {
+    const {user} = useAuth();
+    return useQuery({
+        queryKey: [...profileKeys.own(user?.id), 'deletion-policy'] as const,
+        queryFn: ({signal}) => profileService.getDeletionPolicy(signal),
+        enabled: !!user && enabled,
+        staleTime: 15_000,
+        refetchOnMount: 'always',
+    });
+}
+
+/** Submits the signed-in user's self-service account deletion request under the current Admin policy. */
+export function useDeleteOwnAccount() {
+    return useMutation({
+        mutationFn: (payload: DeleteOwnAccountPayload) => profileService.deleteOwnAccount(payload),
+        retry: false,
+    });
 }

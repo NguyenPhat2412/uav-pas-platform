@@ -1,6 +1,6 @@
 import {apiClient} from '@/lib/api';
 import {API_ROUTES} from '@/lib/api/routes';
-import type {AuthResponse, ForgotPasswordRequest, LoginRequest, OtpChallengeResponse, RegisterRequest, ResendOtpRequest, ResetPasswordRequest, TwoFactorDisableRequest, TwoFactorSetupRequest, TwoFactorSetupResponse, TwoFactorStatusResponse, TwoFactorVerifyRequest, UserResponse, VerifyOtpRequest} from '@/types/auth/auth.types';
+import type {AppleLoginInput, AuthResponse, ForgotPasswordRequest, LoginRequest, OtpChallengeResponse, RegisterRequest, ResendOtpRequest, ResetPasswordRequest, TwoFactorDisableRequest, TwoFactorSetupRequest, TwoFactorSetupResponse, TwoFactorStatusResponse, TwoFactorVerifyRequest, UserResponse, VerifyOtpRequest} from '@/types/auth/auth.types';
 
 export const authService = {
     async login(credentials: LoginRequest): Promise<AuthResponse> {
@@ -9,6 +9,10 @@ export const authService = {
     /** Signs in with a Google ID token; the answer has the same shape as a password login. */
     async loginWithGoogle(credential: string): Promise<AuthResponse> {
         return apiClient.post<AuthResponse>(API_ROUTES.auth.google, {credential});
+    },
+    /** Signs in with an Apple identity token; the answer has the same shape as a password login. */
+    async loginWithApple(payload: AppleLoginInput): Promise<AuthResponse> {
+        return apiClient.post<AuthResponse>(API_ROUTES.auth.apple, payload);
     },
     async register(data: RegisterRequest): Promise<UserResponse> {
         return apiClient.post<UserResponse>(API_ROUTES.auth.register, data);

@@ -1,7 +1,9 @@
 package com.uav.platform.service.user;
 
 import com.uav.platform.dto.record.user.UserProfileUpdateCommand;
+import com.uav.platform.dto.request.user.AccountDeletionRequest;
 import com.uav.platform.dto.request.user.UserProfilePatchRequest;
+import com.uav.platform.dto.response.user.AccountDeletionPolicyResponse;
 import com.uav.platform.dto.response.user.UserProfileResponse;
 
 public interface UserProfileService {
@@ -10,4 +12,8 @@ public interface UserProfileService {
     UserProfileResponse updatePayload(String username, UserProfilePatchRequest request);
 
     UserProfileResponse update(String username, UserProfileUpdateCommand request);
+
+    AccountDeletionPolicyResponse getDeletionPolicy(String username);
+
+    void deleteOwnAccount(String username, AccountDeletionRequest request);
 }

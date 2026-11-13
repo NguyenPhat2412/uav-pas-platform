@@ -108,6 +108,16 @@ public class AuthController {
                 authCookieHelper, authService.loginWithGoogle(request));
     }
 
+    @Operation(summary = CoreConstants.AUTH_OP_APPLE_SUMMARY)
+    @PostMapping(ApiRoutes.Auth.APPLE)
+    public ResponseEntity<AuthResponse> loginWithApple(
+            HttpServletRequest httpRequest,
+            @RequestBody(required = false) AppleLoginRequest request) {
+        limitClient(AuthRateLimitAction.LOGIN, httpRequest);
+        return AuthCookieHelper.okWithCookies(
+                authCookieHelper, authService.loginWithApple(request));
+    }
+
     @Operation(summary = "Verify 2FA code (Email OTP or TOTP Authenticator) and issue JWT session")
     @PostMapping(ApiRoutes.Auth.VERIFY_2FA)
     public ResponseEntity<AuthResponse> verify2fa(

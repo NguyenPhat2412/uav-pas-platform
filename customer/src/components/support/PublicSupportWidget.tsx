@@ -1,7 +1,6 @@
 'use client';
 
 import {useEffect, useRef, useState, type FormEvent} from 'react';
-import {useAuth} from '@/providers/AuthContext';
 import {
     getSupportErrorMessage,
     OPEN_SUPPORT_WIDGET_EVENT,
@@ -13,12 +12,14 @@ import {
     usePublicSiteInfo,
     usePublicSupportSession,
     useSendPublicSupportMessage,
+    useSupportVisitorPrefill,
 } from '@/hooks/support/usePublicSupport';
 import type {
     OpenSupportWidgetDetail,
     SupportQuickTopicOption,
     SupportSessionEventDetail,
     SupportStartDraft,
+    SupportWidgetMode,
 } from '@/types/support/support.types';
 import {PublicSupportLauncher} from '@/components/support/PublicSupportLauncher';
 import {PublicSupportChatPanel} from '@/components/support/PublicSupportChatPanel';
@@ -32,8 +33,8 @@ export const SUPPORT_QUICK_TOPICS: readonly SupportQuickTopicOption[] = [
     },
     {
         topic: 'PRICING_PLAN',
-        chipLabel: 'Báo giá gói cước',
-        selectLabel: 'Tư vấn & Báo giá gói cước vận hành',
+        chipLabel: 'Báo giá & Đối soát',
+        selectLabel: 'Tư vấn gói cước & Đối soát thanh toán',
         starterPrompt: 'Tôi muốn nhận tư vấn chi tiết và báo giá các gói cước Basic / Pro / Enterprise.',
     },
     {
@@ -64,14 +65,23 @@ const INITIAL_START_DRAFT: SupportStartDraft = {
     message: '',
 };
 
-export function PublicSupportWidget() {
-    const {user} = useAuth();
+type EditablePrefillField = 'fullName' | 'contactInfo' | 'organization';
+
+export function PublicSupportWidget({mode = 'public'}: {mode?: SupportWidgetMode} = {}) {
+    const isPortal = mode === 'portal';
     const [open, setOpen] = useState(false);
     const [visitorToken, setVisitorToken] = useState<string | null>(null);
     const [startDraft, setStartDraft] = useState<SupportStartDraft>(INITIAL_START_DRAFT);
+    const [editedPrefill, setEditedPrefill] = useState<Record<EditablePrefillField, boolean>>({
+        fullName: false,
+        contactInfo: false,
+        organization: false,
+    });
     const [replyDraft, setReplyDraft] = useState('');
     const [errorText, setErrorText] = useState<string | null>(null);
     const tokenRef = useRef<string | null>(null);
+
+    const prefill = useSupportVisitorPrefill(isPortal, open);
 
     useEffect(() => {
         const stored = readStoredSupportToken();
@@ -84,17 +94,6 @@ export function PublicSupportWidget() {
     useEffect(() => {
         tokenRef.current = visitorToken;
     }, [visitorToken]);
-
-    useEffect(() => {
-        if (!user) return;
-        // Pre-fill name/contact when a signed-in visitor opens public pages without overwriting edits.
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setStartDraft((prev) => ({
-            ...prev,
-            fullName: prev.fullName || user.fullName || user.username || '',
-            contactInfo: prev.contactInfo || user.email || '',
-        }));
-    }, [user]);
 
     useEffect(() => {
         const onOpenSupport = (event: Event) => {
@@ -148,11 +147,29 @@ export function PublicSupportWidget() {
     }, []);
 
     const siteInfo = usePublicSiteInfo();
-    const sessionQuery = usePublicSupportSession(visitorToken, open);
+    const sessionQuery = usePublicSupportSession(visitorToken, open, isPortal);
     const createThread = useCreatePublicSupportThread();
     const sendMessage = useSendPublicSupportMessage();
     const session = sessionQuery.data;
     const unreadCount = open ? 0 : (session?.unreadForVisitor ?? 0);
+
+    const effectiveStartDraft: SupportStartDraft = {
+        ...startDraft,
+        fullName: editedPrefill.fullName ? startDraft.fullName : startDraft.fullName || prefill.fullName,
+        contactInfo: editedPrefill.contactInfo ? startDraft.contactInfo : startDraft.contactInfo || prefill.contactInfo,
+        organization: editedPrefill.organization ? startDraft.organization : startDraft.organization || prefill.organization,
+    };
+
+    const handleStartDraftChange = (patch: Partial<SupportStartDraft>) => {
+        setStartDraft((prev) => ({...prev, ...patch}));
+        if ('fullName' in patch || 'contactInfo' in patch || 'organization' in patch) {
+            setEditedPrefill((prev) => ({
+                fullName: prev.fullName || 'fullName' in patch,
+                contactInfo: prev.contactInfo || 'contactInfo' in patch,
+                organization: prev.organization || 'organization' in patch,
+            }));
+        }
+    };
 
     const handleSelectTopicChip = (option: SupportQuickTopicOption) => {
         const starterSet = new Set(SUPPORT_QUICK_TOPICS.map((item) => item.starterPrompt));
@@ -165,18 +182,18 @@ export function PublicSupportWidget() {
 
     const handleCreateSubmit = (event: FormEvent) => {
         event.preventDefault();
-        const fullName = startDraft.fullName.trim();
-        const contactInfo = startDraft.contactInfo.trim();
-        const message = startDraft.message.trim();
+        const fullName = effectiveStartDraft.fullName.trim();
+        const contactInfo = effectiveStartDraft.contactInfo.trim();
+        const message = effectiveStartDraft.message.trim();
         if (!fullName || !contactInfo || !message || createThread.isPending) return;
         setErrorText(null);
         createThread.mutate(
             {
                 fullName,
-                organization: startDraft.organization.trim() || undefined,
+                organization: effectiveStartDraft.organization.trim() || undefined,
                 contactInfo,
-                topic: startDraft.topic,
-                source: 'LIVE_WIDGET',
+                topic: effectiveStartDraft.topic,
+                source: isPortal ? 'CUSTOMER_PORTAL' : 'LIVE_WIDGET',
                 message,
             },
             {
@@ -189,10 +206,16 @@ export function PublicSupportWidget() {
         );
     };
 
+    const handleReplyDraftChange = (value: string) => {
+        setReplyDraft(value);
+        sessionQuery.notifyVisitorTyping(Boolean(value.trim()));
+    };
+
     const handleSendReply = () => {
         const content = replyDraft.trim();
         if (!visitorToken || !content || sendMessage.isPending) return;
         setErrorText(null);
+        sessionQuery.notifyVisitorTyping(false);
         sendMessage.mutate(
             {visitorToken, content},
             {
@@ -203,6 +226,7 @@ export function PublicSupportWidget() {
     };
 
     const handleResetSession = () => {
+        sessionQuery.notifyVisitorTyping(false);
         saveStoredSupportToken(null, {open: true});
         setReplyDraft('');
         setErrorText(null);
@@ -212,27 +236,34 @@ export function PublicSupportWidget() {
         <>
             {open && (
                 <PublicSupportChatPanel
+                    mode={mode}
                     hasSession={Boolean(visitorToken)}
                     session={session}
+                    wsConnected={sessionQuery.wsConnected}
+                    adminTyping={sessionQuery.adminTyping}
                     isSessionLoading={sessionQuery.isPending}
                     isCreating={createThread.isPending}
                     isSending={sendMessage.isPending}
                     errorText={errorText}
                     quickTopics={SUPPORT_QUICK_TOPICS}
                     followUpChips={FOLLOW_UP_CHIPS}
-                    startDraft={startDraft}
+                    startDraft={effectiveStartDraft}
                     replyDraft={replyDraft}
-                    onStartDraftChange={(patch) => setStartDraft((prev) => ({...prev, ...patch}))}
+                    onStartDraftChange={handleStartDraftChange}
                     onSelectTopicChip={handleSelectTopicChip}
                     onCreateSubmit={handleCreateSubmit}
-                    onReplyDraftChange={setReplyDraft}
+                    onReplyDraftChange={handleReplyDraftChange}
                     onSendReply={handleSendReply}
                     onResetSession={handleResetSession}
-                    onClose={() => setOpen(false)}
+                    onClose={() => {
+                        sessionQuery.notifyVisitorTyping(false);
+                        setOpen(false);
+                    }}
                     zaloPhone={siteInfo.zaloPhone}
                 />
             )}
             <PublicSupportLauncher
+                mode={mode}
                 open={open}
                 unreadCount={unreadCount}
                 threadCode={session?.code}

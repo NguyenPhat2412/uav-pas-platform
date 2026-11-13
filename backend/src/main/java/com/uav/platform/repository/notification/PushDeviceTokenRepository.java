@@ -14,4 +14,6 @@ public interface PushDeviceTokenRepository
     Optional<PushDeviceToken> findByToken(String token);
 
     List<PushDeviceToken> findByUserIdAndActiveTrue(Long userId);
+
+    void deleteByUserId(Long userId);
 }

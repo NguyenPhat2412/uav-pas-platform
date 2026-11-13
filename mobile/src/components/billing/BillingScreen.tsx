@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
 import {useRouter} from 'expo-router';
-import {ChevronRight, Gauge, Receipt} from 'lucide-react-native';
+import {CheckCircle2, ChevronRight, Gauge, MessageCircle, Radio, Receipt} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
 import {useBilling, useBillingActions} from '@/hooks/billing/useCustomerBilling';
 import {useI18n} from '@/providers/I18nContext';
@@ -22,8 +22,17 @@ export function BillingScreen() {
     const {t, formatCurrency, formatDate, formatNumber} = useI18n();
     const toast = useToast();
     const router = useRouter();
-    const {quota, invoices, plans} = useBilling();
+    const {quota, invoices, plans, wsConnected, lastSettledInvoice} = useBilling();
     const {subscribe} = useBillingActions();
+    const announcedSettlement = useRef<string | null>(null);
+
+    useEffect(() => {
+        if (!lastSettledInvoice || lastSettledInvoice.status !== 'PAID') return;
+        const key = `${lastSettledInvoice.invoiceId}:${lastSettledInvoice.timestamp}`;
+        if (announcedSettlement.current === key) return;
+        announcedSettlement.current = key;
+        toast.show(t('mobile.billing.paidConfirmed', {code: lastSettledInvoice.invoiceCode}), 'success');
+    }, [lastSettledInvoice, t, toast]);
 
     const choosePlan = (plan: ServicePlan) => Alert.alert(planName(plan.name), t('mobile.billing.subscribeQuestion', {price: formatCurrency(plan.price)}), [
         {text: t('common.cancel'), style: 'cancel'},
@@ -60,7 +69,28 @@ export function BillingScreen() {
                 )}
             </Card>
 
-            <SectionTitle title={t('billingPage.invoiceHistory')}/>
+            {lastSettledInvoice?.status === 'PAID' ? (
+                <Card style={styles.settledCard}>
+                    <View style={styles.row}>
+                        <CheckCircle2 size={20} color={colors.primary}/>
+                        <AppText variant="small" style={styles.settledText}>
+                            {t('mobile.billing.paidConfirmed', {code: lastSettledInvoice.invoiceCode})}
+                        </AppText>
+                    </View>
+                </Card>
+            ) : null}
+
+            <SectionTitle
+                title={t('billingPage.invoiceHistory')}
+                action={
+                    <Badge
+                        icon={Radio}
+                        label={wsConnected ? t('mobile.billing.liveReconcileActive') : t('mobile.support.liveSyncing')}
+                        background={wsConnected ? colors.primaryLight : colors.slateLight}
+                        color={wsConnected ? colors.primary : colors.slateDark}
+                    />
+                }
+            />
             {invoices.isPending ? <LoadingState/>
                 : invoices.isError ? <ErrorState message={t('billingPage.loadError')} retryLabel={t('common.retry')} onRetry={() => void invoices.refetch()}/>
                     : !invoices.data?.content.length ? <EmptyState icon={Receipt} message={t('billingPage.noInvoices')}/>
@@ -84,6 +114,16 @@ export function BillingScreen() {
                                 </Card>
                             );
                         })}
+
+            <Card>
+                <AppText variant="small">{t('mobile.billing.supportReconcileHint')}</AppText>
+                <Button
+                    label={t('mobile.billing.contactSupportButton')}
+                    tone="secondary"
+                    icon={MessageCircle}
+                    onPress={() => router.push('/customer/support')}
+                />
+            </Card>
 
             <SectionTitle title={t('billingPage.plans')}/>
             {plans.isPending ? <LoadingState label={t('billingPage.loadingPlans')}/>
@@ -115,4 +155,6 @@ const styles = StyleSheet.create({
     barFill: {height: 8, borderRadius: 4, backgroundColor: colors.primary},
     barDanger: {backgroundColor: colors.danger},
     currentPlan: {borderColor: colors.primary, borderWidth: 1.5, borderRadius: radius.card},
+    settledCard: {borderColor: colors.primary, backgroundColor: colors.primaryLight},
+    settledText: {flex: 1, fontWeight: '600', color: colors.primary},
 });

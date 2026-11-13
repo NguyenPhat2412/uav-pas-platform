@@ -1,7 +1,14 @@
 import {apiClient, API_ROUTES} from '@/lib/api';
 import {buildQueryString} from '@/lib/format';
 import type {PageResponse} from '@/types';
-import type {AdminPaymentTransaction, TransactionFilters, FinancialOutboxEvent, AdminBillingProfile} from '@/types/billing/billing-admin.types';
+import type {
+    AdminBillingProfile,
+    AdminPaymentTransaction,
+    FinancialOutboxEvent,
+    PaymentGatewayConfig,
+    PaymentGatewayConfigInput,
+    TransactionFilters,
+} from '@/types/billing/billing-admin.types';
 
 const BASE = API_ROUTES.billing.admin;
 
@@ -17,6 +24,10 @@ export const billingAdminService = {
             invoiceId: filters.invoiceId?.trim(),
             q: filters.q?.trim(),
         })}`, {signal}),
+    paymentGateway: (signal?: AbortSignal) =>
+        apiClient.get<PaymentGatewayConfig>(`${BASE}/payment-gateway`, {signal}),
+    updatePaymentGateway: (body: PaymentGatewayConfigInput) =>
+        apiClient.put<PaymentGatewayConfig>(`${BASE}/payment-gateway`, body),
     outbox: (page: number, status: string | undefined, signal?: AbortSignal) =>
         apiClient.get<PageResponse<FinancialOutboxEvent>>(`${BASE}/outbox?${buildQueryString({page, size: 20, status})}`, {signal}),
     retryOutbox: (id: string) =>

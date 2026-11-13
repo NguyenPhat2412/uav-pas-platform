@@ -27,6 +27,10 @@ public interface InvoiceRepository
 
     List<Invoice> findByUserId(Long userId);
 
+    long countByUserIdAndStatus(Long userId, InvoiceStatus status);
+
+    long countByUserId(Long userId);
+
     /**
      * One row per plan id; mission invoices count under null even when they carry the customer's
      * plan, so plan rows hold subscriptions only. Columns: pending

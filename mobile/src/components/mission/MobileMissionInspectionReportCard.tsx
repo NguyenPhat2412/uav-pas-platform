@@ -22,7 +22,7 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
     if (query.isPending) {
         return (
             <Card>
-                <LoadingState label="Đang tổng hợp biên bản nghiệm thu nhiệm vụ..."/>
+                <LoadingState label="Đang tải biên bản nghiệm thu..."/>
             </Card>
         );
     }
@@ -36,8 +36,8 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
             `Mã chứng nhận: ${report.certificateCode}`,
             `Nhiệm vụ: ${report.missionCode} — ${report.title}`,
             `Thiết bị bay: ${report.uavSerialNumber} (${report.uavModel})`,
-            `Quãng đường bay: ${(report.totalDistanceMeters / 1000).toFixed(2)} km · Trần bay: ${Math.round(report.maxAltitudeMeters)} m`,
-            `Số điểm lộ trình: ${report.waypointCount} · Tệp bàn giao: ${report.mediaCount}`,
+            `Quãng đường bay: ${(report.totalDistanceMeters / 1000).toFixed(2)} km · Độ cao tối đa: ${Math.round(report.maxAltitudeMeters)} m`,
+            `Số điểm dừng: ${report.waypointCount} · Tệp bàn giao: ${report.mediaCount}`,
         ].join('\n');
         await Share.share({message: summary});
     };
@@ -45,7 +45,7 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
     return (
         <Card>
             <SectionTitle
-                title="Biên bản Nghiệm thu & Bàn giao Geotagged"
+                title="Biên bản nghiệm thu & bàn giao"
                 action={
                     <Badge
                         icon={Award}
@@ -60,15 +60,15 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
                 <ShieldCheck size={18} color={colors.primary}/>
                 <View style={styles.flex}>
                     <AppText variant="small" style={styles.bold}>
-                        {report.uavSerialNumber} · {report.uavModel} ({report.airframeClass})
+                        {report.uavSerialNumber} · {report.uavModel}
                     </AppText>
                     <AppText variant="caption">
-                        Trạm: {report.stationName ?? '—'} · Phi công: {report.operatorName ?? '—'}
+                        Trạm: {report.stationName ?? '—'} · Người điều khiển: {report.operatorName ?? '—'}
                     </AppText>
                 </View>
                 <Badge
                     icon={CheckCircle2}
-                    label={report.preflightPassed ? 'An toàn đạt chuẩn' : 'Đã kiểm tra'}
+                    label={report.preflightPassed ? 'Đạt an toàn' : 'Đã kiểm tra'}
                     background={colors.slateLight}
                     color={colors.slateDark}
                 />
@@ -76,25 +76,25 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
 
             <View style={styles.grid}>
                 <View style={styles.cell}>
-                    <AppText variant="caption">Quãng đường 3D</AppText>
+                    <AppText variant="caption">Quãng đường</AppText>
                     <AppText variant="small" style={styles.bold}>
                         {(report.totalDistanceMeters / 1000).toFixed(2)} km
                     </AppText>
                 </View>
                 <View style={styles.cell}>
-                    <AppText variant="caption">Độ cao cực đại</AppText>
+                    <AppText variant="caption">Độ cao tối đa</AppText>
                     <AppText variant="small" style={styles.bold}>
                         {Math.round(report.maxAltitudeMeters)} m
                     </AppText>
                 </View>
                 <View style={styles.cell}>
-                    <AppText variant="caption">Điểm Waypoint</AppText>
+                    <AppText variant="caption">Điểm dừng</AppText>
                     <AppText variant="small" style={styles.bold}>
                         {report.waypointCount} điểm
                     </AppText>
                 </View>
                 <View style={styles.cell}>
-                    <AppText variant="caption">Tệp Geotagged</AppText>
+                    <AppText variant="caption">Tệp bàn giao</AppText>
                     <AppText variant="small" style={styles.bold}>
                         {report.mediaCount} tệp
                     </AppText>
@@ -104,7 +104,7 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
             {report.deliverablePins.length > 0 && (
                 <View style={styles.pinsSection}>
                     <AppText variant="caption" style={styles.bold}>
-                        Tọa độ đóng dấu Geotag của tệp bàn giao:
+                        Vị trí chụp của từng tệp:
                     </AppText>
                     {report.deliverablePins.map(pin => (
                         <Pressable
@@ -118,7 +118,7 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
                                     {pin.fileName}
                                 </AppText>
                                 <AppText variant="caption">
-                                    WP #{pin.waypointIndex} ({pin.phaseLabel}) · {pin.latitude.toFixed(5)}, {pin.longitude.toFixed(5)} · {Math.round(pin.altitudeMeters)}m
+                                    Điểm {pin.waypointIndex} · {pin.latitude.toFixed(5)}, {pin.longitude.toFixed(5)} · {Math.round(pin.altitudeMeters)} m
                                 </AppText>
                             </View>
                             <MapPin size={15} color={colors.slate}/>
@@ -132,6 +132,7 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
                     Cấp lúc: {formatDate(report.generatedAt)}
                 </AppText>
                 <Button
+                    size="sm"
                     label="Chia sẻ biên bản"
                     icon={Share2}
                     tone="secondary"
@@ -143,10 +144,11 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
 }
 
 const styles = StyleSheet.create({
-    flex: {flex: 1},
+    flex: {flex: 1, minWidth: 0},
     bold: {fontWeight: '700', color: colors.text},
     certBanner: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
         alignItems: 'center',
         gap: spacing.sm,
         padding: spacing.sm,
@@ -162,6 +164,7 @@ const styles = StyleSheet.create({
     },
     cell: {
         flexBasis: '46%',
+        minWidth: 0,
         flexGrow: 1,
         padding: spacing.sm,
         borderRadius: radius.control,
@@ -185,6 +188,7 @@ const styles = StyleSheet.create({
     },
     footerRow: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: spacing.sm,

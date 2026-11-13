@@ -7,15 +7,16 @@ import {Drawer, Metadata} from '@/components/data/Drawer';
 import {Pagination} from '@/components/data/Pagination';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {AdminPage} from '@/components/layout/AdminPage';
-import {useBillingTransactions} from '@/hooks/billing/useBillingAdmin';
+import {useAdminBillingRealtime, useBillingTransactions} from '@/hooks/billing/useBillingAdmin';
 import {useI18n} from '@/providers/I18nContext';
 import type {AdminPaymentTransaction, TransactionFilters} from '@/types/billing/billing-admin.types';
 
-const statuses = ['SUCCESS', 'PENDING', 'FAILED'] as const;
-const gateways = ['VIETQR_NAPAS_247', 'BANK_TRANSFER_MANUAL', 'VIETQR_NAPAS'] as const;
+const statuses = ['SUCCESS', 'PENDING', 'MISMATCH', 'UNMATCHED', 'FAILED'] as const;
+const gateways = ['VIETQR_SEPAY_AUTO', 'VIETQR_NAPAS_247', 'BANK_TRANSFER_MANUAL', 'VIETQR_NAPAS'] as const;
 
 export function AdminTransactionsPanel() {
     const {t, formatDate, formatCurrency} = useI18n();
+    useAdminBillingRealtime(true);
     const [draft, setDraft] = useState<TransactionFilters>({});
     const [filters, setFilters] = useState<TransactionFilters>({});
     const [page, setPage] = useState(0);

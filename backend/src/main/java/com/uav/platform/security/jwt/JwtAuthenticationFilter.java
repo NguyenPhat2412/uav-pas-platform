@@ -119,6 +119,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return cookieToken.trim();
             }
         }
+        String requestUri = request.getRequestURI();
+        if (com.uav.platform.config.routes.ApiRoutes.Realtime.ENDPOINT.equals(requestUri)) {
+            String queryToken = request.getParameter("accessToken");
+            if (StringUtils.hasText(queryToken)) {
+                return queryToken.trim();
+            }
+        }
         return null;
     }
 }

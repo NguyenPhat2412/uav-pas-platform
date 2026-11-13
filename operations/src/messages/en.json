@@ -200,8 +200,16 @@
     "google": {
       "signin_with": "Sign in with Google",
       "signup_with": "Sign up with Google",
+      "short": "Google",
       "loading": "Google sign-in is still loading, please try again in a moment.",
       "notConfigured": "Google sign-in is not configured."
+    },
+    "apple": {
+      "signin_with": "Sign in with Apple",
+      "signup_with": "Sign up with Apple",
+      "short": "Apple",
+      "loading": "Apple sign-in is still loading, please try again in a moment.",
+      "notConfigured": "Apple sign-in is not configured."
     }
   },
   "dashboard": {

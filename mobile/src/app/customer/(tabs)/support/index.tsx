@@ -9,14 +9,14 @@ export interface RouteMeta {
 }
 
 export const ROUTE_META: RouteMeta = {
-    id: 'customer.support',
+    id: 'customer.tabs.support',
     portal: 'customer',
     section: 'support',
     requiresAuth: true,
 };
 
 /**
- * Expo Router form-sheet screen entry for customer direct contact and 2-way live support chat.
+ * Expo Router tab screen entry for customer direct contact and 2-way live support chat.
  */
 export default function CustomerSupportRoute() {
     return <PublicSupportSheetScreen/>;
