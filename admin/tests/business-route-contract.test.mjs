@@ -29,7 +29,12 @@ const {API_ROUTES} = await load(compile(read('src/lib/api/routes.ts')));
 // Compare actual consumer requests to controller mappings, so changing a wrong shared literal
 // and its static assertion together cannot conceal a nonexistent business endpoint.
 // Controllers map their base path through the backend's central ApiRoutes constants.
+const hasFullMonorepo =
+    existsSync(new URL('../../backend/src/main/java/com/uav/platform/config/routes/ApiRoutes.java', import.meta.url)) &&
+    existsSync(new URL('../../customer/package.json', import.meta.url));
+
 const javaRoutes = (() => {
+    if (!hasFullMonorepo) return new Map();
     const source = read('../backend/src/main/java/com/uav/platform/config/routes/ApiRoutes.java');
     const constants = new Map();
     let scope = '';
@@ -78,7 +83,7 @@ async function service(path, exportedName) {
     return {instance: loaded[exportedName], calls};
 }
 
-test('customer quota consumer calls the controller quota route and forwards cancellation', async () => {
+test('customer quota consumer calls the controller quota route and forwards cancellation', {skip: !hasFullMonorepo}, async () => {
     const {instance, calls} = await service('src/api/billing/customer-billing.api.ts', 'customerBillingService');
     const signal = new AbortController().signal;
     await instance.quota(signal);
@@ -86,7 +91,7 @@ test('customer quota consumer calls the controller quota route and forwards canc
     assert.equal(calls[0].options.signal, signal);
 });
 
-test('admin summary and CSV consumers call their actual role-protected report endpoints', async () => {
+test('admin summary and CSV consumers call their actual role-protected report endpoints', {skip: !hasFullMonorepo}, async () => {
     const {instance, calls} = await service('src/api/reporting/reports.api.ts', 'reportsService');
     await instance.operationsReport();
     assert.equal(calls[0].endpoint, controllerGet('reporting/ReportController.java', 'getOperationsSummary'));

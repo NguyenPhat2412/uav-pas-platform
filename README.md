@@ -2,7 +2,7 @@
 
 Nền tảng điều phối UAV gồm website công khai, ba ứng dụng cổng Web độc lập ở cấp thư mục cao nhất (`customer/`, `operations/`, `admin/`) và ứng dụng di động (`mobile/`). Backend dùng Spring Boot 4.1 (Java 21).
 
-`main` là nhánh tích hợp. Các nhánh nhóm bên dưới được đồng bộ từ `main`, và mỗi nhánh tương ứng trực tiếp với thư mục dịch vụ cấp cao nhất để dễ quản lý:
+`main` là nhánh tích hợp đầy đủ (chứa toàn bộ mã nguồn và pipeline CI/CD). 8 nhánh chuyên biệt bên dưới được **tách cô lập** từ `main` bằng `./scripts/sync-branches.sh --push` — mỗi nhánh trên GitHub chỉ chứa đúng thư mục thuộc phạm vi của mảng đó để dễ phân công và quản lý:
 
 | Nhánh / Thư mục | Phạm vi | Cổng mặc định |
 |---|---|---|

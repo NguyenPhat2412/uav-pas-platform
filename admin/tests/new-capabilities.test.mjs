@@ -158,7 +158,11 @@ test('capabilities trilingual catalogs maintain 100% key parity and zero banned 
     }
 });
 
-test('new capability UI components uphold palette, dialog, and hook-boundary guardrails', async () => {
+const hasSiblingPortals =
+    existsSync(new URL('../../customer/package.json', import.meta.url)) &&
+    existsSync(new URL('../../operations/package.json', import.meta.url));
+
+test('new capability UI components uphold palette, dialog, and hook-boundary guardrails', {skip: !hasSiblingPortals}, async () => {
     const uiFiles = [
         'src/components/mission/customer/SavedFlightSitesBar.tsx',
         'src/components/mission/customer/MissionHandoverReviewCard.tsx',

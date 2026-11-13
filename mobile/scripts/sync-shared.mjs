@@ -164,6 +164,16 @@ function listExisting(dir, prefix = '') {
 
 const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isMain) {
+    const hasWebSources = portalSrcDirs.some(dir => existsSync(dir));
+    if (process.argv.includes('--check') && !hasWebSources) {
+        const existing = listExisting(outDir);
+        if (existing.length === 0) {
+            console.error('sync-shared: standalone mobile checkout is missing src/shared files.');
+            process.exit(1);
+        }
+        console.log(`sync-shared: standalone mobile checkout (${existing.length} shared files present)`);
+        process.exit(0);
+    }
     const {files, problems} = build();
     if (problems.length) {
         console.error('sync-shared: these modules are not platform-neutral:\n  ' + problems.join('\n  '));
