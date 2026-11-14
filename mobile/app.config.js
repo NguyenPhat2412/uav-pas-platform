@@ -26,8 +26,22 @@ function withoutAppleSignIn(config) {
     };
 }
 
+// TestFlight/App Store builds must register with the production APNs environment; dev builds keep the default.
+function withProductionPush(config) {
+    if (process.env.EAS_BUILD_PROFILE !== 'production') return config;
+    return {
+        ...config,
+        plugins: (config.plugins ?? []).map(p =>
+            (Array.isArray(p) ? p[0] : p) === 'expo-notifications'
+                ? ['expo-notifications', {...(Array.isArray(p) ? p[1] : {}), mode: 'production'}]
+                : p,
+        ),
+    };
+}
+
 module.exports = ({config: base}) => {
-    const config = process.env.EXPO_PUBLIC_APPLE_SIGN_IN_ENABLED === 'false' ? withoutAppleSignIn(base) : base;
+    const appleAware = process.env.EXPO_PUBLIC_APPLE_SIGN_IN_ENABLED === 'false' ? withoutAppleSignIn(base) : base;
+    const config = withProductionPush(appleAware);
     const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID?.trim();
     if (!iosClientId) return config;
     if (!iosClientId.endsWith(IOS_CLIENT_SUFFIX))
