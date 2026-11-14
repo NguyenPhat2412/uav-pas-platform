@@ -67,6 +67,17 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "owner": "phatdev2412-2",
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "397e5060-6463-44a6-bac3-aee2e84e0934"
+      }
     }
   }
 }
