@@ -9,13 +9,13 @@ export interface RouteMeta {
 }
 
 export const ROUTE_META: RouteMeta = {
-    id: 'customer.services',
+    id: 'customer.tabs.services',
     portal: 'customer',
     section: 'catalog',
     requiresAuth: true,
 };
 
-/** Expo Router screen entry for the customer UAV service catalog route. */
+/** Expo Router screen entry for the customer UAV service catalog tab. */
 export default function CustomerServicesRoute() {
     return <ServicesScreen/>;
 }

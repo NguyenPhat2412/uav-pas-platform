@@ -24,6 +24,13 @@ export function NotificationsScreen({portal = 'customer'}: { portal?: MobilePort
     const router = useRouter();
     const {list, unreadCount, markOne, markAll} = useNotifications();
     const [filter, setFilter] = useState<Filter>('all');
+    // Only a pull shows the spinner: the list also polls in the background, and tying the spinner to every refetch
+    // pushed the whole list down by a spinner's height every few seconds.
+    const [pulling, setPulling] = useState(false);
+    const pull = () => {
+        setPulling(true);
+        void list.refetch().finally(() => setPulling(false));
+    };
     const items = (list.data ?? []).filter(item => filter === 'all' || !item.isRead);
 
     const open = (item: NotificationRecord) => {
@@ -76,7 +83,7 @@ export function NotificationsScreen({portal = 'customer'}: { portal?: MobilePort
                                 {value: 'all', label: t('notificationsPage.all', {count: list.data?.length ?? 0})},
                                 {value: 'unread', label: t('notificationsPage.unread', {count: unreadCount})},
                             ]}/>}
-                            refreshControl={<RefreshControl refreshing={list.isRefetching} onRefresh={() => void list.refetch()} tintColor={colors.primary}/>}
+                            refreshControl={<RefreshControl refreshing={pulling} onRefresh={pull} tintColor={colors.primary}/>}
                             ListEmptyComponent={<EmptyState icon={Bell} message={t('notificationsPage.empty')}/>}
                             renderItem={({item}) => {
                                 const Icon = isAlert(item) ? AlertTriangle : Info;

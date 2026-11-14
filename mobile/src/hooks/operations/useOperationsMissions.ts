@@ -88,6 +88,7 @@ export function useOperationsMissionList(params?: { status?: MissionStatus; miss
     return useQuery({
         queryKey: [...key, 'missions', params ?? {}],
         queryFn: ({signal}) => operationsMissionService.list({...params, size: 50}, signal),
+        placeholderData: prev => prev,
         enabled: permissionsReady && can('MISSION_VIEW'),
     });
 }
@@ -151,93 +152,96 @@ export function useOperationsMissionActions() {
         accept: useMutation({
             mutationFn: ({id, expectedVersion}: { id: number; expectedVersion: number }) =>
                 operationsMissionService.accept(id, expectedVersion),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
+            onError: (err, {id}) => {
+                if ((err as { status?: number } | null)?.status === 409) void refresh(id);
+            },
             retry: false,
         }),
         confirm: useMutation({
             mutationFn: (id: number) => operationsMissionService.confirm(id),
-            onSettled: (_d, _e, id) => refresh(id),
+            onSuccess: (_d, id) => refresh(id),
             retry: false,
         }),
         reject: useMutation({
             mutationFn: ({id, reason}: { id: number; reason: string }) =>
                 operationsMissionService.reject(id, reason),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         ready: useMutation({
             mutationFn: (id: number) => operationsMissionService.ready(id),
-            onSettled: (_d, _e, id) => refresh(id),
+            onSuccess: (_d, id) => refresh(id),
             retry: false,
         }),
         start: useMutation({
             mutationFn: (id: number) => operationsMissionService.start(id),
-            onSettled: (_d, _e, id) => refresh(id),
+            onSuccess: (_d, id) => refresh(id),
             retry: false,
         }),
         complete: useMutation({
             mutationFn: ({id, completionNote, equipmentCondition}: { id: number; completionNote: string; equipmentCondition?: string }) =>
                 operationsMissionService.complete(id, completionNote, equipmentCondition),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         fail: useMutation({
             mutationFn: ({id, failureReason, notes}: { id: number; failureReason: string; notes?: string }) =>
                 operationsMissionService.fail(id, failureReason, notes),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         forceFail: useMutation({
             mutationFn: ({id, reason, notes}: { id: number; reason: string; notes?: string }) =>
                 operationsMissionService.forceFail(id, reason, notes),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         reportConflict: useMutation({
             mutationFn: ({id, note}: { id: number; note: string }) =>
                 operationsMissionService.reportConflict(id, note),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         upsertPermit: useMutation({
             mutationFn: ({id, data}: { id: number; data: MissionPermitUpsertInput }) =>
                 operationsMissionService.upsertPermit(id, data),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         verifyPermit: useMutation({
             mutationFn: ({id, data}: { id: number; data: MissionPermitVerifyInput }) =>
                 operationsMissionService.verifyPermit(id, data),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         assignStation: useMutation({
             mutationFn: ({id, resourceId}: { id: number; resourceId: number }) =>
                 operationsMissionService.assignStation(id, resourceId),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         assignUav: useMutation({
             mutationFn: ({id, resourceId}: { id: number; resourceId: number }) =>
                 operationsMissionService.assignUav(id, resourceId),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         assignOperator: useMutation({
             mutationFn: ({id, resourceId}: { id: number; resourceId: number }) =>
                 operationsMissionService.assignOperator(id, resourceId),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         upsertPreflight: useMutation({
             mutationFn: ({id, data}: { id: number; data: MissionPreflightUpsertInput }) =>
                 operationsMissionService.upsertPreflight(id, data),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         autoAssign: useMutation({
             mutationFn: (id: number) => operationsMissionService.autoAssign(id),
-            onSettled: (_d, _e, id) => refresh(id),
+            onSuccess: (_d, id) => refresh(id),
             retry: false,
         }),
     };

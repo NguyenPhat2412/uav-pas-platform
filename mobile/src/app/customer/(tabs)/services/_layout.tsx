@@ -8,12 +8,12 @@ export interface LayoutMeta {
 }
 
 export const LAYOUT_META: LayoutMeta = {
-    segment: 'customer/(tabs)/weather',
+    segment: 'customer/(tabs)/services',
     portal: 'customer',
     navigator: 'stack',
 };
 
-/** Expo Router stack layout for the customer weather tab segment. */
+/** Expo Router stack layout for the customer UAV service catalog tab segment. */
 export default function Layout() {
-    return <TabStack titleKey="nav.weather"/>;
+    return <TabStack titleKey="nav.services"/>;
 }

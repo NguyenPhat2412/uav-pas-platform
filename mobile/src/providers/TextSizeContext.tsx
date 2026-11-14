@@ -17,7 +17,8 @@ interface TextSizeValue {
     setSize: (size: TextSize) => void;
 }
 
-const TextSizeContext = createContext<TextSizeValue | undefined>(undefined);
+const sharedTextSize = globalThis as { __uavTextSizeContext?: React.Context<TextSizeValue | undefined> };
+const TextSizeContext = (sharedTextSize.__uavTextSizeContext ??= createContext<TextSizeValue | undefined>(undefined));
 
 const scaleOf = (size: TextSize) => TEXT_SIZES.find(step => step.value === size)?.scale ?? 1;
 

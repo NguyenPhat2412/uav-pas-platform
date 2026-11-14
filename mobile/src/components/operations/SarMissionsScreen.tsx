@@ -106,9 +106,19 @@ export function SarMissionsScreen() {
     const router = useRouter();
     const {unreadCount} = useNotifications();
     const [mode, setMode] = useState<SarFilterMode>('active');
+    const [refreshing, setRefreshing] = useState(false);
 
     const query = useSarMissions(mode === 'all');
     const items = query.data ?? [];
+
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await query.refetch();
+        } finally {
+            setRefreshing(false);
+        }
+    };
 
     return (
         <View style={styles.screen}>
@@ -119,14 +129,14 @@ export function SarMissionsScreen() {
                         <HeaderIconButton
                             icon={Bell}
                             label={t('nav.notifications')}
-                            dot={unreadCount > 0}
+                            count={unreadCount}
                             onPress={() => router.push('/operations/notifications')}
                         />
                     ),
                 }}
             />
 
-            {query.isPending || query.isError ? (
+            {!query.data && (query.isPending || query.isError) ? (
                 <View style={styles.centerState}>
                     {query.isPending ? (
                         <LoadingState label={t('mobile.ops.sar.loading')}/>
@@ -164,8 +174,8 @@ export function SarMissionsScreen() {
                     )}
                     refreshControl={
                         <RefreshControl
-                            refreshing={query.isRefetching}
-                            onRefresh={() => void query.refetch()}
+                            refreshing={refreshing}
+                            onRefresh={() => void handleRefresh()}
                             tintColor={colors.primary}
                         />
                     }

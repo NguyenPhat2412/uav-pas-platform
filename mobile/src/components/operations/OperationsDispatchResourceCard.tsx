@@ -111,6 +111,7 @@ export function OperationsDispatchResourceCard({
                     {dispatchCandidates.canAutoAssign &&
                         (canAssignStation || canAssignUav || canAssignOperator || canReserveEquipment) && (
                             <Button
+                                size="sm"
                                 label={
                                     autoAssignLoading
                                         ? t('capabilities.smartDispatch.autoAssigning')
@@ -139,6 +140,7 @@ export function OperationsDispatchResourceCard({
                             }))}
                         />
                         <Button
+                            size="sm"
                             label={t('mobile.ops.dispatch.assignStation')}
                             icon={RadioTower}
                             tone="secondary"
@@ -165,6 +167,7 @@ export function OperationsDispatchResourceCard({
                             }))}
                         />
                         <Button
+                            size="sm"
                             label={t('mobile.ops.dispatch.assignUav')}
                             icon={Cpu}
                             tone="secondary"
@@ -191,6 +194,7 @@ export function OperationsDispatchResourceCard({
                             }))}
                         />
                         <Button
+                            size="sm"
                             label={t('mobile.ops.dispatch.assignOperator')}
                             icon={UserCheck}
                             tone="secondary"

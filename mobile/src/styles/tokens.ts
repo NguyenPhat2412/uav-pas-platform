@@ -1,6 +1,10 @@
 // Same palette as frontend/src/styles/globals.css (--uav-color-*): brand red for actions, slate greys, no blue or green.
 export const colors = {
     primary: '#ab2523',
+    googleBlue: '#4285F4',
+    googleGreen: '#34A853',
+    googleYellow: '#FBBC05',
+    googleRed: '#EA4335',
     primaryHover: '#8f1c1a',
     primaryLight: '#fdf2f2',
     slate: '#475569',

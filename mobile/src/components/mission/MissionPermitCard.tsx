@@ -180,7 +180,7 @@ export function MissionPermitCard({
                     {permit.maxAltitudeMeters != null ? (
                         <AppText variant="small">
                             <AppText variant="small" style={styles.strong}>{t('mobile.permit.ceiling')}: </AppText>
-                            {permit.maxAltitudeMeters} m AGL
+                            {permit.maxAltitudeMeters} m so với mặt đất
                         </AppText>
                     ) : null}
                     {attachedMediaName ? (
@@ -197,7 +197,7 @@ export function MissionPermitCard({
                     ) : null}
                     {permit.note ? <AppText variant="small">{permit.note}</AppText> : null}
                     {permit.permitMediaId != null && onOpenScan ? (
-                        <Button
+                        <Button size="sm"
                             label={t('mobile.permit.openScan')}
                             icon={ExternalLink}
                             tone="secondary"
@@ -210,7 +210,7 @@ export function MissionPermitCard({
             )}
 
             {editable && !editing && (
-                <Button
+                <Button size="sm"
                     label={permit?.permitNumber ? t('mobile.permit.updateAction') : t('mobile.permit.submitAction')}
                     icon={permit?.permitNumber ? Pencil : FileCheck2}
                     tone="secondary"
@@ -256,7 +256,7 @@ export function MissionPermitCard({
                             onChange={permitMediaId => setDraft(prev => ({...prev, permitMediaId}))}
                         />
                         {onUploadScan ? (
-                            <Button
+                            <Button size="sm"
                                 label={t('mobile.permit.uploadScan')}
                                 icon={ImagePlus}
                                 tone="secondary"
@@ -274,7 +274,7 @@ export function MissionPermitCard({
                         multiline
                     />
                     <View style={styles.actions}>
-                        <Button
+                        <Button size="sm"
                             label={t('mobile.permit.saveAction')}
                             icon={Save}
                             loading={upsertLoading}
@@ -282,7 +282,7 @@ export function MissionPermitCard({
                             onPress={submitDraft}
                             style={styles.flex}
                         />
-                        <Button label={t('common.cancel')} tone="ghost" onPress={() => setEditing(false)}/>
+                        <Button size="sm" label={t('common.cancel')} tone="ghost" onPress={() => setEditing(false)}/>
                     </View>
                 </View>
             )}
@@ -295,14 +295,14 @@ export function MissionPermitCard({
                         onChangeText={setVerifyNote}
                     />
                     <View style={styles.actions}>
-                        <Button
+                        <Button size="sm"
                             label={t('mobile.permit.approveAction')}
                             icon={CheckCircle2}
                             loading={verifyLoading}
                             onPress={() => onVerify?.(toPermitVerifyPayload(true, verifyNote), () => setVerifyNote(''))}
                             style={styles.flex}
                         />
-                        <Button
+                        <Button size="sm"
                             label={t('mobile.permit.rejectAction')}
                             icon={XCircle}
                             tone="danger"

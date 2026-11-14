@@ -1,7 +1,8 @@
 import React, {useMemo, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useLocalSearchParams} from 'expo-router';
-import {Inbox, ShieldAlert, Zap} from 'lucide-react-native';
+import {Inbox, Radio, Zap} from 'lucide-react-native';
+import {AppForbiddenView} from '@/components/shared/AppStatusViews';
 import {
     AppText,
     Badge,
@@ -12,16 +13,19 @@ import {
     ErrorState,
     LoadingState,
     Screen,
+    SectionTitle,
     TextField,
 } from '@/components/ui';
 import {AdminQuickRepliesCard} from '@/components/support/AdminQuickRepliesCard';
 import {AdminSupportThreadCard} from '@/components/support/AdminSupportThreadCard';
 import {
+    useAdminSupportRealtime,
     useAdminSupportSummary,
     useAdminSupportThreads,
     useCanManageSupport,
 } from '@/hooks/support/useAdminSupportMobile';
 import {useI18n} from '@/providers/I18nContext';
+import {useToast} from '@/providers/ToastContext';
 import type {SupportThreadFilter, SupportThreadStatus} from '@/shared/types/support/support.types';
 import {formatSupportTime, formatSupportTopic} from '@/shared/utils/support/support-format';
 import {colors, font, radius, spacing} from '@/styles/tokens';
@@ -38,6 +42,7 @@ function statusBadgeMeta(status: SupportThreadStatus, t: (key: string) => string
 
 export function AdminSupportInboxScreen() {
     const {t} = useI18n();
+    const toast = useToast();
     const canManage = useCanManageSupport();
     const params = useLocalSearchParams<{ threadId?: string }>();
 
@@ -49,6 +54,7 @@ export function AdminSupportInboxScreen() {
     const [activeFilter, setActiveFilter] = useState<InboxFilterChip>('ALL');
     const [searchQuery, setSearchQuery] = useState('');
     const [showTemplates, setShowTemplates] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
     const selectedThreadId =
         manualThreadId ?? (deepLinkedId !== null && deepLinkedId !== dismissedDeepLinkId ? deepLinkedId : null);
@@ -59,6 +65,13 @@ export function AdminSupportInboxScreen() {
             setDismissedDeepLinkId(deepLinkedId);
         }
     };
+
+    const {wsConnected, visitorTypingByThread} = useAdminSupportRealtime(canManage, deletedId => {
+        if (selectedThreadId === deletedId) {
+            setSelectedThreadId(null);
+            toast.show(t('mobile.support.threadDeletedToast'), 'info');
+        }
+    });
 
     const filter = useMemo<SupportThreadFilter>(() => {
         const q = searchQuery.trim() || undefined;
@@ -75,7 +88,7 @@ export function AdminSupportInboxScreen() {
     if (!canManage) {
         return (
             <Screen>
-                <EmptyState icon={ShieldAlert} message={t('mobile.support.noPermission')}/>
+                <AppForbiddenView detail={t('mobile.support.noPermission')} fallbackHref="/operations/missions"/>
             </Screen>
         );
     }
@@ -108,24 +121,45 @@ export function AdminSupportInboxScreen() {
         {value: 'RESOLVED', label: t('mobile.support.filterResolved')},
     ];
 
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await Promise.all([summaryQuery.refetch(), threadsQuery.refetch()]);
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
     return (
         <Screen
-            refreshing={summaryQuery.isRefetching || threadsQuery.isRefetching}
-            onRefresh={() => void Promise.all([summaryQuery.refetch(), threadsQuery.refetch()])}>
+            refreshing={refreshing}
+            onRefresh={() => void handleRefresh()}>
             <Card>
+                <SectionTitle
+                    title={t('mobile.support.adminTitle')}
+                    action={
+                        <Badge
+                            icon={Radio}
+                            label={wsConnected ? t('mobile.support.liveRealtime') : t('mobile.support.liveSyncing')}
+                            background={wsConnected ? colors.primaryLight : colors.slateLight}
+                            color={wsConnected ? colors.primary : colors.slateDark}
+                        />
+                    }
+                />
                 <View style={styles.kpiGrid}>
                     {kpis.map(kpi => (
                         <View key={kpi.label} style={[styles.kpiCell, kpi.alert && styles.kpiCellAlert]}>
                             <AppText variant="title" style={kpi.alert ? styles.kpiValueAlert : undefined}>
                                 {kpi.value}
                             </AppText>
-                            <AppText variant="caption" numberOfLines={1} style={kpi.alert ? styles.kpiValueAlert : undefined}>
+                            <AppText variant="caption" style={[styles.kpiLabel, kpi.alert && styles.kpiValueAlert]}>
                                 {kpi.label}
                             </AppText>
                         </View>
                     ))}
                 </View>
                 <Button
+                    size="sm"
                     tone="secondary"
                     icon={Zap}
                     label={showTemplates ? t('mobile.support.hideTemplates') : t('mobile.support.manageTemplates')}
@@ -138,7 +172,7 @@ export function AdminSupportInboxScreen() {
             <Card>
                 <ChipGroup<InboxFilterChip> options={filterOptions} value={activeFilter} onChange={setActiveFilter}/>
                 <TextField
-                    label={t('mobile.support.adminTitle')}
+                    label=""
                     placeholder={t('mobile.support.searchPlaceholder')}
                     value={searchQuery}
                     onChangeText={setSearchQuery}
@@ -159,6 +193,7 @@ export function AdminSupportInboxScreen() {
                 threads.map(item => {
                     const tone = statusBadgeMeta(item.status, t);
                     const hasUnread = item.unreadForAdmin > 0;
+                    const isVisitorTyping = Boolean(visitorTypingByThread[item.id]);
                     return (
                         <Card
                             key={item.id}
@@ -176,6 +211,13 @@ export function AdminSupportInboxScreen() {
                                             color={colors.white}
                                         />
                                     ) : null}
+                                    {isVisitorTyping ? (
+                                        <Badge
+                                            label={t('mobile.support.visitorTyping')}
+                                            background={colors.warningLight}
+                                            color={colors.warning}
+                                        />
+                                    ) : null}
                                 </View>
                                 <AppText variant="caption">{formatSupportTime(item.updatedAt)}</AppText>
                             </View>
@@ -183,7 +225,11 @@ export function AdminSupportInboxScreen() {
                             <AppText variant="small" numberOfLines={1}>
                                 {item.contactInfo} · {formatSupportTopic(item.topic)}
                             </AppText>
-                            {item.lastMessagePreview ? (
+                            {isVisitorTyping ? (
+                                <AppText variant="small" style={styles.typingPreview}>
+                                    {t('mobile.support.visitorTyping')}
+                                </AppText>
+                            ) : item.lastMessagePreview ? (
                                 <AppText variant="body" numberOfLines={2} style={styles.preview}>
                                     {item.lastMessagePreview}
                                 </AppText>
@@ -200,17 +246,23 @@ const styles = StyleSheet.create({
     kpiGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm},
     kpiCell: {
         flexGrow: 1,
-        minWidth: 92,
+        flexBasis: '30%',
+        minWidth: 96,
         paddingVertical: spacing.sm,
-        paddingHorizontal: spacing.md,
+        paddingHorizontal: spacing.sm,
         borderRadius: radius.control,
+        borderWidth: 1,
+        borderColor: colors.border,
         backgroundColor: colors.slateLight,
+        alignItems: 'center',
         gap: 2,
     },
-    kpiCellAlert: {backgroundColor: colors.dangerLight},
+    kpiLabel: {textAlign: 'center'},
+    kpiCellAlert: {backgroundColor: colors.dangerLight, borderColor: colors.danger},
     kpiValueAlert: {color: colors.danger},
     unreadCard: {borderColor: colors.danger, backgroundColor: colors.primaryLight},
     cardHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm},
     badgeRow: {flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.xs, flex: 1},
     preview: {fontSize: font.small, color: colors.textSecondary},
+    typingPreview: {color: colors.primary, fontWeight: '600'},
 });

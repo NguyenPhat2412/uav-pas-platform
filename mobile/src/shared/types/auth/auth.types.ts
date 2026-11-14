@@ -13,6 +13,17 @@ export interface LoginRequest {
     password: string;
 }
 
+export interface AppleLoginInput {
+    credential: string;
+    authorizationCode?: string;
+    fullName?: string;
+    nonce?: string;
+}
+
+export interface AppleCredentialPayload extends AppleLoginInput {
+    email?: string;
+}
+
 export interface RegisterRequest {
     username: string;
     email: string;
@@ -159,6 +170,10 @@ export interface AuthContextType {
     token: string | null;
     isLoading: boolean;
     isAuthenticated: boolean;
+    /** True when session bootstrap could not reach the API (offline, 5xx, 429) while a session may exist. */
+    isUnreachable?: boolean;
+    authError?: Error | null;
+    retryAuth?: () => void;
     permissions: string[];
     permissionsReady: boolean;
     permissionError: Error | null;
@@ -167,6 +182,7 @@ export interface AuthContextType {
     /** Re-reads the signed-in user, e.g. after the profile name changed; ignored if the session switched meanwhile. */
     refreshUser: () => Promise<void>;
     login: (usernameOrEmail: string, password: string) => Promise<AuthResponse>;
+    loginWithApple: (payload: AppleLoginInput) => Promise<AuthResponse>;
     register: (data: RegisterRequest) => Promise<UserResponse>;
     completeAuth: (response: AuthResponse) => AuthResponse;
     logout: () => Promise<void>;

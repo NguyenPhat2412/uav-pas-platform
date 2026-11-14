@@ -1,4 +1,15 @@
 {
+  "auth": {
+    "google": {
+      "short": "Google"
+    },
+    "apple": {
+      "signin_with": "Sign in with Apple",
+      "signup_with": "Sign up with Apple",
+      "short": "Apple",
+      "notConfigured": "Sign in with Apple is not configured on this build."
+    }
+  },
   "mobile": {
     "auth": {
       "fillCredentials": "Enter your username or email and password.",
@@ -26,15 +37,37 @@
     "status": {
       "offlineTitle": "Can't reach the server",
       "offlineHint": "Check your connection and try again. You are still signed in.",
-      "offlineBanner": "You are offline — check your field network connection."
+      "offlineBanner": "Offline — tap to check connection.",
+      "offlineBadge": "CONNECTION LOST",
+      "networkLostTitle": "No network connection",
+      "networkLostDetail": "The link to UAV PAS Dispatch Center is temporarily interrupted. Check Wi-Fi or mobile data and try again.",
+      "checkWifi": "Check Wi-Fi signal or cellular 4G / 5G data",
+      "sessionProtected": "Your session and saved drafts remain protected on this device",
+      "autoSync": "Automatically syncs as soon as connection returns",
+      "reconnectButton": "Reconnect now",
+      "viewCachedButton": "View loaded screen"
     },
     "nav": {
       "missionDetail": "Mission details",
       "missions": "Missions",
-      "weather": "Weather"
+      "weather": "Weather",
+      "services": "Services",
+      "support": "Support"
     },
     "home": {
-      "greeting": "Hello,"
+      "greeting": "Hello,",
+      "shortcuts": {
+        "create": "New",
+        "services": "Services",
+        "billing": "Plans",
+        "training": "Guide"
+      },
+      "pipeline": {
+        "waiting": "Waiting",
+        "active": "Flying",
+        "scheduled": "Planned",
+        "draft": "Drafts"
+      }
     },
     "account": {
       "profile": "Profile",
@@ -46,6 +79,32 @@
         "normal": "Default",
         "large": "Large",
         "xlarge": "Extra large"
+      },
+      "more": "More",
+      "moreTitle": "More settings",
+      "tiles": {
+        "profile": "Profile",
+        "billing": "Billing",
+        "training": "Guides",
+        "security": "Security"
+      },
+      "accountDeletion": {
+        "trigger": "Delete account",
+        "title": "Delete account",
+        "securityHint": "Permanently delete or anonymize your account under current platform policy.",
+        "modeAnonymize": "Mode: Anonymize personal data",
+        "modeHardDelete": "Mode: Permanent deletion",
+        "disabledFallback": "Self-service account deletion is currently unavailable for this account.",
+        "activeMissionsCount": "Active missions: {count}",
+        "unpaidInvoicesCount": "Unpaid invoices: {count}",
+        "phraseLabel": "Type confirmation phrase ({phrase})",
+        "phraseHint": "Enter \"{phrase}\" exactly to unlock account deletion.",
+        "reasonRequiredLabel": "Reason for deletion (required)",
+        "reasonOptionalLabel": "Reason for deletion (optional)",
+        "reasonPlaceholder": "Tell us why you are closing your account…",
+        "confirmAction": "Confirm account deletion",
+        "deletingAction": "Deleting…",
+        "deletedToast": "Your account has been deleted."
       }
     },
     "workspace": {
@@ -57,6 +116,8 @@
     },
     "push": {
       "title": "Device notifications",
+      "compactActive": "Enabled on this device",
+      "compactOff": "Off · Enable to receive alerts",
       "active": "Enabled",
       "inactive": "Not registered",
       "hint": "Receive mission updates, flight permit approvals, rescue target alerts, and payment confirmations on this phone.",
@@ -116,6 +177,15 @@
     },
     "missions": {
       "edit": "Edit",
+      "submitAction": "Submit",
+      "cloneAction": "Duplicate",
+      "cloningAction": "Duplicating...",
+      "cancelShort": "Cancel",
+      "pastStartWarning": "Scheduled start time has passed. Please pick a future time before submitting.",
+      "pastStartTitle": "Start time has passed",
+      "pastStartPrompt": "The scheduled window has passed. Move to tomorrow at the same time and submit now, or edit manually?",
+      "rescheduleAndSubmit": "Move to tomorrow & submit",
+      "editManually": "Edit manually",
       "history": "History",
       "noHistory": "No activity yet.",
       "openMaps": "Open in Maps",
@@ -173,7 +243,22 @@
       "receiptPendingHint": "Save or share the pro-forma PDF invoice for your records or payment approval.",
       "receiptPaidHint": "Invoice paid. Save or share your PDF payment receipt for accounting records.",
       "shareReceiptPdf": "Share / Save PDF Receipt",
-      "receiptShareTitle": "Invoice receipt {code}"
+      "receiptShareTitle": "Invoice receipt {code}",
+      "liveReconcileActive": "Online · Instant reconciliation",
+      "supportReconcileHint": "Need help reconciling a bank transfer or VAT invoice?",
+      "contactSupportButton": "Contact Support for payment reconciliation",
+      "dueOn": "Due {date}",
+      "overdue": "Overdue — please pay soon to avoid service interruption.",
+      "closedTitle": "Invoice closed",
+      "closedExpired": "This invoice expired and can no longer be paid. Choose the plan again to get a new invoice.",
+      "closedCancelled": "This invoice was cancelled and can no longer be paid.",
+      "lateTransferHint": "Transferred money for a closed invoice? Contact support for a refund.",
+      "backToBilling": "Back to plans",
+      "saveQr": "Save QR code",
+      "qrShareTitle": "Payment QR {code}",
+      "cancelInvoice": "Cancel invoice",
+      "cancelQuestion": "Cancel invoice {code}? It can no longer be paid afterwards.",
+      "cancelled": "Invoice {code} cancelled."
     },
     "security": {
       "twoFactor": "Two-step verification",
@@ -396,6 +481,11 @@
         "assignUav": "Assign UAV",
         "assignOperator": "Assign operator",
         "assignedToast": "Mission resource assignment updated."
+      },
+      "tabs": {
+        "missions": "Missions",
+        "sar": "Rescue",
+        "fleet": "Fleet"
       }
     },
     "adminQuick": {
@@ -443,7 +533,7 @@
       "adminLauncherLabel": "Customer Support Inbox",
       "publicTitle": "Direct Contact & Live Support",
       "publicSubtitle": "Connect directly with the UAV PAS Dispatch & Operations Desk",
-      "contactSectionTitle": "Direct Contact Channels",
+      "contactSectionTitle": "Contact",
       "zaloLabel": "Zalo Direct Support",
       "chatZalo": "Chat Zalo",
       "hotlineLabel": "Dispatch Hotline",
@@ -508,7 +598,12 @@
       "statusOpen": "Open",
       "statusInProgress": "In progress",
       "statusResolved": "Resolved",
-      "unreadBadge": "{count} new"
+      "unreadBadge": "{count} new",
+      "liveRealtime": "Online · Real-time",
+      "liveSyncing": "Auto-syncing",
+      "adminTyping": "Admin is typing a reply...",
+      "visitorTyping": "Visitor is typing...",
+      "threadDeletedToast": "This support thread was closed or removed."
     }
   }
 }

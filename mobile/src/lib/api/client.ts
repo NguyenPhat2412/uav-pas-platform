@@ -8,10 +8,42 @@ import {ApiError, bytesToBase64, createApiClient} from '@/lib/api/core';
 
 export {API_ROUTES, ApiError};
 
+export type TransportSignal = 'online' | 'server' | 'maintenance';
+type TransportListener = (signal: TransportSignal) => void;
+const sharedTransport = globalThis as { __uavTransportListeners?: Set<TransportListener> };
+const transportListeners = (sharedTransport.__uavTransportListeners ??= new Set());
+
+export function onTransportStatus(listener: TransportListener): () => void {
+    transportListeners.add(listener);
+    return () => {
+        transportListeners.delete(listener);
+    };
+}
+
+function emitTransport(signal: TransportSignal) {
+    transportListeners.forEach(listener => listener(signal));
+}
+
 /** The only place the app talks HTTP; the architecture check forbids fetch() anywhere else. */
 export const apiClient = createApiClient({
     baseUrl: API_BASE_URL,
-    fetch: (input, init) => fetch(input, init),
+    fetch: async (input, init) => {
+        const isApi = typeof input === 'string' && input.startsWith(API_BASE_URL);
+        try {
+            const response = await fetch(input, init);
+            if (isApi) {
+                if (response.status === 502 || response.status === 503 || response.status === 504) {
+                    emitTransport('maintenance');
+                } else {
+                    emitTransport('online');
+                }
+            }
+            return response;
+        } catch (error) {
+            if (isApi && !init?.signal?.aborted) emitTransport('server');
+            throw error;
+        }
+    },
     session: sessionStore,
     refreshPath: API_ROUTES.auth.refresh,
     // X-Client gives the phone its own refresh token, so signing in here never signs the web portal out.

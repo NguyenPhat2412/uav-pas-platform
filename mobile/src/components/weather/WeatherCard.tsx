@@ -38,7 +38,7 @@ function Fact({icon: Icon, label, value, level, dark}: { icon: LucideIcon; label
 }
 
 /** Sky words, verdict and wind / rain / visibility as levels for one assessment (icons first, few words). */
-function Conditions({data, at, dark}: { data: WeatherAssessment; at?: string; dark: boolean }) {
+function Conditions({data, at, dark, compact = false}: { data: WeatherAssessment; at?: string; dark: boolean; compact?: boolean }) {
     const {t} = useI18n();
     const condition = conditionOf(data.weatherCode);
     const night = !isDaytime(at ?? data.evaluatedTime);
@@ -47,6 +47,18 @@ function Conditions({data, at, dark}: { data: WeatherAssessment; at?: string; da
     const visibility = visibilityLevel(data.visibilityMeters);
     const textColor = dark ? colors.white : colors.text;
     const conditionKey = night && (condition === 'clear' || condition === 'partly') ? `weather.home.conditionsNight.${condition}` : `weather.home.conditions.${condition}`;
+    if (compact) {
+        return (
+            <View style={styles.hero}>
+                <WeatherIcon condition={condition} night={night} size={40} color={textColor}/>
+                <View style={[styles.heroText, styles.flex]}>
+                    {data.temperatureC != null && <ScaledText style={[styles.temperatureCompact, {color: textColor}]}>{Math.round(data.temperatureC)}°</ScaledText>}
+                    <ScaledText numberOfLines={1} style={[styles.factText, {color: textColor, textAlign: 'left'}]}>{t(conditionKey)}</ScaledText>
+                </View>
+                <Verdict clearance={data.clearance}/>
+            </View>
+        );
+    }
     return (
         <View style={styles.conditions}>
             <View style={styles.hero}>
@@ -68,13 +80,15 @@ function Conditions({data, at, dark}: { data: WeatherAssessment; at?: string; da
 
 /**
  * "Today's weather" at a point: the animated sky behind, the take-off verdict, plain levels and a strip of the next
- * hours (same requests and cache as the web home widget). onOpen shows a "details" chevron.
+ * hours (same requests and cache as the web home widget). onOpen shows a "details" chevron. compact keeps one row
+ * (icon, temperature, take-off verdict) for the home screen; the full card lives on the weather tab.
  */
-export function WeatherCard({point, title, onOpen, children}: {
+export function WeatherCard({point, title, onOpen, children, compact = false}: {
     point: { lat: number; lng: number };
     title: string;
     onOpen?: () => void;
     children?: ReactNode;
+    compact?: boolean;
 }) {
     const {t, formatDate} = useI18n();
     const [times] = useState(() => nextHours(new Date()));
@@ -87,7 +101,7 @@ export function WeatherCard({point, title, onOpen, children}: {
     const subColor = dark ? 'rgba(255,255,255,0.75)' : colors.textSecondary;
 
     const body = (
-        <View style={styles.card}>
+        <View style={[styles.card, compact && styles.cardCompact]}>
             {data ? <SkyGradient background={theme.background}/> : <View style={[StyleSheet.absoluteFill, {backgroundColor: colors.slateLight}]}/>}
             {data && <WeatherBackdrop effect={theme.effect} dark={dark}/>}
             <View style={styles.header}>
@@ -95,9 +109,9 @@ export function WeatherCard({point, title, onOpen, children}: {
                 {onOpen && <ChevronRight size={18} color={subColor}/>}
             </View>
             {now.isPending ? <ActivityIndicator color={colors.primary} style={styles.loading}/>
-                : data ? <Conditions data={data} dark={dark}/>
+                : data ? <Conditions data={data} dark={dark} compact={compact}/>
                     : <ScaledText style={[styles.error, {color: subColor}]}>{t('weather.preflight.loadError')}</ScaledText>}
-            {data && (
+            {data && !compact && (
                 <View style={styles.stripWrap}>
                     <ScaledText style={[styles.stripTitle, {color: subColor}]}>{t('weather.home.next')}</ScaledText>
                     <View style={styles.strip}>
@@ -127,6 +141,9 @@ export function WeatherCard({point, title, onOpen, children}: {
 
 const styles = StyleSheet.create({
     card: {borderRadius: radius.sheet, overflow: 'hidden', padding: spacing.lg, gap: spacing.md, minHeight: 200},
+    cardCompact: {minHeight: 0, gap: spacing.sm},
+    flex: {flex: 1},
+    temperatureCompact: {fontSize: 28, fontWeight: '400'},
     header: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
     title: {fontSize: font.small, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5},
     loading: {marginVertical: spacing.xl},

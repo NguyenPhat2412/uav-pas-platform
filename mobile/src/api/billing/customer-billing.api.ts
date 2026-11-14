@@ -7,6 +7,9 @@ export const customerBillingService = {
     plans: (signal?: AbortSignal) => apiClient.get<ServicePlan[]>(API_ROUTES.billing.plans, {signal}),
     invoices: (page = 0, signal?: AbortSignal) =>
         apiClient.get<PageResponse<Invoice>>(`${API_ROUTES.billing.invoices}?page=${page}&size=20`, {signal}),
+    /** Only an unpaid plan invoice can be cancelled by its customer. */
+    cancel: (invoiceId: number, reason?: string) =>
+        apiClient.post<Invoice>(API_ROUTES.billing.invoiceCancel(invoiceId), {reason}),
     receiptDataUri: (invoiceId: number, signal?: AbortSignal) =>
         fetchApiBase64DataUri(API_ROUTES.billing.invoiceReceipt(invoiceId), 'application/pdf', signal),
 };

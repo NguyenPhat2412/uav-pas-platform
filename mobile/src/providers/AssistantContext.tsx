@@ -11,7 +11,8 @@ interface AssistantThread {
     clear: () => void;
 }
 
-const AssistantContext = createContext<AssistantThread | undefined>(undefined);
+const sharedAssistant = globalThis as { __uavAssistantContext?: React.Context<AssistantThread | undefined> };
+const AssistantContext = (sharedAssistant.__uavAssistantContext ??= createContext<AssistantThread | undefined>(undefined));
 
 /** The open chat thread, kept while the sheet is closed; mounted inside the signed-in area so signing out drops it. */
 export function AssistantProvider({children}: { children: ReactNode }) {

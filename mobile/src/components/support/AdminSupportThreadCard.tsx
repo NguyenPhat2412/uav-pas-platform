@@ -1,9 +1,14 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Linking, Pressable, ScrollView, StyleSheet, View} from 'react-native';
-import {ArrowLeft, Mail, Phone, Send, Zap} from 'lucide-react-native';
+import {ArrowLeft, Mail, Phone, Radio, Send, Zap} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, ChipGroup, ErrorState, LoadingState, ScaledText, SectionTitle, TextField} from '@/components/ui';
 import {signInErrorText} from '@/forms/auth/sign-in-flow';
-import {useAdminQuickReplies, useAdminSupportMutations, useAdminSupportThreadDetail} from '@/hooks/support/useAdminSupportMobile';
+import {
+    useAdminQuickReplies,
+    useAdminSupportMutations,
+    useAdminSupportRealtime,
+    useAdminSupportThreadDetail,
+} from '@/hooks/support/useAdminSupportMobile';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import type {SupportQuickReply, SupportThreadStatus} from '@/shared/types/support/support.types';
@@ -16,7 +21,10 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
     const detailQuery = useAdminSupportThreadDetail(threadId);
     const quickRepliesQuery = useAdminQuickReplies();
     const mutations = useAdminSupportMutations();
+    const {wsConnected, visitorTypingByThread, notifyAdminTyping} = useAdminSupportRealtime();
     const [draft, setDraft] = useState('');
+
+    useEffect(() => () => notifyAdminTyping(threadId, false), [notifyAdminTyping, threadId]);
 
     const showError = (error: unknown) => toast.show(signInErrorText(error, t), 'error');
 
@@ -43,6 +51,7 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
     }
 
     const {thread, messages} = detailQuery.data;
+    const isVisitorTyping = Boolean(visitorTypingByThread[thread.id]);
     const contactLink = resolveContactHref(thread.contactInfo);
     const sortedTemplates = prioritizeQuickReplies(quickRepliesQuery.data ?? [], thread.topic);
     const nextReplyStatus: SupportThreadStatus = thread.status === 'OPEN' ? 'IN_PROGRESS' : thread.status;
@@ -64,9 +73,15 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
         );
     };
 
+    const handleDraftChange = (value: string) => {
+        setDraft(value);
+        notifyAdminTyping(thread.id, value.trim().length > 0);
+    };
+
     const sendContent = (rawContent: string, clearDraft: boolean) => {
         const trimmed = rawContent.trim();
         if (!trimmed) return;
+        notifyAdminTyping(thread.id, false);
         mutations.reply.mutate(
             {id: thread.id, body: {content: trimmed, status: nextReplyStatus}},
             {
@@ -85,19 +100,26 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
 
     return (
         <View style={styles.stack}>
-            <Button tone="secondary" icon={ArrowLeft} label={t('mobile.support.backToList')} onPress={onBack}/>
+            <Button size="sm" tone="secondary" icon={ArrowLeft} label={t('mobile.support.backToList')} onPress={onBack}/>
 
             <Card>
                 <View style={styles.headerRow}>
                     <Badge label={thread.code} background={colors.primaryLight} color={colors.primary}/>
                     <Badge label={formatSupportTopic(thread.topic)} background={colors.slateLight} color={colors.slateDark}/>
                     <Badge label={formatSupportSource(thread.source)} background={colors.slateLight} color={colors.slate}/>
+                    <Badge
+                        icon={Radio}
+                        label={wsConnected ? t('mobile.support.liveRealtime') : t('mobile.support.liveSyncing')}
+                        background={wsConnected ? colors.primaryLight : colors.slateLight}
+                        color={wsConnected ? colors.primary : colors.slateDark}
+                    />
                 </View>
                 <AppText variant="heading">{thread.fullName}</AppText>
                 {thread.organization ? <AppText variant="small">{thread.organization}</AppText> : null}
                 <AppText variant="body" selectable>{thread.contactInfo}</AppText>
                 {contactLink ? (
                     <Button
+                        size="sm"
                         tone="secondary"
                         icon={contactLink.isEmail ? Mail : Phone}
                         label={contactLink.isEmail ? t('mobile.support.sendEmail') : t('mobile.support.callNow')}
@@ -132,6 +154,12 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
                         </View>
                     );
                 })}
+                {isVisitorTyping ? (
+                    <View style={styles.typingBanner} accessibilityLiveRegion="polite">
+                        <View style={styles.typingDot}/>
+                        <ScaledText style={styles.typingText}>{t('mobile.support.visitorTyping')}</ScaledText>
+                    </View>
+                ) : null}
             </Card>
 
             {sortedTemplates.length > 0 ? (
@@ -146,7 +174,7 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
                                 </AppText>
                                 <View style={styles.quickActions}>
                                     <Pressable
-                                        onPress={() => setDraft(personalizeQuickReply(tpl.content, thread.fullName))}
+                                        onPress={() => handleDraftChange(personalizeQuickReply(tpl.content, thread.fullName))}
                                         accessibilityRole="button"
                                         style={({pressed}) => [styles.draftChip, pressed && styles.pressed]}>
                                         <ScaledText style={styles.draftChipText}>{t('mobile.support.insertDraft')}</ScaledText>
@@ -175,7 +203,7 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
                     label={t('mobile.support.adminSender')}
                     placeholder={t('mobile.support.adminReplyPlaceholder')}
                     value={draft}
-                    onChangeText={setDraft}
+                    onChangeText={handleDraftChange}
                     multiline
                 />
                 <Button
@@ -202,6 +230,18 @@ const styles = StyleSheet.create({
     timestamp: {fontSize: font.caption, color: colors.muted},
     adminMeta: {color: colors.primaryLight},
     adminText: {color: colors.white},
+    typingBanner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        gap: spacing.xs,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.xs,
+        borderRadius: radius.control,
+        backgroundColor: colors.warningLight,
+    },
+    typingDot: {width: 8, height: 8, borderRadius: 4, backgroundColor: colors.warning},
+    typingText: {fontSize: font.caption, fontWeight: '600', color: colors.warning},
     quickStrip: {gap: spacing.sm, paddingVertical: 2},
     quickItem: {
         width: 268,

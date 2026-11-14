@@ -9,13 +9,13 @@ export interface RouteMeta {
 }
 
 export const ROUTE_META: RouteMeta = {
-    id: 'customer.tabs.notifications',
+    id: 'customer.notifications',
     portal: 'customer',
     section: 'notifications',
     requiresAuth: true,
 };
 
-/** Expo Router screen entry for the customer notifications tab. */
+/** Expo Router screen entry for the customer notifications screen, opened from the bell on the home header. */
 export default function CustomerNotificationsRoute() {
     return <NotificationsScreen/>;
 }

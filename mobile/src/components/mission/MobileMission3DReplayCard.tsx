@@ -47,7 +47,7 @@ export function MobileMission3DReplayCard({missionId, portal}: Props) {
     if (query.isPending) {
         return (
             <Card>
-                <LoadingState label="Đang tải dữ liệu phát lại quỹ đạo 3D..."/>
+                <LoadingState label="Đang tải đường bay..."/>
             </Card>
         );
     }
@@ -94,14 +94,14 @@ export function MobileMission3DReplayCard({missionId, portal}: Props) {
 
             <Card>
                 <SectionTitle
-                    title="Phát lại Quỹ đạo 3D & Mặt cắt Địa hình"
+                    title="Mô phỏng đường bay & độ cao"
                     action={
                         <Badge
                             icon={replay.terrainClearanceSafe ? ShieldCheck : AlertTriangle}
                             label={
                                 replay.terrainClearanceSafe
-                                    ? `An toàn địa hình (≥${Math.round(replay.minClearanceMeters)}m)`
-                                    : `Cảnh báo độ cao (${Math.round(replay.minClearanceMeters)}m)`
+                                    ? `Cách mặt đất an toàn (≥${Math.round(replay.minClearanceMeters)} m)`
+                                    : `Bay quá thấp (${Math.round(replay.minClearanceMeters)} m)`
                             }
                             background={replay.terrainClearanceSafe ? colors.slateLight : colors.warningLight}
                             color={replay.terrainClearanceSafe ? colors.slateDark : colors.warning}
@@ -111,21 +111,21 @@ export function MobileMission3DReplayCard({missionId, portal}: Props) {
 
                 <View style={styles.kpiRow}>
                     <View style={styles.kpiItem}>
-                        <AppText variant="caption">Tổng quãng đường</AppText>
+                        <AppText variant="caption">Quãng đường</AppText>
                         <AppText variant="small" style={styles.bold}>
                             {(replay.totalDistanceMeters / 1000).toFixed(2)} km
                         </AppText>
                     </View>
                     <View style={styles.kpiItem}>
-                        <AppText variant="caption">Trần bay cao nhất</AppText>
+                        <AppText variant="caption">Độ cao tối đa</AppText>
                         <AppText variant="small" style={styles.bold}>
                             {Math.round(replay.maxAltitudeMeters)} m
                         </AppText>
                     </View>
                     <View style={styles.kpiItem}>
-                        <AppText variant="caption">Gimbal / RTK</AppText>
+                        <AppText variant="caption">Góc camera</AppText>
                         <AppText variant="small" style={styles.bold}>
-                            {Math.round(currentSample?.gimbalPitchDeg ?? -45)}° · {currentSample?.rtkStatus ?? 'FIXED'}
+                            {Math.round(currentSample?.gimbalPitchDeg ?? -45)}°
                         </AppText>
                     </View>
                 </View>
@@ -139,8 +139,8 @@ export function MobileMission3DReplayCard({missionId, portal}: Props) {
                         <Circle cx={cursorX} cy={Math.max(6, Math.min(chartH - 6, cursorY))} r={5} fill={colors.primary} stroke={colors.white} strokeWidth={1.5}/>
                     </Svg>
                     <View style={styles.legendRow}>
-                        <AppText variant="caption">Đỏ: Độ cao tuyệt đối UAV</AppText>
-                        <AppText variant="caption">Cam: Cao độ mặt đất (DEM)</AppText>
+                        <AppText variant="caption">Đỏ: Đường bay</AppText>
+                        <AppText variant="caption">Cam: Mặt đất</AppText>
                     </View>
                 </View>
 
@@ -164,12 +164,14 @@ export function MobileMission3DReplayCard({missionId, portal}: Props) {
 
                 <View style={styles.controlsRow}>
                     <Button
-                        label={playing ? 'Tạm dừng' : 'Phát quỹ đạo'}
+                        size="sm"
+                        label={playing ? 'Tạm dừng' : 'Xem đường bay'}
                         icon={playing ? Pause : Play}
                         onPress={() => setPlaying(prev => !prev)}
                         style={styles.flex}
                     />
                     <Button
+                        size="sm"
                         label="Đặt lại"
                         icon={RotateCcw}
                         tone="secondary"
@@ -184,7 +186,7 @@ export function MobileMission3DReplayCard({missionId, portal}: Props) {
                     <View style={styles.speedLabel}>
                         <Compass size={14} color={colors.slate}/>
                         <AppText variant="caption">
-                            Mẫu {safeIdx + 1}/{samples.length} · Tốc độ phát:
+                            Điểm {safeIdx + 1}/{samples.length} · Tốc độ xem:
                         </AppText>
                     </View>
                     <ChipGroup<SpeedScale>
@@ -224,6 +226,8 @@ const styles = StyleSheet.create({
     },
     legendRow: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: spacing.xs,
         justifyContent: 'space-between',
         paddingHorizontal: spacing.xs,
     },
@@ -248,6 +252,7 @@ const styles = StyleSheet.create({
     },
     controlsRow: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
         gap: spacing.sm,
         alignItems: 'center',
     },
@@ -259,6 +264,7 @@ const styles = StyleSheet.create({
         gap: spacing.xs,
     },
     speedLabel: {
+        flexShrink: 1,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,

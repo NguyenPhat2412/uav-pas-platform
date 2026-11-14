@@ -1,3 +1,4 @@
+import {useEffect} from 'react';
 import {Platform} from 'react-native';
 import Constants from 'expo-constants';
 import {requireOptionalNativeModule} from 'expo-modules-core';
@@ -5,9 +6,11 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {queryKeys} from '@/shared/lib/query';
 import {notificationsService} from '@/api/notification/notifications.api';
 import {readSavedPushEndpoint, savePushEndpoint} from '@/lib/storage/preferences';
+import {sessionStore} from '@/lib/api/session';
+import {realtimeWs} from '@/lib/realtime/realtime-ws';
 import {useAuth} from '@/providers/AuthContext';
 
-// Active field polling + native APNs/FCM or Expo Push HTTP registration when a push endpoint is enrolled.
+// Realtime NOTIFICATION_CREATED frames (own user only) + slow polling as a fallback + native APNs/FCM or Expo Push HTTP registration when a push endpoint is enrolled.
 const POLL_MS = 30_000;
 
 interface NativePermissionResponse {
@@ -21,8 +24,17 @@ interface NativePushPermissionsModule {
     requestPermissionsAsync?: (options?: Record<string, unknown>) => Promise<NativePermissionResponse>;
 }
 
-interface NativePushTokenManager {
-    getDevicePushTokenAsync?: () => Promise<string | { data?: string }>;
+type NotificationsModule = typeof import('expo-notifications');
+
+/** Lazy so Node tests and builds without the native module never crash at import time. */
+function loadNotifications(): NotificationsModule | null {
+    if (Platform.OS === 'web') return null;
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        return require('expo-notifications') as NotificationsModule;
+    } catch {
+        return null;
+    }
 }
 
 function isPushPermissionGranted(perm: NativePermissionResponse | null | undefined): boolean {
@@ -51,16 +63,15 @@ async function resolveDevicePushEndpoint(userId?: number): Promise<string> {
         }
     }
 
-    const tokenModule = requireOptionalNativeModule<NativePushTokenManager>('ExpoPushTokenManager');
-    if (tokenModule?.getDevicePushTokenAsync) {
+    // The backend sends through Expo Push (exp.host), so it needs the Expo push token, not the raw APNs token.
+    const notifications = loadNotifications();
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
+    if (notifications && projectId) {
         try {
-            const raw = await tokenModule.getDevicePushTokenAsync();
-            const nativeToken = (typeof raw === 'string' ? raw : raw?.data ?? '').trim();
-            if (nativeToken) {
-                return nativeToken.slice(0, 255);
-            }
+            const {data} = await notifications.getExpoPushTokenAsync({projectId});
+            if (data?.trim()) return data.trim().slice(0, 255);
         } catch {
-            // Simulator or unprovisioned development build without aps-environment entitlement: fall back cleanly.
+            // Simulator or a build without the aps-environment entitlement: fall back cleanly.
         }
     }
 
@@ -93,6 +104,19 @@ export function useNotifications() {
     });
 
     const refresh = () => client.invalidateQueries({queryKey: key});
+
+    // The server pushes each new notification to this user's sockets only: bump the bell at once, refetch the list.
+    const userId = user?.id;
+    useEffect(() => {
+        if (userId == null) return;
+        const feature = queryKeys.feature(userId, 'notifications');
+        realtimeWs.syncAccessToken(sessionStore.read()?.accessToken ?? null);
+        return realtimeWs.subscribe(frame => {
+            if (frame.type !== 'NOTIFICATION_CREATED') return;
+            client.setQueryData([...feature, 'unread'], {unreadCount: frame.unreadCount});
+            void client.invalidateQueries({queryKey: [...feature, 'recent']});
+        });
+    }, [userId, client]);
 
     const markOne = useMutation({
         mutationFn: (id: number) => notificationsService.markRead(id),

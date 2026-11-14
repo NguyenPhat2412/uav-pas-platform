@@ -1,6 +1,8 @@
-import React, {ReactNode} from 'react';
+import {SkeletonList} from './Skeleton';
+import React, {type ComponentType, createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {
     ActivityIndicator,
+    Keyboard,
     KeyboardAvoidingView,
     Platform,
     Pressable,
@@ -16,12 +18,16 @@ import {
     View,
     ViewStyle,
 } from 'react-native';
-import {SafeAreaView, type Edge} from 'react-native-safe-area-context';
-import {AlertTriangle, Inbox, type LucideIcon} from 'lucide-react-native';
+import {SafeAreaView, useSafeAreaInsets, type Edge} from 'react-native-safe-area-context';
+import {AlertTriangle, Eye, EyeOff, Inbox, type LucideIcon} from 'lucide-react-native';
+import {GlassSurface, liquidGlass} from './Glass';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {OfflineBanner} from '@/components/shared/OfflineBanner';
+import {useI18n} from '@/providers/I18nContext';
 import {useTextScale} from '@/providers/TextSizeContext';
+
+export {GlassSurface, liquidGlass};
 
 /** Widest a content column grows (phones use the full width; iPad and landscape centre it). */
 export const CONTENT_WIDTH = 640;
@@ -53,21 +59,25 @@ export function ScaledText({style, ...props}: TextProps) {
     return <Text {...props} style={[style, scaledFont(style, scale)]}/>;
 }
 
-export function AppText({variant = 'body', style, children, numberOfLines, selectable}: {
-    variant?: TextVariant;
-    style?: StyleProp<TextStyle>;
-    children: ReactNode;
-    numberOfLines?: number;
-    selectable?: boolean;
+export function AppText({variant = 'body', style, children, numberOfLines, selectable, adjustsFontSizeToFit, minimumFontScale}: {
+    variant?: TextVariant; style?: StyleProp<TextStyle>; children: ReactNode;
+    numberOfLines?: number; selectable?: boolean; adjustsFontSizeToFit?: boolean; minimumFontScale?: number;
 }) {
-    return <ScaledText style={[TEXT[variant], style]} numberOfLines={numberOfLines} selectable={selectable}>{children}</ScaledText>;
+    return (
+        <ScaledText style={[TEXT[variant], style]} numberOfLines={numberOfLines} selectable={selectable}
+                    adjustsFontSizeToFit={adjustsFontSizeToFit} minimumFontScale={minimumFontScale}>{children}</ScaledText>
+    );
 }
 
-/**
- * A page inside a native stack: the scroll view insets itself under the (glass) header, the tab bar and the keyboard
- * (contentInsetAdjustmentBehavior), with pull-to-refresh when onRefresh is given. Content sits in one centred column
- * (maxWidth) so it never stretches across an iPad. Screens without a header (sign-in) pass edges for the safe area.
- */
+/** Native stack screen with pull-to-refresh, centred max-width column, and keyboard auto-reveal. */
+const KeyboardReveal = createContext<{ reveal: () => void; anchor: React.RefObject<React.ComponentRef<typeof View> | null> } | null>(null);
+
+/** Wraps a form submit button so Screen keeps it visible above the keyboard while typing. */
+export function KeyboardAnchor({children}: { children: ReactNode }) {
+    const screen = useContext(KeyboardReveal);
+    return <View ref={screen?.anchor} collapsable={false}>{children}</View>;
+}
+
 export function Screen({children, onRefresh, refreshing = false, scroll = true, edges = [], contentStyle, maxWidth = CONTENT_WIDTH}: {
     children: ReactNode;
     onRefresh?: () => void;
@@ -77,6 +87,32 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
     contentStyle?: StyleProp<ViewStyle>;
     maxWidth?: number;
 }) {
+    const scrollRef = useRef<React.ComponentRef<typeof ScrollView>>(null);
+    const anchor = useRef<React.ComponentRef<typeof View>>(null);
+    const scrolled = useRef(0);
+    const insets = useSafeAreaInsets();
+    const top = edges.includes('top') ? insets.top : 0;
+    const reveal = useCallback(() => {
+        // Next frame: on focus the field is not yet the first responder.
+        requestAnimationFrame(() => {
+            const field = TextInput.State.currentlyFocusedInput();
+            const keyboard = Keyboard.metrics();
+            const target = anchor.current;
+            if (!field || !keyboard || !target || !Keyboard.isVisible()) return;
+            target.measureInWindow((_x, y, _width, height) => field.measureInWindow((_fx, fieldY) => {
+                const hidden = y + height + spacing.md - keyboard.screenY;
+                // Never so far that the field being typed in (and its label above it) leaves the top of the screen.
+                const room = fieldY - 28 - top - spacing.sm;
+                const by = Math.min(hidden, room);
+                if (by > 0) scrollRef.current?.scrollTo({y: scrolled.current + by, animated: true});
+            }));
+        });
+    }, [top]);
+    useEffect(() => {
+        const shown = Keyboard.addListener('keyboardDidShow', reveal);
+        return () => shown.remove();
+    }, [reveal]);
+    const keyboardReveal = useMemo(() => ({reveal, anchor}), [reveal]);
     const column = (
         <View style={[styles.column, {maxWidth}, contentStyle]}>
             <OfflineBanner/>
@@ -86,15 +122,21 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
     return (
         <SafeAreaView edges={edges} style={styles.screen}>
             <AppBackground/>
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
+            {/* A scroll view already insets itself for the keyboard; padding here as well would lift the form twice. */}
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' && !scroll ? 'padding' : undefined} style={styles.flex}>
                 {scroll ? (
                     <ScrollView
+                        ref={scrollRef}
+                        onScroll={event => {
+                            scrolled.current = event.nativeEvent.contentOffset.y;
+                        }}
+                        scrollEventThrottle={16}
                         contentInsetAdjustmentBehavior="automatic"
                         automaticallyAdjustKeyboardInsets
                         contentContainerStyle={styles.content}
                         keyboardShouldPersistTaps="handled"
                         refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary}/> : undefined}>
-                        {column}
+                        <KeyboardReveal.Provider value={keyboardReveal}>{column}</KeyboardReveal.Provider>
                     </ScrollView>
                 ) : column}
             </KeyboardAvoidingView>
@@ -126,46 +168,65 @@ const BUTTON: Record<ButtonTone, { background: string; text: string; border: str
     danger: {background: colors.danger, text: colors.white, border: colors.danger},
 };
 
-export function Button({label, onPress, tone = 'primary', loading = false, disabled = false, icon: Icon, style}: {
-    label: string;
-    onPress: () => void;
-    tone?: ButtonTone;
-    loading?: boolean;
-    disabled?: boolean;
-    icon?: LucideIcon;
-    style?: StyleProp<ViewStyle>;
+export function Button({label, onPress, tone = 'primary', size = 'md', loading = false, disabled = false, icon: Icon, style}: {
+    label: string; onPress: () => void; tone?: ButtonTone; size?: 'md' | 'sm';
+    loading?: boolean; disabled?: boolean; icon?: ComponentType<{ size?: number; color?: string }>; style?: StyleProp<ViewStyle>;
 }) {
     const palette = BUTTON[tone];
     const inactive = disabled || loading;
+    const compact = size === 'sm';
     return (
         <Pressable
-            onPress={onPress}
-            disabled={inactive}
-            accessibilityRole="button"
+            onPress={onPress} disabled={inactive} accessibilityRole="button"
             accessibilityState={{disabled: inactive, busy: loading}}
-            style={({pressed}) => [styles.button, {backgroundColor: palette.background, borderColor: palette.border},
+            style={({pressed}) => [styles.button, compact && styles.buttonSm, {backgroundColor: palette.background, borderColor: palette.border},
                 inactive && styles.disabled, pressed && styles.pressed, style]}>
-            {loading ? <ActivityIndicator color={palette.text}/> : Icon ? <Icon size={18} color={palette.text}/> : null}
-            <ScaledText style={[styles.buttonText, {color: palette.text}]}>{label}</ScaledText>
+            {loading ? <ActivityIndicator size="small" color={palette.text}/> : Icon ? <Icon size={compact ? 15 : 18} color={palette.text}/> : null}
+            <ScaledText numberOfLines={1} style={[styles.buttonText, compact && styles.buttonTextSm, {color: palette.text}]}>{label}</ScaledText>
         </Pressable>
     );
 }
 
 export function TextField({label, error, hint, style, ...input}: TextInputProps & {
-    label: string;
+    label?: string;
     error?: string | null;
     hint?: string;
 }) {
     const scale = useTextScale();
+    const {t} = useI18n();
+    const screen = useContext(KeyboardReveal);
+    const secure = !!input.secureTextEntry;
+    const [hidden, setHidden] = useState(true);
+    const [focused, setFocused] = useState(false);
+    const EyeIcon = hidden ? Eye : EyeOff;
     return (
         <View style={[styles.field, style as StyleProp<ViewStyle>]}>
-            <ScaledText style={styles.label}>{label}</ScaledText>
-            <TextInput
-                placeholderTextColor={colors.muted}
-                accessibilityLabel={label}
-                {...input}
-                style={[styles.input, scaledFont(styles.input, scale), input.multiline && styles.multiline, !!error && styles.inputError]}
-            />
+            {label ? <ScaledText style={styles.label}>{label}</ScaledText> : null}
+            <View>
+                <TextInput
+                    placeholderTextColor={colors.muted}
+                    accessibilityLabel={label || input.placeholder}
+                    {...input}
+                    secureTextEntry={secure && hidden}
+                    onFocus={event => {
+                        setFocused(true);
+                        input.onFocus?.(event);
+                        screen?.reveal();
+                    }}
+                    onBlur={event => {
+                        setFocused(false);
+                        input.onBlur?.(event);
+                    }}
+                    style={[styles.input, scaledFont(styles.input, scale), input.multiline && styles.multiline,
+                        secure && styles.inputSecure, focused && styles.inputFocused, !!error && styles.inputError]}
+                />
+                {secure && (
+                    <Pressable onPress={() => setHidden(value => !value)} style={styles.eye} accessibilityRole="button"
+                               accessibilityLabel={t(hidden ? 'authShared.showPassword' : 'authShared.hidePassword')}>
+                        <EyeIcon size={20} color={colors.muted}/>
+                    </Pressable>
+                )}
+            </View>
             {error ? <ScaledText style={styles.error} accessibilityRole="alert">{error}</ScaledText>
                 : hint ? <ScaledText style={styles.hint}>{hint}</ScaledText> : null}
         </View>
@@ -189,19 +250,17 @@ export function Badge({label, background = colors.slateLight, color = colors.sla
 export function SectionTitle({title, action}: { title: string; action?: ReactNode }) {
     return (
         <View style={styles.sectionTitle}>
-            <AppText variant="title">{title}</AppText>
+            <AppText variant="title" style={styles.sectionTitleText}>{title}</AppText>
             {action}
         </View>
     );
 }
 
+export {Skeleton, SkeletonList} from './Skeleton';
+
+/** First-load placeholder: card-shaped skeletons instead of a spinner; the label stays for screen readers. */
 export function LoadingState({label}: { label?: string }) {
-    return (
-        <View style={styles.state} accessibilityLiveRegion="polite">
-            <ActivityIndicator color={colors.primary}/>
-            {label ? <AppText variant="small">{label}</AppText> : null}
-        </View>
-    );
+    return <SkeletonList label={label}/>;
 }
 
 export function ErrorState({message, retryLabel, onRetry}: { message: string; retryLabel?: string; onRetry?: () => void }) {
@@ -224,26 +283,25 @@ export function EmptyState({message, icon: Icon = Inbox, action}: { message: str
     );
 }
 
-/** A horizontal row of selectable chips (filters, segmented choices). */
-export function ChipGroup<T extends string>({options, value, onChange}: {
-    options: { value: T; label: string }[];
-    value: T;
-    onChange: (value: T) => void;
+/** Selectable chips (scrollable row by default, or wrapped inside cards when wrap is true). */
+export function ChipGroup<T extends string>({options, value, onChange, wrap = false}: {
+    options: { value: T; label: string }[]; value: T; onChange: (value: T) => void; wrap?: boolean;
 }) {
-    return (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
-            {options.map(option => {
-                const active = option.value === value;
-                return (
-                    <Pressable key={option.value} onPress={() => onChange(option.value)} accessibilityRole="button"
-                               accessibilityState={{selected: active}}
-                               style={[styles.chip, active && styles.chipActive]}>
-                        <ScaledText style={[styles.chipText, active && styles.chipTextActive]}>{option.label}</ScaledText>
-                    </Pressable>
-                );
-            })}
-        </ScrollView>
-    );
+    const items = options.map(option => {
+        const active = option.value === value;
+        return (
+            <Pressable key={option.value} onPress={() => onChange(option.value)} accessibilityRole="button"
+                       accessibilityState={{selected: active}}>
+                <GlassSurface interactive tint={active ? colors.slateDark : colors.slateLight}
+                              style={[styles.chip, wrap && styles.chipWrapItem, liquidGlass && styles.chipGlass]}
+                              fallback={active ? styles.chipActive : undefined}>
+                    <ScaledText numberOfLines={1} style={[styles.chipText, active && styles.chipTextActive]}>{option.label}</ScaledText>
+                </GlassSurface>
+            </Pressable>
+        );
+    });
+    if (wrap) return <View style={styles.chipsWrap}>{items}</View>;
+    return <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>{items}</ScrollView>;
 }
 
 export const styles = StyleSheet.create({
@@ -254,7 +312,7 @@ export const styles = StyleSheet.create({
     column: {width: '100%', alignSelf: 'center', gap: spacing.lg},
     card: {
         backgroundColor: colors.surface, borderRadius: radius.card, padding: spacing.lg, borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border, gap: spacing.sm,
+        borderColor: colors.border, gap: spacing.sm, overflow: 'hidden',
     },
     pressed: {opacity: 0.75},
     disabled: {opacity: 0.5},
@@ -262,31 +320,41 @@ export const styles = StyleSheet.create({
         minHeight: 48, borderRadius: radius.control, borderWidth: 1, paddingHorizontal: spacing.lg,
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm,
     },
-    buttonText: {fontSize: font.body, fontWeight: '600'},
+    buttonSm: {minHeight: 36, paddingHorizontal: spacing.md, paddingVertical: 6, gap: 6},
+    buttonText: {fontSize: font.body, fontWeight: '600', flexShrink: 1},
+    buttonTextSm: {fontSize: font.small},
     field: {gap: 6},
     label: {fontSize: font.small, fontWeight: '600', color: colors.text},
     input: {
         minHeight: 48, borderRadius: radius.control, borderWidth: 1, borderColor: colors.inputBorder, backgroundColor: colors.surface,
         paddingHorizontal: spacing.md, fontSize: font.body, color: colors.text,
     },
+    inputFocused: {borderColor: colors.primary},
+    inputSecure: {paddingRight: 48},
+    eye: {position: 'absolute', right: 0, top: 0, bottom: 0, width: 48, alignItems: 'center', justifyContent: 'center'},
     multiline: {minHeight: 96, paddingTop: spacing.md, textAlignVertical: 'top'},
     inputError: {borderColor: colors.danger},
     error: {fontSize: font.caption, color: colors.danger},
     hint: {fontSize: font.caption, color: colors.muted},
     badge: {
         flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', borderRadius: radius.control,
-        paddingHorizontal: spacing.sm, paddingVertical: 3,
+        paddingHorizontal: spacing.sm, paddingVertical: 3, maxWidth: '100%', flexShrink: 1,
     },
-    badgeText: {fontSize: font.caption, fontWeight: '600'},
-    sectionTitle: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+    badgeText: {fontSize: font.caption, fontWeight: '600', flexShrink: 1},
+    sectionTitle: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: spacing.sm},
+    sectionTitleText: {flexShrink: 1},
     state: {alignItems: 'center', justifyContent: 'center', gap: spacing.md, paddingVertical: spacing.xxl},
     center: {textAlign: 'center'},
     chips: {gap: spacing.sm, paddingVertical: 2},
+    chipsWrap: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs},
     chip: {
         borderRadius: radius.control, borderWidth: 1, borderColor: colors.inputBorder, backgroundColor: colors.surface,
-        paddingHorizontal: spacing.md, paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.md, paddingVertical: spacing.sm, maxWidth: '100%',
     },
+    chipWrapItem: {paddingHorizontal: spacing.md, paddingVertical: 6},
     chipActive: {backgroundColor: colors.slateDark, borderColor: colors.slateDark},
-    chipText: {fontSize: font.small, color: colors.text, fontWeight: '500'},
+    // Glass draws its own edge and fill; the solid chip border would sit on top of it.
+    chipGlass: {borderWidth: 0, backgroundColor: 'transparent', borderRadius: 999},
+    chipText: {fontSize: font.small, color: colors.text, fontWeight: '500', flexShrink: 1},
     chipTextActive: {color: colors.white},
 });

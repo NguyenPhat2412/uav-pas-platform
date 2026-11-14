@@ -13,25 +13,18 @@ import {colors, font} from '@/styles/tokens';
 export type SupportLauncherMode = 'auth' | 'customer' | 'admin';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password'];
-const CUSTOMER_TABS = [
-    '/customer/home',
-    '/customer/missions',
-    '/customer/weather',
-    '/customer/notifications',
-    '/customer/account',
-];
 const OPERATIONS_TABS = [
     '/operations/missions',
     '/operations/sar',
     '/operations/fleet',
     '/operations/weather',
-    '/operations/account',
 ];
 
 const glass = Platform.OS === 'ios' && isLiquidGlassAvailable() && isGlassEffectAPIAvailable();
-const SIZE = 56;
-// Stacked cleanly above AssistantLauncher (74 + 58 + 12 = 144) on tab screens; flush bottom-right on auth screens.
-const ABOVE_ASSISTANT = 144;
+const SIZE = 46;
+// On tab screens: level with AssistantLauncher (74 above the tab bar) and cleanly separated to its left so the pulse ring never overlaps.
+const ABOVE_TAB_BAR = 74;
+const BESIDE_ASSISTANT = 82;
 const AUTH_BOTTOM = 18;
 
 /**
@@ -49,7 +42,7 @@ export function PulsingSupportLauncher({mode}: { mode: SupportLauncherMode }) {
         mode === 'auth'
             ? AUTH_PATHS.includes(pathname)
             : mode === 'customer'
-                ? CUSTOMER_TABS.includes(pathname)
+                ? false
                 : canManage && OPERATIONS_TABS.includes(pathname);
 
     const publicSession = usePublicSupportSession(false);
@@ -58,7 +51,9 @@ export function PulsingSupportLauncher({mode}: { mode: SupportLauncherMode }) {
     const unreadCount =
         mode === 'admin'
             ? adminSummary.data?.unreadMessages ?? adminSummary.data?.unreadThreads ?? 0
-            : publicSession.unreadCount;
+            : mode === 'auth'
+                ? publicSession.unreadCount
+                : 0;
 
     const [pulse] = useState(() => new Animated.Value(0));
 
@@ -96,12 +91,12 @@ export function PulsingSupportLauncher({mode}: { mode: SupportLauncherMode }) {
         inputRange: [0, 0.7, 1],
         outputRange: [unreadCount > 0 ? 0.65 : 0.42, 0.16, 0],
     });
-    const bottomOffset = insets.bottom + (mode === 'auth' ? AUTH_BOTTOM : ABOVE_ASSISTANT);
+    const bottomOffset = insets.bottom + (mode === 'auth' ? AUTH_BOTTOM : ABOVE_TAB_BAR);
 
-    const emblem = <AppLogo size={34}/>;
+    const emblem = <AppLogo size={28}/>;
 
     return (
-        <View pointerEvents="box-none" style={[styles.wrap, {bottom: bottomOffset}]}>
+        <View pointerEvents="box-none" style={[styles.wrap, {bottom: bottomOffset}, mode !== 'auth' && styles.beside]}>
             <Animated.View
                 pointerEvents="none"
                 style={[
@@ -137,6 +132,7 @@ export function PulsingSupportLauncher({mode}: { mode: SupportLauncherMode }) {
 
 const styles = StyleSheet.create({
     wrap: {position: 'absolute', right: 16, width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center'},
+    beside: {right: BESIDE_ASSISTANT},
     pulseRing: {position: 'absolute', width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 2.5},
     pulseRingIdle: {borderColor: colors.primary, backgroundColor: colors.primaryLight},
     pulseRingAlert: {borderColor: colors.danger, backgroundColor: colors.dangerLight},

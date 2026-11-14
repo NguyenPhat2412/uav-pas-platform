@@ -1,34 +1,28 @@
 import React, {useState} from 'react';
-import {Linking, StyleSheet, View} from 'react-native';
-import {BellOff, BellRing, ExternalLink, Smartphone} from 'lucide-react-native';
-import {AppText, Badge, Button, Card, SectionTitle, TextField} from '@/components/ui';
+import {Linking, StyleSheet, Switch, View} from 'react-native';
+import {ExternalLink, Smartphone} from 'lucide-react-native';
+import {AppText, Button, Card} from '@/components/ui';
 import {useNotifications} from '@/hooks/notification/useNotifications';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {signInErrorText} from '@/forms/auth/sign-in-flow';
 import {colors, radius, spacing} from '@/styles/tokens';
 
-/** Device push notification registration card (native iOS/Android permissions + APNs/Expo Push endpoint). */
+/** Sleek, single-row device push notification toggle (native iOS/Android permissions + APNs/Expo Push). */
 export function PushDeviceCard() {
     const {t} = useI18n();
     const toast = useToast();
-    const {savedPushEndpoint, isSimulatedEndpoint, registerPushDevice, unregisterPushDevice} = useNotifications();
-    const [showCustom, setShowCustom] = useState(false);
-    const [customEndpoint, setCustomEndpoint] = useState('');
+    const {savedPushEndpoint, registerPushDevice, unregisterPushDevice} = useNotifications();
     const [permissionDenied, setPermissionDenied] = useState(false);
     const active = !!savedPushEndpoint;
+    const busy = registerPushDevice.isPending || unregisterPushDevice.isPending;
 
     const handleRegister = () => {
         setPermissionDenied(false);
-        const endpoint = showCustom && customEndpoint.trim() ? customEndpoint.trim() : undefined;
         registerPushDevice.mutate(
-            {endpoint},
+            {},
             {
-                onSuccess: () => {
-                    setCustomEndpoint('');
-                    setShowCustom(false);
-                    toast.show(t('mobile.push.registered'), 'success');
-                },
+                onSuccess: () => toast.show(t('mobile.push.registered'), 'success'),
                 onError: error => {
                     if ((error as { code?: string } | null)?.code === 'PUSH_PERMISSION_DENIED') {
                         setPermissionDenied(true);
@@ -49,96 +43,71 @@ export function PushDeviceCard() {
     };
 
     return (
-        <Card>
-            <SectionTitle
-                title={t('mobile.push.title')}
-                action={
-                    <Badge
-                        label={active ? t('mobile.push.active') : t('mobile.push.inactive')}
-                        background={active ? colors.slateDark : colors.slateLight}
-                        color={active ? colors.white : colors.textSecondary}
-                    />
-                }
-            />
-            <AppText variant="small">{t('mobile.push.hint')}</AppText>
-            {savedPushEndpoint ? (
-                <View style={styles.endpointBlock}>
-                    <View style={styles.endpointRow}>
-                        <Smartphone size={16} color={colors.slateDark}/>
-                        <AppText variant="caption" numberOfLines={1} selectable style={styles.flex}>
-                            {savedPushEndpoint}
-                        </AppText>
-                    </View>
-                    {isSimulatedEndpoint && (
-                        <AppText variant="caption">{t('mobile.push.simulatorNotice')}</AppText>
-                    )}
+        <Card style={styles.card}>
+            <View style={styles.row}>
+                <View style={[styles.iconBadge, active && styles.iconBadgeActive]}>
+                    <Smartphone size={15} color={active ? colors.primary : colors.slateDark}/>
                 </View>
-            ) : null}
+                <View style={styles.textBlock}>
+                    <AppText variant="small" numberOfLines={1} style={styles.title}>
+                        {t('mobile.push.title')}
+                    </AppText>
+                    <AppText variant="caption" numberOfLines={1}>
+                        {active ? t('mobile.push.compactActive') : t('mobile.push.compactOff')}
+                    </AppText>
+                </View>
+                <Switch
+                    style={styles.compactSwitch}
+                    value={active}
+                    onValueChange={on => (on ? handleRegister() : handleUnregister())}
+                    disabled={busy}
+                    trackColor={{true: colors.primary}}
+                    accessibilityLabel={t('mobile.push.title')}
+                />
+            </View>
             {permissionDenied && !active && (
-                <View style={styles.deniedBox}>
-                    <AppText variant="small" style={styles.deniedText}>
+                <View style={styles.deniedRow}>
+                    <AppText variant="caption" style={styles.deniedText} numberOfLines={2}>
                         {t('mobile.push.permissionDenied')}
                     </AppText>
                     <Button
-                        label={t('mobile.push.openSettings')}
-                        icon={ExternalLink}
+                        size="sm"
                         tone="secondary"
+                        icon={ExternalLink}
+                        label={t('mobile.push.openSettings')}
                         onPress={() => void Linking.openSettings()}
                     />
                 </View>
             )}
-            {showCustom && (
-                <TextField
-                    label={t('mobile.push.endpointLabel')}
-                    placeholder={t('mobile.push.endpointPlaceholder')}
-                    value={customEndpoint}
-                    onChangeText={setCustomEndpoint}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                />
-            )}
-            <View style={styles.actions}>
-                {!active ? (
-                    <>
-                        <Button
-                            label={t('mobile.push.enableButton')}
-                            icon={BellRing}
-                            loading={registerPushDevice.isPending}
-                            onPress={handleRegister}
-                            style={styles.flex}
-                        />
-                        <Button
-                            label={showCustom ? t('common.cancel') : t('mobile.push.customButton')}
-                            tone="ghost"
-                            onPress={() => setShowCustom(current => !current)}
-                        />
-                    </>
-                ) : (
-                    <Button
-                        label={t('mobile.push.disableButton')}
-                        icon={BellOff}
-                        tone="secondary"
-                        loading={unregisterPushDevice.isPending}
-                        onPress={handleUnregister}
-                    />
-                )}
-            </View>
         </Card>
     );
 }
 
 const styles = StyleSheet.create({
-    flex: {flex: 1},
-    endpointBlock: {gap: 4},
-    endpointRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: 2},
-    deniedBox: {
+    card: {paddingVertical: spacing.sm, paddingHorizontal: spacing.md, gap: spacing.xs},
+    row: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xs},
+    iconBadge: {
+        width: 30,
+        height: 30,
+        borderRadius: radius.control,
+        backgroundColor: colors.slateLight,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    iconBadgeActive: {backgroundColor: colors.primaryLight},
+    textBlock: {flex: 1, gap: 1},
+    title: {fontWeight: '600', color: colors.text},
+    compactSwitch: {transform: [{scaleX: 0.86}, {scaleY: 0.86}]},
+    deniedRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         gap: spacing.sm,
-        padding: spacing.md,
+        padding: spacing.sm,
         borderRadius: radius.control,
         backgroundColor: colors.warningLight,
-        borderWidth: 1,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: colors.warning,
     },
-    deniedText: {color: colors.warning},
-    actions: {flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap'},
+    deniedText: {flex: 1, color: colors.warning},
 });

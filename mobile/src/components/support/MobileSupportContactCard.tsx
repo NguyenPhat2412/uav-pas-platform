@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {ActivityIndicator, Linking, Pressable, StyleSheet, View} from 'react-native';
-import {Mail, MapPin, MessageCircle, PhoneCall} from 'lucide-react-native';
+import {ChevronDown, ChevronUp, Mail, MapPin, MessageCircle, PhoneCall} from 'lucide-react-native';
 import {AppText, Card, ScaledText, SectionTitle} from '@/components/ui';
 import {usePublicSiteInfo} from '@/hooks/support/usePublicSupportMobile';
 import {useI18n} from '@/providers/I18nContext';
@@ -17,10 +17,12 @@ function formatPhone(raw: string): string {
 /**
  * Direct contact channels card backed by PostgreSQL public site settings
  * (Zalo direct support, dispatch hotline, support email, and operations center address).
+ * Collapsed to one row of icon shortcuts by default so the chat below gets the screen; tap the row for the details.
  */
 export function MobileSupportContactCard() {
     const {t} = useI18n();
     const {data, isLoading} = usePublicSiteInfo();
+    const [open, setOpen] = useState(false);
 
     const zaloPhone = data?.zaloPhone?.trim() || '';
     const hotline = data?.dispatchHotline?.trim() || '';
@@ -56,9 +58,29 @@ export function MobileSupportContactCard() {
         void Linking.openURL(`mailto:${email}`);
     };
 
+    const Chevron = open ? ChevronUp : ChevronDown;
+    const shortcuts = [
+        zaloPhone ? {key: 'zalo', icon: MessageCircle, label: t('mobile.support.chatZalo'), onPress: handleOpenZalo, primary: true} : null,
+        hotline ? {key: 'call', icon: PhoneCall, label: t('mobile.support.callNow'), onPress: handleCallHotline, primary: false} : null,
+        email ? {key: 'mail', icon: Mail, label: t('mobile.support.sendEmail'), onPress: handleSendEmail, primary: false} : null,
+    ].filter(shortcut => shortcut !== null);
+
     return (
         <Card>
-            <SectionTitle title={t('mobile.support.contactSectionTitle')}/>
+            <View style={styles.header}>
+                <Pressable onPress={() => setOpen(value => !value)} accessibilityRole="button" accessibilityState={{expanded: open}}
+                           accessibilityLabel={t('mobile.support.contactSectionTitle')} style={styles.toggle}>
+                    <Chevron size={18} color={colors.muted}/>
+                    <AppText variant="title">{t('mobile.support.contactSectionTitle')}</AppText>
+                </Pressable>
+                {!open && shortcuts.map(({key, icon: Icon, label, onPress, primary}) => (
+                    <Pressable key={key} onPress={onPress} accessibilityRole="button" accessibilityLabel={label}
+                               style={({pressed}) => [styles.shortcut, primary ? styles.actionPrimary : styles.actionSecondary, pressed && styles.pressed]}>
+                        <Icon size={18} color={primary ? colors.white : colors.primary}/>
+                    </Pressable>
+                ))}
+            </View>
+            {open ? (<>
 
             {zaloPhone ? (
                 <View style={styles.channelRow}>
@@ -122,11 +144,15 @@ export function MobileSupportContactCard() {
                     </View>
                 </View>
             ) : null}
+            </>) : null}
         </Card>
     );
 }
 
 const styles = StyleSheet.create({
+    header: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
+    toggle: {flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 44},
+    shortcut: {width: 44, height: 44, borderRadius: 22, borderWidth: 1, alignItems: 'center', justifyContent: 'center'},
     loadingWrap: {paddingVertical: spacing.md, alignItems: 'center', justifyContent: 'center'},
     channelRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xs},
     iconBox: {

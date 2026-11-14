@@ -21,7 +21,8 @@ export default function CustomerLayout() {
                     <Stack.Screen name="mission/create" options={{title: t('missions.create'), presentation: 'modal'}}/>
                     <Stack.Screen name="mission/[id]/index" options={{title: t('mobile.nav.missionDetail')}}/>
                     <Stack.Screen name="mission/[id]/edit" options={{title: t('missionDetail.editDraft'), presentation: 'modal'}}/>
-                    <Stack.Screen name="services" options={{title: t('nav.services')}}/>
+                    <Stack.Screen name="weather" options={{title: t('mobile.nav.weather')}}/>
+                    <Stack.Screen name="notifications" options={{title: t('nav.notifications')}}/>
                     <Stack.Screen name="billing" options={{title: t('nav.billing')}}/>
                     <Stack.Screen name="invoices/[id]" options={{title: t('mobile.billing.payTitle')}}/>
                     <Stack.Screen name="profile" options={{title: t('mobile.account.profile')}}/>
@@ -32,11 +33,11 @@ export default function CustomerLayout() {
                     {/* The chat opens as a native sheet: pull it to full height or swipe it away. */}
                     <Stack.Screen name="assistant" options={{presentation: 'formSheet', sheetAllowedDetents: [0.75, 1], sheetGrabberVisible: true, headerTransparent: false}}/>
                     <Stack.Screen
-                        name="support"
+                        name="account-more"
                         options={{
-                            title: t('mobile.support.publicTitle'),
+                            title: t('mobile.account.moreTitle'),
                             presentation: 'formSheet',
-                            sheetAllowedDetents: [0.85, 1],
+                            sheetAllowedDetents: [0.6, 1],
                             sheetGrabberVisible: true,
                             headerTransparent: false,
                         }}

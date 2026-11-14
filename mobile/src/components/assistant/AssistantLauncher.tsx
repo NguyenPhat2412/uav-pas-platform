@@ -10,8 +10,7 @@ import {colors} from '@/styles/tokens';
 const TAB_ROOTS = [
     '/customer/home',
     '/customer/missions',
-    '/customer/weather',
-    '/customer/notifications',
+    '/customer/services',
     '/customer/account',
     '/operations/missions',
     '/operations/sar',
@@ -20,7 +19,7 @@ const TAB_ROOTS = [
     '/operations/account',
 ];
 const glass = Platform.OS === 'ios' && isLiquidGlassAvailable() && isGlassEffectAPIAvailable();
-const SIZE = 58;
+const SIZE = 46;
 // Clears the floating Liquid Glass tab bar (about 62 pt tall above the home indicator).
 const ABOVE_TAB_BAR = 74;
 
@@ -32,7 +31,7 @@ export function AssistantLauncher() {
     const insets = useSafeAreaInsets();
     if (!TAB_ROOTS.includes(pathname)) return null;
     const target = pathname.startsWith('/operations') ? '/operations/assistant' : '/customer/assistant';
-    const content = <AssistantMascot size={42}/>;
+    const content = <AssistantMascot size={34}/>;
     return (
         <View pointerEvents="box-none" style={[styles.wrap, {bottom: insets.bottom + ABOVE_TAB_BAR}]}>
             <Pressable onPress={() => router.push(target)} accessibilityRole="button" accessibilityLabel={t('admin.assistant.open')}

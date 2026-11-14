@@ -8,12 +8,12 @@ export interface LayoutMeta {
 }
 
 export const LAYOUT_META: LayoutMeta = {
-    segment: 'customer/(tabs)/notifications',
+    segment: 'customer/(tabs)/support',
     portal: 'customer',
     navigator: 'stack',
 };
 
-/** Expo Router stack layout for the customer notifications tab segment. */
+/** Expo Router stack layout for the customer contact and live support chat tab segment. */
 export default function Layout() {
-    return <TabStack titleKey="nav.notifications"/>;
+    return <TabStack titleKey="mobile.support.publicTitle"/>;
 }

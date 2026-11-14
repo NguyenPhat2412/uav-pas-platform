@@ -14,8 +14,9 @@ export type SupportTopic =
     | 'TRAINING_SOP'
     | 'GENERAL_SUPPORT';
 
-export type SupportSource = 'LIVE_WIDGET' | 'CONTACT_FORM';
+export type SupportSource = 'LIVE_WIDGET' | 'CONTACT_FORM' | 'CUSTOMER_PORTAL';
 export type SupportThreadSource = SupportSource;
+export type SupportWidgetMode = 'public' | 'portal';
 
 export type SupportThreadStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED';
 
@@ -188,4 +189,9 @@ export interface SupportStartDraft {
     contactInfo: string;
     topic: string;
     message: string;
+}
+
+export interface SupportAdminTypingState {
+    isTyping: boolean;
+    senderName: string | null;
 }

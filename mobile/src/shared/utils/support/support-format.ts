@@ -47,13 +47,15 @@ export const SUPPORT_STATUS_META: Record<
     },
     RESOLVED: {
         label: 'Đã hoàn tất',
-        badgeClass: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-        dotClass: 'bg-emerald-500',
+        badgeClass: 'bg-uav-blue-light text-uav-blue ring-blue-200',
+        dotClass: 'bg-uav-blue',
     },
 };
 
 export function formatSupportSource(source: SupportThreadSource): string {
-    return source === 'LIVE_WIDGET' ? 'Chat trực tuyến' : 'Biểu mẫu liên hệ';
+    if (source === 'CUSTOMER_PORTAL') return 'Cổng khách hàng';
+    if (source === 'LIVE_WIDGET') return 'Chat trực tuyến';
+    return 'Biểu mẫu liên hệ';
 }
 
 export function resolveContactHref(contactInfo: string): { href: string; isEmail: boolean } | null {

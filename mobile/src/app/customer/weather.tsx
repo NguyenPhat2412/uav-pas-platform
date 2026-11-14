@@ -9,13 +9,13 @@ export interface RouteMeta {
 }
 
 export const ROUTE_META: RouteMeta = {
-    id: 'customer.tabs.weather',
+    id: 'customer.weather',
     portal: 'customer',
     section: 'weather',
     requiresAuth: true,
 };
 
-/** Expo Router screen entry for the customer weather and airspace tab. */
+/** Expo Router screen entry for the customer weather and airspace screen, opened from the home weather card. */
 export default function CustomerWeatherRoute() {
     return <WeatherScreen/>;
 }

@@ -76,6 +76,7 @@ function OperationsMissionDetailContent({missionId}: { missionId: number }) {
         airspaceAndPermitCleared: checklistOverrides.airspaceAndPermitCleared ?? (preflightData?.recorded ? preflightData.airspaceAndPermitCleared : INITIAL_PREFLIGHT_CHECKLIST.airspaceAndPermitCleared),
     };
     const [uploadRole, setUploadRole] = useState<UploadRoleOption>('OUTPUT');
+    const [refreshing, setRefreshing] = useState(false);
     const upload = useMissionUpload(missionId, uploadRole);
     const download = useMediaDownload();
 
@@ -177,40 +178,56 @@ function OperationsMissionDetailContent({missionId}: { missionId: number }) {
             ? {latitude: mission.flightPlan!.centerLatitude!, longitude: mission.flightPlan!.centerLongitude!}
             : corridorPolygon.length >= 3 ? corridorPolygon[0] : flightCircle ? flightCircle.center : {latitude: 21.0285, longitude: 105.8542};
     const showMap = hasPoint || corridorPolygon.length >= 3 || flightCircle != null || hasLiveTelemetryPoint;
+    const showPermitCard =
+        (mission.permit != null && mission.permit.status !== 'NOT_REQUIRED') ||
+        !!mission.flightPlan?.permitSupport ||
+        !!airspaceCheck.data?.requiresPermit ||
+        ['CONFIRMED', 'RESOURCE_RESERVED', 'READY'].includes(mission.status);
+    const showPostFlightReport = mission.status === 'IN_PROGRESS' || mission.status === 'COMPLETED';
     const activeSim = (simulationsQuery.data ?? []).find(
         s => s.missionId === mission.id || s.missionCode === mission.code || (mission.uavId != null && s.uavId === mission.uavId),
     );
     const latestRun = missionRunsQuery.data?.[0];
     const simBusy = simActions.rehearseMission.isPending || simActions.command.isPending || simActions.stop.isPending;
 
-    return (
-        <Screen
-            onRefresh={() => void Promise.all([
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await Promise.all([
                 detail.refetch(), timeline.refetch(), media.refetch(), airspaceCheck.refetch(),
                 zonesQuery.refetch(), fleet.overview.refetch(), operatorsQuery.refetch(),
-            ])}
-            refreshing={detail.isRefetching}>
+            ]);
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
+    return (
+        <Screen onRefresh={() => void handleRefresh()} refreshing={refreshing}>
             <OperationsMissionOverviewCards
                 mission={mission} assignedStationLabel={assignedStationLabel} assignedUavLabel={assignedUavLabel}
                 assignedOperatorLabel={assignedOperatorLabel} liveTelemetry={liveTelemetry} finished={finished}
                 hasPoint={hasPoint} weather={weather.data} airspaceCheck={airspaceCheck.data}
             />
 
-            {showMap && (
-                <OperationsMissionMapCard
-                    mission={mission} zones={zonesQuery.data ?? []} corridorPolygon={corridorPolygon}
-                    flightCircle={flightCircle} hasPoint={hasPoint} hasLiveTelemetryPoint={hasLiveTelemetryPoint}
-                    liveTelemetry={liveTelemetry} assignedUavLabel={assignedUavLabel} mapCenter={mapCenter} onOpenMaps={openMaps}
+            {!finished && hasQuickActions && (
+                <OperationsLifecycleActionsCard
+                    controls={controls} takeoffAllowed={takeoffGate.allowed} evidence={evidence}
+                    confirmLoading={actions.confirm.isPending} acceptLoading={actions.accept.isPending}
+                    readyLoading={actions.ready.isPending} startLoading={actions.start.isPending}
+                    rejectLoading={actions.reject.isPending} conflictLoading={actions.reportConflict.isPending}
+                    completeLoading={actions.complete.isPending} failLoading={actions.fail.isPending} forceFailLoading={actions.forceFail.isPending}
+                    onConfirm={() => actions.confirm.mutate(mission.id, {onSuccess: () => toast.show(t('mobile.ops.actions.confirmedToast'), 'success'), onError: showError})}
+                    onAccept={() => actions.accept.mutate({id: mission.id, expectedVersion: mission.version}, {onSuccess: () => toast.show(t('mobile.ops.actions.acceptedToast'), 'success'), onError: showError})}
+                    onReady={() => actions.ready.mutate(mission.id, {onSuccess: () => toast.show(t('mobile.ops.actions.readyToast'), 'success'), onError: showError})}
+                    onStart={() => actions.start.mutate(mission.id, {onSuccess: () => toast.show(t('mobile.ops.actions.startedToast'), 'success'), onError: showError})}
+                    onReject={(reason, onDone) => actions.reject.mutate({id: mission.id, reason}, {onSuccess: () => { onDone(); toast.show(t('mobile.ops.actions.rejectedToast'), 'info'); }, onError: showError})}
+                    onConflict={(note, onDone) => actions.reportConflict.mutate({id: mission.id, note}, {onSuccess: () => { onDone(); toast.show(t('mobile.ops.actions.conflictToast'), 'info'); }, onError: showError})}
+                    onComplete={(completionNote, equipmentCondition, onDone) => actions.complete.mutate({id: mission.id, completionNote, equipmentCondition}, {onSuccess: () => { onDone(); toast.show(t('mobile.ops.actions.completedToast'), 'success'); }, onError: showError})}
+                    onFail={(failureReason, failureNotes, onDone) => actions.fail.mutate({id: mission.id, failureReason, notes: failureNotes}, {onSuccess: () => { onDone(); toast.show(t('mobile.ops.actions.failedToast'), 'info'); }, onError: showError})}
+                    onForceFail={(failureReason, failureNotes, onDone) => actions.forceFail.mutate({id: mission.id, reason: failureReason, notes: failureNotes}, {onSuccess: () => { onDone(); toast.show(t('mobile.ops.actions.failedToast'), 'info'); }, onError: showError})}
                 />
             )}
-
-            <MissionPermitCard
-                mission={mission} allowVerify mediaItems={media.data} onOpenScan={openFile} uploadScanLoading={upload.isPending}
-                onUploadScan={!finished && can('MISSION_MEDIA_UPLOAD') ? onUploaded => void pickMedia('library', 'DOCUMENT', onUploaded) : undefined}
-                upsertLoading={actions.upsertPermit.isPending} verifyLoading={actions.verifyPermit.isPending}
-                onUpsert={(data, onDone) => actions.upsertPermit.mutate({id: mission.id, data}, {onSuccess: () => { onDone(); toast.show(t('mobile.permit.savedToast'), 'success'); }, onError: showError})}
-                onVerify={(data, onDone) => actions.verifyPermit.mutate({id: mission.id, data}, {onSuccess: () => { onDone(); toast.show(data.approved ? t('mobile.permit.approvedToast') : t('mobile.permit.rejectedToast'), data.approved ? 'success' : 'info'); }, onError: showError})}
-            />
 
             {canDispatchResources && (
                 <OperationsDispatchResourceCard
@@ -251,9 +268,23 @@ function OperationsMissionDetailContent({missionId}: { missionId: number }) {
                 />
             )}
 
-            <MobileMission3DReplayCard missionId={mission.id} portal="operations"/>
-            <MobileMissionInspectionReportCard missionId={mission.id} portal="operations" onOpenMedia={openFile}/>
-            {mission.status === 'COMPLETED' && <OperationsCustomerReviewSummaryCard review={reviewQuery.data}/>}
+            {showMap && (
+                <OperationsMissionMapCard
+                    mission={mission} zones={zonesQuery.data ?? []} corridorPolygon={corridorPolygon}
+                    flightCircle={flightCircle} hasPoint={hasPoint} hasLiveTelemetryPoint={hasLiveTelemetryPoint}
+                    liveTelemetry={liveTelemetry} assignedUavLabel={assignedUavLabel} mapCenter={mapCenter} onOpenMaps={openMaps}
+                />
+            )}
+
+            {showPermitCard && (
+                <MissionPermitCard
+                    mission={mission} allowVerify mediaItems={media.data} onOpenScan={openFile} uploadScanLoading={upload.isPending}
+                    onUploadScan={!finished && can('MISSION_MEDIA_UPLOAD') ? onUploaded => void pickMedia('library', 'DOCUMENT', onUploaded) : undefined}
+                    upsertLoading={actions.upsertPermit.isPending} verifyLoading={actions.verifyPermit.isPending}
+                    onUpsert={(data, onDone) => actions.upsertPermit.mutate({id: mission.id, data}, {onSuccess: () => { onDone(); toast.show(t('mobile.permit.savedToast'), 'success'); }, onError: showError})}
+                    onVerify={(data, onDone) => actions.verifyPermit.mutate({id: mission.id, data}, {onSuccess: () => { onDone(); toast.show(data.approved ? t('mobile.permit.approvedToast') : t('mobile.permit.rejectedToast'), data.approved ? 'success' : 'info'); }, onError: showError})}
+                />
+            )}
 
             {can('UAV_VIEW') && (hasPoint || mission.flightPlan != null) && (
                 <OperationsRehearsalSimulationCard
@@ -265,24 +296,9 @@ function OperationsMissionDetailContent({missionId}: { missionId: number }) {
                 />
             )}
 
-            {!finished && hasQuickActions && (
-                <OperationsLifecycleActionsCard
-                    controls={controls} takeoffAllowed={takeoffGate.allowed} evidence={evidence}
-                    confirmLoading={actions.confirm.isPending} acceptLoading={actions.accept.isPending}
-                    readyLoading={actions.ready.isPending} startLoading={actions.start.isPending}
-                    rejectLoading={actions.reject.isPending} conflictLoading={actions.reportConflict.isPending}
-                    completeLoading={actions.complete.isPending} failLoading={actions.fail.isPending} forceFailLoading={actions.forceFail.isPending}
-                    onConfirm={() => actions.confirm.mutate(mission.id, {onSuccess: () => toast.show(t('mobile.ops.actions.confirmedToast'), 'success'), onError: showError})}
-                    onAccept={() => actions.accept.mutate({id: mission.id, expectedVersion: mission.version}, {onSuccess: () => toast.show(t('mobile.ops.actions.acceptedToast'), 'success'), onError: showError})}
-                    onReady={() => actions.ready.mutate(mission.id, {onSuccess: () => toast.show(t('mobile.ops.actions.readyToast'), 'success'), onError: showError})}
-                    onStart={() => actions.start.mutate(mission.id, {onSuccess: () => toast.show(t('mobile.ops.actions.startedToast'), 'success'), onError: showError})}
-                    onReject={(reason, onDone) => actions.reject.mutate({id: mission.id, reason}, {onSuccess: () => { onDone(); toast.show(t('mobile.ops.actions.rejectedToast'), 'info'); }, onError: showError})}
-                    onConflict={(note, onDone) => actions.reportConflict.mutate({id: mission.id, note}, {onSuccess: () => { onDone(); toast.show(t('mobile.ops.actions.conflictToast'), 'info'); }, onError: showError})}
-                    onComplete={(completionNote, equipmentCondition, onDone) => actions.complete.mutate({id: mission.id, completionNote, equipmentCondition}, {onSuccess: () => { onDone(); toast.show(t('mobile.ops.actions.completedToast'), 'success'); }, onError: showError})}
-                    onFail={(failureReason, failureNotes, onDone) => actions.fail.mutate({id: mission.id, failureReason, notes: failureNotes}, {onSuccess: () => { onDone(); toast.show(t('mobile.ops.actions.failedToast'), 'info'); }, onError: showError})}
-                    onForceFail={(failureReason, failureNotes, onDone) => actions.forceFail.mutate({id: mission.id, reason: failureReason, notes: failureNotes}, {onSuccess: () => { onDone(); toast.show(t('mobile.ops.actions.failedToast'), 'info'); }, onError: showError})}
-                />
-            )}
+            <MobileMission3DReplayCard missionId={mission.id} portal="operations"/>
+            {showPostFlightReport && <MobileMissionInspectionReportCard missionId={mission.id} portal="operations" onOpenMedia={openFile}/>}
+            {mission.status === 'COMPLETED' && <OperationsCustomerReviewSummaryCard review={reviewQuery.data}/>}
 
             <OperationsMissionMediaAndTimelineCards
                 canViewMedia={can('MISSION_MEDIA_VIEW')} canUploadMedia={can('MISSION_MEDIA_UPLOAD')} canViewTimeline={can('MISSION_TIMELINE_VIEW')}

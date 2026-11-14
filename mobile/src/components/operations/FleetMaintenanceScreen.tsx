@@ -42,6 +42,7 @@ export function FleetMaintenanceScreen() {
     const [tab, setTab] = useState<FleetTab>('uavs');
     const [orderFilter, setOrderFilter] = useState<OrderFilter>('');
     const [selectedProfile, setSelectedProfile] = useState<UavHealthProfile | null>(null);
+    const [refreshing, setRefreshing] = useState(false);
 
     const {overview, telemetry, telemetryByUavId} = useFleetOverview();
     const ordersQuery = useMaintenanceOrders(orderFilter);
@@ -75,20 +76,18 @@ export function FleetMaintenanceScreen() {
 
     const showError = (error: unknown) => toast.show(missionFormError(error, t), 'error');
 
-    const refreshing =
-        tab === 'maintenance'
-            ? ordersQuery.isRefetching
-            : tab === 'simulation'
-                ? simulationsQuery.isRefetching || simulationRunsQuery.isRefetching
-                : overview.isRefetching || telemetry.isRefetching;
-
-    const handleRefresh = () => {
-        if (tab === 'maintenance') {
-            void ordersQuery.refetch();
-        } else if (tab === 'simulation') {
-            void Promise.all([simulationsQuery.refetch(), simulationRunsQuery.refetch()]);
-        } else {
-            void Promise.all([overview.refetch(), telemetry.refetch()]);
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            if (tab === 'maintenance') {
+                await ordersQuery.refetch();
+            } else if (tab === 'simulation') {
+                await Promise.all([simulationsQuery.refetch(), simulationRunsQuery.refetch()]);
+            } else {
+                await Promise.all([overview.refetch(), telemetry.refetch()]);
+            }
+        } finally {
+            setRefreshing(false);
         }
     };
 
@@ -103,7 +102,7 @@ export function FleetMaintenanceScreen() {
                         <HeaderIconButton
                             icon={Bell}
                             label={t('nav.notifications')}
-                            dot={unreadCount > 0}
+                            count={unreadCount}
                             onPress={() => router.push('/operations/notifications')}
                         />
                     ),
@@ -114,7 +113,7 @@ export function FleetMaintenanceScreen() {
                 contentInsetAdjustmentBehavior="automatic"
                 contentContainerStyle={styles.content}
                 keyboardShouldPersistTaps="handled"
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary}/>}>
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void handleRefresh()} tintColor={colors.primary}/>}>
                 <ChipGroup<FleetTab>
                     value={tab}
                     onChange={setTab}
@@ -128,45 +127,27 @@ export function FleetMaintenanceScreen() {
 
                 {tab === 'uavs' && (
                     <>
-                        <Card>
+                        <Card style={styles.summaryCard}>
                             <SectionTitle title={t('mobile.ops.fleet.summaryTitle')}/>
                             <View style={styles.summaryGrid}>
                                 <View style={styles.summaryCell}>
+                                    <AppText variant="title" style={styles.summaryValue}>{fleetStats.total}</AppText>
                                     <AppText variant="caption">{t('mobile.ops.fleet.stats.total')}</AppText>
-                                    <AppText variant="heading">{fleetStats.total}</AppText>
                                 </View>
                                 <View style={styles.summaryCell}>
+                                    <AppText variant="title" style={styles.summaryValue}>{fleetStats.available}</AppText>
                                     <AppText variant="caption">{t('mobile.ops.fleet.stats.available')}</AppText>
-                                    <AppText variant="heading">{fleetStats.available}</AppText>
                                 </View>
                                 <View style={styles.summaryCell}>
+                                    <AppText variant="title" style={styles.summaryValue}>{fleetStats.active}</AppText>
                                     <AppText variant="caption">{t('mobile.ops.fleet.stats.active')}</AppText>
-                                    <AppText variant="heading">{fleetStats.active}</AppText>
                                 </View>
                                 <View style={styles.summaryCell}>
+                                    <AppText variant="title" style={styles.summaryValue}>{fleetStats.maintenance}</AppText>
                                     <AppText variant="caption">{t('mobile.ops.fleet.stats.maintenance')}</AppText>
-                                    <AppText variant="heading">{fleetStats.maintenance}</AppText>
                                 </View>
                             </View>
                         </Card>
-
-                        <MobileUav3DViewerCard
-                            key={selectedProfile?.uavId ?? 'default-uav'}
-                            serialNumber={selectedProfile?.serialNumber ?? uavs[0]?.serialNumber ?? 'UAV-350-RTK'}
-                            modelName={selectedProfile?.model ?? uavs[0]?.model ?? 'DJI Matrice 350 RTK'}
-                            airframeClass={selectedProfile?.airframeClass ?? 'QUADCOPTER_RTK'}
-                            altitudeM={activeSample?.altitudeAglMeters ?? 85}
-                            speedMps={activeSample?.groundSpeedMs ?? 12.4}
-                            batteryPct={activeSample?.batteryPct ?? selectedProfile?.batteryStateOfHealthPct ?? 88}
-                            yawDeg={activeSample?.headingDeg ?? 45}
-                        />
-
-                        {can('UAV_VIEW') && (
-                            <MobileUavHealthAnalyticsCard
-                                selectedUavId={selectedProfile?.uavId}
-                                onSelectUav={setSelectedProfile}
-                            />
-                        )}
 
                         {overview.isPending ? (
                             <LoadingState label={t('mobile.ops.fleet.loading')}/>
@@ -190,6 +171,24 @@ export function FleetMaintenanceScreen() {
                                 />
                             ))
                         )}
+
+                        {can('UAV_VIEW') && (
+                            <MobileUavHealthAnalyticsCard
+                                selectedUavId={selectedProfile?.uavId}
+                                onSelectUav={setSelectedProfile}
+                            />
+                        )}
+
+                        <MobileUav3DViewerCard
+                            key={selectedProfile?.uavId ?? 'default-uav'}
+                            serialNumber={selectedProfile?.serialNumber ?? uavs[0]?.serialNumber ?? 'UAV-350-RTK'}
+                            modelName={selectedProfile?.model ?? uavs[0]?.model ?? 'DJI Matrice 350 RTK'}
+                            airframeClass={selectedProfile?.airframeClass ?? 'QUADCOPTER_RTK'}
+                            altitudeM={activeSample?.altitudeAglMeters ?? 85}
+                            speedMps={activeSample?.groundSpeedMs ?? 12.4}
+                            batteryPct={activeSample?.batteryPct ?? selectedProfile?.batteryStateOfHealthPct ?? 88}
+                            yawDeg={activeSample?.headingDeg ?? 45}
+                        />
                     </>
                 )}
 
@@ -336,13 +335,19 @@ export function FleetMaintenanceScreen() {
 const styles = StyleSheet.create({
     screen: {flex: 1, backgroundColor: colors.canvas},
     content: {padding: spacing.lg, gap: spacing.md, flexGrow: 1, width: '100%', maxWidth: CONTENT_WIDTH, alignSelf: 'center'},
+    summaryCard: {padding: spacing.lg, gap: spacing.sm},
     summaryGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm},
     summaryCell: {
-        flexBasis: '45%',
+        flexBasis: '46%',
+        minWidth: 140,
         flexGrow: 1,
         backgroundColor: colors.slateLight,
+        borderWidth: 1,
+        borderColor: colors.border,
         borderRadius: radius.control,
-        padding: spacing.sm,
+        paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.md,
         gap: 2,
     },
+    summaryValue: {color: colors.primary},
 });

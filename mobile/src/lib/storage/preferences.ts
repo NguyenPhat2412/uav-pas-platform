@@ -81,3 +81,23 @@ export async function savePushEndpoint(endpoint: string | null): Promise<void> {
         // Best-effort local persistence.
     }
 }
+
+const QUERY_CACHE_PREFIX = 'uav-pas:query-cache:';
+
+/** The saved React Query snapshot for one user (see lib/storage/query-cache.ts). */
+export async function readSavedQueryCache(userId: number): Promise<string | null> {
+    try {
+        return await AsyncStorage.getItem(QUERY_CACHE_PREFIX + userId);
+    } catch {
+        return null;
+    }
+}
+
+export async function saveQueryCache(userId: number, snapshot: string | null): Promise<void> {
+    try {
+        if (snapshot == null) await AsyncStorage.removeItem(QUERY_CACHE_PREFIX + userId);
+        else await AsyncStorage.setItem(QUERY_CACHE_PREFIX + userId, snapshot);
+    } catch {
+        // A cache that cannot be written only costs a network fetch next launch.
+    }
+}

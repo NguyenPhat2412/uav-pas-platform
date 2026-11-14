@@ -126,6 +126,7 @@ export function PreflightSafetyCard({
 
             {canSign && (
                 <Button
+                    size="sm"
                     label={signing ? t('capabilities.preflight.signing') : t('capabilities.preflight.signButton')}
                     icon={ShieldCheck}
                     tone="secondary"

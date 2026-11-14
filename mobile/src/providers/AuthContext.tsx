@@ -1,9 +1,10 @@
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
+import * as SplashScreen from 'expo-splash-screen';
 import {queryKeys} from '@/shared/lib/query';
 import {canUsePortal} from '@/shared/utils/auth/portal';
 import type {AuthResponse, UserResponse} from '@/shared/types/auth/auth.types';
-import {authService, permissionService} from '@/api/auth/auth.api';
+import {authService, permissionService, type AppleLoginPayload} from '@/api/auth/auth.api';
 import {notificationsService} from '@/api/notification/notifications.api';
 import {ApiError} from '@/lib/api/client';
 import {onSessionEnded, restoreSession, sessionStore} from '@/lib/api/session';
@@ -14,6 +15,7 @@ import {
     savePushEndpoint,
     type PortalPreference,
 } from '@/lib/storage/preferences';
+import {clearQueryCache, persistQueryCache, restoreQueryCache} from '@/lib/storage/query-cache';
 import {resolveMobilePortal} from '@/utils/operations/portal-routing';
 
 /** loading: reading the Keychain / asking /auth/me. unreachable: a session exists but the API could not be reached. */
@@ -30,6 +32,7 @@ interface AuthValue {
     /** Resolves to the response; when mfaRequired is set the caller continues with the code screen. */
     login: (usernameOrEmail: string, password: string) => Promise<AuthResponse>;
     loginWithGoogle: (idToken: string) => Promise<AuthResponse>;
+    loginWithApple: (payload: AppleLoginPayload) => Promise<AuthResponse>;
     /** Stores the tokens of a finished sign-in (password, 2FA or email verification) and opens the portal. */
     completeAuth: (response: AuthResponse) => Promise<void>;
     logout: () => Promise<void>;
@@ -37,7 +40,13 @@ interface AuthValue {
     refreshUser: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthValue | undefined>(undefined);
+// Preserve the single Context instance across Metro Fast Refresh so HMR in auth/session modules never splits Provider & consumers.
+const globalWithAuth = globalThis as typeof globalThis & {
+    __UAV_PAS_AUTH_CONTEXT__?: React.Context<AuthValue | undefined>;
+};
+const AuthContext =
+    globalWithAuth.__UAV_PAS_AUTH_CONTEXT__ ??
+    (globalWithAuth.__UAV_PAS_AUTH_CONTEXT__ = createContext<AuthValue | undefined>(undefined));
 
 export function AuthProvider({children}: { children: ReactNode }) {
     const client = useQueryClient();
@@ -57,6 +66,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
     });
 
     const endSession = useCallback(() => {
+        void clearQueryCache(identity.current);
         identity.current = null;
         void client.cancelQueries();
         client.clear();
@@ -81,6 +91,8 @@ export function AuthProvider({children}: { children: ReactNode }) {
                 const me = await authService.me();
                 if (!active) return;
                 identity.current = me.id;
+                await restoreQueryCache(client, me.id);
+                if (!active) return;
                 setUser(me);
                 setStatus('signed-in');
             } catch (error) {
@@ -94,14 +106,31 @@ export function AuthProvider({children}: { children: ReactNode }) {
         return () => {
             active = false;
         };
-    }, [attempt]);
+    }, [attempt, client]);
+
+    // The native splash stays up until we know where to send the user; on a slow network it gives way after 1.5 s to
+    // AppSplash's 3D loader so the launch never looks frozen.
+    useEffect(() => {
+        const hide = () => void SplashScreen.hideAsync().catch(() => undefined);
+        if (status !== 'loading') return hide();
+        const timer = setTimeout(hide, 1500);
+        return () => clearTimeout(timer);
+    }, [status]);
+
+    useEffect(() => {
+        if (status !== 'signed-in' || user?.id == null) return;
+        return persistQueryCache(client, user.id);
+    }, [status, user?.id, client]);
 
     const completeAuth = useCallback(async (response: AuthResponse) => {
         if (response.mfaRequired || !response.accessToken || !response.refreshToken || !response.user) {
             throw new Error('Sign-in is not finished yet');
         }
         // Another account's cached data must never show for this one.
-        if (identity.current !== response.user.id) client.clear();
+        if (identity.current !== response.user.id) {
+            client.clear();
+            await restoreQueryCache(client, response.user.id);
+        }
         const portalPref = await readSavedPortal();
         setSavedPortal(portalPref);
         await sessionStore.save({accessToken: response.accessToken, refreshToken: response.refreshToken});
@@ -124,7 +153,13 @@ export function AuthProvider({children}: { children: ReactNode }) {
 
     const loginWithGoogle = useCallback(async (idToken: string) => {
         const response = await authService.google(idToken);
-        if (!response.mfaRequired) await completeAuth(response);
+        if (!response.mfaRequired && response.mfaMethod !== 'PENDING_APPROVAL') await completeAuth(response);
+        return response;
+    }, [completeAuth]);
+
+    const loginWithApple = useCallback(async (payload: AppleLoginPayload) => {
+        const response = await authService.loginWithApple(payload);
+        if (!response.mfaRequired && response.mfaMethod !== 'PENDING_APPROVAL') await completeAuth(response);
         return response;
     }, [completeAuth]);
 
@@ -168,6 +203,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
             switchPortal,
             login,
             loginWithGoogle,
+            loginWithApple,
             completeAuth,
             logout,
             refreshUser,
@@ -176,9 +212,13 @@ export function AuthProvider({children}: { children: ReactNode }) {
                 setAttempt(count => count + 1);
             },
         };
-    }, [status, user, permissionQuery.data, permissionQuery.error, activePortal, switchPortal, login, loginWithGoogle, completeAuth, logout, refreshUser]);
+    }, [status, user, permissionQuery.data, permissionQuery.error, activePortal, switchPortal, login, loginWithGoogle, loginWithApple, completeAuth, logout, refreshUser]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useOptionalAuth(): AuthValue | undefined {
+    return useContext(AuthContext);
 }
 
 export function useAuth(): AuthValue {

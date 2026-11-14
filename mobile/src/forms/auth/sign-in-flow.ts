@@ -64,3 +64,42 @@ export function signInErrorText(error: unknown, t: (key: string) => string): str
     }
     return message && message.trim() ? message : t('customerAuth.errors.default');
 }
+
+/** Joins Apple's first-sign-in givenName and familyName tokens into a clean display name, or undefined when absent. */
+export function formatAppleFullName(
+    fullName?: { givenName?: string | null; familyName?: string | null } | null,
+): string | undefined {
+    const joined = [fullName?.givenName?.trim(), fullName?.familyName?.trim()].filter(Boolean).join(' ').trim();
+    return joined || undefined;
+}
+
+/** True when the user dismissed Apple's native authorization sheet without completing sign-in. */
+export function isAppleSignInCanceled(error: unknown): boolean {
+    const code = (error as { code?: string } | null)?.code;
+    return code === 'ERR_REQUEST_CANCELED' || code === 'ERR_CANCELED';
+}
+
+/** True when the backend answered 503 APPLE_AUTH_DISABLED because Apple credentials are not configured yet. */
+export function isAppleAuthDisabledError(error: unknown): boolean {
+    return (error as { code?: string } | null)?.code === 'APPLE_AUTH_DISABLED';
+}
+
+/** Validates user inputs against the live Admin-configured account deletion policy (zero hardcoded rules). */
+export function canSubmitAccountDeletion(
+    policy: {
+        enabled: boolean;
+        eligible: boolean;
+        hasPassword: boolean;
+        requirePassword: boolean;
+        requireReason: boolean;
+        confirmationPhrase: string;
+    } | null | undefined,
+    draft: { phrase: string; currentPassword: string; reason: string },
+): boolean {
+    if (!policy || !policy.enabled || !policy.eligible) return false;
+    const expectedPhrase = policy.confirmationPhrase.trim();
+    if (expectedPhrase && draft.phrase.trim() !== expectedPhrase) return false;
+    if (policy.requirePassword && policy.hasPassword && !draft.currentPassword) return false;
+    if (policy.requireReason && !draft.reason.trim()) return false;
+    return true;
+}

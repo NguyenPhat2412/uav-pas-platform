@@ -1,15 +1,13 @@
 import React, {useState} from 'react';
-import {StyleSheet} from 'react-native';
 import {useRouter} from 'expo-router';
 import {KeyRound, Mail} from 'lucide-react-native';
-import {AppText, Button, TextField} from '@/components/ui';
+import {Button, KeyboardAnchor, TextField} from '@/components/ui';
 import {AuthLayout} from '@/components/auth/AuthLayout';
 import {useAuthFlows} from '@/hooks/auth/useAuthFlows';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {authFieldErrors, type ResetPasswordFormDraft} from '@/shared/forms/auth/auth-form';
 import {normalizeCode, signInErrorText} from '@/forms/auth/sign-in-flow';
-import {colors} from '@/styles/tokens';
 
 /** Step 1 asks for the email; step 2 takes the emailed code and the new password. */
 export function ForgotPasswordScreen() {
@@ -20,22 +18,19 @@ export function ForgotPasswordScreen() {
     const [email, setEmail] = useState('');
     const [draft, setDraft] = useState<ResetPasswordFormDraft | null>(null);
     const [fields, setFields] = useState<Record<string, string>>({});
-    const [error, setError] = useState<string | null>(null);
 
     const requestCode = () => {
-        setError(null);
         forgotPassword.mutate(email, {
             onSuccess: challenge => {
                 toast.show(challenge.message, 'info');
                 setDraft({challengeToken: challenge.challengeToken, email: challenge.email || email, code: '', newPassword: '', confirmPassword: ''});
             },
-            onError: failure => setError(signInErrorText(failure, t)),
+            onError: failure => toast.show(signInErrorText(failure, t), 'error'),
         });
     };
 
     const reset = () => {
         if (!draft) return;
-        setError(null);
         setFields({});
         resetPassword.mutate(draft, {
             onSuccess: result => {
@@ -45,7 +40,7 @@ export function ForgotPasswordScreen() {
             onError: failure => {
                 const rejected = authFieldErrors(failure, ['code', 'newPassword', 'confirmPassword']);
                 if (rejected) setFields(rejected.fields);
-                else setError(signInErrorText(failure, t));
+                else toast.show(signInErrorText(failure, t), 'error');
             },
         });
     };
@@ -55,8 +50,7 @@ export function ForgotPasswordScreen() {
             <AuthLayout title={t('mobile.auth.forgotTitle')} subtitle={t('mobile.auth.forgotHint')}>
                 <TextField label={t('auth.email')} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address"
                            autoComplete="email" textContentType="emailAddress" onSubmitEditing={requestCode}/>
-                {error ? <AppText variant="small" style={styles.error}>{error}</AppText> : null}
-                <Button label={t('mobile.auth.sendCode')} icon={Mail} loading={forgotPassword.isPending} onPress={requestCode}/>
+                <KeyboardAnchor><Button label={t('mobile.auth.sendCode')} icon={Mail} loading={forgotPassword.isPending} onPress={requestCode}/></KeyboardAnchor>
                 <Button tone="ghost" label={t('customerAuth.backToLogin')} onPress={() => router.replace('/login')}/>
             </AuthLayout>
         );
@@ -70,13 +64,8 @@ export function ForgotPasswordScreen() {
                        onChangeText={value => setDraft({...draft, newPassword: value})} error={fields.newPassword}/>
             <TextField label={t('mobile.auth.confirmPassword')} value={draft.confirmPassword} secureTextEntry textContentType="newPassword"
                        onChangeText={value => setDraft({...draft, confirmPassword: value})} error={fields.confirmPassword}/>
-            {error ? <AppText variant="small" style={styles.error}>{error}</AppText> : null}
-            <Button label={t('mobile.auth.savePassword')} icon={KeyRound} loading={resetPassword.isPending} onPress={reset}/>
+            <KeyboardAnchor><Button label={t('mobile.auth.savePassword')} icon={KeyRound} loading={resetPassword.isPending} onPress={reset}/></KeyboardAnchor>
             <Button tone="ghost" label={t('customerAuth.backToLogin')} onPress={() => router.replace('/login')}/>
         </AuthLayout>
     );
 }
-
-const styles = StyleSheet.create({
-    error: {color: colors.danger},
-});

@@ -86,32 +86,40 @@ export function OperationsRehearsalSimulationCard({
                         <View style={styles.actions}>
                             {activeSim.mode === 'HOLD' ? (
                                 <Button
+                                    size="sm"
                                     label={t('simulation.resume')}
                                     icon={Play}
                                     disabled={simBusy}
                                     onPress={() => onCommand(activeSim.uavId, 'RESUME')}
+                                    style={styles.simBtn}
                                 />
                             ) : (
                                 <Button
+                                    size="sm"
                                     label={t('simulation.pause')}
                                     icon={Pause}
                                     tone="secondary"
                                     disabled={simBusy || !['MISSION', 'RETURN_TO_HOME'].includes(activeSim.mode)}
                                     onPress={() => onCommand(activeSim.uavId, 'PAUSE')}
+                                    style={styles.simBtn}
                                 />
                             )}
                             <Button
+                                size="sm"
                                 label={t('simulation.rth')}
                                 icon={Home}
                                 tone="secondary"
                                 disabled={simBusy || ['RETURN_TO_HOME', 'LANDING', 'LANDED'].includes(activeSim.mode)}
                                 onPress={() => onCommand(activeSim.uavId, 'RETURN_TO_HOME')}
+                                style={styles.simBtn}
                             />
                             <Button
+                                size="sm"
                                 label={t('simulation.stop')}
                                 tone="ghost"
                                 disabled={simBusy}
                                 onPress={() => onStop(activeSim.uavId)}
+                                style={styles.simStopBtn}
                             />
                         </View>
                     )}
@@ -129,6 +137,7 @@ export function OperationsRehearsalSimulationCard({
                     ) : null}
                     {canFlySim && (
                         <Button
+                            size="sm"
                             label={t('simulation.rehearseAction')}
                             icon={Radio}
                             tone="secondary"
@@ -171,7 +180,9 @@ const styles = StyleSheet.create({
     },
     actions: {
         flexDirection: 'row',
-        gap: spacing.sm,
+        gap: spacing.xs,
         flexWrap: 'wrap',
     },
+    simBtn: {flexGrow: 1, flexBasis: '45%', minWidth: 132},
+    simStopBtn: {flexGrow: 1, flexBasis: '45%', minWidth: 132, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface},
 });

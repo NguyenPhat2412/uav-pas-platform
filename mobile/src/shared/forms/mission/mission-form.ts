@@ -113,7 +113,16 @@ export function missionFormError(error: unknown, t?: Translate): string {
         return message(t, rawCode, MISSION_AIRSPACE_ERROR_FALLBACKS[rawCode]);
     }
     const status = error && typeof error === 'object' && 'status' in error ? error.status : undefined;
-    if (status === 400) return message(t, 'save400', 'Thông tin chưa hợp lệ. Kiểm tra các trường và ngày yêu cầu rồi thử lại.');
+    if (status === 400) {
+        const fields = missionFieldErrors(error);
+        const firstFieldMessage = fields ? Object.values(fields).find((v): v is string => typeof v === 'string' && v.trim().length > 0) : undefined;
+        if (firstFieldMessage) return firstFieldMessage.trim();
+        const detail = typeof structured?.message === 'string' ? structured.message.trim() : '';
+        if (detail && detail.length <= 180 && !/Exception|SQL|SELECT|INSERT|UPDATE|DELETE|org\.|java\.|Validation failed|Bad Request|^HTTP\s*\d+/i.test(detail)) {
+            return detail;
+        }
+        return message(t, 'save400', 'Thông tin chưa hợp lệ. Kiểm tra các trường và ngày yêu cầu rồi thử lại.');
+    }
     if (status === 401) return message(t, 'save401', 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
     if (status === 403) return message(t, 'save403', 'Bạn không có quyền lưu yêu cầu này hoặc quyền của bạn đã thay đổi.');
     if (status === 404) return message(t, 'save404', 'Không tìm thấy yêu cầu hoặc dịch vụ đã chọn. Vui lòng tải lại thông tin.');

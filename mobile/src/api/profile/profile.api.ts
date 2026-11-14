@@ -22,10 +22,40 @@ export const avatarService = {
     remove: () => apiClient.delete<void>(API_ROUTES.users.avatar),
 };
 
+export interface AccountDeletionPolicy {
+    enabled: boolean;
+    eligible: boolean;
+    ineligibleReasonCode: string | null;
+    ineligibleReason: string | null;
+    hasPassword: boolean;
+    requirePassword: boolean;
+    requireReason: boolean;
+    confirmationPhrase: string;
+    mode: 'ANONYMIZE' | 'HARD_DELETE';
+    blockActiveMissions: boolean;
+    blockUnpaidInvoices: boolean;
+    activeMissionCount: number;
+    unpaidInvoiceCount: number;
+    noticeMessage: string;
+}
+
+export interface DeleteOwnAccountPayload {
+    currentPassword?: string;
+    confirmationPhrase: string;
+    reason?: string;
+}
+
 export const profileService = {
     get: (signal?: AbortSignal) => apiClient.get<CustomerProfile>(API_ROUTES.users.profile, {signal}),
     update: (fields: ProfileFields, revision: string) =>
         apiClient.patch<CustomerProfile>(API_ROUTES.users.profile, profilePayload(fields, revision)),
     changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) =>
         apiClient.post<void>(API_ROUTES.users.profilePassword, {currentPassword, newPassword, confirmPassword}),
+    getDeletionPolicy: (signal?: AbortSignal) => apiClient.get<AccountDeletionPolicy>(API_ROUTES.users.deletionPolicy, {signal}),
+    deleteOwnAccount: (payload: DeleteOwnAccountPayload) =>
+        apiClient.post<{ message: string }>(API_ROUTES.users.deleteOwnAccount, {
+            confirmationPhrase: payload.confirmationPhrase.trim(),
+            ...(payload.currentPassword ? {currentPassword: payload.currentPassword} : {}),
+            ...(payload.reason?.trim() ? {reason: payload.reason.trim()} : {}),
+        }),
 };

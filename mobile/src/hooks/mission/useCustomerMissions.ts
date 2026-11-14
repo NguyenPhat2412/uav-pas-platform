@@ -111,11 +111,14 @@ export function useMissionActions() {
         update: useMutation({
             mutationFn: ({id, data, expectedVersion}: { id: number; data: MissionInput; expectedVersion: number }) =>
                 customerMissionService.update(id, data, expectedVersion),
-            onSettled: (_data, _error, {id}) => refresh(id),
+            onSuccess: (_data, {id}) => refresh(id),
+            onError: (err, {id}) => {
+                if ((err as { status?: unknown } | null)?.status === 409) void refresh(id);
+            },
             retry: false,
         }),
-        submit: useMutation({mutationFn: (id: number) => customerMissionService.submit(id), onSettled: (_d, _e, id) => refresh(id), retry: false}),
-        cancel: useMutation({mutationFn: (id: number) => customerMissionService.cancel(id), onSettled: (_d, _e, id) => refresh(id), retry: false}),
+        submit: useMutation({mutationFn: (id: number) => customerMissionService.submit(id), onSuccess: (_d, id) => refresh(id), retry: false}),
+        cancel: useMutation({mutationFn: (id: number) => customerMissionService.cancel(id), onSuccess: (_d, id) => refresh(id), retry: false}),
         clone: useMutation({
             mutationFn: (id: number) => customerMissionService.clone(id),
             onSuccess: data => refresh(data.id),
@@ -123,24 +126,24 @@ export function useMissionActions() {
         }),
         createFlightSite: useMutation({
             mutationFn: (data: SavedFlightSiteUpsertInput) => customerMissionService.createFlightSite(data),
-            onSettled: () => client.invalidateQueries({queryKey: [...key, 'flight-sites']}),
+            onSuccess: () => client.invalidateQueries({queryKey: [...key, 'flight-sites']}),
             retry: false,
         }),
         deleteFlightSite: useMutation({
             mutationFn: (id: number) => customerMissionService.deleteFlightSite(id),
-            onSettled: () => client.invalidateQueries({queryKey: [...key, 'flight-sites']}),
+            onSuccess: () => client.invalidateQueries({queryKey: [...key, 'flight-sites']}),
             retry: false,
         }),
         upsertReview: useMutation({
             mutationFn: ({id, data}: { id: number; data: MissionReviewUpsertInput }) =>
                 customerMissionService.upsertReview(id, data),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         upsertPermit: useMutation({
             mutationFn: ({id, data}: { id: number; data: MissionPermitUpsertInput }) =>
                 customerMissionService.upsertPermit(id, data),
-            onSettled: (_d, _e, {id}) => refresh(id),
+            onSuccess: (_d, {id}) => refresh(id),
             retry: false,
         }),
         availability: useMutation({

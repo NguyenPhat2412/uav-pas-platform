@@ -36,7 +36,7 @@ export function MissionRow({mission, onPress}: { mission: Pick<Mission, 'code' |
             </View>
             <View style={styles.meta}>
                 <CalendarClock size={14} color={colors.muted}/>
-                <AppText variant="small">{formatDate(mission.startTime, {dateStyle: 'medium', timeStyle: 'short'})}</AppText>
+                <AppText variant="small">{formatDate(mission.startTime, {hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric'})}</AppText>
             </View>
             {mission.locationName ? (
                 <View style={styles.meta}>
