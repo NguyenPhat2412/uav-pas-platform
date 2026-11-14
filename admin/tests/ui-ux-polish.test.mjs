@@ -90,17 +90,19 @@ test('AdminAirspacePanel integrates interactive Leaflet overview and geometry bu
 });
 
 test('VietQR BankTransferDialog, Mission coordinate inputs, custom altitude, and Staff login UX contracts hold', async () => {
-    const [bankDialog, locationPicker, missionFields, flightSpec, authModal] = await Promise.all([
+    const [bankDialog, bankBody, locationPicker, missionFields, flightSpec, authModal] = await Promise.all([
         readSource('src/components/billing/BankTransferDialog.tsx'),
+        readSource('src/components/billing/BankTransferBody.tsx'),
         readSource('src/components/mission/customer/LocationPicker.tsx'),
         readSource('src/components/mission/customer/MissionFields.tsx'),
         readSource('src/components/mission/customer/FlightSpecFields.tsx'),
         readSource('src/components/auth/AuthModalPopup.tsx'),
     ]);
 
-    assert.match(bankDialog, /payment\.pollingLive/);
-    assert.match(bankDialog, /payment\.checkNow/);
-    assert.match(bankDialog, /payment\.popupBlocked/);
+    const bankSource = `${bankDialog}\n${bankBody}`;
+    assert.match(bankSource, /payment\.pollingLive/);
+    assert.match(bankSource, /payment\.checkNow/);
+    assert.match(bankSource, /payment\.popupBlocked/);
     assert.match(bankDialog, /useDialogFocusTrap/);
 
     const coordSource = `${locationPicker}\n${missionFields}`;

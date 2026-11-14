@@ -1,14 +1,20 @@
 'use client';
 
 import {useState} from 'react';
-import {CheckCircle2, Clock, Inbox, MessagesSquare, RefreshCw, Search, Sparkles, Zap} from 'lucide-react';
+import {CheckCircle2, Clock, Inbox, MessagesSquare, Radio, RefreshCw, Search, Sparkles, Zap} from 'lucide-react';
 import {Pagination} from '@/components/data/Pagination';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {SupportQuickRepliesDrawer} from '@/components/support/SupportQuickRepliesDrawer';
 import {SupportThreadConversationPane} from '@/components/support/SupportThreadConversationPane';
 import {Button} from '@/components/ui';
-import {useSupportQuickReplies, useSupportSummary, useSupportThreads} from '@/hooks/support/useAdminSupport';
+import {
+    useAdminSupportRealtime,
+    useSupportQuickReplies,
+    useSupportSummary,
+    useSupportThreads,
+} from '@/hooks/support/useAdminSupport';
 import {cn} from '@/lib/utils';
+import {useAuth} from '@/providers/AuthContext';
 import type {SupportThreadStatus} from '@/types/support/support.types';
 import {
     formatSupportSource,
@@ -29,6 +35,8 @@ const STATUS_TABS: readonly { id: StatusTab; label: string }[] = [
 ];
 
 export function SupportInboxWorkspace() {
+    const {can, permissionsReady} = useAuth();
+    const allowed = permissionsReady && can('SUPPORT_MANAGE');
     const [statusTab, setStatusTab] = useState<StatusTab>('ALL');
     const [topic, setTopic] = useState<string>('');
     const [search, setSearch] = useState<string>('');
@@ -36,7 +44,8 @@ export function SupportInboxWorkspace() {
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
-    const summaryQuery = useSupportSummary();
+    const {wsConnected, typingByThread, notifyAdminTyping} = useAdminSupportRealtime(allowed);
+    const summaryQuery = useSupportSummary(allowed);
     const threadsQuery = useSupportThreads({
         status: statusTab === 'ALL' || statusTab === 'UNREAD' ? '' : statusTab,
         unreadOnly: statusTab === 'UNREAD',
@@ -44,8 +53,8 @@ export function SupportInboxWorkspace() {
         q: search.trim() || undefined,
         page,
         size: 20,
-    });
-    const quickRepliesQuery = useSupportQuickReplies();
+    }, allowed);
+    const quickRepliesQuery = useSupportQuickReplies(allowed);
 
     const summary = summaryQuery.data;
     const threads = threadsQuery.data?.content ?? [];
@@ -65,14 +74,20 @@ export function SupportInboxWorkspace() {
         <div className="space-y-4 pb-8">
             <header className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-border bg-card px-5 py-4">
                 <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         <h1 className="text-lg font-bold tracking-tight text-slate-900">Trung tâm Tin nhắn & Hỗ trợ Khách hàng</h1>
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-0.5 text-[11px] font-bold text-primary ring-1 ring-rose-200">
-                            <span className="h-2 w-2 animate-pulse rounded-full bg-primary"/>Đồng bộ trực tiếp
+                        <span className={cn(
+                            'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold ring-1',
+                            wsConnected
+                                ? 'bg-rose-50 text-primary ring-rose-200'
+                                : 'bg-amber-50 text-amber-800 ring-amber-200',
+                        )}>
+                            <span className={cn('h-2 w-2 rounded-full', wsConnected ? 'animate-pulse bg-primary' : 'bg-amber-500')}/>
+                            {wsConnected ? 'Trực tuyến · WebSocket thời gian thực' : 'Đang đồng bộ dự phòng'}
                         </span>
                     </div>
                     <p className="mt-0.5 text-xs text-slate-500">
-                        Tiếp nhận tin nhắn chat trực tuyến & yêu cầu tư vấn từ Trang chủ UAV PAS, phản hồi tức thì bằng mẫu 1 chạm.
+                        Tiếp nhận hội thoại trực tiếp từ Cổng Khách hàng, Trang chủ & Biểu mẫu liên hệ với độ trễ thời gian thực.
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -92,7 +107,7 @@ export function SupportInboxWorkspace() {
                         <span>Tổng hội thoại</span><MessagesSquare size={16} className="text-slate-400"/>
                     </div>
                     <p className="mt-2 text-2xl font-extrabold tabular-nums text-slate-900">{summary?.totalThreads ?? '—'}</p>
-                    <p className="mt-0.5 text-[11.5px] text-slate-400">Từ Widget trực tuyến & Form liên hệ</p>
+                    <p className="mt-0.5 text-[11.5px] text-slate-400">Từ Cổng Khách hàng, Widget & Liên hệ</p>
                 </div>
 
                 <div className={cn('rounded-panel border bg-card p-4', unreadMessages > 0 ? 'border-rose-300 bg-rose-50/35' : 'border-border')}>
@@ -123,8 +138,8 @@ export function SupportInboxWorkspace() {
                 </div>
 
                 <div className="rounded-panel border border-border bg-card p-4">
-                    <div className="flex items-center justify-between text-xs font-semibold text-emerald-700">
-                        <span>Đã giải quyết</span><CheckCircle2 size={16} className="text-emerald-600"/>
+                    <div className="flex items-center justify-between text-xs font-semibold text-uav-blue">
+                        <span>Đã giải quyết</span><CheckCircle2 size={16} className="text-uav-blue"/>
                     </div>
                     <p className="mt-2 text-2xl font-extrabold tabular-nums text-slate-900">{summary?.resolvedThreads ?? '—'}</p>
                     <p className="mt-0.5 text-[11.5px] text-slate-500">Đã tư vấn & đóng yêu cầu</p>
@@ -173,7 +188,10 @@ export function SupportInboxWorkspace() {
                 <section className="flex flex-col overflow-hidden rounded-panel border border-border bg-card lg:col-span-5">
                     <div className="flex items-center justify-between border-b border-border bg-slate-50/70 px-4 py-2.5 text-xs font-bold text-slate-700">
                         <span>Danh sách hội thoại ({threadsQuery.data?.totalElements ?? 0})</span>
-                        <span className="font-normal text-slate-400">Cập nhật 6 giây/lần</span>
+                        <span className="inline-flex items-center gap-1 font-medium text-slate-500">
+                            <Radio size={12} className={cn(wsConnected ? 'text-primary' : 'text-slate-400')}/>
+                            {wsConnected ? 'Đẩy tức thì (WS)' : 'Tự động làm mới'}
+                        </span>
                     </div>
 
                     <QueryState query={threadsQuery}>
@@ -181,13 +199,14 @@ export function SupportInboxWorkspace() {
                             <div className="flex flex-col items-center justify-center gap-2 px-6 py-16 text-center">
                                 <Inbox size={28} className="text-slate-300"/>
                                 <p className="text-sm font-bold text-slate-700">Không có hội thoại nào khớp bộ lọc</p>
-                                <p className="text-xs text-slate-500">Khi khách hàng nhắn tin từ Trang chủ, luồng chat sẽ hiển thị ngay tại đây.</p>
+                                <p className="text-xs text-slate-500">Khi khách hàng nhắn tin trực tiếp, luồng hội thoại sẽ hiển thị tức thì tại đây.</p>
                             </div>
                         ) : (
                             <ul className="m-0 max-h-[540px] flex-1 list-none divide-y divide-slate-100 overflow-y-auto p-0">
                                 {threads.map(item => {
                                     const selected = item.id === activeThreadId;
                                     const unread = item.unreadForAdmin > 0;
+                                    const typingName = typingByThread[item.id];
                                     return (
                                         <li key={item.id}>
                                             <button type="button" onClick={() => setSelectedId(item.id)}
@@ -220,10 +239,17 @@ export function SupportInboxWorkspace() {
                                                     </span>
                                                     <span className="text-slate-400">· {formatSupportSource(item.source)}</span>
                                                 </div>
-                                                <p className={cn('line-clamp-1 text-xs', unread ? 'font-semibold text-slate-800' : 'text-slate-500')}>
-                                                    {item.lastSenderRole === 'ADMIN' ? 'Bạn: ' : ''}
-                                                    {item.lastMessagePreview || 'Yêu cầu tư vấn mới chưa kèm lời nhắn'}
-                                                </p>
+                                                {typingName ? (
+                                                    <p className="m-0 inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
+                                                        <span className="h-1.5 w-1.5 animate-ping rounded-full bg-primary"/>
+                                                        Đang nhập tin nhắn...
+                                                    </p>
+                                                ) : (
+                                                    <p className={cn('m-0 line-clamp-1 text-xs', unread ? 'font-semibold text-slate-800' : 'text-slate-500')}>
+                                                        {item.lastSenderRole === 'ADMIN' ? 'Bạn: ' : ''}
+                                                        {item.lastMessagePreview || 'Yêu cầu tư vấn mới chưa kèm lời nhắn'}
+                                                    </p>
+                                                )}
                                             </button>
                                         </li>
                                     );
@@ -246,6 +272,8 @@ export function SupportInboxWorkspace() {
                             key={activeThreadId}
                             threadId={activeThreadId}
                             quickReplies={quickRepliesQuery.data ?? []}
+                            visitorTypingName={typingByThread[activeThreadId]}
+                            onAdminTyping={typing => notifyAdminTyping(activeThreadId, typing)}
                             onOpenQuickReplies={() => setDrawerOpen(true)}
                             onDeleted={() => setSelectedId(null)}
                         />

@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {cn} from '@/lib/utils';
 import {getPresentationLocale} from '@/lib/presentation';
 import {mountUav3dLoader} from '@/utils/digital-twin/uav-3d-loader';
@@ -17,23 +17,33 @@ export function UavLoader({
     size = 140,
     className,
     fullScreen = false,
+    delayMs = 300,
 }: {
     label?: string;
     size?: number;
     className?: string;
     fullScreen?: boolean;
+    /** Fast session checks finish before this, so the loader never flashes; the space is kept to avoid a jump. */
+    delayMs?: number;
 }) {
     const hostRef = useRef<HTMLDivElement>(null);
     const text = label || defaultLabels[getPresentationLocale()];
+    const [visible, setVisible] = useState(delayMs <= 0);
+
+    useEffect(() => {
+        if (delayMs <= 0) return;
+        const timer = setTimeout(() => setVisible(true), delayMs);
+        return () => clearTimeout(timer);
+    }, [delayMs]);
 
     useEffect(() => {
         const host = hostRef.current;
-        if (!host) return;
+        if (!host || !visible) return;
         const scene = mountUav3dLoader(host, size);
         return () => {
             scene?.dispose();
         };
-    }, [size]);
+    }, [size, visible]);
 
     return (
         <div
@@ -43,6 +53,7 @@ export function UavLoader({
             className={cn(
                 'flex flex-col items-center justify-center gap-3 text-foreground/80',
                 fullScreen && 'min-h-screen bg-background',
+                !visible && 'invisible',
                 className,
             )}
         >

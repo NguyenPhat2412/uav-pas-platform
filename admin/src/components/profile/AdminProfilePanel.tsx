@@ -13,6 +13,7 @@ import {useOwnProfile, useUpdateProfile} from '@/hooks/profile/useProfile';
 import type {ProfileErrors, ProfileFields} from '@/types/profile/profile.types';
 import {PasswordChangeCard} from '@/components/profile/PasswordChangeCard';
 import {TwoFactorSettingsCard} from '@/components/profile/TwoFactorSettingsCard';
+import {AccountDeletionCard} from '@/components/profile/AccountDeletionCard';
 
 /** The admin's own account: editable name and phone, read-only identity, and a self-service password change. */
 export function AdminProfilePanel() {
@@ -120,6 +121,12 @@ export function AdminProfilePanel() {
             <div className="lg:col-span-2 [&>*]:rounded-none [&>*]:border-0">
                 <TwoFactorSettingsCard/>
             </div>
+            <div className="lg:col-span-2 [&>*]:rounded-none [&>*]:border-0">
+                <AccountDeletionCard/>
+            </div>
+            <p className="m-0 bg-white py-3 text-center text-xs text-slate-400 lg:col-span-2">
+                NguyenPhat2412 · UAV PAS
+            </p>
         </div>
     );
 }

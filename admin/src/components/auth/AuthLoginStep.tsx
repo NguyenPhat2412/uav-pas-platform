@@ -59,9 +59,6 @@ export function AuthLoginStep({
                 <h2 id="auth-modal-title" className="text-lg font-extrabold tracking-tight text-slate-900">
                     Đăng nhập hệ thống
                 </h2>
-                <p className="m-0 mt-1 text-xs text-slate-500">
-                    Đăng nhập nhanh và an toàn bằng tài khoản Google.
-                </p>
             </div>
 
             <AuthGoogleEntry

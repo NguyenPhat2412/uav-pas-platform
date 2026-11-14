@@ -10,12 +10,15 @@
     "txStatus": {
       "SUCCESS": "成功",
       "PENDING": "保留中",
-      "FAILED": "失敗"
+      "FAILED": "失敗",
+      "MISMATCH": "金額不一致",
+      "UNMATCHED": "対象請求書なし"
     },
     "gateway": {
       "VIETQR_NAPAS_247": "VietQR NAPAS 247（IPN）",
       "VIETQR_NAPAS": "VietQR NAPAS",
-      "BANK_TRANSFER_MANUAL": "銀行振込（手動確認）"
+      "BANK_TRANSFER_MANUAL": "銀行振込（手動確認）",
+      "VIETQR_SEPAY_AUTO": "VietQR – SePay 自動"
     },
     "tx": {
       "filters": "トランザクションの絞り込み",
@@ -122,6 +125,74 @@
       "emergencyContactName": "緊急連絡先",
       "emergencyContactPhone": "緊急連絡先電話番号",
       "updatedAt": "最終更新：{date}"
+    },
+    "refund": {
+      "action": "返金済みにする",
+      "title": "振込の返金",
+      "reference": "返金の取引番号",
+      "referencePlaceholder": "例: FT26318…",
+      "note": "メモ",
+      "submit": "返金を確定",
+      "done": "返金を記録しました",
+      "refunded": "返金済み",
+      "resolvedBy": "{user} が {time} に返金",
+      "hint": "顧客へ返金した後にのみ記録してください。"
+    },
+    "payments": {
+      "title": "支払いと支出",
+      "anchor": "支払い",
+      "range": "{from} – {to}",
+      "kpi": {
+        "collected": "回収額",
+        "issued": "発行額",
+        "collectionRate": "回収率",
+        "avgDaysToPay": "平均回収日数",
+        "outstanding": "未収金",
+        "overdue": "期限超過",
+        "refunded": "返金額",
+        "payingCustomers": "支払顧客数",
+        "averageInvoice": "平均請求額"
+      },
+      "invoices": "{count} 件",
+      "days": "{value} 日",
+      "trendTitle": "12か月のキャッシュフロー",
+      "issuedSeries": "発行",
+      "collectedSeries": "回収",
+      "refundedSeries": "返金",
+      "gatewayTitle": "決済チャネル別",
+      "sourceTitle": "収益源別",
+      "planTitle": "プラン別",
+      "statusTitle": "発行請求書のステータス",
+      "agingTitle": "未収金の年齢",
+      "reviewTitle": "対応が必要な振込",
+      "topTitle": "支出の多い顧客",
+      "source": {
+        "PLAN": "サービスプラン",
+        "MISSION": "ミッション",
+        "OTHER": "その他"
+      },
+      "aging": {
+        "NOT_DUE": "期限前",
+        "D1_7": "1–7日超過",
+        "D8_30": "8–30日超過",
+        "D31_PLUS": "30日超過"
+      },
+      "review": {
+        "pending": "返金待ち",
+        "mismatch": "金額不一致",
+        "unmatched": "請求書は終了済み",
+        "refunded": "期間内の返金",
+        "open": "取引一覧を開く"
+      },
+      "col": {
+        "customer": "顧客",
+        "paid": "支払額",
+        "count": "件数",
+        "outstanding": "未払い"
+      },
+      "empty": "この期間のデータはありません。",
+      "noReview": "対応が必要な振込はありません。",
+      "definitions": "回収額: 期間内に支払われた請求書。回収率: 期間内に発行された請求書のうち支払済みの割合（取消は除く）。未収金と年齢は現時点で計算。"
     }
   }
 }

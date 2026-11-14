@@ -8,7 +8,7 @@ import {toast} from '@/providers/ToastContext';
 import {authErrorMessage, authFieldErrors} from '@/forms/auth/auth-form';
 import type {AuthModalView, AuthResponse} from '@/types/auth/auth.types';
 import {availablePortalsForRole, canUsePortal, type Portal, portalForRole, portalHome} from '@/utils/auth/portal';
-import {safeNextPath} from '@/utils/auth/auth-entry';
+import {navigatePortalPath, safeNextPath} from '@/utils/auth/auth-entry';
 import {AuthLoginStep} from '@/components/auth/AuthLoginStep';
 import {
     AuthModalTopBar,
@@ -111,7 +111,7 @@ export function AuthModalPopup() {
         setIsOpen(false);
         const dest = resolvePostLoginPath(response.user?.role, nextPath);
         setNextPath(null);
-        router.push(dest);
+        navigatePortalPath(dest, (href) => router.push(href));
     };
 
     const showFailure = (err: unknown, fallback: string) => {
@@ -273,7 +273,7 @@ export function AuthModalPopup() {
                             onSelectPortal={(destination) => {
                                 setIsOpen(false);
                                 setNextPath(null);
-                                router.push(destination);
+                                navigatePortalPath(destination, (href) => router.push(href));
                             }}
                         />
                     )}

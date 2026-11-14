@@ -1,5 +1,5 @@
 'use client';
-import {useMutation, useQueries, useQuery, useQueryClient} from '@tanstack/react-query';
+import {keepPreviousData, useMutation, useQueries, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
 import {usersService} from '@/api/user/users.api';
 import {accessService} from '@/api/access/access.api';
@@ -9,6 +9,7 @@ export function useAdminUsers(page: number, keyword: string, role?: UserRole, st
     const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: ['session', user?.id, 'admin-users', page, keyword, role, status],
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => usersService.users(page, keyword, role, signal, status),
         enabled: permissionsReady && can('USER_VIEW')
     });

@@ -6,6 +6,9 @@ const operationsOrigin = process.env.NEXT_PUBLIC_OPERATIONS_URL || 'http://local
 
 const nextConfig: NextConfig = {
     output: 'standalone',
+    // Production shares uav.all1.vn with the other portals (Next multi-zones): a distinct asset prefix keeps this
+    // zone's /_next files apart; nginx routes /admin-static/* here. Dev servers keep their own port and no prefix.
+    assetPrefix: process.env.NODE_ENV === 'production' ? '/admin-static' : undefined,
     devIndicators: false,
     async redirects() {
         return [

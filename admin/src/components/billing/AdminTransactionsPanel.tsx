@@ -7,15 +7,17 @@ import {Drawer, Metadata} from '@/components/data/Drawer';
 import {Pagination} from '@/components/data/Pagination';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {AdminPage} from '@/components/layout/AdminPage';
-import {useBillingTransactions} from '@/hooks/billing/useBillingAdmin';
+import {useAdminBillingRealtime, useBillingTransactions, useRefundTransaction} from '@/hooks/billing/useBillingAdmin';
+import {toast} from '@/providers/ToastContext';
 import {useI18n} from '@/providers/I18nContext';
 import type {AdminPaymentTransaction, TransactionFilters} from '@/types/billing/billing-admin.types';
 
-const statuses = ['SUCCESS', 'PENDING', 'FAILED'] as const;
-const gateways = ['VIETQR_NAPAS_247', 'BANK_TRANSFER_MANUAL', 'VIETQR_NAPAS'] as const;
+const statuses = ['SUCCESS', 'PENDING', 'MISMATCH', 'UNMATCHED', 'FAILED'] as const;
+const gateways = ['VIETQR_SEPAY_AUTO', 'VIETQR_NAPAS_247', 'BANK_TRANSFER_MANUAL', 'VIETQR_NAPAS'] as const;
 
 export function AdminTransactionsPanel() {
     const {t, formatDate, formatCurrency} = useI18n();
+    useAdminBillingRealtime(true);
     const [draft, setDraft] = useState<TransactionFilters>({});
     const [filters, setFilters] = useState<TransactionFilters>({});
     const [page, setPage] = useState(0);
@@ -176,6 +178,7 @@ export function AdminTransactionsPanel() {
                     {selected.invoiceAmount != null && Number(selected.invoiceAmount) !== Number(selected.amount) && (
                         <Alert variant="warning" role="status">{t('adminCommerce.tx.detail.amountMismatch')}</Alert>
                     )}
+                    <RefundSection tx={selected} onDone={setSelected}/>
                     <section className="space-y-1.5">
                         <h3 className="text-sm font-semibold text-slate-700">{t('adminCommerce.tx.detail.raw')}</h3>
                         <p className="text-xs text-slate-500">{t('adminCommerce.tx.detail.rawHint')}</p>
@@ -190,6 +193,53 @@ export function AdminTransactionsPanel() {
                 </Drawer>
             )}
         </div>
+    );
+}
+
+const REFUNDABLE = new Set(['MISMATCH', 'UNMATCHED']);
+
+/** Money that reached the account without settling an invoice is sent back by bank, then recorded here. */
+function RefundSection({tx, onDone}: {tx: AdminPaymentTransaction; onDone: (tx: AdminPaymentTransaction) => void}) {
+    const {t, formatDate, formatCurrency} = useI18n();
+    const refund = useRefundTransaction();
+    const [reference, setReference] = useState('');
+    const [note, setNote] = useState('');
+    if (tx.resolution === 'REFUNDED') {
+        return (
+            <Alert variant="info" role="status">
+                <strong>{t('adminCommerce.refund.refunded')}</strong> · {tx.resolutionNote}
+                <br/>
+                {t('adminCommerce.refund.resolvedBy', {user: tx.resolvedBy ?? '—', time: tx.resolvedAt ? formatDate(tx.resolvedAt) : '—'})}
+            </Alert>
+        );
+    }
+    if (!REFUNDABLE.has(tx.status)) return null;
+    const submit = (event: FormEvent) => {
+        event.preventDefault();
+        if (!reference.trim()) return;
+        refund.mutate({id: tx.id, bankReference: reference.trim(), note: note.trim() || undefined}, {
+            onSuccess: updated => {
+                toast.success(t('adminCommerce.refund.done'));
+                onDone(updated);
+            },
+            onError: error => toast.error(error instanceof Error ? error.message : String(error)),
+        });
+    };
+    return (
+        <form onSubmit={submit} className="space-y-3 rounded-control border border-rose-200 bg-rose-50/40 p-3">
+            <h3 className="text-sm font-semibold text-primary">{t('adminCommerce.refund.title')} · {formatCurrency(tx.amount)}</h3>
+            <p className="text-xs text-slate-600">{t('adminCommerce.refund.hint')}</p>
+            <FormField label={t('adminCommerce.refund.reference')} required>
+                <Input value={reference} maxLength={100} placeholder={t('adminCommerce.refund.referencePlaceholder')}
+                       onChange={event => setReference(event.target.value)}/>
+            </FormField>
+            <FormField label={t('adminCommerce.refund.note')}>
+                <Input value={note} maxLength={380} onChange={event => setNote(event.target.value)}/>
+            </FormField>
+            <Button type="submit" disabled={!reference.trim()} isLoading={refund.isPending}>
+                {t('adminCommerce.refund.submit')}
+            </Button>
+        </form>
     );
 }
 

@@ -24,6 +24,7 @@
         "MAP": "Map & GIS",
         "AI": "AI & KV260 edge processing",
         "BILLING": "Billing & invoices",
+        "ACCOUNT": "Accounts & self-service deletion",
         "CONTACT": "Public contact details",
         "OTHER": "Other settings"
       },
@@ -75,7 +76,16 @@
         "uav_safety_max_wind_gust_limit": "Maximum wind gust (m/s)",
         "uav_safety_min_visibility_meters": "Minimum visibility (m)",
         "uav_safety_max_precipitation_mm": "Maximum rainfall per hour (mm)",
-        "uav_safety_max_kp_index": "Maximum geomagnetic Kp index"
+        "uav_safety_max_kp_index": "Maximum geomagnetic Kp index",
+        "account_deletion_enabled": "Allow self-service account deletion",
+        "account_deletion_allow_staff_roles": "Allow staff and administrator roles to delete own account",
+        "account_deletion_block_active_missions": "Block deletion while active missions exist",
+        "account_deletion_block_unpaid_invoices": "Block deletion while unpaid invoices exist",
+        "account_deletion_require_password": "Require current password confirmation",
+        "account_deletion_require_reason": "Require a deletion reason",
+        "account_deletion_confirmation_phrase": "Account deletion confirmation phrase",
+        "account_deletion_mode": "Account deletion data handling mode",
+        "account_deletion_notice_message": "Notice message shown before account deletion"
       },
       "notes": {
         "billing_vat_rate": "Enter a fraction: 0.10 = 10%",
@@ -94,7 +104,9 @@
         "streets": "Streets (OpenStreetMap)",
         "satellite": "Satellite (Esri World Imagery)",
         "terrain": "Terrain (OpenTopoMap)",
-        "dark": "Dark (Carto Dark)"
+        "dark": "Dark (Carto Dark)",
+        "ANONYMIZE": "Anonymize personal data (preserve audit records)",
+        "HARD_DELETE": "Permanently delete account record"
       }
     },
     "deviceKeys": {

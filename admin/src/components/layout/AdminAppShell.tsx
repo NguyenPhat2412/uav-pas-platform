@@ -85,7 +85,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
     }, []);
 
     const visibleNav = nav.filter(item => !item.permission || (permissionsReady && can(item.permission)));
-    const supportSummary = useSupportSummary(permissionsReady && can('DASHBOARD_VIEW'));
+    const supportSummary = useSupportSummary(permissionsReady && can('SUPPORT_MANAGE'));
     const unreadSupport = supportSummary.data?.unreadMessages ?? 0;
     const activeNav = resolveSidebarActiveItem(visibleNav, pathname, activeResource);
     // Feeds "Truy cập gần đây" on the dashboard; only sidebar destinations are remembered.

@@ -1,12 +1,13 @@
 'use client';
 
 import React, {useMemo, useState} from 'react';
-import {Cpu, Globe, History, MapPin, Phone, Receipt, Save, Settings2, ShieldCheck} from 'lucide-react';
+import {Cpu, Globe, History, MapPin, Phone, Receipt, Save, Settings2, ShieldCheck, UserCog} from 'lucide-react';
 import {settingLabel} from '@/lib/presentation';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {Alert, Button, Card, FormField, Input, Select, Switch} from '@/components/ui';
 import {AssistantSettingsSection} from '@/components/assistant/AssistantSettingsSection';
+import {PaymentGatewaySettingsSection} from '@/components/billing/PaymentGatewaySettingsSection';
 import {WeatherProviderSettingsSection} from '@/components/weather/WeatherProviderSettingsSection';
 import type {TypedSetting} from '@/types/settings/platform-settings.types';
 import {changedSettings, settingEmptyProblem, settingServerError, sortedSettingsToSave, toSettingUpdatePayload} from '@/forms/settings/settings-form';
@@ -15,7 +16,7 @@ import {useI18n} from '@/providers/I18nContext';
 import {useUnsavedChanges} from '@/hooks/useWorkspaceTabs';
 import {buildSettingHint, flatKey, SettingHistoryDrawer} from './SettingHistoryDrawer';
 
-type GroupId = 'SAFETY' | 'OPERATIONS' | 'MAP' | 'AI' | 'BILLING' | 'CONTACT' | 'OTHER';
+type GroupId = 'SAFETY' | 'OPERATIONS' | 'MAP' | 'AI' | 'BILLING' | 'CONTACT' | 'ACCOUNT' | 'OTHER';
 // Existing group titles keep their admin.settings catalog keys (AI group = KV260 edge processing).
 const GROUPS: { id: GroupId; icon: typeof ShieldCheck; tone: string; title: string }[] = [
     {id: 'SAFETY', icon: ShieldCheck, tone: 'text-primary', title: 'admin.settings.safetyGroup'},
@@ -24,12 +25,14 @@ const GROUPS: { id: GroupId; icon: typeof ShieldCheck; tone: string; title: stri
     {id: 'AI', icon: Cpu, tone: 'text-uav-blue', title: 'admin.settings.aiGroup'},
     {id: 'BILLING', icon: Receipt, tone: 'text-uav-blue', title: 'adminPlatform.settings.groups.BILLING'},
     {id: 'CONTACT', icon: Phone, tone: 'text-sky-700', title: 'adminPlatform.settings.groups.CONTACT'},
+    {id: 'ACCOUNT', icon: UserCog, tone: 'text-primary', title: 'adminPlatform.settings.groups.ACCOUNT'},
     {id: 'OTHER', icon: Settings2, tone: 'text-slate-600', title: 'adminPlatform.settings.groups.OTHER'},
 ];
 
 function groupOf(category: string): GroupId {
     const c = (category || '').toUpperCase();
     if (c === 'AI' || c === 'AI_EDGE') return 'AI';
+    if (c === 'ACCOUNT') return 'ACCOUNT';
     if (c === 'SAFETY' || c === 'OPERATIONS' || c === 'MAP' || c === 'BILLING' || c === 'CONTACT') return c;
     return 'OTHER';
 }
@@ -215,6 +218,7 @@ export default function AdminSettingsPage() {
     return (
         <AdminPage title="admin.pages.settings.title" permission="USER_MANAGE" activeResource="settings">
             <AdminSettingsContent/>
+            <section id="payment-gateway" className="mb-6 scroll-mt-16"><PaymentGatewaySettingsSection/></section>
             <section id="weather" className="mb-6 scroll-mt-16"><WeatherProviderSettingsSection/></section>
             <section id="assistant" className="scroll-mt-16"><AssistantSettingsSection/></section>
         </AdminPage>

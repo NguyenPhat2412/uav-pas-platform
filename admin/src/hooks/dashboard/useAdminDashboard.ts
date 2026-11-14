@@ -32,3 +32,14 @@ export function useAdminPendingMissions() {
         enabled: permissionsReady && can('MISSION_VIEW_ALL'),
     });
 }
+
+/** Payment, revenue and spending figures for the inclusive day range (USER_MANAGE). */
+export function useAdminPaymentStatistics(from: string, to: string) {
+    const {user, can, permissionsReady} = useAuth();
+    return useQuery({
+        queryKey: dashboardKeys.paymentStatistics(user?.id, from, to),
+        queryFn: ({signal}) => adminDashboardService.paymentStatistics(from, to, signal),
+        enabled: permissionsReady && can('USER_MANAGE'),
+        staleTime: 60_000,
+    });
+}

@@ -21,6 +21,7 @@ import {
 } from '@/components/dashboard/AdminCharts';
 import {AdminAnalyticsMapSection} from '@/components/dashboard/AdminAnalyticsMapSection';
 import {AdminAnalyticsBreakdowns} from '@/components/dashboard/AdminAnalyticsBreakdowns';
+import {AdminPaymentStatistics} from '@/components/dashboard/AdminPaymentStatistics';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useAdminAnalytics} from '@/hooks/dashboard/useAdminDashboard';
@@ -69,6 +70,14 @@ export function AdminAnalytics() {
                     >
                         Doanh thu & Quota ({query.data?.quotaWarnings.length ?? 0})
                     </a>
+                    {can('USER_MANAGE') && (
+                        <a
+                            href="#admin-payments"
+                            className="rounded-control border border-rose-200 bg-white px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-uav-red-light"
+                        >
+                            {t('adminCommerce.payments.anchor')}
+                        </a>
+                    )}
                 </div>
                 <div
                     className="inline-flex gap-1 rounded-panel border border-rose-200 bg-rose-50/60 p-1"
@@ -93,6 +102,7 @@ export function AdminAnalytics() {
             <QueryState query={query}>
                 {query.data && <AnalyticsBody data={query.data} money={money} />}
             </QueryState>
+            <AdminPaymentStatistics days={days} money={money} />
         </section>
     );
 }

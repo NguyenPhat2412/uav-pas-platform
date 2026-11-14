@@ -2,10 +2,11 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import {useEffect, useRef, useState, type KeyboardEvent} from 'react';
+import {useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent} from 'react';
 import {ArrowLeft, ArrowUpRight, MessagesSquare, Send, X, Zap} from 'lucide-react';
 import {
     personalizeQuickReply,
+    useAdminSupportRealtime,
     useReplySupportThread,
     useSupportQuickReplies,
     useSupportSummary,
@@ -16,6 +17,7 @@ import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {toast} from '@/providers/ToastContext';
 import {
+    formatSupportSource,
     formatSupportTime,
     formatSupportTopic,
     prioritizeQuickReplies,
@@ -24,13 +26,15 @@ import {
 
 export function AdminSupportQuickDock() {
     const {isAuthenticated, permissionsReady, can} = useAuth();
-    const allowed = isAuthenticated && permissionsReady && can('DASHBOARD_VIEW');
+    const allowed = isAuthenticated && permissionsReady && can('SUPPORT_MANAGE');
 
     const [open, setOpen] = useState(false);
     const [activeThreadId, setActiveThreadId] = useState<number | null>(null);
     const [draft, setDraft] = useState('');
     const listRef = useRef<HTMLDivElement>(null);
+    const stopTypingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    const {wsConnected, typingByThread, notifyAdminTyping} = useAdminSupportRealtime(allowed);
     const summaryQuery = useSupportSummary(allowed);
     const threadsQuery = useSupportThreads({size: 12}, allowed && open);
     const detailQuery = useSupportThreadDetail(open ? activeThreadId : null);
@@ -47,18 +51,38 @@ export function AdminSupportQuickDock() {
     const activeThread = detailQuery.data?.thread;
     const messages = detailQuery.data?.messages ?? [];
     const quickReplies = prioritizeQuickReplies(quickRepliesQuery.data ?? [], activeThread?.topic);
+    const activeVisitorTyping = activeThreadId ? typingByThread[activeThreadId] : undefined;
 
     useEffect(() => {
         listRef.current?.scrollTo({top: listRef.current.scrollHeight, behavior: 'smooth'});
-    }, [activeThreadId, messages.length]);
+    }, [activeThreadId, messages.length, activeVisitorTyping]);
+
+    useEffect(() => () => {
+        if (stopTypingRef.current) clearTimeout(stopTypingRef.current);
+    }, []);
 
     if (!allowed) return null;
+
+    const handleDraftChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const next = e.target.value;
+        setDraft(next);
+        if (!activeThreadId) return;
+        if (stopTypingRef.current) clearTimeout(stopTypingRef.current);
+        if (next.trim().length > 0) {
+            notifyAdminTyping(activeThreadId, true);
+            stopTypingRef.current = setTimeout(() => notifyAdminTyping(activeThreadId, false), 2500);
+        } else {
+            notifyAdminTyping(activeThreadId, false);
+        }
+    };
 
     const handleSend = async (text: string, clearComposer = false) => {
         const trimmed = text.trim();
         if (!trimmed || !activeThread || replyMutation.isPending) return;
         const status = activeThread.status === 'OPEN' ? 'IN_PROGRESS' : activeThread.status;
         try {
+            if (stopTypingRef.current) clearTimeout(stopTypingRef.current);
+            notifyAdminTyping(activeThread.id, false);
             await replyMutation.mutateAsync({id: activeThread.id, content: trimmed, status});
             if (clearComposer) setDraft('');
             toast.success(`Đã phản hồi nhanh cho ${activeThread.fullName}.`);
@@ -85,7 +109,11 @@ export function AdminSupportQuickDock() {
                                 <Image src="/uav-pas-logo.svg" alt="UAV PAS" width={20} height={20} className="h-5 w-5 object-contain"/>
                             </span>
                             <div className="min-w-0">
-                                <strong className="block truncate text-xs font-extrabold text-slate-900">Hỗ trợ trực tuyến · Trả lời nhanh</strong>
+                                <div className="flex items-center gap-1.5">
+                                    <strong className="truncate text-xs font-extrabold text-slate-900">Hỗ trợ trực tuyến</strong>
+                                    <span className={cn('h-2 w-2 shrink-0 rounded-full', wsConnected ? 'bg-primary animate-pulse' : 'bg-amber-500')}
+                                          title={wsConnected ? 'Kết nối WebSocket trực tiếp' : 'Đang đồng bộ lại'}/>
+                                </div>
                                 <Link href="/admin/support" onClick={() => setOpen(false)}
                                       className="inline-flex items-center gap-0.5 text-[11px] font-bold text-primary hover:underline">
                                     Mở Hộp thư đầy đủ → <ArrowUpRight size={11}/>
@@ -104,7 +132,7 @@ export function AdminSupportQuickDock() {
                                 <div className="flex flex-col items-center justify-center gap-1.5 px-5 py-10 text-center">
                                     <MessagesSquare size={24} className="text-slate-300"/>
                                     <p className="text-xs font-bold text-slate-700">Chưa có tin nhắn hỗ trợ mới</p>
-                                    <p className="text-[11px] text-slate-500">Mọi yêu cầu từ Trang chủ sẽ nhấp nháy báo hiệu ngay tại đây.</p>
+                                    <p className="text-[11px] text-slate-500">Mọi tin nhắn từ Cổng Khách hàng & Trang chủ sẽ đẩy tức thì tại đây.</p>
                                 </div>
                             ) : prioritizedThreads.map(item => (
                                 <button key={item.id} type="button" onClick={() => { setActiveThreadId(item.id); setDraft(''); }}
@@ -127,11 +155,15 @@ export function AdminSupportQuickDock() {
                                         <span className={cn('rounded-badge px-1.5 py-0.2 font-semibold ring-1 ring-inset', SUPPORT_STATUS_META[item.status].badgeClass)}>
                                             {SUPPORT_STATUS_META[item.status].label}
                                         </span>
-                                        <span className="truncate">{formatSupportTopic(item.topic)}</span>
+                                        <span className="truncate">{formatSupportTopic(item.topic)} · {formatSupportSource(item.source)}</span>
                                     </div>
-                                    <p className="line-clamp-1 text-[11.5px] text-slate-600">
-                                        {item.lastSenderRole === 'ADMIN' ? 'Bạn: ' : ''}{item.lastMessagePreview || 'Yêu cầu tư vấn mới'}
-                                    </p>
+                                    {typingByThread[item.id] ? (
+                                        <p className="m-0 text-[11px] font-semibold text-primary">Đang nhập tin nhắn...</p>
+                                    ) : (
+                                        <p className="m-0 line-clamp-1 text-[11.5px] text-slate-600">
+                                            {item.lastSenderRole === 'ADMIN' ? 'Bạn: ' : ''}{item.lastMessagePreview || 'Yêu cầu tư vấn mới'}
+                                        </p>
+                                    )}
                                 </button>
                             ))}
                         </div>
@@ -164,6 +196,11 @@ export function AdminSupportQuickDock() {
                                         </div>
                                     );
                                 })}
+                                {activeVisitorTyping && (
+                                    <p className="m-0 text-[11px] font-medium italic text-primary" role="status">
+                                        {activeVisitorTyping} đang nhập...
+                                    </p>
+                                )}
                             </div>
 
                             {activeThread && quickReplies.length > 0 && (
@@ -193,7 +230,7 @@ export function AdminSupportQuickDock() {
                             )}
 
                             <div className="flex items-center gap-1.5 border-t border-slate-200 bg-white p-2.5">
-                                <input type="text" value={draft} onChange={e => setDraft(e.target.value)} onKeyDown={onComposerKeyDown}
+                                <input type="text" value={draft} onChange={handleDraftChange} onKeyDown={onComposerKeyDown}
                                        placeholder="Nhập phản hồi nhanh..."
                                        className="h-8 flex-1 rounded-control border border-border px-2.5 text-xs text-slate-900 focus:border-primary focus:outline-none"/>
                                 <button type="button" disabled={!draft.trim() || replyMutation.isPending} onClick={() => void handleSend(draft, true)}

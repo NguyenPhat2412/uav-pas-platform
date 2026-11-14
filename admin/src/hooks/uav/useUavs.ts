@@ -1,5 +1,5 @@
 'use client';
-import {useQuery} from '@tanstack/react-query';
+import {keepPreviousData, useQuery} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
 import {queryKeys, QUIET} from '@/lib/query';
 import {uavsService} from '@/api/uav/uavs.api';
@@ -9,6 +9,7 @@ export function useUavs(page = 0) {
     const {user, can} = useAuth();
     return useQuery({
         queryKey: queryKeys.list(user?.id, 'uavs', page),
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => uavsService.listUavs(page, 20, signal),
         enabled: can('UAV_VIEW')
     });

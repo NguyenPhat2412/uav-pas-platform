@@ -13,6 +13,7 @@ export const billingKeys = {
     invoices: (userId: UserId, ...filters: unknown[]) => queryKeys.of(userId, 'billing-admin', 'invoices', ...filters),
     outbox: (userId: UserId, ...filters: unknown[]) => queryKeys.of(userId, 'billing-admin', 'outbox', ...filters),
     transactions: (userId: UserId, ...filters: unknown[]) => queryKeys.of(userId, 'billing-admin', 'transactions', ...filters),
+    paymentGateway: (userId: UserId) => queryKeys.of(userId, 'billing-admin', 'payment-gateway'),
     customerSearch: (userId: UserId, keyword: string) => queryKeys.of(userId, 'billing-admin', 'customers', keyword),
     userProfile: (userId: UserId, customerId: number) => queryKeys.of(userId, 'billing-admin', 'billing-profile', customerId),
     /** The signed-in customer's own billing (quota, invoices, plans, bank transfer). */

@@ -12,8 +12,8 @@ export type SupportTopic =
     | 'TRAINING_SOP'
     | 'GENERAL_SUPPORT';
 
-export type SupportSource = 'LIVE_WIDGET' | 'CONTACT_FORM';
-export type SupportThreadSource = SupportSource;
+export type SupportSource = 'LIVE_WIDGET' | 'CONTACT_FORM' | 'CUSTOMER_PORTAL';
+export type SupportThreadSource = SupportSource | (string & {});
 
 export type SupportThreadStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED';
 
