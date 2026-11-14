@@ -1,5 +1,6 @@
 package com.uav.platform.service.training;
 
+import com.uav.platform.common.util.Hashing;
 import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.entity.training.TrainingAsset;
 import com.uav.platform.enums.training.TrainingAssetStatus;
@@ -18,11 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HexFormat;
 import java.util.Locale;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Per-request signed GET/PUT URLs for lesson media and covers. When running inside an HTTP request with a
@@ -34,8 +31,6 @@ import javax.crypto.spec.SecretKeySpec;
 public class TrainingMediaUrls {
     /** Long enough to watch a lesson video, seeking included. */
     public static final Duration VALIDITY = Duration.ofHours(2);
-
-    private static final String HMAC_ALGO = "HmacSHA256";
 
     private final ObjectStorageService storage;
     private final String signingSecret;
@@ -95,15 +90,8 @@ public class TrainingMediaUrls {
     }
 
     public String sign(String method, Long assetId, long exp) {
-        try {
-            Mac mac = Mac.getInstance(HMAC_ALGO);
-            mac.init(new SecretKeySpec(signingSecret.getBytes(StandardCharsets.UTF_8), HMAC_ALGO));
-            String payload = method.toUpperCase(Locale.ROOT) + ":" + assetId + ":" + exp;
-            byte[] digest = mac.doFinal(payload.getBytes(StandardCharsets.UTF_8));
-            return HexFormat.of().formatHex(digest);
-        } catch (Exception ex) {
-            throw new IllegalStateException("Cannot sign training media URL", ex);
-        }
+        return Hashing.hmacSha256Hex(
+                signingSecret, method.toUpperCase(Locale.ROOT) + ":" + assetId + ":" + exp);
     }
 
     private boolean canBuildBackendUrl(TrainingAsset asset) {

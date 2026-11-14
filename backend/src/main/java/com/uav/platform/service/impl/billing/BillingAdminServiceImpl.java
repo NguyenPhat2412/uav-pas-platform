@@ -250,7 +250,8 @@ public class BillingAdminServiceImpl implements BillingAdminService {
                     "Transaction is already resolved", "TRANSACTION_ALREADY_RESOLVED");
         }
         String reference = bankReference.trim();
-        String detail = note == null || note.isBlank() ? reference : reference + " · " + note.trim();
+        String detail =
+                note == null || note.isBlank() ? reference : reference + " · " + note.trim();
         txn.setResolution("REFUNDED");
         txn.setResolutionNote(detail.length() > 500 ? detail.substring(0, 500) : detail);
         txn.setResolvedAt(java.time.LocalDateTime.now());

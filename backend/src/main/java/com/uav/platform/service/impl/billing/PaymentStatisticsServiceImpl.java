@@ -95,7 +95,10 @@ public class PaymentStatisticsServiceImpl implements PaymentStatisticsService {
     }
 
     static Period period(
-            List<Invoice> rows, List<PaymentTransaction> txs, LocalDateTime from, LocalDateTime to) {
+            List<Invoice> rows,
+            List<PaymentTransaction> txs,
+            LocalDateTime from,
+            LocalDateTime to) {
         List<Invoice> paid = rows.stream().filter(paidIn(from, to)).toList();
         List<Invoice> issued = rows.stream().filter(i -> in(i.getCreatedAt(), from, to)).toList();
         BigDecimal collected = sum(paid);
@@ -108,8 +111,10 @@ public class PaymentStatisticsServiceImpl implements PaymentStatisticsService {
                 paid.stream()
                         .filter(i -> i.getCreatedAt() != null)
                         .mapToDouble(
-                                i -> Duration.between(i.getCreatedAt(), i.getPaidAt()).toMinutes()
-                                        / 1440.0)
+                                i ->
+                                        Duration.between(i.getCreatedAt(), i.getPaidAt())
+                                                        .toMinutes()
+                                                / 1440.0)
                         .average()
                         .orElse(0);
         BigDecimal refunded =
@@ -128,7 +133,8 @@ public class PaymentStatisticsServiceImpl implements PaymentStatisticsService {
                 round1(avgDays),
                 paid.isEmpty()
                         ? BigDecimal.ZERO
-                        : collected.divide(BigDecimal.valueOf(paid.size()), 0, RoundingMode.HALF_UP),
+                        : collected.divide(
+                                BigDecimal.valueOf(paid.size()), 0, RoundingMode.HALF_UP),
                 refunded,
                 paid.stream().map(i -> i.getUser().getId()).distinct().count());
     }
@@ -220,8 +226,7 @@ public class PaymentStatisticsServiceImpl implements PaymentStatisticsService {
                             ? "NOT_DUE"
                             : late <= 7 ? "D1_7" : late <= 30 ? "D8_30" : "D31_PLUS";
             Slice old = buckets.get(key);
-            buckets.put(
-                    key, new Slice(key, old.count() + 1, old.amount().add(amount(invoice))));
+            buckets.put(key, new Slice(key, old.count() + 1, old.amount().add(amount(invoice))));
         }
         return List.copyOf(buckets.values());
     }

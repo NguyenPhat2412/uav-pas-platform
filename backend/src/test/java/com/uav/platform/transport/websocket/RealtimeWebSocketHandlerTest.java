@@ -1,4 +1,4 @@
-package com.uav.platform.websocket;
+package com.uav.platform.transport.websocket;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

@@ -89,7 +89,8 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         this.notifications = notifications;
     }
 
-    public void setInvoices(ObjectProvider<com.uav.platform.service.billing.BillingService> invoices) {
+    public void setInvoices(
+            ObjectProvider<com.uav.platform.service.billing.BillingService> invoices) {
         this.invoices = invoices;
     }
 

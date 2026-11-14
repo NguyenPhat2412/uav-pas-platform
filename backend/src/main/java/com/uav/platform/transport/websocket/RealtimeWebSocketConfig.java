@@ -1,4 +1,4 @@
-package com.uav.platform.websocket;
+package com.uav.platform.transport.websocket;
 
 import com.uav.platform.config.routes.ApiRoutes;
 

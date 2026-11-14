@@ -1,5 +1,8 @@
 package com.uav.platform.service.impl.assistant;
 
+import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_HEADER;
+import static com.uav.platform.common.constant.SecurityConstants.BEARER_PREFIX;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -254,8 +257,8 @@ public class AiRouterServiceImpl implements AiRouterService {
                             HttpRequest.newBuilder(URI.create(base + "/models"))
                                     .timeout(Duration.ofSeconds(10))
                                     .header(
-                                            "Authorization",
-                                            "Bearer " + cipher.decrypt(s.getApiKeyCipher()))
+                                            AUTHORIZATION_HEADER,
+                                            BEARER_PREFIX + cipher.decrypt(s.getApiKeyCipher()))
                                     .GET()
                                     .build(),
                             HttpResponse.BodyHandlers.ofString());
@@ -360,8 +363,8 @@ public class AiRouterServiceImpl implements AiRouterService {
                                                             + "/chat/completions"))
                                     .timeout(Duration.ofSeconds(90))
                                     .header(
-                                            "Authorization",
-                                            "Bearer " + cipher.decrypt(s.getApiKeyCipher()))
+                                            AUTHORIZATION_HEADER,
+                                            BEARER_PREFIX + cipher.decrypt(s.getApiKeyCipher()))
                                     .header("Content-Type", "application/json")
                                     .POST(
                                             HttpRequest.BodyPublishers.ofString(

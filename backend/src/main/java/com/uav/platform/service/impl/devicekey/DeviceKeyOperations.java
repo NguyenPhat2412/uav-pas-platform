@@ -1,15 +1,13 @@
 package com.uav.platform.service.impl.devicekey;
 
+import com.uav.platform.common.util.Hashing;
+import com.uav.platform.common.util.SecureTokens;
 import com.uav.platform.entity.devicekey.DeviceApiKey;
 import com.uav.platform.enums.devicekey.DeviceKeyStatus;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.HexFormat;
 
 /** Key material rules: generation, hashing and constant-time comparison. */
 public final class DeviceKeyOperations {
@@ -20,14 +18,11 @@ public final class DeviceKeyOperations {
 
     static final int ENCODED_LENGTH = 43;
     static final int VISIBLE_PREFIX = 8;
-    private static final SecureRandom RANDOM = new SecureRandom();
 
     private DeviceKeyOperations() {}
 
     public static String generate() {
-        byte[] bytes = new byte[RANDOM_BYTES];
-        RANDOM.nextBytes(bytes);
-        return KEY_PREFIX + Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        return KEY_PREFIX + SecureTokens.base64Url(RANDOM_BYTES);
     }
 
     /** Cheap shape check so malformed headers never reach the database. */
@@ -47,14 +42,7 @@ public final class DeviceKeyOperations {
     }
 
     public static String sha256Hex(String key) {
-        try {
-            return HexFormat.of()
-                    .formatHex(
-                            MessageDigest.getInstance("SHA-256")
-                                    .digest(key.getBytes(StandardCharsets.UTF_8)));
-        } catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException("SHA-256 unavailable", ex);
-        }
+        return Hashing.sha256Hex(key);
     }
 
     public static boolean hashesEqual(String a, String b) {

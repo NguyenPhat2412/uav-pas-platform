@@ -53,7 +53,8 @@ public class BillingAdminController {
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<PaymentTransactionAdminResponse> refund(
             @PathVariable Long id,
-            @Valid @RequestBody com.uav.platform.dto.request.billing.RefundTransactionRequest request,
+            @Valid @RequestBody
+                    com.uav.platform.dto.request.billing.RefundTransactionRequest request,
             Authentication auth) {
         return ResponseEntity.ok(
                 billingAdmin.refundTransaction(id, request.bankReference(), request.note(), auth));

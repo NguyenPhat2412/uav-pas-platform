@@ -426,7 +426,8 @@ class BillingServiceTest {
                 org.mockito.Mockito.mock(com.uav.platform.entity.mission.Mission.class);
         when(mission.getId()).thenReturn(5L);
         when(mission.getCustomer()).thenReturn(customer);
-        when(mission.getStatus()).thenReturn(com.uav.platform.enums.mission.MissionStatus.COMPLETED);
+        when(mission.getStatus())
+                .thenReturn(com.uav.platform.enums.mission.MissionStatus.COMPLETED);
         when(missionRepository.findById(5L)).thenReturn(Optional.of(mission));
         when(invoiceRepository.existsByMissionIdAndStatusIn(
                         org.mockito.ArgumentMatchers.eq(5L), org.mockito.ArgumentMatchers.any()))
@@ -437,7 +438,8 @@ class BillingServiceTest {
                         SystemException.class,
                         () ->
                                 service.createInvoice(
-                                        new com.uav.platform.dto.request.billing.CreateInvoiceRequest(
+                                        new com.uav.platform.dto.request.billing
+                                                .CreateInvoiceRequest(
                                                 1L, 5L, null, new BigDecimal("500000"), null),
                                         auth));
 

@@ -1,5 +1,7 @@
 package com.uav.platform.security;
 
+import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_HEADER;
+
 import com.uav.platform.dto.record.devicekey.DevicePrincipal;
 import com.uav.platform.service.devicekey.DeviceKeyService;
 
@@ -57,7 +59,7 @@ public class DeviceKeyAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         List<String> keys = Collections.list(values);
-        if (keys.size() != 1 || request.getHeader("Authorization") != null) {
+        if (keys.size() != 1 || request.getHeader(AUTHORIZATION_HEADER) != null) {
             reject(response, HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }

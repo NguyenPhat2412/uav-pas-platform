@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.billing;
 
+import static com.uav.platform.common.constant.TimeConstants.DATE_TIME_MINUTE;
+
 import com.uav.platform.dto.record.billing.InvoiceReceiptData;
 import com.uav.platform.enums.billing.InvoiceStatus;
 
@@ -11,7 +13,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -23,9 +24,6 @@ import java.util.Locale;
  * font embedding or Mojibake.
  */
 public final class InvoiceReceiptOperations {
-
-    private static final DateTimeFormatter DATE_TIME_FMT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private InvoiceReceiptOperations() {}
 
@@ -479,7 +477,7 @@ public final class InvoiceReceiptOperations {
     }
 
     private static String formatDate(LocalDateTime dateTime) {
-        return dateTime != null ? dateTime.format(DATE_TIME_FMT) : "-";
+        return dateTime != null ? dateTime.format(DATE_TIME_MINUTE) : "-";
     }
 
     private static boolean notBlank(String text) {

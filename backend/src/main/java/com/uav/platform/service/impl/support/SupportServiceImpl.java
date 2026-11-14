@@ -24,7 +24,7 @@ import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.notification.NotificationService;
 import com.uav.platform.service.support.SupportService;
 import com.uav.platform.specification.support.SupportThreadSpecifications;
-import com.uav.platform.websocket.RealtimeEventBroadcaster;
+import com.uav.platform.transport.websocket.RealtimeEventBroadcaster;
 
 import lombok.extern.slf4j.Slf4j;
 

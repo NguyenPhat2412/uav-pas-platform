@@ -4,6 +4,7 @@ import com.uav.platform.dto.record.billing.PaymentAccountSettings;
 import com.uav.platform.dto.response.billing.BankTransferInstructionsResponse;
 import com.uav.platform.dto.response.billing.BankTransferStatusResponse;
 import com.uav.platform.dto.response.billing.InvoiceResponse;
+import com.uav.platform.enums.billing.InvoiceStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.billing.ServicePlanRepository;
 import com.uav.platform.repository.mission.MissionRepository;
@@ -14,8 +15,6 @@ import com.uav.platform.service.billing.PaymentSettingsService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.uav.platform.enums.billing.InvoiceStatus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -84,7 +83,9 @@ public class BankTransferServiceImpl implements BankTransferService {
                 flightHours(invoice),
                 invoice.dueDate(),
                 invoice.createdAt(),
-                invoice.missionId() != null ? "MISSION" : invoice.planId() != null ? "PLAN" : "OTHER");
+                invoice.missionId() != null
+                        ? "MISSION"
+                        : invoice.planId() != null ? "PLAN" : "OTHER");
     }
 
     /** "UAV INV" plus the invoice code without separators, matching what VietQR keeps in the memo. */

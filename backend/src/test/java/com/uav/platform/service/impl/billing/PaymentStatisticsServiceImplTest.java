@@ -80,7 +80,9 @@ class PaymentStatisticsServiceImplTest {
         assertThat(stats.outstanding().pendingAmount()).isEqualByComparingTo("800000");
         assertThat(stats.outstanding().overdueCount()).isEqualTo(1);
         assertThat(stats.aging())
-                .extracting(PaymentStatisticsResponse.Slice::key, PaymentStatisticsResponse.Slice::count)
+                .extracting(
+                        PaymentStatisticsResponse.Slice::key,
+                        PaymentStatisticsResponse.Slice::count)
                 .containsExactly(
                         org.assertj.core.groups.Tuple.tuple("NOT_DUE", 1L),
                         org.assertj.core.groups.Tuple.tuple("D1_7", 0L),
@@ -89,13 +91,19 @@ class PaymentStatisticsServiceImplTest {
 
         assertThat(stats.byPlan()).singleElement().extracting("key").isEqualTo("PRO");
         assertThat(stats.bySource()).singleElement().extracting("key").isEqualTo("PLAN");
-        assertThat(stats.byGateway()).singleElement().extracting("key").isEqualTo("VIETQR_SEPAY_AUTO");
+        assertThat(stats.byGateway())
+                .singleElement()
+                .extracting("key")
+                .isEqualTo("VIETQR_SEPAY_AUTO");
         assertThat(stats.review().pendingCount()).isEqualTo(1);
         assertThat(stats.review().pendingAmount()).isEqualByComparingTo("450000");
-        assertThat(stats.topCustomers()).singleElement().satisfies(c -> {
-            assertThat(c.name()).isEqualTo("alice");
-            assertThat(c.outstanding()).isEqualByComparingTo("300000");
-        });
+        assertThat(stats.topCustomers())
+                .singleElement()
+                .satisfies(
+                        c -> {
+                            assertThat(c.name()).isEqualTo("alice");
+                            assertThat(c.outstanding()).isEqualByComparingTo("300000");
+                        });
         assertThat(stats.monthly()).hasSize(12);
         assertThat(stats.monthly().getLast().month()).isEqualTo("2026-11");
         assertThat(stats.monthly().getLast().collected()).isEqualByComparingTo("15000000");
@@ -112,8 +120,13 @@ class PaymentStatisticsServiceImplTest {
     }
 
     private static Invoice invoice(
-            AppUser owner, String amount, InvoiceStatus status, LocalDateTime created, LocalDateTime due) {
-        Invoice invoice = new Invoice("INV-" + created, owner, null, null, new BigDecimal(amount), due, null);
+            AppUser owner,
+            String amount,
+            InvoiceStatus status,
+            LocalDateTime created,
+            LocalDateTime due) {
+        Invoice invoice =
+                new Invoice("INV-" + created, owner, null, null, new BigDecimal(amount), due, null);
         invoice.setStatus(status);
         invoice.setCreatedAt(created);
         return invoice;

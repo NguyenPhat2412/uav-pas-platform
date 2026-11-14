@@ -1,4 +1,4 @@
-package com.uav.platform.websocket;
+package com.uav.platform.transport.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

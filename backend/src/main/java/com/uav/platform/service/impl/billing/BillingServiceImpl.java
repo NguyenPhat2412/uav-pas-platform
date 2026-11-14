@@ -1,6 +1,7 @@
 package com.uav.platform.service.impl.billing;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.common.util.Hashing;
 import com.uav.platform.dto.record.billing.InvoiceReceiptData;
 import com.uav.platform.dto.record.billing.IpnSignaturePayload;
 import com.uav.platform.dto.record.billing.PaymentAccountSettings;
@@ -21,8 +22,8 @@ import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.entity.user.CustomerBillingProfile;
 import com.uav.platform.enums.billing.InvoiceStatus;
-import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.billing.PaymentMethod;
+import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.billing.BillingMapper;
@@ -95,7 +96,7 @@ public class BillingServiceImpl implements BillingService {
     private ObjectProvider<NotificationService> notifications;
 
     @Autowired(required = false)
-    private com.uav.platform.websocket.RealtimeEventBroadcaster realtimeBroadcaster;
+    private com.uav.platform.transport.websocket.RealtimeEventBroadcaster realtimeBroadcaster;
 
     public void setNotifications(ObjectProvider<NotificationService> notifications) {
         this.notifications = notifications;
@@ -106,7 +107,7 @@ public class BillingServiceImpl implements BillingService {
     }
 
     public void setRealtimeBroadcaster(
-            com.uav.platform.websocket.RealtimeEventBroadcaster realtimeBroadcaster) {
+            com.uav.platform.transport.websocket.RealtimeEventBroadcaster realtimeBroadcaster) {
         this.realtimeBroadcaster = realtimeBroadcaster;
     }
 
@@ -460,7 +461,8 @@ public class BillingServiceImpl implements BillingService {
                 request != null && request.paymentMethod() != null
                         ? request.paymentMethod()
                         : PaymentMethod.BANK_TRANSFER;
-        // shortcut: only VietQR / bank transfer is wired; add a gateway adapter before enabling these.
+        // shortcut: only VietQR / bank transfer is wired; add a gateway adapter before enabling
+        // these.
         if (method == PaymentMethod.VNPAY || method == PaymentMethod.MOMO) {
             throw SystemException.badRequest(
                     "Payment method is not supported yet", "PAYMENT_METHOD_UNSUPPORTED");
@@ -940,7 +942,12 @@ public class BillingServiceImpl implements BillingService {
                                 i.getStatus() == InvoiceStatus.PENDING
                                         && i.getMission() == null
                                         && i.getPlan() != null)
-                .forEach(i -> close(i, InvoiceStatus.CANCELLED, "[Đổi sang gói " + plan.getCode() + "]"));
+                .forEach(
+                        i ->
+                                close(
+                                        i,
+                                        InvoiceStatus.CANCELLED,
+                                        "[Đổi sang gói " + plan.getCode() + "]"));
         if (plan.getPrice() == null || plan.getPrice().signum() <= 0) {
             quotaService.updateQuota(
                     user.getId(),
@@ -988,7 +995,8 @@ public class BillingServiceImpl implements BillingService {
         }
         String note = reason == null || reason.isBlank() ? null : reason.trim();
         if (note != null && note.length() > 200) {
-            throw SystemException.badRequest("Reason is too long", "INVOICE_CANCEL_REASON_TOO_LONG");
+            throw SystemException.badRequest(
+                    "Reason is too long", "INVOICE_CANCEL_REASON_TOO_LONG");
         }
         close(
                 invoice,
@@ -1024,7 +1032,9 @@ public class BillingServiceImpl implements BillingService {
             notifyCustomer(
                     invoice,
                     "Hóa đơn đã hết hạn",
-                    "Hóa đơn " + invoice.getCode() + " đã quá hạn và được đóng. Hãy chọn lại gói nếu cần.");
+                    "Hóa đơn "
+                            + invoice.getCode()
+                            + " đã quá hạn và được đóng. Hãy chọn lại gói nếu cần.");
         }
         if (!overdue.isEmpty()) log.info("Expired {} overdue plan invoices", overdue.size());
         return overdue.size();
@@ -1050,20 +1060,7 @@ public class BillingServiceImpl implements BillingService {
 
     public String computeIpnSignature(PaymentIpnRequest request) {
         String canonical = IpnSignaturePayload.from(request).canonical();
-        try {
-            javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
-            javax.crypto.spec.SecretKeySpec keySpec =
-                    new javax.crypto.spec.SecretKeySpec(
-                            this.ipnSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8),
-                            "HmacSHA256");
-            mac.init(keySpec);
-            return java.util.HexFormat.of()
-                    .formatHex(
-                            mac.doFinal(
-                                    canonical.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable to compute HMAC-SHA256 for IPN", e);
-        }
+        return Hashing.hmacSha256Hex(this.ipnSecret, canonical);
     }
 
     private boolean isValidIpnSignature(PaymentIpnRequest request, String providedSignature) {

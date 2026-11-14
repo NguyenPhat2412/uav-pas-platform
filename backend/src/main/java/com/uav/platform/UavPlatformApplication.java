@@ -1,5 +1,7 @@
 package com.uav.platform;
 
+import static com.uav.platform.common.constant.TimeConstants.BUSINESS_TIME_ZONE;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -14,8 +16,6 @@ public class UavPlatformApplication {
      * maintenance due dates, device-key expiry) is read and stored in this zone, whatever the host
      * clock says. Override with APP_TIME_ZONE only for a deployment outside Vietnam.
      */
-    public static final String BUSINESS_TIME_ZONE = "Asia/Ho_Chi_Minh";
-
     public static void main(String[] args) {
         TimeZone.setDefault(
                 TimeZone.getTimeZone(

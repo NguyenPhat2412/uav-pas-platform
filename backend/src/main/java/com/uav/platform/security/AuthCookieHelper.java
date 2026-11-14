@@ -1,5 +1,9 @@
 package com.uav.platform.security;
 
+import static com.uav.platform.common.constant.SecurityConstants.ANONYMOUS_USER;
+import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_HEADER;
+import static com.uav.platform.common.constant.SecurityConstants.BEARER_PREFIX;
+
 import com.uav.platform.common.dto.response.MessageResponse;
 import com.uav.platform.dto.request.auth.LogoutRequest;
 import com.uav.platform.dto.request.auth.RefreshTokenRequest;
@@ -187,8 +191,11 @@ public class AuthCookieHelper {
     }
 
     public static String extractAccessToken(AuthCookieHelper helper, HttpServletRequest request) {
-        String authHeader = request != null ? request.getHeader("Authorization") : null;
-        if (authHeader != null && authHeader.trim().regionMatches(true, 0, "Bearer ", 0, 7)) {
+        String authHeader = request != null ? request.getHeader(AUTHORIZATION_HEADER) : null;
+        if (authHeader != null
+                && authHeader
+                        .trim()
+                        .regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length())) {
             return authHeader.trim().substring(7).trim();
         }
         return helper != null ? helper.resolveAccessToken(request) : null;
@@ -217,7 +224,7 @@ public class AuthCookieHelper {
     public static String requireAuthenticatedUsername(Authentication authentication) {
         if (authentication == null
                 || !authentication.isAuthenticated()
-                || "anonymousUser".equals(authentication.getName())) {
+                || ANONYMOUS_USER.equals(authentication.getName())) {
             throw SystemException.unauthorized("Authentication required");
         }
         return authentication.getName();

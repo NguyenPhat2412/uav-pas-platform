@@ -1,5 +1,12 @@
 package com.uav.platform.service.training;
 
+import static com.uav.platform.common.constant.MediaConstants.APPLICATION_PDF;
+import static com.uav.platform.common.constant.MediaConstants.IMAGE_JPEG;
+import static com.uav.platform.common.constant.MediaConstants.IMAGE_PNG;
+import static com.uav.platform.common.constant.MediaConstants.IMAGE_WEBP;
+import static com.uav.platform.common.constant.MediaConstants.VIDEO_MP4;
+import static com.uav.platform.common.constant.MediaConstants.VIDEO_WEBM;
+
 import com.uav.platform.error.SystemException;
 import com.uav.platform.service.media.MediaUploadPolicy;
 
@@ -31,17 +38,17 @@ public final class TrainingAssetPolicy {
 
     private static final Map<String, Long> LIMITS =
             Map.of(
-                    "video/mp4",
+                    VIDEO_MP4,
                     MAX_VIDEO_BYTES,
-                    "video/webm",
+                    VIDEO_WEBM,
                     MAX_VIDEO_BYTES,
-                    "image/png",
+                    IMAGE_PNG,
                     MAX_IMAGE_BYTES,
-                    "image/jpeg",
+                    IMAGE_JPEG,
                     MAX_IMAGE_BYTES,
-                    "image/webp",
+                    IMAGE_WEBP,
                     MAX_IMAGE_BYTES,
-                    "application/pdf",
+                    APPLICATION_PDF,
                     MAX_PDF_BYTES,
                     DOCX,
                     MAX_OFFICE_BYTES,
@@ -55,7 +62,7 @@ public final class TrainingAssetPolicy {
 
     private TrainingAssetPolicy() {}
 
-    /** Lower-cased content type without parameters, e.g. "video/mp4" for "Video/MP4; codecs=avc1". */
+    /** Lower-cased content type without parameters, e.g. VIDEO_MP4 for "Video/MP4; codecs=avc1". */
     public static String baseType(String contentType) {
         if (contentType == null) return "";
         int semicolon = contentType.indexOf(';');

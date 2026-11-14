@@ -1,4 +1,6 @@
-package com.uav.platform.websocket;
+package com.uav.platform.transport.websocket;
+
+import static com.uav.platform.common.constant.SecurityConstants.ANONYMOUS_USER;
 
 import com.uav.platform.dto.record.realtime.RealtimeSessionPrincipal;
 import com.uav.platform.entity.user.AppUser;
@@ -53,7 +55,7 @@ public class RealtimeHandshakeInterceptor implements HandshakeInterceptor {
         }
         if (auth != null
                 && auth.isAuthenticated()
-                && !"anonymousUser".equals(auth.getName())
+                && !ANONYMOUS_USER.equals(auth.getName())
                 && auth.getName() != null
                 && !auth.getName().isBlank()) {
             AppUser user = userRepository.findByUsername(auth.getName()).orElse(null);

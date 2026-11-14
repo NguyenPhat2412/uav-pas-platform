@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.user;
 
+import static com.uav.platform.common.constant.MediaConstants.IMAGE_TYPES;
+
 import com.uav.platform.dto.request.media.MediaUploadRequest;
 import com.uav.platform.dto.request.user.AvatarUploadRequest;
 import com.uav.platform.dto.response.media.MediaAssetResponse;
@@ -37,7 +39,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class AvatarServiceImpl implements AvatarService {
     static final long MAX_BYTES = 5_000_000L;
-    static final Set<String> TYPES = Set.of("image/jpeg", "image/png", "image/webp");
+    static final Set<String> TYPES = IMAGE_TYPES;
     private static final Pattern VERSION = Pattern.compile("[?&]v=(\\d+)");
 
     private final UserRepository users;

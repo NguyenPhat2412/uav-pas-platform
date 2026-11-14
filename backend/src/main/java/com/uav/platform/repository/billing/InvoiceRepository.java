@@ -31,7 +31,8 @@ public interface InvoiceRepository
 
     long countByUserId(Long userId);
 
-    boolean existsByMissionIdAndStatusIn(Long missionId, java.util.Collection<InvoiceStatus> statuses);
+    boolean existsByMissionIdAndStatusIn(
+            Long missionId, java.util.Collection<InvoiceStatus> statuses);
 
     List<Invoice> findByMissionIdAndStatus(Long missionId, InvoiceStatus status);
 

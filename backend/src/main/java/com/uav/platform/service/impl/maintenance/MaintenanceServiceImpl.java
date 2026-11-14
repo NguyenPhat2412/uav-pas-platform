@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.maintenance;
 
+import static com.uav.platform.common.constant.TimeConstants.BUSINESS_ZONE;
+
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.dto.request.maintenance.*;
 import com.uav.platform.dto.response.maintenance.*;
@@ -36,7 +38,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.EnumSet;
 
 /** All writes take the UAV lock before schedule/order locks. No mission row is locked here. */
@@ -45,7 +46,6 @@ import java.util.EnumSet;
 @Transactional
 @RequiredArgsConstructor
 public class MaintenanceServiceImpl implements MaintenanceService {
-    static final ZoneId BUSINESS_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
     private static final EnumSet<RepairStatus> ACTIVE =
             EnumSet.of(RepairStatus.OPEN, RepairStatus.IN_PROGRESS);
     private static final EnumSet<MissionStatus> TERMINAL =

@@ -1,5 +1,8 @@
 package com.uav.platform.security.jwt;
 
+import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_HEADER;
+import static com.uav.platform.common.constant.SecurityConstants.BEARER_PREFIX;
+
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.AuthCookieHelper;
@@ -108,9 +111,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken)
-                && bearerToken.trim().regionMatches(true, 0, "Bearer ", 0, 7)) {
+                && bearerToken
+                        .trim()
+                        .regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length())) {
             return bearerToken.trim().substring(7).trim();
         }
         if (authCookieHelper != null) {

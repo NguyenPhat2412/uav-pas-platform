@@ -15,7 +15,7 @@ import com.uav.platform.repository.notification.NotificationRepository;
 import com.uav.platform.repository.notification.PushDeviceTokenRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.notification.NotificationService;
-import com.uav.platform.websocket.RealtimeEventBroadcaster;
+import com.uav.platform.transport.websocket.RealtimeEventBroadcaster;
 
 import lombok.RequiredArgsConstructor;
 

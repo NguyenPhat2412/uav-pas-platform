@@ -1,6 +1,7 @@
 package com.uav.platform.service.impl.user;
 
 import com.uav.platform.common.constant.CoreConstants;
+import com.uav.platform.common.util.Hashing;
 import com.uav.platform.common.util.PhoneNumbers;
 import com.uav.platform.dto.record.user.UserProfileUpdateCommand;
 import com.uav.platform.dto.request.user.AccountDeletionRequest;
@@ -35,9 +36,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -471,17 +469,11 @@ public class UserProfileServiceImpl implements UserProfileService {
     private UserProfileResponse response(AppUser user) {
         String content =
                 user.getId() + ":" + part(user.getFullName()) + part(user.getPhoneNumber());
-        try {
-            String revision =
-                    HexFormat.of()
-                            .formatHex(
-                                    MessageDigest.getInstance("SHA-256")
-                                            .digest(content.getBytes(StandardCharsets.UTF_8)));
-            return new UserProfileResponse(
-                    user.getId(), user.getFullName(), user.getPhoneNumber(), revision);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-256 is unavailable", e);
-        }
+        return new UserProfileResponse(
+                user.getId(),
+                user.getFullName(),
+                user.getPhoneNumber(),
+                Hashing.sha256Hex(content));
     }
 
     private String part(String value) {

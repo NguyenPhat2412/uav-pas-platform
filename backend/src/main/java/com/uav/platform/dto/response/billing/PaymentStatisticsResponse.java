@@ -41,7 +41,10 @@ public record PaymentStatisticsResponse(
             long payingCustomers) {}
 
     public record Outstanding(
-            long pendingCount, BigDecimal pendingAmount, long overdueCount, BigDecimal overdueAmount) {}
+            long pendingCount,
+            BigDecimal pendingAmount,
+            long overdueCount,
+            BigDecimal overdueAmount) {}
 
     public record MonthPoint(
             String month, BigDecimal issued, BigDecimal collected, BigDecimal refunded) {}

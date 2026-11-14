@@ -2,6 +2,7 @@ package com.uav.platform.service.impl.auth;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.common.util.Hashing;
 import com.uav.platform.dto.record.auth.AppleIdentity;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.service.auth.AppleIdTokenService;
@@ -22,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPublicKeySpec;
@@ -308,7 +308,7 @@ public class AppleIdTokenServiceImpl implements AppleIdTokenService {
         if (MessageDigest.isEqual(tokenBytes, expectedNonce.getBytes(StandardCharsets.UTF_8))) {
             return true;
         }
-        byte[] sha256 = sha256(expectedNonce);
+        byte[] sha256 = Hashing.sha256(expectedNonce);
         String hex = HexFormat.of().formatHex(sha256);
         if (MessageDigest.isEqual(tokenBytes, hex.getBytes(StandardCharsets.UTF_8))) {
             return true;
@@ -319,15 +319,6 @@ public class AppleIdTokenServiceImpl implements AppleIdTokenService {
         }
         String base64UrlPadded = Base64.getUrlEncoder().encodeToString(sha256);
         return MessageDigest.isEqual(tokenBytes, base64UrlPadded.getBytes(StandardCharsets.UTF_8));
-    }
-
-    private static byte[] sha256(String input) {
-        try {
-            return MessageDigest.getInstance("SHA-256")
-                    .digest(input.getBytes(StandardCharsets.UTF_8));
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-256 unavailable", e);
-        }
     }
 
     private static byte[] base64UrlDecode(String segment) {
