@@ -39,3 +39,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Apple keys (.p8) and their local inventory: never commit
+/credentials/
