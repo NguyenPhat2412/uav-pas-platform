@@ -109,6 +109,17 @@ class SupportSecurityIntegrationTest {
         mvc.perform(get("/api/v1/admin/support/summary")).andExpect(status().isUnauthorized());
         mvc.perform(get("/api/v1/admin/support/summary").with(authentication(unprivilegedAuth)))
                 .andExpect(status().isForbidden());
+        // A customer holds DASHBOARD_VIEW by default but must never read other visitors' threads.
+        AppUser customer = createUser(UserRole.ROLE_PILOT, "Khách hàng thử");
+        var customerAuth =
+                new UsernamePasswordAuthenticationToken(
+                        customer.getUsername(),
+                        "n/a",
+                        List.of(new SimpleGrantedAuthority("ROLE_PILOT")));
+        mvc.perform(get("/api/v1/admin/support/summary").with(authentication(customerAuth)))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/api/v1/admin/support/threads").with(authentication(customerAuth)))
+                .andExpect(status().isForbidden());
 
         // 4. Admin lists filtered threads & inspects summary via real JPA queries
         mvc.perform(

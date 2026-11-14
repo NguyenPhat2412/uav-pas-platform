@@ -5,7 +5,7 @@ import {readFile} from 'node:fs/promises';
 
 const source = await readFile(new URL('../src/utils/errors/runtime-error.ts', import.meta.url), 'utf8');
 const compiled = ts.transpileModule(source, {compilerOptions: {module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022}}).outputText;
-const {isChunkLoadError, errorReference, shouldAutoReload, CHUNK_RELOAD_WINDOW_MS} =
+const {isChunkLoadError, classifyRuntimeException, errorReference, shouldAutoReload, CHUNK_RELOAD_WINDOW_MS} =
     await import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
 
 test('runtime errors: stale-build chunk failures are recognised, ordinary bugs are not', () => {
@@ -14,6 +14,21 @@ test('runtime errors: stale-build chunk failures are recognised, ordinary bugs a
     assert.equal(isChunkLoadError({message: 'Failed to fetch dynamically imported module: /_next/static/chunks/a.js'}), true);
     assert.equal(isChunkLoadError({message: "Cannot read properties of null (reading 'y')"}), false);
     assert.equal(isChunkLoadError(null), false);
+});
+
+test('runtime errors: classifyRuntimeException distinguishes all 9 portal/mobile exception states', () => {
+    assert.equal(classifyRuntimeException({message: 'anything'}, false), 'offline');
+    assert.equal(classifyRuntimeException({name: 'ChunkLoadError', message: 'chunk failed'}, true), 'stale_build');
+    assert.equal(classifyRuntimeException({status: 0, code: 'NETWORK_ERROR'}, true), 'server_unreachable');
+    assert.equal(classifyRuntimeException({message: 'Failed to fetch'}, true), 'server_unreachable');
+    assert.equal(classifyRuntimeException({status: 503, message: 'Service Unavailable'}, true), 'maintenance');
+    assert.equal(classifyRuntimeException({status: 502, message: 'Bad Gateway'}, true), 'maintenance');
+    assert.equal(classifyRuntimeException({status: 429, code: 'RATE_LIMITED'}, true), 'rate_limited');
+    assert.equal(classifyRuntimeException({status: 403, code: 'FORBIDDEN'}, true), 'forbidden');
+    assert.equal(classifyRuntimeException({status: 404, code: 'NOT_FOUND'}, true), 'not_found');
+    assert.equal(classifyRuntimeException({status: 401, code: 'SESSION_EXPIRED'}, true), 'unauthorized');
+    assert.equal(classifyRuntimeException({name: 'TypeError', message: 'boom'}, true), 'runtime');
+    assert.equal(classifyRuntimeException(null, true), 'runtime');
 });
 
 test('runtime errors: the reference is short, stable per error and prefers the server digest', () => {

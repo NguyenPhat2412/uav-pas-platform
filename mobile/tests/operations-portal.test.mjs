@@ -396,3 +396,24 @@ test('push registration, forceFail & operations portal routes are wired end to e
         assert.doesNotMatch(raw, bannedPattern, `messages/${locale}.json contains a banned term`);
     }
 });
+
+test('mobile exception suite: +not-found, AppErrorView, AppForbiddenView, and 3-mode ConnectionLostScreen are wired across all 3 portals', () => {
+    assert.equal(existsSync(new URL('../src/app/+not-found.tsx', import.meta.url)), true);
+    const notFoundRoute = readFileSync(new URL('../src/app/+not-found.tsx', import.meta.url), 'utf8');
+    assert.match(notFoundRoute, /AppNotFoundView/);
+
+    const statusViews = readFileSync(new URL('../src/components/shared/AppStatusViews.tsx', import.meta.url), 'utf8');
+    assert.match(statusViews, /classifyRuntimeException/);
+    assert.match(statusViews, /export function AppNotFoundView/);
+    assert.match(statusViews, /export function AppForbiddenView/);
+
+    const connectionLost = readFileSync(new URL('../src/components/shared/ConnectionLostScreen.tsx', import.meta.url), 'utf8');
+    assert.match(connectionLost, /maintenance/);
+    assert.match(connectionLost, /server/);
+    assert.match(connectionLost, /GlobalOfflineScreen/);
+
+    const adminQuickScreen = readFileSync(new URL('../src/components/operations/AdminQuickActionsScreen.tsx', import.meta.url), 'utf8');
+    const adminSupportScreen = readFileSync(new URL('../src/components/support/AdminSupportInboxScreen.tsx', import.meta.url), 'utf8');
+    assert.match(adminQuickScreen, /<AppForbiddenView/);
+    assert.match(adminSupportScreen, /<AppForbiddenView/);
+});

@@ -1,6 +1,16 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import test from 'node:test';
-import {nextSignInStep, normalizeCode, registerVerifyParams, signInErrorText} from '../src/forms/auth/sign-in-flow.ts';
+import {
+    canSubmitAccountDeletion,
+    formatAppleFullName,
+    isAppleAuthDisabledError,
+    isAppleSignInCanceled,
+    nextSignInStep,
+    normalizeCode,
+    registerVerifyParams,
+    signInErrorText,
+} from '../src/forms/auth/sign-in-flow.ts';
 import {fromLocalIso, newMissionDraft, toLocalIso, withEnd, withPoint, withStart} from '../src/forms/mission/mission-draft.ts';
 import {canCancel, MISSION_FILTERS, progressStep, statusTone} from '../src/utils/mission/status.ts';
 import {gradientStops, nextHours} from '../src/utils/weather/gradient.ts';
@@ -73,4 +83,86 @@ test('weather: sky gradients and the next-hours strip', () => {
     assert.deepEqual(gradientStops('bg-gradient-to-br from-[#454c5c] to-[#1f2430]'), ['#454c5c', '#1f2430']);
     assert.equal(gradientStops('none').length, 2);
     assert.deepEqual(nextHours(new Date(2026, 10, 1, 22, 40)), [undefined, '2026-11-02T01:00', '2026-11-02T04:00', '2026-11-02T07:00', '2026-11-02T10:00']);
+});
+
+test('apple sign-in: fullName formatting, cancel/503 guards and horizontal social row wiring', () => {
+    assert.equal(formatAppleFullName({givenName: 'Minh', familyName: 'Nguyễn'}), 'Minh Nguyễn');
+    assert.equal(formatAppleFullName({givenName: '  Minh ', familyName: null}), 'Minh');
+    assert.equal(formatAppleFullName({givenName: null, familyName: '   '}), undefined);
+    assert.equal(formatAppleFullName(null), undefined);
+
+    assert.equal(isAppleSignInCanceled({code: 'ERR_REQUEST_CANCELED'}), true);
+    assert.equal(isAppleSignInCanceled({code: 'ERR_CANCELED'}), true);
+    assert.equal(isAppleSignInCanceled({code: 'OTHER'}), false);
+    assert.equal(isAppleAuthDisabledError({code: 'APPLE_AUTH_DISABLED'}), true);
+    assert.equal(isAppleAuthDisabledError({code: 'INVALID_CREDENTIALS'}), false);
+
+    const appJson = JSON.parse(readFileSync(new URL('../app.json', import.meta.url), 'utf8'));
+    assert.equal(appJson.expo.ios.usesAppleSignIn, true);
+    assert.ok(appJson.expo.plugins.includes('expo-apple-authentication'));
+
+    const authApi = readFileSync(new URL('../src/api/auth/auth.api.ts', import.meta.url), 'utf8');
+    assert.match(authApi, /loginWithApple:/);
+    assert.match(authApi, /API_ROUTES\.auth\.apple/);
+
+    const socialRow = readFileSync(new URL('../src/components/auth/SocialSignInRow.tsx', import.meta.url), 'utf8');
+    assert.match(socialRow, /<GoogleSignInButton/);
+    assert.match(socialRow, /<AppleSignInButton/);
+    assert.match(socialRow, /flexDirection:\s*'row'/);
+
+    const loginScreen = readFileSync(new URL('../src/components/auth/LoginScreen.tsx', import.meta.url), 'utf8');
+    const registerScreen = readFileSync(new URL('../src/components/auth/RegisterScreen.tsx', import.meta.url), 'utf8');
+    assert.match(loginScreen, /<SocialSignInRow/);
+    assert.match(registerScreen, /<SocialSignInRow\s+mode="signup"/);
+});
+
+test('account deletion & compact account controls: 100% Admin-policy driven with zero hardcoded rules', () => {
+    const basePolicy = {
+        enabled: true,
+        eligible: true,
+        hasPassword: true,
+        requirePassword: true,
+        requireReason: false,
+        confirmationPhrase: 'DELETE-NOW',
+    };
+
+    assert.equal(canSubmitAccountDeletion(null, {phrase: 'DELETE-NOW', currentPassword: 'secret', reason: ''}), false);
+    assert.equal(
+        canSubmitAccountDeletion({...basePolicy, enabled: false}, {phrase: 'DELETE-NOW', currentPassword: 'secret', reason: ''}),
+        false,
+    );
+    assert.equal(
+        canSubmitAccountDeletion({...basePolicy, eligible: false}, {phrase: 'DELETE-NOW', currentPassword: 'secret', reason: ''}),
+        false,
+    );
+    assert.equal(
+        canSubmitAccountDeletion(basePolicy, {phrase: 'WRONG', currentPassword: 'secret', reason: ''}),
+        false,
+        'must match dynamic confirmationPhrase from Admin policy',
+    );
+    assert.equal(
+        canSubmitAccountDeletion(basePolicy, {phrase: 'DELETE-NOW', currentPassword: '', reason: ''}),
+        false,
+        'requires password when policy.requirePassword && policy.hasPassword',
+    );
+    assert.equal(
+        canSubmitAccountDeletion({...basePolicy, hasPassword: false}, {phrase: 'DELETE-NOW', currentPassword: '', reason: ''}),
+        true,
+        'OAuth-only accounts without password are not blocked by password field',
+    );
+    assert.equal(
+        canSubmitAccountDeletion({...basePolicy, requireReason: true}, {phrase: 'DELETE-NOW', currentPassword: 'secret', reason: '   '}),
+        false,
+    );
+    assert.equal(
+        canSubmitAccountDeletion({...basePolicy, requireReason: true}, {phrase: '  DELETE-NOW ', currentPassword: 'secret', reason: 'No longer flying'}),
+        true,
+    );
+
+    const profileApi = readFileSync(new URL('../src/api/profile/profile.api.ts', import.meta.url), 'utf8');
+    assert.match(profileApi, /API_ROUTES\.users\.deletionPolicy/);
+    assert.match(profileApi, /API_ROUTES\.users\.deleteOwnAccount/);
+
+    const moreSheet = readFileSync(new URL('../src/components/profile/AccountMoreSheet.tsx', import.meta.url), 'utf8');
+    assert.match(moreSheet, /if\s*\(router\.canDismiss\(\)\)\s*router\.dismiss\(\)/);
 });

@@ -204,6 +204,9 @@ class EntityDtoBoundaryTest {
                     raw == Void.class
                             || raw == void.class
                             || raw == byte[].class
+                            || raw
+                                    == org.springframework.web.servlet.mvc.method.annotation
+                                            .StreamingResponseBody.class
                             || raw.getPackageName().matches(".*\\.dto\\.response(\\.\\w+)?"),
                     "API responses must use response DTOs (CSV binary and empty bodies are transport exceptions): "
                             + type);
