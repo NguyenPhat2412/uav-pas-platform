@@ -4,6 +4,7 @@ import com.uav.platform.dto.record.billing.PaymentAccountSettings;
 import com.uav.platform.dto.response.billing.BankTransferInstructionsResponse;
 import com.uav.platform.dto.response.billing.BankTransferStatusResponse;
 import com.uav.platform.dto.response.billing.InvoiceResponse;
+import com.uav.platform.enums.billing.InvoiceStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.billing.ServicePlanRepository;
 import com.uav.platform.repository.mission.MissionRepository;
@@ -70,8 +71,10 @@ public class BankTransferServiceImpl implements BankTransferService {
                 settings.accountNumber(),
                 settings.accountName(),
                 content,
-                VietQrOperations.build(
-                        settings.bankBin(), settings.accountNumber(), total, content),
+                invoice.status() == InvoiceStatus.PENDING
+                        ? VietQrOperations.build(
+                                settings.bankBin(), settings.accountNumber(), total, content)
+                        : null,
                 split[0],
                 vatRate,
                 split[1],
@@ -79,7 +82,10 @@ public class BankTransferServiceImpl implements BankTransferService {
                 invoice.missionTitle() != null ? invoice.missionTitle() : invoice.planName(),
                 flightHours(invoice),
                 invoice.dueDate(),
-                invoice.createdAt());
+                invoice.createdAt(),
+                invoice.missionId() != null
+                        ? "MISSION"
+                        : invoice.planId() != null ? "PLAN" : "OTHER");
     }
 
     /** "UAV INV" plus the invoice code without separators, matching what VietQR keeps in the memo. */

@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.training;
 
+import static com.uav.platform.common.constant.MediaConstants.APPLICATION_PDF;
+
 import com.uav.platform.dto.record.media.ObjectMetadata;
 import com.uav.platform.dto.request.training.CreateTrainingAssetRequest;
 import com.uav.platform.dto.request.training.UpdateCourseCoverRequest;
@@ -371,7 +373,7 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
                             documentAssetId,
                             "documentAssetId",
                             "Tệp phải là PDF.",
-                            "application/pdf");
+                            APPLICATION_PDF);
                 }
             }
             case ARTICLE -> {
@@ -425,7 +427,7 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
                             resource.assetId(),
                             "resources",
                             "Tài nguyên phải là tệp PDF, Word, PowerPoint, Excel hoặc ảnh PNG, JPEG, WebP.",
-                            "application/pdf",
+                            APPLICATION_PDF,
                             "image/",
                             TrainingAssetPolicy.DOCX,
                             TrainingAssetPolicy.PPTX,

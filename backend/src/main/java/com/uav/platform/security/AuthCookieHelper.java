@@ -1,5 +1,9 @@
 package com.uav.platform.security;
 
+import static com.uav.platform.common.constant.SecurityConstants.ANONYMOUS_USER;
+import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_HEADER;
+import static com.uav.platform.common.constant.SecurityConstants.BEARER_PREFIX;
+
 import com.uav.platform.common.dto.response.MessageResponse;
 import com.uav.platform.dto.request.auth.LogoutRequest;
 import com.uav.platform.dto.request.auth.RefreshTokenRequest;
@@ -23,6 +27,7 @@ public class AuthCookieHelper {
 
     public static final String ACCESS_TOKEN_COOKIE = "uav_access_token";
     public static final String REFRESH_TOKEN_COOKIE = "uav_refresh_token";
+    public static final String SESSION_PRESENCE_COOKIE = "uav_session_present";
 
     private final boolean secure;
     private final String sameSite;
@@ -97,6 +102,36 @@ public class AuthCookieHelper {
         return builder.build();
     }
 
+    public ResponseCookie createSessionPresenceCookie(long maxAgeSeconds) {
+        ResponseCookie.ResponseCookieBuilder builder =
+                ResponseCookie.from(SESSION_PRESENCE_COOKIE, "1")
+                        .httpOnly(false)
+                        .secure(secure)
+                        .sameSite(sameSite)
+                        .path("/")
+                        .maxAge(Duration.ofSeconds(maxAgeSeconds));
+
+        if (domain != null && !domain.isBlank()) {
+            builder.domain(domain.trim());
+        }
+        return builder.build();
+    }
+
+    public ResponseCookie clearSessionPresenceCookie() {
+        ResponseCookie.ResponseCookieBuilder builder =
+                ResponseCookie.from(SESSION_PRESENCE_COOKIE, "")
+                        .httpOnly(false)
+                        .secure(secure)
+                        .sameSite(sameSite)
+                        .path("/")
+                        .maxAge(0);
+
+        if (domain != null && !domain.isBlank()) {
+            builder.domain(domain.trim());
+        }
+        return builder.build();
+    }
+
     public String resolveAccessToken(HttpServletRequest request) {
         if (request == null || request.getCookies() == null) {
             return null;
@@ -129,6 +164,9 @@ public class AuthCookieHelper {
                 builder.header(
                         HttpHeaders.SET_COOKIE,
                         helper.createAccessTokenCookie(response.accessToken(), 86400).toString());
+                builder.header(
+                        HttpHeaders.SET_COOKIE,
+                        helper.createSessionPresenceCookie(604800).toString());
             }
             if (response.refreshToken() != null) {
                 builder.header(
@@ -153,8 +191,11 @@ public class AuthCookieHelper {
     }
 
     public static String extractAccessToken(AuthCookieHelper helper, HttpServletRequest request) {
-        String authHeader = request != null ? request.getHeader("Authorization") : null;
-        if (authHeader != null && authHeader.trim().regionMatches(true, 0, "Bearer ", 0, 7)) {
+        String authHeader = request != null ? request.getHeader(AUTHORIZATION_HEADER) : null;
+        if (authHeader != null
+                && authHeader
+                        .trim()
+                        .regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length())) {
             return authHeader.trim().substring(7).trim();
         }
         return helper != null ? helper.resolveAccessToken(request) : null;
@@ -175,6 +216,7 @@ public class AuthCookieHelper {
         if (helper != null) {
             builder.header(HttpHeaders.SET_COOKIE, helper.clearAccessTokenCookie().toString());
             builder.header(HttpHeaders.SET_COOKIE, helper.clearRefreshTokenCookie().toString());
+            builder.header(HttpHeaders.SET_COOKIE, helper.clearSessionPresenceCookie().toString());
         }
         return builder.body(new MessageResponse(message));
     }
@@ -182,7 +224,7 @@ public class AuthCookieHelper {
     public static String requireAuthenticatedUsername(Authentication authentication) {
         if (authentication == null
                 || !authentication.isAuthenticated()
-                || "anonymousUser".equals(authentication.getName())) {
+                || ANONYMOUS_USER.equals(authentication.getName())) {
             throw SystemException.unauthorized("Authentication required");
         }
         return authentication.getName();

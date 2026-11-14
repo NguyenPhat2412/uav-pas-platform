@@ -17,4 +17,6 @@ public interface UserPermissionRepository
 
     void deleteByUserIdAndPermissionCode(
             Long userId, com.uav.platform.enums.permission.PermissionCode code);
+
+    void deleteByUserId(Long userId);
 }

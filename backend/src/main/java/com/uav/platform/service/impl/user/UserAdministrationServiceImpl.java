@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.user;
 
+import static com.uav.platform.common.constant.TimeConstants.DATE_TIME_MINUTE;
+
 import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.common.util.PhoneNumbers;
 import com.uav.platform.dto.request.user.AdminCreateUserRequest;
@@ -32,7 +34,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -40,8 +41,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserAdministrationServiceImpl implements UserAdministrationService {
-    private static final DateTimeFormatter CSV_DATE =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private static final int EXPORT_LIMIT = 5000;
 
     private final UserRepository userRepository;
@@ -196,7 +195,7 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
                                         .append(
                                                 u.getCreatedAt() == null
                                                         ? ""
-                                                        : CSV_DATE.format(u.getCreatedAt()))
+                                                        : DATE_TIME_MINUTE.format(u.getCreatedAt()))
                                         .append('\n'));
         return csv.toString();
     }

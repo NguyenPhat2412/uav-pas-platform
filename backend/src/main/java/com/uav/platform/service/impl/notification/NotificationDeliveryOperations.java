@@ -1,5 +1,8 @@
 package com.uav.platform.service.impl.notification;
 
+import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_HEADER;
+import static com.uav.platform.common.constant.SecurityConstants.BEARER_PREFIX;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uav.platform.dto.record.notification.NotificationDeliveryPayload;
@@ -261,7 +264,7 @@ public class NotificationDeliveryOperations {
                                 HttpRequest.BodyPublishers.ofString(
                                         requestBody, StandardCharsets.UTF_8));
         if (expoAccessToken != null && !expoAccessToken.isBlank()) {
-            reqBuilder.header("Authorization", "Bearer " + expoAccessToken.trim());
+            reqBuilder.header(AUTHORIZATION_HEADER, BEARER_PREFIX + expoAccessToken.trim());
         }
 
         HttpResponse<String> response =

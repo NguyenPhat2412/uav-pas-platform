@@ -25,6 +25,7 @@ class EmailDomainPolicyServiceTest {
                         "pilot@outlook.com",
                         "pilot@hotmail.com",
                         "pilot@icloud.com",
+                        "relay.abc123@privaterelay.appleid.com",
                         "pilot@yahoo.com",
                         "student@school.ac.vn",
                         "researcher@university.edu.vn",

@@ -52,4 +52,16 @@ public interface BillingService {
      * plan is free and was applied immediately.
      */
     InvoiceResponse subscribe(String planCode, Authentication auth);
+
+    /**
+     * Cancels a PENDING invoice. A customer may cancel only their own plan invoice (a mission
+     * invoice is a debt for work ordered); an admin may cancel any pending invoice.
+     */
+    InvoiceResponse cancelInvoice(Long id, String reason, Authentication auth);
+
+    /** Cancels the open invoices of a mission that was cancelled or rejected. Returns how many. */
+    int cancelOpenMissionInvoices(com.uav.platform.entity.mission.Mission mission, String reason);
+
+    /** Marks plan invoices unpaid past their due date EXPIRED. Mission invoices stay owed. */
+    int expireOverduePlanInvoices();
 }

@@ -1,5 +1,9 @@
 package com.uav.platform.service.impl.assistant;
 
+import static com.uav.platform.common.constant.MediaConstants.IMAGE_JPEG;
+import static com.uav.platform.common.constant.MediaConstants.IMAGE_PNG;
+import static com.uav.platform.common.constant.MediaConstants.IMAGE_WEBP;
+
 import com.uav.platform.dto.record.assistant.ChatImage;
 import com.uav.platform.dto.request.assistant.AssistantAttachmentRequest;
 import com.uav.platform.error.SystemException;
@@ -59,9 +63,9 @@ public final class AssistantAttachmentOperations {
         if (d.length >= 3
                 && (d[0] & 0xFF) == 0xFF
                 && (d[1] & 0xFF) == 0xD8
-                && (d[2] & 0xFF) == 0xFF) return "image/jpeg";
+                && (d[2] & 0xFF) == 0xFF) return IMAGE_JPEG;
         if (d.length >= 8 && (d[0] & 0xFF) == 0x89 && d[1] == 'P' && d[2] == 'N' && d[3] == 'G')
-            return "image/png";
+            return IMAGE_PNG;
         if (d.length >= 12
                 && d[0] == 'R'
                 && d[1] == 'I'
@@ -70,7 +74,7 @@ public final class AssistantAttachmentOperations {
                 && d[8] == 'W'
                 && d[9] == 'E'
                 && d[10] == 'B'
-                && d[11] == 'P') return "image/webp";
+                && d[11] == 'P') return IMAGE_WEBP;
         return null;
     }
 

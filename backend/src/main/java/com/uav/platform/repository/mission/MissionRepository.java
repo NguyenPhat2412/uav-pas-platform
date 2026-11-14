@@ -32,6 +32,16 @@ public interface MissionRepository
     java.util.List<Mission> findByCustomerIdAndStatusNotIn(
             Long customerId, Collection<MissionStatus> closedStatuses);
 
+    @Query(
+            "select count(m) from Mission m where (m.customer.id = :userId or m.operator.id = :userId) and m.status not in :closedStatuses")
+    long countActiveByUserId(
+            @Param("userId") Long userId,
+            @Param("closedStatuses") Collection<MissionStatus> closedStatuses);
+
+    @Query(
+            "select count(m) from Mission m where m.customer.id = :userId or m.operator.id = :userId")
+    long countAnyByUserId(@Param("userId") Long userId);
+
     /** The mission a UAV is flying right now, used to tag telemetry sent without a mission id. */
     Optional<Mission> findFirstByUavIdAndStatusOrderByIdDesc(Long uavId, MissionStatus status);
 

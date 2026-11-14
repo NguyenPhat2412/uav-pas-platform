@@ -1,6 +1,7 @@
 package com.uav.platform.service.impl.webhook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.common.util.Hashing;
 import com.uav.platform.dto.record.webhook.QueueResult;
 import com.uav.platform.dto.request.webhook.WebhookSubscriptionRequest;
 import com.uav.platform.dto.request.webhook.WebhookTestDispatchRequest;
@@ -21,14 +22,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 @Service
 @Transactional
@@ -371,15 +367,6 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
 
     @Override
     public String calculateHmacSha256(String data, String key) {
-        try {
-            Mac mac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secretKeySpec =
-                    new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-            mac.init(secretKeySpec);
-            byte[] hmacBytes = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-            return HexFormat.of().formatHex(hmacBytes);
-        } catch (Exception e) {
-            throw new IllegalStateException("Error calculating HMAC-SHA256", e);
-        }
+        return Hashing.hmacSha256Hex(key, data);
     }
 }

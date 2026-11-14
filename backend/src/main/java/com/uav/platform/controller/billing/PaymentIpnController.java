@@ -1,5 +1,7 @@
 package com.uav.platform.controller.billing;
 
+import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_HEADER;
+
 import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.dto.request.billing.PaymentIpnRequest;
 import com.uav.platform.dto.request.billing.SepayWebhookRequest;
@@ -40,7 +42,8 @@ public class PaymentIpnController {
     @PostMapping(ApiRoutes.Webhook.SEPAY)
     public ResponseEntity<SepayWebhookResponse> handleSepayWebhook(
             @RequestBody SepayWebhookRequest request,
-            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @RequestHeader(value = AUTHORIZATION_HEADER, required = false)
+                    String authorizationHeader,
             @RequestHeader(value = "X-Webhook-Secret", required = false) String webhookSecret) {
         return ResponseEntity.ok(
                 billingService.processSepayWebhook(request, authorizationHeader, webhookSecret));

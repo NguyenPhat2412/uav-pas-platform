@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.weather;
 
+import static com.uav.platform.common.constant.TimeConstants.BUSINESS_ZONE;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,7 +54,6 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -76,7 +77,6 @@ import java.util.function.Function;
 @Slf4j
 @Service
 public class WeatherServiceImpl implements WeatherService {
-    static final ZoneId ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
     static final DateTimeFormatter HOUR_KEY = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:00");
     static final String OPEN_METEO_URL =
             "https://api.open-meteo.com/v1/forecast?latitude=%s&longitude=%s"
@@ -164,7 +164,7 @@ public class WeatherServiceImpl implements WeatherService {
                         .connectTimeout(HTTP_TIMEOUT)
                         .followRedirects(HttpClient.Redirect.NORMAL)
                         .build(),
-                Clock.system(ZONE),
+                Clock.system(BUSINESS_ZONE),
                 remoteEnabled);
     }
 
@@ -499,7 +499,7 @@ public class WeatherServiceImpl implements WeatherService {
         if (points == null || points.isEmpty()) return null;
         LocalDateTime targetUtc =
                 LocalDateTime.parse(hour, HOUR_KEY)
-                        .atZone(ZONE)
+                        .atZone(BUSINESS_ZONE)
                         .withZoneSameInstant(ZoneOffset.UTC)
                         .toLocalDateTime();
         Double best = null;
@@ -687,7 +687,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     private LocalDateTime now() {
-        return LocalDateTime.now(clock.withZone(ZONE));
+        return LocalDateTime.now(clock.withZone(BUSINESS_ZONE));
     }
 
     private LocalDateTime parseTime(String at) {
@@ -698,7 +698,7 @@ public class WeatherServiceImpl implements WeatherService {
                         LocalDateTime::parse,
                         text ->
                                 OffsetDateTime.parse(text)
-                                        .atZoneSameInstant(ZONE)
+                                        .atZoneSameInstant(BUSINESS_ZONE)
                                         .toLocalDateTime())) {
             try {
                 return parser.apply(value);

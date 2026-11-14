@@ -25,6 +25,11 @@ public interface MissionAccessService {
         return false;
     }
 
+    /** Active staff who may confirm a submitted mission. */
+    default java.util.List<AppUser> dispatchers() {
+        return java.util.List.of();
+    }
+
     Mission find(Long id);
 
     AppUser user(String username);

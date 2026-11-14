@@ -1,5 +1,9 @@
 package com.uav.platform.security.jwt;
 
+import static com.uav.platform.common.constant.SecurityConstants.DEFAULT_ROLE;
+
+import com.uav.platform.common.util.Hashing;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -11,8 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -42,12 +44,7 @@ public class JwtTokenProvider {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
 
         if (keyBytes.length < 32) {
-            try {
-                MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
-                keyBytes = sha256.digest(keyBytes);
-            } catch (NoSuchAlgorithmException e) {
-                log.error("SHA-256 algorithm not available", e);
-            }
+            keyBytes = Hashing.sha256(keyBytes);
         }
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -57,7 +54,7 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(Long userId, String username, String email) {
-        return generateToken(userId, username, email, "ROLE_PILOT", this.expirationMs);
+        return generateToken(userId, username, email, DEFAULT_ROLE, this.expirationMs);
     }
 
     public String generateToken(Long userId, String username, String email, String role) {
@@ -65,7 +62,7 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(Long userId, String username, String email, long validityMs) {
-        return generateToken(userId, username, email, "ROLE_PILOT", validityMs);
+        return generateToken(userId, username, email, DEFAULT_ROLE, validityMs);
     }
 
     public String generateToken(
@@ -78,7 +75,7 @@ public class JwtTokenProvider {
                 .subject(username)
                 .claim("userId", userId)
                 .claim("email", email)
-                .claim("role", role != null ? role : "ROLE_PILOT")
+                .claim("role", role != null ? role : DEFAULT_ROLE)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(key)
@@ -96,7 +93,7 @@ public class JwtTokenProvider {
     public String getRoleFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
         Object roleObj = claims.get("role");
-        return roleObj != null ? roleObj.toString() : "ROLE_PILOT";
+        return roleObj != null ? roleObj.toString() : DEFAULT_ROLE;
     }
 
     public Long getUserIdFromToken(String token) {
@@ -122,17 +119,7 @@ public class JwtTokenProvider {
         }
 
         // Fallback: SHA-256 hash of token string
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(token.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                hexString.append(String.format("%02x", b));
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            return token;
-        }
+        return Hashing.sha256Hex(token);
     }
 
     public Date getExpirationFromToken(String token) {

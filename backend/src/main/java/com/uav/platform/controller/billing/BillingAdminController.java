@@ -3,10 +3,14 @@ package com.uav.platform.controller.billing;
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
 import com.uav.platform.config.routes.ApiRoutes;
+import com.uav.platform.dto.request.billing.PaymentGatewayConfigUpdateRequest;
+import com.uav.platform.dto.response.billing.PaymentGatewayConfigResponse;
 import com.uav.platform.dto.response.billing.PaymentTransactionAdminResponse;
 import com.uav.platform.dto.response.webhook.FinancialOutboxEventResponse;
 import com.uav.platform.service.billing.BillingAdminService;
 import com.uav.platform.service.webhook.FinancialOutboxAdminService;
+
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,13 +22,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
-/** Operator views over payment/IPN records and the financial event outbox. */
+/** Operator views over payment/IPN records, VietQR gateway settings, and financial event outbox. */
 @RestController
 @RequestMapping(ApiRoutes.Billing.ADMIN)
 @RequiredArgsConstructor
 public class BillingAdminController {
     private final BillingAdminService billingAdmin;
     private final FinancialOutboxAdminService outbox;
+    private final com.uav.platform.service.billing.PaymentStatisticsService statistics;
 
     @GetMapping(ApiRoutes.Billing.ADMIN_TRANSACTIONS)
     @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
@@ -42,6 +47,42 @@ public class BillingAdminController {
         return ResponseEntity.ok(
                 billingAdmin.listTransactions(
                         status, gateway, from, to, invoiceId, q, Pageables.of(page, size)));
+    }
+
+    @PostMapping(ApiRoutes.Billing.ADMIN_TRANSACTION_REFUND)
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<PaymentTransactionAdminResponse> refund(
+            @PathVariable Long id,
+            @Valid @RequestBody
+                    com.uav.platform.dto.request.billing.RefundTransactionRequest request,
+            Authentication auth) {
+        return ResponseEntity.ok(
+                billingAdmin.refundTransaction(id, request.bankReference(), request.note(), auth));
+    }
+
+    /** Payment, revenue and spending figures for the admin dashboard; dates are inclusive. */
+    @GetMapping(ApiRoutes.Billing.ADMIN_STATISTICS)
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<com.uav.platform.dto.response.billing.PaymentStatisticsResponse>
+            statistics(
+                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                            LocalDate from,
+                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                            LocalDate to) {
+        return ResponseEntity.ok(statistics.statistics(from, to));
+    }
+
+    @GetMapping(ApiRoutes.Billing.ADMIN_PAYMENT_GATEWAY)
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<PaymentGatewayConfigResponse> getPaymentGatewayConfig() {
+        return ResponseEntity.ok(billingAdmin.getPaymentGatewayConfig());
+    }
+
+    @PutMapping(ApiRoutes.Billing.ADMIN_PAYMENT_GATEWAY)
+    @PreAuthorize("@permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<PaymentGatewayConfigResponse> updatePaymentGatewayConfig(
+            @Valid @RequestBody PaymentGatewayConfigUpdateRequest request, Authentication auth) {
+        return ResponseEntity.ok(billingAdmin.updatePaymentGatewayConfig(request, auth));
     }
 
     @GetMapping(ApiRoutes.Billing.ADMIN_OUTBOX)

@@ -13,6 +13,8 @@ public interface UserQuotaRepository
         extends JpaRepository<UserQuota, Long>, JpaSpecificationExecutor<UserQuota> {
     Optional<UserQuota> findByUserId(Long userId);
 
+    void deleteByUserId(Long userId);
+
     /** Quotas whose cycle ended or whose paid plan period lapsed; the rollover job refreshes them. */
     @org.springframework.data.jpa.repository.Query(
             "select q.user.id from UserQuota q where q.cycleEnd is null or q.cycleEnd <= :now"

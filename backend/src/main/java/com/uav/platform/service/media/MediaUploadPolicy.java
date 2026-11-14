@@ -1,5 +1,12 @@
 package com.uav.platform.service.media;
 
+import static com.uav.platform.common.constant.MediaConstants.APPLICATION_PDF;
+import static com.uav.platform.common.constant.MediaConstants.IMAGE_JPEG;
+import static com.uav.platform.common.constant.MediaConstants.IMAGE_PNG;
+import static com.uav.platform.common.constant.MediaConstants.IMAGE_WEBP;
+import static com.uav.platform.common.constant.MediaConstants.VIDEO_MP4;
+import static com.uav.platform.common.constant.MediaConstants.VIDEO_WEBM;
+
 import com.uav.platform.error.SystemException;
 
 import java.nio.charset.StandardCharsets;
@@ -14,17 +21,17 @@ public final class MediaUploadPolicy {
             "JPEG/PNG/WebP/PDF: tối đa 100 MB (100000000 byte); MP4/WebM: tối đa 1 GB (1000000000 byte).";
     private static final Map<String, Long> LIMITS =
             Map.of(
-                    "image/jpeg",
+                    IMAGE_JPEG,
                     100_000_000L,
-                    "image/png",
+                    IMAGE_PNG,
                     100_000_000L,
-                    "image/webp",
+                    IMAGE_WEBP,
                     100_000_000L,
-                    "application/pdf",
+                    APPLICATION_PDF,
                     100_000_000L,
-                    "video/mp4",
+                    VIDEO_MP4,
                     1_000_000_000L,
-                    "video/webm",
+                    VIDEO_WEBM,
                     1_000_000_000L);
 
     public static void validate(String mime, long size) {
@@ -48,19 +55,19 @@ public final class MediaUploadPolicy {
         boolean valid =
                 bytes != null
                         && switch (mime) {
-                            case "image/jpeg" ->
+                            case IMAGE_JPEG ->
                                     bytes.length >= 3
                                             && (bytes[0] & 255) == 255
                                             && (bytes[1] & 255) == 216
                                             && (bytes[2] & 255) == 255;
-                            case "image/png" ->
+                            case IMAGE_PNG ->
                                     starts(
                                             bytes,
                                             new byte[] {(byte) 137, 80, 78, 71, 13, 10, 26, 10});
-                            case "image/webp" -> ascii(bytes, 0, "RIFF") && ascii(bytes, 8, "WEBP");
-                            case "application/pdf" -> ascii(bytes, 0, "%PDF-");
-                            case "video/mp4" -> bytes.length >= 12 && ascii(bytes, 4, "ftyp");
-                            case "video/webm" ->
+                            case IMAGE_WEBP -> ascii(bytes, 0, "RIFF") && ascii(bytes, 8, "WEBP");
+                            case APPLICATION_PDF -> ascii(bytes, 0, "%PDF-");
+                            case VIDEO_MP4 -> bytes.length >= 12 && ascii(bytes, 4, "ftyp");
+                            case VIDEO_WEBM ->
                                     starts(bytes, new byte[] {26, 69, (byte) 223, (byte) 163})
                                             && new String(bytes, StandardCharsets.ISO_8859_1)
                                                     .contains("webm");

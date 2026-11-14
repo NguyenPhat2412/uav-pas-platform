@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.billing;
 
+import static com.uav.platform.common.constant.TimeConstants.DATE_TIME_MINUTE;
+
 import com.uav.platform.dto.record.billing.InvoiceReceiptData;
 import com.uav.platform.enums.billing.InvoiceStatus;
 
@@ -11,7 +13,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -23,9 +24,6 @@ import java.util.Locale;
  * font embedding or Mojibake.
  */
 public final class InvoiceReceiptOperations {
-
-    private static final DateTimeFormatter DATE_TIME_FMT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private InvoiceReceiptOperations() {}
 
@@ -72,7 +70,7 @@ public final class InvoiceReceiptOperations {
                     case PAID -> "0.09 0.60 0.30";
                     case PENDING -> "0.82 0.46 0.04";
                     case FAILED -> "0.76 0.18 0.18";
-                    case CANCELLED -> "0.38 0.43 0.50";
+                    case CANCELLED, EXPIRED -> "0.38 0.43 0.50";
                 };
         fillRect(s, 430, 796, 125, 24, badgeColor);
         text(s, "F2", 10, 442, 804, "1 1 1", "STATUS: " + status.name());
@@ -479,7 +477,7 @@ public final class InvoiceReceiptOperations {
     }
 
     private static String formatDate(LocalDateTime dateTime) {
-        return dateTime != null ? dateTime.format(DATE_TIME_FMT) : "-";
+        return dateTime != null ? dateTime.format(DATE_TIME_MINUTE) : "-";
     }
 
     private static boolean notBlank(String text) {

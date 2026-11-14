@@ -87,6 +87,15 @@ public class AppUser extends BaseEntity {
     @Column(name = "totp_last_step")
     private Long totpLastStep;
 
+    @Column(name = "apple_sub", unique = true, length = 128)
+    private String appleSub;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @Column(name = "deletion_reason", length = 500)
+    private String deletionReason;
+
     public AppUser(
             String username,
             String email,

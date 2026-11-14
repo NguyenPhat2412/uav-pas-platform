@@ -1,5 +1,6 @@
 package com.uav.platform.service.impl.webhook;
 
+import com.uav.platform.common.util.SecureTokens;
 import com.uav.platform.dto.response.webhook.WebhookDeliveryLogResponse;
 import com.uav.platform.dto.response.webhook.WebhookSecretRotationResponse;
 import com.uav.platform.entity.webhook.WebhookDeliveryLog;
@@ -18,15 +19,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
 public class WebhookAdminServiceImpl implements WebhookAdminService {
     static final String SECRET_PREFIX = "whsec_";
-    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final WebhookSubscriptionRepository subscriptions;
     private final WebhookDeliveryLogRepository deliveries;
@@ -128,8 +126,6 @@ public class WebhookAdminServiceImpl implements WebhookAdminService {
 
     /** 256 random bits, URL-safe base64 without padding: "whsec_" + 43 chars (fits VARCHAR(120)). */
     static String generateSecret() {
-        byte[] bytes = new byte[32];
-        RANDOM.nextBytes(bytes);
-        return SECRET_PREFIX + Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        return SECRET_PREFIX + SecureTokens.base64Url(32);
     }
 }

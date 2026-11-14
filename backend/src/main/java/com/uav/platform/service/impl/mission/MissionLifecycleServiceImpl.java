@@ -69,6 +69,10 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     @Autowired(required = false)
     private ObjectProvider<MissionPreflightLogRepository> preflightLogs;
 
+    /** Optional so focused mission tests run without the billing module. */
+    @Autowired(required = false)
+    private ObjectProvider<com.uav.platform.service.billing.BillingService> invoices;
+
     @org.springframework.beans.factory.annotation.Value(
             "${app.mission.preflight-signoff-required:false}")
     private boolean preflightSignoffRequired;
@@ -83,6 +87,17 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
 
     public void setNotifications(ObjectProvider<NotificationService> notifications) {
         this.notifications = notifications;
+    }
+
+    public void setInvoices(
+            ObjectProvider<com.uav.platform.service.billing.BillingService> invoices) {
+        this.invoices = invoices;
+    }
+
+    /** A mission that will not fly is never billed: close whatever invoice it still has open. */
+    private void cancelOpenInvoices(Mission mission, String why) {
+        var billingService = invoices == null ? null : invoices.getIfAvailable();
+        if (billingService != null) billingService.cancelOpenMissionInvoices(mission, why);
     }
 
     public void setPreflightLogs(ObjectProvider<MissionPreflightLogRepository> preflightLogs) {
@@ -385,6 +400,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         MissionStatus old = mission.getStatus();
         resources.releaseResources(mission, authentication.getName());
         MissionOperations.transitionTo(mission, MissionStatus.CANCELLED);
+        cancelOpenInvoices(mission, "nhiệm vụ " + mission.getCode() + " đã hủy");
         missionEvents.record(
                 mission,
                 MissionEventType.CANCELLED,
@@ -437,6 +453,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
             throw new IllegalArgumentException("Lý do từ chối không được vượt quá 500 ký tự.");
         MissionStatus old = mission.getStatus();
         MissionOperations.transitionTo(mission, MissionStatus.REJECTED);
+        cancelOpenInvoices(mission, "nhiệm vụ " + mission.getCode() + " bị từ chối");
         resources.releaseResources(mission, authentication.getName());
         missionEvents.record(
                 mission,

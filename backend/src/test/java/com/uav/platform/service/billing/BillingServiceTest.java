@@ -358,6 +358,94 @@ class BillingServiceTest {
         when(userRepository.findById(target.getId())).thenReturn(Optional.of(target));
     }
 
+    @Test
+    void customerCannotCancelMissionInvoiceButCanCancelPlanInvoice() {
+        AppUser owner = user(1L, "owner");
+        Authentication auth = authentication("owner");
+        stubUser(auth, owner);
+        when(permissions.has(auth, "USER_MANAGE")).thenReturn(false);
+        Invoice missionInvoice = invoice(owner);
+        com.uav.platform.entity.mission.Mission mission =
+                org.mockito.Mockito.mock(com.uav.platform.entity.mission.Mission.class);
+        missionInvoice.setMission(mission);
+        when(invoiceRepository.findById(10L)).thenReturn(Optional.of(missionInvoice));
+
+        SystemException denied =
+                assertThrows(SystemException.class, () -> service.cancelInvoice(10L, null, auth));
+        assertEquals(HttpStatus.FORBIDDEN, denied.getStatus());
+
+        org.springframework.test.util.ReflectionTestUtils.setField(
+                service,
+                "billingJdbc",
+                org.mockito.Mockito.mock(org.springframework.jdbc.core.JdbcTemplate.class));
+        Invoice planInvoice = invoice(owner);
+        when(invoiceRepository.findById(10L)).thenReturn(Optional.of(planInvoice));
+
+        assertEquals(
+                com.uav.platform.enums.billing.InvoiceStatus.CANCELLED,
+                service.cancelInvoice(10L, "nhầm gói", auth).status());
+    }
+
+    @Test
+    void missionCancellationClosesItsOpenInvoices() {
+        com.uav.platform.entity.mission.Mission mission =
+                org.mockito.Mockito.mock(com.uav.platform.entity.mission.Mission.class);
+        when(mission.getId()).thenReturn(5L);
+        Invoice open = invoice(user(1L, "owner"));
+        when(invoiceRepository.findByMissionIdAndStatus(
+                        5L, com.uav.platform.enums.billing.InvoiceStatus.PENDING))
+                .thenReturn(List.of(open));
+
+        assertEquals(1, service.cancelOpenMissionInvoices(mission, "nhiệm vụ đã hủy"));
+        assertEquals(com.uav.platform.enums.billing.InvoiceStatus.CANCELLED, open.getStatus());
+        org.mockito.Mockito.verify(mission).setBillingStatus("CANCELLED");
+    }
+
+    @Test
+    void overduePlanInvoicesExpire() {
+        Invoice overdue = invoice(user(1L, "owner"));
+        when(invoiceRepository.findByStatusAndDueDateBeforeAndMissionIsNull(
+                        org.mockito.ArgumentMatchers.eq(
+                                com.uav.platform.enums.billing.InvoiceStatus.PENDING),
+                        org.mockito.ArgumentMatchers.any()))
+                .thenReturn(List.of(overdue));
+
+        assertEquals(1, service.expireOverduePlanInvoices());
+        assertEquals(com.uav.platform.enums.billing.InvoiceStatus.EXPIRED, overdue.getStatus());
+    }
+
+    @Test
+    void secondInvoiceForTheSameMissionIsRefused() {
+        AppUser admin = user(3L, "admin");
+        Authentication auth = authentication("admin");
+        stubUser(auth, admin);
+        when(permissions.has(auth, "USER_MANAGE")).thenReturn(true);
+        AppUser customer = user(1L, "owner");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(customer));
+        com.uav.platform.entity.mission.Mission mission =
+                org.mockito.Mockito.mock(com.uav.platform.entity.mission.Mission.class);
+        when(mission.getId()).thenReturn(5L);
+        when(mission.getCustomer()).thenReturn(customer);
+        when(mission.getStatus())
+                .thenReturn(com.uav.platform.enums.mission.MissionStatus.COMPLETED);
+        when(missionRepository.findById(5L)).thenReturn(Optional.of(mission));
+        when(invoiceRepository.existsByMissionIdAndStatusIn(
+                        org.mockito.ArgumentMatchers.eq(5L), org.mockito.ArgumentMatchers.any()))
+                .thenReturn(true);
+
+        SystemException error =
+                assertThrows(
+                        SystemException.class,
+                        () ->
+                                service.createInvoice(
+                                        new com.uav.platform.dto.request.billing
+                                                .CreateInvoiceRequest(
+                                                1L, 5L, null, new BigDecimal("500000"), null),
+                                        auth));
+
+        assertEquals(HttpStatus.CONFLICT, error.getStatus());
+    }
+
     private void stubUser(Authentication auth, AppUser user) {
         when(userRepository.findByUsername(auth.getName())).thenReturn(Optional.of(user));
     }

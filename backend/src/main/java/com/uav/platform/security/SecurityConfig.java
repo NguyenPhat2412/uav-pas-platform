@@ -1,5 +1,8 @@
 package com.uav.platform.security;
 
+import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_HEADER;
+import static com.uav.platform.common.constant.SecurityConstants.BEARER_PREFIX;
+
 import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.security.jwt.JwtAuthenticationFilter;
 import com.uav.platform.service.devicekey.DeviceKeyService;
@@ -90,6 +93,7 @@ public class SecurityConfig {
                                         .ignoringRequestMatchers(ApiRoutes.Webhook.WILDCARD)
                                         .ignoringRequestMatchers(
                                                 ApiRoutes.Public.FULL_SUPPORT_WILDCARD)
+                                        .ignoringRequestMatchers(ApiRoutes.Realtime.WILDCARD)
                                         .ignoringRequestMatchers(
                                                 ApiRoutes.Training.FULL_ASSET_CONTENT)
                                         .ignoringRequestMatchers(
@@ -113,12 +117,16 @@ public class SecurityConfig {
                                                         return false;
                                                     }
                                                     String header =
-                                                            request.getHeader("Authorization");
+                                                            request.getHeader(AUTHORIZATION_HEADER);
                                                     return !(StringUtils.hasText(header)
                                                             && header.trim()
                                                                     .regionMatches(
-                                                                            true, 0, "Bearer ", 0,
-                                                                            7));
+                                                                            true,
+                                                                            0,
+                                                                            BEARER_PREFIX,
+                                                                            0,
+                                                                            BEARER_PREFIX
+                                                                                    .length()));
                                                 }))
                 .cors(Customizer.withDefaults())
                 .sessionManagement(
@@ -147,6 +155,8 @@ public class SecurityConfig {
                                                 HttpMethod.GET, ApiRoutes.Public.FULL_DISCOVERY)
                                         .permitAll()
                                         .requestMatchers(ApiRoutes.Public.FULL_SUPPORT_WILDCARD)
+                                        .permitAll()
+                                        .requestMatchers(ApiRoutes.Realtime.WILDCARD)
                                         .permitAll()
                                         .requestMatchers(
                                                 HttpMethod.GET,

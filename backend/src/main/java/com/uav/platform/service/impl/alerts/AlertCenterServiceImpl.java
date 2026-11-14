@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.alerts;
 
+import static com.uav.platform.common.constant.TimeConstants.BUSINESS_ZONE;
+
 import com.uav.platform.dto.response.alerts.AdminAlertResponse;
 import com.uav.platform.dto.response.alerts.AlertCenterResponse;
 import com.uav.platform.dto.response.dashboard.SystemHealthResponse;
@@ -25,7 +27,6 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -51,7 +52,6 @@ public class AlertCenterServiceImpl implements AlertCenterService {
     static final Duration WEBHOOK_STUCK = Duration.ofMinutes(30);
     static final Duration KEY_EXPIRY_WINDOW = Duration.ofDays(7);
     static final int MAX_ITEMS = 200;
-    private static final ZoneId OPERATIONS_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
 
     private final JdbcTemplate db;
     private final SystemConfigService settings;
@@ -265,7 +265,7 @@ public class AlertCenterServiceImpl implements AlertCenterService {
     }
 
     private void maintenance(List<AdminAlertResponse> items) {
-        LocalDate today = LocalDate.now(OPERATIONS_ZONE);
+        LocalDate today = LocalDate.now(BUSINESS_ZONE);
         db.query(
                 "SELECT s.id, s.uav_id, s.title, s.next_due_date, u.serial_number"
                         + " FROM maintenance_schedules s JOIN uavs u ON u.id = s.uav_id"

@@ -1,6 +1,7 @@
 package com.uav.platform.service.impl.billing;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.common.util.Hashing;
 import com.uav.platform.dto.record.billing.InvoiceReceiptData;
 import com.uav.platform.dto.record.billing.IpnSignaturePayload;
 import com.uav.platform.dto.record.billing.PaymentAccountSettings;
@@ -21,6 +22,8 @@ import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.entity.user.CustomerBillingProfile;
 import com.uav.platform.enums.billing.InvoiceStatus;
+import com.uav.platform.enums.billing.PaymentMethod;
+import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.billing.BillingMapper;
@@ -92,8 +95,20 @@ public class BillingServiceImpl implements BillingService {
     @Autowired(required = false)
     private ObjectProvider<NotificationService> notifications;
 
+    @Autowired(required = false)
+    private com.uav.platform.transport.websocket.RealtimeEventBroadcaster realtimeBroadcaster;
+
     public void setNotifications(ObjectProvider<NotificationService> notifications) {
         this.notifications = notifications;
+    }
+
+    public void setPaymentSettingsService(PaymentSettingsService paymentSettingsService) {
+        this.paymentSettingsService = paymentSettingsService;
+    }
+
+    public void setRealtimeBroadcaster(
+            com.uav.platform.transport.websocket.RealtimeEventBroadcaster realtimeBroadcaster) {
+        this.realtimeBroadcaster = realtimeBroadcaster;
     }
 
     public BillingServiceImpl(
@@ -384,6 +399,17 @@ public class BillingServiceImpl implements BillingService {
             if (!Objects.equals(mission.getCustomer().getId(), user.getId())) {
                 throw SystemException.badRequest("Mission does not belong to invoice customer");
             }
+            if (mission.getStatus() == MissionStatus.CANCELLED
+                    || mission.getStatus() == MissionStatus.REJECTED) {
+                throw SystemException.badRequest(
+                        "A cancelled or rejected mission cannot be billed", "MISSION_NOT_BILLABLE");
+            }
+            // One bill per mission: a second open or paid invoice would let the customer pay twice.
+            if (invoiceRepository.existsByMissionIdAndStatusIn(
+                    mission.getId(), List.of(InvoiceStatus.PENDING, InvoiceStatus.PAID))) {
+                throw SystemException.conflict(
+                        "Mission already has an open or paid invoice", "INVOICE_ALREADY_EXISTS");
+            }
         }
 
         ServicePlan plan = null;
@@ -414,15 +440,67 @@ public class BillingServiceImpl implements BillingService {
                         dueDate,
                         request.notes());
         Invoice saved = invoiceRepository.save(invoice);
-        financialEvents.recordInvoiceIssued(saved);
+        if (financialEvents != null) {
+            financialEvents.recordInvoiceIssued(saved);
+        }
+        publishInvoiceRealtime(saved);
         return billingMapper.toInvoiceResponse(saved);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PaymentResponse payInvoice(Long id, PayInvoiceRequest request, Authentication auth) {
-        accessibleInvoice(id, auth);
-        throw SystemException.serviceUnavailable(
-                "Payment gateway is not configured", "PAYMENT_UNAVAILABLE");
+        Invoice invoice = accessibleInvoice(id, auth);
+        PaymentAccountSettings settings =
+                paymentSettingsService != null ? paymentSettingsService.current() : null;
+        if (settings == null || !settings.configured()) {
+            throw SystemException.serviceUnavailable(
+                    "Payment gateway is not configured", "PAYMENT_UNAVAILABLE");
+        }
+        PaymentMethod method =
+                request != null && request.paymentMethod() != null
+                        ? request.paymentMethod()
+                        : PaymentMethod.BANK_TRANSFER;
+        // shortcut: only VietQR / bank transfer is wired; add a gateway adapter before enabling
+        // these.
+        if (method == PaymentMethod.VNPAY || method == PaymentMethod.MOMO) {
+            throw SystemException.badRequest(
+                    "Payment method is not supported yet", "PAYMENT_METHOD_UNSUPPORTED");
+        }
+        if (invoice.getStatus() == InvoiceStatus.PAID) {
+            PaymentTransaction settled = resolveSettledTransaction(invoice.getId());
+            return new PaymentResponse(
+                    settled != null ? settled.getId() : null,
+                    settled != null ? settled.getTransactionCode() : null,
+                    invoice.getId(),
+                    invoice.getCode(),
+                    invoice.getAmount(),
+                    method,
+                    "PAID",
+                    InvoiceStatus.PAID,
+                    invoice.getPaidAt(),
+                    null);
+        }
+        if (invoice.getStatus() != InvoiceStatus.PENDING) {
+            throw SystemException.conflict("Invoice is not pending payment", "INVOICE_NOT_PENDING");
+        }
+        BigDecimal totalDong =
+                wholeDong(invoice.getAmount() != null ? invoice.getAmount() : BigDecimal.ZERO);
+        String transferMemo = BankTransferServiceImpl.transferContent(invoice.getCode());
+        String qrPayload =
+                VietQrOperations.build(
+                        settings.bankBin(), settings.accountNumber(), totalDong, transferMemo);
+        return new PaymentResponse(
+                null,
+                transferMemo,
+                invoice.getId(),
+                invoice.getCode(),
+                totalDong,
+                method,
+                "AWAITING_TRANSFER",
+                InvoiceStatus.PENDING,
+                null,
+                qrPayload);
     }
 
     @Override
@@ -757,9 +835,23 @@ public class BillingServiceImpl implements BillingService {
         if (financialEvents == null || !financialEvents.handlesPaymentNotification()) {
             notifyInvoiceSettled(invoice);
         }
+        publishInvoiceRealtime(invoice);
+    }
+
+    private void publishInvoiceRealtime(Invoice invoice) {
+        if (realtimeBroadcaster == null || invoice == null || invoice.getStatus() == null) {
+            return;
+        }
+        Long customerId = invoice.getUser() != null ? invoice.getUser().getId() : null;
+        realtimeBroadcaster.publishInvoiceUpdated(
+                customerId, invoice.getId(), invoice.getCode(), invoice.getStatus().name());
     }
 
     private void notifyInvoiceSettled(Invoice invoice) {
+        notifyCustomer(invoice, "Đã ghi nhận thanh toán", "Hóa đơn: " + invoice.getCode());
+    }
+
+    private void notifyCustomer(Invoice invoice, String title, String content) {
         if (invoice == null
                 || invoice.getUser() == null
                 || invoice.getUser().getId() == null
@@ -774,14 +866,14 @@ public class BillingServiceImpl implements BillingService {
             notificationService.sendNotification(
                     new CreateNotificationRequest(
                             invoice.getUser().getId(),
-                            "Đã ghi nhận thanh toán",
-                            "Hóa đơn: " + invoice.getCode(),
+                            title,
+                            content,
                             NotificationType.PAYMENT,
                             "INVOICE",
                             invoice.getId()));
         } catch (RuntimeException ex) {
             log.warn(
-                    "Unable to dispatch payment notification for invoice {}: {}",
+                    "Unable to dispatch invoice notification for invoice {}: {}",
                     invoice.getCode(),
                     ex.getMessage());
         }
@@ -843,6 +935,19 @@ public class BillingServiceImpl implements BillingService {
                         .findFirst()
                         .orElse(null);
         if (open != null) return billingMapper.toInvoiceResponse(open);
+        // Choosing another plan replaces the unpaid one, so the customer can never pay for two.
+        invoiceRepository.findByUserId(user.getId()).stream()
+                .filter(
+                        i ->
+                                i.getStatus() == InvoiceStatus.PENDING
+                                        && i.getMission() == null
+                                        && i.getPlan() != null)
+                .forEach(
+                        i ->
+                                close(
+                                        i,
+                                        InvoiceStatus.CANCELLED,
+                                        "[Đổi sang gói " + plan.getCode() + "]"));
         if (plan.getPrice() == null || plan.getPrice().signum() <= 0) {
             quotaService.updateQuota(
                     user.getId(),
@@ -865,8 +970,83 @@ public class BillingServiceImpl implements BillingService {
                         LocalDateTime.now().plusDays(7),
                         "PLAN_SUBSCRIPTION:" + plan.getCode());
         Invoice saved = invoiceRepository.save(invoice);
-        financialEvents.recordInvoiceIssued(saved);
+        if (financialEvents != null) {
+            financialEvents.recordInvoiceIssued(saved);
+        }
+        publishInvoiceRealtime(saved);
         return billingMapper.toInvoiceResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public InvoiceResponse cancelInvoice(Long id, String reason, Authentication auth) {
+        Invoice invoice = accessibleInvoice(id, auth);
+        boolean admin = permissions.has(auth, "USER_MANAGE");
+        if (!admin && invoice.getMission() != null) {
+            throw SystemException.forbidden(
+                    "A mission invoice can only be cancelled by an administrator",
+                    "INVOICE_CANCEL_FORBIDDEN");
+        }
+        // Lock against a payment settling the same invoice at this moment.
+        billingJdbc.queryForObject(
+                "SELECT id FROM billing_payment_guard WHERE id=1 FOR UPDATE", Long.class);
+        if (invoice.getStatus() != InvoiceStatus.PENDING) {
+            throw SystemException.conflict("Invoice is not pending payment", "INVOICE_NOT_PENDING");
+        }
+        String note = reason == null || reason.isBlank() ? null : reason.trim();
+        if (note != null && note.length() > 200) {
+            throw SystemException.badRequest(
+                    "Reason is too long", "INVOICE_CANCEL_REASON_TOO_LONG");
+        }
+        close(
+                invoice,
+                InvoiceStatus.CANCELLED,
+                (admin ? "[Admin hủy] " : "[Khách hủy] ") + (note == null ? "" : note));
+        return billingMapper.toInvoiceResponse(invoice);
+    }
+
+    @Override
+    @Transactional
+    public int cancelOpenMissionInvoices(
+            com.uav.platform.entity.mission.Mission mission, String reason) {
+        if (mission == null || mission.getId() == null) return 0;
+        List<Invoice> open =
+                invoiceRepository.findByMissionIdAndStatus(mission.getId(), InvoiceStatus.PENDING);
+        for (Invoice invoice : open) {
+            close(invoice, InvoiceStatus.CANCELLED, "[Hủy tự động] " + reason);
+        }
+        if (!open.isEmpty()) mission.setBillingStatus("CANCELLED");
+        return open.size();
+    }
+
+    @Override
+    @Transactional
+    @org.springframework.scheduling.annotation.Scheduled(
+            cron = "${app.billing.invoice-expiry-cron:0 5 * * * *}")
+    public int expireOverduePlanInvoices() {
+        List<Invoice> overdue =
+                invoiceRepository.findByStatusAndDueDateBeforeAndMissionIsNull(
+                        InvoiceStatus.PENDING, LocalDateTime.now());
+        for (Invoice invoice : overdue) {
+            close(invoice, InvoiceStatus.EXPIRED, "[Hết hạn thanh toán]");
+            notifyCustomer(
+                    invoice,
+                    "Hóa đơn đã hết hạn",
+                    "Hóa đơn "
+                            + invoice.getCode()
+                            + " đã quá hạn và được đóng. Hãy chọn lại gói nếu cần.");
+        }
+        if (!overdue.isEmpty()) log.info("Expired {} overdue plan invoices", overdue.size());
+        return overdue.size();
+    }
+
+    /** Ends a pending invoice without payment and tells the customer's open screens. */
+    private void close(Invoice invoice, InvoiceStatus status, String note) {
+        invoice.setStatus(status);
+        String joined = (invoice.getNotes() == null ? "" : invoice.getNotes() + " ") + note.trim();
+        invoice.setNotes(joined.length() > 500 ? joined.substring(0, 500) : joined);
+        invoiceRepository.save(invoice);
+        publishInvoiceRealtime(invoice);
     }
 
     private PaymentIpnResponse paymentResult(Invoice invoice, String transactionCode) {
@@ -880,20 +1060,7 @@ public class BillingServiceImpl implements BillingService {
 
     public String computeIpnSignature(PaymentIpnRequest request) {
         String canonical = IpnSignaturePayload.from(request).canonical();
-        try {
-            javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
-            javax.crypto.spec.SecretKeySpec keySpec =
-                    new javax.crypto.spec.SecretKeySpec(
-                            this.ipnSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8),
-                            "HmacSHA256");
-            mac.init(keySpec);
-            return java.util.HexFormat.of()
-                    .formatHex(
-                            mac.doFinal(
-                                    canonical.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable to compute HMAC-SHA256 for IPN", e);
-        }
+        return Hashing.hmacSha256Hex(this.ipnSecret, canonical);
     }
 
     private boolean isValidIpnSignature(PaymentIpnRequest request, String providedSignature) {

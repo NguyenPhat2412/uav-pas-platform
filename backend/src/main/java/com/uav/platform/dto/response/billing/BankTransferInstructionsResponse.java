@@ -5,7 +5,8 @@ import java.time.LocalDateTime;
 
 /**
  * Everything a customer needs to pay one invoice by NAPAS 247 transfer. The invoice amount is VAT inclusive;
- * subtotal and vat are derived from it with the configured rate.
+ * subtotal and vat are derived from it with the configured rate. qrPayload is null once the invoice is
+ * no longer PENDING, so a closed invoice can never be scanned and paid.
  */
 public record BankTransferInstructionsResponse(
         Long invoiceId,
@@ -24,4 +25,6 @@ public record BankTransferInstructionsResponse(
         String itemName,
         Double flightHours,
         LocalDateTime dueDate,
-        LocalDateTime issuedAt) {}
+        LocalDateTime issuedAt,
+        /** MISSION, PLAN or OTHER: a customer may cancel only an unpaid PLAN invoice. */
+        String kind) {}

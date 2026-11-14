@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.config.routes.ApiRoutes;
+import com.uav.platform.dto.request.auth.AppleLoginRequest;
 import com.uav.platform.dto.request.auth.GoogleLoginRequest;
 import com.uav.platform.dto.request.auth.LoginRequest;
 import com.uav.platform.dto.request.auth.LogoutRequest;
@@ -20,6 +21,7 @@ import com.uav.platform.dto.response.user.UserResponse;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.error.SystemException;
+import com.uav.platform.service.auth.AppleIdTokenService;
 import com.uav.platform.service.auth.AuthService;
 import com.uav.platform.service.auth.GoogleIdTokenService;
 
@@ -294,6 +296,48 @@ class AuthControllerTest {
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.code").value("GOOGLE_LOGIN_DISABLED"))
                 .andExpect(jsonPath("$.message").value("Đăng nhập Google chưa được cấu hình."));
+    }
+
+    // ==================== Apple Sign-in Tests ====================
+
+    @Test
+    void apple_ValidCredential_ReturnsSession() throws Exception {
+        UserResponse user =
+                new UserResponse(
+                        2L,
+                        "applepilot",
+                        "pilot@privaterelay.appleid.com",
+                        null,
+                        UserStatus.ACTIVE,
+                        LocalDateTime.now());
+        when(authService.loginWithApple(any(AppleLoginRequest.class)))
+                .thenReturn(AuthResponse.of("apple-access-token", "apple-refresh-token", user));
+
+        mockMvc.perform(
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.APPLE)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        "{\"credential\":\"apple-id-token\",\"fullName\":\"Pilot Apple\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").value("apple-access-token"))
+                .andExpect(jsonPath("$.user.username").value("applepilot"));
+    }
+
+    @Test
+    void apple_NotConfigured_Returns503WithCode() throws Exception {
+        when(authService.loginWithApple(any(AppleLoginRequest.class)))
+                .thenThrow(
+                        SystemException.serviceUnavailable(
+                                AppleIdTokenService.DISABLED_MESSAGE,
+                                AppleIdTokenService.DISABLED_CODE));
+
+        mockMvc.perform(
+                        post(ApiRoutes.Auth.BASE + ApiRoutes.Auth.APPLE)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"credential\":\"apple-id-token\"}"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.code").value("APPLE_AUTH_DISABLED"))
+                .andExpect(jsonPath("$.message").value("Đăng nhập Apple chưa được cấu hình."));
     }
 
     @Test
