@@ -1,5 +1,5 @@
 'use client';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
 import {queryKeys} from '@/lib/query';
 import {customerMissionService} from '@/api/mission/customer-missions.api';
@@ -58,6 +58,7 @@ export function useMissions(search = '', page = 0, status?: MissionStatus, missi
     const {key, user, can, permissionsReady} = useCustomerScope();
     return useQuery({
         queryKey: [...key, 'missions', {search, page, status, missionType}],
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => customerMissionService.missions(search, page, status, missionType, signal),
         enabled: (!!user && permissionsReady && can('MISSION_VIEW'))
     });

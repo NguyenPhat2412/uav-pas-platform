@@ -24,6 +24,7 @@
         "MAP": "地図・GIS",
         "AI": "AI・KV260エッジ処理",
         "BILLING": "請求・請求書",
+        "ACCOUNT": "アカウント・自主退会設定",
         "CONTACT": "公開連絡先",
         "OTHER": "その他の設定"
       },
@@ -75,7 +76,16 @@
         "uav_safety_max_wind_gust_limit": "最大突風（m/s）",
         "uav_safety_min_visibility_meters": "最小視程（m）",
         "uav_safety_max_precipitation_mm": "1時間あたりの最大降水量（mm）",
-        "uav_safety_max_kp_index": "最大地磁気Kp指数"
+        "uav_safety_max_kp_index": "最大地磁気Kp指数",
+        "account_deletion_enabled": "ユーザー自身によるアカウント削除を許可",
+        "account_deletion_allow_staff_roles": "スタッフ・管理者ロールの自己削除を許可",
+        "account_deletion_block_active_missions": "進行中の任務がある場合は削除を制限",
+        "account_deletion_block_unpaid_invoices": "未払いの請求書がある場合は削除を制限",
+        "account_deletion_require_password": "現在のパスワード確認を必須にする",
+        "account_deletion_require_reason": "退会理由の入力を必須にする",
+        "account_deletion_confirmation_phrase": "アカウント削除の確認フレーズ",
+        "account_deletion_mode": "削除時のデータ処理モード",
+        "account_deletion_notice_message": "削除前に表示する注意事項メッセージ"
       },
       "notes": {
         "billing_vat_rate": "小数で入力：0.10 = 10%",
@@ -94,7 +104,9 @@
         "streets": "道路地図 (OpenStreetMap)",
         "satellite": "衛星写真 (Esri World Imagery)",
         "terrain": "地形図 (OpenTopoMap)",
-        "dark": "ダーク戦術図 (Carto Dark)"
+        "dark": "ダーク戦術図 (Carto Dark)",
+        "ANONYMIZE": "個人情報を匿名化（監査履歴を保持）",
+        "HARD_DELETE": "アカウント記録を完全に削除"
       }
     },
     "deviceKeys": {

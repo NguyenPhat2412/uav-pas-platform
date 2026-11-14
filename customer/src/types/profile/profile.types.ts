@@ -36,3 +36,36 @@ export interface SignedAvatarUpload {
 
 export type AvatarUploadStatus = { kind: 'error' | 'success'; key: string } | null;
 
+export type AccountDeletionMode = 'ANONYMIZE' | 'HARD_DELETE';
+
+export interface AccountDeletionPolicy {
+    enabled: boolean;
+    eligible: boolean;
+    ineligibleReasonCode: string | null;
+    ineligibleReason: string | null;
+    hasPassword: boolean;
+    requirePassword: boolean;
+    requireReason: boolean;
+    confirmationPhrase: string;
+    mode: AccountDeletionMode;
+    blockActiveMissions: boolean;
+    blockUnpaidInvoices: boolean;
+    activeMissionCount: number;
+    unpaidInvoiceCount: number;
+    noticeMessage: string;
+}
+
+export interface DeleteOwnAccountRequest {
+    currentPassword?: string;
+    confirmationPhrase: string;
+    reason?: string;
+}
+
+export interface AccountDeletionDraft {
+    confirmationPhrase: string;
+    currentPassword: string;
+    reason: string;
+}
+
+export type AccountDeletionFieldErrors = Partial<Record<keyof AccountDeletionDraft, string>>;
+

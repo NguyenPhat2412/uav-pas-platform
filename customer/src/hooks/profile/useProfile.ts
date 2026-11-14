@@ -5,7 +5,13 @@ import {afterSuccess, QUIET, type MutationOptions} from '@/lib/query';
 import {avatarService, profileService} from '@/api/profile/profile.api';
 import {authService} from '@/api/auth/auth.api';
 import {profileKeys} from '@/hooks/profile/query-keys';
-import type {BillingProfile, BillingProfileFields, ProfileFields} from '@/types/profile/profile.types';
+import type {
+    AccountDeletionPolicy,
+    BillingProfile,
+    BillingProfileFields,
+    DeleteOwnAccountRequest,
+    ProfileFields,
+} from '@/types/profile/profile.types';
 import type {TwoFactorMethod, TwoFactorSetupResponse, TwoFactorStatusResponse, TwoFactorVerifyRequest} from '@/types/auth/auth.types';
 
 export function useOwnProfile() {
@@ -91,5 +97,23 @@ export function useDisableTwoFactor(options?: MutationOptions<TwoFactorStatusRes
         // The backend requires the current password to turn 2FA off.
         mutationFn: (password: string) => authService.disable2fa({password}),
         onSuccess: afterSuccess(options, data => client.setQueryData(profileKeys.twoFactor(user?.id), data)),
+    });
+}
+
+export function useAccountDeletionPolicy() {
+    const {user} = useAuth();
+    return useQuery<AccountDeletionPolicy>({
+        queryKey: profileKeys.deletionPolicy(user?.id),
+        enabled: !!user,
+        staleTime: 0,
+        queryFn: ({signal}) => profileService.getDeletionPolicy(signal),
+    });
+}
+
+export function useDeleteOwnAccount(options?: MutationOptions<{ message: string }, DeleteOwnAccountRequest>) {
+    return useMutation({
+        meta: QUIET,
+        ...options,
+        mutationFn: (payload: DeleteOwnAccountRequest) => profileService.deleteOwnAccount(payload),
     });
 }

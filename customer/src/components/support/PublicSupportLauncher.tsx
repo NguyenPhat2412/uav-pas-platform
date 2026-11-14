@@ -5,9 +5,11 @@ import Image from 'next/image';
 import {MessageCircleMore, X} from 'lucide-react';
 import {cn} from '@/lib/utils';
 import {ZaloBrandIcon} from '@/components/support/ZaloBrandIcon';
+import type {SupportWidgetMode} from '@/types/support/support.types';
 import {formatPhoneDisplay, toZaloChatUrl} from '@/utils/support/contact-format';
 
 export interface PublicSupportLauncherProps {
+    mode?: SupportWidgetMode;
     open: boolean;
     unreadCount: number;
     threadCode?: string | null;
@@ -21,10 +23,11 @@ const CALLOUT_HIDDEN_MS = 10_000;
 
 /**
  * Floating bottom-right support launcher stack:
- * 1. Direct Zalo quick-chat button (sourced dynamically from PostgreSQL site settings)
- * 2. Pulsing UAV PAS logo launcher with unread Admin badge and periodic auto-fading callout pill
+ * - Public marketing pages (`mode="public"`): docked at `bottom-5 right-5` with direct Zalo button + auto-fading callout.
+ * - Signed-in Customer Portal (`mode="portal"`): docked at `bottom-24 right-5` cleanly above `AssistantWidget` (`bottom-5 right-5`).
  */
 export function PublicSupportLauncher({
+    mode = 'public',
     open,
     unreadCount,
     threadCode,
@@ -32,13 +35,14 @@ export function PublicSupportLauncher({
     onToggle,
     onOpen,
 }: PublicSupportLauncherProps) {
+    const isPortal = mode === 'portal';
     const hasUnread = unreadCount > 0;
     const [autoShowCallout, setAutoShowCallout] = useState(true);
     const [hovered, setHovered] = useState(false);
     const [zaloHovered, setZaloHovered] = useState(false);
 
     useEffect(() => {
-        if (open || hasUnread) return;
+        if (isPortal || open || hasUnread) return;
 
         const timer = window.setTimeout(
             () => setAutoShowCallout((prev) => !prev),
@@ -46,10 +50,10 @@ export function PublicSupportLauncher({
         );
 
         return () => window.clearTimeout(timer);
-    }, [autoShowCallout, hasUnread, open]);
+    }, [autoShowCallout, hasUnread, isPortal, open]);
 
-    const showCallout = !open && (hasUnread || hovered || autoShowCallout);
-    const zaloUrl = toZaloChatUrl(zaloPhone);
+    const showCallout = !open && (hasUnread || hovered || (!isPortal && autoShowCallout));
+    const zaloUrl = !isPortal ? toZaloChatUrl(zaloPhone) : null;
     const zaloDisplay = formatPhoneDisplay(zaloPhone);
 
     const calloutText = hasUnread
@@ -59,7 +63,12 @@ export function PublicSupportLauncher({
           : 'Hỗ trợ trực tuyến · Nhắn Admin ngay';
 
     return (
-        <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
+        <div
+            className={cn(
+                'fixed right-5 z-50 flex flex-col items-end gap-3',
+                isPortal ? 'bottom-24' : 'bottom-5',
+            )}
+        >
             {!open && zaloUrl && (
                 <div
                     className="flex items-center gap-2.5 pr-1"
@@ -73,7 +82,7 @@ export function PublicSupportLauncher({
                         tabIndex={zaloHovered ? 0 : -1}
                         aria-hidden={!zaloHovered}
                         className={cn(
-                            'hidden sm:inline-flex items-center gap-1.5 rounded-full border border-[#0068FF]/30 bg-white/95 px-3 py-1.5 text-xs font-bold text-[#0068FF] shadow-md backdrop-blur-xs transition-all duration-300 ease-out',
+                            'hidden sm:inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-800 shadow-md backdrop-blur-xs transition-all duration-300 ease-out hover:border-primary/40 hover:text-primary',
                             zaloHovered
                                 ? 'pointer-events-auto translate-x-0 scale-100 opacity-100'
                                 : 'pointer-events-none translate-x-2 scale-95 opacity-0',
@@ -83,10 +92,6 @@ export function PublicSupportLauncher({
                     </a>
 
                     <div className="relative flex items-center justify-center">
-                        <span
-                            aria-hidden="true"
-                            className="pointer-events-none absolute -inset-1 rounded-full bg-[#0068FF]/25 animate-pulse motion-reduce:animate-none"
-                        />
                         <a
                             href={zaloUrl}
                             target="_blank"
@@ -95,9 +100,9 @@ export function PublicSupportLauncher({
                             onBlur={() => setZaloHovered(false)}
                             aria-label={`Liên hệ Zalo ${zaloDisplay}`}
                             title={`Chat Zalo · ${zaloDisplay}`}
-                            className="relative inline-flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-[#0068FF] text-white shadow-xl ring-2 ring-[#0068FF]/20 transition-transform duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#0068FF] focus:ring-offset-2"
+                            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 shadow-lg ring-1 ring-slate-900/5 transition-all duration-200 hover:scale-105 hover:border-primary/50 hover:text-primary active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                         >
-                            <ZaloBrandIcon className="h-7 w-7" />
+                            <ZaloBrandIcon className="h-6 w-6" />
                         </a>
                     </div>
                 </div>
@@ -128,14 +133,14 @@ export function PublicSupportLauncher({
                             aria-hidden="true"
                             className={cn(
                                 'absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping motion-reduce:animate-none',
-                                hasUnread ? 'bg-white' : 'bg-emerald-400',
+                                hasUnread ? 'bg-white' : 'bg-sky-400',
                             )}
                         />
                         <span
                             aria-hidden="true"
                             className={cn(
                                 'relative inline-flex h-2.5 w-2.5 rounded-full',
-                                hasUnread ? 'bg-white' : 'bg-emerald-500',
+                                hasUnread ? 'bg-white' : 'bg-uav-blue',
                             )}
                         />
                     </span>
@@ -193,8 +198,8 @@ export function PublicSupportLauncher({
                             className="pointer-events-none absolute right-0 bottom-0 flex h-4 w-4 items-center justify-center rounded-full bg-white p-0.5 shadow-xs ring-1 ring-slate-200"
                         >
                             <span className="relative flex h-2.5 w-2.5">
-                                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping motion-reduce:animate-none" />
-                                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                                <span className="absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75 animate-ping motion-reduce:animate-none" />
+                                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-uav-blue" />
                             </span>
                         </span>
 

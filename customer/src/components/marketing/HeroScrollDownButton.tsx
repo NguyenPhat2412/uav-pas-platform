@@ -5,17 +5,13 @@ import {ChevronDown} from 'lucide-react';
 
 interface HeroScrollDownButtonProps {
     targetId?: string;
-    label?: string;
 }
 
 /**
  * Centered Hero scroll-down CTA with animated mouse-wheel + cascading chevrons
  * and smooth eased scrolling to the target landing section.
  */
-export function HeroScrollDownButton({
-    targetId = 'home-overview',
-    label = 'Khám phá UAV PAS',
-}: HeroScrollDownButtonProps) {
+export function HeroScrollDownButton({targetId = 'home-overview'}: HeroScrollDownButtonProps) {
     const handleScrollDown = (event: MouseEvent<HTMLAnchorElement>) => {
         const target = document.getElementById(targetId);
         if (!target) return;
@@ -59,13 +55,9 @@ export function HeroScrollDownButton({
         <a
             href={`#${targetId}`}
             onClick={handleScrollDown}
-            aria-label={`${label} — cuộn xuống phần giới thiệu`}
+            aria-label="Cuộn xuống phần giới thiệu"
             className="group absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2 rounded-2xl px-5 py-2 text-center text-white/85 transition-all duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
         >
-            <span className="rounded-full border border-white/25 bg-slate-950/45 px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-[#e2c18b] shadow-lg backdrop-blur-md transition-all duration-300 group-hover:border-[#e2c18b]/70 group-hover:bg-slate-950/70 group-hover:text-white">
-                {label}
-            </span>
-
             <span className="flex flex-col items-center" aria-hidden="true">
                 <span className="flex h-8 w-5 items-start justify-center rounded-full border border-white/45 bg-white/5 p-1 backdrop-blur-xs transition-colors duration-300 group-hover:border-[#e2c18b]">
                     <span className="h-2 w-1 rounded-full bg-[#e2c18b] animate-uav-scroll-wheel" />

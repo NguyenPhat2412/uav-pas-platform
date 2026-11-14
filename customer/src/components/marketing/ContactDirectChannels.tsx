@@ -30,18 +30,18 @@ export function ContactDirectChannels() {
                         href={zaloUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between gap-2 rounded-xl border border-[#0068FF]/45 bg-[#0068FF]/20 px-3 py-2.5 text-white transition-colors hover:bg-[#0068FF]/35"
+                        className="flex items-center justify-between gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2.5 text-white transition-colors hover:border-rose-300/60 hover:bg-white/20"
                     >
                         <span className="flex min-w-0 items-center gap-2">
-                            <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#0068FF] text-white">
+                            <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/15 text-rose-200">
                                 <ZaloBrandIcon className="h-4 w-4" />
                             </span>
                             <span className="min-w-0">
-                                <span className="block text-[10px] font-semibold text-sky-200">Zalo trực tuyến</span>
+                                <span className="block text-[10px] font-semibold text-slate-300">Zalo trực tuyến</span>
                                 <span className="block truncate text-xs font-extrabold tabular-nums">{zaloDisplay}</span>
                             </span>
                         </span>
-                        <ExternalLink className="h-3.5 w-3.5 shrink-0 text-sky-200" aria-hidden="true" />
+                        <ExternalLink className="h-3.5 w-3.5 shrink-0 text-slate-300" aria-hidden="true" />
                     </a>
                 )}
 

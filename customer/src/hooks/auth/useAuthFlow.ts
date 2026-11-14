@@ -12,6 +12,7 @@ export function useAuthFlow() {
 
 const AUTH_FLOW = {
     loginWithGoogle: authService.loginWithGoogle,
+    loginWithApple: authService.loginWithApple,
     registerWithOtp: authService.registerWithOtp,
     verifyEmail: authService.verifyEmail,
     verify2fa: authService.verify2fa,

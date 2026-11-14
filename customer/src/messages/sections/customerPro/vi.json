@@ -40,7 +40,13 @@
     "checking": "Đang kiểm tra…",
     "stillPending": "Chưa ghi nhận giao dịch mới. Hệ thống tiếp tục tự động kiểm tra.",
     "paidSuccess": "Thanh toán đã được xác nhận thành công!",
-    "popupBlocked": "Trình duyệt đã chặn cửa sổ in. Hãy cho phép mở cửa sổ bật lên hoặc dùng nút Tải hóa đơn PDF."
+    "popupBlocked": "Trình duyệt đã chặn cửa sổ in. Hãy cho phép mở cửa sổ bật lên hoặc dùng nút Tải hóa đơn PDF.",
+    "realtimeListening": "Tự động xác nhận tức thời qua WebSocket ngay khi nhận chuyển khoản",
+    "realtimeBadge": "Đối soát tức thời",
+    "settledRealtimeBanner": "Đã thanh toán · Dịch vụ và hạn mức giờ bay đã được kích hoạt tự động.",
+    "contactAdminReconcile": "Liên hệ Admin đối soát ngay",
+    "notConfiguredTitle": "Tài khoản nhận chuyển khoản VietQR đang được cấu hình",
+    "notConfiguredDesc": "Hệ thống chưa bật mã QR tự động cho hóa đơn này. Bạn có thể nhắn trực tiếp Quản trị viên để nhận thông tin chuyển khoản và kích hoạt đối soát ngay."
   },
   "plans": {
     "subscribe": "Đăng ký gói này",
@@ -52,6 +58,7 @@
     "subscribeFailed": "Chưa đăng ký được gói. Hãy thử lại."
   },
   "planner": {
+    "obstacles": "Chướng ngại vật",
     "label": "Vùng bay",
     "takeoffHere": "Cất cánh tại vị trí của tôi",
     "toolLabel": "Công cụ vẽ",
@@ -166,6 +173,7 @@
     "history": "Lịch sử"
   },
   "missionMonitor": {
+    "mapTitle": "Bản đồ bay",
     "live": "Đang bay · dữ liệu trực tiếp",
     "phase": {
       "live": "Đang chờ dữ liệu bay",
@@ -203,5 +211,31 @@
     "uav": "UAV",
     "noLocation": "Nhiệm vụ chưa có vị trí trên bản đồ.",
     "mapAria": "Bản đồ giám sát nhiệm vụ {code}"
+  },
+  "accountDeletion": {
+    "title": "Xóa tài khoản",
+    "subtitle": "Tự yêu cầu đóng tài khoản theo chính sách quản trị hiện hành.",
+    "loading": "Đang tải chính sách xóa tài khoản...",
+    "loadError": "Không thể tải chính sách xóa tài khoản. Vui lòng thử lại.",
+    "disabledBadge": "TẠM KHÓA",
+    "disabledNotice": "Chức năng tự xóa tài khoản hiện đang tạm tắt bởi quản trị viên.",
+    "ineligibleFallback": "Tài khoản hiện chưa đủ điều kiện tự xóa theo chính sách hệ thống.",
+    "modeAnonymize": "Ẩn danh dữ liệu cá nhân",
+    "modeHardDelete": "Xóa vĩnh viễn tài khoản",
+    "activeMissionsBadge": "Nhiệm vụ đang xử lý: {count}",
+    "unpaidInvoicesBadge": "Hóa đơn chưa thanh toán: {count}",
+    "openAction": "Yêu cầu xóa tài khoản",
+    "dialogTitle": "Xác nhận xóa tài khoản",
+    "phraseLabel": "Nhập cụm từ xác nhận",
+    "phraseHint": "Nhập chính xác: {phrase}",
+    "passwordLabel": "Mật khẩu hiện tại",
+    "passwordPlaceholder": "Nhập mật khẩu để xác minh danh tính",
+    "reasonLabel": "Lý do xóa tài khoản",
+    "reasonPlaceholder": "Chia sẻ ngắn gọn lý do bạn muốn đóng tài khoản",
+    "cancel": "Giữ lại tài khoản",
+    "confirmDelete": "Xác nhận xóa tài khoản",
+    "deleting": "Đang xóa tài khoản...",
+    "deletedToast": "Tài khoản của bạn đã được xóa thành công.",
+    "deleteFailed": "Không thể xóa tài khoản. Vui lòng kiểm tra thông tin xác nhận."
   }
 }

@@ -7,4 +7,5 @@ export const profileKeys = {
     own: (userId: UserId) => queryKeys.of(userId, 'profile'),
     billing: (userId: UserId) => queryKeys.of(userId, 'profile', 'billing'),
     twoFactor: (userId: UserId) => queryKeys.of(userId, 'profile', '2fa-status'),
+    deletionPolicy: (userId: UserId) => queryKeys.of(userId, 'profile', 'deletion-policy'),
 };

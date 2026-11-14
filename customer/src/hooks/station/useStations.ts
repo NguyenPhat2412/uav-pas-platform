@@ -1,5 +1,5 @@
 'use client';
-import {useQuery} from '@tanstack/react-query';
+import {keepPreviousData, useQuery} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
 import {queryKeys} from '@/lib/query';
 import {stationsService} from '@/api/station/stations.api';
@@ -10,6 +10,7 @@ export function useStations(page = 0, size = 20) {
     const {user, can} = useAuth();
     return useQuery({
         queryKey: [...queryKeys.list(user?.id, 'stations', page), size],
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => stationsService.listStations(page, size, signal),
         enabled: can('STATION_VIEW')
     });

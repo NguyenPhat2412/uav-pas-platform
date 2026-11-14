@@ -15,6 +15,7 @@ import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import {EnterpriseProfilePanel} from '@/components/profile/EnterpriseProfilePanel';
 import {AvatarEditor} from '@/components/profile/AvatarEditor';
+import {AccountDeletionCard} from '@/components/profile/AccountDeletionCard';
 
 export function CustomerProfilePage() {
     const {user} = useAuth();
@@ -262,6 +263,12 @@ function Profile() {
                 </Panel>
             </div>
             <EnterpriseProfilePanel/>
+            <div className="bg-white [&>*]:rounded-none [&>*]:border-0">
+                <AccountDeletionCard/>
+            </div>
+            <p className="m-0 bg-white py-3 text-center text-xs text-slate-400">
+                NguyenPhat2412 · UAV PAS
+            </p>
         </div>
     </>;
 }

@@ -1,7 +1,7 @@
 import {apiClient, apiRequest} from '@/lib/api';
 import {API_ROUTES} from '@/lib/api/routes';
 import {profilePayload} from '@/forms/profile/profile-form';
-import type {BillingProfile, BillingProfileFields, CustomerProfile, ProfileFields, SignedAvatarUpload} from '@/types/profile/profile.types';
+import type {AccountDeletionPolicy, BillingProfile, BillingProfileFields, CustomerProfile, DeleteOwnAccountRequest, ProfileFields, SignedAvatarUpload} from '@/types/profile/profile.types';
 
 /** Signed upload straight to storage, then the backend confirms the object and makes it the avatar. */
 export const avatarService = {
@@ -30,4 +30,8 @@ export const profileService = {
         apiClient.get<BillingProfile>(API_ROUTES.users.profileBilling, {signal}),
     updateBilling: (fields: BillingProfileFields, expectedVersion: number) =>
         apiClient.put<BillingProfile>(API_ROUTES.users.profileBilling, {expectedVersion, ...fields}),
+    getDeletionPolicy: (signal?: AbortSignal) =>
+        apiClient.get<AccountDeletionPolicy>(API_ROUTES.users.deletionPolicy, {signal}),
+    deleteOwnAccount: (payload: DeleteOwnAccountRequest) =>
+        apiClient.post<{ message: string }>(API_ROUTES.users.deleteOwnAccount, payload),
 };

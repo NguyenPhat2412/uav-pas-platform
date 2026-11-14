@@ -2,7 +2,7 @@
 
 import {createContext, useContext, useEffect} from 'react';
 import {usePathname, useRouter} from 'next/navigation';
-import {Menu} from 'lucide-react';
+import {Menu, ShieldAlert} from 'lucide-react';
 import {AssistantWidget} from '@/components/assistant/AssistantWidget';
 import {CustomerAccountMenu} from '@/components/customer/CustomerAccountMenu';
 import {CustomerNavSidebar} from '@/components/customer/CustomerNavSidebar';
@@ -10,7 +10,9 @@ import {DispatchHotline} from '@/components/customer/DispatchHotline';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {NotificationBell} from '@/components/notification/NotificationBell';
+import {PortalErrorView} from '@/components/shared/PortalErrorView';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
+import {PublicSupportWidget} from '@/components/support/PublicSupportWidget';
 import {Alert, Button, LanguageSwitcher, UavLoader} from '@/components/ui';
 import {CUSTOMER_SIDEBAR_ROUTES, resolveSidebarActiveItem} from '@/config/sidebar-routes';
 import {useOwnProfile} from '@/hooks/profile/useProfile';
@@ -113,6 +115,7 @@ export function AppShell({children}: { children: React.ReactNode }) {
                 <main id="content" className="flex w-full flex-1 flex-col bg-white outline-none" tabIndex={-1}>
                     {children}
                 </main>
+                <PublicSupportWidget mode="portal"/>
                 <AssistantWidget portal="CUSTOMER"/>
             </div>
         </div>
@@ -128,11 +131,16 @@ const PortalFrame = createContext(false);
 export function CustomerPortalFrame({children}: { children: React.ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
-    const {isAuthenticated, isLoading} = useAuth();
+    const {isAuthenticated, isLoading, isUnreachable, authError, retryAuth} = useAuth();
     const {t} = useI18n();
     useEffect(() => {
-        if (!isLoading && !isAuthenticated) router.replace(loginEntryForPage(pathname, '/customer/dashboard'));
-    }, [router, pathname, isLoading, isAuthenticated]);
+        if (!isLoading && !isAuthenticated && !isUnreachable) {
+            router.replace(loginEntryForPage(pathname, '/customer/dashboard'));
+        }
+    }, [router, pathname, isLoading, isAuthenticated, isUnreachable]);
+    if (!isLoading && !isAuthenticated && isUnreachable) {
+        return <PortalErrorView error={authError ?? undefined} reset={() => retryAuth?.()} area="customer" homeHref="/customer/dashboard"/>;
+    }
     if (isLoading || !isAuthenticated) {
         return <UavLoader fullScreen label={t('common.authenticating')}/>;
     }
@@ -145,30 +153,46 @@ export function PageGuard({children, permission = 'MISSION_VIEW'}: {
 }) {
     const router = useRouter();
     const pathname = usePathname();
-    const {isAuthenticated, isLoading, permissionsReady, permissionError, refreshPermissions, can} = useAuth();
+    const {isAuthenticated, isLoading, isUnreachable, authError, retryAuth, permissionsReady, permissionError, refreshPermissions, can} = useAuth();
     const {t} = useI18n();
     const inFrame = useContext(PortalFrame);
     useEffect(() => {
-        if (!inFrame && !isLoading && !isAuthenticated) router.replace(loginEntryForPage(pathname, '/customer/dashboard'));
-    }, [router, pathname, inFrame, isLoading, isAuthenticated]);
+        if (!inFrame && !isLoading && !isAuthenticated && !isUnreachable) {
+            router.replace(loginEntryForPage(pathname, '/customer/dashboard'));
+        }
+    }, [router, pathname, inFrame, isLoading, isAuthenticated, isUnreachable]);
+    if (!inFrame && !isLoading && !isAuthenticated && isUnreachable) {
+        return <PortalErrorView error={authError ?? undefined} reset={() => retryAuth?.()} area="customer" homeHref="/customer/dashboard"/>;
+    }
     if (!inFrame && (isLoading || !isAuthenticated)) {
         return <UavLoader fullScreen label={t('common.authenticating')}/>;
     }
     const content = (
         <>
             {permission && permissionError ? (
-                <Alert variant="error" className="rounded-none border-x-0 border-t-0">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                        <span>{t('common.permissionError')}</span>
-                        <Button size="sm" onClick={() => void refreshPermissions()}>{t('common.retry')}</Button>
-                    </div>
-                </Alert>
+                <div className="m-auto w-full max-w-lg p-6">
+                    <Alert variant="error">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <span>{t('common.permissionError')}</span>
+                            <Button size="sm" onClick={() => void refreshPermissions()}>{t('common.retry')}</Button>
+                        </div>
+                    </Alert>
+                </div>
             ) : permission && !permissionsReady ? (
                 <div className="py-10 text-center text-sm text-slate-500" role="status">{t('common.checkingPermissions')}</div>
             ) : permission && !can(permission) ? (
-                <Alert variant="warning" className="rounded-none border-x-0 border-t-0 font-medium">
-                    {t('common.permissionDenied')}
-                </Alert>
+                <div className="m-auto w-full max-w-lg p-6">
+                    <div className="flex flex-col items-center justify-center gap-2 rounded-panel border border-amber-200 bg-amber-50/60 p-8 text-center text-slate-700" role="status" data-permission={permission}>
+                        <ShieldAlert size={24} className="text-warning"/>
+                        <h3 className="text-base font-bold text-slate-900">{t('errorPage.forbiddenTitle')}</h3>
+                        <p className="max-w-md text-sm text-slate-600">{t('common.permissionDenied')}</p>
+                        {pathname !== '/customer/dashboard' && (
+                            <Button size="sm" variant="outline" className="mt-2" onClick={() => router.push('/customer/dashboard')}>
+                                {t('errorPage.home')}
+                            </Button>
+                        )}
+                    </div>
+                </div>
             ) : (
                 children
             )}

@@ -104,28 +104,36 @@ export function HomeLandingShowcaseSection() {
             </section>
 
             {/* BOTTOM CTA */}
-            <section className="relative overflow-hidden bg-primary py-16 text-primary-foreground sm:py-20" aria-labelledby="home-cta-title">
+            <section className="relative isolate overflow-hidden bg-slate-950 py-16 text-white sm:py-20" aria-labelledby="home-cta-title">
+                <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,var(--primary)_0%,transparent_60%)] opacity-35" aria-hidden="true"/>
+                <div className="absolute inset-x-0 top-0 -z-10 h-1 bg-primary" aria-hidden="true"/>
                 <div className="relative z-10 mx-auto flex w-full max-w-[1380px] flex-wrap items-center justify-between gap-8 px-5 sm:px-8 lg:px-12">
                     <div className="max-w-xl space-y-3">
-                        <h2 id="home-cta-title" className="text-2xl font-black tracking-tight sm:text-4xl">
+                        <p className="text-xs font-extrabold uppercase tracking-widest text-rose-300">
+                            Sẵn sàng triển khai nhiệm vụ
+                        </p>
+                        <h2 id="home-cta-title" className="text-2xl font-black tracking-tight text-white sm:text-4xl">
                             {keepVietnamesePhrases('Mô tả nhiệm vụ trên bản đồ GIS. Đội vận hành lo phần bay.')}
                         </h2>
-                        <p className="text-sm text-rose-100 sm:text-base">
+                        <p className="text-sm text-slate-300 sm:text-base">
                             Tạo tài khoản, chọn gói cước phù hợp, gửi yêu cầu đầu tiên và theo dõi trạng thái điều phối trực tiếp trong Cổng Khách hàng.
                         </p>
                     </div>
-                    <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-3.5">
                         <Link
-                            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-white px-6 py-3 text-sm font-bold text-primary hover:bg-slate-100 transition-colors shadow-md"
+                            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-lg transition-colors hover:bg-primary-hover"
                             href="/?auth=register"
                         >
-                            Tạo tài khoản ngay
+                            Tạo tài khoản ngay →
                         </Link>
-                        <Link className="text-sm font-bold text-white underline underline-offset-4 hover:text-rose-100" href="/pricing">
+                        <Link
+                            className="inline-flex min-h-11 items-center justify-center rounded-control border border-white/30 bg-white/5 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-white/15"
+                            href="/pricing"
+                        >
                             Xem bảng giá gói cước
                         </Link>
-                        <Link className="text-sm font-bold text-white underline underline-offset-4 hover:text-rose-100" href="/services">
-                            Xem tất cả dịch vụ
+                        <Link className="px-2 text-sm font-bold text-slate-200 underline underline-offset-4 hover:text-white" href="/services">
+                            Tất cả dịch vụ
                         </Link>
                     </div>
                     <Image

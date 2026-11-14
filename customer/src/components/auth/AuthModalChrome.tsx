@@ -5,7 +5,8 @@ import {Lock, UserPlus, X} from 'lucide-react';
 import {Alert, Button} from '@/components/ui';
 import {useAuthFlow} from '@/hooks/auth/useAuthFlow';
 import {useI18n} from '@/providers/I18nContext';
-import type {AuthModalView, AuthResponse, TwoFactorMethod} from '@/types/auth/auth.types';
+import type {AppleCredentialPayload, AuthModalView, AuthResponse, TwoFactorMethod} from '@/types/auth/auth.types';
+import {AppleSignInButton} from '@/components/auth/AppleSignInButton';
 import {GoogleSignInButton} from '@/components/auth/GoogleSignInButton';
 
 export const AUTH_INPUT_CLASS =
@@ -128,7 +129,7 @@ export function AuthGoogleEntry({
     const {t} = useI18n();
     const authFlow = useAuthFlow();
 
-    const handleCredential = (credential: string) => {
+    const handleGoogleCredential = (credential: string) => {
         if (disabled) return;
         void runAuthAction('Không đăng nhập được bằng Google. Vui lòng thử lại.', async () => {
             const res = await authFlow.loginWithGoogle(credential);
@@ -136,9 +137,20 @@ export function AuthGoogleEntry({
         });
     };
 
+    const handleAppleCredential = ({email, ...payload}: AppleCredentialPayload) => {
+        if (disabled) return;
+        void runAuthAction('Không đăng nhập được bằng Apple. Vui lòng thử lại.', async () => {
+            const res = await authFlow.loginWithApple(payload);
+            onSignInResult(res, res.user?.email ?? email ?? '');
+        });
+    };
+
     return (
         <>
-            <GoogleSignInButton text={text} disabled={disabled} onCredential={handleCredential}/>
+            <div className="grid grid-cols-2 gap-3">
+                <GoogleSignInButton text={text} disabled={disabled} onCredential={handleGoogleCredential}/>
+                <AppleSignInButton text={text} disabled={disabled} onCredential={handleAppleCredential}/>
+            </div>
             <div className="flex items-center gap-3 pt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 <span className="h-px flex-1 bg-slate-200"/>
                 {t('auth.orDivider')}
@@ -147,6 +159,8 @@ export function AuthGoogleEntry({
         </>
     );
 }
+
+export const AuthSocialEntry = AuthGoogleEntry;
 
 interface AuthDevOtpBannerProps {
     label: string;

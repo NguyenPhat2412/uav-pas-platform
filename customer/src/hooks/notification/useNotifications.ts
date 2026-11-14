@@ -1,6 +1,8 @@
 "use client";
 
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useEffect} from 'react';
+import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {acquireRealtimeConnection, subscribeRealtimeEvents} from '@/lib/realtime-ws';
 import {useAuth} from "@/providers/AuthContext";
 import {useI18n} from '@/providers/I18nContext';
 import {queryKeys} from '@/lib/query';
@@ -34,6 +36,23 @@ export function useNotifications() {
         mutationFn: (id: string | null) => id === null ? notificationsService.markAllRead() : notificationsService.markRead(id),
         onSuccess: () => client.invalidateQueries({queryKey: key}),
     });
+    // The server pushes each new notification to this user's sockets only: bump the bell at once, refetch the list.
+    const userId = user?.id;
+    useEffect(() => {
+        if (userId == null) return;
+        const feature = queryKeys.feature(userId, 'notifications');
+        const onFrame = (frame: {type: string; unreadCount?: number}) => {
+            if (frame.type !== 'NOTIFICATION_CREATED') return;
+            client.setQueryData([...feature, 'unread'], {unreadCount: frame.unreadCount ?? 0});
+            void client.invalidateQueries({queryKey: [...feature, 'recent']});
+        };
+        const release = acquireRealtimeConnection({authenticated: true});
+        const unsubscribe = subscribeRealtimeEvents(onFrame);
+        return () => {
+            unsubscribe();
+            release();
+        };
+    }, [userId, client]);
     return {
         notifications: user ? list.data ?? [] : [], unreadCount: user ? count.data?.unreadCount ?? 0 : 0,
         loading: !!user && (list.isPending || count.isPending), busy: mutation.isPending,
@@ -52,6 +71,7 @@ export function useNotificationPage(page: number, size: number) {
     const {user} = useAuth();
     return useQuery({
         queryKey: queryKeys.of(user?.id, 'notifications', 'admin-page', page),
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => notificationsService.page(page, size, signal),
         enabled: !!user,
     });
