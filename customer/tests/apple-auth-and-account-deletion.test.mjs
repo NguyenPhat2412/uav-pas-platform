@@ -38,7 +38,7 @@ test('AppleSignInButton and AuthModalChrome render side-by-side social sign-in w
     assert.match(googleBtn, /auth\.google\.short/);
 
     const modalChrome = read('src/components/auth/AuthModalChrome.tsx');
-    assert.match(modalChrome, /grid grid-cols-2 gap-2\.5/);
+    assert.match(modalChrome, /grid grid-cols-2 gap-3/);
     assert.match(modalChrome, /<GoogleSignInButton/);
     assert.match(modalChrome, /<AppleSignInButton/);
     assert.match(modalChrome, /export const AuthSocialEntry = AuthGoogleEntry/);

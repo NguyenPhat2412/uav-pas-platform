@@ -122,20 +122,24 @@ export function GoogleSignInButton({onCredential, disabled = false, text = 'sign
         };
     }, [text, locale]);
 
+    // Our own "Google" face matches the Apple button; Google's rendered button sits invisibly on top so the click
+    // still goes through Google Identity Services (its popup, its consent screen).
     return (
-        <div className={`relative h-10 w-full ${disabled ? 'pointer-events-none opacity-50' : ''}`}>
-            <div ref={slot} className={`flex h-10 w-full justify-center ${ready ? '' : 'invisible absolute inset-0'}`}/>
-            {!ready && (
-                <button
-                    type="button"
-                    aria-label={t(`auth.google.${text}`)}
-                    onClick={() => toast.info(t(CLIENT_ID ? 'auth.google.loading' : 'auth.google.notConfigured'))}
-                    className="flex h-10 w-full items-center justify-center gap-2 rounded-control border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 cursor-pointer"
-                >
-                    <GoogleMark/>
-                    <span className="truncate">{t('auth.google.short')}</span>
-                </button>
-            )}
+        <div className={`relative h-10 w-full overflow-hidden rounded-control ${disabled ? 'pointer-events-none opacity-50' : ''}`}>
+            <button
+                type="button"
+                aria-label={t(`auth.google.${text}`)}
+                tabIndex={ready ? -1 : 0}
+                onClick={() => toast.info(t(CLIENT_ID ? 'auth.google.loading' : 'auth.google.notConfigured'))}
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-control border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 cursor-pointer"
+            >
+                <GoogleMark/>
+                <span className="truncate">{t('auth.google.short')}</span>
+            </button>
+            <div
+                ref={slot}
+                className={`absolute inset-0 flex justify-center opacity-[0.01] ${ready ? '' : 'pointer-events-none'}`}
+            />
         </div>
     );
 }

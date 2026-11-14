@@ -147,7 +147,7 @@ export function AuthGoogleEntry({
 
     return (
         <>
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-3">
                 <GoogleSignInButton text={text} disabled={disabled} onCredential={handleGoogleCredential}/>
                 <AppleSignInButton text={text} disabled={disabled} onCredential={handleAppleCredential}/>
             </div>
