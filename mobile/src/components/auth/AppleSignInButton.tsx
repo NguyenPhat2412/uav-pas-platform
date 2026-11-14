@@ -22,7 +22,7 @@ type AppleAuthModule = typeof import('expo-apple-authentication');
  * Android, and Node test runs never crash at module import time.
  */
 function loadAppleAuth(): AppleAuthModule | null {
-    if (Platform.OS !== 'ios') return null;
+    if (Platform.OS !== 'ios' || process.env.EXPO_PUBLIC_APPLE_SIGN_IN_ENABLED === 'false') return null;
     try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         return require('expo-apple-authentication') as AppleAuthModule;

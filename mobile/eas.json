@@ -17,7 +17,8 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.uav.all1.vn",
         "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "527884427670-baa1dat4f4t2v1r8oa9rk03j2kh0nb06.apps.googleusercontent.com",
-        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "527884427670-cf502cj66u6q9sd515rqspghve9p5230.apps.googleusercontent.com"
+        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "527884427670-cf502cj66u6q9sd515rqspghve9p5230.apps.googleusercontent.com",
+        "EXPO_PUBLIC_APPLE_SIGN_IN_ENABLED": "false"
       }
     }
   },
