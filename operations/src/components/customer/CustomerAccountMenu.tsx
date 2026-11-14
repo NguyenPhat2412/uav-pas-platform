@@ -10,6 +10,7 @@ import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {canUsePortal} from '@/utils/auth/portal';
+import {resolvePortalHref} from '@/utils/auth/auth-entry';
 
 /** Top-bar account button; its menu holds the account page, billing and sign-out. */
 export function CustomerAccountMenu({name}: { name: string }) {
@@ -63,14 +64,14 @@ export function CustomerAccountMenu({name}: { name: string }) {
                         <CreditCard size={16} aria-hidden="true"/>{t('account.billing')}
                     </Link>
                     {canUsePortal(user?.role, 'operations') && (
-                        <Link role="menuitem" href="/operations/overview" onClick={close} className={itemClass}>
+                        <a role="menuitem" href={resolvePortalHref('/operations/overview')} onClick={close} className={itemClass}>
                             <Radar size={16} aria-hidden="true"/>{t('shell.portalSwitcher.operationsPortal')}
-                        </Link>
+                        </a>
                     )}
                     {canUsePortal(user?.role, 'admin') && (
-                        <Link role="menuitem" href="/admin/dashboard" onClick={close} className={itemClass}>
+                        <a role="menuitem" href={resolvePortalHref('/admin/dashboard')} onClick={close} className={itemClass}>
                             <ShieldCheck size={16} aria-hidden="true"/>{t('shell.portalSwitcher.adminPortal')}
-                        </Link>
+                        </a>
                     )}
                     <hr className="my-1.5 border-slate-100"/>
                     <Button
@@ -78,8 +79,8 @@ export function CustomerAccountMenu({name}: { name: string }) {
                         role="menuitem"
                         variant="ghost"
                         size="sm"
-                        leftIcon={<LogOut size={16} aria-hidden="true"/>}
-                        className="h-auto w-full justify-start gap-2.5 px-3 py-2 text-sm font-semibold text-danger hover:bg-red-50"
+                        leftIcon={<LogOut size={14} aria-hidden="true"/>}
+                        className="h-auto w-full justify-start gap-2 px-2.5 py-1.5 text-xs font-semibold text-danger hover:bg-red-50"
                         onClick={() => {
                             close();
                             void logout();

@@ -774,13 +774,15 @@
         "OVERDUE": "Overdue",
         "PAID": "Paid",
         "FAILED": "Failed",
-        "CANCELLED": "Cancelled"
+        "CANCELLED": "Cancelled",
+        "EXPIRED": "Expired"
       },
       "status": {
         "PENDING": "Unpaid",
         "PAID": "Paid",
         "FAILED": "Failed",
-        "CANCELLED": "Cancelled"
+        "CANCELLED": "Cancelled",
+        "EXPIRED": "Expired"
       },
       "overdue": "Overdue",
       "create": "Issue invoice",

@@ -1,5 +1,5 @@
 'use client';
-import {useMutation, useQueries, useQuery} from '@tanstack/react-query';
+import {keepPreviousData, useMutation, useQueries, useQuery} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {queryKeys, type MutationOptions} from '@/lib/query';
@@ -16,6 +16,7 @@ export function useMedia(page = 0) {
     const {user, can} = useAuth();
     return useQuery({
         queryKey: queryKeys.list(user?.id, 'media', page),
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => mediaService.listMedia(page, signal),
         enabled: can('MEDIA_VIEW')
     });

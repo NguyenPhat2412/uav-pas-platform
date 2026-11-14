@@ -14,3 +14,4 @@ export * from "@/components/ui/Toast";
 export * from "@/components/ui/Switch";
 export * from "@/components/ui/UavLoader";
 export * from "@/components/ui/ConfirmDialog";
+export * from "@/components/ui/PageSkeleton";

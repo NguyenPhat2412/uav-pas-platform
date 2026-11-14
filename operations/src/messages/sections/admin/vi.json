@@ -774,13 +774,15 @@
         "OVERDUE": "Quá hạn",
         "PAID": "Đã thanh toán",
         "FAILED": "Thất bại",
-        "CANCELLED": "Đã hủy"
+        "CANCELLED": "Đã hủy",
+        "EXPIRED": "Hết hạn"
       },
       "status": {
         "PENDING": "Chờ thanh toán",
         "PAID": "Đã thanh toán",
         "FAILED": "Thất bại",
-        "CANCELLED": "Đã hủy"
+        "CANCELLED": "Đã hủy",
+        "EXPIRED": "Hết hạn"
       },
       "overdue": "Quá hạn",
       "create": "Phát hành hóa đơn",

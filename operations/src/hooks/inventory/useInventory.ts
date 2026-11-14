@@ -1,5 +1,5 @@
 'use client';
-import {useQuery} from '@tanstack/react-query';
+import {keepPreviousData, useQuery} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
 import {queryKeys} from '@/lib/query';
 import {inventoryService} from '@/api/inventory/inventory.api';
@@ -9,6 +9,7 @@ export function useEquipment(page = 0) {
     const {user, can} = useAuth();
     return useQuery({
         queryKey: queryKeys.list(user?.id, 'equipment', page),
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => inventoryService.listEquipment(page, 20, signal),
         enabled: can('INVENTORY_VIEW')
     });
@@ -18,6 +19,7 @@ export function useInventoryHistory(page = 0) {
     const {user, can} = useAuth();
     return useQuery({
         queryKey: [...queryKeys.history(user?.id, 'equipment'), page],
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => inventoryService.inventoryHistory(page, signal),
         enabled: can('INVENTORY_HISTORY_VIEW')
     });

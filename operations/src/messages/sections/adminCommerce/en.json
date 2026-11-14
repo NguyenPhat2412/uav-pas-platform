@@ -10,12 +10,15 @@
     "txStatus": {
       "SUCCESS": "Succeeded",
       "PENDING": "Pending",
-      "FAILED": "Failed"
+      "FAILED": "Failed",
+      "MISMATCH": "Amount mismatch",
+      "UNMATCHED": "No open invoice"
     },
     "gateway": {
       "VIETQR_NAPAS_247": "VietQR NAPAS 247 (IPN)",
       "VIETQR_NAPAS": "VietQR NAPAS",
-      "BANK_TRANSFER_MANUAL": "Bank transfer – manual confirmation"
+      "BANK_TRANSFER_MANUAL": "Bank transfer – manual confirmation",
+      "VIETQR_SEPAY_AUTO": "VietQR – SePay auto"
     },
     "tx": {
       "filters": "Transaction filters",
@@ -122,6 +125,74 @@
       "emergencyContactName": "Emergency contact",
       "emergencyContactPhone": "Emergency contact phone",
       "updatedAt": "Last updated: {date}"
+    },
+    "refund": {
+      "action": "Mark as refunded",
+      "title": "Refund transfer",
+      "reference": "Refund bank reference",
+      "referencePlaceholder": "e.g. FT26318…",
+      "note": "Note",
+      "submit": "Confirm refund",
+      "done": "Refund recorded",
+      "refunded": "Refunded",
+      "resolvedBy": "Refunded by {user} at {time}",
+      "hint": "Record this only after the money was sent back to the customer."
+    },
+    "payments": {
+      "title": "Payments & spending",
+      "anchor": "Payments",
+      "range": "{from} – {to}",
+      "kpi": {
+        "collected": "Collected",
+        "issued": "Issued",
+        "collectionRate": "Collection rate",
+        "avgDaysToPay": "Avg days to pay",
+        "outstanding": "Outstanding",
+        "overdue": "Overdue",
+        "refunded": "Refunded",
+        "payingCustomers": "Paying customers",
+        "averageInvoice": "Average invoice"
+      },
+      "invoices": "{count} invoices",
+      "days": "{value} days",
+      "trendTitle": "12-month cash flow",
+      "issuedSeries": "Issued",
+      "collectedSeries": "Collected",
+      "refundedSeries": "Refunded",
+      "gatewayTitle": "By payment channel",
+      "sourceTitle": "By revenue source",
+      "planTitle": "By plan",
+      "statusTitle": "Issued invoices by status",
+      "agingTitle": "Receivables aging",
+      "reviewTitle": "Transfers to resolve",
+      "topTitle": "Top spending customers",
+      "source": {
+        "PLAN": "Service plans",
+        "MISSION": "Missions",
+        "OTHER": "Other"
+      },
+      "aging": {
+        "NOT_DUE": "Not due",
+        "D1_7": "1–7 days late",
+        "D8_30": "8–30 days late",
+        "D31_PLUS": "Over 30 days late"
+      },
+      "review": {
+        "pending": "Awaiting refund",
+        "mismatch": "Amount mismatch",
+        "unmatched": "Invoice already closed",
+        "refunded": "Refunded this period",
+        "open": "Open transactions"
+      },
+      "col": {
+        "customer": "Customer",
+        "paid": "Paid",
+        "count": "Invoices",
+        "outstanding": "Owes"
+      },
+      "empty": "No data in this range.",
+      "noReview": "No transfers need attention.",
+      "definitions": "Collected: invoices paid in the period. Collection rate: share of invoices issued in the period already paid (cancelled excluded). Outstanding and aging are measured now."
     }
   }
 }

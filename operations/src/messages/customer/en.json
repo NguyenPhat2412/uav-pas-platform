@@ -367,7 +367,8 @@
             "PAID": "Paid",
             "PENDING": "Awaiting payment",
             "FAILED": "Payment failed",
-            "CANCELLED": "Cancelled"
+            "CANCELLED": "Cancelled",
+            "EXPIRED": "Expired"
         },
         "loading": "Loading billing data…",
         "loadError": "Could not load billing data.",

@@ -367,7 +367,8 @@
             "PAID": "Đã thanh toán",
             "PENDING": "Chờ thanh toán",
             "FAILED": "Thanh toán thất bại",
-            "CANCELLED": "Đã hủy"
+            "CANCELLED": "Đã hủy",
+            "EXPIRED": "Hết hạn"
         },
         "loading": "Đang tải dữ liệu thanh toán…",
         "loadError": "Không tải được dữ liệu thanh toán.",

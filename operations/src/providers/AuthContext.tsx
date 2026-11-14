@@ -3,9 +3,9 @@
 import {clearWelcomeFlags} from '@/lib/welcome-flag';
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
-import type {AuthContextType, AuthResponse, RegisterRequest, UserResponse} from "@/types/auth/auth.types";
+import type {AppleLoginInput, AuthContextType, AuthResponse, RegisterRequest, UserResponse} from "@/types/auth/auth.types";
 import {authService} from '@/api/auth/auth.api';
-import {API_ROUTES, ApiError, apiClient, knownSignedOut, PERMISSIONS_EVENT, rememberSessionUser, SESSION_EVENT, SESSION_STORAGE_KEY, sessionOwnerOf, setAuthSession} from "@/lib/api";
+import {API_ROUTES, ApiError, apiClient, knownSignedOut, PERMISSIONS_EVENT, rememberSessionUser, SESSION_EVENT, SESSION_STORAGE_KEY, sessionOwnerOf, setAuthSession, TRANSPORT_EVENT, type TransportState} from "@/lib/api";
 import {toast} from '@/providers/ToastContext';
 import {useI18n} from '@/providers/I18nContext';
 
@@ -17,6 +17,8 @@ export function AuthProvider({children}: { children: ReactNode }) {
     const [user, setUser] = useState<UserResponse | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [authError, setAuthError] = useState<Error | null>(null);
+    const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
     const identity = useRef<number | null>(null);
     const permissionSignature = useRef<string | null>(null);
     const permissionQuery = useQuery({
@@ -41,6 +43,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
             identity.current = session?.user?.id ?? null;
             setToken(session ? 'cookie' : null);
             setUser(session?.user ?? null);
+            setAuthError(null);
             setIsLoading(false);
         };
         const permissionsChanged = () => void client.invalidateQueries({queryKey: ['session', identity.current ?? 'anonymous', 'permissions']});
@@ -76,11 +79,18 @@ export function AuthProvider({children}: { children: ReactNode }) {
         };
     }, [client]);
 
+    const retryAuth = useCallback(() => {
+        setIsLoading(true);
+        setAuthError(null);
+        setBootstrapAttempt(prev => prev + 1);
+    }, []);
+
     useEffect(() => {
         let active = true;
         const initialize = async () => {
             // Known to be signed out (and no tab has signed in since): nothing to ask the API.
             if (knownSignedOut()) {
+                setAuthError(null);
                 setIsLoading(false);
                 return;
             }
@@ -92,6 +102,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
                     rememberSessionUser(current.id);
                     setUser(current);
                     setToken('cookie');
+                    setAuthError(null);
                 }
             } catch (error) {
                 if (!active || (error instanceof Error && error.name === 'AbortError')) return;
@@ -101,7 +112,12 @@ export function AuthProvider({children}: { children: ReactNode }) {
                 // An unreachable or overloaded API (offline, 5xx, 429) says nothing about the session: keep the markers so
                 // the next load asks again instead of signing every tab out. Only a refusal ends the session.
                 const unreachable = error instanceof ApiError && (error.status === 0 || error.status === 429 || error.status >= 500);
-                if (!unreachable) setAuthSession(null);
+                if (unreachable) {
+                    setAuthError(error);
+                } else {
+                    setAuthError(null);
+                    setAuthSession(null);
+                }
             } finally {
                 if (active) setIsLoading(false);
             }
@@ -110,7 +126,22 @@ export function AuthProvider({children}: { children: ReactNode }) {
         return () => {
             active = false;
         };
-    }, []);
+    }, [bootstrapAttempt]);
+
+    useEffect(() => {
+        if (!authError) return;
+        const handleRecover = () => retryAuth();
+        const handleTransport = (event: Event) => {
+            const detail = (event as CustomEvent<{ state?: TransportState }>).detail;
+            if (detail?.state === 'online') retryAuth();
+        };
+        window.addEventListener('online', handleRecover);
+        window.addEventListener(TRANSPORT_EVENT, handleTransport);
+        return () => {
+            window.removeEventListener('online', handleRecover);
+            window.removeEventListener(TRANSPORT_EVENT, handleTransport);
+        };
+    }, [authError, retryAuth]);
 
     useEffect(() => {
         if (!permissionQuery.data) return;
@@ -145,6 +176,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
         usernameOrEmail,
         password
     })), [authenticate]);
+    const loginWithApple = useCallback((payload: AppleLoginInput) => authenticate(() => authService.loginWithApple(payload)), [authenticate]);
     const register = useCallback((data: RegisterRequest) => authService.register(data), []);
     const logout = useCallback(async () => {
         clearWelcomeFlags();
@@ -178,9 +210,10 @@ export function AuthProvider({children}: { children: ReactNode }) {
     const permissions = hasPermissions ? permissionQuery.data ?? [] : [];
     return <AuthContext.Provider value={{
         user, token, isLoading, isAuthenticated: !!user,
+        isUnreachable: !!authError, authError, retryAuth,
         permissions, permissionsReady: hasPermissions, permissionError: hasPermissions ? null : permissionQuery.error,
         can: code => permissions.includes(code), refreshPermissions: permissionQuery.refetch, refreshUser,
-        login, register, completeAuth, logout
+        login, loginWithApple, register, completeAuth, logout
     }}>{children}</AuthContext.Provider>;
 }
 
