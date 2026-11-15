@@ -77,7 +77,22 @@ export function OperationsMissionOverviewSection({
                 <CardContent className="p-5 md:p-7">
                     <div className="flex flex-col-reverse items-start justify-between gap-3 md:flex-row md:gap-5">
                         <div className="min-w-0">
-                            <p className="m-0 text-xs font-bold tracking-wider text-primary">{mission.code}</p>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <p className="m-0 text-xs font-bold tracking-wider text-primary">{mission.code}</p>
+                                {mission.providerDisplayName ? (
+                                    <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
+                                        Đơn vị cung ứng Sàn: {mission.providerDisplayName}
+                                    </span>
+                                ) : mission.providerResponseStatus === 'OPEN_RFQ' ? (
+                                    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold text-amber-800">
+                                        Đấu thầu mở (Open RFQ)
+                                    </span>
+                                ) : (
+                                    <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
+                                        1P Đội bay nội bộ
+                                    </span>
+                                )}
+                            </div>
                             <h1
                                 id="mission-title"
                                 className="my-2 break-words text-2xl font-extrabold leading-tight tracking-tight text-foreground md:text-3xl"
