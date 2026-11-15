@@ -1,7 +1,7 @@
 import {AdminPage} from '@/components/layout/AdminPage';
-import {Dashboard} from "@/components/dashboard/AdminDashboard";
-import {AdminAnalytics} from "@/components/dashboard/AdminAnalytics";
-import {AdminHome} from "@/components/dashboard/AdminHome";
+import {Dashboard} from "@/components/dashboard/overview/AdminDashboard";
+import {AdminAnalytics} from "@/components/dashboard/analytics/AdminAnalytics";
+import {AdminHome} from "@/components/dashboard/overview/AdminHome";
 
 export default function Page() {
     return <AdminPage title="admin.pages.dashboard.title"

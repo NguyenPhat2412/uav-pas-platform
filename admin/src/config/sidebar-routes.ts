@@ -40,26 +40,32 @@ import {
     ShieldAlert,
     ShieldCheck,
     Siren,
+    Store,
     TableProperties,
     User,
     Users,
+    Wallet,
     Wrench,
 } from 'lucide-react';
 import {activeDestination} from '@/lib/navigation';
 import type {
     AdminNavGroup,
+    AdminNavSubGroup,
     CustomerNavBadge,
     CustomerNavGroup,
     OperationsNavGroup,
     SidebarRouteItem,
+    SidebarSubGroupMeta,
 } from '@/types/ui';
 
 export type {
     AdminNavGroup,
+    AdminNavSubGroup,
     CustomerNavBadge,
     CustomerNavGroup,
     OperationsNavGroup,
     SidebarRouteItem,
+    SidebarSubGroupMeta,
 };
 
 /**
@@ -87,12 +93,73 @@ export const ADMIN_SIDEBAR_GROUPS: readonly AdminNavGroup[] = [
     'infrastructure',
 ] as const;
 
-export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
-    // 1. Nhóm: Tổng quan & Phân tích (overview)
+/**
+ * Các nhóm con cấp 2 (Hybrid 3-Level Sidebar):
+ * Chỉ áp dụng cho các nhóm lớn có nhiều trang con (overview, commerce, access, infrastructure),
+ * giữ nguyên cây 2 cấp gọn nhẹ cho các nhóm nhỏ 3–4 mục (training, intelligence, security, system).
+ */
+export const ADMIN_SIDEBAR_SUBGROUPS: readonly SidebarSubGroupMeta<AdminNavGroup, AdminNavSubGroup>[] = [
+    // 1. Tổng quan (overview)
+    {
+        key: 'operationsPulse',
+        group: 'overview',
+        icon: LayoutDashboard,
+        defaultLabel: 'Điều hành & Hỗ trợ',
+    },
+    {
+        key: 'airspaceWeather',
+        group: 'overview',
+        icon: MapIcon,
+        defaultLabel: 'Bản đồ & Không phận',
+    },
+    // 2. Dịch vụ & tài chính (commerce)
+    {
+        key: 'catalogPlans',
+        group: 'commerce',
+        icon: Package,
+        defaultLabel: 'Danh mục & Gói cước',
+    },
+    {
+        key: 'marketplace3p',
+        group: 'commerce',
+        icon: Store,
+        defaultLabel: 'Sàn đối tác 3P',
+    },
+    {
+        key: 'billingLedger',
+        group: 'commerce',
+        icon: ReceiptText,
+        defaultLabel: 'Đối soát & Sổ cái',
+    },
+    // 3. Người dùng & quyền (access — `/admin/users` giữ cấp 2 trực tiếp, 4 trang RBAC gom vào nhóm con)
+    {
+        key: 'rbacGovernance',
+        group: 'access',
+        icon: ShieldCheck,
+        defaultLabel: 'Phân quyền & Vai trò',
+    },
+    // 8. Hạ tầng (infrastructure)
+    {
+        key: 'runtimeOps',
+        group: 'infrastructure',
+        icon: Server,
+        defaultLabel: 'Máy chủ & Triển khai',
+    },
+    {
+        key: 'dataComms',
+        group: 'infrastructure',
+        icon: Database,
+        defaultLabel: 'Lưu trữ, Dữ liệu & Email',
+    },
+] as const;
+
+export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGroup>[] = [
+    // 1. Nhóm: Tổng quan & Phân tích (overview — 2 nhóm con cấp 2)
     {
         href: '/admin/dashboard',
         key: 'dashboard',
         group: 'overview',
+        subGroup: 'operationsPulse',
         icon: LayoutDashboard,
         permission: 'DASHBOARD_VIEW',
     },
@@ -100,6 +167,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/reports',
         key: 'reports',
         group: 'overview',
+        subGroup: 'operationsPulse',
         icon: BarChart3,
         permission: 'DASHBOARD_VIEW',
     },
@@ -107,6 +175,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/notifications',
         key: 'notifications',
         group: 'overview',
+        subGroup: 'operationsPulse',
         icon: Inbox,
         permission: 'DASHBOARD_VIEW',
     },
@@ -115,6 +184,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         key: 'supportInbox',
         defaultLabel: 'Tin nhắn hỗ trợ',
         group: 'overview',
+        subGroup: 'operationsPulse',
         icon: MessagesSquare,
         permission: 'SUPPORT_MANAGE',
     },
@@ -123,6 +193,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         key: 'fleetMap',
         defaultLabel: 'Bản đồ đội bay',
         group: 'overview',
+        subGroup: 'airspaceWeather',
         icon: MapIcon,
         permission: 'MISSION_VIEW_ALL',
     },
@@ -131,6 +202,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         key: 'weather',
         defaultLabel: 'Thời tiết bay',
         group: 'overview',
+        subGroup: 'airspaceWeather',
         icon: CloudSun,
         permission: 'MISSION_VIEW_ALL',
     },
@@ -139,15 +211,17 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         key: 'airspace',
         defaultLabel: 'Vùng không phận',
         group: 'overview',
+        subGroup: 'airspaceWeather',
         icon: ShieldAlert,
         permission: 'USER_MANAGE',
     },
 
-    // 5. Nhóm: Tài chính & Hạn mức (commerce) — Đã tách riêng 3 trang con chuyên biệt
+    // 2. Nhóm: Dịch vụ & Tài chính (commerce — 3 nhóm con cấp 2)
     {
         href: '/admin/services',
         key: 'services',
         group: 'commerce',
+        subGroup: 'catalogPlans',
         icon: Package,
         permission: 'MISSION_CONFIRM',
     },
@@ -155,6 +229,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/billing/plans',
         key: 'billingPlans',
         group: 'commerce',
+        subGroup: 'catalogPlans',
         icon: CreditCard,
         permission: 'USER_MANAGE',
         aliases: ['/admin/billing'],
@@ -163,13 +238,42 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/billing/quotas',
         key: 'billingQuotas',
         group: 'commerce',
+        subGroup: 'catalogPlans',
         icon: Gauge,
         permission: 'USER_MANAGE',
+    },
+    {
+        href: '/admin/marketplace/providers',
+        key: 'marketplaceProviders',
+        defaultLabel: 'Duyệt đối tác KYC',
+        group: 'commerce',
+        subGroup: 'marketplace3p',
+        icon: Store,
+        permission: 'MARKETPLACE_MODERATE',
+    },
+    {
+        href: '/admin/marketplace/listings',
+        key: 'marketplaceListings',
+        defaultLabel: 'Kiểm duyệt tin đăng',
+        group: 'commerce',
+        subGroup: 'marketplace3p',
+        icon: Boxes,
+        permission: 'MARKETPLACE_MODERATE',
+    },
+    {
+        href: '/admin/billing/payouts',
+        key: 'billingPayouts',
+        defaultLabel: 'Giải ngân đối tác',
+        group: 'commerce',
+        subGroup: 'marketplace3p',
+        icon: Wallet,
+        permission: 'PAYOUT_MANAGE',
     },
     {
         href: '/admin/billing/invoices',
         key: 'billingInvoices',
         group: 'commerce',
+        subGroup: 'billingLedger',
         icon: FileSpreadsheet,
         permission: 'USER_MANAGE',
     },
@@ -177,6 +281,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/billing/transactions',
         key: 'billingTransactions',
         group: 'commerce',
+        subGroup: 'billingLedger',
         icon: ReceiptText,
         permission: 'USER_MANAGE',
     },
@@ -184,11 +289,12 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/billing/outbox',
         key: 'billingOutbox',
         group: 'commerce',
+        subGroup: 'billingLedger',
         icon: Inbox,
         permission: 'USER_MANAGE',
     },
 
-    // 4. Nhóm: Người dùng & Phân quyền (access) — Đã tách riêng 5 trang con chuyên biệt
+    // 3. Nhóm: Người dùng & Phân quyền (access — `/admin/users` trực tiếp + nhóm con RBAC)
     {
         href: '/admin/users',
         key: 'users',
@@ -200,6 +306,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/access-control',
         key: 'accessControl',
         group: 'access',
+        subGroup: 'rbacGovernance',
         icon: ShieldCheck,
         permission: 'USER_PERMISSION_MANAGE',
     },
@@ -207,6 +314,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/access-control/role-templates',
         key: 'roleTemplates',
         group: 'access',
+        subGroup: 'rbacGovernance',
         icon: KeyRound,
         permission: 'USER_PERMISSION_MANAGE',
         aliases: ['/admin/role-templates'],
@@ -215,6 +323,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/access-control/role-matrix',
         key: 'roleMatrix',
         group: 'access',
+        subGroup: 'rbacGovernance',
         icon: TableProperties,
         permission: 'USER_PERMISSION_MANAGE',
         aliases: ['/admin/role-matrix'],
@@ -223,12 +332,13 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/access-control/permissions',
         key: 'permissions',
         group: 'access',
+        subGroup: 'rbacGovernance',
         icon: Lock,
         permission: 'USER_PERMISSION_MANAGE',
         aliases: ['/admin/permissions'],
     },
 
-    // 5. Nhóm: Đào tạo & SOP (training) — mỗi cổng một mục; /admin/training chuyển về mục khách hàng.
+    // 4. Nhóm: Đào tạo & SOP (training — 2 cấp gọn nhẹ)
     {
         href: '/admin/training/customer',
         key: 'trainingCustomer',
@@ -251,7 +361,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         icon: FileCheck2,
     },
 
-    // 6. Nhóm: Trí tuệ Nhân tạo & Tích hợp (intelligence)
+    // 5. Nhóm: Trí tuệ Nhân tạo & Tích hợp (intelligence — 2 cấp gọn nhẹ)
     {
         href: '/admin/ai-router',
         key: 'aiRouter',
@@ -274,7 +384,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         permission: 'USER_MANAGE',
     },
 
-    // 7. Nhóm: Bảo mật (security) — phiên, chính sách đăng nhập, bí mật, khóa thiết bị
+    // 6. Nhóm: Bảo mật (security — 2 cấp gọn nhẹ)
     {
         href: '/admin/security/sessions',
         key: 'securitySessions',
@@ -305,7 +415,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         permission: 'USER_PERMISSION_MANAGE',
     },
 
-    // 8. Nhóm: Hệ thống & Kiểm toán (system)
+    // 7. Nhóm: Hệ thống & Kiểm toán (system — 2 cấp gọn nhẹ)
     {
         href: '/admin/alerts',
         key: 'alerts',
@@ -328,11 +438,12 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         permission: 'AUDIT_VIEW',
     },
 
-    // 9. Nhóm: Hạ tầng (infrastructure) — chỉ xem; thao tác máy chủ làm qua SSH theo deploy/DEPLOY.md
+    // 8. Nhóm: Hạ tầng (infrastructure — 2 nhóm con cấp 2)
     {
         href: '/admin/infrastructure',
         key: 'infrastructure',
         group: 'infrastructure',
+        subGroup: 'runtimeOps',
         icon: Server,
         permission: 'USER_PERMISSION_MANAGE',
     },
@@ -340,6 +451,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/system-health',
         key: 'systemHealth',
         group: 'infrastructure',
+        subGroup: 'runtimeOps',
         icon: Activity,
         permission: 'USER_PERMISSION_MANAGE',
     },
@@ -347,6 +459,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/infrastructure/deployment',
         key: 'infrastructureDeployment',
         group: 'infrastructure',
+        subGroup: 'runtimeOps',
         icon: Rocket,
         permission: 'USER_PERMISSION_MANAGE',
     },
@@ -354,6 +467,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/infrastructure/backups',
         key: 'infrastructureBackups',
         group: 'infrastructure',
+        subGroup: 'runtimeOps',
         icon: Archive,
         permission: 'USER_PERMISSION_MANAGE',
     },
@@ -361,6 +475,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/infrastructure/storage',
         key: 'infrastructureStorage',
         group: 'infrastructure',
+        subGroup: 'dataComms',
         icon: HardDrive,
         permission: 'USER_PERMISSION_MANAGE',
     },
@@ -368,6 +483,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/files',
         key: 'files',
         group: 'infrastructure',
+        subGroup: 'dataComms',
         icon: FolderOpen,
         permission: 'USER_PERMISSION_MANAGE',
     },
@@ -375,6 +491,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/infrastructure/database',
         key: 'infrastructureDatabase',
         group: 'infrastructure',
+        subGroup: 'dataComms',
         icon: Database,
         permission: 'USER_PERMISSION_MANAGE',
     },
@@ -382,6 +499,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup>[] = [
         href: '/admin/infrastructure/email',
         key: 'infrastructureEmail',
         group: 'infrastructure',
+        subGroup: 'dataComms',
         icon: Mail,
         permission: 'USER_PERMISSION_MANAGE',
     },

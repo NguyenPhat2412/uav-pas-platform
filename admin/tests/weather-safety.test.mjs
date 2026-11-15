@@ -85,12 +85,44 @@ test('Weather: every locale carries the same weather, error, label and alert key
 });
 
 test('Weather: applying a recommended window keeps the flight duration and the requested date', async () => {
-    const {applyFlightWindow} = await load('src/utils/weather/flight-window.ts', s => s.replace(/^import type .*$/m, ''));
+    const {
+        WEATHER_DAY_OFFSETS,
+        applyFlightWindow,
+        buildWeatherSlotIso,
+        dayOffsetFromIso,
+        isHistoricalWeatherTime,
+        shiftWeatherDay,
+        weatherTimelineForDay,
+    } = await load('src/utils/weather/flight-window.ts', s => s.replace(/^import type .*$/m, ''));
     const form = {startTime: '2026-10-31T13:00', expectedEndTime: '2026-10-31T14:30', requestedDate: '2026-10-31', title: 'x'};
     assert.deepEqual(applyFlightWindow(form, '2026-11-01T07:00'),
         {...form, startTime: '2026-11-01T07:00', expectedEndTime: '2026-11-01T08:30', requestedDate: '2026-11-01'});
     assert.equal(applyFlightWindow({...form, expectedEndTime: ''}, '2026-11-01T09:00').expectedEndTime, '2026-11-01T10:00');
     assert.equal(applyFlightWindow(form, 'not a time'), form);
+
+    const base = new Date(2026, 10, 15, 14, 25); // 2026-11-15 14:25
+    assert.equal(WEATHER_DAY_OFFSETS.length, 22);
+    assert.equal(WEATHER_DAY_OFFSETS[0], -7);
+    assert.equal(WEATHER_DAY_OFFSETS.at(-1), 14);
+    assert.equal(buildWeatherSlotIso(-1, 10, base), '2026-11-14T10:00');
+    assert.equal(buildWeatherSlotIso(1, 7, base), '2026-11-16T07:00');
+    assert.equal(dayOffsetFromIso('2026-11-14T10:00', base), -1);
+    assert.equal(dayOffsetFromIso('2026-11-16T07:00', base), 1);
+    assert.equal(dayOffsetFromIso('2026-11-01T07:00', base), -7);
+    assert.equal(dayOffsetFromIso('2026-12-20T07:00', base), 14);
+    assert.equal(shiftWeatherDay(undefined, 1, base), '2026-11-16T09:00');
+    assert.equal(shiftWeatherDay('2026-11-16T14:00', -2, base), '2026-11-14T14:00');
+    assert.equal(isHistoricalWeatherTime('2026-11-14T10:00', base), true);
+    assert.equal(isHistoricalWeatherTime('2026-11-15T14:00', base), false);
+    assert.equal(isHistoricalWeatherTime('2026-11-16T08:00', base), false);
+    assert.equal(weatherTimelineForDay(0, base)[0], undefined);
+    assert.deepEqual(weatherTimelineForDay(1, base), [
+        '2026-11-16T09:00',
+        '2026-11-16T08:00',
+        '2026-11-16T11:00',
+        '2026-11-16T14:00',
+        '2026-11-16T17:00',
+    ]);
 });
 
 test('Weather: the three portals render the shared preflight card', () => {

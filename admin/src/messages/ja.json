@@ -115,6 +115,16 @@
     "security": "セキュリティ",
     "infrastructure": "インフラ"
   },
+  "adminNavSubGroups": {
+    "operationsPulse": "運航・サポート",
+    "airspaceWeather": "マップ・空域",
+    "catalogPlans": "カタログ・プラン",
+    "marketplace3p": "3Pマーケットプレイス",
+    "billingLedger": "請求照合・台帳",
+    "rbacGovernance": "ロール・権限設計",
+    "runtimeOps": "サーバー・デプロイ",
+    "dataComms": "ストレージ・DB・メール"
+  },
   "adminNav": {
     "dashboard": "概要",
     "users": "ユーザー",
@@ -135,6 +145,9 @@
     "fleetMap": "UAV機体マップ",
     "uavs": "UAV機体",
     "services": "サービスカタログ",
+    "marketplaceProviders": "パートナーKYC審査",
+    "marketplaceListings": "出品サービス審査",
+    "billingPayouts": "パートナー出金精算",
     "systemHealth": "システム状態",
     "aiRouter": "AIルーター制御",
     "aiConversations": "AIチャット監査ログ",
@@ -460,7 +473,8 @@
         "WEATHER_SOURCE_UNAVAILABLE": "気象データを取得できませんでした。飛行前に再確認してください。",
         "FORECAST_OUT_OF_RANGE": "この日時は16日間の予報範囲外です。",
         "MISSION_LOCATION_MISSING": "ミッションに座標がないため気象を評価できません。"
-      }
+      },
+      "historicalAt": "過去の観測 · {time}"
     },
     "provider": {
       "title": "気象データの取得元",
@@ -505,7 +519,18 @@
       },
       "filters": "フィルター",
       "map": "天気マップ",
-      "stations": "基地"
+      "stations": "基地",
+      "day": "日付",
+      "hour": "時間帯",
+      "prevDay": "前日",
+      "nextDay": "翌日",
+      "yesterday": "昨日",
+      "today": "今日",
+      "tomorrowDay": "明日",
+      "pickDate": "日付を選択",
+      "rangeHint": "過去7日間 · 14日間予報",
+      "dayOffsetPast": "{days}日前",
+      "dayOffsetFuture": "{days}日後"
     },
     "home": {
       "title": "今日の天気",
@@ -552,7 +577,11 @@
       "conditionsNight": {
         "clear": "晴れ",
         "partly": "晴れ時々曇り"
-      }
+      },
+      "titleYesterday": "昨日の天気",
+      "titleTomorrow": "明日の天気",
+      "titleDate": "{date} の天気",
+      "daySlots": "日中の時間帯"
     }
   },
   "digitalTwin": {

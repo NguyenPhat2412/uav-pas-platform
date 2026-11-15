@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import {useSidebarController} from '@/hooks/useSidebarController';
-import {AssistantWidget} from '@/components/assistant/AssistantWidget';
+import {AssistantWidget} from '@/components/assistant/widget/AssistantWidget';
 import {AdminSupportQuickDock} from '@/components/support/AdminSupportQuickDock';
 import {useSupportSummary} from '@/hooks/support/useAdminSupport';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
@@ -39,18 +39,26 @@ import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {
     ADMIN_SIDEBAR_GROUPS,
     ADMIN_SIDEBAR_ROUTES,
+    ADMIN_SIDEBAR_SUBGROUPS,
     resolveSidebarActiveItem,
 } from '@/config/sidebar-routes';
 import {cn} from '@/lib/utils';
 import {ADMIN_RECENT_PAGES_KEY, rememberRecentPage} from '@/lib/recent-pages';
-import {FoldingNavGroup, foldedLinkClass, useFoldedNavGroups} from '@/components/layout/FoldingNavGroup';
+import {
+    FoldingNavGroup,
+    FoldingSubNavGroup,
+    foldedLinkClass,
+    foldedSubLinkClass,
+    useFoldedNavGroups,
+} from '@/components/layout/FoldingNavGroup';
 import {WorkspaceTabs} from '@/components/layout/WorkspaceTabs';
 import {UnsavedChangesContext, useWorkspaceTabs} from '@/hooks/useWorkspaceTabs';
 
-// Cấu hình routes của Sidebar Admin (bao gồm /reports, /billing, /settings, /access-control/*)
+// Cấu hình routes của Sidebar Admin (bao gồm cây 3 cấp chọn lọc cho nhóm lớn)
 // được tách riêng và quản lý tập trung tại `@/config/sidebar-routes.ts`.
 const nav = ADMIN_SIDEBAR_ROUTES;
 const navGroups = ADMIN_SIDEBAR_GROUPS;
+const navSubGroups = ADMIN_SIDEBAR_SUBGROUPS;
 
 const GROUP_ICONS: Partial<Record<(typeof ADMIN_SIDEBAR_GROUPS)[number], typeof Menu>> = {
     overview: LayoutDashboard,
@@ -94,11 +102,22 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
         if (activeHref) rememberRecentPage(ADMIN_RECENT_PAGES_KEY, activeHref);
     }, [activeHref]);
 
-    const {openGroups, toggleGroup} = useFoldedNavGroups(OPEN_GROUPS_KEY, activeNav?.group);
+    const activeSubGroupKey = activeNav?.subGroup ? `${activeNav.group}.${activeNav.subGroup}` : undefined;
+    const {openGroups, toggleGroup} = useFoldedNavGroups(OPEN_GROUPS_KEY, activeNav?.group, activeSubGroupKey);
     const getNavLabel = (item: typeof nav[0]) => {
         const key = `adminNav.${item.key}`;
         const translated = t(key);
         return translated !== key ? translated : (item.defaultLabel || item.key);
+    };
+    const getSubGroupLabel = (subKey: NonNullable<typeof nav[0]['subGroup']>) => {
+        const key = `adminNavSubGroups.${subKey}`;
+        const translated = t(key);
+        if (translated !== key) return translated;
+        return navSubGroups.find(s => s.key === subKey)?.defaultLabel ?? subKey;
+    };
+    const getSearchGroupLabel = (item: typeof nav[0]) => {
+        const groupLabel = t(`adminNavGroups.${item.group}`);
+        return item.subGroup ? `${groupLabel} · ${getSubGroupLabel(item.subGroup)}` : groupLabel;
     };
     const workspaceTabs = useWorkspaceTabs({storageKey: TABS_KEY, pinnedHref: HOME, activeHref, pathname});
     // A tab whose page the user can no longer open (permission removed) is simply not drawn.
@@ -122,7 +141,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                 id="portal-navigation"
                 className={cn(
                     'fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-[width,transform] duration-200 lg:sticky lg:top-0 lg:z-40 lg:h-screen',
-                    railCollapsed ? 'w-[60px]' : 'w-[min(280px,85vw)] lg:w-[220px]',
+                    railCollapsed ? 'w-[60px]' : 'w-[min(280px,85vw)] lg:w-[256px]',
                     open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0',
                 )}
             >
@@ -166,7 +185,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                 </div>
                 <div className="mb-2 space-y-2 border-b border-slate-100 pb-2.5 md:hidden">
                     <PortalSwitcher currentPortal="admin" variant="drawer"/>
-                    <HeaderSearch variant="drawer" items={visibleNav.map(item => ({href: item.href, label: getNavLabel(item), group: t(`adminNavGroups.${item.group}`)}))}/>
+                    <HeaderSearch variant="drawer" items={visibleNav.map(item => ({href: item.href, label: getNavLabel(item), group: getSearchGroupLabel(item)}))}/>
                     <LanguageSwitcher variant="compact" className="sm:hidden"/>
                 </div>
                 <nav ref={navList} aria-label={t('shell.adminSection')} className={cn('flex flex-1 flex-col overflow-y-auto', railCollapsed ? 'gap-1.5 py-0.5' : 'gap-0.5')}>
@@ -177,6 +196,27 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                         const groupLabel = t(`adminNavGroups.${group}`);
                         const expanded = !!openGroups[group];
                         const groupActive = items.some(item => item.href === activeNav?.href);
+                        const renderUnreadPill = () => (
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-white">
+                                <span className="h-1.5 w-1.5 animate-ping rounded-full bg-white"/>
+                                {unreadSupport > 99 ? '99+' : unreadSupport}
+                            </span>
+                        );
+                        const renderLeafItem = (item: typeof nav[0], nested: boolean) => {
+                            const active = item.href === activeNav?.href;
+                            const label = getNavLabel(item);
+                            const showBadge = item.key === 'supportInbox' && unreadSupport > 0;
+                            const linkCls = nested ? foldedSubLinkClass(active) : foldedLinkClass(active);
+                            return (
+                                <li key={item.href}>
+                                    <Link href={item.href} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined}
+                                          aria-label={label} title={label} className={cn(linkCls, showBadge && 'flex items-center justify-between gap-1.5')}>
+                                        <span className="truncate">{label}</span>
+                                        {showBadge && renderUnreadPill()}
+                                    </Link>
+                                </li>
+                            );
+                        };
                         if (railCollapsed) {
                             const groupHasUnreadSupport = items.some(item => item.key === 'supportInbox') && unreadSupport > 0;
                             return (
@@ -199,32 +239,42 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                                         return {
                                             href: item.href,
                                             label: getNavLabel(item),
+                                            subGroupLabel: item.subGroup ? getSubGroupLabel(item.subGroup) : undefined,
                                             active: item.href === activeNav?.href,
-                                            badge: showBadge ? (
-                                                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-white">
-                                                    <span className="h-1.5 w-1.5 animate-ping rounded-full bg-white"/>
-                                                    {unreadSupport > 99 ? '99+' : unreadSupport}
-                                                </span>
-                                            ) : undefined,
+                                            badge: showBadge ? renderUnreadPill() : undefined,
                                         };
                                     })}
                                 />
                             );
                         }
+                        const directItems = items.filter(item => !item.subGroup);
+                        const groupSubGroups = navSubGroups.filter(sg => sg.group === group && items.some(item => item.subGroup === sg.key));
                         return (
                             <FoldingNavGroup key={group} id={`admin-nav-${group}`} label={groupLabel} icon={GroupIcon}
                                              expanded={expanded} active={groupActive} onToggle={() => toggleGroup(group)}>
-                                {items.map(item => {
-                                    const active = item.href === activeNav?.href;
-                                    const label = getNavLabel(item);
-                                    const showBadge = item.key === 'supportInbox' && unreadSupport > 0;
-                                    return <li key={item.href}>
-                                        <Link href={item.href} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined}
-                                              aria-label={label} title={label} className={cn(foldedLinkClass(active), showBadge && 'flex items-center justify-between gap-1.5')}>
-                                            <span className="truncate">{label}</span>
-                                            {showBadge && <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-white"><span className="h-1.5 w-1.5 animate-ping rounded-full bg-white"/>{unreadSupport > 99 ? '99+' : unreadSupport}</span>}
-                                        </Link>
-                                    </li>;
+                                {directItems.map(item => renderLeafItem(item, false))}
+                                {groupSubGroups.map(sg => {
+                                    const subItems = items.filter(item => item.subGroup === sg.key);
+                                    const stateKey = `${group}.${sg.key}`;
+                                    const subExpanded = !!openGroups[stateKey];
+                                    const subActive = subItems.some(item => item.href === activeNav?.href);
+                                    const subHasUnread = subItems.some(item => item.key === 'supportInbox') && unreadSupport > 0;
+                                    const subLabel = getSubGroupLabel(sg.key);
+                                    return (
+                                        <FoldingSubNavGroup
+                                            key={sg.key}
+                                            id={`admin-subnav-${group}-${sg.key}`}
+                                            label={subLabel}
+                                            icon={sg.icon}
+                                            count={subItems.length}
+                                            badge={subHasUnread && !subExpanded ? renderUnreadPill() : undefined}
+                                            expanded={subExpanded}
+                                            active={subActive}
+                                            onToggle={() => toggleGroup(stateKey)}
+                                        >
+                                            {subItems.map(item => renderLeafItem(item, true))}
+                                        </FoldingSubNavGroup>
+                                    );
                                 })}
                             </FoldingNavGroup>
                         );
@@ -256,7 +306,13 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                             <div className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[13px] text-slate-500">
                                 <span className="hidden xl:inline">UAV PAS</span>
                                 <span className="hidden xl:inline">/</span>
-                                <span className="hidden xl:inline">{t('shell.adminSection')}</span>
+                                <span className="hidden xl:inline">{activeNav ? t(`adminNavGroups.${activeNav.group}`) : t('shell.adminSection')}</span>
+                                {activeNav?.subGroup && (
+                                    <>
+                                        <span className="hidden 2xl:inline">/</span>
+                                        <span className="hidden 2xl:inline">{getSubGroupLabel(activeNav.subGroup)}</span>
+                                    </>
+                                )}
                                 {(activeNav || pageTitle) && (
                                     <>
                                         <span className="hidden xl:inline">/</span>
@@ -266,7 +322,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                             </div>
                         </div>
                         <div className="flex shrink-0 items-center gap-2 xl:gap-3">
-                            <HeaderSearch items={visibleNav.map(item => ({href: item.href, label: getNavLabel(item), group: t(`adminNavGroups.${item.group}`)}))}/>
+                            <HeaderSearch items={visibleNav.map(item => ({href: item.href, label: getNavLabel(item), group: getSearchGroupLabel(item)}))}/>
                             <PortalSwitcher currentPortal="admin"/>
                             <AdminAlertsPopover/>
                             <NotificationBell viewAllHref="/admin/notifications"/>

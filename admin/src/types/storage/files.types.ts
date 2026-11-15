@@ -32,6 +32,9 @@ export interface StoredFile {
     status: StoredFileStatus;
     deletable: boolean;
     createdAt: string;
+    storageBackend?: 'GOOGLE_DRIVE' | 'R2' | string | null;
+    driveNodeCode?: string | null;
+    driveNodeName?: string | null;
 }
 
 export interface StoredFilePage {

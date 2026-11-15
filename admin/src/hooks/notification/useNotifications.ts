@@ -45,6 +45,10 @@ export function useNotifications() {
             if (frame.type !== 'NOTIFICATION_CREATED') return;
             client.setQueryData([...feature, 'unread'], {unreadCount: frame.unreadCount ?? 0});
             void client.invalidateQueries({queryKey: [...feature, 'recent']});
+            void client.invalidateQueries({queryKey: ['admin-marketplace']});
+            void client.invalidateQueries({
+                predicate: q => q.queryKey[0] === 'session' && q.queryKey[1] === userId && q.queryKey[2] !== 'notifications',
+            });
         };
         return adminRealtimeClient.subscribeFrames(onFrame);
     }, [userId, client]);

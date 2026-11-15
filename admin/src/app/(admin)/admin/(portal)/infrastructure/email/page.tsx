@@ -1,5 +1,5 @@
 import {AdminPage} from '@/components/layout/AdminPage';
-import {EmailPanel} from '@/components/infrastructure/EmailPanel';
+import {EmailPanel} from '@/components/infrastructure/data/EmailPanel';
 
 export default function Page() {
     return <AdminPage title="adminInfra.pages.email" permission="USER_PERMISSION_MANAGE" activeResource="infrastructureEmail">
