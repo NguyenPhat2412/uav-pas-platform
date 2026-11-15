@@ -11,7 +11,9 @@ import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.auth.RefreshTokenRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
-import com.uav.platform.service.impl.auth.RefreshTokenServiceImpl;
+import com.uav.platform.service.auth.session.AuthSessionLock;
+import com.uav.platform.service.auth.session.RefreshTokenService;
+import com.uav.platform.service.impl.auth.session.RefreshTokenServiceImpl;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

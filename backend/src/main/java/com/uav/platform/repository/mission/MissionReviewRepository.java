@@ -28,4 +28,14 @@ public interface MissionReviewRepository
     @Query(
             "select r.mission.operator.id, avg(r.overallRating) from MissionReview r where r.mission.operator is not null and r.overallRating is not null group by r.mission.operator.id")
     List<Object[]> averageOverallRatingByOperator();
+
+    @EntityGraph(attributePaths = {"mission", "customer"})
+    List<MissionReview> findTop20ByMissionListingIdOrderByUpdatedAtDescIdDesc(Long listingId);
+
+    @EntityGraph(attributePaths = {"mission", "mission.listing", "customer"})
+    List<MissionReview> findTop20ByMissionProviderIdOrderByUpdatedAtDescIdDesc(Long providerId);
+
+    List<MissionReview> findByMissionListingId(Long listingId);
+
+    List<MissionReview> findByMissionProviderId(Long providerId);
 }

@@ -18,12 +18,12 @@ import com.uav.platform.repository.auth.RefreshTokenRepository;
 import com.uav.platform.repository.security.SessionRevocationRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
-import com.uav.platform.service.auth.AuthSessionLock;
-import com.uav.platform.service.impl.auth.AuthOtpServiceImpl;
+import com.uav.platform.service.auth.session.AuthSessionLock;
+import com.uav.platform.service.impl.auth.verification.AuthOtpServiceImpl;
 import com.uav.platform.service.security.SecuritySessionService;
 import com.uav.platform.service.security.SessionRevocationService;
 import com.uav.platform.specification.security.SecuritySessionSpecifications;
-import com.uav.platform.specification.user.UserSpecifications;
+import com.uav.platform.specification.user.account.UserSpecifications;
 
 import lombok.RequiredArgsConstructor;
 

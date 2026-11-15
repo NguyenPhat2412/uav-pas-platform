@@ -4,14 +4,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.dto.request.auth.ForgotPasswordRequest;
+import com.uav.platform.dto.request.auth.verification.ForgotPasswordRequest;
 import com.uav.platform.entity.user.AppUser;
-import com.uav.platform.mapper.auth.AuthMapper;
-import com.uav.platform.mapper.user.UserMapper;
+import com.uav.platform.mapper.auth.session.AuthMapper;
+import com.uav.platform.mapper.user.account.UserMapper;
 import com.uav.platform.repository.auth.AuthOtpTokenRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
-import com.uav.platform.service.impl.auth.AuthOtpServiceImpl;
+import com.uav.platform.service.auth.verification.AuthMailService;
+import com.uav.platform.service.auth.verification.TotpService;
+import com.uav.platform.service.impl.auth.verification.AuthOtpServiceImpl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;

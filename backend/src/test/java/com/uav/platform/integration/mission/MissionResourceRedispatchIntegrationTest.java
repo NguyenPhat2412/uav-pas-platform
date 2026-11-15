@@ -5,7 +5,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 
 import com.uav.platform.dto.request.inventory.QuantityRequest;
-import com.uav.platform.dto.request.mission.*;
+import com.uav.platform.dto.request.mission.catalog.*;
+import com.uav.platform.dto.request.mission.dispatch.*;
+import com.uav.platform.dto.request.mission.flightplan.*;
+import com.uav.platform.dto.request.mission.lifecycle.*;
 import com.uav.platform.entity.inventory.Equipment;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.entity.uav.Uav;
@@ -26,7 +29,7 @@ import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.inventory.InventoryService;
-import com.uav.platform.service.mission.MissionService;
+import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.service.uav.UavService;
 import com.uav.platform.support.ServicePlanTestData;
 
@@ -140,7 +143,7 @@ class MissionResourceRedispatchIntegrationTest {
         AppUser replacement = user("replacement_", UserRole.ROLE_OPERATOR);
         missions.acceptOperator(
                 id,
-                new com.uav.platform.dto.request.mission.MissionAcceptanceRequest(
+                new com.uav.platform.dto.request.mission.lifecycle.MissionAcceptanceRequest(
                         missions.get(id, auth(operator)).version()),
                 auth(operator));
         missions.ready(id, auth(admin));
@@ -153,7 +156,7 @@ class MissionResourceRedispatchIntegrationTest {
         assertThrows(IllegalStateException.class, () -> missions.start(id, auth(replacement)));
         missions.acceptOperator(
                 id,
-                new com.uav.platform.dto.request.mission.MissionAcceptanceRequest(
+                new com.uav.platform.dto.request.mission.lifecycle.MissionAcceptanceRequest(
                         missions.get(id, auth(replacement)).version()),
                 auth(replacement));
         missions.ready(id, auth(admin));

@@ -137,15 +137,53 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
             DataIntegrityViolationException ex, HttpServletRequest request) {
         String detail = ex.getMostSpecificCause().getMessage();
-        if (detail != null && detail.toLowerCase(Locale.ROOT).contains("uk_users_phone_number")) {
+        String lower = detail == null ? "" : detail.toLowerCase(Locale.ROOT);
+        if (lower.contains("uk_users_phone_number")) {
             return handleSystemException(
                     SystemException.conflict(CoreConstants.PHONE_ALREADY_EXISTS), request);
+        }
+        if (lower.contains("uk_mission_bids_mission_provider")) {
+            return respond(
+                    HttpStatus.CONFLICT,
+                    "DUPLICATE_MISSION_BID",
+                    "Bạn đã gửi báo giá cho yêu cầu này. Vui lòng tải lại trang để cập nhật báo giá.",
+                    request);
+        }
+        if (lower.contains("provider_profiles_user_id_key")
+                || lower.contains("provider_profiles_slug_key")) {
+            return respond(
+                    HttpStatus.CONFLICT,
+                    "PROVIDER_ALREADY_EXISTS",
+                    "Hồ sơ đối tác đã tồn tại, vui lòng tải lại trang.",
+                    request);
+        }
+        if (lower.contains("marketplace_listings_slug_key")) {
+            return respond(
+                    HttpStatus.CONFLICT,
+                    "LISTING_SLUG_CONFLICT",
+                    "Đường dẫn tin đăng bị trùng lặp khi lưu đồng thời, vui lòng thử lại.",
+                    request);
+        }
+        if (lower.contains("serial_number")) {
+            return respond(
+                    HttpStatus.CONFLICT,
+                    "DUPLICATE_SERIAL_NUMBER",
+                    "Số serial thiết bị đã tồn tại trên hệ thống.",
+                    request,
+                    Map.of("serialNumber", "Số serial thiết bị đã tồn tại trên hệ thống."));
+        }
+        if (lower.contains("provider_payouts_code_key")) {
+            return respond(
+                    HttpStatus.CONFLICT,
+                    "DUPLICATE_PAYOUT_CODE",
+                    "Lệnh rút tiền đang được xử lý đồng thời, vui lòng thử lại.",
+                    request);
         }
         log.warn("Data integrity violation on {}", request.getRequestURI());
         return respond(
                 HttpStatus.CONFLICT,
                 "DATA_INTEGRITY_CONFLICT",
-                "Data integrity constraint violated. Please check duplicate or referenced records.",
+                "Dữ liệu bị xung đột hoặc đã tồn tại bản ghi trùng lặp. Vui lòng tải lại và thử lại.",
                 request);
     }
 

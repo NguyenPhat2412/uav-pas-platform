@@ -6,7 +6,7 @@ import com.uav.platform.dto.response.infrastructure.EmailTestResponse;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.auth.AuthMailService;
+import com.uav.platform.service.auth.verification.AuthMailService;
 import com.uav.platform.service.infrastructure.MailDiagnosticsService;
 
 import jakarta.annotation.PreDestroy;

@@ -17,7 +17,7 @@ import com.uav.platform.repository.auth.RefreshTokenRepository;
 import com.uav.platform.repository.security.SessionRevocationRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
-import com.uav.platform.service.auth.AuthSessionLock;
+import com.uav.platform.service.auth.session.AuthSessionLock;
 import com.uav.platform.service.impl.security.SecuritySessionServiceImpl;
 
 import org.junit.jupiter.api.BeforeEach;

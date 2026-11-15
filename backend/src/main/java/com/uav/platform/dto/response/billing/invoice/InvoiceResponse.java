@@ -1,0 +1,70 @@
+package com.uav.platform.dto.response.billing.invoice;
+
+import com.uav.platform.enums.billing.InvoiceStatus;
+import com.uav.platform.enums.marketplace.EscrowStatus;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+public record InvoiceResponse(
+        Long id,
+        String code,
+        Long userId,
+        String username,
+        Long missionId,
+        String missionTitle,
+        Long planId,
+        String planName,
+        BigDecimal amount,
+        InvoiceStatus status,
+        LocalDateTime dueDate,
+        LocalDateTime paidAt,
+        String notes,
+        LocalDateTime createdAt,
+        Long providerId,
+        String providerDisplayName,
+        EscrowStatus escrowStatus,
+        BigDecimal platformFeeRate,
+        BigDecimal platformFeeVnd,
+        BigDecimal providerNetVnd,
+        LocalDateTime escrowReleasedAt) {
+
+    public InvoiceResponse(
+            Long id,
+            String code,
+            Long userId,
+            String username,
+            Long missionId,
+            String missionTitle,
+            Long planId,
+            String planName,
+            BigDecimal amount,
+            InvoiceStatus status,
+            LocalDateTime dueDate,
+            LocalDateTime paidAt,
+            String notes,
+            LocalDateTime createdAt) {
+        this(
+                id,
+                code,
+                userId,
+                username,
+                missionId,
+                missionTitle,
+                planId,
+                planName,
+                amount,
+                status,
+                dueDate,
+                paidAt,
+                notes,
+                createdAt,
+                null,
+                null,
+                EscrowStatus.NONE,
+                null,
+                null,
+                null,
+                null);
+    }
+}

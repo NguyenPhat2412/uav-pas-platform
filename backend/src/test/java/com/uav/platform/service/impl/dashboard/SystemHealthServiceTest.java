@@ -54,12 +54,12 @@ class SystemHealthServiceTest {
         when(deliveries.count(any(Specification.class))).thenReturn(0L);
         FinancialOutboxRepository outbox = mock(FinancialOutboxRepository.class);
         when(outbox.count(any(Specification.class))).thenReturn(0L);
-        com.uav.platform.service.billing.BankTransferService bank =
-                mock(com.uav.platform.service.billing.BankTransferService.class);
+        com.uav.platform.service.billing.reconciliation.BankTransferService bank =
+                mock(com.uav.platform.service.billing.reconciliation.BankTransferService.class);
         when(bank.status())
                 .thenReturn(
-                        new com.uav.platform.dto.response.billing.BankTransferStatusResponse(
-                                false, null));
+                        new com.uav.platform.dto.response.billing.reconciliation
+                                .BankTransferStatusResponse(false, null));
 
         com.uav.platform.service.infrastructure.MailDiagnosticsService mail =
                 mock(com.uav.platform.service.infrastructure.MailDiagnosticsService.class);

@@ -16,7 +16,7 @@ import com.uav.platform.repository.media.MediaAssetRepository;
 import com.uav.platform.repository.mission.*;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.media.MediaCleanupServiceImpl;
-import com.uav.platform.service.impl.mission.MissionOperations;
+import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.media.*;
 
 import org.junit.jupiter.api.*;
@@ -80,7 +80,7 @@ class MediaLifecyclePostgresMinioTest {
     @Autowired MediaCleanupService cleanup;
     @Autowired MediaAssetRepository assets;
     @Autowired MissionRepository missions;
-    @Autowired com.uav.platform.service.mission.MissionService missionService;
+    @Autowired com.uav.platform.service.mission.lifecycle.MissionService missionService;
     @Autowired MissionMediaRepository links;
     @Autowired UserRepository users;
     @Autowired JdbcTemplate db;

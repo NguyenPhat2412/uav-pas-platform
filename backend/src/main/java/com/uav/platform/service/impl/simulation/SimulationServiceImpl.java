@@ -7,7 +7,7 @@ import com.uav.platform.dto.request.simulation.SurveyPlanRequest;
 import com.uav.platform.dto.request.uav.TelemetryReportRequest;
 import com.uav.platform.dto.response.airspace.AirspaceCheckResponse;
 import com.uav.platform.dto.response.airspace.AirspaceViolationResponse;
-import com.uav.platform.dto.response.mission.FlightPlanResponse;
+import com.uav.platform.dto.response.mission.flightplan.FlightPlanResponse;
 import com.uav.platform.dto.response.simulation.SimulationRunLogResponse;
 import com.uav.platform.dto.response.simulation.SimulationStateResponse;
 import com.uav.platform.dto.response.simulation.SurveyPlanResponse;
@@ -25,7 +25,7 @@ import com.uav.platform.repository.simulation.SimulationRunLogRepository;
 import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.service.airspace.AirspaceService;
 import com.uav.platform.service.audit.AuditLogService;
-import com.uav.platform.service.impl.mission.FlightPlanOperations;
+import com.uav.platform.service.impl.mission.flightplan.FlightPlanOperations;
 import com.uav.platform.service.simulation.SimulationService;
 import com.uav.platform.service.uav.TelemetryService;
 

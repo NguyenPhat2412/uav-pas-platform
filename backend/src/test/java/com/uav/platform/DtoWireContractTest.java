@@ -10,7 +10,7 @@ import com.uav.platform.common.dto.response.MessageResponse;
 import com.uav.platform.controller.sar.SarController;
 import com.uav.platform.controller.webhook.WebhookController;
 import com.uav.platform.dto.request.sar.RescueDispatchRequest;
-import com.uav.platform.dto.request.user.UserProfilePatchRequest;
+import com.uav.platform.dto.request.user.profile.UserProfilePatchRequest;
 import com.uav.platform.dto.request.webhook.WebhookTestDispatchRequest;
 import com.uav.platform.dto.response.notification.UnreadCountResponse;
 import com.uav.platform.dto.response.permission.PermissionCodesResponse;

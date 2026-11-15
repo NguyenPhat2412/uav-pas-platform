@@ -5,9 +5,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 
 import com.uav.platform.dto.request.inventory.QuantityRequest;
-import com.uav.platform.dto.request.mission.MissionCompletionRequest;
-import com.uav.platform.dto.request.mission.MissionCreateRequest;
-import com.uav.platform.dto.request.mission.ResourceAssignmentRequest;
+import com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest;
+import com.uav.platform.dto.request.mission.lifecycle.MissionCompletionRequest;
+import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
 import com.uav.platform.entity.inventory.Equipment;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.entity.uav.Uav;
@@ -29,7 +29,7 @@ import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.inventory.InventoryService;
-import com.uav.platform.service.mission.MissionService;
+import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.support.ServicePlanTestData;
 
 import org.junit.jupiter.api.BeforeEach;

@@ -5,9 +5,9 @@ import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_H
 import static com.uav.platform.common.constant.SecurityConstants.BEARER_PREFIX;
 
 import com.uav.platform.common.dto.response.MessageResponse;
-import com.uav.platform.dto.request.auth.LogoutRequest;
-import com.uav.platform.dto.request.auth.RefreshTokenRequest;
-import com.uav.platform.dto.response.auth.AuthResponse;
+import com.uav.platform.dto.request.auth.session.LogoutRequest;
+import com.uav.platform.dto.request.auth.session.RefreshTokenRequest;
+import com.uav.platform.dto.response.auth.session.AuthResponse;
 import com.uav.platform.error.SystemException;
 
 import jakarta.servlet.http.Cookie;

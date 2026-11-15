@@ -8,8 +8,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.uav.platform.dto.request.inventory.QuantityRequest;
-import com.uav.platform.dto.request.mission.MissionCreateRequest;
-import com.uav.platform.dto.request.mission.ResourceAssignmentRequest;
+import com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest;
+import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
 import com.uav.platform.entity.inventory.Equipment;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.entity.uav.Uav;
@@ -29,7 +29,7 @@ import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.media.MediaAssetOperations;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.inventory.InventoryService;
-import com.uav.platform.service.mission.MissionService;
+import com.uav.platform.service.mission.lifecycle.MissionService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,7 +82,7 @@ class MissionHandoverIntegrationTest {
     void fixture() {
         if (servicePlans.findByCode("BASIC").isEmpty())
             servicePlans.save(
-                    com.uav.platform.service.impl.billing.ServicePlanOperations.create(
+                    com.uav.platform.service.impl.billing.plan.ServicePlanOperations.create(
                             "BASIC",
                             "Synthetic handover plan",
                             java.math.BigDecimal.ZERO,
@@ -422,8 +422,8 @@ class MissionHandoverIntegrationTest {
                 () ->
                         missions.complete(
                                 missionId,
-                                new com.uav.platform.dto.request.mission.MissionCompletionRequest(
-                                        "Done", "Intact"),
+                                new com.uav.platform.dto.request.mission.lifecycle
+                                        .MissionCompletionRequest("Done", "Intact"),
                                 auth(operator)));
         assertEquals(before, snapshot());
     }

@@ -198,9 +198,14 @@ public class AdminFileServiceImpl implements AdminFileService {
             ),
             file_rows AS (
               SELECT f.*, {KIND} AS file_kind, ou.id AS owner_id,
-                     COALESCE(NULLIF(ou.full_name, ''), ou.username, f.uploaded_by) AS owner_name
+                     COALESCE(NULLIF(ou.full_name, ''), ou.username, f.uploaded_by) AS owner_name,
+                     CASE WHEN sdo.id IS NOT NULL THEN 'GOOGLE_DRIVE' ELSE 'R2' END AS storage_backend,
+                     sdn.code AS drive_node_code,
+                     sdn.display_name AS drive_node_name
                 FROM stored_files f
                 LEFT JOIN users ou ON ou.username = f.uploaded_by
+                LEFT JOIN storage_drive_objects sdo ON sdo.object_key = f.storage_key
+                LEFT JOIN storage_drive_nodes sdn ON sdn.id = sdo.node_id
             )
             """
                     .replace("{KIND}", KIND);
@@ -515,7 +520,10 @@ public class AdminFileServiceImpl implements AdminFileService {
                                 rs.getString("link_slug")),
                 status,
                 deletable(module, status, createdAt, LocalDateTime.now()),
-                createdAt);
+                createdAt,
+                rs.getString("storage_backend"),
+                rs.getString("drive_node_code"),
+                rs.getString("drive_node_name"));
     }
 
     static boolean deletable(

@@ -3,7 +3,7 @@ package com.uav.platform.service.billing;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.dto.request.billing.PaymentIpnRequest;
+import com.uav.platform.dto.request.billing.reconciliation.PaymentIpnRequest;
 import com.uav.platform.entity.billing.*;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserStatus;
@@ -11,7 +11,7 @@ import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.billing.*;
 import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.impl.billing.BillingServiceImpl;
+import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
 import com.uav.platform.service.permission.PermissionService;
 
 import org.junit.jupiter.api.Test;

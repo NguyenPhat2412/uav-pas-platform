@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.dto.record.mission.MissionFilter;
-import com.uav.platform.dto.request.mission.MissionCreateRequest;
-import com.uav.platform.dto.response.mission.MissionResponse;
+import com.uav.platform.dto.record.mission.lifecycle.MissionFilter;
+import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
+import com.uav.platform.dto.response.mission.lifecycle.MissionResponse;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.*;
@@ -23,6 +23,7 @@ import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.mission.ServiceOfferingRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
+import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.service.permission.PermissionService;
 
 import org.junit.jupiter.api.Test;

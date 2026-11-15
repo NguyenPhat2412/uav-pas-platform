@@ -11,7 +11,7 @@ import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.sar.*;
 import com.uav.platform.repository.station.StationRepository;
 import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.service.impl.mission.MissionOperations;
+import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.impl.reporting.ReportServiceImpl;
 import com.uav.platform.service.permission.PermissionService;
 

@@ -5,15 +5,16 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.uav.platform.common.dto.response.PageResponse;
-import com.uav.platform.dto.request.user.RoleUpdateRequest;
-import com.uav.platform.dto.request.user.UserQueryRequest;
-import com.uav.platform.dto.response.user.UserResponse;
+import com.uav.platform.dto.request.user.account.RoleUpdateRequest;
+import com.uav.platform.dto.request.user.account.UserQueryRequest;
+import com.uav.platform.dto.response.user.account.UserResponse;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.impl.user.UserServiceImpl;
+import com.uav.platform.service.impl.user.account.UserServiceImpl;
+import com.uav.platform.service.user.account.UserService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

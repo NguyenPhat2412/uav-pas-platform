@@ -432,6 +432,7 @@ public final class ApiRoutes {
         public static final String SECURITY = BASE + "/security";
         public static final String DEVICE_KEYS = BASE + "/device-keys";
         public static final String FILES = BASE + "/files";
+        public static final String STORAGE_POOL = BASE + "/storage-pool";
         public static final String INFRASTRUCTURE = BASE + "/infrastructure";
         public static final String ASSISTANT_CONVERSATIONS = BASE + "/assistant/conversations";
         public static final String USER_BILLING_PROFILE = BASE + "/users/{id}/billing-profile";
@@ -456,6 +457,17 @@ public final class ApiRoutes {
         public static final String FILES_SUMMARY = "/summary";
         public static final String FILES_DOWNLOAD = "/{id}/download";
         public static final String FILES_BY_ID = "/{id}";
+        public static final String STORAGE_POOL_POLICY = "/policy";
+        public static final String STORAGE_POOL_OAUTH_CONFIG = "/oauth-config";
+        public static final String STORAGE_POOL_OAUTH_AUTHORIZE = "/oauth/authorize-url";
+        public static final String STORAGE_POOL_OAUTH_CALLBACK = "/oauth/callback";
+        public static final String FULL_STORAGE_POOL_OAUTH_CALLBACK =
+                STORAGE_POOL + STORAGE_POOL_OAUTH_CALLBACK;
+        public static final String STORAGE_POOL_NODES = "/nodes";
+        public static final String STORAGE_POOL_NODE_BY_ID = "/nodes/{id}";
+        public static final String STORAGE_POOL_NODE_SYNC = "/nodes/{id}/sync";
+        public static final String STORAGE_POOL_MIGRATE_R2 = "/migrate-r2";
+        public static final String STORAGE_POOL_MIGRATE_FILE = "/migrate-file";
         public static final String SUPPORT_SUMMARY = "/summary";
         public static final String SUPPORT_THREADS = "/threads";
         public static final String SUPPORT_THREAD_BY_ID = "/threads/{id}";
@@ -595,6 +607,59 @@ public final class ApiRoutes {
         public static final String BASE = API_V1_PREFIX + "/ws";
         public static final String ENDPOINT = BASE + "/realtime";
         public static final String WILDCARD = BASE + "/**";
+    }
+
+    /** Signed upload/download streaming gateway for Google Drive storage pool objects. */
+    public static final class StorageGateway {
+        private StorageGateway() {}
+
+        public static final String BASE = API_V1_PREFIX + "/storage/gateway";
+        public static final String UPLOAD = "/upload";
+        public static final String DOWNLOAD = "/download";
+        public static final String WILDCARD = BASE + "/**";
+    }
+
+    /** Two-sided UAV Marketplace: public storefront, seller studio, RFQ bidding, and escrow payouts. */
+    public static final class Marketplace {
+        private Marketplace() {}
+
+        public static final String PUBLIC_BASE = API_V1_PREFIX + "/public/marketplace";
+        public static final String PUBLIC_WILDCARD = PUBLIC_BASE + "/**";
+        public static final String PUBLIC_LISTINGS = "/listings";
+        public static final String PUBLIC_LISTING_BY_SLUG = "/listings/{slug}";
+        public static final String PUBLIC_PROVIDER_BY_SLUG = "/providers/{slug}";
+
+        public static final String PROVIDER_BASE = API_V1_PREFIX + "/marketplace/provider";
+        public static final String ME = "/me";
+        public static final String DOCUMENTS = "/documents";
+        public static final String DOCUMENT_BY_ID = "/documents/{id}";
+        public static final String LISTINGS = "/listings";
+        public static final String LISTING_BY_ID = "/listings/{id}";
+        public static final String LISTING_PAUSE = "/listings/{id}/pause";
+        public static final String FLEET = "/fleet";
+        public static final String FLEET_UAVS = "/fleet/uavs";
+        public static final String FLEET_EQUIPMENT = "/fleet/equipment";
+        public static final String ORDERS = "/orders";
+        public static final String ORDER_RESPOND = "/orders/{missionId}/respond";
+        public static final String ORDER_START = "/orders/{missionId}/start";
+        public static final String ORDER_COMPLETE = "/orders/{missionId}/complete";
+        public static final String OPEN_RFQ = "/rfq";
+        public static final String SUBMIT_BID = "/rfq/{missionId}/bids";
+        public static final String MY_BIDS = "/bids";
+        public static final String WALLET = "/wallet";
+        public static final String PAYOUTS = "/payouts";
+
+        public static final String RFQ_BASE = API_V1_PREFIX + "/marketplace/rfq";
+        public static final String MISSION_BIDS = "/missions/{missionId}/bids";
+        public static final String ACCEPT_MISSION_BID = "/missions/{missionId}/bids/{bidId}/accept";
+
+        public static final String ADMIN_BASE = API_V1_PREFIX + "/admin/marketplace";
+        public static final String ADMIN_PROVIDERS = "/providers";
+        public static final String ADMIN_PROVIDER_MODERATE = "/providers/{id}/moderate";
+        public static final String ADMIN_LISTINGS = "/listings";
+        public static final String ADMIN_LISTING_MODERATE = "/listings/{id}/moderate";
+        public static final String ADMIN_PAYOUTS = "/payouts";
+        public static final String ADMIN_PAYOUT_PROCESS = "/payouts/{id}/process";
     }
 
     public static final String[] SWAGGER_WHITELIST = {

@@ -4,7 +4,7 @@ import com.uav.platform.enums.permission.PermissionCode;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.permission.PermissionRepository;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.impl.user.UserAccountServiceImpl;
+import com.uav.platform.service.impl.user.account.UserAccountServiceImpl;
 import com.uav.platform.service.permission.PermissionService;
 
 import jakarta.persistence.EntityManager;

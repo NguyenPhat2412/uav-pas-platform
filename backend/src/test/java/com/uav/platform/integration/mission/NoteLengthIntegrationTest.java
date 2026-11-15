@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.uav.platform.dto.request.inventory.QuantityRequest;
-import com.uav.platform.dto.request.mission.MissionCreateRequest;
+import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
 import com.uav.platform.entity.inventory.Equipment;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.entity.uav.Uav;
@@ -27,7 +27,7 @@ import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.inventory.InventoryService;
-import com.uav.platform.service.mission.MissionService;
+import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.support.ServicePlanTestData;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -246,21 +246,22 @@ class NoteLengthIntegrationTest {
         missions.confirm(missionId, auth(admin));
         missions.assignStation(
                 missionId,
-                new com.uav.platform.dto.request.mission.ResourceAssignmentRequest(stationId),
+                new com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest(
+                        stationId),
                 auth(admin));
         missions.assignUav(
                 missionId,
-                new com.uav.platform.dto.request.mission.ResourceAssignmentRequest(uavId),
+                new com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest(uavId),
                 auth(admin));
         missions.assignOperator(
                 missionId,
-                new com.uav.platform.dto.request.mission.ResourceAssignmentRequest(
+                new com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest(
                         operator.getId()),
                 auth(admin));
         if (action.equals("reject") || action.equals("report-conflict")) return;
         missions.reserveEquipment(
                 missionId,
-                new com.uav.platform.dto.request.mission.ResourceAssignmentRequest(
+                new com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest(
                         equipmentId, 2, null),
                 auth(admin));
         MissionHandoverTestData.accept(missions, missionId, auth(operator));

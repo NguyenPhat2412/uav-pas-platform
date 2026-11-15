@@ -1,9 +1,11 @@
 package com.uav.platform.entity.billing;
 
 import com.uav.platform.common.entity.BaseEntity;
+import com.uav.platform.entity.marketplace.ProviderProfile;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.billing.InvoiceStatus;
+import com.uav.platform.enums.marketplace.EscrowStatus;
 
 import jakarta.persistence.*;
 
@@ -52,6 +54,26 @@ public class Invoice extends BaseEntity {
 
     @Column(length = 500)
     private String notes;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "provider_id")
+    private ProviderProfile provider;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "escrow_status", nullable = false, length = 24)
+    private EscrowStatus escrowStatus = EscrowStatus.NONE;
+
+    @Column(name = "platform_fee_rate", precision = 5, scale = 4)
+    private BigDecimal platformFeeRate;
+
+    @Column(name = "platform_fee_vnd", precision = 14, scale = 2)
+    private BigDecimal platformFeeVnd;
+
+    @Column(name = "provider_net_vnd", precision = 14, scale = 2)
+    private BigDecimal providerNetVnd;
+
+    @Column(name = "escrow_released_at")
+    private LocalDateTime escrowReleasedAt;
 
     public Invoice(
             String code,

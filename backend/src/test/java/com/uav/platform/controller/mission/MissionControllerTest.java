@@ -4,8 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.dto.request.mission.MissionCreateRequest;
-import com.uav.platform.dto.response.mission.MissionResponse;
+import com.uav.platform.controller.mission.lifecycle.MissionController;
+import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
+import com.uav.platform.dto.response.mission.lifecycle.MissionResponse;
 import com.uav.platform.enums.audit.*;
 import com.uav.platform.enums.inventory.*;
 import com.uav.platform.enums.media.*;
@@ -14,7 +15,7 @@ import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
-import com.uav.platform.service.mission.MissionService;
+import com.uav.platform.service.mission.lifecycle.MissionService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;

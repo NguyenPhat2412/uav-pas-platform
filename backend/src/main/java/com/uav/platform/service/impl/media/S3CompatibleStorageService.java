@@ -10,7 +10,6 @@ import jakarta.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -38,10 +37,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * S3-compatible signed URLs for MinIO in development and AWS S3 in production.
+ * S3-compatible signed URLs for MinIO in development and AWS S3 / Cloudflare R2 in production.
  * Credentials stay server-side; clients only receive short-lived PUT/GET URLs.
  */
-@Service
 public class S3CompatibleStorageService implements ObjectStorageService {
     private final String provider;
     private final String bucket;
@@ -165,7 +163,7 @@ public class S3CompatibleStorageService implements ObjectStorageService {
     }
 
     @PostConstruct
-    void initializeBucket() {
+    public void initializeBucket() {
         if (!ensureBucket) {
             if (!"test".equalsIgnoreCase(provider)) {
                 try {
@@ -227,7 +225,7 @@ public class S3CompatibleStorageService implements ObjectStorageService {
     }
 
     @PreDestroy
-    void closeClients() {
+    public void closeClients() {
         presigner.close();
         client.close();
     }

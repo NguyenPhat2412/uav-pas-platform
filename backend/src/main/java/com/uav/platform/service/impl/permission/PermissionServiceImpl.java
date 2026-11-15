@@ -19,7 +19,7 @@ import com.uav.platform.repository.role.RoleTemplateRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.AccessRecoveryGuard;
 import com.uav.platform.service.audit.AuditLogService;
-import com.uav.platform.service.impl.user.UserAccountServiceImpl;
+import com.uav.platform.service.impl.user.account.UserAccountServiceImpl;
 import com.uav.platform.service.permission.PermissionService;
 
 import org.mapstruct.factory.Mappers;

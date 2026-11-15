@@ -6,7 +6,7 @@ import com.uav.platform.common.entity.BaseEntity;
 import com.uav.platform.common.entity.Identifiable;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.service.impl.user.UserAccountServiceImpl;
+import com.uav.platform.service.impl.user.account.UserAccountServiceImpl;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

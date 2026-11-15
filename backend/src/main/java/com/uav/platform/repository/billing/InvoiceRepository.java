@@ -3,10 +3,14 @@ package com.uav.platform.repository.billing;
 import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.enums.billing.InvoiceStatus;
 
+import jakarta.persistence.LockModeType;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -18,11 +22,16 @@ import java.util.Optional;
 @Repository
 public interface InvoiceRepository
         extends JpaRepository<Invoice, Long>, JpaSpecificationExecutor<Invoice> {
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select i from Invoice i where i.id = :id")
+    Optional<Invoice> findByIdForUpdate(@Param("id") Long id);
+
     Optional<Invoice> findByCode(String code);
 
     @Query("select i from Invoice i where upper(replace(i.code, '-', '')) = :normalizedCode")
     Optional<Invoice> findByNormalizedCode(@Param("normalizedCode") String normalizedCode);
 
+    @EntityGraph(attributePaths = {"user", "mission", "plan", "provider"})
     Page<Invoice> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
     List<Invoice> findByUserId(Long userId);
@@ -35,6 +44,8 @@ public interface InvoiceRepository
             Long missionId, java.util.Collection<InvoiceStatus> statuses);
 
     List<Invoice> findByMissionIdAndStatus(Long missionId, InvoiceStatus status);
+
+    List<Invoice> findByMissionIdOrderByIdDesc(Long missionId);
 
     /** Plan (non-mission) invoices still waiting for payment after their due date. */
     List<Invoice> findByStatusAndDueDateBeforeAndMissionIsNull(

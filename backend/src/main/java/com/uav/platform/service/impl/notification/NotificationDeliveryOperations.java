@@ -12,8 +12,8 @@ import com.uav.platform.entity.notification.PushDeviceToken;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.repository.notification.PushDeviceTokenRepository;
-import com.uav.platform.service.auth.AuthMailService;
-import com.uav.platform.service.auth.EmailDomainPolicyService;
+import com.uav.platform.service.auth.verification.AuthMailService;
+import com.uav.platform.service.auth.verification.EmailDomainPolicyService;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.mail.Session;

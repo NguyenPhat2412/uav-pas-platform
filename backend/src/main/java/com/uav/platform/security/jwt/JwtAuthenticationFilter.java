@@ -6,8 +6,8 @@ import static com.uav.platform.common.constant.SecurityConstants.BEARER_PREFIX;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.AuthCookieHelper;
-import com.uav.platform.service.auth.InvalidatedTokenService;
-import com.uav.platform.service.impl.user.UserAccountServiceImpl;
+import com.uav.platform.service.auth.session.InvalidatedTokenService;
+import com.uav.platform.service.impl.user.account.UserAccountServiceImpl;
 import com.uav.platform.service.security.SessionRevocationService;
 
 import jakarta.servlet.FilterChain;

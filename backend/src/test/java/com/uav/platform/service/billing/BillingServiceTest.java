@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.uav.platform.dto.request.billing.CreateInvoiceRequest;
+import com.uav.platform.dto.request.billing.invoice.CreateInvoiceRequest;
 import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.billing.ServicePlan;
 import com.uav.platform.entity.mission.Mission;
@@ -26,10 +26,10 @@ import com.uav.platform.repository.billing.PaymentTransactionRepository;
 import com.uav.platform.repository.billing.ServicePlanRepository;
 import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.impl.billing.BillingServiceImpl;
-import com.uav.platform.service.impl.billing.ServicePlanOperations;
-import com.uav.platform.service.impl.mission.MissionOperations;
-import com.uav.platform.service.impl.user.UserAccountServiceImpl;
+import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
+import com.uav.platform.service.impl.billing.plan.ServicePlanOperations;
+import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
+import com.uav.platform.service.impl.user.account.UserAccountServiceImpl;
 import com.uav.platform.service.permission.PermissionService;
 
 import org.junit.jupiter.api.Test;
@@ -61,9 +61,9 @@ class BillingServiceTest {
     @Mock PermissionService permissions;
 
     @org.mockito.Spy
-    com.uav.platform.mapper.billing.BillingMapper mapper =
+    com.uav.platform.mapper.billing.invoice.BillingMapper mapper =
             org.mapstruct.factory.Mappers.getMapper(
-                    com.uav.platform.mapper.billing.BillingMapper.class);
+                    com.uav.platform.mapper.billing.invoice.BillingMapper.class);
 
     @InjectMocks BillingServiceImpl service;
 
@@ -438,7 +438,7 @@ class BillingServiceTest {
                         SystemException.class,
                         () ->
                                 service.createInvoice(
-                                        new com.uav.platform.dto.request.billing
+                                        new com.uav.platform.dto.request.billing.invoice
                                                 .CreateInvoiceRequest(
                                                 1L, 5L, null, new BigDecimal("500000"), null),
                                         auth));

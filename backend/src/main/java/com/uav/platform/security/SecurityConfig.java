@@ -96,6 +96,7 @@ public class SecurityConfig {
                                         .ignoringRequestMatchers(ApiRoutes.Realtime.WILDCARD)
                                         .ignoringRequestMatchers(
                                                 ApiRoutes.Training.FULL_ASSET_CONTENT)
+                                        .ignoringRequestMatchers(ApiRoutes.StorageGateway.WILDCARD)
                                         .ignoringRequestMatchers(
                                                 ApiRoutes.Health.ENDPOINT,
                                                 ApiRoutes.Health.LIVENESS)
@@ -154,6 +155,10 @@ public class SecurityConfig {
                                         .requestMatchers(
                                                 HttpMethod.GET, ApiRoutes.Public.FULL_DISCOVERY)
                                         .permitAll()
+                                        .requestMatchers(
+                                                HttpMethod.GET,
+                                                ApiRoutes.Marketplace.PUBLIC_WILDCARD)
+                                        .permitAll()
                                         .requestMatchers(ApiRoutes.Public.FULL_SUPPORT_WILDCARD)
                                         .permitAll()
                                         .requestMatchers(ApiRoutes.Realtime.WILDCARD)
@@ -169,6 +174,19 @@ public class SecurityConfig {
                                         .requestMatchers(
                                                 HttpMethod.PUT,
                                                 ApiRoutes.Training.FULL_ASSET_CONTENT)
+                                        .permitAll()
+                                        .requestMatchers(
+                                                HttpMethod.GET, ApiRoutes.StorageGateway.WILDCARD)
+                                        .permitAll()
+                                        .requestMatchers(
+                                                HttpMethod.HEAD, ApiRoutes.StorageGateway.WILDCARD)
+                                        .permitAll()
+                                        .requestMatchers(
+                                                HttpMethod.PUT, ApiRoutes.StorageGateway.WILDCARD)
+                                        .permitAll()
+                                        .requestMatchers(
+                                                HttpMethod.GET,
+                                                ApiRoutes.Admin.FULL_STORAGE_POOL_OAUTH_CALLBACK)
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())

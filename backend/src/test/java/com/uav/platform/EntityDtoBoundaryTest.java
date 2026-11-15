@@ -175,7 +175,7 @@ class EntityDtoBoundaryTest {
                                 parameter
                                         .getType()
                                         .getPackageName()
-                                        .matches(".*\\.dto\\.request(\\.\\w+)?"),
+                                        .matches(".*\\.dto\\.request(\\.\\w+)*"),
                                 "JSON request body must use a request DTO: " + method);
                     }
                 }
@@ -207,7 +207,7 @@ class EntityDtoBoundaryTest {
                             || raw
                                     == org.springframework.web.servlet.mvc.method.annotation
                                             .StreamingResponseBody.class
-                            || raw.getPackageName().matches(".*\\.dto\\.response(\\.\\w+)?"),
+                            || raw.getPackageName().matches(".*\\.dto\\.response(\\.\\w+)*"),
                     "API responses must use response DTOs (CSV binary and empty bodies are transport exceptions): "
                             + type);
         }
@@ -221,7 +221,7 @@ class EntityDtoBoundaryTest {
     private void assertRecordLocation(Class<?> type) {
         if (type.isRecord())
             assertTrue(
-                    type.getPackageName().matches(".*\\.dto\\.(request|response|record)(\\.\\w+)?"),
+                    type.getPackageName().matches(".*\\.dto\\.(request|response|record)(\\.\\w+)*"),
                     "Internal records belong in dto.record: " + type.getName());
         for (Class<?> nested : type.getDeclaredClasses()) assertRecordLocation(nested);
     }

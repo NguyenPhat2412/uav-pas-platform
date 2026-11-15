@@ -19,7 +19,7 @@ import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.weather.FlightSafetyEvaluatorOperations;
 import com.uav.platform.service.impl.weather.WeatherCipherOperations;
 import com.uav.platform.service.impl.weather.WeatherServiceImpl;
-import com.uav.platform.service.mission.MissionAccessService;
+import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.settings.SystemConfigService;
 
 import org.junit.jupiter.api.BeforeEach;

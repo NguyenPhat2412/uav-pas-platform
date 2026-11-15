@@ -9,7 +9,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.uav.platform.dto.request.maintenance.*;
-import com.uav.platform.dto.request.mission.*;
+import com.uav.platform.dto.request.mission.catalog.*;
+import com.uav.platform.dto.request.mission.dispatch.*;
+import com.uav.platform.dto.request.mission.flightplan.*;
+import com.uav.platform.dto.request.mission.lifecycle.*;
 import com.uav.platform.dto.request.uav.UavRequest;
 import com.uav.platform.dto.response.maintenance.*;
 import com.uav.platform.entity.user.AppUser;
@@ -28,7 +31,7 @@ import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.maintenance.MaintenanceService;
-import com.uav.platform.service.mission.MissionService;
+import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.service.uav.UavService;
 import com.uav.platform.support.ServicePlanTestData;
 

@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.uav.platform.dto.request.inventory.QuantityRequest;
-import com.uav.platform.dto.request.mission.MissionCreateRequest;
+import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
 import com.uav.platform.entity.inventory.Equipment;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.entity.uav.Uav;
@@ -26,7 +26,7 @@ import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.inventory.InventoryService;
-import com.uav.platform.service.mission.MissionService;
+import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.support.ServicePlanTestData;
 
 import org.junit.jupiter.api.BeforeEach;
