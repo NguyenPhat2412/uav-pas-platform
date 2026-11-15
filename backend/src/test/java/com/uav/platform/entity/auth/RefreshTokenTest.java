@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.service.impl.auth.RefreshTokenServiceImpl;
+import com.uav.platform.service.impl.auth.session.RefreshTokenServiceImpl;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.uav.platform.service.impl.auth;
+package com.uav.platform.service.impl.auth.oauth;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -12,9 +12,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-import com.uav.platform.dto.record.auth.GoogleIdentity;
+import com.uav.platform.dto.record.auth.oauth.GoogleIdentity;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.service.auth.GoogleIdTokenService;
+import com.uav.platform.service.auth.oauth.GoogleIdTokenService;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;

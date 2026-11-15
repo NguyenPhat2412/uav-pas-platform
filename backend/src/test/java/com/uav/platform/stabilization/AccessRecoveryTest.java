@@ -16,7 +16,7 @@ import com.uav.platform.repository.permission.UserPermissionRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.role.RoleTemplateService;
-import com.uav.platform.service.user.UserService;
+import com.uav.platform.service.user.account.UserService;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;

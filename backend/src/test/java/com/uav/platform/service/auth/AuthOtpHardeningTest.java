@@ -4,25 +4,28 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.dto.request.auth.ForgotPasswordRequest;
-import com.uav.platform.dto.request.auth.RegisterRequest;
-import com.uav.platform.dto.request.auth.ResendOtpRequest;
-import com.uav.platform.dto.request.auth.ResetPasswordRequest;
-import com.uav.platform.dto.request.auth.TwoFactorDisableRequest;
-import com.uav.platform.dto.request.auth.TwoFactorSetupRequest;
-import com.uav.platform.dto.request.auth.TwoFactorVerifyRequest;
-import com.uav.platform.dto.request.auth.VerifyOtpRequest;
+import com.uav.platform.dto.request.auth.session.RegisterRequest;
+import com.uav.platform.dto.request.auth.verification.ForgotPasswordRequest;
+import com.uav.platform.dto.request.auth.verification.ResendOtpRequest;
+import com.uav.platform.dto.request.auth.verification.ResetPasswordRequest;
+import com.uav.platform.dto.request.auth.verification.TwoFactorDisableRequest;
+import com.uav.platform.dto.request.auth.verification.TwoFactorSetupRequest;
+import com.uav.platform.dto.request.auth.verification.TwoFactorVerifyRequest;
+import com.uav.platform.dto.request.auth.verification.VerifyOtpRequest;
 import com.uav.platform.entity.auth.AuthOtpToken;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.mapper.auth.AuthMapper;
-import com.uav.platform.mapper.user.UserMapper;
+import com.uav.platform.mapper.auth.session.AuthMapper;
+import com.uav.platform.mapper.user.account.UserMapper;
 import com.uav.platform.repository.auth.AuthOtpTokenRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
-import com.uav.platform.service.impl.auth.AuthOtpServiceImpl;
+import com.uav.platform.service.auth.session.SessionTerminationService;
+import com.uav.platform.service.auth.verification.AuthMailService;
+import com.uav.platform.service.auth.verification.TotpService;
+import com.uav.platform.service.impl.auth.verification.AuthOtpServiceImpl;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -347,7 +350,9 @@ class AuthOtpHardeningTest {
     @Test
     void loginChallengeAndSetup2faEnforceCooldownAndAccountOtpRateLimit() {
         var clock = new AuthRateLimitServiceTest.MutableClock();
-        var limiter = new com.uav.platform.service.impl.auth.AuthRateLimitServiceImpl(true, clock);
+        var limiter =
+                new com.uav.platform.service.impl.auth.session.AuthRateLimitServiceImpl(
+                        true, clock);
         otp.setRateLimiter(limiter);
 
         AppUser unverified =
@@ -380,8 +385,8 @@ class AuthOtpHardeningTest {
     @Test
     void emailDomainPolicyGatesSignUpsAndBlocksOnlyReservedDomainsOnReset() {
         otp.setEmailDomainPolicy(
-                new com.uav.platform.service.impl.auth.EmailDomainPolicyServiceImpl(
-                        com.uav.platform.service.impl.auth.EmailDomainPolicyServiceImpl
+                new com.uav.platform.service.impl.auth.verification.EmailDomainPolicyServiceImpl(
+                        com.uav.platform.service.impl.auth.verification.EmailDomainPolicyServiceImpl
                                 .DEFAULT_ALLOWED_DOMAINS,
                         ""));
 

@@ -4,7 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.service.impl.auth.EmailDomainPolicyServiceImpl;
+import com.uav.platform.service.auth.verification.AuthMailService;
+import com.uav.platform.service.impl.auth.verification.EmailDomainPolicyServiceImpl;
 
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;

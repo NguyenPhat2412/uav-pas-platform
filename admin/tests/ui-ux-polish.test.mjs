@@ -96,7 +96,7 @@ test('VietQR BankTransferDialog, Mission coordinate inputs, custom altitude, and
         readSource('src/components/mission/customer/LocationPicker.tsx'),
         readSource('src/components/mission/customer/MissionFields.tsx'),
         readSource('src/components/mission/customer/FlightSpecFields.tsx'),
-        readSource('src/components/auth/AuthModalPopup.tsx'),
+        readSource('src/components/auth/modal/AuthModalPopup.tsx'),
     ]);
 
     const bankSource = `${bankDialog}\n${bankBody}`;
@@ -139,7 +139,7 @@ test('Responsive tablet breakpoint, dropdown unclipping, viewport clamping, and 
         readSource('src/components/data/DataTable.tsx'),
         readSource('src/components/data/Drawer.tsx'),
         readSource('src/components/layout/WorkspaceTabs.tsx'),
-        readSource('src/components/billing/AdminInvoicesPanel.tsx'),
+        readSource('src/components/billing/invoices/AdminInvoicesPanel.tsx'),
         readSource('src/messages/vi.json').then(JSON.parse),
         readSource('src/messages/en.json').then(JSON.parse),
         readSource('src/messages/ja.json').then(JSON.parse),

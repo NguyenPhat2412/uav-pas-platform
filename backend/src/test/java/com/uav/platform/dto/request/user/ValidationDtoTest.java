@@ -2,9 +2,9 @@ package com.uav.platform.dto.request.user;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.uav.platform.dto.request.auth.LoginRequest;
-import com.uav.platform.dto.request.auth.RefreshTokenRequest;
-import com.uav.platform.dto.request.auth.RegisterRequest;
+import com.uav.platform.dto.request.auth.session.LoginRequest;
+import com.uav.platform.dto.request.auth.session.RefreshTokenRequest;
+import com.uav.platform.dto.request.auth.session.RegisterRequest;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;

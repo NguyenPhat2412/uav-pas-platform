@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.uav.platform.enums.auth.AuthRateLimitAction;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.service.impl.auth.AuthRateLimitServiceImpl;
+import com.uav.platform.service.impl.auth.session.AuthRateLimitServiceImpl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

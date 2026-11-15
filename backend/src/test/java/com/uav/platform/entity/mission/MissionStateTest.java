@@ -12,7 +12,7 @@ import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.station.StationStatus;
 import com.uav.platform.enums.uav.*;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.service.impl.mission.MissionOperations;
+import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.impl.station.StationOperations;
 
 import org.junit.jupiter.api.Test;

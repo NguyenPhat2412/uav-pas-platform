@@ -1,17 +1,17 @@
-package com.uav.platform.service.impl.user;
+package com.uav.platform.service.impl.user.account;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.dto.request.user.BulkLockRequest;
-import com.uav.platform.dto.request.user.PasswordResetRequest;
-import com.uav.platform.dto.response.user.BulkActionResponse;
+import com.uav.platform.dto.request.user.account.BulkLockRequest;
+import com.uav.platform.dto.request.user.account.PasswordResetRequest;
+import com.uav.platform.dto.response.user.account.BulkActionResponse;
 import com.uav.platform.entity.user.AppUser;
-import com.uav.platform.mapper.user.UserMapper;
+import com.uav.platform.mapper.user.account.UserMapper;
 import com.uav.platform.repository.auth.RefreshTokenRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
-import com.uav.platform.service.user.UserService;
+import com.uav.platform.service.user.account.UserService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;

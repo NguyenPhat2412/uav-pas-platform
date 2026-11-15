@@ -1,9 +1,9 @@
-package com.uav.platform.service.impl.user;
+package com.uav.platform.service.impl.user.account;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.dto.request.user.PasswordChangeRequest;
+import com.uav.platform.dto.request.user.account.PasswordChangeRequest;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.auth.RefreshTokenRepository;

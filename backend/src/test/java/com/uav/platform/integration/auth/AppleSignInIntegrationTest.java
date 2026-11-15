@@ -10,12 +10,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.uav.platform.dto.record.auth.AppleIdentity;
+import com.uav.platform.dto.record.auth.oauth.AppleIdentity;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.auth.AppleIdTokenService;
+import com.uav.platform.service.auth.oauth.AppleIdTokenService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

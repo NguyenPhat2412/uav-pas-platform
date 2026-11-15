@@ -13,7 +13,7 @@ import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.repository.media.MediaAssetRepository;
 import com.uav.platform.service.impl.media.MediaAssetOperations;
-import com.uav.platform.service.impl.mission.MissionOperations;
+import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.permission.PermissionService;
 

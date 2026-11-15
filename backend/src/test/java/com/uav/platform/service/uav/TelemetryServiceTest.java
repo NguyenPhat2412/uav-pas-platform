@@ -16,7 +16,7 @@ import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.repository.uav.UavTelemetryRepository;
 import com.uav.platform.service.impl.uav.TelemetryServiceImpl;
-import com.uav.platform.service.mission.MissionAccessService;
+import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.permission.PermissionService;
 
 import org.junit.jupiter.api.Test;

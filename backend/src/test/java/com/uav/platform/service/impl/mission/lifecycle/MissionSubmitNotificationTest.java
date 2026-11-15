@@ -1,4 +1,4 @@
-package com.uav.platform.service.impl.mission;
+package com.uav.platform.service.impl.mission.lifecycle;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -8,7 +8,7 @@ import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.mission.MissionEventType;
 import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.service.mission.MissionAccessService;
+import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.notification.NotificationService;
 
 import org.junit.jupiter.api.Test;

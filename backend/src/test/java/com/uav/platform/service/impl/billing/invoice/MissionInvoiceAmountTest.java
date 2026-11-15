@@ -1,4 +1,4 @@
-package com.uav.platform.service.impl.billing;
+package com.uav.platform.service.impl.billing.invoice;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;

@@ -1,7 +1,13 @@
 package com.uav.platform.support;
 
-import com.uav.platform.dto.request.mission.*;
-import com.uav.platform.dto.response.mission.*;
+import com.uav.platform.dto.request.mission.catalog.*;
+import com.uav.platform.dto.request.mission.dispatch.*;
+import com.uav.platform.dto.request.mission.flightplan.*;
+import com.uav.platform.dto.request.mission.lifecycle.*;
+import com.uav.platform.dto.response.mission.catalog.*;
+import com.uav.platform.dto.response.mission.dispatch.*;
+import com.uav.platform.dto.response.mission.flightplan.*;
+import com.uav.platform.dto.response.mission.lifecycle.*;
 import com.uav.platform.entity.mission.*;
 import com.uav.platform.enums.mission.*;
 import com.uav.platform.repository.inventory.EquipmentRepository;
@@ -15,9 +21,15 @@ import com.uav.platform.repository.station.StationRepository;
 import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
-import com.uav.platform.service.impl.mission.*;
+import com.uav.platform.service.impl.mission.catalog.*;
+import com.uav.platform.service.impl.mission.dispatch.*;
+import com.uav.platform.service.impl.mission.flightplan.*;
+import com.uav.platform.service.impl.mission.lifecycle.*;
 import com.uav.platform.service.inventory.InventoryService;
-import com.uav.platform.service.mission.*;
+import com.uav.platform.service.mission.catalog.*;
+import com.uav.platform.service.mission.dispatch.*;
+import com.uav.platform.service.mission.flightplan.*;
+import com.uav.platform.service.mission.lifecycle.*;
 import com.uav.platform.service.notification.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
 
@@ -131,17 +143,17 @@ public final class MissionServiceFixture {
             NotificationService notifications) {
         jakarta.persistence.EntityManager entityManager = null;
         com.uav.platform.service.media.MediaAccessService mediaAccess = null;
-        com.uav.platform.service.billing.QuotaService quotaService = null;
-        com.uav.platform.service.billing.MissionInvoiceService missionInvoiceService = null;
+        com.uav.platform.service.billing.quota.QuotaService quotaService = null;
+        com.uav.platform.service.billing.invoice.MissionInvoiceService missionInvoiceService = null;
         var missionMapper =
                 org.mapstruct.factory.Mappers.getMapper(
-                        com.uav.platform.mapper.mission.MissionMapper.class);
+                        com.uav.platform.mapper.mission.lifecycle.MissionMapper.class);
         var missionEventMapper =
                 org.mapstruct.factory.Mappers.getMapper(
-                        com.uav.platform.mapper.mission.MissionEventMapper.class);
+                        com.uav.platform.mapper.mission.lifecycle.MissionEventMapper.class);
         var missionMediaMapper =
                 org.mapstruct.factory.Mappers.getMapper(
-                        com.uav.platform.mapper.mission.MissionMediaMapper.class);
+                        com.uav.platform.mapper.mission.flightplan.MissionMediaMapper.class);
         var access = new MissionAccessServiceImpl(entityManager, missions, users, permissions);
         var missionEvents = new MissionEventServiceImpl(events, notifications, access);
         var resources =

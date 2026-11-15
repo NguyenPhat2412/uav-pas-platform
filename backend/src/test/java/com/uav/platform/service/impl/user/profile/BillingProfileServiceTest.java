@@ -1,10 +1,10 @@
-package com.uav.platform.service.impl.user;
+package com.uav.platform.service.impl.user.profile;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.dto.request.user.BillingProfileRequest;
+import com.uav.platform.dto.request.user.profile.BillingProfileRequest;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.entity.user.CustomerBillingProfile;
 import com.uav.platform.error.SystemException;

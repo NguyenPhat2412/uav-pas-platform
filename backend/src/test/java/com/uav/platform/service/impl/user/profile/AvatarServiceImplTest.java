@@ -1,4 +1,4 @@
-package com.uav.platform.service.impl.user;
+package com.uav.platform.service.impl.user.profile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.uav.platform.dto.request.media.MediaUploadRequest;
-import com.uav.platform.dto.request.user.AvatarUploadRequest;
+import com.uav.platform.dto.request.user.profile.AvatarUploadRequest;
 import com.uav.platform.dto.response.media.MediaAssetResponse;
 import com.uav.platform.dto.response.media.SignedMediaUrlResponse;
 import com.uav.platform.entity.media.MediaAsset;

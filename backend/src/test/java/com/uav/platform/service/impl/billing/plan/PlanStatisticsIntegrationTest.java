@@ -1,4 +1,4 @@
-package com.uav.platform.service.impl.billing;
+package com.uav.platform.service.impl.billing.plan;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
@@ -6,9 +6,9 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.uav.platform.dto.response.billing.PlanStatsResponse;
-import com.uav.platform.dto.response.billing.PlanStatsResponse.MonthRow;
-import com.uav.platform.dto.response.billing.PlanStatsResponse.PlanRow;
+import com.uav.platform.dto.response.billing.plan.PlanStatsResponse;
+import com.uav.platform.dto.response.billing.plan.PlanStatsResponse.MonthRow;
+import com.uav.platform.dto.response.billing.plan.PlanStatsResponse.PlanRow;
 import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.billing.ServicePlan;
 import com.uav.platform.entity.billing.UserQuota;
@@ -24,7 +24,7 @@ import com.uav.platform.repository.billing.ServicePlanRepository;
 import com.uav.platform.repository.billing.UserQuotaRepository;
 import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.impl.mission.MissionOperations;
+import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

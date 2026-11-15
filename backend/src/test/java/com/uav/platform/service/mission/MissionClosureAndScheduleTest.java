@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.dto.request.mission.MissionCreateRequest;
-import com.uav.platform.dto.request.mission.MissionForceFailRequest;
+import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
+import com.uav.platform.dto.request.mission.lifecycle.MissionForceFailRequest;
 import com.uav.platform.entity.mission.*;
 import com.uav.platform.entity.uav.Uav;
 import com.uav.platform.entity.user.AppUser;
@@ -13,19 +13,24 @@ import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.mapper.mission.MissionMapper;
+import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
 import com.uav.platform.repository.inventory.EquipmentRepository;
 import com.uav.platform.repository.mission.*;
 import com.uav.platform.repository.station.StationRepository;
 import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
-import com.uav.platform.service.billing.QuotaService;
-import com.uav.platform.service.impl.mission.MissionBillingServiceImpl;
-import com.uav.platform.service.impl.mission.MissionInputOperations;
-import com.uav.platform.service.impl.mission.MissionLifecycleServiceImpl;
-import com.uav.platform.service.impl.mission.MissionOperations;
+import com.uav.platform.service.billing.quota.QuotaService;
+import com.uav.platform.service.impl.mission.lifecycle.MissionBillingServiceImpl;
+import com.uav.platform.service.impl.mission.lifecycle.MissionInputOperations;
+import com.uav.platform.service.impl.mission.lifecycle.MissionLifecycleServiceImpl;
+import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.inventory.InventoryService;
+import com.uav.platform.service.mission.dispatch.MissionResourceService;
+import com.uav.platform.service.mission.lifecycle.MissionAccessService;
+import com.uav.platform.service.mission.lifecycle.MissionBillingService;
+import com.uav.platform.service.mission.lifecycle.MissionEventService;
+import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.service.permission.PermissionService;
 
 import org.junit.jupiter.api.Test;
@@ -104,8 +109,8 @@ class MissionClosureAndScheduleTest {
                 () ->
                         service.fail(
                                 1L,
-                                new com.uav.platform.dto.request.mission.MissionFailureRequest(
-                                        "x", null),
+                                new com.uav.platform.dto.request.mission.lifecycle
+                                        .MissionFailureRequest("x", null),
                                 auth("commander")));
     }
 

@@ -6,9 +6,11 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.mission.MissionPriority;
 import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.service.impl.mission.MissionBillingServiceImpl;
-import com.uav.platform.service.impl.mission.MissionOperations;
-import com.uav.platform.service.mission.MissionBillingService;
+import com.uav.platform.service.billing.invoice.MissionInvoiceService;
+import com.uav.platform.service.billing.quota.QuotaService;
+import com.uav.platform.service.impl.mission.lifecycle.MissionBillingServiceImpl;
+import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
+import com.uav.platform.service.mission.lifecycle.MissionBillingService;
 
 import org.junit.jupiter.api.Test;
 

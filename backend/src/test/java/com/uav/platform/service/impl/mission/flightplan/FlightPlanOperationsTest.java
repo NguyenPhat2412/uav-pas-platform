@@ -1,9 +1,9 @@
-package com.uav.platform.service.impl.mission;
+package com.uav.platform.service.impl.mission.flightplan;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.uav.platform.dto.request.mission.FlightPlanRequest;
-import com.uav.platform.dto.response.mission.FlightPlanResponse;
+import com.uav.platform.dto.request.mission.flightplan.FlightPlanRequest;
+import com.uav.platform.dto.response.mission.flightplan.FlightPlanResponse;
 import com.uav.platform.error.SystemException;
 
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.uav.platform.service.impl.auth;
+package com.uav.platform.service.impl.auth.verification;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

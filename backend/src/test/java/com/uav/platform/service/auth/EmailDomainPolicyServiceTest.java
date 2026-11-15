@@ -3,7 +3,8 @@ package com.uav.platform.service.auth;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.uav.platform.error.SystemException;
-import com.uav.platform.service.impl.auth.EmailDomainPolicyServiceImpl;
+import com.uav.platform.service.auth.verification.EmailDomainPolicyService;
+import com.uav.platform.service.impl.auth.verification.EmailDomainPolicyServiceImpl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

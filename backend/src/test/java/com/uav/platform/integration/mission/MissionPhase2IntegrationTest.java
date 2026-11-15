@@ -3,8 +3,14 @@ package com.uav.platform.integration.mission;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.uav.platform.dto.request.inventory.QuantityRequest;
-import com.uav.platform.dto.request.mission.*;
-import com.uav.platform.dto.response.mission.*;
+import com.uav.platform.dto.request.mission.catalog.*;
+import com.uav.platform.dto.request.mission.dispatch.*;
+import com.uav.platform.dto.request.mission.flightplan.*;
+import com.uav.platform.dto.request.mission.lifecycle.*;
+import com.uav.platform.dto.response.mission.catalog.*;
+import com.uav.platform.dto.response.mission.dispatch.*;
+import com.uav.platform.dto.response.mission.flightplan.*;
+import com.uav.platform.dto.response.mission.lifecycle.*;
 import com.uav.platform.entity.inventory.*;
 import com.uav.platform.entity.mission.*;
 import com.uav.platform.entity.station.*;
@@ -25,7 +31,7 @@ import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.inventory.InventoryService;
-import com.uav.platform.service.mission.MissionService;
+import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.support.ServicePlanTestData;
 
 import org.junit.jupiter.api.Test;

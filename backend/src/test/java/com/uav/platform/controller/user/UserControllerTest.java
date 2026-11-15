@@ -7,12 +7,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.config.routes.ApiRoutes;
-import com.uav.platform.dto.request.user.UserQueryRequest;
-import com.uav.platform.dto.response.user.UserResponse;
+import com.uav.platform.controller.user.account.UserController;
+import com.uav.platform.dto.request.user.account.UserQueryRequest;
+import com.uav.platform.dto.response.user.account.UserResponse;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.service.user.UserService;
+import com.uav.platform.service.user.account.UserService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

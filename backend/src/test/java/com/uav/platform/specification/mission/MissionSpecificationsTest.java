@@ -13,6 +13,7 @@ import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
+import com.uav.platform.specification.mission.lifecycle.MissionSpecifications;
 
 import jakarta.persistence.criteria.*;
 

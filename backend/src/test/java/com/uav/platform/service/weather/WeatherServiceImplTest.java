@@ -29,7 +29,7 @@ import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.weather.FlightSafetyEvaluatorOperations;
 import com.uav.platform.service.impl.weather.WeatherCipherOperations;
 import com.uav.platform.service.impl.weather.WeatherServiceImpl;
-import com.uav.platform.service.mission.MissionAccessService;
+import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.settings.SystemConfigService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -672,5 +672,48 @@ class WeatherServiceImplTest {
         when(config.valueOrDefault(eq("uav.safety.max_wind_speed_limit"), anyString()))
                 .thenReturn(" 8.5 ");
         assertEquals(8.5, service(false).assess(21.0, 105.8, null, null).effectiveMaxWindMs());
+    }
+
+    @Test
+    void forecastSupportsPastSevenDaysWithoutLiveObservationBleed() throws Exception {
+        responses.put(
+                "api.open-meteo.com",
+                openMeteo(LocalDateTime.of(2026, 10, 24, 0, 0), 23 * 24, 3.0));
+        WeatherProviderSettings settings = new WeatherProviderSettings();
+        settings.setProvider(WeatherProviderType.OPENWEATHERMAP);
+        settings.setApiKeyCipher(cipher.encrypt("owm-key"));
+        when(providerSettings.findById(1)).thenReturn(Optional.of(settings));
+        responses.put(
+                "api.openweathermap.org",
+                "{\"main\":{\"temp\":31.0,\"humidity\":55},\"wind\":{\"speed\":14.0,\"gust\":18.0,\"deg\":200},\"visibility\":9000}");
+
+        WeatherServiceImpl weather = service(true);
+        WeatherAssessmentResponse yesterday =
+                weather.forecast(21.0285, 105.8542, "2026-10-30T09:15", null);
+        assertFalse(yesterday.forecast());
+        assertEquals("2026-10-30T09:00", yesterday.evaluatedTime());
+        assertEquals(3.0, yesterday.windSpeed10mMs(), "past hour must not use live OWM wind");
+        assertEquals(FlightClearanceLevel.GO, yesterday.clearance());
+
+        ArgumentCaptor<HttpRequest> requestCaptor = ArgumentCaptor.forClass(HttpRequest.class);
+        verify(http, atLeastOnce()).send(requestCaptor.capture(), any());
+        assertTrue(
+                requestCaptor.getAllValues().stream()
+                        .map(req -> req.uri().toString())
+                        .anyMatch(
+                                uri ->
+                                        uri.contains("past_days=7")
+                                                && uri.contains("forecast_days=16")));
+
+        WeatherAssessmentResponse sevenDaysAgo =
+                weather.forecast(21.0285, 105.8542, "2026-10-24T11:00", null);
+        assertEquals("2026-10-24T11:00", sevenDaysAgo.evaluatedTime());
+        assertEquals(FlightClearanceLevel.NO_GO, sevenDaysAgo.clearance());
+
+        WeatherAssessmentResponse tooOld =
+                weather.forecast(21.0285, 105.8542, "2026-10-20T09:00", null);
+        assertEquals(FlightClearanceLevel.UNAVAILABLE, tooOld.clearance());
+        assertEquals(List.of("FORECAST_OUT_OF_RANGE"), tooOld.reasonCodes());
+        assertFalse(tooOld.forecast());
     }
 }

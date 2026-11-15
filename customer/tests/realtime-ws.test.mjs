@@ -156,4 +156,16 @@ test('support and billing components keep <= 300 lines, zero emerald classes, an
 
     const launcher = read('src/components/support/PublicSupportLauncher.tsx');
     assert.match(launcher, /bottom-24/, 'portal launcher docks above AssistantWidget (bottom-5)');
+    assert.match(launcher, /pointer-events-none fixed right-5/, 'outer launcher dock must not intercept clicks over table actions');
+
+    const buttonUi = read('src/components/ui/Button.tsx');
+    assert.match(buttonUi, /\bwhitespace-nowrap\b/, 'Button primitive prevents multi-line text spill inside table cells');
+    assert.match(buttonUi, /\bmin-h-9\b/, 'Button primitive uses min-height rather than rigid height');
+
+    const invoicesCard = read('src/components/billing/CustomerBillingInvoicesCard.tsx');
+    assert.doesNotMatch(invoicesCard, /(?:^|[\s"])h-8(?=[\s"])/, 'Invoice action buttons use min-h-8 instead of rigid h-8');
+    assert.match(invoicesCard, /min-h-8/, 'Invoice action buttons use min-h-8');
+
+    const globalsCss = read('src/styles/globals.css');
+    assert.match(globalsCss, /padding-bottom:\s*10\.5rem/, 'Portal workspace reserves bottom scroll clearance for stacked launchers');
 });

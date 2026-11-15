@@ -7,7 +7,8 @@ import static org.mockito.Mockito.*;
 import com.uav.platform.entity.auth.InvalidatedToken;
 import com.uav.platform.repository.auth.InvalidatedTokenRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
-import com.uav.platform.service.impl.auth.InvalidatedTokenServiceImpl;
+import com.uav.platform.service.auth.session.InvalidatedTokenService;
+import com.uav.platform.service.impl.auth.session.InvalidatedTokenServiceImpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

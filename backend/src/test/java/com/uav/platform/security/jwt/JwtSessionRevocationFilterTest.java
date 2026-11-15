@@ -85,7 +85,8 @@ class JwtSessionRevocationFilterTest {
     void failedPasswordLockDoesNotEndAnExistingSession() throws Exception {
         AppUser user = users.findByUsername("pilot").orElseThrow();
         for (int i = 0; i < 5; i++)
-            com.uav.platform.service.impl.user.UserAccountServiceImpl.incrementFailedAttempts(user);
+            com.uav.platform.service.impl.user.account.UserAccountServiceImpl
+                    .incrementFailedAttempts(user);
         assertNotNull(user.getLockTime());
         String token = provider.generateToken(7L, "pilot", "p@x.vn", "ROLE_PILOT");
 
