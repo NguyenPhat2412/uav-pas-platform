@@ -45,6 +45,14 @@ export function useNotifications() {
             if (frame.type !== 'NOTIFICATION_CREATED') return;
             client.setQueryData([...feature, 'unread'], {unreadCount: frame.unreadCount ?? 0});
             void client.invalidateQueries({queryKey: [...feature, 'recent']});
+            void client.invalidateQueries({
+                predicate: q =>
+                    (q.queryKey[0] === 'session' &&
+                        q.queryKey[1] === userId &&
+                        q.queryKey[2] !== 'notifications') ||
+                    q.queryKey[0] === 'marketplace' ||
+                    q.queryKey[0] === 'public',
+            });
         };
         const release = acquireRealtimeConnection({authenticated: true});
         const unsubscribe = subscribeRealtimeEvents(onFrame);

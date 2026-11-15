@@ -1,6 +1,7 @@
 'use client';
 import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
+import {billingKeys} from '@/hooks/billing/query-keys';
 import {queryKeys} from '@/lib/query';
 import {customerMissionService} from '@/api/mission/customer-missions.api';
 import type {
@@ -92,9 +93,14 @@ export function useMissionDetail(id: number) {
 
 export function useMissionActions() {
     const client = useQueryClient();
-    const {key} = useCustomerScope();
+    const {key, user} = useCustomerScope();
     const refresh = async (id: number) => {
-        await Promise.all([client.invalidateQueries({queryKey: [...key, 'missions']}), client.invalidateQueries({queryKey: [...key, 'mission', id]})]);
+        await Promise.all([
+            client.invalidateQueries({queryKey: [...key, 'missions']}),
+            client.invalidateQueries({queryKey: [...key, 'mission', id]}),
+            client.invalidateQueries({queryKey: billingKeys.customer(user?.id)}),
+            client.invalidateQueries({queryKey: ['marketplace']}),
+        ]);
     };
     const submit = useMutation({
         mutationFn: (id: number) => customerMissionService.submit(id),

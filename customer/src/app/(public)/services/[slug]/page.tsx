@@ -1,10 +1,10 @@
 import {serviceScenes} from "@/components/marketing/UavPhoto";
 import {pageMetadata} from "@/content/marketing/metadata";
-import {notFound} from 'next/navigation';
 import Link from 'next/link';
 import {serviceDetails} from "@/content/marketing/service-details";
 import {services} from "@/content/marketing/site-content";
 import {CustomerCta, PublicPage} from "@/components/marketing/PublicPage";
+import {PublicListingDetail} from "@/components/marketplace/PublicListingDetail";
 
 export function generateStaticParams() {
     return services.map(({slug}) => ({slug}));
@@ -13,14 +13,22 @@ export function generateStaticParams() {
 export async function generateMetadata({params}: { params: Promise<{ slug: string }> }) {
     const {slug} = await params;
     const service = services.find((item) => item.slug === slug);
-    if (!service) notFound();
+    if (!service) {
+        return pageMetadata(
+            'Chi tiết Gói dịch vụ & Thiết bị UAV',
+            'Thông số kỹ thuật, đơn giá thuê theo đơn vị và đánh giá nghiệm thu trên sàn giao dịch UAV PAS.',
+            `/services/${slug}`,
+        );
+    }
     return pageMetadata(`Dịch vụ: ${service.title}`, service.text, `/services/${slug}`);
 }
 
 export default async function ServiceDetail({params}: { params: Promise<{ slug: string }> }) {
     const {slug} = await params;
     const service = services.find((item) => item.slug === slug);
-    if (!service) notFound();
+    if (!service) {
+        return <PublicListingDetail slug={slug}/>;
+    }
     const detail = serviceDetails[slug];
     return (
         <PublicPage

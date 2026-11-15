@@ -46,11 +46,14 @@ export function AppShell({children}: { children: React.ReactNode }) {
     const name = profile.data?.fullName || user?.fullName || user?.username || t('common.appTitle');
     const visibleNav = navItems.filter(item => !item.permission || (permissionsReady && can(item.permission)));
     const activeNav = resolveSidebarActiveItem(visibleNav, pathname);
-    const searchItems = visibleNav.map(item => ({
-        href: item.href,
-        label: t(`nav.${item.key}`) || item.defaultLabel || item.key,
-        group: t(`nav.groups.${item.group}`),
-    }));
+    const searchItems = visibleNav.map(item => {
+        const translated = t(`nav.${item.key}`);
+        return {
+            href: item.href,
+            label: (translated && translated !== `nav.${item.key}` ? translated : item.defaultLabel) || item.key,
+            group: t(`nav.groups.${item.group}`),
+        };
+    });
 
     // Feeds the dashboard's search "Recents"; only sidebar destinations are remembered.
     const activeHref = activeNav?.href;
@@ -96,7 +99,9 @@ export function AppShell({children}: { children: React.ReactNode }) {
                                 <>
                                     <span className="hidden xl:inline">/</span>
                                     <strong className="truncate font-semibold text-slate-900">
-                                        {t(`nav.${activeNav.key}`) || activeNav.defaultLabel}
+                                        {t(`nav.${activeNav.key}`) !== `nav.${activeNav.key}`
+                                            ? t(`nav.${activeNav.key}`)
+                                            : activeNav.defaultLabel}
                                     </strong>
                                 </>
                             )}

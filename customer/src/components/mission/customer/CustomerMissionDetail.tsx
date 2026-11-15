@@ -20,6 +20,7 @@ import {SiteWeather} from "@/components/mission/customer/SiteWeather";
 import {MissionMonitoring} from "@/components/mission/customer/MissionMonitoring";
 import {MissionHandoverReviewCard} from "@/components/mission/customer/MissionHandoverReviewCard";
 import {MissionInspectionReportCard} from "@/components/mission/MissionInspectionReportCard";
+import {CustomerMissionMarketplaceCard} from "@/components/marketplace/CustomerMissionMarketplaceCard";
 import {parseEntityId, toMissionSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/providers/I18nContext';
 import type {MissionTab} from '@/types/mission/mission.types';
@@ -190,6 +191,7 @@ function MissionDetail() {
             </div>
         </section>
         <MissionProgress status={mission.status}/>
+        <CustomerMissionMarketplaceCard mission={mission} isOwner={mission.customerId === user?.id}/>
         {confirmCancel && canCancel &&
             <div className="grid gap-3 rounded-panel border border-border bg-background p-4 md:p-5" role="group" aria-label={t('missionDetail.cancelConfirmLabel')}><strong>{t('missionDetail.cancelQuestion')}</strong><p className={mutedClass}>{t('missionDetail.cancelWarning')}</p>
                 <div className="flex flex-wrap items-center gap-2.5"><Button variant="secondary"

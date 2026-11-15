@@ -249,8 +249,8 @@
 :root[data-portal] :is(#workspace, #content) {
     background: #fff;
     padding: 1.5rem;
-    /* Room under the last row so it can scroll clear of the floating assistant button (bottom right). */
-    padding-bottom: 6rem;
+    /* Room under the last row so it can scroll clear of the stacked support + assistant buttons (bottom right). */
+    padding-bottom: 10.5rem;
     gap: 1rem;
 }
 
@@ -355,7 +355,7 @@
 
 @media (max-width: 640px) {
     :root[data-portal] :is(#workspace, #content) {
-        padding: 1rem;
+        padding: 1rem 1rem 10.5rem;
     }
 }
 

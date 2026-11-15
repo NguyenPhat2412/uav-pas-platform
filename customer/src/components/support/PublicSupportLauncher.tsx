@@ -65,24 +65,22 @@ export function PublicSupportLauncher({
     return (
         <div
             className={cn(
-                'fixed right-5 z-50 flex flex-col items-end gap-3',
+                'pointer-events-none fixed right-5 z-50 flex flex-col items-end gap-3',
                 isPortal ? 'bottom-24' : 'bottom-5',
             )}
         >
             {!open && zaloUrl && (
-                <div
-                    className="flex items-center gap-2.5 pr-1"
-                    onMouseEnter={() => setZaloHovered(true)}
-                    onMouseLeave={() => setZaloHovered(false)}
-                >
+                <div className="flex items-center gap-2.5 pr-1">
                     <a
                         href={zaloUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         tabIndex={zaloHovered ? 0 : -1}
                         aria-hidden={!zaloHovered}
+                        onMouseEnter={() => setZaloHovered(true)}
+                        onMouseLeave={() => setZaloHovered(false)}
                         className={cn(
-                            'hidden sm:inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-800 shadow-md backdrop-blur-xs transition-all duration-300 ease-out hover:border-primary/40 hover:text-primary',
+                            'hidden sm:inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-800 shadow-md backdrop-blur-xs transition-all duration-300 ease-out hover:border-primary/40 hover:text-primary',
                             zaloHovered
                                 ? 'pointer-events-auto translate-x-0 scale-100 opacity-100'
                                 : 'pointer-events-none translate-x-2 scale-95 opacity-0',
@@ -91,7 +89,11 @@ export function PublicSupportLauncher({
                         <span>Chat Zalo · {zaloDisplay}</span>
                     </a>
 
-                    <div className="relative flex items-center justify-center">
+                    <div
+                        className="pointer-events-auto relative flex items-center justify-center"
+                        onMouseEnter={() => setZaloHovered(true)}
+                        onMouseLeave={() => setZaloHovered(false)}
+                    >
                         <a
                             href={zaloUrl}
                             target="_blank"
@@ -108,18 +110,16 @@ export function PublicSupportLauncher({
                 </div>
             )}
 
-            <div
-                className="flex items-center gap-3"
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
-            >
+            <div className="flex items-center gap-3">
                 <button
                     type="button"
                     onClick={onOpen}
                     tabIndex={showCallout ? 0 : -1}
                     aria-hidden={!showCallout}
+                    onMouseEnter={() => showCallout && setHovered(true)}
+                    onMouseLeave={() => setHovered(false)}
                     className={cn(
-                        'hidden sm:inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-bold shadow-lg backdrop-blur-xs transition-all duration-500 ease-out',
+                        'hidden sm:inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-3.5 py-2 text-xs font-bold shadow-lg backdrop-blur-xs transition-all duration-500 ease-out',
                         showCallout
                             ? 'pointer-events-auto translate-x-0 scale-100 opacity-100 hover:-translate-y-0.5'
                             : 'pointer-events-none translate-x-3 scale-95 opacity-0',
@@ -148,8 +148,12 @@ export function PublicSupportLauncher({
                     <span>{calloutText}</span>
                 </button>
 
-                <div className="relative flex items-center justify-center">
-                    {!open && (
+                <div
+                    className="pointer-events-auto relative flex items-center justify-center"
+                    onMouseEnter={() => setHovered(true)}
+                    onMouseLeave={() => setHovered(false)}
+                >
+                    {!open && (!isPortal || hasUnread) && (
                         <>
                             <span
                                 aria-hidden="true"

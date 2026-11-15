@@ -30,10 +30,16 @@
         "profile": "アカウント情報",
         "portalTitle": "カスタマーポータル",
         "createRequest": "新規依頼",
+        "providerOnboarding": "パートナー登録・KYC",
+        "providerListings": "出品サービス管理",
+        "providerFleet": "所有機体・機材",
+        "providerOrders": "受注・RFQ入札",
+        "providerWallet": "エスクロー・出金",
         "groups": {
             "overview": "概要",
             "missions": "飛行ミッション",
             "services": "サービスと請求",
+            "partner": "UAVパートナー管理",
             "support": "ヘルプとアカウント"
         },
         "badges": {

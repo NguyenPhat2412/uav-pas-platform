@@ -168,7 +168,7 @@ export type AdminNavGroup =
     | 'system'
     | 'infrastructure';
 export type OperationsNavGroup = 'command' | 'missions' | 'assets' | 'monitoring';
-export type CustomerNavGroup = 'overview' | 'missions' | 'services' | 'support';
+export type CustomerNavGroup = 'overview' | 'missions' | 'services' | 'partner' | 'support';
 export type CustomerNavBadge = 'activeMissions' | 'pendingInvoices' | 'unreadNotifications';
 
 export interface SidebarRouteItem<G extends string = string> {

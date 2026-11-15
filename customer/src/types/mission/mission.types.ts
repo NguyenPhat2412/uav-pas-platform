@@ -82,6 +82,17 @@ export interface Mission {
     equipmentCondition?: string;
     failureReason?: string;
     failureNotes?: string;
+    providerId?: number | null;
+    providerDisplayName?: string | null;
+    listingId?: number | null;
+    listingTitle?: string | null;
+    pricingModelSnapshot?: 'PER_HOUR' | 'PER_HECTARE' | 'PER_DAY' | 'PER_PACKAGE' | null;
+    unitPriceSnapshotVnd?: number | null;
+    bookingUnits?: number | null;
+    quotedSubtotalVnd?: number | null;
+    securityDepositVnd?: number | null;
+    providerResponseStatus?: 'NOT_APPLICABLE' | 'OPEN_RFQ' | 'PENDING_PROVIDER' | 'ACCEPTED' | 'DECLINED' | null;
+    providerResponseNote?: string | null;
 }
 
 export interface MissionEvent {
@@ -118,6 +129,9 @@ export interface MissionInput {
     priority?: MissionPriority;
     notes?: string;
     flightPlan?: FlightPlanInput;
+    listingId?: number | null;
+    bookingUnits?: number | null;
+    openRfq?: boolean;
 }
 
 export interface MissionDashboard {
