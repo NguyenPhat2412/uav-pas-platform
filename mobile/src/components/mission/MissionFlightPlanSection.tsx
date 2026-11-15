@@ -121,9 +121,8 @@ export function MissionFlightPlanSection({
         <>
             <Card>
                 <SectionTitle title={t('capabilities.flightSites.title')}/>
-                <AppText variant="caption">{t('capabilities.flightSites.subtitle')}</AppText>
                 {savedSites.length === 0 ? (
-                    <AppText variant="small">{t('capabilities.flightSites.empty')}</AppText>
+                    <AppText variant="caption">{t('mobile.missions.savedSitesHint')}</AppText>
                 ) : (
                     <View style={styles.chipsRow}>
                         {savedSites.map(site => (

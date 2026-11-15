@@ -4,14 +4,15 @@ import {useLocalSearchParams, useRouter} from 'expo-router';
 import MapView, {Marker} from 'react-native-maps';
 import * as ImagePicker from 'expo-image-picker';
 import * as WebBrowser from 'expo-web-browser';
-import {AlertTriangle, Camera, CalendarClock, Copy, Download, FileText, ImagePlus, MapPin, Pencil, Send, ShieldAlert, XCircle} from 'lucide-react-native';
-import {AppText, Badge, Button, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
+import {AlertTriangle, Camera, CalendarClock, Copy, Download, FileText, ImagePlus, MapPin, Pencil, Send, XCircle} from 'lucide-react-native';
+import {AppText, Button, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
 import {CustomerHandoverReviewCard} from '@/components/mission/CustomerHandoverReviewCard';
 import {MissionStatusBadge} from '@/components/mission/MissionBits';
-import {MissionProgress, MissionSiteWeather} from '@/components/mission/MissionDetailBits';
+import {MissionAirspaceCard, MissionProgress, MissionSiteWeather} from '@/components/mission/MissionDetailBits';
 import {MissionPermitCard} from '@/components/mission/MissionPermitCard';
 import {MobileMission3DReplayCard} from '@/components/mission/MobileMission3DReplayCard';
 import {MobileMissionInspectionReportCard} from '@/components/mission/MobileMissionInspectionReportCard';
+import {MobileMissionMarketplaceCard} from '@/components/mission/MobileMissionMarketplaceCard';
 import {fromLocalIso, withStart} from '@/forms/mission/mission-draft';
 import {useMissionAirspaceCheck} from '@/hooks/airspace/useAirspace';
 import {useMissionActions, useMissionDetail} from '@/hooks/mission/useCustomerMissions';
@@ -236,28 +237,9 @@ export function MissionDetailScreen() {
                 {mission.description ? <AppText variant="small">{mission.description}</AppText> : null}
             </Card>
 
-            {airspace.data && airspace.data.violations.length > 0 && (
-                <Card>
-                    <SectionTitle
-                        title={t('mobile.airspace.title')}
-                        action={
-                            <Badge
-                                icon={ShieldAlert}
-                                label={
-                                    airspace.data.blocked ? t('mobile.airspace.clearance.BLOCKED')
-                                        : airspace.data.requiresPermit ? t('mobile.airspace.clearance.PERMIT_REQUIRED')
-                                            : t('mobile.airspace.clearance.CAUTION')
-                                }
-                                background={airspace.data.blocked ? colors.dangerLight : colors.warningLight}
-                                color={airspace.data.blocked ? colors.danger : colors.warning}
-                            />
-                        }
-                    />
-                    {airspace.data.violations.map(v => (
-                        <AppText key={v.zoneId} variant="small">• {v.name}: {v.message}</AppText>
-                    ))}
-                </Card>
-            )}
+            <MobileMissionMarketplaceCard mission={mission} owned={owned}/>
+
+            <MissionAirspaceCard result={airspace.data}/>
 
             {showPermitCard && (
                 <MissionPermitCard
@@ -282,7 +264,13 @@ export function MissionDetailScreen() {
 
             {showPostFlightReport && <MobileMissionInspectionReportCard missionId={mission.id} portal="customer" onOpenMedia={open}/>}
 
-            {owned && mission.status === 'COMPLETED' && <CustomerHandoverReviewCard key={mission.id} missionId={mission.id}/>}
+            {owned && mission.status === 'COMPLETED' && (
+                <CustomerHandoverReviewCard
+                    key={mission.id}
+                    missionId={mission.id}
+                    isMarketplace={Boolean(mission.providerId || mission.listingId)}
+                />
+            )}
 
             {owned && can('MISSION_MEDIA_VIEW') && (
                 <Card>

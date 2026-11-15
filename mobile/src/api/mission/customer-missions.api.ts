@@ -1,6 +1,6 @@
 import {apiClient, API_ROUTES} from '@/lib/api/client';
 import {buildQueryString} from '@/shared/lib/format';
-import {missionDraftUpdatePayload} from '@/shared/forms/mission/mission-form';
+import {missionCreatePayload, missionDraftUpdatePayload} from '@/shared/forms/mission/mission-form';
 import type {Mission, MissionAvailability, MissionEvent, MissionInput, MissionMedia, MissionStatus, PageResponse, UavService} from '@/shared/types/customer';
 import type {
     MissionInspectionReport,
@@ -24,7 +24,7 @@ export const customerMissionService = {
         apiClient.get<MissionInspectionReport>(API_ROUTES.missions.inspectionReport(id), {signal}),
     availability: (startTime: string, endTime: string) =>
         apiClient.get<MissionAvailability>(`${API_ROUTES.missions.availability}?${buildQueryString({startTime, endTime})}`),
-    create: (data: MissionInput) => apiClient.post<Mission>(API_ROUTES.missions.list, data),
+    create: (data: MissionInput) => apiClient.post<Mission>(API_ROUTES.missions.list, missionCreatePayload(data)),
     update: (id: number, data: MissionInput, expectedVersion: number) =>
         apiClient.patch<Mission>(API_ROUTES.missions.detail(id), missionDraftUpdatePayload(data, expectedVersion)),
     submit: (id: number) => apiClient.post<Mission>(API_ROUTES.missions.submit(id)),

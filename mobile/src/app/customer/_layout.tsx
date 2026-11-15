@@ -30,6 +30,14 @@ export default function CustomerLayout() {
                     <Stack.Screen name="training/index" options={{title: t('nav.training')}}/>
                     <Stack.Screen name="training/[slug]" options={{title: t('nav.training')}}/>
                     <Stack.Screen name="training/lesson/[id]" options={{title: t('nav.training')}}/>
+                    <Stack.Screen name="marketplace/[slug]" options={{title: t('nav.services')}}/>
+                    <Stack.Screen name="providers/[slug]" options={{title: t('mobile.provider.storefrontTitle')}}/>
+                    <Stack.Screen name="provider/index" options={{title: t('mobile.provider.hubEntry')}}/>
+                    <Stack.Screen name="provider/onboarding" options={{title: t('mobile.provider.menuOnboarding')}}/>
+                    <Stack.Screen name="provider/listings" options={{title: t('mobile.provider.menuListings')}}/>
+                    <Stack.Screen name="provider/fleet" options={{title: t('mobile.provider.menuFleet')}}/>
+                    <Stack.Screen name="provider/orders" options={{title: t('mobile.provider.menuOrders')}}/>
+                    <Stack.Screen name="provider/wallet" options={{title: t('mobile.provider.menuWallet')}}/>
                     {/* The chat opens as a native sheet: pull it to full height or swipe it away. */}
                     <Stack.Screen name="assistant" options={{presentation: 'formSheet', sheetAllowedDetents: [0.75, 1], sheetGrabberVisible: true, headerTransparent: false}}/>
                     <Stack.Screen

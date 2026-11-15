@@ -144,7 +144,7 @@ export function InvoicePaymentScreen() {
     return (
         <Screen refreshing={refreshing} onRefresh={() => void handlePullRefresh()}>
             <Card style={styles.center}>
-                <AppText variant="caption">{t('billingPage.invoiceAmount', {code: data.invoiceCode, amount: ''})}</AppText>
+                <AppText variant="caption">{`${t('payment.invoice')} · ${data.invoiceCode}`}</AppText>
                 <AppText variant="display">{formatCurrency(data.total)}</AppText>
                 {data.itemName ? <AppText variant="small">{data.itemName}</AppText> : null}
                 {data.dueDate && !paid ? (

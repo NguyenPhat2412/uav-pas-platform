@@ -2,9 +2,12 @@ import React, {useState} from 'react';
 import {Platform, Pressable, StyleSheet, View} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {CloudSun, Save, Send} from 'lucide-react-native';
-import {AppText, Button, Card, ChipGroup, ErrorState, LoadingState, ScaledText, Screen, SectionTitle, TextField} from '@/components/ui';
+import {AlertTriangle, Clock3, CloudSun, Flame, Gauge, Save, Send} from 'lucide-react-native';
+import {AppText, Button, Card, ErrorState, LoadingState, ScaledText, Screen, TextField} from '@/components/ui';
+import {GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
+import {MissionBookingOptionsCard} from '@/components/mission/MissionBookingOptionsCard';
 import {MissionFlightPlanSection, sitePlanToInput} from '@/components/mission/MissionFlightPlanSection';
+import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplaceCatalog';
 import {useMissionActions, useMissionDetail, useSavedFlightSites, useServices} from '@/hooks/mission/useCustomerMissions';
 import {useDeviceLocation} from '@/hooks/location/useDeviceLocation';
 import {usePointForecast} from '@/hooks/weather/useWeather';
@@ -17,33 +20,33 @@ import {
     missionFormError,
     missionFormFromDetail,
     missionTypeForService,
-    missionTypes,
     type MissionFormErrors,
 } from '@/shared/forms/mission/mission-form';
-import {displayLabel, serviceName} from '@/shared/lib/presentation';
+import {displayLabel} from '@/shared/lib/presentation';
 import {applyFlightWindow} from '@/shared/utils/weather/flight-window';
+import type {MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
 import type {Mission, MissionInput, MissionPriority, SavedFlightSite} from '@/shared/types/mission/mission.types';
 import {fromLocalIso, newMissionDraft, withEnd, withPoint, withStart} from '@/forms/mission/mission-draft';
 import {isFinitePoint} from '@/utils/operations/map-shapes';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
-const PRIORITIES: MissionPriority[] = ['LOW', 'NORMAL', 'HIGH', 'URGENT'];
-
 function DateField({label, value, onChange, error}: { label: string; value: string; onChange: (date: Date) => void; error?: string }) {
     const date = fromLocalIso(value) ?? new Date();
     return (
-        <View style={styles.dateRow}>
-            <AppText variant="small" style={styles.dateLabel}>{label}</AppText>
-            {/* iOS shows a compact button that opens the native calendar and clock. */}
-            <DateTimePicker value={date} mode="datetime" display={Platform.OS === 'ios' ? 'compact' : 'default'} minuteInterval={5}
-                            accentColor={colors.primary} onChange={(_event, next) => next && onChange(next)}/>
+        <View style={styles.dateField}>
+            <View style={styles.dateRow}>
+                <AppText variant="small" style={styles.dateLabel}>{label}</AppText>
+                <View style={styles.pickerAlign}>
+                    <DateTimePicker value={date} mode="datetime" display={Platform.OS === 'ios' ? 'compact' : 'default'} minuteInterval={5}
+                                    accentColor={colors.primary} onChange={(_event, next) => next && onChange(next)}/>
+                </View>
+            </View>
             {error ? <AppText variant="caption" style={styles.error}>{error}</AppText> : null}
         </View>
     );
 }
 
-/** Shared by create and edit; the backend validates every field and answers per field. */
-function MissionForm({initial, mission}: { initial: MissionInput; mission?: Mission }) {
+function MissionForm({initial, mission, initialListing}: { initial: MissionInput; mission?: Mission; initialListing?: MarketplaceListing | null }) {
     const {t, formatDate} = useI18n();
     const {can} = useAuth();
     const toast = useToast();
@@ -57,6 +60,13 @@ function MissionForm({initial, mission}: { initial: MissionInput; mission?: Miss
     const [message, setMessage] = useState<string | null>(null);
     const set = <K extends keyof MissionInput>(key: K, value: MissionInput[K]) => setForm(current => ({...current, [key]: value}));
     const busy = actions.create.isPending || actions.update.isPending || actions.submit.isPending;
+
+    const priorityOptions: GlassOption<MissionPriority>[] = [
+        {value: 'LOW', label: displayLabel('LOW'), description: t('mobile.booking.priorityDesc.LOW'), icon: Clock3},
+        {value: 'NORMAL', label: displayLabel('NORMAL'), description: t('mobile.booking.priorityDesc.NORMAL'), icon: Gauge},
+        {value: 'HIGH', label: displayLabel('HIGH'), description: t('mobile.booking.priorityDesc.HIGH'), icon: AlertTriangle},
+        {value: 'URGENT', label: displayLabel('URGENT'), description: t('mobile.booking.priorityDesc.URGENT'), icon: Flame},
+    ];
 
     const fail = (error: unknown) => {
         const fields = missionFieldErrors(error);
@@ -89,11 +99,6 @@ function MissionForm({initial, mission}: { initial: MissionInput; mission?: Miss
         } catch (error) {
             fail(error);
         }
-    };
-
-    const chooseService = (value: string) => {
-        const service = services.data?.find(item => String(item.id) === value);
-        setForm(current => ({...current, serviceId: service?.id, missionType: missionTypeForService(service?.code, current.missionType)}));
     };
 
     const point =
@@ -163,18 +168,15 @@ function MissionForm({initial, mission}: { initial: MissionInput; mission?: Miss
 
     return (
         <Screen>
-            <Card>
-                <SectionTitle title={t('missionCreate.serviceOptional')}/>
-                {services.isPending ? <LoadingState/> : (
-                    <ChipGroup value={form.serviceId != null ? String(form.serviceId) : ''} onChange={chooseService}
-                               options={[{value: '', label: t('missionCreate.noService')},
-                                   ...(services.data ?? []).filter(service => service.active).map(service => ({value: String(service.id), label: serviceName(service)}))]}/>
-                )}
-                <AppText variant="small" style={styles.label}>{t('missions.type')}</AppText>
-                <ChipGroup value={form.missionType} onChange={value => set('missionType', value)}
-                           options={missionTypes.map(type => ({value: type, label: displayLabel(type)}))}/>
-                {errors.missionType ? <AppText variant="caption" style={styles.error}>{errors.missionType}</AppText> : null}
-            </Card>
+            <MissionBookingOptionsCard
+                form={form}
+                errors={errors}
+                services={services.data ?? []}
+                servicesLoading={services.isPending}
+                initialListing={initialListing}
+                isEditing={Boolean(mission)}
+                onChange={setForm}
+            />
 
             <Card>
                 <TextField label={t('missionForm.title')} value={form.title} onChangeText={value => set('title', value)} maxLength={180} error={errors.title}/>
@@ -235,9 +237,13 @@ function MissionForm({initial, mission}: { initial: MissionInput; mission?: Miss
             />
 
             <Card>
-                <AppText variant="small" style={styles.label}>{t('missionForm.priority')}</AppText>
-                <ChipGroup value={form.priority ?? 'NORMAL'} onChange={value => set('priority', value)}
-                           options={PRIORITIES.map(priority => ({value: priority, label: displayLabel(priority)}))}/>
+                <GlassSelectField<MissionPriority>
+                    label={t('missionForm.priority')}
+                    sheetTitle={t('missionForm.priority')}
+                    value={form.priority ?? 'NORMAL'}
+                    options={priorityOptions}
+                    onChange={value => set('priority', value)}
+                />
                 <TextField label={t('missionForm.notes')} value={form.notes ?? ''} onChangeText={value => set('notes', value)} multiline maxLength={2000}
                            error={errors.notes}/>
             </Card>
@@ -254,14 +260,45 @@ function MissionForm({initial, mission}: { initial: MissionInput; mission?: Miss
 }
 
 export function MissionCreateScreen() {
-    const {serviceId} = useLocalSearchParams<{ serviceId?: string }>();
+    const {serviceId, listingSlug, units, rfq} = useLocalSearchParams<{
+        serviceId?: string;
+        listingSlug?: string;
+        units?: string;
+        rfq?: string;
+    }>();
     const services = useServices();
+    const listingDetail = usePublicListingDetail(listingSlug);
     const id = serviceId ? Number(serviceId) : undefined;
     const service = services.data?.find(item => item.id === id);
-    // Wait for the catalogue when a service was chosen, so its duration and type seed the draft.
-    if (id && services.isPending) return <Screen><LoadingState/></Screen>;
-    const draft = newMissionDraft(new Date(), service?.id, service?.defaultDurationMinutes);
-    return <MissionForm initial={service ? {...draft, missionType: missionTypeForService(service.code, draft.missionType)} : draft}/>;
+
+    if ((id && services.isPending) || (listingSlug && listingDetail.isPending)) {
+        return <Screen><LoadingState/></Screen>;
+    }
+
+    const listing = listingDetail.data?.listing ?? null;
+    const draft = newMissionDraft(new Date(), listing?.categoryServiceId ?? service?.id, service?.defaultDurationMinutes);
+    const parsedUnits = units ? Number(units) : undefined;
+    const minUnits = Number(listing?.minBookingUnits || 1);
+
+    const seeded: MissionInput = listing
+        ? {
+              ...draft,
+              title: listing.title,
+              missionType: listing.missionType,
+              listingId: listing.id,
+              bookingUnits: parsedUnits && Number.isFinite(parsedUnits) ? Math.max(parsedUnits, minUnits) : minUnits,
+          }
+        : rfq === '1' || rfq === 'true'
+          ? {
+                ...draft,
+                openRfq: true,
+                missionType: service ? missionTypeForService(service.code, draft.missionType) : draft.missionType,
+            }
+          : service
+            ? {...draft, missionType: missionTypeForService(service.code, draft.missionType)}
+            : draft;
+
+    return <MissionForm initial={seeded} initialListing={listing}/>;
 }
 
 export function MissionEditScreen() {
@@ -274,14 +311,15 @@ export function MissionEditScreen() {
 }
 
 const styles = StyleSheet.create({
-    label: {fontWeight: '600', color: colors.text, marginTop: spacing.xs},
     error: {color: colors.danger},
+    dateField: {gap: spacing.xs},
     dateRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: spacing.sm},
     dateLabel: {fontWeight: '600', color: colors.text},
+    pickerAlign: {marginLeft: 'auto'},
     windowsSection: {gap: spacing.xs, paddingTop: spacing.xs, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border},
     windowsHeader: {flexDirection: 'row', alignItems: 'center', gap: spacing.xs},
     windowsRow: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs},
-    windowChip: {borderRadius: radius.control, borderWidth: 1, borderColor: colors.inputBorder, backgroundColor: colors.surface, paddingHorizontal: spacing.md, paddingVertical: spacing.xs},
+    windowChip: {minHeight: 36, justifyContent: 'center', borderRadius: radius.control, borderWidth: 1, borderColor: colors.inputBorder, backgroundColor: colors.surface, paddingHorizontal: spacing.md, paddingVertical: spacing.sm},
     windowChipActive: {backgroundColor: colors.slateDark, borderColor: colors.slateDark},
     windowChipText: {fontSize: font.caption, fontWeight: '600', color: colors.text},
     windowChipTextActive: {color: colors.white},

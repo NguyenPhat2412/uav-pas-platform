@@ -47,12 +47,19 @@ function StarRow({
     );
 }
 
-export function CustomerHandoverReviewCard({missionId}: { missionId: number }) {
+export function CustomerHandoverReviewCard({
+    missionId,
+    isMarketplace = false,
+}: {
+    missionId: number;
+    isMarketplace?: boolean;
+}) {
     const {t} = useI18n();
     const toast = useToast();
     const query = useMissionReview(missionId, true);
     const actions = useMissionActions();
     const review = query.data;
+    const lockedAccepted = Boolean(review?.reviewed && review.deliverablesAccepted);
 
     const [overrides, setOverrides] = useState<{
         overall?: number;
@@ -67,7 +74,7 @@ export function CustomerHandoverReviewCard({missionId}: { missionId: number }) {
         overrides.dataQuality ?? (review?.reviewed ? (review.dataQualityRating ?? review.overallRating ?? 5) : 5);
     const timeliness =
         overrides.timeliness ?? (review?.reviewed ? (review.timelinessRating ?? review.overallRating ?? 5) : 5);
-    const accepted = overrides.accepted ?? (review?.reviewed ? review.deliverablesAccepted : true);
+    const accepted = lockedAccepted ? true : (overrides.accepted ?? (review?.reviewed ? review.deliverablesAccepted : true));
     const comment = overrides.comment ?? (review?.reviewed ? (review.comment ?? '') : '');
     const AcceptIcon = accepted ? CheckSquare : Square;
 
@@ -131,13 +138,23 @@ export function CustomerHandoverReviewCard({missionId}: { missionId: number }) {
             />
 
             <Pressable
+                disabled={lockedAccepted}
                 accessibilityRole="checkbox"
-                accessibilityState={{checked: accepted}}
+                accessibilityState={{checked: accepted, disabled: lockedAccepted}}
                 onPress={() => setOverrides(prev => ({...prev, accepted: !accepted}))}
-                style={({pressed}) => [styles.acceptRow, pressed && styles.pressed]}>
+                style={({pressed}) => [styles.acceptRow, pressed && !lockedAccepted && styles.pressed]}>
                 <AcceptIcon size={20} color={accepted ? colors.primary : colors.slate}/>
                 <AppText variant="small" style={styles.flex}>{t('capabilities.review.acceptDeliverables')}</AppText>
             </Pressable>
+            {isMarketplace ? (
+                <AppText variant="caption">
+                    {lockedAccepted
+                        ? t('mobile.escrow.acceptedLockedHint')
+                        : accepted
+                          ? t('mobile.escrow.acceptReleaseHint')
+                          : t('mobile.escrow.rejectDisputeHint')}
+                </AppText>
+            ) : null}
 
             <TextField
                 label={t('capabilities.review.commentLabel')}

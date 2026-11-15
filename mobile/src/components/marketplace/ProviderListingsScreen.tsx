@@ -1,0 +1,290 @@
+import React, {useState} from 'react';
+import {StyleSheet, View} from 'react-native';
+import {Award, Layers, Package, Pause, Plane, Play, Plus, Send, Tag, X} from 'lucide-react-native';
+import {
+    AppText,
+    Badge,
+    Button,
+    Card,
+    EmptyState,
+    LoadingState,
+    Screen,
+    SectionTitle,
+    TextField,
+} from '@/components/ui';
+import {GlassSelectCards, GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
+import {
+    useMyProviderListings,
+    useMyProviderProfile,
+    useProviderStudioMutations,
+} from '@/hooks/marketplace/useProviderStudio';
+import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+import {useI18n} from '@/providers/I18nContext';
+import {useToast} from '@/providers/ToastContext';
+import {
+    extractActionableError,
+    formatVndCompact,
+    initialListingForm,
+    LISTING_TYPE_OPTIONS,
+    listingTypeLabel,
+    moderationStatusLabel,
+    PRICING_MODEL_OPTIONS,
+    pricingUnitLabel,
+} from '@/shared/forms/marketplace/marketplace-forms';
+import {missionTypes} from '@/shared/forms/mission/mission-form';
+import {displayLabel} from '@/shared/lib/presentation';
+import type {
+    ListingType,
+    MarketplaceListingUpsertInput,
+    PricingModel,
+} from '@/shared/types/marketplace/marketplace.types';
+import type {MissionType} from '@/shared/types/mission/mission.types';
+import {colors, spacing} from '@/styles/tokens';
+
+export function ProviderListingsScreen() {
+    const {t} = useI18n();
+    const toast = useToast();
+    const {defaultServiceRadiusKm} = useSiteInfo();
+    const profileQuery = useMyProviderProfile();
+    const listingsQuery = useMyProviderListings();
+    const mutations = useProviderStudioMutations();
+
+    const [showCreate, setShowCreate] = useState(false);
+    const [form, setForm] = useState<MarketplaceListingUpsertInput>(() =>
+        initialListingForm(profileQuery.data?.province ?? 'Hà Nội', defaultServiceRadiusKm),
+    );
+
+    const set = <K extends keyof MarketplaceListingUpsertInput>(
+        key: K,
+        value: MarketplaceListingUpsertInput[K],
+    ) => setForm(prev => ({...prev, [key]: value}));
+
+    const typeOptions: GlassOption<ListingType>[] = LISTING_TYPE_OPTIONS.map(opt => ({
+        value: opt.value,
+        label: opt.label,
+        description: opt.hint,
+        icon:
+            opt.value === 'FLIGHT_SERVICE'
+                ? Plane
+                : opt.value === 'WET_LEASE'
+                  ? Award
+                  : Package,
+    }));
+
+    const missionOptions: GlassOption<MissionType>[] = missionTypes.map(type => ({
+        value: type,
+        label: displayLabel(type),
+        icon: Layers,
+    }));
+
+    const pricingOptions: GlassOption<PricingModel>[] = PRICING_MODEL_OPTIONS.map(opt => ({
+        value: opt.value,
+        label: opt.label,
+        badge: `/${opt.unitShort}`,
+        icon: Tag,
+    }));
+
+    const submitListing = () => {
+        if (!form.title.trim()) {
+            toast.show(t('mobile.provider.listingTitleRequired'), 'error');
+            return;
+        }
+        mutations.createListing.mutate(
+            {
+                ...form,
+                title: form.title.trim(),
+                province: form.province.trim() || 'Hà Nội',
+                submitForReview: true,
+            },
+            {
+                onSuccess: () => {
+                    setShowCreate(false);
+                    setForm(
+                        initialListingForm(
+                            profileQuery.data?.province ?? 'Hà Nội',
+                            defaultServiceRadiusKm,
+                        ),
+                    );
+                    toast.show(t('mobile.provider.listingCreatedToast'), 'success');
+                },
+                onError: err =>
+                    toast.show(
+                        extractActionableError(err, t('mobile.provider.saveError')),
+                        'error',
+                    ),
+            },
+        );
+    };
+
+    const listings = listingsQuery.data ?? [];
+
+    return (
+        <Screen
+            onRefresh={() => void listingsQuery.refetch()}
+            refreshing={listingsQuery.isRefetching}>
+            <Button
+                icon={showCreate ? X : Plus}
+                tone={showCreate ? 'secondary' : 'primary'}
+                label={
+                    showCreate
+                        ? t('common.cancel')
+                        : t('mobile.provider.newListingBtn')
+                }
+                onPress={() => setShowCreate(prev => !prev)}
+            />
+
+            {showCreate ? (
+                <Card>
+                    <SectionTitle title={t('mobile.provider.newListingBtn')}/>
+                    <GlassSelectCards<ListingType>
+                        label={t('mobile.marketplace.leaseTypeLabel')}
+                        columns={1}
+                        value={form.listingType}
+                        options={typeOptions}
+                        onChange={val => set('listingType', val)}
+                    />
+                    <GlassSelectField<MissionType>
+                        label={t('missions.type')}
+                        sheetTitle={t('missions.type')}
+                        value={form.missionType}
+                        options={missionOptions}
+                        onChange={val => set('missionType', val)}
+                    />
+                    <GlassSelectField<PricingModel>
+                        label={t('mobile.provider.pricingModelLabel')}
+                        sheetTitle={t('mobile.provider.pricingModelLabel')}
+                        value={form.pricingModel}
+                        options={pricingOptions}
+                        onChange={val => set('pricingModel', val)}
+                    />
+                    <TextField
+                        label={t('missionForm.title')}
+                        value={form.title}
+                        onChangeText={val => set('title', val)}
+                        maxLength={160}
+                    />
+                    <TextField
+                        label={t('mobile.provider.summaryLabel')}
+                        value={form.summary ?? ''}
+                        onChangeText={val => set('summary', val)}
+                        maxLength={280}
+                    />
+                    <View style={styles.row}>
+                        <View style={styles.flex}>
+                            <TextField
+                                label={t('mobile.provider.basePriceLabel')}
+                                keyboardType="number-pad"
+                                value={String(form.basePriceVnd)}
+                                onChangeText={val => set('basePriceVnd', Number(val) || 0)}
+                            />
+                        </View>
+                        <View style={styles.flex}>
+                            <TextField
+                                label={t('mobile.provider.minUnitsLabel')}
+                                keyboardType="decimal-pad"
+                                value={String(form.minBookingUnits ?? 1)}
+                                onChangeText={val => set('minBookingUnits', Number(val) || 1)}
+                            />
+                        </View>
+                    </View>
+                    <TextField
+                        label={t('mobile.marketplace.equipmentLabel')}
+                        value={form.equipmentSpecs ?? ''}
+                        onChangeText={val => set('equipmentSpecs', val)}
+                    />
+                    <TextField
+                        label={t('mobile.marketplace.deliverablesLabel')}
+                        value={form.deliverablesSummary ?? ''}
+                        onChangeText={val => set('deliverablesSummary', val)}
+                    />
+                    <Button
+                        icon={Send}
+                        loading={mutations.createListing.isPending}
+                        label={t('mobile.provider.publishListingBtn')}
+                        onPress={submitListing}
+                    />
+                </Card>
+            ) : null}
+
+            <SectionTitle
+                title={t('mobile.provider.myListingsTitle', {count: listings.length})}
+            />
+
+            {listingsQuery.isPending ? (
+                <LoadingState/>
+            ) : listings.length === 0 ? (
+                <EmptyState icon={Layers} message={t('mobile.provider.noListings')}/>
+            ) : (
+                listings.map(item => (
+                    <Card key={item.id}>
+                        <View style={styles.badgeRow}>
+                            <Badge
+                                label={listingTypeLabel(item.listingType)}
+                                background={colors.slateLight}
+                                color={colors.slateDark}
+                            />
+                            <Badge
+                                label={moderationStatusLabel(item.moderationStatus)}
+                                background={
+                                    item.moderationStatus === 'PUBLISHED'
+                                        ? colors.primaryLight
+                                        : item.moderationStatus === 'REJECTED'
+                                          ? colors.dangerLight
+                                          : colors.warningLight
+                                }
+                                color={
+                                    item.moderationStatus === 'PUBLISHED'
+                                        ? colors.primary
+                                        : item.moderationStatus === 'REJECTED'
+                                          ? colors.danger
+                                          : colors.warning
+                                }
+                            />
+                        </View>
+                        <AppText variant="title">{item.title}</AppText>
+                        <AppText variant="title" style={styles.price}>
+                            {formatVndCompact(item.basePriceVnd)} /{' '}
+                            {pricingUnitLabel(item.pricingModel)}
+                        </AppText>
+                        {item.moderationNote ? (
+                            <AppText variant="caption" style={styles.danger}>
+                                {item.moderationNote}
+                            </AppText>
+                        ) : null}
+                        {(item.moderationStatus === 'PUBLISHED' ||
+                            item.moderationStatus === 'PAUSED') && (
+                            <Button
+                                size="sm"
+                                tone="secondary"
+                                icon={item.moderationStatus === 'PAUSED' ? Play : Pause}
+                                loading={
+                                    mutations.toggleListingPause.isPending &&
+                                    mutations.toggleListingPause.variables === item.id
+                                }
+                                label={
+                                    item.moderationStatus === 'PAUSED'
+                                        ? t('mobile.provider.resumeListingBtn')
+                                        : t('mobile.provider.pauseListingBtn')
+                                }
+                                onPress={() => mutations.toggleListingPause.mutate(item.id)}
+                            />
+                        )}
+                    </Card>
+                ))
+            )}
+        </Screen>
+    );
+}
+
+const styles = StyleSheet.create({
+    row: {flexDirection: 'row', gap: spacing.sm},
+    flex: {flex: 1},
+    badgeRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        gap: spacing.xs,
+    },
+    price: {color: colors.primary, fontWeight: '700'},
+    danger: {color: colors.danger, fontWeight: '600'},
+});

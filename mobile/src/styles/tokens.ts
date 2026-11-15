@@ -22,6 +22,12 @@ export const colors = {
     warning: '#b54708',
     warningLight: '#fffaeb',
     white: '#ffffff',
+    glassSurface: 'rgba(255, 255, 255, 0.86)',
+    glassSurfaceSelected: 'rgba(253, 242, 242, 0.94)',
+    glassBorder: 'rgba(203, 213, 225, 0.72)',
+    glassBorderSelected: 'rgba(171, 37, 35, 0.55)',
+    glassSheetSurface: 'rgba(250, 246, 246, 0.97)',
+    sheetBackdrop: 'rgba(15, 23, 42, 0.42)',
 } as const;
 
 /** App background, top to bottom: a clear brand red tint under the header, warm ivory, then cool slate by the tab bar. */

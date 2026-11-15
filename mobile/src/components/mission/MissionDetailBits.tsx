@@ -1,9 +1,11 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {AppText, Card, LoadingState, SectionTitle} from '@/components/ui';
+import {ShieldAlert} from 'lucide-react-native';
+import {AppText, Badge, Card, LoadingState, SectionTitle} from '@/components/ui';
 import {Verdict} from '@/components/weather/WeatherCard';
 import {useMissionWeather} from '@/hooks/weather/useWeather';
 import {useI18n} from '@/providers/I18nContext';
+import type {AirspaceCheckResult} from '@/shared/types/airspace/airspace.types';
 import type {Mission} from '@/shared/types/mission/mission.types';
 import {progressStep} from '@/utils/mission/status';
 import {colors, spacing} from '@/styles/tokens';
@@ -49,6 +51,34 @@ export function MissionSiteWeather({mission}: { mission: Mission }) {
                         ))}
                     </View>
                 ) : <AppText variant="small">{t('weather.preflight.loadError')}</AppText>}
+        </Card>
+    );
+}
+
+/** Airspace restriction / violation notice card for MissionDetailScreen. */
+export function MissionAirspaceCard({result}: { result?: AirspaceCheckResult | null }) {
+    const {t} = useI18n();
+    if (!result || result.violations.length === 0) return null;
+    return (
+        <Card>
+            <SectionTitle
+                title={t('mobile.airspace.title')}
+                action={
+                    <Badge
+                        icon={ShieldAlert}
+                        label={
+                            result.blocked ? t('mobile.airspace.clearance.BLOCKED')
+                                : result.requiresPermit ? t('mobile.airspace.clearance.PERMIT_REQUIRED')
+                                    : t('mobile.airspace.clearance.CAUTION')
+                        }
+                        background={result.blocked ? colors.dangerLight : colors.warningLight}
+                        color={result.blocked ? colors.danger : colors.warning}
+                    />
+                }
+            />
+            {result.violations.map(v => (
+                <AppText key={v.zoneId} variant="small">• {v.name}: {v.message}</AppText>
+            ))}
         </Card>
     );
 }

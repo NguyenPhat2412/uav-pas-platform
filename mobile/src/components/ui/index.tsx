@@ -19,6 +19,7 @@ import {
     ViewStyle,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets, type Edge} from 'react-native-safe-area-context';
+import {usePathname} from 'expo-router';
 import {AlertTriangle, Eye, EyeOff, Inbox, type LucideIcon} from 'lucide-react-native';
 import {GlassSurface, liquidGlass} from './Glass';
 import {colors, font, radius, spacing} from '@/styles/tokens';
@@ -91,9 +92,10 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
     const anchor = useRef<React.ComponentRef<typeof View>>(null);
     const scrolled = useRef(0);
     const insets = useSafeAreaInsets();
+    const pathname = usePathname();
+    const isTabRoot = /^\/(customer|operations)\/(home|missions|services|support|account|sar|fleet|weather)$/.test(pathname);
     const top = edges.includes('top') ? insets.top : 0;
     const reveal = useCallback(() => {
-        // Next frame: on focus the field is not yet the first responder.
         requestAnimationFrame(() => {
             const field = TextInput.State.currentlyFocusedInput();
             const keyboard = Keyboard.metrics();
@@ -101,7 +103,6 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
             if (!field || !keyboard || !target || !Keyboard.isVisible()) return;
             target.measureInWindow((_x, y, _width, height) => field.measureInWindow((_fx, fieldY) => {
                 const hidden = y + height + spacing.md - keyboard.screenY;
-                // Never so far that the field being typed in (and its label above it) leaves the top of the screen.
                 const room = fieldY - 28 - top - spacing.sm;
                 const by = Math.min(hidden, room);
                 if (by > 0) scrollRef.current?.scrollTo({y: scrolled.current + by, animated: true});
@@ -113,6 +114,7 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
         return () => shown.remove();
     }, [reveal]);
     const keyboardReveal = useMemo(() => ({reveal, anchor}), [reveal]);
+    const bottomPad = insets.bottom + (isTabRoot ? 128 : spacing.xl);
     const column = (
         <View style={[styles.column, {maxWidth}, contentStyle]}>
             <OfflineBanner/>
@@ -122,18 +124,15 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
     return (
         <SafeAreaView edges={edges} style={styles.screen}>
             <AppBackground/>
-            {/* A scroll view already insets itself for the keyboard; padding here as well would lift the form twice. */}
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' && !scroll ? 'padding' : undefined} style={styles.flex}>
                 {scroll ? (
                     <ScrollView
                         ref={scrollRef}
-                        onScroll={event => {
-                            scrolled.current = event.nativeEvent.contentOffset.y;
-                        }}
+                        onScroll={event => { scrolled.current = event.nativeEvent.contentOffset.y; }}
                         scrollEventThrottle={16}
                         contentInsetAdjustmentBehavior="automatic"
                         automaticallyAdjustKeyboardInsets
-                        contentContainerStyle={styles.content}
+                        contentContainerStyle={[styles.content, {paddingBottom: bottomPad}]}
                         keyboardShouldPersistTaps="handled"
                         refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary}/> : undefined}>
                         <KeyboardReveal.Provider value={keyboardReveal}>{column}</KeyboardReveal.Provider>
@@ -336,14 +335,11 @@ export const styles = StyleSheet.create({
     inputError: {borderColor: colors.danger},
     error: {fontSize: font.caption, color: colors.danger},
     hint: {fontSize: font.caption, color: colors.muted},
-    badge: {
-        flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', borderRadius: radius.control,
-        paddingHorizontal: spacing.sm, paddingVertical: 3, maxWidth: '100%', flexShrink: 1,
-    },
-    badgeText: {fontSize: font.caption, fontWeight: '600', flexShrink: 1},
+    badge: {flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', borderRadius: radius.control, paddingHorizontal: 10, paddingVertical: 4, maxWidth: '100%'},
+    badgeText: {fontSize: font.caption, fontWeight: '600'},
     sectionTitle: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: spacing.sm},
     sectionTitleText: {flexShrink: 1},
-    state: {alignItems: 'center', justifyContent: 'center', gap: spacing.md, paddingVertical: spacing.xxl},
+    state: {alignItems: 'center', justifyContent: 'center', gap: spacing.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.xl, backgroundColor: colors.glassSurface, borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border},
     center: {textAlign: 'center'},
     chips: {gap: spacing.sm, paddingVertical: 2},
     chipsWrap: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs},
