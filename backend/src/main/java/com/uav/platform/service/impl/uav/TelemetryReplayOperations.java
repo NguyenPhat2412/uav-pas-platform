@@ -1,12 +1,12 @@
 package com.uav.platform.service.impl.uav;
 
-import com.uav.platform.dto.response.mission.FlightPlanResponse;
+import com.uav.platform.dto.response.mission.flightplan.FlightPlanResponse;
 import com.uav.platform.dto.response.uav.MissionTelemetryReplayResponse;
 import com.uav.platform.dto.response.uav.MissionTelemetryReplayResponse.ReplaySample;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.uav.Uav;
 import com.uav.platform.entity.uav.UavTelemetry;
-import com.uav.platform.service.impl.mission.FlightPlanOperations;
+import com.uav.platform.service.impl.mission.flightplan.FlightPlanOperations;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

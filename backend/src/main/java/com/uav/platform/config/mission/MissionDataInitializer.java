@@ -27,7 +27,7 @@ public class MissionDataInitializer implements ApplicationRunner {
     private void seed(String code, String name, String description, int minutes) {
         if (services.findByCode(code).isEmpty())
             services.save(
-                    com.uav.platform.service.impl.mission.ServiceOfferingOperations.create(
+                    com.uav.platform.service.impl.mission.catalog.ServiceOfferingOperations.create(
                             code, name, description, minutes));
     }
 }

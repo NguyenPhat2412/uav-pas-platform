@@ -2,14 +2,16 @@ package com.uav.platform.service.auth;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.uav.platform.dto.request.auth.LoginRequest;
-import com.uav.platform.dto.request.auth.RefreshTokenRequest;
-import com.uav.platform.dto.response.auth.AuthResponse;
+import com.uav.platform.dto.request.auth.session.LoginRequest;
+import com.uav.platform.dto.request.auth.session.RefreshTokenRequest;
+import com.uav.platform.dto.response.auth.session.AuthResponse;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
+import com.uav.platform.service.auth.session.AuthService;
+import com.uav.platform.service.auth.session.InvalidatedTokenService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

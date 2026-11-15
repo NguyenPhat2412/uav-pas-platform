@@ -17,7 +17,7 @@ import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.dashboard.DashboardService;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.specification.inventory.EquipmentSpecifications;
-import com.uav.platform.specification.mission.MissionSpecifications;
+import com.uav.platform.specification.mission.lifecycle.MissionSpecifications;
 import com.uav.platform.specification.uav.UavSpecifications;
 
 import org.springframework.data.jpa.domain.Specification;

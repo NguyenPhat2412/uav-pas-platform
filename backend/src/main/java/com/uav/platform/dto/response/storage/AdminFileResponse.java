@@ -22,7 +22,41 @@ public record AdminFileResponse(
         LinkedTo linkedTo,
         StoredFileStatus status,
         boolean deletable,
-        LocalDateTime createdAt) {
+        LocalDateTime createdAt,
+        String storageBackend,
+        String driveNodeCode,
+        String driveNodeName) {
+
+    public AdminFileResponse(
+            String id,
+            StoredFileModule module,
+            String fileName,
+            String contentType,
+            StoredFileKind kind,
+            long sizeBytes,
+            String storageKey,
+            Owner owner,
+            LinkedTo linkedTo,
+            StoredFileStatus status,
+            boolean deletable,
+            LocalDateTime createdAt) {
+        this(
+                id,
+                module,
+                fileName,
+                contentType,
+                kind,
+                sizeBytes,
+                storageKey,
+                owner,
+                linkedTo,
+                status,
+                deletable,
+                createdAt,
+                "R2",
+                null,
+                null);
+    }
 
     /** id is null when the uploader's account no longer exists; name then holds the stored username. */
     public record Owner(Long id, String name) {}

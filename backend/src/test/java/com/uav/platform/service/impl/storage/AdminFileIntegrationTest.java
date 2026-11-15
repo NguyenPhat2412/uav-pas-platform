@@ -39,7 +39,7 @@ import com.uav.platform.repository.training.TrainingAssetRepository;
 import com.uav.platform.repository.training.TrainingDocumentRepository;
 import com.uav.platform.repository.training.TrainingLessonRepository;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.impl.mission.MissionOperations;
+import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.media.ObjectStorageService;
 import com.uav.platform.service.storage.AdminFileService;
 

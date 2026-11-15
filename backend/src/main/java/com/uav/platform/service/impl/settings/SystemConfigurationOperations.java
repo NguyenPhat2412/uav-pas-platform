@@ -142,8 +142,48 @@ public final class SystemConfigurationOperations {
         String key = c.getConfigKey() == null ? "" : c.getConfigKey();
         if (typeOf(c) == SettingValueType.BOOLEAN || typeOf(c) == SettingValueType.ENUM)
             return false;
-        if ("billing.hourly_rate_vnd".equals(key)) return false;
+        if ("billing.hourly_rate_vnd".equals(key) || "billing.invoice_due_days".equals(key))
+            return false;
         return key.startsWith("billing.") || key.startsWith("contact.");
+    }
+
+    public static int intOrDefault(
+            com.uav.platform.service.settings.SystemConfigService cfg, String key, int fallback) {
+        if (cfg == null) return fallback;
+        try {
+            String raw = cfg.valueOrDefault(key, String.valueOf(fallback));
+            return raw == null || raw.isBlank() ? fallback : Integer.parseInt(raw.trim());
+        } catch (RuntimeException ex) {
+            return fallback;
+        }
+    }
+
+    public static long longOrDefault(
+            com.uav.platform.service.settings.SystemConfigService cfg, String key, long fallback) {
+        if (cfg == null) return fallback;
+        try {
+            String raw = cfg.valueOrDefault(key, String.valueOf(fallback));
+            return raw == null || raw.isBlank() ? fallback : Long.parseLong(raw.trim());
+        } catch (RuntimeException ex) {
+            return fallback;
+        }
+    }
+
+    public static boolean boolOrDefault(
+            com.uav.platform.service.settings.SystemConfigService cfg,
+            String key,
+            boolean fallback) {
+        if (cfg == null) return fallback;
+        try {
+            String raw = cfg.valueOrDefault(key, String.valueOf(fallback));
+            if (raw == null || raw.isBlank()) return fallback;
+            String trimmed = raw.trim();
+            if ("true".equalsIgnoreCase(trimmed)) return true;
+            if ("false".equalsIgnoreCase(trimmed)) return false;
+            return fallback;
+        } catch (RuntimeException ex) {
+            return fallback;
+        }
     }
 
     /** Validates a candidate value against the setting's declared type; returns the stored form. */

@@ -63,4 +63,13 @@ public interface MissionRepository
     @Query(
             "select m from Mission m where m.status <> com.uav.platform.enums.mission.MissionStatus.DRAFT")
     List<Mission> findAllNonDraftWithAssociations();
+
+    @EntityGraph(attributePaths = {"uav", "operator", "station", "customer", "listing", "provider"})
+    List<Mission> findByProviderIdOrderByCreatedAtDesc(Long providerId);
+
+    @EntityGraph(attributePaths = {"customer", "service"})
+    @Query(
+            "select m from Mission m where m.providerResponseStatus = com.uav.platform.enums.marketplace.ProviderOrderStatus.OPEN_RFQ and m.status in :openStatuses order by m.createdAt desc")
+    List<Mission> findOpenRfqMissions(
+            @Param("openStatuses") Collection<MissionStatus> openStatuses);
 }

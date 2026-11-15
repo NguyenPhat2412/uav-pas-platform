@@ -22,4 +22,7 @@ public interface EquipmentRepository
     @EntityGraph(attributePaths = {"station"})
     @Query("select e from Equipment e")
     List<Equipment> findAllWithStation();
+
+    @EntityGraph(attributePaths = {"station"})
+    List<Equipment> findByProviderIdOrderByIdDesc(Long providerId);
 }

@@ -9,14 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
 import com.uav.platform.controller.maintenance.MaintenanceController;
-import com.uav.platform.controller.user.UserController;
+import com.uav.platform.controller.user.account.UserController;
 import com.uav.platform.dto.request.maintenance.MaintenanceScheduleQueryRequest;
 import com.uav.platform.dto.request.maintenance.RepairOrderQueryRequest;
 import com.uav.platform.enums.maintenance.DueStatus;
 import com.uav.platform.enums.maintenance.RepairStatus;
 import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.impl.user.UserServiceImpl;
+import com.uav.platform.service.impl.user.account.UserServiceImpl;
 import com.uav.platform.service.maintenance.MaintenanceService;
 
 import org.junit.jupiter.api.BeforeEach;

@@ -3,7 +3,7 @@ package com.uav.platform.entity.user;
 import com.uav.platform.common.entity.BaseEntity;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.service.impl.user.UserAccountPersistenceListener;
+import com.uav.platform.service.impl.user.account.UserAccountPersistenceListener;
 
 import jakarta.persistence.*;
 

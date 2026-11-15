@@ -1,5 +1,6 @@
 package com.uav.platform.service.impl.settings;
 
+import com.uav.platform.dto.record.settings.CachedSettingValue;
 import com.uav.platform.dto.request.settings.UpdateConfigurationRequest;
 import com.uav.platform.dto.response.settings.PublicSiteInfoResponse;
 import com.uav.platform.dto.response.settings.SystemConfigurationHistoryResponse;
@@ -24,15 +25,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Transactional
 public class SystemConfigServiceImpl implements SystemConfigService {
 
+    private static final long CACHE_TTL_NANOS = 5_000_000_000L;
+
     private final SystemConfigurationRepository configRepository;
     private final SystemConfigMapper systemConfigMapper;
     private final SystemConfigurationHistoryRepository historyRepository;
     private final AuditLogService auditLogService;
+    private final ConcurrentHashMap<String, CachedSettingValue> valueCache =
+            new ConcurrentHashMap<>();
 
     public SystemConfigServiceImpl(SystemConfigurationRepository configRepository) {
         this(
@@ -72,10 +78,19 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     @Override
     @Transactional(readOnly = true)
     public String valueOrDefault(String key, String fallback) {
-        return configRepository
-                .findByConfigKey(key)
-                .map(SystemConfiguration::getConfigValue)
-                .orElse(fallback);
+        if (key == null) return fallback;
+        long now = System.nanoTime();
+        CachedSettingValue cached = valueCache.get(key);
+        if (cached != null && now < cached.expiresAtNanos()) {
+            return cached.value();
+        }
+        var found = configRepository.findByConfigKey(key).map(SystemConfiguration::getConfigValue);
+        if (found.isPresent()) {
+            valueCache.put(key, new CachedSettingValue(found.get(), now + CACHE_TTL_NANOS));
+            return found.get();
+        }
+        valueCache.remove(key);
+        return fallback;
     }
 
     private SystemConfiguration find(String key) {
@@ -132,6 +147,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
         }
         cfg.setUpdatedBy(actor);
         SystemConfiguration saved = configRepository.save(cfg);
+        valueCache.put(key, new CachedSettingValue(value, System.nanoTime() + CACHE_TTL_NANOS));
 
         if (changed) {
             if (historyRepository != null)

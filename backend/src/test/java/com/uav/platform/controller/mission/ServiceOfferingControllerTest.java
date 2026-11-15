@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.controller.mission.catalog.ServiceOfferingController;
 import com.uav.platform.entity.mission.ServiceOffering;
 import com.uav.platform.enums.audit.*;
 import com.uav.platform.enums.inventory.*;
@@ -27,7 +28,7 @@ class ServiceOfferingControllerTest {
 
         var response =
                 new ServiceOfferingController(
-                                new com.uav.platform.service.impl.mission
+                                new com.uav.platform.service.impl.mission.catalog
                                         .ServiceOfferingServiceImpl(repository))
                         .list();
 
@@ -40,13 +41,14 @@ class ServiceOfferingControllerTest {
     void invalidDurationIsRejectedBeforePersistence() {
         var repository = mock(ServiceOfferingRepository.class);
         var service =
-                new com.uav.platform.service.impl.mission.ServiceOfferingServiceImpl(repository);
+                new com.uav.platform.service.impl.mission.catalog.ServiceOfferingServiceImpl(
+                        repository);
         org.junit.jupiter.api.Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () ->
                         service.create(
-                                new com.uav.platform.dto.request.mission.ServiceOfferingRequest(
-                                        "BAD", "Invalid", null, 0)));
+                                new com.uav.platform.dto.request.mission.catalog
+                                        .ServiceOfferingRequest("BAD", "Invalid", null, 0)));
         verify(repository, never()).save(any());
     }
 
@@ -58,12 +60,14 @@ class ServiceOfferingControllerTest {
                         java.util.Optional.of(
                                 new ServiceOffering("EXISTING", "Existing", null, 30)));
         var service =
-                new com.uav.platform.service.impl.mission.ServiceOfferingServiceImpl(repository);
+                new com.uav.platform.service.impl.mission.catalog.ServiceOfferingServiceImpl(
+                        repository);
         org.junit.jupiter.api.Assertions.assertThrows(
                 IllegalStateException.class,
                 () ->
                         service.create(
-                                new com.uav.platform.dto.request.mission.ServiceOfferingRequest(
+                                new com.uav.platform.dto.request.mission.catalog
+                                        .ServiceOfferingRequest(
                                         "EXISTING", "Duplicate", null, 30)));
         verify(repository, never()).save(any());
     }

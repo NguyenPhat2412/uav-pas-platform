@@ -13,9 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.uav.platform.config.routes.ApiRoutes;
-import com.uav.platform.controller.user.UserProfileController;
-import com.uav.platform.dto.request.user.AccountDeletionRequest;
-import com.uav.platform.dto.response.user.AccountDeletionPolicyResponse;
+import com.uav.platform.controller.user.profile.UserProfileController;
+import com.uav.platform.dto.request.user.account.AccountDeletionRequest;
+import com.uav.platform.dto.response.user.account.AccountDeletionPolicyResponse;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.billing.InvoiceStatus;
@@ -30,12 +30,13 @@ import com.uav.platform.repository.notification.PushDeviceTokenRepository;
 import com.uav.platform.repository.permission.UserPermissionRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
-import com.uav.platform.service.auth.AuthSessionLock;
-import com.uav.platform.service.auth.RefreshTokenService;
-import com.uav.platform.service.auth.SessionTerminationService;
-import com.uav.platform.service.impl.user.UserProfileServiceImpl;
+import com.uav.platform.service.auth.session.AuthSessionLock;
+import com.uav.platform.service.auth.session.RefreshTokenService;
+import com.uav.platform.service.auth.session.SessionTerminationService;
+import com.uav.platform.service.impl.user.profile.UserProfileServiceImpl;
 import com.uav.platform.service.security.SessionRevocationService;
 import com.uav.platform.service.settings.SystemConfigService;
+import com.uav.platform.service.user.profile.UserProfileService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

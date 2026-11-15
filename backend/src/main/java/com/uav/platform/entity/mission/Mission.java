@@ -1,9 +1,13 @@
 package com.uav.platform.entity.mission;
 
 import com.uav.platform.common.entity.BaseEntity;
+import com.uav.platform.entity.marketplace.MarketplaceListing;
+import com.uav.platform.entity.marketplace.ProviderProfile;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.entity.uav.Uav;
 import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.marketplace.PricingModel;
+import com.uav.platform.enums.marketplace.ProviderOrderStatus;
 import com.uav.platform.enums.mission.*;
 
 import jakarta.persistence.*;
@@ -151,4 +155,38 @@ public class Mission extends BaseEntity {
 
     @Column(name = "permit_note", length = 1000)
     private String permitNote;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "provider_id")
+    private ProviderProfile provider;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "listing_id")
+    private MarketplaceListing listing;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "pricing_model_snapshot", length = 30)
+    private PricingModel pricingModelSnapshot;
+
+    @Column(name = "unit_price_snapshot_vnd", precision = 14, scale = 2)
+    private BigDecimal unitPriceSnapshotVnd;
+
+    @Column(name = "booking_units", precision = 10, scale = 2)
+    private BigDecimal bookingUnits;
+
+    @Column(name = "quoted_subtotal_vnd", precision = 14, scale = 2)
+    private BigDecimal quotedSubtotalVnd;
+
+    @Column(name = "security_deposit_vnd", precision = 14, scale = 2)
+    private BigDecimal securityDepositVnd;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider_response_status", nullable = false, length = 30)
+    private ProviderOrderStatus providerResponseStatus = ProviderOrderStatus.NOT_APPLICABLE;
+
+    @Column(name = "provider_response_note", length = 1000)
+    private String providerResponseNote;
+
+    @Column(name = "provider_responded_at")
+    private LocalDateTime providerRespondedAt;
 }

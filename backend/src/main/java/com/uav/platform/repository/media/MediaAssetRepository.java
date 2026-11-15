@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface MediaAssetRepository
         extends JpaRepository<MediaAsset, Long>, JpaSpecificationExecutor<MediaAsset> {
+    java.util.Optional<MediaAsset> findByObjectKey(String objectKey);
+
     @org.springframework.data.jpa.repository.Lock(
             jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     @org.springframework.data.jpa.repository.Query("select a from MediaAsset a where a.id=:id")

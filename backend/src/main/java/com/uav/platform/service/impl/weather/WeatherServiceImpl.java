@@ -29,7 +29,7 @@ import com.uav.platform.repository.station.StationRepository;
 import com.uav.platform.repository.weather.WeatherObservationCacheRepository;
 import com.uav.platform.repository.weather.WeatherProviderSettingsRepository;
 import com.uav.platform.service.audit.AuditLogService;
-import com.uav.platform.service.mission.MissionAccessService;
+import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.settings.SystemConfigService;
 import com.uav.platform.service.weather.WeatherService;
 
@@ -83,7 +83,7 @@ public class WeatherServiceImpl implements WeatherService {
                     + "&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,"
                     + "weather_code,cloud_cover,visibility,wind_speed_10m,wind_speed_80m,wind_speed_120m,"
                     + "wind_direction_10m,wind_gusts_10m&wind_speed_unit=ms&timezone=Asia%%2FHo_Chi_Minh"
-                    + "&forecast_days=16";
+                    + "&past_days=7&forecast_days=16";
     static final String NOAA_KP_URL =
             "https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json";
     static final String OPEN_WEATHER_URL =
@@ -199,6 +199,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public WeatherAssessmentResponse forecast(double lat, double lng, String at, Long serviceId) {
         requireCoordinates(lat, lng);
         Double serviceMaxWind =
@@ -207,7 +208,9 @@ public class WeatherServiceImpl implements WeatherService {
                         : services.findById(serviceId)
                                 .map(ServiceOffering::getMaxWindMs)
                                 .orElse(null);
-        return assess(lat, lng, parseTime(at), serviceMaxWind);
+        LocalDateTime parsed = parseTime(at);
+        LocalDateTime target = (parsed == null ? now() : parsed).truncatedTo(ChronoUnit.HOURS);
+        return evaluateTarget(lat, lng, target, serviceMaxWind);
     }
 
     /** Not transactional: a forecast fetched here is cached in its own write. */
@@ -295,12 +298,19 @@ public class WeatherServiceImpl implements WeatherService {
         LocalDateTime now = now();
         LocalDateTime target =
                 (at == null || at.isBefore(now) ? now : at).truncatedTo(ChronoUnit.HOURS);
-        boolean forecast = target.isAfter(now.truncatedTo(ChronoUnit.HOURS));
+        return evaluateTarget(lat, lng, target, serviceMaxWindMs);
+    }
+
+    private WeatherAssessmentResponse evaluateTarget(
+            double lat, double lng, LocalDateTime target, Double serviceMaxWindMs) {
+        LocalDateTime currentHour = now().truncatedTo(ChronoUnit.HOURS);
+        boolean forecast = target.isAfter(currentHour);
+        boolean isCurrentHour = target.equals(currentHour);
         SafetyThresholds limits = thresholds(serviceMaxWindMs);
         WeatherProviderSettings settings = currentSettings();
         String provider = settings.getProvider().name();
         String hour = hourKey(target);
-        WeatherForecastData data = load(lat, lng, hour, settings, !forecast);
+        WeatherForecastData data = load(lat, lng, hour, settings, isCurrentHour);
         if (data == null)
             return evaluator.unavailable(
                     limits, hour, forecast, provider, "WEATHER_SOURCE_UNAVAILABLE");
@@ -493,7 +503,7 @@ public class WeatherServiceImpl implements WeatherService {
         return slots;
     }
 
-    /** NOAA planetary Kp nearest to the hour (UTC); null when no reading is available. */
+    /** NOAA planetary Kp nearest to the hour (UTC) within {@link #KP_STALE_LIMIT}; null outside the feed window. */
     Double kpIndex(String hour) {
         List<KpReading> points = kpPoints();
         if (points == null || points.isEmpty()) return null;
@@ -503,7 +513,7 @@ public class WeatherServiceImpl implements WeatherService {
                         .withZoneSameInstant(ZoneOffset.UTC)
                         .toLocalDateTime();
         Double best = null;
-        long bestDistance = Long.MAX_VALUE;
+        long bestDistance = KP_STALE_LIMIT.toMinutes() + 1;
         for (KpReading point : points) {
             long distance = Math.abs(Duration.between(point.tagUtc(), targetUtc).toMinutes());
             if (distance < bestDistance) {

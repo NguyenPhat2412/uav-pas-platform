@@ -28,14 +28,14 @@ final class MissionHandoverTestData {
     }
 
     static void accept(
-            com.uav.platform.service.mission.MissionService missions,
+            com.uav.platform.service.mission.lifecycle.MissionService missions,
             Long id,
             org.springframework.security.core.Authentication actor) {
         var mission = missions.get(id, actor);
         if (!mission.operatorAccepted())
             missions.acceptOperator(
                     id,
-                    new com.uav.platform.dto.request.mission.MissionAcceptanceRequest(
+                    new com.uav.platform.dto.request.mission.lifecycle.MissionAcceptanceRequest(
                             mission.version()),
                     actor);
     }

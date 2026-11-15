@@ -19,7 +19,7 @@ import com.uav.platform.repository.mission.MissionMediaRepository;
 import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.dashboard.CustomerAnalyticsService;
-import com.uav.platform.specification.mission.MissionSpecifications;
+import com.uav.platform.specification.mission.lifecycle.MissionSpecifications;
 
 import lombok.RequiredArgsConstructor;
 

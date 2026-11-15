@@ -94,7 +94,8 @@ public class PermissionDataInitializer implements ApplicationRunner {
                     PermissionCode.MISSION_ASSIGN_UAV,
                     PermissionCode.MISSION_ASSIGN_OPERATOR,
                     PermissionCode.MISSION_STATUS_UPDATE,
-                    PermissionCode.MISSION_TIMELINE_VIEW);
+                    PermissionCode.MISSION_TIMELINE_VIEW,
+                    PermissionCode.MARKETPLACE_MODERATE);
         if (role == UserRole.ROLE_OPERATOR)
             return EnumSet.of(
                     PermissionCode.SUPPORT_MANAGE,

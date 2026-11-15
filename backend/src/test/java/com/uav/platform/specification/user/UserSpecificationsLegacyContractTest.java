@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
+import com.uav.platform.specification.user.account.UserSpecifications;
 
 import jakarta.persistence.criteria.*;
 

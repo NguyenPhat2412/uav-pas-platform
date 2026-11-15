@@ -156,6 +156,17 @@ class ArchitecturePackageTest {
                         "enums".equals(layer),
                         "Domain enums must be in the enums package: " + relative);
             }
+            Set<String> subpackagedFeatures =
+                    Set.of("mission", "billing", "marketplace", "auth", "user");
+            String feature = nested ? parts[5] : parts[4];
+            if (subpackagedFeatures.contains(feature)
+                    && Set.of("controller", "service", "dto", "mapper", "specification")
+                            .contains(layer)) {
+                assertTrue(
+                        parts.length >= (nested ? 8 : 7),
+                        "Large domain modules must organize classes into <feature>/<sub-domain> sub-packages: "
+                                + relative);
+            }
         }
     }
 
@@ -190,8 +201,8 @@ class ArchitecturePackageTest {
             }
             if (file.getFileName().toString().endsWith("Mapper.java")) {
                 assertTrue(
-                        relative.matches("com/uav/platform/mapper/[^/]+/[^/]+Mapper\\.java"),
-                        "Mappers must be in mapper/<feature>: " + relative);
+                        relative.matches("com/uav/platform/mapper/(?:[^/]+/)+[^/]+Mapper\\.java"),
+                        "Mappers must be in mapper/<feature>[/<sub-domain>]: " + relative);
             }
             if (file.getFileName().toString().endsWith("Controller.java")) {
                 assertFalse(

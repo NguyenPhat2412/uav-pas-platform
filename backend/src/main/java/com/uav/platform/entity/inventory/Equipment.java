@@ -1,6 +1,7 @@
 package com.uav.platform.entity.inventory;
 
 import com.uav.platform.common.entity.BaseEntity;
+import com.uav.platform.entity.marketplace.ProviderProfile;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.enums.inventory.*;
 
@@ -46,6 +47,10 @@ public class Equipment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "station_id")
     private Station station;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "provider_id")
+    private ProviderProfile provider;
 
     public Equipment(String name, EquipmentType type, String serialNumber, Station station) {
         this.name = name;

@@ -70,5 +70,8 @@ public enum PermissionCode {
     MISSION_STATUS_UPDATE,
     MISSION_MEDIA_VIEW,
     MISSION_MEDIA_UPLOAD,
-    MISSION_TIMELINE_VIEW
+    MISSION_TIMELINE_VIEW,
+    // Marketplace & Escrow (Phase 3)
+    MARKETPLACE_MODERATE,
+    PAYOUT_MANAGE
 }

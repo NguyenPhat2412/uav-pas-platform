@@ -24,4 +24,7 @@ public interface UavRepository extends JpaRepository<Uav, Long>, JpaSpecificatio
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from Uav u where u.id = :id")
     Optional<Uav> findByIdForUpdate(Long id);
+
+    @EntityGraph(attributePaths = {"station"})
+    List<Uav> findByProviderIdOrderByIdDesc(Long providerId);
 }

@@ -1,6 +1,7 @@
 package com.uav.platform.entity.station;
 
 import com.uav.platform.common.entity.BaseEntity;
+import com.uav.platform.entity.marketplace.ProviderProfile;
 import com.uav.platform.enums.station.*;
 
 import jakarta.persistence.*;
@@ -34,4 +35,8 @@ public class Station extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private StationStatus status = StationStatus.ACTIVE;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "provider_id")
+    private ProviderProfile provider;
 }

@@ -5,16 +5,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.uav.platform.common.constant.CoreConstants;
-import com.uav.platform.dto.request.auth.LoginRequest;
-import com.uav.platform.dto.request.auth.RegisterRequest;
-import com.uav.platform.dto.response.auth.AuthResponse;
-import com.uav.platform.dto.response.user.UserResponse;
+import com.uav.platform.dto.request.auth.session.LoginRequest;
+import com.uav.platform.dto.request.auth.session.RegisterRequest;
+import com.uav.platform.dto.response.auth.session.AuthResponse;
+import com.uav.platform.dto.response.user.account.UserResponse;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
-import com.uav.platform.service.impl.auth.AuthServiceImpl;
+import com.uav.platform.service.auth.session.AuthService;
+import com.uav.platform.service.auth.session.AuthSessionLock;
+import com.uav.platform.service.auth.session.RefreshTokenService;
+import com.uav.platform.service.impl.auth.session.AuthServiceImpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -353,8 +356,8 @@ class AuthServiceTest {
                         SystemException.class,
                         () ->
                                 service.refreshToken(
-                                        new com.uav.platform.dto.request.auth.RefreshTokenRequest(
-                                                "refresh-1")));
+                                        new com.uav.platform.dto.request.auth.session
+                                                .RefreshTokenRequest("refresh-1")));
         assertEquals("ACCOUNT_LOCKED", error.getCode());
         verify(refresh, never()).createRefreshToken(any());
         verifyNoInteractions(jwtTokenProvider);
@@ -394,7 +397,8 @@ class AuthServiceTest {
 
         var response =
                 service.refreshToken(
-                        new com.uav.platform.dto.request.auth.RefreshTokenRequest("refresh-ios"));
+                        new com.uav.platform.dto.request.auth.session.RefreshTokenRequest(
+                                "refresh-ios"));
 
         assertEquals("refresh-ios-2", response.refreshToken());
         verify(refresh, never()).createRefreshToken(any());

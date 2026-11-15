@@ -4,13 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.dto.request.mission.ServiceOfferingUpdateRequest;
-import com.uav.platform.dto.response.mission.ServiceOfferingResponse;
+import com.uav.platform.dto.request.mission.catalog.ServiceOfferingUpdateRequest;
+import com.uav.platform.dto.response.mission.catalog.ServiceOfferingResponse;
 import com.uav.platform.entity.mission.ServiceOffering;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.mission.ServiceOfferingRepository;
-import com.uav.platform.service.impl.mission.ServiceOfferingOperations;
-import com.uav.platform.service.impl.mission.ServiceOfferingServiceImpl;
+import com.uav.platform.service.impl.mission.catalog.ServiceOfferingOperations;
+import com.uav.platform.service.impl.mission.catalog.ServiceOfferingServiceImpl;
 
 import org.junit.jupiter.api.Test;
 

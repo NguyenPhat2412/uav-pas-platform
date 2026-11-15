@@ -5,8 +5,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
 
-import com.uav.platform.dto.request.mission.MissionCreateRequest;
-import com.uav.platform.dto.response.mission.MissionResponse;
+import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
+import com.uav.platform.dto.response.mission.lifecycle.MissionResponse;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.mission.MissionPriority;
@@ -16,7 +16,7 @@ import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.repository.billing.ServicePlanRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
-import com.uav.platform.service.mission.MissionService;
+import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.support.ServicePlanTestData;
 
 import org.junit.jupiter.api.BeforeEach;
