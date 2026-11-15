@@ -70,7 +70,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
                     aria-required={required}
                     aria-invalid={error ? true : undefined}
                     className={cn(
-                        'min-w-0 w-full h-11 px-3 rounded-control bg-card text-sm text-on-surface transition-colors duration-150 outline-none focus:outline-2 focus:outline-ring border border-border-input disabled:bg-slate-100 disabled:text-slate-500',
+                        'min-w-0 w-full h-11 pl-3 pr-9 appearance-none rounded-control bg-card text-sm text-on-surface transition-colors duration-150 outline-none focus:outline-2 focus:outline-ring border border-border-input disabled:bg-slate-100 disabled:text-slate-500',
                         error && 'border-danger focus:outline-danger',
                         className
                     )}

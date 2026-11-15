@@ -3,7 +3,7 @@
 import {createContext, useContext, useEffect} from 'react';
 import {usePathname, useRouter} from 'next/navigation';
 import {Menu} from 'lucide-react';
-import {AssistantWidget} from '@/components/assistant/AssistantWidget';
+import {AssistantWidget} from '@/components/assistant/widget/AssistantWidget';
 import {CustomerAccountMenu} from '@/components/customer/CustomerAccountMenu';
 import {CustomerNavSidebar} from '@/components/customer/CustomerNavSidebar';
 import {DispatchHotline} from '@/components/customer/DispatchHotline';

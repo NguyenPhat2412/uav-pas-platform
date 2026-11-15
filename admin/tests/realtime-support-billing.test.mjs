@@ -32,10 +32,10 @@ test('Admin support & billing components respect palette guardrails and <= 300 l
         'src/components/support/SupportThreadConversationPane.tsx',
         'src/components/support/AdminSupportQuickDock.tsx',
         'src/utils/support/support-format.ts',
-        'src/components/billing/PaymentGatewaySettingsSection.tsx',
-        'src/components/billing/AdminInvoiceDialogs.tsx',
-        'src/components/billing/AdminInvoicesPanel.tsx',
-        'src/components/billing/AdminTransactionsPanel.tsx',
+        'src/components/billing/reconciliation/PaymentGatewaySettingsSection.tsx',
+        'src/components/billing/invoices/AdminInvoiceDialogs.tsx',
+        'src/components/billing/invoices/AdminInvoicesPanel.tsx',
+        'src/components/billing/reconciliation/AdminTransactionsPanel.tsx',
     ];
 
     for (const rel of uiFiles) {

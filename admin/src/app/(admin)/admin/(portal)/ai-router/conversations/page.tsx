@@ -1,6 +1,6 @@
 'use client';
 
-import {AdminAiConversationsWorkspace} from '@/components/assistant/AdminRouterConsole';
+import {AdminAiConversationsWorkspace} from '@/components/assistant/console/AdminRouterConsole';
 
 export default function AdminAiConversationsRoutePage() {
     return <AdminAiConversationsWorkspace />;

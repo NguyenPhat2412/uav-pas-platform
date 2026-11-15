@@ -88,6 +88,13 @@
         "failed": "{count} tệp không xoá được:",
         "stop": "Dừng",
         "close": "Đóng"
+      },
+      "storage": {
+        "driveBadge": "Google Drive · {node}",
+        "r2Badge": "Cloudflare R2",
+        "moveAction": "Chuyển {name} sang Google Drive",
+        "movedToDrive": "Đã chuyển \"{name}\" sang Google Drive.",
+        "moveFailed": "Không chuyển được tệp sang Google Drive."
       }
     },
     "pages": {

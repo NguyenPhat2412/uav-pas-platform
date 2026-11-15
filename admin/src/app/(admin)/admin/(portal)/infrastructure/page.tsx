@@ -1,5 +1,5 @@
 import {AdminPage} from '@/components/layout/AdminPage';
-import {InfrastructureOverview} from '@/components/infrastructure/InfrastructureOverview';
+import {InfrastructureOverview} from '@/components/infrastructure/runtime/InfrastructureOverview';
 
 export default function Page() {
     return <AdminPage title="adminInfra.pages.overview" permission="USER_PERMISSION_MANAGE" activeResource="infrastructure">

@@ -87,7 +87,7 @@ test('customer quota consumer calls the controller quota route and forwards canc
     const {instance, calls} = await service('src/api/billing/customer-billing.api.ts', 'customerBillingService');
     const signal = new AbortController().signal;
     await instance.quota(signal);
-    assert.equal(calls[0].endpoint, controllerGet('billing/BillingController.java', 'getQuota'));
+    assert.equal(calls[0].endpoint, controllerGet('billing/invoice/BillingController.java', 'getQuota'));
     assert.equal(calls[0].options.signal, signal);
 });
 

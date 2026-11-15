@@ -6,7 +6,7 @@ import {useAdminAudit} from '@/hooks/audit/useAdminAudit';
 import {EmptyState, QueryState} from "@/components/data/WorkspaceState";
 import {Pagination} from "@/components/data/Pagination";
 import {Button} from "@/components/ui";
-import {Heatmap} from "@/components/dashboard/AdminCharts";
+import {Heatmap} from "@/components/dashboard/analytics/AdminCharts";
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import type {AuditFilters} from "@/types/admin";

@@ -22,12 +22,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref
     ) => {
         const baseStyles =
-            'rounded-control font-title-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed select-none focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2';
+            'rounded-control font-title-sm font-semibold inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap leading-tight transition-all duration-150 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed select-none focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2';
 
+        const hasExplicitHeight = /(?:^|\s)(?:min-)?h-\S+/.test(className ?? '');
         const sizes = {
-            sm: 'h-9 px-3 text-sm gap-1.5',
-            md: 'h-10 px-4 text-sm gap-2',
-            lg: 'h-14 px-6 text-body-lg gap-2.5',
+            sm: cn(!hasExplicitHeight && 'min-h-9 py-1.5', 'px-3 text-sm gap-1.5'),
+            md: cn(!hasExplicitHeight && 'min-h-10 py-2', 'px-4 text-sm gap-2'),
+            lg: cn(!hasExplicitHeight && 'min-h-14 py-3', 'px-6 text-body-lg gap-2.5'),
         };
 
         const variants = {

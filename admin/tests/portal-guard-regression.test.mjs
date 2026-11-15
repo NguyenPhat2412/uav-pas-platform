@@ -99,7 +99,7 @@ function harness(auth, search, storedDemo) {
         },
         './services/admin.service': {adminService: {}},
         '../services/admin.service': {adminService: {}},
-        '@/components/dashboard/AdminMonitoringCard': {AdminMonitoringCard: () => null},
+        '@/components/dashboard/overview/AdminMonitoringCard': {AdminMonitoringCard: () => null},
     };
     modules['@/components/ui'] = modules['@/components/ui'];
     modules['@/components/layout/AdminAppShell'] = modules['@/components/layout/AppShell'];
@@ -108,7 +108,7 @@ function harness(auth, search, storedDemo) {
     modules['@/api/dashboard/admin-dashboard.api'] = {adminDashboardService: {}};
     modules['@/api/audit/audit.api'] = {auditService: {}};
     modules['@/api/mission/missions.api'] = {missionService: {}};
-    modules['@/components/dashboard/AdminMonitoringCard'] = {AdminMonitoringCard: () => null};
+    modules['@/components/dashboard/overview/AdminMonitoringCard'] = {AdminMonitoringCard: () => null};
 
     function load(path) {
         const compiled = ts.transpileModule(source(path), {
@@ -255,7 +255,7 @@ for (const [available, total, expectedValue, expectedMeta] of [
         isAuthenticated: true, permissionsReady: true, allowed: true,
         summary: {totalUsers: 1, totalStations: 1, availableUavs: available, totalUavs: total, totalAuditEvents: 1}
     }, '', null);
-    const {Dashboard} = h.load('src/components/dashboard/AdminDashboard.tsx');
+    const {Dashboard} = h.load('src/components/dashboard/overview/AdminDashboard.tsx');
     content(Dashboard());
     const fleet = h.cards.find(card => card.label === 'UAV sẵn sàng');
     assert.ok(fleet);

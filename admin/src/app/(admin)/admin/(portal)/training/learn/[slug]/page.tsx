@@ -1,7 +1,7 @@
 'use client';
 
 import {Suspense, use} from 'react';
-import {AdminTrainingCoursePreview} from '@/components/training/AdminTrainingCoursePreview';
+import {AdminTrainingCoursePreview} from '@/components/training/catalog/AdminTrainingCoursePreview';
 
 /** An admin opening a course the way a learner sees it ("Xem như học viên"). */
 export default function AdminTrainingCoursePreviewRoutePage({params}: {params: Promise<{slug: string}>}) {

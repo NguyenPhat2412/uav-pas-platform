@@ -19,7 +19,7 @@ import {cn} from '@/lib/utils';
 import {toUserSlug} from '@/lib/url-slugs';
 import {useI18n} from '@/providers/I18nContext';
 import {avatarSrc} from '@/components/shared/Avatar';
-import {CustomerBillingProfileCard} from '@/components/billing/CustomerBillingProfileCard';
+import {CustomerBillingProfileCard} from '@/components/billing/invoices/CustomerBillingProfileCard';
 import {UserAccountActions, UserActivitySection} from '@/components/user/UserDetailSections';
 import {UserFormDrawer} from '@/components/user/UserFormDrawer';
 import {UsersToolbar} from '@/components/user/UsersToolbar';

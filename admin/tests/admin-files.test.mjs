@@ -103,11 +103,22 @@ test('Admin files: every module, kind and status has a label in vi, en and ja', 
 
 test('Admin files: the page sits in the infrastructure group behind USER_PERMISSION_MANAGE', async () => {
     const routes = await readFile(new URL('../src/config/sidebar-routes.ts', import.meta.url), 'utf8');
-    assert.match(routes, /href: '\/admin\/files',\s*key: 'files',\s*group: 'infrastructure',\s*icon: FolderOpen,\s*permission: 'USER_PERMISSION_MANAGE'/);
+    assert.match(routes, /href: '\/admin\/files',\s*key: 'files',\s*group: 'infrastructure',\s*(?:subGroup: 'dataComms',\s*)?icon: FolderOpen,\s*permission: 'USER_PERMISSION_MANAGE'/);
     const page = await readFile(new URL('../src/app/(admin)/admin/(portal)/files/page.tsx', import.meta.url), 'utf8');
     assert.match(page, /permission="USER_PERMISSION_MANAGE"/);
     for (const locale of ['vi', 'en', 'ja']) {
         const root = JSON.parse(await readFile(new URL(`../src/messages/${locale}.json`, import.meta.url), 'utf8'));
         assert.ok(root.adminNav.files, `adminNav.files in ${locale}`);
     }
+});
+
+test('Google Drive storage pool: trilingual i18n parity and API route contract', async () => {
+    const infra = async locale => JSON.parse(await readFile(new URL(`../src/messages/sections/adminInfra/${locale}.json`, import.meta.url), 'utf8')).adminInfra;
+    const [vi, en, ja] = await Promise.all(['vi', 'en', 'ja'].map(infra));
+    const keys = (node, prefix = '') => Object.entries(node).flatMap(([k, v]) =>
+        v && typeof v === 'object' ? keys(v, `${prefix}${k}.`) : [`${prefix}${k}`]).sort();
+    assert.deepEqual(keys(en.storage.pool), keys(vi.storage.pool));
+    assert.deepEqual(keys(ja.storage.pool), keys(vi.storage.pool));
+    const routes = await readFile(new URL('../src/lib/api/routes.ts', import.meta.url), 'utf8');
+    assert.match(routes, /storagePool:\s*'\/api\/v1\/admin\/storage-pool'/);
 });

@@ -3,15 +3,17 @@
 import {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {
-    ArrowDown, ArrowUp, ArrowUpDown, Eraser, ExternalLink, File as FileIcon,
+    ArrowDown, ArrowUp, ArrowUpDown, CloudUpload, Eraser, ExternalLink, File as FileIcon,
     FileImage, FileText, FileVideo, RefreshCw, Search, Trash2, type LucideIcon,
 } from 'lucide-react';
 import {Alert, Badge, type BadgeProps, Button, Card, FormField, Input, Select} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
 import {cn} from '@/lib/utils';
 import {useFileList, useFileSummary, useOpenStoredFile, useRefreshFiles} from '@/hooks/storage/useAdminFiles';
+import {useMigrateSingleFile, useStoragePoolOverview} from '@/hooks/storage/useStoragePool';
 import type {FileSortDirection, FileSortField, StoredFile, StoredFileKind, StoredFileModule, StoredFileStatus} from '@/types/storage/files.types';
 import {FILE_KINDS, FILE_MODULES, FILE_PAGE_SIZE, FILE_STATUSES, canDeleteFile, formatFileSize, linkHref, nextSort} from '@/utils/storage/files';
 import {AdminFileDeleteDialog, AdminFileSummaryCard} from './AdminFileDetailCard';
@@ -172,11 +174,30 @@ function FileTable({files, order, onSort, onDelete, busy}: {
 }) {
     const {t, formatDate, formatNumber} = useI18n();
     const [opening, setOpening] = useState<string | null>(null);
+    const [migratingId, setMigratingId] = useState<string | null>(null);
     const openStoredFile = useOpenStoredFile();
+    const poolOverview = useStoragePoolOverview();
+    const migrateSingle = useMigrateSingleFile();
+    const hasActiveDrive = (poolOverview.data?.driveActiveNodeCount ?? 0) > 0;
     const open = async (file: StoredFile) => {
         setOpening(file.id);
         await openStoredFile(file, t('admin.files.openFailed'));
         setOpening(null);
+    };
+    const moveFileToDrive = async (file: StoredFile) => {
+        setMigratingId(file.id);
+        try {
+            const res = await migrateSingle.mutateAsync({fileId: file.id, deleteSourceFromR2: false});
+            if (res.migratedCount > 0) {
+                toast.success(t('admin.files.storage.movedToDrive', {name: file.fileName}));
+            } else {
+                toast.error(t('admin.files.storage.moveFailed'));
+            }
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : t('admin.files.storage.moveFailed'));
+        } finally {
+            setMigratingId(null);
+        }
     };
     return (
         <div className={cn('overflow-x-auto', busy && 'opacity-70')} tabIndex={0} aria-label={t('admin.files.table')}>
@@ -190,20 +211,30 @@ function FileTable({files, order, onSort, onDelete, busy}: {
                     <SortHeader field="sizeBytes" label={t('admin.files.col.size')} order={order} onSort={onSort} className="w-28"/>
                     <SortHeader field="createdAt" label={t('admin.files.col.created')} order={order} onSort={onSort} className="w-36"/>
                     <th className="w-28 px-4 py-3">{t('admin.files.col.status')}</th>
-                    <th className="w-24 px-4 py-3 text-right">{t('admin.files.col.actions')}</th>
+                    <th className="w-28 px-4 py-3 text-right">{t('admin.files.col.actions')}</th>
                 </tr>
                 </thead>
                 <tbody>{files.map(file => {
                     const Icon = KIND_ICONS[file.kind] ?? FileIcon;
                     const href = linkHref(file.linkedTo);
                     const deletable = canDeleteFile(file);
+                    const onDrive = file.storageBackend === 'GOOGLE_DRIVE';
                     return (
                         <tr key={file.id} className="border-t border-slate-100 align-top">
                             <td className="px-4 py-3">
                                 <div className="flex min-w-0 items-start gap-2.5">
                                     <Icon size={18} className="mt-0.5 shrink-0 text-slate-400" aria-label={t(`admin.files.kind.${file.kind}`)}/>
                                     <div className="min-w-0">
-                                        <strong className="block break-all font-semibold text-slate-900">{file.fileName}</strong>
+                                        <div className="flex flex-wrap items-center gap-1.5">
+                                            <strong className="break-all font-semibold text-slate-900">{file.fileName}</strong>
+                                            <Badge variant={onDrive ? 'primary' : 'default'} size="sm" className="whitespace-nowrap">
+                                                {onDrive
+                                                    ? t('admin.files.storage.driveBadge', {
+                                                          node: file.driveNodeName || file.driveNodeCode || 'Drive',
+                                                      })
+                                                    : t('admin.files.storage.r2Badge')}
+                                            </Badge>
+                                        </div>
                                         <span className="block truncate font-mono text-[11px] text-slate-400" title={file.storageKey}>{file.storageKey}</span>
                                     </div>
                                 </div>
@@ -222,6 +253,15 @@ function FileTable({files, order, onSort, onDelete, busy}: {
                             <td className="px-4 py-3"><StatusBadge status={file.status}/></td>
                             <td className="px-4 py-3">
                                 <div className="flex justify-end gap-1">
+                                    {!onDrive && hasActiveDrive && file.status !== 'PENDING' && (
+                                        <Button type="button" variant="ghost" size="sm" onClick={() => void moveFileToDrive(file)}
+                                                disabled={migratingId === file.id}
+                                                aria-label={t('admin.files.storage.moveAction', {name: file.fileName})}
+                                                title={t('admin.files.storage.moveAction', {name: file.fileName})}
+                                                className="h-8 w-8 px-0 text-uav-blue hover:bg-uav-blue/10">
+                                            <CloudUpload size={15} aria-hidden="true"/>
+                                        </Button>
+                                    )}
                                     <Button type="button" variant="ghost" size="sm" onClick={() => void open(file)} disabled={opening === file.id}
                                             aria-label={t('admin.files.open', {name: file.fileName})} title={t('admin.files.open', {name: file.fileName})}
                                             className="h-8 w-8 px-0 text-slate-500 hover:text-slate-900">

@@ -1,7 +1,7 @@
 'use client';
 
 import {useState, type ReactNode} from 'react';
-import {Clock3, LocateFixed, MapPin, RadioTower} from 'lucide-react';
+import {CalendarDays, ChevronLeft, ChevronRight, Clock3, LocateFixed, MapPin, RadioTower} from 'lucide-react';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useMapConfig} from '@/lib/map-config';
@@ -10,11 +10,21 @@ import {useForecastAssessment, useForecastMany, useStationsWeather} from '@/hook
 import {PreflightWeatherCard} from '@/components/weather/PreflightWeatherCard';
 import {WeatherIcon} from '@/components/weather/WeatherIcon';
 import {WeatherPointMap, type WeatherMapPlace} from '@/components/weather/WeatherPointMap';
-import {localIso} from '@/utils/weather/flight-window';
+import {
+    WEATHER_DAY_OFFSETS,
+    WEATHER_HOUR_SLOTS,
+    WEATHER_MAX_DAY_OFFSET,
+    WEATHER_MIN_DAY_OFFSET,
+    buildWeatherSlotIso,
+    clampDayOffset,
+    dateAtDayOffset,
+    dayOffsetFromIso,
+    hourFromIso,
+    localDateIso,
+} from '@/utils/weather/flight-window';
 import {conditionOf, isDaytime} from '@/utils/weather/conditions';
 import type {WeatherAssessment} from '@/types/weather/weather.types';
 
-// Common flying areas; "home" is replaced by the platform's configured map centre.
 const PRESETS = [
     {key: 'home', lat: 0, lng: 0},
     {key: 'hanoi', lat: 21.0285, lng: 105.8048},
@@ -22,8 +32,8 @@ const PRESETS = [
     {key: 'danang', lat: 16.0544, lng: 108.2022},
     {key: 'hcmc', lat: 10.7769, lng: 106.7009},
 ] as const;
-const TIMES = ['now', 'plus3', 'plus6', 'tomorrow', 'custom'] as const;
-type TimeChoice = typeof TIMES[number];
+
+type HourChoice = 'now' | typeof WEATHER_HOUR_SLOTS[number] | 'custom';
 
 const round = (value: number) => Math.round(value * 1e4) / 1e4;
 const samePoint = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => round(a.lat) === round(b.lat) && round(a.lng) === round(b.lng);
@@ -31,17 +41,10 @@ const row = (active: boolean) => cn(
     'flex w-full items-center gap-2.5 rounded-control px-2.5 py-2 text-left text-sm transition-colors',
     active ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-600 hover:bg-slate-50',
 );
-
-function timeFor(choice: 'plus3' | 'plus6' | 'tomorrow'): string {
-    const date = new Date();
-    if (choice === 'tomorrow') {
-        date.setDate(date.getDate() + 1);
-        date.setHours(7, 0, 0, 0);
-    } else {
-        date.setHours(date.getHours() + (choice === 'plus3' ? 3 : 6), 0, 0, 0);
-    }
-    return localIso(date);
-}
+const chip = (active: boolean) => cn(
+    'inline-flex h-8 items-center justify-center rounded-control border px-2.5 text-xs font-semibold transition-colors',
+    active ? 'border-primary bg-sky-50 text-uav-blue' : 'border-border bg-white text-slate-600 hover:bg-slate-50',
+);
 
 function SkyIcon({data, size}: { data?: WeatherAssessment; size: number }) {
     return data ? <WeatherIcon condition={conditionOf(data.weatherCode)} night={!isDaytime(data.evaluatedTime)} size={size} animated={false}/>
@@ -56,20 +59,31 @@ function FilterGroup({icon, title, children}: { icon: ReactNode; title: string; 
 }
 
 /**
- * The "Flight weather" page shared by the three portals. Filters sit in one column (place, then hour);
- * the map shows every place as its sky icon and temperature at that hour, so sunny and rainy areas read
- * at a glance; the card gives the full take-off assessment for the picked point. Crews and admins with
- * STATION_VIEW also see their ground stations.
+ * Shared "Flight weather" workspace across all three portals: supports multi-day navigation from -7 past days
+ * through +14 forecast days (Hôm trước / Hôm qua / Hôm nay / Ngày mai / Hôm sau + 22-day strip + hour slots).
  */
 export function FlightWeatherWorkspace({showStations = false}: { showStations?: boolean }) {
-    const {t} = useI18n();
+    const {t, formatDate} = useI18n();
     const {can, permissionsReady} = useAuth();
     const {config} = useMapConfig();
+    const [baseDate] = useState(() => new Date());
     const [point, setPoint] = useState<{ lat: number; lng: number; label: string } | null>(null);
-    const [choice, setChoice] = useState<TimeChoice>('now');
-    const [at, setAt] = useState<string | undefined>(undefined);
+    const [dayOffset, setDayOffset] = useState(0);
+    const [hourChoice, setHourChoice] = useState<HourChoice>('now');
+    const [customAt, setCustomAt] = useState<string>('');
     const [locating, setLocating] = useState(false);
     const [locateError, setLocateError] = useState<string | null>(null);
+
+    const selectedDate = dateAtDayOffset(dayOffset, baseDate);
+    const selectedDateIso = localDateIso(selectedDate);
+    const minDateIso = localDateIso(dateAtDayOffset(WEATHER_MIN_DAY_OFFSET, baseDate));
+    const maxDateIso = localDateIso(dateAtDayOffset(WEATHER_MAX_DAY_OFFSET, baseDate));
+
+    const at: string | undefined = hourChoice === 'now'
+        ? (dayOffset === 0 ? undefined : buildWeatherSlotIso(dayOffset, 9, baseDate))
+        : hourChoice === 'custom'
+            ? (customAt || buildWeatherSlotIso(dayOffset, 9, baseDate))
+            : buildWeatherSlotIso(dayOffset, hourChoice, baseDate);
 
     const stationsAllowed = showStations && permissionsReady && can('STATION_VIEW');
     const stations = useStationsWeather(stationsAllowed);
@@ -98,12 +112,30 @@ export function FlightWeatherWorkspace({showStations = false}: { showStations?: 
         };
     });
 
-    const pickTime = (next: TimeChoice) => {
-        setChoice(next);
-        if (next === 'now') setAt(undefined);
-        else if (next !== 'custom') setAt(timeFor(next));
-        else setAt(previous => previous ?? timeFor('plus3'));
+    const selectDay = (next: number, resetToLive = false) => {
+        const safe = clampDayOffset(next);
+        setDayOffset(safe);
+        if (resetToLive && safe === 0) {
+            setHourChoice('now');
+            return;
+        }
+        if (hourChoice === 'now' && safe !== 0) {
+            setHourChoice(10);
+        } else if (hourChoice === 'custom') {
+            const timePart = customAt.length >= 16 ? customAt.slice(11, 16) : '09:00';
+            setCustomAt(`${localDateIso(dateAtDayOffset(safe, baseDate))}T${timePart}`);
+        }
     };
+
+    const relativeDayLabel = (offset: number) => {
+        if (offset === 0) return t('weather.workspace.today');
+        if (offset === -1) return t('weather.workspace.yesterday');
+        if (offset === 1) return t('weather.workspace.tomorrowDay');
+        return offset < 0
+            ? t('weather.workspace.dayOffsetPast', {days: Math.abs(offset)})
+            : t('weather.workspace.dayOffsetFuture', {days: offset});
+    };
+
     const locate = () => {
         if (!navigator.geolocation) {
             setLocateError(t('weather.workspace.locateUnsupported'));
@@ -123,6 +155,7 @@ export function FlightWeatherWorkspace({showStations = false}: { showStations?: 
             {enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000},
         );
     };
+
     const placeRow = (place: { key: string; lat: number; lng: number; label: string }, index: number) => {
         const data = dataOf(index);
         const active = samePoint(place, current);
@@ -135,6 +168,97 @@ export function FlightWeatherWorkspace({showStations = false}: { showStations?: 
 
     return (
         <div className="grid gap-4 lg:grid-cols-[15rem_minmax(0,1fr)] 2xl:grid-cols-[15rem_minmax(0,1fr)_26rem]">
+            <section className="col-span-full space-y-2.5 rounded-panel border border-border bg-card p-3" aria-label={t('weather.workspace.day')}>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                        <button type="button" disabled={dayOffset <= WEATHER_MIN_DAY_OFFSET} onClick={() => selectDay(dayOffset - 1)}
+                                className="inline-flex h-8 items-center gap-1 rounded-control border border-border bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40">
+                            <ChevronLeft size={14}/>{t('weather.workspace.prevDay')}
+                        </button>
+                        <span className="inline-flex h-8 items-center gap-1.5 rounded-control border border-sky-200 bg-sky-50 px-3 text-xs font-bold text-uav-blue">
+                            <CalendarDays size={14}/>
+                            {relativeDayLabel(dayOffset)} · {formatDate(selectedDate, {weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric'})}
+                        </span>
+                        <button type="button" disabled={dayOffset >= WEATHER_MAX_DAY_OFFSET} onClick={() => selectDay(dayOffset + 1)}
+                                className="inline-flex h-8 items-center gap-1 rounded-control border border-border bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40">
+                            {t('weather.workspace.nextDay')}<ChevronRight size={14}/>
+                        </button>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-1.5">
+                        <button type="button" aria-pressed={dayOffset === -1} className={chip(dayOffset === -1)} onClick={() => selectDay(-1)}>
+                            {t('weather.workspace.yesterday')}
+                        </button>
+                        <button type="button" aria-pressed={dayOffset === 0 && hourChoice === 'now'} className={chip(dayOffset === 0)}
+                                onClick={() => selectDay(0, true)}>
+                            {t('weather.workspace.today')}
+                        </button>
+                        <button type="button" aria-pressed={dayOffset === 1} className={chip(dayOffset === 1)} onClick={() => selectDay(1)}>
+                            {t('weather.workspace.tomorrowDay')}
+                        </button>
+                        <input type="date" aria-label={t('weather.workspace.pickDate')} min={minDateIso} max={maxDateIso} value={selectedDateIso}
+                               onChange={event => event.target.value && selectDay(dayOffsetFromIso(event.target.value, baseDate))}
+                               className="h-8 rounded-control border border-border bg-white px-2 text-xs font-medium text-slate-700"/>
+                        <span className="hidden text-[11px] text-muted xl:inline">{t('weather.workspace.rangeHint')}</span>
+                    </div>
+                </div>
+
+                <div className="flex gap-1.5 overflow-x-auto pb-1" role="group" aria-label={t('weather.workspace.rangeHint')}>
+                    {WEATHER_DAY_OFFSETS.map(offset => {
+                        const day = dateAtDayOffset(offset, baseDate);
+                        const active = offset === dayOffset;
+                        const isToday = offset === 0;
+                        return (
+                            <button key={offset} type="button" aria-pressed={active} onClick={() => selectDay(offset)}
+                                    className={cn('flex min-w-[3.6rem] shrink-0 flex-col items-center rounded-control border px-2 py-1 text-center transition-colors',
+                                        active
+                                            ? 'border-primary bg-sky-50 font-bold text-uav-blue'
+                                            : isToday
+                                                ? 'border-slate-300 bg-slate-50 text-slate-900 hover:bg-slate-100'
+                                                : 'border-border bg-white text-slate-600 hover:bg-slate-50')}>
+                                <span className="text-[10px] uppercase tracking-tight opacity-80">
+                                    {offset === -1 ? t('weather.workspace.yesterday') : offset === 0 ? t('weather.workspace.today') : offset === 1 ? t('weather.workspace.tomorrowDay') : formatDate(day, {weekday: 'short'})}
+                                </span>
+                                <span className="text-xs font-semibold tabular-nums">{formatDate(day, {day: '2-digit', month: '2-digit'})}</span>
+                            </button>
+                        );
+                    })}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5 border-t border-border pt-2" role="group" aria-label={t('weather.workspace.hour')}>
+                    <span className="inline-flex items-center gap-1 pr-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        <Clock3 size={12}/>{t('weather.workspace.hour')}
+                    </span>
+                    <button type="button" aria-pressed={dayOffset === 0 && hourChoice === 'now'} className={chip(dayOffset === 0 && hourChoice === 'now')}
+                            onClick={() => { setDayOffset(0); setHourChoice('now'); }}>
+                        {t('weather.workspace.times.now')}
+                    </button>
+                    {WEATHER_HOUR_SLOTS.map(slot => (
+                        <button key={slot} type="button" aria-pressed={hourChoice === slot} className={chip(hourChoice === slot)}
+                                onClick={() => setHourChoice(slot)}>
+                            {`${String(slot).padStart(2, '0')}:00`}
+                        </button>
+                    ))}
+                    <button type="button" aria-pressed={hourChoice === 'custom'} className={chip(hourChoice === 'custom')}
+                            onClick={() => {
+                                setHourChoice('custom');
+                                setCustomAt(prev => prev || buildWeatherSlotIso(dayOffset, hourFromIso(at) ?? 9, baseDate));
+                            }}>
+                        {t('weather.workspace.times.custom')}
+                    </button>
+                    {hourChoice === 'custom' && (
+                        <input type="datetime-local" aria-label={t('weather.workspace.times.custom')}
+                               min={`${minDateIso}T00:00`} max={`${maxDateIso}T23:00`} value={customAt}
+                               onChange={event => {
+                                   const next = event.target.value;
+                                   setCustomAt(next);
+                                   if (next) setDayOffset(dayOffsetFromIso(next, baseDate));
+                               }}
+                               className="h-8 rounded-control border border-border bg-white px-2 text-xs text-slate-800"/>
+                    )}
+                </div>
+            </section>
+
             <aside className="space-y-4 rounded-panel border border-border bg-card p-2.5 lg:row-span-2 2xl:row-span-1" aria-label={t('weather.workspace.filters')}>
                 <FilterGroup icon={<MapPin size={12}/>} title={t('weather.workspace.place')}>
                     {presetPlaces.map(placeRow)}
@@ -149,17 +273,6 @@ export function FlightWeatherWorkspace({showStations = false}: { showStations?: 
                         {stationPlaces.map((place, index) => placeRow(place, presetPlaces.length + index))}
                     </FilterGroup>
                 )}
-                <FilterGroup icon={<Clock3 size={12}/>} title={t('weather.workspace.time')}>
-                    {TIMES.map(option => (
-                        <button key={option} type="button" aria-pressed={choice === option} className={row(choice === option)}
-                                onClick={() => pickTime(option)}>{t(`weather.workspace.times.${option}`)}</button>
-                    ))}
-                    {choice === 'custom' && (
-                        <input type="datetime-local" aria-label={t('weather.workspace.times.custom')} value={at ?? ''}
-                               onChange={event => setAt(event.target.value || undefined)}
-                               className="mt-1 h-9 w-full rounded-control border border-border bg-white px-2 text-sm text-slate-800"/>
-                    )}
-                </FilterGroup>
             </aside>
 
             <section className="min-w-0 overflow-hidden rounded-panel border border-border bg-card" aria-label={t('weather.workspace.map')}>
@@ -172,8 +285,16 @@ export function FlightWeatherWorkspace({showStations = false}: { showStations?: 
 
             <PreflightWeatherCard className="min-w-0" assessment={assessment.data} isPending={assessment.isPending} isError={assessment.isError}
                                   onSelectWindow={start => {
-                                      setChoice('custom');
-                                      setAt(start);
+                                      const nextOffset = dayOffsetFromIso(start, baseDate);
+                                      const parsedHour = hourFromIso(start);
+                                      const slotMatch = WEATHER_HOUR_SLOTS.find(s => s === parsedHour && start.endsWith(':00'));
+                                      setDayOffset(nextOffset);
+                                      if (slotMatch) {
+                                          setHourChoice(slotMatch);
+                                      } else {
+                                          setHourChoice('custom');
+                                          setCustomAt(start.slice(0, 16));
+                                      }
                                   }}/>
         </div>
     );

@@ -93,7 +93,7 @@ test('components delegate duplicate regex/range/URL validation to backend and wi
     assert.doesNotMatch(adminSettings, /function\s+clientCheck\b/);
     assert.match(adminSettings, /@\/forms\/settings\/settings-form/);
 
-    const trainingLessons = await readSource('src/components/training/TrainingCourseLessonsPanel.tsx');
+    const trainingLessons = await readSource('src/components/training/editor/TrainingCourseLessonsPanel.tsx');
     assert.doesNotMatch(trainingLessons, /isSupportedVideoLink|isSupportedDocumentLink/);
     assert.match(trainingLessons, /@\/forms\/training\/training-form/);
 
@@ -102,8 +102,8 @@ test('components delegate duplicate regex/range/URL validation to backend and wi
     assert.match(weatherSettings, /@\/forms\/weather\/weather-provider-form/);
 
     for (const [componentPath, formImport] of [
-        ['src/components/assistant/AssistantSettingsSection.tsx', '@/forms/assistant/assistant-settings-form'],
-        ['src/components/auth/AuthModalPopup.tsx', '@/forms/auth/auth-form'],
+        ['src/components/assistant/console/AssistantSettingsSection.tsx', '@/forms/assistant/assistant-settings-form'],
+        ['src/components/auth/modal/AuthModalPopup.tsx', '@/forms/auth/auth-form'],
         ['src/components/profile/PasswordChangeCard.tsx', '@/forms/profile/profile-form'],
         ['src/components/user/Users.tsx', '@/forms/user/user-form'],
         ...(hasSiblingPortals ? [['src/components/mission/operations/OperationsMissionDetail.tsx', '@/forms/mission/operations-mission-form']] : []),
@@ -111,10 +111,10 @@ test('components delegate duplicate regex/range/URL validation to backend and wi
         ['src/components/station/StationPanel.tsx', '@/forms/station/station-form'],
         ['src/components/inventory/EquipmentPanel.tsx', '@/forms/inventory/equipment-form'],
         ['src/components/maintenance/OrderCreate.tsx', '@/forms/maintenance/maintenance-form'],
-        ['src/components/billing/AdminPlansManager.tsx', '@/forms/billing/billing-form'],
-        ['src/components/billing/AdminInvoiceDialogs.tsx', '@/forms/billing/billing-form'],
-        ['src/components/billing/PaymentGatewaySettingsSection.tsx', '@/forms/billing/payment-gateway-form'],
-        ['src/components/billing/AdminBillingPanel.tsx', '@/forms/billing/billing-form'],
+        ['src/components/billing/plans/AdminPlansManager.tsx', '@/forms/billing/billing-form'],
+        ['src/components/billing/invoices/AdminInvoiceDialogs.tsx', '@/forms/billing/billing-form'],
+        ['src/components/billing/reconciliation/PaymentGatewaySettingsSection.tsx', '@/forms/billing/payment-gateway-form'],
+        ['src/components/billing/plans/AdminBillingPanel.tsx', '@/forms/billing/billing-form'],
         ['src/components/catalog/AdminServicesPanel.tsx', '@/forms/catalog/service-offering-form'],
         ...(hasSiblingPortals ? [['src/components/marketing/ContactQuickForm.tsx', '@/forms/marketing/contact-form']] : []),
         ['src/components/webhook/WebhookSubscriptions.tsx', '@/forms/webhook/webhook-form'],

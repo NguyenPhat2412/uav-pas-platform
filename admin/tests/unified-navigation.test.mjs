@@ -42,3 +42,30 @@ test('unified navigation: all routes have permission guards or default fallbacks
         assert.ok(item.group, `item must belong to a group: ${item.href}`);
     }
 });
+
+test('unified navigation: hybrid 3-level admin sidebar organizes dense groups into sub-groups while keeping compact groups 2-level', async () => {
+    const {ADMIN_SIDEBAR_ROUTES, ADMIN_SIDEBAR_SUBGROUPS} = await loadSidebarRoutes();
+    assert.ok(Array.isArray(ADMIN_SIDEBAR_SUBGROUPS) && ADMIN_SIDEBAR_SUBGROUPS.length >= 7);
+
+    const subGroupMap = new Map(ADMIN_SIDEBAR_SUBGROUPS.map(sg => [sg.key, sg]));
+    for (const item of ADMIN_SIDEBAR_ROUTES) {
+        if (item.subGroup) {
+            const meta = subGroupMap.get(item.subGroup);
+            assert.ok(meta, `missing ADMIN_SIDEBAR_SUBGROUPS metadata for ${item.subGroup}`);
+            assert.equal(meta.group, item.group, `subGroup ${item.subGroup} must match parent group ${item.group}`);
+        }
+    }
+
+    // Commerce has 3 cohesive sub-groups: catalogPlans, marketplace3p, billingLedger
+    const commerceSubGroups = new Set(
+        ADMIN_SIDEBAR_ROUTES.filter(item => item.group === 'commerce').map(item => item.subGroup),
+    );
+    assert.deepEqual([...commerceSubGroups].sort(), ['billingLedger', 'catalogPlans', 'marketplace3p']);
+
+    // Compact 3-4 item groups remain 2-level without unnecessary sub-group clicks
+    for (const compactGroup of ['training', 'intelligence', 'security', 'system']) {
+        for (const item of ADMIN_SIDEBAR_ROUTES.filter(r => r.group === compactGroup)) {
+            assert.equal(item.subGroup, undefined, `${compactGroup} item ${item.key} stays 2-level`);
+        }
+    }
+});

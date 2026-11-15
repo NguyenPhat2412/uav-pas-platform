@@ -167,14 +167,32 @@ export type AdminNavGroup =
     | 'security'
     | 'system'
     | 'infrastructure';
+export type AdminNavSubGroup =
+    | 'operationsPulse'
+    | 'airspaceWeather'
+    | 'catalogPlans'
+    | 'marketplace3p'
+    | 'billingLedger'
+    | 'rbacGovernance'
+    | 'runtimeOps'
+    | 'dataComms';
 export type OperationsNavGroup = 'command' | 'missions' | 'assets' | 'monitoring';
 export type CustomerNavGroup = 'overview' | 'missions' | 'services' | 'support';
 export type CustomerNavBadge = 'activeMissions' | 'pendingInvoices' | 'unreadNotifications';
 
-export interface SidebarRouteItem<G extends string = string> {
+export interface SidebarSubGroupMeta<G extends string = string, SG extends string = string> {
+    key: SG;
+    group: G;
+    icon: LucideIcon;
+    defaultLabel: string;
+}
+
+export interface SidebarRouteItem<G extends string = string, SG extends string = string> {
     href: string;
     key: string;
     group: G;
+    /** Nhóm con cấp 2 (tùy chọn) dành cho các nhóm lớn có nhiều trang con */
+    subGroup?: SG;
     icon: LucideIcon;
     permission?: string;
     /** Các URL phụ / đường dẫn cũ sẽ tự động kích hoạt (highlight) mục Sidebar này */

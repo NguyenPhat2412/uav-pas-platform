@@ -88,6 +88,13 @@
         "failed": "{count} files could not be deleted:",
         "stop": "Stop",
         "close": "Close"
+      },
+      "storage": {
+        "driveBadge": "Google Drive · {node}",
+        "r2Badge": "Cloudflare R2",
+        "moveAction": "Move {name} to Google Drive",
+        "movedToDrive": "Moved \"{name}\" to Google Drive.",
+        "moveFailed": "Could not move the file to Google Drive."
       }
     },
     "pages": {

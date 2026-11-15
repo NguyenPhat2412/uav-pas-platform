@@ -88,6 +88,13 @@
         "failed": "{count} 件を削除できませんでした:",
         "stop": "停止",
         "close": "閉じる"
+      },
+      "storage": {
+        "driveBadge": "Google Drive · {node}",
+        "r2Badge": "Cloudflare R2",
+        "moveAction": "{name} を Google Drive へ移動",
+        "movedToDrive": "「{name}」を Google Drive へ移動しました。",
+        "moveFailed": "Google Drive への移動に失敗しました。"
       }
     },
     "pages": {

@@ -18,6 +18,7 @@ export interface CollapsedFlyoutItem {
     href: string;
     label: string;
     active: boolean;
+    subGroupLabel?: string;
     accessibleLabel?: string;
     badge?: ReactNode;
 }
@@ -81,7 +82,8 @@ export function useCollapsedNavFlyout(railCollapsed: boolean): CollapsedNavFlyou
         const asideRight = el.closest('aside')?.getBoundingClientRect().right ?? rect.right;
         const left = asideRight + 8;
         if (items && items.length > 0) {
-            const estimatedHeight = 46 + items.length * 36;
+            const subGroupHeaders = new Set(items.map(i => i.subGroupLabel).filter(Boolean)).size;
+            const estimatedHeight = 46 + items.length * 36 + subGroupHeaders * 24;
             const top = Math.max(8, Math.min(rect.top - 4, window.innerHeight - estimatedHeight - 12));
             setRawFlyout({id, label, items, top, left, pathname});
         } else {
@@ -222,37 +224,49 @@ export function CollapsedNavFlyoutPortal({
                 {flyout.label}
             </p>
             <ul className="m-0 max-h-[calc(100dvh-4rem)] list-none space-y-0.5 overflow-y-auto p-0">
-                {flyout.items.map(item => (
-                    <li key={item.href}>
-                        <Link
-                            href={item.href}
-                            aria-current={item.active ? 'page' : undefined}
-                            aria-label={item.accessibleLabel ?? item.label}
-                            onClick={() => {
-                                closeFlyoutNow();
-                                onNavigate?.();
-                            }}
-                            className={cn(
-                                'group/flyout-item flex items-center justify-between gap-2.5 rounded-xl px-2.5 py-1.5 text-[13.5px] leading-5 transition-colors outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#ab2523]',
-                                item.active
-                                    ? 'bg-[#ab2523]/10 font-semibold text-[#ab2523]'
-                                    : 'font-normal text-slate-700 hover:bg-slate-100 hover:text-slate-900',
+                {flyout.items.map((item, idx) => {
+                    const prevSubGroup = idx > 0 ? flyout.items?.[idx - 1]?.subGroupLabel : undefined;
+                    const showSubGroupHeader = Boolean(item.subGroupLabel && item.subGroupLabel !== prevSubGroup);
+                    return (
+                        <li key={item.href}>
+                            {showSubGroupHeader && (
+                                <p className={cn(
+                                    'px-2.5 pb-0.5 text-[10.5px] font-semibold tracking-[0.03em] text-slate-400',
+                                    idx > 0 ? 'mt-1.5 border-t border-slate-100 pt-1.5' : 'pt-0.5',
+                                )}>
+                                    {item.subGroupLabel}
+                                </p>
                             )}
-                        >
-                            <span className="flex min-w-0 items-center gap-2.5">
-                                <span
-                                    aria-hidden="true"
-                                    className={cn(
-                                        'h-1.5 w-1.5 shrink-0 rounded-full transition-colors',
-                                        item.active ? 'bg-[#ab2523]' : 'bg-slate-400 group-hover/flyout-item:bg-slate-600',
-                                    )}
-                                />
-                                <span className="truncate">{item.label}</span>
-                            </span>
-                            {item.badge}
-                        </Link>
-                    </li>
-                ))}
+                            <Link
+                                href={item.href}
+                                aria-current={item.active ? 'page' : undefined}
+                                aria-label={item.accessibleLabel ?? item.label}
+                                onClick={() => {
+                                    closeFlyoutNow();
+                                    onNavigate?.();
+                                }}
+                                className={cn(
+                                    'group/flyout-item flex items-center justify-between gap-2.5 rounded-xl px-2.5 py-1.5 text-[13.5px] leading-5 transition-colors outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#ab2523]',
+                                    item.active
+                                        ? 'bg-[#ab2523]/10 font-semibold text-[#ab2523]'
+                                        : 'font-normal text-slate-700 hover:bg-slate-100 hover:text-slate-900',
+                                )}
+                            >
+                                <span className="flex min-w-0 items-center gap-2.5">
+                                    <span
+                                        aria-hidden="true"
+                                        className={cn(
+                                            'h-1.5 w-1.5 shrink-0 rounded-full transition-colors',
+                                            item.active ? 'bg-[#ab2523]' : 'bg-slate-400 group-hover/flyout-item:bg-slate-600',
+                                        )}
+                                    />
+                                    <span className="truncate">{item.label}</span>
+                                </span>
+                                {item.badge}
+                            </Link>
+                        </li>
+                    );
+                })}
             </ul>
         </div>,
         document.body,

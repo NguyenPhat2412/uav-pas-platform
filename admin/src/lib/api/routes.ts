@@ -267,6 +267,7 @@ export const API_ROUTES = {
         alerts: '/api/v1/admin/alerts',
         deviceKeys: '/api/v1/admin/device-keys',
         files: '/api/v1/admin/files',
+        storagePool: '/api/v1/admin/storage-pool',
         infrastructure: '/api/v1/admin/infrastructure',
         security: '/api/v1/admin/security',
         slaIntelligence: '/api/v1/admin/sla-intelligence',
@@ -300,6 +301,14 @@ export const API_ROUTES = {
         zones: '/api/v1/airspace/zones',
         check: '/api/v1/airspace/check',
         zoneById: (id: string | number) => `/api/v1/airspace/zones/${id}`,
+    },
+    adminMarketplace: {
+        providers: '/api/v1/admin/marketplace/providers',
+        moderateProvider: (id: string | number) => `/api/v1/admin/marketplace/providers/${id}/moderate`,
+        listings: '/api/v1/admin/marketplace/listings',
+        moderateListing: (id: string | number) => `/api/v1/admin/marketplace/listings/${id}/moderate`,
+        payouts: '/api/v1/admin/marketplace/payouts',
+        processPayout: (id: string | number) => `/api/v1/admin/marketplace/payouts/${id}/process`,
     },
 } as const;
 
