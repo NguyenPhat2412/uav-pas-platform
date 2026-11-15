@@ -82,6 +82,12 @@ export interface Mission {
     equipmentCondition?: string;
     failureReason?: string;
     failureNotes?: string;
+    providerId?: number | null;
+    providerDisplayName?: string | null;
+    listingId?: number | null;
+    listingTitle?: string | null;
+    quotedSubtotalVnd?: number | null;
+    providerResponseStatus?: 'NOT_APPLICABLE' | 'OPEN_RFQ' | 'PENDING_PROVIDER' | 'ACCEPTED' | 'DECLINED' | null;
 }
 
 export interface MissionEvent {

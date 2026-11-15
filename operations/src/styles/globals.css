@@ -355,7 +355,7 @@
 
 @media (max-width: 640px) {
     :root[data-portal] :is(#workspace, #content) {
-        padding: 1rem;
+        padding: 1rem 1rem 6rem;
     }
 }
 

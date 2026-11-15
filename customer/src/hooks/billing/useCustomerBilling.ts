@@ -10,7 +10,7 @@ import {
     subscribeRealtimeStatus,
 } from '@/lib/realtime-ws';
 import {useAuth} from '@/providers/AuthContext';
-import {afterSuccess, QUIET, type MutationOptions} from '@/lib/query';
+import {afterSuccess, queryKeys, QUIET, type MutationOptions} from '@/lib/query';
 import {customerBillingService} from '@/api/billing/customer-billing.api';
 import {bankTransferService} from '@/api/billing/billing.api';
 import {billingKeys} from '@/hooks/billing/query-keys';
@@ -70,6 +70,11 @@ export function useCustomerBillingRealtime(enabled = true) {
                                       ...inv,
                                       status: frame.status as InvoiceStatus,
                                       paidAt: frame.status === 'PAID' ? inv.paidAt ?? frame.timestamp : inv.paidAt,
+                                      escrowStatus:
+                                          frame.status === 'PAID' &&
+                                          (inv.providerId != null || inv.escrowStatus === 'UNFUNDED')
+                                              ? 'HELD'
+                                              : inv.escrowStatus,
                                   }
                                 : inv,
                         ),
@@ -78,6 +83,8 @@ export function useCustomerBillingRealtime(enabled = true) {
             );
 
             void client.invalidateQueries({queryKey: billingKeys.customer(userId)});
+            void client.invalidateQueries({queryKey: queryKeys.feature(userId, 'customer')});
+            void client.invalidateQueries({queryKey: ['marketplace']});
 
             setLastSettledInvoice({
                 invoiceId: frame.invoiceId,

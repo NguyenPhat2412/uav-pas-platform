@@ -49,6 +49,17 @@ export function missionUpdatePayload(form: MissionInput): MissionUpdateInput {
     };
 }
 
+export function missionCreatePayload(form: MissionInput): MissionInput {
+    return {
+        ...missionUpdatePayload(form),
+        missionType: form.missionType,
+        serviceId: form.serviceId,
+        ...(form.listingId != null ? {listingId: form.listingId} : {}),
+        ...(form.bookingUnits != null ? {bookingUnits: form.bookingUnits} : {}),
+        ...(form.openRfq ? {openRfq: true} : {}),
+    };
+}
+
 export function missionDraftUpdatePayload(form: MissionInput, expectedVersion: number): MissionUpdateInput & {
     expectedVersion: number
 } {

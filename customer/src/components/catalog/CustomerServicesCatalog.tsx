@@ -10,6 +10,7 @@ import {useServices} from '@/hooks/mission/useCustomerMissions';
 import {useAuth} from '@/providers/AuthContext';
 import {toServiceSlug} from '@/lib/url-slugs';
 import {useI18n} from '@/providers/I18nContext';
+import {PublicMarketplaceCatalog} from '@/components/marketplace/PublicMarketplaceCatalog';
 import type {UavService} from '@/types/mission/mission.types';
 
 const serviceIcons: Record<string, LucideIcon | typeof UavIcon> = {
@@ -27,6 +28,7 @@ function Services() {
     const hours = (value?: number | null) => value == null ? t('services.sla.contact') : t('services.sla.hours', {value: formatNumber(value)});
     const services = q.data ?? [];
     return <div className="flex flex-1 flex-col bg-white">
+        <PublicMarketplaceCatalog mode="portal"/>
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-2.5 sm:px-5">
             <span className="text-xs font-semibold tabular-nums text-slate-500">{t('services.count', {count: services.length})}</span>
             {can('MISSION_CREATE') && (

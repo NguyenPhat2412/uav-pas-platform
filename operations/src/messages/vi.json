@@ -460,7 +460,8 @@
         "WEATHER_SOURCE_UNAVAILABLE": "Chưa lấy được dữ liệu thời tiết. Hãy kiểm tra lại trước giờ bay.",
         "FORECAST_OUT_OF_RANGE": "Thời điểm này nằm ngoài khoảng dự báo (16 ngày).",
         "MISSION_LOCATION_MISSING": "Nhiệm vụ chưa có tọa độ nên chưa đánh giá được thời tiết."
-      }
+      },
+      "historicalAt": "Quan trắc lịch sử · {time}"
     },
     "provider": {
       "title": "Nguồn dữ liệu thời tiết",
@@ -505,7 +506,18 @@
       },
       "filters": "Bộ lọc",
       "map": "Bản đồ thời tiết",
-      "stations": "Trạm"
+      "stations": "Trạm",
+      "day": "Ngày kiểm tra",
+      "hour": "Khung giờ",
+      "prevDay": "Hôm trước",
+      "nextDay": "Hôm sau",
+      "yesterday": "Hôm qua",
+      "today": "Hôm nay",
+      "tomorrowDay": "Ngày mai",
+      "pickDate": "Chọn ngày",
+      "rangeHint": "Lịch sử 7 ngày qua · Dự báo 14 ngày tới",
+      "dayOffsetPast": "{days} ngày trước",
+      "dayOffsetFuture": "{days} ngày tới"
     },
     "home": {
       "title": "Thời tiết hôm nay",
@@ -552,7 +564,11 @@
       "conditionsNight": {
         "clear": "Trời quang",
         "partly": "Ít mây"
-      }
+      },
+      "titleYesterday": "Thời tiết hôm qua",
+      "titleTomorrow": "Thời tiết ngày mai",
+      "titleDate": "Thời tiết · {date}",
+      "daySlots": "Các khung giờ trong ngày"
     }
   },
   "digitalTwin": {

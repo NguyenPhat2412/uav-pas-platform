@@ -29,8 +29,27 @@ export function MissionList({missions, loading, error, onRefresh, label, showCus
         {
             accessorKey: 'title',
             header: t('opsMissions.list.col.title'),
-            cell: ({row}) => <Link href={`/operations/missions/${toMissionSlug(row.original)}`}
-                                   className="font-semibold text-slate-900 hover:text-primary">{row.original.title}</Link>,
+            cell: ({row}) => (
+                <div className="space-y-1">
+                    <Link href={`/operations/missions/${toMissionSlug(row.original)}`}
+                          className="font-semibold text-slate-900 hover:text-primary">{row.original.title}</Link>
+                    <div>
+                        {row.original.providerResponseStatus === 'OPEN_RFQ' ? (
+                            <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[10.5px] font-bold text-amber-800">
+                                Sàn RFQ · Chờ chọn đối tác
+                            </span>
+                        ) : row.original.providerDisplayName ? (
+                            <span className="inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-[10.5px] font-bold text-emerald-800">
+                                Đơn Sàn: {row.original.providerDisplayName}
+                            </span>
+                        ) : (
+                            <span className="inline-block rounded-full bg-slate-100 px-2 py-0.5 text-[10.5px] font-semibold text-slate-600">
+                                1P Đội bay nội bộ
+                            </span>
+                        )}
+                    </div>
+                </div>
+            ),
         },
         ...(showCustomer ? [{
             accessorKey: 'customerName',

@@ -19,8 +19,16 @@ import {
     missionTypeForService,
     missionTypes,
     missionFieldErrors,
-    missionUpdatePayload
+    missionCreatePayload,
 } from "@/forms/mission/mission-form";
+import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplace';
+import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+import {
+    estimateBookingSubtotal,
+    formatVndCompact,
+    listingTypeLabel,
+    pricingUnitLabel,
+} from '@/forms/marketplace/marketplace-forms';
 import type {MissionInput, MissionType} from "@/types/customer";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {resolveServiceIdFromParam, toServiceSlug} from "@/lib/url-slugs";
@@ -57,6 +65,15 @@ function CreateMission() {
     const actions = useMissionActions();
     const {can} = useAuth();
     const {t, formatDate, formatNumber} = useI18n();
+    const {rfqEnabled, requireEscrowBeforeStart, invoiceDueDays} = useSiteInfo();
+    const listingSlug = params.get('listing');
+    const initialUnitsParam = Number(params.get('units'));
+    const listingQuery = usePublicListingDetail(listingSlug);
+    const activeListing = listingQuery.data?.listing;
+    const [bookingUnits, setBookingUnits] = useState<number>(
+        Number.isFinite(initialUnitsParam) && initialUnitsParam >= 0.5 ? initialUnitsParam : 1,
+    );
+    const [openRfq, setOpenRfq] = useState<boolean>(params.get('rfq') === '1');
     const [formValues, setForm] = useState<MissionInput>({
         ...initial,
         serviceId: resolveServiceIdFromParam(params.get('service'), params.get('serviceId'))
@@ -68,17 +85,29 @@ function CreateMission() {
     const [availability, setAvailability] = useState<'' | 'ok' | 'conflict' | 'draft'>('');
     const [checking, setChecking] = useState(false);
     const activeServices = (services.data ?? []).filter(service => service.active);
-    const resolvedServiceId = formValues.serviceId === -1 && params.get('service')
-        ? resolveServiceIdFromParam(params.get('service'), null, activeServices)
-        : formValues.serviceId;
+    const resolvedServiceId = activeListing?.categoryServiceId ?? (
+        formValues.serviceId === -1 && params.get('service')
+            ? resolveServiceIdFromParam(params.get('service'), null, activeServices)
+            : formValues.serviceId
+    );
     const selectedService = activeServices.find(service => service.id === resolvedServiceId);
+    const effectiveUnits = activeListing
+        ? Math.max(bookingUnits || Number(activeListing.minBookingUnits || 1), Number(activeListing.minBookingUnits || 1))
+        : undefined;
+    const estimatedSubtotal = activeListing
+        ? estimateBookingSubtotal(Number(activeListing.basePriceVnd), effectiveUnits ?? 1, Number(activeListing.minBookingUnits || 1))
+        : null;
+    const effectiveOpenRfq = !activeListing && rfqEnabled && openRfq;
     // Resolve a linked service after its catalogue arrives; keep an explicit type choice.
     const form: MissionInput = {
         ...formValues,
-        serviceId: resolvedServiceId,
-        missionType: missionTypeOverride ?? missionTypeForService(selectedService?.code, formValues.missionType)
+        serviceId: resolvedServiceId ?? undefined,
+        missionType: activeListing?.missionType ?? missionTypeOverride ?? missionTypeForService(selectedService?.code, formValues.missionType),
+        listingId: activeListing?.id,
+        bookingUnits: effectiveUnits,
+        openRfq: effectiveOpenRfq ? true : undefined,
     };
-    const payload = () => ({...missionUpdatePayload(form), missionType: form.missionType, serviceId: form.serviceId});
+    const payload = () => missionCreatePayload(form);
     /** Puts the backend's field errors on the form and returns to step 1; false when the error was not about fields. */
     const showFieldErrors = (err: unknown) => {
         const fields = missionFieldErrors(err);
@@ -154,6 +183,60 @@ function CreateMission() {
                 <fieldset className="m-0 border-0 p-0 disabled:opacity-65" disabled={checking}>
                     <legend className="sr-only">{t('missionCreate.requestDetails')}</legend>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {activeListing ? (
+                            <div className="col-span-full rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4">
+                                <div className="flex flex-wrap items-start justify-between gap-4">
+                                    <div className="space-y-1">
+                                        <span className="inline-block rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800">
+                                            Đặt thuê từ Sàn UAV · {listingTypeLabel(activeListing.listingType)}
+                                        </span>
+                                        <h3 className="m-0 text-base font-extrabold text-slate-900">{activeListing.title}</h3>
+                                        <p className="m-0 text-xs text-slate-600">
+                                            Đơn vị cung cấp: <strong>{activeListing.providerDisplayName}</strong> ({activeListing.province}) · Đơn giá:{' '}
+                                            <strong className="text-primary">{formatVndCompact(activeListing.basePriceVnd)} / {pricingUnitLabel(activeListing.pricingModel)}</strong>
+                                        </p>
+                                        <p className="m-0 text-[11.5px] text-emerald-900">
+                                            Bảo vệ Ký quỹ VietQR (hạn thanh toán {invoiceDueDays} ngày){requireEscrowBeforeStart ? ' · Yêu cầu nạp Ký quỹ trước khi đối tác xuất phát bay' : ' · Chỉ giải ngân cho đối tác sau khi bạn nghiệm thu kết quả'}.
+                                        </p>
+                                    </div>
+                                    <label className="grid gap-1 text-xs font-bold text-slate-800">
+                                        <span>Khối lượng đặt ({pricingUnitLabel(activeListing.pricingModel)})</span>
+                                        <input
+                                            type="number"
+                                            min={Number(activeListing.minBookingUnits || 1)}
+                                            step="0.5"
+                                            value={effectiveUnits ?? 1}
+                                            onChange={e => setBookingUnits(Number(e.target.value))}
+                                            className="h-10 w-36 rounded-control border border-slate-300 bg-white px-3 text-sm font-black text-slate-900"
+                                        />
+                                        <span className="text-[11px] font-semibold text-primary">
+                                            Tạm tính: {formatVndCompact(estimatedSubtotal)}
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        ) : rfqEnabled ? (
+                            <label className="col-span-full flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-xs">
+                                <input
+                                    type="checkbox"
+                                    checked={openRfq}
+                                    onChange={e => setOpenRfq(e.target.checked)}
+                                    className="mt-0.5 h-4 w-4 accent-primary"
+                                />
+                                <span>
+                                    <strong className="block font-bold text-slate-900">
+                                        Đăng yêu cầu mở nhận báo giá từ các Đối tác UAV (Open RFQ)
+                                    </strong>
+                                    <span className="text-slate-600">
+                                        Cho phép các đối tác UAV đã xác minh KYC gửi báo giá cạnh tranh và phương án thiết bị để bạn lựa chọn.
+                                    </span>
+                                </span>
+                            </label>
+                        ) : (
+                            <p className="col-span-full m-0 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-600">
+                                Chế độ đấu thầu báo giá mở (Open RFQ) hiện đang tạm đóng theo cấu hình vận hành của sàn. Bạn vẫn có thể đặt thuê trực tiếp gói niêm yết hoặc gửi yêu cầu tới đội bay UAV PAS.
+                            </p>
+                        )}
                         <SavedFlightSitesBar
                             form={form}
                             onApply={site => {
@@ -208,6 +291,20 @@ function CreateMission() {
                         <dt>{t('missionForm.title')}</dt>
                         <dd>{form.title.trim()}</dd>
                     </div>
+                    {activeListing && (
+                        <div>
+                            <dt>Gói thuê Sàn UAV & Tạm tính</dt>
+                            <dd>
+                                {activeListing.title} · {effectiveUnits} {pricingUnitLabel(activeListing.pricingModel)} ({formatVndCompact(estimatedSubtotal)})
+                            </dd>
+                        </div>
+                    )}
+                    {effectiveOpenRfq && (
+                        <div>
+                            <dt>Hình thức giao dịch</dt>
+                            <dd>Đấu thầu mở (Open RFQ)</dd>
+                        </div>
+                    )}
                     <div>
                         <dt>{t('missionCreate.service')}</dt>
                         <dd>{selectedService ? serviceName(selectedService) : t('missionCreate.noService')}</dd>

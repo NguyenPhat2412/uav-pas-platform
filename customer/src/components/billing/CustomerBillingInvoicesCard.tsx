@@ -65,39 +65,39 @@ export function CustomerBillingInvoicesCard({
 
             <CardContent className="p-0">
                 <div className="overflow-x-auto">
-                    <table className="w-full min-w-[760px] border-collapse text-left text-[13px]">
+                    <table className="w-full min-w-[860px] border-collapse text-left text-[13px]">
                         <thead>
                         <tr className="border-b border-border bg-slate-50 text-[11px] text-slate-500">
-                            <th className="whitespace-nowrap px-5 py-3 font-bold">{t('billingPage.invoiceNo')}</th>
-                            <th className="whitespace-nowrap px-5 py-3 font-bold">{t('billingPage.description')}</th>
-                            <th className="whitespace-nowrap px-5 py-3 font-bold">{t('billingPage.issuedOn')}</th>
-                            <th className="whitespace-nowrap px-5 py-3 font-bold">{t('billingPage.dueDate')}</th>
-                            <th className="whitespace-nowrap px-5 py-3 font-bold">{t('billingPage.amount')}</th>
-                            <th className="whitespace-nowrap px-5 py-3 font-bold">{t('common.status')}</th>
-                            <th className="whitespace-nowrap px-5 py-3 text-right font-bold">{t('billingPage.actions')}</th>
+                            <th className="whitespace-nowrap px-4 py-3 font-bold sm:px-5">{t('billingPage.invoiceNo')}</th>
+                            <th className="whitespace-nowrap px-4 py-3 font-bold sm:px-5">{t('billingPage.description')}</th>
+                            <th className="whitespace-nowrap px-4 py-3 font-bold sm:px-5">{t('billingPage.issuedOn')}</th>
+                            <th className="whitespace-nowrap px-4 py-3 font-bold sm:px-5">{t('billingPage.dueDate')}</th>
+                            <th className="whitespace-nowrap px-4 py-3 font-bold sm:px-5">{t('billingPage.amount')}</th>
+                            <th className="whitespace-nowrap px-4 py-3 font-bold sm:px-5">{t('common.status')}</th>
+                            <th className="whitespace-nowrap px-4 py-3 text-right font-bold sm:px-5">{t('billingPage.actions')}</th>
                         </tr>
                         </thead>
                         <tbody>
                         {invoices.map((inv) => (
                             <tr key={inv.id} className="border-b border-slate-100 transition-colors hover:bg-slate-50">
-                                <td className="px-5 py-4 font-extrabold tabular-nums text-slate-900">{inv.code}</td>
-                                <td className="px-5 py-4 text-xs text-slate-700">
+                                <td className="whitespace-nowrap px-4 py-4 align-middle font-extrabold tabular-nums text-slate-900 sm:px-5">{inv.code}</td>
+                                <td className="min-w-[180px] max-w-[280px] px-4 py-4 align-middle text-xs leading-relaxed text-slate-700 sm:px-5">
                                     {inv.missionTitle ?? (inv.planName ? planName(inv.planName) : inv.notes ?? '—')}
                                 </td>
-                                <td className="px-5 py-4 text-xs text-slate-500">{formatDate(inv.createdAt)}</td>
-                                <td className="px-5 py-4 text-xs text-slate-500">{formatDate(inv.dueDate)}</td>
-                                <td className="px-5 py-4 font-extrabold tabular-nums text-slate-900">
+                                <td className="whitespace-nowrap px-4 py-4 align-middle text-xs tabular-nums text-slate-500 sm:px-5">{formatDate(inv.createdAt)}</td>
+                                <td className="whitespace-nowrap px-4 py-4 align-middle text-xs tabular-nums text-slate-500 sm:px-5">{formatDate(inv.dueDate)}</td>
+                                <td className="whitespace-nowrap px-4 py-4 align-middle font-extrabold tabular-nums text-slate-900 sm:px-5">
                                     {formatCurrency(inv.amount)}
                                 </td>
-                                <td className="px-5 py-4 text-xs text-slate-700">
+                                <td className="whitespace-nowrap px-4 py-4 align-middle text-xs text-slate-700 sm:px-5">
                                     <StatusBadge
                                         status={inv.status === 'PAID' ? 'COMPLETED' : inv.status}
                                         label={t(`billingPage.status.${inv.status}`)}
                                         className={inv.status === 'PAID' ? 'border-slate-900 bg-slate-900 text-white [&>span]:bg-white' : undefined}
                                     />
                                 </td>
-                                <td className="px-5 py-4 text-right">
-                                    <div className="inline-flex flex-wrap items-center justify-end gap-2">
+                                <td className="min-w-[240px] px-4 py-4 text-right align-middle sm:px-5">
+                                    <div className="flex flex-wrap items-center justify-end gap-2">
                                         {inv.status === 'PENDING' && transferEnabled ? (
                                             <>
                                                 <Button
@@ -105,7 +105,7 @@ export function CustomerBillingInvoicesCard({
                                                     variant="primary"
                                                     size="sm"
                                                     onClick={() => onPay(inv)}
-                                                    className="h-8 px-3.5 text-xs"
+                                                    className="min-h-8 px-3.5 py-1.5 text-xs"
                                                 >
                                                     {t('billingPage.viewPayment')}
                                                 </Button>
@@ -115,7 +115,7 @@ export function CustomerBillingInvoicesCard({
                                                     size="sm"
                                                     leftIcon={<MessageCircleMore size={13} aria-hidden="true" />}
                                                     onClick={() => handleContactAdmin(inv)}
-                                                    className="h-8 px-2.5 text-xs"
+                                                    className="min-h-8 px-2.5 py-1.5 text-xs"
                                                 >
                                                     {t('payment.contactAdminReconcile')}
                                                 </Button>
@@ -129,7 +129,7 @@ export function CustomerBillingInvoicesCard({
                                                     leftIcon={<MessageCircleMore size={13} aria-hidden="true" />}
                                                     onClick={() => handleContactAdmin(inv)}
                                                     title={awaitingTransferHint}
-                                                    className="h-8 px-3 text-xs"
+                                                    className="min-h-8 px-3 py-1.5 text-xs"
                                                 >
                                                     {t('payment.contactAdminReconcile')}
                                                 </Button>
@@ -138,13 +138,13 @@ export function CustomerBillingInvoicesCard({
                                                     variant="outline"
                                                     size="sm"
                                                     onClick={() => onPay(inv)}
-                                                    className="h-8 px-2.5 text-xs"
+                                                    className="min-h-8 px-2.5 py-1.5 text-xs"
                                                 >
                                                     {t('billingPage.viewPayment')}
                                                 </Button>
                                             </>
                                         ) : (
-                                            <span className="text-xs text-slate-400">{formatDate(inv.paidAt)}</span>
+                                            <span className="whitespace-nowrap text-xs tabular-nums text-slate-400">{formatDate(inv.paidAt)}</span>
                                         )}
                                         <Button
                                             type="button"
@@ -155,7 +155,7 @@ export function CustomerBillingInvoicesCard({
                                             onClick={() => onDownloadReceipt(inv.id, inv.code)}
                                             aria-label={t('billingPage.downloadPdfAria', {code: inv.code})}
                                             title={t('billingPage.downloadPdfAria', {code: inv.code})}
-                                            className="h-8 px-2.5 text-xs"
+                                            className="min-h-8 px-2.5 py-1.5 text-xs"
                                         >
                                             {t('billingPage.downloadPdf')}
                                         </Button>

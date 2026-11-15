@@ -30,10 +30,16 @@
         "profile": "Tài khoản",
         "portalTitle": "Customer Portal",
         "createRequest": "Tạo yêu cầu",
+        "providerOnboarding": "Hồ sơ Đối tác UAV",
+        "providerListings": "Tin đăng dịch vụ & thuê",
+        "providerFleet": "Đội bay & Thiết bị 3P",
+        "providerOrders": "Đơn đặt & Đấu thầu RFQ",
+        "providerWallet": "Ví ký quỹ & Rút tiền",
         "groups": {
             "overview": "Tổng quan",
             "missions": "Nhiệm vụ bay",
             "services": "Dịch vụ & thanh toán",
+            "partner": "Kênh Đối tác UAV",
             "support": "Hỗ trợ & tài khoản"
         },
         "badges": {

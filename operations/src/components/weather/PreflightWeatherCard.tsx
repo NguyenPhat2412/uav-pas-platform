@@ -5,6 +5,7 @@ import {BatteryMedium, Clock3, CloudSun, Compass, Droplets, Eye, Gauge, Magnet, 
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
 import {CLEARANCE_TONE, compassPoint} from '@/utils/weather/clearance';
+import {isHistoricalWeatherTime} from '@/utils/weather/flight-window';
 import type {FlightClearanceLevel, WeatherAssessment} from '@/types/weather/weather.types';
 
 interface PreflightWeatherCardProps {
@@ -36,6 +37,11 @@ export function PreflightWeatherCard({assessment, isPending, isError, emptyMessa
     const time = (value: string) => formatDate(value, {dateStyle: 'short', timeStyle: 'short'});
     const data = assessment ?? null;
     const titleId = useId();
+    const timeKey = data?.forecast
+        ? 'weather.preflight.forecastAt'
+        : isHistoricalWeatherTime(data?.evaluatedTime)
+            ? 'weather.preflight.historicalAt'
+            : 'weather.preflight.currentAt';
 
     return <section className={cn('min-w-0 overflow-hidden rounded-panel border border-border bg-card', className)} aria-labelledby={titleId}>
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
@@ -52,7 +58,7 @@ export function PreflightWeatherCard({assessment, isPending, isError, emptyMessa
                     {isPending ? t('common.loading') : isError ? t('weather.preflight.loadError') : emptyMessage ?? t('weather.preflight.noLocation')}</p>
                 : <>
                     <p className="m-0 text-xs text-muted">
-                        {t(data.forecast ? 'weather.preflight.forecastAt' : 'weather.preflight.currentAt', {time: time(data.evaluatedTime)})}
+                        {t(timeKey, {time: time(data.evaluatedTime)})}
                         {' · '}{t(`weather.preflight.provider.${data.provider}`)}
                         {data.fromCache && <> · {t('weather.preflight.cached')}</>}
                     </p>

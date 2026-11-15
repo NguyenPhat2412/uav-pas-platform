@@ -236,12 +236,21 @@ export function MissionHandoverReviewCard({
                     />
                 </div>
 
-                <Switch
-                    checked={accepted}
-                    disabled={actions.upsertReview.isPending}
-                    onCheckedChange={val => patchOverrides({accepted: val})}
-                    label={t('capabilities.review.acceptDeliverables')}
-                />
+                <div className="space-y-1">
+                    <Switch
+                        checked={isReviewedAccepted ? true : accepted}
+                        disabled={actions.upsertReview.isPending || isReviewedAccepted}
+                        onCheckedChange={val => patchOverrides({accepted: val})}
+                        label={t('capabilities.review.acceptDeliverables')}
+                    />
+                    <p className="m-0 text-[11.5px] text-slate-500">
+                        {isReviewedAccepted
+                            ? 'Trạng thái nghiệm thu đã được khóa sau khi giải ngân Ký quỹ. Bạn vẫn có thể cập nhật điểm đánh giá và nhận xét.'
+                            : accepted
+                              ? 'Khi xác nhận nghiệm thu, hệ thống sẽ giải ngân Ký quỹ Escrow (nếu có) về ví đối tác thực hiện.'
+                              : 'Bỏ chọn nếu dữ liệu chưa đạt yêu cầu — khoản Ký quỹ Escrow sẽ được khóa bảo vệ cho tới khi đối tác bổ sung.'}
+                    </p>
+                </div>
 
                 <FormField id="handover-review-comment" label={t('capabilities.review.commentLabel')} optional>
                     <Textarea

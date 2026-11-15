@@ -10,6 +10,7 @@ import {
     PanelLeftOpen,
     Plane,
     ReceiptText,
+    Store,
     X,
     type LucideIcon,
 } from 'lucide-react';
@@ -36,6 +37,7 @@ const GROUP_ICONS: Partial<Record<(typeof CUSTOMER_SIDEBAR_GROUPS)[number], Luci
     overview: LayoutDashboard,
     missions: Plane,
     services: ReceiptText,
+    partner: Store,
     support: CircleHelp,
 };
 

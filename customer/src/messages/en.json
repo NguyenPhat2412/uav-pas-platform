@@ -460,7 +460,8 @@
         "WEATHER_SOURCE_UNAVAILABLE": "Weather data is not available yet. Check again before the flight.",
         "FORECAST_OUT_OF_RANGE": "This time is outside the 16-day forecast.",
         "MISSION_LOCATION_MISSING": "The mission has no coordinates, so weather cannot be assessed."
-      }
+      },
+      "historicalAt": "Past observation · {time}"
     },
     "provider": {
       "title": "Weather data source",
@@ -505,7 +506,18 @@
       },
       "filters": "Filters",
       "map": "Weather map",
-      "stations": "Stations"
+      "stations": "Stations",
+      "day": "Date",
+      "hour": "Hour",
+      "prevDay": "Previous day",
+      "nextDay": "Next day",
+      "yesterday": "Yesterday",
+      "today": "Today",
+      "tomorrowDay": "Tomorrow",
+      "pickDate": "Pick date",
+      "rangeHint": "Past 7 days · 14-day forecast",
+      "dayOffsetPast": "{days}d ago",
+      "dayOffsetFuture": "In {days}d"
     },
     "home": {
       "title": "Today's weather",
@@ -552,7 +564,11 @@
       "conditionsNight": {
         "clear": "Clear",
         "partly": "Partly cloudy"
-      }
+      },
+      "titleYesterday": "Yesterday's weather",
+      "titleTomorrow": "Tomorrow's weather",
+      "titleDate": "Weather · {date}",
+      "daySlots": "Daytime flight hours"
     }
   },
   "digitalTwin": {
