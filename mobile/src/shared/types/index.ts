@@ -158,6 +158,13 @@ export interface Invoice {
     missionTitle?: string;
     planId?: number;
     planName?: string;
+    providerId?: number | null;
+    providerDisplayName?: string | null;
+    escrowStatus?: 'NONE' | 'UNFUNDED' | 'HELD' | 'RELEASED' | 'REFUNDED' | 'DISPUTED';
+    platformFeeRate?: number | null;
+    platformFeeVnd?: number | null;
+    providerNetVnd?: number | null;
+    escrowReleasedAt?: string | null;
     amount: number;
     status: InvoiceStatus;
     dueDate: string;

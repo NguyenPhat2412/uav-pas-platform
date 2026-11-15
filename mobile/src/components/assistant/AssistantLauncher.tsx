@@ -9,14 +9,7 @@ import {colors} from '@/styles/tokens';
 
 const TAB_ROOTS = [
     '/customer/home',
-    '/customer/missions',
-    '/customer/services',
-    '/customer/account',
     '/operations/missions',
-    '/operations/sar',
-    '/operations/fleet',
-    '/operations/weather',
-    '/operations/account',
 ];
 const glass = Platform.OS === 'ios' && isLiquidGlassAvailable() && isGlassEffectAPIAvailable();
 const SIZE = 46;

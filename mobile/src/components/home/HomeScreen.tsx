@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
-import {Bell, CalendarCheck, Clock3, CreditCard, FilePenLine, GraduationCap, Layers, Plane, Plus, Receipt, type LucideIcon} from 'lucide-react-native';
-import {AppText, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
+import {Bell, CalendarCheck, ChevronRight, Clock3, CreditCard, FilePenLine, GraduationCap, Layers, Plane, Plus, Receipt, Store, type LucideIcon} from 'lucide-react-native';
+import {AppText, Card, EmptyState, ErrorState, GlassSurface, LoadingState, Screen, SectionTitle} from '@/components/ui';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {UserAvatar} from '@/components/profile/UserAvatar';
 import {WeatherCard} from '@/components/weather/WeatherCard';
@@ -87,6 +87,17 @@ export function HomeScreen() {
                 <Action icon={GraduationCap} label={t('mobile.home.shortcuts.training')} name={t('nav.training')} onPress={() => router.push('/customer/training')}/>
             </View>
 
+            <Card onPress={() => router.push('/customer/provider')}>
+                <GlassSurface style={styles.partnerRow} fallback={styles.partnerRow}>
+                    <View style={styles.actionIcon}><Store size={20} color={colors.primary}/></View>
+                    <View style={styles.flex}>
+                        <AppText variant="title">{t('mobile.provider.hubEntry')}</AppText>
+                        <AppText variant="caption" numberOfLines={1}>{t('mobile.provider.accountBannerDesc')}</AppText>
+                    </View>
+                    <ChevronRight size={18} color={colors.muted}/>
+                </GlassSurface>
+            </Card>
+
             <SectionTitle title={t('dashboard.analytics.pipelineTitle')}/>
             {analytics.isPending ? <LoadingState label={t('dashboard.analytics.loading')}/>
                 : analytics.isError || !data ? <ErrorState message={t('dashboard.analytics.loadError')} retryLabel={t('common.retry')} onRetry={() => void analytics.refetch()}/>
@@ -147,4 +158,5 @@ const styles = StyleSheet.create({
     invoice: {backgroundColor: colors.warningLight, borderColor: colors.warningLight},
     invoiceRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.md},
     invoiceText: {flex: 1, color: colors.warning, fontWeight: '600'},
+    partnerRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
 });

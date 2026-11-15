@@ -6,6 +6,7 @@ import {AppText, Badge, Button, Card, EmptyState, ErrorState, LoadingState, Scre
 import {useBilling, useBillingActions} from '@/hooks/billing/useCustomerBilling';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
+import {escrowStatusLabel} from '@/shared/forms/marketplace/marketplace-forms';
 import {planName} from '@/shared/lib/presentation';
 import type {InvoiceStatus, ServicePlan} from '@/shared/types/customer';
 import {signInErrorText} from '@/forms/auth/sign-in-flow';
@@ -110,11 +111,21 @@ export function BillingScreen() {
                                 <Card key={invoice.id} onPress={canOpen ? () => router.push({pathname: '/customer/invoices/[id]', params: {id: String(invoice.id)}}) : undefined}>
                                     <View style={styles.row}>
                                         <AppText variant="caption" style={styles.code}>{invoice.code}</AppText>
+                                        {invoice.escrowStatus && invoice.escrowStatus !== 'NONE' ? (
+                                            <Badge
+                                                label={escrowStatusLabel(invoice.escrowStatus)}
+                                                background={invoice.escrowStatus === 'DISPUTED' ? colors.dangerLight : colors.primaryLight}
+                                                color={invoice.escrowStatus === 'DISPUTED' ? colors.danger : colors.primary}
+                                            />
+                                        ) : null}
                                         <Badge label={t(`billingPage.status.${invoice.status}`)} background={tone.background} color={tone.color}/>
                                     </View>
                                     <View style={styles.row}>
                                         <View style={styles.flex}>
                                             <AppText numberOfLines={1}>{invoice.missionTitle || planName(invoice.planName) || invoice.notes || invoice.code}</AppText>
+                                            {invoice.providerDisplayName ? (
+                                                <AppText variant="caption">{invoice.providerDisplayName}</AppText>
+                                            ) : null}
                                             <AppText variant="caption">{t('billingPage.dueDate')}: {formatDate(invoice.dueDate, {dateStyle: 'medium'})}</AppText>
                                         </View>
                                         <AppText variant="title">{formatCurrency(invoice.amount)}</AppText>

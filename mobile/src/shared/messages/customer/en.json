@@ -30,10 +30,16 @@
         "profile": "Profile",
         "portalTitle": "Customer Portal",
         "createRequest": "New request",
+        "providerOnboarding": "Partner KYC Profile",
+        "providerListings": "My UAV Listings",
+        "providerFleet": "Partner Fleet & Gear",
+        "providerOrders": "Orders & RFQ Bids",
+        "providerWallet": "Escrow Wallet & Payouts",
         "groups": {
             "overview": "Overview",
             "missions": "Flight missions",
             "services": "Services & billing",
+            "partner": "UAV Partner Studio",
             "support": "Help & account"
         },
         "badges": {

@@ -5,6 +5,7 @@ import {sessionStore} from '@/lib/api/session';
 import {realtimeWs, type RealtimeServerFrame} from '@/lib/realtime/realtime-ws';
 import {useAuth} from '@/providers/AuthContext';
 import {billingKeys} from '@/shared/hooks/billing/query-keys';
+import {queryKeys} from '@/shared/lib/query';
 import type {BankTransferInstructions} from '@/shared/types/billing/billing.types';
 import type {Invoice, InvoiceStatus, PageResponse} from '@/shared/types/customer';
 
@@ -63,12 +64,24 @@ export function useBillingRealtime(watchInvoiceId?: number) {
                         ? {
                               ...prev,
                               content: prev.content.map(inv =>
-                                  inv.id === frame.invoiceId ? {...inv, status: frame.status as InvoiceStatus} : inv,
+                                  inv.id === frame.invoiceId
+                                      ? {
+                                            ...inv,
+                                            status: frame.status as InvoiceStatus,
+                                            escrowStatus:
+                                                frame.status === 'PAID' &&
+                                                (inv.providerId != null || inv.escrowStatus === 'UNFUNDED')
+                                                    ? 'HELD'
+                                                    : inv.escrowStatus,
+                                        }
+                                      : inv,
                               ),
                           }
                         : prev,
             );
             void client.invalidateQueries({queryKey: billingKeys.customer(userId)});
+            void client.invalidateQueries({queryKey: queryKeys.feature(userId, 'customer')});
+            void client.invalidateQueries({queryKey: queryKeys.feature(userId, 'marketplace')});
         });
 
         return () => {

@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
-import {Bell, CalendarClock, CheckCircle2, ChevronRight, ClipboardList, Clock, Cpu, MapPin, ShieldCheck, Star} from 'lucide-react-native';
+import {Bell, CalendarClock, CheckCircle2, ChevronRight, ClipboardList, Clock, Cpu, MapPin, Megaphone, ShieldCheck, Star, Store} from 'lucide-react-native';
 import {AppText, Badge, Card, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState, SectionTitle, TextField} from '@/components/ui';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {AppBackground} from '@/components/layout/AppBackground';
@@ -79,6 +79,13 @@ function OpsMissionCard({mission, onPress}: { mission: Mission; onPress: () => v
             ) : null}
 
             <View style={styles.pillsRow}>
+                {mission.providerResponseStatus === 'OPEN_RFQ' ? (
+                    <Badge icon={Megaphone} label="RFQ" background={colors.warningLight} color={colors.warning}/>
+                ) : mission.providerDisplayName ? (
+                    <Badge icon={Store} label={mission.providerDisplayName} background={colors.primaryLight} color={colors.primary}/>
+                ) : (
+                    <Badge label="1P" background={colors.slateLight} color={colors.slateDark}/>
+                )}
                 {mission.uavId != null && (
                     <Badge
                         icon={Cpu}

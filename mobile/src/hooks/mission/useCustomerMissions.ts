@@ -1,4 +1,5 @@
 import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {billingKeys} from '@/shared/hooks/billing/query-keys';
 import {queryKeys} from '@/shared/lib/query';
 import {customerMissionService} from '@/api/mission/customer-missions.api';
 import {useAuth} from '@/providers/AuthContext';
@@ -105,6 +106,8 @@ export function useMissionActions() {
         client.invalidateQueries({queryKey: [...key, 'missions']}),
         id ? client.invalidateQueries({queryKey: [...key, 'mission', id]}) : undefined,
         client.invalidateQueries({queryKey: opsKey}),
+        client.invalidateQueries({queryKey: billingKeys.customer(user?.id)}),
+        client.invalidateQueries({queryKey: queryKeys.feature(user?.id, 'marketplace')}),
     ]);
     return {
         create: useMutation({mutationFn: (data: MissionInput) => customerMissionService.create(data), onSuccess: data => refresh(data.id), retry: false}),
@@ -117,8 +120,8 @@ export function useMissionActions() {
             },
             retry: false,
         }),
-        submit: useMutation({mutationFn: (id: number) => customerMissionService.submit(id), onSuccess: (_d, id) => refresh(id), retry: false}),
-        cancel: useMutation({mutationFn: (id: number) => customerMissionService.cancel(id), onSuccess: (_d, id) => refresh(id), retry: false}),
+        submit: useMutation({mutationFn: (id: number) => customerMissionService.submit(id), onSettled: (_d, _e, id) => void refresh(id), retry: false}),
+        cancel: useMutation({mutationFn: (id: number) => customerMissionService.cancel(id), onSettled: (_d, _e, id) => void refresh(id), retry: false}),
         clone: useMutation({
             mutationFn: (id: number) => customerMissionService.clone(id),
             onSuccess: data => refresh(data.id),
@@ -137,13 +140,17 @@ export function useMissionActions() {
         upsertReview: useMutation({
             mutationFn: ({id, data}: { id: number; data: MissionReviewUpsertInput }) =>
                 customerMissionService.upsertReview(id, data),
-            onSuccess: (_d, {id}) => refresh(id),
+            onSettled: (_d, _e, {id}) => {
+                void refresh(id);
+                void client.invalidateQueries({queryKey: [...key, 'mission', id, 'review']});
+                void client.invalidateQueries({queryKey: [...key, 'mission', id, 'timeline']});
+            },
             retry: false,
         }),
         upsertPermit: useMutation({
             mutationFn: ({id, data}: { id: number; data: MissionPermitUpsertInput }) =>
                 customerMissionService.upsertPermit(id, data),
-            onSuccess: (_d, {id}) => refresh(id),
+            onSettled: (_d, _e, {id}) => void refresh(id),
             retry: false,
         }),
         availability: useMutation({

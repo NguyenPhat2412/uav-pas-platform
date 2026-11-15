@@ -1,8 +1,10 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {Stack, useLocalSearchParams, useRouter} from 'expo-router';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ClipboardList, Plus} from 'lucide-react-native';
 import {Button, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState} from '@/components/ui';
+import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {MissionRow} from '@/components/mission/MissionBits';
 import {useMissionList} from '@/hooks/mission/useCustomerMissions';
 import {useAuth} from '@/providers/AuthContext';
@@ -17,6 +19,7 @@ export function MissionListScreen() {
     const {t} = useI18n();
     const {can} = useAuth();
     const router = useRouter();
+    const insets = useSafeAreaInsets();
     const params = useLocalSearchParams<{ filter?: string }>();
     const requested = FILTERS.includes(params.filter as MissionFilter) ? params.filter as MissionFilter : 'all';
     const [chosen, setChosen] = useState<{ from: string | undefined; filter: MissionFilter }>({from: params.filter, filter: requested});
@@ -45,12 +48,9 @@ export function MissionListScreen() {
         <View style={styles.screen}>
             <AppBackground/>
             <Stack.Screen options={{
-                headerRight: can('MISSION_CREATE') ? () => (
-                    <Pressable onPress={() => router.push('/customer/mission/create')} accessibilityRole="button" accessibilityLabel={t('missions.create')}
-                               hitSlop={8} style={({pressed}) => [styles.add, pressed && styles.pressed]}>
-                        <Plus size={22} color={colors.primary}/>
-                    </Pressable>
-                ) : undefined,
+                headerRight: can('MISSION_CREATE')
+                    ? () => <HeaderIconButton icon={Plus} label={t('missions.create')} onPress={() => router.push('/customer/mission/create')}/>
+                    : undefined,
             }}/>
             {list.isPending || list.isError ? (
                 <View style={styles.centerState}>
@@ -62,7 +62,7 @@ export function MissionListScreen() {
                     data={missions}
                     keyExtractor={mission => String(mission.id)}
                     contentInsetAdjustmentBehavior="automatic"
-                    contentContainerStyle={styles.list}
+                    contentContainerStyle={[styles.list, {paddingBottom: insets.bottom + 116}]}
                     ListHeaderComponent={filters}
                     renderItem={({item}) => <MissionRow mission={item} onPress={() => router.push({pathname: '/customer/mission/[id]', params: {id: String(item.id)}})}/>}
                     onEndReachedThreshold={0.4}
@@ -94,9 +94,7 @@ export function MissionListScreen() {
 
 const styles = StyleSheet.create({
     screen: {flex: 1, backgroundColor: colors.canvas},
-    add: {width: 32, height: 32, alignItems: 'center', justifyContent: 'center'},
-    pressed: {opacity: 0.6},
-    centerState: {flex: 1, justifyContent: 'center'},
+    centerState: {flex: 1, justifyContent: 'center', paddingHorizontal: spacing.lg},
     // Same centred column as Screen, so lists line up with the other pages on wide screens.
     list: {padding: spacing.lg, gap: spacing.md, flexGrow: 1, width: '100%', maxWidth: CONTENT_WIDTH, alignSelf: 'center'},
     more: {marginVertical: spacing.lg},

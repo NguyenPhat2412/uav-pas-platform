@@ -2,8 +2,8 @@ import React from 'react';
 import {ActivityIndicator, Alert, Pressable, StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import {ArrowRightLeft, Camera, ChevronRight, type LucideIcon} from 'lucide-react-native';
-import {AppText, Screen} from '@/components/ui';
+import {ArrowRightLeft, Camera, ChevronRight, Store, type LucideIcon} from 'lucide-react-native';
+import {AppText, Card, Screen} from '@/components/ui';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {AccountFooterActions} from '@/components/profile/AccountFooterActions';
 import {AccountQuickGrid} from '@/components/profile/AccountQuickGrid';
@@ -126,6 +126,19 @@ export function AccountScreen() {
             )}
 
             <AccountQuickGrid/>
+
+            <Card onPress={() => router.push('/customer/provider')}>
+                <View style={styles.row}>
+                    <View style={styles.rowIcon}>
+                        <Store size={18} color={colors.primary}/>
+                    </View>
+                    <View style={styles.flex}>
+                        <AppText variant="title">{t('mobile.provider.hubEntry')}</AppText>
+                        <AppText variant="caption" numberOfLines={1}>{t('mobile.provider.accountBannerDesc')}</AppText>
+                    </View>
+                    <ChevronRight size={18} color={colors.muted}/>
+                </View>
+            </Card>
 
             <PushDeviceCard/>
 
