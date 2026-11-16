@@ -6,6 +6,19 @@ export type NotificationType =
     | 'PAYMENT'
     | 'SYSTEM';
 
+export type NotificationModuleCode =
+    | 'SAR'
+    | 'AIRSPACE'
+    | 'MISSION'
+    | 'MARKETPLACE'
+    | 'BILLING'
+    | 'SUPPORT'
+    | 'MAINTENANCE'
+    | 'STORAGE'
+    | 'SYSTEM';
+
+export type NotificationSeverity = 'INFO' | 'ACTION' | 'CRITICAL';
+
 export const notificationTypes: NotificationType[] = [
     'MISSION_ASSIGNED',
     'MISSION_STATUS_CHANGED',
@@ -15,6 +28,20 @@ export const notificationTypes: NotificationType[] = [
     'SYSTEM',
 ];
 
+export const notificationModuleCodes: NotificationModuleCode[] = [
+    'SAR',
+    'AIRSPACE',
+    'MISSION',
+    'MARKETPLACE',
+    'BILLING',
+    'SUPPORT',
+    'MAINTENANCE',
+    'STORAGE',
+    'SYSTEM',
+];
+
+export const notificationSeverities: NotificationSeverity[] = ['CRITICAL', 'ACTION', 'INFO'];
+
 /** GET /api/v1/notifications row; always the signed-in user's own inbox. */
 export interface NotificationRecord {
     id: number;
@@ -22,6 +49,8 @@ export interface NotificationRecord {
     title: string;
     content: string;
     type: NotificationType | null;
+    moduleCode?: NotificationModuleCode | null;
+    severity?: NotificationSeverity | null;
     referenceType: string | null;
     referenceId: number | null;
     isRead: boolean;
@@ -37,9 +66,14 @@ export interface SendNotificationInput {
 
 export interface NotificationResponse {
     id: number;
+    userId?: number;
     title: string;
     content: string;
     type: string;
+    moduleCode?: NotificationModuleCode | null;
+    severity?: NotificationSeverity | null;
+    referenceType?: string | null;
+    referenceId?: number | null;
     isRead: boolean;
     createdAt: string;
 }
@@ -49,6 +83,86 @@ export interface NotificationItem {
     title: string;
     message: string;
     type: 'INFO' | 'WARNING' | 'ALERT' | 'SUCCESS';
+    moduleCode?: NotificationModuleCode | null;
+    severity?: NotificationSeverity | null;
+    referenceType?: string | null;
+    referenceId?: number | null;
     isRead: boolean;
     createdAt: string;
+}
+
+export interface NotificationModulePolicy {
+    id: number;
+    moduleCode: NotificationModuleCode;
+    displayNameVi: string;
+    displayNameEn: string;
+    displayNameJa: string;
+    descriptionVi: string;
+    descriptionEn: string;
+    descriptionJa: string;
+    severity: NotificationSeverity;
+    enabled: boolean;
+    mandatory: boolean;
+    inAppEnabled: boolean;
+    screenPopupEnabled: boolean;
+    desktopOsEnabled: boolean;
+    mobilePushEnabled: boolean;
+    emailEnabled: boolean;
+    cooldownSeconds: number;
+    sortOrder: number;
+    updatedAt: string | null;
+}
+
+export interface UpdateNotificationModulePolicyInput {
+    enabled: boolean;
+    severity: NotificationSeverity;
+    mandatory: boolean;
+    inAppEnabled: boolean;
+    screenPopupEnabled: boolean;
+    desktopOsEnabled: boolean;
+    mobilePushEnabled: boolean;
+    emailEnabled: boolean;
+    cooldownSeconds: number;
+}
+
+export interface UserNotificationModulePreference {
+    moduleCode: NotificationModuleCode;
+    displayNameVi: string;
+    displayNameEn: string;
+    displayNameJa: string;
+    descriptionVi: string;
+    descriptionEn: string;
+    descriptionJa: string;
+    severity: NotificationSeverity;
+    moduleEnabled: boolean;
+    mandatory: boolean;
+    muted: boolean;
+    adminScreenPopupEnabled: boolean;
+    adminDesktopOsEnabled: boolean;
+    adminMobilePushEnabled: boolean;
+    adminEmailEnabled: boolean;
+    screenPopupEnabled: boolean;
+    desktopOsEnabled: boolean;
+    mobilePushEnabled: boolean;
+    emailEnabled: boolean;
+}
+
+export interface UpdateUserNotificationPreferenceInput {
+    muted: boolean;
+    screenPopupEnabled: boolean;
+    desktopOsEnabled: boolean;
+    mobilePushEnabled: boolean;
+    emailEnabled: boolean;
+}
+
+export interface RealtimeNotificationPopupPayload {
+    id: number;
+    title: string;
+    content?: string;
+    type?: string | null;
+    moduleCode?: NotificationModuleCode | null;
+    severity?: NotificationSeverity | null;
+    referenceType?: string | null;
+    referenceId?: number | null;
+    createdAt?: string;
 }

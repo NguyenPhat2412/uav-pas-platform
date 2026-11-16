@@ -16,7 +16,24 @@ export type RealtimeServerFrame =
     | { type: 'SUPPORT_ADMIN_TYPING'; timestamp: string; threadId: number; senderName?: string | null; typing: boolean }
     | { type: 'SUPPORT_THREAD_DELETED'; timestamp: string; threadId: number }
     | { type: 'INVOICE_UPDATED'; timestamp: string; invoiceId: number; invoiceCode: string; status: InvoiceStatus | string }
-    | { type: 'NOTIFICATION_CREATED'; timestamp: string; notification: { id: number; title: string }; unreadCount: number };
+    | {
+          type: 'NOTIFICATION_CREATED';
+          timestamp: string;
+          notification: {
+              id: number;
+              title: string;
+              content?: string;
+              type?: string | null;
+              moduleCode?: 'SAR' | 'AIRSPACE' | 'MISSION' | 'MARKETPLACE' | 'BILLING' | 'SUPPORT' | 'MAINTENANCE' | 'STORAGE' | 'SYSTEM' | null;
+              severity?: 'INFO' | 'ACTION' | 'CRITICAL' | null;
+              referenceType?: string | null;
+              referenceId?: number | null;
+              createdAt?: string;
+          };
+          unreadCount: number;
+          screenPopup?: boolean;
+          desktopOs?: boolean;
+      };
 
 export interface RealtimeAcquireOptions {
     authenticated?: boolean;

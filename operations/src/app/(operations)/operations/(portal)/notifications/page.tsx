@@ -1,4 +1,4 @@
-import OperationsNotificationsPanel from '@/components/notification/OperationsNotificationsPanel';
+import OperationsNotificationsPanel from '@/components/notification/inbox/OperationsNotificationsPanel';
 
 export default function OperationsNotificationsRoutePage() {
     return <OperationsNotificationsPanel/>;

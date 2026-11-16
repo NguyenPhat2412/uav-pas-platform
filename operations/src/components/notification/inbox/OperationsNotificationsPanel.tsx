@@ -6,6 +6,7 @@ import {Alert, Badge, type BadgeProps, Button, Card, FormField, Input, Select, S
 import {useNotifications} from '@/hooks/notification/useNotifications';
 import {OperationsPage} from '@/components/layout/OperationsPage';
 import {useI18n} from '@/providers/I18nContext';
+import {UserNotificationPreferencesCard} from '@/components/notification/policy/UserNotificationPreferencesCard';
 
 const typeTone: Record<string, { icon: typeof Info; variant: NonNullable<BadgeProps['variant']> }> = {
     ALERT: {icon: ShieldAlert, variant: 'error'},
@@ -32,6 +33,7 @@ export default function NotificationsPage() {
     return (
         <OperationsPage permission={null} activeResource="notifications">
             <div className="space-y-4">
+                <UserNotificationPreferencesCard/>
                 <Card className="flex flex-col gap-3 p-3.5 lg:flex-row lg:items-end">
                     <FormField id="ops-notif-search" label={t('opsMissions.notifications.searchLabel')} optional={false} className="min-w-[200px] flex-1">
                         <Input

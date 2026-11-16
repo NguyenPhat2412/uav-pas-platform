@@ -157,7 +157,8 @@
     "infrastructureDatabase": "Cơ sở dữ liệu",
     "infrastructureEmail": "Email",
     "weather": "Thời tiết bay",
-    "airspace": "Vùng không phận"
+    "airspace": "Vùng không phận",
+    "notificationModules": "Modules thông báo"
   },
   "sidebar": {
     "title": "UAV PAS",
@@ -1067,5 +1068,46 @@
       "recentReviewsTitle": "Biên bản nghiệm thu bàn giao gần đây",
       "recentReviewsEmpty": "Chưa có biên bản nghiệm thu nào từ khách hàng."
     }
+  },
+  "notificationCenter": {
+    "popupOpen": "Xem ngay",
+    "popupDismiss": "Đóng thông báo",
+    "severityCRITICAL": "Khẩn cấp",
+    "severityACTION": "Cần chú ý",
+    "severityINFO": "Thông tin",
+    "desktopTitle": "Thông báo màn hình hệ điều hành (macOS / Windows)",
+    "desktopGranted": "Đã cấp quyền hiển thị ra ngoài khay hệ điều hành",
+    "desktopDefault": "Bật quyền để nhận thông báo nổi ngay cả khi ẩn tab trình duyệt",
+    "desktopDenied": "Trình duyệt đang chặn quyền thông báo — hãy mở khoá trên thanh địa chỉ",
+    "desktopUnsupported": "Trình duyệt hiện tại không hỗ trợ thông báo hệ điều hành",
+    "desktopEnableBtn": "Bật thông báo màn hình",
+    "prefsTitle": "Tuỳ chỉnh thông báo theo Module",
+    "prefsSubtitle": "Chọn các nhóm nghiệp vụ bạn muốn hiển thị nổi trên màn hình hoặc nhận qua điện thoại, email.",
+    "prefsExpand": "Cài đặt kênh & module thông báo",
+    "prefsHide": "Thu gọn cài đặt",
+    "mandatoryBadge": "Bắt buộc an toàn bay",
+    "disabledByAdmin": "Quản trị viên đang tạm tắt",
+    "receiveModule": "Nhận thông báo",
+    "channelInApp": "Chuông nội bộ",
+    "channelScreenPopup": "Popup màn hình",
+    "channelDesktopOs": "Khay HĐH Desktop",
+    "channelMobilePush": "Mobile Push",
+    "channelEmail": "Email",
+    "adminTitle": "Quản trị Danh sách Modules Thông báo",
+    "adminSubtitle": "Điều khiển tập trung các module nghiệp vụ, kênh hiển thị ngoài màn hình, mức độ khẩn cấp và chống lặp thông báo.",
+    "backToInbox": "Về hộp thư thông báo",
+    "openModulesBtn": "Quản lý Modules thông báo",
+    "kpiActiveModules": "Modules đang bật",
+    "kpiMandatory": "Bắt buộc an toàn",
+    "kpiScreenPopup": "Bật Popup màn hình",
+    "kpiDesktopOs": "Bật Khay HĐH",
+    "mandatoryToggle": "Khóa bắt buộc",
+    "severityLabel": "Mức hiển thị",
+    "cooldownLabel": "Giãn cách chống lặp (giây)",
+    "saveCooldown": "Lưu giãn cách",
+    "testPopupBtn": "Bắn thử ra màn hình",
+    "testFired": "Đã bắn thông báo kiểm thử cho module {module}",
+    "savedModule": "Đã cập nhật chính sách module {module}",
+    "savedPref": "Đã lưu tuỳ chọn thông báo của bạn"
   }
 }
