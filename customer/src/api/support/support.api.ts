@@ -27,6 +27,13 @@ export const publicSupportService = {
             {signal},
         ),
 
+    markRead: (visitorToken: string, signal?: AbortSignal) =>
+        apiClient.post<PublicSupportThreadSession>(
+            API_ROUTES.public.supportMarkRead(visitorToken),
+            {},
+            {signal},
+        ),
+
     sendMessage: (
         visitorToken: string,
         content: string,

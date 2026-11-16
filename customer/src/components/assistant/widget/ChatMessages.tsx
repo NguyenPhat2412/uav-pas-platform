@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect, useRef, useState} from 'react';
-import {ChevronLeft, ChevronRight, Film, X} from 'lucide-react';
+import {AlertCircle, Check, CheckCheck, ChevronLeft, ChevronRight, Clock, Film, X} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import type {ChatImage, ChatMessage} from '@/types/assistant/assistant.types';
@@ -16,13 +16,30 @@ function isToday(at: number) {
 
 /**
  * Messenger-style transcript: one avatar per sender run (15-minute window), a time divider between runs that are
- * far apart, and image grids that open full size.
+ * far apart, image grids that open full size, and Chat-TTA delivery/seen/retry status badges on user turns.
  */
-export function ChatMessages({messages}: { messages: ChatMessage[] }) {
+export function ChatMessages({
+    messages,
+    onRetryMessage,
+}: {
+    messages: ChatMessage[];
+    onRetryMessage?: (clientKey: string) => void;
+}) {
     const {t, formatDate} = useI18n();
     const [viewing, setViewing] = useState<{images: ChatImage[]; index: number} | null>(null);
     const time = (at: number) => formatDate(new Date(at).toISOString(), isToday(at)
         ? {timeStyle: 'short'} : {dateStyle: 'short', timeStyle: 'short'});
+
+    let lastSettledUserMsg: ChatMessage | null = null;
+    let lastSettledUserHasReply = false;
+    for (let i = messages.length - 1; i >= 0; i--) {
+        const item = messages[i];
+        if (item.role === 'user' && item.status !== 'sending' && item.status !== 'failed') {
+            lastSettledUserMsg = item;
+            lastSettledUserHasReply = item.status === 'seen' || messages.slice(i + 1).some(x => x.role === 'assistant');
+            break;
+        }
+    }
 
     return <>
         {groupMessages(messages).map((group, g) => {
@@ -34,12 +51,39 @@ export function ChatMessages({messages}: { messages: ChatMessage[] }) {
                 <div className={cn('flex gap-2', mine ? 'justify-end' : 'justify-start')}>
                     {!mine && <span className="mt-0.5 shrink-0 self-start"><SuperheroLogo size={26}/></span>}
                     <div className={cn('flex min-w-0 max-w-[82%] flex-col gap-1', mine ? 'items-end' : 'items-start')}>
-                        {group.messages.map((m, i) => <div key={i} className={cn('flex min-w-0 max-w-full flex-col gap-1', mine ? 'items-end' : 'items-start')}>
-                            {!!m.images?.length && <ImageGrid images={m.images} onOpen={index => setViewing({images: m.images!, index})}/>}
-                            {m.content && <p className={cn('m-0 max-w-full whitespace-pre-wrap break-words rounded-overlay px-3 py-1.5 text-[13px] leading-relaxed',
-                                mine ? 'bg-primary text-primary-foreground' : 'border border-slate-200 bg-white text-slate-800')}>{m.content}</p>}
-                            {m.note && <span className="px-1 font-mono text-[10px] text-slate-400">{m.note}</span>}
-                        </div>)}
+                        {group.messages.map((m, i) => {
+                            const isLastSettledMine = mine && m === lastSettledUserMsg;
+                            return <div key={m.clientKey ?? i} className={cn('flex min-w-0 max-w-full flex-col gap-1', mine ? 'items-end' : 'items-start')}>
+                                {!!m.images?.length && <ImageGrid images={m.images} onOpen={index => setViewing({images: m.images!, index})}/>}
+                                {m.content && <p className={cn('m-0 max-w-full whitespace-pre-wrap break-words rounded-overlay px-3 py-1.5 text-[13px] leading-relaxed transition-opacity',
+                                    mine ? 'bg-primary text-primary-foreground' : 'border border-slate-200 bg-white text-slate-800',
+                                    m.status === 'sending' && 'opacity-70')}>{m.content}</p>}
+                                {m.note && <span className="px-1 font-mono text-[10px] text-slate-400">{m.note}</span>}
+                                {mine && m.status === 'sending' && (
+                                    <span className="inline-flex items-center gap-1 px-1 text-[10px] font-medium text-slate-400">
+                                        <Clock size={11} aria-hidden="true"/> Đang gửi
+                                    </span>
+                                )}
+                                {mine && m.status === 'failed' && (
+                                    <button type="button" onClick={() => m.clientKey && onRetryMessage?.(m.clientKey)}
+                                            className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-semibold text-rose-700 transition-colors hover:bg-rose-50 hover:underline cursor-pointer">
+                                        <AlertCircle size={11} className="text-danger" aria-hidden="true"/> Không gửi được · Thử lại
+                                    </button>
+                                )}
+                                {isLastSettledMine && (
+                                    lastSettledUserHasReply ? (
+                                        <span className="inline-flex items-center gap-1 px-1 text-[10px] font-semibold text-slate-600" title="Đã xem bởi Trợ lý AI UAV PAS">
+                                            <span className="inline-flex h-3.5 w-3.5 items-center justify-center rounded-full border border-slate-300 bg-slate-900 text-[7.5px] font-extrabold text-white" aria-hidden="true">AI</span>
+                                            <CheckCheck size={12} className="text-primary" aria-hidden="true"/> Đã xem
+                                        </span>
+                                    ) : (
+                                        <span className="inline-flex items-center gap-1 px-1 text-[10px] font-medium text-slate-400">
+                                            <Check size={11} aria-hidden="true"/> Đã gửi
+                                        </span>
+                                    )
+                                )}
+                            </div>;
+                        })}
                         {last.at != null && <span className="px-1 text-[10px] tabular-nums text-slate-400">{time(last.at)}</span>}
                     </div>
                 </div>

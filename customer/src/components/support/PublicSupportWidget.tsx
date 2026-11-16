@@ -23,6 +23,8 @@ import type {
 } from '@/types/support/support.types';
 import {PublicSupportLauncher} from '@/components/support/PublicSupportLauncher';
 import {PublicSupportChatPanel} from '@/components/support/PublicSupportChatPanel';
+import {useSupportOutbox} from '@/hooks/support/useSupportOutbox';
+import {mergeMessagesWithOutbox} from '@/utils/support/message-status';
 
 export const SUPPORT_QUICK_TOPICS: readonly SupportQuickTopicOption[] = [
     {
@@ -150,8 +152,13 @@ export function PublicSupportWidget({mode = 'public'}: {mode?: SupportWidgetMode
     const sessionQuery = usePublicSupportSession(visitorToken, open, isPortal);
     const createThread = useCreatePublicSupportThread();
     const sendMessage = useSendPublicSupportMessage();
-    const session = sessionQuery.data;
-    const unreadCount = open ? 0 : (session?.unreadForVisitor ?? 0);
+    const {outbox, enqueue, retry, clearScope} = useSupportOutbox(
+        (entry) => sendMessage.mutateAsync({visitorToken: entry.scopeKey, content: entry.content}),
+    );
+    const rawSession = sessionQuery.data;
+    const mergedMessages = mergeMessagesWithOutbox(rawSession?.messages ?? [], outbox, visitorToken);
+    const session = rawSession ? {...rawSession, messages: mergedMessages} : rawSession;
+    const unreadCount = open ? 0 : (rawSession?.unreadForVisitor ?? 0);
 
     const effectiveStartDraft: SupportStartDraft = {
         ...startDraft,
@@ -213,20 +220,21 @@ export function PublicSupportWidget({mode = 'public'}: {mode?: SupportWidgetMode
 
     const handleSendReply = () => {
         const content = replyDraft.trim();
-        if (!visitorToken || !content || sendMessage.isPending) return;
+        if (!visitorToken || !content) return;
         setErrorText(null);
+        setReplyDraft('');
         sessionQuery.notifyVisitorTyping(false);
-        sendMessage.mutate(
-            {visitorToken, content},
-            {
-                onSuccess: () => setReplyDraft(''),
-                onError: (err) => setErrorText(getSupportErrorMessage(err)),
-            },
-        );
+        enqueue({
+            scopeKey: visitorToken,
+            senderRole: 'VISITOR',
+            senderName: rawSession?.fullName || effectiveStartDraft.fullName || 'Bạn',
+            content,
+        });
     };
 
     const handleResetSession = () => {
         sessionQuery.notifyVisitorTyping(false);
+        clearScope(visitorToken);
         saveStoredSupportToken(null, {open: true});
         setReplyDraft('');
         setErrorText(null);
@@ -254,6 +262,7 @@ export function PublicSupportWidget({mode = 'public'}: {mode?: SupportWidgetMode
                     onCreateSubmit={handleCreateSubmit}
                     onReplyDraftChange={handleReplyDraftChange}
                     onSendReply={handleSendReply}
+                    onRetryMessage={retry}
                     onResetSession={handleResetSession}
                     onClose={() => {
                         sessionQuery.notifyVisitorTyping(false);
