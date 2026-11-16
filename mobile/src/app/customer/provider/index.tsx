@@ -1,5 +1,5 @@
 import React from 'react';
-import {ProviderHubScreen} from '@/components/marketplace/ProviderHubScreen';
+import {ProviderHubScreen} from '@/components/marketplace/provider/ProviderHubScreen';
 
 export interface RouteMeta {
     id: string;

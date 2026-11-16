@@ -133,7 +133,7 @@ function AccountDeletionSheetBody({onClose}: { onClose: () => void }) {
                                 <View style={styles.form}>
                                     {policy.confirmationPhrase.trim() ? (
                                         <TextField
-                                            label={t('mobile.account.accountDeletion.phraseLabel', {phrase: policy.confirmationPhrase})}
+                                            label={t('mobile.account.accountDeletion.phraseLabel', {phrase: policy.confirmationPhrase})} required
                                             placeholder={policy.confirmationPhrase}
                                             hint={t('mobile.account.accountDeletion.phraseHint', {phrase: policy.confirmationPhrase})}
                                             value={phrase}
@@ -145,7 +145,7 @@ function AccountDeletionSheetBody({onClose}: { onClose: () => void }) {
 
                                     {needsPassword && (
                                         <TextField
-                                            label={t('mobile.security.currentPassword')}
+                                            label={t('mobile.security.currentPassword')} required
                                             value={currentPassword}
                                             onChangeText={setCurrentPassword}
                                             secureTextEntry
@@ -160,6 +160,7 @@ function AccountDeletionSheetBody({onClose}: { onClose: () => void }) {
                                                 ? t('mobile.account.accountDeletion.reasonRequiredLabel')
                                                 : t('mobile.account.accountDeletion.reasonOptionalLabel')
                                         }
+                                        required={policy.requireReason} optional={!policy.requireReason}
                                         placeholder={t('mobile.account.accountDeletion.reasonPlaceholder')}
                                         value={reason}
                                         onChangeText={setReason}

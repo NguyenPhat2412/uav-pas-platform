@@ -1,5 +1,5 @@
 import React from 'react';
-import {FleetMaintenanceScreen} from '@/components/operations/FleetMaintenanceScreen';
+import {FleetMaintenanceScreen} from '@/components/uav/FleetMaintenanceScreen';
 
 export interface RouteMeta {
     id: string;

@@ -20,7 +20,7 @@ import {
     TextField,
 } from '@/components/ui';
 import {GlassSelectCards, GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
-import {ProviderRfqBiddingList} from '@/components/marketplace/ProviderRfqBiddingList';
+import {ProviderRfqBiddingList} from '@/components/marketplace/provider/ProviderRfqBiddingList';
 import {MissionStatusBadge} from '@/components/mission/MissionBits';
 import {
     useMyProviderBids,
@@ -160,13 +160,14 @@ export function ProviderOrdersScreen() {
                                 {pending ? (
                                     <View style={styles.actionStack}>
                                         <GlassSelectField<string>
-                                            label={t('mobile.provider.assignUavLabel')}
+                                            label={t('mobile.provider.assignUavLabel')} optional
                                             sheetTitle={t('mobile.provider.assignUavLabel')}
                                             value={chosenUav}
                                             options={uavOptions}
                                             onChange={val => setUavChoice(prev => ({...prev, [order.id]: val}))}
                                         />
                                         <TextField
+                                            label={t('missionForm.notes')} optional
                                             placeholder={t('mobile.provider.orderNotePlaceholder')}
                                             value={note}
                                             onChangeText={val => setNotes(prev => ({...prev, [order.id]: val}))}
@@ -230,7 +231,7 @@ export function ProviderOrdersScreen() {
                                 ) : inProgress ? (
                                     <View style={styles.actionStack}>
                                         <TextField
-                                            label={t('mobile.provider.completionNoteLabel')}
+                                            label={t('mobile.provider.completionNoteLabel')} required
                                             value={note}
                                             onChangeText={val => setNotes(prev => ({...prev, [order.id]: val}))}
                                         />

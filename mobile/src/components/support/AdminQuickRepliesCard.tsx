@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Alert, Pressable, StyleSheet, View} from 'react-native';
 import {Plus, Trash2, Zap} from 'lucide-react-native';
-import {AppText, Badge, Button, Card, ChipGroup, LoadingState, SectionTitle, TextField} from '@/components/ui';
+import {AppText, Badge, Button, Card, ChipGroup, FieldLabel, LoadingState, SectionTitle, TextField} from '@/components/ui';
 import {signInErrorText} from '@/forms/auth/sign-in-flow';
 import {useAdminQuickReplies, useAdminSupportMutations} from '@/hooks/support/useAdminSupportMobile';
 import {useI18n} from '@/providers/I18nContext';
@@ -108,17 +108,17 @@ export function AdminQuickRepliesCard() {
 
             <View style={styles.form}>
                 <TextField
-                    label={t('mobile.support.templateTitleLabel')}
+                    label={t('mobile.support.templateTitleLabel')} required
                     placeholder={t('mobile.support.templateTitlePlaceholder')}
                     value={title}
                     onChangeText={setTitle}
                 />
                 <View style={styles.topicGroup}>
-                    <AppText variant="small" style={styles.topicLabel}>{t('mobile.support.topicLabel')}</AppText>
+                    <FieldLabel label={t('mobile.support.topicLabel')} required/>
                     <ChipGroup<SupportTopic> options={TOPIC_OPTIONS} value={topic} onChange={setTopic}/>
                 </View>
                 <TextField
-                    label={t('mobile.support.templateContentLabel')}
+                    label={t('mobile.support.templateContentLabel')} required
                     placeholder={t('mobile.support.templateContentPlaceholder')}
                     value={content}
                     onChangeText={setContent}

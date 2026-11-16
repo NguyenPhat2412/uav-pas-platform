@@ -80,7 +80,7 @@ export function VerifyCodeScreen() {
 
     return (
         <AuthLayout title={params.purpose === 'register' ? t('mobile.auth.verifyEmailTitle') : t('mobile.auth.twoFactorTitle')} subtitle={subtitle}>
-            <TextField label={t('mobile.auth.code')} value={code} onChangeText={value => setCode(normalizeCode(value))} keyboardType="number-pad"
+            <TextField label={t('mobile.auth.code')} required value={code} onChangeText={value => setCode(normalizeCode(value))} keyboardType="number-pad"
                        autoComplete="one-time-code" textContentType="oneTimeCode" maxLength={6} autoFocus style={styles.code}/>
             <KeyboardAnchor><Button label={t('mobile.auth.verify')} icon={ShieldCheck} loading={verify.isPending} onPress={submit}/></KeyboardAnchor>
             <View style={styles.actions}>

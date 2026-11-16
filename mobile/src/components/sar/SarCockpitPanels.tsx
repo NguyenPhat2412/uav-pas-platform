@@ -11,7 +11,7 @@ import {
     XCircle,
 } from 'lucide-react-native';
 import {AppText, Badge, Button, Card, EmptyState, LoadingState, SectionTitle} from '@/components/ui';
-import {SarStatusBadge} from '@/components/operations/SarMissionsScreen';
+import {SarStatusBadge} from '@/components/sar/SarMissionsScreen';
 import {useI18n} from '@/providers/I18nContext';
 import {displayLabel} from '@/shared/lib/presentation';
 import type {AiDetection, AiTask, SarCockpitMission} from '@/shared/types/sar/sar.types';

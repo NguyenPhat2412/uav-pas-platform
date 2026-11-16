@@ -103,11 +103,11 @@ test('mobile ios-design-review: HIG touch targets, NativeTabs clearance, Vietnam
     assert.match(missionList, /HeaderIconButton/);
     assert.match(missionList, /insets\.bottom \+ 116/);
 
-    const providerListings = read('components/marketplace/ProviderListingsScreen.tsx');
+    const providerListings = read('components/marketplace/provider/ProviderListingsScreen.tsx');
     assert.match(providerListings, /showCreate \? X : Plus/);
     assert.match(providerListings, /provider\.noListings/);
 
-    const providerWallet = read('components/marketplace/ProviderWalletScreen.tsx');
+    const providerWallet = read('components/marketplace/provider/ProviderWalletScreen.tsx');
     assert.match(providerWallet, /disabled=\{available < minPayoutVnd\}/);
 });
 

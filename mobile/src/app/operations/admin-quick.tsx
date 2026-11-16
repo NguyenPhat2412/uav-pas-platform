@@ -1,5 +1,5 @@
 import React from 'react';
-import {AdminQuickActionsScreen} from '@/components/operations/AdminQuickActionsScreen';
+import {AdminQuickActionsScreen} from '@/components/admin/AdminQuickActionsScreen';
 
 export interface RouteMeta {
     id: string;

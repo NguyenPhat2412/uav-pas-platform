@@ -173,7 +173,7 @@ export function ProviderOnboardingScreen() {
                 />
 
                 <GlassSelectCards<ProviderType>
-                    label={t('mobile.provider.entityTypeLabel')}
+                    label={t('mobile.provider.entityTypeLabel')} required
                     columns={2}
                     value={form.providerType}
                     options={providerTypeOptions}
@@ -181,19 +181,19 @@ export function ProviderOnboardingScreen() {
                 />
 
                 <TextField
-                    label={t('mobile.provider.displayNameLabel')}
+                    label={t('mobile.provider.displayNameLabel')} required
                     value={form.displayName}
                     onChangeText={val => set('displayName', val)}
                     maxLength={140}
                 />
                 <TextField
-                    label={t('mobile.provider.taxOrIdLabel')}
+                    label={t('mobile.provider.taxOrIdLabel')} optional
                     value={form.taxOrIdNumber ?? ''}
                     onChangeText={val => set('taxOrIdNumber', val)}
                     maxLength={60}
                 />
                 <TextField
-                    label={t('mobile.provider.flightLicenseLabel')}
+                    label={t('mobile.provider.flightLicenseLabel')} optional
                     value={form.flightLicenseNumber ?? ''}
                     onChangeText={val => set('flightLicenseNumber', val)}
                     maxLength={80}
@@ -201,14 +201,14 @@ export function ProviderOnboardingScreen() {
                 <View style={styles.row}>
                     <View style={styles.flex}>
                         <TextField
-                            label={t('mobile.provider.provinceLabel')}
+                            label={t('mobile.provider.provinceLabel')} required
                             value={form.province}
                             onChangeText={val => set('province', val)}
                         />
                     </View>
                     <View style={styles.flex}>
                         <TextField
-                            label={t('mobile.provider.radiusKmLabel')}
+                            label={t('mobile.provider.radiusKmLabel')} optional
                             keyboardType="number-pad"
                             value={String(form.serviceRadiusKm ?? defaultServiceRadiusKm)}
                             onChangeText={val => set('serviceRadiusKm', Number(val) || 50)}
@@ -216,30 +216,30 @@ export function ProviderOnboardingScreen() {
                     </View>
                 </View>
                 <TextField
-                    label={t('mobile.provider.phoneLabel')}
+                    label={t('mobile.provider.phoneLabel')} optional
                     keyboardType="phone-pad"
                     value={form.contactPhone ?? ''}
                     onChangeText={val => set('contactPhone', val)}
                 />
                 <TextField
-                    label={t('mobile.provider.bankNameLabel')}
+                    label={t('mobile.provider.bankNameLabel')} optional
                     value={form.bankName ?? ''}
                     onChangeText={val => set('bankName', val)}
                 />
                 <TextField
-                    label={t('mobile.provider.bankAccountLabel')}
+                    label={t('mobile.provider.bankAccountLabel')} optional
                     keyboardType="number-pad"
                     value={form.bankAccountNumber ?? ''}
                     onChangeText={val => set('bankAccountNumber', val)}
                 />
                 <TextField
-                    label={t('mobile.provider.bankHolderLabel')}
+                    label={t('mobile.provider.bankHolderLabel')} optional
                     autoCapitalize="characters"
                     value={form.bankAccountHolder ?? ''}
                     onChangeText={val => set('bankAccountHolder', val)}
                 />
                 <TextField
-                    label={t('mobile.provider.bioLabel')}
+                    label={t('mobile.provider.bioLabel')} optional
                     multiline
                     value={form.bio ?? ''}
                     onChangeText={val => set('bio', val)}
@@ -266,24 +266,24 @@ export function ProviderOnboardingScreen() {
             <Card>
                 <SectionTitle title={t('mobile.provider.docsSectionTitle')}/>
                 <GlassSelectField<ProviderDocumentType>
-                    label={t('mobile.provider.docTypeLabel')}
+                    label={t('mobile.provider.docTypeLabel')} required
                     sheetTitle={t('mobile.provider.docTypeLabel')}
                     value={docType}
                     options={docTypeOptions}
                     onChange={setDocType}
                 />
                 <TextField
-                    label={t('mobile.provider.docTitleLabel')}
+                    label={t('mobile.provider.docTitleLabel')} required
                     value={docTitle}
                     onChangeText={setDocTitle}
                 />
                 <TextField
-                    label={t('mobile.provider.docNumberLabel')}
+                    label={t('mobile.provider.docNumberLabel')} optional
                     value={docNumber}
                     onChangeText={setDocNumber}
                 />
                 <TextField
-                    label={t('mobile.provider.docUrlLabel')}
+                    label={t('mobile.provider.docUrlLabel')} optional
                     placeholder="https://..."
                     autoCapitalize="none"
                     value={docUrl}

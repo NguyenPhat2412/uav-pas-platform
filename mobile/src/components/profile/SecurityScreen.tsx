@@ -77,7 +77,7 @@ export function SecurityScreen() {
             <Card>
                 <SectionTitle title={t('mobile.security.changePassword')}/>
                 <TextField
-                    label={t('mobile.security.currentPassword')}
+                    label={t('mobile.security.currentPassword')} required
                     value={draft.currentPassword}
                     secureTextEntry
                     textContentType="password"
@@ -85,7 +85,7 @@ export function SecurityScreen() {
                     error={errors.currentPassword}
                 />
                 <TextField
-                    label={t('mobile.auth.newPassword')}
+                    label={t('mobile.auth.newPassword')} required
                     value={draft.newPassword}
                     secureTextEntry
                     textContentType="newPassword"
@@ -93,7 +93,7 @@ export function SecurityScreen() {
                     error={errors.newPassword}
                 />
                 <TextField
-                    label={t('mobile.auth.confirmPassword')}
+                    label={t('mobile.auth.confirmPassword')} required
                     value={draft.confirmPassword}
                     secureTextEntry
                     textContentType="newPassword"

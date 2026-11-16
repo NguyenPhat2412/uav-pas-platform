@@ -148,7 +148,7 @@ export function MissionFlightPlanSection({
                 {showSaveSite ? (
                     <View style={styles.saveSiteForm}>
                         <TextField
-                            label={t('capabilities.flightSites.nameLabel')}
+                            label={t('capabilities.flightSites.nameLabel')} required
                             placeholder={t('capabilities.flightSites.namePlaceholder')}
                             value={siteName}
                             onChangeText={setSiteName}
@@ -187,7 +187,7 @@ export function MissionFlightPlanSection({
             </Card>
 
             <Card>
-                <TextField label={t('missionForm.location')} value={form.locationName} onChangeText={onChangeLocationName} maxLength={255} error={errors.locationName}/>
+                <TextField label={t('missionForm.location')} required value={form.locationName} onChangeText={onChangeLocationName} maxLength={255} error={errors.locationName}/>
                 <AppText variant="caption">
                     {hasPreservedArea ? t('mobile.missions.preservedGeometry') : t('mobile.missions.tapMap')}
                 </AppText>

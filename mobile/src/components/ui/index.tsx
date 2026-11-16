@@ -1,4 +1,5 @@
 import {SkeletonList} from './Skeleton';
+import {FieldLabel} from './FieldLabel';
 import React, {type ComponentType, createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {
     ActivityIndicator,
@@ -28,7 +29,7 @@ import {OfflineBanner} from '@/components/shared/OfflineBanner';
 import {useI18n} from '@/providers/I18nContext';
 import {useTextScale} from '@/providers/TextSizeContext';
 
-export {GlassSurface, liquidGlass};
+export {FieldLabel, GlassSurface, liquidGlass};
 
 /** Widest a content column grows (phones use the full width; iPad and landscape centre it). */
 export const CONTENT_WIDTH = 640;
@@ -186,10 +187,8 @@ export function Button({label, onPress, tone = 'primary', size = 'md', loading =
     );
 }
 
-export function TextField({label, error, hint, style, ...input}: TextInputProps & {
-    label?: string;
-    error?: string | null;
-    hint?: string;
+export function TextField({label, required, optional, error, hint, style, ...input}: TextInputProps & {
+    label?: string; required?: boolean; optional?: boolean; error?: string | null; hint?: string;
 }) {
     const scale = useTextScale();
     const {t} = useI18n();
@@ -200,7 +199,7 @@ export function TextField({label, error, hint, style, ...input}: TextInputProps 
     const EyeIcon = hidden ? Eye : EyeOff;
     return (
         <View style={[styles.field, style as StyleProp<ViewStyle>]}>
-            {label ? <ScaledText style={styles.label}>{label}</ScaledText> : null}
+            <FieldLabel label={label} required={required} optional={optional}/>
             <View>
                 <TextInput
                     placeholderTextColor={colors.muted}

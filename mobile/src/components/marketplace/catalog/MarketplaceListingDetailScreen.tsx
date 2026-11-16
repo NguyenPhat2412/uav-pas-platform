@@ -203,7 +203,7 @@ export function MarketplaceListingDetailScreen() {
                 </View>
 
                 <TextField
-                    label={t('mobile.marketplace.unitsInputLabel', {unit: unitLabel, min: minUnits})}
+                    label={t('mobile.marketplace.unitsInputLabel', {unit: unitLabel, min: minUnits})} required
                     keyboardType="decimal-pad"
                     value={unitsInput}
                     placeholder={String(minUnits)}

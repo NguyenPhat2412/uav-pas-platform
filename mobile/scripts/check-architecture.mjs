@@ -62,6 +62,13 @@ for (const file of files(src)) {
     if (lineCount > 360) {
         fail(file, `too long (${lineCount} lines > 360 max): split into focused feature subcomponents`);
     }
+    const parts = rel.split('/');
+    if (parts[0] === 'components' && parts[1] === 'marketplace' && parts.length < 4) {
+        fail(file, 'organize marketplace components into components/marketplace/<sub-domain>/');
+    }
+    if (parts[0] === 'components' && parts[1] === 'operations' && /^(AdminQuick|Sar|FleetMaintenance)/.test(parts[2] ?? '')) {
+        fail(file, 'place AdminQuick*, Sar*, and FleetMaintenance* in their owning feature folder (components/admin, components/sar, components/uav)');
+    }
 }
 
 if (problems.length) {

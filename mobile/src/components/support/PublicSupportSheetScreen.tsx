@@ -9,6 +9,7 @@ import {
     Button,
     Card,
     ChipGroup,
+    FieldLabel,
     LoadingState,
     ScaledText,
     Screen,
@@ -176,16 +177,16 @@ export function PublicSupportSheetScreen() {
                 <Card>
                     <SectionTitle title={t('mobile.support.startChatTitle')}/>
                     <View style={styles.topicSection}>
-                        <ScaledText style={styles.topicLabel}>{t('mobile.support.topicLabel')}</ScaledText>
+                        <FieldLabel label={t('mobile.support.topicLabel')} required/>
                         <ChipGroup<SupportTopic> value={topic} onChange={setTopic} options={TOPIC_CHIPS}/>
                     </View>
-                    <TextField label={t('mobile.support.fullNameLabel')} placeholder={t('mobile.support.fullNamePlaceholder')}
+                    <TextField label={t('mobile.support.fullNameLabel')} required placeholder={t('mobile.support.fullNamePlaceholder')}
                                value={fullName} onChangeText={setFullNameInput} returnKeyType="next"/>
-                    <TextField label={t('mobile.support.organizationLabel')} placeholder={t('mobile.support.organizationPlaceholder')}
+                    <TextField label={t('mobile.support.organizationLabel')} optional placeholder={t('mobile.support.organizationPlaceholder')}
                                value={organization} onChangeText={setOrganization} returnKeyType="next"/>
-                    <TextField label={t('mobile.support.contactInfoLabel')} placeholder={t('mobile.support.contactInfoPlaceholder')}
+                    <TextField label={t('mobile.support.contactInfoLabel')} required placeholder={t('mobile.support.contactInfoPlaceholder')}
                                value={contactInfo} onChangeText={setContactInput} autoCapitalize="none" autoCorrect={false} returnKeyType="next"/>
-                    <TextField label={t('mobile.support.messageLabel')} placeholder={t('mobile.support.messagePlaceholder')}
+                    <TextField label={t('mobile.support.messageLabel')} required placeholder={t('mobile.support.messagePlaceholder')}
                                value={message} onChangeText={setMessage} multiline/>
                     {formError ? <AppText variant="small" style={styles.errorText}>{formError}</AppText> : null}
                     <Button label={t('mobile.support.startButton')} icon={Send} loading={startThread.isPending} onPress={handleStartInquiry}/>
@@ -223,7 +224,7 @@ export function PublicSupportSheetScreen() {
                     </Card>
 
                     <Card>
-                        <TextField label={t('mobile.support.messageLabel')} placeholder={t('mobile.support.replyPlaceholder')}
+                        <TextField label={t('mobile.support.messageLabel')} required placeholder={t('mobile.support.replyPlaceholder')}
                                    value={draft} onChangeText={handleDraftChange} multiline error={replyError}/>
                         <Button label={t('mobile.support.sendButton')} icon={Send} loading={sendMessage.isPending}
                                 disabled={!draft.trim() || sendMessage.isPending} onPress={handleSendReply}/>

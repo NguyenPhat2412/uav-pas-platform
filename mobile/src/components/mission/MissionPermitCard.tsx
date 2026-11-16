@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Platform, StyleSheet, View} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {CheckCircle2, ExternalLink, FileCheck2, ImagePlus, Pencil, Save, XCircle} from 'lucide-react-native';
-import {AppText, Badge, Button, Card, ChipGroup, SectionTitle, TextField} from '@/components/ui';
+import {AppText, Badge, Button, Card, ChipGroup, FieldLabel, SectionTitle, TextField} from '@/components/ui';
 import {fromLocalIso, toLocalIso} from '@/forms/mission/mission-draft';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
@@ -64,7 +64,7 @@ function PermitDatePickerRow({
     const date = fromLocalIso(value) ?? new Date();
     return (
         <View style={styles.dateRow}>
-            <AppText variant="small" style={styles.strong}>{label}</AppText>
+            <FieldLabel label={label} required/>
             <DateTimePicker
                 value={date}
                 mode="datetime"
@@ -221,13 +221,13 @@ export function MissionPermitCard({
             {editable && editing && (
                 <View style={styles.form}>
                     <TextField
-                        label={t('mobile.permit.number')}
+                        label={t('mobile.permit.number')} required
                         value={draft.permitNumber}
                         onChangeText={permitNumber => setDraft(prev => ({...prev, permitNumber}))}
                         autoCapitalize="characters"
                     />
                     <TextField
-                        label={t('mobile.permit.authority')}
+                        label={t('mobile.permit.authority')} required
                         value={draft.permitAuthority}
                         onChangeText={permitAuthority => setDraft(prev => ({...prev, permitAuthority}))}
                     />
@@ -242,14 +242,14 @@ export function MissionPermitCard({
                         onChange={validUntil => setDraft(prev => ({...prev, validUntil}))}
                     />
                     <TextField
-                        label={t('mobile.permit.ceiling')}
+                        label={t('mobile.permit.ceiling')} optional
                         placeholder="120"
                         keyboardType="numeric"
                         value={draft.maxAltitudeMeters}
                         onChangeText={maxAltitudeMeters => setDraft(prev => ({...prev, maxAltitudeMeters}))}
                     />
                     <View style={styles.scanSection}>
-                        <AppText variant="small" style={styles.strong}>{t('mobile.permit.scanAttachment')}</AppText>
+                        <FieldLabel label={t('mobile.permit.scanAttachment')} optional/>
                         <ChipGroup
                             options={scanChipOptions}
                             value={draft.permitMediaId}
@@ -268,7 +268,7 @@ export function MissionPermitCard({
                         ) : null}
                     </View>
                     <TextField
-                        label={t('mobile.permit.note')}
+                        label={t('mobile.permit.note')} optional
                         value={draft.note}
                         onChangeText={note => setDraft(prev => ({...prev, note}))}
                         multiline
@@ -290,7 +290,7 @@ export function MissionPermitCard({
             {verifiable && !editing && (
                 <View style={styles.verifyBox}>
                     <TextField
-                        label={t('mobile.permit.verifyNoteLabel')}
+                        label={t('mobile.permit.verifyNoteLabel')} optional
                         value={verifyNote}
                         onChangeText={setVerifyNote}
                     />

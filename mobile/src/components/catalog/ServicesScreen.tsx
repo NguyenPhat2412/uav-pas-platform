@@ -30,7 +30,7 @@ import {
     TextField,
 } from '@/components/ui';
 import {GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
-import {MarketplaceListingCard} from '@/components/marketplace/MarketplaceListingCard';
+import {MarketplaceListingCard} from '@/components/marketplace/catalog/MarketplaceListingCard';
 import {usePublicListings} from '@/hooks/marketplace/useMarketplaceCatalog';
 import {useServices} from '@/hooks/mission/useCustomerMissions';
 import {useSiteInfo} from '@/hooks/settings/useSiteInfo';

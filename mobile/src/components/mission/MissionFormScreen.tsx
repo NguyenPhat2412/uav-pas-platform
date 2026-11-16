@@ -3,7 +3,7 @@ import {Platform, Pressable, StyleSheet, View} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {AlertTriangle, Clock3, CloudSun, Flame, Gauge, Save, Send} from 'lucide-react-native';
-import {AppText, Button, Card, ErrorState, LoadingState, ScaledText, Screen, TextField} from '@/components/ui';
+import {AppText, Button, Card, ErrorState, FieldLabel, LoadingState, ScaledText, Screen, TextField} from '@/components/ui';
 import {GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
 import {MissionBookingOptionsCard} from '@/components/mission/MissionBookingOptionsCard';
 import {MissionFlightPlanSection, sitePlanToInput} from '@/components/mission/MissionFlightPlanSection';
@@ -35,7 +35,7 @@ function DateField({label, value, onChange, error}: { label: string; value: stri
     return (
         <View style={styles.dateField}>
             <View style={styles.dateRow}>
-                <AppText variant="small" style={styles.dateLabel}>{label}</AppText>
+                <FieldLabel label={label} required/>
                 <View style={styles.pickerAlign}>
                     <DateTimePicker value={date} mode="datetime" display={Platform.OS === 'ios' ? 'compact' : 'default'} minuteInterval={5}
                                     accentColor={colors.primary} onChange={(_event, next) => next && onChange(next)}/>
@@ -179,8 +179,8 @@ function MissionForm({initial, mission, initialListing}: { initial: MissionInput
             />
 
             <Card>
-                <TextField label={t('missionForm.title')} value={form.title} onChangeText={value => set('title', value)} maxLength={180} error={errors.title}/>
-                <TextField label={t('missionForm.description')} value={form.description ?? ''} onChangeText={value => set('description', value)} multiline
+                <TextField label={t('missionForm.title')} required value={form.title} onChangeText={value => set('title', value)} maxLength={180} error={errors.title}/>
+                <TextField label={t('missionForm.description')} optional value={form.description ?? ''} onChangeText={value => set('description', value)} multiline
                            maxLength={2000} error={errors.description}/>
             </Card>
 
@@ -238,13 +238,13 @@ function MissionForm({initial, mission, initialListing}: { initial: MissionInput
 
             <Card>
                 <GlassSelectField<MissionPriority>
-                    label={t('missionForm.priority')}
+                    label={t('missionForm.priority')} required
                     sheetTitle={t('missionForm.priority')}
                     value={form.priority ?? 'NORMAL'}
                     options={priorityOptions}
                     onChange={value => set('priority', value)}
                 />
-                <TextField label={t('missionForm.notes')} value={form.notes ?? ''} onChangeText={value => set('notes', value)} multiline maxLength={2000}
+                <TextField label={t('missionForm.notes')} optional value={form.notes ?? ''} onChangeText={value => set('notes', value)} multiline maxLength={2000}
                            error={errors.notes}/>
             </Card>
 

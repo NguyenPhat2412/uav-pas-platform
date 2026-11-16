@@ -4,7 +4,7 @@ import {useLocalSearchParams, useRouter} from 'expo-router';
 import MapView, {Circle, Marker, Polygon} from 'react-native-maps';
 import {ExternalLink, Home, Send} from 'lucide-react-native';
 import {AppText, Button, Card, ErrorState, LoadingState, Screen, SectionTitle, TextField} from '@/components/ui';
-import {SarDetectionsCard, SarMissionHeaderCard, SarTelemetryHudCard} from '@/components/operations/SarCockpitPanels';
+import {SarDetectionsCard, SarMissionHeaderCard, SarTelemetryHudCard} from '@/components/sar/SarCockpitPanels';
 import {useSarCockpit} from '@/hooks/sar/useSarCockpit';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
@@ -254,7 +254,7 @@ export function SarCockpitScreen() {
                     )}
 
                     <TextField
-                        label={t('mobile.ops.sar.coordinatorNoteLabel')}
+                        label={t('mobile.ops.sar.coordinatorNoteLabel')} optional
                         placeholder={t('mobile.ops.sar.coordinatorNotePlaceholder')}
                         value={coordinatorNote}
                         onChangeText={setCoordinatorNote}

@@ -28,9 +28,9 @@ import {AppForbiddenView} from '@/components/shared/AppStatusViews';
 import {
     AdminAirspaceTabContent,
     AdminSlaTabContent,
-} from '@/components/operations/AdminQuickAirspaceAndSlaCards';
-import {AdminMarketplaceTabContent} from '@/components/operations/AdminQuickMarketplaceCards';
-import {AdminSettingsTabContent} from '@/components/operations/AdminQuickSettingsCard';
+} from '@/components/admin/AdminQuickAirspaceAndSlaCards';
+import {AdminMarketplaceTabContent} from '@/components/admin/AdminQuickMarketplaceCards';
+import {AdminSettingsTabContent} from '@/components/admin/AdminQuickSettingsCard';
 import {signInErrorText} from '@/forms/auth/sign-in-flow';
 import {
     useAdminAirspaceZones,
@@ -238,7 +238,7 @@ export function AdminQuickActionsScreen() {
                                     </AppText>
                                     <AppText variant="caption">{formatDate(invoice.createdAt, {dateStyle: 'short', timeStyle: 'short'})}</AppText>
                                     <TextField
-                                        label={t('mobile.adminQuick.invoices.refLabel')}
+                                        label={t('mobile.adminQuick.invoices.refLabel')} required
                                         placeholder={t('mobile.adminQuick.invoices.refPlaceholder')}
                                         value={refValue}
                                         maxLength={100}

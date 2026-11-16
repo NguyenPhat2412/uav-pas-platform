@@ -200,7 +200,7 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
 
             <Card>
                 <TextField
-                    label={t('mobile.support.adminSender')}
+                    label={t('mobile.support.adminSender')} required
                     placeholder={t('mobile.support.adminReplyPlaceholder')}
                     value={draft}
                     onChangeText={handleDraftChange}

@@ -132,13 +132,13 @@ export function ProviderFleetScreen() {
                     <Card>
                         <SectionTitle title={t('mobile.provider.addUavTitle')}/>
                         <TextField
-                            label={t('mobile.provider.uavModelLabel')}
+                            label={t('mobile.provider.uavModelLabel')} required
                             placeholder="DJI Matrice 350 RTK"
                             value={uavForm.model}
                             onChangeText={val => setUavForm(prev => ({...prev, model: val}))}
                         />
                         <TextField
-                            label={t('mobile.provider.serialLabel')}
+                            label={t('mobile.provider.serialLabel')} required
                             autoCapitalize="characters"
                             value={uavForm.serialNumber}
                             onChangeText={val =>
@@ -146,7 +146,7 @@ export function ProviderFleetScreen() {
                             }
                         />
                         <TextField
-                            label={t('mobile.provider.manufacturerLabel')}
+                            label={t('mobile.provider.manufacturerLabel')} required
                             value={uavForm.manufacturer}
                             onChangeText={val =>
                                 setUavForm(prev => ({...prev, manufacturer: val}))
@@ -187,14 +187,14 @@ export function ProviderFleetScreen() {
                     <Card>
                         <SectionTitle title={t('mobile.provider.addEquipTitle')}/>
                         <GlassSelectField<ProviderEquipmentCategory>
-                            label={t('mobile.provider.equipCategoryLabel')}
+                            label={t('mobile.provider.equipCategoryLabel')} required
                             sheetTitle={t('mobile.provider.equipCategoryLabel')}
                             value={equipForm.type}
                             options={categoryOptions}
                             onChange={val => setEquipForm(prev => ({...prev, type: val}))}
                         />
                         <TextField
-                            label={t('mobile.provider.equipNameLabel')}
+                            label={t('mobile.provider.equipNameLabel')} required
                             placeholder="Zenmuse L2 LiDAR"
                             value={equipForm.name}
                             onChangeText={val => setEquipForm(prev => ({...prev, name: val}))}
@@ -202,7 +202,7 @@ export function ProviderFleetScreen() {
                         <View style={styles.row}>
                             <View style={styles.flex}>
                                 <TextField
-                                    label={t('mobile.provider.serialLabel')}
+                                    label={t('mobile.provider.serialLabel')} optional
                                     value={equipForm.serialNumber ?? ''}
                                     onChangeText={val =>
                                         setEquipForm(prev => ({...prev, serialNumber: val}))
@@ -211,7 +211,7 @@ export function ProviderFleetScreen() {
                             </View>
                             <View style={styles.flex}>
                                 <TextField
-                                    label={t('mobile.provider.quantityLabel')}
+                                    label={t('mobile.provider.quantityLabel')} required
                                     keyboardType="number-pad"
                                     value={String(equipForm.quantity)}
                                     onChangeText={val =>

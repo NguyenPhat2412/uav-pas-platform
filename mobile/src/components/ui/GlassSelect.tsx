@@ -3,6 +3,7 @@ import {Modal, Pressable, ScrollView, StyleSheet, View, type StyleProp, type Vie
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {CheckCircle2, ChevronDown, Circle, X, type LucideIcon} from 'lucide-react-native';
 import {GlassSurface} from '@/components/ui/Glass';
+import {FieldLabel} from '@/components/ui/FieldLabel';
 import {AppText, Badge, ScaledText} from '@/components/ui';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
@@ -17,6 +18,8 @@ export interface GlassOption<T extends string = string> {
 /** Interactive Liquid Glass option cards (1 or 2 columns) for touch-first selection. */
 export function GlassSelectCards<T extends string>({
     label,
+    required,
+    optional,
     value,
     options,
     onChange,
@@ -25,6 +28,8 @@ export function GlassSelectCards<T extends string>({
     style,
 }: {
     label?: string;
+    required?: boolean;
+    optional?: boolean;
     value: T;
     options: GlassOption<T>[];
     onChange: (next: T) => void;
@@ -35,7 +40,7 @@ export function GlassSelectCards<T extends string>({
     const isBento = columns === 2;
     return (
         <View style={[styles.group, style]}>
-            {label ? <ScaledText style={styles.fieldLabel}>{label}</ScaledText> : null}
+            <FieldLabel label={label} required={required} optional={optional}/>
             <View style={isBento ? styles.gridTwo : styles.gridOne}>
                 {options.map(option => {
                     const selected = option.value === value;
@@ -117,6 +122,8 @@ export function GlassSelectCards<T extends string>({
 /** Compact Liquid Glass select trigger card that opens a bottom sheet of Liquid Glass option cards. */
 export function GlassSelectField<T extends string>({
     label,
+    required,
+    optional,
     sheetTitle,
     placeholder,
     value,
@@ -127,6 +134,8 @@ export function GlassSelectField<T extends string>({
     showTriggerDescription = false,
 }: {
     label?: string;
+    required?: boolean;
+    optional?: boolean;
     sheetTitle?: string;
     placeholder?: string;
     value: T;
@@ -144,7 +153,7 @@ export function GlassSelectField<T extends string>({
 
     return (
         <View style={styles.group}>
-            {label ? <ScaledText style={styles.fieldLabel}>{label}</ScaledText> : null}
+            <FieldLabel label={label} required={required} optional={optional}/>
             <Pressable
                 disabled={disabled}
                 onPress={() => setOpen(true)}

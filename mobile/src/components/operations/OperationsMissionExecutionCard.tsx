@@ -179,7 +179,7 @@ export function OperationsLifecycleActionsCard({
 
             {activeForm === 'reject' && controls.reject && (
                 <View style={styles.inlineForm}>
-                    <TextField label={t('opsMissions.detail.note.reason')} value={reasonText} onChangeText={setReasonText} multiline/>
+                    <TextField label={t('opsMissions.detail.note.reason')} required value={reasonText} onChangeText={setReasonText} multiline/>
                     <Button
                         size="sm"
                         label={t('opsMissions.detail.confirm.reject.submit')}
@@ -193,7 +193,7 @@ export function OperationsLifecycleActionsCard({
 
             {activeForm === 'conflict' && controls.conflict && (
                 <View style={styles.inlineForm}>
-                    <TextField label={t('opsMissions.detail.note.reason')} value={reasonText} onChangeText={setReasonText} multiline/>
+                    <TextField label={t('opsMissions.detail.note.reason')} required value={reasonText} onChangeText={setReasonText} multiline/>
                     <Button
                         size="sm"
                         label={t('opsMissions.detail.confirm.conflict.submit')}
@@ -211,9 +211,9 @@ export function OperationsLifecycleActionsCard({
                             ? t('opsMissions.detail.complete.evidenceCount', {count: evidence.count})
                             : t('opsMissions.detail.complete.evidenceOptional')}
                     </AppText>
-                    <TextField label={t('opsMissions.detail.note.result')} value={completionNote} onChangeText={setCompletionNote} multiline/>
+                    <TextField label={t('opsMissions.detail.note.result')} required value={completionNote} onChangeText={setCompletionNote} multiline/>
                     <TextField
-                        label={t('opsMissions.detail.note.equipmentCondition')}
+                        label={t('opsMissions.detail.note.equipmentCondition')} required
                         hint={t('opsMissions.detail.note.equipmentConditionHint')}
                         value={equipmentCondition}
                         onChangeText={setEquipmentCondition}
@@ -235,8 +235,8 @@ export function OperationsLifecycleActionsCard({
 
             {activeForm === 'fail' && controls.fail && (
                 <View style={styles.inlineForm}>
-                    <TextField label={t('opsMissions.detail.note.failureReason')} value={failureReason} onChangeText={setFailureReason}/>
-                    <TextField label={t('opsMissions.detail.note.incident')} value={failureNotes} onChangeText={setFailureNotes} multiline/>
+                    <TextField label={t('opsMissions.detail.note.failureReason')} required value={failureReason} onChangeText={setFailureReason}/>
+                    <TextField label={t('opsMissions.detail.note.incident')} optional value={failureNotes} onChangeText={setFailureNotes} multiline/>
                     <Button
                         size="sm"
                         label={t('opsMissions.detail.confirm.fail.submit')}
@@ -255,8 +255,8 @@ export function OperationsLifecycleActionsCard({
             {activeForm === 'forceFail' && controls.forceFail && (
                 <View style={styles.inlineForm}>
                     <AppText variant="small">{t('opsMissions.detail.forceFailWarning')}</AppText>
-                    <TextField label={t('opsMissions.detail.note.failureReason')} value={failureReason} onChangeText={setFailureReason}/>
-                    <TextField label={t('opsMissions.detail.note.incident')} value={failureNotes} onChangeText={setFailureNotes} multiline/>
+                    <TextField label={t('opsMissions.detail.note.failureReason')} required value={failureReason} onChangeText={setFailureReason}/>
+                    <TextField label={t('opsMissions.detail.note.incident')} optional value={failureNotes} onChangeText={setFailureNotes} multiline/>
                     <Button
                         size="sm"
                         label={t('opsMissions.detail.confirm.forceFail.submit')}
