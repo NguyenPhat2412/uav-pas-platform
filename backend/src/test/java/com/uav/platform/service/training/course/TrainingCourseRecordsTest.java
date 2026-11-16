@@ -1,4 +1,4 @@
-package com.uav.platform.service.training;
+package com.uav.platform.service.training.course;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

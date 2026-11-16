@@ -1,4 +1,4 @@
-package com.uav.platform.service.storage;
+package com.uav.platform.service.storage.pool;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -10,8 +10,8 @@ import static org.mockito.Mockito.when;
 
 import com.uav.platform.dto.record.media.ObjectMetadata;
 import com.uav.platform.dto.record.media.ObjectStream;
-import com.uav.platform.dto.record.storage.DriveUploadedFile;
-import com.uav.platform.dto.record.storage.ServiceAccountParsed;
+import com.uav.platform.dto.record.storage.pool.DriveUploadedFile;
+import com.uav.platform.dto.record.storage.pool.ServiceAccountParsed;
 import com.uav.platform.entity.settings.SystemConfiguration;
 import com.uav.platform.entity.storage.StorageDriveNode;
 import com.uav.platform.entity.storage.StorageDriveObject;
@@ -22,8 +22,8 @@ import com.uav.platform.repository.storage.StorageDriveNodeRepository;
 import com.uav.platform.repository.storage.StorageDriveObjectRepository;
 import com.uav.platform.service.impl.media.HybridObjectStorageServiceImpl;
 import com.uav.platform.service.impl.media.S3CompatibleStorageService;
-import com.uav.platform.service.impl.storage.GoogleDriveClientOperations;
-import com.uav.platform.service.impl.storage.StorageAllocationOperations;
+import com.uav.platform.service.impl.storage.pool.GoogleDriveClientOperations;
+import com.uav.platform.service.impl.storage.pool.StorageAllocationOperations;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

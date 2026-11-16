@@ -1,4 +1,4 @@
-package com.uav.platform.service.impl.storage;
+package com.uav.platform.service.impl.storage.files;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,9 +12,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.uav.platform.dto.request.storage.AdminFileQueryRequest;
-import com.uav.platform.dto.response.storage.AdminFileResponse;
-import com.uav.platform.dto.response.storage.AdminFileSummaryResponse;
+import com.uav.platform.dto.request.storage.files.AdminFileQueryRequest;
+import com.uav.platform.dto.response.storage.files.AdminFileResponse;
+import com.uav.platform.dto.response.storage.files.AdminFileSummaryResponse;
 import com.uav.platform.entity.media.MediaAsset;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.training.TrainingAsset;
@@ -41,7 +41,7 @@ import com.uav.platform.repository.training.TrainingLessonRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.media.ObjectStorageService;
-import com.uav.platform.service.storage.AdminFileService;
+import com.uav.platform.service.storage.files.AdminFileService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

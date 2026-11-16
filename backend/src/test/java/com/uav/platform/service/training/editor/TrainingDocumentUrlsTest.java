@@ -1,4 +1,4 @@
-package com.uav.platform.service.training;
+package com.uav.platform.service.training.editor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

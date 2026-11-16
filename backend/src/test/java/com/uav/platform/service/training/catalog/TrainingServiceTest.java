@@ -1,12 +1,12 @@
-package com.uav.platform.service.training;
+package com.uav.platform.service.training.catalog;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.dto.request.training.UpdateTrainingProgressRequest;
-import com.uav.platform.dto.response.training.TrainingDocumentResponse;
-import com.uav.platform.dto.response.training.TrainingOverviewResponse;
+import com.uav.platform.dto.request.training.catalog.UpdateTrainingProgressRequest;
+import com.uav.platform.dto.response.training.catalog.TrainingDocumentResponse;
+import com.uav.platform.dto.response.training.catalog.TrainingOverviewResponse;
 import com.uav.platform.entity.training.TrainingDocument;
 import com.uav.platform.entity.training.TrainingLesson;
 import com.uav.platform.entity.training.TrainingLessonProgress;
@@ -19,7 +19,7 @@ import com.uav.platform.repository.training.TrainingLessonProgressRepository;
 import com.uav.platform.repository.training.TrainingLessonRepository;
 import com.uav.platform.repository.training.UserTrainingProgressRepository;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.impl.training.TrainingServiceImpl;
+import com.uav.platform.service.impl.training.catalog.TrainingServiceImpl;
 import com.uav.platform.service.permission.PermissionService;
 
 import org.junit.jupiter.api.BeforeEach;

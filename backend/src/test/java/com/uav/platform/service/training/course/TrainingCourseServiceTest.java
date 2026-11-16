@@ -1,4 +1,4 @@
-package com.uav.platform.service.training;
+package com.uav.platform.service.training.course;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,10 +11,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.uav.platform.dto.record.media.ObjectStream;
-import com.uav.platform.dto.request.training.UpdateLessonProgressRequest;
-import com.uav.platform.dto.response.training.TrainingCourseDetailResponse;
-import com.uav.platform.dto.response.training.TrainingCourseSummaryResponse;
-import com.uav.platform.dto.response.training.TrainingLessonDetailResponse;
+import com.uav.platform.dto.request.training.course.UpdateLessonProgressRequest;
+import com.uav.platform.dto.response.training.course.TrainingCourseDetailResponse;
+import com.uav.platform.dto.response.training.course.TrainingCourseSummaryResponse;
+import com.uav.platform.dto.response.training.course.TrainingLessonDetailResponse;
 import com.uav.platform.entity.training.TrainingAsset;
 import com.uav.platform.entity.training.TrainingDocument;
 import com.uav.platform.entity.training.TrainingLesson;
@@ -33,7 +33,7 @@ import com.uav.platform.repository.training.TrainingLessonProgressRepository;
 import com.uav.platform.repository.training.TrainingLessonRepository;
 import com.uav.platform.repository.training.UserTrainingProgressRepository;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.impl.training.TrainingCourseServiceImpl;
+import com.uav.platform.service.impl.training.course.TrainingCourseServiceImpl;
 import com.uav.platform.service.media.ObjectStorageService;
 import com.uav.platform.service.permission.PermissionService;
 

@@ -1,4 +1,4 @@
-package com.uav.platform.service.training;
+package com.uav.platform.service.training.editor;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -7,13 +7,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.uav.platform.dto.record.media.ObjectMetadata;
-import com.uav.platform.dto.request.training.CreateTrainingAssetRequest;
-import com.uav.platform.dto.request.training.UpsertTrainingLessonRequest;
-import com.uav.platform.dto.request.training.UpsertTrainingLessonRequest.ResourceRequest;
-import com.uav.platform.dto.request.training.UpsertTrainingLessonRequest.SlideRequest;
-import com.uav.platform.dto.response.training.TrainingAssetResponse;
-import com.uav.platform.dto.response.training.TrainingAssetUploadResponse;
-import com.uav.platform.dto.response.training.TrainingLessonAdminResponse;
+import com.uav.platform.dto.request.training.editor.CreateTrainingAssetRequest;
+import com.uav.platform.dto.request.training.editor.UpdateCourseCoverRequest;
+import com.uav.platform.dto.request.training.editor.UpsertTrainingLessonRequest;
+import com.uav.platform.dto.request.training.editor.UpsertTrainingLessonRequest.ResourceRequest;
+import com.uav.platform.dto.request.training.editor.UpsertTrainingLessonRequest.SlideRequest;
+import com.uav.platform.dto.response.training.editor.TrainingAssetResponse;
+import com.uav.platform.dto.response.training.editor.TrainingAssetUploadResponse;
+import com.uav.platform.dto.response.training.editor.TrainingLessonAdminResponse;
 import com.uav.platform.entity.training.TrainingAsset;
 import com.uav.platform.entity.training.TrainingDocument;
 import com.uav.platform.entity.training.TrainingLesson;
@@ -24,8 +25,10 @@ import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.training.TrainingAssetRepository;
 import com.uav.platform.repository.training.TrainingDocumentRepository;
 import com.uav.platform.repository.training.TrainingLessonRepository;
-import com.uav.platform.service.impl.training.TrainingCourseAdminServiceImpl;
+import com.uav.platform.service.impl.training.editor.TrainingCourseAdminServiceImpl;
 import com.uav.platform.service.media.ObjectStorageService;
+import com.uav.platform.service.training.course.TrainingCourseRecords;
+import com.uav.platform.service.training.course.TrainingMediaUrls;
 
 import org.hibernate.annotations.BatchSize;
 import org.junit.jupiter.api.BeforeEach;
@@ -378,14 +381,8 @@ class TrainingCourseAdminServiceTest {
         asset(7, "image/jpeg", TrainingAssetStatus.READY);
         assertEquals(
                 "TRAINING_ASSET_TYPE_MISMATCH",
-                errorCode(
-                        () ->
-                                service.setCover(
-                                        1L,
-                                        new com.uav.platform.dto.request.training
-                                                .UpdateCourseCoverRequest(5L))));
-        service.setCover(
-                1L, new com.uav.platform.dto.request.training.UpdateCourseCoverRequest(7L));
+                errorCode(() -> service.setCover(1L, new UpdateCourseCoverRequest(5L))));
+        service.setCover(1L, new UpdateCourseCoverRequest(7L));
         assertEquals(7L, course.getCoverAssetId());
         service.setCover(1L, null);
         assertNull(course.getCoverAssetId());
@@ -632,12 +629,7 @@ class TrainingCourseAdminServiceTest {
                                                 .build())));
         assertEquals(
                 "TRAINING_ASSET_TYPE_MISMATCH",
-                errorCode(
-                        () ->
-                                service.setCover(
-                                        1L,
-                                        new com.uav.platform.dto.request.training
-                                                .UpdateCourseCoverRequest(40L))));
+                errorCode(() -> service.setCover(1L, new UpdateCourseCoverRequest(40L))));
     }
 
     @Test
