@@ -90,7 +90,10 @@ export function useAdminSupportRealtime(enabled = true, onThreadDeleted?: (threa
     useEffect(() => {
         if (!enabled || !allowed || userId == null) return;
 
-        const unsubStatus = realtimeWs.subscribeStatus(setWsConnected);
+        const unsubStatus = realtimeWs.subscribeStatus(connected => {
+            setWsConnected(connected);
+            if (connected) void mobileSupportService.adminAcknowledgeDelivered().catch(() => undefined);
+        });
         const unsubFrames = realtimeWs.subscribe(frame => {
             if (frame.type === 'SUPPORT_THREAD_DELETED') {
                 onDeletedRef.current?.(frame.threadId);
@@ -132,11 +135,16 @@ export function useAdminSupportRealtime(enabled = true, onThreadDeleted?: (threa
                     );
                     void queryClient.invalidateQueries({queryKey: threadKey});
                 }
-                if (isThreadMounted && updatedThread.unreadForAdmin > 0) {
-                    void mobileSupportService.adminThreadDetail(updatedThread.id).then(() => {
+                const hasUnreadVisitor = Boolean(frame.messages?.some(m => m.senderRole === 'VISITOR' && !m.readAt));
+                const hasUndeliveredVisitor = Boolean(frame.messages?.some(m => m.senderRole === 'VISITOR' && !m.deliveredAt));
+                if (isThreadMounted && (updatedThread.unreadForAdmin > 0 || hasUnreadVisitor)) {
+                    void mobileSupportService.adminMarkRead(updatedThread.id).then(marked => {
+                        queryClient.setQueryData(threadKey, marked);
                         void queryClient.invalidateQueries({queryKey: supportKeys.summary(userId)});
                         void queryClient.invalidateQueries({queryKey: supportKeys.threadsAll(userId)});
                     }).catch(() => undefined);
+                } else if (!isThreadMounted && hasUndeliveredVisitor) {
+                    void mobileSupportService.adminAcknowledgeDelivered().catch(() => undefined);
                 }
                 queryClient.setQueriesData<PageResponse<SupportThread>>(
                     {queryKey: supportKeys.threadsAll(userId)},

@@ -3,6 +3,7 @@ import {StyleSheet, View} from 'react-native';
 import {usePathname} from 'expo-router';
 import {Radio, RotateCcw, Send} from 'lucide-react-native';
 import {MobileSupportContactCard} from '@/components/support/MobileSupportContactCard';
+import {SupportMessageStatusRow} from '@/components/support/SupportMessageStatusRow';
 import {
     AppText,
     Badge,
@@ -18,10 +19,16 @@ import {
 } from '@/components/ui';
 import {signInErrorText} from '@/forms/auth/sign-in-flow';
 import {usePublicSupportSession} from '@/hooks/support/usePublicSupportMobile';
+import {useSupportOutboxMobile} from '@/hooks/support/useSupportOutboxMobile';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import type {SupportChatMessage, SupportThreadStatus, SupportTopic} from '@/shared/types/support/support.types';
+import {
+    mergeMessagesWithOutbox,
+    resolveSupportMessageReceipt,
+    type ResolvedMessageReceipt,
+} from '@/shared/utils/support/message-status';
 import {formatSupportTime, formatSupportTopic, SUPPORT_TOPIC_OPTIONS} from '@/shared/utils/support/support-format';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
@@ -37,10 +44,12 @@ function resolveStatusTone(status: SupportThreadStatus, t: (key: string) => stri
     return {label: t('mobile.support.statusOpen'), background: colors.primaryLight, color: colors.primary};
 }
 
-function SupportMessageBubble({message, youLabel, adminFallback}: {
+function SupportMessageBubble({message, youLabel, adminFallback, receipt, onRetry}: {
     message: SupportChatMessage;
     youLabel: string;
     adminFallback: string;
+    receipt: ResolvedMessageReceipt | null;
+    onRetry?: () => void;
 }) {
     const isVisitor = message.senderRole === 'VISITOR';
     const senderLabel = isVisitor ? youLabel : message.senderName || adminFallback;
@@ -49,18 +58,23 @@ function SupportMessageBubble({message, youLabel, adminFallback}: {
             <ScaledText style={styles.bubbleMeta}>
                 {senderLabel} · {formatSupportTime(message.createdAt)}
             </ScaledText>
-            <View style={[styles.bubble, isVisitor ? styles.bubbleVisitor : styles.bubbleAdmin]}>
+            <View style={[
+                styles.bubble,
+                isVisitor ? styles.bubbleVisitor : styles.bubbleAdmin,
+                message.deliveryStatus === 'sending' && styles.sendingBubble,
+            ]}>
                 <AppText selectable style={isVisitor ? styles.bubbleVisitorText : styles.bubbleAdminText}>
                     {message.content}
                 </AppText>
             </View>
+            <SupportMessageStatusRow receipt={receipt} onRetry={onRetry}/>
         </View>
     );
 }
 
 /** Visitor & customer direct contact + live 2-way support chat form-sheet screen. */
 export function PublicSupportSheetScreen() {
-    const {t} = useI18n();
+    const {t, locale} = useI18n();
     const {user} = useAuth();
     const toast = useToast();
     const pathname = usePathname();
@@ -125,6 +139,15 @@ export function PublicSupportSheetScreen() {
         );
     };
 
+    const {outbox, enqueue, retry, clearScope} = useSupportOutboxMobile(
+        entry => sendMessage.mutateAsync(entry.content),
+        err => {
+            const text = signInErrorText(err, t);
+            setReplyError(text);
+            toast.show(text, 'error');
+        },
+    );
+
     const handleDraftChange = (value: string) => {
         setDraft(value);
         notifyVisitorTyping(value.trim().length > 0);
@@ -132,25 +155,21 @@ export function PublicSupportSheetScreen() {
 
     const handleSendReply = () => {
         const trimmed = draft.trim();
-        if (!trimmed || sendMessage.isPending) return;
+        if (!trimmed || !visitorToken) return;
         setReplyError(null);
+        setDraft('');
         notifyVisitorTyping(false);
-        sendMessage.mutate(trimmed, {
-            onSuccess: () => {
-                setDraft('');
-                setReplyError(null);
-                toast.show(t('mobile.support.sentToast'), 'success');
-            },
-            onError: err => {
-                const text = signInErrorText(err, t);
-                setReplyError(text);
-                toast.show(text, 'error');
-            },
+        enqueue({
+            scopeKey: visitorToken,
+            senderRole: 'VISITOR',
+            senderName: session?.fullName || fullName || t('mobile.support.youSender'),
+            content: trimmed,
         });
     };
 
     const handleResetSession = async () => {
         notifyVisitorTyping(false);
+        clearScope(visitorToken);
         setDraft('');
         setReplyError(null);
         await resetSession();
@@ -166,6 +185,7 @@ export function PublicSupportSheetScreen() {
     };
 
     const statusTone = session ? resolveStatusTone(session.status, t) : null;
+    const mergedMessages = mergeMessagesWithOutbox(session?.messages ?? [], outbox, visitorToken);
 
     return (
         <Screen onRefresh={() => void handleRefresh()} refreshing={refreshing}>
@@ -212,8 +232,15 @@ export function PublicSupportSheetScreen() {
                     </Card>
 
                     <Card style={styles.threadCard}>
-                        {session.messages.map(msg => (
-                            <SupportMessageBubble key={msg.id} message={msg} youLabel={t('mobile.support.youSender')} adminFallback={t('mobile.support.adminSender')}/>
+                        {mergedMessages.map((msg, idx) => (
+                            <SupportMessageBubble
+                                key={msg.clientKey ?? msg.id}
+                                message={msg}
+                                youLabel={t('mobile.support.youSender')}
+                                adminFallback={t('mobile.support.adminSender')}
+                                receipt={resolveSupportMessageReceipt(mergedMessages, idx, 'VISITOR', locale)}
+                                onRetry={msg.clientKey ? () => retry(msg.clientKey!) : undefined}
+                            />
                         ))}
                         {adminTyping ? (
                             <View style={styles.typingPill} accessibilityLiveRegion="polite">
@@ -226,8 +253,8 @@ export function PublicSupportSheetScreen() {
                     <Card>
                         <TextField label={t('mobile.support.messageLabel')} required placeholder={t('mobile.support.replyPlaceholder')}
                                    value={draft} onChangeText={handleDraftChange} multiline error={replyError}/>
-                        <Button label={t('mobile.support.sendButton')} icon={Send} loading={sendMessage.isPending}
-                                disabled={!draft.trim() || sendMessage.isPending} onPress={handleSendReply}/>
+                        <Button label={t('mobile.support.sendButton')} icon={Send}
+                                disabled={!draft.trim()} onPress={handleSendReply}/>
                     </Card>
                 </>
             )}
@@ -249,6 +276,7 @@ const styles = StyleSheet.create({
     bubbleWrapAdmin: {alignSelf: 'flex-start', alignItems: 'flex-start'},
     bubbleMeta: {fontSize: font.caption, color: colors.muted},
     bubble: {borderRadius: radius.card, paddingHorizontal: spacing.md, paddingVertical: spacing.sm},
+    sendingBubble: {opacity: 0.7},
     bubbleVisitor: {backgroundColor: colors.primary, borderBottomRightRadius: spacing.xs},
     bubbleAdmin: {backgroundColor: colors.slateLight, borderBottomLeftRadius: spacing.xs},
     bubbleVisitorText: {color: colors.white},

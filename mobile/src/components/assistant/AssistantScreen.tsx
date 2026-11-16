@@ -2,8 +2,8 @@ import React, {useRef, useState} from 'react';
 import {ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View} from 'react-native';
 import {Stack} from 'expo-router';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {ArrowUp, Trash2} from 'lucide-react-native';
-import {AppText, Button, ChipGroup, LoadingState} from '@/components/ui';
+import {AlertCircle, ArrowUp, Check, CheckCheck, Clock, Trash2} from 'lucide-react-native';
+import {AppText, ChipGroup, LoadingState, ScaledText} from '@/components/ui';
 import {AssistantMascot} from '@/components/assistant/AssistantMascot';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {useAssistantChat, useAssistantInfo} from '@/hooks/assistant/useAssistant';
@@ -15,23 +15,59 @@ import {colors, font, radius, spacing} from '@/styles/tokens';
 
 /** Starter questions of the customer portal, the same list as the web widget (admin.assistant.faqCustomer.*). */
 const FAQ = ['createMission', 'statuses', 'payment', 'quota', 'results', 'cancel'] as const;
-
-/** A chat message stamped with the moment it was sent (used to key and order the bubbles). */
-const message = (role: ChatMessage['role'], content: string): ChatMessage => ({role, content, at: Date.now()});
+const sentAt = () => Date.now();
 
 /** Replies use light Markdown; on the phone bold markers and heading hashes are dropped, the text stays. */
 function plain(text: string) {
     return text.replace(/\*\*(.+?)\*\*/g, '$1').replace(/^#{1,6}\s+/gm, '').replace(/`([^`]+)`/g, '$1');
 }
 
-function Bubble({item}: { item: ChatMessage }) {
+function Bubble({
+    item,
+    isLastSettledMine,
+    hasAssistantReply,
+    onRetry,
+}: {
+    item: ChatMessage;
+    isLastSettledMine: boolean;
+    hasAssistantReply: boolean;
+    onRetry?: () => void;
+}) {
     const mine = item.role === 'user';
     return (
-        <View style={[styles.bubbleRow, mine && styles.bubbleRowMine]}>
-            {!mine && <AssistantMascot size={28}/>}
-            <View style={[styles.bubble, mine ? styles.mine : styles.theirs]}>
-                <AppText selectable style={mine ? styles.mineText : undefined}>{mine ? item.content : plain(item.content)}</AppText>
+        <View style={[styles.turnWrap, mine && styles.turnWrapMine]}>
+            <View style={[styles.bubbleRow, mine && styles.bubbleRowMine]}>
+                {!mine && <AssistantMascot size={28}/>}
+                <View style={[styles.bubble, mine ? styles.mine : styles.theirs, item.status === 'sending' && styles.sendingBubble]}>
+                    <AppText selectable style={mine ? styles.mineText : undefined}>{mine ? item.content : plain(item.content)}</AppText>
+                </View>
             </View>
+            {mine && item.status === 'sending' ? (
+                <View style={styles.statusRow}>
+                    <Clock size={12} color={colors.muted}/>
+                    <ScaledText style={styles.statusMuted}>Đang gửi</ScaledText>
+                </View>
+            ) : null}
+            {mine && item.status === 'failed' ? (
+                <Pressable onPress={onRetry} accessibilityRole="button" style={({pressed}) => [styles.failedBtn, pressed && styles.pressed]}>
+                    <AlertCircle size={12} color={colors.danger}/>
+                    <ScaledText style={styles.failedText}>Không gửi được · Thử lại</ScaledText>
+                </Pressable>
+            ) : null}
+            {isLastSettledMine ? (
+                hasAssistantReply ? (
+                    <View style={styles.statusRow}>
+                        <View style={styles.aiBadge}><ScaledText style={styles.aiBadgeText}>AI</ScaledText></View>
+                        <CheckCheck size={13} color={colors.primary}/>
+                        <ScaledText style={styles.statusSeen}>Đã xem</ScaledText>
+                    </View>
+                ) : (
+                    <View style={styles.statusRow}>
+                        <Check size={12} color={colors.muted}/>
+                        <ScaledText style={styles.statusMuted}>Đã gửi</ScaledText>
+                    </View>
+                )
+            ) : null}
         </View>
     );
 }
@@ -45,29 +81,61 @@ export function AssistantScreen() {
     const chat = useAssistantChat();
     const thread = useAssistantThread();
     const [draft, setDraft] = useState('');
-    const [error, setError] = useState<string | null>(null);
     const scroll = useRef<React.ComponentRef<typeof ScrollView>>(null);
     const modes = info.data?.modes ?? [];
     const mode = thread.mode ?? modes[0]?.mode ?? 1;
 
-    const ask = (text: string) => {
-        const content = text.trim();
-        if (!content || chat.isPending) return;
-        const next: ChatMessage[] = [...thread.messages, message('user', content)];
-        thread.setMessages(() => next);
-        setDraft('');
-        setError(null);
-        chat.mutate({mode, messages: next, conversationId: thread.conversationId}, {
+    const dispatchTurn = (clientKey: string, nextMessages: ChatMessage[]) => {
+        const cleanHistory = nextMessages.filter(m => m.status !== 'failed');
+        chat.mutate({mode, messages: cleanHistory, conversationId: thread.conversationId}, {
             onSuccess: reply => {
                 thread.setConversationId(reply.conversationId);
-                thread.setMessages(messages => [...messages, message('assistant', reply.reply)]);
+                thread.setMessages(items => [
+                    ...items.map(m => (m.clientKey === clientKey ? {...m, status: 'seen' as const} : m)),
+                    {role: 'assistant', content: reply.reply, at: sentAt()},
+                ]);
             },
-            onError: failure => {
-                const code = (failure as { status?: number }).status ?? 0;
-                setError(t('admin.assistant.failed', {code}));
+            onError: () => {
+                thread.setMessages(items =>
+                    items.map(m => (m.clientKey === clientKey ? {...m, status: 'failed' as const} : m)),
+                );
             },
         });
     };
+
+    const ask = (text: string) => {
+        const content = text.trim();
+        if (!content || chat.isPending) return;
+        const now = sentAt();
+        const clientKey = `mob-ast-${now}`;
+        const next: ChatMessage[] = [
+            ...thread.messages,
+            {role: 'user', content, at: now, clientKey, status: 'sending'},
+        ];
+        thread.setMessages(() => next);
+        setDraft('');
+        dispatchTurn(clientKey, next);
+    };
+
+    const retryTurn = (clientKey?: string) => {
+        if (!clientKey || chat.isPending) return;
+        const idx = thread.messages.findIndex(m => m.clientKey === clientKey && m.status === 'failed');
+        if (idx < 0) return;
+        const next = thread.messages.map((m, i) => (i === idx ? {...m, status: 'sending' as const} : m));
+        thread.setMessages(() => next);
+        dispatchTurn(clientKey, next.slice(0, idx + 1));
+    };
+
+    let lastSettledUserIdx = -1;
+    let lastSettledHasReply = false;
+    for (let i = thread.messages.length - 1; i >= 0; i--) {
+        const item = thread.messages[i];
+        if (item.role === 'user' && item.status !== 'sending' && item.status !== 'failed') {
+            lastSettledUserIdx = i;
+            lastSettledHasReply = item.status === 'seen' || thread.messages.slice(i + 1).some(x => x.role === 'assistant');
+            break;
+        }
+    }
 
     const header = (
         <Stack.Screen options={{
@@ -111,7 +179,15 @@ export function AssistantScreen() {
                             </Pressable>
                         ))}
                     </View>
-                ) : thread.messages.map((item, index) => <Bubble key={`${item.at}-${index}`} item={item}/>)}
+                ) : thread.messages.map((item, index) => (
+                    <Bubble
+                        key={item.clientKey ?? `${item.at}-${index}`}
+                        item={item}
+                        isLastSettledMine={index === lastSettledUserIdx}
+                        hasAssistantReply={lastSettledHasReply}
+                        onRetry={() => retryTurn(item.clientKey)}
+                    />
+                ))}
                 {chat.isPending && (
                     <View style={styles.bubbleRow}>
                         <AssistantMascot size={28}/>
@@ -119,17 +195,6 @@ export function AssistantScreen() {
                             <ActivityIndicator size="small" color={colors.slate}/>
                             <AppText variant="small">{t('admin.assistant.thinking')}</AppText>
                         </View>
-                    </View>
-                )}
-                {error && (
-                    <View style={styles.errorRow}>
-                        <AppText variant="small" style={styles.error}>{error}</AppText>
-                        <Button label={t('common.retry')} tone="ghost" onPress={() => {
-                            const lastUser = [...thread.messages].reverse().find(item => item.role === 'user');
-                            if (!lastUser) return;
-                            thread.setMessages(items => items.slice(0, items.lastIndexOf(lastUser)));
-                            ask(lastUser.content);
-                        }}/>
                     </View>
                 )}
             </ScrollView>
@@ -166,15 +231,29 @@ const styles = StyleSheet.create({
     },
     faqText: {color: colors.text},
     pressed: {opacity: 0.7},
+    turnWrap: {gap: 4, maxWidth: '100%'},
+    turnWrapMine: {alignItems: 'flex-end'},
     bubbleRow: {flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm, maxWidth: '100%'},
     bubbleRowMine: {justifyContent: 'flex-end'},
     bubble: {maxWidth: '82%', borderRadius: 18, paddingHorizontal: spacing.md, paddingVertical: 10},
+    sendingBubble: {opacity: 0.7},
     mine: {backgroundColor: colors.primary, borderBottomRightRadius: 6},
     mineText: {color: colors.white},
     theirs: {backgroundColor: colors.surface, borderBottomLeftRadius: 6, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border},
     thinking: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
-    errorRow: {alignItems: 'center'},
-    error: {color: colors.danger},
+    statusRow: {flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 2},
+    statusMuted: {fontSize: font.caption - 1, color: colors.muted, fontWeight: '500'},
+    statusSeen: {fontSize: font.caption - 1, color: colors.slateDark, fontWeight: '600'},
+    aiBadge: {
+        width: 15, height: 15, borderRadius: 8, backgroundColor: colors.slateDark,
+        borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center',
+    },
+    aiBadgeText: {fontSize: 7, fontWeight: '800', color: colors.white},
+    failedBtn: {
+        flexDirection: 'row', alignItems: 'center', gap: 4,
+        paddingHorizontal: spacing.sm, paddingVertical: 3, borderRadius: radius.control, backgroundColor: colors.dangerLight,
+    },
+    failedText: {fontSize: font.caption - 1, fontWeight: '700', color: colors.danger},
     composer: {
         gap: spacing.sm, paddingHorizontal: spacing.lg, paddingTop: spacing.sm, backgroundColor: colors.surface,
         borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border,

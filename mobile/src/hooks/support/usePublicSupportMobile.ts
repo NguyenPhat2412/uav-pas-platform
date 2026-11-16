@@ -119,8 +119,19 @@ export function usePublicSupportSession(markRead = false) {
                 queryClient.setQueryData(supportKeys.publicSession(visitorToken), viewSession);
                 queryClient.setQueryData([...supportKeys.publicSession(visitorToken), 'read'], viewSession);
                 queryClient.setQueryData([...supportKeys.publicSession(visitorToken), 'peek'], viewSession);
-                if (markRead && updated.unreadForVisitor > 0) {
-                    void mobileSupportService.getPublicThread(visitorToken, true).catch(() => undefined);
+                const hasUnreadAdmin = updated.messages.some(m => m.senderRole === 'ADMIN' && !m.readAt);
+                const hasUndeliveredAdmin = updated.messages.some(m => m.senderRole === 'ADMIN' && !m.deliveredAt);
+                if (markRead && (updated.unreadForVisitor > 0 || hasUnreadAdmin)) {
+                    void mobileSupportService
+                        .markPublicRead(visitorToken)
+                        .then(marked => {
+                            queryClient.setQueryData(supportKeys.publicSession(visitorToken), marked);
+                            queryClient.setQueryData([...supportKeys.publicSession(visitorToken), 'read'], marked);
+                            queryClient.setQueryData([...supportKeys.publicSession(visitorToken), 'peek'], marked);
+                        })
+                        .catch(() => undefined);
+                } else if (!markRead && hasUndeliveredAdmin) {
+                    void mobileSupportService.getPublicThread(visitorToken, false).catch(() => undefined);
                 }
                 return;
             }

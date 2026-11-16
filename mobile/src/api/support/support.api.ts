@@ -33,6 +33,13 @@ export const mobileSupportService = {
             {signal},
         ),
 
+    markPublicRead: (visitorToken: string, signal?: AbortSignal) =>
+        apiClient.post<PublicSupportThreadSession>(
+            API_ROUTES.public.supportMarkRead(visitorToken),
+            {},
+            {signal},
+        ),
+
     sendPublicMessage: (visitorToken: string, content: string, signal?: AbortSignal) => {
         const body: PublicSupportMessageInput = {content};
         return apiClient.post<PublicSupportThreadSession>(
@@ -44,6 +51,9 @@ export const mobileSupportService = {
 
     adminSummary: (signal?: AbortSignal) =>
         apiClient.get<SupportAdminSummary>(API_ROUTES.adminSupport.summary, {signal}),
+
+    adminAcknowledgeDelivered: () =>
+        apiClient.post<{ delivered: number }>(API_ROUTES.adminSupport.delivered, {}),
 
     adminThreads: (filter: SupportThreadFilter = {}, signal?: AbortSignal) => {
         const qs = buildQueryString({
@@ -60,6 +70,9 @@ export const mobileSupportService = {
 
     adminThreadDetail: (id: number, signal?: AbortSignal) =>
         apiClient.get<SupportThreadDetail>(API_ROUTES.adminSupport.thread(id), {signal}),
+
+    adminMarkRead: (id: number) =>
+        apiClient.post<SupportThreadDetail>(API_ROUTES.adminSupport.markRead(id), {}),
 
     adminReply: (id: number, body: SupportReplyInput) =>
         apiClient.post<SupportThreadDetail>(API_ROUTES.adminSupport.reply(id), body),

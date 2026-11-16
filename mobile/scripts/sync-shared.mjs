@@ -73,6 +73,7 @@ export const ROOTS = [
     'utils/mission/presentation.ts',
     'utils/mission/workflows.ts',
     'utils/support/support-format.ts',
+    'utils/support/message-status.ts',
     'utils/training/course-helpers.ts',
     'utils/weather/conditions.ts',
     'utils/weather/sky-theme.ts',
