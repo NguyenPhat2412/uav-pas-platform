@@ -157,7 +157,14 @@ class ArchitecturePackageTest {
                         "Domain enums must be in the enums package: " + relative);
             }
             Set<String> subpackagedFeatures =
-                    Set.of("mission", "billing", "marketplace", "auth", "user");
+                    Set.of(
+                            "mission",
+                            "billing",
+                            "marketplace",
+                            "auth",
+                            "user",
+                            "storage",
+                            "training");
             String feature = nested ? parts[5] : parts[4];
             if (subpackagedFeatures.contains(feature)
                     && Set.of("controller", "service", "dto", "mapper", "specification")
