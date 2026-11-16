@@ -64,7 +64,24 @@ export type OperationsRealtimeFrame =
     | { type: 'SUPPORT_SUMMARY_UPDATED'; timestamp: string; summary: OpsSupportSummary }
     | { type: 'SUPPORT_THREAD_DELETED'; timestamp: string; threadId: number; summary?: OpsSupportSummary }
     | { type: 'SUPPORT_VISITOR_TYPING'; timestamp: string; threadId: number; senderName?: string; typing: boolean }
-    | { type: 'NOTIFICATION_CREATED'; timestamp: string; notification: { id: number; title: string }; unreadCount: number };
+    | {
+          type: 'NOTIFICATION_CREATED';
+          timestamp: string;
+          notification: {
+              id: number;
+              title: string;
+              content?: string;
+              type?: string | null;
+              moduleCode?: 'SAR' | 'AIRSPACE' | 'MISSION' | 'MARKETPLACE' | 'BILLING' | 'SUPPORT' | 'MAINTENANCE' | 'STORAGE' | 'SYSTEM' | null;
+              severity?: 'INFO' | 'ACTION' | 'CRITICAL' | null;
+              referenceType?: string | null;
+              referenceId?: number | null;
+              createdAt?: string;
+          };
+          unreadCount: number;
+          screenPopup?: boolean;
+          desktopOs?: boolean;
+      };
 
 type FrameListener = (frame: OperationsRealtimeFrame) => void;
 type StatusListener = (connected: boolean) => void;
