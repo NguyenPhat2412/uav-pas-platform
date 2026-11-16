@@ -1,10 +1,11 @@
 'use client';
 /* eslint-disable @next/next/no-img-element -- mission images use signed storage URLs (R2, minutes-long expiry); they are not next/image remote patterns, so the browser loads them directly. */
 
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import {X} from 'lucide-react';
 import {ExifPanel} from '@/components/mission/customer/ExifPanel';
 import {Button, Card} from '@/components/ui';
+import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {useMediaDownloadUrls} from '@/hooks/media/useMedia';
 import {useI18n} from '@/providers/I18nContext';
 import type {MissionMedia} from '@/types/customer';
@@ -16,8 +17,11 @@ export function MediaPreview({items}: { items: MissionMedia[] }) {
     const images = items.filter(item => item.media.contentType?.startsWith('image/')).slice(0, PREVIEW_LIMIT);
     const urls = useMediaDownloadUrls(images.map(item => item.media.id));
     const [open, setOpen] = useState<number | null>(null);
-    if (!images.length) return null;
+    const dialogRef = useRef<HTMLDivElement | null>(null);
     const active = open == null ? null : images.findIndex(item => item.media.id === open);
+    const modalOpen = active != null && active >= 0 && Boolean(urls[active]?.data?.url);
+    useDialogFocusTrap(dialogRef, modalOpen, () => setOpen(null));
+    if (!images.length) return null;
 
     return (
         <>
@@ -49,12 +53,12 @@ export function MediaPreview({items}: { items: MissionMedia[] }) {
             </ul>
             {active != null && active >= 0 && urls[active]?.data?.url && (
                 <div
-                    className="fixed inset-0 z-100 flex flex-col items-center justify-center gap-3 bg-black/80 px-4 pt-12 pb-6 text-white"
+                    ref={dialogRef}
+                    className="fixed inset-0 z-100 flex flex-col items-center justify-center gap-3 bg-black/80 px-4 pt-12 pb-6 text-white outline-none"
                     role="dialog"
                     aria-modal="true"
                     aria-label={images[active].media.originalName}
                     onClick={() => setOpen(null)}
-                    onKeyDown={event => event.key === 'Escape' && setOpen(null)}
                 >
                     <Button
                         type="button"
@@ -67,12 +71,12 @@ export function MediaPreview({items}: { items: MissionMedia[] }) {
                     >
                         <X size={20}/>
                     </Button>
-                    <div className="flex max-h-[calc(100vh-80px)] w-full max-w-6xl flex-col items-center gap-4 overflow-y-auto md:flex-row md:items-start md:justify-center">
+                    <div className="flex max-h-[calc(100dvh-80px)] w-full max-w-6xl flex-col items-center gap-4 overflow-y-auto md:flex-row md:items-start md:justify-center">
                         <div className="flex min-w-0 flex-col items-center gap-3">
                             <img
                                 src={urls[active].data!.url}
                                 alt={images[active].media.originalName}
-                                className="max-h-[calc(100vh-140px)] max-w-full rounded-panel object-contain"
+                                className="max-h-[calc(100dvh-140px)] max-w-full rounded-panel object-contain"
                                 onClick={event => event.stopPropagation()}
                             />
                             <p className="m-0 text-sm">{images[active].media.originalName}</p>

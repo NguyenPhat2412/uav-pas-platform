@@ -31,7 +31,7 @@ export function HomeLandingCapabilitiesSection() {
                         {uavPlatformFeatures.map((feature, index) => (
                             <Card
                                 key={feature.id}
-                                className="flex flex-col justify-between rounded-2xl border-border shadow-xs transition-all hover:border-primary/40 hover:shadow-md"
+                                className="flex flex-col justify-between rounded-2xl border-border shadow-xs transition-[border-color,box-shadow] duration-200 hover:border-primary/40 hover:shadow-md"
                             >
                                 <CardContent className="space-y-2.5">
                                     <div className="flex items-center justify-between gap-2">
@@ -80,7 +80,7 @@ export function HomeLandingCapabilitiesSection() {
                             return (
                                 <Card
                                     key={service.slug}
-                                    className="flex flex-col justify-between rounded-2xl border-border shadow-xs transition-all hover:border-primary/40 hover:shadow-md"
+                                    className="flex flex-col justify-between rounded-2xl border-border shadow-xs transition-[border-color,box-shadow] duration-200 hover:border-primary/40 hover:shadow-md"
                                 >
                                     <CardContent className="space-y-3.5">
                                         <div className="flex flex-wrap items-center justify-between gap-2">

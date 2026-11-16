@@ -23,18 +23,13 @@ import {
 } from "@/forms/mission/mission-form";
 import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplace';
 import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
-import {
-    estimateBookingSubtotal,
-    formatVndCompact,
-    listingTypeLabel,
-    pricingUnitLabel,
-} from '@/forms/marketplace/marketplace-forms';
+import {estimateBookingSubtotal} from '@/forms/marketplace/marketplace-forms';
+import {MissionMarketplaceBanner} from '@/components/mission/customer/MissionMarketplaceBanner';
+import {MissionReviewSummaryList} from '@/components/mission/customer/MissionReviewSummaryList';
 import type {MissionInput, MissionType} from "@/types/customer";
-import {RequiredMark} from "@/components/shared/RequiredMark";
+import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {resolveServiceIdFromParam, toServiceSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/providers/I18nContext';
-import {defaultFlightPlan} from "@/types/mission/flight-plan.types";
-import {flightGeometry} from "@/utils/mission/flight-geometry";
 import {MissionWeatherAdvisor} from '@/components/weather/MissionWeatherAdvisor';
 import {MissionAirspaceAdvisor} from '@/components/airspace/MissionAirspaceAdvisor';
 import {
@@ -64,7 +59,7 @@ function CreateMission() {
     const services = useServices();
     const actions = useMissionActions();
     const {can} = useAuth();
-    const {t, formatDate, formatNumber} = useI18n();
+    const {t} = useI18n();
     const {rfqEnabled, requireEscrowBeforeStart, invoiceDueDays} = useSiteInfo();
     const listingSlug = params.get('listing');
     const initialUnitsParam = Number(params.get('units'));
@@ -154,14 +149,6 @@ function CreateMission() {
             if (!showFieldErrors(err)) setError(missionFormError(err, t));
         }
     };
-    // What the review step shows of the flight plan, so the customer checks it before sending.
-    const plan = form.flightPlan ?? defaultFlightPlan();
-    const planArea = flightGeometry(plan).areaSquareMeters;
-    const flightArea = plan.areaType === 'POLYGON'
-        ? `${t('planner.tool.polygon')}${planArea != null ? ` · ${formatNumber(Math.round(planArea / 100) / 100)} ha` : ''}`
-        : plan.areaType === 'CIRCLE'
-            ? `${t('planner.tool.circle')} · ${formatNumber(plan.radiusMeters ?? 0)} m`
-            : t('planner.tool.takeoff');
     const fieldClass = 'grid gap-1.5 text-xs font-bold text-foreground';
     const selectClass = 'min-h-11 w-full rounded-control border border-border-input bg-card px-3 py-2 text-base font-normal text-foreground sm:text-sm aria-[invalid=true]:border-danger';
     return <div className="flex flex-1 flex-col bg-white">
@@ -183,60 +170,17 @@ function CreateMission() {
                 <fieldset className="m-0 border-0 p-0 disabled:opacity-65" disabled={checking}>
                     <legend className="sr-only">{t('missionCreate.requestDetails')}</legend>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {activeListing ? (
-                            <div className="col-span-full rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4">
-                                <div className="flex flex-wrap items-start justify-between gap-4">
-                                    <div className="space-y-1">
-                                        <span className="inline-block rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800">
-                                            Đặt thuê từ Sàn UAV · {listingTypeLabel(activeListing.listingType)}
-                                        </span>
-                                        <h3 className="m-0 text-base font-extrabold text-slate-900">{activeListing.title}</h3>
-                                        <p className="m-0 text-xs text-slate-600">
-                                            Đơn vị cung cấp: <strong>{activeListing.providerDisplayName}</strong> ({activeListing.province}) · Đơn giá:{' '}
-                                            <strong className="text-primary">{formatVndCompact(activeListing.basePriceVnd)} / {pricingUnitLabel(activeListing.pricingModel)}</strong>
-                                        </p>
-                                        <p className="m-0 text-[11.5px] text-emerald-900">
-                                            Bảo vệ Ký quỹ VietQR (hạn thanh toán {invoiceDueDays} ngày){requireEscrowBeforeStart ? ' · Yêu cầu nạp Ký quỹ trước khi đối tác xuất phát bay' : ' · Chỉ giải ngân cho đối tác sau khi bạn nghiệm thu kết quả'}.
-                                        </p>
-                                    </div>
-                                    <label className="grid gap-1 text-xs font-bold text-slate-800">
-                                        <span>Khối lượng đặt ({pricingUnitLabel(activeListing.pricingModel)})</span>
-                                        <input
-                                            type="number"
-                                            min={Number(activeListing.minBookingUnits || 1)}
-                                            step="0.5"
-                                            value={effectiveUnits ?? 1}
-                                            onChange={e => setBookingUnits(Number(e.target.value))}
-                                            className="h-10 w-36 rounded-control border border-slate-300 bg-white px-3 text-sm font-black text-slate-900"
-                                        />
-                                        <span className="text-[11px] font-semibold text-primary">
-                                            Tạm tính: {formatVndCompact(estimatedSubtotal)}
-                                        </span>
-                                    </label>
-                                </div>
-                            </div>
-                        ) : rfqEnabled ? (
-                            <label className="col-span-full flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-xs">
-                                <input
-                                    type="checkbox"
-                                    checked={openRfq}
-                                    onChange={e => setOpenRfq(e.target.checked)}
-                                    className="mt-0.5 h-4 w-4 accent-primary"
-                                />
-                                <span>
-                                    <strong className="block font-bold text-slate-900">
-                                        Đăng yêu cầu mở nhận báo giá từ các Đối tác UAV (Open RFQ)
-                                    </strong>
-                                    <span className="text-slate-600">
-                                        Cho phép các đối tác UAV đã xác minh KYC gửi báo giá cạnh tranh và phương án thiết bị để bạn lựa chọn.
-                                    </span>
-                                </span>
-                            </label>
-                        ) : (
-                            <p className="col-span-full m-0 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-600">
-                                Chế độ đấu thầu báo giá mở (Open RFQ) hiện đang tạm đóng theo cấu hình vận hành của sàn. Bạn vẫn có thể đặt thuê trực tiếp gói niêm yết hoặc gửi yêu cầu tới đội bay UAV PAS.
-                            </p>
-                        )}
+                        <MissionMarketplaceBanner
+                            activeListing={activeListing}
+                            effectiveUnits={effectiveUnits}
+                            estimatedSubtotal={estimatedSubtotal}
+                            onBookingUnitsChange={setBookingUnits}
+                            rfqEnabled={rfqEnabled}
+                            openRfq={openRfq}
+                            onOpenRfqChange={setOpenRfq}
+                            invoiceDueDays={invoiceDueDays}
+                            requireEscrowBeforeStart={requireEscrowBeforeStart}
+                        />
                         <SavedFlightSitesBar
                             form={form}
                             onApply={site => {
@@ -245,7 +189,7 @@ function CreateMission() {
                                 setForm(nextForm);
                             }}
                         />
-                        <label className={fieldClass}><span>{t('missionCreate.serviceOptional')}</span><select id="mission-serviceId"
+                        <label className={fieldClass}><span>{t('missionCreate.service')}<OptionalMark/></span><select id="mission-serviceId"
                                                                                         className={selectClass}
                                                                                         value={form.serviceId ?? ''}
                                                                                         aria-invalid={!!errors.serviceId}
@@ -286,89 +230,14 @@ function CreateMission() {
                     </div>
                 </fieldset>
             </form> : <>
-                <dl className="m-0 grid grid-cols-1 gap-px border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:grid-cols-4 [&>div]:bg-white [&>div]:p-3.5 [&_dt]:text-xs [&_dt]:text-muted [&_dd]:m-0 [&_dd]:mt-1 [&_dd]:whitespace-pre-wrap [&_dd]:break-words [&_dd]:text-sm [&_dd]:font-semibold [&_dd]:text-foreground">
-                    <div>
-                        <dt>{t('missionForm.title')}</dt>
-                        <dd>{form.title.trim()}</dd>
-                    </div>
-                    {activeListing && (
-                        <div>
-                            <dt>Gói thuê Sàn UAV & Tạm tính</dt>
-                            <dd>
-                                {activeListing.title} · {effectiveUnits} {pricingUnitLabel(activeListing.pricingModel)} ({formatVndCompact(estimatedSubtotal)})
-                            </dd>
-                        </div>
-                    )}
-                    {effectiveOpenRfq && (
-                        <div>
-                            <dt>Hình thức giao dịch</dt>
-                            <dd>Đấu thầu mở (Open RFQ)</dd>
-                        </div>
-                    )}
-                    <div>
-                        <dt>{t('missionCreate.service')}</dt>
-                        <dd>{selectedService ? serviceName(selectedService) : t('missionCreate.noService')}</dd>
-                    </div>
-                    <div>
-                        <dt>{t('missions.type')}</dt>
-                        <dd>{displayLabel(form.missionType)}</dd>
-                    </div>
-                    <div>
-                        <dt>{t('missionForm.requestedDate')}</dt>
-                        <dd>{form.requestedDate}</dd>
-                    </div>
-                    <div>
-                        <dt>{t('missionCreate.time')}</dt>
-                        <dd>{formatDate(form.startTime)} → {formatDate(form.expectedEndTime)}</dd>
-                    </div>
-                    <div>
-                        <dt>{t('missionForm.location')}</dt>
-                        <dd>{form.locationName.trim()}</dd>
-                    </div>
-                    <div>
-                        <dt>{t('missionForm.priority')}</dt>
-                        <dd>{displayLabel(form.priority ?? 'NORMAL')}</dd>
-                    </div>
-                    <div>
-                        <dt>{t('missionCreate.coordinates')}</dt>
-                        <dd>{t('missionCreate.coordinatesValue', {lat: form.latitude ?? t('missionCreate.notEntered'), lng: form.longitude ?? t('missionCreate.notEntered')})}</dd>
-                    </div>
-                    <div>
-                        <dt>{t('planner.label')}</dt>
-                        <dd>{flightArea}</dd>
-                    </div>
-                    <div>
-                        <dt>{t('flightSpec.altitude')}</dt>
-                        <dd>{plan.altitudeAglMeters} m</dd>
-                    </div>
-                    <div>
-                        <dt>{t('flightSpec.gsd')}</dt>
-                        <dd>{t(`flightSpec.gsdOption.${plan.targetGsdCm.toFixed(1).replace('.', '_')}`)}</dd>
-                    </div>
-                    <div>
-                        <dt>{t('flightSpec.forwardOverlap')} / {t('flightSpec.sideOverlap')}</dt>
-                        <dd>{plan.forwardOverlap}% / {plan.sideOverlap}%</dd>
-                    </div>
-                    <div className={plan.permitSupport ? 'sm:col-span-2' : 'sm:col-span-2 lg:col-span-4'}>
-                        <dt>{t('flightSpec.sensors')}</dt>
-                        <dd>{plan.sensors.length ? plan.sensors.map(sensor => t(`flightSpec.sensor.${sensor}.name`)).join(', ') : t('missionCreate.notEntered')}</dd>
-                    </div>
-                    {plan.permitSupport && <div className="sm:col-span-2">
-                        <dt>{t('flightSpec.permit')}</dt>
-                        <dd>✓</dd>
-                    </div>}
-                    {plan.obstacles?.trim() && <div className="sm:col-span-2 lg:col-span-4">
-                        <dt>{t('flightSpec.obstacles')}</dt>
-                        <dd>{plan.obstacles.trim()}</dd>
-                    </div>}
-                    {form.description && <div className="sm:col-span-2 lg:col-span-4">
-                        <dt>{t('missionForm.description')}</dt>
-                        <dd>{form.description}</dd>
-                    </div>}{form.notes && <div className="sm:col-span-2 lg:col-span-4">
-                    <dt>{t('missionForm.notes')}</dt>
-                    <dd>{form.notes}</dd>
-                </div>}
-                </dl>
+                <MissionReviewSummaryList
+                    form={form}
+                    activeListing={activeListing}
+                    effectiveUnits={effectiveUnits}
+                    estimatedSubtotal={estimatedSubtotal}
+                    effectiveOpenRfq={effectiveOpenRfq}
+                    selectedService={selectedService}
+                />
                 <div className="mt-4 rounded-panel bg-amber-50 px-3.5 py-3 text-xs text-warning">{availability && t(`missionCreate.${{ok: 'availabilityOk', conflict: 'availabilityConflict', draft: 'availabilityDraft'}[availability]}`)}</div>
                 <div className="mt-5 flex flex-wrap justify-end gap-3">
                     <Button type="button" variant="secondary" onClick={() => setStep(1)} disabled={busy}>{t('missionCreate.edit')}</Button>

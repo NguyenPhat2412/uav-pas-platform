@@ -3,7 +3,7 @@
 import {useEffect, useState} from 'react';
 import {usePathname, useSearchParams} from 'next/navigation';
 import { Minimize2, Sparkles, X } from 'lucide-react';
-import {openAuthModal, OPEN_AUTH_MODAL_EVENT} from '@/components/auth/AuthModalPopup';
+import {openAuthModal, OPEN_AUTH_MODAL_EVENT} from '@/components/auth/modal/AuthModalPopup';
 import {
     ScrollEngagementStageContent,
     type ScrollEngagementStage,
@@ -96,7 +96,7 @@ export function ScrollEngagementPopup() {
                 <button
                     type="button"
                     onClick={() => setMinimized(false)}
-                    className="group inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white/95 px-4 py-2.5 text-xs font-bold text-slate-900 shadow-xl backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-primary/50"
+                    className="group inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white/95 px-4 py-2.5 text-xs font-bold text-slate-900 shadow-xl backdrop-blur-md transition-[transform,border-color] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:border-primary/50"
                 >
                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
                         <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
@@ -110,7 +110,7 @@ export function ScrollEngagementPopup() {
     return (
         <aside
             aria-label="Gợi ý dịch vụ, đăng nhập và đào tạo UAV"
-            className="fixed bottom-5 left-5 z-40 w-[calc(100vw-2.5rem)] max-w-[388px] overflow-hidden rounded-2xl border border-slate-200/95 bg-white/98 shadow-2xl ring-1 ring-slate-900/5 backdrop-blur-md transition-all duration-300"
+            className="fixed bottom-5 left-5 z-40 w-[calc(100vw-2.5rem)] max-w-[388px] overflow-hidden rounded-2xl border border-slate-200/95 bg-white/98 shadow-2xl ring-1 ring-slate-900/5 backdrop-blur-md transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
         >
             {/* Top accent bar */}
             <div className="h-1 w-full bg-primary" aria-hidden="true" />

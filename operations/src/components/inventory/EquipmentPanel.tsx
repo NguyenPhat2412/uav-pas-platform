@@ -19,7 +19,7 @@ import {
     toInventoryMovementPayload,
 } from "@/forms/inventory/equipment-form";
 import type {Equipment} from "@/types/resources";
-import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
+import {OptionalMark, RequiredMark, stripFieldLabelMarker} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';
 
 type MovementAction = 'stock-in' | 'stock-out' | 'reserve' | 'release' | 'transfer';
@@ -92,7 +92,7 @@ export function EquipmentPanel() {
                     <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-name">{t('opsAssets.equipment.name')}<RequiredMark/></label><Input
                         id="equipment-name" aria-required error={createFieldErrors?.name} value={form.name}
                         onChange={event => setForm({...form, name: event.target.value})}/></div>
-                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-type">{t('opsAssets.equipment.type')}</label><select id="equipment-type"
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-type">{t('opsAssets.equipment.type')}<RequiredMark/></label><select id="equipment-type"
                                                                                                      className="min-h-11 w-full min-w-0 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm"
                                                                                                      value={form.type}
                                                                                                      onChange={event => setForm({
@@ -105,7 +105,7 @@ export function EquipmentPanel() {
                         onChange={event => setForm({...form, serialNumber: event.target.value})}/></div>
                 </div>
                 {can('STATION_VIEW') &&
-                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-station">{t('opsAssets.equipment.storageStation')}<OptionalMark/></label><select id="equipment-station"
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="equipment-station">{stripFieldLabelMarker(t('opsAssets.equipment.storageStation'))}<OptionalMark/></label><select id="equipment-station"
                                              className="min-h-11 w-full min-w-0 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm"
                                              disabled={create.isPending || stations.isPending || !!stations.error}
                                              value={form.stationId}
@@ -138,7 +138,7 @@ export function EquipmentPanel() {
                         <option value="">{t('opsAssets.equipment.selectEquipment')}</option>
                         {rows.map(item => <option key={item.id} value={item.id}>{item.name} · #{item.id}</option>)}
                     </select></div>
-                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-action">{t('opsAssets.equipment.action')}</label><select
+                    <div className="flex flex-col gap-1.5"><label className="text-xs font-semibold text-slate-700" htmlFor="movement-action">{t('opsAssets.equipment.action')}<RequiredMark/></label><select
                         id="movement-action" className="min-h-11 w-full min-w-0 rounded-control border border-slate-300 bg-white px-3 py-2 text-sm" value={movement.action} onChange={event => setMovement({
                         ...movement,
                         action: event.target.value

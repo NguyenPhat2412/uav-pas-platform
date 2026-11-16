@@ -59,7 +59,7 @@ export function MissionFields({form, onChange, errors = {}}: {
             <FormField id="mission-locationName" label={t('missionForm.location')} required error={errors.locationName} labelClassName={labelClass}>
                 <Input className={inputClass} {...attributes('locationName')} value={form.locationName} onChange={set('locationName')}/>
             </FormField>
-            <FormField id="mission-priority" label={t('missionForm.priority')} optional={false} error={errors.priority} labelClassName={labelClass}>
+            <FormField id="mission-priority" label={t('missionForm.priority')} required error={errors.priority} labelClassName={labelClass}>
                 <Select className={inputClass} {...attributes('priority')} value={form.priority ?? 'NORMAL'} onChange={set('priority')}>
                     {['LOW', 'NORMAL', 'HIGH', 'URGENT'].map(priority => (
                         <option key={priority} value={priority}>{displayLabel(priority)}</option>

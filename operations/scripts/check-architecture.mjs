@@ -86,6 +86,14 @@ for (const file of files.filter(name => /\.[cm]?[jt]sx?$/.test(name))) {
 for (const forbiddenGroup of ["(customer)","(public)","(admin)"]) {
     assert.ok(!existsSync(path.join(root, 'src/app', forbiddenGroup)), `Portal isolation violated: ${forbiddenGroup} belongs to another top-level portal`);
 }
+const subpackagedComponents = new Set(['assistant', 'auth', 'training']);
+for (const file of files.filter(name => /\.[cm]?[jt]sx?$/.test(name))) {
+    const rel = path.relative(root, file).replaceAll('\\', '/');
+    const parts = rel.split('/');
+    if (parts[0] === 'src' && parts[1] === 'components' && subpackagedComponents.has(parts[2])) {
+        assert.ok(parts.length >= 5, `${rel}: organize large component modules into src/components/${parts[2]}/<sub-domain>/`);
+    }
+}
 assert.ok(routes >= 15, 'All operations portal routes must remain available');
 assert.deepEqual(dataLayer, [], `UI must use feature hooks for server data:\n${dataLayer.join('\n')}`);
 assert.deepEqual(formLayer, [], `Form modules must stay pure TypeScript:\n${formLayer.join('\n')}`);

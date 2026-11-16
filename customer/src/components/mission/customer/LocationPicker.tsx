@@ -219,7 +219,7 @@ export function LocationPicker({
                 onRadiusChange={radiusMeters => emit({...current, areaType: 'CIRCLE', radiusMeters})}
             />
             <Card variant="surface" className="grid gap-2 border-border bg-slate-50/60 p-3 sm:grid-cols-2">
-                <FormField id="mission-latitude" label={t('planner.latitude')} optional={false}>
+                <FormField id="mission-latitude" label={t('planner.latitude')} optional>
                     <Input
                         id="mission-latitude"
                         type="number"
@@ -236,7 +236,7 @@ export function LocationPicker({
                         className={coordInputClass}
                     />
                 </FormField>
-                <FormField id="mission-longitude" label={t('planner.longitude')} optional={false}>
+                <FormField id="mission-longitude" label={t('planner.longitude')} optional>
                     <Input
                         id="mission-longitude"
                         type="number"

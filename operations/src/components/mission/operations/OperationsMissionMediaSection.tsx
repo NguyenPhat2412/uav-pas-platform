@@ -52,7 +52,7 @@ export function OperationsMissionMediaSection({
                         <div className="mb-3">
                             <Select
                                 id="mission-media-role"
-                                optional={false}
+                                required
                                 label={t('opsMissions.detail.media.role')}
                                 aria-label={t('opsMissions.detail.media.role')}
                                 disabled={disabled}

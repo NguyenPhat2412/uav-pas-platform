@@ -60,7 +60,7 @@ test('useSiteInfo, CustomerMissionMarketplaceCard, and trilingual adminPlatform 
     }
 
     const cardSrc = await readFile(
-        new URL('../src/components/marketplace/CustomerMissionMarketplaceCard.tsx', import.meta.url),
+        new URL('../src/components/marketplace/escrow/CustomerMissionMarketplaceCard.tsx', import.meta.url),
         'utf8',
     );
     assert.ok(cardSrc.includes('BankTransferDialog'), 'Mission marketplace card must embed 1-click VietQR dialog');

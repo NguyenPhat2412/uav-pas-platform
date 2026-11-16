@@ -80,7 +80,7 @@ export function PublicSupportLauncher({
                         onMouseEnter={() => setZaloHovered(true)}
                         onMouseLeave={() => setZaloHovered(false)}
                         className={cn(
-                            'hidden sm:inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-800 shadow-md backdrop-blur-xs transition-all duration-300 ease-out hover:border-primary/40 hover:text-primary',
+                            'hidden sm:inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-800 shadow-md backdrop-blur-xs transition-[opacity,transform,border-color,color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-primary/40 hover:text-primary',
                             zaloHovered
                                 ? 'pointer-events-auto translate-x-0 scale-100 opacity-100'
                                 : 'pointer-events-none translate-x-2 scale-95 opacity-0',
@@ -102,7 +102,7 @@ export function PublicSupportLauncher({
                             onBlur={() => setZaloHovered(false)}
                             aria-label={`Liên hệ Zalo ${zaloDisplay}`}
                             title={`Chat Zalo · ${zaloDisplay}`}
-                            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 shadow-lg ring-1 ring-slate-900/5 transition-all duration-200 hover:scale-105 hover:border-primary/50 hover:text-primary active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 shadow-lg ring-1 ring-slate-900/5 transition-[transform,border-color,color] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-105 hover:border-primary/50 hover:text-primary active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                         >
                             <ZaloBrandIcon className="h-6 w-6" />
                         </a>
@@ -119,7 +119,7 @@ export function PublicSupportLauncher({
                     onMouseEnter={() => showCallout && setHovered(true)}
                     onMouseLeave={() => setHovered(false)}
                     className={cn(
-                        'hidden sm:inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-3.5 py-2 text-xs font-bold shadow-lg backdrop-blur-xs transition-all duration-500 ease-out',
+                        'hidden sm:inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-3.5 py-2 text-xs font-bold shadow-lg backdrop-blur-xs transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]',
                         showCallout
                             ? 'pointer-events-auto translate-x-0 scale-100 opacity-100 hover:-translate-y-0.5'
                             : 'pointer-events-none translate-x-3 scale-95 opacity-0',
@@ -179,7 +179,7 @@ export function PublicSupportLauncher({
                         }
                         title={open ? 'Đóng khung hỗ trợ' : 'Hỗ trợ trực tuyến · Nhắn Admin ngay'}
                         className={cn(
-                            'relative inline-flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border-2 bg-white shadow-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+                            'relative inline-flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border-2 bg-white shadow-2xl transition-[transform,border-color,background-color] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
                             open
                                 ? 'border-primary ring-2 ring-primary/20 hover:bg-slate-50'
                                 : 'border-primary/40 ring-2 ring-primary/15 hover:scale-105 hover:border-primary active:scale-95',

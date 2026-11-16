@@ -179,7 +179,7 @@ export function MissionPreflightCard({
                             min={0}
                             max={field.max}
                             step={field.step}
-                            optional={false}
+                            optional
                             label={field.label}
                             value={field.value}
                             disabled={inputDisabled}
@@ -193,7 +193,7 @@ export function MissionPreflightCard({
                     id={`preflight-notes-${mission.id}`}
                     rows={2}
                     maxLength={1000}
-                    optional={false}
+                    optional
                     label={t('capabilities.preflight.notes')}
                     value={notes}
                     disabled={inputDisabled}

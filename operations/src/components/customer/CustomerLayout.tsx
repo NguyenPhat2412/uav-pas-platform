@@ -3,7 +3,7 @@
 import {createContext, useContext, useEffect} from 'react';
 import {usePathname, useRouter} from 'next/navigation';
 import {Menu} from 'lucide-react';
-import {AssistantWidget} from '@/components/assistant/AssistantWidget';
+import {AssistantWidget} from '@/components/assistant/widget/AssistantWidget';
 import {CustomerAccountMenu} from '@/components/customer/CustomerAccountMenu';
 import {CustomerNavSidebar} from '@/components/customer/CustomerNavSidebar';
 import {DispatchHotline} from '@/components/customer/DispatchHotline';
@@ -57,7 +57,7 @@ export function AppShell({children}: { children: React.ReactNode }) {
     }, [activeHref]);
 
     return (
-        <div className="flex min-h-screen bg-background text-foreground">
+        <div className="flex min-h-dvh bg-background text-foreground">
             <a
                 className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-primary-foreground"
                 href="#content"

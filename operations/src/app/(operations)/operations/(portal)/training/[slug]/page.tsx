@@ -2,7 +2,7 @@
 
 import {Suspense, use} from 'react';
 import {OperationsPage} from '@/components/layout/OperationsPage';
-import {TrainingCoursePlayer} from '@/components/training/TrainingCoursePlayer';
+import {TrainingCoursePlayer} from '@/components/training/player/TrainingCoursePlayer';
 
 export default function OperationsTrainingCourseRoutePage({params}: {params: Promise<{slug: string}>}) {
     const {slug} = use(params);

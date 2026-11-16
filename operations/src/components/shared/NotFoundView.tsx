@@ -39,7 +39,7 @@ export function NotFoundView({title, detail, homeHref, homeLabel, backLabel, lin
     };
     return (
         <main className={fullScreen
-            ? 'flex min-h-screen flex-col bg-white px-4 py-8 text-slate-900'
+            ? 'flex min-h-dvh flex-col bg-white px-4 py-8 text-slate-900'
             : 'flex min-h-[70vh] flex-col bg-white px-4 py-12 text-slate-900'}>
             {fullScreen && (
                 <Link href="/" className="mx-auto mb-auto inline-flex items-center gap-2.5 text-sm font-semibold text-slate-900">

@@ -85,7 +85,7 @@ export function ContactTopicPicker({
                             role="radio"
                             aria-checked={active}
                             onClick={() => onSelectTopic(item.value)}
-                            className={`flex items-start gap-2.5 rounded-xl border p-2.5 text-left transition-all ${
+                            className={`flex items-start gap-2.5 rounded-xl border p-2.5 text-left transition-colors ${
                                 active
                                     ? 'border-primary bg-uav-red-light/70 shadow-2xs'
                                     : 'border-slate-200 bg-slate-50/50 hover:border-slate-300 hover:bg-white'

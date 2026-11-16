@@ -45,7 +45,7 @@ export function SimulationTargetCard({
                     <FormField
                         id="sim-uav"
                         label="UAV"
-                        optional={false}
+                        required
                         labelClassName="text-[11px] font-bold uppercase tracking-wider text-slate-500"
                     >
                         <Select
@@ -74,7 +74,7 @@ export function SimulationTargetCard({
                     <CardContent className="space-y-2.5 p-4">
                         <FormField
                             id="sim-mission-rehearse"
-                            optional={false}
+                            optional
                             label={
                                 <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-600">
                                     <FastForward size={13} className="text-uav-blue" aria-hidden="true"/>

@@ -39,7 +39,7 @@ export function MissionList({missions, loading, error, onRefresh, label, showCus
                                 Sàn RFQ · Chờ chọn đối tác
                             </span>
                         ) : row.original.providerDisplayName ? (
-                            <span className="inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-[10.5px] font-bold text-emerald-800">
+                            <span className="inline-block rounded-full border border-slate-300 bg-slate-100 px-2 py-0.5 text-[10.5px] font-bold text-slate-800">
                                 Đơn Sàn: {row.original.providerDisplayName}
                             </span>
                         ) : (

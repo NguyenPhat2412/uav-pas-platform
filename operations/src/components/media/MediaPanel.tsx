@@ -2,7 +2,7 @@
 import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention} from "@/utils/media/media-policy";
 import {displayLabel} from "@/lib/presentation";
 import {useState} from 'react';
-import {Badge, Button, Input} from '@/components/ui';
+import {Badge, Button, Input, OptionalMark, RequiredMark} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
 import {useMediaMutations} from '@/hooks/media/useMedia';
 import {useCollection} from '@/hooks/useCollection';
@@ -68,11 +68,12 @@ export function MediaPanel() {
                       if (file) void runUpload(file);
                   }}>
                 <div className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-3"><Input id="media-upload-file"
+                                                                                      required
                                                                                       label={t('opsAssets.media.uploadFile')} type="file"
                                                                                       accept={MEDIA_ACCEPT} aria-required
                                                                                       disabled={upload.isPending}
                                                                                       onChange={event => setFile(event.target.files?.[0])}/><label
-                    className="flex flex-col gap-1 text-sm">{t('opsAssets.media.linkResource')}<select className={selectClass}
+                    className="flex flex-col gap-1 text-sm"><span className="font-medium">{t('opsAssets.media.linkResource')}<OptionalMark/></span><select className={selectClass}
                                                                                        value={link.type}
                                                                                        onChange={event => setLink({
                                                                                            type: event.target.value,
@@ -82,9 +83,9 @@ export function MediaPanel() {
                     {['MISSION', 'STATION', 'UAV', 'EQUIPMENT'].map(type => <option key={type}
                                                                                     value={type}>{displayLabel(type)}</option>)}
                 </select></label>{link.type &&
-                    <Input id="media-resource-id" label={t('opsAssets.media.resourceId')} type="number" aria-required step={1}
+                    <Input id="media-resource-id" required label={t('opsAssets.media.resourceId')} type="number" aria-required step={1}
                            value={link.id} onChange={event => setLink({...link, id: event.target.value})}/>}<label
-                    className="flex flex-col gap-1 text-sm">{t('opsAssets.media.visibility.label')}<select className={selectClass}
+                    className="flex flex-col gap-1 text-sm"><span className="font-medium">{t('opsAssets.media.visibility.label')}<RequiredMark/></span><select className={selectClass}
                                                                                            value={visibility}
                                                                                            onChange={event => setVisibility(event.target.value as MediaVisibility)}>
                     {MEDIA_VISIBILITIES.map(level => <option key={level} value={level}>{t(`opsAssets.media.visibility.${level}`)}</option>)}
@@ -94,7 +95,7 @@ export function MediaPanel() {
             </form>}
         <ErrorNotice error={upload.error || confirm.error || open.error}/>
         <QueryState query={query}>
-            <div className="flex flex-wrap items-end gap-3 rounded-panel border border-border bg-card p-4 sm:px-6 sm:py-5"><Input label={t('opsAssets.media.search')} aria-label={t('opsAssets.media.search')} placeholder={t('opsAssets.media.searchPlaceholder')}
+            <div className="flex flex-wrap items-end gap-3 rounded-panel border border-border bg-card p-4 sm:px-6 sm:py-5"><Input label={t('opsAssets.media.search')} optional={false} aria-label={t('opsAssets.media.search')} placeholder={t('opsAssets.media.searchPlaceholder')}
                                                       value={search} onChange={event => setSearch(event.target.value)}/><select
                 aria-label={t('opsAssets.media.typeFilter')} className={selectClass} value={typeFilter}
                 onChange={event => setTypeFilter(event.target.value)}>

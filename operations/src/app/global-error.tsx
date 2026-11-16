@@ -11,7 +11,7 @@ export default function OperationsGlobalErrorPage({error, reset}: {
 }) {
     return (
         <html lang="vi">
-            <body className="min-h-screen bg-background font-sans text-sm leading-relaxed text-foreground antialiased">
+            <body className="min-h-dvh bg-background font-sans text-sm leading-relaxed text-foreground antialiased">
                 <I18nProvider area="operations">
                     <PortalErrorView error={error} reset={reset} area="operations" homeHref="/operations/overview"/>
                 </I18nProvider>

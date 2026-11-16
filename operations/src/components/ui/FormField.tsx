@@ -1,6 +1,6 @@
 import React, {forwardRef} from 'react';
 import {cn} from '@/lib/utils';
-import {FieldLabelMark, OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
+import {FieldLabelMark, OptionalMark, RequiredMark, stripFieldLabelMarker} from '@/components/shared/RequiredMark';
 import type {FormFieldProps, SelectProps, TextareaProps} from '@/types/ui';
 
 export {FieldLabelMark, OptionalMark, RequiredMark};
@@ -23,10 +23,10 @@ export function FormField({
             {label && (
                 <label
                     htmlFor={id}
-                    className={cn('block text-xs font-semibold text-slate-700', labelClassName)}
+                    className={cn('block text-xs font-semibold text-on-surface', labelClassName)}
                 >
                     <span>
-                        {label}
+                        {stripFieldLabelMarker(label)}
                         <FieldLabelMark
                             required={required}
                             optional={optional ?? !required}
@@ -41,7 +41,9 @@ export function FormField({
                     {error}
                 </p>
             ) : helperText ? (
-                <p className="text-xs font-normal text-slate-500 mt-0.5">{helperText}</p>
+                <p className="text-xs font-normal text-muted mt-0.5" id={id ? `${id}-helper` : undefined}>
+                    {helperText}
+                </p>
             ) : null}
         </div>
     );
@@ -49,14 +51,15 @@ export function FormField({
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     ({className, label, error, helperText, id, required, optional, optionalLabel, children, ...props}, ref) => {
+        const describedBy = error && id ? `${id}-error` : helperText && id ? `${id}-helper` : undefined;
         return (
             <div className="flex min-w-0 flex-col w-full">
                 {label && (
                     <label
                         htmlFor={id}
-                        className="block font-label-lg text-label-lg font-medium text-on-surface mb-2"
+                        className="block text-xs font-semibold text-on-surface mb-1.5"
                     >
-                        {label}
+                        {stripFieldLabelMarker(label)}
                         <FieldLabelMark
                             required={required}
                             optional={optional ?? !required}
@@ -69,8 +72,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
                     ref={ref}
                     aria-required={required}
                     aria-invalid={error ? true : undefined}
+                    aria-describedby={describedBy}
                     className={cn(
-                        'min-w-0 w-full h-11 px-3 rounded-control bg-card text-sm text-on-surface transition-colors duration-150 outline-none focus:outline-2 focus:outline-ring border border-border-input disabled:bg-slate-100 disabled:text-slate-500',
+                        'min-w-0 w-full h-11 pl-3 pr-9 appearance-none rounded-control bg-card text-sm text-on-surface transition-colors duration-150 outline-none focus:outline-2 focus:outline-ring border border-border-input disabled:bg-slate-100 disabled:text-slate-500',
                         error && 'border-danger focus:outline-danger',
                         className
                     )}
@@ -79,9 +83,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
                     {children}
                 </select>
                 {error ? (
-                    <p className="font-body-sm text-body-sm text-error mt-1.5">{error}</p>
+                    <p className="text-xs font-normal text-danger mt-1.5" id={id ? `${id}-error` : undefined}>{error}</p>
                 ) : helperText ? (
-                    <p className="font-body-md text-body-md text-secondary mt-1.5">{helperText}</p>
+                    <p className="text-xs font-normal text-muted mt-1.5" id={id ? `${id}-helper` : undefined}>{helperText}</p>
                 ) : null}
             </div>
         );
@@ -92,14 +96,15 @@ Select.displayName = 'Select';
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     ({className, label, error, helperText, id, required, optional, optionalLabel, rows = 3, ...props}, ref) => {
+        const describedBy = error && id ? `${id}-error` : helperText && id ? `${id}-helper` : undefined;
         return (
             <div className="flex min-w-0 flex-col w-full">
                 {label && (
                     <label
                         htmlFor={id}
-                        className="block font-label-lg text-label-lg font-medium text-on-surface mb-2"
+                        className="block text-xs font-semibold text-on-surface mb-1.5"
                     >
-                        {label}
+                        {stripFieldLabelMarker(label)}
                         <FieldLabelMark
                             required={required}
                             optional={optional ?? !required}
@@ -113,6 +118,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                     rows={rows}
                     aria-required={required}
                     aria-invalid={error ? true : undefined}
+                    aria-describedby={describedBy}
                     className={cn(
                         'min-w-0 w-full px-3.5 py-2.5 rounded-control bg-card text-sm text-on-surface placeholder:text-outline transition-colors duration-150 outline-none focus:outline-2 focus:outline-ring border border-border-input disabled:bg-slate-100 disabled:text-slate-500',
                         error && 'border-danger focus:outline-danger',
@@ -121,9 +127,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                     {...props}
                 />
                 {error ? (
-                    <p className="font-body-sm text-body-sm text-error mt-1.5">{error}</p>
+                    <p className="text-xs font-normal text-danger mt-1.5" id={id ? `${id}-error` : undefined}>{error}</p>
                 ) : helperText ? (
-                    <p className="font-body-md text-body-md text-secondary mt-1.5">{helperText}</p>
+                    <p className="text-xs font-normal text-muted mt-1.5" id={id ? `${id}-helper` : undefined}>{helperText}</p>
                 ) : null}
             </div>
         );

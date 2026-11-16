@@ -6,7 +6,7 @@ import {ScrollEngagementPopup} from '@/components/marketing/ScrollEngagementPopu
 import {ScrollToTopButton} from '@/components/marketing/ScrollToTopButton';
 import {PublicSupportWidget} from '@/components/support/PublicSupportWidget';
 import {PortalProviders} from '@/providers/PortalProviders';
-import {AuthModalPopup} from '@/components/auth/AuthModalPopup';
+import {AuthModalPopup} from '@/components/auth/modal/AuthModalPopup';
 import {publicUrl as siteUrl} from '@/content/marketing/origins';
 
 export const metadata: Metadata = {
@@ -40,7 +40,7 @@ export default function PublicLayout({children}: { children: React.ReactNode }) 
         url: siteUrl,
     };
     return (
-        <div className="min-h-screen bg-card text-foreground">
+        <div className="min-h-dvh bg-card text-foreground">
             <PortalProviders area="customer">
                 <a
                     className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-control focus:bg-card focus:px-4 focus:py-2 focus:font-bold focus:text-primary focus:shadow-lg"

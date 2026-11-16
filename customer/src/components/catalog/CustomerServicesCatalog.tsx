@@ -10,7 +10,7 @@ import {useServices} from '@/hooks/mission/useCustomerMissions';
 import {useAuth} from '@/providers/AuthContext';
 import {toServiceSlug} from '@/lib/url-slugs';
 import {useI18n} from '@/providers/I18nContext';
-import {PublicMarketplaceCatalog} from '@/components/marketplace/PublicMarketplaceCatalog';
+import {PublicMarketplaceCatalog} from '@/components/marketplace/catalog/PublicMarketplaceCatalog';
 import type {UavService} from '@/types/mission/mission.types';
 
 const serviceIcons: Record<string, LucideIcon | typeof UavIcon> = {

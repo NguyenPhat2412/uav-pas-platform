@@ -30,7 +30,7 @@ export function Switch({
             )}
         >
             <span className={cn('relative h-5 w-9 rounded-full transition-colors', checked ? 'bg-primary' : 'bg-slate-300')}>
-                <span className={cn('absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-all', checked ? 'left-[18px]' : 'left-0.5')}/>
+                <span className={cn('absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-150 ease-[cubic-bezier(0.32,0.72,0,1)]', checked ? 'translate-x-4' : 'translate-x-0')}/>
             </span>
             {label != null && (
                 <span className={cn('text-xs font-semibold', checked ? 'text-primary' : 'text-slate-500')}>

@@ -2,6 +2,7 @@
 
 import type {FormEvent} from 'react';
 import {Loader2, Sparkles} from 'lucide-react';
+import {OptionalMark, RequiredMark} from '@/components/ui';
 import {cn} from '@/lib/utils';
 import type {SupportQuickTopicOption, SupportStartDraft} from '@/types/support/support.types';
 
@@ -60,11 +61,12 @@ export function PublicSupportStartForm({
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                 <div>
                     <label htmlFor="support-name" className="mb-1 block text-[11px] font-bold text-slate-700">
-                        Họ và tên <span className="text-primary">*</span>
+                        Họ và tên<RequiredMark/>
                     </label>
                     <input
                         id="support-name"
                         type="text"
+                        aria-required
                         value={startDraft.fullName}
                         placeholder="Nguyễn Văn A"
                         className={inputCls}
@@ -73,11 +75,12 @@ export function PublicSupportStartForm({
                 </div>
                 <div>
                     <label htmlFor="support-contact" className="mb-1 block text-[11px] font-bold text-slate-700">
-                        Email hoặc SĐT <span className="text-primary">*</span>
+                        Email hoặc SĐT<RequiredMark/>
                     </label>
                     <input
                         id="support-contact"
                         type="text"
+                        aria-required
                         value={startDraft.contactInfo}
                         placeholder="09xx... / email@..."
                         className={inputCls}
@@ -89,7 +92,7 @@ export function PublicSupportStartForm({
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                 <div>
                     <label htmlFor="support-org" className="mb-1 block text-[11px] font-bold text-slate-700">
-                        Đơn vị
+                        Đơn vị<OptionalMark/>
                     </label>
                     <input
                         id="support-org"
@@ -102,7 +105,7 @@ export function PublicSupportStartForm({
                 </div>
                 <div>
                     <label htmlFor="support-topic" className="mb-1 block text-[11px] font-bold text-slate-700">
-                        Chủ đề
+                        Chủ đề<RequiredMark/>
                     </label>
                     <select
                         id="support-topic"
@@ -121,11 +124,12 @@ export function PublicSupportStartForm({
 
             <div>
                 <label htmlFor="support-msg" className="mb-1 block text-[11px] font-bold text-slate-700">
-                    Tin nhắn hỗ trợ <span className="text-primary">*</span>
+                    Tin nhắn hỗ trợ<RequiredMark/>
                 </label>
                 <textarea
                     id="support-msg"
                     rows={3}
+                    aria-required
                     value={startDraft.message}
                     className={inputCls}
                     placeholder="Nhập nội dung cần Quản trị viên tư vấn hoặc hỗ trợ..."

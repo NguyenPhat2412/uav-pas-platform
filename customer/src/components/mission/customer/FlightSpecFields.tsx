@@ -1,7 +1,7 @@
 'use client';
 
 import {useState} from 'react';
-import {Button, Card, FormField, Input, Select, Textarea} from '@/components/ui';
+import {Button, Card, FormField, Input, RequiredMark, Select, Textarea} from '@/components/ui';
 import {cn} from '@/lib/utils';
 import {useI18n} from '@/providers/I18nContext';
 import {
@@ -34,7 +34,7 @@ export function FlightSpecFields({plan, onChange}: { plan: FlightPlanInput; onCh
                 <legend className="mb-1 px-0 text-sm font-extrabold text-foreground">{t('flightSpec.title')}</legend>
                 <FormField
                     label={t('flightSpec.altitude')}
-                    optional={false}
+                    required
                     helperText={t('flightSpec.altitudeHint')}
                     labelClassName={labelClass}
                 >
@@ -116,7 +116,7 @@ export function FlightSpecFields({plan, onChange}: { plan: FlightPlanInput; onCh
                         </div>
                     </div>
                 </FormField>
-                <FormField id="flight-spec-gsd" label={t('flightSpec.gsd')} optional={false} labelClassName={labelClass}>
+                <FormField id="flight-spec-gsd" label={t('flightSpec.gsd')} required labelClassName={labelClass}>
                     <Select
                         id="flight-spec-gsd"
                         value={plan.targetGsdCm}
@@ -129,7 +129,7 @@ export function FlightSpecFields({plan, onChange}: { plan: FlightPlanInput; onCh
                         ))}
                     </Select>
                 </FormField>
-                <FormField id="flight-spec-forward-overlap" label={t('flightSpec.forwardOverlap')} optional={false} labelClassName={labelClass}>
+                <FormField id="flight-spec-forward-overlap" label={t('flightSpec.forwardOverlap')} required labelClassName={labelClass}>
                     <div className="flex items-center gap-3">
                         <div className="flex-1">
                             <Input
@@ -146,7 +146,7 @@ export function FlightSpecFields({plan, onChange}: { plan: FlightPlanInput; onCh
                         <strong className="w-12 text-right text-xs tabular-nums">{plan.forwardOverlap}%</strong>
                     </div>
                 </FormField>
-                <FormField id="flight-spec-side-overlap" label={t('flightSpec.sideOverlap')} optional={false} labelClassName={labelClass}>
+                <FormField id="flight-spec-side-overlap" label={t('flightSpec.sideOverlap')} required labelClassName={labelClass}>
                     <div className="flex items-center gap-3">
                         <div className="flex-1">
                             <Input
@@ -164,7 +164,7 @@ export function FlightSpecFields({plan, onChange}: { plan: FlightPlanInput; onCh
                     </div>
                 </FormField>
                 <fieldset className="col-span-full m-0 grid gap-2 border-0 p-0">
-                    <legend className="mb-1.5 text-xs font-bold text-foreground">{t('flightSpec.sensors')}</legend>
+                    <legend className="mb-1.5 text-xs font-bold text-foreground">{t('flightSpec.sensors')}<RequiredMark/></legend>
                     <div className="grid gap-2 sm:grid-cols-2">
                         {flightSensors.map(sensor => {
                             const selected = plan.sensors.includes(sensor);

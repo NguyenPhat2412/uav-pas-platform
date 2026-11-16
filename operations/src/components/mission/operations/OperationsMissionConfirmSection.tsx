@@ -121,7 +121,7 @@ export function OperationsMissionConfirmSection({
                         {(confirmation === 'fail' || confirmation === 'forceFail') && (
                             <Textarea
                                 id="mission-confirm-incident"
-                                optional={false}
+                                optional
                                 label={t('opsMissions.detail.note.incident')}
                                 disabled={disabled}
                                 value={extraNote}

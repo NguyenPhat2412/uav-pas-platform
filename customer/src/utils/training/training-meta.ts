@@ -93,11 +93,11 @@ export const LEVEL_LABELS: Record<string, {label: string; toneClass: string}> = 
     },
     ADVANCED_TACTICAL: {
         label: 'Nâng cao',
-        toneClass: 'border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300',
+        toneClass: 'border-slate-400/40 bg-slate-100 text-slate-800',
     },
     ADVANCED: {
         label: 'Chuyên sâu',
-        toneClass: 'border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300',
+        toneClass: 'border-slate-400/40 bg-slate-100 text-slate-800',
     },
     MANDATORY: {
         label: 'Trọng yếu',

@@ -52,7 +52,7 @@ export function UavLoader({
             data-loader-mode="3d-uav"
             className={cn(
                 'flex flex-col items-center justify-center gap-3 text-foreground/80',
-                fullScreen && 'min-h-screen bg-background',
+                fullScreen && 'min-h-dvh bg-background',
                 !visible && 'invisible',
                 className,
             )}

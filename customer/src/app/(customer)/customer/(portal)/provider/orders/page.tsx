@@ -1,4 +1,4 @@
-import ProviderOrdersView from '@/components/marketplace/ProviderOrdersView';
+import ProviderOrdersView from '@/components/marketplace/provider/ProviderOrdersView';
 
 export default function ProviderOrdersPage() {
     return <ProviderOrdersView/>;

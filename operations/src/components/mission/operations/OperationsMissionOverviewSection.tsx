@@ -80,7 +80,7 @@ export function OperationsMissionOverviewSection({
                             <div className="flex flex-wrap items-center gap-2">
                                 <p className="m-0 text-xs font-bold tracking-wider text-primary">{mission.code}</p>
                                 {mission.providerDisplayName ? (
-                                    <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
+                                    <span className="rounded-full border border-slate-300 bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold text-slate-800">
                                         Đơn vị cung ứng Sàn: {mission.providerDisplayName}
                                     </span>
                                 ) : mission.providerResponseStatus === 'OPEN_RFQ' ? (

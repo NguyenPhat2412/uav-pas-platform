@@ -20,7 +20,7 @@ import {SiteWeather} from "@/components/mission/customer/SiteWeather";
 import {MissionMonitoring} from "@/components/mission/customer/MissionMonitoring";
 import {MissionHandoverReviewCard} from "@/components/mission/customer/MissionHandoverReviewCard";
 import {MissionInspectionReportCard} from "@/components/mission/MissionInspectionReportCard";
-import {CustomerMissionMarketplaceCard} from "@/components/marketplace/CustomerMissionMarketplaceCard";
+import {CustomerMissionMarketplaceCard} from "@/components/marketplace/escrow/CustomerMissionMarketplaceCard";
 import {parseEntityId, toMissionSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/providers/I18nContext';
 import type {MissionTab} from '@/types/mission/mission.types';

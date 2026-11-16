@@ -56,7 +56,7 @@ export function HeroScrollDownButton({targetId = 'home-overview'}: HeroScrollDow
             href={`#${targetId}`}
             onClick={handleScrollDown}
             aria-label="Cuộn xuống phần giới thiệu"
-            className="group absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2 rounded-2xl px-5 py-2 text-center text-white/85 transition-all duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+            className="group absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2 rounded-2xl px-5 py-2 text-center text-white/85 transition-colors duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
         >
             <span className="flex flex-col items-center" aria-hidden="true">
                 <span className="flex h-8 w-5 items-start justify-center rounded-full border border-white/45 bg-white/5 p-1 backdrop-blur-xs transition-colors duration-300 group-hover:border-[#e2c18b]">

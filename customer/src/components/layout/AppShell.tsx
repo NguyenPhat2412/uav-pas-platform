@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import {useSidebarController} from '@/hooks/useSidebarController';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
-import {AssistantWidget} from '@/components/assistant/AssistantWidget';
+import {AssistantWidget} from '@/components/assistant/widget/AssistantWidget';
 import React from 'react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
@@ -107,7 +107,7 @@ function OperationsShell({children, activeResource}: { children: React.ReactNode
     const toggleLabel = `${railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')} (${shortcut})`;
 
     return (
-        <div className="flex min-h-screen bg-background text-foreground">
+        <div className="flex min-h-dvh bg-background text-foreground">
             <a
                 className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-primary-foreground"
                 href="#workspace"
@@ -118,7 +118,7 @@ function OperationsShell({children, activeResource}: { children: React.ReactNode
                 ref={rail}
                 id="portal-navigation"
                 className={cn(
-                    'fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-[width,transform] duration-200 lg:sticky lg:top-0 lg:z-40 lg:h-screen',
+                    'fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-[width,transform] duration-200 lg:sticky lg:top-0 lg:z-40 lg:h-dvh',
                     railCollapsed ? 'w-[60px]' : 'w-[min(280px,85vw)] lg:w-[220px]',
                     open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0',
                 )}

@@ -15,7 +15,7 @@ const inter = Inter({
 export default function RootLayout({children}: { children: ReactNode }) {
     return (
         <html lang="vi" className={inter.variable}>
-            <body className="min-h-screen bg-background font-sans text-sm leading-relaxed text-foreground antialiased">
+            <body className="min-h-dvh bg-background font-sans text-sm leading-relaxed text-foreground antialiased">
                 <DevtoolsGuard/>
                 <OfflineConnectionOverlay/>
                 {children}

@@ -83,7 +83,7 @@ export default function CustomerNotificationsPage() {
                                         }
                                     }}
                                     onClick={() => !busy && !item.isRead && markOneRead(item.id)}
-                                    className={`flex items-start gap-3.5 px-5 py-4 transition-all duration-150 ${
+                                    className={`flex items-start gap-3.5 px-5 py-4 transition-colors duration-150 ${
                                         !item.isRead
                                             ? 'bg-gradient-to-r from-primary/5 to-card cursor-pointer hover:bg-primary/10'
                                             : 'bg-card cursor-default'
