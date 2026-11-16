@@ -91,6 +91,7 @@ export function AdminMarketplaceTabContent() {
                                     {prov.providerType} · {prov.province} · {prov.taxOrIdNumber ?? '—'}
                                 </AppText>
                                 <TextField
+                                    label={t('missionForm.notes')} optional
                                     placeholder={t('mobile.adminQuick.marketplace.notePlaceholder')}
                                     value={note}
                                     onChangeText={val => setNotes(prev => ({...prev, [key]: val}))}
@@ -150,6 +151,7 @@ export function AdminMarketplaceTabContent() {
                                     {item.providerDisplayName} · {formatVndCompact(item.basePriceVnd)}
                                 </AppText>
                                 <TextField
+                                    label={t('missionForm.notes')} optional
                                     placeholder={t('mobile.adminQuick.marketplace.notePlaceholder')}
                                     value={note}
                                     onChangeText={val => setNotes(prev => ({...prev, [key]: val}))}
@@ -210,12 +212,13 @@ export function AdminMarketplaceTabContent() {
                                 {payout.providerDisplayName} · {payout.bankName} ({payout.bankAccountNumber})
                             </AppText>
                             <TextField
-                                label={t('mobile.adminQuick.invoices.refLabel')}
+                                label={t('mobile.adminQuick.invoices.refLabel')} required
                                 value={ref}
                                 autoCapitalize="characters"
                                 onChangeText={val => setRefs(prev => ({...prev, [payout.id]: val}))}
                             />
                             <TextField
+                                label={t('missionForm.notes')} optional
                                 placeholder={t('mobile.adminQuick.marketplace.notePlaceholder')}
                                 value={note}
                                 onChangeText={val => setNotes(prev => ({...prev, [`w-${payout.id}`]: val}))}

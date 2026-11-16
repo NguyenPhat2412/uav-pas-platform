@@ -63,6 +63,7 @@ export function AdminSettingsTabContent() {
                             <View style={styles.row}>
                                 <View style={styles.flex}>
                                     <TextField
+                                        label={item.valueType} required
                                         value={value}
                                         onChangeText={txt =>
                                             setDrafts(prev => ({...prev, [item.configKey]: txt}))

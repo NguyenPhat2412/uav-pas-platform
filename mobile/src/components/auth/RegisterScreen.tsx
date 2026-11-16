@@ -43,15 +43,15 @@ export function RegisterScreen() {
     return (
         <AuthLayout title={t('customerAuth.registerHeading')} subtitle={t('customerAuth.registerIntro')}>
             <SocialSignInRow mode="signup"/>
-            <TextField label={t('customerAuth.username')} value={draft.username} onChangeText={set('username')} autoCapitalize="none"
+            <TextField label={t('customerAuth.username')} required value={draft.username} onChangeText={set('username')} autoCapitalize="none"
                        autoCorrect={false} autoComplete="username-new" error={fields.username}/>
-            <TextField label={t('auth.email')} value={draft.email} onChangeText={set('email')} autoCapitalize="none" keyboardType="email-address"
+            <TextField label={t('auth.email')} required value={draft.email} onChangeText={set('email')} autoCapitalize="none" keyboardType="email-address"
                        autoComplete="email" textContentType="emailAddress" error={fields.email}/>
-            <TextField label={t('customerAuth.phone')} value={draft.phoneNumber} onChangeText={set('phoneNumber')} keyboardType="phone-pad"
+            <TextField label={t('customerAuth.phone')} required value={draft.phoneNumber} onChangeText={set('phoneNumber')} keyboardType="phone-pad"
                        autoComplete="tel" error={fields.phoneNumber}/>
-            <TextField label={t('customerAuth.password')} value={draft.password} onChangeText={set('password')} secureTextEntry
+            <TextField label={t('customerAuth.password')} required value={draft.password} onChangeText={set('password')} secureTextEntry
                        autoComplete="new-password" textContentType="newPassword" error={fields.password}/>
-            <TextField label={t('mobile.auth.confirmPassword')} value={draft.confirmPassword} onChangeText={set('confirmPassword')} secureTextEntry
+            <TextField label={t('mobile.auth.confirmPassword')} required value={draft.confirmPassword} onChangeText={set('confirmPassword')} secureTextEntry
                        autoComplete="new-password" textContentType="newPassword" error={fields.confirmPassword}/>
             <KeyboardAnchor><Button label={register.isPending ? t('customerAuth.creating') : t('customerAuth.createAccount')} icon={UserPlus}
                     loading={register.isPending} onPress={submit}/></KeyboardAnchor>

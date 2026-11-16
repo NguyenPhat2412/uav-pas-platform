@@ -325,7 +325,7 @@ test('push registration, forceFail & operations portal routes are wired end to e
     assert.match(opsDetailScreen, /controls\.forceFail/);
     assert.match(opsDetailScreen, /hasQuickActions/);
 
-    const sarCockpitScreen = readFileSync(new URL('../src/components/operations/SarCockpitScreen.tsx', import.meta.url), 'utf8');
+    const sarCockpitScreen = readFileSync(new URL('../src/components/sar/SarCockpitScreen.tsx', import.meta.url), 'utf8');
     assert.match(sarCockpitScreen, /disabled=\{mission\.uavId == null\}/);
 
     const notificationsScreen = readFileSync(new URL('../src/components/notification/NotificationsScreen.tsx', import.meta.url), 'utf8');
@@ -412,7 +412,7 @@ test('mobile exception suite: +not-found, AppErrorView, AppForbiddenView, and 3-
     assert.match(connectionLost, /server/);
     assert.match(connectionLost, /GlobalOfflineScreen/);
 
-    const adminQuickScreen = readFileSync(new URL('../src/components/operations/AdminQuickActionsScreen.tsx', import.meta.url), 'utf8');
+    const adminQuickScreen = readFileSync(new URL('../src/components/admin/AdminQuickActionsScreen.tsx', import.meta.url), 'utf8');
     const adminSupportScreen = readFileSync(new URL('../src/components/support/AdminSupportInboxScreen.tsx', import.meta.url), 'utf8');
     assert.match(adminQuickScreen, /<AppForbiddenView/);
     assert.match(adminSupportScreen, /<AppForbiddenView/);

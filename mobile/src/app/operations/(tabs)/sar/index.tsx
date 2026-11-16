@@ -1,5 +1,5 @@
 import React from 'react';
-import {SarMissionsScreen} from '@/components/operations/SarMissionsScreen';
+import {SarMissionsScreen} from '@/components/sar/SarMissionsScreen';
 
 export interface RouteMeta {
     id: string;

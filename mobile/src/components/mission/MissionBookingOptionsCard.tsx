@@ -187,7 +187,7 @@ export function MissionBookingOptionsCard({
 
             {!isEditing ? (
                 <GlassSelectCards<BookingMode>
-                    label={t('mobile.booking.modeLabel')}
+                    label={t('mobile.booking.modeLabel')} required
                     columns={modeOptions.length === 2 ? 2 : 1}
                     value={mode}
                     options={modeOptions}
@@ -201,7 +201,7 @@ export function MissionBookingOptionsCard({
                         <LoadingState/>
                     ) : (
                         <GlassSelectField<string>
-                            label={t('mobile.booking.packageSelectLabel')}
+                            label={t('mobile.booking.packageSelectLabel')} required
                             sheetTitle={t('mobile.booking.packageSelectLabel')}
                             placeholder={t('mobile.booking.packagePlaceholder')}
                             value={selectedListing ? String(selectedListing.id) : ''}
@@ -219,7 +219,7 @@ export function MissionBookingOptionsCard({
                                 label={t('mobile.marketplace.unitsInputLabel', {
                                     unit: unitLabel,
                                     min: minUnits,
-                                })}
+                                })} required
                                 keyboardType="decimal-pad"
                                 value={String(form.bookingUnits ?? minUnits)}
                                 onChangeText={txt => {
@@ -251,7 +251,7 @@ export function MissionBookingOptionsCard({
                 <LoadingState/>
             ) : (
                 <GlassSelectField<string>
-                    label={t('missionCreate.serviceOptional')}
+                    label={t('missionCreate.serviceOptional')} optional
                     sheetTitle={t('missionCreate.serviceOptional')}
                     value={form.serviceId != null ? String(form.serviceId) : ''}
                     options={serviceOptions}
@@ -268,7 +268,7 @@ export function MissionBookingOptionsCard({
             )}
 
             <GlassSelectCards<MissionType>
-                label={t('missions.type')}
+                label={t('missions.type')} required
                 columns={2}
                 value={form.missionType}
                 options={missionTypeOptions}

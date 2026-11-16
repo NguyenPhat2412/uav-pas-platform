@@ -137,34 +137,34 @@ export function ProviderListingsScreen() {
                 <Card>
                     <SectionTitle title={t('mobile.provider.newListingBtn')}/>
                     <GlassSelectCards<ListingType>
-                        label={t('mobile.marketplace.leaseTypeLabel')}
+                        label={t('mobile.marketplace.leaseTypeLabel')} required
                         columns={1}
                         value={form.listingType}
                         options={typeOptions}
                         onChange={val => set('listingType', val)}
                     />
                     <GlassSelectField<MissionType>
-                        label={t('missions.type')}
+                        label={t('missions.type')} required
                         sheetTitle={t('missions.type')}
                         value={form.missionType}
                         options={missionOptions}
                         onChange={val => set('missionType', val)}
                     />
                     <GlassSelectField<PricingModel>
-                        label={t('mobile.provider.pricingModelLabel')}
+                        label={t('mobile.provider.pricingModelLabel')} required
                         sheetTitle={t('mobile.provider.pricingModelLabel')}
                         value={form.pricingModel}
                         options={pricingOptions}
                         onChange={val => set('pricingModel', val)}
                     />
                     <TextField
-                        label={t('missionForm.title')}
+                        label={t('missionForm.title')} required
                         value={form.title}
                         onChangeText={val => set('title', val)}
                         maxLength={160}
                     />
                     <TextField
-                        label={t('mobile.provider.summaryLabel')}
+                        label={t('mobile.provider.summaryLabel')} optional
                         value={form.summary ?? ''}
                         onChangeText={val => set('summary', val)}
                         maxLength={280}
@@ -172,7 +172,7 @@ export function ProviderListingsScreen() {
                     <View style={styles.row}>
                         <View style={styles.flex}>
                             <TextField
-                                label={t('mobile.provider.basePriceLabel')}
+                                label={t('mobile.provider.basePriceLabel')} required
                                 keyboardType="number-pad"
                                 value={String(form.basePriceVnd)}
                                 onChangeText={val => set('basePriceVnd', Number(val) || 0)}
@@ -180,7 +180,7 @@ export function ProviderListingsScreen() {
                         </View>
                         <View style={styles.flex}>
                             <TextField
-                                label={t('mobile.provider.minUnitsLabel')}
+                                label={t('mobile.provider.minUnitsLabel')} optional
                                 keyboardType="decimal-pad"
                                 value={String(form.minBookingUnits ?? 1)}
                                 onChangeText={val => set('minBookingUnits', Number(val) || 1)}
@@ -188,12 +188,12 @@ export function ProviderListingsScreen() {
                         </View>
                     </View>
                     <TextField
-                        label={t('mobile.marketplace.equipmentLabel')}
+                        label={t('mobile.marketplace.equipmentLabel')} optional
                         value={form.equipmentSpecs ?? ''}
                         onChangeText={val => set('equipmentSpecs', val)}
                     />
                     <TextField
-                        label={t('mobile.marketplace.deliverablesLabel')}
+                        label={t('mobile.marketplace.deliverablesLabel')} optional
                         value={form.deliverablesSummary ?? ''}
                         onChangeText={val => set('deliverablesSummary', val)}
                     />

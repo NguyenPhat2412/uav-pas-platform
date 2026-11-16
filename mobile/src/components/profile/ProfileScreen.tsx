@@ -34,9 +34,9 @@ function ProfileForm({profile, onReload}: { profile: CustomerProfile; onReload: 
     return (
         <Card>
             <SectionTitle title={t('profile.personalInfo')}/>
-            <TextField label={t('profile.fullName')} value={fields.fullName} onChangeText={fullName => setFields({...fields, fullName})} maxLength={100}
+            <TextField label={t('profile.fullName')} optional value={fields.fullName} onChangeText={fullName => setFields({...fields, fullName})} maxLength={100}
                        hint={t('profile.nameHint')} error={errors.fullName} autoComplete="name" textContentType="name"/>
-            <TextField label={t('profile.phone')} value={fields.phoneNumber} onChangeText={phoneNumber => setFields({...fields, phoneNumber})} maxLength={20}
+            <TextField label={t('profile.phone')} required value={fields.phoneNumber} onChangeText={phoneNumber => setFields({...fields, phoneNumber})} maxLength={20}
                        hint={t('profile.phoneHint')} error={errors.phoneNumber} keyboardType="phone-pad" autoComplete="tel"/>
             {message ? <AppText variant="small" style={styles.error}>{message.text}</AppText> : null}
             {message?.conflict && <Button label={t('profile.loadLatest')} icon={RefreshCw} tone="secondary" onPress={onReload}/>}

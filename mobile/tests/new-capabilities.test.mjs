@@ -104,8 +104,8 @@ test('mobile capability screens wire hooks cleanly with zero raw hex literals', 
         'components/mission/MissionDetailScreen.tsx',
         'components/operations/OperationsMissionsScreen.tsx',
         'components/operations/OperationsMissionDetailScreen.tsx',
-        'components/operations/FleetMaintenanceScreen.tsx',
-        'components/operations/AdminQuickActionsScreen.tsx',
+        'components/uav/FleetMaintenanceScreen.tsx',
+        'components/admin/AdminQuickActionsScreen.tsx',
     ];
 
     for (const rel of screens) {
@@ -120,7 +120,7 @@ test('mobile capability screens wire hooks cleanly with zero raw hex literals', 
         assert.notEqual(translate(locale, 'simulation.rehearseAction'), 'simulation.rehearseAction');
         assert.notEqual(translate(locale, 'simulation.history.title'), 'simulation.history.title');
     }
-    assert.match(readSrc('components/operations/FleetMaintenanceScreen.tsx'), /useSimulationRuns/);
+    assert.match(readSrc('components/uav/FleetMaintenanceScreen.tsx'), /useSimulationRuns/);
     assert.match(readSrc('components/operations/OperationsMissionDetailScreen.tsx'), /simActions\.rehearseMission\.mutate/);
 
     assert.match(readSrc('components/mission/MissionFormScreen.tsx'), /useSavedFlightSites/);
@@ -129,5 +129,5 @@ test('mobile capability screens wire hooks cleanly with zero raw hex literals', 
     assert.match(readSrc('components/operations/OperationsMissionsScreen.tsx'), /useOperatorLogbook/);
     assert.match(readSrc('components/operations/OperationsMissionDetailScreen.tsx'), /useOperationsDispatchCandidates/);
     assert.match(readSrc('components/operations/OperationsMissionDetailScreen.tsx'), /useOperationsMissionPreflight/);
-    assert.match(readSrc('components/operations/AdminQuickActionsScreen.tsx'), /useAdminSlaIntelligence/);
+    assert.match(readSrc('components/admin/AdminQuickActionsScreen.tsx'), /useAdminSlaIntelligence/);
 });

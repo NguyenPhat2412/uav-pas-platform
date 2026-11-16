@@ -48,7 +48,7 @@ export function ForgotPasswordScreen() {
     if (!draft) {
         return (
             <AuthLayout title={t('mobile.auth.forgotTitle')} subtitle={t('mobile.auth.forgotHint')}>
-                <TextField label={t('auth.email')} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address"
+                <TextField label={t('auth.email')} required value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address"
                            autoComplete="email" textContentType="emailAddress" onSubmitEditing={requestCode}/>
                 <KeyboardAnchor><Button label={t('mobile.auth.sendCode')} icon={Mail} loading={forgotPassword.isPending} onPress={requestCode}/></KeyboardAnchor>
                 <Button tone="ghost" label={t('customerAuth.backToLogin')} onPress={() => router.replace('/login')}/>
@@ -58,11 +58,11 @@ export function ForgotPasswordScreen() {
 
     return (
         <AuthLayout title={t('mobile.auth.newPasswordTitle')} subtitle={t('mobile.auth.emailHint', {email: draft.email})}>
-            <TextField label={t('mobile.auth.code')} value={draft.code} keyboardType="number-pad" textContentType="oneTimeCode" maxLength={6}
+            <TextField label={t('mobile.auth.code')} required value={draft.code} keyboardType="number-pad" textContentType="oneTimeCode" maxLength={6}
                        onChangeText={value => setDraft({...draft, code: normalizeCode(value)})} error={fields.code}/>
-            <TextField label={t('mobile.auth.newPassword')} value={draft.newPassword} secureTextEntry textContentType="newPassword"
+            <TextField label={t('mobile.auth.newPassword')} required value={draft.newPassword} secureTextEntry textContentType="newPassword"
                        onChangeText={value => setDraft({...draft, newPassword: value})} error={fields.newPassword}/>
-            <TextField label={t('mobile.auth.confirmPassword')} value={draft.confirmPassword} secureTextEntry textContentType="newPassword"
+            <TextField label={t('mobile.auth.confirmPassword')} required value={draft.confirmPassword} secureTextEntry textContentType="newPassword"
                        onChangeText={value => setDraft({...draft, confirmPassword: value})} error={fields.confirmPassword}/>
             <KeyboardAnchor><Button label={t('mobile.auth.savePassword')} icon={KeyRound} loading={resetPassword.isPending} onPress={reset}/></KeyboardAnchor>
             <Button tone="ghost" label={t('customerAuth.backToLogin')} onPress={() => router.replace('/login')}/>

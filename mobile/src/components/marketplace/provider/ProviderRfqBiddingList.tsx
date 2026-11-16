@@ -52,7 +52,7 @@ export function ProviderRfqBiddingList({
                         ) : bidding ? (
                             <View style={styles.stack}>
                                 <TextField
-                                    label={t('mobile.provider.bidPriceLabel')}
+                                    label={t('mobile.provider.bidPriceLabel')} required
                                     keyboardType="number-pad"
                                     value={String(bidForm.proposedPriceVnd)}
                                     onChangeText={val =>
@@ -63,14 +63,14 @@ export function ProviderRfqBiddingList({
                                     }
                                 />
                                 <TextField
-                                    label={t('mobile.provider.bidUavModelLabel')}
+                                    label={t('mobile.provider.bidUavModelLabel')} optional
                                     value={bidForm.proposedUavModel ?? ''}
                                     onChangeText={val =>
                                         setBidForm(prev => ({...prev, proposedUavModel: val}))
                                     }
                                 />
                                 <TextField
-                                    label={t('mobile.provider.bidNoteLabel')}
+                                    label={t('mobile.provider.bidNoteLabel')} required
                                     multiline
                                     value={bidForm.proposalNote}
                                     onChangeText={val =>

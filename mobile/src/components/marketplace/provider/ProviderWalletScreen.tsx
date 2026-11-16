@@ -150,13 +150,13 @@ export function ProviderWalletScreen() {
                 <TextField
                     label={t('mobile.provider.payoutAmountLabel', {
                         min: formatVndCompact(minPayoutVnd),
-                    })}
+                    })} required
                     keyboardType="number-pad"
                     value={amountInput}
                     onChangeText={setAmountInput}
                 />
                 <TextField
-                    label={t('mobile.provider.payoutNoteLabel')}
+                    label={t('mobile.provider.payoutNoteLabel')} optional
                     value={note}
                     onChangeText={setNote}
                 />

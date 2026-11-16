@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {CheckCircle2, CheckSquare, Square, Star} from 'lucide-react-native';
-import {AppText, Badge, Button, Card, SectionTitle, TextField} from '@/components/ui';
+import {AppText, Badge, Button, Card, FieldLabel, SectionTitle, TextField} from '@/components/ui';
 import {useMissionActions, useMissionReview} from '@/hooks/mission/useCustomerMissions';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
@@ -21,7 +21,7 @@ function StarRow({
 }) {
     return (
         <View style={styles.starGroup}>
-            <AppText variant="small" style={styles.stepDone}>{label}</AppText>
+            <FieldLabel label={label} required/>
             <View style={styles.starRow}>
                 {[1, 2, 3, 4, 5].map(score => {
                     const active = score <= value;
@@ -157,7 +157,7 @@ export function CustomerHandoverReviewCard({
             ) : null}
 
             <TextField
-                label={t('capabilities.review.commentLabel')}
+                label={t('capabilities.review.commentLabel')} optional
                 placeholder={t('capabilities.review.commentPlaceholder')}
                 value={comment}
                 onChangeText={val => setOverrides(prev => ({...prev, comment: val}))}

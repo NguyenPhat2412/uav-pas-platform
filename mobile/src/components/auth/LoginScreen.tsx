@@ -46,9 +46,9 @@ export function LoginScreen() {
     return (
         <AuthLayout title={t('customerAuth.loginHeading')}>
             <SocialSignInRow mode="signin"/>
-            <TextField label={t('authShared.identity')} value={identity} onChangeText={setIdentity} autoCapitalize="none"
+            <TextField label={t('authShared.identity')} required value={identity} onChangeText={setIdentity} autoCapitalize="none"
                        autoCorrect={false} autoComplete="username" textContentType="username" returnKeyType="next"/>
-            <TextField label={t('authShared.password')} value={password} onChangeText={setPassword} secureTextEntry
+            <TextField label={t('authShared.password')} required value={password} onChangeText={setPassword} secureTextEntry
                        autoComplete="current-password" textContentType="password" returnKeyType="go" onSubmitEditing={submit}/>
             <KeyboardAnchor><Button label={submitting ? t('customerAuth.signingIn') : t('customerAuth.signIn')} icon={UavPasIcon} loading={submitting} onPress={submit}/></KeyboardAnchor>
             <View style={styles.links}>

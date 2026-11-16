@@ -235,7 +235,7 @@ export function RepairOrderCard({
             {controls.complete && showCompleteForm && (
                 <View style={styles.inlineForm}>
                     <TextField
-                        label={t('mobile.ops.maintenance.inspectionNotesLabel')}
+                        label={t('mobile.ops.maintenance.inspectionNotesLabel')} required
                         placeholder={t('mobile.ops.maintenance.inspectionNotesPlaceholder')}
                         value={inspectionNotes}
                         onChangeText={setInspectionNotes}

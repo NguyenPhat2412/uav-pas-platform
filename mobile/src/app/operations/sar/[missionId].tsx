@@ -1,5 +1,5 @@
 import React from 'react';
-import {SarCockpitScreen} from '@/components/operations/SarCockpitScreen';
+import {SarCockpitScreen} from '@/components/sar/SarCockpitScreen';
 
 export interface RouteMeta {
     id: string;
