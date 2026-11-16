@@ -8,7 +8,7 @@ import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.sar.SarMissionRepository;
 import com.uav.platform.service.impl.sar.SarServiceImpl;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.webhook.WebhookService;
 

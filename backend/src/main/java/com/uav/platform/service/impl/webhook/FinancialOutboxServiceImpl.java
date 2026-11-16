@@ -2,12 +2,12 @@ package com.uav.platform.service.impl.webhook;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.webhook.FinancialOutboxEvent;
 import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.repository.webhook.FinancialOutboxRepository;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.webhook.FinancialOutboxService;
 import com.uav.platform.service.webhook.WebhookEventQueue;
 

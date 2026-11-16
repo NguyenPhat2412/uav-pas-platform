@@ -2,6 +2,8 @@ package com.uav.platform.entity.notification;
 
 import com.uav.platform.common.entity.BaseEntity;
 import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.notification.NotificationModuleCode;
+import com.uav.platform.enums.notification.NotificationSeverity;
 import com.uav.platform.enums.notification.NotificationType;
 
 import jakarta.persistence.*;
@@ -30,6 +32,14 @@ public class Notification extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private NotificationType type = NotificationType.SYSTEM;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "module_code", nullable = false, length = 40)
+    private NotificationModuleCode moduleCode = NotificationModuleCode.SYSTEM;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private NotificationSeverity severity = NotificationSeverity.INFO;
 
     @Column(name = "reference_type", length = 50)
     private String referenceType;

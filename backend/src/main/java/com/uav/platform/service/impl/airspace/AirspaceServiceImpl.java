@@ -6,15 +6,18 @@ import com.uav.platform.dto.response.airspace.AirspaceCheckResponse;
 import com.uav.platform.dto.response.airspace.AirspaceZoneResponse;
 import com.uav.platform.entity.airspace.AirspaceZone;
 import com.uav.platform.enums.audit.AuditAction;
+import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.airspace.AirspaceMapper;
 import com.uav.platform.repository.airspace.AirspaceZoneRepository;
 import com.uav.platform.service.airspace.AirspaceService;
 import com.uav.platform.service.audit.AuditLogService;
+import com.uav.platform.service.impl.notification.policy.NotificationBroadcastOperations;
 import com.uav.platform.service.permission.PermissionService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,9 @@ public class AirspaceServiceImpl implements AirspaceService {
     private final AirspaceMapper airspaceMapper;
     private final PermissionService permissionService;
     private final AuditLogService auditLogService;
+
+    @Autowired(required = false)
+    private NotificationBroadcastOperations notificationBroadcast;
 
     @Override
     @Transactional(readOnly = true)
@@ -79,6 +85,15 @@ public class AirspaceServiceImpl implements AirspaceService {
                     "AIRSPACE_ZONE",
                     saved.getId() == null ? normalizedCode : saved.getId().toString(),
                     saved.getCode() + ":" + saved.getZoneType());
+        }
+        if (notificationBroadcast != null && saved.isActive() && authentication != null) {
+            notificationBroadcast.notifyActor(
+                    authentication.getName(),
+                    "Vùng không phận mới: " + saved.getName(),
+                    "Đã kích hoạt vùng " + saved.getZoneType() + " (" + saved.getCode() + ").",
+                    NotificationType.SYSTEM,
+                    "AIRSPACE",
+                    saved.getId());
         }
         return airspaceMapper.toResponse(saved);
     }

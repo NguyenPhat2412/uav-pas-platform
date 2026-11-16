@@ -9,7 +9,7 @@ import com.uav.platform.dto.request.billing.invoice.CreateInvoiceRequest;
 import com.uav.platform.dto.request.billing.invoice.PayInvoiceRequest;
 import com.uav.platform.dto.request.billing.reconciliation.PaymentIpnRequest;
 import com.uav.platform.dto.request.billing.reconciliation.SepayWebhookRequest;
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.dto.response.billing.invoice.InvoiceResponse;
 import com.uav.platform.dto.response.billing.invoice.PaymentResponse;
 import com.uav.platform.dto.response.billing.plan.ServicePlanResponse;
@@ -41,7 +41,7 @@ import com.uav.platform.service.impl.billing.reconciliation.PaymentTransactionOp
 import com.uav.platform.service.impl.billing.reconciliation.SepayReconciliationOperations;
 import com.uav.platform.service.impl.billing.reconciliation.VietQrOperations;
 import com.uav.platform.service.impl.user.account.UserAccountServiceImpl;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.webhook.WebhookService;
 

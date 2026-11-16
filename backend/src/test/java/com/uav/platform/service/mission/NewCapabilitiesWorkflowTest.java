@@ -83,7 +83,7 @@ import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.mission.lifecycle.MissionBillingService;
 import com.uav.platform.service.mission.lifecycle.MissionEventService;
 import com.uav.platform.service.mission.lifecycle.MissionLifecycleService;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.reporting.SlaIntelligenceService;
 

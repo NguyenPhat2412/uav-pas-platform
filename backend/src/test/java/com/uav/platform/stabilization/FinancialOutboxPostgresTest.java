@@ -14,7 +14,7 @@ import com.uav.platform.repository.webhook.FinancialOutboxRepository;
 import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
 import com.uav.platform.service.impl.webhook.FinancialOutboxServiceImpl;
 import com.uav.platform.service.impl.webhook.WebhookServiceImpl;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.webhook.FinancialOutboxService;
 import com.uav.platform.transport.webhook.WebhookTransport;
 

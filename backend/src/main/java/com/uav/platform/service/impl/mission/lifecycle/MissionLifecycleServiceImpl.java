@@ -5,7 +5,7 @@ import com.uav.platform.dto.request.mission.catalog.*;
 import com.uav.platform.dto.request.mission.dispatch.*;
 import com.uav.platform.dto.request.mission.flightplan.*;
 import com.uav.platform.dto.request.mission.lifecycle.*;
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.dto.response.airspace.AirspaceCheckResponse;
 import com.uav.platform.dto.response.mission.catalog.*;
 import com.uav.platform.dto.response.mission.dispatch.*;
@@ -37,7 +37,7 @@ import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.mission.lifecycle.MissionBillingService;
 import com.uav.platform.service.mission.lifecycle.MissionEventService;
 import com.uav.platform.service.mission.lifecycle.MissionLifecycleService;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.weather.WeatherService;
 
 import org.springframework.beans.factory.ObjectProvider;

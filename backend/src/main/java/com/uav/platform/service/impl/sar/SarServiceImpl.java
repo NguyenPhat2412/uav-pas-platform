@@ -1,7 +1,7 @@
 package com.uav.platform.service.impl.sar;
 
 import com.uav.platform.dto.record.sar.AlertResult;
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.dto.request.sar.FlightPlanRequest;
 import com.uav.platform.dto.request.sar.RescueDispatchRequest;
 import com.uav.platform.dto.request.sar.SarMissionRequest;
@@ -22,7 +22,7 @@ import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.sar.SarMapper;
 import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.sar.SarMissionRepository;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.sar.SarService;
 import com.uav.platform.service.webhook.WebhookService;
 import com.uav.platform.specification.sar.SarSpecifications;

@@ -1,4 +1,4 @@
-package com.uav.platform.service.notification;
+package com.uav.platform.service.notification.delivery;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -11,12 +11,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
-import com.uav.platform.controller.notification.NotificationController;
+import com.uav.platform.controller.notification.inbox.NotificationController;
 import com.uav.platform.dto.request.mission.dispatch.MissionResourceRedispatchRequest;
 import com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest;
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
-import com.uav.platform.dto.request.notification.RegisterPushTokenRequest;
-import com.uav.platform.dto.response.notification.PushTokenResponse;
+import com.uav.platform.dto.request.notification.delivery.RegisterPushTokenRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
+import com.uav.platform.dto.response.notification.delivery.PushTokenResponse;
 import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.billing.PaymentTransaction;
 import com.uav.platform.entity.mission.Mission;
@@ -29,7 +29,7 @@ import com.uav.platform.enums.notification.PushPlatform;
 import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.mapper.billing.invoice.BillingMapper;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
-import com.uav.platform.mapper.notification.NotificationMapper;
+import com.uav.platform.mapper.notification.inbox.NotificationMapper;
 import com.uav.platform.repository.billing.InvoiceRepository;
 import com.uav.platform.repository.billing.PaymentTransactionRepository;
 import com.uav.platform.repository.billing.ServicePlanRepository;
@@ -46,12 +46,13 @@ import com.uav.platform.service.auth.verification.EmailDomainPolicyService;
 import com.uav.platform.service.impl.auth.verification.EmailDomainPolicyServiceImpl;
 import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
 import com.uav.platform.service.impl.mission.dispatch.MissionDispatchServiceImpl;
-import com.uav.platform.service.impl.notification.NotificationDeliveryOperations;
-import com.uav.platform.service.impl.notification.NotificationServiceImpl;
+import com.uav.platform.service.impl.notification.delivery.NotificationDeliveryOperations;
+import com.uav.platform.service.impl.notification.inbox.NotificationServiceImpl;
 import com.uav.platform.service.inventory.InventoryService;
 import com.uav.platform.service.mission.dispatch.MissionResourceService;
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.mission.lifecycle.MissionEventService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
 
 import jakarta.mail.Session;

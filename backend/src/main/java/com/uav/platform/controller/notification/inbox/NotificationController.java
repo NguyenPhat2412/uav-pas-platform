@@ -1,16 +1,16 @@
-package com.uav.platform.controller.notification;
+package com.uav.platform.controller.notification.inbox;
 
 import com.uav.platform.common.dto.response.MessageResponse;
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
 import com.uav.platform.config.routes.ApiRoutes;
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
-import com.uav.platform.dto.request.notification.RegisterPushTokenRequest;
-import com.uav.platform.dto.request.notification.UnregisterPushTokenRequest;
-import com.uav.platform.dto.response.notification.NotificationResponse;
-import com.uav.platform.dto.response.notification.PushTokenResponse;
-import com.uav.platform.dto.response.notification.UnreadCountResponse;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.dto.request.notification.delivery.RegisterPushTokenRequest;
+import com.uav.platform.dto.request.notification.delivery.UnregisterPushTokenRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
+import com.uav.platform.dto.response.notification.delivery.PushTokenResponse;
+import com.uav.platform.dto.response.notification.inbox.NotificationResponse;
+import com.uav.platform.dto.response.notification.inbox.UnreadCountResponse;
+import com.uav.platform.service.notification.inbox.NotificationService;
 
 import jakarta.validation.Valid;
 

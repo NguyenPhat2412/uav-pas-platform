@@ -1,10 +1,10 @@
-package com.uav.platform.service.notification;
+package com.uav.platform.service.notification.inbox;
 
 import com.uav.platform.common.dto.response.PageResponse;
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
-import com.uav.platform.dto.request.notification.RegisterPushTokenRequest;
-import com.uav.platform.dto.response.notification.NotificationResponse;
-import com.uav.platform.dto.response.notification.PushTokenResponse;
+import com.uav.platform.dto.request.notification.delivery.RegisterPushTokenRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
+import com.uav.platform.dto.response.notification.delivery.PushTokenResponse;
+import com.uav.platform.dto.response.notification.inbox.NotificationResponse;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;

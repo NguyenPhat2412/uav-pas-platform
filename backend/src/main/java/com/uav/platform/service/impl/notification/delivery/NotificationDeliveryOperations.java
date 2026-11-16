@@ -1,13 +1,13 @@
-package com.uav.platform.service.impl.notification;
+package com.uav.platform.service.impl.notification.delivery;
 
 import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_HEADER;
 import static com.uav.platform.common.constant.SecurityConstants.BEARER_PREFIX;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uav.platform.dto.record.notification.NotificationDeliveryPayload;
-import com.uav.platform.dto.request.notification.RegisterPushTokenRequest;
-import com.uav.platform.dto.response.notification.PushTokenResponse;
+import com.uav.platform.dto.record.notification.delivery.NotificationDeliveryPayload;
+import com.uav.platform.dto.request.notification.delivery.RegisterPushTokenRequest;
+import com.uav.platform.dto.response.notification.delivery.PushTokenResponse;
 import com.uav.platform.entity.notification.PushDeviceToken;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.notification.NotificationType;
@@ -224,7 +224,8 @@ public class NotificationDeliveryOperations {
     }
 
     void dispatchExpoPush(NotificationDeliveryPayload payload) throws Exception {
-        if (!pushEnabled
+        if (Boolean.FALSE.equals(payload.mobilePushAllowed())
+                || !pushEnabled
                 || pushTokenRepository == null
                 || payload.userId() == null
                 || expoPushUrl == null
@@ -327,7 +328,11 @@ public class NotificationDeliveryOperations {
     }
 
     void dispatchOperationalEmail(NotificationDeliveryPayload payload) throws Exception {
-        if (!isOperationalEmailCandidate(payload.type(), payload.referenceType())) {
+        boolean emailAllowed =
+                payload.emailAllowed() != null
+                        ? payload.emailAllowed()
+                        : isOperationalEmailCandidate(payload.type(), payload.referenceType());
+        if (!emailAllowed) {
             return;
         }
         AuthMailService authMail =

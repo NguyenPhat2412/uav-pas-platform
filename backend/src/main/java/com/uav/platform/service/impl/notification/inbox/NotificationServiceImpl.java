@@ -1,20 +1,26 @@
-package com.uav.platform.service.impl.notification;
+package com.uav.platform.service.impl.notification.inbox;
 
 import com.uav.platform.common.dto.response.PageResponse;
-import com.uav.platform.dto.record.notification.NotificationDeliveryPayload;
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
-import com.uav.platform.dto.request.notification.RegisterPushTokenRequest;
-import com.uav.platform.dto.response.notification.NotificationResponse;
-import com.uav.platform.dto.response.notification.PushTokenResponse;
+import com.uav.platform.dto.record.notification.delivery.NotificationDeliveryPayload;
+import com.uav.platform.dto.record.notification.policy.EffectiveNotificationChannels;
+import com.uav.platform.dto.request.notification.delivery.RegisterPushTokenRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
+import com.uav.platform.dto.response.notification.delivery.PushTokenResponse;
+import com.uav.platform.dto.response.notification.inbox.NotificationResponse;
 import com.uav.platform.entity.notification.Notification;
 import com.uav.platform.entity.notification.PushDeviceToken;
 import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.notification.NotificationModuleCode;
+import com.uav.platform.enums.notification.NotificationSeverity;
+import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.mapper.notification.NotificationMapper;
+import com.uav.platform.mapper.notification.inbox.NotificationMapper;
 import com.uav.platform.repository.notification.NotificationRepository;
 import com.uav.platform.repository.notification.PushDeviceTokenRepository;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.impl.notification.delivery.NotificationDeliveryOperations;
+import com.uav.platform.service.impl.notification.policy.NotificationPolicyOperations;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.transport.websocket.RealtimeEventBroadcaster;
 
 import lombok.RequiredArgsConstructor;
@@ -44,6 +50,9 @@ public class NotificationServiceImpl implements NotificationService {
     private NotificationDeliveryOperations deliveryOperations;
 
     @Autowired(required = false)
+    private NotificationPolicyOperations policyOperations;
+
+    @Autowired(required = false)
     private RealtimeEventBroadcaster realtime;
 
     public void setPushTokenRepository(PushDeviceTokenRepository pushTokenRepository) {
@@ -52,6 +61,14 @@ public class NotificationServiceImpl implements NotificationService {
 
     public void setDeliveryOperations(NotificationDeliveryOperations deliveryOperations) {
         this.deliveryOperations = deliveryOperations;
+    }
+
+    public void setPolicyOperations(NotificationPolicyOperations policyOperations) {
+        this.policyOperations = policyOperations;
+    }
+
+    public void setRealtime(RealtimeEventBroadcaster realtime) {
+        this.realtime = realtime;
     }
 
     private AppUser getCurrentUser(Authentication auth) {
@@ -114,17 +131,59 @@ public class NotificationServiceImpl implements NotificationService {
                                         SystemException.notFound(
                                                 "User not found with id: " + request.userId()));
 
+        NotificationModuleCode fallbackModule =
+                NotificationPolicyOperations.resolveModuleCode(
+                        request.type(), request.referenceType());
+        NotificationSeverity fallbackSeverity =
+                NotificationPolicyOperations.defaultSeverity(fallbackModule);
+        EffectiveNotificationChannels channels =
+                policyOperations != null
+                        ? policyOperations.evaluate(
+                                user.getId(), request.type(), request.referenceType())
+                        : null;
+
+        if (channels != null && (!channels.enabled() || !channels.inApp())) {
+            return new NotificationResponse(
+                    null,
+                    user.getId(),
+                    request.title(),
+                    request.content(),
+                    request.type() != null ? request.type() : NotificationType.SYSTEM,
+                    channels.moduleCode(),
+                    channels.severity(),
+                    request.referenceType(),
+                    request.referenceId(),
+                    true,
+                    LocalDateTime.now());
+        }
+
+        NotificationModuleCode moduleCode =
+                channels != null ? channels.moduleCode() : fallbackModule;
+        NotificationSeverity severity = channels != null ? channels.severity() : fallbackSeverity;
+
+        boolean withinCooldown =
+                channels != null
+                        && channels.cooldownSeconds() > 0
+                        && notificationRepository.existsByUserIdAndModuleCodeAndCreatedAtAfter(
+                                user.getId(),
+                                moduleCode,
+                                LocalDateTime.now().minusSeconds(channels.cooldownSeconds()));
+
         Notification notif =
                 NotificationOperations.create(
                         user,
                         request.title(),
                         request.content(),
                         request.type(),
+                        moduleCode,
+                        severity,
                         request.referenceType(),
                         request.referenceId());
 
         Notification saved = notificationRepository.save(notif);
-        if (deliveryOperations != null) {
+        if (deliveryOperations != null && !withinCooldown) {
+            Boolean mobilePushAllowed = channels != null ? channels.mobilePush() : null;
+            Boolean emailAllowed = channels != null ? channels.email() : null;
             deliveryOperations.dispatchAfterCommit(
                     new NotificationDeliveryPayload(
                             saved.getId(),
@@ -135,14 +194,20 @@ public class NotificationServiceImpl implements NotificationService {
                             saved.getContent(),
                             saved.getType(),
                             saved.getReferenceType(),
-                            saved.getReferenceId()));
+                            saved.getReferenceId(),
+                            mobilePushAllowed,
+                            emailAllowed));
         }
         NotificationResponse response = notificationMapper.toResponse(saved);
         if (realtime != null) {
+            boolean screenPopup = !withinCooldown && (channels == null || channels.screenPopup());
+            boolean desktopOs = !withinCooldown && (channels == null || channels.desktopOs());
             realtime.publishNotificationCreated(
                     user.getId(),
                     response,
-                    notificationRepository.countByUserIdAndIsReadFalse(user.getId()));
+                    notificationRepository.countByUserIdAndIsReadFalse(user.getId()),
+                    screenPopup,
+                    desktopOs);
         }
         return response;
     }

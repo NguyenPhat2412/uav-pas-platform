@@ -22,6 +22,7 @@ import com.uav.platform.entity.settings.SystemConfiguration;
 import com.uav.platform.entity.storage.StorageDriveNode;
 import com.uav.platform.entity.storage.StorageDriveObject;
 import com.uav.platform.enums.audit.AuditAction;
+import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.enums.settings.SettingValueType;
 import com.uav.platform.enums.storage.DriveAuthType;
 import com.uav.platform.enums.storage.DriveNodeHealth;
@@ -32,6 +33,7 @@ import com.uav.platform.repository.storage.StorageDriveNodeRepository;
 import com.uav.platform.repository.storage.StorageDriveObjectRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.media.HybridObjectStorageServiceImpl;
+import com.uav.platform.service.impl.notification.policy.NotificationBroadcastOperations;
 import com.uav.platform.service.impl.settings.SystemConfigurationOperations;
 import com.uav.platform.service.media.ObjectStorageService;
 import com.uav.platform.service.storage.pool.StoragePoolService;
@@ -110,6 +112,9 @@ public class StoragePoolServiceImpl implements StoragePoolService {
     private final String envClientSecret;
     private final String publicAppUrl;
     private final Set<String> allowedOrigins;
+
+    @Autowired(required = false)
+    private NotificationBroadcastOperations notificationBroadcast;
 
     @Autowired
     public StoragePoolServiceImpl(
@@ -621,6 +626,21 @@ public class StoragePoolServiceImpl implements StoragePoolService {
                 "STORAGE_POOL",
                 "migrate-r2",
                 "migrated=" + migratedCount + ",failed=" + failedCount);
+        if (notificationBroadcast != null && (migratedCount > 0 || failedCount > 0)) {
+            notificationBroadcast.notifyActor(
+                    actor,
+                    "Hoàn tất đợt di chuyển kho tệp sang Google Drive",
+                    "Đã chuyển "
+                            + migratedCount
+                            + " tệp"
+                            + (failedCount > 0 ? " (" + failedCount + " lỗi)" : "")
+                            + ", còn lại "
+                            + remCount
+                            + " tệp trên R2.",
+                    NotificationType.SYSTEM,
+                    "STORAGE",
+                    explicitTarget == null ? null : explicitTarget.getId());
+        }
         return new StorageR2MigrationResponse(
                 migratedCount, migratedBytes, failedCount, remCount, remBytes);
     }

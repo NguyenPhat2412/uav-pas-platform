@@ -121,7 +121,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
 
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     private org.springframework.beans.factory.ObjectProvider<
-                    com.uav.platform.service.notification.NotificationService>
+                    com.uav.platform.service.notification.inbox.NotificationService>
             notifications;
 
     private void notifyUser(
@@ -136,7 +136,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
         if (svc == null) return;
         try {
             svc.sendNotification(
-                    new com.uav.platform.dto.request.notification.CreateNotificationRequest(
+                    new com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest(
                             target.getId(), title, content, type, refType, refId));
         } catch (RuntimeException ignored) {
             // Best-effort realtime notification.

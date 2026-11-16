@@ -47,7 +47,7 @@ public class MarketplaceEscrowServiceImpl implements MarketplaceEscrowService {
 
     @Autowired(required = false)
     private org.springframework.beans.factory.ObjectProvider<
-                    com.uav.platform.service.notification.NotificationService>
+                    com.uav.platform.service.notification.inbox.NotificationService>
             notifications;
 
     private void notifyProvider(
@@ -60,7 +60,7 @@ public class MarketplaceEscrowServiceImpl implements MarketplaceEscrowService {
         if (svc == null) return;
         try {
             svc.sendNotification(
-                    new com.uav.platform.dto.request.notification.CreateNotificationRequest(
+                    new com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest(
                             provider.getUser().getId(),
                             title,
                             content,

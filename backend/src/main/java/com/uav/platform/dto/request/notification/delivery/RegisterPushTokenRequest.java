@@ -1,4 +1,4 @@
-package com.uav.platform.dto.request.notification;
+package com.uav.platform.dto.request.notification.delivery;
 
 import com.uav.platform.enums.notification.PushPlatform;
 

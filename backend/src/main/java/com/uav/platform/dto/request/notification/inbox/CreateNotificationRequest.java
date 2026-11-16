@@ -1,4 +1,4 @@
-package com.uav.platform.dto.request.notification;
+package com.uav.platform.dto.request.notification.inbox;
 
 import com.uav.platform.enums.notification.NotificationType;
 
