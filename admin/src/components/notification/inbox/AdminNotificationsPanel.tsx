@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import {useRef, useState, type FormEvent} from 'react';
-import {CheckCheck, Mail, MailOpen, Search, Send, X} from 'lucide-react';
+import {CheckCheck, Mail, MailOpen, Search, Send, SlidersHorizontal, X} from 'lucide-react';
+import {UserNotificationPreferencesCard} from '@/components/notification/policy/UserNotificationPreferencesCard';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {Alert, Button} from '@/components/ui';
@@ -71,6 +72,7 @@ export function AdminNotificationsPanel() {
     const typeLabel = (value: NotificationType | null) => t(`admin.notifications.types.${value ?? 'SYSTEM'}`);
 
     return <div className="space-y-4">
+        <UserNotificationPreferencesCard/>
         <div className="flex flex-wrap items-center gap-3">
             <FilterSelect label={t('admin.notifications.col.status')} value={readFilter} onChange={setReadFilter}
                           options={(['all', 'unread', 'read'] as const).map(value => ({
@@ -86,7 +88,12 @@ export function AdminNotificationsPanel() {
             <FilterSelect<NotificationType | ''> label={t('admin.notifications.type')} value={type} onChange={setType}
                                                  options={[{value: '', label: t('admin.notifications.allTypes')},
                                                      ...notificationTypes.map(value => ({value, label: typeLabel(value)}))]}/>
-            <div className="ml-auto flex gap-2">
+            <div className="ml-auto flex flex-wrap gap-2">
+                <Link href="/admin/notifications/modules"
+                      className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border bg-card px-3 text-xs font-bold text-on-surface transition-colors duration-150 hover:bg-slate-50">
+                    <SlidersHorizontal size={14}/>
+                    <span>{t('notificationCenter.openModulesBtn')}</span>
+                </Link>
                 <Button size="sm" variant="outline" leftIcon={<CheckCheck size={15}/>} disabled={markAll.isPending || !unreadOnPage}
                         onClick={() => markAll.mutate()}>{t('admin.notifications.markAll')}</Button>
                 {can('USER_MANAGE') && <Button size="sm" leftIcon={<Send size={15}/>} onClick={() => setComposing(true)}>

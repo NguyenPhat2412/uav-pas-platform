@@ -6,7 +6,7 @@ import {useI18n} from '@/providers/I18nContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
 import {AccountMenu} from '@/components/layout/AccountMenu';
 import {AdminAlertsPopover} from '@/components/layout/AdminAlertsPopover';
-import {NotificationBell} from '@/components/notification/NotificationBell';
+import {NotificationBell} from '@/components/notification/inbox/NotificationBell';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import type {ADMIN_SIDEBAR_ROUTES} from '@/config/sidebar-routes';

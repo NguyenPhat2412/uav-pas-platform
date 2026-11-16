@@ -170,7 +170,8 @@
     "infrastructureDatabase": "Database",
     "infrastructureEmail": "Email",
     "weather": "Flight weather",
-    "airspace": "Airspace zones"
+    "airspace": "Airspace zones",
+    "notificationModules": "Notification modules"
   },
   "sidebar": {
     "title": "UAV PAS",
@@ -1080,5 +1081,46 @@
       "recentReviewsTitle": "Recent Customer Handover Sign-Offs",
       "recentReviewsEmpty": "No customer handover reviews recorded yet."
     }
+  },
+  "notificationCenter": {
+    "popupOpen": "Open now",
+    "popupDismiss": "Dismiss notification",
+    "severityCRITICAL": "Critical",
+    "severityACTION": "Action",
+    "severityINFO": "Info",
+    "desktopTitle": "OS Desktop Notifications (macOS / Windows)",
+    "desktopGranted": "OS Notification Center delivery is active",
+    "desktopDefault": "Grant permission to see notifications outside the browser when tabs are unfocused",
+    "desktopDenied": "Browser notifications are blocked — allow them in the address bar lock menu",
+    "desktopUnsupported": "OS notifications are not supported in this browser",
+    "desktopEnableBtn": "Enable desktop alerts",
+    "prefsTitle": "Module Notification Preferences",
+    "prefsSubtitle": "Choose which operational modules pop up on screen or deliver to your phone and email.",
+    "prefsExpand": "Module & channel settings",
+    "prefsHide": "Hide settings",
+    "mandatoryBadge": "Flight-safety mandatory",
+    "disabledByAdmin": "Paused by administrator",
+    "receiveModule": "Receive alerts",
+    "channelInApp": "In-app bell",
+    "channelScreenPopup": "Screen popup",
+    "channelDesktopOs": "OS desktop",
+    "channelMobilePush": "Mobile push",
+    "channelEmail": "Email",
+    "adminTitle": "Notification Module Registry & Governance",
+    "adminSubtitle": "Centrally control module activation, out-of-screen popup channels, severity tiers, and cooldown throttling.",
+    "backToInbox": "Back to inbox",
+    "openModulesBtn": "Manage notification modules",
+    "kpiActiveModules": "Active modules",
+    "kpiMandatory": "Safety mandatory",
+    "kpiScreenPopup": "Screen popup on",
+    "kpiDesktopOs": "OS desktop on",
+    "mandatoryToggle": "Safety mandatory",
+    "severityLabel": "Display tier",
+    "cooldownLabel": "Cooldown window (sec)",
+    "saveCooldown": "Save cooldown",
+    "testPopupBtn": "Test screen popup",
+    "testFired": "Fired live test alert for module {module}",
+    "savedModule": "Updated policy for module {module}",
+    "savedPref": "Saved your notification preferences"
   }
 }

@@ -1,5 +1,5 @@
 import {AdminPage} from '@/components/layout/AdminPage';
-import {AdminNotificationsPanel} from "@/components/notification/AdminNotificationsPanel";
+import {AdminNotificationsPanel} from "@/components/notification/inbox/AdminNotificationsPanel";
 
 export default function Page() {
     return <AdminPage title="admin.pages.notifications.title" permission="DASHBOARD_VIEW" activeResource="notifications">

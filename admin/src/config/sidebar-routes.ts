@@ -180,6 +180,15 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
         permission: 'DASHBOARD_VIEW',
     },
     {
+        href: '/admin/notifications/modules',
+        key: 'notificationModules',
+        defaultLabel: 'Modules thông báo',
+        group: 'overview',
+        subGroup: 'operationsPulse',
+        icon: Bell,
+        permission: 'DASHBOARD_VIEW',
+    },
+    {
         href: '/admin/support',
         key: 'supportInbox',
         defaultLabel: 'Tin nhắn hỗ trợ',

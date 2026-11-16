@@ -35,7 +35,24 @@ export type AdminRealtimeFrame =
           invoiceCode: string;
           status: string;
       }
-    | { type: 'NOTIFICATION_CREATED'; timestamp: string; notification: { id: number; title: string }; unreadCount: number };
+    | {
+          type: 'NOTIFICATION_CREATED';
+          timestamp: string;
+          notification: {
+              id: number;
+              title: string;
+              content?: string;
+              type?: string | null;
+              moduleCode?: 'SAR' | 'AIRSPACE' | 'MISSION' | 'MARKETPLACE' | 'BILLING' | 'SUPPORT' | 'MAINTENANCE' | 'STORAGE' | 'SYSTEM' | null;
+              severity?: 'INFO' | 'ACTION' | 'CRITICAL' | null;
+              referenceType?: string | null;
+              referenceId?: number | null;
+              createdAt?: string;
+          };
+          unreadCount: number;
+          screenPopup?: boolean;
+          desktopOs?: boolean;
+      };
 
 type FrameListener = (frame: AdminRealtimeFrame) => void;
 type StatusListener = (connected: boolean) => void;
