@@ -146,9 +146,9 @@ export function Mission3DReplayAndTerrainCard({
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                     <span
-                        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-bold ${
+                        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-bold tabular-nums ${
                             replay.terrainClearanceSafe
-                                ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                                ? 'border-slate-300 bg-slate-100 text-slate-800'
                                 : 'border-amber-200 bg-amber-50 text-amber-800'
                         }`}
                     >
@@ -247,7 +247,7 @@ export function Mission3DReplayAndTerrainCard({
                                 {isEn ? 'Terrain Elevation & Clearance Profile (ASL)' : 'Mặt cắt Địa hình & Độ cao Bay (ASL)'}
                             </span>
                             {activeFrame && (
-                                <span className="font-mono text-[11px] text-emerald-300">
+                                <span className="font-mono text-[11px] text-sky-300 tabular-nums">
                                     AGL {formatNumber(Math.round(activeFrame.clearanceMeters))}m · ASL{' '}
                                     {formatNumber(Math.round(activeFrame.terrainElevationMeters + activeFrame.altitudeAglMeters))}m
                                 </span>
@@ -378,8 +378,8 @@ export function Mission3DReplayAndTerrainCard({
                         </div>
                         <div className="rounded-panel border border-slate-200 bg-slate-50/70 p-2.5">
                             <dt className="text-[11px] font-medium text-slate-500">{isEn ? 'Min Battery Reserve' : 'Pin Dự phòng Tối thiểu'}</dt>
-                            <dd className="m-0 mt-0.5 inline-flex items-center gap-1 text-sm font-bold text-slate-900">
-                                <Activity size={13} className="text-emerald-600" />
+                            <dd className="m-0 mt-0.5 inline-flex items-center gap-1 text-sm font-bold text-slate-900 tabular-nums">
+                                <Activity size={13} className="text-slate-600" />
                                 {minBattery}%
                             </dd>
                         </div>

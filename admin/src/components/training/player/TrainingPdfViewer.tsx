@@ -401,7 +401,7 @@ export function PdfPageViewer({url, title, storageKey, completed, onReachedEnd, 
 
                 <div className="flex min-w-fit items-center justify-center px-4 py-4 sm:px-8">
                     <div
-                        className={`relative flex items-stretch justify-center rounded-sm bg-slate-800/90 p-1.5 shadow-[0_18px_40px_-12px_rgba(15,23,42,0.32),0_4px_12px_rgba(15,23,42,0.12)] ring-1 ring-slate-400/60 transition-all duration-300 ease-out [transform-style:preserve-3d] ${flipTransform} ${
+                        className={`relative flex items-stretch justify-center rounded-sm bg-slate-800/90 p-1.5 shadow-[0_18px_40px_-12px_rgba(15,23,42,0.32),0_4px_12px_rgba(15,23,42,0.12)] ring-1 ring-slate-400/60 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] [transform-style:preserve-3d] ${flipTransform} ${
                             loading || pageError ? 'invisible h-0 p-0' : ''
                         }`}
                     >

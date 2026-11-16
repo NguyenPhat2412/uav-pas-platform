@@ -133,7 +133,7 @@ export function TrainingLessonEditorModal({
                                 className="text-xs"
                             />
                         </FormField>
-                        <FormField label="Chương" error={fieldErrors?.sectionTitle}>
+                        <FormField label="Chương" optional error={fieldErrors?.sectionTitle}>
                             <Input
                                 value={draft.sectionTitle}
                                 placeholder="Nội dung"
@@ -143,7 +143,7 @@ export function TrainingLessonEditorModal({
                             />
                         </FormField>
                         <div className="grid grid-cols-2 gap-3">
-                            <FormField label="Thời lượng (phút)" error={fieldErrors?.durationMinutes}>
+                            <FormField label="Thời lượng (phút)" optional error={fieldErrors?.durationMinutes}>
                                 <Input
                                     type="number"
                                     value={draft.durationMinutes}
@@ -152,7 +152,7 @@ export function TrainingLessonEditorModal({
                                     className="text-xs"
                                 />
                             </FormField>
-                            <FormField label="Thứ tự">
+                            <FormField label="Thứ tự" optional>
                                 <Input
                                     type="number"
                                     value={draft.sortOrder}

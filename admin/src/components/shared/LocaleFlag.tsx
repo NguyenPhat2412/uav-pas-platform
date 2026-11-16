@@ -12,7 +12,7 @@ const flags: Record<SupportedLocale, ReactNode> = {
         <rect width="30" height="20" className="fill-white"/>
         {[0, 2, 4, 6, 8, 10, 12].map(row => <rect key={row} y={row * 20 / 13} width="30" height={20 / 13}
                                                   className="fill-red-700"/>)}
-        <rect width="12" height={20 * 7 / 13} className="fill-indigo-900"/>
+        <rect width="12" height={20 * 7 / 13} fill="#002868"/>
     </>,
     ja: <>
         <rect width="30" height="20" className="fill-white"/>

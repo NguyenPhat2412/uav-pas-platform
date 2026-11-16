@@ -103,7 +103,7 @@ function ServiceDialog({service, onClose, onSaved}: { service: ServiceOffering |
     const fieldErrors = serviceOfferingFieldErrors(save.error);
     const field = 'mt-1 w-full border border-slate-200 px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none aria-[invalid=true]:border-danger';
     const specField = (key: keyof ServiceOfferingSpecDraft, label: string, step: number) =>
-        <label className="text-[13px] font-semibold text-slate-600">{label}
+        <label className="text-[13px] font-semibold text-slate-600">{label}<OptionalMark/>
             <input type="number" step={step} aria-invalid={Boolean(fieldErrors?.[key])} value={draft.spec[key]} placeholder={t('admin.services.spec.notCommitted')}
                    onChange={e => setDraft(prev => ({...prev, spec: {...prev.spec, [key]: e.target.value}}))} className={cn(field, 'tabular-nums')}/>
             {fieldErrors?.[key] && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors[key]}</span>}</label>;

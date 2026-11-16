@@ -2,13 +2,14 @@
 
 import React, {type FormEvent} from 'react';
 import {ArrowLeft, Mail, RefreshCw, ShieldCheck, Smartphone} from 'lucide-react';
-import {Badge, Button} from '@/components/ui';
+import {Badge, Button, FormField} from '@/components/ui';
 import {toVerifyOtpPayload} from '@/forms/auth/auth-form';
 import {useAuthFlow} from '@/hooks/auth/useAuthFlow';
 import {toast} from '@/providers/ToastContext';
 import type {AuthResponse} from '@/types/auth/auth.types';
 import {OtpCodeInput} from '@/components/auth/social/OtpCodeInput';
 import {
+    AUTH_LABEL_CLASS,
     type AuthChallengeState,
     AuthDevOtpBanner,
     type RunAuthAction,
@@ -162,7 +163,9 @@ export function AuthVerificationStep({
                 />
             )}
 
-            <OtpCodeInput value={otpCode} onChange={onOtpCodeChange} disabled={submitting}/>
+            <FormField label="Mã xác thực 6 chữ số" required labelClassName={AUTH_LABEL_CLASS}>
+                <OtpCodeInput value={otpCode} onChange={onOtpCodeChange} disabled={submitting}/>
+            </FormField>
 
             <Button
                 type="submit"

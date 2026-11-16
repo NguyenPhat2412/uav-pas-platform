@@ -184,7 +184,9 @@ export function AuthPasswordRecoveryStep({
                 />
             )}
 
-            <OtpCodeInput value={otpCode} onChange={onOtpCodeChange} disabled={submitting}/>
+            <FormField label="Mã xác thực 6 chữ số" required labelClassName={AUTH_LABEL_CLASS}>
+                <OtpCodeInput value={otpCode} onChange={onOtpCodeChange} disabled={submitting}/>
+            </FormField>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <FormField

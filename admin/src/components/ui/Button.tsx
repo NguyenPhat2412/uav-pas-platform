@@ -22,7 +22,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref
     ) => {
         const baseStyles =
-            'rounded-control font-title-sm font-semibold inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap leading-tight transition-all duration-150 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed select-none focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2';
+            'rounded-control font-title-sm font-semibold inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap leading-tight transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.985] disabled:active:scale-100 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed select-none focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2';
 
         const hasExplicitHeight = /(?:^|\s)(?:min-)?h-\S+/.test(className ?? '');
         const sizes = {

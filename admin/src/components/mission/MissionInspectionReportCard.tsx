@@ -43,7 +43,7 @@ export function MissionInspectionReportCard({
     const isPartial = !isCompliant && (report.waypointCount > 0 || report.mediaCount > 0);
 
     const verdictStyle = isCompliant
-        ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+        ? 'border-slate-300 bg-slate-100 text-slate-800'
         : isPartial
           ? 'border-amber-200 bg-amber-50 text-amber-800'
           : 'border-slate-200 bg-slate-100 text-slate-700';
@@ -117,9 +117,9 @@ export function MissionInspectionReportCard({
                         <span className="text-[11px] font-medium text-slate-500">
                             {isEn ? 'Quality Score' : 'Điểm Chất lượng Nghiệm thu'}
                         </span>
-                        <div className="mt-1 flex items-baseline gap-1.5">
+                        <div className="mt-1 flex items-baseline gap-1.5 tabular-nums">
                             <strong className="text-lg font-extrabold text-slate-900">{qualityScorePct}%</strong>
-                            <span className="text-xs font-semibold text-emerald-700">ISO/RTK</span>
+                            <span className="text-xs font-semibold text-slate-600">ISO/RTK</span>
                         </div>
                     </div>
                     <div className="rounded-panel border border-slate-200 bg-slate-50/70 p-3">

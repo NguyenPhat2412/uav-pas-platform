@@ -211,7 +211,7 @@ export function TrainingBulkLessonUpload({
 
             {items.length > 0 && (
                 <div className="space-y-3 text-xs">
-                    <FormField label="Chương cho các bài mới" className="max-w-sm">
+                    <FormField label="Chương cho các bài mới" optional className="max-w-sm">
                         <Input
                             value={sectionTitle}
                             placeholder="Nội dung"

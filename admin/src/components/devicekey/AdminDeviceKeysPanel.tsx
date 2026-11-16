@@ -4,7 +4,8 @@ import React, {useEffect, useId, useRef, useState} from 'react';
 import {Check, Copy, KeyRound, Plus, ShieldOff, TriangleAlert} from 'lucide-react';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {QueryState} from '@/components/data/WorkspaceState';
-import {Button} from '@/components/ui';
+import {Button, OptionalMark, RequiredMark} from '@/components/ui';
+import {stripFieldLabelMarker} from '@/components/shared/RequiredMark';
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
 import type {CreatedDeviceKey, DeviceKey} from '@/types/devicekey/device-key.types';
@@ -23,7 +24,7 @@ interface UavOption {
 }
 
 const statusTone: Record<DeviceKey['status'], string> = {
-    ACTIVE: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    ACTIVE: 'bg-slate-100 text-slate-800 border-slate-300',
     EXPIRED: 'bg-amber-50 text-amber-700 border-amber-200',
     REVOKED: 'bg-slate-100 text-slate-500 border-slate-200',
 };
@@ -161,14 +162,14 @@ function CreateKeyDialog({uavs, onClose, onCreated}: {
             }
         }}>
             <label className="block space-y-1 text-sm font-semibold text-slate-800">
-                <span>{t('adminPlatform.deviceKeys.form.name')}</span>
+                <span>{t('adminPlatform.deviceKeys.form.name')}<RequiredMark/></span>
                 <input className={input} aria-required aria-invalid={Boolean(fieldErrors?.name)} value={draft.name} autoFocus
                        onChange={e => setDraft(prev => ({...prev, name: e.target.value}))}
                        placeholder={t('adminPlatform.deviceKeys.form.namePlaceholder')}/>
                 {fieldErrors?.name && <span className="block text-xs text-red-700">{fieldErrors.name}</span>}
             </label>
             <label className="block space-y-1 text-sm font-semibold text-slate-800">
-                <span>{t('adminPlatform.deviceKeys.form.uav')}</span>
+                <span>{t('adminPlatform.deviceKeys.form.uav')}<OptionalMark/></span>
                 <select className={input} aria-invalid={Boolean(fieldErrors?.uavId)} value={draft.uavId}
                         onChange={e => setDraft(prev => ({...prev, uavId: e.target.value}))}>
                     <option value="">{t('adminPlatform.deviceKeys.anyUav')}</option>
@@ -178,7 +179,7 @@ function CreateKeyDialog({uavs, onClose, onCreated}: {
                 <span className="block text-xs font-normal text-slate-500">{t('adminPlatform.deviceKeys.form.uavHint')}</span>
             </label>
             <label className="block space-y-1 text-sm font-semibold text-slate-800">
-                <span>{t('adminPlatform.deviceKeys.form.expiresAt')}</span>
+                <span>{stripFieldLabelMarker(t('adminPlatform.deviceKeys.form.expiresAt'))}<OptionalMark/></span>
                 <input type="datetime-local" className={input} aria-invalid={Boolean(fieldErrors?.expiresAt)} value={draft.expiresAt}
                        onChange={e => setDraft(prev => ({...prev, expiresAt: e.target.value}))}/>
                 <span className="block text-xs font-normal text-slate-500">{t('adminPlatform.deviceKeys.form.expiresHint')}</span>

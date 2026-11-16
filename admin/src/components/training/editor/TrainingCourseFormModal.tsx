@@ -125,7 +125,7 @@ export function TrainingCourseFormModal({
                             />
                         </FormField>
 
-                        <FormField label="Phiên bản (Version)">
+                        <FormField label="Phiên bản (Version)" optional>
                             <Input
                                 type="text"
                                 value={formState.versionTag}
@@ -188,7 +188,7 @@ export function TrainingCourseFormModal({
                         />
                     </FormField>
 
-                    <FormField label="Các bước Checklist thực hành (Mỗi dòng 1 bước kiểm tra)">
+                    <FormField label="Các bước Checklist thực hành (Mỗi dòng 1 bước kiểm tra)" optional>
                         <Textarea
                             rows={4}
                             value={formState.checklistSteps.join('\n')}

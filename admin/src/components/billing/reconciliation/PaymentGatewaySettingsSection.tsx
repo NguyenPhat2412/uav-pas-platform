@@ -63,6 +63,7 @@ function GatewayForm({config, onSaved}: { config: PaymentGatewayConfig; onSaved?
     const errors = validatePaymentGatewayDraft(draft);
     const canSubmit = canSubmitPaymentGateway(draft);
     const matchedPreset = NAPAS_BANK_PRESETS.find(item => item.bin === draft.bankBin.trim());
+    const anyBankFilled = Boolean(draft.bankBin.trim() || draft.accountNumber.trim() || draft.accountName.trim());
 
     const handlePresetSelect = (bin: string) => {
         if (!bin) return;
@@ -128,7 +129,7 @@ function GatewayForm({config, onSaved}: { config: PaymentGatewayConfig; onSaved?
                             ))}
                         </Select>
 
-                        <Input id="gateway-bank-bin" label="Mã BIN NAPAS (6 chữ số)" required={false}
+                        <Input id="gateway-bank-bin" label="Mã BIN NAPAS (6 chữ số)" required={anyBankFilled} optional={!anyBankFilled}
                                placeholder="Ví dụ: 970436" maxLength={6} inputMode="numeric"
                                value={draft.bankBin} error={errors.bankBin}
                                onChange={e => setDraft(prev => ({...prev, bankBin: e.target.value.replace(/\D/g, '')}))}
@@ -146,13 +147,13 @@ function GatewayForm({config, onSaved}: { config: PaymentGatewayConfig; onSaved?
                                onChange={e => setDraft(prev => ({...prev, vatPercent: e.target.value}))}
                                className="h-10 text-xs font-semibold tabular-nums"/>
 
-                        <Input id="gateway-account-number" label="Số tài khoản thụ hưởng" required={false}
+                        <Input id="gateway-account-number" label="Số tài khoản thụ hưởng" required={anyBankFilled} optional={!anyBankFilled}
                                placeholder="Ví dụ: 0123456789" maxLength={19}
                                value={draft.accountNumber} error={errors.accountNumber}
                                onChange={e => setDraft(prev => ({...prev, accountNumber: e.target.value.replace(/\s+/g, '')}))}
                                className="h-10 font-mono text-xs font-semibold"/>
 
-                        <Input id="gateway-account-name" label="Chủ tài khoản thụ hưởng (Không dấu)" required={false}
+                        <Input id="gateway-account-name" label="Chủ tài khoản thụ hưởng (Không dấu)" required={anyBankFilled} optional={!anyBankFilled}
                                placeholder="Ví dụ: CONG TY CO PHAN UAV PAS" maxLength={120}
                                value={draft.accountName} error={errors.accountName}
                                onChange={e => setDraft(prev => ({...prev, accountName: e.target.value.toUpperCase()}))}

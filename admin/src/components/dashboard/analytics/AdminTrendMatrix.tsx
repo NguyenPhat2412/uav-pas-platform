@@ -46,7 +46,7 @@ export function TrendMatrixGrid({
                             onMouseEnter={() => setHover(i)}
                             onMouseLeave={() => setHover(null)}
                             className={cn(
-                                'relative flex flex-col justify-between rounded-control p-2 transition-all select-none',
+                                'relative flex flex-col justify-between rounded-control p-2 transition-colors select-none',
                                 total === 0
                                     ? 'border-rose-100 bg-white text-rose-300'
                                     : failOnly

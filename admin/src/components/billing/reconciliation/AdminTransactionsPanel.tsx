@@ -233,7 +233,7 @@ function RefundSection({tx, onDone}: {tx: AdminPaymentTransaction; onDone: (tx: 
                 <Input value={reference} maxLength={100} placeholder={t('adminCommerce.refund.referencePlaceholder')}
                        onChange={event => setReference(event.target.value)}/>
             </FormField>
-            <FormField label={t('adminCommerce.refund.note')}>
+            <FormField label={t('adminCommerce.refund.note')} optional>
                 <Input value={note} maxLength={380} onChange={event => setNote(event.target.value)}/>
             </FormField>
             <Button type="submit" disabled={!reference.trim()} isLoading={refund.isPending}>

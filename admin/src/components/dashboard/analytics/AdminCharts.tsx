@@ -190,7 +190,7 @@ export function ColumnChart({
                                         <span
                                             key={s.label}
                                             className={cn(
-                                                'w-[min(22px,42%)] transition-all',
+                                                'w-[min(22px,42%)] transition-opacity',
                                                 val > 0
                                                     ? 'rounded-t-[3px]'
                                                     : 'h-[2px] rounded-full bg-rose-200',

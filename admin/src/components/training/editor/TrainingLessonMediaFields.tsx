@@ -70,6 +70,7 @@ export function TrainingLessonMediaFields({
                     </div>
                     {draft.videoSource === 'FILE' ? (
                         <div className="space-y-2">
+                            <span className="block font-semibold text-foreground">Tệp video bài học <RequiredMark /></span>
                             {draft.videoAssetId !== null && (
                                 <p className="flex items-center gap-1.5 text-foreground">
                                     <Video className="h-3.5 w-3.5 text-muted" />
@@ -84,11 +85,12 @@ export function TrainingLessonMediaFields({
                             />
                         </div>
                     ) : (
-                        <FormField label="Liên kết YouTube hoặc Vimeo" error={fieldErrors?.videoUrl}>
+                        <FormField label="Liên kết YouTube hoặc Vimeo" required error={fieldErrors?.videoUrl}>
                             <Input
                                 type="url"
                                 value={draft.videoUrl}
                                 placeholder="https://youtu.be/…"
+                                aria-required
                                 aria-invalid={Boolean(fieldErrors?.videoUrl)}
                                 onChange={event => onPatch({videoUrl: event.target.value})}
                                 className="text-xs"
@@ -100,6 +102,7 @@ export function TrainingLessonMediaFields({
 
             {draft.type === 'SLIDES' && (
                 <div className="space-y-3 rounded-panel border border-border p-3">
+                    <span className="block font-semibold text-foreground">Danh sách ảnh slide <RequiredMark /></span>
                     <TrainingAssetUpload
                         kind="image"
                         multiple
@@ -202,6 +205,7 @@ export function TrainingLessonMediaFields({
                     </div>
                     {draft.documentSource === 'FILE' ? (
                         <div className="space-y-2">
+                            <span className="block font-semibold text-foreground">Tệp PDF bài học <RequiredMark /></span>
                             {draft.documentAssetId !== null && (
                                 <p className="flex items-center gap-1.5 text-foreground">
                                     <FileText className="h-3.5 w-3.5 text-muted" />
@@ -222,12 +226,14 @@ export function TrainingLessonMediaFields({
                     ) : (
                         <FormField
                             label="Liên kết Google Docs, Slides, Sheets hoặc Drive"
+                            required
                             error={fieldErrors?.documentUrl}
                         >
                             <Input
                                 type="url"
                                 value={draft.documentUrl}
                                 placeholder="https://docs.google.com/document/d/…"
+                                aria-required
                                 aria-invalid={Boolean(fieldErrors?.documentUrl)}
                                 onChange={event => onPatch({documentUrl: event.target.value})}
                                 className="text-xs"

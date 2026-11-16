@@ -5,7 +5,22 @@ import type {CardProps} from '@/types/ui';
 export type {CardProps};
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-    ({className, variant = 'default', children, ...props}, ref) => {
+    ({className, innerClassName, variant = 'default', children, ...props}, ref) => {
+        if (variant === 'machined') {
+            return (
+                <div
+                    ref={ref}
+                    data-bezel="machined"
+                    className={cn('uav-bezel overflow-hidden', className)}
+                    {...props}
+                >
+                    <div className={cn('uav-bezel-core h-full w-full text-card-foreground overflow-hidden', innerClassName)}>
+                        {children}
+                    </div>
+                </div>
+            );
+        }
+
         const variants = {
             default:
                 'bg-card text-card-foreground border border-slate-200 rounded-panel overflow-hidden',

@@ -33,7 +33,7 @@ function PortalAuthGate({area, home}: { area: 'operations' | 'admin'; home: stri
     }, [allowed, home, isAuthenticated, isLoading, isUnreachable, router, user?.role]);
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-4 text-slate-100">
+        <div className="flex min-h-dvh flex-col items-center justify-center bg-slate-950 px-4 text-slate-100">
             <div className="w-full max-w-md rounded-card border border-slate-800 bg-slate-900/90 p-6 text-center shadow-lg">
                 <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
                     UAV PAS · {area === 'operations' ? 'Operations Center' : 'System Administration'}

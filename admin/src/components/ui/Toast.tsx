@@ -19,7 +19,7 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                 <div
                     key={item.id}
                     className={cn(
-                        'group pointer-events-auto relative overflow-hidden rounded-overlay border bg-white shadow-xl shadow-slate-900/10 transition-all',
+                        'group pointer-events-auto relative overflow-hidden rounded-overlay border bg-white shadow-xl shadow-slate-900/10 transition-[opacity,transform]',
                         item.isExiting ? 'animate-slide-out-right' : 'animate-slide-in-right',
                         item.type === 'success' && 'border-l-4 border-l-toast-success-border border-slate-200/80',
                         item.type === 'error' && 'border-l-4 border-l-toast-error-border border-slate-200/80',
