@@ -34,6 +34,7 @@ interface AssistantWidgetMessageListProps {
     isSending: boolean;
     dropping: boolean;
     onAsk: (question: string) => void;
+    onRetryMessage?: (clientKey: string) => void;
     onClose: () => void;
 }
 
@@ -49,6 +50,7 @@ export function AssistantWidgetMessageList({
     isSending,
     dropping,
     onAsk,
+    onRetryMessage,
     onClose,
 }: AssistantWidgetMessageListProps) {
     const {t} = useI18n();
@@ -116,7 +118,7 @@ export function AssistantWidgetMessageList({
                     </ul>
                 </div>
             ) : (
-                <ChatMessages messages={messages}/>
+                <ChatMessages messages={messages} onRetryMessage={onRetryMessage}/>
             )}
 
             {isSending && (

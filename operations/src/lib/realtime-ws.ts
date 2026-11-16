@@ -4,6 +4,11 @@ export interface OpsSupportChatMessage {
     senderName: string;
     content: string;
     createdAt: string;
+    deliveredAt?: string | null;
+    readAt?: string | null;
+    seenByName?: string | null;
+    clientKey?: string;
+    deliveryStatus?: 'sending' | 'failed';
 }
 
 export type OpsSupportStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED';

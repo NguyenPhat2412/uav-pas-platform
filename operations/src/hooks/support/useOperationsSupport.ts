@@ -98,6 +98,7 @@ export function useOperationsSupportRealtime(enabled = true) {
         const unsubStatus = operationsRealtimeClient.subscribeStatus(connected => {
             setWsConnected(connected);
             if (connected) {
+                void operationsSupportService.acknowledgeDelivered().catch(() => undefined);
                 void client.invalidateQueries({queryKey: opsSupportKeys.summary(user?.id)});
                 void client.invalidateQueries({queryKey: opsSupportKeys.threads(user?.id)});
             }
@@ -110,17 +111,26 @@ export function useOperationsSupportRealtime(enabled = true) {
                 }
                 const threadKey = opsSupportKeys.thread(user?.id, frame.thread.id);
                 const isMounted = (client.getQueryCache().find({queryKey: threadKey})?.getObserversCount() ?? 0) > 0;
+                const hasUnreadVisitor = Boolean(
+                    frame.messages?.some(m => m.senderRole === 'VISITOR' && !m.readAt),
+                );
+                const hasUndeliveredVisitor = Boolean(
+                    frame.messages?.some(m => m.senderRole === 'VISITOR' && !m.deliveredAt),
+                );
                 if (frame.messages && client.getQueryData<OpsSupportThreadDetail>(threadKey)) {
                     client.setQueryData<OpsSupportThreadDetail>(threadKey, {
                         thread: isMounted ? {...frame.thread, unreadForAdmin: 0} : frame.thread,
                         messages: frame.messages,
                     });
                 }
-                if (isMounted && frame.thread.unreadForAdmin > 0) {
-                    void operationsSupportService.thread(frame.thread.id).then(() => {
+                if (isMounted && (frame.thread.unreadForAdmin > 0 || hasUnreadVisitor)) {
+                    void operationsSupportService.markRead(frame.thread.id).then(marked => {
+                        client.setQueryData(threadKey, marked);
                         void client.invalidateQueries({queryKey: opsSupportKeys.summary(user?.id)});
                         void client.invalidateQueries({queryKey: opsSupportKeys.threads(user?.id)});
                     }).catch(() => undefined);
+                } else if (!isMounted && hasUndeliveredVisitor) {
+                    void operationsSupportService.acknowledgeDelivered().catch(() => undefined);
                 }
                 void client.invalidateQueries({queryKey: opsSupportKeys.threads(user?.id)});
                 if (frame.thread.lastSenderRole === 'VISITOR') clearThreadTyping(frame.thread.id);
