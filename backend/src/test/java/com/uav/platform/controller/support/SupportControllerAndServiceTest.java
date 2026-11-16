@@ -90,9 +90,36 @@ class SupportControllerAndServiceTest {
                 .thenAnswer(
                         call -> {
                             SupportMessage m = call.getArgument(0);
-                            if (m.getId() == null) m.setId(seq.incrementAndGet());
-                            messageStore.add(m);
+                            if (m.getId() == null) {
+                                m.setId(seq.incrementAndGet());
+                                messageStore.add(m);
+                            }
                             return m;
+                        });
+        when(messages.saveAll(any()))
+                .thenAnswer(
+                        call -> {
+                            Iterable<SupportMessage> batch = call.getArgument(0);
+                            List<SupportMessage> out = new ArrayList<>();
+                            for (SupportMessage m : batch) {
+                                if (m.getId() == null) {
+                                    m.setId(seq.incrementAndGet());
+                                    messageStore.add(m);
+                                }
+                                out.add(m);
+                            }
+                            return out;
+                        });
+        when(messages.findBySenderRoleAndDeliveredAtIsNull(anyString()))
+                .thenAnswer(
+                        call -> {
+                            String role = call.getArgument(0);
+                            return messageStore.stream()
+                                    .filter(
+                                            m ->
+                                                    role.equalsIgnoreCase(m.getSenderRole())
+                                                            && m.getDeliveredAt() == null)
+                                    .toList();
                         });
         when(messages.findByThreadIdOrderByCreatedAtAscIdAsc(anyLong()))
                 .thenAnswer(
@@ -287,5 +314,77 @@ class SupportControllerAndServiceTest {
                 .andExpect(jsonPath("$.totalThreads").value(4))
                 .andExpect(jsonPath("$.unreadThreads").value(2))
                 .andExpect(jsonPath("$.unreadMessages").value(5));
+    }
+
+    @Test
+    void messageReceiptsProgressSentDeliveredAndSeenForBothSides() throws Exception {
+        AppUser activeAdmin = new AppUser();
+        activeAdmin.setId(10L);
+        activeAdmin.setUsername("admin_ops");
+        activeAdmin.setFullName("Trần Thu Hà");
+        activeAdmin.setRole(UserRole.ROLE_ADMIN);
+        activeAdmin.setStatus(UserStatus.ACTIVE);
+        when(users.findByRole(UserRole.ROLE_ADMIN)).thenReturn(List.of(activeAdmin));
+        when(users.findByUsername("admin_ops")).thenReturn(Optional.of(activeAdmin));
+
+        // 1. Visitor sends while no Admin WS connected -> SENT (deliveredAt = null, readAt = null)
+        mvc.perform(
+                        post("/api/v1/public/support/threads")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        """
+                                        {
+                                          "fullName": "Lê Quốc Bảo",
+                                          "contactInfo": "0909888777",
+                                          "topic": "FLIGHT_PERMIT_NFZ",
+                                          "source": "LIVE_WIDGET",
+                                          "message": "Xin kiểm tra vùng bay Cát Bi"
+                                        }
+                                        """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.messages[0].deliveredAt").doesNotExist())
+                .andExpect(jsonPath("$.messages[0].readAt").doesNotExist());
+
+        SupportThread stored = threadStore.values().iterator().next();
+        var adminAuth = new UsernamePasswordAuthenticationToken("admin_ops", "n/a", List.of());
+
+        // 2. Admin portal connects and acknowledges delivery -> DELIVERED (deliveredAt != null,
+        // readAt = null)
+        mvc.perform(post("/api/v1/admin/support/threads/delivered").principal(adminAuth))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.delivered").value(1));
+
+        mvc.perform(get("/api/v1/public/support/threads/" + stored.getVisitorToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.messages[0].deliveredAt").isNotEmpty())
+                .andExpect(jsonPath("$.messages[0].readAt").doesNotExist());
+
+        // 3. Admin opens thread -> SEEN by Trần Thu Hà
+        mvc.perform(get("/api/v1/admin/support/threads/" + stored.getId()).principal(adminAuth))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.messages[0].readAt").isNotEmpty())
+                .andExpect(jsonPath("$.messages[0].seenByName").value("Trần Thu Hà"));
+
+        // 4. Admin replies while visitor WS offline -> SENT -> Visitor polls peek -> DELIVERED ->
+        // Visitor marks read -> SEEN
+        mvc.perform(
+                        post("/api/v1/admin/support/threads/" + stored.getId() + "/reply")
+                                .principal(adminAuth)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        "{\"content\":\"Khu vực Cát Bi nằm trong CTR cần phép Cục Tác chiến.\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.messages[1].deliveredAt").doesNotExist())
+                .andExpect(jsonPath("$.messages[1].readAt").doesNotExist());
+
+        mvc.perform(get("/api/v1/public/support/threads/" + stored.getVisitorToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.messages[1].deliveredAt").isNotEmpty())
+                .andExpect(jsonPath("$.messages[1].readAt").doesNotExist());
+
+        mvc.perform(post("/api/v1/public/support/threads/" + stored.getVisitorToken() + "/read"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.messages[1].readAt").isNotEmpty())
+                .andExpect(jsonPath("$.messages[1].seenByName").value("Lê Quốc Bảo"));
     }
 }
