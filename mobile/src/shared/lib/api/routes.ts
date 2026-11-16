@@ -204,6 +204,11 @@ export const API_ROUTES = {
         markRead: (id: string | number) => `/api/v1/notifications/${id}/read`,
         markAllRead: '/api/v1/notifications/read-all',
         pushTokens: '/api/v1/notifications/push-tokens',
+        modules: '/api/v1/notifications/modules',
+        moduleByCode: (code: string) => `/api/v1/notifications/modules/${encodeURIComponent(code)}`,
+        moduleTest: (code: string) => `/api/v1/notifications/modules/${encodeURIComponent(code)}/test`,
+        preferences: '/api/v1/notifications/preferences',
+        preferenceByModule: (code: string) => `/api/v1/notifications/preferences/${encodeURIComponent(code)}`,
     },
     billing: {
         plans: '/api/v1/billing/plans',

@@ -1,6 +1,13 @@
 import {apiClient, API_ROUTES} from '@/lib/api/client';
 import {buildQueryString} from '@/shared/lib/format';
-import type {NotificationRecord} from '@/shared/types/notification/notification.types';
+import type {
+    NotificationModuleCode,
+    NotificationModulePolicy,
+    NotificationRecord,
+    UpdateNotificationModulePolicyInput,
+    UpdateUserNotificationPreferenceInput,
+    UserNotificationModulePreference,
+} from '@/shared/types/notification/notification.types';
 
 export interface PushEndpointPayload {
     token: string;
@@ -38,4 +45,14 @@ export const notificationsService = {
     },
     unregisterPushEndpoint: (token: string) =>
         apiClient.delete(`${API_ROUTES.notifications.pushTokens}?${buildQueryString({token: token.trim()})}`),
+    listModules: (signal?: AbortSignal) =>
+        apiClient.get<NotificationModulePolicy[]>(API_ROUTES.notifications.modules, {signal}),
+    updateModule: (moduleCode: NotificationModuleCode, input: UpdateNotificationModulePolicyInput) =>
+        apiClient.put<NotificationModulePolicy>(API_ROUTES.notifications.moduleByCode(moduleCode), input),
+    testModule: (moduleCode: NotificationModuleCode) =>
+        apiClient.post<NotificationRecord>(API_ROUTES.notifications.moduleTest(moduleCode)),
+    listPreferences: (signal?: AbortSignal) =>
+        apiClient.get<UserNotificationModulePreference[]>(API_ROUTES.notifications.preferences, {signal}),
+    updatePreference: (moduleCode: NotificationModuleCode, input: UpdateUserNotificationPreferenceInput) =>
+        apiClient.put<UserNotificationModulePreference>(API_ROUTES.notifications.preferenceByModule(moduleCode), input),
 };

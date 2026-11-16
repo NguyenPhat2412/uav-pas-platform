@@ -9,8 +9,12 @@ import {readSavedPushEndpoint, savePushEndpoint} from '@/lib/storage/preferences
 import {sessionStore} from '@/lib/api/session';
 import {realtimeWs} from '@/lib/realtime/realtime-ws';
 import {useAuth} from '@/providers/AuthContext';
+import type {
+    NotificationModuleCode,
+    RealtimeNotificationPopupPayload,
+    UpdateUserNotificationPreferenceInput,
+} from '@/shared/types/notification/notification.types';
 
-// Realtime NOTIFICATION_CREATED frames (own user only) + slow polling as a fallback + native APNs/FCM or Expo Push HTTP registration when a push endpoint is enrolled.
 const POLL_MS = 30_000;
 
 interface NativePermissionResponse {
@@ -26,12 +30,26 @@ interface NativePushPermissionsModule {
 
 type NotificationsModule = typeof import('expo-notifications');
 
-/** Lazy so Node tests and builds without the native module never crash at import time. */
+let foregroundHandlerConfigured = false;
+
 function loadNotifications(): NotificationsModule | null {
     if (Platform.OS === 'web') return null;
     try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        return require('expo-notifications') as NotificationsModule;
+        const mod = require('expo-notifications') as NotificationsModule;
+        if (!foregroundHandlerConfigured && typeof mod.setNotificationHandler === 'function') {
+            foregroundHandlerConfigured = true;
+            mod.setNotificationHandler({
+                handleNotification: async () => ({
+                    shouldShowAlert: true,
+                    shouldPlaySound: true,
+                    shouldSetBadge: true,
+                    shouldShowBanner: true,
+                    shouldShowList: true,
+                }),
+            });
+        }
+        return mod;
     } catch {
         return null;
     }
@@ -40,7 +58,6 @@ function loadNotifications(): NotificationsModule | null {
 function isPushPermissionGranted(perm: NativePermissionResponse | null | undefined): boolean {
     if (!perm) return false;
     if (perm.granted === true || perm.status === 'granted') return true;
-    // UNAuthorizationStatusAuthorized = 2, Provisional = 3, Ephemeral = 4
     return perm.ios?.status === 2 || perm.ios?.status === 3 || perm.ios?.status === 4;
 }
 
@@ -63,7 +80,6 @@ async function resolveDevicePushEndpoint(userId?: number): Promise<string> {
         }
     }
 
-    // The backend sends through Expo Push (exp.host), so it needs the Expo push token, not the raw APNs token.
     const notifications = loadNotifications();
     const projectId = Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
     if (notifications && projectId) {
@@ -71,11 +87,50 @@ async function resolveDevicePushEndpoint(userId?: number): Promise<string> {
             const {data} = await notifications.getExpoPushTokenAsync({projectId});
             if (data?.trim()) return data.trim().slice(0, 255);
         } catch {
-            // Simulator or a build without the aps-environment entitlement: fall back cleanly.
+            // Simulator or a build without aps-environment entitlement: fall back cleanly.
         }
     }
 
     return defaultDevicePushEndpoint(userId);
+}
+
+export interface MobileIncomingNotificationEvent {
+    notification: RealtimeNotificationPopupPayload;
+    screenPopup: boolean;
+}
+
+export function useRealtimeMobileNotifications(
+    onIncoming?: (event: MobileIncomingNotificationEvent) => void,
+) {
+    const {user} = useAuth();
+    const client = useQueryClient();
+    const userId = user?.id;
+
+    useEffect(() => {
+        loadNotifications();
+        if (userId == null) return;
+        const feature = queryKeys.feature(userId, 'notifications');
+        realtimeWs.syncAccessToken(sessionStore.read()?.accessToken ?? null);
+        return realtimeWs.subscribe(frame => {
+            if (frame.type !== 'NOTIFICATION_CREATED') return;
+            client.setQueryData([...feature, 'unread'], {unreadCount: frame.unreadCount});
+            void client.invalidateQueries({queryKey: [...feature, 'recent']});
+            void client.invalidateQueries({
+                predicate: q =>
+                    (q.queryKey[0] === 'session' &&
+                        q.queryKey[1] === userId &&
+                        q.queryKey[2] !== 'notifications') ||
+                    q.queryKey[0] === 'marketplace' ||
+                    q.queryKey[0] === 'public',
+            });
+            if (onIncoming && frame.notification) {
+                onIncoming({
+                    notification: frame.notification,
+                    screenPopup: frame.screenPopup !== false,
+                });
+            }
+        });
+    }, [userId, client, onIncoming]);
 }
 
 export function useNotifications() {
@@ -105,26 +160,7 @@ export function useNotifications() {
 
     const refresh = () => client.invalidateQueries({queryKey: key});
 
-    // The server pushes each new notification to this user's sockets only: bump the bell at once, refetch the list.
-    const userId = user?.id;
-    useEffect(() => {
-        if (userId == null) return;
-        const feature = queryKeys.feature(userId, 'notifications');
-        realtimeWs.syncAccessToken(sessionStore.read()?.accessToken ?? null);
-        return realtimeWs.subscribe(frame => {
-            if (frame.type !== 'NOTIFICATION_CREATED') return;
-            client.setQueryData([...feature, 'unread'], {unreadCount: frame.unreadCount});
-            void client.invalidateQueries({queryKey: [...feature, 'recent']});
-            void client.invalidateQueries({
-                predicate: q =>
-                    (q.queryKey[0] === 'session' &&
-                        q.queryKey[1] === userId &&
-                        q.queryKey[2] !== 'notifications') ||
-                    q.queryKey[0] === 'marketplace' ||
-                    q.queryKey[0] === 'public',
-            });
-        });
-    }, [userId, client]);
+    useRealtimeMobileNotifications();
 
     const markOne = useMutation({
         mutationFn: (id: number) => notificationsService.markRead(id),
@@ -151,36 +187,63 @@ export function useNotifications() {
                 deviceName,
                 appVersion,
             });
-            await savePushEndpoint(record.token || endpoint);
+            await savePushEndpoint(endpoint);
             return record;
         },
-        onSuccess: () => client.invalidateQueries({queryKey: [...key, 'push-endpoint']}),
-        retry: false,
+        onSuccess: refresh,
     });
 
     const unregisterPushDevice = useMutation({
-        mutationFn: async (explicitEndpoint?: string) => {
-            const current = explicitEndpoint?.trim() || (await readSavedPushEndpoint());
+        mutationFn: async () => {
+            const current = await readSavedPushEndpoint();
             if (current) {
-                await notificationsService.unregisterPushEndpoint(current);
+                try {
+                    await notificationsService.unregisterPushEndpoint(current);
+                } finally {
+                    await savePushEndpoint(null);
+                }
             }
-            await savePushEndpoint(null);
         },
-        onSuccess: () => client.invalidateQueries({queryKey: [...key, 'push-endpoint']}),
-        retry: false,
+        onSuccess: refresh,
     });
-
-    const savedPushEndpoint = pushEndpointQuery.data ?? null;
 
     return {
         list,
-        unreadCount: unread.data?.unreadCount ?? 0,
+        unreadCount: user ? unread.data?.unreadCount ?? 0 : 0,
+        savedPushEndpoint: pushEndpointQuery.data ?? null,
+        pushEndpoint: pushEndpointQuery.data ?? null,
+        pushEndpointLoading: pushEndpointQuery.isPending,
         markOne,
         markAll,
-        refresh,
-        savedPushEndpoint,
-        isSimulatedEndpoint: Boolean(savedPushEndpoint?.startsWith('ExponentPushToken[uav-')),
         registerPushDevice,
         unregisterPushDevice,
+    };
+}
+
+export function useUserNotificationPreferences() {
+    const {user} = useAuth();
+    return useQuery({
+        queryKey: queryKeys.of(user?.id, 'notifications', 'preferences'),
+        queryFn: ({signal}) => notificationsService.listPreferences(signal),
+        enabled: !!user,
+    });
+}
+
+export function useUserNotificationPreferenceActions() {
+    const client = useQueryClient();
+    const {user} = useAuth();
+    const refresh = () =>
+        void client.invalidateQueries({queryKey: queryKeys.of(user?.id, 'notifications', 'preferences')});
+    return {
+        updatePreference: useMutation({
+            mutationFn: ({
+                moduleCode,
+                payload,
+            }: {
+                moduleCode: NotificationModuleCode;
+                payload: UpdateUserNotificationPreferenceInput;
+            }) => notificationsService.updatePreference(moduleCode, payload),
+            onSettled: refresh,
+        }),
     };
 }

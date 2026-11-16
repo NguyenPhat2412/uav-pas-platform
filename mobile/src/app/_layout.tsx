@@ -10,6 +10,7 @@ import {AuthProvider} from '@/providers/AuthContext';
 import {ToastProvider} from '@/providers/ToastContext';
 import {AppErrorView} from '@/components/shared/AppStatusViews';
 import {GlobalOfflineScreen} from '@/components/shared/ConnectionLostScreen';
+import {LiveNotificationBanner} from '@/components/notification/LiveNotificationBanner';
 import {colors} from '@/styles/tokens';
 
 // AuthProvider hides it once the session check is done.
@@ -33,6 +34,7 @@ export default function RootLayout() {
                                 <ToastProvider>
                                     <StatusBar style="dark"/>
                                     <Stack screenOptions={{headerShown: false, contentStyle: {backgroundColor: colors.canvas}}}/>
+                                    <LiveNotificationBanner/>
                                     <GlobalOfflineScreen/>
                                 </ToastProvider>
                             </AuthProvider>
