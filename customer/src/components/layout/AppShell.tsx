@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import {useAuth} from '@/providers/AuthContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
-import {NotificationBell} from '@/components/notification/NotificationBell';
+import {NotificationBell} from '@/components/notification/inbox/NotificationBell';
 import {AccountMenu} from '@/components/layout/AccountMenu';
 import {
     CollapsedNavFlyoutPortal,

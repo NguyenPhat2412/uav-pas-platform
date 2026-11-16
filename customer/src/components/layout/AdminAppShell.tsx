@@ -31,7 +31,7 @@ import {
     CollapsedNavGroupTrigger,
     useCollapsedNavFlyout,
 } from '@/components/layout/CollapsedNavFlyout';
-import {NotificationBell} from '@/components/notification/NotificationBell';
+import {NotificationBell} from '@/components/notification/inbox/NotificationBell';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {

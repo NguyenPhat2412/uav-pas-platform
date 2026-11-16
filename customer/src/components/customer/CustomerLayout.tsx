@@ -9,7 +9,7 @@ import {CustomerNavSidebar} from '@/components/customer/CustomerNavSidebar';
 import {DispatchHotline} from '@/components/customer/DispatchHotline';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
-import {NotificationBell} from '@/components/notification/NotificationBell';
+import {NotificationBell} from '@/components/notification/inbox/NotificationBell';
 import {PortalErrorView} from '@/components/shared/PortalErrorView';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import {PublicSupportWidget} from '@/components/support/PublicSupportWidget';

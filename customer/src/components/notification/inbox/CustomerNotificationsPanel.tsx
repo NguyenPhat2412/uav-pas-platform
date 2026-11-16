@@ -7,6 +7,7 @@ import {Button, Panel} from "@/components/customer/CustomerUi";
 import {type NotificationItem, useNotifications} from '@/hooks/notification/useNotifications';
 import {useI18n} from '@/providers/I18nContext';
 import {FilterSelect} from '@/components/shared/FilterSelect';
+import {UserNotificationPreferencesCard} from '@/components/notification/policy/UserNotificationPreferencesCard';
 
 export default function CustomerNotificationsPage() {
     const {notifications, unreadCount, loading, busy, error, reload, markAllRead, markOneRead} = useNotifications();
@@ -30,6 +31,9 @@ export default function CustomerNotificationsPage() {
 
     return (
         <PageGuard permission={null}>
+            <div className="mb-4">
+                <UserNotificationPreferencesCard/>
+            </div>
             {loading && <p role="status" className="m-0 border-b border-slate-200 px-5 py-4 text-sm text-slate-500">{t('notificationsPage.loading')}</p>}
             {error && (
                 <div role="alert" className="border-b border-rose-200 bg-rose-50 px-4 py-3 text-danger text-[13px] flex items-center justify-between gap-3 flex-wrap">

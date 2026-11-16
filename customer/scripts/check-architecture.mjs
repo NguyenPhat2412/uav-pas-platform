@@ -86,7 +86,7 @@ for (const file of files.filter(name => /\.[cm]?[jt]sx?$/.test(name))) {
 for (const forbiddenGroup of ["(operations)","(admin)"]) {
     assert.ok(!existsSync(path.join(root, 'src/app', forbiddenGroup)), `Portal isolation violated: ${forbiddenGroup} belongs to another top-level portal`);
 }
-const subpackagedComponents = new Set(['assistant', 'auth', 'marketplace', 'training']);
+const subpackagedComponents = new Set(['assistant', 'auth', 'marketplace', 'notification', 'training']);
 for (const file of files.filter(name => /\.[cm]?[jt]sx?$/.test(name))) {
     const rel = path.relative(root, file).replaceAll('\\', '/');
     const parts = rel.split('/');
