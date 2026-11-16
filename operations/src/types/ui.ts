@@ -40,7 +40,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
-    variant?: 'default' | 'surface' | 'glass';
+    variant?: 'default' | 'surface' | 'glass' | 'machined';
+    innerClassName?: string;
 }
 
 export interface ErrorBoundaryProps {

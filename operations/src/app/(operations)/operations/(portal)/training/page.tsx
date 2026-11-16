@@ -1,7 +1,7 @@
 'use client';
 
 import {OperationsPage} from '@/components/layout/OperationsPage';
-import {OperationsTrainingWorkspace} from '@/components/training/TrainingAcademyWorkspace';
+import {OperationsTrainingWorkspace} from '@/components/training/catalog/TrainingAcademyWorkspace';
 
 export default function OperationsTrainingRoutePage() {
     return (

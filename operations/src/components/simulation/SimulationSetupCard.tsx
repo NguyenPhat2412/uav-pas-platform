@@ -236,7 +236,7 @@ function SimNumberField({id, label, value, min, max, step = 1, onChange}: {
     id: string; label: string; value: number; min: number; max: number; step?: number; onChange: (v: number) => void;
 }) {
     return (
-        <FormField id={id} label={label} optional={false} labelClassName="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+        <FormField id={id} label={label} required labelClassName="text-[10px] font-bold uppercase tracking-wider text-slate-500">
             <Input
                 id={id}
                 type="number"

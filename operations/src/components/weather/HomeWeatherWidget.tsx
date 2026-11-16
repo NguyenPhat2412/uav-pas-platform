@@ -185,7 +185,7 @@ export function HomeWeatherWidget({detailsHref, className}: { detailsHref: strin
                                 <li key={slotIso} className="list-none">
                                     <button type="button" aria-pressed={activeSlot}
                                             onClick={() => setSelectedSlot(prev => prev === slotIso ? undefined : slotIso)}
-                                            className={cn('flex w-full flex-col items-center gap-1.5 rounded-control border px-1 py-3 text-center shadow-xs transition-all',
+                                            className={cn('flex w-full flex-col items-center gap-1.5 rounded-control border px-1 py-3 text-center shadow-xs transition-[border-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.32,0.72,0,1)]',
                                                 tile ? cn(tile.background, tile.dark ? 'border-white/10' : 'border-white/60') : 'border-transparent bg-white/60',
                                                 activeSlot && 'ring-2 ring-primary')}>
                                         <span className={cn('text-[11px] font-semibold', tile?.dark ? 'text-white/75' : 'text-slate-600')}>{hour(slotIso)}</span>

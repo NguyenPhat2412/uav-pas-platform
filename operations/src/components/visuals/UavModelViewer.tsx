@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {Box, Compass, Download, Eye, Fan, Layers, Maximize2, RotateCcw, ZoomIn, ZoomOut} from 'lucide-react';
 import {Button, StatusBadge} from '@/components/ui';
+import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {useI18n} from '@/providers/I18nContext';
 import {
     buildEnterpriseUav3D,
@@ -265,7 +266,7 @@ function ThreeUavCanvas({
                     <span className={`h-1.5 w-1.5 rounded-full ${spinning ? 'bg-sky-400 animate-ping' : 'bg-slate-400'}`}/>
                     3D WEBGL · {serial}
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-950/70 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-emerald-300 backdrop-blur-xs">
+                <span className="inline-flex items-center gap-1 rounded-md border border-white/20 bg-slate-900/80 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-100 backdrop-blur-xs">
                     {AIRFRAME_LABELS[airframeClass]}
                 </span>
             </div>
@@ -282,7 +283,7 @@ function ThreeUavCanvas({
                         {altitudeM != null && <span>ALT {altitudeM.toFixed(1)}m</span>}
                         {speedMps != null && <span>SPD {speedMps.toFixed(1)}m/s</span>}
                         {batteryPct != null && (
-                            <span className={batteryPct < 25 ? 'text-rose-400 font-bold' : 'text-emerald-300'}>
+                            <span className={batteryPct < 25 ? 'text-rose-400 font-bold' : 'text-slate-100'}>
                                 BAT {batteryPct}%
                             </span>
                         )}
@@ -328,18 +329,11 @@ export function UavModelViewer({
     const [spinOverride, setSpinOverride] = useState<boolean | null>(null);
     const [wireframe, setWireframe] = useState(false);
     const [expanded, setExpanded] = useState(false);
+    const dialogRef = useRef<HTMLDivElement | null>(null);
     const {t} = useI18n();
 
     const spinning = spinOverride ?? isFlying;
-
-    useEffect(() => {
-        if (!expanded) return;
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') setExpanded(false);
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [expanded]);
+    useDialogFocusTrap(dialogRef, expanded, () => setExpanded(false));
 
     const reset = () => {
         setPreset('iso');
@@ -541,8 +535,13 @@ export function UavModelViewer({
                     role="dialog"
                     aria-modal="true"
                     aria-label={ariaLabel}
+                    onClick={e => e.target === e.currentTarget && setExpanded(false)}
                 >
-                    <div className="w-full max-w-4xl space-y-4 rounded-2xl border border-border bg-card p-6 shadow-2xl">
+                    <div
+                        ref={dialogRef}
+                        tabIndex={-1}
+                        className="max-h-[min(92dvh,calc(100dvh-2rem))] w-full max-w-4xl space-y-4 overflow-y-auto rounded-overlay border border-border bg-card p-6 shadow-2xl outline-none"
+                    >
                         <header className="flex items-center justify-between border-b border-slate-100 pb-3">
                             <div className="flex items-center gap-2">
                                 <strong className="text-base font-bold text-foreground">{serial}</strong>

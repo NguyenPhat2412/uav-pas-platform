@@ -7,7 +7,7 @@ import type {
 } from "@/types/mission/mission.types";
 import {reservationQuantity} from "@/utils/mission/workflows";
 import {canSubmitResourceRedispatch, redispatchAvailableQuantity} from "@/forms/mission/operations-mission-form";
-import {RequiredMark} from "@/components/shared/RequiredMark";
+import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';
 import {useMissionWorkflow} from '@/hooks/mission/useMissionWorkflow';
 
@@ -124,7 +124,7 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
                         <p className="m-0 text-sm leading-relaxed text-muted">{t('opsMissions.redispatch.stationHint')}</p>}
                     {form.kind === 'equipment' &&
                         <p className="m-0 text-sm leading-relaxed text-muted">{t('opsMissions.redispatch.equipmentHint', {id: form.reservationId ?? '', quantity: form.oldQuantity ?? 0})}</p>}
-                    <label className="grid gap-1.5 text-sm font-semibold text-foreground">{form.kind === 'equipment' ? t('opsMissions.redispatch.replacementEquipment') : form.kind === 'operator' ? t('opsMissions.redispatch.replacementOperator') : t('opsMissions.redispatch.replacementStation')}<select
+                    <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{form.kind === 'equipment' ? t('opsMissions.redispatch.replacementEquipment') : form.kind === 'operator' ? t('opsMissions.redispatch.replacementOperator') : t('opsMissions.redispatch.replacementStation')}<OptionalMark/></span><select
                         autoFocus
                         className="mt-1 min-h-11 w-full min-w-0 rounded-control border border-border-input bg-card px-3 text-sm font-normal text-foreground"
                         disabled={disabled} value={replacement} onChange={e => selectReplacement(e.target.value)}>
@@ -138,7 +138,7 @@ export function ResourceRedispatch({snapshot, stations, operators, equipment, al
                             setSchedule('checking');
                             setRetry(v => v + 1);
                         }}>{t('opsMissions.redispatch.schedule.retry')}</Button>}</div>}
-                    {form.kind === 'equipment' && !!replacement && <label className="grid gap-1.5 text-sm font-semibold text-foreground">{t('opsMissions.redispatch.newQuantity')}<input
+                    {form.kind === 'equipment' && !!replacement && <label className="grid gap-1.5 text-sm font-semibold text-foreground"><span>{t('opsMissions.redispatch.newQuantity')}<RequiredMark/></span><input
                         className="mt-1 min-h-11 w-full rounded-control border border-border-input bg-card px-3 text-sm font-normal text-foreground" type="number" step={1} inputMode="numeric" disabled={disabled} value={quantity}
                         onChange={e => setQuantity(e.target.value)}/><span
                         className="text-sm font-normal leading-relaxed text-muted">{t('opsMissions.redispatch.maxQuantity', {count: available})}</span></label>}

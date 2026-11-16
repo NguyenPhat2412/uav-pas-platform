@@ -167,7 +167,7 @@ export function StationFormDrawer({
                                     ]}
                                 />
                                 {can('STATION_STATUS_UPDATE') && (
-                                    <FormField id="station-status-select" label={t('opsAssets.station.statusLabel')} optional={false} className="max-w-xs">
+                                    <FormField id="station-status-select" label={t('opsAssets.station.statusLabel')} required className="max-w-xs">
                                         <Select
                                             id="station-status-select"
                                             value={detail.data.status}

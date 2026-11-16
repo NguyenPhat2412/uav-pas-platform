@@ -109,7 +109,7 @@ export function OperationsMissionDispatchSection({
                             .filter(r => controls[r.key])
                             .map(r => (
                                 <div key={r.key} className="grid gap-2">
-                                    <FormField id={`resource-${r.key}`} label={r.label} optional={false}>
+                                    <FormField id={`resource-${r.key}`} label={r.label} required>
                                         <div className="flex gap-2">
                                             <Select
                                                 id={`resource-${r.key}`}
@@ -151,7 +151,7 @@ export function OperationsMissionDispatchSection({
                                             type="number"
                                             inputMode="numeric"
                                             step={1}
-                                            optional={false}
+                                            required
                                             label={t('opsMissions.detail.resources.quantity')}
                                             aria-label={t('opsMissions.detail.resources.quantity')}
                                             helperText={
