@@ -113,6 +113,28 @@ public class RealtimeEventBroadcaster {
         return sessions.size();
     }
 
+    public boolean hasActiveAdminSupportSubscriber() {
+        for (SessionSlot slot : sessions.values()) {
+            if (slot != null && slot.session.isOpen() && slot.principal().canAdminSupport()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasActiveVisitorSubscriber(String visitorToken) {
+        if (visitorToken == null || visitorToken.isBlank()) {
+            return false;
+        }
+        String normalized = visitorToken.trim();
+        for (SessionSlot slot : sessions.values()) {
+            if (slot != null && slot.session.isOpen() && slot.hasVisitorToken(normalized)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void sendDirect(WebSocketSession target, Map<String, Object> payload) {
         SessionSlot slot = sessions.get(target.getId());
         WebSocketSession safeSession = slot != null ? slot.session : target;

@@ -423,6 +423,7 @@ public final class ApiRoutes {
         public static final String SUPPORT_THREAD_BY_TOKEN = "/support/threads/{visitorToken}";
         public static final String SUPPORT_THREAD_MESSAGES =
                 "/support/threads/{visitorToken}/messages";
+        public static final String SUPPORT_THREAD_READ = "/support/threads/{visitorToken}/read";
         public static final String FULL_SUPPORT_WILDCARD = BASE + "/support/**";
     }
 
@@ -475,7 +476,9 @@ public final class ApiRoutes {
         public static final String STORAGE_POOL_MIGRATE_FILE = "/migrate-file";
         public static final String SUPPORT_SUMMARY = "/summary";
         public static final String SUPPORT_THREADS = "/threads";
+        public static final String SUPPORT_THREADS_DELIVERED = "/threads/delivered";
         public static final String SUPPORT_THREAD_BY_ID = "/threads/{id}";
+        public static final String SUPPORT_THREAD_READ = "/threads/{id}/read";
         public static final String SUPPORT_THREAD_REPLY = "/threads/{id}/reply";
         public static final String SUPPORT_THREAD_STATUS = "/threads/{id}/status";
         public static final String SUPPORT_QUICK_REPLIES = "/quick-replies";

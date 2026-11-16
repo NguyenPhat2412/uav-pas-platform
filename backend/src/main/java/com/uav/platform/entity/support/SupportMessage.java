@@ -38,4 +38,13 @@ public class SupportMessage {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "delivered_at")
+    private LocalDateTime deliveredAt;
+
+    @Column(name = "read_at")
+    private LocalDateTime readAt;
+
+    @Column(name = "seen_by_name", length = 120)
+    private String seenByName;
 }

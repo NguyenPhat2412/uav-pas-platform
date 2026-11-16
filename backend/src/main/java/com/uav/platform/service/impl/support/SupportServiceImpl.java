@@ -35,8 +35,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -95,6 +97,10 @@ public class SupportServiceImpl implements SupportService {
                                         threadRepository::existsByVisitorToken),
                                 request,
                                 now));
+        LocalDateTime deliveredAt =
+                realtimeBroadcaster != null && realtimeBroadcaster.hasActiveAdminSupportSubscriber()
+                        ? now
+                        : null;
         SupportMessage firstMessage =
                 messageRepository.save(
                         SupportOperations.createMessage(
@@ -102,7 +108,8 @@ public class SupportServiceImpl implements SupportService {
                                 SupportOperations.ROLE_VISITOR,
                                 thread.getFullName(),
                                 content,
-                                now));
+                                now,
+                                deliveredAt));
         notifyAdminsSafely(
                 thread,
                 "Yêu cầu hỗ trợ mới [" + thread.getCode() + "]",
@@ -122,6 +129,7 @@ public class SupportServiceImpl implements SupportService {
     public PublicSupportThreadSessionResponse getPublicThread(
             String visitorToken, boolean markRead) {
         SupportThread thread = findByVisitorTokenOrThrow(visitorToken);
+        LocalDateTime now = LocalDateTime.now();
         boolean clearedUnread = false;
         if (markRead && thread.getUnreadForVisitor() > 0) {
             thread.setUnreadForVisitor(0);
@@ -130,9 +138,18 @@ public class SupportServiceImpl implements SupportService {
         }
         List<SupportMessage> messages =
                 messageRepository.findByThreadIdOrderByCreatedAtAscIdAsc(thread.getId());
+        List<SupportMessage> changed =
+                markRead
+                        ? SupportOperations.stampRead(
+                                messages, SupportOperations.ROLE_ADMIN, thread.getFullName(), now)
+                        : SupportOperations.stampDelivered(
+                                messages, SupportOperations.ROLE_ADMIN, now);
+        if (!changed.isEmpty()) {
+            messageRepository.saveAll(changed);
+        }
         PublicSupportThreadSessionResponse session =
                 SupportOperations.toPublicSessionResponse(thread, messages);
-        if (clearedUnread) {
+        if (clearedUnread || !changed.isEmpty()) {
             publishThreadSnapshot(thread, messages);
         }
         return session;
@@ -145,13 +162,27 @@ public class SupportServiceImpl implements SupportService {
         SupportThread thread = findByVisitorTokenOrThrow(visitorToken);
         LocalDateTime now = LocalDateTime.now();
         String content = request.content().trim();
+        List<SupportMessage> existing =
+                messageRepository.findByThreadIdOrderByCreatedAtAscIdAsc(thread.getId());
+        List<SupportMessage> readByVisitor =
+                SupportOperations.stampRead(
+                        existing, SupportOperations.ROLE_ADMIN, thread.getFullName(), now);
+        if (!readByVisitor.isEmpty()) {
+            messageRepository.saveAll(readByVisitor);
+        }
+        LocalDateTime deliveredAt =
+                realtimeBroadcaster != null && realtimeBroadcaster.hasActiveAdminSupportSubscriber()
+                        ? now
+                        : null;
         messageRepository.save(
                 SupportOperations.createMessage(
                         thread.getId(),
                         SupportOperations.ROLE_VISITOR,
                         thread.getFullName(),
                         content,
-                        now));
+                        now,
+                        deliveredAt));
+        thread.setUnreadForVisitor(0);
         SupportOperations.applyVisitorMessage(thread, content, now);
         thread = threadRepository.save(thread);
         notifyAdminsSafely(
@@ -202,19 +233,62 @@ public class SupportServiceImpl implements SupportService {
 
     @Override
     @Transactional
-    public SupportThreadDetailResponse getAdminThreadDetail(Long id) {
+    public int acknowledgeAdminDelivered() {
+        List<SupportMessage> undelivered =
+                messageRepository.findBySenderRoleAndDeliveredAtIsNull(
+                        SupportOperations.ROLE_VISITOR);
+        if (undelivered.isEmpty()) {
+            return 0;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        Set<Long> affectedThreadIds = new LinkedHashSet<>();
+        for (SupportMessage message : undelivered) {
+            message.setDeliveredAt(now);
+            if (message.getThreadId() != null) {
+                affectedThreadIds.add(message.getThreadId());
+            }
+        }
+        messageRepository.saveAll(undelivered);
+        for (Long threadId : affectedThreadIds) {
+            threadRepository
+                    .findById(threadId)
+                    .ifPresent(
+                            thread -> {
+                                List<SupportMessage> messages =
+                                        messageRepository.findByThreadIdOrderByCreatedAtAscIdAsc(
+                                                threadId);
+                                publishThreadSnapshot(thread, messages);
+                            });
+        }
+        return undelivered.size();
+    }
+
+    @Override
+    @Transactional
+    public SupportThreadDetailResponse getAdminThreadDetail(Long id, Authentication auth) {
         SupportThread thread = findByIdOrThrow(id);
+        LocalDateTime now = LocalDateTime.now();
         boolean clearedAdminUnread = false;
         if (thread.getUnreadForAdmin() > 0) {
             thread.setUnreadForAdmin(0);
             thread = threadRepository.save(thread);
             clearedAdminUnread = true;
         }
-        SupportThreadDetailResponse detail = buildDetailResponse(thread);
-        if (clearedAdminUnread && realtimeBroadcaster != null) {
-            realtimeBroadcaster.publishSupportSummaryUpdated(getAdminSummary());
+        String viewerName = resolveViewerAdminName(auth);
+        List<SupportMessage> messages =
+                messageRepository.findByThreadIdOrderByCreatedAtAscIdAsc(thread.getId());
+        List<SupportMessage> readMessages =
+                SupportOperations.stampRead(
+                        messages, SupportOperations.ROLE_VISITOR, viewerName, now);
+        if (!readMessages.isEmpty()) {
+            messageRepository.saveAll(readMessages);
         }
-        return detail;
+        if (clearedAdminUnread || !readMessages.isEmpty()) {
+            publishThreadSnapshot(thread, messages);
+        }
+        return new SupportThreadDetailResponse(
+                SupportOperations.toThreadResponse(thread, messages.size()),
+                messages.stream().map(SupportOperations::toMessageResponse).toList());
     }
 
     @Override
@@ -227,14 +301,30 @@ public class SupportServiceImpl implements SupportService {
                 auth != null && auth.getName() != null && !auth.getName().isBlank()
                         ? auth.getName().trim()
                         : "admin";
+        String adminDisplayName = resolveAdminDisplayName(adminUsername);
         String content = request.content().trim();
+        List<SupportMessage> existing =
+                messageRepository.findByThreadIdOrderByCreatedAtAscIdAsc(thread.getId());
+        List<SupportMessage> readVisitorMessages =
+                SupportOperations.stampRead(
+                        existing, SupportOperations.ROLE_VISITOR, adminDisplayName, now);
+        if (!readVisitorMessages.isEmpty()) {
+            messageRepository.saveAll(readVisitorMessages);
+        }
+        LocalDateTime deliveredAt =
+                realtimeBroadcaster != null
+                                && realtimeBroadcaster.hasActiveVisitorSubscriber(
+                                        thread.getVisitorToken())
+                        ? now
+                        : null;
         messageRepository.save(
                 SupportOperations.createMessage(
                         thread.getId(),
                         SupportOperations.ROLE_ADMIN,
-                        resolveAdminDisplayName(adminUsername),
+                        adminDisplayName,
                         content,
-                        now));
+                        now,
+                        deliveredAt));
         SupportOperations.applyAdminReply(thread, adminUsername, content, request.status(), now);
         thread = threadRepository.save(thread);
         List<SupportMessage> messages =
@@ -319,14 +409,6 @@ public class SupportServiceImpl implements SupportService {
                 thread.getVisitorToken(), visitorSession, adminThread, getAdminSummary());
     }
 
-    private SupportThreadDetailResponse buildDetailResponse(SupportThread thread) {
-        List<SupportMessage> messages =
-                messageRepository.findByThreadIdOrderByCreatedAtAscIdAsc(thread.getId());
-        return new SupportThreadDetailResponse(
-                SupportOperations.toThreadResponse(thread, messages.size()),
-                messages.stream().map(SupportOperations::toMessageResponse).toList());
-    }
-
     private SupportThread findByVisitorTokenOrThrow(String visitorToken) {
         if (visitorToken == null || visitorToken.isBlank()) {
             throw SupportOperations.threadNotFound();
@@ -342,6 +424,13 @@ public class SupportServiceImpl implements SupportService {
 
     private SupportQuickReply findQuickReplyOrThrow(Long id) {
         return quickReplyRepository.findById(id).orElseThrow(SupportOperations::quickReplyNotFound);
+    }
+
+    private String resolveViewerAdminName(Authentication auth) {
+        if (auth != null && auth.getName() != null && !auth.getName().isBlank()) {
+            return resolveAdminDisplayName(auth.getName().trim());
+        }
+        return "Quản trị viên";
     }
 
     private String resolveAdminDisplayName(String adminUsername) {

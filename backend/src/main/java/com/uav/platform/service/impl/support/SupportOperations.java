@@ -19,6 +19,7 @@ import com.uav.platform.service.notification.inbox.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -159,13 +160,65 @@ public final class SupportOperations {
             String senderName,
             String content,
             LocalDateTime createdAt) {
+        return createMessage(threadId, senderRole, senderName, content, createdAt, null);
+    }
+
+    public static SupportMessage createMessage(
+            Long threadId,
+            String senderRole,
+            String senderName,
+            String content,
+            LocalDateTime createdAt,
+            LocalDateTime deliveredAt) {
         SupportMessage message = new SupportMessage();
         message.setThreadId(threadId);
         message.setSenderRole(senderRole);
         message.setSenderName(senderName);
         message.setContent(content);
         message.setCreatedAt(createdAt);
+        message.setDeliveredAt(deliveredAt);
         return message;
+    }
+
+    public static List<SupportMessage> stampDelivered(
+            List<SupportMessage> messages, String targetSenderRole, LocalDateTime now) {
+        List<SupportMessage> changed = new ArrayList<>();
+        for (SupportMessage message : messages) {
+            if (targetSenderRole.equalsIgnoreCase(message.getSenderRole())
+                    && message.getDeliveredAt() == null) {
+                message.setDeliveredAt(now);
+                changed.add(message);
+            }
+        }
+        return changed;
+    }
+
+    public static List<SupportMessage> stampRead(
+            List<SupportMessage> messages,
+            String targetSenderRole,
+            String viewerName,
+            LocalDateTime now) {
+        String cleanViewer = normalizeOrNull(viewerName);
+        List<SupportMessage> changed = new ArrayList<>();
+        for (SupportMessage message : messages) {
+            if (!targetSenderRole.equalsIgnoreCase(message.getSenderRole())) {
+                continue;
+            }
+            boolean updated = false;
+            if (message.getDeliveredAt() == null) {
+                message.setDeliveredAt(now);
+                updated = true;
+            }
+            if (message.getReadAt() == null) {
+                message.setReadAt(now);
+                message.setSeenByName(cleanViewer);
+                updated = true;
+            }
+            if (updated) {
+                changed.add(message);
+            }
+        }
+        return changed;
     }
 
     public static Map<Long, Long> toCountMap(List<Object[]> rows) {
@@ -214,7 +267,14 @@ public final class SupportOperations {
 
     public static SupportMessageResponse toMessageResponse(SupportMessage m) {
         return new SupportMessageResponse(
-                m.getId(), m.getSenderRole(), m.getSenderName(), m.getContent(), m.getCreatedAt());
+                m.getId(),
+                m.getSenderRole(),
+                m.getSenderName(),
+                m.getContent(),
+                m.getCreatedAt(),
+                m.getDeliveredAt(),
+                m.getReadAt(),
+                m.getSeenByName());
     }
 
     public static PublicSupportThreadSessionResponse toPublicSessionResponse(

@@ -6,6 +6,7 @@ import com.uav.platform.dto.request.support.SupportAdminReplyRequest;
 import com.uav.platform.dto.request.support.SupportQuickReplyUpsertRequest;
 import com.uav.platform.dto.request.support.SupportStatusUpdateRequest;
 import com.uav.platform.dto.response.support.SupportAdminSummaryResponse;
+import com.uav.platform.dto.response.support.SupportDeliveryAckResponse;
 import com.uav.platform.dto.response.support.SupportQuickReplyResponse;
 import com.uav.platform.dto.response.support.SupportThreadDetailResponse;
 import com.uav.platform.dto.response.support.SupportThreadResponse;
@@ -59,10 +60,25 @@ public class AdminSupportController {
                 supportService.listAdminThreads(status, topic, unreadOnly, q, page, size));
     }
 
+    @PostMapping(ApiRoutes.Admin.SUPPORT_THREADS_DELIVERED)
+    @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
+    public ResponseEntity<SupportDeliveryAckResponse> acknowledgeDelivered() {
+        return ResponseEntity.ok(
+                new SupportDeliveryAckResponse(supportService.acknowledgeAdminDelivered()));
+    }
+
     @GetMapping(ApiRoutes.Admin.SUPPORT_THREAD_BY_ID)
     @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
-    public ResponseEntity<SupportThreadDetailResponse> getThreadDetail(@PathVariable Long id) {
-        return ResponseEntity.ok(supportService.getAdminThreadDetail(id));
+    public ResponseEntity<SupportThreadDetailResponse> getThreadDetail(
+            @PathVariable Long id, Authentication auth) {
+        return ResponseEntity.ok(supportService.getAdminThreadDetail(id, auth));
+    }
+
+    @PostMapping(ApiRoutes.Admin.SUPPORT_THREAD_READ)
+    @PreAuthorize("@permissionService.has(authentication, 'SUPPORT_MANAGE')")
+    public ResponseEntity<SupportThreadDetailResponse> markThreadRead(
+            @PathVariable Long id, Authentication auth) {
+        return ResponseEntity.ok(supportService.getAdminThreadDetail(id, auth));
     }
 
     @PostMapping(ApiRoutes.Admin.SUPPORT_THREAD_REPLY)
