@@ -3,7 +3,7 @@ package com.uav.platform.service.impl.mission.flightplan;
 import com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest;
 import com.uav.platform.dto.request.mission.flightplan.MissionPreflightUpsertRequest;
 import com.uav.platform.dto.request.mission.flightplan.MissionReviewUpsertRequest;
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.dto.response.airspace.AirspaceCheckResponse;
 import com.uav.platform.dto.response.mission.dispatch.MissionDispatchCandidatesResponse;
 import com.uav.platform.dto.response.mission.flightplan.FlightPlanResponse;
@@ -55,7 +55,7 @@ import com.uav.platform.service.mission.flightplan.MissionExtendedWorkflowServic
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.mission.lifecycle.MissionBillingService;
 import com.uav.platform.service.mission.lifecycle.MissionLifecycleService;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.specification.mission.lifecycle.MissionSpecifications;
 

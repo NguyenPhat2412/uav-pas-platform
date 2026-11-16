@@ -1,4 +1,4 @@
-package com.uav.platform.specification.notification;
+package com.uav.platform.specification.notification.inbox;
 
 import com.uav.platform.entity.notification.Notification;
 import com.uav.platform.enums.notification.NotificationType;

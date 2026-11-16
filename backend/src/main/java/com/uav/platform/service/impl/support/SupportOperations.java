@@ -1,6 +1,6 @@
 package com.uav.platform.service.impl.support;
 
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.dto.request.support.PublicSupportCreateRequest;
 import com.uav.platform.dto.request.support.SupportQuickReplyUpsertRequest;
 import com.uav.platform.dto.response.support.PublicSupportThreadSessionResponse;
@@ -14,7 +14,7 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 
 import lombok.extern.slf4j.Slf4j;
 

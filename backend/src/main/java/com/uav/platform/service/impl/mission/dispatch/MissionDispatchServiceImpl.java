@@ -5,7 +5,7 @@ import com.uav.platform.dto.request.mission.catalog.*;
 import com.uav.platform.dto.request.mission.dispatch.*;
 import com.uav.platform.dto.request.mission.flightplan.*;
 import com.uav.platform.dto.request.mission.lifecycle.*;
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.dto.response.mission.catalog.*;
 import com.uav.platform.dto.response.mission.dispatch.*;
 import com.uav.platform.dto.response.mission.flightplan.*;
@@ -35,7 +35,7 @@ import com.uav.platform.service.mission.dispatch.MissionDispatchService;
 import com.uav.platform.service.mission.dispatch.MissionResourceService;
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.mission.lifecycle.MissionEventService;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.specification.mission.lifecycle.MissionSpecifications;
 

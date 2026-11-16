@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.entity.support.SupportMessage;
 import com.uav.platform.entity.support.SupportQuickReply;
 import com.uav.platform.entity.support.SupportThread;
@@ -20,7 +20,7 @@ import com.uav.platform.repository.support.SupportQuickReplyRepository;
 import com.uav.platform.repository.support.SupportThreadRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.support.SupportServiceImpl;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

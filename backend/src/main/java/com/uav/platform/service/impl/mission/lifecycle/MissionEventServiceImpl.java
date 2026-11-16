@@ -1,6 +1,6 @@
 package com.uav.platform.service.impl.mission.lifecycle;
 
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.entity.mission.*;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.mission.*;
@@ -8,7 +8,7 @@ import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.repository.mission.MissionEventRepository;
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.mission.lifecycle.MissionEventService;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 

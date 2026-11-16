@@ -237,6 +237,15 @@ public class RealtimeEventBroadcaster {
      */
     public void publishNotificationCreated(
             Long recipientUserId, Object notification, long unreadCount) {
+        publishNotificationCreated(recipientUserId, notification, unreadCount, true, true);
+    }
+
+    public void publishNotificationCreated(
+            Long recipientUserId,
+            Object notification,
+            long unreadCount,
+            boolean screenPopup,
+            boolean desktopOs) {
         if (recipientUserId == null) {
             return;
         }
@@ -247,6 +256,8 @@ public class RealtimeEventBroadcaster {
                     frame.put("timestamp", Instant.now().toString());
                     frame.put("notification", notification);
                     frame.put("unreadCount", unreadCount);
+                    frame.put("screenPopup", screenPopup);
+                    frame.put("desktopOs", desktopOs);
                     broadcastMatching(
                             slot -> recipientUserId.equals(slot.principal().userId()), frame);
                 });

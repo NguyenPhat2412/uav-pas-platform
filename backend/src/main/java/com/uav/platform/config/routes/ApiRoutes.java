@@ -366,6 +366,11 @@ public final class ApiRoutes {
         public static final String MARK_READ = "/{id}/read";
         public static final String MARK_ALL_READ = "/read-all";
         public static final String PUSH_TOKENS = "/push-tokens";
+        public static final String MODULES = "/modules";
+        public static final String MODULE_BY_CODE = "/modules/{moduleCode}";
+        public static final String MODULE_TEST = "/modules/{moduleCode}/test";
+        public static final String PREFERENCES = "/preferences";
+        public static final String PREFERENCE_BY_MODULE = "/preferences/{moduleCode}";
     }
 
     public static final class Settings {

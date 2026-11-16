@@ -1,6 +1,6 @@
-package com.uav.platform.mapper.notification;
+package com.uav.platform.mapper.notification.inbox;
 
-import com.uav.platform.dto.response.notification.NotificationResponse;
+import com.uav.platform.dto.response.notification.inbox.NotificationResponse;
 import com.uav.platform.entity.notification.Notification;
 
 import org.mapstruct.Mapper;

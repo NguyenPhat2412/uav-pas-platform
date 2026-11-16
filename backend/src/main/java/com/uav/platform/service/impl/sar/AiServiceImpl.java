@@ -1,6 +1,6 @@
 package com.uav.platform.service.impl.sar;
 
-import com.uav.platform.dto.request.notification.CreateNotificationRequest;
+import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.dto.request.sar.AiTaskDispatchRequest;
 import com.uav.platform.dto.request.sar.AiTaskResultRequest;
 import com.uav.platform.dto.request.sar.VerifyDetectionRequest;
@@ -20,7 +20,7 @@ import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.sar.AiDetectionRepository;
 import com.uav.platform.repository.sar.AiTaskRepository;
 import com.uav.platform.repository.sar.SarMissionRepository;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.sar.AiService;
 import com.uav.platform.service.webhook.WebhookService;
 

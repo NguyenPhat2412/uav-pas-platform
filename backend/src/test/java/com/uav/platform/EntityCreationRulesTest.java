@@ -14,7 +14,7 @@ import com.uav.platform.enums.sar.ProcessingNode;
 import com.uav.platform.enums.sar.SarStatus;
 import com.uav.platform.service.impl.billing.plan.ServicePlanOperations;
 import com.uav.platform.service.impl.billing.quota.UserQuotaOperations;
-import com.uav.platform.service.impl.notification.NotificationOperations;
+import com.uav.platform.service.impl.notification.inbox.NotificationOperations;
 import com.uav.platform.service.impl.sar.AiTaskOperations;
 import com.uav.platform.service.impl.sar.SarMissionOperations;
 import com.uav.platform.service.impl.settings.SystemConfigurationOperations;

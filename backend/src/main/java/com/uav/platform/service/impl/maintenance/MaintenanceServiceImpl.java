@@ -14,6 +14,7 @@ import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.maintenance.DueStatus;
 import com.uav.platform.enums.maintenance.RepairStatus;
 import com.uav.platform.enums.mission.MissionStatus;
+import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.maintenance.MaintenanceMapper;
@@ -23,6 +24,7 @@ import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.repository.uav.UavStatusHistoryRepository;
 import com.uav.platform.service.audit.AuditLogService;
+import com.uav.platform.service.impl.notification.policy.NotificationBroadcastOperations;
 import com.uav.platform.service.impl.uav.UavOperations;
 import com.uav.platform.service.maintenance.MaintenanceService;
 
@@ -30,6 +32,7 @@ import jakarta.persistence.EntityManager;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -62,6 +65,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     private final AuditLogService audit;
     private final EntityManager em;
     private final MaintenanceMapper maintenanceMapper;
+
+    @Autowired(required = false)
+    private NotificationBroadcastOperations notificationBroadcast;
 
     @Override
     @Transactional(readOnly = true)
@@ -170,6 +176,15 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                                 r.technicianName().trim()));
         audit("REPAIR_ORDER", o.getId(), "CREATED", actor);
         em.flush();
+        if (notificationBroadcast != null) {
+            notificationBroadcast.notifyActor(
+                    actor,
+                    "Phiếu sửa chữa mới: " + o.getTitle(),
+                    "UAV " + uav.getSerialNumber() + " đã chuyển sang bảo trì kỹ thuật.",
+                    NotificationType.SYSTEM,
+                    "MAINTENANCE",
+                    o.getId());
+        }
         return maintenanceMapper.toOrderResponse(o);
     }
 

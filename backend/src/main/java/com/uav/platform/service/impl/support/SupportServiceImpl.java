@@ -21,7 +21,7 @@ import com.uav.platform.repository.support.SupportMessageRepository;
 import com.uav.platform.repository.support.SupportQuickReplyRepository;
 import com.uav.platform.repository.support.SupportThreadRepository;
 import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.support.SupportService;
 import com.uav.platform.specification.support.SupportThreadSpecifications;
 import com.uav.platform.transport.websocket.RealtimeEventBroadcaster;
