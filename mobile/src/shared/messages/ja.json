@@ -157,7 +157,8 @@
     "infrastructureDatabase": "データベース",
     "infrastructureEmail": "メール",
     "weather": "飛行気象",
-    "airspace": "空域ゾーン"
+    "airspace": "空域ゾーン",
+    "notificationModules": "通知モジュール管理"
   },
   "sidebar": {
     "title": "UAV PAS",
@@ -1067,5 +1068,46 @@
       "recentReviewsTitle": "最新の顧客検収・品質レビュー",
       "recentReviewsEmpty": "顧客からの検収レビューはまだありません。"
     }
+  },
+  "notificationCenter": {
+    "popupOpen": "今すぐ開く",
+    "popupDismiss": "通知を閉じる",
+    "severityCRITICAL": "緊急",
+    "severityACTION": "重要",
+    "severityINFO": "情報",
+    "desktopTitle": "OSデスクトップ通知 (macOS / Windows)",
+    "desktopGranted": "OS通知センターへの配信が有効です",
+    "desktopDefault": "タブが背面にある時でも画面外に通知を表示するには許可してください",
+    "desktopDenied": "ブラウザで通知がブロックされています — アドレスバーの設定から許可してください",
+    "desktopUnsupported": "このブラウザはOS通知に対応していません",
+    "desktopEnableBtn": "デスクトップ通知を有効化",
+    "prefsTitle": "モジュール別通知設定",
+    "prefsSubtitle": "画面ポップアップやモバイルPush・メールで受け取る業務モジュールを選択します。",
+    "prefsExpand": "モジュール・配信チャネル設定",
+    "prefsHide": "設定を閉じる",
+    "mandatoryBadge": "飛行安全必須",
+    "disabledByAdmin": "管理者により一時停止中",
+    "receiveModule": "通知を受け取る",
+    "channelInApp": "アプリ内ベル",
+    "channelScreenPopup": "画面ポップアップ",
+    "channelDesktopOs": "OSデスクトップ",
+    "channelMobilePush": "モバイルPush",
+    "channelEmail": "メール",
+    "adminTitle": "通知モジュール一覧・配信ポリシー管理",
+    "adminSubtitle": "業務モジュールごとの有効化、画面外ポップアップ配信チャネル、重要度、重複抑止秒数を一元管理します。",
+    "backToInbox": "受信箱へ戻る",
+    "openModulesBtn": "通知モジュール管理",
+    "kpiActiveModules": "有効モジュール",
+    "kpiMandatory": "安全必須",
+    "kpiScreenPopup": "画面ポップアップ有効",
+    "kpiDesktopOs": "OS通知有効",
+    "mandatoryToggle": "必須ロック",
+    "severityLabel": "表示レベル",
+    "cooldownLabel": "重複抑止クールダウン (秒)",
+    "saveCooldown": "秒数を保存",
+    "testPopupBtn": "画面へテスト送信",
+    "testFired": "{module} モジュールのテスト通知を送信しました",
+    "savedModule": "{module} モジュールのポリシーを更新しました",
+    "savedPref": "通知設定を保存しました"
   }
 }

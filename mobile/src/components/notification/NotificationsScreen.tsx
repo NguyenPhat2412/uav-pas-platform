@@ -10,6 +10,7 @@ import {canUsePortal} from '@/shared/utils/auth/portal';
 import type {NotificationRecord} from '@/shared/types/notification/notification.types';
 import {resolveNotificationTarget, type MobilePortal} from '@/utils/operations/portal-routing';
 import {AppBackground} from '@/components/layout/AppBackground';
+import {NotificationModulePrefsCard} from '@/components/notification/NotificationModulePrefsCard';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 type Filter = 'all' | 'unread';
@@ -79,10 +80,15 @@ export function NotificationsScreen({portal = 'customer'}: { portal?: MobilePort
                             keyExtractor={item => String(item.id)}
                             contentInsetAdjustmentBehavior="automatic"
                             contentContainerStyle={styles.list}
-                            ListHeaderComponent={<ChipGroup value={filter} onChange={setFilter} options={[
-                                {value: 'all', label: t('notificationsPage.all', {count: list.data?.length ?? 0})},
-                                {value: 'unread', label: t('notificationsPage.unread', {count: unreadCount})},
-                            ]}/>}
+                            ListHeaderComponent={
+                                <View style={styles.headerStack}>
+                                    <NotificationModulePrefsCard/>
+                                    <ChipGroup value={filter} onChange={setFilter} options={[
+                                        {value: 'all', label: t('notificationsPage.all', {count: list.data?.length ?? 0})},
+                                        {value: 'unread', label: t('notificationsPage.unread', {count: unreadCount})},
+                                    ]}/>
+                                </View>
+                            }
                             refreshControl={<RefreshControl refreshing={pulling} onRefresh={pull} tintColor={colors.primary}/>}
                             ListEmptyComponent={<EmptyState icon={Bell} message={t('notificationsPage.empty')}/>}
                             renderItem={({item}) => {
@@ -116,6 +122,7 @@ export function NotificationsScreen({portal = 'customer'}: { portal?: MobilePort
 const styles = StyleSheet.create({
     screen: {flex: 1, backgroundColor: colors.canvas},
     centerState: {flex: 1, justifyContent: 'center'},
+    headerStack: {gap: spacing.sm},
     list: {padding: spacing.lg, gap: spacing.sm, flexGrow: 1, width: '100%', maxWidth: CONTENT_WIDTH, alignSelf: 'center'},
     // The white frame is the shared card (ui.card); a row is a little tighter.
     item: {flexDirection: 'row', gap: spacing.md, padding: spacing.md},

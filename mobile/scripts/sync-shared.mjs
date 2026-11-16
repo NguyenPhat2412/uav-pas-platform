@@ -51,6 +51,7 @@ export const ROOTS = [
     'forms/marketplace/marketplace-forms.ts',
     'forms/mission/mission-form.ts',
     'forms/mission/permit-form.ts',
+    'forms/notification/notification-policy-form.ts',
     'forms/profile',
     'lib/api/routes.ts',
     'lib/api/messages.ts',
