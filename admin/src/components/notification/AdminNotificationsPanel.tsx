@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {useState, type FormEvent} from 'react';
+import {useRef, useState, type FormEvent} from 'react';
 import {CheckCheck, Mail, MailOpen, Search, Send, X} from 'lucide-react';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
@@ -9,6 +9,7 @@ import {Alert, Button} from '@/components/ui';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
 import {cn} from '@/lib/utils';
+import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {useNotificationPage, useNotificationReadActions, useRecipientSearch, useSendNotification} from '@/hooks/notification/useNotifications';
 import {
     canSubmitSendNotification,
@@ -23,7 +24,7 @@ import {notificationTypes, type NotificationRecord, type NotificationType} from 
 const PAGE_SIZE = 20;
 
 const typeTone: Record<NotificationType, string> = {
-    MISSION_ASSIGNED: 'bg-violet-50 text-violet-700 ring-violet-200',
+    MISSION_ASSIGNED: 'bg-slate-100 text-slate-800 ring-slate-300',
     MISSION_STATUS_CHANGED: 'bg-sky-50 text-sky-700 ring-sky-200',
     SAR_TARGET_FOUND: 'bg-red-50 text-red-700 ring-red-200',
     QUOTA_WARNING: 'bg-amber-50 text-amber-800 ring-amber-200',
@@ -160,11 +161,13 @@ export function AdminNotificationsPanel() {
 
 function SendDialog({onClose, onSent}: { onClose: () => void; onSent: (name: string) => void }) {
     const {t} = useI18n();
+    const dialogRef = useRef<HTMLFormElement | null>(null);
     const [keyword, setKeyword] = useState('');
     const [draft, setDraft] = useState(emptySendNotificationDraft);
     const users = useRecipientSearch(keyword, !draft.recipient);
     const send = useSendNotification();
     const fieldErrors = notificationFieldErrors(send.error);
+    useDialogFocusTrap(dialogRef, true, send.isPending ? undefined : onClose);
     const submit = async (e: FormEvent) => {
         e.preventDefault();
         if (!canSubmitSendNotification(draft)) return;
@@ -177,10 +180,9 @@ function SendDialog({onClose, onSent}: { onClose: () => void; onSent: (name: str
     };
     const field = 'mt-1 w-full rounded-control border border-border px-3 py-2 text-[13px] font-normal focus:border-primary focus:outline-none aria-[invalid=true]:border-danger';
     return <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/45 p-4" role="presentation"
-                onMouseDown={e => e.target === e.currentTarget && onClose()}>
-        <form noValidate role="dialog" aria-modal="true" aria-labelledby="send-notification-title" onSubmit={e => void submit(e)}
-              onKeyDown={e => e.key === 'Escape' && onClose()}
-              className="flex max-h-[calc(100dvh-32px)] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-overlay bg-card p-6 shadow-2xl">
+                onMouseDown={e => e.target === e.currentTarget && !send.isPending && onClose()}>
+        <form ref={dialogRef} noValidate role="dialog" aria-modal="true" aria-labelledby="send-notification-title" onSubmit={e => void submit(e)}
+              className="flex max-h-[calc(100dvh-32px)] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-overlay bg-card p-6 shadow-2xl outline-none">
             <header className="flex items-center justify-between">
                 <h2 id="send-notification-title" className="text-lg font-bold">{t('admin.notifications.sendTitle')}</h2>
                 <button type="button" onClick={onClose} aria-label={t('admin.notifications.cancel')}

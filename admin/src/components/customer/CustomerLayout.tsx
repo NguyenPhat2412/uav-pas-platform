@@ -57,7 +57,7 @@ export function AppShell({children}: { children: React.ReactNode }) {
     }, [activeHref]);
 
     return (
-        <div className="flex min-h-screen bg-background text-foreground">
+        <div className="flex min-h-dvh bg-background text-foreground">
             <a
                 className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-primary-foreground"
                 href="#content"

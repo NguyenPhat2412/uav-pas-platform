@@ -5,7 +5,7 @@ import {Cpu, Globe, History, MapPin, Phone, Receipt, Save, Settings2, ShieldChec
 import {settingLabel} from '@/lib/presentation';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {QueryState} from '@/components/data/WorkspaceState';
-import {Alert, Button, Card, FormField, Input, Select, Switch} from '@/components/ui';
+import {Alert, Button, Card, FieldLabelMark, FormField, Input, Select, Switch} from '@/components/ui';
 import {AssistantSettingsSection} from '@/components/assistant/console/AssistantSettingsSection';
 import {PaymentGatewaySettingsSection} from '@/components/billing/reconciliation/PaymentGatewaySettingsSection';
 import {WeatherProviderSettingsSection} from '@/components/weather/WeatherProviderSettingsSection';
@@ -24,7 +24,7 @@ const GROUPS: { id: GroupId; icon: typeof ShieldCheck; tone: string; title: stri
     {id: 'MAP', icon: Globe, tone: 'text-uav-blue', title: 'adminPlatform.settings.groups.MAP'},
     {id: 'AI', icon: Cpu, tone: 'text-uav-blue', title: 'admin.settings.aiGroup'},
     {id: 'BILLING', icon: Receipt, tone: 'text-uav-blue', title: 'adminPlatform.settings.groups.BILLING'},
-    {id: 'MARKETPLACE', icon: Store, tone: 'text-emerald-700', title: 'adminPlatform.settings.groups.MARKETPLACE'},
+    {id: 'MARKETPLACE', icon: Store, tone: 'text-slate-700', title: 'adminPlatform.settings.groups.MARKETPLACE'},
     {id: 'CONTACT', icon: Phone, tone: 'text-sky-700', title: 'adminPlatform.settings.groups.CONTACT'},
     {id: 'ACCOUNT', icon: UserCog, tone: 'text-primary', title: 'adminPlatform.settings.groups.ACCOUNT'},
     {id: 'OTHER', icon: Settings2, tone: 'text-slate-600', title: 'adminPlatform.settings.groups.OTHER'},
@@ -143,7 +143,12 @@ function AdminSettingsContent() {
                                     return (
                                         <div key={s.configKey} className="space-y-1.5">
                                             <div className="flex items-center justify-between gap-2">
-                                                <label htmlFor={id} className="text-sm font-semibold text-slate-800">{label(s)}</label>
+                                                <label htmlFor={id} className="text-sm font-semibold text-slate-800">
+                                                    {label(s)}
+                                                    {s.valueType !== 'BOOLEAN' && (
+                                                        <FieldLabelMark required={!s.emptyAllowed} optional={s.emptyAllowed}/>
+                                                    )}
+                                                </label>
                                                 <Button type="button" variant="ghost" size="sm" onClick={() => setHistoryFor(s)}
                                                         leftIcon={<History size={13} aria-hidden="true"/>} className="h-7 px-2 text-xs font-semibold">
                                                     {t('adminPlatform.settings.history')}

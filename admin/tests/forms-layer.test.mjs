@@ -120,6 +120,12 @@ test('components delegate duplicate regex/range/URL validation to backend and wi
         ['src/components/webhook/WebhookSubscriptions.tsx', '@/forms/webhook/webhook-form'],
         ['src/components/devicekey/AdminDeviceKeysPanel.tsx', '@/forms/devicekey/device-key-form'],
         ['src/components/notification/AdminNotificationsPanel.tsx', '@/forms/notification/notification-form'],
+        ['src/components/storage/pool/GoogleDriveNodeModal.tsx', '@/forms/storage/storage-pool-form'],
+        ['src/components/storage/pool/StoragePolicyFormSection.tsx', '@/forms/storage/storage-pool-form'],
+        ['src/components/storage/pool/StorageR2MigrationCard.tsx', '@/forms/storage/storage-pool-form'],
+        ['src/components/marketplace/AdminMarketplaceProviders.tsx', '@/forms/marketplace/admin-marketplace-form'],
+        ['src/components/marketplace/AdminMarketplaceListings.tsx', '@/forms/marketplace/admin-marketplace-form'],
+        ['src/components/marketplace/AdminMarketplacePayouts.tsx', '@/forms/marketplace/admin-marketplace-form'],
     ]) {
         const componentSource = await readSource(componentPath);
         assert.match(componentSource, new RegExp(formImport.replaceAll('/', '\\/')), componentPath);
@@ -367,5 +373,66 @@ test('asset, maintenance, billing, catalog, webhook, device-key, notification an
             message: 'Khảo sát 50ha',
         },
     );
+
+    const storagePoolForm = await loadForm('src/forms/storage/storage-pool-form.ts');
+    assert.deepEqual(
+        storagePoolForm.buildStoragePolicyInput({
+            primaryBackend: 'HYBRID_TIERED',
+            allocationStrategy: 'MOST_FREE_SPACE',
+            fallbackToR2: true,
+            tieredMb: '10',
+        }),
+        {
+            primaryBackend: 'HYBRID_TIERED',
+            allocationStrategy: 'MOST_FREE_SPACE',
+            fallbackToR2: true,
+            tieredSmallFileMaxBytes: 10 * 1024 * 1024,
+        },
+    );
+    assert.deepEqual(storagePoolForm.toggleStorageRouteTag(['ALL'], 'VIDEO'), ['VIDEO']);
+    assert.deepEqual(storagePoolForm.toggleStorageRouteTag(['VIDEO'], 'VIDEO'), ['ALL']);
+    assert.deepEqual(
+        storagePoolForm.validateAndBuildDriveNodeCreateInput({
+            tab: 'oauth_manual',
+            displayName: ' Drive Pool #1 ',
+            rootFolderId: ' folder_abc ',
+            priorityWeight: '250',
+            maxUsagePercent: '95',
+            selectedModules: ['MISSION_MEDIA', 'VIDEO'],
+            manualClientId: ' ',
+            manualClientSecret: '',
+            refreshToken: ' 1//0gtoken ',
+            serviceAccountJson: '',
+        }),
+        {
+            ok: true,
+            data: {
+                displayName: 'Drive Pool #1',
+                authType: 'OAUTH2',
+                clientId: undefined,
+                clientSecret: undefined,
+                refreshToken: '1//0gtoken',
+                rootFolderId: 'folder_abc',
+                priorityWeight: 250,
+                maxUsagePercent: 95,
+                routedModules: 'MISSION_MEDIA,VIDEO',
+            },
+        },
+    );
+
+    const marketplaceForm = await loadForm('src/forms/marketplace/admin-marketplace-form.ts');
+    assert.deepEqual(
+        marketplaceForm.validateProviderModerationInput({
+            status: 'VERIFIED',
+            rawFeePct: '12',
+            rawNote: ' Đạt chuẩn hồ sơ ',
+        }),
+        {
+            ok: true,
+            payload: {status: 'VERIFIED', reviewNote: 'Đạt chuẩn hồ sơ', commissionRateOverride: 0.12},
+        },
+    );
+    assert.equal(marketplaceForm.validateProviderModerationInput({status: 'REJECTED', rawNote: '  '}).ok, false);
+    assert.equal(marketplaceForm.validatePayoutProcessInput({approve: true, rawBankTransferRef: ''}).ok, false);
 });
 

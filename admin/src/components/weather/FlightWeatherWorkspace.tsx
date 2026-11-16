@@ -11,25 +11,15 @@ import {PreflightWeatherCard} from '@/components/weather/PreflightWeatherCard';
 import {WeatherIcon} from '@/components/weather/WeatherIcon';
 import {WeatherPointMap, type WeatherMapPlace} from '@/components/weather/WeatherPointMap';
 import {
-    WEATHER_DAY_OFFSETS,
-    WEATHER_HOUR_SLOTS,
-    WEATHER_MAX_DAY_OFFSET,
-    WEATHER_MIN_DAY_OFFSET,
-    buildWeatherSlotIso,
-    clampDayOffset,
-    dateAtDayOffset,
-    dayOffsetFromIso,
-    hourFromIso,
-    localDateIso,
+    WEATHER_DAY_OFFSETS, WEATHER_HOUR_SLOTS, WEATHER_MAX_DAY_OFFSET, WEATHER_MIN_DAY_OFFSET,
+    buildWeatherSlotIso, clampDayOffset, dateAtDayOffset, dayOffsetFromIso, hourFromIso, localDateIso,
 } from '@/utils/weather/flight-window';
 import {conditionOf, isDaytime} from '@/utils/weather/conditions';
 import type {WeatherAssessment} from '@/types/weather/weather.types';
 
 const PRESETS = [
-    {key: 'home', lat: 0, lng: 0},
-    {key: 'hanoi', lat: 21.0285, lng: 105.8048},
-    {key: 'halong', lat: 20.9517, lng: 107.08},
-    {key: 'danang', lat: 16.0544, lng: 108.2022},
+    {key: 'home', lat: 0, lng: 0}, {key: 'hanoi', lat: 21.0285, lng: 105.8048},
+    {key: 'halong', lat: 20.9517, lng: 107.08}, {key: 'danang', lat: 16.0544, lng: 108.2022},
     {key: 'hcmc', lat: 10.7769, lng: 106.7009},
 ] as const;
 

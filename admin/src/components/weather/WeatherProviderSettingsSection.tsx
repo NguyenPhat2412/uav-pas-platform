@@ -2,7 +2,7 @@
 
 import {type FormEvent, useState} from 'react';
 import {CloudSun, KeyRound, Save} from 'lucide-react';
-import {Switch} from '@/components/ui';
+import {FieldLabelMark, RequiredMark, Switch} from '@/components/ui';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {useAuth} from '@/providers/AuthContext';
 import {confirmDialog} from '@/providers/ConfirmContext';
@@ -59,19 +59,25 @@ function ProviderForm({settings}: { settings: WeatherProviderSettings }) {
             <CloudSun size={18} className="text-uav-blue" aria-hidden="true"/>{t('weather.provider.title')}</h3>
         <p className="m-0 text-xs leading-relaxed text-muted">{t('weather.provider.intro')}</p>
         <div className="grid gap-4 md:grid-cols-2">
-            <label className="text-[13px] font-semibold text-slate-700">{t('weather.provider.source')}
+            <label className="text-[13px] font-semibold text-slate-700">{t('weather.provider.source')}<RequiredMark/>
                 <select value={draft.provider} onChange={e => set({provider: e.target.value as WeatherProviderType})} className={field}>
                     {WEATHER_PROVIDERS.map(item => <option key={item} value={item}>{t(`weather.preflight.provider.${item}`)}</option>)}
                 </select>
                 {fieldErrors?.provider && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.provider}</span>}
             </label>
-            <label className="text-[13px] font-semibold text-slate-700">{t('weather.provider.cacheTtl')}
+            <label className="text-[13px] font-semibold text-slate-700">{t('weather.provider.cacheTtl')}<RequiredMark/>
                 <input type="number" step={1} value={draft.cacheTtlMinutes} onChange={e => set({cacheTtlMinutes: e.target.value})}
                        aria-invalid={Boolean(fieldErrors?.cacheTtlMinutes)} className={cn(field, 'tabular-nums', fieldErrors?.cacheTtlMinutes && 'border-danger')}/>
                 {fieldErrors?.cacheTtlMinutes && <span className="mt-1 block text-xs font-normal text-danger">{fieldErrors.cacheTtlMinutes}</span>}
             </label>
             <label className="text-[13px] font-semibold text-slate-700 md:col-span-2">
-                <span className="inline-flex items-center gap-1.5"><KeyRound size={14} aria-hidden="true"/>{t('weather.provider.apiKey')}</span>
+                <span className="inline-flex items-center gap-1.5">
+                    <KeyRound size={14} aria-hidden="true"/>{t('weather.provider.apiKey')}
+                    <FieldLabelMark
+                        required={draft.provider !== 'OPEN_METEO' && !settings.apiKeyConfigured}
+                        optional={draft.provider === 'OPEN_METEO' || settings.apiKeyConfigured}
+                    />
+                </span>
                 <input type="password" autoComplete="off" value={draft.apiKey} onChange={e => set({apiKey: e.target.value})} maxLength={256}
                        placeholder={settings.apiKeyConfigured ? t('weather.provider.apiKeyKeep') : t('weather.provider.apiKeyPlaceholder')}
                        aria-invalid={Boolean(fieldErrors?.apiKey)} className={cn(field, 'font-mono', fieldErrors?.apiKey && 'border-danger')}/>

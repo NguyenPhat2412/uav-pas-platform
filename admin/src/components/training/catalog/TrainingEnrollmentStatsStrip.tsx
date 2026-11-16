@@ -63,8 +63,8 @@ export function TrainingEnrollmentStatsStrip({
                     <div className="flex items-center gap-3 sm:w-72">
                         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-variant">
                             <div
-                                className="h-full bg-primary transition-all duration-300"
-                                style={{width: `${completionPct}%`}}
+                                className="h-full w-full origin-left bg-primary transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                                style={{transform: `scaleX(${Math.min(1, Math.max(0, completionPct / 100))})`}}
                             />
                         </div>
                         <span className="text-sm font-semibold text-foreground">{completionPct}%</span>

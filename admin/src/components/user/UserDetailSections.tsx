@@ -39,7 +39,7 @@ export function UserAccountActions({user}: { user: User }) {
                 <div className="flex flex-wrap items-end gap-3">
                     {can('USER_PERMISSION_MANAGE') && (
                         <>
-                            <FormField id="account-role-select" label={t('admin.users.role')} optional={false} className="w-auto min-w-[180px]">
+                            <FormField id="account-role-select" label={t('admin.users.role')} required className="w-auto min-w-[180px]">
                                 <Select id="account-role-select" value={role} onChange={e => setRole(e.target.value as UserRole)} disabled={pending}>
                                     {roles.map(r => <option key={r} value={r}>{displayLabel(r)}</option>)}
                                 </Select>

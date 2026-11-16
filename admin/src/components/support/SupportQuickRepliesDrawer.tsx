@@ -4,7 +4,7 @@ import {useState, type FormEvent} from 'react';
 import {Plus, Sparkles, Trash2, Zap} from 'lucide-react';
 import {Drawer} from '@/components/data/Drawer';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
-import {Button} from '@/components/ui';
+import {Button, OptionalMark, RequiredMark} from '@/components/ui';
 import {
     useCreateSupportQuickReply,
     useDeleteSupportQuickReply,
@@ -96,7 +96,7 @@ export function SupportQuickRepliesDrawer({open, onClose}: SupportQuickRepliesDr
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-12">
                     <label className="sm:col-span-6 block text-xs font-semibold text-slate-700">
-                        Tiêu đề nút nhanh <span className="text-primary">*</span>
+                        Tiêu đề nút nhanh<RequiredMark/>
                         <input
                             type="text"
                             value={title}
@@ -106,7 +106,7 @@ export function SupportQuickRepliesDrawer({open, onClose}: SupportQuickRepliesDr
                         />
                     </label>
                     <label className="sm:col-span-4 block text-xs font-semibold text-slate-700">
-                        Chủ đề ưu tiên
+                        Chủ đề ưu tiên<OptionalMark/>
                         <select
                             value={topic}
                             onChange={e => setTopic(e.target.value)}
@@ -119,7 +119,7 @@ export function SupportQuickRepliesDrawer({open, onClose}: SupportQuickRepliesDr
                         </select>
                     </label>
                     <label className="sm:col-span-2 block text-xs font-semibold text-slate-700">
-                        Thứ tự
+                        Thứ tự<OptionalMark/>
                         <input
                             type="number"
                             value={sortOrder}
@@ -132,7 +132,7 @@ export function SupportQuickRepliesDrawer({open, onClose}: SupportQuickRepliesDr
                 <div>
                     <div className="flex items-center justify-between gap-2">
                         <label htmlFor="qr-content" className="text-xs font-semibold text-slate-700">
-                            Nội dung tin nhắn mẫu <span className="text-primary">*</span>
+                            Nội dung tin nhắn mẫu<RequiredMark/>
                         </label>
                         <button
                             type="button"

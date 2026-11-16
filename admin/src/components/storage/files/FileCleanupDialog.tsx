@@ -5,6 +5,7 @@ import {Trash2, X} from 'lucide-react';
 import {Alert, Badge, Button, Card, CardFooter, CardHeader, CardTitle, Spinner} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
+import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import type {StoredFile} from '@/types/storage/files.types';
 import {formatFileSize, totalBytes} from '@/utils/storage/files';
 import {useCleanupCandidates, useRemoveFile} from '@/hooks/storage/useAdminFiles';
@@ -28,6 +29,7 @@ export function FileCleanupDialog({onClose}: { onClose: () => void }) {
     const [done, setDone] = useState(0);
     const [failures, setFailures] = useState<{ file: StoredFile; message: string }[]>([]);
     const stopped = useRef(false);
+    const dialogRef = useRef<HTMLDivElement | null>(null);
     const size = (bytes: number) => formatFileSize(bytes, formatNumber);
 
     const toggle = (id: string) => setSelected(() => {
@@ -58,6 +60,7 @@ export function FileCleanupDialog({onClose}: { onClose: () => void }) {
         if (phase === 'running') return;
         onClose();
     };
+    useDialogFocusTrap(dialogRef, true, phase === 'running' ? undefined : close);
     const progress = picked.length ? Math.round(done / picked.length * 100) : 0;
 
     return (
@@ -67,11 +70,11 @@ export function FileCleanupDialog({onClose}: { onClose: () => void }) {
             onMouseDown={e => e.target === e.currentTarget && close()}
         >
             <Card
+                ref={dialogRef}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="file-cleanup-title"
-                onKeyDown={e => e.key === 'Escape' && close()}
-                className="flex max-h-[calc(100dvh-32px)] w-full max-w-2xl flex-col shadow-2xl"
+                className="flex max-h-[calc(100dvh-32px)] w-full max-w-2xl flex-col rounded-overlay shadow-2xl outline-none"
             >
                 <CardHeader className="flex-row items-center justify-between gap-3 space-y-0 px-5 py-4">
                     <CardTitle id="file-cleanup-title" className="m-0 text-lg font-bold text-slate-900">
@@ -151,8 +154,11 @@ export function FileCleanupDialog({onClose}: { onClose: () => void }) {
                                             : t('admin.files.cleanup.done', {ok: done - failures.length, total: picked.length})}
                                     </span>
                                 </div>
-                                <div className="h-2 bg-slate-100" role="progressbar" aria-valuemin={0} aria-valuemax={picked.length} aria-valuenow={done}>
-                                    <div className="h-full bg-slate-700 transition-all" style={{width: `${progress}%`}}/>
+                                <div className="h-2 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuemin={0} aria-valuemax={picked.length} aria-valuenow={done}>
+                                    <div
+                                        className="h-full w-full origin-left bg-slate-700 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                                        style={{transform: `scaleX(${progress / 100})`}}
+                                    />
                                 </div>
                                 {failures.length > 0 && (
                                     <Alert variant="error" className="p-3 text-[13px]" title={t('admin.files.cleanup.failed', {count: failures.length})}>

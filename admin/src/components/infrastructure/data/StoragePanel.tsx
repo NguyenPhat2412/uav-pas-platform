@@ -6,7 +6,7 @@ import {QueryState} from '@/components/data/WorkspaceState';
 import type {StorageStatus} from '@/types/infrastructure/infrastructure.types';
 import {formatBytes, Note, Panel, Stat, StatGrid, StatusBanner, type Tone} from '@/components/infrastructure/runtime/InfraUi';
 import {useStorageStatus} from '@/hooks/infrastructure/useInfrastructure';
-import {GoogleDrivePoolSection} from './GoogleDrivePoolSection';
+import {GoogleDrivePoolSection} from '@/components/storage/pool/GoogleDrivePoolSection';
 
 const reachTone: Record<StorageStatus['reachable'], Tone> = {UP: 'good', DOWN: 'bad', UNKNOWN: 'neutral'};
 

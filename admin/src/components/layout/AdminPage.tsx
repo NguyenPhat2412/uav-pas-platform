@@ -38,7 +38,7 @@ export function AdminPortalFrame({children, page}: { children: React.ReactNode; 
     }, [isAuthenticated, isAdmin, isLoading, isUnreachable, pathname, router, user?.role]);
     if (!isLoading && !isAuthenticated && isUnreachable) {
         return (
-            <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6" role="alert">
+            <main className="flex min-h-dvh items-center justify-center bg-slate-50 p-6" role="alert">
                 <div className="w-full max-w-lg space-y-4 rounded-panel border border-slate-200 border-t-4 border-t-primary bg-white p-8 text-center">
                     <h1 className="m-0 text-xl font-extrabold text-slate-900">{t('errorPage.serverTitle')}</h1>
                     <p className="m-0 text-sm leading-6 text-slate-600">{t('errorPage.serverDetail')}</p>

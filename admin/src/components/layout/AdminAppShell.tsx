@@ -10,57 +10,28 @@ import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {useEffect} from 'react';
 import {
-    Bot,
-    CreditCard,
-    GraduationCap,
-    LayoutDashboard,
-    Menu,
-    Server,
-    Settings2,
-    ShieldCheck,
-    Users,
-    PanelLeftClose,
-    PanelLeftOpen,
-    X
+    Bot, CreditCard, GraduationCap, LayoutDashboard, PanelLeftClose,
+    PanelLeftOpen, Server, Settings2, ShieldCheck, Users, X,
 } from 'lucide-react';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
-import {AccountMenu} from '@/components/layout/AccountMenu';
-import {AdminAlertsPopover} from '@/components/layout/AdminAlertsPopover';
-import {
-    CollapsedNavFlyoutPortal,
-    CollapsedNavGroupTrigger,
-    useCollapsedNavFlyout,
-} from '@/components/layout/CollapsedNavFlyout';
-import {NotificationBell} from '@/components/notification/NotificationBell';
+import {CollapsedNavFlyoutPortal, CollapsedNavGroupTrigger, useCollapsedNavFlyout} from '@/components/layout/CollapsedNavFlyout';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {HeaderSearch} from '@/components/layout/HeaderSearch';
-import {
-    ADMIN_SIDEBAR_GROUPS,
-    ADMIN_SIDEBAR_ROUTES,
-    ADMIN_SIDEBAR_SUBGROUPS,
-    resolveSidebarActiveItem,
-} from '@/config/sidebar-routes';
+import {AdminShellHeader} from '@/components/layout/AdminShellHeader';
+import {ADMIN_SIDEBAR_GROUPS, ADMIN_SIDEBAR_ROUTES, ADMIN_SIDEBAR_SUBGROUPS, resolveSidebarActiveItem} from '@/config/sidebar-routes';
 import {cn} from '@/lib/utils';
 import {ADMIN_RECENT_PAGES_KEY, rememberRecentPage} from '@/lib/recent-pages';
-import {
-    FoldingNavGroup,
-    FoldingSubNavGroup,
-    foldedLinkClass,
-    foldedSubLinkClass,
-    useFoldedNavGroups,
-} from '@/components/layout/FoldingNavGroup';
+import {FoldingNavGroup, FoldingSubNavGroup, foldedLinkClass, foldedSubLinkClass, useFoldedNavGroups} from '@/components/layout/FoldingNavGroup';
 import {WorkspaceTabs} from '@/components/layout/WorkspaceTabs';
 import {UnsavedChangesContext, useWorkspaceTabs} from '@/hooks/useWorkspaceTabs';
 
-// Cấu hình routes của Sidebar Admin (bao gồm cây 3 cấp chọn lọc cho nhóm lớn)
-// được tách riêng và quản lý tập trung tại `@/config/sidebar-routes.ts`.
 const nav = ADMIN_SIDEBAR_ROUTES;
 const navGroups = ADMIN_SIDEBAR_GROUPS;
 const navSubGroups = ADMIN_SIDEBAR_SUBGROUPS;
 
-const GROUP_ICONS: Partial<Record<(typeof ADMIN_SIDEBAR_GROUPS)[number], typeof Menu>> = {
+const GROUP_ICONS: Partial<Record<(typeof ADMIN_SIDEBAR_GROUPS)[number], typeof LayoutDashboard>> = {
     overview: LayoutDashboard,
     commerce: CreditCard,
     access: Users,
@@ -74,7 +45,6 @@ const OPEN_GROUPS_KEY = 'uav_admin_nav_open_groups';
 const TABS_KEY = 'uav_admin_workspace_tabs';
 const HOME = '/admin/dashboard';
 
-/** pageTitle names pages that have no sidebar entry (e.g. the profile) in the breadcrumb. */
 export function AppShell({children, activeResource, pageTitle}: { children: React.ReactNode; activeResource?: string; pageTitle?: string }) {
     const pathname = usePathname();
     const {can, permissionsReady} = useAuth();
@@ -83,7 +53,6 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
         useSidebarController('uav_sidebar_collapsed');
     const flyout = useCollapsedNavFlyout(railCollapsed);
 
-    // Opts the admin portal into its own shape and surface scale (see globals.css).
     useEffect(() => {
         const root = document.documentElement;
         root.dataset.portal = 'admin';
@@ -96,7 +65,6 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
     const supportSummary = useSupportSummary(permissionsReady && can('SUPPORT_MANAGE'));
     const unreadSupport = supportSummary.data?.unreadMessages ?? 0;
     const activeNav = resolveSidebarActiveItem(visibleNav, pathname, activeResource);
-    // Feeds "Truy cập gần đây" on the dashboard; only sidebar destinations are remembered.
     const activeHref = activeNav?.href;
     useEffect(() => {
         if (activeHref) rememberRecentPage(ADMIN_RECENT_PAGES_KEY, activeHref);
@@ -112,15 +80,17 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
     const getSubGroupLabel = (subKey: NonNullable<typeof nav[0]['subGroup']>) => {
         const key = `adminNavSubGroups.${subKey}`;
         const translated = t(key);
-        if (translated !== key) return translated;
-        return navSubGroups.find(s => s.key === subKey)?.defaultLabel ?? subKey;
+        return translated !== key ? translated : (navSubGroups.find(s => s.key === subKey)?.defaultLabel ?? subKey);
     };
-    const getSearchGroupLabel = (item: typeof nav[0]) => {
+    const searchItems = visibleNav.map(item => {
         const groupLabel = t(`adminNavGroups.${item.group}`);
-        return item.subGroup ? `${groupLabel} · ${getSubGroupLabel(item.subGroup)}` : groupLabel;
-    };
+        return {
+            href: item.href,
+            label: getNavLabel(item),
+            group: item.subGroup ? `${groupLabel} · ${getSubGroupLabel(item.subGroup)}` : groupLabel,
+        };
+    });
     const workspaceTabs = useWorkspaceTabs({storageKey: TABS_KEY, pinnedHref: HOME, activeHref, pathname});
-    // A tab whose page the user can no longer open (permission removed) is simply not drawn.
     const describeTab = (href: string) => {
         const item = visibleNav.find(entry => entry.href === href);
         return item && {label: getNavLabel(item), icon: item.icon};
@@ -128,10 +98,17 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
     const brandLabel = `UAV PAS · ${t('shell.adminTitle')}`;
     const toggleLabel = `${railCollapsed ? t('shell.expandSidebar') : t('shell.collapseSidebar')} (${shortcut})`;
 
+    const renderUnreadPill = () => (
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-white tabular-nums">
+            <span className="h-1.5 w-1.5 animate-ping rounded-full bg-white"/>
+            {unreadSupport > 99 ? '99+' : unreadSupport}
+        </span>
+    );
+
     return (
-        <div className="flex min-h-screen bg-background text-foreground">
+        <div className="flex min-h-dvh bg-background text-foreground">
             <a
-                className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-primary-foreground"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-control focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-primary-foreground"
                 href="#workspace"
             >
                 {t('shell.skipToContent')}
@@ -140,7 +117,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                 ref={rail}
                 id="portal-navigation"
                 className={cn(
-                    'fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-[width,transform] duration-200 lg:sticky lg:top-0 lg:z-40 lg:h-screen',
+                    'fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-border bg-card px-2.5 py-2.5 transition-[width,transform] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] lg:sticky lg:top-0 lg:z-40 lg:h-dvh',
                     railCollapsed ? 'w-[60px]' : 'w-[min(280px,85vw)] lg:w-[256px]',
                     open ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0',
                 )}
@@ -185,7 +162,7 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                 </div>
                 <div className="mb-2 space-y-2 border-b border-slate-100 pb-2.5 md:hidden">
                     <PortalSwitcher currentPortal="admin" variant="drawer"/>
-                    <HeaderSearch variant="drawer" items={visibleNav.map(item => ({href: item.href, label: getNavLabel(item), group: getSearchGroupLabel(item)}))}/>
+                    <HeaderSearch variant="drawer" items={searchItems}/>
                     <LanguageSwitcher variant="compact" className="sm:hidden"/>
                 </div>
                 <nav ref={navList} aria-label={t('shell.adminSection')} className={cn('flex flex-1 flex-col overflow-y-auto', railCollapsed ? 'gap-1.5 py-0.5' : 'gap-0.5')}>
@@ -196,12 +173,6 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                         const groupLabel = t(`adminNavGroups.${group}`);
                         const expanded = !!openGroups[group];
                         const groupActive = items.some(item => item.href === activeNav?.href);
-                        const renderUnreadPill = () => (
-                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-white">
-                                <span className="h-1.5 w-1.5 animate-ping rounded-full bg-white"/>
-                                {unreadSupport > 99 ? '99+' : unreadSupport}
-                            </span>
-                        );
                         const renderLeafItem = (item: typeof nav[0], nested: boolean) => {
                             const active = item.href === activeNav?.href;
                             const label = getNavLabel(item);
@@ -234,16 +205,13 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                                             <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary"/>
                                         </span>
                                     ) : undefined}
-                                    items={items.map(item => {
-                                        const showBadge = item.key === 'supportInbox' && unreadSupport > 0;
-                                        return {
-                                            href: item.href,
-                                            label: getNavLabel(item),
-                                            subGroupLabel: item.subGroup ? getSubGroupLabel(item.subGroup) : undefined,
-                                            active: item.href === activeNav?.href,
-                                            badge: showBadge ? renderUnreadPill() : undefined,
-                                        };
-                                    })}
+                                    items={items.map(item => ({
+                                        href: item.href,
+                                        label: getNavLabel(item),
+                                        subGroupLabel: item.subGroup ? getSubGroupLabel(item.subGroup) : undefined,
+                                        active: item.href === activeNav?.href,
+                                        badge: item.key === 'supportInbox' && unreadSupport > 0 ? renderUnreadPill() : undefined,
+                                    }))}
                                 />
                             );
                         }
@@ -259,12 +227,11 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                                     const subExpanded = !!openGroups[stateKey];
                                     const subActive = subItems.some(item => item.href === activeNav?.href);
                                     const subHasUnread = subItems.some(item => item.key === 'supportInbox') && unreadSupport > 0;
-                                    const subLabel = getSubGroupLabel(sg.key);
                                     return (
                                         <FoldingSubNavGroup
                                             key={sg.key}
                                             id={`admin-subnav-${group}-${sg.key}`}
-                                            label={subLabel}
+                                            label={getSubGroupLabel(sg.key)}
                                             icon={sg.icon}
                                             count={subItems.length}
                                             badge={subHasUnread && !subExpanded ? renderUnreadPill() : undefined}
@@ -291,45 +258,16 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
             )}
             <div className="flex min-w-0 flex-1 flex-col" inert={open}>
                 <div className="sticky top-0 z-20">
-                    <header className="flex min-h-13 items-center justify-between gap-4 border-b border-border bg-card/90 px-4 sm:px-6 backdrop-blur-md">
-                        <div className="flex min-w-0 flex-1 items-center gap-2.5">
-                            <button
-                                ref={menuButton}
-                                aria-controls="portal-navigation"
-                                className="lg:hidden inline-flex h-8 w-8 items-center justify-center rounded-control border border-border text-slate-700 hover:bg-slate-100"
-                                aria-label={t('shell.openNavigation')}
-                                aria-expanded={open}
-                                onClick={() => setOpen(true)}
-                            >
-                                <Menu size={18}/>
-                            </button>
-                            <div className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[13px] text-slate-500">
-                                <span className="hidden xl:inline">UAV PAS</span>
-                                <span className="hidden xl:inline">/</span>
-                                <span className="hidden xl:inline">{activeNav ? t(`adminNavGroups.${activeNav.group}`) : t('shell.adminSection')}</span>
-                                {activeNav?.subGroup && (
-                                    <>
-                                        <span className="hidden 2xl:inline">/</span>
-                                        <span className="hidden 2xl:inline">{getSubGroupLabel(activeNav.subGroup)}</span>
-                                    </>
-                                )}
-                                {(activeNav || pageTitle) && (
-                                    <>
-                                        <span className="hidden xl:inline">/</span>
-                                        <strong className="truncate font-semibold text-slate-900">{activeNav ? getNavLabel(activeNav) : pageTitle}</strong>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                        <div className="flex shrink-0 items-center gap-2 xl:gap-3">
-                            <HeaderSearch items={visibleNav.map(item => ({href: item.href, label: getNavLabel(item), group: getSearchGroupLabel(item)}))}/>
-                            <PortalSwitcher currentPortal="admin"/>
-                            <AdminAlertsPopover/>
-                            <NotificationBell viewAllHref="/admin/notifications"/>
-                            <LanguageSwitcher variant="compact" className="hidden sm:inline-flex"/>
-                            <AccountMenu portal="admin"/>
-                        </div>
-                    </header>
+                    <AdminShellHeader
+                        menuButton={menuButton}
+                        open={open}
+                        onOpenMenu={() => setOpen(true)}
+                        activeNav={activeNav}
+                        pageTitle={pageTitle}
+                        searchItems={searchItems}
+                        getNavLabel={getNavLabel}
+                        getSubGroupLabel={getSubGroupLabel}
+                    />
                     <WorkspaceTabs tabs={workspaceTabs.tabs} activeHref={activeHref} pinnedHref={HOME} dirtyHref={workspaceTabs.dirtyHref}
                                    describe={describeTab} onClose={workspaceTabs.close} onCloseOthers={workspaceTabs.closeOthers}/>
                 </div>

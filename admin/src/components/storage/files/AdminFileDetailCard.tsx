@@ -1,9 +1,11 @@
 'use client';
 
+import {useRef} from 'react';
 import {Database, FileCheck2, FileClock, FileWarning, Trash2} from 'lucide-react';
 import {Alert, Badge, Button, Card, CardContent, KpiCard, MetricStrip} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
+import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {useDeleteFile} from '@/hooks/storage/useAdminFiles';
 import type {StoredFile, StoredFileSummary} from '@/types/storage/files.types';
 import {formatFileSize, sharePercent} from '@/utils/storage/files';
@@ -91,9 +93,11 @@ export function AdminFileDeleteDialog({file, onClose, onDeleted}: {
             onDeleted();
         },
     });
+    const dialogRef = useRef<HTMLDivElement | null>(null);
     const close = () => {
         if (!remove.isPending) onClose();
     };
+    useDialogFocusTrap(dialogRef, true, remove.isPending ? undefined : close);
 
     return (
         <div
@@ -102,12 +106,12 @@ export function AdminFileDeleteDialog({file, onClose, onDeleted}: {
             onMouseDown={e => e.target === e.currentTarget && close()}
         >
             <Card
+                ref={dialogRef}
                 role="alertdialog"
                 aria-modal="true"
                 aria-labelledby="file-delete-title"
                 aria-describedby="file-delete-body"
-                onKeyDown={e => e.key === 'Escape' && close()}
-                className="flex w-full max-w-md flex-col gap-4 p-5 shadow-2xl sm:p-6"
+                className="flex w-full max-w-md flex-col gap-4 rounded-overlay p-5 shadow-2xl outline-none sm:p-6"
             >
                 <h2 id="file-delete-title" className="m-0 text-lg font-bold text-slate-900">
                     {t('admin.files.confirmTitle')}

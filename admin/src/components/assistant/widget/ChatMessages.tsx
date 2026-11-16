@@ -1,8 +1,9 @@
 'use client';
 
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {ChevronLeft, ChevronRight, Film, X} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
+import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import type {ChatImage, ChatMessage} from '@/types/assistant/assistant.types';
 import {SuperheroLogo} from '@/components/assistant/widget/SuperheroLogo';
 import {groupMessages} from '@/utils/assistant/chat-groups';
@@ -65,20 +66,21 @@ function ImageGrid({images, onOpen}: { images: ChatImage[]; onOpen: (index: numb
 /** Full-size viewer; Esc closes, arrow keys step through the images of one message. */
 export function ImageViewer({images, start, onClose, label}: { images: ChatImage[]; start: number; onClose: () => void; label: string }) {
     const {t} = useI18n();
+    const dialogRef = useRef<HTMLDivElement | null>(null);
     const [index, setIndex] = useState(start);
     const step = (by: number) => setIndex(i => (i + by + images.length) % images.length);
+    useDialogFocusTrap(dialogRef, true, onClose);
     useEffect(() => {
         const onKey = (event: globalThis.KeyboardEvent) => {
-            if (event.key === 'Escape') onClose();
             if (event.key === 'ArrowLeft') setIndex(i => (i - 1 + images.length) % images.length);
             if (event.key === 'ArrowRight') setIndex(i => (i + 1) % images.length);
         };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
-    }, [images.length, onClose]);
+    }, [images.length]);
     const image = images[index];
-    return <div role="dialog" aria-modal="true" aria-label={label} onClick={onClose}
-                className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/85 p-6 animate-[assistant-pop_160ms_ease-out]">
+    return <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={label} onClick={onClose}
+                className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/85 p-6 outline-none animate-[assistant-pop_160ms_ease-out]">
         {/* eslint-disable-next-line @next/next/no-img-element -- data URLs need no optimisation */}
         <img src={image.src} alt={image.name ?? ''} onClick={e => e.stopPropagation()} className="max-h-full max-w-full rounded-control object-contain shadow-2xl"/>
         {image.name && <p className="absolute bottom-4 left-1/2 m-0 -translate-x-1/2 truncate rounded-badge bg-slate-900/70 px-2 py-1 text-xs text-white">
