@@ -13,7 +13,7 @@ import com.uav.platform.dto.response.sar.TelemetryEvaluateResponse;
 import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.repository.sar.SarMissionRepository;
 import com.uav.platform.service.impl.sar.SarServiceImpl;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.webhook.WebhookService;
 
 import org.junit.jupiter.api.BeforeEach;

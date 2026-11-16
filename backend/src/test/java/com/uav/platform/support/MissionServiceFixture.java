@@ -30,7 +30,7 @@ import com.uav.platform.service.mission.catalog.*;
 import com.uav.platform.service.mission.dispatch.*;
 import com.uav.platform.service.mission.flightplan.*;
 import com.uav.platform.service.mission.lifecycle.*;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
 
 /** Keeps unit-test fixture wiring outside the production service constructors. */

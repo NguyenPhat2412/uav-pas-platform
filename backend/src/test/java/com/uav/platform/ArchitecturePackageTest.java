@@ -164,7 +164,8 @@ class ArchitecturePackageTest {
                             "auth",
                             "user",
                             "storage",
-                            "training");
+                            "training",
+                            "notification");
             String feature = nested ? parts[5] : parts[4];
             if (subpackagedFeatures.contains(feature)
                     && Set.of("controller", "service", "dto", "mapper", "specification")

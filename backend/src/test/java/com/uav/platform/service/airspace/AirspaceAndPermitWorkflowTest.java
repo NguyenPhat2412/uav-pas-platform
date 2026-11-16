@@ -44,7 +44,7 @@ import com.uav.platform.service.mission.dispatch.MissionResourceService;
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.mission.lifecycle.MissionBillingService;
 import com.uav.platform.service.mission.lifecycle.MissionEventService;
-import com.uav.platform.service.notification.NotificationService;
+import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
 
 import org.junit.jupiter.api.BeforeEach;

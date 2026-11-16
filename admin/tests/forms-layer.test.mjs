@@ -119,7 +119,7 @@ test('components delegate duplicate regex/range/URL validation to backend and wi
         ...(hasSiblingPortals ? [['src/components/marketing/ContactQuickForm.tsx', '@/forms/marketing/contact-form']] : []),
         ['src/components/webhook/WebhookSubscriptions.tsx', '@/forms/webhook/webhook-form'],
         ['src/components/devicekey/AdminDeviceKeysPanel.tsx', '@/forms/devicekey/device-key-form'],
-        ['src/components/notification/AdminNotificationsPanel.tsx', '@/forms/notification/notification-form'],
+        ['src/components/notification/inbox/AdminNotificationsPanel.tsx', '@/forms/notification/notification-form'],
         ['src/components/storage/pool/GoogleDriveNodeModal.tsx', '@/forms/storage/storage-pool-form'],
         ['src/components/storage/pool/StoragePolicyFormSection.tsx', '@/forms/storage/storage-pool-form'],
         ['src/components/storage/pool/StorageR2MigrationCard.tsx', '@/forms/storage/storage-pool-form'],
