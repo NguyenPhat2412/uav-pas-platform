@@ -6,24 +6,24 @@ The backend remains one Spring Boot application. Packages group code by business
 
 ```text
 com.uav.platform
-├── config                  Spring and infrastructure configuration
-├── security                Authentication filters, JWT and security integration
-├── error                   Shared exception handling
-├── common                  Shared base entities and pagination
-└── modules
-    └── <feature>
-        ├── controller      HTTP endpoints
-        ├── dto/request     Validated API inputs
-        ├── dto/response    API outputs
-        ├── dto/record      Internal working data, filters and commands
-        ├── entity          Persistent domain state
-        ├── enums           Domain enums
-        ├── mapper          Entity-to-DTO conversion
-        ├── repository      Database access
-        ├── specification   Reusable query predicates
-        └── service
-            └── impl        Implementations of service contracts
+├── config                  Spring, security, routes (ApiRoutes), WebSocket & infrastructure configuration
+├── error                   Shared exception handling & validation error mapping
+├── common                  Shared base entities, pagination, constants & utilities
+├── controller/<feature>[/<sub-domain>]        HTTP endpoints (paths strictly from ApiRoutes)
+├── dto/request/<feature>[/<sub-domain>]       Validated API inputs (*Request records)
+├── dto/response/<feature>[/<sub-domain>]      API outputs (*Response records)
+├── dto/record/<feature>[/<sub-domain>]        Internal working data, filters & commands
+├── entity/<feature>                           Persistent JPA domain state
+├── enums/<feature>                            Domain enums
+├── mapper/<feature>[/<sub-domain>]            Entity-to-DTO conversion
+├── repository/<feature>                       Spring Data JPA + JpaSpecificationExecutor
+├── specification/<feature>[/<sub-domain>]     Reusable query predicates
+└── service
+    ├── <feature>[/<sub-domain>]               Service contracts & stateless domain policies
+    └── impl/<feature>[/<sub-domain>]          *ServiceImpl & *Operations implementations
 ```
+
+Large domain modules (`mission`, `billing`, `marketplace`, `auth`, `user`, `storage`, `training`) organize `controller`, `service`, `service/impl`, `dto/{request,response,record}`, `mapper`, and `specification` into explicit `<feature>/<sub-domain>` sub-packages (enforced by `ArchitecturePackageTest`).
 
 Create only the layers a feature needs. A small internal service does not need an otherwise unused interface. When a contract exists, use `StationService` for the interface and `StationServiceImpl` for the implementation. Provider implementations may have descriptive names such as `S3CompatibleStorageService`.
 
