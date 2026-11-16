@@ -1,5 +1,5 @@
 import {pageMetadata} from '@/content/marketing/metadata';
-import {PublicProviderStorefront} from '@/components/marketplace/PublicProviderStorefront';
+import {PublicProviderStorefront} from '@/components/marketplace/catalog/PublicProviderStorefront';
 
 export const metadata = pageMetadata(
     'Gian hàng Đối tác UAV',

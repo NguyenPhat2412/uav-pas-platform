@@ -2,6 +2,7 @@
 import {type FormEvent, useEffect, useRef, useState} from 'react';
 import {displayLabel} from "@/lib/presentation";
 import {Button, Field, Panel} from "@/components/customer/CustomerUi";
+import {OptionalMark} from "@/components/ui";
 import {useAuth} from '@/providers/AuthContext';
 import {
     type CustomerProfile,
@@ -157,7 +158,7 @@ function Profile() {
                         )}
                         <fieldset disabled={busy} className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-0 p-0 m-0 disabled:opacity-65">
                             <div className="grid gap-2 text-[13px] font-bold text-slate-900">
-                                <label htmlFor="profile-name">{t('profile.fullName')}</label>
+                                <label htmlFor="profile-name">{t('profile.fullName')}<OptionalMark/></label>
                                 <input
                                     id="profile-name"
                                     ref={firstInput}

@@ -1,4 +1,4 @@
-import ProviderWalletView from '@/components/marketplace/ProviderWalletView';
+import ProviderWalletView from '@/components/marketplace/escrow/ProviderWalletView';
 
 export default function ProviderWalletPage() {
     return <ProviderWalletView/>;

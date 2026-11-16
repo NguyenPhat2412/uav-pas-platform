@@ -26,18 +26,18 @@ test('API_ROUTES exposes Sign in with Apple and self-service account deletion en
 });
 
 test('AppleSignInButton and AuthModalChrome render side-by-side social sign-in with Google', () => {
-    const appleBtn = read('src/components/auth/AppleSignInButton.tsx');
+    const appleBtn = read('src/components/auth/social/AppleSignInButton.tsx');
     assert.match(appleBtn, /appleid\.cdn-apple\.com\/appleauth\/static\/jsapi\/appleid\/1\/en_US\/appleid\.auth\.js/);
     assert.match(appleBtn, /NEXT_PUBLIC_APPLE_CLIENT_ID/);
     assert.match(appleBtn, /auth\.apple\.notConfigured/);
     assert.match(appleBtn, /popup_closed_by_user/);
     assert.match(appleBtn, /user_cancelled_authorize/);
 
-    const googleBtn = read('src/components/auth/GoogleSignInButton.tsx');
+    const googleBtn = read('src/components/auth/social/GoogleSignInButton.tsx');
     assert.match(googleBtn, /Math\.max\(140,/);
     assert.match(googleBtn, /auth\.google\.short/);
 
-    const modalChrome = read('src/components/auth/AuthModalChrome.tsx');
+    const modalChrome = read('src/components/auth/modal/AuthModalChrome.tsx');
     assert.match(modalChrome, /grid grid-cols-2 gap-3/);
     assert.match(modalChrome, /<GoogleSignInButton/);
     assert.match(modalChrome, /<AppleSignInButton/);

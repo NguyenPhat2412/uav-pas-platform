@@ -18,12 +18,12 @@ const AIRFRAME_BADGE: Record<string, {labelVi: string; labelEn: string; tone: st
     HEXACOPTER_SAR: {
         labelVi: '6-Rotor Heavy SAR',
         labelEn: '6-Rotor Heavy SAR',
-        tone: 'border-indigo-200 bg-indigo-50 text-indigo-800',
+        tone: 'border-slate-300 bg-slate-100 text-slate-800',
     },
     VTOL_FIXED_WING: {
         labelVi: 'VTOL Cánh bằng tầm xa',
         labelEn: 'VTOL Fixed-Wing',
-        tone: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+        tone: 'border-slate-300 bg-slate-50 text-slate-700',
     },
 };
 
@@ -69,14 +69,14 @@ export function UavHealthAnalyticsSection({onSelectUav}: UavHealthAnalyticsSecti
                         </p>
                     </div>
                 </div>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-800">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-slate-100 px-2.5 py-0.5 text-xs font-bold text-slate-800 tabular-nums">
                     <Activity size={13} />
                     {isEn ? 'Fleet Avg Health' : 'Sức khỏe Đội bay TB'}: {avgScore}%
                 </span>
             </header>
 
             <div className="grid gap-4 p-4">
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="grid grid-cols-2 gap-3 tabular-nums sm:grid-cols-4">
                     <div className="rounded-panel border border-slate-200 bg-slate-50/70 p-3">
                         <span className="text-[11px] font-medium text-slate-500">
                             {isEn ? 'Fleet Average Health' : 'Chỉ số Sức khỏe Trung bình'}
@@ -86,14 +86,14 @@ export function UavHealthAnalyticsSection({onSelectUav}: UavHealthAnalyticsSecti
                             <strong className="text-lg font-extrabold text-slate-900">{avgScore}%</strong>
                         </div>
                     </div>
-                    <div className="rounded-panel border border-emerald-200/80 bg-emerald-50/40 p-3">
-                        <span className="text-[11px] font-medium text-emerald-800">
+                    <div className="rounded-panel border border-slate-300/80 bg-slate-100/60 p-3">
+                        <span className="text-[11px] font-medium text-slate-700">
                             {isEn ? 'Nominal & Ready' : 'Hoạt động Chuẩn (Nominal)'}
                         </span>
                         <div className="mt-1 flex items-center gap-1.5">
-                            <CheckCircle2 size={16} className="text-emerald-600" />
-                            <strong className="text-lg font-extrabold text-emerald-900">{data.optimalCount}</strong>
-                            <span className="text-xs text-emerald-700">UAV</span>
+                            <CheckCircle2 size={16} className="text-slate-700" />
+                            <strong className="text-lg font-extrabold text-slate-900">{data.optimalCount}</strong>
+                            <span className="text-xs text-slate-600">UAV</span>
                         </div>
                     </div>
                     <div className="rounded-panel border border-amber-200/80 bg-amber-50/40 p-3">
@@ -135,7 +135,7 @@ export function UavHealthAnalyticsSection({onSelectUav}: UavHealthAnalyticsSecti
                                     const airframe = AIRFRAME_BADGE[item.airframeClass] ?? AIRFRAME_BADGE.QUADCOPTER_RTK;
                                     const urgencyTone =
                                         item.healthTier === 'OPTIMAL'
-                                            ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                                            ? 'border-slate-300 bg-slate-100 text-slate-800'
                                             : item.healthTier === 'ATTENTION'
                                               ? 'border-amber-200 bg-amber-50 text-amber-800'
                                               : 'border-rose-200 bg-rose-50 text-rose-800';
@@ -156,21 +156,21 @@ export function UavHealthAnalyticsSection({onSelectUav}: UavHealthAnalyticsSecti
                                                     <strong className="text-sm font-extrabold text-slate-900">
                                                         {item.healthScore}%
                                                     </strong>
-                                                    <span className="inline-flex items-center gap-0.5 text-[11px] text-slate-600">
-                                                        <BatteryCharging size={12} className="text-emerald-600" />
+                                                    <span className="inline-flex items-center gap-0.5 text-[11px] text-slate-600 tabular-nums">
+                                                        <BatteryCharging size={12} className="text-slate-600" />
                                                         SOH {item.batteryStateOfHealthPct}%
                                                     </span>
                                                 </div>
                                                 <div className="mt-1.5 h-1.5 w-32 overflow-hidden rounded-full bg-slate-200">
                                                     <div
-                                                        className={`h-full rounded-full ${
+                                                        className={`h-full w-full origin-left rounded-full transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
                                                             item.healthScore >= 82
-                                                                ? 'bg-emerald-600'
+                                                                ? 'bg-slate-800'
                                                                 : item.healthScore >= 68
                                                                   ? 'bg-amber-500'
                                                                   : 'bg-rose-600'
                                                         }`}
-                                                        style={{width: `${Math.min(100, Math.max(10, item.healthScore))}%`}}
+                                                        style={{transform: `scaleX(${Math.min(1, Math.max(0.1, item.healthScore / 100))})`}}
                                                     />
                                                 </div>
                                                 <div className="mt-1 text-[11px] text-slate-500">

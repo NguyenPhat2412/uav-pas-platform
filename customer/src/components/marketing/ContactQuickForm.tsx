@@ -3,6 +3,7 @@
 import {useState, type FormEvent} from 'react';
 import Link from 'next/link';
 import {CheckCircle2, Loader2, MessageCircleMore} from 'lucide-react';
+import {OptionalMark, RequiredMark} from '@/components/ui';
 import {
     canSubmitContactInquiry,
     contactFieldErrors,
@@ -118,7 +119,7 @@ export function ContactQuickForm() {
             <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
                 <div>
                     <label htmlFor="contact-fullname" className="mb-1 block text-xs font-bold text-slate-700">
-                        Họ và tên <span className="text-primary">*</span>
+                        Họ và tên<RequiredMark/>
                     </label>
                     <input
                         id="contact-fullname"
@@ -135,7 +136,7 @@ export function ContactQuickForm() {
                 </div>
                 <div>
                     <label htmlFor="contact-info" className="mb-1 block text-xs font-bold text-slate-700">
-                        Số điện thoại / Email <span className="text-primary">*</span>
+                        Số điện thoại / Email<RequiredMark/>
                     </label>
                     <input
                         id="contact-info"
@@ -152,7 +153,7 @@ export function ContactQuickForm() {
                 </div>
                 <div>
                     <label htmlFor="contact-org" className="mb-1 block text-xs font-bold text-slate-700">
-                        Đơn vị / Dự án
+                        Đơn vị / Dự án<OptionalMark/>
                     </label>
                     <input
                         id="contact-org"
@@ -168,7 +169,7 @@ export function ContactQuickForm() {
             <div className="space-y-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <label htmlFor="contact-message" className="text-xs font-bold text-slate-700">
-                        2. Khu vực dự kiến bay &amp; yêu cầu kỹ thuật
+                        2. Khu vực dự kiến bay &amp; yêu cầu kỹ thuật<OptionalMark/>
                     </label>
                     <div className="flex flex-wrap gap-1.5" role="group" aria-label="Quy mô dự kiến">
                         {CONTACT_SCOPE_TAGS.map((tag) => {

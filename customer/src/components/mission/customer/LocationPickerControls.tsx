@@ -136,7 +136,7 @@ export function LocationPickerToolbar({
                 <FormField
                     id="planner-radius"
                     label={t('planner.radius')}
-                    optional={false}
+                    required
                     className="sm:flex-row sm:items-center sm:gap-3"
                     labelClassName="shrink-0 text-slate-600"
                 >

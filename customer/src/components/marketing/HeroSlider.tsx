@@ -37,7 +37,7 @@ export function HeroSlider() {
         return (
           <div
             key={slide.src}
-            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
+            className={`absolute inset-0 transition-[opacity,transform] duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)] ${
               isActive ? 'opacity-100 scale-105' : 'opacity-0 scale-100'
             }`}
           >
@@ -63,7 +63,7 @@ export function HeroSlider() {
             key={index}
             type="button"
             aria-label={`Chuyển tới ảnh ${index + 1}`}
-            className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+            className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] cursor-pointer ${
               index === currentIndex
                 ? 'w-10 bg-primary shadow-sm shadow-primary'
                 : 'w-6 bg-white/40 hover:bg-white/75'

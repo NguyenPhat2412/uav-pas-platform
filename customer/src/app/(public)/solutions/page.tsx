@@ -66,7 +66,7 @@ export default function SolutionsPage() {
                                     <Link
                                         key={item.slug}
                                         href={`/solutions/${item.slug}`}
-                                        className="group grid grid-cols-1 overflow-hidden rounded-2xl border border-border bg-card shadow-xs transition-all hover:border-primary/40 hover:shadow-md sm:grid-cols-12"
+                                        className="group grid grid-cols-1 overflow-hidden rounded-2xl border border-border bg-card shadow-xs transition-[border-color,box-shadow] duration-200 hover:border-primary/40 hover:shadow-md sm:grid-cols-12"
                                     >
                                         <div className="relative aspect-[16/10] sm:col-span-5 sm:aspect-auto sm:h-full">
                                             <Image

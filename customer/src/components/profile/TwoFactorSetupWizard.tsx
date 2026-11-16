@@ -6,7 +6,7 @@ import QRCode from 'qrcode';
 import {Copy} from 'lucide-react';
 import {toast} from '@/providers/ToastContext';
 import type {TwoFactorSetupResponse} from '@/types/auth/auth.types';
-import {OtpCodeInput} from '@/components/auth/OtpCodeInput';
+import {OtpCodeInput} from '@/components/auth/social/OtpCodeInput';
 import {Alert, Button, Card, CardContent, FormField} from '@/components/ui';
 
 export interface TwoFactorSetupWizardProps {

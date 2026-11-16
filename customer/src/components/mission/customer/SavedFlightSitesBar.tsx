@@ -141,7 +141,7 @@ export function SavedFlightSitesBar({form, onApply}: SavedFlightSitesBarProps) {
                             <FormField
                                 id="saved-flight-site-name"
                                 label={t('capabilities.flightSites.nameLabel')}
-                                optional={false}
+                                required
                                 className="min-w-[220px] flex-1"
                             >
                                 <Input

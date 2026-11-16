@@ -1,4 +1,4 @@
-import ProviderListingsView from '@/components/marketplace/ProviderListingsView';
+import ProviderListingsView from '@/components/marketplace/provider/ProviderListingsView';
 
 export default function ProviderListingsPage() {
     return <ProviderListingsView/>;

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {serviceDetails} from "@/content/marketing/service-details";
 import {services} from "@/content/marketing/site-content";
 import {CustomerCta, PublicPage} from "@/components/marketing/PublicPage";
-import {PublicListingDetail} from "@/components/marketplace/PublicListingDetail";
+import {PublicListingDetail} from "@/components/marketplace/catalog/PublicListingDetail";
 
 export function generateStaticParams() {
     return services.map(({slug}) => ({slug}));
