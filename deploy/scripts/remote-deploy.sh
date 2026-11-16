@@ -247,6 +247,7 @@ case "$ACTION" in
 
     write_current_release
     docker image prune -f >/dev/null 2>&1 || true
+    docker builder prune -f --keep-storage=2GB >/dev/null 2>&1 || true
     log "Deployment to ${DEPLOY_ENV} completed and verified."
     ;;
 

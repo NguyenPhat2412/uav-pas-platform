@@ -168,8 +168,20 @@ export function usePublicSupportSession(visitorToken: string | null, isOpen: boo
         isOpenRef.current = isOpen;
         if (isOpen && visitorToken) {
             const cached = queryClient.getQueryData<PublicSupportThreadSession | null>(supportThreadKey(visitorToken));
-            if (!cached || cached.unreadForVisitor > 0) {
-                void queryClient.invalidateQueries({queryKey: supportThreadKey(visitorToken)});
+            const hasUnreadAdminMsg = Boolean(
+                cached?.messages?.some((m) => m.senderRole === 'ADMIN' && !m.readAt),
+            );
+            if (!cached || cached.unreadForVisitor > 0 || hasUnreadAdminMsg) {
+                void publicSupportService
+                    .markRead(visitorToken)
+                    .then((marked) => {
+                        if (tokenRef.current === visitorToken) {
+                            queryClient.setQueryData(supportThreadKey(visitorToken), marked);
+                        }
+                    })
+                    .catch(() => {
+                        void queryClient.invalidateQueries({queryKey: supportThreadKey(visitorToken)});
+                    });
             }
         }
     }, [isOpen, queryClient, visitorToken]);
@@ -198,13 +210,20 @@ export function usePublicSupportSession(visitorToken: string | null, isOpen: boo
                 clearAdminTypingTimer();
                 setAdminTyping(IDLE_ADMIN_TYPING);
 
-                if (isOpenRef.current && frame.session.unreadForVisitor > 0) {
+                const hasUnreadAdmin = frame.session.messages.some(
+                    (m) => m.senderRole === 'ADMIN' && !m.readAt,
+                );
+                const hasUndeliveredAdmin = frame.session.messages.some(
+                    (m) => m.senderRole === 'ADMIN' && !m.deliveredAt,
+                );
+
+                if (isOpenRef.current && (frame.session.unreadForVisitor > 0 || hasUnreadAdmin)) {
                     queryClient.setQueryData<PublicSupportThreadSession>(
                         supportThreadKey(visitorToken),
                         {...frame.session, unreadForVisitor: 0},
                     );
                     void publicSupportService
-                        .getThread(visitorToken, true)
+                        .markRead(visitorToken)
                         .then((marked) => {
                             if (tokenRef.current === visitorToken) {
                                 queryClient.setQueryData(supportThreadKey(visitorToken), marked);
@@ -215,6 +234,16 @@ export function usePublicSupportSession(visitorToken: string | null, isOpen: boo
                         });
                 } else {
                     queryClient.setQueryData(supportThreadKey(visitorToken), frame.session);
+                    if (!isOpenRef.current && hasUndeliveredAdmin) {
+                        void publicSupportService
+                            .getThread(visitorToken, false)
+                            .then((delivered) => {
+                                if (tokenRef.current === visitorToken) {
+                                    queryClient.setQueryData(supportThreadKey(visitorToken), delivered);
+                                }
+                            })
+                            .catch(() => undefined);
+                    }
                 }
                 return;
             }

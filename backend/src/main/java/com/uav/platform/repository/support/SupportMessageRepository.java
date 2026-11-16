@@ -16,6 +16,8 @@ public interface SupportMessageRepository
 
     List<SupportMessage> findByThreadIdOrderByCreatedAtAscIdAsc(Long threadId);
 
+    List<SupportMessage> findBySenderRoleAndDeliveredAtIsNull(String senderRole);
+
     long countByThreadId(Long threadId);
 
     @Query(

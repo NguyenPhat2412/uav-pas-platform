@@ -19,8 +19,14 @@ export const operationsSupportService = {
         return apiClient.get<PageResponse<OpsSupportThread>>(`${API_ROUTES.adminSupport.threads}?${qs}`, {signal});
     },
 
+    acknowledgeDelivered: () =>
+        apiClient.post<{ delivered: number }>(API_ROUTES.adminSupport.delivered, {}),
+
     thread: (id: number, signal?: AbortSignal) =>
         apiClient.get<OpsSupportThreadDetail>(API_ROUTES.adminSupport.thread(id), {signal}),
+
+    markRead: (id: number) =>
+        apiClient.post<OpsSupportThreadDetail>(API_ROUTES.adminSupport.markRead(id), {}),
 
     reply: (id: number, body: { content: string; status?: OpsSupportStatus | null }) =>
         apiClient.post<OpsSupportThreadDetail>(API_ROUTES.adminSupport.reply(id), body),

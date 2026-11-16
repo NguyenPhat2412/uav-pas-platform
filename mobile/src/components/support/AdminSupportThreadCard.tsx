@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Linking, Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import {ArrowLeft, Mail, Phone, Radio, Send, Zap} from 'lucide-react-native';
+import {SupportMessageStatusRow} from '@/components/support/SupportMessageStatusRow';
 import {AppText, Badge, Button, Card, ChipGroup, ErrorState, LoadingState, ScaledText, SectionTitle, TextField} from '@/components/ui';
 import {signInErrorText} from '@/forms/auth/sign-in-flow';
 import {
@@ -9,14 +10,18 @@ import {
     useAdminSupportRealtime,
     useAdminSupportThreadDetail,
 } from '@/hooks/support/useAdminSupportMobile';
+import {useSupportOutboxMobile} from '@/hooks/support/useSupportOutboxMobile';
+import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import type {SupportQuickReply, SupportThreadStatus} from '@/shared/types/support/support.types';
+import {mergeMessagesWithOutbox, resolveSupportMessageReceipt} from '@/shared/utils/support/message-status';
 import {formatSupportSource, formatSupportTime, formatSupportTopic, personalizeQuickReply, prioritizeQuickReplies, resolveContactHref} from '@/shared/utils/support/support-format';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; onBack: () => void }) {
-    const {t} = useI18n();
+    const {t, locale} = useI18n();
+    const {user} = useAuth();
     const toast = useToast();
     const detailQuery = useAdminSupportThreadDetail(threadId);
     const quickRepliesQuery = useAdminQuickReplies();
@@ -24,9 +29,16 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
     const {wsConnected, visitorTypingByThread, notifyAdminTyping} = useAdminSupportRealtime();
     const [draft, setDraft] = useState('');
 
-    useEffect(() => () => notifyAdminTyping(threadId, false), [notifyAdminTyping, threadId]);
-
     const showError = (error: unknown) => toast.show(signInErrorText(error, t), 'error');
+    const {outbox, enqueue, retry} = useSupportOutboxMobile(
+        entry => mutations.reply.mutateAsync({
+            id: Number(entry.scopeKey),
+            body: {content: entry.content, status: entry.requestedThreadStatus},
+        }),
+        showError,
+    );
+
+    useEffect(() => () => notifyAdminTyping(threadId, false), [notifyAdminTyping, threadId]);
 
     if (detailQuery.isPending) {
         return (
@@ -50,7 +62,8 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
         );
     }
 
-    const {thread, messages} = detailQuery.data;
+    const {thread, messages: rawMessages} = detailQuery.data;
+    const messages = mergeMessagesWithOutbox(rawMessages, outbox, String(thread.id));
     const isVisitorTyping = Boolean(visitorTypingByThread[thread.id]);
     const contactLink = resolveContactHref(thread.contactInfo);
     const sortedTemplates = prioritizeQuickReplies(quickRepliesQuery.data ?? [], thread.topic);
@@ -82,16 +95,14 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
         const trimmed = rawContent.trim();
         if (!trimmed) return;
         notifyAdminTyping(thread.id, false);
-        mutations.reply.mutate(
-            {id: thread.id, body: {content: trimmed, status: nextReplyStatus}},
-            {
-                onSuccess: () => {
-                    if (clearDraft) setDraft('');
-                    toast.show(t('mobile.support.replySentToast'), 'success');
-                },
-                onError: showError,
-            },
-        );
+        if (clearDraft) setDraft('');
+        enqueue({
+            scopeKey: String(thread.id),
+            senderRole: 'ADMIN',
+            senderName: user?.fullName?.trim() || user?.username || t('mobile.support.adminSender'),
+            content: trimmed,
+            requestedThreadStatus: nextReplyStatus,
+        });
     };
 
     const handleInstantSend = (tpl: SupportQuickReply) => {
@@ -136,21 +147,25 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
             </Card>
 
             <Card style={styles.transcriptCard}>
-                {messages.map(msg => {
+                {messages.map((msg, idx) => {
                     const isAdmin = msg.senderRole === 'ADMIN';
+                    const receipt = resolveSupportMessageReceipt(messages, idx, 'ADMIN', locale);
                     return (
-                        <View key={msg.id} style={[styles.bubble, isAdmin ? styles.adminBubble : styles.visitorBubble]}>
-                            <View style={styles.bubbleHeader}>
-                                <ScaledText style={[styles.sender, isAdmin && styles.adminMeta]}>
-                                    {msg.senderName || (isAdmin ? t('mobile.support.adminSender') : thread.fullName)}
-                                </ScaledText>
-                                <ScaledText style={[styles.timestamp, isAdmin && styles.adminMeta]}>
-                                    {formatSupportTime(msg.createdAt)}
-                                </ScaledText>
+                        <View key={msg.clientKey ?? msg.id} style={[styles.msgGroup, isAdmin ? styles.msgGroupAdmin : styles.msgGroupVisitor]}>
+                            <View style={[styles.bubble, isAdmin ? styles.adminBubble : styles.visitorBubble, msg.deliveryStatus === 'sending' && styles.sendingBubble]}>
+                                <View style={styles.bubbleHeader}>
+                                    <ScaledText style={[styles.sender, isAdmin && styles.adminMeta]}>
+                                        {msg.senderName || (isAdmin ? t('mobile.support.adminSender') : thread.fullName)}
+                                    </ScaledText>
+                                    <ScaledText style={[styles.timestamp, isAdmin && styles.adminMeta]}>
+                                        {formatSupportTime(msg.createdAt)}
+                                    </ScaledText>
+                                </View>
+                                <AppText variant="body" selectable style={isAdmin ? styles.adminText : undefined}>
+                                    {msg.content}
+                                </AppText>
                             </View>
-                            <AppText variant="body" selectable style={isAdmin ? styles.adminText : undefined}>
-                                {msg.content}
-                            </AppText>
+                            <SupportMessageStatusRow receipt={receipt} onRetry={msg.clientKey ? () => retry(msg.clientKey!) : undefined}/>
                         </View>
                     );
                 })}
@@ -181,13 +196,8 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
                                     </Pressable>
                                     <Pressable
                                         onPress={() => handleInstantSend(tpl)}
-                                        disabled={mutations.reply.isPending}
                                         accessibilityRole="button"
-                                        style={({pressed}) => [
-                                            styles.instantChip,
-                                            mutations.reply.isPending && styles.disabled,
-                                            pressed && styles.pressed,
-                                        ]}>
+                                        style={({pressed}) => [styles.instantChip, pressed && styles.pressed]}>
                                         <Zap size={13} color={colors.white}/>
                                         <ScaledText style={styles.instantChipText}>{t('mobile.support.instantSend')}</ScaledText>
                                     </Pressable>
@@ -209,7 +219,6 @@ export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; o
                 <Button
                     label={t('mobile.support.sendReplyButton')}
                     icon={Send}
-                    loading={mutations.reply.isPending}
                     disabled={!draft.trim()}
                     onPress={() => sendContent(draft, true)}
                 />
@@ -222,9 +231,13 @@ const styles = StyleSheet.create({
     stack: {gap: spacing.lg},
     headerRow: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs},
     transcriptCard: {gap: spacing.md},
-    bubble: {maxWidth: '86%', borderRadius: radius.card, padding: spacing.md, gap: spacing.xs},
-    visitorBubble: {alignSelf: 'flex-start', backgroundColor: colors.slateLight},
-    adminBubble: {alignSelf: 'flex-end', backgroundColor: colors.primary},
+    msgGroup: {maxWidth: '86%', gap: 4},
+    msgGroupVisitor: {alignSelf: 'flex-start', alignItems: 'flex-start'},
+    msgGroupAdmin: {alignSelf: 'flex-end', alignItems: 'flex-end'},
+    bubble: {borderRadius: radius.card, padding: spacing.md, gap: spacing.xs},
+    sendingBubble: {opacity: 0.7},
+    visitorBubble: {backgroundColor: colors.slateLight},
+    adminBubble: {backgroundColor: colors.primary},
     bubbleHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm},
     sender: {fontSize: font.caption, fontWeight: '700', color: colors.slateDark},
     timestamp: {fontSize: font.caption, color: colors.muted},

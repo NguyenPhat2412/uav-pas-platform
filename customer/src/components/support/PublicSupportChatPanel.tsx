@@ -5,8 +5,10 @@ import Image from 'next/image';
 import {Loader2, RotateCcw, Send, ShieldCheck, X} from 'lucide-react';
 import {cn} from '@/lib/utils';
 import {PublicSupportStartForm} from '@/components/support/PublicSupportStartForm';
+import {SupportMessageStatusRow} from '@/components/support/SupportMessageStatusRow';
 import {ZaloBrandIcon} from '@/components/support/ZaloBrandIcon';
 import {formatPhoneDisplay, toZaloChatUrl} from '@/utils/support/contact-format';
+import {resolveSupportMessageReceipt} from '@/utils/support/message-status';
 import type {
     PublicSupportThreadSession,
     SupportAdminTypingState,
@@ -23,7 +25,7 @@ export interface PublicSupportChatPanelProps {
     adminTyping: SupportAdminTypingState;
     isSessionLoading: boolean;
     isCreating: boolean;
-    isSending: boolean;
+    isSending?: boolean;
     errorText: string | null;
     quickTopics: readonly SupportQuickTopicOption[];
     followUpChips: readonly string[];
@@ -35,6 +37,7 @@ export interface PublicSupportChatPanelProps {
     onCreateSubmit: (event: FormEvent) => void;
     onReplyDraftChange: (value: string) => void;
     onSendReply: () => void;
+    onRetryMessage?: (clientKey: string) => void;
     onResetSession: () => void;
     onClose: () => void;
 }
@@ -52,7 +55,6 @@ export function PublicSupportChatPanel({
     adminTyping,
     isSessionLoading,
     isCreating,
-    isSending,
     errorText,
     quickTopics,
     followUpChips,
@@ -64,6 +66,7 @@ export function PublicSupportChatPanel({
     onCreateSubmit,
     onReplyDraftChange,
     onSendReply,
+    onRetryMessage,
     onResetSession,
     onClose,
 }: PublicSupportChatPanelProps) {
@@ -189,10 +192,12 @@ export function PublicSupportChatPanel({
                             </div>
                         ) : (
                             <>
-                                {(session?.messages ?? []).map((msg) => {
+                                {(session?.messages ?? []).map((msg, idx, list) => {
                                     const isAdmin = msg.senderRole === 'ADMIN';
+                                    const receipt = resolveSupportMessageReceipt(list, idx, 'VISITOR');
+                                    const isSendingMsg = msg.deliveryStatus === 'sending';
                                     return (
-                                        <div key={msg.id} className={cn('flex flex-col', isAdmin ? 'items-start' : 'items-end')}>
+                                        <div key={msg.clientKey ?? msg.id} className={cn('flex flex-col', isAdmin ? 'items-start' : 'items-end')}>
                                             {isAdmin && (
                                                 <span className="mb-1 inline-flex items-center gap-1 rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold text-white">
                                                     <ShieldCheck className="h-3 w-3 text-rose-300" aria-hidden="true" />
@@ -201,10 +206,11 @@ export function PublicSupportChatPanel({
                                             )}
                                             <div
                                                 className={cn(
-                                                    'max-w-[86%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed shadow-2xs',
+                                                    'max-w-[86%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed shadow-2xs transition-opacity',
                                                     isAdmin
                                                         ? 'rounded-bl-sm border border-slate-200 bg-white text-slate-800'
                                                         : 'rounded-br-sm bg-primary text-white',
+                                                    isSendingMsg && 'opacity-70',
                                                 )}
                                             >
                                                 {msg.content}
@@ -212,6 +218,14 @@ export function PublicSupportChatPanel({
                                             <span className="mt-1 text-[10px] text-slate-400">
                                                 {isAdmin ? msg.senderName : 'Bạn'} · {formatChatTime(msg.createdAt)}
                                             </span>
+                                            <SupportMessageStatusRow
+                                                receipt={receipt}
+                                                onRetry={
+                                                    msg.clientKey && onRetryMessage
+                                                        ? () => onRetryMessage(msg.clientKey!)
+                                                        : undefined
+                                                }
+                                            />
                                         </div>
                                     );
                                 })}
@@ -262,11 +276,11 @@ export function PublicSupportChatPanel({
                             <button
                                 type="button"
                                 onClick={onSendReply}
-                                disabled={!replyDraft.trim() || isSending}
+                                disabled={!replyDraft.trim()}
                                 aria-label="Gửi tin nhắn"
                                 className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-xs transition-colors hover:bg-primary-hover disabled:opacity-50"
                             >
-                                {isSending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Send className="h-4 w-4" aria-hidden="true" />}
+                                <Send className="h-4 w-4" aria-hidden="true" />
                             </button>
                         </div>
                     </div>

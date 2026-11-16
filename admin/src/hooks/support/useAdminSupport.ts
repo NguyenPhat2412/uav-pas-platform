@@ -50,6 +50,7 @@ export function useAdminSupportRealtime(enabled = true) {
         const unsubStatus = adminRealtimeClient.subscribeStatus(connected => {
             setWsConnected(connected);
             if (connected) {
+                void adminSupportService.acknowledgeDelivered().catch(() => undefined);
                 void client.invalidateQueries({queryKey: supportKeys.summary(user?.id)});
                 void client.invalidateQueries({queryKey: supportKeys.threadsAll(user?.id)});
             }
@@ -62,17 +63,26 @@ export function useAdminSupportRealtime(enabled = true) {
                 }
                 const threadKey = supportKeys.thread(user?.id, frame.thread.id);
                 const isThreadMounted = (client.getQueryCache().find({queryKey: threadKey})?.getObserversCount() ?? 0) > 0;
+                const hasUnreadVisitor = Boolean(
+                    frame.messages?.some(m => m.senderRole === 'VISITOR' && !m.readAt),
+                );
+                const hasUndeliveredVisitor = Boolean(
+                    frame.messages?.some(m => m.senderRole === 'VISITOR' && !m.deliveredAt),
+                );
                 if (frame.messages && client.getQueryData<SupportThreadDetail>(threadKey)) {
                     client.setQueryData<SupportThreadDetail>(threadKey, {
                         thread: isThreadMounted ? {...frame.thread, unreadForAdmin: 0} : frame.thread,
                         messages: frame.messages,
                     });
                 }
-                if (isThreadMounted && frame.thread.unreadForAdmin > 0) {
-                    void adminSupportService.thread(frame.thread.id).then(() => {
+                if (isThreadMounted && (frame.thread.unreadForAdmin > 0 || hasUnreadVisitor)) {
+                    void adminSupportService.markRead(frame.thread.id).then(marked => {
+                        client.setQueryData(threadKey, marked);
                         void client.invalidateQueries({queryKey: supportKeys.summary(user?.id)});
                         void client.invalidateQueries({queryKey: supportKeys.threadsAll(user?.id)});
                     }).catch(() => undefined);
+                } else if (!isThreadMounted && hasUndeliveredVisitor) {
+                    void adminSupportService.acknowledgeDelivered().catch(() => undefined);
                 }
                 void client.invalidateQueries({queryKey: supportKeys.threadsAll(user?.id)});
                 if (frame.thread.lastSenderRole === 'VISITOR') {

@@ -15,12 +15,14 @@ export type SupportTopic =
     | 'GENERAL_SUPPORT';
 
 export type SupportSource = 'LIVE_WIDGET' | 'CONTACT_FORM' | 'CUSTOMER_PORTAL';
-export type SupportThreadSource = SupportSource;
+export type SupportThreadSource = SupportSource | (string & {});
 export type SupportWidgetMode = 'public' | 'portal';
 
 export type SupportThreadStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED';
 
 export type SupportSenderRole = 'VISITOR' | 'ADMIN';
+
+export type SupportMessageDeliveryStatus = 'sending' | 'failed' | 'sent' | 'delivered' | 'seen';
 
 export interface PublicSiteInfo {
     dispatchHotline?: string | null;
@@ -72,6 +74,11 @@ export interface SupportChatMessage {
     senderName: string;
     content: string;
     createdAt: string;
+    deliveredAt?: string | null;
+    readAt?: string | null;
+    seenByName?: string | null;
+    clientKey?: string;
+    deliveryStatus?: 'sending' | 'failed';
 }
 
 export interface PublicSupportCreateInput {

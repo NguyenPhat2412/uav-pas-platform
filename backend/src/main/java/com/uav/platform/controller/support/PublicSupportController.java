@@ -42,6 +42,12 @@ public class PublicSupportController {
         return ResponseEntity.ok(supportService.getPublicThread(visitorToken, markRead));
     }
 
+    @PostMapping(ApiRoutes.Public.SUPPORT_THREAD_READ)
+    public ResponseEntity<PublicSupportThreadSessionResponse> markThreadRead(
+            @PathVariable String visitorToken) {
+        return ResponseEntity.ok(supportService.getPublicThread(visitorToken, true));
+    }
+
     @PostMapping(ApiRoutes.Public.SUPPORT_THREAD_MESSAGES)
     public ResponseEntity<PublicSupportThreadSessionResponse> postMessage(
             @PathVariable String visitorToken,

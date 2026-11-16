@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent} from 'react';
 import {ArrowLeft, ArrowUpRight, MessagesSquare, Send, X, Zap} from 'lucide-react';
+import {SupportMessageStatusRow} from '@/components/support/SupportMessageStatusRow';
 import {
     personalizeQuickReply,
     useAdminSupportRealtime,
@@ -13,9 +14,11 @@ import {
     useSupportThreadDetail,
     useSupportThreads,
 } from '@/hooks/support/useAdminSupport';
+import {useSupportOutbox} from '@/hooks/support/useSupportOutbox';
 import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {toast} from '@/providers/ToastContext';
+import {mergeMessagesWithOutbox, resolveSupportMessageReceipt} from '@/utils/support/message-status';
 import {
     formatSupportSource,
     formatSupportTime,
@@ -25,7 +28,7 @@ import {
 } from '@/utils/support/support-format';
 
 export function AdminSupportQuickDock() {
-    const {isAuthenticated, permissionsReady, can} = useAuth();
+    const {user, isAuthenticated, permissionsReady, can} = useAuth();
     const allowed = isAuthenticated && permissionsReady && can('SUPPORT_MANAGE');
 
     const [open, setOpen] = useState(false);
@@ -40,6 +43,10 @@ export function AdminSupportQuickDock() {
     const detailQuery = useSupportThreadDetail(open ? activeThreadId : null);
     const quickRepliesQuery = useSupportQuickReplies(allowed && open);
     const replyMutation = useReplySupportThread();
+    const {outbox, enqueue, retry} = useSupportOutbox(
+        (entry) => replyMutation.mutateAsync({id: Number(entry.scopeKey), content: entry.content, status: entry.requestedThreadStatus}),
+        () => toast.error('Không thể gửi tin nhắn phản hồi. Nhấn Thử lại trên tin nhắn.'),
+    );
 
     const unreadMessages = summaryQuery.data?.unreadMessages ?? 0;
     const prioritizedThreads = [...(threadsQuery.data?.content ?? [])].sort((a, b) => {
@@ -49,7 +56,12 @@ export function AdminSupportQuickDock() {
     });
 
     const activeThread = detailQuery.data?.thread;
-    const messages = detailQuery.data?.messages ?? [];
+    const messages = mergeMessagesWithOutbox(
+        detailQuery.data?.messages ?? [],
+        outbox,
+        activeThreadId ? String(activeThreadId) : null,
+    );
+    const visibleMessages = messages.slice(-12);
     const quickReplies = prioritizeQuickReplies(quickRepliesQuery.data ?? [], activeThread?.topic);
     const activeVisitorTyping = activeThreadId ? typingByThread[activeThreadId] : undefined;
 
@@ -76,19 +88,20 @@ export function AdminSupportQuickDock() {
         }
     };
 
-    const handleSend = async (text: string, clearComposer = false) => {
+    const handleSend = (text: string, clearComposer = false) => {
         const trimmed = text.trim();
-        if (!trimmed || !activeThread || replyMutation.isPending) return;
+        if (!trimmed || !activeThread) return;
         const status = activeThread.status === 'OPEN' ? 'IN_PROGRESS' : activeThread.status;
-        try {
-            if (stopTypingRef.current) clearTimeout(stopTypingRef.current);
-            notifyAdminTyping(activeThread.id, false);
-            await replyMutation.mutateAsync({id: activeThread.id, content: trimmed, status});
-            if (clearComposer) setDraft('');
-            toast.success(`Đã phản hồi nhanh cho ${activeThread.fullName}.`);
-        } catch {
-            toast.error('Không thể gửi tin nhắn phản hồi. Vui lòng thử lại.');
-        }
+        if (stopTypingRef.current) clearTimeout(stopTypingRef.current);
+        notifyAdminTyping(activeThread.id, false);
+        if (clearComposer) setDraft('');
+        enqueue({
+            scopeKey: String(activeThread.id),
+            senderRole: 'ADMIN',
+            senderName: user?.fullName?.trim() || user?.username || 'Quản trị viên',
+            content: trimmed,
+            requestedThreadStatus: status,
+        });
     };
 
     const onComposerKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -182,17 +195,20 @@ export function AdminSupportQuickDock() {
                             </div>
 
                             <div ref={listRef} className="max-h-56 space-y-2 overflow-y-auto bg-slate-50/40 p-3">
-                                {messages.slice(-10).map(msg => {
+                                {visibleMessages.map((msg, idx) => {
                                     const isAdmin = msg.senderRole === 'ADMIN';
+                                    const receipt = resolveSupportMessageReceipt(visibleMessages, idx, 'ADMIN');
                                     return (
-                                        <div key={msg.id} className={cn('flex flex-col', isAdmin ? 'items-end' : 'items-start')}>
+                                        <div key={msg.clientKey ?? msg.id} className={cn('flex flex-col', isAdmin ? 'items-end' : 'items-start')}>
                                             <span className="mb-0.5 text-[10px] text-slate-400">{msg.senderName} · {formatSupportTime(msg.createdAt)}</span>
                                             <div className={cn(
-                                                'max-w-[86%] rounded-xl px-3 py-1.5 text-xs leading-relaxed whitespace-pre-wrap',
+                                                'max-w-[86%] rounded-xl px-3 py-1.5 text-xs leading-relaxed whitespace-pre-wrap transition-opacity',
                                                 isAdmin ? 'bg-primary text-primary-foreground' : 'border border-slate-200 bg-white text-slate-800',
+                                                msg.deliveryStatus === 'sending' && 'opacity-70',
                                             )}>
                                                 {msg.content}
                                             </div>
+                                            <SupportMessageStatusRow receipt={receipt} onRetry={msg.clientKey ? () => retry(msg.clientKey!) : undefined}/>
                                         </div>
                                     );
                                 })}
@@ -217,7 +233,7 @@ export function AdminSupportQuickDock() {
                                                             className="max-w-32 truncate px-2 py-0.5 font-medium text-slate-700 hover:bg-slate-50 cursor-pointer">
                                                         {qr.title}
                                                     </button>
-                                                    <button type="button" disabled={replyMutation.isPending} onClick={() => void handleSend(text)}
+                                                    <button type="button" onClick={() => handleSend(text)}
                                                             title={`Gửi ngay: ${text}`}
                                                             className="border-l border-rose-100 bg-rose-50 px-1.5 py-0.5 font-bold text-primary hover:bg-primary hover:text-white cursor-pointer">
                                                         ⚡
@@ -233,7 +249,7 @@ export function AdminSupportQuickDock() {
                                 <input type="text" value={draft} onChange={handleDraftChange} onKeyDown={onComposerKeyDown}
                                        placeholder="Nhập phản hồi nhanh..."
                                        className="h-8 flex-1 rounded-control border border-border px-2.5 text-xs text-slate-900 focus:border-primary focus:outline-none"/>
-                                <button type="button" disabled={!draft.trim() || replyMutation.isPending} onClick={() => void handleSend(draft, true)}
+                                <button type="button" disabled={!draft.trim()} onClick={() => handleSend(draft, true)}
                                         aria-label="Gửi phản hồi nhanh"
                                         className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-primary text-white hover:bg-primary-hover disabled:opacity-50 cursor-pointer">
                                     <Send size={13}/>

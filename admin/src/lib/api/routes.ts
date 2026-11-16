@@ -286,11 +286,15 @@ export const API_ROUTES = {
             `/api/v1/public/support/threads/${encodeURIComponent(visitorToken)}?markRead=${markRead}`,
         supportMessages: (visitorToken: string) =>
             `/api/v1/public/support/threads/${encodeURIComponent(visitorToken)}/messages`,
+        supportMarkRead: (visitorToken: string) =>
+            `/api/v1/public/support/threads/${encodeURIComponent(visitorToken)}/read`,
     },
     adminSupport: {
         summary: '/api/v1/admin/support/summary',
         threads: '/api/v1/admin/support/threads',
+        delivered: '/api/v1/admin/support/threads/delivered',
         thread: (id: string | number) => `/api/v1/admin/support/threads/${id}`,
+        markRead: (id: string | number) => `/api/v1/admin/support/threads/${id}/read`,
         reply: (id: string | number) => `/api/v1/admin/support/threads/${id}/reply`,
         status: (id: string | number) => `/api/v1/admin/support/threads/${id}/status`,
         quickReplies: '/api/v1/admin/support/quick-replies',

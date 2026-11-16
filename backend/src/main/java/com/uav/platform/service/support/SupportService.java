@@ -30,7 +30,13 @@ public interface SupportService {
     PageResponse<SupportThreadResponse> listAdminThreads(
             String status, String topic, Boolean unreadOnly, String q, int page, int size);
 
-    SupportThreadDetailResponse getAdminThreadDetail(Long id);
+    int acknowledgeAdminDelivered();
+
+    SupportThreadDetailResponse getAdminThreadDetail(Long id, Authentication auth);
+
+    default SupportThreadDetailResponse getAdminThreadDetail(Long id) {
+        return getAdminThreadDetail(id, null);
+    }
 
     SupportThreadDetailResponse replyAsAdmin(
             Long id, SupportAdminReplyRequest request, Authentication auth);

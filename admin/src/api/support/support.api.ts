@@ -30,8 +30,14 @@ export const adminSupportService = {
         return apiClient.get<PageResponse<SupportThread>>(endpoint, {signal});
     },
 
+    acknowledgeDelivered: () =>
+        apiClient.post<{ delivered: number }>(API_ROUTES.adminSupport.delivered, {}),
+
     thread: (id: number | string, signal?: AbortSignal) =>
         apiClient.get<SupportThreadDetail>(API_ROUTES.adminSupport.thread(id), {signal}),
+
+    markRead: (id: number | string) =>
+        apiClient.post<SupportThreadDetail>(API_ROUTES.adminSupport.markRead(id), {}),
 
     reply: (id: number | string, body: SupportReplyInput) =>
         apiClient.post<SupportThreadDetail>(API_ROUTES.adminSupport.reply(id), body),
