@@ -6,34 +6,16 @@ import {ApiError} from '@/lib/api';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import {useAssistantChat, useAssistantInfo} from '@/hooks/assistant/useAssistant';
-import type {
-    AssistantCorner as Corner,
-    AssistantPortal,
-    ChatImage,
-    ChatMessage,
-    PendingAttachment,
-} from '@/types/assistant/assistant.types';
-import {
-    AssistantWidgetLauncher,
-    CORNER_KEY,
-    EXPANDED_KEY,
-    isCorner,
-    PANEL_AT,
-    PANEL_ORIGIN,
-} from '@/components/assistant/widget/AssistantWidgetLauncher';
+import type {AssistantCorner as Corner, AssistantPortal, ChatImage, ChatMessage, PendingAttachment} from '@/types/assistant/assistant.types';
+import {AssistantWidgetLauncher, CORNER_KEY, EXPANDED_KEY, isCorner, PANEL_AT, PANEL_ORIGIN} from '@/components/assistant/widget/AssistantWidgetLauncher';
 import {AssistantWidgetHeader} from '@/components/assistant/widget/AssistantWidgetHeader';
 import {AssistantWidgetMessageList} from '@/components/assistant/widget/AssistantWidgetMessageList';
 import {AssistantWidgetComposer, readMediaAttachments} from '@/components/assistant/widget/AssistantWidgetComposer';
 import {MAX_ATTACHMENTS} from '@/utils/assistant/attachments';
 import {cn} from '@/lib/utils';
 
-/** History sent back to the model; older turns are dropped so each request stays small. */
 const HISTORY_LIMIT = 12;
-
-/** Send time of a message; kept out of the component so it is clearly an event-time read. */
-function sentAt() {
-    return Date.now();
-}
+const sentAt = () => Date.now();
 
 function loadConversation(key: string): number | null {
     try {
@@ -48,14 +30,16 @@ function loadHistory(key: string): ChatMessage[] {
     try {
         const raw = sessionStorage.getItem(key);
         const parsed: unknown = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed.filter((m): m is ChatMessage =>
-            !!m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string') : [];
+        return Array.isArray(parsed)
+            ? parsed
+                  .filter((m): m is ChatMessage => !!m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
+                  .map((m) => (m.status === 'sending' ? {...m, status: 'failed' as const} : m))
+            : [];
     } catch {
         return [];
     }
 }
 
-/** Keeps the tab's chat across reloads; images keep only their thumbnail, and are dropped if storage is full. */
 function saveHistory(key: string, messages: ChatMessage[]) {
     const recent = messages.slice(-40);
     const slim = recent.map((m) => (m.images ? {...m, images: m.images.map((i) => ({...i, src: i.thumb}))} : m));
@@ -63,7 +47,7 @@ function saveHistory(key: string, messages: ChatMessage[]) {
         sessionStorage.setItem(key, JSON.stringify(slim));
     } catch {
         try {
-            sessionStorage.setItem(key, JSON.stringify(recent.map(({role, content, at}) => ({role, content, at}))));
+            sessionStorage.setItem(key, JSON.stringify(recent.map(({role, content, at, clientKey, status}) => ({role, content, at, clientKey, status}))));
         } catch {
             // Storage unavailable: the conversation simply is not kept.
         }
@@ -128,12 +112,25 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
         }
     }, [conversationId, threadKey]);
 
+    const inFlightKeyRef = useRef<string | null>(null);
     const send = useAssistantChat({
         onSuccess: (reply) => {
-            setMessages((prev) => [...prev, {role: 'assistant', content: reply.reply, at: sentAt()}]);
+            const activeKey = inFlightKeyRef.current;
+            inFlightKeyRef.current = null;
+            setMessages((prev) => [
+                ...prev.map((m) => (activeKey && m.clientKey === activeKey ? {...m, status: 'seen' as const} : m)),
+                {role: 'assistant', content: reply.reply, at: sentAt()},
+            ]);
             if (reply.conversationId) setConversationId(reply.conversationId);
         },
         onError: (error) => {
+            const activeKey = inFlightKeyRef.current;
+            inFlightKeyRef.current = null;
+            if (activeKey) {
+                setMessages((prev) =>
+                    prev.map((m) => (m.clientKey === activeKey ? {...m, status: 'failed' as const} : m)),
+                );
+            }
             const code = error instanceof ApiError ? (error.code ?? '') : '';
             const key = `admin.assistant.error.${code}`;
             const text = code ? t(key, {code}) : key;
@@ -183,9 +180,14 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
         const files = pending;
         if ((!text && !files.length) || !activeMode || send.isPending || reading) return;
         const images: ChatImage[] = files.map(({kind, name, src, thumb}) => ({kind, name, src, thumb}));
+        const now = sentAt();
+        const clientKey = `ast-${now}`;
+        inFlightKeyRef.current = clientKey;
         const next: ChatMessage[] = [...messages, {
             role: 'user',
-            at: sentAt(),
+            at: now,
+            clientKey,
+            status: 'sending',
             content: text || t('admin.assistant.attachmentOnly'),
             ...(images.length ? {images} : {}),
         }];
@@ -194,13 +196,35 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
         setPending([]);
         send.mutate({
             mode: activeMode.mode,
-            messages: next.slice(-HISTORY_LIMIT).map((m, i, all) =>
-                i < all.length - 1 && m.images?.length
-                    ? {...m, content: `${m.content}\n${t('admin.assistant.attachedEarlier', {count: m.images.length})}`}
-                    : m),
+            messages: next
+                .filter((m) => m.status !== 'failed')
+                .slice(-HISTORY_LIMIT)
+                .map((m, i, all) =>
+                    i < all.length - 1 && m.images?.length
+                        ? {...m, content: `${m.content}\n${t('admin.assistant.attachedEarlier', {count: m.images.length})}`}
+                        : m),
             portal,
             conversationId,
             attachments: files.map(({kind, name, data}) => ({kind, name, data})),
+        });
+    };
+
+    const retryMessage = (clientKey: string) => {
+        if (!activeMode || send.isPending) return;
+        const idx = messages.findIndex((m) => m.clientKey === clientKey && m.status === 'failed');
+        if (idx < 0) return;
+        inFlightKeyRef.current = clientKey;
+        const next = messages.map((m, i) => (i === idx ? {...m, status: 'sending' as const} : m));
+        setMessages(next);
+        send.mutate({
+            mode: activeMode.mode,
+            messages: next
+                .slice(0, idx + 1)
+                .filter((m) => m.status !== 'failed')
+                .slice(-HISTORY_LIMIT),
+            portal,
+            conversationId,
+            attachments: [],
         });
     };
 
@@ -235,7 +259,7 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
                         portal={portal} listRef={list} messages={messages} isInfoPending={info.isPending}
                         enabled={enabled} canManageSettings={can('USER_PERMISSION_MANAGE')}
                         displayName={user?.fullName || user?.username || ''} expanded={expanded}
-                        isSending={send.isPending} dropping={dropping} onAsk={ask} onClose={() => setOpen(false)}
+                        isSending={send.isPending} dropping={dropping} onAsk={ask} onRetryMessage={retryMessage} onClose={() => setOpen(false)}
                     />
                     <AssistantWidgetComposer
                         portal={portal} open={open} enabled={enabled} draft={draft} pending={pending}

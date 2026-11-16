@@ -81,6 +81,8 @@ export interface ChatMessage extends AssistantMessage {
     images?: ChatImage[];
     /** Small grey line under the bubble, e.g. model and latency in the admin transcript. */
     note?: string;
+    clientKey?: string;
+    status?: 'sending' | 'sent' | 'seen' | 'failed';
 }
 
 /** Consecutive messages of one sender within the grouping window, drawn under one avatar. */

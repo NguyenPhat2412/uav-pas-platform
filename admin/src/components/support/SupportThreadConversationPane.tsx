@@ -3,26 +3,17 @@
 import {useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent} from 'react';
 import {Building2, CheckCircle2, Clock, Mail, Phone, RotateCcw, Send, Settings2, Trash2, User, Zap} from 'lucide-react';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
+import {SupportMessageStatusRow} from '@/components/support/SupportMessageStatusRow';
 import {Button} from '@/components/ui';
-import {
-    personalizeQuickReply,
-    useDeleteSupportThread,
-    useReplySupportThread,
-    useSupportThreadDetail,
-    useUpdateSupportStatus,
-} from '@/hooks/support/useAdminSupport';
+import {personalizeQuickReply, useDeleteSupportThread, useReplySupportThread, useSupportThreadDetail, useUpdateSupportStatus} from '@/hooks/support/useAdminSupport';
+import {useSupportOutbox} from '@/hooks/support/useSupportOutbox';
 import {cn} from '@/lib/utils';
+import {useAuth} from '@/providers/AuthContext';
 import {confirmDialog} from '@/providers/ConfirmContext';
 import {toast} from '@/providers/ToastContext';
 import type {SupportQuickReply, SupportThreadStatus} from '@/types/support/support.types';
-import {
-    formatSupportSource,
-    formatSupportTime,
-    formatSupportTopic,
-    prioritizeQuickReplies,
-    resolveContactHref,
-    SUPPORT_STATUS_META,
-} from '@/utils/support/support-format';
+import {mergeMessagesWithOutbox, resolveSupportMessageReceipt} from '@/utils/support/message-status';
+import {formatSupportSource, formatSupportTime, formatSupportTopic, prioritizeQuickReplies, resolveContactHref, SUPPORT_STATUS_META} from '@/utils/support/support-format';
 
 interface SupportThreadConversationPaneProps {
     threadId: number;
@@ -33,14 +24,8 @@ interface SupportThreadConversationPaneProps {
     onDeleted: () => void;
 }
 
-export function SupportThreadConversationPane({
-    threadId,
-    quickReplies,
-    visitorTypingName,
-    onAdminTyping,
-    onOpenQuickReplies,
-    onDeleted,
-}: SupportThreadConversationPaneProps) {
+export function SupportThreadConversationPane({threadId, quickReplies, visitorTypingName, onAdminTyping, onOpenQuickReplies, onDeleted}: SupportThreadConversationPaneProps) {
+    const {user} = useAuth();
     const detailQuery = useSupportThreadDetail(threadId);
     const replyMutation = useReplySupportThread();
     const statusMutation = useUpdateSupportStatus();
@@ -51,8 +36,13 @@ export function SupportThreadConversationPane({
     const composerRef = useRef<HTMLTextAreaElement>(null);
     const stopTypingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    const {outbox, enqueue, retry, clearScope} = useSupportOutbox(async (entry) => {
+        await replyMutation.mutateAsync({id: Number(entry.scopeKey), content: entry.content, status: entry.requestedThreadStatus});
+        if (entry.requestedThreadStatus === 'RESOLVED') toast.success('Đã gửi phản hồi & hoàn tất hội thoại.');
+    });
+
     const thread = detailQuery.data?.thread;
-    const messages = detailQuery.data?.messages ?? [];
+    const messages = mergeMessagesWithOutbox(detailQuery.data?.messages ?? [], outbox, String(threadId));
 
     useEffect(() => {
         transcriptRef.current?.scrollTo({top: transcriptRef.current.scrollHeight, behavior: 'smooth'});
@@ -75,19 +65,20 @@ export function SupportThreadConversationPane({
         }
     };
 
-    const sendMessage = async (rawContent: string, nextStatus?: SupportThreadStatus, clearComposer = false) => {
+    const sendMessage = (rawContent: string, nextStatus?: SupportThreadStatus, clearComposer = false) => {
         const trimmed = rawContent.trim();
-        if (!trimmed || !thread || replyMutation.isPending) return;
+        if (!trimmed || !thread) return;
         const status = nextStatus ?? (thread.status === 'OPEN' ? 'IN_PROGRESS' : thread.status);
-        try {
-            if (stopTypingTimerRef.current) clearTimeout(stopTypingTimerRef.current);
-            onAdminTyping?.(false);
-            await replyMutation.mutateAsync({id: thread.id, content: trimmed, status});
-            if (clearComposer) setDraft('');
-            toast.success(nextStatus === 'RESOLVED' ? 'Đã gửi phản hồi & hoàn tất hội thoại.' : 'Đã gửi tin nhắn phản hồi.');
-        } catch {
-            // ErrorNotice renders API failure below.
-        }
+        if (stopTypingTimerRef.current) clearTimeout(stopTypingTimerRef.current);
+        onAdminTyping?.(false);
+        if (clearComposer) setDraft('');
+        enqueue({
+            scopeKey: String(thread.id),
+            senderRole: 'ADMIN',
+            senderName: user?.fullName?.trim() || user?.username || 'Quản trị viên',
+            content: trimmed,
+            requestedThreadStatus: status,
+        });
     };
 
     const handleStatusChange = async (status: SupportThreadStatus) => {
@@ -111,6 +102,7 @@ export function SupportThreadConversationPane({
         if (!ok) return;
         try {
             await deleteMutation.mutateAsync(thread.id);
+            clearScope(String(thread.id));
             toast.success(`Đã xóa hội thoại ${thread.code}.`);
             onDeleted();
         } catch {
@@ -188,21 +180,24 @@ export function SupportThreadConversationPane({
                     <div ref={transcriptRef} className="flex-1 space-y-3 overflow-y-auto bg-slate-50/35 p-4 max-h-[380px]">
                         {messages.length === 0 ? (
                             <p className="py-12 text-center text-xs text-slate-400">Chưa có tin nhắn nào trong hội thoại này.</p>
-                        ) : messages.map(msg => {
+                        ) : messages.map((msg, idx) => {
                             const isAdmin = msg.senderRole === 'ADMIN';
+                            const receipt = resolveSupportMessageReceipt(messages, idx, 'ADMIN');
                             return (
-                                <div key={msg.id} className={cn('flex flex-col', isAdmin ? 'items-end' : 'items-start')}>
+                                <div key={msg.clientKey ?? msg.id} className={cn('flex flex-col', isAdmin ? 'items-end' : 'items-start')}>
                                     <div className="mb-1 flex items-center gap-2 px-1 text-[11px] text-slate-400">
                                         <strong className={cn('font-semibold', isAdmin ? 'text-primary' : 'text-slate-600')}>{msg.senderName}</strong>
                                         <span>·</span>
                                         <time dateTime={msg.createdAt}>{formatSupportTime(msg.createdAt)}</time>
                                     </div>
                                     <div className={cn(
-                                        'max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap shadow-2xs',
+                                        'max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap shadow-2xs transition-opacity',
                                         isAdmin ? 'rounded-tr-xs bg-primary text-primary-foreground' : 'rounded-tl-xs border border-slate-200 bg-white text-slate-800',
+                                        msg.deliveryStatus === 'sending' && 'opacity-70',
                                     )}>
                                         {msg.content}
                                     </div>
+                                    <SupportMessageStatusRow receipt={receipt} onRetry={msg.clientKey ? () => retry(msg.clientKey!) : undefined}/>
                                 </div>
                             );
                         })}
@@ -243,9 +238,9 @@ export function SupportThreadConversationPane({
                                                     className="max-w-48 truncate px-2.5 py-1 font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 cursor-pointer">
                                                 {qr.title}
                                             </button>
-                                            <button type="button" disabled={replyMutation.isPending} title={`Gửi ngay lập tức:\n${personalized}`}
-                                                    onClick={() => void sendMessage(personalized)}
-                                                    className="border-l border-rose-100 bg-rose-50 px-2 py-1 text-[11px] font-bold text-primary hover:bg-primary hover:text-white disabled:opacity-50 transition-colors cursor-pointer">
+                                            <button type="button" title={`Gửi ngay lập tức:\n${personalized}`}
+                                                    onClick={() => sendMessage(personalized)}
+                                                    className="border-l border-rose-100 bg-rose-50 px-2 py-1 text-[11px] font-bold text-primary hover:bg-primary hover:text-white transition-colors cursor-pointer">
                                                 ⚡ Gửi ngay
                                             </button>
                                         </div>
@@ -271,12 +266,12 @@ export function SupportThreadConversationPane({
                                 Nhấn <strong>Enter</strong> để gửi nhanh · <strong>Shift + Enter</strong> xuống dòng
                             </span>
                             <div className="flex items-center gap-2">
-                                <Button size="sm" variant="outline" disabled={!draft.trim() || replyMutation.isPending}
-                                        leftIcon={<CheckCircle2 size={14}/>} onClick={() => void sendMessage(draft, 'RESOLVED', true)}>
+                                <Button size="sm" variant="outline" disabled={!draft.trim()}
+                                        leftIcon={<CheckCircle2 size={14}/>} onClick={() => sendMessage(draft, 'RESOLVED', true)}>
                                     Gửi & Hoàn tất
                                 </Button>
-                                <Button size="sm" isLoading={replyMutation.isPending} disabled={!draft.trim()}
-                                        leftIcon={<Send size={14}/>} onClick={() => void sendMessage(draft, undefined, true)}>
+                                <Button size="sm" disabled={!draft.trim()}
+                                        leftIcon={<Send size={14}/>} onClick={() => sendMessage(draft, undefined, true)}>
                                     Gửi phản hồi
                                 </Button>
                             </div>
