@@ -306,6 +306,7 @@ public final class ApiRoutes {
         public static final String INVOICES = "/invoices";
         public static final String INVOICE_BY_ID = "/invoices/{id}";
         public static final String INVOICE_RECEIPT = "/invoices/{id}/receipt";
+        public static final String SEND_INVOICE_EMAIL = "/invoices/{id}/send-email";
         public static final String PAY_INVOICE = "/invoices/{id}/pay";
         public static final String CANCEL_INVOICE = "/invoices/{id}/cancel";
 
@@ -419,6 +420,9 @@ public final class ApiRoutes {
         public static final String SITE_INFO = "/site-info";
         public static final String DISCOVERY = "/discovery";
         public static final String FULL_DISCOVERY = BASE + DISCOVERY;
+        public static final String I18N_BY_LOCALE = "/i18n/{locale}";
+        public static final String I18N_SWITCH = "/i18n/switch";
+        public static final String FULL_I18N_WILDCARD = BASE + "/i18n/**";
         public static final String SUPPORT_THREADS = "/support/threads";
         public static final String SUPPORT_THREAD_BY_TOKEN = "/support/threads/{visitorToken}";
         public static final String SUPPORT_THREAD_MESSAGES =
@@ -444,6 +448,9 @@ public final class ApiRoutes {
         public static final String USER_BILLING_PROFILE = BASE + "/users/{id}/billing-profile";
         public static final String SLA_INTELLIGENCE = BASE + "/sla-intelligence";
         public static final String SUPPORT = BASE + "/support";
+        public static final String I18N = BASE + "/i18n";
+        public static final String I18N_BY_ID = "/{id}";
+        public static final String I18N_NAMESPACES = "/namespaces";
 
         // Method-level paths, relative to the controller mapping.
         public static final String ASSISTANT_CONVERSATIONS_BY_ID = "/{id}";
@@ -454,6 +461,13 @@ public final class ApiRoutes {
         public static final String INFRASTRUCTURE_DATABASE = "/database";
         public static final String INFRASTRUCTURE_EMAIL = "/email";
         public static final String INFRASTRUCTURE_EMAIL_TEST = "/email/test";
+        public static final String INFRASTRUCTURE_MAIL_OTP_SETTINGS = "/mail-otp-settings";
+        public static final String INFRASTRUCTURE_OTP_TOKENS = "/otp-tokens";
+        public static final String INFRASTRUCTURE_OTP_TOKEN_INVALIDATE =
+                "/otp-tokens/{id}/invalidate";
+        public static final String INFRASTRUCTURE_OTP_SEND_RESET = "/otp-support/send-reset";
+        public static final String INFRASTRUCTURE_OTP_CLEAR_RATE_LIMIT =
+                "/otp-support/clear-rate-limit";
         public static final String SECURITY_SESSIONS = "/sessions";
         public static final String SECURITY_USERS_REVOKE_SESSIONS = "/users/{id}/revoke-sessions";
         public static final String SECURITY_REVOKE_ALL_SESSIONS = "/revoke-all-sessions";

@@ -50,6 +50,9 @@ public class MarketplaceEscrowServiceImpl implements MarketplaceEscrowService {
                     com.uav.platform.service.notification.inbox.NotificationService>
             notifications;
 
+    @Autowired(required = false)
+    private com.uav.platform.service.webhook.FinancialOutboxService financialEvents;
+
     private void notifyProvider(
             ProviderProfile provider, String title, String content, String refType, Long refId) {
         if (provider == null
@@ -178,7 +181,10 @@ public class MarketplaceEscrowServiceImpl implements MarketplaceEscrowService {
             invoice.setEscrowStatus(EscrowStatus.NONE);
         }
 
-        invoices.save(invoice);
+        Invoice savedInvoice = invoices.save(invoice);
+        if (financialEvents != null) {
+            financialEvents.recordInvoiceIssued(savedInvoice);
+        }
         mission.setBillingStatus("ISSUED");
         missions.save(mission);
     }

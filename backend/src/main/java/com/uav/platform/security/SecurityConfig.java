@@ -93,6 +93,8 @@ public class SecurityConfig {
                                         .ignoringRequestMatchers(ApiRoutes.Webhook.WILDCARD)
                                         .ignoringRequestMatchers(
                                                 ApiRoutes.Public.FULL_SUPPORT_WILDCARD)
+                                        .ignoringRequestMatchers(
+                                                ApiRoutes.Public.FULL_I18N_WILDCARD)
                                         .ignoringRequestMatchers(ApiRoutes.Realtime.WILDCARD)
                                         .ignoringRequestMatchers(
                                                 ApiRoutes.Training.FULL_ASSET_CONTENT)
@@ -160,6 +162,8 @@ public class SecurityConfig {
                                                 ApiRoutes.Marketplace.PUBLIC_WILDCARD)
                                         .permitAll()
                                         .requestMatchers(ApiRoutes.Public.FULL_SUPPORT_WILDCARD)
+                                        .permitAll()
+                                        .requestMatchers(ApiRoutes.Public.FULL_I18N_WILDCARD)
                                         .permitAll()
                                         .requestMatchers(ApiRoutes.Realtime.WILDCARD)
                                         .permitAll()

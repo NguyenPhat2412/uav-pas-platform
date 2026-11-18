@@ -21,6 +21,9 @@ public interface AuthRateLimitService {
     /** Starts the resend cooldown for this key (called whenever a code is emailed). */
     void startResendCooldown(String key);
 
+    /** Clears account-scoped rate-limit counters and resend cooldowns for admin support recovery. */
+    default void clearAccountLimits(String accountKey) {}
+
     /** Caps outbound authentication emails per minute across the platform (anonymous flows). */
     default void checkGlobalEmailBudget() {
         checkGlobalEmailBudget(false);

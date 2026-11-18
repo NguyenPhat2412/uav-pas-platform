@@ -5,7 +5,7 @@ import com.uav.platform.enums.billing.InvoiceStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/** Resolved snapshot of invoice, customer, tax profile, and settlement data for PDF rendering. */
+/** Resolved snapshot of invoice, customer, tax profile, and settlement data for PDF & email rendering. */
 public record InvoiceReceiptData(
         Long invoiceId,
         String invoiceCode,
@@ -23,6 +23,7 @@ public record InvoiceReceiptData(
         String organizationName,
         String taxCode,
         String billingAddress,
+        String billingEmail,
         String itemTitle,
         String itemReference,
         String paymentGateway,
@@ -32,4 +33,62 @@ public record InvoiceReceiptData(
         String bankBin,
         String bankAccountNumber,
         String bankAccountName,
-        String transferMemo) {}
+        String transferMemo) {
+
+    public InvoiceReceiptData(
+            Long invoiceId,
+            String invoiceCode,
+            InvoiceStatus status,
+            BigDecimal totalAmount,
+            BigDecimal vatRate,
+            LocalDateTime issuedAt,
+            LocalDateTime dueDate,
+            LocalDateTime paidAt,
+            String notes,
+            String customerUsername,
+            String customerFullName,
+            String customerEmail,
+            String customerPhone,
+            String organizationName,
+            String taxCode,
+            String billingAddress,
+            String itemTitle,
+            String itemReference,
+            String paymentGateway,
+            String transactionCode,
+            LocalDateTime transactionCompletedAt,
+            String bankName,
+            String bankBin,
+            String bankAccountNumber,
+            String bankAccountName,
+            String transferMemo) {
+        this(
+                invoiceId,
+                invoiceCode,
+                status,
+                totalAmount,
+                vatRate,
+                issuedAt,
+                dueDate,
+                paidAt,
+                notes,
+                customerUsername,
+                customerFullName,
+                customerEmail,
+                customerPhone,
+                organizationName,
+                taxCode,
+                billingAddress,
+                null,
+                itemTitle,
+                itemReference,
+                paymentGateway,
+                transactionCode,
+                transactionCompletedAt,
+                bankName,
+                bankBin,
+                bankAccountNumber,
+                bankAccountName,
+                transferMemo);
+    }
+}

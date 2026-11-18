@@ -28,6 +28,9 @@ public class CustomerBillingProfile {
     @Column(name = "billing_address", length = 500)
     private String billingAddress;
 
+    @Column(name = "billing_email", length = 255)
+    private String billingEmail;
+
     @Column(name = "emergency_contact_name", length = 120)
     private String emergencyContactName;
 

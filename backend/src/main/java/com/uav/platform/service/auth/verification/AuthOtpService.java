@@ -22,6 +22,10 @@ public interface AuthOtpService {
 
     OtpChallengeResponse forgotPassword(ForgotPasswordRequest request);
 
+    default OtpChallengeResponse forgotPassword(ForgotPasswordRequest request, String source) {
+        return forgotPassword(request);
+    }
+
     MessageResponse resetPassword(ResetPasswordRequest request);
 
     TwoFactorStatusResponse get2faStatus(String username);

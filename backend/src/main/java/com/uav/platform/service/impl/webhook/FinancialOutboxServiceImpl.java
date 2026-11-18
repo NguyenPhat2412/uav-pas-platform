@@ -7,10 +7,14 @@ import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.webhook.FinancialOutboxEvent;
 import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.repository.webhook.FinancialOutboxRepository;
+import com.uav.platform.service.billing.invoice.InvoiceMailService;
 import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.webhook.FinancialOutboxService;
 import com.uav.platform.service.webhook.WebhookEventQueue;
 
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class FinancialOutboxServiceImpl implements FinancialOutboxService {
     /** After this many failed local attempts the event is FAILED and waits for an admin retry. */
     static final int MAX_ATTEMPTS = 8;
@@ -38,6 +43,9 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
     @Value("${app.financial-outbox.worker-enabled:true}")
     private boolean workerEnabled;
 
+    @Autowired(required = false)
+    private InvoiceMailService invoiceMailService;
+
     public FinancialOutboxServiceImpl(
             FinancialOutboxRepository events,
             NotificationService notifications,
@@ -50,21 +58,32 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
         transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
     }
 
+    public void setInvoiceMailService(InvoiceMailService invoiceMailService) {
+        this.invoiceMailService = invoiceMailService;
+    }
+
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public void recordInvoiceIssued(Invoice invoice) {
         record("INVOICE_ISSUED", invoice);
+        if (invoice != null && invoice.getId() != null) {
+            scheduleAfterCommit("INVOICE_ISSUED:" + invoice.getId());
+        }
     }
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public void recordPaymentCompleted(Invoice invoice) {
         record("PAYMENT_COMPLETED", invoice);
+        if (invoice != null && invoice.getId() != null) {
+            scheduleAfterCommit("PAYMENT_COMPLETED:" + invoice.getId());
+        }
+    }
+
+    private void scheduleAfterCommit(String eventId) {
         if (workerEnabled
-                && invoice != null
-                && invoice.getId() != null
+                && eventId != null
                 && TransactionSynchronizationManager.isSynchronizationActive()) {
-            String eventId = "PAYMENT_COMPLETED:" + invoice.getId();
             TransactionSynchronizationManager.registerSynchronization(
                     new TransactionSynchronization() {
                         @Override
@@ -112,6 +131,8 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
 
     @Override
     public void process(String id) {
+        Long[] mailTargetInvoiceId = {null};
+        String[] mailTargetEventType = {null};
         try {
             transaction.executeWithoutResult(
                     tx -> {
@@ -147,6 +168,8 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
                         event.setNextAttemptAt(LocalDateTime.now().plusMinutes(1));
                         event.setAttempts(event.getAttempts() + 1);
                         event.setLastError(null);
+                        mailTargetInvoiceId[0] = event.getInvoiceId();
+                        mailTargetEventType[0] = event.getEventType();
                     });
         } catch (RuntimeException ex) {
             transaction.executeWithoutResult(
@@ -160,6 +183,22 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
                         event.setNextAttemptAt(
                                 LocalDateTime.now().plusMinutes(Math.min(60, event.getAttempts())));
                     });
+            return;
+        }
+
+        if (invoiceMailService != null
+                && mailTargetInvoiceId[0] != null
+                && mailTargetEventType[0] != null) {
+            try {
+                invoiceMailService.sendForOutboxEvent(
+                        mailTargetInvoiceId[0], mailTargetEventType[0]);
+            } catch (RuntimeException ex) {
+                log.warn(
+                        "Best-effort invoice email dispatch failed for invoiceId={}, eventType={}: {}",
+                        mailTargetInvoiceId[0],
+                        mailTargetEventType[0],
+                        ex.getMessage());
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import com.uav.platform.dto.request.billing.invoice.CreateInvoiceRequest;
 import com.uav.platform.dto.request.billing.invoice.PayInvoiceRequest;
 import com.uav.platform.dto.request.billing.reconciliation.PaymentIpnRequest;
 import com.uav.platform.dto.request.billing.reconciliation.SepayWebhookRequest;
+import com.uav.platform.dto.response.billing.invoice.InvoiceEmailDispatchResponse;
 import com.uav.platform.dto.response.billing.invoice.InvoiceResponse;
 import com.uav.platform.dto.response.billing.invoice.PaymentResponse;
 import com.uav.platform.dto.response.billing.plan.ServicePlanResponse;
@@ -43,6 +44,10 @@ public interface BillingService {
 
     /** Renders a standards-compliant ISO-32000 PDF invoice / payment receipt for an accessible invoice. */
     byte[] renderInvoiceReceiptPdf(Long id, Authentication auth);
+
+    /** Sends or resends the itemized HTML invoice / payment receipt email with PDF attachment. */
+    InvoiceEmailDispatchResponse sendInvoiceEmail(
+            Long id, String recipientEmail, Authentication auth);
 
     /** Settles a PENDING invoice after an admin has matched the transfer on the bank statement. */
     InvoiceResponse confirmBankTransfer(Long id, String bankReference, Authentication auth);

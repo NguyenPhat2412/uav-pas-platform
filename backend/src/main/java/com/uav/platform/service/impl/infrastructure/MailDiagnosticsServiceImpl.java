@@ -8,8 +8,10 @@ import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.auth.verification.AuthMailService;
 import com.uav.platform.service.infrastructure.MailDiagnosticsService;
+import com.uav.platform.service.infrastructure.MailOtpSettingsService;
 
 import jakarta.annotation.PreDestroy;
+import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -69,6 +72,9 @@ public class MailDiagnosticsServiceImpl implements MailDiagnosticsService {
                     });
     private volatile MailConnectionCheck cachedConnection;
 
+    @Autowired(required = false)
+    private ObjectProvider<MailOtpSettingsService> mailOtpSettingsProvider;
+
     @Autowired
     public MailDiagnosticsServiceImpl(
             AuthMailService authMail,
@@ -100,23 +106,81 @@ public class MailDiagnosticsServiceImpl implements MailDiagnosticsService {
         this.clock = clock;
     }
 
+    public void setMailOtpSettingsProvider(
+            ObjectProvider<MailOtpSettingsService> mailOtpSettingsProvider) {
+        this.mailOtpSettingsProvider = mailOtpSettingsProvider;
+    }
+
     @PreDestroy
     void shutdown() {
         probeExecutor.shutdownNow();
     }
 
     @Override
+    public void invalidateConnectionCache() {
+        this.cachedConnection = null;
+    }
+
+    private MailOtpSettingsService dynamicSettings() {
+        return mailOtpSettingsProvider == null ? null : mailOtpSettingsProvider.getIfAvailable();
+    }
+
+    private JavaMailSender effectiveSender() {
+        MailOtpSettingsService settings = dynamicSettings();
+        if (settings != null) {
+            return settings.currentMailSender();
+        }
+        return senderProvider == null ? null : senderProvider.getIfAvailable();
+    }
+
+    private String effectiveHost() {
+        MailOtpSettingsService settings = dynamicSettings();
+        return settings != null ? settings.effectiveSmtpHost() : host;
+    }
+
+    private String effectiveUsername() {
+        MailOtpSettingsService settings = dynamicSettings();
+        return settings != null ? settings.effectiveSmtpUsername() : username;
+    }
+
+    private Integer effectivePort() {
+        MailOtpSettingsService settings = dynamicSettings();
+        return settings != null ? settings.effectiveSmtpPort() : port;
+    }
+
+    private String effectiveFromAddress() {
+        MailOtpSettingsService settings = dynamicSettings();
+        return settings != null ? settings.effectiveFromAddress() : fromAddress;
+    }
+
+    private String effectiveDisplayName() {
+        MailOtpSettingsService settings = dynamicSettings();
+        return settings != null ? settings.effectiveSenderDisplayName() : null;
+    }
+
+    private boolean effectiveEnabled() {
+        MailOtpSettingsService settings = dynamicSettings();
+        if (settings != null) {
+            return settings.isMailEnabled() && effectiveSender() != null;
+        }
+        return authMail.isMailEnabled();
+    }
+
+    @Override
     public EmailStatusResponse status(Authentication authentication) {
         AppUser admin = currentAdmin(authentication);
+        String resolvedHost = effectiveHost();
+        String resolvedUsername = effectiveUsername();
         return new EmailStatusResponse(
-                authMail.isMailEnabled(),
-                senderProvider.getIfAvailable() != null,
+                effectiveEnabled(),
+                effectiveSender() != null,
                 // The property default is "localhost", which only reaches a developer's mail
                 // catcher.
-                StringUtils.hasText(host) && !"localhost".equalsIgnoreCase(host.trim()),
-                StringUtils.hasText(username),
-                port,
-                fromAddress,
+                StringUtils.hasText(resolvedHost)
+                        && !"localhost".equalsIgnoreCase(resolvedHost.trim()),
+                StringUtils.hasText(resolvedUsername),
+                effectivePort(),
+                effectiveFromAddress(),
                 admin == null ? null : AuthMailService.maskEmail(admin.getEmail()),
                 TEST_COOLDOWN.toSeconds(),
                 connection());
@@ -124,7 +188,7 @@ public class MailDiagnosticsServiceImpl implements MailDiagnosticsService {
 
     @Override
     public EmailTestResponse sendTest(Authentication authentication) {
-        if (!authMail.isMailEnabled())
+        if (!effectiveEnabled())
             throw SystemException.conflict("Outbound email is disabled", "INFRA_MAIL_DISABLED");
         AppUser admin = currentAdmin(authentication);
         if (admin == null || !StringUtils.hasText(admin.getEmail()))
@@ -139,17 +203,34 @@ public class MailDiagnosticsServiceImpl implements MailDiagnosticsService {
                     "INFRA_MAIL_TEST_RATE_LIMITED");
         String masked = AuthMailService.maskEmail(admin.getEmail());
         try {
-            JavaMailSender sender = senderProvider.getObject();
+            JavaMailSender sender = effectiveSender();
+            if (sender == null && senderProvider != null) {
+                sender = senderProvider.getObject();
+            }
+            if (sender == null) {
+                throw SystemException.conflict("Outbound email is disabled", "INFRA_MAIL_DISABLED");
+            }
             MimeMessage message = sender.createMimeMessage();
+            if (message == null) {
+                message = new MimeMessage(Session.getInstance(new Properties()));
+            }
             MimeMessageHelper helper =
                     new MimeMessageHelper(message, false, StandardCharsets.UTF_8.name());
-            helper.setFrom(fromAddress);
+            String from = effectiveFromAddress();
+            String displayName = effectiveDisplayName();
+            if (StringUtils.hasText(displayName)) {
+                helper.setFrom(from, displayName);
+            } else {
+                helper.setFrom(from);
+            }
             helper.setTo(admin.getEmail().trim());
             helper.setSubject("[UAV PAS] Email kiểm tra cấu hình / Test email");
             helper.setText(body(now), false);
             sender.send(message);
             log.info("Infrastructure test email sent to {}", masked);
             return new EmailTestResponse(true, null, masked, now);
+        } catch (SystemException ex) {
+            throw ex;
         } catch (Exception failure) {
             log.warn("Infrastructure test email failed: {}", failure.getClass().getSimpleName());
             return new EmailTestResponse(false, failure.getClass().getSimpleName(), masked, now);
@@ -173,7 +254,7 @@ public class MailDiagnosticsServiceImpl implements MailDiagnosticsService {
     @Override
     public MailConnectionCheck connection() {
         Instant now = clock.instant();
-        if (!authMail.isMailEnabled()) return new MailConnectionCheck("DISABLED", now, null);
+        if (!effectiveEnabled()) return new MailConnectionCheck("DISABLED", now, null);
         MailConnectionCheck snapshot = cachedConnection;
         if (snapshot != null && snapshot.checkedAt().plus(CONNECTION_CACHE).isAfter(now))
             return snapshot;
@@ -187,7 +268,7 @@ public class MailDiagnosticsServiceImpl implements MailDiagnosticsService {
     }
 
     private MailConnectionCheck probe(Instant now) {
-        JavaMailSender sender = senderProvider.getIfAvailable();
+        JavaMailSender sender = effectiveSender();
         if (!(sender instanceof JavaMailSenderImpl impl))
             return new MailConnectionCheck("UNKNOWN", now, null);
         // testConnection() has no timeout of its own unless mail.smtp.*timeout is set, so bound it

@@ -29,7 +29,23 @@ public class SystemSettingsDataInitializer implements ApplicationRunner {
                 SettingValueType.DECIMAL,
                 new BigDecimal("0.0000"),
                 new BigDecimal("0.5000"),
-                "Tỷ lệ hoa hồng nền tảng thu trên mỗi đơn hàng Đối tác 3P hoàn thành (0.00 đến 0.50)");
+                "Tỷ lệ đối soát dịch vụ nền tảng tiêu chuẩn theo Phụ lục Biểu phí Đối tác (0.00 đến 0.50)");
+        seed(
+                "marketplace.pro_fee_rate",
+                "0.06",
+                "MARKETPLACE",
+                SettingValueType.DECIMAL,
+                new BigDecimal("0.0000"),
+                new BigDecimal("0.5000"),
+                "Tỷ lệ đối soát dịch vụ nền tảng theo Phụ lục Đối tác gói Pro (0.00 đến 0.50)");
+        seed(
+                "marketplace.enterprise_fee_rate",
+                "0.03",
+                "MARKETPLACE",
+                SettingValueType.DECIMAL,
+                new BigDecimal("0.0000"),
+                new BigDecimal("0.5000"),
+                "Tỷ lệ đối soát dịch vụ nền tảng theo Phụ lục Đối tác gói Enterprise (0.00 đến 0.50)");
         seed(
                 "marketplace.min_payout_vnd",
                 "100000",
