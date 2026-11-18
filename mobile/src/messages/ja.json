@@ -1024,6 +1024,7 @@
       "pilotSpecLabel": "専門分野",
       "pilotSavedToast": "操縦エンジニアを保存しました。",
       "pilotDeletedToast": "操縦エンジニアを削除しました。",
+      "pilotsLoadError": "操縦エンジニア一覧を読み込めませんでした。",
       "noPilotsYet": "操縦エンジニアがまだ登録されていません。",
       "fromTemplateBtn": "テンプレート出品",
       "customListingBtn": "詳細入力",

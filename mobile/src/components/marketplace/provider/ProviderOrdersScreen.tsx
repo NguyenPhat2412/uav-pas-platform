@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
+import {useRouter} from 'expo-router';
 import {
     CheckCircle2,
     ClipboardList,
+    Layers,
     Megaphone,
     Plane,
     ShieldCheck,
@@ -46,6 +48,7 @@ type OrderTab = 'ORDERS' | 'RFQ';
 export function ProviderOrdersScreen() {
     const {t, formatDate} = useI18n();
     const toast = useToast();
+    const router = useRouter();
     const {requireEscrowBeforeStart} = useSiteInfo();
     const ordersQuery = useProviderOrders();
     const rfqsQuery = useOpenRfqs();
@@ -129,7 +132,18 @@ export function ProviderOrdersScreen() {
                         onRetry={() => void ordersQuery.refetch()}
                     />
                 ) : orders.length === 0 ? (
-                    <EmptyState icon={ClipboardList} message={t('mobile.provider.noOrders')}/>
+                    <EmptyState
+                        icon={ClipboardList}
+                        message={t('mobile.provider.noOrders')}
+                        action={
+                            <Button
+                                size="sm"
+                                icon={Layers}
+                                label={t('mobile.provider.menuListings')}
+                                onPress={() => router.push('/customer/provider/listings')}
+                            />
+                        }
+                    />
                 ) : (
                     orders.map(order => {
                         const chosenUav = uavChoice[order.id] ?? '';

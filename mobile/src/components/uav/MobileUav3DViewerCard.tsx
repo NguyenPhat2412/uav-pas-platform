@@ -62,11 +62,13 @@ export function MobileUav3DViewerCard({
     const pitchOffset = Math.max(-14, Math.min(14, pitchDeg * 0.6));
     const rollAngle = Math.max(-25, Math.min(25, rollDeg));
 
+    const cleanSerial = serialNumber ? serialNumber.replace(/-?[rR][tT][kK]\b/g, '') : '';
+
     return (
         <Card>
             <SectionTitle
-                title={`Thiết bị bay dự kiến · ${modelName && !/(Quadcopter|Enterprise)/i.test(modelName) ? modelName : AIRFRAME_NAME[airframe]}`}
-                action={<Badge icon={Cpu} label={serialNumber} background={colors.slateDark} color={colors.white}/>}
+                title={`Thiết bị bay dự kiến · ${modelName && !/(Quadcopter|Enterprise)/i.test(modelName) ? modelName.replace(/-?[rR][tT][kK]\b/g, '').trim() : AIRFRAME_NAME[airframe]}`}
+                action={cleanSerial ? <Badge icon={Cpu} label={cleanSerial} background={colors.slateDark} color={colors.white}/> : undefined}
             />
 
             <ChipGroup<MobileAirframeClass>

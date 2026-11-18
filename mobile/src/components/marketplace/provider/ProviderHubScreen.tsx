@@ -62,7 +62,9 @@ function StudioNavRow({
                     <Icon size={20} color={colors.primary}/>
                 </View>
                 <View style={styles.flex}>
-                    <AppText variant="title">{title}</AppText>
+                    <AppText variant="title" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
+                        {title}
+                    </AppText>
                     <AppText variant="caption" numberOfLines={1}>
                         {subtitle}
                     </AppText>
@@ -205,19 +207,29 @@ export function ProviderHubScreen() {
             <View style={styles.kpiRow}>
                 <Card style={styles.kpiCard} onPress={() => router.push('/customer/provider/wallet')}>
                     <AppText variant="caption" numberOfLines={1}>
-                        {t('mobile.provider.availableBalance')} · {t('mobile.shop.illustrativePrice')}
+                        {t('mobile.provider.availableBalance')}
                     </AppText>
-                    <AppText variant="title" style={styles.price} numberOfLines={1}>
-                        {formatVndCompact(wallet?.availableBalanceVnd ?? 0)}
-                    </AppText>
+                    <View style={styles.kpiValRow}>
+                        <AppText variant="title" style={styles.price} numberOfLines={1}>
+                            {formatVndCompact(wallet?.availableBalanceVnd ?? 0)}
+                        </AppText>
+                        <AppText variant="caption" numberOfLines={1}>
+                            {t('mobile.shop.illustrativePrice')}
+                        </AppText>
+                    </View>
                 </Card>
                 <Card style={styles.kpiCard} onPress={() => router.push('/customer/provider/wallet')}>
                     <AppText variant="caption" numberOfLines={1}>
-                        {t('mobile.provider.escrowHeld')} · {t('mobile.shop.illustrativePrice')}
+                        {t('mobile.provider.escrowHeld')}
                     </AppText>
-                    <AppText variant="title" numberOfLines={1}>
-                        {formatVndCompact(wallet?.escrowHeldVnd ?? 0)}
-                    </AppText>
+                    <View style={styles.kpiValRow}>
+                        <AppText variant="title" numberOfLines={1}>
+                            {formatVndCompact(wallet?.escrowHeldVnd ?? 0)}
+                        </AppText>
+                        <AppText variant="caption" numberOfLines={1}>
+                            {t('mobile.shop.illustrativePrice')}
+                        </AppText>
+                    </View>
                 </Card>
             </View>
 
@@ -301,6 +313,7 @@ const styles = StyleSheet.create({
     warningText: {color: colors.warning, fontWeight: '600'},
     kpiRow: {flexDirection: 'row', gap: spacing.sm},
     kpiCard: {flex: 1, gap: 4},
+    kpiValRow: {flexDirection: 'row', alignItems: 'baseline', gap: 4},
     price: {color: colors.primary, fontWeight: '700'},
     navRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
     iconWrap: {

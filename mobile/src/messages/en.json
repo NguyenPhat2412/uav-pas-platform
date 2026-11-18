@@ -1024,6 +1024,7 @@
       "pilotSpecLabel": "Primary specialization",
       "pilotSavedToast": "Control engineer saved.",
       "pilotDeletedToast": "Engineer removed from fleet.",
+      "pilotsLoadError": "Could not load control engineers.",
       "noPilotsYet": "No control engineers registered yet.",
       "fromTemplateBtn": "From template",
       "customListingBtn": "Custom form",

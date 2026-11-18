@@ -166,7 +166,7 @@ export function ProviderPilotsScreen() {
                 <LoadingState/>
             ) : pilotsQuery.isError ? (
                 <ErrorState
-                    message={t('services.loadError')}
+                    message={t('mobile.overnight.pilotsLoadError')}
                     retryLabel={t('common.retry')}
                     onRetry={() => void pilotsQuery.refetch()}
                 />

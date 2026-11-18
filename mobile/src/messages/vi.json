@@ -1024,6 +1024,7 @@
       "pilotSpecLabel": "Chuyên môn chính",
       "pilotSavedToast": "Đã lưu thông tin kỹ sư điều khiển.",
       "pilotDeletedToast": "Đã xoá kỹ sư khỏi đội bay.",
+      "pilotsLoadError": "Chưa tải được danh sách kỹ sư điều khiển.",
       "noPilotsYet": "Chưa khai báo kỹ sư điều khiển nào.",
       "fromTemplateBtn": "Tạo nhanh từ mẫu",
       "customListingBtn": "Tự nhập chi tiết",
