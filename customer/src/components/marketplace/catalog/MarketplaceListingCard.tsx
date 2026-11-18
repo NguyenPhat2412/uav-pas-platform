@@ -1,12 +1,20 @@
 'use client';
 
+import {useState} from 'react';
 import Link from 'next/link';
-import {CheckCircle2, Clock3, MapPin, ShieldCheck, Star} from 'lucide-react';
+import {Camera, CheckCircle2, Clock3, Database, MapPin, MapPinned, Plane, ShieldCheck, Star, type LucideIcon} from 'lucide-react';
 import {scenes} from '@/components/marketing/UavPhoto';
 import {formatVndCompact} from '@/forms/marketplace/marketplace-forms';
 import {resolveListingBadge} from '@/forms/project/project-form';
 import {useI18n} from '@/providers/I18nContext';
 import type {ListingType, MarketplaceListing, PricingModel} from '@/types/marketplace/marketplace.types';
+
+const CATEGORY_FALLBACK_ICONS: Record<string, LucideIcon> = {
+    UAV_RENTAL: Plane,
+    AREA_INSPECTION: MapPinned,
+    AERIAL_RECORDING: Camera,
+    DATA_COLLECTION: Database,
+};
 
 const MISSION_FALLBACK_PHOTOS: Record<string, { src: string; alt: string }> = {
     UAV_RENTAL: scenes.rentalFleet,
@@ -32,8 +40,10 @@ export function MarketplaceListingCard({
     mode?: 'public' | 'portal';
 }) {
     const {t} = useI18n();
+    const [imgFailed, setImgFailed] = useState(false);
     const photo = resolveListingPhoto(item);
     const badge = resolveListingBadge(item);
+    const FallbackIcon = CATEGORY_FALLBACK_ICONS[item.missionType] ?? Plane;
     const detailHref = mode === 'portal' ? `/customer/services/${item.slug}` : `/services/${item.slug}`;
     const createHref = `/customer/services/${encodeURIComponent(item.slug)}?subscribe=1`;
 
@@ -57,24 +67,33 @@ export function MarketplaceListingCard({
             <div>
                 <Link
                     href={detailHref}
-                    className="relative block aspect-[4/3] w-full overflow-hidden bg-slate-900"
+                    className="relative block aspect-[4/3] w-full overflow-hidden bg-uav-red-light"
                 >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                        src={photo.src}
-                        alt={photo.alt}
-                        loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
-                    />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent"/>
-                    <div className="absolute top-2.5 right-2.5 left-2.5 flex flex-wrap items-center justify-between gap-1.5">
-                        <span className="rounded-badge bg-slate-950/80 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-xs">
+                    {!imgFailed && photo?.src ? (
+                        <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={photo.src}
+                                alt={photo.alt}
+                                loading="lazy"
+                                onError={() => setImgFailed(true)}
+                                className="h-full w-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105 motion-reduce:transition-none"
+                            />
+                            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent"/>
+                        </>
+                    ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-uav-red-light text-primary">
+                            <FallbackIcon size={36} strokeWidth={1.75} aria-hidden="true"/>
+                        </div>
+                    )}
+                    <div className="absolute top-2.5 right-2.5 left-2.5 flex items-center justify-between gap-1.5">
+                        <span className="max-w-[55%] truncate rounded-badge bg-slate-950/80 px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-white backdrop-blur-xs">
                             {typeText(item.listingType)}
                         </span>
                         {badge.verified && (
-                            <span className="inline-flex items-center gap-1 rounded-control bg-primary px-2 py-0.5 text-[11px] font-semibold text-white shadow-2xs">
-                                <ShieldCheck size={12} aria-hidden="true"/>
-                                {t('publicSite.catalog.verifiedPartner')}
+                            <span className="inline-flex max-w-[45%] items-center gap-1 rounded-control bg-primary px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-white shadow-2xs">
+                                <ShieldCheck size={12} className="shrink-0" aria-hidden="true"/>
+                                <span className="truncate">{t('publicSite.catalog.verifiedPartner')}</span>
                             </span>
                         )}
                     </div>
@@ -112,12 +131,12 @@ export function MarketplaceListingCard({
                     </div>
 
                     <div className="flex items-center justify-between gap-2 text-xs text-slate-600 tabular-nums">
-                        <span className="inline-flex items-center gap-1 rounded-badge bg-uav-red-light px-2 py-0.5 text-[11px] font-semibold text-primary">
-                            <CheckCircle2 size={12} aria-hidden="true"/>
-                            {t('publicSite.catalog.verifiedPartner')}
+                        <span className="inline-flex min-w-0 items-center gap-1 rounded-badge bg-uav-red-light px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-primary">
+                            <CheckCircle2 size={12} className="shrink-0" aria-hidden="true"/>
+                            <span className="truncate">{t('publicSite.catalog.verifiedPartner')}</span>
                         </span>
-                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700">
-                            <Star size={12} className="fill-amber-400 text-amber-500" aria-hidden="true"/>
+                        <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold whitespace-nowrap text-slate-700">
+                            <Star size={12} className="shrink-0 fill-amber-400 text-amber-500" aria-hidden="true"/>
                             {badge.reviewCount > 0
                                 ? `${badge.ratingAvg.toFixed(1)} (${badge.reviewCount})`
                                 : t('publicSite.catalog.newListing')}
