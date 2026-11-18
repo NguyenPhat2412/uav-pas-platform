@@ -43,6 +43,18 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
     @Value("${app.financial-outbox.worker-enabled:true}")
     private boolean workerEnabled;
 
+    @Value("${app.financial-outbox.async-after-commit:true}")
+    private boolean asyncAfterCommit;
+
+    private final java.util.concurrent.ExecutorService afterCommitExecutor =
+            java.util.concurrent.Executors.newFixedThreadPool(
+                    2,
+                    r -> {
+                        Thread t = new Thread(r, "financial-outbox-after-commit");
+                        t.setDaemon(true);
+                        return t;
+                    });
+
     @Autowired(required = false)
     private InvoiceMailService invoiceMailService;
 
@@ -78,6 +90,11 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
         if (invoice != null && invoice.getId() != null) {
             scheduleAfterCommit("PAYMENT_COMPLETED:" + invoice.getId());
         }
+    }
+
+    @jakarta.annotation.PreDestroy
+    void shutdownAfterCommitExecutor() {
+        afterCommitExecutor.shutdown();
     }
 
     private void scheduleAfterCommit(String eventId) {
@@ -189,15 +206,24 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
         if (invoiceMailService != null
                 && mailTargetInvoiceId[0] != null
                 && mailTargetEventType[0] != null) {
-            try {
-                invoiceMailService.sendForOutboxEvent(
-                        mailTargetInvoiceId[0], mailTargetEventType[0]);
-            } catch (RuntimeException ex) {
-                log.warn(
-                        "Best-effort invoice email dispatch failed for invoiceId={}, eventType={}: {}",
-                        mailTargetInvoiceId[0],
-                        mailTargetEventType[0],
-                        ex.getMessage());
+            final Long targetInvId = mailTargetInvoiceId[0];
+            final String targetType = mailTargetEventType[0];
+            Runnable sendTask =
+                    () -> {
+                        try {
+                            invoiceMailService.sendForOutboxEvent(targetInvId, targetType);
+                        } catch (RuntimeException ex) {
+                            log.warn(
+                                    "Best-effort invoice email dispatch failed for invoiceId={}, eventType={}: {}",
+                                    targetInvId,
+                                    targetType,
+                                    ex.getMessage());
+                        }
+                    };
+            if (asyncAfterCommit) {
+                afterCommitExecutor.execute(sendTask);
+            } else {
+                sendTask.run();
             }
         }
     }

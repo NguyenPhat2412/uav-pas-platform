@@ -123,7 +123,7 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
         String title =
                 trimOrNull(request.title()) != null
                         ? request.title().trim()
-                        : template.getName() + " (minh hoạ)";
+                        : template.getName() + " — minh hoạ";
         MissionType missionType = mapMissionType(template.getCode());
         PricingModel pricingModel =
                 request.pricingModel() != null
@@ -149,11 +149,11 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
         listing.setSummary(
                 template.getDescription() != null && !template.getDescription().isBlank()
                         ? truncate(template.getDescription().trim(), 500)
-                        : "Gói dịch vụ bay theo mẫu chuẩn trên nền tảng UAV PAS (dữ liệu minh hoạ).");
+                        : "Gói dịch vụ bay theo mẫu chuẩn trên nền tảng UAV PAS — dữ liệu minh hoạ.");
         listing.setDescription(
                 template.getDescription() != null && !template.getDescription().isBlank()
                         ? template.getDescription().trim()
-                        : "Dịch vụ triển khai theo mẫu kỹ thuật của nền tảng (minh hoạ).");
+                        : "Dịch vụ triển khai theo mẫu kỹ thuật của nền tảng — minh hoạ.");
         listing.setListingType(
                 "UAV_RENTAL".equalsIgnoreCase(template.getCode())
                         ? ListingType.WET_LEASE
@@ -179,11 +179,11 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
                         ? request.equipmentSpecs().trim()
                         : (template.getSensors() != null && !template.getSensors().isBlank()
                                 ? "Cảm biến hỗ trợ: " + template.getSensors()
-                                : "Tàu bay đa cánh quạt cảm biến quang học (minh hoạ)"));
+                                : "Tàu bay đa cánh quạt cảm biến quang học — minh hoạ"));
         listing.setDeliverablesSummary(
                 trimOrNull(request.deliverablesSummary()) != null
                         ? request.deliverablesSummary().trim()
-                        : "Ảnh chụp thực địa, bản đồ trực quan & biên bản bàn giao số (minh hoạ)");
+                        : "Ảnh chụp thực địa, bản đồ trực quan & biên bản bàn giao số — minh hoạ");
         listing.setCoverImageUrl(validateOptionalHttpUrl(request.coverImageUrl()));
         listing.setOnSiteSlaHours(
                 request.onSiteSlaHours() != null

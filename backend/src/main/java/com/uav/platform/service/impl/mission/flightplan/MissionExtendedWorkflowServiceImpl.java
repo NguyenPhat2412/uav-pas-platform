@@ -941,6 +941,21 @@ public class MissionExtendedWorkflowServiceImpl implements MissionExtendedWorkfl
         Mission mission = access.accessible(id, authentication);
         MissionPreflightLog preflight = preflightLogs.findByMissionId(id).orElse(null);
         MissionReview review = reviews.findByMissionId(id).orElse(null);
-        return MissionInspectionOperations.buildReport(mission, mediaItems, preflight, review);
+        boolean canSeeInternalFleet =
+                hasPermission(authentication, "MISSION_VIEW_ALL")
+                        || hasPermission(authentication, "MARKETPLACE_MODERATE");
+        if (!canSeeInternalFleet && authentication != null && authentication.getName() != null) {
+            String viewer = authentication.getName();
+            if ((mission.getOperator() != null
+                            && viewer.equalsIgnoreCase(mission.getOperator().getUsername()))
+                    || (mission.getProvider() != null
+                            && mission.getProvider().getUser() != null
+                            && viewer.equalsIgnoreCase(
+                                    mission.getProvider().getUser().getUsername()))) {
+                canSeeInternalFleet = true;
+            }
+        }
+        return MissionInspectionOperations.buildReport(
+                mission, mediaItems, preflight, review, !canSeeInternalFleet);
     }
 }

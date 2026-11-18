@@ -83,28 +83,28 @@ public class DevSeedDataInitializer implements ApplicationRunner {
         AppUser admin =
                 upsertAccount(
                         DEMO_ADMIN_USERNAME,
-                        "demo.admin@gmail.com",
+                        "demo.admin@uav.local",
                         "Quản trị viên Demo — minh hoạ",
                         UserRole.ROLE_ADMIN,
                         encoded);
         AppUser customer =
                 upsertAccount(
                         DEMO_CUSTOMER_USERNAME,
-                        "demo.customer@gmail.com",
+                        "demo.customer@uav.local",
                         "Khách hàng Dự án — minh hoạ",
                         UserRole.ROLE_PILOT,
                         encoded);
         AppUser fleetOwner =
                 upsertAccount(
                         DEMO_FLEET_USERNAME,
-                        "demo.fleet@gmail.com",
+                        "demo.fleet@uav.local",
                         "Chủ đội bay Miền Nam — minh hoạ",
                         UserRole.ROLE_PILOT,
                         encoded);
         AppUser fleetPilot =
                 upsertAccount(
                         DEMO_PILOT_USERNAME,
-                        "demo.pilot@gmail.com",
+                        "demo.pilot@uav.local",
                         "Kỹ sư Trần Minh Quân — minh hoạ",
                         UserRole.ROLE_OPERATOR,
                         encoded);
