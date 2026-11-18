@@ -4,7 +4,7 @@ import {useLocalSearchParams, useRouter} from 'expo-router';
 import MapView, {Marker} from 'react-native-maps';
 import * as ImagePicker from 'expo-image-picker';
 import * as WebBrowser from 'expo-web-browser';
-import {AlertTriangle, Camera, CalendarClock, Copy, Download, FileText, ImagePlus, MapPin, Pencil, Send, XCircle} from 'lucide-react-native';
+import {AlertTriangle, Camera, CalendarClock, Copy, Download, FileText, ImagePlus, MapPin, Navigation, Pencil, Send, XCircle} from 'lucide-react-native';
 import {AppText, Button, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
 import {CustomerHandoverReviewCard} from '@/components/mission/CustomerHandoverReviewCard';
 import {MissionStatusBadge} from '@/components/mission/MissionBits';
@@ -165,6 +165,17 @@ export function MissionDetailScreen() {
                 <AppText variant="heading">{mission.title}</AppText>
                 <MissionProgress mission={mission}/>
                 <AppText variant="small">{missionHint(mission.status)}</AppText>
+                <Button
+                    size="sm"
+                    icon={Navigation}
+                    label={t('mobile.overnight.trackFlightBtn')}
+                    onPress={() =>
+                        router.push({
+                            pathname: '/customer/orders/[id]/tracking',
+                            params: {id: String(mission.id)},
+                        })
+                    }
+                />
 
                 {(editable || cancellable || canClone) && (
                     <View style={styles.actionSection}>

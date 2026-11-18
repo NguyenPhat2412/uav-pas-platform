@@ -4,16 +4,19 @@ import type {PageResponse} from '@/shared/types';
 import type {PricingModel} from '@/shared/types/marketplace/marketplace.types';
 import type {MissionStatus} from '@/shared/types/mission/mission.types';
 
+export type ProjectStatus = 'ACTIVE' | 'ARCHIVED';
 export type ProjectScheduleType = 'ONCE' | 'WEEKLY' | 'MONTHLY';
 export type ProjectSubscriptionStatus = 'ACTIVE' | 'PAUSED' | 'ENDED';
 export type OrderStatusGroup = 'PENDING' | 'SCHEDULED' | 'IN_FLIGHT' | 'DELIVERED' | 'TO_REVIEW';
 
 export interface CustomerProject {
     id: number;
+    code?: string | null;
     name: string;
     province: string;
     areaGeoJson?: string | null;
     note?: string | null;
+    status?: ProjectStatus | null;
     activeSubscriptionCount?: number;
     missionCount?: number;
     createdAt?: string;
@@ -25,6 +28,7 @@ export interface CustomerProjectUpsertInput {
     province: string;
     areaGeoJson?: string | null;
     note?: string | null;
+    status?: ProjectStatus;
 }
 
 export interface ProjectSubscription {
@@ -89,6 +93,7 @@ export interface OrderTrackingPosition {
 export interface OrderTrackingSnapshot {
     missionId?: number;
     status?: MissionStatus | string | null;
+    statusGroup?: OrderStatusGroup | string | null;
     progressPct: number;
     position?: OrderTrackingPosition | null;
     battery?: number | null;

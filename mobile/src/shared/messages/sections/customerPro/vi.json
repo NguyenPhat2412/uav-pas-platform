@@ -357,6 +357,19 @@
     "homeTraining": "Hướng dẫn",
     "homeQuickTitle": "Tiện ích nhanh",
     "homeFeaturedTitle": "Dịch vụ nổi bật",
-    "homeViewDetails": "Chi tiết"
+    "homeViewDetails": "Chi tiết",
+    "exploreCatalogCta": "Khám phá chợ dịch vụ",
+    "trainingSearch": "Tìm khoá học",
+    "trainingClearSearch": "Xoá từ khoá",
+    "trainingTopic": "Chủ đề",
+    "trainingAll": "Tất cả",
+    "trainingRefresh": "Làm mới",
+    "trainingLoading": "Đang tải khoá học",
+    "trainingEmptyTitle": "Chưa có khoá học",
+    "trainingNoMatchTitle": "Không có khoá học phù hợp",
+    "trainingEmptyDesc": "Khoá hướng dẫn mới sẽ hiển thị tại đây.",
+    "trainingNoMatchDesc": "Thử bỏ bộ lọc hoặc đổi từ khoá tìm kiếm.",
+    "trainingCompletedSummary": "Đã hoàn thành {completed}/{total} khoá",
+    "trainingAudienceHint": "Danh mục khoá học hiển thị cho {audience}."
   }
 }

@@ -27,7 +27,8 @@ export default function CustomerLayout() {
             <View style={styles.fill}>
                 <Stack screenOptions={detailHeader}>
                     <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-                    <Stack.Screen name="orders" options={{title: t('mobile.overnight.navOrders')}}/>
+                    <Stack.Screen name="orders/index" options={{title: t('mobile.overnight.navOrders')}}/>
+                    <Stack.Screen name="orders/[id]/tracking" options={{title: t('mobile.overnight.trackingTitle')}}/>
                     <Stack.Screen name="projects/create" options={{title: t('mobile.overnight.newProjectBtn')}}/>
                     <Stack.Screen name="projects/[id]/index" options={{title: t('mobile.overnight.projectDetailTitle')}}/>
                     <Stack.Screen name="projects/[id]/edit" options={{title: t('mobile.overnight.editProjectTitle')}}/>

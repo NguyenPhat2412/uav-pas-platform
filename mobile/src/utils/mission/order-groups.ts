@@ -41,6 +41,9 @@ export function resolveOrderStatusGroup(
     if (raw === 'COMPLETED' || raw === 'DELIVERED') {
         return mission.reviewed === false ? 'TO_REVIEW' : 'DELIVERED';
     }
+    if (raw === 'REVIEWED') {
+        return 'DELIVERED';
+    }
     return null;
 }
 
@@ -57,7 +60,33 @@ export function matchesOrderStatusGroup(
         );
     }
     if (group === 'DELIVERED') {
-        return mission.statusGroup === 'DELIVERED' || raw === 'COMPLETED' || raw === 'DELIVERED';
+        return (
+            mission.statusGroup === 'DELIVERED' ||
+            raw === 'COMPLETED' ||
+            raw === 'DELIVERED' ||
+            raw === 'REVIEWED'
+        );
     }
     return resolveOrderStatusGroup(mission) === group;
+}
+
+/**
+ * Safely formats `OrderTrackingResponse.link` whether S0 returns a `Link` record
+ * (`{ sent, delivered, lost, lossPct, averageLatencyMs }`), percentage number, or string.
+ */
+export function formatTrackingLink(link: unknown): string {
+    if (link == null) return '—';
+    if (typeof link === 'number' && Number.isFinite(link)) {
+        return `${Math.round(link)}%`;
+    }
+    if (typeof link === 'string') {
+        return link.trim() || '—';
+    }
+    if (typeof link === 'object' && 'lossPct' in link) {
+        const loss = Number((link as { lossPct?: unknown }).lossPct ?? 0);
+        if (Number.isFinite(loss)) {
+            return `${Math.max(0, Math.min(100, Math.round(100 - loss)))}%`;
+        }
+    }
+    return '—';
 }
