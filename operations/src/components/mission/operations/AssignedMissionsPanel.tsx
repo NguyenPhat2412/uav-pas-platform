@@ -2,6 +2,7 @@
 
 import {MissionList} from '@/components/mission/MissionList';
 import {OperatorLogbookSummary} from '@/components/mission/operations/OperatorLogbookSummary';
+import {PilotTodayWorkspace} from '@/components/mission/operations/PilotTodayWorkspace';
 import {useMissions} from '@/hooks/mission/useOperationsMissions';
 import {OperationsPage} from '@/components/layout/OperationsPage';
 import {useI18n} from '@/providers/I18nContext';
@@ -11,6 +12,12 @@ export default function AssignedMissionsPage() {
     const {t} = useI18n();
     return (
         <OperationsPage permission="MISSION_VIEW" activeResource="assigned-missions">
+            <PilotTodayWorkspace
+                missions={missions}
+                loading={isLoading}
+                error={error}
+                onRefresh={() => void reload()}
+            />
             <OperatorLogbookSummary />
             <MissionList
                 label={t('opsMissions.assigned.title')}

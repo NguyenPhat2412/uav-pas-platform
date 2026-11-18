@@ -92,3 +92,87 @@ test('S3 opsMarketplace catalogs and provider components obey content-guard rule
     }
 });
 
+test('S3 marketplace form helpers classify order tabs, UAV/pilot status cards, and illustrative VND prices accurately', async () => {
+    const {
+        classifySellerOrderTab,
+        normalizeUavStatusCardKey,
+        formatVndCompact,
+        extractActionableError,
+        inferMissionTypeFromServiceCode,
+        listingFormFromTemplate,
+    } = await import('../src/forms/marketplace/marketplace-forms.ts');
+
+    assert.equal(
+        classifySellerOrderTab({id: 1, status: 'CONFIRMED', providerResponseStatus: 'PENDING_PROVIDER'}),
+        'PENDING_ACCEPT',
+    );
+    assert.equal(
+        classifySellerOrderTab({id: 2, status: 'PENDING_CONFIRMATION', providerResponseStatus: null}),
+        'PENDING_ACCEPT',
+    );
+    assert.equal(
+        classifySellerOrderTab({id: 3, status: 'READY', providerResponseStatus: 'ACCEPTED'}),
+        'WAITING_FLIGHT',
+    );
+    assert.equal(
+        classifySellerOrderTab({id: 4, status: 'IN_PROGRESS', providerResponseStatus: 'ACCEPTED'}),
+        'IN_FLIGHT',
+    );
+    assert.equal(
+        classifySellerOrderTab({id: 5, status: 'COMPLETED', providerResponseStatus: 'ACCEPTED'}),
+        'DELIVERED',
+    );
+    assert.equal(
+        classifySellerOrderTab({id: 6, status: 'CONFIRMED', providerResponseStatus: 'DECLINED'}),
+        'DELIVERED',
+    );
+
+    assert.equal(normalizeUavStatusCardKey('AVAILABLE'), 'READY');
+    assert.equal(normalizeUavStatusCardKey('IN_USE'), 'FLYING');
+    assert.equal(normalizeUavStatusCardKey('IN_FLIGHT'), 'FLYING');
+    assert.equal(normalizeUavStatusCardKey('MAINTENANCE'), 'MAINTENANCE');
+    assert.equal(normalizeUavStatusCardKey('OFF_DUTY'), 'MAINTENANCE');
+
+    assert.match(formatVndCompact(1500000), /1\.500\.000\s*₫/);
+    assert.equal(formatVndCompact(null), '0 ₫');
+
+    assert.equal(
+        extractActionableError({fields: {province: 'Thiếu tỉnh', title: 'Thiếu tên'}}, 'fallback'),
+        'Thiếu tỉnh · Thiếu tên',
+    );
+    assert.equal(inferMissionTypeFromServiceCode('LIDAR_DATA_SURVEY'), 'DATA_COLLECTION');
+    assert.equal(inferMissionTypeFromServiceCode('AERIAL_VIDEO_4K'), 'AERIAL_RECORDING');
+
+    const tplForm = listingFormFromTemplate(
+        {
+            id: 9,
+            code: 'LIDAR_MAP',
+            name: 'Khảo sát bản đồ 3D',
+            description: 'Bàn giao đám mây điểm',
+            active: true,
+            defaultDurationMinutes: 60,
+            sensors: ['LiDAR', 'RGB'],
+            deliveryHours: 36,
+        },
+        'Đà Nẵng',
+        120,
+    );
+    assert.equal(tplForm.categoryServiceId, 9);
+    assert.equal(tplForm.province, 'Đà Nẵng');
+    assert.equal(tplForm.serviceRadiusKm, 120);
+    assert.equal(tplForm.deliverySlaHours, 36);
+});
+
+test('S3 control engineer today workspace wires preflight checklist, simulation launch, and deliverable upload', () => {
+    const pilotWorkspace = read('src/components/mission/operations/PilotTodayWorkspace.tsx');
+    const assignedPanel = read('src/components/mission/operations/AssignedMissionsPanel.tsx');
+    const marketplaceHooks = read('src/hooks/marketplace/useMarketplace.ts');
+    assert.match(assignedPanel, /PilotTodayWorkspace/);
+    assert.match(pilotWorkspace, /MissionPreflightCard/);
+    assert.match(pilotWorkspace, /\/operations\/simulation\?missionId=/);
+    assert.match(pilotWorkspace, /usePilotTodayActions/);
+    assert.match(marketplaceHooks, /requestMediaUpload/);
+    assert.match(marketplaceHooks, /confirmMedia/);
+});
+
+

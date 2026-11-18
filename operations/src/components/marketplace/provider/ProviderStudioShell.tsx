@@ -43,7 +43,7 @@ export function ProviderStudioShell({
 
     return (
         <OperationsPage permission={null} activeResource={activeResource}>
-            <div className="flex flex-1 flex-col bg-slate-50/50">
+            <div className="flex min-w-0 flex-1 flex-col overflow-x-hidden bg-slate-50/50">
                 <header className="border-b border-slate-200 bg-white px-4 pt-4 sm:px-6">
                     <div className="flex flex-wrap items-start justify-between gap-3 pb-3">
                         <div className="min-w-0">

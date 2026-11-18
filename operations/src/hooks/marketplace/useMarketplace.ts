@@ -3,7 +3,9 @@
 import {useEffect} from 'react';
 import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {marketplaceApi} from '@/api/marketplace/marketplace.api';
+import {missionService} from '@/api/mission/missions.api';
 import {operationsRealtimeClient} from '@/lib/realtime-ws';
+import type {Mission} from '@/types/mission/mission.types';
 import type {
     MarketplaceListingFromTemplateInput,
     MarketplaceListingUpsertInput,
@@ -213,4 +215,57 @@ export function useMyProviderWallet(enabled = true) {
         placeholderData: keepPreviousData,
         enabled,
     });
+}
+
+export function usePilotTodayActions() {
+    const qc = useQueryClient();
+    const invalidate = () => {
+        void qc.invalidateQueries({queryKey: ['marketplace', 'provider-orders']});
+        void qc.invalidateQueries({queryKey: ['missions']});
+    };
+
+    const startTask = useMutation({
+        mutationFn: async (mission: Mission) => {
+            if (mission.status === 'IN_PROGRESS') return mission;
+            if (mission.providerId) {
+                return marketplaceApi.startOrder(mission.id);
+            }
+            return missionService.start(mission.id);
+        },
+        onSettled: invalidate,
+    });
+
+    const uploadDeliverable = useMutation({
+        mutationFn: async ({missionId, file}: { missionId: number; file: File }) => {
+            const signed = await missionService.requestMediaUpload(missionId, file);
+            await missionService.uploadFile(signed.url, file);
+            await missionService.confirmMedia(missionId, signed.mediaId);
+            await missionService.attachMedia(missionId, signed.mediaId, 'OUTPUT');
+            return file.name;
+        },
+        onSettled: invalidate,
+    });
+
+    const completeTask = useMutation({
+        mutationFn: async ({
+            mission,
+            completionNote,
+            equipmentCondition,
+        }: {
+            mission: Mission;
+            completionNote: string;
+            equipmentCondition: string;
+        }) => {
+            if (mission.providerId) {
+                return marketplaceApi.completeOrder(mission.id, {
+                    completionNote,
+                    equipmentCondition,
+                });
+            }
+            return missionService.complete(mission.id, completionNote, equipmentCondition);
+        },
+        onSettled: invalidate,
+    });
+
+    return {startTask, uploadDeliverable, completeTask};
 }

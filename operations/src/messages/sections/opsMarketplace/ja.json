@@ -296,6 +296,29 @@
       "pendingAccept": "受諾待ち",
       "shortcutsTitle": "クイックメニュー",
       "viewDetails": "詳細を見る"
+    },
+    "pilotToday": {
+      "badge": "操縦エンジニア",
+      "title": "本日の担当タスク",
+      "subtitle": "飛行前チェックリストの確認、シミュレーション開始、納品ファイルのアップロードを行います。",
+      "tabs": {
+        "ACTIVE": "実施予定",
+        "IN_FLIGHT": "飛行中",
+        "COMPLETED": "完了済み"
+      },
+      "empty": "現在このタブに割り当てられたミッションはありません。",
+      "preflightToggle": "飛行前チェックリスト",
+      "startSimulation": "飛行シミュレーション開始",
+      "openSimulation": "シミュレーション画面",
+      "completeToggle": "完了・納品",
+      "uploadDeliverable": "納品ファイルをアップロード",
+      "uploading": "アップロード中…",
+      "uploadedFiles": "アップロード済み ({count})",
+      "handoverNote": "納品結果メモ",
+      "handoverPlaceholder": "飛行結果と納品データの概要を入力…",
+      "equipmentCondition": "飛行後の機材状態",
+      "equipmentConditionDefault": "飛行後異常なし",
+      "submitComplete": "完了を確定"
     }
   }
 }

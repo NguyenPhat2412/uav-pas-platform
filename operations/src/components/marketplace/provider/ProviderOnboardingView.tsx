@@ -238,7 +238,7 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
                             role="tab"
                             aria-selected={active}
                             onClick={() => setStep(item.id)}
-                            className={`flex min-h-11 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold whitespace-nowrap transition-colors ${
+                            className={`flex min-h-11 min-w-0 items-center justify-center gap-1.5 overflow-hidden rounded-xl px-2 py-2 text-xs font-semibold whitespace-nowrap transition-colors sm:gap-2 sm:px-3 ${
                                 active
                                     ? 'bg-primary text-white'
                                     : item.done
@@ -246,7 +246,7 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
                                       : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                             }`}
                         >
-                            <Icon size={16} aria-hidden="true"/>
+                            <Icon size={15} className="shrink-0" aria-hidden="true"/>
                             <span className="truncate">{item.label}</span>
                         </button>
                     );

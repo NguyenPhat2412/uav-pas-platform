@@ -294,8 +294,31 @@
       "readyUavs": "UAV sẵn sàng",
       "inFlightOrders": "Đang bay",
       "pendingAccept": "Chờ nhận",
-      "shortcutsTitle": " Thao tác đội bay",
+      "shortcutsTitle": "Thao tác đội bay",
       "viewDetails": "Xem chi tiết"
+    },
+    "pilotToday": {
+      "badge": "Kỹ sư điều khiển",
+      "title": "Việc hôm nay của tôi",
+      "subtitle": "Kiểm tra an toàn trước bay, khởi động bay mô phỏng và tải tài liệu bàn giao.",
+      "tabs": {
+        "ACTIVE": "Cần thực hiện",
+        "IN_FLIGHT": "Đang bay",
+        "COMPLETED": "Đã bàn giao"
+      },
+      "empty": "Hiện chưa có nhiệm vụ nào được phân công cho bạn trong mục này.",
+      "preflightToggle": "Checklist trước bay",
+      "startSimulation": "Bắt đầu bay mô phỏng",
+      "openSimulation": "Màn bay mô phỏng",
+      "completeToggle": "Hoàn thành & Bàn giao",
+      "uploadDeliverable": "Tải tài liệu bàn giao",
+      "uploading": "Đang tải tệp lên…",
+      "uploadedFiles": "Tệp đã tải lên ({count})",
+      "handoverNote": "Ghi chú kết quả bàn giao",
+      "handoverPlaceholder": "Nhập tóm tắt kết quả chuyến bay và dữ liệu bàn giao…",
+      "equipmentCondition": "Tình trạng thiết bị sau bay",
+      "equipmentConditionDefault": "Hoạt động tốt sau bay",
+      "submitComplete": "Xác nhận hoàn thành"
     }
   }
 }

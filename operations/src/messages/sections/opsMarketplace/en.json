@@ -296,6 +296,29 @@
       "pendingAccept": "To Accept",
       "shortcutsTitle": "Fleet Shortcuts",
       "viewDetails": "View details"
+    },
+    "pilotToday": {
+      "badge": "Control Engineer",
+      "title": "My Tasks Today",
+      "subtitle": "Complete preflight safety checklist, launch flight simulation, and upload deliverables.",
+      "tabs": {
+        "ACTIVE": "To Execute",
+        "IN_FLIGHT": "In Flight",
+        "COMPLETED": "Completed"
+      },
+      "empty": "No assigned missions in this section right now.",
+      "preflightToggle": "Preflight Checklist",
+      "startSimulation": "Start Flight Simulation",
+      "openSimulation": "Flight Simulation",
+      "completeToggle": "Complete & Deliver",
+      "uploadDeliverable": "Upload Deliverable File",
+      "uploading": "Uploading file…",
+      "uploadedFiles": "Uploaded files ({count})",
+      "handoverNote": "Handover Summary Notes",
+      "handoverPlaceholder": "Summarize flight results and deliverable files…",
+      "equipmentCondition": "Post-flight Equipment Condition",
+      "equipmentConditionDefault": "Nominal after flight",
+      "submitComplete": "Confirm Completion"
     }
   }
 }
