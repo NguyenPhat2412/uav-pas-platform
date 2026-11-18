@@ -104,8 +104,8 @@
         "heading": "方位:",
         "age": "{seconds} 秒前に更新",
         "rtk": {
-          "FIXED": "RTK FIX",
-          "FLOAT": "RTK FLOAT",
+          "FIXED": "GNSS FIX",
+          "FLOAT": "GNSS FLOAT",
           "SINGLE": "単独測位",
           "NONE": "測位なし"
         }
