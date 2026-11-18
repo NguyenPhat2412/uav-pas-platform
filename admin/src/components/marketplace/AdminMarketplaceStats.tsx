@@ -103,9 +103,9 @@ export function AdminMarketplaceStats() {
             <Card>
                 <CardHeader className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
                     <div className="min-w-0">
-                        <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+                        <CardTitle className="flex flex-wrap items-center gap-2 text-lg font-semibold">
                             <BarChart3 size={20} className="shrink-0 text-primary" aria-hidden="true"/>
-                            <span className="truncate">{t('adminCommerce.marketplace.stats.pageTitle')}</span>
+                            <span>{t('adminCommerce.marketplace.stats.pageTitle')}</span>
                             <IllustrativeTag/>
                         </CardTitle>
                         <p className="m-0 mt-1 text-xs text-muted">{t('adminCommerce.marketplace.stats.subtitle')}</p>
@@ -148,7 +148,7 @@ export function AdminMarketplaceStats() {
                                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--uav-color-primary-light)] text-primary">
                                         <Icon size={14} aria-hidden="true"/>
                                     </span>
-                                    <span className="truncate whitespace-nowrap">{item.label}</span>
+                                    <span className="line-clamp-2 break-words leading-tight">{item.label}</span>
                                 </Link>
                             );
                         })}
@@ -179,7 +179,7 @@ export function AdminMarketplaceStats() {
                                         </span>
                                         {kpi.illustrative && <IllustrativeTag/>}
                                     </div>
-                                    <span className="block truncate text-xs font-medium whitespace-nowrap text-muted">
+                                    <span className="line-clamp-2 break-words text-xs leading-snug font-medium text-muted">
                                         {kpi.label}
                                     </span>
                                     <strong className="block truncate text-lg font-bold text-on-surface tabular-nums">

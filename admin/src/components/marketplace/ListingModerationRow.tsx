@@ -43,7 +43,7 @@ export function ListingModerationRow({
 
     return (
         <div className="space-y-3 p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex min-w-0 flex-1 items-start gap-3.5">
                     <div className="hidden aspect-[4/3] w-24 shrink-0 overflow-hidden rounded-control border border-border bg-[var(--uav-color-primary-light)] sm:flex sm:items-center sm:justify-center">
                         {hasCover && item.coverImageUrl ? (
@@ -95,9 +95,9 @@ export function ListingModerationRow({
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2.5 tabular-nums">
-                    <div className="text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                <div className="flex shrink-0 flex-wrap items-center justify-between gap-2.5 tabular-nums sm:justify-end">
+                    <div className="text-left sm:text-right">
+                        <div className="flex items-center gap-1.5 sm:justify-end">
                             <strong className="text-base font-bold text-primary whitespace-nowrap">
                                 {formatMarketplaceVnd(Number(item.basePriceVnd))}
                             </strong>

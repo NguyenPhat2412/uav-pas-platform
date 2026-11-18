@@ -45,7 +45,7 @@ export function ProviderModerationRow({
 
     return (
         <div className="space-y-3 p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 flex-1 space-y-1.5">
                     <div className="flex flex-wrap items-center gap-2">
                         <strong className="line-clamp-2 text-base font-semibold text-on-surface">
@@ -84,7 +84,7 @@ export function ProviderModerationRow({
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 sm:justify-end">
                     <span className="inline-flex items-center gap-1.5 text-xs text-muted tabular-nums whitespace-nowrap">
                         <strong className="text-on-surface">{feeDisplay}</strong>
                         <IllustrativeTag/>
@@ -136,8 +136,8 @@ export function ProviderModerationRow({
                                     className="h-9 w-full rounded-control border border-border-input bg-card px-3 text-xs font-normal"
                                 />
                             </label>
-                            <label className="w-36 space-y-1 text-xs font-semibold text-on-surface">
-                                <span className="block whitespace-nowrap">
+                            <label className="w-full space-y-1 text-xs font-semibold text-on-surface sm:w-48">
+                                <span className="block leading-snug">
                                     {t('adminCommerce.marketplace.providers.feeInputLabel')}
                                     <OptionalMark/>
                                 </span>

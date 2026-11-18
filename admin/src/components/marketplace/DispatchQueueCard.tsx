@@ -29,7 +29,7 @@ export function DispatchQueueCard({
 
     return (
         <div className="space-y-3.5 p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 flex-1 space-y-1.5">
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="rounded-badge bg-slate-900 px-2 py-0.5 font-mono text-xs font-semibold whitespace-nowrap text-white">
@@ -67,7 +67,7 @@ export function DispatchQueueCard({
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2.5 tabular-nums">
+                <div className="flex shrink-0 flex-wrap items-center justify-between gap-2.5 tabular-nums sm:justify-end">
                     {mission.quotedSubtotalVnd != null && (
                         <div className="flex items-center gap-1.5">
                             <strong className="text-base font-bold text-primary whitespace-nowrap">
@@ -120,7 +120,7 @@ export function DispatchQueueCard({
                             return (
                                 <div
                                     key={cand.providerId}
-                                    className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-2.5"
+                                    className="flex flex-col gap-2.5 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between"
                                 >
                                     <div className="min-w-0 flex-1 space-y-1">
                                         <div className="flex flex-wrap items-center gap-2">

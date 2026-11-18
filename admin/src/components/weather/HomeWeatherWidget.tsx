@@ -40,10 +40,10 @@ const LEVEL_TONE_DARK: Record<Level, string> = {good: 'text-white', fair: 'text-
 /** Icon plus one or two words; the caption (Gió, Mưa, Tầm nhìn) lives in the tooltip and accessible name. */
 function Fact({icon, label, value, level, dark}: { icon: ReactNode; label: string; value: string; level: Level | null; dark: boolean }) {
     const tone = level ? (dark ? LEVEL_TONE_DARK : LEVEL_TONE)[level] : dark ? 'text-white/60' : 'text-slate-500';
-    return <div className="flex min-w-0 items-center gap-2.5" title={label} aria-label={`${label}: ${value}`}>
-        <span className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-control backdrop-blur-sm',
+    return <div className="flex min-w-0 items-center gap-2" title={label} aria-label={`${label}: ${value}`}>
+        <span className={cn('flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-control backdrop-blur-sm',
             dark ? 'bg-white/15 text-white' : 'bg-white/65 text-slate-700')} aria-hidden="true">{icon}</span>
-        <span aria-hidden="true" className={cn('truncate text-sm font-semibold', tone)}>{value}</span>
+        <span aria-hidden="true" className={cn('line-clamp-2 break-words text-xs sm:text-sm font-semibold leading-tight', tone)}>{value}</span>
     </div>;
 }
 

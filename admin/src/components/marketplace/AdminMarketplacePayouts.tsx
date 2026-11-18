@@ -132,7 +132,7 @@ export function AdminMarketplacePayouts() {
                         <div className={`divide-y divide-border transition-opacity ${query.isPlaceholderData ? 'opacity-60' : ''}`}>
                             {payouts.map(po => (
                                 <div key={po.id} className="space-y-3 p-5">
-                                    <div className="flex flex-wrap items-start justify-between gap-3">
+                                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-start sm:justify-between">
                                         <div className="min-w-0 flex-1 space-y-1">
                                             <div className="flex flex-wrap items-center gap-2">
                                                 <strong className="font-mono text-sm font-semibold whitespace-nowrap text-on-surface">
@@ -181,7 +181,7 @@ export function AdminMarketplacePayouts() {
                                             )}
                                         </div>
 
-                                        <div className="flex items-center gap-2 tabular-nums">
+                                        <div className="flex shrink-0 items-center gap-2 tabular-nums">
                                             <strong className="text-lg font-bold text-primary whitespace-nowrap">
                                                 {formatMarketplaceVnd(Number(po.amountVnd))}
                                             </strong>

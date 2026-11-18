@@ -198,7 +198,7 @@ export function AdminMarketplaceOrders() {
                     ) : (
                         <div className={`divide-y divide-border transition-opacity ${query.isPlaceholderData ? 'opacity-60' : ''}`}>
                             {orders.map(order => (
-                                <div key={order.id} className="flex flex-wrap items-start justify-between gap-3 p-5">
+                                <div key={order.id} className="flex flex-col gap-3 p-5 sm:flex-row sm:items-start sm:justify-between">
                                     <div className="min-w-0 flex-1 space-y-1.5">
                                         <div className="flex flex-wrap items-center gap-2">
                                             <span className="rounded-badge bg-slate-900 px-2 py-0.5 font-mono text-xs font-semibold whitespace-nowrap text-white">
@@ -248,7 +248,7 @@ export function AdminMarketplaceOrders() {
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-wrap items-center gap-2.5 tabular-nums">
+                                    <div className="flex shrink-0 flex-wrap items-center justify-between gap-2.5 tabular-nums sm:justify-end">
                                         {order.quotedSubtotalVnd != null && (
                                             <div className="flex items-center gap-1.5">
                                                 <strong className="text-sm font-bold text-primary whitespace-nowrap">

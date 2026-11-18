@@ -235,7 +235,7 @@ export function ProviderKycDrawer({
                                 />
                             </label>
                             <label className="space-y-1 text-xs font-semibold text-on-surface">
-                                <span className="flex items-center gap-1 whitespace-nowrap">
+                                <span className="flex flex-wrap items-center gap-1 leading-snug">
                                     {t('adminCommerce.marketplace.providers.feeInputLabel')}
                                     <OptionalMark/>
                                 </span>
