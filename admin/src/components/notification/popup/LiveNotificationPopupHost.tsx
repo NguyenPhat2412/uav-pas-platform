@@ -193,7 +193,7 @@ export function LiveNotificationPopupHost({
     return (
         <div
             aria-live="assertive"
-            className="pointer-events-none fixed right-4 top-16 z-[95] flex w-[372px] max-w-[calc(100vw-2rem)] flex-col gap-2.5"
+            className="pointer-events-none fixed top-16 right-4 left-4 z-[95] flex w-auto max-w-[calc(100vw-2rem)] flex-col gap-2.5 sm:left-auto sm:w-[372px]"
         >
             {cards.map(({key, item, href, duration, isExiting}) => {
                 const isCritical = item.severity === 'CRITICAL';
@@ -282,11 +282,11 @@ export function LiveNotificationPopupHost({
                                         </button>
                                     </div>
 
-                                    <p className="mt-1 text-[13px] font-bold leading-snug text-on-surface">
+                                    <p className="mt-1 text-[13px] leading-snug font-bold break-words text-on-surface">
                                         {item.title}
                                     </p>
                                     {item.content && (
-                                        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted">
+                                        <p className="mt-1 line-clamp-2 text-xs leading-relaxed break-words text-muted">
                                             {item.content}
                                         </p>
                                     )}
