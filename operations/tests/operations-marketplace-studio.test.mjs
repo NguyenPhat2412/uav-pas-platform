@@ -100,7 +100,13 @@ test('S3 marketplace form helpers classify order tabs, UAV/pilot status cards, a
         extractActionableError,
         inferMissionTypeFromServiceCode,
         listingFormFromTemplate,
+        sanitizeMarketplaceText,
     } = await import('../src/forms/marketplace/marketplace-forms.ts');
+
+    assert.equal(
+        sanitizeMarketplaceText('Khảo sát RTK (minh hoạ)'),
+        'Khảo sát GNSS — minh hoạ',
+    );
 
     assert.equal(
         classifySellerOrderTab({id: 1, status: 'CONFIRMED', providerResponseStatus: 'PENDING_PROVIDER'}),

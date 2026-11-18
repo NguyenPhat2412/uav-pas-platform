@@ -31,6 +31,7 @@ import {
     classifySellerOrderTab,
     extractActionableError,
     formatVndCompact,
+    sanitizeMarketplaceText,
     type SellerOrderTab,
 } from '@/forms/marketplace/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
@@ -322,7 +323,7 @@ export function ProviderOrdersView() {
                                                     </span>
                                                 </div>
                                                 <h3 className="m-0 mt-1.5 line-clamp-2 text-base font-semibold text-slate-900">
-                                                    {mission.title}
+                                                    {sanitizeMarketplaceText(mission.title)}
                                                 </h3>
                                                 <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                                                     <span className="inline-flex items-center gap-1 whitespace-nowrap">

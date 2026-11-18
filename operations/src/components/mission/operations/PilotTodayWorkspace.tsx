@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import {MissionPreflightCard} from '@/components/mission/operations/MissionPreflightCard';
 import {Button, OptionalMark, RequiredMark} from '@/components/ui';
-import {extractActionableError} from '@/forms/marketplace/marketplace-forms';
+import {extractActionableError, sanitizeMarketplaceText} from '@/forms/marketplace/marketplace-forms';
 import {usePilotTodayActions} from '@/hooks/marketplace/useMarketplace';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
@@ -250,7 +250,7 @@ export function PilotTodayWorkspace({
                                             </span>
                                         </div>
                                         <h3 className="m-0 mt-1.5 line-clamp-2 text-base font-semibold text-slate-900">
-                                            {mission.title}
+                                            {sanitizeMarketplaceText(mission.title)}
                                         </h3>
                                         <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                                             <span className="inline-flex items-center gap-1 whitespace-nowrap">
@@ -321,7 +321,9 @@ export function PilotTodayWorkspace({
 
                                         <Link
                                             href={`/operations/missions/${mission.id}`}
-                                            className="inline-flex min-h-10 items-center gap-1 rounded-control border border-slate-200 bg-white px-2.5 text-xs font-semibold whitespace-nowrap text-slate-600 hover:text-primary"
+                                            aria-label={t('opsMarketplace.orders.card.openDetail')}
+                                            title={t('opsMarketplace.orders.card.openDetail')}
+                                            className="inline-flex min-h-10 min-w-10 items-center justify-center gap-1 rounded-control border border-slate-200 bg-white px-2.5 text-xs font-semibold whitespace-nowrap text-slate-600 hover:text-primary"
                                         >
                                             <ExternalLink size={13} aria-hidden="true"/>
                                         </Link>

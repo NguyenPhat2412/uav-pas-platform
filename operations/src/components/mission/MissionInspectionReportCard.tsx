@@ -3,6 +3,7 @@
 import {useState} from 'react';
 import {Award, CheckCircle2, Clock, Download, FileCheck2, Layers, MapPin, Printer, ShieldCheck, SlidersHorizontal} from 'lucide-react';
 import {Button} from '@/components/ui';
+import {sanitizeMarketplaceText} from '@/forms/marketplace/marketplace-forms';
 import {useMissionInspectionReport} from '@/hooks/mission/useCustomerMissions';
 import {useI18n} from '@/providers/I18nContext';
 
@@ -87,7 +88,7 @@ export function MissionInspectionReportCard({
                             </span>
                         </div>
                         <p className="m-0 mt-0.5 text-xs text-muted">
-                            {report.locationName ?? report.title} · {report.uavModel || 'Enterprise GNSS'} ({report.uavSerialNumber || 'GNSS'}) ·{' '}
+                            {sanitizeMarketplaceText(report.locationName ?? report.title)} · {sanitizeMarketplaceText(report.uavModel || 'Enterprise GNSS')} ({sanitizeMarketplaceText(report.uavSerialNumber || 'GNSS')}) ·{' '}
                             {isEn ? 'Permit' : 'Giấy phép'}: {report.permitReference ?? report.permitStatus}
                         </p>
                     </div>
@@ -292,7 +293,7 @@ export function MissionInspectionReportCard({
                                                 <div className="min-w-0 flex-1">
                                                     <div className="flex items-center gap-1.5 font-bold text-slate-900">
                                                         <FileCheck2 size={13} className="shrink-0 text-uav-blue" />
-                                                        <span className="truncate">{pin.fileName}</span>
+                                                        <span className="truncate">{sanitizeMarketplaceText(pin.fileName)}</span>
                                                     </div>
                                                     <div className="mt-0.5 flex flex-wrap items-center gap-2 font-mono text-[11px] text-slate-500">
                                                         <span className="inline-flex items-center gap-0.5">

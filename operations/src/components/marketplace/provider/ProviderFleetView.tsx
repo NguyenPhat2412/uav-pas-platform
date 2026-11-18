@@ -24,6 +24,7 @@ import {
     extractActionableError,
     initialUavForm,
     normalizeUavStatusCardKey,
+    sanitizeMarketplaceText,
     UAV_STATUS_CODES,
 } from '@/forms/marketplace/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
@@ -354,10 +355,10 @@ export function ProviderFleetView() {
                                                 </span>
                                                 <div className="min-w-0">
                                                     <h3 className="m-0 line-clamp-2 text-base font-semibold text-slate-900">
-                                                        {uav.model}
+                                                        {sanitizeMarketplaceText(uav.model)}
                                                     </h3>
                                                     <p className="m-0 mt-0.5 truncate font-mono text-xs text-slate-500">
-                                                        {uav.serialNumber} · {uav.manufacturer}
+                                                        {sanitizeMarketplaceText(uav.serialNumber)} · {sanitizeMarketplaceText(uav.manufacturer)}
                                                     </p>
                                                 </div>
                                             </div>

@@ -31,6 +31,7 @@ import {
     LISTING_TYPE_CODES,
     listingFormFromTemplate,
     PRICING_MODEL_CODES,
+    sanitizeMarketplaceText,
 } from '@/forms/marketplace/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
 import type {UavService} from '@/types/mission/mission.types';
@@ -543,7 +544,7 @@ export function ProviderListingsView() {
                                             </div>
 
                                             <h3 className="m-0 line-clamp-2 text-base font-semibold text-slate-900">
-                                                {item.title}
+                                                {sanitizeMarketplaceText(item.title)}
                                             </h3>
 
                                             <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">

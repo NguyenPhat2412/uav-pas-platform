@@ -28,6 +28,7 @@ import {
     initialPilotForm,
     normalizeUavStatusCardKey,
     PILOT_STATUS_CODES,
+    sanitizeMarketplaceText,
 } from '@/forms/marketplace/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
 import type {
@@ -403,11 +404,11 @@ export function ProviderPilotsView() {
                                                     </span>
                                                     <div className="min-w-0">
                                                         <h3 className="m-0 line-clamp-2 text-base font-semibold text-slate-900">
-                                                            {pilot.fullName}
+                                                            {sanitizeMarketplaceText(pilot.fullName)}
                                                         </h3>
                                                         {pilot.specialization && (
                                                             <p className="m-0 mt-0.5 truncate text-xs text-slate-500">
-                                                                {pilot.specialization}
+                                                                {sanitizeMarketplaceText(pilot.specialization)}
                                                             </p>
                                                         )}
                                                     </div>
