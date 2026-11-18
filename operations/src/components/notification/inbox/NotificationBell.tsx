@@ -34,7 +34,7 @@ export function NotificationBell({viewAllHref = '/operations/notifications'}: { 
     }, []);
 
     return (
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative inline-flex" ref={dropdownRef}>
             <Button
                 type="button"
                 variant="outline"
@@ -46,12 +46,12 @@ export function NotificationBell({viewAllHref = '/operations/notifications'}: { 
                 title={t('opsMissions.notifications.center')}
             >
                 <Bell size={18}/>
-                {unreadCount > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] animate-pulse items-center justify-center rounded-panel bg-primary px-1 text-[10px] leading-none font-bold whitespace-nowrap text-primary-foreground ring-2 ring-white">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
-                )}
             </Button>
+            {unreadCount > 0 && (
+                <span className="pointer-events-none absolute -right-1 -top-1 flex h-5 min-w-5 animate-pulse items-center justify-center rounded-panel bg-primary px-1.5 text-[10px] leading-none font-bold whitespace-nowrap text-primary-foreground ring-2 ring-white">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+            )}
 
             {isOpen && (
                 <Card

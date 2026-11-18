@@ -357,7 +357,7 @@ export function ProviderFleetView() {
                                                     <h3 className="m-0 line-clamp-2 text-base font-semibold text-slate-900">
                                                         {sanitizeMarketplaceText(uav.model)}
                                                     </h3>
-                                                    <p className="m-0 mt-0.5 truncate font-mono text-xs text-slate-500">
+                                                    <p className="m-0 mt-0.5 break-words font-mono text-xs text-slate-500">
                                                         {sanitizeMarketplaceText(uav.serialNumber)} · {sanitizeMarketplaceText(uav.manufacturer)}
                                                     </p>
                                                 </div>
