@@ -12,6 +12,11 @@ export function formatMarketplaceVnd(amount: number): string {
     return `${new Intl.NumberFormat('vi-VN').format(Math.round(amount || 0))} ₫`;
 }
 
+export function sanitizeMarketplaceText(raw?: string | null): string {
+    if (!raw) return '';
+    return raw.replace(/\s*\(\s*minh\s+ho[aạ]\s*\)/gi, ' — minh hoạ').trim();
+}
+
 export type ProviderModerationErrorCode = 'INVALID_FEE_RATE' | 'NOTE_REQUIRED';
 export type ListingModerationErrorCode = 'NOTE_REQUIRED';
 export type PayoutProcessErrorCode = 'TRANSFER_REF_REQUIRED' | 'ADMIN_NOTE_REQUIRED';

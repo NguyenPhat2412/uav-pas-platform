@@ -15,6 +15,7 @@ import {
 import {Drawer, Metadata} from '@/components/data/Drawer';
 import {Button, OptionalMark} from '@/components/ui';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
+import {sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
 import {useI18n} from '@/providers/I18nContext';
 import type {
     AdminProviderDocument,
@@ -48,6 +49,7 @@ export function ProviderKycDrawer({
     onClose: () => void;
 }) {
     const {t, formatDate} = useI18n();
+    const docs = provider.documents ?? [];
     const docTypeLabel = (code: string) => {
         const key = `adminCommerce.marketplace.docType.${code}`;
         const val = t(key);
@@ -62,7 +64,7 @@ export function ProviderKycDrawer({
     return (
         <Drawer
             wide
-            title={t('adminCommerce.marketplace.providers.drawerTitle', {name: provider.displayName})}
+            title={t('adminCommerce.marketplace.providers.drawerTitle', {name: sanitizeMarketplaceText(provider.displayName)})}
             onClose={onClose}
         >
             <section className="space-y-3">
@@ -134,7 +136,7 @@ export function ProviderKycDrawer({
                 />
                 {provider.bio && (
                     <p className="m-0 rounded-panel border border-border bg-slate-50/70 p-3 text-xs text-muted">
-                        {provider.bio}
+                        {sanitizeMarketplaceText(provider.bio)}
                     </p>
                 )}
             </section>
@@ -142,15 +144,15 @@ export function ProviderKycDrawer({
             <section className="space-y-3">
                 <h3 className="m-0 flex items-center gap-2 text-sm font-semibold text-on-surface">
                     <FileCheck2 size={16} className="text-primary" aria-hidden="true"/>
-                    {t('adminCommerce.marketplace.providers.sectionDocs')} ({provider.documents.length})
+                    {t('adminCommerce.marketplace.providers.sectionDocs')} ({docs.length})
                 </h3>
-                {provider.documents.length === 0 ? (
+                {docs.length === 0 ? (
                     <div className="rounded-panel border border-dashed border-border p-5 text-center text-xs text-muted">
                         {t('adminCommerce.marketplace.providers.noDocs')}
                     </div>
                 ) : (
                     <div className="space-y-2.5">
-                        {provider.documents.map(doc => {
+                        {docs.map(doc => {
                             const canOpen = Boolean(
                                 (doc.fileUrl && /^https?:\/\//i.test(doc.fileUrl)) || doc.mediaAssetId,
                             );

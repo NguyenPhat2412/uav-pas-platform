@@ -3,6 +3,7 @@
 import {CheckCircle2, Eye, FileText, MapPin, PauseCircle, Star, XCircle} from 'lucide-react';
 import {Button, OptionalMark} from '@/components/ui';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
+import {sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
 import {useI18n} from '@/providers/I18nContext';
 import type {
     AdminProviderDocument,
@@ -36,6 +37,7 @@ export function ProviderModerationRow({
     onModerate: (status: ProviderVerificationStatus) => void;
 }) {
     const {t} = useI18n();
+    const docs = provider.documents ?? [];
     const feeDisplay =
         provider.commissionRateOverride != null
             ? `${(Number(provider.commissionRateOverride) * 100).toFixed(1)}%`
@@ -47,7 +49,7 @@ export function ProviderModerationRow({
                 <div className="min-w-0 flex-1 space-y-1.5">
                     <div className="flex flex-wrap items-center gap-2">
                         <strong className="line-clamp-2 text-base font-semibold text-on-surface">
-                            {provider.displayName}
+                            {sanitizeMarketplaceText(provider.displayName)}
                         </strong>
                         <span className="rounded-badge bg-surface-container-low px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-on-surface">
                             {t(`adminCommerce.marketplace.providerType.${provider.providerType}`)}
@@ -67,12 +69,12 @@ export function ProviderModerationRow({
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted tabular-nums">
                         <span className="inline-flex items-center gap-1 whitespace-nowrap">
                             <MapPin size={13} aria-hidden="true"/>
-                            {provider.province} · {t('adminCommerce.marketplace.providers.radiusKm', {km: provider.serviceRadiusKm})}
+                            {provider.province || '—'} · {t('adminCommerce.marketplace.providers.radiusKm', {km: provider.serviceRadiusKm ?? 0})}
                         </span>
                         <span className="inline-flex items-center gap-1 whitespace-nowrap">
                             <Star size={13} className="text-amber-500" aria-hidden="true"/>
                             {Number(provider.ratingAvg ?? 0).toFixed(1)} ·{' '}
-                            {t('adminCommerce.marketplace.providers.completedFlights', {count: provider.completedMissionsCount})}
+                            {t('adminCommerce.marketplace.providers.completedFlights', {count: provider.completedMissionsCount ?? 0})}
                         </span>
                         {provider.taxOrIdNumber && (
                             <span className="whitespace-nowrap">
@@ -95,14 +97,14 @@ export function ProviderModerationRow({
                         onClick={onInspect}
                         className="whitespace-nowrap"
                     >
-                        {t('adminCommerce.marketplace.providers.viewDocs', {count: provider.documents.length})}
+                        {t('adminCommerce.marketplace.providers.viewDocs', {count: docs.length})}
                     </Button>
                 </div>
             </div>
 
-            {provider.documents.length > 0 && (
+            {docs.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                    {provider.documents.map(doc => (
+                    {docs.map(doc => (
                         <button
                             key={doc.id}
                             type="button"
@@ -110,7 +112,7 @@ export function ProviderModerationRow({
                             className="inline-flex min-h-8 max-w-full items-center gap-1.5 rounded-control border border-slate-200 bg-surface-container-low px-2.5 py-1 text-xs text-on-surface transition-colors hover:border-slate-400"
                         >
                             <FileText size={13} className="shrink-0" aria-hidden="true"/>
-                            <strong className="truncate">{doc.title}</strong>
+                            <strong className="truncate">{sanitizeMarketplaceText(doc.title)}</strong>
                         </button>
                     ))}
                 </div>

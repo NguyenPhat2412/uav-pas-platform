@@ -16,7 +16,7 @@ import {
 import {Drawer, Metadata} from '@/components/data/Drawer';
 import {Alert, Button, OptionalMark} from '@/components/ui';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
-import {formatMarketplaceVnd} from '@/forms/marketplace/admin-marketplace-form';
+import {formatMarketplaceVnd, sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
 import {useI18n} from '@/providers/I18nContext';
 import type {AdminMarketplaceListing, ListingModerationStatus} from '@/types/marketplace/marketplace.types';
 
@@ -47,7 +47,7 @@ export function ListingModerationDrawer({
     return (
         <Drawer
             wide
-            title={t('adminCommerce.marketplace.listings.drawerTitle', {title: listing.title})}
+            title={t('adminCommerce.marketplace.listings.drawerTitle', {title: sanitizeMarketplaceText(listing.title)})}
             onClose={onClose}
         >
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -56,7 +56,7 @@ export function ListingModerationDrawer({
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                             src={listing.coverImageUrl}
-                            alt={listing.title}
+                            alt={sanitizeMarketplaceText(listing.title)}
                             className="h-full w-full object-cover"
                         />
                     ) : (
@@ -74,8 +74,8 @@ export function ListingModerationDrawer({
                             {t(`adminCommerce.marketplace.listingStatus.${listing.moderationStatus}`)}
                         </span>
                     </div>
-                    <h3 className="m-0 text-base font-semibold text-on-surface">{listing.title}</h3>
-                    {listing.summary && <p className="m-0 text-xs text-muted">{listing.summary}</p>}
+                    <h3 className="m-0 text-base font-semibold text-on-surface">{sanitizeMarketplaceText(listing.title)}</h3>
+                    {listing.summary && <p className="m-0 text-xs text-muted">{sanitizeMarketplaceText(listing.summary)}</p>}
                     <div className="flex flex-wrap items-center gap-2 pt-1 tabular-nums">
                         <strong className="text-lg font-bold text-primary">
                             {formatMarketplaceVnd(Number(listing.basePriceVnd))}
@@ -136,7 +136,7 @@ export function ListingModerationDrawer({
                             <Wrench size={14} className="mt-0.5 shrink-0 text-muted" aria-hidden="true"/>
                             <div>
                                 <strong className="text-on-surface">{t('adminCommerce.marketplace.listings.equipmentLabel')}: </strong>
-                                <span className="text-muted">{listing.equipmentSpecs}</span>
+                                <span className="text-muted">{sanitizeMarketplaceText(listing.equipmentSpecs)}</span>
                             </div>
                         </div>
                     )}
@@ -145,12 +145,12 @@ export function ListingModerationDrawer({
                             <PackageCheck size={14} className="mt-0.5 shrink-0 text-muted" aria-hidden="true"/>
                             <div>
                                 <strong className="text-on-surface">{t('adminCommerce.marketplace.listings.deliverablesLabel')}: </strong>
-                                <span className="text-muted">{listing.deliverablesSummary}</span>
+                                <span className="text-muted">{sanitizeMarketplaceText(listing.deliverablesSummary)}</span>
                             </div>
                         </div>
                     )}
                     {listing.description && (
-                        <p className="m-0 pt-1 text-muted whitespace-pre-line">{listing.description}</p>
+                        <p className="m-0 pt-1 text-muted whitespace-pre-line">{sanitizeMarketplaceText(listing.description)}</p>
                     )}
                 </section>
             )}

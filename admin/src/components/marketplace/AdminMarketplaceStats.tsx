@@ -92,9 +92,9 @@ export function AdminMarketplaceStats() {
     const supplyBars = s
         ? [
               {label: t('adminCommerce.marketplace.stats.kpiActiveProviders'), value: s.activeProvidersCount ?? 0},
-              {label: t('adminCommerce.marketplace.providerStatus.PENDING_REVIEW'), value: s.pendingProvidersCount ?? 0},
+              {label: t('adminCommerce.marketplace.stats.kpiPendingProviders'), value: s.pendingProvidersCount ?? 0},
               {label: t('adminCommerce.marketplace.stats.kpiPublishedListings'), value: s.publishedListingsCount ?? 0},
-              {label: t('adminCommerce.marketplace.listingStatus.PENDING_REVIEW'), value: s.pendingListingsCount ?? 0},
+              {label: t('adminCommerce.marketplace.stats.kpiPendingListings'), value: s.pendingListingsCount ?? 0},
           ]
         : [];
 

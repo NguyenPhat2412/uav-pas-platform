@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import {Button, OptionalMark} from '@/components/ui';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
-import {formatMarketplaceVnd} from '@/forms/marketplace/admin-marketplace-form';
+import {formatMarketplaceVnd, sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
 import {useI18n} from '@/providers/I18nContext';
 import type {AdminMarketplaceListing, ListingModerationStatus} from '@/types/marketplace/marketplace.types';
 
@@ -56,7 +56,7 @@ export function ListingModerationRow({
                     <div className="min-w-0 flex-1 space-y-1.5">
                         <div className="flex flex-wrap items-center gap-2">
                             <strong className="line-clamp-2 text-base font-semibold text-on-surface">
-                                {item.title}
+                                {sanitizeMarketplaceText(item.title)}
                             </strong>
                             <span className="rounded-badge bg-surface-container-low px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-on-surface">
                                 {t(`adminCommerce.marketplace.listingType.${item.listingType}`)}
@@ -76,11 +76,11 @@ export function ListingModerationRow({
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted tabular-nums">
                             <span className="inline-flex items-center gap-1 whitespace-nowrap">
                                 <Store size={13} aria-hidden="true"/>
-                                <strong className="text-on-surface">{item.providerDisplayName}</strong>
+                                <strong className="text-on-surface">{sanitizeMarketplaceText(item.providerDisplayName)}</strong>
                             </span>
                             <span className="inline-flex items-center gap-1 whitespace-nowrap">
                                 <MapPin size={13} aria-hidden="true"/>
-                                {item.province} · {t('adminCommerce.marketplace.providers.radiusKm', {km: item.serviceRadiusKm})}
+                                {item.province || '—'} · {t('adminCommerce.marketplace.providers.radiusKm', {km: item.serviceRadiusKm ?? 0})}
                             </span>
                             {item.deliverySlaHours != null && (
                                 <span className="inline-flex items-center gap-1 whitespace-nowrap">
