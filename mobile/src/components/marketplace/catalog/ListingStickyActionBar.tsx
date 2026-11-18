@@ -1,15 +1,15 @@
 import React from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {MessageSquareText, ShoppingBag, Store} from 'lucide-react-native';
+import {FolderKanban, MessageSquareText, Store} from 'lucide-react-native';
 import {AppText, ScaledText} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 /**
  * Shopee-style sticky conversion bar pinned at the bottom of a Flight Service detail page:
- * - Left: Quick Chat Advisor + Visit Partner Shop icon actions (30% structural slate)
- * - Right: Prominent 10% accent 2-line CTA ("Chốt dịch vụ" + full price, zero truncation)
+ * - Left: Quick Chat Advisor icon action (1-line label)
+ * - Right: Prominent primary CTA ("Đăng ký cho dự án" + illustrative price, 1-line labels)
  */
 export function ListingStickyActionBar({
     priceLabel,
@@ -56,16 +56,24 @@ export function ListingStickyActionBar({
             {canBook ? (
                 <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel={t('mobile.shop.checkoutNowWithPrice', {price: priceLabel})}
+                    accessibilityLabel={`${t('mobile.overnight.subscribeForProjectBtn')} ${priceLabel}`}
                     onPress={onCheckoutPress}
                     style={({pressed}) => [styles.checkoutBtn, pressed && styles.pressed]}>
-                    <ShoppingBag size={18} color={colors.white}/>
+                    <FolderKanban size={18} color={colors.white}/>
                     <View style={styles.checkoutTextCol}>
-                        <ScaledText style={styles.checkoutTitle} numberOfLines={1}>
-                            {t('mobile.shop.checkoutBtn')}
+                        <ScaledText
+                            style={styles.checkoutTitle}
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                            minimumFontScale={0.85}>
+                            {t('mobile.overnight.subscribeForProjectBtn')}
                         </ScaledText>
-                        <ScaledText style={styles.checkoutPrice} numberOfLines={1}>
-                            {priceLabel}
+                        <ScaledText
+                            style={styles.checkoutPrice}
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                            minimumFontScale={0.85}>
+                            {priceLabel} · {t('mobile.shop.illustrativePrice')}
                         </ScaledText>
                     </View>
                 </Pressable>
@@ -111,7 +119,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: spacing.md,
         paddingVertical: 6,
     },
-    checkoutTextCol: {alignItems: 'flex-start'},
+    checkoutTextCol: {alignItems: 'flex-start', flexShrink: 1},
     checkoutTitle: {color: colors.white, fontSize: font.small, fontWeight: '700', lineHeight: 16},
     checkoutPrice: {color: colors.primaryLight, fontSize: font.caption, fontWeight: '700', lineHeight: 15},
     pressed: {opacity: 0.78},

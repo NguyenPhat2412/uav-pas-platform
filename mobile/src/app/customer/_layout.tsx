@@ -7,7 +7,7 @@ import {AssistantProvider} from '@/providers/AssistantContext';
 import {detailHeader} from '@/components/layout/TabStack';
 import {AppSplash} from '@/components/shared/AppStatusViews';
 
-const PRIVATE_CUSTOMER_ROUTE = /^\/customer\/(mission|orders|projects|billing|invoices|profile|security|notifications|assistant|provider(\/|$))/;
+const PRIVATE_CUSTOMER_ROUTE = /^\/customer\/(mission|orders|projects|marketplace\/subscribe|billing|invoices|profile|security|notifications|assistant|provider(\/|$))/;
 
 /**
  * Customer Marketplace & Booking stack: supports Guest browsing across discovery tabs, listing pages, and partner
@@ -43,6 +43,7 @@ export default function CustomerLayout() {
                     <Stack.Screen name="training/index" options={{title: t('nav.training')}}/>
                     <Stack.Screen name="training/[slug]" options={{title: t('nav.training')}}/>
                     <Stack.Screen name="training/lesson/[id]" options={{title: t('nav.training')}}/>
+                    <Stack.Screen name="marketplace/subscribe" options={{title: t('mobile.overnight.subWizardTitle')}}/>
                     <Stack.Screen name="marketplace/[slug]" options={{title: t('mobile.nav.explore')}}/>
                     <Stack.Screen name="providers/[slug]" options={{title: t('mobile.provider.storefrontTitle')}}/>
                     <Stack.Screen name="provider/index" options={{title: t('mobile.provider.hubEntry')}}/>
