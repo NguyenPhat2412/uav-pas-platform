@@ -163,7 +163,7 @@ export default function HomePage() {
                                     <strong className="block text-2xl font-bold tracking-tight text-slate-900 tabular-nums">
                                         {stat.value}
                                     </strong>
-                                    <span className="mt-0.5 block truncate text-xs font-semibold whitespace-nowrap text-slate-500">
+                                    <span className="mt-0.5 block line-clamp-2 break-words text-xs font-semibold leading-snug text-slate-500">
                                         {stat.label}
                                     </span>
                                 </div>

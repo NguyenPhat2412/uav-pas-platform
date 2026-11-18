@@ -193,7 +193,7 @@ export function PilotTodayWorkspace({
                         >
                             <span className="inline-flex items-center gap-1.5 min-w-0">
                                 <Icon size={16} className="shrink-0" aria-hidden="true"/>
-                                <span className="truncate text-xs font-semibold whitespace-nowrap">
+                                <span className="line-clamp-2 break-words text-xs font-semibold leading-tight">
                                     {t(`opsMarketplace.pilotToday.tabs.${tab.key}`)}
                                 </span>
                             </span>

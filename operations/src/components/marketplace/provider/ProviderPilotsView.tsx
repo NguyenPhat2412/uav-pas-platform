@@ -215,7 +215,7 @@ export function ProviderPilotsView() {
                                     >
                                         <span className="inline-flex items-center gap-2 min-w-0">
                                             <Icon size={18} className={active ? 'text-primary' : 'text-slate-500'} aria-hidden="true"/>
-                                            <span className="truncate text-xs font-semibold whitespace-nowrap">
+                                            <span className="line-clamp-2 break-words text-xs font-semibold leading-tight">
                                                 {t(`opsMarketplace.fleet.filter.${item.key}`)}
                                             </span>
                                         </span>
