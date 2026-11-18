@@ -105,6 +105,7 @@ export function HomeScreen() {
                             ) : (
                                 <Pressable
                                     accessibilityRole="button"
+                                    accessibilityLabel={t('mobile.shop.signInShort')}
                                     onPress={() => router.push('/login')}
                                     style={({pressed}) => [styles.signInPill, pressed && styles.pressed]}>
                                     <LogIn size={14} color={colors.white}/>
@@ -131,6 +132,7 @@ export function HomeScreen() {
                 action={
                     <Pressable
                         accessibilityRole="button"
+                        accessibilityLabel={t('mobile.shop.viewAllBtn')}
                         onPress={() => router.navigate('/customer/services')}
                         style={({pressed}) => [pressed && styles.pressed]}>
                         <AppText variant="caption" style={styles.viewAllLink} numberOfLines={1}>

@@ -1044,7 +1044,23 @@
       "hideStaffLoginToggle": "Hide staff sign-in",
       "uavStatusAvailable": "Available",
       "uavStatusInUse": "In flight",
-      "uavStatusMaintenance": "Maintenance"
+      "uavStatusMaintenance": "Maintenance",
+      "orderUpdatedToast": "Order #{id} updated: {status}",
+      "reportLoading": "Loading handover certificate...",
+      "reportTitle": "Inspection & Handover Certificate",
+      "reportShareHeading": "UAV PAS HANDOVER CERTIFICATE",
+      "reportCertCode": "Certificate code",
+      "reportPreflightPass": "Safety passed",
+      "reportPreflightChecked": "Verified",
+      "reportDistance": "Distance",
+      "reportMaxAlt": "Max altitude",
+      "reportWaypoints": "Waypoints",
+      "reportWaypointsCount": "{count} pts",
+      "reportFiles": "Deliverables",
+      "reportFilesCount": "{count} files",
+      "reportPinsHeading": "Capture coordinates per file:",
+      "reportIssuedAt": "Issued: {date}",
+      "reportShareBtn": "Share certificate"
     }
   }
 }

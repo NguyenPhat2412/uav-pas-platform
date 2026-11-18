@@ -202,6 +202,7 @@ export function ProjectSubscriptionWizardScreen() {
                                     <Pressable
                                         key={proj.id}
                                         accessibilityRole="radio"
+                                        accessibilityLabel={`${proj.name}, ${proj.province}`}
                                         accessibilityState={{checked: chosen}}
                                         onPress={() => handleSelectProject(proj)}
                                         style={[styles.projectOption, chosen && styles.projectOptionChosen]}>

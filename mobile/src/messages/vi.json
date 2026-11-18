@@ -1044,7 +1044,23 @@
       "hideStaffLoginToggle": "Ẩn đăng nhập nhân sự",
       "uavStatusAvailable": "Sẵn sàng",
       "uavStatusInUse": "Đang bay",
-      "uavStatusMaintenance": "Bảo trì"
+      "uavStatusMaintenance": "Bảo trì",
+      "orderUpdatedToast": "Đơn #{id} vừa cập nhật: {status}",
+      "reportLoading": "Đang tải biên bản nghiệm thu...",
+      "reportTitle": "Biên bản nghiệm thu & bàn giao",
+      "reportShareHeading": "BIÊN BẢN NGHIỆM THU NHIỆM VỤ UAV PAS",
+      "reportCertCode": "Mã biên bản",
+      "reportPreflightPass": "Đạt an toàn",
+      "reportPreflightChecked": "Đã kiểm tra",
+      "reportDistance": "Quãng đường",
+      "reportMaxAlt": "Độ cao tối đa",
+      "reportWaypoints": "Điểm dừng",
+      "reportWaypointsCount": "{count} điểm",
+      "reportFiles": "Tệp bàn giao",
+      "reportFilesCount": "{count} tệp",
+      "reportPinsHeading": "Vị trí chụp của từng tệp:",
+      "reportIssuedAt": "Cấp lúc: {date}",
+      "reportShareBtn": "Chia sẻ biên bản"
     }
   }
 }

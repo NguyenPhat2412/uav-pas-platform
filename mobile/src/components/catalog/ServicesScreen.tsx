@@ -208,6 +208,7 @@ export function ServicesScreen() {
 
                 <Pressable
                     accessibilityRole="button"
+                    accessibilityLabel={t('mobile.shop.escrowMicroHint')}
                     onPress={rfqEnabled && canBook ? handleOpenRfq : undefined}
                     style={({pressed}) => [styles.escrowBar, pressed && styles.pressed]}>
                     <ShieldCheck size={15} color={colors.primary}/>

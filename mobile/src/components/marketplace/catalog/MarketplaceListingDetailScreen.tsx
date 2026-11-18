@@ -220,6 +220,7 @@ export function MarketplaceListingDetailScreen() {
                                 <Pressable
                                     key={val}
                                     accessibilityRole="button"
+                                    accessibilityLabel={`${val} ${unitLabel}`}
                                     accessibilityState={{selected: active}}
                                     onPress={() => setUnitsInput(String(val))}
                                     style={({pressed}) => [

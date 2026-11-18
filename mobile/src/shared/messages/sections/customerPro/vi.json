@@ -378,6 +378,27 @@
     "orderRealtimeToastBody": "Trạng thái mới: {status}",
     "emptyProjectsFirstCta": "Tạo dự án đầu tiên",
     "emptyOrdersTitle": "Chưa có đơn dịch vụ nào",
-    "emptyOrdersDesc": "Chọn dịch vụ bay từ chợ UAV PAS và đăng ký cho dự án để bắt đầu."
+    "emptyOrdersDesc": "Chọn dịch vụ bay từ chợ UAV PAS và đăng ký cho dự án để bắt đầu.",
+    "emptyCatalogDesc": "Thử đổi trạng thái đơn, dự án hoặc từ khoá tìm kiếm.",
+    "pubEscrowStep1": "1. Đặt cho dự án",
+    "pubEscrowStep2": "2. Ký quỹ minh hoạ",
+    "pubEscrowStep3": "3. Bay & bàn giao",
+    "pubEscrowStep4": "4. Nghiệm thu sao",
+    "pubBackCatalog": "← Quay lại Sàn dịch vụ UAV",
+    "pubCategoryCode": "Danh mục: {name}",
+    "pubScopeHeading": "Phạm vi thực hiện chi tiết",
+    "pubEquipmentHeading": "Tổ hợp UAV & cảm biến",
+    "pubEquipmentDefault": "Trang bị tiêu chuẩn đã thẩm định phù hợp nhiệm vụ bay.",
+    "pubDefaultDeliverable": "Dữ liệu bay gốc và báo cáo nghiệm thu lưu trữ bảo mật qua Signed-URL.",
+    "pubCalcAria": "Bảng tính chi phí và đặt dịch vụ",
+    "pubMinUnitsHint": "Đặt tối thiểu {min} {unit}",
+    "pubMinPreset": "Tối thiểu · {val}",
+    "pubSubtotal": "Tạm tính · minh hoạ",
+    "pubDeposit": "Đặt cọc thiết bị · minh hoạ",
+    "pubEscrowTotal": "Tổng ký quỹ · minh hoạ",
+    "pubOnSiteHours": "Có mặt hiện trường trong {hours} giờ",
+    "pubDeliveryHours": "Bàn giao dữ liệu trong {hours} giờ",
+    "pubOpenRfqLink": "Khối lượng lớn hoặc yêu cầu đặc thù? Gửi yêu cầu riêng →",
+    "pubEscrowNote": "Khoản ký quỹ minh hoạ (hạn {days} ngày) được giữ an toàn và chỉ đối soát sau khi bạn nghiệm thu dữ liệu bàn giao."
   }
 }

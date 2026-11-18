@@ -26,7 +26,7 @@ export type RealtimeServerFrame =
     | { type: 'SUPPORT_SUMMARY_UPDATED'; timestamp: string; summary: SupportAdminSummary }
     | { type: 'SUPPORT_VISITOR_TYPING'; timestamp: string; threadId: number; senderName?: string; typing: boolean }
     | { type: 'INVOICE_UPDATED'; timestamp: string; invoiceId: number; invoiceCode: string; status: InvoiceStatus | string }
-    | { type: 'ORDER_UPDATED'; timestamp?: string; missionId: number; status: string; statusGroup?: OrderStatusGroup }
+    | { type: 'ORDER_UPDATED'; timestamp?: string; missionId: number; orderId?: number; status: string; statusGroup?: OrderStatusGroup }
     | { type: 'NOTIFICATION_CREATED'; timestamp: string; notification: RealtimeNotificationPopupPayload; unreadCount: number; screenPopup?: boolean; desktopOs?: boolean };
 
 export interface RealtimeSocketLike {

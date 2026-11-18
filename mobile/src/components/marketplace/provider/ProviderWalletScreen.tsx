@@ -139,6 +139,7 @@ export function ProviderWalletScreen() {
                             <Pressable
                                 key={val}
                                 accessibilityRole="button"
+                                accessibilityLabel={formatVndCompact(val)}
                                 onPress={() => setAmountInput(String(val))}
                                 style={[styles.chip, active && styles.chipActive]}>
                                 <ScaledText

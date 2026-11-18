@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Redirect, Stack, usePathname} from 'expo-router';
+import {useOrderRealtimeSync} from '@/hooks/order/useOrders';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {AssistantProvider} from '@/providers/AssistantContext';
@@ -18,6 +19,7 @@ export default function CustomerLayout() {
     const {status} = useAuth();
     const {t} = useI18n();
     const pathname = usePathname();
+    useOrderRealtimeSync({notifyToast: true});
     if (status === 'loading') return <AppSplash/>;
     if (status !== 'signed-in' && PRIVATE_CUSTOMER_ROUTE.test(pathname)) {
         return <Redirect href="/login"/>;

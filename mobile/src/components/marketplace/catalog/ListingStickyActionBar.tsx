@@ -33,6 +33,7 @@ export function ListingStickyActionBar({
         <View style={[styles.bar, {paddingBottom: Math.max(insets.bottom, spacing.sm)}]}>
             <Pressable
                 accessibilityRole="button"
+                accessibilityLabel={t('mobile.shop.chatAdvisorBtn')}
                 onPress={onChatPress}
                 style={({pressed}) => [styles.iconAction, pressed && styles.pressed]}>
                 <MessageSquareText size={19} color={colors.slateDark}/>
@@ -44,6 +45,7 @@ export function ListingStickyActionBar({
             {hasShop && onShopPress ? (
                 <Pressable
                     accessibilityRole="button"
+                    accessibilityLabel={t('mobile.shop.visitShopBtn')}
                     onPress={onShopPress}
                     style={({pressed}) => [styles.iconAction, styles.iconDivider, pressed && styles.pressed]}>
                     <Store size={19} color={colors.slateDark}/>

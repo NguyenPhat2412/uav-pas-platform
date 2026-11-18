@@ -85,6 +85,7 @@ export function OrderStatusBarCard() {
                 action={
                     <Pressable
                         accessibilityRole="button"
+                        accessibilityLabel={t('mobile.shop.viewAllBtn')}
                         onPress={() => openOrders()}
                         style={({pressed}) => [styles.allBtn, pressed && styles.pressed]}>
                         <AppText variant="caption" style={styles.allText} numberOfLines={1}>

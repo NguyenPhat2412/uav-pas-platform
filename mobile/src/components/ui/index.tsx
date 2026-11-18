@@ -181,7 +181,7 @@ export function Button({label, onPress, tone = 'primary', size = 'md', loading =
     const compact = size === 'sm';
     return (
         <Pressable
-            onPress={onPress} disabled={inactive} accessibilityRole="button"
+            onPress={onPress} disabled={inactive} accessibilityRole="button" accessibilityLabel={label}
             accessibilityState={{disabled: inactive, busy: loading}}
             style={({pressed}) => [styles.button, compact && styles.buttonSm, {backgroundColor: palette.background, borderColor: palette.border},
                 inactive && styles.disabled, pressed && styles.pressed, style]}>
@@ -292,7 +292,7 @@ export function ChipGroup<T extends string>({options, value, onChange, wrap = fa
     const items = options.map(option => {
         const active = option.value === value;
         return (
-            <Pressable key={option.value} onPress={() => onChange(option.value)} accessibilityRole="button"
+            <Pressable key={option.value} onPress={() => onChange(option.value)} accessibilityRole="button" accessibilityLabel={option.label}
                        accessibilityState={{selected: active}}>
                 <GlassSurface interactive tint={active ? colors.slateDark : colors.slateLight}
                               style={[styles.chip, wrap && styles.chipWrapItem, liquidGlass && styles.chipGlass]}

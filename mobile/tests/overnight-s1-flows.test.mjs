@@ -95,3 +95,95 @@ test('S1 offline cache, 320pt/xlarge responsive layout, and customer fleet anony
     const inspectionReport = read('components/mission/MobileMissionInspectionReportCard.tsx');
     assert.match(inspectionReport, /const isCustomer = portal === 'customer'/);
 });
+
+test('S1 VoiceOver a11y & ORDER_UPDATED realtime sync across Home, Projects, and Tracking', () => {
+    // 1. Every <Pressable ...> in S1 screens & shared controls must carry an explicit accessibilityLabel
+    const s1A11yFiles = [
+        'components/home/HomeScreen.tsx',
+        'components/home/MarketplaceSearchHero.tsx',
+        'components/home/ServiceCategoryShowcase.tsx',
+        'components/home/OrderStatusBarCard.tsx',
+        'components/home/ProjectPackagePromoCard.tsx',
+        'components/project/ProjectListScreen.tsx',
+        'components/project/ProjectFormScreen.tsx',
+        'components/project/ProjectDetailScreen.tsx',
+        'components/project/ProjectZoneMapField.tsx',
+        'components/marketplace/catalog/ListingStickyActionBar.tsx',
+        'components/marketplace/catalog/MarketplaceListingDetailScreen.tsx',
+        'components/marketplace/catalog/ProjectSubscriptionWizardScreen.tsx',
+        'components/marketplace/catalog/SubscriptionScheduleConfirmCard.tsx',
+        'components/order/CustomerOrdersScreen.tsx',
+        'components/order/OrderTrackingScreen.tsx',
+        'components/marketplace/provider/ProviderHubScreen.tsx',
+        'components/marketplace/provider/ProviderPilotsScreen.tsx',
+        'components/marketplace/provider/ProviderTemplateQuickCard.tsx',
+        'components/marketplace/provider/ProviderOrderAssignBox.tsx',
+        'components/marketplace/provider/ProviderWalletScreen.tsx',
+        'components/mission/CustomerHandoverReviewCard.tsx',
+        'components/mission/MobileMissionInspectionReportCard.tsx',
+        'components/auth/LoginScreen.tsx',
+        'components/layout/AppHeader.tsx',
+        'components/ui/GlassSelect.tsx',
+        'components/ui/index.tsx',
+    ];
+
+    function findOpeningPressableTags(source) {
+        const tags = [];
+        const needle = '<Pressable';
+        let idx = source.indexOf(needle);
+        while (idx !== -1) {
+            const after = source[idx + needle.length];
+            if (after && /[A-Za-z0-9_]/.test(after)) {
+                idx = source.indexOf(needle, idx + needle.length);
+                continue;
+            }
+            let pos = idx + needle.length;
+            let braceDepth = 0;
+            let inStr = null;
+            while (pos < source.length) {
+                const ch = source[pos];
+                if (inStr) {
+                    if (ch === '\\') pos += 1;
+                    else if (ch === inStr) inStr = null;
+                } else if (ch === '\'' || ch === '"' || ch === '`') {
+                    inStr = ch;
+                } else if (ch === '{') {
+                    braceDepth += 1;
+                } else if (ch === '}') {
+                    braceDepth = Math.max(0, braceDepth - 1);
+                } else if (ch === '>' && braceDepth === 0) {
+                    tags.push(source.slice(idx, pos + 1));
+                    break;
+                }
+                pos += 1;
+            }
+            idx = source.indexOf(needle, pos + 1);
+        }
+        return tags;
+    }
+
+    for (const rel of s1A11yFiles) {
+        const content = read(rel);
+        for (const tag of findOpeningPressableTags(content)) {
+            assert.match(tag, /\baccessibilityLabel=/, `${rel} has <Pressable> without accessibilityLabel: ${tag}`);
+            assert.match(tag, /\baccessibilityRole=/, `${rel} has <Pressable> without accessibilityRole: ${tag}`);
+        }
+    }
+
+    // 2. ORDER_UPDATED realtime sync is wired across CustomerLayout, Home, Projects, Missions, and Flight Tracking
+    const customerLayout = read('app/customer/_layout.tsx');
+    assert.match(customerLayout, /useOrderRealtimeSync\(\{notifyToast:\s*true\}\)/);
+
+    const ordersHook = read('hooks/order/useOrders.ts');
+    assert.match(ordersHook, /realtimeWs\.syncAccessToken/);
+    assert.match(ordersHook, /frame\.type !== 'ORDER_UPDATED'/);
+    assert.match(ordersHook, /projectKeys\.all\(userId\)/);
+    assert.match(ordersHook, /projectKeys\.orderTracking\(userId,\s*resolvedId\)/);
+    assert.match(ordersHook, /describeOrderRealtimeToast/);
+
+    const projectsHook = read('hooks/project/useProjects.ts');
+    assert.match(projectsHook, /useOrderRealtimeSync\(\)/);
+
+    const missionsHook = read('hooks/mission/useCustomerMissions.ts');
+    assert.match(missionsHook, /useOrderRealtimeSync/);
+});

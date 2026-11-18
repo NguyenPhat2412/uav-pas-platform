@@ -48,6 +48,7 @@ export function SubscriptionWizardStepper({
                         key={item.id}
                         disabled={item.id > step}
                         accessibilityRole="tab"
+                        accessibilityLabel={item.label}
                         accessibilityState={{selected: active}}
                         onPress={() => onSelectStep(item.id)}
                         style={[
@@ -136,6 +137,7 @@ export function SubscriptionScheduleConfirmCard({
                             <Pressable
                                 key={preset.value}
                                 accessibilityRole="button"
+                                accessibilityLabel={preset.label}
                                 onPress={() => onChangeStartDate(preset.value)}
                                 style={[styles.chip, active && styles.chipActive]}>
                                 <ScaledText

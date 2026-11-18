@@ -1044,7 +1044,23 @@
       "hideStaffLoginToggle": "スタッフ用ログインを隠す",
       "uavStatusAvailable": "待機中",
       "uavStatusInUse": "飛行中",
-      "uavStatusMaintenance": "整備中"
+      "uavStatusMaintenance": "整備中",
+      "orderUpdatedToast": "注文 #{id} の状態が更新されました: {status}",
+      "reportLoading": "検収レポートを読み込み中...",
+      "reportTitle": "検収・納品証明書",
+      "reportShareHeading": "UAV PAS 納品検収証明書",
+      "reportCertCode": "証明書番号",
+      "reportPreflightPass": "安全基準クリア",
+      "reportPreflightChecked": "確認済",
+      "reportDistance": "飛行距離",
+      "reportMaxAlt": "最大高度",
+      "reportWaypoints": "経由点",
+      "reportWaypointsCount": "{count} 地点",
+      "reportFiles": "納品データ",
+      "reportFilesCount": "{count} 件",
+      "reportPinsHeading": "各ファイルの撮影座標:",
+      "reportIssuedAt": "発行日時: {date}",
+      "reportShareBtn": "証明書を共有"
     }
   }
 }

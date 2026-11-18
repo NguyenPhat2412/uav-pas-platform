@@ -2,6 +2,7 @@ import {keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClien
 import {billingKeys} from '@/shared/hooks/billing/query-keys';
 import {queryKeys} from '@/shared/lib/query';
 import {customerMissionService} from '@/api/mission/customer-missions.api';
+import {useOrderRealtimeSync} from '@/hooks/order/useOrders';
 import {useAuth} from '@/providers/AuthContext';
 import type {MissionInput, MissionStatus} from '@/shared/types/customer';
 import type {
@@ -72,6 +73,7 @@ export function useMissionList(
     extra?: { projectId?: number; statusGroup?: OrderStatusGroup },
 ) {
     const {key, can, permissionsReady} = useCustomerKey();
+    useOrderRealtimeSync();
     return useInfiniteQuery({
         queryKey: [...key, 'missions', 'infinite', {status, search, ...extra}],
         queryFn: ({pageParam, signal}) => customerMissionService.missions(pageParam, status, search, signal, extra),
@@ -84,6 +86,7 @@ export function useMissionList(
 
 export function useMissionDetail(id: number) {
     const {key, can, permissionsReady, user} = useCustomerKey();
+    useOrderRealtimeSync({targetOrderId: id});
     const valid = Number.isSafeInteger(id) && id > 0;
     const detail = useQuery({
         queryKey: [...key, 'mission', id],

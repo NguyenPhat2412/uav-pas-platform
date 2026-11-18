@@ -65,6 +65,11 @@ export function LoginScreen() {
 
             <Pressable
                 accessibilityRole="button"
+                accessibilityLabel={
+                    showStaffForm
+                        ? t('mobile.overnight.hideStaffLoginToggle')
+                        : t('mobile.overnight.staffLoginToggle')
+                }
                 accessibilityState={{expanded: showStaffForm}}
                 onPress={() => setShowStaffForm(prev => !prev)}
                 style={({pressed}) => [styles.staffToggle, pressed && styles.pressed]}>
