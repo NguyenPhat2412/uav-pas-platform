@@ -172,7 +172,10 @@
     "infrastructureEmail": "メール",
     "weather": "飛行気象",
     "airspace": "空域ゾーン",
-    "notificationModules": "通知モジュール管理"
+    "notificationModules": "通知モジュール管理",
+    "marketplaceDispatch": "注文ディスパッチ",
+    "marketplaceOrders": "全注文モニタリング",
+    "marketplaceStats": "マーケット統計"
   },
   "sidebar": {
     "title": "UAV PAS",

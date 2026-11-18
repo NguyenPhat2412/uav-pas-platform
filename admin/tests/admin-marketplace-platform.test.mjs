@@ -13,6 +13,16 @@ const compile = source =>
 
 const load = source => import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
 
+function collectLeafKeys(obj, prefix = '') {
+    const keys = [];
+    for (const [k, v] of Object.entries(obj ?? {})) {
+        const next = prefix ? `${prefix}.${k}` : k;
+        if (v && typeof v === 'object' && !Array.isArray(v)) keys.push(...collectLeafKeys(v, next));
+        else keys.push(next);
+    }
+    return keys.sort();
+}
+
 test('adminI18nService.namespaces unwraps DTO { namespaces: string[] } from backend', async () => {
     const {API_ROUTES} = await load(compile(read('src/lib/api/routes.ts')));
     globalThis.__i18nTest = {
@@ -42,7 +52,44 @@ test('admin hooks gate server queries behind permissionsReady and PermissionCode
     assert.match(marketplaceHooks, /permissionsReady && can\('MARKETPLACE_MODERATE'\)/);
     assert.match(marketplaceHooks, /permissionsReady && can\('PAYOUT_MANAGE'\)/);
     assert.match(marketplaceHooks, /keepPreviousData/);
+    assert.match(marketplaceHooks, /useOpenProviderDocument/);
 
     const usersSource = read('src/components/user/Users.tsx');
     assert.match(usersSource, /can\('MARKETPLACE_MODERATE'\)\s*&&\s*<AdminUserProviderCard/);
+});
+
+test('trilingual adminCommerce.marketplace catalog maintains 100% leaf-key parity and passes content-guard', () => {
+    const vi = JSON.parse(read('src/messages/sections/adminCommerce/vi.json')).adminCommerce.marketplace;
+    const en = JSON.parse(read('src/messages/sections/adminCommerce/en.json')).adminCommerce.marketplace;
+    const ja = JSON.parse(read('src/messages/sections/adminCommerce/ja.json')).adminCommerce.marketplace;
+
+    assert.deepEqual(collectLeafKeys(en), collectLeafKeys(vi));
+    assert.deepEqual(collectLeafKeys(ja), collectLeafKeys(vi));
+
+    const banned = /\b(VJU|VNU|tactical|combat)\b|tác chiến|chiến đấu|sĩ quan|chiến thuật|bản demo|\(\s*(minh hoạ|minh họa|mô phỏng|giả lập)\s*\)/i;
+    for (const [locale, obj] of [['vi', vi], ['en', en], ['ja', ja]]) {
+        assert.doesNotMatch(JSON.stringify(obj), banned, `Banned wording in ${locale} marketplace catalog`);
+    }
+});
+
+test('Provider moderation UI wires skeleton, error/empty states, document drawer, and <= 300 line limit', async () => {
+    const form = await load(compile(read('src/forms/marketplace/admin-marketplace-form.ts')));
+    const rejectedWithoutNote = form.validateProviderModerationInput({status: 'REJECTED', rawNote: '   '});
+    assert.equal(rejectedWithoutNote.ok, false);
+    assert.equal(rejectedWithoutNote.code, 'NOTE_REQUIRED');
+
+    const badFee = form.validateProviderModerationInput({status: 'VERIFIED', rawFeePct: '65'});
+    assert.equal(badFee.ok, false);
+    assert.equal(badFee.code, 'INVALID_FEE_RATE');
+
+    for (const rel of [
+        'src/components/marketplace/MarketplaceShared.tsx',
+        'src/components/marketplace/AdminMarketplaceProviders.tsx',
+        'src/components/marketplace/ProviderModerationRow.tsx',
+        'src/components/marketplace/ProviderKycDrawer.tsx',
+    ]) {
+        const src = read(rel);
+        const lines = src.split('\n').length;
+        assert.ok(lines <= 301, `${rel} must stay <= 300 lines (got ${lines - 1})`);
+    }
 });

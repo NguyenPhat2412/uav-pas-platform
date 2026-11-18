@@ -172,7 +172,10 @@
     "infrastructureEmail": "Email",
     "weather": "Thời tiết bay",
     "airspace": "Vùng không phận",
-    "notificationModules": "Modules thông báo"
+    "notificationModules": "Modules thông báo",
+    "marketplaceDispatch": "Điều phối giao đơn",
+    "marketplaceOrders": "Toàn cảnh đơn hàng",
+    "marketplaceStats": "Thống kê sàn"
   },
   "sidebar": {
     "title": "UAV PAS",

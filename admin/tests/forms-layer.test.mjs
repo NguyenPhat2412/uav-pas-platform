@@ -24,10 +24,15 @@ const compileModule = source =>
     ).toString('base64')}`;
 
 const formatUrl = compileModule(await readSource('src/lib/format.ts'));
+const flightPlanTypesUrl = compileModule(await readSource('src/types/mission/flight-plan.types.ts'));
+const rewritePureImports = source =>
+    source
+        .replaceAll('@/lib/format', formatUrl)
+        .replaceAll('@/types/mission/flight-plan.types', flightPlanTypesUrl);
 
 async function loadForm(relativePath) {
     const raw = await readSource(relativePath);
-    const rewritten = raw.replaceAll('@/lib/format', formatUrl);
+    const rewritten = rewritePureImports(raw);
     return import(compileModule(rewritten));
 }
 
@@ -78,7 +83,7 @@ test('every module in src/forms/** is pure TypeScript and compiles standalone fo
             /from\s+['"](?:react|react-dom|next\/|@tanstack\/react-query|react-hook-form|@hookform\/|@\/api\/|@\/hooks\/|@\/components\/|@\/providers\/|@\/lib\/api)/,
             `Forbidden runtime import in ${fileUrl.pathname}`,
         );
-        const mod = await import(compileModule(content.replaceAll('@/lib/format', formatUrl)));
+        const mod = await import(compileModule(rewritePureImports(content)));
         assert.equal(Object.keys(mod).length > 0, true, `${fileUrl.pathname} must export runtime helpers`);
     }
 

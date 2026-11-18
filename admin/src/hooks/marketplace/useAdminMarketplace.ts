@@ -3,7 +3,9 @@
 import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {adminMarketplaceApi} from '@/api/marketplace/marketplace.api';
 import {useAuth} from '@/providers/AuthContext';
+import {toast} from '@/providers/ToastContext';
 import type {
+    AdminProviderDocument,
     ListingModerationInput,
     ListingModerationStatus,
     PayoutProcessInput,
@@ -70,4 +72,28 @@ export function useProcessPayout() {
             adminMarketplaceApi.processPayout(id, payload),
         onSettled: () => void qc.invalidateQueries({queryKey: ['session', user?.id ?? 'anonymous', 'admin-marketplace', 'payouts']}),
     });
+}
+
+export function useOpenProviderDocument() {
+    return async (doc: AdminProviderDocument, fallbackError: string) => {
+        const directHref = doc.fileUrl && /^https?:\/\//i.test(doc.fileUrl) ? doc.fileUrl : null;
+        if (directHref) {
+            window.open(directHref, '_blank', 'noopener,noreferrer');
+            return;
+        }
+        if (!doc.mediaAssetId) {
+            toast.error(fallbackError);
+            return;
+        }
+        const tab = window.open('about:blank', '_blank');
+        if (tab) tab.opener = null;
+        try {
+            const {url} = await adminMarketplaceApi.mediaDownloadUrl(doc.mediaAssetId);
+            if (tab) tab.location.href = url;
+            else window.open(url, '_blank', 'noopener,noreferrer');
+        } catch (error) {
+            tab?.close();
+            toast.error(error instanceof Error && error.message ? error.message : fallbackError);
+        }
+    };
 }

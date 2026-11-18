@@ -12,6 +12,7 @@ import type {
     PayoutStatus,
     ProviderModerationInput,
     ProviderVerificationStatus,
+    SignedMediaDownloadUrl,
 } from '@/types/marketplace/marketplace.types';
 
 export const adminMarketplaceApi = {
@@ -52,4 +53,7 @@ export const adminMarketplaceApi = {
     },
     processPayout: (id: number, payload: PayoutProcessInput) =>
         apiClient.post<AdminProviderPayout>(API_ROUTES.adminMarketplace.processPayout(id), payload),
+
+    mediaDownloadUrl: (mediaId: number) =>
+        apiClient.get<SignedMediaDownloadUrl>(API_ROUTES.media.downloadUrl(mediaId)),
 };

@@ -10,7 +10,10 @@ export interface AdminProviderDocument {
     title: string;
     documentNumber?: string | null;
     fileUrl?: string | null;
+    mediaAssetId?: number | null;
     status: string;
+    reviewerNote?: string | null;
+    createdAt?: string | null;
 }
 
 export interface AdminProviderProfile {
@@ -47,9 +50,14 @@ export interface AdminMarketplaceListing {
     providerSlug: string;
     providerDisplayName: string;
     officialPlatformListing: boolean;
+    providerVerificationStatus?: ProviderVerificationStatus;
+    categoryServiceId?: number | null;
+    categoryServiceCode?: string | null;
+    categoryServiceName?: string | null;
     slug: string;
     title: string;
     summary?: string | null;
+    description?: string | null;
     listingType: 'FLIGHT_SERVICE' | 'WET_LEASE' | 'DRY_LEASE';
     missionType: string;
     pricingModel: 'PER_HOUR' | 'PER_HECTARE' | 'PER_DAY' | 'PER_PACKAGE';
@@ -59,8 +67,14 @@ export interface AdminMarketplaceListing {
     province: string;
     serviceRadiusKm: number;
     equipmentSpecs?: string | null;
+    deliverablesSummary?: string | null;
+    coverImageUrl?: string | null;
+    onSiteSlaHours?: number | null;
+    deliverySlaHours?: number | null;
     moderationStatus: ListingModerationStatus;
     moderationNote?: string | null;
+    ratingAvg?: number | null;
+    reviewCount?: number;
     featured: boolean;
     bookingCount: number;
     createdAt?: string;
@@ -100,6 +114,12 @@ export interface PayoutProcessInput {
     approve: boolean;
     bankTransferRef?: string;
     adminNote?: string;
+}
+
+export interface SignedMediaDownloadUrl {
+    mediaId?: number;
+    url: string;
+    expiresInSeconds?: number;
 }
 
 export type AdminProviderPage = PageResponse<AdminProviderProfile>;

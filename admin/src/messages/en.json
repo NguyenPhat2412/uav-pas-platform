@@ -172,7 +172,10 @@
     "infrastructureEmail": "Email",
     "weather": "Flight weather",
     "airspace": "Airspace zones",
-    "notificationModules": "Notification modules"
+    "notificationModules": "Notification modules",
+    "marketplaceDispatch": "Order Dispatch",
+    "marketplaceOrders": "Marketplace Orders",
+    "marketplaceStats": "Marketplace Stats"
   },
   "sidebar": {
     "title": "UAV PAS",

@@ -4,7 +4,7 @@ import {AdminMarketplaceProviders} from '@/components/marketplace/AdminMarketpla
 export default function AdminMarketplaceProvidersPage() {
     return (
         <AdminPage
-            title="Duyệt đối tác KYC"
+            title="adminCommerce.marketplace.providers.pageTitle"
             permission="MARKETPLACE_MODERATE"
             activeResource="/admin/marketplace/providers"
         >
