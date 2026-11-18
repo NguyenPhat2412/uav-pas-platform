@@ -261,12 +261,12 @@ export function PilotTodayWorkspace({
                                             {sanitizeMarketplaceText(mission.title)}
                                         </h3>
                                         <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-slate-500">
-                                            <span className="inline-flex items-center gap-1 whitespace-nowrap">
-                                                <MapPin size={13} className="text-primary" aria-hidden="true"/>
-                                                {mission.locationName}
+                                            <span className="inline-flex items-center gap-1 break-words">
+                                                <MapPin size={13} className="shrink-0 text-primary" aria-hidden="true"/>
+                                                <span>{sanitizeMarketplaceText(mission.locationName)}</span>
                                             </span>
                                             <span className="inline-flex items-center gap-1 whitespace-nowrap">
-                                                <Calendar size={13} aria-hidden="true"/>
+                                                <Calendar size={13} className="shrink-0" aria-hidden="true"/>
                                                 {mission.requestedDate}
                                             </span>
                                         </div>

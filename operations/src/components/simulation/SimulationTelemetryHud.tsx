@@ -73,7 +73,7 @@ export function SimulationTelemetryHud({
                     <TelemetryTile icon={<Wind size={14}/>} label={t('simulation.hud.wind')} value={`${num(state.settings.windSpeedMs, 1)} · ${num(state.settings.timeScale)}x`}/>
                 </dl>
 
-                <div className="grid grid-cols-4 gap-1.5">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                     {state.mode === 'HOLD' ? (
                         <CommandButton icon={<Play size={15}/>} label={t('simulation.resume')} disabled={!canFly || busy} onClick={() => onCommand('RESUME')}/>
                     ) : (
