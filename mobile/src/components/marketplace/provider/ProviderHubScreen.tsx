@@ -11,6 +11,7 @@ import {
     FileCheck2,
     Layers,
     ShieldCheck,
+    UserCheck,
     Wallet,
     type LucideIcon,
 } from 'lucide-react-native';
@@ -27,6 +28,7 @@ import {
 import {
     useMyProviderFleet,
     useMyProviderListings,
+    useMyProviderPilots,
     useMyProviderProfile,
     useMyProviderWallet,
     useOpenRfqs,
@@ -85,6 +87,7 @@ export function ProviderHubScreen() {
     const profileQuery = useMyProviderProfile();
     const listingsQuery = useMyProviderListings();
     const fleetQuery = useMyProviderFleet();
+    const pilotsQuery = useMyProviderPilots();
     const ordersQuery = useProviderOrders();
     const rfqsQuery = useOpenRfqs();
     const walletQuery = useMyProviderWallet();
@@ -92,6 +95,7 @@ export function ProviderHubScreen() {
     const profile = profileQuery.data;
     const listings = listingsQuery.data ?? [];
     const uavCount = (fleetQuery.data?.uavs.length ?? 0) + (fleetQuery.data?.equipment.length ?? 0);
+    const pilotCount = pilotsQuery.data?.length ?? 0;
     const orders = ordersQuery.data ?? [];
     const rfqs = rfqsQuery.data ?? [];
     const wallet = walletQuery.data;
@@ -200,14 +204,18 @@ export function ProviderHubScreen() {
 
             <View style={styles.kpiRow}>
                 <Card style={styles.kpiCard} onPress={() => router.push('/customer/provider/wallet')}>
-                    <AppText variant="caption">{t('mobile.provider.availableBalance')}</AppText>
-                    <AppText variant="title" style={styles.price}>
+                    <AppText variant="caption" numberOfLines={1}>
+                        {t('mobile.provider.availableBalance')} · {t('mobile.shop.illustrativePrice')}
+                    </AppText>
+                    <AppText variant="title" style={styles.price} numberOfLines={1}>
                         {formatVndCompact(wallet?.availableBalanceVnd ?? 0)}
                     </AppText>
                 </Card>
                 <Card style={styles.kpiCard} onPress={() => router.push('/customer/provider/wallet')}>
-                    <AppText variant="caption">{t('mobile.provider.escrowHeld')}</AppText>
-                    <AppText variant="title">
+                    <AppText variant="caption" numberOfLines={1}>
+                        {t('mobile.provider.escrowHeld')} · {t('mobile.shop.illustrativePrice')}
+                    </AppText>
+                    <AppText variant="title" numberOfLines={1}>
                         {formatVndCompact(wallet?.escrowHeldVnd ?? 0)}
                     </AppText>
                 </Card>
@@ -246,6 +254,13 @@ export function ProviderHubScreen() {
                 subtitle={t('mobile.provider.menuFleetDesc')}
                 badge={`${uavCount}`}
                 onPress={() => router.push('/customer/provider/fleet')}
+            />
+            <StudioNavRow
+                icon={UserCheck}
+                title={t('mobile.overnight.pilotsMenuTitle')}
+                subtitle={t('mobile.overnight.pilotsMenuDesc')}
+                badge={pilotCount > 0 ? `${pilotCount}` : undefined}
+                onPress={() => router.push('/customer/provider/pilots')}
             />
             <StudioNavRow
                 icon={Wallet}

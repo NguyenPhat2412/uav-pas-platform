@@ -16,6 +16,7 @@ import type {
     PayoutCreateInput,
     PayoutProcessInput,
     PayoutStatus,
+    PricingModel,
     ProviderDocument,
     ProviderDocumentInput,
     ProviderEquipment,
@@ -33,6 +34,62 @@ import type {
     ProviderWallet,
     PublicListingFilters,
 } from '@/shared/types/marketplace/marketplace.types';
+
+export type ProviderPilotStatus = 'AVAILABLE' | 'IN_FLIGHT' | 'OFF_DUTY';
+
+export interface ProviderPilot {
+    id: number;
+    providerId?: number | null;
+    userId?: number | null;
+    pilotUserId?: number | null;
+    fullName: string;
+    email?: string | null;
+    phone?: string | null;
+    licenseNumber?: string | null;
+    specialization?: string | null;
+    status: ProviderPilotStatus;
+    assignedUavId?: number | null;
+    assignedUavModel?: string | null;
+    completedMissionsCount?: number;
+    createdAt?: string;
+}
+
+export interface ProviderPilotUpsertInput {
+    userId?: number;
+    pilotUserId?: number;
+    fullName: string;
+    email?: string;
+    phone?: string;
+    licenseNumber?: string;
+    specialization?: string;
+    status?: ProviderPilotStatus;
+    assignedUavId?: number | null;
+}
+
+export interface CreateListingFromTemplateInput {
+    serviceOfferingId: number;
+    title?: string;
+    province?: string;
+    serviceRadiusKm?: number;
+    basePriceVnd?: number;
+    pricingModel?: PricingModel;
+    minBookingUnits?: number;
+    deliverySlaHours?: number;
+    onSiteSlaHours?: number;
+    equipmentSpecs?: string;
+    deliverablesSummary?: string;
+    coverImageUrl?: string;
+    submitForReview?: boolean;
+}
+
+export interface ProviderOrderAssignInput {
+    pilotId?: number;
+    pilotUserId?: number;
+    uavId: number;
+    note?: string;
+}
+
+const PROVIDER_ROOT = '/api/v1/marketplace/provider';
 
 function listingQuery(filters: PublicListingFilters = {}): string {
     const qs = buildQueryString({
@@ -88,11 +145,15 @@ export const mobileMarketplaceApi = {
         apiClient.get<MarketplaceListing[]>(API_ROUTES.marketplace.providerListings, {signal}),
     createListing: (payload: MarketplaceListingUpsertInput) =>
         apiClient.post<MarketplaceListing>(API_ROUTES.marketplace.providerListings, payload),
+    createListingFromTemplate: (payload: CreateListingFromTemplateInput) =>
+        apiClient.post<MarketplaceListing>(`${PROVIDER_ROOT}/listings/from-template`, payload),
     updateListing: (id: number, payload: MarketplaceListingUpsertInput) =>
         apiClient.put<MarketplaceListing>(
             API_ROUTES.marketplace.providerListingById(id),
             payload,
         ),
+    deleteListing: (id: number) =>
+        apiClient.delete<void>(API_ROUTES.marketplace.providerListingById(id)),
     toggleListingPause: (id: number) =>
         apiClient.patch<MarketplaceListing>(API_ROUTES.marketplace.providerListingPause(id)),
 
@@ -100,13 +161,31 @@ export const mobileMarketplaceApi = {
         apiClient.get<ProviderFleetSummary>(API_ROUTES.marketplace.providerFleet, {signal}),
     registerUav: (payload: ProviderUavCreateInput) =>
         apiClient.post<ProviderUav>(API_ROUTES.marketplace.providerFleetUavs, payload),
+    deleteUav: (id: number) =>
+        apiClient.delete<void>(`${API_ROUTES.marketplace.providerFleetUavs}/${id}`),
     registerEquipment: (payload: ProviderEquipmentCreateInput) =>
         apiClient.post<ProviderEquipment>(API_ROUTES.marketplace.providerFleetEquipment, payload),
+
+    listMyPilots: async (signal?: AbortSignal): Promise<ProviderPilot[]> => {
+        const res = await apiClient.get<ProviderPilot[] | { content?: ProviderPilot[] }>(
+            `${PROVIDER_ROOT}/pilots`,
+            {signal},
+        );
+        return Array.isArray(res) ? res : res?.content ?? [];
+    },
+    createPilot: (payload: ProviderPilotUpsertInput) =>
+        apiClient.post<ProviderPilot>(`${PROVIDER_ROOT}/pilots`, payload),
+    updatePilot: (id: number, payload: Partial<ProviderPilotUpsertInput>) =>
+        apiClient.patch<ProviderPilot>(`${PROVIDER_ROOT}/pilots/${id}`, payload),
+    deletePilot: (id: number) =>
+        apiClient.delete<void>(`${PROVIDER_ROOT}/pilots/${id}`),
 
     listMyOrders: (signal?: AbortSignal) =>
         apiClient.get<Mission[]>(API_ROUTES.marketplace.providerOrders, {signal}),
     respondToOrder: (missionId: number, payload: ProviderOrderActionInput) =>
         apiClient.post<Mission>(API_ROUTES.marketplace.providerOrderRespond(missionId), payload),
+    assignOrder: (missionId: number, payload: ProviderOrderAssignInput) =>
+        apiClient.post<Mission>(`${PROVIDER_ROOT}/orders/${missionId}/assign`, payload),
     startOrder: (missionId: number) =>
         apiClient.post<Mission>(API_ROUTES.marketplace.providerOrderStart(missionId)),
     completeOrder: (missionId: number, payload: ProviderOrderCompleteInput) =>

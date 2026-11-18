@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Cpu, Package, Plane, Plus} from 'lucide-react-native';
+import {Cpu, Package, Plane, Plus, Trash2} from 'lucide-react-native';
 import {
     AppText,
     Badge,
@@ -168,16 +168,41 @@ export function ProviderFleetScreen() {
                         uavs.map(item => (
                             <Card key={item.id}>
                                 <View style={styles.rowBetween}>
-                                    <AppText variant="title">{item.model}</AppText>
+                                    <AppText variant="title" numberOfLines={1} style={styles.flex}>
+                                        {item.model}
+                                    </AppText>
                                     <Badge
                                         label={item.status}
                                         background={colors.primaryLight}
                                         color={colors.primary}
                                     />
                                 </View>
-                                <AppText variant="caption">
-                                    {item.manufacturer} · SN: {item.serialNumber}
-                                </AppText>
+                                <View style={styles.rowBetween}>
+                                    <AppText variant="caption" numberOfLines={1} style={styles.flex}>
+                                        {item.manufacturer} · SN: {item.serialNumber}
+                                    </AppText>
+                                    <Button
+                                        size="sm"
+                                        tone="ghost"
+                                        icon={Trash2}
+                                        loading={
+                                            mutations.deleteUav.isPending &&
+                                            mutations.deleteUav.variables === item.id
+                                        }
+                                        label={t('mobile.overnight.deleteUavBtn')}
+                                        onPress={() =>
+                                            mutations.deleteUav.mutate(item.id, {
+                                                onSuccess: () =>
+                                                    toast.show(t('mobile.overnight.uavDeletedToast'), 'info'),
+                                                onError: err =>
+                                                    toast.show(
+                                                        extractActionableError(err, t('mobile.provider.saveError')),
+                                                        'error',
+                                                    ),
+                                            })
+                                        }
+                                    />
+                                </View>
                             </Card>
                         ))
                     )}

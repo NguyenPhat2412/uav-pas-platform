@@ -51,6 +51,7 @@ export default function CustomerLayout() {
                     <Stack.Screen name="provider/onboarding" options={{title: t('mobile.provider.menuOnboarding')}}/>
                     <Stack.Screen name="provider/listings" options={{title: t('mobile.provider.menuListings')}}/>
                     <Stack.Screen name="provider/fleet" options={{title: t('mobile.provider.menuFleet')}}/>
+                    <Stack.Screen name="provider/pilots" options={{title: t('mobile.overnight.pilotsScreenTitle')}}/>
                     <Stack.Screen name="provider/orders" options={{title: t('mobile.provider.menuOrders')}}/>
                     <Stack.Screen name="provider/wallet" options={{title: t('mobile.provider.menuWallet')}}/>
                     <Stack.Screen name="assistant" options={{title: t('admin.assistant.open')}}/>

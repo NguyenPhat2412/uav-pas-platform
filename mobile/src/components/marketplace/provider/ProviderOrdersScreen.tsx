@@ -5,26 +5,28 @@ import {
     ClipboardList,
     Megaphone,
     Plane,
-    Play,
     ShieldCheck,
     XCircle,
 } from 'lucide-react-native';
+import {ProviderOrderAssignBox} from '@/components/marketplace/provider/ProviderOrderAssignBox';
+import {ProviderRfqBiddingList} from '@/components/marketplace/provider/ProviderRfqBiddingList';
+import {MissionStatusBadge} from '@/components/mission/MissionBits';
 import {
     AppText,
     Badge,
     Button,
     Card,
     EmptyState,
+    ErrorState,
     LoadingState,
     Screen,
     TextField,
 } from '@/components/ui';
 import {GlassSelectCards, GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
-import {ProviderRfqBiddingList} from '@/components/marketplace/provider/ProviderRfqBiddingList';
-import {MissionStatusBadge} from '@/components/mission/MissionBits';
 import {
     useMyProviderBids,
     useMyProviderFleet,
+    useMyProviderPilots,
     useOpenRfqs,
     useProviderOrders,
     useProviderStudioMutations,
@@ -49,6 +51,7 @@ export function ProviderOrdersScreen() {
     const rfqsQuery = useOpenRfqs();
     const bidsQuery = useMyProviderBids();
     const fleetQuery = useMyProviderFleet();
+    const pilotsQuery = useMyProviderPilots();
     const mutations = useProviderStudioMutations();
 
     const [tab, setTab] = useState<OrderTab>('ORDERS');
@@ -59,6 +62,7 @@ export function ProviderOrdersScreen() {
     const rfqs = rfqsQuery.data ?? [];
     const myBids = bidsQuery.data ?? [];
     const uavs = fleetQuery.data?.uavs ?? [];
+    const pilots = pilotsQuery.data ?? [];
 
     const tabOptions: GlassOption<OrderTab>[] = [
         {
@@ -92,6 +96,7 @@ export function ProviderOrdersScreen() {
         void ordersQuery.refetch();
         void rfqsQuery.refetch();
         void bidsQuery.refetch();
+        void pilotsQuery.refetch();
     };
 
     return (
@@ -117,6 +122,12 @@ export function ProviderOrdersScreen() {
             {tab === 'ORDERS' ? (
                 ordersQuery.isPending ? (
                     <LoadingState/>
+                ) : ordersQuery.isError ? (
+                    <ErrorState
+                        message={t('missions.loadError')}
+                        retryLabel={t('common.retry')}
+                        onRetry={() => void ordersQuery.refetch()}
+                    />
                 ) : orders.length === 0 ? (
                     <EmptyState icon={ClipboardList} message={t('mobile.provider.noOrders')}/>
                 ) : (
@@ -126,10 +137,13 @@ export function ProviderOrdersScreen() {
                         const pending = order.providerResponseStatus === 'PENDING_PROVIDER';
                         const canStart =
                             order.providerResponseStatus === 'ACCEPTED' &&
-                            (order.status === 'CONFIRMED' ||
+                            (order.status === 'ACCEPTED' ||
+                                order.status === 'SCHEDULED' ||
+                                order.status === 'CONFIRMED' ||
                                 order.status === 'RESOURCE_RESERVED' ||
                                 order.status === 'READY');
-                        const inProgress = order.status === 'IN_PROGRESS';
+                        const inProgress =
+                            order.status === 'IN_PROGRESS' || order.status === 'IN_FLIGHT';
 
                         return (
                             <Card key={order.id}>
@@ -139,8 +153,10 @@ export function ProviderOrdersScreen() {
                                     </AppText>
                                     <MissionStatusBadge status={order.status}/>
                                 </View>
-                                <AppText variant="title">{order.title}</AppText>
-                                <AppText variant="caption">
+                                <AppText variant="title" numberOfLines={2}>
+                                    {order.title}
+                                </AppText>
+                                <AppText variant="caption" numberOfLines={1}>
                                     {order.locationName} ·{' '}
                                     {formatDate(order.startTime, {dateStyle: 'medium', timeStyle: 'short'})}
                                 </AppText>
@@ -151,9 +167,14 @@ export function ProviderOrdersScreen() {
                                         color={colors.primary}
                                     />
                                     {order.quotedSubtotalVnd != null ? (
-                                        <AppText variant="title" style={styles.price}>
-                                            {formatVndCompact(order.quotedSubtotalVnd)}
-                                        </AppText>
+                                        <View style={styles.priceInline}>
+                                            <AppText variant="title" style={styles.price} numberOfLines={1}>
+                                                {formatVndCompact(order.quotedSubtotalVnd)}
+                                            </AppText>
+                                            <AppText variant="caption" numberOfLines={1}>
+                                                {t('mobile.shop.illustrativePrice')}
+                                            </AppText>
+                                        </View>
                                     ) : null}
                                 </View>
 
@@ -216,12 +237,22 @@ export function ProviderOrdersScreen() {
                                         </View>
                                     </View>
                                 ) : canStart ? (
-                                    <Button
-                                        size="sm"
-                                        icon={Play}
-                                        loading={mutations.startOrder.isPending}
-                                        label={t('mobile.provider.startFlightBtn')}
-                                        onPress={() =>
+                                    <ProviderOrderAssignBox
+                                        uavs={uavs}
+                                        pilots={pilots}
+                                        assigning={mutations.assignOrder.isPending}
+                                        starting={mutations.startOrder.isPending}
+                                        onAssign={({pilotId, uavId}) =>
+                                            mutations.assignOrder.mutate(
+                                                {missionId: order.id, payload: {pilotId, uavId}},
+                                                {
+                                                    onSuccess: () =>
+                                                        toast.show(t('mobile.overnight.orderAssignedToast'), 'success'),
+                                                    onError: showErr,
+                                                },
+                                            )
+                                        }
+                                        onStart={() =>
                                             mutations.startOrder.mutate(order.id, {
                                                 onSuccess: () => toast.show(t('mobile.provider.flightStartedToast'), 'success'),
                                                 onError: showErr,
@@ -298,6 +329,7 @@ const styles = StyleSheet.create({
     },
     row: {flexDirection: 'row', gap: spacing.xs},
     rowBetween: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing.sm},
+    priceInline: {flexDirection: 'row', alignItems: 'baseline', gap: 4},
     actionStack: {gap: spacing.xs, paddingTop: spacing.xs},
     bold: {fontWeight: '700', color: colors.text},
     price: {color: colors.primary, fontWeight: '700'},

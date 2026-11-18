@@ -102,8 +102,10 @@ export function ProviderWalletScreen() {
             onRefresh={() => void walletQuery.refetch()}
             refreshing={walletQuery.isRefetching}>
             <GlassSurface style={styles.heroGlass} fallback={styles.heroFallback}>
-                <AppText variant="caption">{t('mobile.provider.availableBalance')}</AppText>
-                <AppText variant="display" style={styles.price}>
+                <AppText variant="caption" numberOfLines={1}>
+                    {t('mobile.provider.availableBalance')} · {t('mobile.shop.illustrativePrice')}
+                </AppText>
+                <AppText variant="display" style={styles.price} numberOfLines={1} adjustsFontSizeToFit>
                     {formatVndCompact(available)}
                 </AppText>
                 <View style={styles.row}>
