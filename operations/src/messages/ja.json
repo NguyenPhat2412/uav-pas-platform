@@ -99,7 +99,13 @@
     "audit": "監査ログ",
     "training": "UAV研修・SOP手順書",
     "weather": "飛行気象",
-    "simulation": "飛行シミュレーション"
+    "simulation": "飛行シミュレーション",
+    "providerOnboarding": "パートナー登録",
+    "providerFleet": "パートナーUAV機隊",
+    "providerPilots": "操縦エンジニア",
+    "providerListings": "出品サービス",
+    "providerOrders": "受注案件",
+    "providerWallet": "精算ウォレット"
   },
   "adminNavGroups": {
     "overview": "概要・統計",

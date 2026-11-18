@@ -99,7 +99,13 @@
     "audit": "Activity Log",
     "training": "UAV Training & SOP",
     "weather": "Flight weather",
-    "simulation": "Flight simulation"
+    "simulation": "Flight simulation",
+    "providerOnboarding": "Partner Registration",
+    "providerFleet": "Partner UAV Fleet",
+    "providerPilots": "Control Engineers",
+    "providerListings": "My Services",
+    "providerOrders": "Assigned Orders",
+    "providerWallet": "Settlement Wallet"
   },
   "adminNavGroups": {
     "overview": "Overview & Analytics",

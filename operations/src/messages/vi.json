@@ -99,7 +99,13 @@
     "audit": "Nhật ký",
     "training": "Đào tạo & SOP UAV",
     "weather": "Thời tiết bay",
-    "simulation": "Mô phỏng bay"
+    "simulation": "Mô phỏng bay",
+    "providerOnboarding": "Đăng ký đối tác",
+    "providerFleet": "Đội UAV đối tác",
+    "providerPilots": "Kỹ sư điều khiển",
+    "providerListings": "Dịch vụ của tôi",
+    "providerOrders": "Đơn được giao",
+    "providerWallet": "Ví đối soát"
   },
   "adminNavGroups": {
     "overview": "Tổng quan",

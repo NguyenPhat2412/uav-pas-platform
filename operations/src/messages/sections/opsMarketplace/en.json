@@ -1,0 +1,301 @@
+{
+  "opsMarketplace": {
+    "common": {
+      "illustrationBadge": "Illustrative",
+      "retry": "Retry",
+      "loading": "Loading data…",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "create": "Create",
+      "back": "Back",
+      "next": "Next",
+      "requiredOnboardingTitle": "Fleet partner profile not registered",
+      "requiredOnboardingDesc": "Complete the 3-step partner registration to declare UAVs, create services, and receive orders.",
+      "goToOnboarding": "Register partner"
+    },
+    "studio": {
+      "badge": "Fleet Partner · UAV PAS",
+      "tabs": {
+        "onboarding": "Onboarding",
+        "fleet": "UAV Fleet",
+        "pilots": "Engineers",
+        "listings": "Services",
+        "orders": "Orders",
+        "wallet": "Wallet"
+      },
+      "verification": {
+        "DRAFT": "Draft",
+        "PENDING_REVIEW": "Pending review",
+        "VERIFIED": "Verified",
+        "REJECTED": "Needs update",
+        "SUSPENDED": "Suspended"
+      }
+    },
+    "onboarding": {
+      "title": "Fleet Partner Registration",
+      "subtitle": "Complete 3 steps to receive flight orders from UAV PAS.",
+      "steps": {
+        "profile": "1. Profile",
+        "documents": "2. Documents",
+        "area": "3. Service Area"
+      },
+      "statusCard": {
+        "pendingTitle": "Application pending administrator review",
+        "pendingDesc": "You can still update documents or service area while awaiting verification.",
+        "verifiedTitle": "Fleet partner verified",
+        "verifiedDesc": "Your fleet is eligible to receive platform orders.",
+        "rejectedTitle": "Application requires additional details",
+        "draftTitle": "Complete 3 steps to submit for partner review",
+        "reviewNote": "Reviewer note: {note}",
+        "rating": "Rating",
+        "completed": "Completed"
+      },
+      "fields": {
+        "displayName": "Fleet / Organization Name",
+        "displayNamePlaceholder": "e.g. Northern Survey Fleet",
+        "providerType": "Partner Type",
+        "typeCompany": "Company / Fleet Team",
+        "typeIndividual": "Individual Engineer",
+        "taxOrIdNumber": "Tax ID / National ID",
+        "flightLicenseNumber": "Operator Certificate No.",
+        "contactPhone": "Dispatch Phone",
+        "bio": "Fleet & Equipment Overview",
+        "bioPlaceholder": "Describe UAV models, sensors, and field experience…",
+        "province": "Primary Base Province / City",
+        "provincePlaceholder": "Hanoi, Da Nang, Ho Chi Minh City…",
+        "serviceRadiusKm": "Service Radius (km)",
+        "bankName": "Settlement Bank",
+        "bankAccountNumber": "Account Number",
+        "bankAccountHolder": "Account Holder"
+      },
+      "documents": {
+        "title": "Verification Documents",
+        "subtitle": "Attach business registration, operator certificates, and airframe serial documents.",
+        "type": "Document Type",
+        "docTitle": "Document Title",
+        "docTitlePlaceholder": "e.g. Class A UAV Operator Certificate",
+        "docNumber": "Reference No.",
+        "fileUrl": "Evidence File URL",
+        "add": "Add Document",
+        "empty": "No documents attached yet. Save step 1 first, then add documents here.",
+        "saveFirstHint": "Click Next on Step 1 to initialize your profile before attaching documents.",
+        "types": {
+          "BUSINESS_LICENSE": "Business Registration",
+          "IDENTITY_CARD": "Representative ID Card",
+          "PILOT_CERTIFICATE": "Engineer Flight Certificate",
+          "UAV_REGISTRATION": "UAV Serial Registration",
+          "FLIGHT_OPERATION_PERMIT": "Flight Operation Permit",
+          "INSURANCE_POLICY": "Liability Insurance",
+          "PLATFORM_FEE_AGREEMENT": "Settlement Fee Schedule",
+          "TAX_SETTLEMENT_DOSSIER": "Tax & Bank Dossier"
+        },
+        "status": {
+          "PENDING": "Pending",
+          "APPROVED": "Approved",
+          "REJECTED": "Rejected"
+        }
+      },
+      "actions": {
+        "saveDraft": "Save draft",
+        "saveAndNext": "Save & continue",
+        "submitReview": "Submit for review",
+        "submitting": "Submitting…",
+        "savedDraft": "Partner profile draft saved.",
+        "submitted": "Partner profile submitted for review!",
+        "errorMissing": "Please enter Fleet Name and Primary Province.",
+        "errorUrl": "Evidence URL must start with http:// or https://."
+      }
+    },
+    "fleet": {
+      "title": "UAV Fleet & Control Engineers",
+      "subtitle": "Manage ready, flying, and maintenance status across your UAVs and engineers.",
+      "filter": {
+        "ALL": "All",
+        "READY": "Ready",
+        "FLYING": "Flying",
+        "MAINTENANCE": "Maintenance"
+      },
+      "status": {
+        "READY": "Ready",
+        "FLYING": "Flying",
+        "MAINTENANCE": "Maintenance"
+      },
+      "uavs": {
+        "title": "UAV Fleet",
+        "add": "Add UAV",
+        "edit": "Edit UAV",
+        "empty": "No UAVs registered in your fleet yet.",
+        "model": "UAV Model",
+        "modelPlaceholder": "e.g. Matrice 350",
+        "serialNumber": "Serial Number",
+        "serialPlaceholder": "e.g. SN-M350-01",
+        "manufacturer": "Manufacturer",
+        "manufacturerPlaceholder": "e.g. DJI Enterprise",
+        "status": "Status",
+        "setReady": "Ready",
+        "setFlying": "Flying",
+        "setMaintenance": "Maintenance"
+      },
+      "pilots": {
+        "title": "Control Engineers",
+        "add": "Add Engineer",
+        "edit": "Edit Engineer",
+        "empty": "No control engineers registered yet.",
+        "fullName": "Engineer Full Name",
+        "fullNamePlaceholder": "e.g. Nguyen Van An",
+        "phone": "Phone Number",
+        "email": "Account Email",
+        "licenseNumber": "Certificate No.",
+        "licensePlaceholder": "e.g. VN-PILOT-01",
+        "specialization": "Specialization",
+        "specializationPlaceholder": "e.g. LiDAR Survey, Aerial Media",
+        "assignedUav": "Assigned UAV",
+        "noUav": "Unassigned",
+        "status": "Status",
+        "missionsDone": "{count} flights"
+      }
+    },
+    "listings": {
+      "title": "My Services",
+      "subtitle": "Create listings quickly from platform templates or customize your own.",
+      "templatesTitle": "Quick Create from UAV PAS Templates",
+      "templatesEmpty": "No service templates available.",
+      "useTemplate": "Use template",
+      "customCreate": "Custom service",
+      "myListingsTitle": "My Service Listings",
+      "empty": "No service listings yet. Pick a template above to create one in a single step.",
+      "status": {
+        "DRAFT": "Draft",
+        "PENDING_REVIEW": "Pending review",
+        "PUBLISHED": "Active",
+        "PAUSED": "Paused",
+        "REJECTED": "Rejected"
+      },
+      "types": {
+        "FLIGHT_SERVICE": "Full Flight Service",
+        "WET_LEASE": "UAV with Engineer",
+        "DRY_LEASE": "Equipment Rental"
+      },
+      "pricing": {
+        "PER_HECTARE": "ha",
+        "PER_HOUR": "hour",
+        "PER_DAY": "day",
+        "PER_PACKAGE": "pkg"
+      },
+      "fields": {
+        "title": "Service Title",
+        "summary": "Short Summary",
+        "listingType": "Service Type",
+        "pricingModel": "Pricing Unit",
+        "basePriceVnd": "Illustrative Price (VND)",
+        "minBookingUnits": "Min Units",
+        "province": "Primary Province",
+        "serviceRadiusKm": "Radius (km)",
+        "equipmentSpecs": "Equipment Specs",
+        "deliverablesSummary": "Deliverables",
+        "deliveryHours": "Turnaround (hours)",
+        "coverImageUrl": "Cover Image URL"
+      },
+      "actions": {
+        "createFromTemplate": "Create from template & submit",
+        "saveDraft": "Save draft",
+        "submitReview": "Save & submit",
+        "pause": "Pause",
+        "resume": "Resume",
+        "edit": "Edit",
+        "delete": "Delete",
+        "bookings": "{count} orders",
+        "moderationNote": "Review note: {note}"
+      }
+    },
+    "orders": {
+      "title": "Assigned Orders",
+      "subtitle": "Accept assigned orders, assign engineer + UAV, start flight simulation, and deliver results.",
+      "tabs": {
+        "PENDING_ACCEPT": "To Accept",
+        "WAITING_FLIGHT": "Scheduled",
+        "IN_FLIGHT": "In Flight",
+        "DELIVERED": "Delivered"
+      },
+      "empty": "No orders in this tab.",
+      "card": {
+        "code": "Order #{code}",
+        "schedule": "Schedule",
+        "location": "Location",
+        "price": "Illustrative Value",
+        "assignedUav": "Assigned UAV",
+        "assignedPilot": "Control Engineer",
+        "unassigned": "Unassigned",
+        "selectUav": "Select UAV",
+        "selectPilot": "Select engineer",
+        "accept": "Accept Order",
+        "reject": "Decline",
+        "rejectReasonPlaceholder": "Reason for declining (schedule conflict, weather…)",
+        "confirmReject": "Confirm decline",
+        "assign": "Save Assignment",
+        "startSimulation": "Start Flight Simulation",
+        "openSimulation": "Flight Simulation",
+        "openDetail": "Details & Deliverables",
+        "handoverNote": "Handover Summary & Deliverable Links",
+        "handoverPlaceholder": "Describe survey results and attached deliverable files…",
+        "equipmentCondition": "Post-flight Equipment Condition",
+        "equipmentConditionDefault": "Nominal after flight",
+        "completeOrder": "Complete & Deliver"
+      }
+    },
+    "simulation": {
+      "orderBannerBadge": "Order Flight Simulation",
+      "orderCode": "Order #{code}",
+      "backToOrders": "Back to orders",
+      "orderDetail": "Order detail",
+      "linkStatus": "Command Link",
+      "linkOnline": "Nominal · Online",
+      "failsafeTitle": "Safety Controls (Fail-safe)",
+      "failsafeRth": "Emergency RTH",
+      "failsafeHold": "Hold Position",
+      "failsafeLand": "Land Now"
+    },
+    "wallet": {
+      "title": "Settlement Wallet & Revenue",
+      "subtitle": "Read-only settlement balances and payout records for your fleet.",
+      "readOnlyNotice": "Display only — All balances, revenue figures, and payout records shown below are illustrative.",
+      "cards": {
+        "available": "Available Balance",
+        "escrowHeld": "Escrow Held",
+        "pendingPayout": "Pending Payout",
+        "totalEarned": "Total Revenue"
+      },
+      "bankSection": {
+        "title": "Settlement Bank Account",
+        "empty": "No settlement bank account configured.",
+        "updateLink": "Update in Partner Profile"
+      },
+      "transactions": {
+        "title": "Illustrative Ledger Entries",
+        "empty": "No settlement ledger entries yet.",
+        "gross": "Gross",
+        "fee": "Platform Fee",
+        "net": "Net"
+      },
+      "payouts": {
+        "title": "Illustrative Payout History",
+        "empty": "No payout records yet.",
+        "status": {
+          "PENDING": "Pending",
+          "PAID": "Paid",
+          "REJECTED": "Rejected"
+        }
+      }
+    },
+    "home": {
+      "todayOrders": "Today's Orders",
+      "readyUavs": "Ready UAVs",
+      "inFlightOrders": "In Flight",
+      "pendingAccept": "To Accept",
+      "shortcutsTitle": "Fleet Shortcuts",
+      "viewDetails": "View details"
+    }
+  }
+}

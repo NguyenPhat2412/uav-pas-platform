@@ -30,10 +30,13 @@ import adminPlatformJa from './adminPlatform/ja.json';
 import publicSiteVi from './publicSite/vi.json';
 import publicSiteEn from './publicSite/en.json';
 import publicSiteJa from './publicSite/ja.json';
+import opsMarketplaceVi from './opsMarketplace/vi.json';
+import opsMarketplaceEn from './opsMarketplace/en.json';
+import opsMarketplaceJa from './opsMarketplace/ja.json';
 
 // Each section owns one top-level namespace, so portal features can be translated independently.
 export const sectionMessages: Record<SupportedLocale, MessageRecord> = {
-    vi: {...adminVi, ...opsMissionsVi, ...opsAssetsVi, ...opsSharedVi, ...customerProVi, ...adminSecurityVi, ...adminCommerceVi, ...adminInfraVi, ...adminPlatformVi, ...publicSiteVi},
-    en: {...adminEn, ...opsMissionsEn, ...opsAssetsEn, ...opsSharedEn, ...customerProEn, ...adminSecurityEn, ...adminCommerceEn, ...adminInfraEn, ...adminPlatformEn, ...publicSiteEn},
-    ja: {...adminJa, ...opsMissionsJa, ...opsAssetsJa, ...opsSharedJa, ...customerProJa, ...adminSecurityJa, ...adminCommerceJa, ...adminInfraJa, ...adminPlatformJa, ...publicSiteJa},
+    vi: {...adminVi, ...opsMissionsVi, ...opsAssetsVi, ...opsSharedVi, ...customerProVi, ...adminSecurityVi, ...adminCommerceVi, ...adminInfraVi, ...adminPlatformVi, ...publicSiteVi, ...opsMarketplaceVi},
+    en: {...adminEn, ...opsMissionsEn, ...opsAssetsEn, ...opsSharedEn, ...customerProEn, ...adminSecurityEn, ...adminCommerceEn, ...adminInfraEn, ...adminPlatformEn, ...publicSiteEn, ...opsMarketplaceEn},
+    ja: {...adminJa, ...opsMissionsJa, ...opsAssetsJa, ...opsSharedJa, ...customerProJa, ...adminSecurityJa, ...adminCommerceJa, ...adminInfraJa, ...adminPlatformJa, ...publicSiteJa, ...opsMarketplaceJa},
 };
