@@ -82,6 +82,7 @@ export function ProviderOrdersView() {
         setErrorMsg('');
         const chosenUavId = selectedUavByMission[mission.id] ?? mission.uavId;
         const chosenPilotId = selectedPilotByMission[mission.id] ?? mission.operatorId;
+        const matchedPilot = pilots.find(p => p.id === chosenPilotId || p.userId === chosenPilotId);
         const reasonText = (rejectReasonByMission[mission.id] ?? '').trim();
         try {
             await respondToOrder.mutateAsync({
@@ -89,13 +90,27 @@ export function ProviderOrdersView() {
                 payload: {
                     accept,
                     uavId: accept ? chosenUavId : undefined,
-                    pilotUserId: accept ? chosenPilotId : undefined,
+                    pilotUserId: accept ? (matchedPilot?.userId ?? chosenPilotId) : undefined,
                     reason: accept ? undefined : reasonText || 'Đội bay từ chối nhận đơn',
                     responseNote: accept
                         ? 'Đội bay đã tiếp nhận đơn.'
                         : reasonText || 'Đội bay bận lịch khai thác.',
                 },
             });
+            if (accept && chosenUavId) {
+                try {
+                    await assignOrder.mutateAsync({
+                        missionId: mission.id,
+                        payload: {
+                            uavId: chosenUavId,
+                            pilotId: matchedPilot?.id ?? chosenPilotId,
+                            pilotUserId: matchedPilot?.userId ?? chosenPilotId,
+                        },
+                    });
+                } catch {
+                    // Best-effort inline assignment right after accept
+                }
+            }
             setRejectingMissionId(null);
             if (accept) setActiveTab('WAITING_FLIGHT');
         } catch (err) {
@@ -108,13 +123,13 @@ export function ProviderOrdersView() {
         const uavId = selectedUavByMission[mission.id] ?? mission.uavId ?? uavs[0]?.id;
         const pilotId = selectedPilotByMission[mission.id] ?? mission.operatorId ?? pilots[0]?.id;
         if (!uavId) return;
-        const matchedPilot = pilots.find(p => p.id === pilotId);
+        const matchedPilot = pilots.find(p => p.id === pilotId || p.userId === pilotId);
         try {
             await assignOrder.mutateAsync({
                 missionId: mission.id,
                 payload: {
                     uavId,
-                    pilotId,
+                    pilotId: matchedPilot?.id ?? pilotId,
                     pilotUserId: matchedPilot?.userId ?? pilotId,
                 },
             });
