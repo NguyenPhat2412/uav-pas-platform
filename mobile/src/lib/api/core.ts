@@ -43,7 +43,7 @@ export interface ClientText {
 }
 
 export interface ApiClientOptions {
-    baseUrl: string;
+    baseUrl: string | (() => string);
     fetch: typeof fetch;
     session: SessionStore;
     refreshPath: string;
@@ -99,7 +99,7 @@ export function bytesToBase64(bytes: Uint8Array): string {
 
 export function createApiClient(options: ApiClientOptions) {
     const {baseUrl, session} = options;
-    const apiOrigin = new URL(baseUrl).origin;
+    const resolveBaseUrl = () => (typeof baseUrl === 'function' ? baseUrl() : baseUrl);
     let refreshing: Promise<string> | null = null;
 
     const networkError = (path: string, cause: unknown) =>
@@ -120,7 +120,7 @@ export function createApiClient(options: ApiClientOptions) {
         refreshing = (async () => {
             const current = session.read();
             if (!current) throw new ApiError(401, 'Unauthorized', options.text().sessionExpired, options.refreshPath, 'SESSION_EXPIRED');
-            const response = await send(`${baseUrl}${options.refreshPath}`, {
+            const response = await send(`${resolveBaseUrl()}${options.refreshPath}`, {
                 method: 'POST',
                 headers: {...options.headers(), 'content-type': 'application/json'},
                 body: JSON.stringify({refreshToken: current.refreshToken}),
@@ -163,9 +163,10 @@ export function createApiClient(options: ApiClientOptions) {
     }
 
     async function sendAuthenticated(endpoint: string, init: RequestInit = {}): Promise<Response> {
-        const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint}`;
+        const activeBase = resolveBaseUrl();
+        const url = endpoint.startsWith('http') ? endpoint : `${activeBase}${endpoint}`;
         // Signed storage URLs authenticate with their signature: no token, no extra headers that could break it.
-        const isApi = new URL(url).origin === apiOrigin;
+        const isApi = new URL(url).origin === new URL(activeBase).origin;
         const headers: Record<string, string> = {...(isApi ? options.headers() : {}), ...(init.headers as Record<string, string> | undefined)};
         const hasType = Object.keys(headers).some(name => name.toLowerCase() === 'content-type');
         if (isApi && typeof init.body === 'string' && !hasType) headers['content-type'] = 'application/json';

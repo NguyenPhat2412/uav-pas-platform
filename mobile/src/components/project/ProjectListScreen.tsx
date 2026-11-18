@@ -71,7 +71,7 @@ export function ProjectListScreen() {
 
             {query.isPending && !query.data ? (
                 <LoadingState label={t('mobile.overnight.projectsLoading')}/>
-            ) : query.isError ? (
+            ) : query.isError && projects.length === 0 ? (
                 <ErrorState
                     message={t('mobile.overnight.projectsLoadError')}
                     retryLabel={t('common.retry')}

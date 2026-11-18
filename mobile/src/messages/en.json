@@ -635,7 +635,7 @@
       "threadDeletedToast": "This support thread was closed or removed."
     },
     "marketplace": {
-      "officialBadge": "UAV PAS Official",
+      "officialBadge": "Verified Partner",
       "verifiedPartnerBadge": "KYC Verified",
       "newListing": "New",
       "minUnits": "Min {units} {unit}",
@@ -1041,7 +1041,10 @@
       "listingDeletedToast": "Service package deleted.",
       "googlePrimaryHint": "Recommended for customers & fleet owners",
       "staffLoginToggle": "Staff sign-in with admin-issued credentials",
-      "hideStaffLoginToggle": "Hide staff sign-in"
+      "hideStaffLoginToggle": "Hide staff sign-in",
+      "uavStatusAvailable": "Available",
+      "uavStatusInUse": "In flight",
+      "uavStatusMaintenance": "Maintenance"
     }
   }
 }

@@ -1,4 +1,4 @@
-import {API_BASE_URL} from '@/config/env';
+import {getApiBaseUrl} from '@/config/env';
 import {onSessionEnded, onSessionTokenChanged, sessionStore} from '@/lib/api/session';
 import {readSupportVisitorToken, readTokens} from '@/lib/storage/secure-tokens';
 import type {InvoiceStatus} from '@/shared/types/customer';
@@ -343,7 +343,7 @@ export function createRealtimeWsClient(options: RealtimeWsOptions) {
 export type RealtimeWsClient = ReturnType<typeof createRealtimeWsClient>;
 
 export const realtimeWs = createRealtimeWsClient({
-    getBaseUrl: () => API_BASE_URL,
+    getBaseUrl: getApiBaseUrl,
     getAccessTokenSync: () => sessionStore.read()?.accessToken ?? null,
     getAccessTokenAsync: async () => (await readTokens())?.accessToken ?? null,
     getVisitorTokenAsync: () => readSupportVisitorToken(),

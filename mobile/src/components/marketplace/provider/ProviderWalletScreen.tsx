@@ -39,7 +39,7 @@ export function ProviderWalletScreen() {
     const [amountInput, setAmountInput] = useState('');
     const [note, setNote] = useState('');
 
-    if (walletQuery.isPending) {
+    if (walletQuery.isPending && !walletQuery.data) {
         return (
             <Screen>
                 <LoadingState/>
@@ -125,7 +125,7 @@ export function ProviderWalletScreen() {
                 <AppText variant="caption">
                     {t('mobile.provider.feeBanner', {fee: feePct})}
                     {wallet?.bankName
-                        ? ` · ${wallet.bankName} (${wallet.bankAccountNumber ?? ''})`
+                        ? ` · ${wallet.bankName}${wallet.bankAccountNumber ? ` · ${wallet.bankAccountNumber}` : ''}`
                         : ''}
                 </AppText>
             </GlassSurface>

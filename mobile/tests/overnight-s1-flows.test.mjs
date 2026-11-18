@@ -76,3 +76,22 @@ test('S1 overnight routes & Shopee marketplace screens are wired end-to-end', ()
     assert.match(login, /SocialSignInRow/);
     assert.match(login, /googlePrimaryHint/);
 });
+
+test('S1 offline cache, 320pt/xlarge responsive layout, and customer fleet anonymization guards', () => {
+    const queryCache = read('lib/storage/query-cache.ts');
+    assert.match(queryCache, /owner === 'public-listings'/);
+    assert.match(queryCache, /owner === 'public-listing'/);
+
+    const customerOrders = read('components/order/CustomerOrdersScreen.tsx');
+    assert.match(customerOrders, /<OfflineBanner\s*\/>/);
+    assert.match(customerOrders, /list\.isError && orders\.length === 0/);
+
+    const homeHero = read('components/home/MarketplaceSearchHero.tsx');
+    assert.match(homeHero, /onLayout=/);
+
+    const providerHub = read('components/marketplace/provider/ProviderHubScreen.tsx');
+    assert.doesNotMatch(providerHub, /\/customer\/providers\/\[slug\]/);
+
+    const inspectionReport = read('components/mission/MobileMissionInspectionReportCard.tsx');
+    assert.match(inspectionReport, /const isCustomer = portal === 'customer'/);
+});

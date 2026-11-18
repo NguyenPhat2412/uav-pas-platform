@@ -230,7 +230,7 @@ export function ServicesScreen() {
 
             {listingsQuery.isPending && !listings.length ? (
                 <LoadingState label={t('services.loading')}/>
-            ) : listingsQuery.isError ? (
+            ) : listingsQuery.isError && !listings.length ? (
                 <ErrorState
                     message={t('services.loadError')}
                     retryLabel={t('common.retry')}

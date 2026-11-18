@@ -7,6 +7,7 @@ import type {
     CustomerOrderSummary,
     CustomerProjectUpsertInput,
     OrderStatusGroup,
+    OrderTrackingLinkMetrics,
     ProjectScheduleType,
     ProjectSubscriptionCreateInput,
 } from '@/shared/types/project/project.types';
@@ -235,4 +236,82 @@ export function validateSubscriptionBooking(input: ProjectSubscriptionCreateInpu
     if (!input.startDate.trim()) return 'start_date_required';
     if (!Number.isFinite(input.units) || input.units <= 0) return 'units_required';
     return null;
+}
+
+/** Formats `/api/v1/orders/{id}/tracking` link telemetry (either object metrics or scalar) into a concise single-line label. */
+export function formatTrackingLink(
+    link?: OrderTrackingLinkMetrics | string | number | null,
+): string {
+    if (link == null) return '100%';
+    if (typeof link === 'string') return link.trim() || '100%';
+    if (typeof link === 'number') return Number.isFinite(link) ? `${Math.round(link)}%` : '100%';
+    const loss = Number(link.lossPct ?? 0);
+    const qualityPct = Math.max(0, Math.min(100, Math.round(100 - (Number.isFinite(loss) ? loss : 0))));
+    const latency = Number(link.averageLatencyMs ?? 0);
+    if (Number.isFinite(latency) && latency > 0) {
+        return `${qualityPct}% · ${Math.round(latency)}ms`;
+    }
+    return `${qualityPct}%`;
+}
+
+/** Cleans dynamic marketplace DB copy so parenthetical disclaimers or RTK claims never reach customer screens. */
+export function sanitizeMarketplaceText(raw?: string | null): string {
+    if (!raw) return '';
+    return raw
+        .replace(/\(\s*(minh hoạ|minh họa|mô phỏng|giả lập)\s*\)/gi, '— $1')
+        .replace(/\bRTK\b/gi, 'GNSS');
+}
+
+/** Classifies an `ORDER_UPDATED` realtime frame into a deduplication key and toast tone with icon. */
+export function describeOrderRealtimeToast(frame: {
+    missionId: number;
+    status: string;
+    statusGroup?: OrderStatusGroup | string | null;
+}): {
+    dedupeKey: string;
+    tone: 'success' | 'info' | 'warning';
+} {
+    const status = String(frame.status || '').toUpperCase();
+    const dedupeKey = `${frame.missionId}:${status}:${frame.statusGroup ?? ''}`;
+    if (['CANCELLED', 'REJECTED', 'FAILED'].includes(status)) {
+        return {dedupeKey, tone: 'warning'};
+    }
+    if (['DELIVERED', 'COMPLETED', 'REVIEWED', 'ACCEPTED', 'SCHEDULED', 'CONFIRMED', 'READY'].includes(status)) {
+        return {dedupeKey, tone: 'success'};
+    }
+    return {dedupeKey, tone: 'info'};
+}
+
+const SEO_FALLBACK_IMAGES: Record<string, string> = {
+    UAV_RENTAL: '/images/services/uav-rental-fleet.webp',
+    AREA_INSPECTION: '/images/services/aerial-inspection-grid.webp',
+    AERIAL_RECORDING: '/images/services/aerial-recording-cinema.webp',
+    DATA_COLLECTION: '/images/services/data-collection-corridor.webp',
+};
+
+/** Builds fleet-anonymous `<title>`, `description`, and Open Graph cover image for a public service listing. */
+export function formatListingSeoMeta(
+    listing: Pick<
+        MarketplaceListing,
+        'title' | 'summary' | 'description' | 'province' | 'missionType' | 'coverImageUrl' | 'basePriceVnd'
+    >,
+): { title: string; description: string; imageUrl: string } {
+    const cleanTitle = sanitizeMarketplaceText(listing.title).trim();
+    const title = cleanTitle || 'Chi tiết dịch vụ UAV';
+    const rawDesc = sanitizeMarketplaceText(listing.summary || listing.description || '').trim();
+    const priceVnd = Number(listing.basePriceVnd || 0);
+    const priceSuffix =
+        priceVnd > 0
+            ? `${new Intl.NumberFormat('vi-VN').format(Math.round(priceVnd))} ₫ · minh hoạ`
+            : 'Đơn giá minh hoạ';
+    const locationPart = listing.province ? ` tại ${listing.province}` : '';
+    const baseDesc = rawDesc || `Dịch vụ bay chuyên dụng từ Đối tác đã xác minh UAV PAS${locationPart}.`;
+    const combined = `${baseDesc} (${priceSuffix})`.replace(/\(\s*([^)]*minh hoạ[^)]*)\s*\)/gi, '— $1');
+    const description = combined.length > 165 ? `${combined.slice(0, 162).trim()}…` : combined;
+    const customCover = listing.coverImageUrl?.trim();
+    const imageUrl =
+        customCover && (/^https?:\/\//i.test(customCover) || customCover.startsWith('/'))
+            ? customCover
+            : SEO_FALLBACK_IMAGES[listing.missionType] ?? '/images/services/uav-rental-fleet.webp';
+    return {title, description, imageUrl};
 }

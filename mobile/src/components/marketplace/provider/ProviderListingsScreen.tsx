@@ -229,9 +229,9 @@ export function ProviderListingsScreen() {
                 title={t('mobile.provider.myListingsTitle', {count: listings.length})}
             />
 
-            {listingsQuery.isPending ? (
+            {listingsQuery.isPending && !listings.length ? (
                 <LoadingState/>
-            ) : listingsQuery.isError ? (
+            ) : listingsQuery.isError && !listings.length ? (
                 <ErrorState
                     message={t('services.loadError')}
                     retryLabel={t('common.retry')}

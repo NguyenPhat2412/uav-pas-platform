@@ -13,7 +13,8 @@ export interface TrackingLinkQuality {
     averageLatencyMs?: number;
 }
 
-export interface MobileOrderTrackingSnapshot extends Omit<OrderTrackingSnapshot, 'link'> {
+export interface MobileOrderTrackingSnapshot
+    extends Omit<OrderTrackingSnapshot, 'link' | 'waypoints' | 'track'> {
     missionCode?: string | null;
     statusGroup?: OrderStatusGroup | string | null;
     activeSimulation?: boolean;

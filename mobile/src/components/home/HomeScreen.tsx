@@ -37,7 +37,7 @@ function MarketplaceHomeHeader() {
                     <AppText variant="caption" numberOfLines={1}>
                         {t('mobile.shop.guestHeaderSub')}
                     </AppText>
-                    <AppText variant="title" numberOfLines={1}>
+                    <AppText variant="title" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}>
                         {t('mobile.shop.guestHeaderTitle')}
                     </AppText>
                 </View>
@@ -52,7 +52,7 @@ function MarketplaceHomeHeader() {
                     {t('mobile.home.greeting').replace(/,$/, '')} ·{' '}
                     {formatDate(new Date(), {weekday: 'short', day: 'numeric', month: 'numeric'})}
                 </AppText>
-                <AppText variant="title" numberOfLines={1}>
+                <AppText variant="title" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}>
                     {user?.fullName || user?.username || ''}
                 </AppText>
             </View>
@@ -142,7 +142,7 @@ export function HomeScreen() {
 
             {listingsQuery.isPending && !listings.length ? (
                 <LoadingState label={t('services.loading')}/>
-            ) : listingsQuery.isError ? (
+            ) : listingsQuery.isError && !listings.length ? (
                 <ErrorState
                     message={t('services.loadError')}
                     retryLabel={t('common.retry')}

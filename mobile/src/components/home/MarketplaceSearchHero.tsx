@@ -28,7 +28,11 @@ export function MarketplaceSearchHero() {
     const router = useRouter();
     const {width} = useWindowDimensions();
     const [activeSlide, setActiveSlide] = useState(0);
-    const slideWidth = Math.max(260, Math.min(width, CONTENT_WIDTH) - spacing.lg * 2);
+    const [frameWidth, setFrameWidth] = useState(0);
+    const slideWidth =
+        frameWidth > 0
+            ? frameWidth
+            : Math.max(260, Math.min(width, CONTENT_WIDTH) - spacing.lg * 2);
 
     const slides = [
         {
@@ -64,7 +68,12 @@ export function MarketplaceSearchHero() {
                 </AppText>
             </Pressable>
 
-            <View style={styles.carouselFrame}>
+            <View
+                style={styles.carouselFrame}
+                onLayout={event => {
+                    const next = Math.round(event.nativeEvent.layout.width);
+                    if (next > 0 && next !== frameWidth) setFrameWidth(next);
+                }}>
                 <ScrollView
                     horizontal
                     pagingEnabled
@@ -135,7 +144,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         backgroundColor: colors.slate900,
     },
-    slide: {height: 158, justifyContent: 'flex-end'},
+    slide: {minHeight: 164, justifyContent: 'flex-end'},
     slideImage: {...StyleSheet.absoluteFill, width: '100%', height: '100%'},
     slideOverlay: {
         padding: spacing.md,

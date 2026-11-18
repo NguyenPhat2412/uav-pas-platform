@@ -21,7 +21,7 @@ const BANNED_EVERYWHERE = [
     ['parenthetical demo disclaimer', /\(\s*(minh hoạ|minh họa|mô phỏng|giả lập)\s*\)/i],
     ['unverified cm accuracy', /\d\s*[–-]\s*\d\s*cm|sai số chỉ khoảng\s*\d/i],
     ['unverified RTK claim', /\bRTK\b/],
-    ['unverified VAT or SLA promise', /hóa đơn VAT|hoá đơn VAT|bao gồm VAT|cam kết SLA|24\/7|chuẩn quốc tế/i],
+    ['unverified VAT or SLA promise', /hóa đơn VAT|hoá đơn VAT|bao gồm VAT|cam kết SLA|24\/7|chuẩn quốc tế|chính hãng/i],
     ['Math.random fake numbers', /Math\.random\s*\(/],
 ];
 

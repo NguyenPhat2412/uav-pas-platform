@@ -116,8 +116,9 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
     }, [reveal]);
     const keyboardReveal = useMemo(() => ({reveal, anchor}), [reveal]);
     const bottomPad = insets.bottom + (isTabRoot ? 128 : spacing.xl);
+    const effectiveMaxWidth = (typeof __DEV__ !== 'undefined' && __DEV__ && (globalThis as { __uavDevMaxWidth?: number | null }).__uavDevMaxWidth) || maxWidth;
     const column = (
-        <View style={[styles.column, {maxWidth}, contentStyle]}>
+        <View style={[styles.column, {maxWidth: effectiveMaxWidth}, contentStyle]}>
             <OfflineBanner/>
             {children}
         </View>
@@ -185,7 +186,7 @@ export function Button({label, onPress, tone = 'primary', size = 'md', loading =
             style={({pressed}) => [styles.button, compact && styles.buttonSm, {backgroundColor: palette.background, borderColor: palette.border},
                 inactive && styles.disabled, pressed && styles.pressed, style]}>
             {loading ? <ActivityIndicator size="small" color={palette.text}/> : Icon ? <Icon size={compact ? 15 : 18} color={palette.text}/> : null}
-            <ScaledText numberOfLines={1} style={[styles.buttonText, compact && styles.buttonTextSm, {color: palette.text}]}>{label}</ScaledText>
+            <ScaledText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.buttonText, compact && styles.buttonTextSm, {color: palette.text}]}>{label}</ScaledText>
         </Pressable>
     );
 }
@@ -243,7 +244,7 @@ export function Badge({label, background = colors.slateLight, color = colors.sla
     return (
         <View style={[styles.badge, {backgroundColor: background}]}>
             {Icon && <Icon size={12} color={color}/>}
-            <ScaledText style={[styles.badgeText, {color}]} numberOfLines={1}>{label}</ScaledText>
+            <ScaledText style={[styles.badgeText, {color}]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}>{label}</ScaledText>
         </View>
     );
 }

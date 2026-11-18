@@ -635,7 +635,7 @@
       "threadDeletedToast": "Phiên hỗ trợ đã được đóng hoặc xóa."
     },
     "marketplace": {
-      "officialBadge": "Chính hãng UAV PAS",
+      "officialBadge": "Đối tác đã xác minh",
       "verifiedPartnerBadge": "Đối tác KYC",
       "newListing": "Mới đăng",
       "minUnits": "Tối thiểu {units} {unit}",
@@ -802,7 +802,7 @@
       "equipNameRequired": "Vui lòng nhập tên cảm biến / thiết bị.",
       "equipAddedToast": "Đã thêm thiết bị chuyên dụng.",
       "addUavTitle": "Đăng ký tàu bay UAV",
-      "uavModelLabel": "Dòng máy bay (Model)",
+      "uavModelLabel": "Dòng tàu bay",
       "serialLabel": "Số Serial",
       "manufacturerLabel": "Hãng sản xuất",
       "addUavBtn": "Thêm tàu bay UAV",
@@ -841,8 +841,8 @@
       "insufficientBalance": "Số dư khả dụng không đủ để thực hiện lệnh rút này.",
       "payoutRequestedToast": "Đã tạo lệnh rút tiền — chờ bộ phận kế toán giải ngân.",
       "withdrawTitle": "Tạo lệnh rút doanh thu về ngân hàng",
-      "payoutAmountLabel": "Số tiền rút (VNĐ, tối thiểu {min})",
-      "payoutNoteLabel": "Ghi chú lệnh rút (tùy chọn)",
+      "payoutAmountLabel": "Số tiền rút · tối thiểu {min}",
+      "payoutNoteLabel": "Ghi chú lệnh rút",
       "requestPayoutBtn": "Gửi yêu cầu rút tiền",
       "payoutHistoryTitle": "Lịch sử lệnh rút tiền",
       "noPayouts": "Chưa có lệnh rút tiền nào.",
@@ -853,7 +853,7 @@
       "guestHeaderSub": "Sàn dịch vụ bay & cho thuê UAV",
       "guestHeaderTitle": "Khám phá & Chốt dịch vụ",
       "signInShort": "Đăng nhập",
-      "browseAsGuest": "Xem sàn dịch vụ trước (Chế độ Khách)",
+      "browseAsGuest": "Xem sàn dịch vụ trước",
       "searchFakePlaceholder": "Tìm khảo sát 3D, phun nông nghiệp, quay flycam...",
       "mallBadge": "UAV PAS",
       "mallTitle": "Chọn dịch vụ cho dự án · Theo dõi bay mô phỏng",
@@ -1041,7 +1041,10 @@
       "listingDeletedToast": "Đã xoá gói dịch vụ.",
       "googlePrimaryHint": "Khuyến nghị cho khách hàng & chủ đội bay",
       "staffLoginToggle": "Đăng nhập nhân sự bằng tài khoản cấp sẵn",
-      "hideStaffLoginToggle": "Ẩn đăng nhập nhân sự"
+      "hideStaffLoginToggle": "Ẩn đăng nhập nhân sự",
+      "uavStatusAvailable": "Sẵn sàng",
+      "uavStatusInUse": "Đang bay",
+      "uavStatusMaintenance": "Bảo trì"
     }
   }
 }

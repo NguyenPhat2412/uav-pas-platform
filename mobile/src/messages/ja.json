@@ -635,7 +635,7 @@
       "threadDeletedToast": "このサポートスレッドは終了または削除されました。"
     },
     "marketplace": {
-      "officialBadge": "UAV PAS公式",
+      "officialBadge": "認証済みパートナー",
       "verifiedPartnerBadge": "KYC認証済",
       "newListing": "新着",
       "minUnits": "最小 {units} {unit}",
@@ -1041,7 +1041,10 @@
       "listingDeletedToast": "出品プランを削除しました。",
       "googlePrimaryHint": "顧客・パートナー事業者に推奨",
       "staffLoginToggle": "管理者発行アカウントでログイン（スタッフ用）",
-      "hideStaffLoginToggle": "スタッフ用ログインを隠す"
+      "hideStaffLoginToggle": "スタッフ用ログインを隠す",
+      "uavStatusAvailable": "待機中",
+      "uavStatusInUse": "飛行中",
+      "uavStatusMaintenance": "整備中"
     }
   }
 }

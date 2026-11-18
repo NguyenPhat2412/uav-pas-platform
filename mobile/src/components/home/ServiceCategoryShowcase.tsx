@@ -121,7 +121,7 @@ export function ServiceCategoryShowcase() {
                             <View style={styles.iconCircle}>
                                 <Icon size={21} color={colors.primary} strokeWidth={1.85}/>
                             </View>
-                            <AppText variant="caption" style={styles.label} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
+                            <AppText variant="caption" style={styles.label} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72}>
                                 {item.label}
                             </AppText>
                         </Pressable>

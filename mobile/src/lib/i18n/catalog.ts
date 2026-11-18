@@ -60,13 +60,16 @@ function lookup(catalog: MessageRecord | undefined, key: string): unknown {
     return current;
 }
 
-/** Resolves text from PostgreSQL remote bundle first, falling back to bundled catalogs and {param} interpolation. */
+/** Resolves text from bundled mobile.* catalogs (or PostgreSQL remote bundle for shared CMS keys), with {param} interpolation. */
 export function translate(locale: SupportedLocale, key: string, params?: Record<string, string | number>): string {
-    let value = lookup(remoteCatalogs[locale], key);
+    const preferBundled = key.startsWith('mobile.');
+    let value = preferBundled
+        ? lookup(catalogs[locale], key) ?? lookup(remoteCatalogs[locale], key)
+        : lookup(remoteCatalogs[locale], key);
     if (typeof value !== 'string') value = lookup(catalogs[locale], key);
     if (typeof value !== 'string') value = lookup(remoteCatalogs.vi, key) ?? lookup(catalogs.vi, key);
     if (typeof value !== 'string') return key;
-    let result = value;
+    let result = value.replace(/\bRTK\b/gi, 'GNSS');
     if (params) {
         for (const [name, param] of Object.entries(params)) {
             result = result.split(`{{${name}}}`).join(String(param)).split(`{${name}}`).join(String(param));

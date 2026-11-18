@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {readDevApiBaseUrl, saveDevApiBaseUrl} from '@/lib/storage/preferences';
 
 // Expo inlines EXPO_PUBLIC_* at build time only when read as a literal process.env.NAME expression.
 const schema = z.object({
@@ -20,6 +21,32 @@ if (!parsed.success) {
 
 /** Backend origin, without a trailing slash (routes in API_ROUTES start with /api/v1). */
 export const API_BASE_URL = parsed.data.EXPO_PUBLIC_API_URL.replace(/\/+$/, '');
+
+const IS_DEV = typeof __DEV__ !== 'undefined' && __DEV__;
+const sharedDevEnv = globalThis as { __uavDevApiBaseUrl?: string | null; __uavDevApiHydrated?: boolean };
+
+if (IS_DEV && !sharedDevEnv.__uavDevApiHydrated) {
+    sharedDevEnv.__uavDevApiHydrated = true;
+    void readDevApiBaseUrl().then(saved => {
+        if (saved && /^https?:\/\//i.test(saved) && !sharedDevEnv.__uavDevApiBaseUrl) {
+            sharedDevEnv.__uavDevApiBaseUrl = saved.replace(/\/+$/, '');
+        }
+    });
+}
+
+export function getApiBaseUrl(): string {
+    if (IS_DEV && sharedDevEnv.__uavDevApiBaseUrl) {
+        return sharedDevEnv.__uavDevApiBaseUrl;
+    }
+    return API_BASE_URL;
+}
+
+export function setDevApiBaseUrl(nextUrl: string | null): void {
+    if (!IS_DEV) return;
+    const cleaned = nextUrl?.trim().replace(/\/+$/, '') || null;
+    sharedDevEnv.__uavDevApiBaseUrl = cleaned;
+    void saveDevApiBaseUrl(cleaned);
+}
 
 /**
  * Google Sign-In client IDs. The web client ID is the ID token's audience, the same one the backend

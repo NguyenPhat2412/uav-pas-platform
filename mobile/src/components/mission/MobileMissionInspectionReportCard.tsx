@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedia}: Props) {
-    const {formatDate} = useI18n();
+    const {t, formatDate} = useI18n();
     const customerQuery = useMissionInspectionReport(missionId, portal === 'customer');
     const opsQuery = useOperationsMissionInspectionReport(missionId, portal === 'operations');
     const query = portal === 'customer' ? customerQuery : opsQuery;
@@ -29,13 +29,17 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
 
     const report = query.data;
     if (!report) return null;
+    const isCustomer = portal === 'customer';
+    const cleanText = (val?: string | null) => (val ?? '').replace(/[rR][tT][kK]/g, 'GNSS');
 
     const handleShareCertificate = async () => {
         const summary = [
             `CHỨNG NHẬN NGHIỆM THU NHIỆM VỤ UAV PAS`,
             `Mã chứng nhận: ${report.certificateCode}`,
             `Nhiệm vụ: ${report.missionCode} — ${report.title}`,
-            `Thiết bị bay: ${report.uavSerialNumber} (${report.uavModel})`,
+            isCustomer
+                ? `Đơn vị thực hiện: ${t('mobile.marketplace.verifiedPartnerBadge')}`
+                : `Thiết bị bay: ${cleanText(report.uavSerialNumber)} (${cleanText(report.uavModel)})`,
             `Quãng đường bay: ${(report.totalDistanceMeters / 1000).toFixed(2)} km · Độ cao tối đa: ${Math.round(report.maxAltitudeMeters)} m`,
             `Số điểm dừng: ${report.waypointCount} · Tệp bàn giao: ${report.mediaCount}`,
         ].join('\n');
@@ -59,12 +63,16 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
             <View style={styles.certBanner}>
                 <ShieldCheck size={18} color={colors.primary}/>
                 <View style={styles.flex}>
-                    <AppText variant="small" style={styles.bold}>
-                        {report.uavSerialNumber} · {report.uavModel}
+                    <AppText variant="small" style={styles.bold} numberOfLines={1}>
+                        {isCustomer
+                            ? t('mobile.marketplace.verifiedPartnerBadge')
+                            : `${cleanText(report.uavSerialNumber)} · ${cleanText(report.uavModel)}`}
                     </AppText>
-                    <AppText variant="caption">
-                        Trạm: {report.stationName ?? '—'} · Người điều khiển: {report.operatorName ?? '—'}
-                    </AppText>
+                    {!isCustomer ? (
+                        <AppText variant="caption" numberOfLines={1}>
+                            Trạm: {report.stationName ?? '—'} · Người điều khiển: {report.operatorName ?? '—'}
+                        </AppText>
+                    ) : null}
                 </View>
                 <Badge
                     icon={CheckCircle2}
@@ -115,7 +123,7 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
                             <FileCheck2 size={16} color={colors.primary}/>
                             <View style={styles.flex}>
                                 <AppText variant="small" numberOfLines={1} style={styles.bold}>
-                                    {pin.fileName}
+                                    {cleanText(pin.fileName)}
                                 </AppText>
                                 <AppText variant="caption">
                                     Điểm {pin.waypointIndex} · {pin.latitude.toFixed(5)}, {pin.longitude.toFixed(5)} · {Math.round(pin.altitudeMeters)} m

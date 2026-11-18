@@ -5,6 +5,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Compass, PackageCheck} from 'lucide-react-native';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {MissionRow} from '@/components/mission/MissionBits';
+import {OfflineBanner} from '@/components/shared/OfflineBanner';
 import {
     Button,
     ChipGroup,
@@ -77,7 +78,7 @@ export function CustomerOrdersScreen() {
                 <View style={styles.centerState}>
                     <LoadingState label={t('missions.loading')}/>
                 </View>
-            ) : list.isError ? (
+            ) : list.isError && orders.length === 0 ? (
                 <View style={styles.centerState}>
                     <ErrorState
                         message={t('missions.loadError')}
@@ -95,11 +96,14 @@ export function CustomerOrdersScreen() {
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={[styles.list, {paddingBottom: insets.bottom + spacing.xl}]}
                     ListHeaderComponent={
-                        <ChipGroup
-                            options={chipOptions}
-                            value={group}
-                            onChange={value => setChosen({from: params.group, value})}
-                        />
+                        <View style={styles.headerStack}>
+                            <OfflineBanner/>
+                            <ChipGroup
+                                options={chipOptions}
+                                value={group}
+                                onChange={value => setChosen({from: params.group, value})}
+                            />
+                        </View>
                     }
                     renderItem={({item}) => (
                         <MissionRow
@@ -165,4 +169,5 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
     more: {marginVertical: spacing.lg},
+    headerStack: {gap: spacing.sm},
 });

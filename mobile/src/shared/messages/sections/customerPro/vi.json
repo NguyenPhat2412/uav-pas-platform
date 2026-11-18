@@ -370,6 +370,14 @@
     "trainingEmptyDesc": "Khoá hướng dẫn mới sẽ hiển thị tại đây.",
     "trainingNoMatchDesc": "Thử bỏ bộ lọc hoặc đổi từ khoá tìm kiếm.",
     "trainingCompletedSummary": "Đã hoàn thành {completed}/{total} khoá",
-    "trainingAudienceHint": "Danh mục khoá học hiển thị cho {audience}."
+    "trainingAudienceHint": "Danh mục khoá học hiển thị cho {audience}.",
+    "reviewEscrowLocked": "Trạng thái nghiệm thu đã khoá sau khi đối soát ký quỹ minh hoạ. Bạn vẫn có thể cập nhật điểm đánh giá và nhận xét.",
+    "reviewEscrowRelease": "Khi xác nhận nghiệm thu, hệ thống ghi nhận hoàn tất ký quỹ minh hoạ cho đối tác thực hiện.",
+    "reviewEscrowHold": "Bỏ chọn nếu dữ liệu chưa đạt yêu cầu — khoản ký quỹ minh hoạ sẽ được giữ cho tới khi bổ sung.",
+    "orderRealtimeToastTitle": "Đơn #{id} vừa cập nhật",
+    "orderRealtimeToastBody": "Trạng thái mới: {status}",
+    "emptyProjectsFirstCta": "Tạo dự án đầu tiên",
+    "emptyOrdersTitle": "Chưa có đơn dịch vụ nào",
+    "emptyOrdersDesc": "Chọn dịch vụ bay từ chợ UAV PAS và đăng ký cho dự án để bắt đầu."
   }
 }

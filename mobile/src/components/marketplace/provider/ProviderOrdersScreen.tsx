@@ -123,9 +123,9 @@ export function ProviderOrdersScreen() {
             ) : null}
 
             {tab === 'ORDERS' ? (
-                ordersQuery.isPending ? (
+                ordersQuery.isPending && !orders.length ? (
                     <LoadingState/>
-                ) : ordersQuery.isError ? (
+                ) : ordersQuery.isError && !orders.length ? (
                     <ErrorState
                         message={t('missions.loadError')}
                         retryLabel={t('common.retry')}

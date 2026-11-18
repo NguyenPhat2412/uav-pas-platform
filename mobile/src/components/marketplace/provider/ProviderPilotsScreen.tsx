@@ -162,9 +162,9 @@ export function ProviderPilotsScreen() {
 
             <SectionTitle title={`${t('mobile.overnight.pilotsScreenTitle')} (${pilots.length})`}/>
 
-            {pilotsQuery.isPending && !pilotsQuery.data ? (
+            {pilotsQuery.isPending && !pilots.length ? (
                 <LoadingState/>
-            ) : pilotsQuery.isError ? (
+            ) : pilotsQuery.isError && !pilots.length ? (
                 <ErrorState
                     message={t('mobile.overnight.pilotsLoadError')}
                     retryLabel={t('common.retry')}

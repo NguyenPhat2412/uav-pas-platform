@@ -7,7 +7,6 @@ import {
     ChevronRight,
     ClipboardList,
     Cpu,
-    ExternalLink,
     FileCheck2,
     Layers,
     ShieldCheck,
@@ -18,7 +17,6 @@ import {
 import {
     AppText,
     Badge,
-    Button,
     Card,
     GlassSurface,
     LoadingState,
@@ -120,7 +118,7 @@ export function ProviderHubScreen() {
         void walletQuery.refetch();
     };
 
-    if (profileQuery.isPending) {
+    if (profileQuery.isPending && !profile) {
         return (
             <Screen>
                 <LoadingState/>
@@ -187,26 +185,15 @@ export function ProviderHubScreen() {
                         </AppText>
                     </View>
                 ) : null}
-
-                {profile?.slug && profile.verificationStatus === 'VERIFIED' ? (
-                    <Button
-                        size="sm"
-                        tone="secondary"
-                        icon={ExternalLink}
-                        label={t('mobile.provider.viewPublicStorefront')}
-                        onPress={() =>
-                            router.push({
-                                pathname: '/customer/providers/[slug]',
-                                params: {slug: profile.slug},
-                            })
-                        }
-                    />
-                ) : null}
             </GlassSurface>
 
             <View style={styles.kpiRow}>
                 <Card style={styles.kpiCard} onPress={() => router.push('/customer/provider/wallet')}>
-                    <AppText variant="caption" numberOfLines={1}>
+                    <AppText
+                        variant="caption"
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                        minimumFontScale={0.82}>
                         {t('mobile.provider.availableBalance')}
                     </AppText>
                     <View style={styles.kpiValRow}>
@@ -219,7 +206,11 @@ export function ProviderHubScreen() {
                     </View>
                 </Card>
                 <Card style={styles.kpiCard} onPress={() => router.push('/customer/provider/wallet')}>
-                    <AppText variant="caption" numberOfLines={1}>
+                    <AppText
+                        variant="caption"
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                        minimumFontScale={0.82}>
                         {t('mobile.provider.escrowHeld')}
                     </AppText>
                     <View style={styles.kpiValRow}>
@@ -238,8 +229,7 @@ export function ProviderHubScreen() {
             <StudioNavRow
                 icon={FileCheck2}
                 title={t('mobile.provider.menuOnboarding')}
-                subtitle={t('mobile.provider.menuOnboardingDesc')}
-                badge={verificationStatusLabel(profile?.verificationStatus)}
+                subtitle={`${verificationStatusLabel(profile?.verificationStatus)} · ${t('mobile.provider.menuOnboardingDesc')}`}
                 onPress={() => router.push('/customer/provider/onboarding')}
             />
             <StudioNavRow

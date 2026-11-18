@@ -56,7 +56,7 @@ export function OrderStatusBarCard() {
         );
     }
 
-    if (summaryQuery.isError && !summaryQuery.isNotFound) {
+    if (summaryQuery.isError && !summaryQuery.isNotFound && !summaryQuery.data) {
         return (
             <ErrorState
                 message={t('mobile.overnight.orderLoadError')}
@@ -119,7 +119,7 @@ export function OrderStatusBarCard() {
                                 style={styles.cellLabel}
                                 numberOfLines={1}
                                 adjustsFontSizeToFit
-                                minimumFontScale={0.78}>
+                                minimumFontScale={0.68}>
                                 {item.label}
                             </AppText>
                         </Pressable>

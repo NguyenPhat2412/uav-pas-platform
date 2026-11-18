@@ -115,6 +115,12 @@ export function ProviderFleetScreen() {
 
     const uavs = fleetQuery.data?.uavs ?? [];
     const equipment = fleetQuery.data?.equipment ?? [];
+    const formatUavStatus = (status: string) => {
+        if (status === 'AVAILABLE') return t('mobile.overnight.uavStatusAvailable');
+        if (status === 'IN_USE') return t('mobile.overnight.uavStatusInUse');
+        if (status === 'MAINTENANCE') return t('mobile.overnight.uavStatusMaintenance');
+        return status;
+    };
 
     return (
         <Screen
@@ -160,7 +166,7 @@ export function ProviderFleetScreen() {
                         />
                     </Card>
 
-                    {fleetQuery.isPending ? (
+                    {fleetQuery.isPending && !fleetQuery.data ? (
                         <LoadingState/>
                     ) : uavs.length === 0 ? (
                         <EmptyState icon={Plane} message={t('mobile.provider.noUavs')}/>
@@ -169,12 +175,20 @@ export function ProviderFleetScreen() {
                             <Card key={item.id}>
                                 <View style={styles.rowBetween}>
                                     <AppText variant="title" numberOfLines={1} style={styles.flex}>
-                                        {item.model}
+                                        {item.model.replace(/\s*\(minh hoạ\)/gi, ' — minh hoạ')}
                                     </AppText>
                                     <Badge
-                                        label={item.status}
-                                        background={colors.primaryLight}
-                                        color={colors.primary}
+                                        label={formatUavStatus(item.status)}
+                                        background={
+                                            item.status === 'IN_USE'
+                                                ? colors.warningLight
+                                                : colors.primaryLight
+                                        }
+                                        color={
+                                            item.status === 'IN_USE'
+                                                ? colors.warning
+                                                : colors.primary
+                                        }
                                     />
                                 </View>
                                 <View style={styles.rowBetween}>
@@ -256,7 +270,7 @@ export function ProviderFleetScreen() {
                         />
                     </Card>
 
-                    {fleetQuery.isPending ? (
+                    {fleetQuery.isPending && !fleetQuery.data ? (
                         <LoadingState/>
                     ) : equipment.length === 0 ? (
                         <EmptyState icon={Package} message={t('mobile.provider.noEquipment')}/>
@@ -271,7 +285,10 @@ export function ProviderFleetScreen() {
                                         color={colors.slateDark}
                                     />
                                 </View>
-                                <AppText variant="caption">{item.type}</AppText>
+                                <AppText variant="caption">
+                                    {EQUIPMENT_CATEGORY_OPTIONS.find(o => o.value === item.type)?.label ??
+                                        item.type}
+                                </AppText>
                             </Card>
                         ))
                     )}
