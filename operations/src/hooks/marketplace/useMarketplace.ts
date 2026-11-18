@@ -5,6 +5,7 @@ import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack
 import {marketplaceApi} from '@/api/marketplace/marketplace.api';
 import {missionService} from '@/api/mission/missions.api';
 import {operationsRealtimeClient} from '@/lib/realtime-ws';
+import {toast} from '@/providers/ToastContext';
 import type {Mission} from '@/types/mission/mission.types';
 import type {
     MarketplaceListingFromTemplateInput,
@@ -167,6 +168,8 @@ export function useProviderOrders(enabled = true) {
         return operationsRealtimeClient.subscribeFrames(frame => {
             if (frame.type === 'ORDER_UPDATED') {
                 void qc.invalidateQueries({queryKey: ['marketplace', 'provider-orders']});
+                void qc.invalidateQueries({queryKey: ['missions']});
+                toast.info(`#${frame.missionId} · ${frame.status}`);
             }
         });
     }, [enabled, qc]);

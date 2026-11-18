@@ -9,6 +9,7 @@ import {
     Clock,
     ExternalLink,
     FileCheck2,
+    FileUp,
     Gamepad2,
     MapPin,
     PackageCheck,
@@ -23,6 +24,7 @@ import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStu
 import {
     useMyProviderFleet,
     useMyProviderProfile,
+    usePilotTodayActions,
     useProviderOrderActions,
     useProviderOrders,
     useProviderPilots,
@@ -36,6 +38,7 @@ import {
 } from '@/forms/marketplace/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
 import type {Mission} from '@/types/mission/mission.types';
+import {MEDIA_ACCEPT} from '@/utils/media/media-policy';
 
 const INPUT_CLASS =
     'h-10 w-full rounded-control border border-slate-300 bg-white px-3 text-xs font-medium text-slate-900 outline-none focus:border-primary';
@@ -56,6 +59,7 @@ export function ProviderOrdersView() {
     const fleetQuery = useMyProviderFleet(true);
     const pilotsQuery = useProviderPilots(true);
     const {respondToOrder, assignOrder, startOrder, completeOrder} = useProviderOrderActions();
+    const {uploadDeliverable} = usePilotTodayActions();
 
     const [activeTab, setActiveTab] = useState<SellerOrderTab>('PENDING_ACCEPT');
     const [selectedUavByMission, setSelectedUavByMission] = useState<Record<number, number>>({});
@@ -64,6 +68,8 @@ export function ProviderOrdersView() {
     const [rejectReasonByMission, setRejectReasonByMission] = useState<Record<number, string>>({});
     const [handoverNoteByMission, setHandoverNoteByMission] = useState<Record<number, string>>({});
     const [conditionByMission, setConditionByMission] = useState<Record<number, string>>({});
+    const [uploadingMissionId, setUploadingMissionId] = useState<number | null>(null);
+    const [uploadedNamesByMission, setUploadedNamesByMission] = useState<Record<number, string[]>>({});
     const [errorMsg, setErrorMsg] = useState('');
 
     const orders = ordersQuery.data ?? [];
@@ -172,6 +178,22 @@ export function ProviderOrdersView() {
             );
         } catch (err) {
             setErrorMsg(extractActionableError(err, t('opsMarketplace.common.retry')));
+        }
+    };
+
+    const handleUploadDeliverable = async (missionId: number, file: File) => {
+        setErrorMsg('');
+        setUploadingMissionId(missionId);
+        try {
+            const uploadedName = await uploadDeliverable.mutateAsync({missionId, file});
+            setUploadedNamesByMission(prev => ({
+                ...prev,
+                [missionId]: [...(prev[missionId] ?? []), uploadedName],
+            }));
+        } catch (err) {
+            setErrorMsg(extractActionableError(err, t('opsMissions.detail.errors.uploadUnconfirmed')));
+        } finally {
+            setUploadingMissionId(null);
         }
     };
 
@@ -503,13 +525,34 @@ export function ProviderOrdersView() {
                                         {tab === 'IN_FLIGHT' && (
                                             <div className="mt-4 space-y-3 rounded-xl bg-slate-50 p-4">
                                                 <div className="flex flex-wrap items-center justify-between gap-2">
-                                                    <Link
-                                                        href={`/operations/simulation?missionId=${mission.id}${mission.uavId ? `&uavId=${mission.uavId}` : ''}`}
-                                                        className="inline-flex min-h-10 items-center gap-1.5 rounded-control bg-slate-900 px-4 text-xs font-semibold whitespace-nowrap text-white hover:bg-slate-800"
-                                                    >
-                                                        <Gamepad2 size={15} aria-hidden="true"/>
-                                                        {t('opsMarketplace.orders.card.openSimulation')}
-                                                    </Link>
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        <Link
+                                                            href={`/operations/simulation?missionId=${mission.id}${mission.uavId ? `&uavId=${mission.uavId}` : ''}`}
+                                                            className="inline-flex min-h-10 items-center gap-1.5 rounded-control bg-slate-900 px-4 text-xs font-semibold whitespace-nowrap text-white hover:bg-slate-800"
+                                                        >
+                                                            <Gamepad2 size={15} aria-hidden="true"/>
+                                                            {t('opsMarketplace.orders.card.openSimulation')}
+                                                        </Link>
+                                                        <label className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-control border border-dashed border-primary bg-uav-red-light/60 px-3.5 text-xs font-semibold whitespace-nowrap text-primary hover:bg-uav-red-light">
+                                                            <FileUp size={15} aria-hidden="true"/>
+                                                            <span>
+                                                                {uploadingMissionId === mission.id
+                                                                    ? t('opsMarketplace.pilotToday.uploading')
+                                                                    : t('opsMarketplace.pilotToday.uploadDeliverable')}
+                                                            </span>
+                                                            <input
+                                                                type="file"
+                                                                accept={MEDIA_ACCEPT}
+                                                                className="sr-only"
+                                                                disabled={uploadingMissionId === mission.id}
+                                                                onChange={e => {
+                                                                    const file = e.target.files?.[0];
+                                                                    if (file) void handleUploadDeliverable(mission.id, file);
+                                                                    e.target.value = '';
+                                                                }}
+                                                            />
+                                                        </label>
+                                                    </div>
                                                     <Link
                                                         href={`/operations/missions/${mission.id}`}
                                                         className="inline-flex min-h-10 items-center gap-1.5 rounded-control border border-slate-200 bg-white px-3.5 text-xs font-semibold whitespace-nowrap text-slate-700 hover:border-primary hover:text-primary"
@@ -518,6 +561,15 @@ export function ProviderOrdersView() {
                                                         {t('opsMarketplace.orders.card.openDetail')}
                                                     </Link>
                                                 </div>
+
+                                                {(uploadedNamesByMission[mission.id]?.length ?? 0) > 0 && (
+                                                    <div className="text-xs font-semibold text-slate-700">
+                                                        {t('opsMarketplace.pilotToday.uploadedFiles', {
+                                                            count: uploadedNamesByMission[mission.id].length,
+                                                        })}
+                                                        : {uploadedNamesByMission[mission.id].join(', ')}
+                                                    </div>
+                                                )}
 
                                                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                                     <label className="grid gap-1 text-xs font-semibold text-slate-700">

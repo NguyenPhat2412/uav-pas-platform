@@ -137,7 +137,8 @@ const LEGACY_PAREN_ILLUSTRATIVE_RE = new RegExp(
 const LEGACY_POS_CLAIM_RE = new RegExp('\\b' + 'R' + 'TK\\b', 'gi');
 
 /**
- * Scrubs legacy DB strings so parenthetical illustrative labels or legacy positioning acronyms never render in UI text.
+ * Legacy-only fallback scrubber: S0 migration V64/V65 cleans seed data at the database source;
+ * this helper is retained strictly as a defensive guard for any older un-migrated local rows.
  */
 export function sanitizeMarketplaceText(raw?: string | null): string {
     if (!raw) return '';
