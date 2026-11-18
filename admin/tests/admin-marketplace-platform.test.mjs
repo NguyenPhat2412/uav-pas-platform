@@ -87,9 +87,30 @@ test('Provider moderation UI wires skeleton, error/empty states, document drawer
         'src/components/marketplace/AdminMarketplaceProviders.tsx',
         'src/components/marketplace/ProviderModerationRow.tsx',
         'src/components/marketplace/ProviderKycDrawer.tsx',
+        'src/components/marketplace/AdminMarketplaceListings.tsx',
+        'src/components/marketplace/ListingModerationRow.tsx',
+        'src/components/marketplace/ListingModerationDrawer.tsx',
     ]) {
         const src = read(rel);
         const lines = src.split('\n').length;
         assert.ok(lines <= 301, `${rel} must stay <= 300 lines (got ${lines - 1})`);
     }
+
+    const listingRejectedWithoutNote = form.validateListingModerationInput({
+        status: 'REJECTED',
+        rawNote: ' ',
+        featured: false,
+    });
+    assert.equal(listingRejectedWithoutNote.ok, false);
+    assert.equal(listingRejectedWithoutNote.code, 'NOTE_REQUIRED');
+
+    const listingPublished = form.validateListingModerationInput({
+        status: 'PUBLISHED',
+        rawNote: ' Đạt chuẩn dịch vụ ',
+        featured: true,
+    });
+    assert.deepEqual(listingPublished, {
+        ok: true,
+        payload: {status: 'PUBLISHED', moderationNote: 'Đạt chuẩn dịch vụ', featured: true},
+    });
 });
