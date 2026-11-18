@@ -2,6 +2,7 @@
   "publicSite": {
     "header": {
       "becomeProvider": "サービス掲載",
+      "moreMenu": "その他",
       "marketplace": "UAVサービス一覧",
       "languageLabel": "表示言語",
       "scrollDownAria": "概要セクションへスクロール",
