@@ -247,7 +247,7 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
                             }`}
                         >
                             <Icon size={15} className="shrink-0" aria-hidden="true"/>
-                            <span className="truncate">{item.label}</span>
+                            <span className="line-clamp-2 break-words leading-tight">{item.label}</span>
                         </button>
                     );
                 })}

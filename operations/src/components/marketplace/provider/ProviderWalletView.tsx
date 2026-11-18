@@ -120,7 +120,7 @@ export function ProviderWalletView() {
                                         </span>
                                     </div>
                                     <div className="mt-3">
-                                        <span className="block truncate text-xs font-medium text-slate-500">
+                                        <span className="block line-clamp-2 break-words text-xs font-medium leading-snug text-slate-500">
                                             {card.label}
                                         </span>
                                         <strong className="mt-0.5 block text-xl font-bold text-primary tabular-nums">
