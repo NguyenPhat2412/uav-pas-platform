@@ -114,6 +114,8 @@ export function useMissionActions() {
         client.invalidateQueries({queryKey: opsKey}),
         client.invalidateQueries({queryKey: billingKeys.customer(user?.id)}),
         client.invalidateQueries({queryKey: queryKeys.feature(user?.id, 'marketplace')}),
+        client.invalidateQueries({queryKey: queryKeys.feature(user?.id, 'orders')}),
+        client.invalidateQueries({queryKey: queryKeys.feature(user?.id, 'projects')}),
     ]);
     return {
         create: useMutation({mutationFn: (data: MissionInput) => customerMissionService.create(data), onSuccess: data => refresh(data.id), retry: false}),

@@ -21,6 +21,7 @@ import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {canEditMission, missionFormError, missionFormFromDetail} from '@/shared/forms/mission/mission-form';
+import {canCancelCustomerOrder} from '@/shared/forms/project/project-form';
 import {eventNote, eventTitle, missionHint, terminalStatuses} from '@/shared/lib/presentation';
 import {formatFileSize} from '@/shared/lib/format';
 import {canCancel} from '@/utils/mission/status';
@@ -55,9 +56,10 @@ export function MissionDetailScreen() {
 
     const owned = mission.customerId === user?.id;
     const editable = canEditMission(mission, user?.id, can('MISSION_UPDATE'));
-    const cancellable = owned && canCancel(mission.status) && can('MISSION_CANCEL');
+    const cancellable = owned && (canCancel(mission.status) || canCancelCustomerOrder(mission.status)) && can('MISSION_CANCEL');
     const canClone = owned && can('MISSION_CREATE');
     const finished = terminalStatuses.includes(mission.status);
+    const isDeliveredOrDone = mission.status === 'DELIVERED' || mission.status === 'COMPLETED' || mission.status === 'REVIEWED';
     const canUpload = owned && !finished && can('MISSION_MEDIA_UPLOAD');
     const hasPoint = isFinitePoint(mission.latitude, mission.longitude);
     const parsedStart = fromLocalIso(mission.startTime);
@@ -66,7 +68,7 @@ export function MissionDetailScreen() {
         (mission.permit != null && mission.permit.status !== 'NOT_REQUIRED') ||
         !!mission.flightPlan?.permitSupport ||
         !!airspace.data?.requiresPermit;
-    const showPostFlightReport = mission.status === 'IN_PROGRESS' || mission.status === 'COMPLETED';
+    const showPostFlightReport = mission.status === 'IN_PROGRESS' || mission.status === 'IN_FLIGHT' || isDeliveredOrDone;
     const submitting = actions.submit.isPending || actions.update.isPending;
 
     const fail = (error: unknown) => toast.show(missionFormError(error, t), 'error');
@@ -275,17 +277,17 @@ export function MissionDetailScreen() {
 
             {showPostFlightReport && <MobileMissionInspectionReportCard missionId={mission.id} portal="customer" onOpenMedia={open}/>}
 
-            {owned && mission.status === 'COMPLETED' && (
+            {owned && isDeliveredOrDone && (
                 <CustomerHandoverReviewCard
                     key={mission.id}
                     missionId={mission.id}
-                    isMarketplace={Boolean(mission.providerId || mission.listingId)}
+                    isMarketplace={Boolean(mission.providerId || mission.listingId || mission.subscriptionId)}
                 />
             )}
 
             {owned && can('MISSION_MEDIA_VIEW') && (
                 <Card>
-                    <SectionTitle title={t('mobile.files.title')}/>
+                    <SectionTitle title={isDeliveredOrDone ? t('mobile.overnight.handoverFilesTitle') : t('mobile.files.title')}/>
                     {canUpload && (
                         <View style={styles.actionRow}>
                             <Button size="sm" label={t('mobile.files.camera')} icon={Camera} tone="secondary" disabled={upload.isPending} onPress={() => void pick('camera')} style={styles.flex}/>
@@ -293,7 +295,7 @@ export function MissionDetailScreen() {
                         </View>
                     )}
                     {media.isPending ? <LoadingState/>
-                        : !media.data?.length ? <EmptyState icon={FileText} message={t('mobile.files.empty')}/>
+                        : !media.data?.length ? <EmptyState icon={FileText} message={isDeliveredOrDone ? t('mobile.overnight.noHandoverFiles') : t('mobile.files.empty')}/>
                             : media.data.map(item => (
                                 <Pressable key={item.id} onPress={() => open(item.media.id)} accessibilityRole="button" style={styles.file}>
                                     <FileText size={18} color={colors.slate}/>
