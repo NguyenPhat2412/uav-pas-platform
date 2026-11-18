@@ -97,7 +97,7 @@ public class ProjectServiceImpl implements ProjectService {
         Specification<Project> spec =
                 Specification.allOf(
                         notDeleted(),
-                        viewAll ? null : belongsToCustomer(actor.getId()),
+                        belongsToCustomer(viewAll ? null : actor.getId()),
                         hasKeyword(keyword),
                         hasProvince(province),
                         hasStatus(status));
@@ -506,7 +506,9 @@ public class ProjectServiceImpl implements ProjectService {
         boolean isOwner =
                 project.getCustomer() != null
                         && Objects.equals(project.getCustomer().getId(), actor.getId());
-        if (!isOwner && !permissions.has(auth, "USER_MANAGE")) {
+        if (!isOwner
+                && !permissions.has(auth, "USER_MANAGE")
+                && !permissions.has(auth, "MARKETPLACE_MODERATE")) {
             throw new AccessDeniedException("Only project owner can modify this project");
         }
         return project;

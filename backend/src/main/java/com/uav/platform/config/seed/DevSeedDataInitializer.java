@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Local development & automated QA account initializer. Disabled by default in all environments
@@ -54,6 +55,7 @@ public class DevSeedDataInitializer implements ApplicationRunner {
 
     public static final String DEMO_CUSTOMER_USERNAME = "demo_customer";
     public static final String DEMO_FLEET_USERNAME = "demo_fleet";
+    public static final String DEMO_PILOT_USERNAME = "demo_pilot";
     public static final String DEMO_ADMIN_USERNAME = "demo_admin";
 
     private final UserRepository users;
@@ -99,18 +101,26 @@ public class DevSeedDataInitializer implements ApplicationRunner {
                         "Chủ đội bay Miền Nam — minh hoạ",
                         UserRole.ROLE_PILOT,
                         encoded);
+        AppUser fleetPilot =
+                upsertAccount(
+                        DEMO_PILOT_USERNAME,
+                        "demo.pilot@gmail.com",
+                        "Kỹ sư Trần Minh Quân — minh hoạ",
+                        UserRole.ROLE_OPERATOR,
+                        encoded);
 
         ensureCustomerProject(customer);
         ProviderProfile fleet = ensureVerifiedFleet(fleetOwner);
         ensureTenFleetUavs(fleet);
-        ensureTwoFleetPilots(fleet, fleetOwner);
+        ensureTwoFleetPilots(fleet, fleetPilot, fleetOwner);
         ensureDemoListings(fleet);
 
         log.info(
-                "DevSeedDataInitializer provisioned local test accounts: {}, {}, {}",
+                "DevSeedDataInitializer provisioned local test accounts: {}, {}, {}, {}",
                 admin.getUsername(),
                 customer.getUsername(),
-                fleetOwner.getUsername());
+                fleetOwner.getUsername(),
+                fleetPilot.getUsername());
     }
 
     private AppUser upsertAccount(
@@ -203,16 +213,23 @@ public class DevSeedDataInitializer implements ApplicationRunner {
         }
     }
 
-    private void ensureTwoFleetPilots(ProviderProfile fleet, AppUser fleetOwner) {
+    private void ensureTwoFleetPilots(
+            ProviderProfile fleet, AppUser fleetPilot, AppUser fleetOwner) {
         List<ProviderPilot> current =
                 pilots.findByProviderIdAndDeletedFalseOrderByCreatedAtDesc(fleet.getId());
         if (current.size() >= 2) {
+            ProviderPilot first = current.get(current.size() - 1);
+            if (first.getPilotUser() == null
+                    || !Objects.equals(first.getPilotUser().getId(), fleetPilot.getId())) {
+                first.setPilotUser(fleetPilot);
+                pilots.save(first);
+            }
             return;
         }
         if (current.isEmpty()) {
             ProviderPilot p1 = new ProviderPilot();
             p1.setProvider(fleet);
-            p1.setPilotUser(fleetOwner);
+            p1.setPilotUser(fleetPilot);
             p1.setFullName("Kỹ sư Trần Minh Quân — minh hoạ");
             p1.setPhone("0909300101");
             p1.setLicenseNumber("CC-BAY-DEMO-101");

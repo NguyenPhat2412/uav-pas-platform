@@ -17,6 +17,7 @@ public class ProjectMapper {
 
     public ProjectResponse toProjectResponse(
             Project project, long activeSubscriptionCount, long missionCount) {
+        var customer = project.getCustomer();
         return new ProjectResponse(
                 project.getId(),
                 project.getCode(),
@@ -25,6 +26,9 @@ public class ProjectMapper {
                 project.getAreaGeoJson(),
                 project.getNote(),
                 project.getStatus(),
+                customer != null ? customer.getId() : null,
+                customer != null ? customer.getUsername() : null,
+                customer != null ? customer.getFullName() : null,
                 activeSubscriptionCount,
                 missionCount,
                 project.getCreatedAt(),

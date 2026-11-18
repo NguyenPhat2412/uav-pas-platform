@@ -72,7 +72,7 @@ public final class MissionSpecifications {
     public static Specification<Mission> hasStatusGroup(String rawGroup) {
         String group = OrderStatusGroups.normalizeGroupParam(rawGroup);
         if (group == null) {
-            return null;
+            return (root, query, cb) -> null;
         }
         return (root, query, cb) ->
                 switch (group) {
@@ -162,7 +162,7 @@ public final class MissionSpecifications {
 
     public static Specification<Mission> filtered(MissionFilter filter, Long ownerId) {
         if (filter == null && ownerId == null) {
-            return null;
+            return (root, query, cb) -> null;
         }
         MissionFilter f = filter == null ? MissionFilter.empty() : filter;
         Long effectiveCustomerId = ownerId != null ? ownerId : f.customerId();

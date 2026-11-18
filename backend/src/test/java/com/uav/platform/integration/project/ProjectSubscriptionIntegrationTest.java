@@ -466,7 +466,7 @@ class ProjectSubscriptionIntegrationTest {
     }
 
     @Test
-    void devSeedInitializerProvisionsThreeDemoAccountsWithTenUavsWhenEnabled() {
+    void devSeedInitializerProvisionsThreeDemoAccountsWithTenUavsWhenEnabled() throws Exception {
         DevSeedDataInitializer seeder =
                 new DevSeedDataInitializer(
                         users,
@@ -497,6 +497,17 @@ class ProjectSubscriptionIntegrationTest {
                                         fleetProfile.getId())
                                 .size()
                         >= 2);
+
+        // Regression test: GET /api/v1/missions & /api/v1/projects without optional filters for
+        // both customer and admin (must never pass null Specification into .and / allOf)
+        mvc.perform(get("/api/v1/missions").with(authentication(authToken(customer))))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/v1/missions").with(authentication(authToken(admin))))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/v1/projects").with(authentication(authToken(customer))))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/v1/projects").with(authentication(authToken(admin))))
+                .andExpect(status().isOk());
     }
 
     private AppUser createUser(String username, UserRole role) {
