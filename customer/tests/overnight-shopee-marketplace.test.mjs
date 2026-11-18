@@ -287,6 +287,12 @@ test('customer-facing marketplace and portal screens hide fleet names, stay <= 3
     assert.match(read('src/components/customer/CustomerLayout.tsx'), /notifyToast:\s*true/);
     assert.match(read('src/app/(public)/services/[slug]/page.tsx'), /buildPublicServiceMetadata/);
 
+    const toastSrc = read('src/components/ui/Toast.tsx');
+    assert.match(toastSrc, /right-4 left-4/);
+    assert.match(toastSrc, /max-w-\[calc\(100vw-2rem\)\]/);
+    assert.doesNotMatch(toastSrc, /<h4[^>]*\btruncate\b/);
+    assert.doesNotMatch(read('tailwind.config.mjs'), /translateX\(115%\)/);
+
     const sidebar = read('src/config/sidebar-routes.ts');
     assert.match(sidebar, /href:\s*'\/customer\/projects'/);
     assert.match(sidebar, /aliases:\s*\['\/customer\/orders'\]/);

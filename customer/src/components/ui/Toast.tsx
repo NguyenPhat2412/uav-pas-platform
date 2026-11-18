@@ -11,7 +11,7 @@ export type {ToastItem, ToastOptions, ToastType, ToastViewportProps};
 export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewportProps) {
     return (
         <div
-            className="fixed top-5 right-5 z-[999999] flex flex-col gap-3 pointer-events-none max-w-sm sm:max-w-md w-[calc(100vw-2.5rem)] sm:w-96"
+            className="pointer-events-none fixed top-3 right-4 left-4 z-[999999] flex max-w-[calc(100vw-2rem)] flex-col gap-2.5 sm:top-5 sm:right-5 sm:left-auto sm:w-96 sm:max-w-md"
             aria-live="polite"
             aria-atomic="true"
         >
@@ -19,7 +19,7 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                 <div
                     key={item.id}
                     className={cn(
-                        'group pointer-events-auto relative overflow-hidden rounded-overlay border bg-white shadow-xl shadow-slate-900/10 transition-[opacity,transform]',
+                        'group pointer-events-auto relative w-full max-w-full overflow-hidden rounded-overlay border bg-white shadow-xl shadow-slate-900/10 transition-[opacity,transform]',
                         item.isExiting ? 'animate-slide-out-right' : 'animate-slide-in-right',
                         item.type === 'success' && 'border-l-4 border-l-toast-success-border border-slate-200/80',
                         item.type === 'error' && 'border-l-4 border-l-toast-error-border border-slate-200/80',
@@ -30,7 +30,7 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                     onMouseEnter={() => onPause(item.id)}
                     onMouseLeave={() => onResume(item.id)}
                 >
-                    <div className="flex items-start gap-3 p-4">
+                    <div className="flex items-start gap-2.5 p-3.5 sm:gap-3 sm:p-4">
                         <div className="relative flex-shrink-0">
                             <div
                                 className={cn(
@@ -51,9 +51,9 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                             </div>
                         </div>
 
-                        <div className="flex-1 min-w-0 pr-1">
-                            <div className="flex items-center gap-2 mb-1">
-                                <h4 className="text-sm font-bold text-slate-900 leading-snug truncate">
+                        <div className="min-w-0 flex-1">
+                            <div className="mb-1 flex flex-wrap items-center gap-1.5">
+                                <h4 className="m-0 min-w-0 flex-1 break-words text-sm leading-snug font-bold text-slate-900">
                                     {item.title ||
                                         (item.type === 'success'
                                             ? 'Thành công'
@@ -65,7 +65,7 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                                 </h4>
                                 <span
                                     className={cn(
-                                        'text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-badge ml-auto shrink-0',
+                                        'hidden text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-badge ml-auto shrink-0 whitespace-nowrap sm:inline-flex',
                                         item.type === 'success' && 'bg-uav-blue-light text-uav-blue border border-blue-200',
                                         item.type === 'error' && 'bg-red-50 text-red-700 border border-red-200',
                                         item.type === 'warning' && 'bg-amber-50 text-amber-700 border border-amber-200',
@@ -75,7 +75,7 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                                     UAV PAS
                                 </span>
                             </div>
-                            <p className="text-xs text-slate-600 leading-relaxed break-words">{item.message}</p>
+                            <p className="m-0 break-words text-xs leading-relaxed text-slate-600">{item.message}</p>
                         </div>
 
                         <button
