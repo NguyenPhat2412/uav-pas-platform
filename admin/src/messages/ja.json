@@ -175,6 +175,7 @@
     "notificationModules": "通知モジュール管理",
     "marketplaceDispatch": "注文ディスパッチ",
     "marketplaceOrders": "全注文モニタリング",
+    "marketplaceProjects": "顧客プロジェクト",
     "marketplaceStats": "マーケット統計"
   },
   "sidebar": {

@@ -172,6 +172,13 @@ export const API_ROUTES = {
         list: '/api/v1/flight-sites',
         detail: (id: string | number) => `/api/v1/flight-sites/${id}`,
     },
+    projects: {
+        list: '/api/v1/projects',
+        detail: (id: string | number) => `/api/v1/projects/${id}`,
+        subscriptions: (projectId: string | number) => `/api/v1/projects/${projectId}/subscriptions`,
+        subscriptionById: (projectId: string | number, subId: string | number) =>
+            `/api/v1/projects/${projectId}/subscriptions/${subId}`,
+    },
     media: {
         list: '/api/v1/media',
         detail: (id: string | number) => `/api/v1/media/${id}`,

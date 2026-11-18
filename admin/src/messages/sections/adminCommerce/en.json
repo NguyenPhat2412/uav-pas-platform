@@ -441,6 +441,52 @@
         "notePlaceholder": "Rejection reason or accounting note…",
         "approveBtn": "Confirm transfer",
         "rejectBtn": "Reject & refund"
+      },
+      "projects": {
+        "pageTitle": "Customer Projects & Subscriptions",
+        "subtitle": "Inspect all customer projects, review recurring service subscriptions, and cancel plans when needed.",
+        "searchPlaceholder": "Search project code, name, customer…",
+        "provincePlaceholder": "Filter province…",
+        "statusFilter": "Project status",
+        "statusAll": "All statuses",
+        "statusActive": "Active",
+        "statusArchived": "Archived",
+        "emptyTitle": "No customer projects",
+        "emptyDetail": "No customer projects match the selected filters.",
+        "loadError": "Could not load customer projects.",
+        "customerLabel": "Customer",
+        "provinceLabel": "Province",
+        "activeSubsBadge": "{count} active plans",
+        "missionsBadge": "{count} orders",
+        "inspectBtn": "View subscriptions",
+        "viewOrdersBtn": "Project orders",
+        "drawerTitle": "Project · {code}",
+        "projectInfoSection": "Customer project details",
+        "noteLabel": "Project note",
+        "createdLabel": "Created",
+        "readOnlyHint": "Read-only governance view — admins only cancel subscriptions upon customer request or incident intervention.",
+        "subsSection": "Service subscriptions ({count})",
+        "subsEmpty": "This project has no service subscriptions yet.",
+        "subsLoadError": "Could not load project subscriptions.",
+        "subStatus": {
+          "ACTIVE": "Active",
+          "PAUSED": "Paused",
+          "ENDED": "Ended"
+        },
+        "schedule": {
+          "ONCE": "One-time",
+          "WEEKLY": "Weekly",
+          "MONTHLY": "Monthly"
+        },
+        "startDateLabel": "Start date",
+        "nextRunLabel": "Next run",
+        "unitsLabel": "Units",
+        "firstOrderLabel": "First order",
+        "cancelSubBtn": "Cancel plan",
+        "cancelConfirmTitle": "Cancel service subscription",
+        "cancelConfirmDesc": "End subscription \"{title}\" under project {code}? Future recurring runs will stop.",
+        "cancelledToast": "Cancelled project subscription.",
+        "cancelError": "Could not cancel this subscription."
       }
     }
   }

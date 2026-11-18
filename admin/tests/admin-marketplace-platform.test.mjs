@@ -163,3 +163,35 @@ test('Admin dispatch queue wires manual/auto endpoints, ORDER_UPDATED realtime, 
         reason: 'Khách yêu cầu đổi lịch',
     });
 });
+
+test('Admin customer projects & subscriptions governance wires read-only view, subscription cancel, and <= 300 line cap', async () => {
+    const {API_ROUTES} = await load(compile(read('src/lib/api/routes.ts')));
+    assert.equal(API_ROUTES.projects.list, '/api/v1/projects');
+    assert.equal(API_ROUTES.projects.detail(12), '/api/v1/projects/12');
+    assert.equal(API_ROUTES.projects.subscriptions(12), '/api/v1/projects/12/subscriptions');
+    assert.equal(API_ROUTES.projects.subscriptionById(12, 34), '/api/v1/projects/12/subscriptions/34');
+
+    const form = await load(compile(read('src/forms/marketplace/admin-marketplace-form.ts')));
+    assert.equal(form.canAdminCancelSubscription('ACTIVE'), true);
+    assert.equal(form.canAdminCancelSubscription('PAUSED'), true);
+    assert.equal(form.canAdminCancelSubscription('ENDED'), false);
+    assert.equal(form.canAdminCancelSubscription(null), false);
+    assert.equal(
+        form.sanitizeMarketplaceText('Tàu bay quang học (' + 'minh hoạ)'),
+        'Tàu bay quang học — minh hoạ',
+    );
+
+    const sidebar = read('src/config/sidebar-routes.ts');
+    assert.match(sidebar, /\/admin\/marketplace\/projects/);
+    assert.match(sidebar, /marketplaceProjects/);
+
+    for (const rel of [
+        'src/components/marketplace/AdminMarketplaceProjects.tsx',
+        'src/components/marketplace/ProjectSubscriptionsDrawer.tsx',
+        'src/app/(admin)/admin/(portal)/marketplace/projects/page.tsx',
+    ]) {
+        const src = read(rel);
+        const lines = src.split('\n').length;
+        assert.ok(lines <= 301, `${rel} must stay <= 300 lines (got ${lines - 1})`);
+    }
+});

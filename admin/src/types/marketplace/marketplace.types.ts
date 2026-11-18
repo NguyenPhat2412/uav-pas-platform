@@ -234,3 +234,60 @@ export type AdminListingPage = PageResponse<AdminMarketplaceListing>;
 export type AdminPayoutPage = PageResponse<AdminProviderPayout>;
 export type AdminDispatchQueuePage = PageResponse<AdminDispatchQueueItem>;
 export type AdminMarketplaceOrderPage = PageResponse<AdminMarketplaceOrder>;
+
+export type AdminProjectStatus = 'ACTIVE' | 'ARCHIVED';
+export type AdminSubscriptionStatus = 'ACTIVE' | 'PAUSED' | 'ENDED';
+export type AdminSubscriptionScheduleType = 'ONCE' | 'WEEKLY' | 'MONTHLY';
+
+export interface AdminCustomerProject {
+    id: number;
+    code: string;
+    name: string;
+    province?: string | null;
+    areaGeoJson?: string | null;
+    note?: string | null;
+    status: AdminProjectStatus;
+    customerId?: number | null;
+    customerUsername?: string | null;
+    customerFullName?: string | null;
+    activeSubscriptionCount: number;
+    missionCount: number;
+    createdAt?: string | null;
+    updatedAt?: string | null;
+}
+
+export interface AdminProjectSubscription {
+    id: number;
+    projectId: number;
+    projectName?: string | null;
+    listingId: number;
+    listingSlug?: string | null;
+    listingTitle?: string | null;
+    pricingModel: 'PER_HOUR' | 'PER_HECTARE' | 'PER_DAY' | 'PER_PACKAGE';
+    areaGeoJson?: string | null;
+    scheduleType: AdminSubscriptionScheduleType;
+    status: AdminSubscriptionStatus;
+    startDate?: string | null;
+    nextRunDate?: string | null;
+    nextRunAt?: string | null;
+    units: number;
+    unitPriceVnd: number;
+    estimatedTotalVnd: number;
+    note?: string | null;
+    firstMissionId?: number | null;
+    firstMissionCode?: string | null;
+    latestMissionId?: number | null;
+    createdAt?: string | null;
+    updatedAt?: string | null;
+}
+
+export interface AdminProjectFilter {
+    keyword?: string;
+    province?: string;
+    status?: AdminProjectStatus | '';
+    page?: number;
+    size?: number;
+}
+
+export type AdminCustomerProjectPage = PageResponse<AdminCustomerProject>;
+export type AdminProjectSubscriptionPage = PageResponse<AdminProjectSubscription>;

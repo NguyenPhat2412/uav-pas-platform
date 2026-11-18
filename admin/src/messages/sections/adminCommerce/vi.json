@@ -441,6 +441,52 @@
         "notePlaceholder": "Lý do từ chối hoặc ghi chú kế toán…",
         "approveBtn": "Xác nhận đã chuyển",
         "rejectBtn": "Từ chối & hoàn ví"
+      },
+      "projects": {
+        "pageTitle": "Dự án & Gói đăng ký",
+        "subtitle": "Theo dõi toàn bộ dự án của khách hàng, kiểm tra gói dịch vụ định kỳ và can thiệp huỷ gói khi cần.",
+        "searchPlaceholder": "Tìm mã dự án, tên dự án, khách hàng…",
+        "provincePlaceholder": "Lọc tỉnh / thành…",
+        "statusFilter": "Trạng thái dự án",
+        "statusAll": "Mọi trạng thái",
+        "statusActive": "Đang hoạt động",
+        "statusArchived": "Lưu trữ",
+        "emptyTitle": "Chưa có dự án khách hàng",
+        "emptyDetail": "Không tìm thấy dự án nào khớp điều kiện lọc hiện tại.",
+        "loadError": "Không tải được danh sách dự án khách hàng.",
+        "customerLabel": "Khách hàng",
+        "provinceLabel": "Tỉnh / thành",
+        "activeSubsBadge": "{count} gói đang chạy",
+        "missionsBadge": "{count} đơn bay",
+        "inspectBtn": "Xem gói đăng ký",
+        "viewOrdersBtn": "Xem đơn thuộc dự án",
+        "drawerTitle": "Dự án · {code}",
+        "projectInfoSection": "Thông tin dự án khách hàng",
+        "noteLabel": "Ghi chú dự án",
+        "createdLabel": "Ngày tạo",
+        "readOnlyHint": "Chế độ quản trị chỉ đọc — quản trị viên chỉ can thiệp huỷ gói đăng ký khi khách yêu cầu hoặc phát sinh sự cố.",
+        "subsSection": "Gói đăng ký dịch vụ ({count})",
+        "subsEmpty": "Dự án này chưa đăng ký gói dịch vụ nào.",
+        "subsLoadError": "Không tải được danh sách gói đăng ký.",
+        "subStatus": {
+          "ACTIVE": "Đang chạy",
+          "PAUSED": "Tạm dừng",
+          "ENDED": "Đã kết thúc"
+        },
+        "schedule": {
+          "ONCE": "Một lần",
+          "WEEKLY": "Hàng tuần",
+          "MONTHLY": "Hàng tháng"
+        },
+        "startDateLabel": "Bắt đầu",
+        "nextRunLabel": "Kỳ tới",
+        "unitsLabel": "Khối lượng",
+        "firstOrderLabel": "Đơn đầu",
+        "cancelSubBtn": "Huỷ gói",
+        "cancelConfirmTitle": "Huỷ gói đăng ký dịch vụ",
+        "cancelConfirmDesc": "Xác nhận kết thúc gói \"{title}\" của dự án {code}? Các kỳ tự động tiếp theo sẽ dừng lại.",
+        "cancelledToast": "Đã huỷ gói đăng ký dịch vụ.",
+        "cancelError": "Không thể huỷ gói đăng ký này."
       }
     }
   }

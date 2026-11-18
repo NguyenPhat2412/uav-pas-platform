@@ -441,6 +441,52 @@
         "notePlaceholder": "却下理由または経理メモ…",
         "approveBtn": "振込済みを確定",
         "rejectBtn": "却下して残高戻し"
+      },
+      "projects": {
+        "pageTitle": "顧客プロジェクト・定期契約",
+        "subtitle": "全顧客のプロジェクトと定期サービス契約を確認し、必要に応じて解約処理を行います。",
+        "searchPlaceholder": "プロジェクトコード・名称・顧客を検索…",
+        "provincePlaceholder": "地域で絞り込み…",
+        "statusFilter": "プロジェクト状態",
+        "statusAll": "すべて",
+        "statusActive": "稼働中",
+        "statusArchived": "アーカイブ",
+        "emptyTitle": "顧客プロジェクトなし",
+        "emptyDetail": "条件に一致するプロジェクトはありません。",
+        "loadError": "プロジェクト一覧を読み込めませんでした。",
+        "customerLabel": "顧客",
+        "provinceLabel": "地域",
+        "activeSubsBadge": "契約中 {count} 件",
+        "missionsBadge": "注文 {count} 件",
+        "inspectBtn": "契約を確認",
+        "viewOrdersBtn": "注文一覧",
+        "drawerTitle": "プロジェクト · {code}",
+        "projectInfoSection": "顧客プロジェクト情報",
+        "noteLabel": "備考",
+        "createdLabel": "作成日",
+        "readOnlyHint": "読み取り専用ビュー — 顧客依頼やトラブル対応時のみ定期契約を解約できます。",
+        "subsSection": "登録サービス契約 ({count})",
+        "subsEmpty": "このプロジェクトにはまだサービス契約がありません。",
+        "subsLoadError": "サービス契約を読み込めませんでした。",
+        "subStatus": {
+          "ACTIVE": "稼働中",
+          "PAUSED": "一時停止",
+          "ENDED": "終了"
+        },
+        "schedule": {
+          "ONCE": "単発",
+          "WEEKLY": "毎週",
+          "MONTHLY": "毎月"
+        },
+        "startDateLabel": "開始日",
+        "nextRunLabel": "次回予定",
+        "unitsLabel": "数量",
+        "firstOrderLabel": "初回注文",
+        "cancelSubBtn": "契約を解約",
+        "cancelConfirmTitle": "サービス契約の解約",
+        "cancelConfirmDesc": "プロジェクト {code} の「{title}」を解約しますか？次回以降の自動発注は停止されます。",
+        "cancelledToast": "サービス契約を解約しました。",
+        "cancelError": "サービス契約を解約できませんでした。"
       }
     }
   }

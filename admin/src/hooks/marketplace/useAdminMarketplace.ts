@@ -8,7 +8,9 @@ import {useAuth} from '@/providers/AuthContext';
 import {toast} from '@/providers/ToastContext';
 import type {
     AdminOrderFilter,
+    AdminProjectFilter,
     AdminProviderDocument,
+    AdminSubscriptionStatus,
     AutoDispatchInput,
     ListingModerationInput,
     ListingModerationStatus,
@@ -232,4 +234,48 @@ export function useOpenProviderDocument() {
             toast.error(error instanceof Error && error.message ? error.message : fallbackError);
         }
     };
+}
+
+export function useAdminCustomerProjects(filter: AdminProjectFilter) {
+    const {user, can, permissionsReady} = useAuth();
+    return useQuery({
+        queryKey: ['session', user?.id ?? 'anonymous', 'admin-marketplace', 'projects', filter],
+        queryFn: ({signal}) => adminMarketplaceApi.listCustomerProjects(filter, signal),
+        placeholderData: keepPreviousData,
+        enabled: permissionsReady && (can('MARKETPLACE_MODERATE') || can('USER_MANAGE')),
+    });
+}
+
+export function useAdminProjectSubscriptions(
+    projectId: number | null,
+    status: AdminSubscriptionStatus | '' = '',
+    page = 0,
+) {
+    const {user, can, permissionsReady} = useAuth();
+    return useQuery({
+        queryKey: ['session', user?.id ?? 'anonymous', 'admin-marketplace', 'project-subs', projectId, status, page],
+        queryFn: ({signal}) => adminMarketplaceApi.listProjectSubscriptions(projectId as number, {status, page}, signal),
+        placeholderData: keepPreviousData,
+        enabled:
+            projectId !== null &&
+            projectId > 0 &&
+            permissionsReady &&
+            (can('MARKETPLACE_MODERATE') || can('USER_MANAGE')),
+    });
+}
+
+export function useCancelAdminProjectSubscription() {
+    const {user} = useAuth();
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: ({projectId, subscriptionId}: { projectId: number; subscriptionId: number }) =>
+            adminMarketplaceApi.cancelProjectSubscription(projectId, subscriptionId),
+        onSettled: (_data, _err, vars) => {
+            const base = ['session', user?.id ?? 'anonymous', 'admin-marketplace'];
+            void qc.invalidateQueries({queryKey: [...base, 'project-subs', vars.projectId]});
+            void qc.invalidateQueries({queryKey: [...base, 'projects']});
+            void qc.invalidateQueries({queryKey: [...base, 'orders']});
+            void qc.invalidateQueries({queryKey: [...base, 'stats']});
+        },
+    });
 }

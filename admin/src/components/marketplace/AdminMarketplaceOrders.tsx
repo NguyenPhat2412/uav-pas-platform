@@ -1,6 +1,7 @@
 'use client';
 
 import {useState} from 'react';
+import {useSearchParams} from 'next/navigation';
 import {
     Calendar,
     ClipboardList,
@@ -46,9 +47,10 @@ const ORDER_STATUS_TABS = [
 export function AdminMarketplaceOrders() {
     const {t, formatDate} = useI18n();
     const {wsConnected} = useAdminMarketplaceRealtime();
+    const searchParams = useSearchParams();
 
     const [status, setStatus] = useState<string>('');
-    const [projectId, setProjectId] = useState('');
+    const [projectId, setProjectId] = useState<string>(() => searchParams.get('projectId') ?? '');
     const [providerId, setProviderId] = useState('');
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(0);

@@ -175,6 +175,7 @@
     "notificationModules": "Notification modules",
     "marketplaceDispatch": "Order Dispatch",
     "marketplaceOrders": "Marketplace Orders",
+    "marketplaceProjects": "Customer Projects",
     "marketplaceStats": "Marketplace Stats"
   },
   "sidebar": {

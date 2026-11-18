@@ -166,3 +166,7 @@ export function validateAdminOrderCancelReason(
     }
     return {ok: true, reason};
 }
+
+export function canAdminCancelSubscription(status?: string | null): boolean {
+    return status === 'ACTIVE' || status === 'PAUSED';
+}

@@ -16,6 +16,7 @@ import {
     FileKey2,
     FileLock2,
     FileSpreadsheet,
+    FolderKanban,
     FolderOpen,
     Gauge,
     GraduationCap,
@@ -295,6 +296,15 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
         group: 'commerce',
         subGroup: 'marketplace3p',
         icon: ClipboardList,
+        permission: 'MARKETPLACE_MODERATE',
+    },
+    {
+        href: '/admin/marketplace/projects',
+        key: 'marketplaceProjects',
+        defaultLabel: 'Dự án & Gói đăng ký',
+        group: 'commerce',
+        subGroup: 'marketplace3p',
+        icon: FolderKanban,
         permission: 'MARKETPLACE_MODERATE',
     },
     {

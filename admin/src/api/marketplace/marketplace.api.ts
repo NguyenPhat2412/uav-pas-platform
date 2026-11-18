@@ -1,5 +1,6 @@
 import {apiClient, API_ROUTES} from '@/lib/api';
 import type {
+    AdminCustomerProjectPage,
     AdminDispatchQueuePage,
     AdminListingPage,
     AdminMarketplaceListing,
@@ -8,9 +9,12 @@ import type {
     AdminMarketplaceStats,
     AdminOrderFilter,
     AdminPayoutPage,
+    AdminProjectFilter,
+    AdminProjectSubscriptionPage,
     AdminProviderPage,
     AdminProviderPayout,
     AdminProviderProfile,
+    AdminSubscriptionStatus,
     AutoDispatchInput,
     ListingModerationInput,
     ListingModerationStatus,
@@ -92,4 +96,30 @@ export const adminMarketplaceApi = {
 
     mediaDownloadUrl: (mediaId: number) =>
         apiClient.get<SignedMediaDownloadUrl>(API_ROUTES.media.downloadUrl(mediaId)),
+
+    listCustomerProjects: (filter: AdminProjectFilter, signal?: AbortSignal) => {
+        const qs = new URLSearchParams();
+        if (filter.keyword?.trim()) qs.set('q', filter.keyword.trim());
+        if (filter.province?.trim()) qs.set('province', filter.province.trim());
+        if (filter.status) qs.set('status', filter.status);
+        qs.set('page', String(filter.page ?? 0));
+        qs.set('size', String(filter.size ?? 20));
+        return apiClient.get<AdminCustomerProjectPage>(`${API_ROUTES.projects.list}?${qs.toString()}`, {signal});
+    },
+    listProjectSubscriptions: (
+        projectId: number,
+        params: { status?: AdminSubscriptionStatus | ''; page?: number; size?: number },
+        signal?: AbortSignal,
+    ) => {
+        const qs = new URLSearchParams();
+        if (params.status) qs.set('status', params.status);
+        qs.set('page', String(params.page ?? 0));
+        qs.set('size', String(params.size ?? 20));
+        return apiClient.get<AdminProjectSubscriptionPage>(
+            `${API_ROUTES.projects.subscriptions(projectId)}?${qs.toString()}`,
+            {signal},
+        );
+    },
+    cancelProjectSubscription: (projectId: number, subscriptionId: number) =>
+        apiClient.delete<void>(API_ROUTES.projects.subscriptionById(projectId, subscriptionId)),
 };
