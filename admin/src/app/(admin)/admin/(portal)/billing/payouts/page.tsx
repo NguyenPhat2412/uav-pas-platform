@@ -4,7 +4,7 @@ import {AdminMarketplacePayouts} from '@/components/marketplace/AdminMarketplace
 export default function AdminMarketplacePayoutsPage() {
     return (
         <AdminPage
-            title="Giải ngân đối tác"
+            title="adminCommerce.marketplace.payouts.pageTitle"
             permission="PAYOUT_MANAGE"
             activeResource="/admin/billing/payouts"
         >

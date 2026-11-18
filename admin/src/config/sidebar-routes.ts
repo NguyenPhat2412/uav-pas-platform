@@ -305,6 +305,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
         subGroup: 'marketplace3p',
         icon: Wallet,
         permission: 'PAYOUT_MANAGE',
+        aliases: ['/admin/marketplace/payouts'],
     },
     {
         href: '/admin/billing/invoices',

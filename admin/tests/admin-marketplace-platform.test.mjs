@@ -145,6 +145,7 @@ test('Admin dispatch queue wires manual/auto endpoints, ORDER_UPDATED realtime, 
         'src/components/marketplace/AdminMarketplaceOrders.tsx',
         'src/components/marketplace/OrderTwoSidedDrawer.tsx',
         'src/components/marketplace/AdminMarketplaceStats.tsx',
+        'src/components/marketplace/AdminMarketplacePayouts.tsx',
     ]) {
         const lines = read(rel).split('\n').length;
         assert.ok(lines <= 301, `${rel} must stay <= 300 lines (got ${lines - 1})`);
