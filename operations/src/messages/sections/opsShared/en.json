@@ -104,8 +104,8 @@
         "heading": "Heading:",
         "age": "Updated {seconds} s ago",
         "rtk": {
-          "FIXED": "RTK FIX",
-          "FLOAT": "RTK FLOAT",
+          "FIXED": "GNSS FIX",
+          "FLOAT": "GNSS FLOAT",
           "SINGLE": "Single GNSS",
           "NONE": "No fix"
         }

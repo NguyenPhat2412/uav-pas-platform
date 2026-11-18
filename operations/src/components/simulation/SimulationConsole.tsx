@@ -47,7 +47,7 @@ function errorText(error: unknown, fallback: string) {
 
 /**
  * Console for simulated flights & digital mission rehearsals: plan a route or a survey area, overlay active
- * civil airspace & NOTAM zones, tune wind vectors & time scale, inject RTK/battery faults live, and audit
+ * civil airspace & NOTAM zones, tune wind vectors & time scale, inject GNSS/battery faults live, and audit
  * persisted rehearsal history.
  */
 export function SimulationConsole({initialMissionId}: { initialMissionId?: number } = {}) {
@@ -340,8 +340,8 @@ export function SimulationConsole({initialMissionId}: { initialMissionId?: numbe
                         />
                     </div>
                     <UavModelViewer
-                        serial={selectedUav?.serialNumber ?? active?.uavCode ?? 'UAV-350-RTK'}
-                        model={selectedUav?.model ?? 'Enterprise RTK Quadcopter'}
+                        serial={selectedUav?.serialNumber ?? active?.uavCode ?? 'UAV-350-GNSS'}
+                        model={selectedUav?.model ?? 'Enterprise GNSS Quadcopter'}
                         status={active && active.mode !== 'LANDED' ? 'IN_USE' : (selectedUav?.status ?? 'AVAILABLE')}
                     />
                     {active && (

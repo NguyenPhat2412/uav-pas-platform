@@ -130,8 +130,8 @@ export function UavPanel() {
         </div>
         {showFleet3d && (
             <UavModelViewer
-                serial={rows[0]?.serialNumber ?? 'UAV-350-RTK'}
-                model={rows[0]?.model ?? 'Enterprise RTK Quadcopter'}
+                serial={rows[0]?.serialNumber ?? 'UAV-350-GNSS'}
+                model={rows[0]?.model ?? 'Enterprise GNSS Quadcopter'}
                 status={rows[0]?.status ?? 'AVAILABLE'}
             />
         )}

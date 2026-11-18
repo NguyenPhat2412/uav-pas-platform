@@ -157,8 +157,8 @@ function MissionCockpit({mission, missions, onChoose, canOperate}: {
         </div>
 
         <UavModelViewer
-            serial={mission.uavSerialNumber ?? 'UAV-350-RTK'}
-            model={mission.uavModel ?? 'Enterprise RTK Quadcopter'}
+            serial={mission.uavSerialNumber ?? 'UAV-350-GNSS'}
+            model={mission.uavModel ?? 'Enterprise GNSS Quadcopter'}
             status="IN_USE"
         />
     </div>;

@@ -11,8 +11,8 @@ export interface UavHealthAnalyticsSectionProps {
 
 const AIRFRAME_BADGE: Record<string, {labelVi: string; labelEn: string; tone: string}> = {
     QUADCOPTER_RTK: {
-        labelVi: '4-Rotor RTK Survey',
-        labelEn: '4-Rotor RTK Survey',
+        labelVi: '4-Rotor GNSS Survey',
+        labelEn: '4-Rotor GNSS Survey',
         tone: 'border-sky-200 bg-sky-50 text-sky-800',
     },
     HEXACOPTER_SAR: {

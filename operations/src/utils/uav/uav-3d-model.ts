@@ -69,7 +69,7 @@ function connectStrut(
 
 /**
  * Builds a detailed 3D enterprise UAV model supporting 3 airframe classes:
- * - QUADCOPTER_RTK (4-rotor industrial RTK survey quadcopter)
+ * - QUADCOPTER_RTK (4-rotor industrial GNSS survey quadcopter)
  * - HEXACOPTER_SAR (6-rotor heavy-lift Search & Rescue hexacopter with rescue pod)
  * - VTOL_FIXED_WING (Twin-boom fixed-wing VTOL with 4 lift rotors + pusher prop)
  */
@@ -240,7 +240,7 @@ export function buildEnterpriseUav3D(
         bodyGroup.add(glass);
     }
 
-    // 2. Dual RTK GNSS Antennas (Rear-Top)
+    // 2. Dual GNSS Antennas (Rear-Top)
     for (const side of [-1, 1]) {
         const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.04, 0.22, 16), darkCarbon);
         mast.position.set(side * 0.28, 0.62, 0.46);
