@@ -87,7 +87,7 @@ export function OrderStatusBar({
                         >
                             <Icon size={17} strokeWidth={1.85} aria-hidden="true"/>
                             {count > 0 && (
-                                <span className="absolute -top-1 -right-1.5 inline-flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-4 whitespace-nowrap text-white ring-2 ring-white tabular-nums">
+                                <span className="absolute -top-1 -right-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] leading-none font-bold whitespace-nowrap text-white ring-2 ring-white tabular-nums">
                                     {count > 99 ? '99+' : count}
                                 </span>
                             )}
