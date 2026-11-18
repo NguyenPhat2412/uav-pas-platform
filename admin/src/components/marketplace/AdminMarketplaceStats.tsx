@@ -63,7 +63,7 @@ export function AdminMarketplaceStats() {
               {key: 'total', label: t('adminCommerce.marketplace.stats.kpiTotalOrders'), value: formatNumber(s.totalOrders), icon: ClipboardList, illustrative: false},
               {key: 'pendingDispatch', label: t('adminCommerce.marketplace.stats.kpiPendingDispatch'), value: formatNumber(s.pendingDispatchCount), icon: Clock, illustrative: false},
               {key: 'inFlight', label: t('adminCommerce.marketplace.stats.kpiInFlight'), value: formatNumber(s.inFlightCount), icon: PlaneTakeoff, illustrative: false},
-              {key: 'completed', label: t('adminCommerce.marketplace.stats.kpiCompleted'), value: formatNumber((s.deliveredCount ?? 0) + (s.reviewedCount ?? 0)), icon: CheckCircle2, illustrative: false},
+              {key: 'completed', label: t('adminCommerce.marketplace.stats.kpiCompleted'), value: formatNumber(s.deliveredCount ?? 0), icon: CheckCircle2, illustrative: false},
               {key: 'providers', label: t('adminCommerce.marketplace.stats.kpiActiveProviders'), value: formatNumber(s.activeProvidersCount), icon: Store, illustrative: false},
               {key: 'listings', label: t('adminCommerce.marketplace.stats.kpiPublishedListings'), value: formatNumber(s.publishedListingsCount), icon: Boxes, illustrative: false},
               {key: 'gross', label: t('adminCommerce.marketplace.stats.kpiGrossRevenue'), value: formatMarketplaceVnd(Number(s.illustrativeGrossRevenueVnd ?? 0)), icon: Wallet, illustrative: true},
@@ -77,7 +77,7 @@ export function AdminMarketplaceStats() {
               {label: displayLabel('PENDING_PROVIDER'), value: s.pendingProviderCount ?? 0, color: seriesColors.orange},
               {label: displayLabel('CONFIRMED'), value: s.scheduledCount ?? 0, color: seriesColors.aqua},
               {label: displayLabel('IN_PROGRESS'), value: s.inFlightCount ?? 0, color: seriesColors.red},
-              {label: displayLabel('COMPLETED'), value: (s.deliveredCount ?? 0) + (s.reviewedCount ?? 0), color: seriesColors.yellow},
+              {label: displayLabel('COMPLETED'), value: s.deliveredCount ?? 0, color: seriesColors.yellow},
               {label: displayLabel('CANCELLED'), value: s.cancelledCount ?? 0, color: seriesColors.violet},
           ]
         : [];
