@@ -116,4 +116,7 @@ public class MarketplaceListing extends BaseEntity {
 
     @Column(nullable = false)
     private boolean featured;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 }

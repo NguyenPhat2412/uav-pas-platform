@@ -6,7 +6,23 @@ public record RealtimeSessionPrincipal(
         String username,
         boolean canAdminSupport,
         boolean canManageBilling,
+        boolean canAdminMarketplace,
         String initialVisitorToken) {
 
     public static final String ATTRIBUTE_KEY = "uav.realtime.principal";
+
+    public RealtimeSessionPrincipal(
+            Long userId,
+            String username,
+            boolean canAdminSupport,
+            boolean canManageBilling,
+            String initialVisitorToken) {
+        this(
+                userId,
+                username,
+                canAdminSupport,
+                canManageBilling,
+                canManageBilling,
+                initialVisitorToken);
+    }
 }

@@ -14,8 +14,30 @@ import java.math.BigDecimal;
 
 public interface MarketplaceCatalogService {
 
+    default PageResponse<MarketplaceListingResponse> listPublicListings(
+            String keyword,
+            ListingType listingType,
+            MissionType missionType,
+            PricingModel pricingModel,
+            String province,
+            BigDecimal maxPriceVnd,
+            Long categoryServiceId,
+            Pageable pageable) {
+        return listPublicListings(
+                keyword,
+                null,
+                listingType,
+                missionType,
+                pricingModel,
+                province,
+                maxPriceVnd,
+                categoryServiceId,
+                pageable);
+    }
+
     PageResponse<MarketplaceListingResponse> listPublicListings(
             String keyword,
+            String category,
             ListingType listingType,
             MissionType missionType,
             PricingModel pricingModel,

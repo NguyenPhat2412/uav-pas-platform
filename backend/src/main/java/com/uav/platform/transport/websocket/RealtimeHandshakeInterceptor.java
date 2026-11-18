@@ -48,6 +48,7 @@ public class RealtimeHandshakeInterceptor implements HandshakeInterceptor {
         String username = null;
         boolean canAdminSupport = false;
         boolean canManageBilling = false;
+        boolean canAdminMarketplace = false;
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null && request.getPrincipal() instanceof Authentication principalAuth) {
@@ -66,6 +67,8 @@ public class RealtimeHandshakeInterceptor implements HandshakeInterceptor {
                 // visitor's messages.
                 canAdminSupport = permissionService.has(auth, "SUPPORT_MANAGE");
                 canManageBilling = permissionService.has(auth, "USER_MANAGE");
+                canAdminMarketplace =
+                        permissionService.has(auth, "MARKETPLACE_MODERATE") || canManageBilling;
             }
         }
 
@@ -94,6 +97,7 @@ public class RealtimeHandshakeInterceptor implements HandshakeInterceptor {
                         username,
                         canAdminSupport,
                         canManageBilling,
+                        canAdminMarketplace,
                         validatedVisitorToken));
         return true;
     }

@@ -1,0 +1,255 @@
+package com.uav.platform.config.seed;
+
+import com.uav.platform.entity.marketplace.MarketplaceListing;
+import com.uav.platform.entity.marketplace.ProviderPilot;
+import com.uav.platform.entity.marketplace.ProviderProfile;
+import com.uav.platform.entity.marketplace.ProviderWallet;
+import com.uav.platform.entity.project.Project;
+import com.uav.platform.entity.uav.Uav;
+import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.marketplace.ListingModerationStatus;
+import com.uav.platform.enums.marketplace.ListingType;
+import com.uav.platform.enums.marketplace.PricingModel;
+import com.uav.platform.enums.marketplace.ProviderPilotStatus;
+import com.uav.platform.enums.marketplace.ProviderType;
+import com.uav.platform.enums.marketplace.ProviderVerificationStatus;
+import com.uav.platform.enums.mission.MissionType;
+import com.uav.platform.enums.project.ProjectStatus;
+import com.uav.platform.enums.uav.UavStatus;
+import com.uav.platform.enums.user.UserRole;
+import com.uav.platform.enums.user.UserStatus;
+import com.uav.platform.repository.marketplace.MarketplaceListingRepository;
+import com.uav.platform.repository.marketplace.ProviderPilotRepository;
+import com.uav.platform.repository.marketplace.ProviderProfileRepository;
+import com.uav.platform.repository.marketplace.ProviderWalletRepository;
+import com.uav.platform.repository.project.ProjectRepository;
+import com.uav.platform.repository.uav.UavRepository;
+import com.uav.platform.repository.user.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * Local development & automated QA account initializer. Disabled by default in all environments
+ * (`app.dev-seed.enabled=false`); only runs when explicitly opted in and reads the password from
+ * `APP_DEV_SEED_PASSWORD` so credentials are never hardcoded in source control.
+ */
+@Slf4j
+@Component
+@ConditionalOnProperty(name = "app.dev-seed.enabled", havingValue = "true")
+@RequiredArgsConstructor
+public class DevSeedDataInitializer implements ApplicationRunner {
+
+    public static final String DEMO_CUSTOMER_USERNAME = "demo_customer";
+    public static final String DEMO_FLEET_USERNAME = "demo_fleet";
+    public static final String DEMO_ADMIN_USERNAME = "demo_admin";
+
+    private final UserRepository users;
+    private final ProviderProfileRepository providers;
+    private final ProviderWalletRepository wallets;
+    private final ProviderPilotRepository pilots;
+    private final MarketplaceListingRepository listings;
+    private final UavRepository uavs;
+    private final ProjectRepository projects;
+    private final PasswordEncoder passwordEncoder;
+
+    @Value("${app.dev-seed.password:}")
+    private String rawPassword;
+
+    @Override
+    @Transactional
+    public void run(ApplicationArguments args) {
+        if (rawPassword == null || rawPassword.isBlank()) {
+            log.warn(
+                    "app.dev-seed.enabled=true but APP_DEV_SEED_PASSWORD is empty; skipping dev seed account password sync.");
+            return;
+        }
+        String encoded = passwordEncoder.encode(rawPassword);
+
+        AppUser admin =
+                upsertAccount(
+                        DEMO_ADMIN_USERNAME,
+                        "demo.admin@gmail.com",
+                        "Quản trị viên Demo — minh hoạ",
+                        UserRole.ROLE_ADMIN,
+                        encoded);
+        AppUser customer =
+                upsertAccount(
+                        DEMO_CUSTOMER_USERNAME,
+                        "demo.customer@gmail.com",
+                        "Khách hàng Dự án — minh hoạ",
+                        UserRole.ROLE_PILOT,
+                        encoded);
+        AppUser fleetOwner =
+                upsertAccount(
+                        DEMO_FLEET_USERNAME,
+                        "demo.fleet@gmail.com",
+                        "Chủ đội bay Miền Nam — minh hoạ",
+                        UserRole.ROLE_PILOT,
+                        encoded);
+
+        ensureCustomerProject(customer);
+        ProviderProfile fleet = ensureVerifiedFleet(fleetOwner);
+        ensureTenFleetUavs(fleet);
+        ensureTwoFleetPilots(fleet, fleetOwner);
+        ensureDemoListings(fleet);
+
+        log.info(
+                "DevSeedDataInitializer provisioned local test accounts: {}, {}, {}",
+                admin.getUsername(),
+                customer.getUsername(),
+                fleetOwner.getUsername());
+    }
+
+    private AppUser upsertAccount(
+            String username, String email, String fullName, UserRole role, String passwordHash) {
+        AppUser user =
+                users.findByUsername(username)
+                        .orElseGet(
+                                () -> {
+                                    AppUser created = new AppUser();
+                                    created.setUsername(username);
+                                    created.setEmail(email);
+                                    return created;
+                                });
+        user.setFullName(fullName);
+        user.setRole(role);
+        user.setStatus(UserStatus.ACTIVE);
+        user.setEmailVerified(true);
+        user.setManualLocked(false);
+        user.setFailedAttempts(0);
+        user.setTwoFactorEnabled(false);
+        user.setPasswordHash(passwordHash);
+        return users.save(user);
+    }
+
+    private void ensureCustomerProject(AppUser customer) {
+        if (!projects.existsByCode("PRJ-2026-DEMO01")) {
+            Project p = new Project();
+            p.setCustomer(customer);
+            p.setCode("PRJ-2026-DEMO01");
+            p.setName("Dự án Khu Đô Thị Sinh Thái Nam Sài Gòn — minh hoạ");
+            p.setProvince("TP. Hồ Chí Minh");
+            p.setAreaGeoJson(
+                    "{\"type\":\"Polygon\",\"coordinates\":[[[106.7010,10.7280],[106.7120,10.7280],[106.7120,10.7360],[106.7010,10.7360],[106.7010,10.7280]]]}");
+            p.setNote("Dự án mẫu minh hoạ cho tài khoản khách hàng kiểm thử.");
+            p.setStatus(ProjectStatus.ACTIVE);
+            p.setDeleted(false);
+            projects.save(p);
+        }
+    }
+
+    private ProviderProfile ensureVerifiedFleet(AppUser fleetOwner) {
+        ProviderProfile profile =
+                providers
+                        .findByUserId(fleetOwner.getId())
+                        .orElseGet(
+                                () -> {
+                                    ProviderProfile created = new ProviderProfile();
+                                    created.setUser(fleetOwner);
+                                    created.setSlug("doi-bay-mien-nam-minh-hoa");
+                                    return created;
+                                });
+        profile.setDisplayName("Đội bay Khảo sát Miền Nam — minh hoạ");
+        profile.setProviderType(ProviderType.COMPANY);
+        profile.setProvince("TP. Hồ Chí Minh");
+        profile.setServiceRadiusKm(300);
+        profile.setBio("Đội bay khảo sát hạ tầng quy mô 10 thiết bị bay — dữ liệu minh hoạ.");
+        profile.setVerificationStatus(ProviderVerificationStatus.VERIFIED);
+        if (profile.getVerifiedAt() == null) {
+            profile.setVerifiedAt(LocalDateTime.now());
+            profile.setVerifiedBy("SYSTEM");
+        }
+        if (profile.getRatingAvg() == null || profile.getRatingAvg().signum() == 0) {
+            profile.setRatingAvg(new BigDecimal("4.90"));
+            profile.setReviewCount(24);
+        }
+        ProviderProfile saved = providers.save(profile);
+        if (wallets.findByProviderId(saved.getId()).isEmpty()) {
+            ProviderWallet wallet = new ProviderWallet();
+            wallet.setProvider(saved);
+            wallets.save(wallet);
+        }
+        return saved;
+    }
+
+    private void ensureTenFleetUavs(ProviderProfile fleet) {
+        for (int i = 1; i <= 10; i++) {
+            String sn = String.format("DEMO-SGN-UAV-%02d", i);
+            if (!uavs.existsBySerialNumber(sn)) {
+                Uav uav =
+                        new Uav(
+                                i <= 4
+                                        ? "Matrice 350 Survey — minh hoạ"
+                                        : "Mavic 3 Enterprise — minh hoạ",
+                                sn,
+                                "DJI");
+                uav.setProvider(fleet);
+                uav.setStatus(UavStatus.AVAILABLE);
+                uavs.save(uav);
+            }
+        }
+    }
+
+    private void ensureTwoFleetPilots(ProviderProfile fleet, AppUser fleetOwner) {
+        List<ProviderPilot> current =
+                pilots.findByProviderIdAndDeletedFalseOrderByCreatedAtDesc(fleet.getId());
+        if (current.size() >= 2) {
+            return;
+        }
+        if (current.isEmpty()) {
+            ProviderPilot p1 = new ProviderPilot();
+            p1.setProvider(fleet);
+            p1.setPilotUser(fleetOwner);
+            p1.setFullName("Kỹ sư Trần Minh Quân — minh hoạ");
+            p1.setPhone("0909300101");
+            p1.setLicenseNumber("CC-BAY-DEMO-101");
+            p1.setSpecialization("Khảo sát bản đồ & mô hình 3D");
+            p1.setPilotStatus(ProviderPilotStatus.AVAILABLE);
+            pilots.save(p1);
+        }
+        ProviderPilot p2 = new ProviderPilot();
+        p2.setProvider(fleet);
+        p2.setPilotUser(fleetOwner);
+        p2.setFullName("Kỹ sư Lê Hoàng Hải — minh hoạ");
+        p2.setPhone("0909300102");
+        p2.setLicenseNumber("CC-BAY-DEMO-102");
+        p2.setSpecialization("Kiểm tra nhiệt hạ tầng & điện mặt trời");
+        p2.setPilotStatus(ProviderPilotStatus.AVAILABLE);
+        pilots.save(p2);
+    }
+
+    private void ensureDemoListings(ProviderProfile fleet) {
+        String slug = "khao-sat-ban-do-2d-du-an-minh-hoa";
+        if (!listings.existsBySlug(slug)) {
+            MarketplaceListing l = new MarketplaceListing();
+            l.setProvider(fleet);
+            l.setSlug(slug);
+            l.setTitle("Khảo sát bản đồ trực giao 2D khu đất dự án — minh hoạ");
+            l.setSummary("Chụp ảnh lập thể và ghép bình đồ tiến độ theo dự án — giá minh hoạ.");
+            l.setDescription("Dịch vụ khảo sát khu đất xây dựng theo lịch dự án — minh hoạ.");
+            l.setListingType(ListingType.FLIGHT_SERVICE);
+            l.setMissionType(MissionType.DATA_COLLECTION);
+            l.setPricingModel(PricingModel.PER_HECTARE);
+            l.setBasePriceVnd(new BigDecimal("450000"));
+            l.setMinBookingUnits(new BigDecimal("5"));
+            l.setProvince("TP. Hồ Chí Minh");
+            l.setServiceRadiusKm(250);
+            l.setModerationStatus(ListingModerationStatus.PUBLISHED);
+            l.setFeatured(true);
+            listings.save(l);
+        }
+    }
+}

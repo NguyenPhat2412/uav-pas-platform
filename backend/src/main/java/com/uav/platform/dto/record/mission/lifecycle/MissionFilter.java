@@ -12,8 +12,33 @@ public record MissionFilter(
         Long operatorId,
         Long customerId,
         LocalDate requestedDate,
-        String search) {
+        String search,
+        Long projectId,
+        Long providerId,
+        String statusGroup) {
+
+    public MissionFilter(
+            MissionStatus status,
+            MissionType missionType,
+            Long stationId,
+            Long operatorId,
+            Long customerId,
+            LocalDate requestedDate,
+            String search) {
+        this(
+                status,
+                missionType,
+                stationId,
+                operatorId,
+                customerId,
+                requestedDate,
+                search,
+                null,
+                null,
+                null);
+    }
+
     public static MissionFilter empty() {
-        return new MissionFilter(null, null, null, null, null, null, null);
+        return new MissionFilter(null, null, null, null, null, null, null, null, null, null);
     }
 }

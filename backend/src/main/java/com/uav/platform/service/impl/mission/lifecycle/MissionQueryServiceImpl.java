@@ -2,17 +2,12 @@ package com.uav.platform.service.impl.mission.lifecycle;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.dto.record.mission.lifecycle.MissionFilter;
-import com.uav.platform.dto.request.mission.catalog.*;
-import com.uav.platform.dto.request.mission.dispatch.*;
-import com.uav.platform.dto.request.mission.flightplan.*;
-import com.uav.platform.dto.request.mission.lifecycle.*;
-import com.uav.platform.dto.response.mission.catalog.*;
-import com.uav.platform.dto.response.mission.dispatch.*;
-import com.uav.platform.dto.response.mission.flightplan.*;
-import com.uav.platform.dto.response.mission.lifecycle.*;
-import com.uav.platform.entity.mission.*;
+import com.uav.platform.dto.response.mission.dispatch.MissionAvailabilityResponse;
+import com.uav.platform.dto.response.mission.lifecycle.MissionEventResponse;
+import com.uav.platform.dto.response.mission.lifecycle.MissionResponse;
+import com.uav.platform.entity.mission.Mission;
+import com.uav.platform.entity.mission.MissionReview;
 import com.uav.platform.entity.user.AppUser;
-import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.station.StationStatus;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserRole;
@@ -20,6 +15,7 @@ import com.uav.platform.mapper.mission.lifecycle.MissionEventMapper;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
 import com.uav.platform.repository.mission.MissionEventRepository;
 import com.uav.platform.repository.mission.MissionRepository;
+import com.uav.platform.repository.mission.MissionReviewRepository;
 import com.uav.platform.repository.station.StationRepository;
 import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.repository.user.UserRepository;
@@ -29,20 +25,21 @@ import com.uav.platform.service.mission.lifecycle.MissionQueryService;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.specification.mission.lifecycle.MissionSpecifications;
 
-import lombok.RequiredArgsConstructor;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /** Read-only mission queries, visibility and availability. */
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
 public class MissionQueryServiceImpl implements MissionQueryService {
     private final MissionRepository missions;
     private final UserRepository users;
@@ -55,12 +52,43 @@ public class MissionQueryServiceImpl implements MissionQueryService {
     private final MissionMapper missionMapper;
     private final MissionEventMapper missionEventMapper;
 
+    @Autowired(required = false)
+    private MissionReviewRepository reviews;
+
+    @Autowired
+    public MissionQueryServiceImpl(
+            MissionRepository missions,
+            UserRepository users,
+            PermissionService permissions,
+            MissionEventRepository events,
+            StationRepository stations,
+            UavRepository uavs,
+            MissionAccessService access,
+            MissionResourceService resources,
+            MissionMapper missionMapper,
+            MissionEventMapper missionEventMapper) {
+        this.missions = missions;
+        this.users = users;
+        this.permissions = permissions;
+        this.events = events;
+        this.stations = stations;
+        this.uavs = uavs;
+        this.access = access;
+        this.resources = resources;
+        this.missionMapper = missionMapper;
+        this.missionEventMapper = missionEventMapper;
+    }
+
     @Override
     @Transactional(readOnly = true)
     public MissionResponse get(Long id, Authentication authentication) {
         Mission mission = access.find(id);
         access.enforceVisibility(mission, authentication);
-        return missionMapper.toResponse(mission);
+        boolean isReviewed =
+                reviews != null && reviews.findByMissionId(mission.getId()).isPresent();
+        return missionMapper
+                .toResponse(mission)
+                .withOrderContext(isReviewed, shouldAnonymizeProvider(mission, authentication));
     }
 
     @Override
@@ -68,7 +96,9 @@ public class MissionQueryServiceImpl implements MissionQueryService {
     public PageResponse<MissionResponse> list(
             MissionFilter filter, Pageable pageable, Authentication authentication) {
         MissionFilter safeFilter = filter == null ? MissionFilter.empty() : filter;
-        boolean viewAll = permissions.has(authentication, "MISSION_VIEW_ALL");
+        boolean viewAll =
+                permissions.has(authentication, "MISSION_VIEW_ALL")
+                        || permissions.has(authentication, "MARKETPLACE_MODERATE");
         Long ownerId = null;
         if (!viewAll && authentication != null) {
             AppUser viewer = access.user(authentication.getName());
@@ -81,14 +111,64 @@ public class MissionQueryServiceImpl implements MissionQueryService {
                                 viewer.getId(),
                                 null,
                                 safeFilter.requestedDate(),
-                                safeFilter.search());
+                                safeFilter.search(),
+                                safeFilter.projectId(),
+                                null,
+                                safeFilter.statusGroup());
             } else {
                 ownerId = viewer.getId();
             }
         }
         Page<Mission> page =
                 missions.findAll(MissionSpecifications.filtered(safeFilter, ownerId), pageable);
-        return PageResponse.from(page, missionMapper::toResponse);
+        Set<Long> reviewedIds = resolveReviewedMissionIds(page.getContent());
+        return PageResponse.from(
+                page,
+                m ->
+                        missionMapper
+                                .toResponse(m)
+                                .withOrderContext(
+                                        reviewedIds.contains(m.getId()),
+                                        shouldAnonymizeProvider(m, authentication)));
+    }
+
+    private Set<Long> resolveReviewedMissionIds(List<Mission> items) {
+        if (reviews == null || items == null || items.isEmpty()) {
+            return Set.of();
+        }
+        List<Long> ids = items.stream().map(Mission::getId).filter(Objects::nonNull).toList();
+        if (ids.isEmpty()) {
+            return Set.of();
+        }
+        Set<Long> out = new HashSet<>();
+        for (MissionReview r : reviews.findByMissionIdIn(ids)) {
+            if (r.getMission() != null && r.getMission().getId() != null) {
+                out.add(r.getMission().getId());
+            }
+        }
+        return out;
+    }
+
+    private boolean shouldAnonymizeProvider(Mission mission, Authentication auth) {
+        if (auth == null || !auth.isAuthenticated()) {
+            return true;
+        }
+        if (permissions.has(auth, "MISSION_VIEW_ALL")
+                || permissions.has(auth, "MARKETPLACE_MODERATE")
+                || permissions.has(auth, "USER_MANAGE")) {
+            return false;
+        }
+        String username = auth.getName();
+        if (mission.getOperator() != null
+                && Objects.equals(mission.getOperator().getUsername(), username)) {
+            return false;
+        }
+        if (mission.getProvider() != null
+                && mission.getProvider().getUser() != null
+                && Objects.equals(mission.getProvider().getUser().getUsername(), username)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

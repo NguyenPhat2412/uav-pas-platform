@@ -1,5 +1,6 @@
 package com.uav.platform.service.impl.marketplace.provider;
 
+import com.uav.platform.common.util.OrderStatusGroups;
 import com.uav.platform.dto.request.marketplace.catalog.MissionBidCreateRequest;
 import com.uav.platform.dto.request.marketplace.escrow.PayoutCreateRequest;
 import com.uav.platform.dto.request.marketplace.provider.MarketplaceListingUpsertRequest;
@@ -123,6 +124,34 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     private org.springframework.beans.factory.ObjectProvider<
                     com.uav.platform.service.notification.inbox.NotificationService>
             notifications;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.uav.platform.repository.marketplace.ProviderPilotRepository pilots;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.uav.platform.service.simulation.SimulationService simulationService;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.uav.platform.transport.websocket.RealtimeEventBroadcaster realtime;
+
+    private void publishOrderUpdated(Mission mission, String statusGroup) {
+        if (realtime == null || mission == null) {
+            return;
+        }
+        Long customerUserId = mission.getCustomer() != null ? mission.getCustomer().getId() : null;
+        Long providerUserId =
+                mission.getProvider() != null && mission.getProvider().getUser() != null
+                        ? mission.getProvider().getUser().getId()
+                        : null;
+        Long operatorUserId = mission.getOperator() != null ? mission.getOperator().getId() : null;
+        realtime.publishOrderUpdated(
+                mission.getId(),
+                mission.getStatus().name(),
+                statusGroup,
+                customerUserId,
+                providerUserId,
+                operatorUserId);
+    }
 
     private void notifyUser(
             AppUser target,
@@ -272,9 +301,10 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     @Override
     @Transactional(readOnly = true)
     public List<MarketplaceListingResponse> listMyListings(String username) {
-        ProviderProfile provider = providers.findByUserUsername(username).orElse(null);
+        ProviderProfile provider = resolveProfile(username).orElse(null);
         if (provider == null) return List.of();
         return listings.findByProviderIdOrderByCreatedAtDesc(provider.getId()).stream()
+                .filter(l -> !l.isDeleted())
                 .map(mapper::toListingResponse)
                 .toList();
     }
@@ -337,14 +367,16 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     @Override
     @Transactional(readOnly = true)
     public ProviderFleetSummaryResponse getMyFleet(String username) {
-        ProviderProfile provider = providers.findByUserUsername(username).orElse(null);
+        ProviderProfile provider = resolveProfile(username).orElse(null);
         if (provider == null) return new ProviderFleetSummaryResponse(List.of(), List.of());
         var myUavs =
                 uavs.findByProviderIdOrderByIdDesc(provider.getId()).stream()
+                        .filter(u -> u.getStatus() != UavStatus.INACTIVE)
                         .map(mapper::toUavResponse)
                         .toList();
         var myEquipment =
                 equipmentRepository.findByProviderIdOrderByIdDesc(provider.getId()).stream()
+                        .filter(e -> e.getStatus() != EquipmentStatus.INACTIVE)
                         .map(mapper::toEquipmentResponse)
                         .toList();
         return new ProviderFleetSummaryResponse(myUavs, myEquipment);
@@ -385,7 +417,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     @Override
     @Transactional(readOnly = true)
     public List<MissionResponse> listMyOrders(String username) {
-        ProviderProfile provider = providers.findByUserUsername(username).orElse(null);
+        ProviderProfile provider = resolveProfile(username).orElse(null);
         if (provider == null) return List.of();
         return missions.findByProviderIdOrderByCreatedAtDesc(provider.getId()).stream()
                 .map(missionMapper::toResponse)
@@ -413,7 +445,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
         }
 
         MissionStatus previous = mission.getStatus();
-        mission.setProviderResponseNote(trimOrNull(request.responseNote()));
+        mission.setProviderResponseNote(request.effectiveNote());
         mission.setProviderRespondedAt(LocalDateTime.now());
 
         if (request.accept()) {
@@ -433,7 +465,9 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                                                         "PROVIDER_UAV_MISMATCH"));
                 mission.setUav(uav);
             }
-            mission.setOperator(provider.getUser());
+            if (mission.getOperator() == null) {
+                mission.setOperator(provider.getUser());
+            }
             mission.setOperatorAccepted(true);
             mission.setProviderResponseStatus(ProviderOrderStatus.ACCEPTED);
             mission.setStatus(
@@ -447,40 +481,45 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                             provider.getUser(),
                             previous,
                             saved.getStatus(),
-                            "Đối tác " + provider.getDisplayName() + " đã nhận đơn",
+                            "Đội bay đã xác nhận tiếp nhận đơn",
                             mission.getProviderResponseNote()));
             notifyUser(
                     saved.getCustomer(),
-                    "Đối tác đã nhận đơn " + saved.getCode(),
-                    provider.getDisplayName() + " đã xác nhận nhận đơn dịch vụ của bạn.",
+                    "Đơn " + saved.getCode() + " đã được xác nhận lịch bay",
+                    "Đội bay đối tác đã xác nhận tiếp nhận đơn dịch vụ của bạn.",
                     com.uav.platform.enums.notification.NotificationType.MISSION_STATUS_CHANGED,
                     "MISSION",
                     saved.getId());
+            publishOrderUpdated(saved, OrderStatusGroups.SCHEDULED);
             return missionMapper.toResponse(saved);
         } else {
-            mission.setProviderResponseStatus(ProviderOrderStatus.DECLINED);
-            mission.setStatus(MissionStatus.REJECTED);
-            mission.setFailureReason("Đối tác từ chối đơn thuê");
-            mission.setFailureNotes(mission.getProviderResponseNote());
+            // CONTRACT §1: Fleet declines -> return order to PENDING_DISPATCH queue for platform
+            // re-dispatch.
+            mission.setProvider(null);
+            mission.setUav(null);
+            mission.setOperator(null);
+            mission.setOperatorAccepted(false);
+            mission.setProviderResponseStatus(ProviderOrderStatus.PENDING_DISPATCH);
+            mission.setStatus(MissionStatus.PENDING_CONFIRMATION);
             Mission saved = missions.save(mission);
-            escrowService.onMissionCancelledOrFailed(
-                    saved.getId(), "đối tác từ chối đơn thuê " + saved.getCode());
             missionEvents.save(
                     new MissionEvent(
                             saved,
                             MissionEventType.REJECTED,
                             provider.getUser(),
                             previous,
-                            MissionStatus.REJECTED,
-                            "Đối tác từ chối đơn thuê",
+                            MissionStatus.PENDING_CONFIRMATION,
+                            "Đội bay từ chối nhận đơn — chuyển lại hàng đợi điều phối nền tảng",
                             mission.getProviderResponseNote()));
-            notifyUser(
-                    saved.getCustomer(),
-                    "Đối tác từ chối đơn " + saved.getCode(),
-                    provider.getDisplayName() + " đã từ chối đơn thuê.",
-                    com.uav.platform.enums.notification.NotificationType.MISSION_STATUS_CHANGED,
-                    "MISSION",
-                    saved.getId());
+            if (realtime != null) {
+                realtime.publishOrderUpdated(
+                        saved.getId(),
+                        saved.getStatus().name(),
+                        OrderStatusGroups.PENDING,
+                        saved.getCustomer() != null ? saved.getCustomer().getId() : null,
+                        provider.getUser() != null ? provider.getUser().getId() : null,
+                        null);
+            }
             return missionMapper.toResponse(saved);
         }
     }
@@ -513,9 +552,35 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                     "Khách hàng cần hoàn tất nạp tiền tạm giữ (Escrow) trước khi đối tác bắt đầu thực hiện đơn hàng.",
                     "ESCROW_FUNDING_REQUIRED");
         }
+        if (mission.getUav() == null) {
+            uavs.findByProviderIdOrderByIdDesc(provider.getId()).stream()
+                    .filter(u -> u.getStatus() == UavStatus.AVAILABLE)
+                    .findFirst()
+                    .ifPresent(mission::setUav);
+        }
+        if (mission.getUav() != null) {
+            Uav uav = mission.getUav();
+            uav.setStatus(UavStatus.IN_USE);
+            uavs.save(uav);
+        }
+        if (pilots != null && mission.getOperator() != null) {
+            for (var p : pilots.findByPilotUserIdAndDeletedFalse(mission.getOperator().getId())) {
+                p.setPilotStatus(com.uav.platform.enums.marketplace.ProviderPilotStatus.IN_FLIGHT);
+                pilots.save(p);
+            }
+        }
         MissionStatus previous = mission.getStatus();
         mission.setStatus(MissionStatus.IN_PROGRESS);
         Mission saved = missions.save(mission);
+
+        if (simulationService != null) {
+            try {
+                simulationService.rehearseMission(saved.getId(), 3.2, 115.0, 2.5, username);
+            } catch (RuntimeException ignored) {
+                // Simulation session is best-effort when no fleet UAV exists in focused tests.
+            }
+        }
+
         missionEvents.save(
                 new MissionEvent(
                         saved,
@@ -523,15 +588,16 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                         provider.getUser(),
                         previous,
                         MissionStatus.IN_PROGRESS,
-                        "Đối tác bắt đầu triển khai bay / bàn giao thiết bị",
+                        "Đội bay bắt đầu triển khai chuyến bay (mô phỏng)",
                         null));
         notifyUser(
                 saved.getCustomer(),
-                "Đơn " + saved.getCode() + " đang thực hiện",
-                provider.getDisplayName() + " đã bắt đầu triển khai bay.",
+                "Đơn " + saved.getCode() + " đang bay",
+                "Chuyến bay của đơn hàng đã khởi hành — bạn có thể theo dõi trực tiếp trên bản đồ.",
                 com.uav.platform.enums.notification.NotificationType.MISSION_STATUS_CHANGED,
                 "MISSION",
                 saved.getId());
+        publishOrderUpdated(saved, OrderStatusGroups.IN_FLIGHT);
         return missionMapper.toResponse(saved);
     }
 
@@ -554,6 +620,26 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                     "Trạng thái đơn hiện tại không thể hoàn thành bàn giao.",
                     "ORDER_CANNOT_COMPLETE");
         }
+        if (mission.getUav() != null) {
+            Uav uav = mission.getUav();
+            if (simulationService != null) {
+                try {
+                    simulationService.stop(uav.getId(), username);
+                } catch (RuntimeException ignored) {
+                    // Ignore if simulation already finished.
+                }
+            }
+            if (uav.getStatus() == UavStatus.IN_USE) {
+                uav.setStatus(UavStatus.AVAILABLE);
+                uavs.save(uav);
+            }
+        }
+        if (pilots != null && mission.getOperator() != null) {
+            for (var p : pilots.findByPilotUserIdAndDeletedFalse(mission.getOperator().getId())) {
+                p.setPilotStatus(com.uav.platform.enums.marketplace.ProviderPilotStatus.AVAILABLE);
+                pilots.save(p);
+            }
+        }
         MissionStatus previous = mission.getStatus();
         mission.setStatus(MissionStatus.COMPLETED);
         mission.setCompletedAt(LocalDateTime.now());
@@ -572,15 +658,16 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                         provider.getUser(),
                         previous,
                         MissionStatus.COMPLETED,
-                        "Đối tác hoàn tất và bàn giao kết quả",
+                        "Đội bay hoàn tất và bàn giao kết quả",
                         saved.getCompletionNote()));
         notifyUser(
                 saved.getCustomer(),
                 "Đã bàn giao kết quả " + saved.getCode(),
-                provider.getDisplayName() + " đã hoàn tất bay. Vui lòng nghiệm thu để giải ngân.",
+                "Đơn hàng đã hoàn tất bàn giao. Vui lòng kiểm tra dữ liệu và đánh giá dịch vụ.",
                 com.uav.platform.enums.notification.NotificationType.MISSION_STATUS_CHANGED,
                 "MISSION",
                 saved.getId());
+        publishOrderUpdated(saved, OrderStatusGroups.TO_REVIEW);
         return missionMapper.toResponse(saved);
     }
 
@@ -913,6 +1000,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
 
     private MarketplaceListing requireOwnedListing(Long listingId, ProviderProfile provider) {
         return listings.findWithDetailsById(listingId)
+                .filter(l -> !l.isDeleted())
                 .filter(
                         l ->
                                 l.getProvider() != null
@@ -921,9 +1009,24 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                 .orElseThrow(() -> SystemException.notFound("LISTING_NOT_FOUND"));
     }
 
+    private Optional<ProviderProfile> resolveProfile(String username) {
+        Optional<ProviderProfile> owned = providers.findByUserUsername(username);
+        if (owned.isPresent() || pilots == null) {
+            return owned;
+        }
+        return users.findByUsername(username)
+                .flatMap(
+                        u ->
+                                pilots.findByPilotUserIdAndDeletedFalse(u.getId()).stream()
+                                        .map(
+                                                com.uav.platform.entity.marketplace.ProviderPilot
+                                                        ::getProvider)
+                                        .filter(Objects::nonNull)
+                                        .findFirst());
+    }
+
     private ProviderProfile requireMyProfile(String username) {
-        return providers
-                .findByUserUsername(username)
+        return resolveProfile(username)
                 .orElseThrow(
                         () ->
                                 SystemException.conflict(

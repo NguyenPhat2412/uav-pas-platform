@@ -125,6 +125,9 @@ public class MissionExtendedWorkflowServiceImpl implements MissionExtendedWorkfl
     @Autowired(required = false)
     private com.uav.platform.service.marketplace.escrow.MarketplaceEscrowService marketplaceEscrow;
 
+    @Autowired(required = false)
+    private com.uav.platform.transport.websocket.RealtimeEventBroadcaster realtime;
+
     public MissionExtendedWorkflowServiceImpl(
             MissionRepository missions,
             MissionEventRepository events,
@@ -405,10 +408,16 @@ public class MissionExtendedWorkflowServiceImpl implements MissionExtendedWorkfl
                     "Khoản tạm giữ (Escrow) đã được giải ngân cho đối tác nên không thể thu hồi xác nhận nghiệm thu.",
                     "ESCROW_ALREADY_RELEASED");
         }
+        Integer effectiveOverall = request.effectiveOverallRating();
+        if (effectiveOverall == null) {
+            throw SystemException.badRequest(
+                            "Chọn mức đánh giá từ 1 đến 5 sao.", "VALIDATION_ERROR")
+                    .at("overallRating");
+        }
         boolean creating = review.getId() == null;
-        review.setOverallRating(request.overallRating());
-        review.setDataQualityRating(request.dataQualityRating());
-        review.setTimelinessRating(request.timelinessRating());
+        review.setOverallRating(effectiveOverall);
+        review.setDataQualityRating(request.effectiveDataQualityRating());
+        review.setTimelinessRating(request.effectiveTimelinessRating());
         review.setDeliverablesAccepted(accepted);
         review.setComment(
                 request.comment() == null || request.comment().isBlank()
@@ -418,6 +427,17 @@ public class MissionExtendedWorkflowServiceImpl implements MissionExtendedWorkfl
         MissionReview saved = reviews.save(review);
         if (marketplaceEscrow != null) {
             marketplaceEscrow.onMissionReviewed(mission.getId());
+        }
+        if (realtime != null) {
+            realtime.publishOrderUpdated(
+                    mission.getId(),
+                    mission.getStatus().name(),
+                    com.uav.platform.common.util.OrderStatusGroups.DELIVERED,
+                    mission.getCustomer() != null ? mission.getCustomer().getId() : null,
+                    mission.getProvider() != null && mission.getProvider().getUser() != null
+                            ? mission.getProvider().getUser().getId()
+                            : null,
+                    mission.getOperator() != null ? mission.getOperator().getId() : null);
         }
         events.save(
                 new MissionEvent(

@@ -7,17 +7,13 @@ import com.uav.platform.dto.response.marketplace.catalog.MarketplaceListingDetai
 import com.uav.platform.dto.response.marketplace.catalog.MarketplaceListingResponse;
 import com.uav.platform.dto.response.marketplace.catalog.MarketplaceStorefrontResponse;
 import com.uav.platform.entity.marketplace.MarketplaceListing;
-import com.uav.platform.entity.marketplace.ProviderProfile;
 import com.uav.platform.enums.marketplace.ListingModerationStatus;
 import com.uav.platform.enums.marketplace.ListingType;
 import com.uav.platform.enums.marketplace.PricingModel;
-import com.uav.platform.enums.marketplace.ProviderVerificationStatus;
 import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.marketplace.provider.MarketplaceMapper;
 import com.uav.platform.repository.marketplace.MarketplaceListingRepository;
-import com.uav.platform.repository.marketplace.ProviderDocumentRepository;
-import com.uav.platform.repository.marketplace.ProviderProfileRepository;
 import com.uav.platform.repository.mission.MissionReviewRepository;
 import com.uav.platform.service.marketplace.catalog.MarketplaceCatalogService;
 
@@ -38,14 +34,13 @@ import java.math.BigDecimal;
 public class MarketplaceCatalogServiceImpl implements MarketplaceCatalogService {
 
     private final MarketplaceListingRepository listings;
-    private final ProviderProfileRepository providers;
-    private final ProviderDocumentRepository documents;
     private final MissionReviewRepository reviews;
     private final MarketplaceMapper mapper;
 
     @Override
     public PageResponse<MarketplaceListingResponse> listPublicListings(
             String keyword,
+            String category,
             ListingType listingType,
             MissionType missionType,
             PricingModel pricingModel,
@@ -55,8 +50,10 @@ public class MarketplaceCatalogServiceImpl implements MarketplaceCatalogService 
             Pageable pageable) {
         Specification<MarketplaceListing> spec =
                 Specification.allOf(
+                        listingNotDeleted(),
                         listingModerationStatus(ListingModerationStatus.PUBLISHED),
                         listingKeyword(keyword),
+                        listingCategory(category),
                         listingType(listingType),
                         listingMissionType(missionType),
                         listingPricingModel(pricingModel),
@@ -65,20 +62,21 @@ public class MarketplaceCatalogServiceImpl implements MarketplaceCatalogService 
                         listingCategoryService(categoryServiceId));
         Pageable sorted =
                 PageRequest.of(
-                        pageable.getPageNumber(),
+                        Math.max(0, pageable.getPageNumber()),
                         Math.min(Math.max(pageable.getPageSize(), 1), 50),
                         Sort.by(
                                 Sort.Order.desc("featured"),
                                 Sort.Order.desc("ratingAvg"),
                                 Sort.Order.desc("bookingCount"),
                                 Sort.Order.desc("id")));
-        return PageResponse.from(listings.findAll(spec, sorted), mapper::toListingResponse);
+        return PageResponse.from(listings.findAll(spec, sorted), mapper::toPublicListingResponse);
     }
 
     @Override
     public MarketplaceListingDetailResponse getPublicListingBySlug(String slug) {
         MarketplaceListing listing =
                 listings.findBySlug(slug)
+                        .filter(l -> !l.isDeleted())
                         .filter(l -> l.getModerationStatus() == ListingModerationStatus.PUBLISHED)
                         .orElseThrow(
                                 () ->
@@ -92,40 +90,12 @@ public class MarketplaceCatalogServiceImpl implements MarketplaceCatalogService 
                         .map(mapper::toReviewResponse)
                         .toList();
         return new MarketplaceListingDetailResponse(
-                mapper.toListingResponse(listing), recentReviews);
+                mapper.toPublicListingResponse(listing), recentReviews);
     }
 
     @Override
     public MarketplaceStorefrontResponse getPublicStorefrontBySlug(String slug) {
-        ProviderProfile provider =
-                providers
-                        .findBySlug(slug)
-                        .filter(
-                                p ->
-                                        p.getVerificationStatus()
-                                                == ProviderVerificationStatus.VERIFIED)
-                        .orElseThrow(
-                                () ->
-                                        SystemException.notFound(
-                                                "Không tìm thấy gian hàng đối tác đã xác minh.",
-                                                "PROVIDER_NOT_FOUND"));
-        var publishedListings =
-                listings
-                        .findByProviderIdAndModerationStatusOrderByFeaturedDescCreatedAtDesc(
-                                provider.getId(), ListingModerationStatus.PUBLISHED)
-                        .stream()
-                        .map(mapper::toListingResponse)
-                        .toList();
-        var recentReviews =
-                reviews
-                        .findTop20ByMissionProviderIdOrderByUpdatedAtDescIdDesc(provider.getId())
-                        .stream()
-                        .map(mapper::toReviewResponse)
-                        .toList();
-        // Public storefront never exposes sensitive KYC document files.
-        return new MarketplaceStorefrontResponse(
-                mapper.toProfileResponse(provider, java.util.List.of()),
-                publishedListings,
-                recentReviews);
+        throw SystemException.notFound(
+                "Thông tin đội bay được ẩn danh trên sàn dịch vụ UAV PAS.", "PROVIDER_ANONYMIZED");
     }
 }

@@ -91,6 +91,9 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     @Autowired(required = false)
     private com.uav.platform.service.settings.SystemConfigService systemConfig;
 
+    @Autowired(required = false)
+    private com.uav.platform.transport.websocket.RealtimeEventBroadcaster realtime;
+
     @org.springframework.beans.factory.annotation.Value(
             "${app.mission.preflight-signoff-required:false}")
     private boolean preflightSignoffRequired;
@@ -567,6 +570,17 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 com.uav.platform.enums.notification.NotificationType.MISSION_STATUS_CHANGED,
                 "Đơn " + missionLabel(mission) + " đã hủy",
                 note == null ? "Khách hàng đã hủy nhiệm vụ." : note);
+        if (realtime != null) {
+            realtime.publishOrderUpdated(
+                    mission.getId(),
+                    mission.getStatus().name(),
+                    com.uav.platform.common.util.OrderStatusGroups.CANCELLED,
+                    mission.getCustomer() != null ? mission.getCustomer().getId() : null,
+                    mission.getProvider() != null && mission.getProvider().getUser() != null
+                            ? mission.getProvider().getUser().getId()
+                            : null,
+                    mission.getOperator() != null ? mission.getOperator().getId() : null);
+        }
         return missionMapper.toResponse(mission);
     }
 

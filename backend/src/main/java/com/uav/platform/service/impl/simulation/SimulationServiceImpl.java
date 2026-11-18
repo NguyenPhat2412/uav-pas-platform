@@ -53,7 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Service
 public class SimulationServiceImpl implements SimulationService {
-    static final int MAX_SESSIONS = 10;
+    static final int MAX_SESSIONS = 50;
     static final String REPORTER = "simulator";
     static final double DEFAULT_ALTITUDE_M = 50;
     static final double DEFAULT_SPEED_MS = 8;

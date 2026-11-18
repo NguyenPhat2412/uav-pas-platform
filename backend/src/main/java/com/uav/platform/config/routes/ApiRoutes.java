@@ -656,13 +656,20 @@ public final class ApiRoutes {
         public static final String DOCUMENTS = "/documents";
         public static final String DOCUMENT_BY_ID = "/documents/{id}";
         public static final String LISTINGS = "/listings";
+        public static final String LISTINGS_FROM_TEMPLATE = "/listings/from-template";
         public static final String LISTING_BY_ID = "/listings/{id}";
         public static final String LISTING_PAUSE = "/listings/{id}/pause";
         public static final String FLEET = "/fleet";
         public static final String FLEET_UAVS = "/fleet/uavs";
+        public static final String FLEET_UAV_BY_ID = "/fleet/uavs/{id}";
         public static final String FLEET_EQUIPMENT = "/fleet/equipment";
+        public static final String FLEET_EQUIPMENT_BY_ID = "/fleet/equipment/{id}";
+        public static final String PILOTS = "/pilots";
+        public static final String PILOT_BY_ID = "/pilots/{id}";
         public static final String ORDERS = "/orders";
+        public static final String ORDER_BY_ID = "/orders/{missionId}";
         public static final String ORDER_RESPOND = "/orders/{missionId}/respond";
+        public static final String ORDER_ASSIGN = "/orders/{missionId}/assign";
         public static final String ORDER_START = "/orders/{missionId}/start";
         public static final String ORDER_COMPLETE = "/orders/{missionId}/complete";
         public static final String OPEN_RFQ = "/rfq";
@@ -680,8 +687,32 @@ public final class ApiRoutes {
         public static final String ADMIN_PROVIDER_MODERATE = "/providers/{id}/moderate";
         public static final String ADMIN_LISTINGS = "/listings";
         public static final String ADMIN_LISTING_MODERATE = "/listings/{id}/moderate";
+        public static final String ADMIN_DISPATCH = "/dispatch";
+        public static final String ADMIN_DISPATCH_BY_MISSION = "/dispatch/{missionId}";
+        public static final String ADMIN_DISPATCH_AUTO = "/dispatch/auto";
+        public static final String ADMIN_DISPATCH_MISSION_AUTO = "/dispatch/{missionId}/auto";
+        public static final String ADMIN_STATS = "/stats";
         public static final String ADMIN_PAYOUTS = "/payouts";
         public static final String ADMIN_PAYOUT_PROCESS = "/payouts/{id}/process";
+    }
+
+    /** Customer projects and project-scoped UAV service subscriptions. */
+    public static final class Projects {
+        private Projects() {}
+
+        public static final String BASE = API_V1_PREFIX + "/projects";
+        public static final String BY_ID = "/{id}";
+        public static final String SUBSCRIPTIONS = "/{id}/subscriptions";
+        public static final String SUBSCRIPTION_BY_ID = "/{id}/subscriptions/{subId}";
+    }
+
+    /** Customer Shopee-style order summary and simulated flight tracking. */
+    public static final class Orders {
+        private Orders() {}
+
+        public static final String BASE = API_V1_PREFIX + "/orders";
+        public static final String SUMMARY = "/summary";
+        public static final String TRACKING = "/{id}/tracking";
     }
 
     public static final String[] SWAGGER_WHITELIST = {
