@@ -86,9 +86,8 @@ public class MissionQueryServiceImpl implements MissionQueryService {
         access.enforceVisibility(mission, authentication);
         boolean isReviewed =
                 reviews != null && reviews.findByMissionId(mission.getId()).isPresent();
-        return missionMapper
-                .toResponse(mission)
-                .withOrderContext(isReviewed, shouldAnonymizeProvider(mission, authentication));
+        return applyOrderContext(
+                mission, missionMapper.toResponse(mission), isReviewed, authentication);
     }
 
     @Override
@@ -125,11 +124,27 @@ public class MissionQueryServiceImpl implements MissionQueryService {
         return PageResponse.from(
                 page,
                 m ->
-                        missionMapper
-                                .toResponse(m)
-                                .withOrderContext(
-                                        reviewedIds.contains(m.getId()),
-                                        shouldAnonymizeProvider(m, authentication)));
+                        applyOrderContext(
+                                m,
+                                missionMapper.toResponse(m),
+                                reviewedIds.contains(m.getId()),
+                                authentication));
+    }
+
+    private MissionResponse applyOrderContext(
+            Mission mission,
+            MissionResponse response,
+            boolean isReviewed,
+            Authentication authentication) {
+        if (response == null) {
+            return null;
+        }
+        boolean anonymize = shouldAnonymizeProvider(mission, authentication);
+        if (!isReviewed && !anonymize) {
+            return response;
+        }
+        MissionResponse updated = response.withOrderContext(isReviewed, anonymize);
+        return updated != null ? updated : response;
     }
 
     private Set<Long> resolveReviewedMissionIds(List<Mission> items) {

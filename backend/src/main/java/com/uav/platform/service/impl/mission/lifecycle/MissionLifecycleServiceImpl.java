@@ -1192,6 +1192,10 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     }
 
     private MissionResponse toViewerSafeResponse(Mission mission, Authentication authentication) {
+        MissionResponse response = missionMapper.toResponse(mission);
+        if (response == null) {
+            return null;
+        }
         boolean anonymizeForCustomer =
                 authentication != null
                         && mission.getCustomer() != null
@@ -1206,6 +1210,10 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                                         .getName()
                                         .equalsIgnoreCase(
                                                 mission.getProvider().getUser().getUsername()));
-        return missionMapper.toResponse(mission).withOrderContext(false, anonymizeForCustomer);
+        if (!anonymizeForCustomer) {
+            return response;
+        }
+        MissionResponse masked = response.withOrderContext(false, true);
+        return masked != null ? masked : response;
     }
 }
