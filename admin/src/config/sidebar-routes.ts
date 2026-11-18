@@ -253,6 +253,15 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
         permission: 'USER_MANAGE',
     },
     {
+        href: '/admin/marketplace/stats',
+        key: 'marketplaceStats',
+        defaultLabel: 'Thống kê sàn',
+        group: 'commerce',
+        subGroup: 'marketplace3p',
+        icon: BarChart3,
+        permission: 'MARKETPLACE_MODERATE',
+    },
+    {
         href: '/admin/marketplace/providers',
         key: 'marketplaceProviders',
         defaultLabel: 'Duyệt đối tác KYC',
