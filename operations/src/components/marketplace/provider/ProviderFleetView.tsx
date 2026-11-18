@@ -40,7 +40,7 @@ export function ProviderFleetView() {
     const {t} = useI18n();
     const profileQuery = useMyProviderProfile();
     const profile = profileQuery.data;
-    const fleetQuery = useMyProviderFleet(Boolean(profile));
+    const fleetQuery = useMyProviderFleet(true);
     const {registerUav, updateUav, deleteUav} = useProviderFleetActions();
 
     const [filter, setFilter] = useState<'ALL' | 'READY' | 'FLYING' | 'MAINTENANCE'>('ALL');
@@ -134,7 +134,7 @@ export function ProviderFleetView() {
             subtitle={t('opsMarketplace.fleet.subtitle')}
             activeResource="providerFleet"
         >
-            {profileQuery.isLoading || (Boolean(profile) && fleetQuery.isLoading) ? (
+            {profileQuery.isLoading || fleetQuery.isLoading ? (
                 <div className="mx-auto max-w-6xl space-y-4" role="status" aria-label={t('opsMarketplace.common.loading')}>
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                         {[1, 2, 3, 4].map(n => (
@@ -147,7 +147,7 @@ export function ProviderFleetView() {
                         ))}
                     </div>
                 </div>
-            ) : !profile ? (
+            ) : !profile && uavs.length === 0 ? (
                 <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-6 text-center" role="status">
                     <Plane size={28} className="mx-auto text-primary" aria-hidden="true"/>
                     <h2 className="m-0 mt-2 text-base font-semibold text-slate-900">

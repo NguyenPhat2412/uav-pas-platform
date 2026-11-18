@@ -43,8 +43,8 @@ export function ProviderPilotsView() {
     const {t} = useI18n();
     const profileQuery = useMyProviderProfile();
     const profile = profileQuery.data;
-    const pilotsQuery = useProviderPilots(Boolean(profile));
-    const fleetQuery = useMyProviderFleet(Boolean(profile));
+    const pilotsQuery = useProviderPilots(true);
+    const fleetQuery = useMyProviderFleet(true);
     const {createPilot, updatePilot, deletePilot} = useProviderPilotActions();
 
     const [filter, setFilter] = useState<'ALL' | 'READY' | 'FLYING' | 'MAINTENANCE'>('ALL');
@@ -146,7 +146,7 @@ export function ProviderPilotsView() {
             subtitle={t('opsMarketplace.fleet.subtitle')}
             activeResource="providerPilots"
         >
-            {profileQuery.isLoading || (Boolean(profile) && pilotsQuery.isLoading) ? (
+            {profileQuery.isLoading || pilotsQuery.isLoading ? (
                 <div className="mx-auto max-w-6xl space-y-4" role="status" aria-label={t('opsMarketplace.common.loading')}>
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                         {[1, 2, 3, 4].map(n => (
@@ -159,7 +159,7 @@ export function ProviderPilotsView() {
                         ))}
                     </div>
                 </div>
-            ) : !profile ? (
+            ) : !profile && pilots.length === 0 && uavs.length === 0 ? (
                 <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-6 text-center" role="status">
                     <Users size={28} className="mx-auto text-primary" aria-hidden="true"/>
                     <h2 className="m-0 mt-2 text-base font-semibold text-slate-900">

@@ -25,7 +25,6 @@ import {useAuth} from '@/providers/AuthContext';
 import {useOperationsOverview} from '@/hooks/dashboard/useOperationsOverview';
 import {
     useMyProviderFleet,
-    useMyProviderProfile,
     useProviderOrders,
 } from '@/hooks/marketplace/useMarketplace';
 import {
@@ -55,9 +54,8 @@ export default function HomePage() {
     const {t, formatNumber} = useI18n();
     const {summary, missions, error} = useOperationsOverview();
 
-    const profileQuery = useMyProviderProfile(isAuthenticated);
-    const providerFleetQuery = useMyProviderFleet(Boolean(profileQuery.data));
-    const providerOrdersQuery = useProviderOrders(Boolean(profileQuery.data));
+    const providerFleetQuery = useMyProviderFleet(isAuthenticated);
+    const providerOrdersQuery = useProviderOrders(isAuthenticated);
     const uavsQuery = useCollection('uavs');
     const fleetTelemetry = useFleetTelemetry();
 
