@@ -17,7 +17,7 @@ export const serviceDetails: Record<string, ServiceDetailEntry> = {
         deliverySla: 'Bàn giao dữ liệu trong 6 – 24 giờ',
         deliverables: [
             'Nhật ký chuyến bay chi tiết (Flight Log & Telemetry Summary)',
-            'Bộ ảnh gốc gắn tọa độ GPS/RTK (Geotagged JPEG/PNG/WebP)',
+            'Bộ ảnh gốc gắn tọa độ GNSS (Geotagged JPEG/PNG/WebP)',
             'Video ghi hình quá trình bay thực địa (MP4/WebM 4K)',
         ],
         useCases: [
@@ -30,7 +30,7 @@ export const serviceDetails: Record<string, ServiceDetailEntry> = {
         code: 'AREA_INSPECTION',
         audience: 'Các đơn vị quản lý hạ tầng, khu đô thị, lưới điện, cầu đường, đê điều và nhà máy năng lượng cần kiểm tra bề mặt công trình hoặc ranh giới khu vực từ trên cao.',
         example: 'Vẽ đa giác khu vực cần kiểm tra trên bản đồ số, chọn độ cao AGL (30m–80m) và độ phân giải GSD 1,5 cm/px kèm cảm biến RGB 4K hoặc Nhiệt hồng ngoại để phát hiện điểm bất thường.',
-        output: 'Bộ ảnh chụp quét song song độ phân giải cao gắn tọa độ EXIF/RTK và báo cáo tổng hợp kiểm tra hiện trạng (PDF) lưu trữ bảo mật trong không gian nhiệm vụ.',
+        output: 'Bộ ảnh chụp quét song song độ phân giải cao gắn tọa độ EXIF/GNSS và báo cáo tổng hợp kiểm tra hiện trạng (PDF) lưu trữ bảo mật trong không gian nhiệm vụ.',
         sensors: ['RGB 4K Độ phân giải cao', 'Camera Nhiệt hồng ngoại (Thermal IR)'],
         bestGsd: '1,5 cm/px – 3,0 cm/px',
         altitudeRange: '30m – 100m AGL',
@@ -76,7 +76,7 @@ export const serviceDetails: Record<string, ServiceDetailEntry> = {
         code: 'DATA_COLLECTION',
         audience: 'Viện nghiên cứu, đơn vị trắc địa – bản đồ, nông lâm nghiệp công nghệ cao và quản lý tài nguyên môi trường cần thu thập dữ liệu không gian có cấu trúc.',
         example: 'Thiết lập vùng khảo sát đa giác hoặc tuyến hành lang (đường điện, kênh, đê), cấu hình chồng phủ dọc 75–90%, chồng ngang 65–85% và chọn tổ hợp cảm biến LiDAR / Đa phổ / RGB.',
-        output: 'Tập dữ liệu ảnh chồng phủ chuẩn trắc địa gắn tọa độ RTK và báo cáo tóm tắt thông số thu thập (Data Collection Summary PDF) để đưa vào quy trình dựng mô hình 2D/3D.',
+        output: 'Tập dữ liệu ảnh chồng phủ chuẩn trắc địa gắn tọa độ GNSS và báo cáo tóm tắt thông số thu thập (Data Collection Summary PDF) để đưa vào quy trình dựng mô hình 2D/3D.',
         sensors: ['RGB 4K Trắc địa', 'LiDAR 3D', 'Cảm biến Đa phổ (Multispectral)', 'Camera Nhiệt'],
         bestGsd: '1,5 cm/px – 5,0 cm/px',
         altitudeRange: '50m – 120m AGL',
@@ -85,7 +85,7 @@ export const serviceDetails: Record<string, ServiceDetailEntry> = {
         onSiteSla: 'Lập kế hoạch & triển khai trong 12 – 24 giờ',
         deliverySla: 'Bàn giao tập dữ liệu trong 24 – 48 giờ',
         deliverables: [
-            'Tập ảnh chồng phủ chuẩn Photogrammetry gắn tọa độ RTK (Geotagged Dataset)',
+            'Tập ảnh chồng phủ chuẩn Photogrammetry gắn tọa độ GNSS (Geotagged Dataset)',
             'Báo cáo tổng hợp thông số thu thập dữ liệu & kiểm soát chất lượng (PDF Data Summary)',
             'Dữ liệu nhật ký quỹ đạo bay và thông số độ cao AGL / độ chồng phủ thực tế',
         ],

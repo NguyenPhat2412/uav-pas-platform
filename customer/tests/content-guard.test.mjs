@@ -36,7 +36,7 @@ const EVERYWHERE = [
 
 /** Unverified technical or commercial claims; checked on the public site, auth screens and their copy. */
 const PUBLIC_CLAIMS = [
-    ['unverified RTK accuracy', /\d\s*[–-]\s*\d\s*cm\s*RTK|RTK\s*\d\s*[–-]\s*\d\s*cm|<\s*1[.,]5\s*cm/i],
+    ['unverified RTK claim', /RTK/],
     ['AI on board claim', /khoang bay|on[- ]board|gắn trên UAV,/i],
     ['100% claim', /100\s?%\s*(chuyến|flight)/i],
     ['official pricing', /chính thức/i],
@@ -58,8 +58,10 @@ test('public site and sign-in copy makes no unverified technical or commercial c
         ...files('src/components/marketing', SOURCES),
         ...files('src/components/auth', SOURCES),
         ...files('src/content/marketing', SOURCES),
+        ...files('src/messages/sections/publicSite', SOURCES),
     ];
     assert.deepEqual(offences(paths, PUBLIC_CLAIMS), []);
+    assert.deepEqual(offences(files('src/components/marketplace', SOURCES), [['unverified RTK claim', /RTK/]]), []);
 });
 
 const DEMO_BANNERS = [

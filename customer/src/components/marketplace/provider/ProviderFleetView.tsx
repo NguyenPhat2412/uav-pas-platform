@@ -93,7 +93,7 @@ export default function ProviderFleetView() {
                             <form onSubmit={handleCreateUav} className="grid grid-cols-1 items-end gap-2.5 rounded-xl bg-slate-50 p-3.5 sm:grid-cols-3">
                                 <label className="grid gap-1 text-xs font-bold text-slate-700">
                                     <span>Model tàu bay<RequiredMark/></span>
-                                    <input required aria-label="Model tàu bay UAV" className={INPUT_CLASS} value={uavForm.model} onChange={e => setUavForm(s => ({...s, model: e.target.value}))} placeholder="VD: Matrice 350 RTK"/>
+                                    <input required aria-label="Model tàu bay UAV" className={INPUT_CLASS} value={uavForm.model} onChange={e => setUavForm(s => ({...s, model: e.target.value}))} placeholder="VD: Matrice 350"/>
                                 </label>
                                 <label className="grid gap-1 text-xs font-bold text-slate-700">
                                     <span>Số Serial<RequiredMark/></span>

@@ -113,7 +113,7 @@ export function ProviderRfqSection({
                                             onChange={e =>
                                                 setBidForm(s => ({...s, proposedUavModel: e.target.value}))
                                             }
-                                            placeholder="VD: DJI Matrice 350 RTK"
+                                            placeholder="VD: DJI Matrice 350"
                                             className="h-9 rounded-control border border-slate-300 bg-white px-3 text-xs"
                                         />
                                     </label>

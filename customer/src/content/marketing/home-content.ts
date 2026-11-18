@@ -48,7 +48,7 @@ export const uavPlatformFeatures: UavPlatformFeature[] = [
     },
     {
         id: 'realtime-telemetry-rtk',
-        badge: 'Telemetry & RTK',
+        badge: 'Telemetry & GNSS',
         title: 'Giám sát telemetry trực tuyến',
         subtitle: 'Theo dõi trực tiếp tọa độ, dung lượng pin và ranh giới an toàn không phận.',
         description:
@@ -273,8 +273,8 @@ export const droneParts: DronePart[] = [
         text: 'Đọc cảm biến quán tính (con quay hồi chuyển, gia tốc kế), khí áp kế và la bàn, rồi điều chỉnh tốc độ từng motor liên tục để giữ UAV thăng bằng và bám đúng đường bay.',
         spec: 'Vòng điều khiển: hàng trăm đến hàng nghìn lần mỗi giây'},
     {id: 'gps', x: 50, y: 37, name: 'GNSS và la bàn', kicker: 'Định vị',
-        text: 'Xác định vị trí bằng nhiều hệ vệ tinh như GPS, GLONASS, Galileo, BeiDou. Bản RTK cho sai số cỡ centimet, cần cho khảo sát và lập bản đồ.',
-        spec: 'Sai số: ~1–3 m thường, ~1–3 cm với RTK'},
+        text: 'Xác định vị trí bằng nhiều hệ vệ tinh như GPS, GLONASS, Galileo, BeiDou phục vụ điều hướng và gắn tọa độ khung hình khảo sát.',
+        spec: 'Đa hệ vệ tinh GNSS: GPS · GLONASS · Galileo · BeiDou'},
     {id: 'bat', x: 50, y: 54, name: 'Pin LiPo / Li-ion', kicker: 'Năng lượng',
         text: 'Quyết định thời gian bay. Hệ thống theo dõi điện áp từng cell và tự đưa UAV quay về khi pin xuống ngưỡng an toàn.',
         spec: 'Đa cánh quạt: ~20–45 phút mỗi lần sạc'},

@@ -122,7 +122,7 @@ function OnboardingContent({profile}: { profile: ProviderProfile | null }) {
                     </label>
                     <label className="grid gap-1.5 text-xs font-bold text-slate-700 sm:col-span-2">
                         <span>Giới thiệu năng lực đội bay & Kinh nghiệm thực địa<OptionalMark/></span>
-                        <textarea rows={3} className="w-full rounded-control border border-slate-300 bg-white p-3 text-xs font-medium text-slate-900 outline-none focus:border-primary" value={form.bio ?? ''} onChange={e => setForm(s => ({...s, bio: e.target.value}))} placeholder="Mô tả dòng máy bay sở hữu (Matrice 350 RTK, Mavic 3E, LiDAR...), kinh nghiệm khảo sát..."/>
+                        <textarea rows={3} className="w-full rounded-control border border-slate-300 bg-white p-3 text-xs font-medium text-slate-900 outline-none focus:border-primary" value={form.bio ?? ''} onChange={e => setForm(s => ({...s, bio: e.target.value}))} placeholder="Mô tả dòng máy bay sở hữu (Matrice 350, Mavic 3E, LiDAR...), kinh nghiệm khảo sát..."/>
                     </label>
                 </div>
 

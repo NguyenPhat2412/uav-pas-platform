@@ -24,7 +24,7 @@ const photoMosaic = [
     {
         src: scenes.aboutGnssBase.src,
         alt: scenes.aboutGnssBase.alt,
-        tag: 'Định vị GNSS/RTK',
+        tag: 'Định vị GNSS',
         caption: 'Theo dõi trạng thái định vị GNSS và thông số chuyến bay từ luồng dữ liệu telemetry.',
         span: 'md:col-span-5',
     },

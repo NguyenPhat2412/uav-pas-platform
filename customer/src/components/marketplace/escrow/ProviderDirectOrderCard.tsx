@@ -132,7 +132,7 @@ export function ProviderDirectOrderCard({
                             aria-required
                             value={handoverNote}
                             onChange={e => onChangeHandoverNote(e.target.value)}
-                            placeholder="VD: Đã bay quét đủ 50ha, tải lên 420 ảnh RTK và bình đồ GeoTIFF..."
+                            placeholder="VD: Đã bay quét đủ 50ha, tải lên 420 ảnh GNSS và bình đồ GeoTIFF..."
                             className="mt-1 h-10 w-full rounded-control border border-slate-300 bg-white px-3 text-xs font-medium text-slate-900"
                         />
                     </label>
