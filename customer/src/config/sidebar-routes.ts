@@ -534,6 +534,14 @@ export const CUSTOMER_SIDEBAR_ROUTES: SidebarRouteItem<CustomerNavGroup>[] = [
 
     // Nhóm: Nhiệm vụ bay (missions)
     {
+        href: '/customer/projects',
+        key: 'projects',
+        defaultLabel: 'Dự án của tôi',
+        group: 'missions',
+        icon: FolderOpen,
+        permission: 'MISSION_VIEW',
+    },
+    {
         href: '/customer/missions/create',
         key: 'createRequest',
         defaultLabel: 'Tạo yêu cầu',
