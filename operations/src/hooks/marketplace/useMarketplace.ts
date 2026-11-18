@@ -1,7 +1,9 @@
 'use client';
 
+import {useEffect} from 'react';
 import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {marketplaceApi} from '@/api/marketplace/marketplace.api';
+import {operationsRealtimeClient} from '@/lib/realtime-ws';
 import type {
     MarketplaceListingFromTemplateInput,
     MarketplaceListingUpsertInput,
@@ -157,6 +159,15 @@ export function useProviderPilotActions() {
 }
 
 export function useProviderOrders(enabled = true) {
+    const qc = useQueryClient();
+    useEffect(() => {
+        if (!enabled) return;
+        return operationsRealtimeClient.subscribeFrames(frame => {
+            if (frame.type === 'ORDER_UPDATED') {
+                void qc.invalidateQueries({queryKey: ['marketplace', 'provider-orders']});
+            }
+        });
+    }, [enabled, qc]);
     return useQuery({
         queryKey: ['marketplace', 'provider-orders'],
         queryFn: () => marketplaceApi.listMyOrders(),
