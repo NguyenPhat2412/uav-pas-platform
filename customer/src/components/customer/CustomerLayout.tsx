@@ -16,6 +16,7 @@ import {PublicSupportWidget} from '@/components/support/PublicSupportWidget';
 import {Alert, Button, LanguageSwitcher, PageSkeleton, UavLoader} from '@/components/ui';
 import {CUSTOMER_SIDEBAR_ROUTES, resolveSidebarActiveItem} from '@/config/sidebar-routes';
 import {useOwnProfile} from '@/hooks/profile/useProfile';
+import {useOrderRealtimeSync} from '@/hooks/project/useCustomerProjects';
 import {useSidebarController} from '@/hooks/useSidebarController';
 import {CUSTOMER_RECENT_PAGES_KEY, rememberRecentPage} from '@/lib/recent-pages';
 import {useAuth} from '@/providers/AuthContext';
@@ -31,6 +32,7 @@ export function AppShell({children}: { children: React.ReactNode }) {
     const {user, can, permissionsReady} = useAuth();
     const {t} = useI18n();
     const profile = useOwnProfile();
+    useOrderRealtimeSync(undefined, {notifyToast: true});
     const sidebar = useSidebarController('uav_customer_sidebar_collapsed');
     const {open, setOpen, menuButton} = sidebar;
 

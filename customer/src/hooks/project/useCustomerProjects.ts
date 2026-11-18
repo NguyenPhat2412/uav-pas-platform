@@ -3,9 +3,11 @@
 import {useEffect, useState} from 'react';
 import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {customerProjectsService} from '@/api/project/projects.api';
+import {describeOrderRealtimeToast} from '@/forms/project/project-form';
 import {billingKeys} from '@/hooks/billing/query-keys';
 import {projectKeys} from '@/hooks/project/query-keys';
 import {ApiError} from '@/lib/api';
+import {displayLabel} from '@/lib/presentation';
 import {queryKeys} from '@/lib/query';
 import {
     acquireRealtimeConnection,
@@ -15,6 +17,8 @@ import {
     type RealtimeConnectionStatus,
 } from '@/lib/realtime-ws';
 import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
+import {toast} from '@/providers/ToastContext';
 import type {
     CustomerProjectUpsertInput,
     ProjectSubscriptionCreateInput,
@@ -74,9 +78,16 @@ export function useOrderTracking(missionId: number, activeFlight = false, enable
     });
 }
 
-export function useOrderRealtimeSync(targetMissionId?: number) {
+let lastOrderToastDedupeKey = '';
+
+export function useOrderRealtimeSync(
+    targetMissionId?: number,
+    options?: { notifyToast?: boolean },
+) {
     const {user} = useAuth();
+    const {t} = useI18n();
     const userId = user?.id;
+    const notifyToast = Boolean(options?.notifyToast);
     const client = useQueryClient();
     const [wsStatus, setWsStatus] = useState<RealtimeConnectionStatus>(() => getRealtimeStatus());
 
@@ -94,13 +105,24 @@ export function useOrderRealtimeSync(targetMissionId?: number) {
                 void client.invalidateQueries({queryKey: [...customerKey, 'mission', frame.missionId]});
                 void client.invalidateQueries({queryKey: projectKeys.orderTracking(userId, frame.missionId)});
             }
+            if (notifyToast) {
+                const meta = describeOrderRealtimeToast(frame);
+                if (lastOrderToastDedupeKey !== meta.dedupeKey) {
+                    lastOrderToastDedupeKey = meta.dedupeKey;
+                    const statusText = displayLabel(frame.status);
+                    toast[meta.tone](
+                        t('marketplaceShop.orderRealtimeToastBody', {status: statusText}),
+                        {title: t('marketplaceShop.orderRealtimeToastTitle', {id: frame.missionId})},
+                    );
+                }
+            }
         });
         return () => {
             unsubEvent();
             unsubStatus();
             release();
         };
-    }, [client, targetMissionId, userId]);
+    }, [client, notifyToast, t, targetMissionId, userId]);
 
     return {wsConnected: Boolean(userId) && wsStatus === 'connected'};
 }

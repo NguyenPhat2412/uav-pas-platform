@@ -182,6 +182,46 @@ test('GeoJSON polygon conversion round-trips flight plans and validates project/
         pf.sanitizeMarketplaceText('Khảo sát RTK (minh hoạ) chuẩn cao'),
         'Khảo sát GNSS — minh hoạ chuẩn cao',
     );
+
+    assert.deepEqual(
+        pf.describeOrderRealtimeToast({missionId: 12, status: 'IN_FLIGHT', statusGroup: 'IN_FLIGHT'}),
+        {dedupeKey: '12:IN_FLIGHT:IN_FLIGHT', tone: 'info'},
+    );
+    assert.deepEqual(
+        pf.describeOrderRealtimeToast({missionId: 12, status: 'DELIVERED', statusGroup: 'TO_REVIEW'}),
+        {dedupeKey: '12:DELIVERED:TO_REVIEW', tone: 'success'},
+    );
+    assert.deepEqual(
+        pf.describeOrderRealtimeToast({missionId: 12, status: 'CANCELLED', statusGroup: 'PENDING'}),
+        {dedupeKey: '12:CANCELLED:PENDING', tone: 'warning'},
+    );
+
+    const seo = pf.formatListingSeoMeta({
+        title: 'Khảo sát địa hình RTK (minh hoạ)',
+        summary: 'Bình đồ trực giao độ nét cao',
+        description: 'Chi tiết kỹ thuật',
+        province: 'Bắc Ninh',
+        missionType: 'AREA_INSPECTION',
+        coverImageUrl: null,
+        basePriceVnd: 3_500_000,
+        providerDisplayName: 'Đội bay Bí mật',
+    });
+    assert.equal(seo.title, 'Khảo sát địa hình GNSS — minh hoạ');
+    assert.doesNotMatch(seo.title, /Đội bay Bí mật|RTK/i);
+    assert.doesNotMatch(seo.description, /Đội bay Bí mật|RTK|\(minh hoạ\)/i);
+    assert.equal(seo.imageUrl, '/images/services/aerial-inspection-grid.webp');
+
+    const customCoverSeo = pf.formatListingSeoMeta({
+        title: 'Quay phim tiến độ công trình',
+        summary: '',
+        description: '',
+        province: 'Đà Nẵng',
+        missionType: 'AERIAL_RECORDING',
+        coverImageUrl: 'https://cdn.example.com/uav-cover.webp',
+        basePriceVnd: 2_000_000,
+    });
+    assert.equal(customCoverSeo.imageUrl, 'https://cdn.example.com/uav-cover.webp');
+    assert.match(customCoverSeo.description, /Đối tác đã xác minh UAV PAS tại Đà Nẵng/);
 });
 
 test('customerPro marketplaceShop and customer nav catalogs maintain 100% vi/en/ja parity', () => {
@@ -235,11 +275,17 @@ test('customer-facing marketplace and portal screens hide fleet names, stay <= 3
         'src/components/mission/customer/CustomerMissionDetail.tsx',
         'src/components/dashboard/CustomerShopeeHome.tsx',
         'src/components/profile/ProfileQuickGrid.tsx',
+        'src/components/shared/IllustratedEmptyState.tsx',
     ];
     for (const file of s2NewOrUpdatedComponents) {
         const lineCount = read(file).split('\n').length;
         assert.ok(lineCount <= 300, `${file} has ${lineCount} lines (must be <= 300)`);
     }
+
+    assert.match(read('src/components/project/CustomerProjectsView.tsx'), /IllustratedEmptyState/);
+    assert.match(read('src/components/mission/customer/CustomerMissionsList.tsx'), /IllustratedEmptyState/);
+    assert.match(read('src/components/customer/CustomerLayout.tsx'), /notifyToast:\s*true/);
+    assert.match(read('src/app/(public)/services/[slug]/page.tsx'), /buildPublicServiceMetadata/);
 
     const sidebar = read('src/config/sidebar-routes.ts');
     assert.match(sidebar, /href:\s*'\/customer\/projects'/);

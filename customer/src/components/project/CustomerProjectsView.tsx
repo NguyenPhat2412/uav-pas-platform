@@ -8,6 +8,7 @@ import {PageGuard} from '@/components/customer/CustomerLayout';
 import {Status} from '@/components/customer/CustomerUi';
 import {ProjectSubscriptionsSection} from '@/components/project/ProjectSubscriptionsSection';
 import {ProjectUpsertDialog} from '@/components/project/ProjectUpsertDialog';
+import {IllustratedEmptyState} from '@/components/shared/IllustratedEmptyState';
 import {Alert, Button} from '@/components/ui';
 import {extractActionableError} from '@/forms/marketplace/marketplace-forms';
 import {useMissions} from '@/hooks/mission/useCustomerMissions';
@@ -100,15 +101,19 @@ function CustomerProjectsView() {
                     </Button>
                 </Alert>
             ) : projects.length === 0 ? (
-                <div role="status" className="flex flex-col items-center justify-center gap-3 rounded-panel border border-slate-200 bg-card px-5 py-14 text-center">
-                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-uav-red-light text-primary">
-                        <FolderKanban size={24} aria-hidden="true"/>
-                    </span>
-                    <h2 className="m-0 text-base font-semibold text-slate-900">{t('marketplaceShop.emptyProjectsTitle')}</h2>
-                    <p className="m-0 max-w-md text-xs text-slate-500">{t('marketplaceShop.emptyProjectsDesc')}</p>
-                    <Button type="button" leftIcon={<Plus size={15}/>} onClick={openCreate} className="min-h-11 whitespace-nowrap">
-                        {t('marketplaceShop.newProjectBtn')}
-                    </Button>
+                <div className="rounded-panel border border-slate-200 bg-card">
+                    <IllustratedEmptyState
+                        imageSrc="/images/process/step-02-gis-planning.webp"
+                        imageAlt={t('marketplaceShop.emptyProjectsTitle')}
+                        icon={FolderKanban}
+                        title={t('marketplaceShop.emptyProjectsTitle')}
+                        description={t('marketplaceShop.emptyProjectsDesc')}
+                        action={
+                            <Button type="button" leftIcon={<Plus size={15}/>} onClick={openCreate} className="min-h-11 whitespace-nowrap">
+                                {t('marketplaceShop.emptyProjectsFirstCta')}
+                            </Button>
+                        }
+                    />
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">

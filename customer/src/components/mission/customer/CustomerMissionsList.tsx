@@ -8,6 +8,7 @@ import {PageGuard} from '@/components/customer/CustomerLayout';
 import {Button, Status} from '@/components/customer/CustomerUi';
 import {LoadingRows} from '@/components/data/WorkspaceState';
 import {OrderStatusBar} from '@/components/mission/customer/OrderStatusBar';
+import {IllustratedEmptyState} from '@/components/shared/IllustratedEmptyState';
 import {formatVndCompact} from '@/forms/marketplace/marketplace-forms';
 import {missionListFilters, missionPageRange} from '@/forms/mission/mission-form';
 import {mapMissionToOrderStatusGroup, ORDER_STATUS_GROUPS} from '@/forms/project/project-form';
@@ -147,20 +148,28 @@ function Missions() {
                 ) : query.isLoading ? (
                     <LoadingRows/>
                 ) : items.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center" role="status">
-                        <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-uav-red-light text-primary">
-                            <PackageSearch size={24} aria-hidden="true"/>
-                        </span>
-                        <p className="m-0 text-sm text-slate-600">
-                            {filtered ? t('missions.emptyFiltered') : t('missions.empty')}
-                        </p>
-                        <Link
-                            href="/customer/services"
-                            className="inline-flex min-h-10 items-center justify-center rounded-control bg-primary px-4 text-xs font-bold whitespace-nowrap text-primary-foreground"
-                        >
-                            {t('marketplaceShop.exploreCatalog')}
-                        </Link>
-                    </div>
+                    <IllustratedEmptyState
+                        imageSrc="/images/process/step-01-select-service.webp"
+                        imageAlt={t('marketplaceShop.emptyOrdersTitle')}
+                        icon={PackageSearch}
+                        title={filtered ? t('missions.emptyFiltered') : t('marketplaceShop.emptyOrdersTitle')}
+                        description={filtered ? t('marketplaceShop.emptyCatalogDesc') : t('marketplaceShop.emptyOrdersDesc')}
+                        action={
+                            filtered ? (
+                                <Button variant="secondary" onClick={resetFilters}>
+                                    <RotateCcw size={13} className="mr-1 inline" aria-hidden="true"/>
+                                    {t('missions.clearFilters')}
+                                </Button>
+                            ) : (
+                                <Link
+                                    href="/customer/services"
+                                    className="inline-flex min-h-11 items-center justify-center rounded-control bg-primary px-4 text-xs font-bold whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary-hover"
+                                >
+                                    {t('marketplaceShop.exploreCatalog')}
+                                </Link>
+                            )
+                        }
+                    />
                 ) : (
                     <>
                         {!!range?.total && (
