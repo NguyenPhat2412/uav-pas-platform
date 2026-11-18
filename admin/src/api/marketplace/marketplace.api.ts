@@ -1,13 +1,20 @@
 import {apiClient, API_ROUTES} from '@/lib/api';
 import type {
+    AdminDispatchQueuePage,
     AdminListingPage,
     AdminMarketplaceListing,
+    AdminMarketplaceOrder,
+    AdminMarketplaceOrderPage,
+    AdminMarketplaceStats,
+    AdminOrderFilter,
     AdminPayoutPage,
     AdminProviderPage,
     AdminProviderPayout,
     AdminProviderProfile,
+    AutoDispatchInput,
     ListingModerationInput,
     ListingModerationStatus,
+    ManualDispatchInput,
     PayoutProcessInput,
     PayoutStatus,
     ProviderModerationInput,
@@ -43,6 +50,35 @@ export const adminMarketplaceApi = {
     },
     moderateListing: (id: number, payload: ListingModerationInput) =>
         apiClient.patch<AdminMarketplaceListing>(API_ROUTES.adminMarketplace.moderateListing(id), payload),
+
+    listDispatchQueue: (params: { page?: number; size?: number }, signal?: AbortSignal) => {
+        const qs = new URLSearchParams();
+        qs.set('page', String(params.page ?? 0));
+        qs.set('size', String(params.size ?? 20));
+        return apiClient.get<AdminDispatchQueuePage>(`${API_ROUTES.adminMarketplace.dispatch}?${qs.toString()}`, {signal});
+    },
+    dispatchManual: (missionId: number, payload: ManualDispatchInput) =>
+        apiClient.post<AdminMarketplaceOrder>(API_ROUTES.adminMarketplace.dispatchMission(missionId), payload),
+    dispatchAuto: (missionId: number, payload?: AutoDispatchInput) =>
+        apiClient.post<AdminMarketplaceOrder>(API_ROUTES.adminMarketplace.dispatchMissionAuto(missionId), payload ?? {}),
+
+    getStats: (signal?: AbortSignal) =>
+        apiClient.get<AdminMarketplaceStats>(API_ROUTES.adminMarketplace.stats, {signal}),
+
+    listOrders: (filter: AdminOrderFilter, signal?: AbortSignal) => {
+        const qs = new URLSearchParams();
+        if (filter.status) qs.set('status', filter.status);
+        if (filter.projectId?.trim()) qs.set('projectId', filter.projectId.trim());
+        if (filter.providerId?.trim()) qs.set('providerId', filter.providerId.trim());
+        if (filter.search?.trim()) qs.set('search', filter.search.trim());
+        qs.set('page', String(filter.page ?? 0));
+        qs.set('size', String(filter.size ?? 20));
+        return apiClient.get<AdminMarketplaceOrderPage>(`${API_ROUTES.missions.list}?${qs.toString()}`, {signal});
+    },
+    getOrderDetail: (id: number, signal?: AbortSignal) =>
+        apiClient.get<AdminMarketplaceOrder>(API_ROUTES.missions.detail(id), {signal}),
+    cancelOrder: (id: number, reason: string) =>
+        apiClient.post<AdminMarketplaceOrder>(API_ROUTES.missions.cancel(id), {reason}),
 
     listPayouts: (params: { status?: PayoutStatus | ''; page?: number; size?: number }, signal?: AbortSignal) => {
         const qs = new URLSearchParams();

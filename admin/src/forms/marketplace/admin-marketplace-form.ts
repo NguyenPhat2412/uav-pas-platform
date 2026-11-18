@@ -1,6 +1,8 @@
 import type {
+    AutoDispatchInput,
     ListingModerationInput,
     ListingModerationStatus,
+    ManualDispatchInput,
     PayoutProcessInput,
     ProviderModerationInput,
     ProviderVerificationStatus,
@@ -119,4 +121,43 @@ export function validatePayoutProcessInput(params: {
             adminNote,
         },
     };
+}
+
+export function buildManualDispatchInput(params: {
+    providerId: number;
+    rawNote?: string;
+}): ManualDispatchInput {
+    return {
+        providerId: params.providerId,
+        note: params.rawNote?.trim() || undefined,
+    };
+}
+
+export function buildAutoDispatchInput(params: {
+    missionId?: number;
+    rawNote?: string;
+}): AutoDispatchInput {
+    return {
+        missionId: params.missionId,
+        note: params.rawNote?.trim() || undefined,
+    };
+}
+
+export function canAdminCancelMarketplaceOrder(status?: string | null, statusGroup?: string | null): boolean {
+    if (!status) return false;
+    const blockedStatuses = new Set(['IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'REJECTED', 'FAILED']);
+    if (blockedStatuses.has(status)) return false;
+    const blockedGroups = new Set(['IN_FLIGHT', 'DELIVERED', 'TO_REVIEW', 'CANCELLED']);
+    if (statusGroup && blockedGroups.has(statusGroup)) return false;
+    return true;
+}
+
+export function validateAdminOrderCancelReason(
+    rawReason?: string,
+): { ok: true; reason: string } | { ok: false; code: 'REASON_REQUIRED' } {
+    const reason = rawReason?.trim() || '';
+    if (!reason) {
+        return {ok: false, code: 'REASON_REQUIRED'};
+    }
+    return {ok: true, reason};
 }

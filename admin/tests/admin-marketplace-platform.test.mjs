@@ -114,3 +114,36 @@ test('Provider moderation UI wires skeleton, error/empty states, document drawer
         payload: {status: 'PUBLISHED', moderationNote: 'Đạt chuẩn dịch vụ', featured: true},
     });
 });
+
+test('Admin dispatch queue wires manual/auto endpoints, ORDER_UPDATED realtime, and <= 300 line cap', async () => {
+    const {API_ROUTES} = await load(compile(read('src/lib/api/routes.ts')));
+    assert.equal(API_ROUTES.adminMarketplace.dispatch, '/api/v1/admin/marketplace/dispatch');
+    assert.equal(API_ROUTES.adminMarketplace.dispatchMission(77), '/api/v1/admin/marketplace/dispatch/77');
+    assert.equal(API_ROUTES.adminMarketplace.dispatchMissionAuto(77), '/api/v1/admin/marketplace/dispatch/77/auto');
+    assert.equal(API_ROUTES.adminMarketplace.stats, '/api/v1/admin/marketplace/stats');
+
+    const wsClient = read('src/lib/realtime-ws.ts');
+    assert.match(wsClient, /ORDER_UPDATED/);
+
+    const hookSource = read('src/hooks/marketplace/useAdminMarketplace.ts');
+    assert.match(hookSource, /useAdminMarketplaceRealtime/);
+    assert.match(hookSource, /ORDER_UPDATED/);
+
+    const form = await load(compile(read('src/forms/marketplace/admin-marketplace-form.ts')));
+    assert.deepEqual(form.buildManualDispatchInput({providerId: 9, rawNote: ' Giao ưu tiên '}), {
+        providerId: 9,
+        note: 'Giao ưu tiên',
+    });
+    assert.deepEqual(form.buildAutoDispatchInput({missionId: 77, rawNote: '  '}), {
+        missionId: 77,
+        note: undefined,
+    });
+
+    for (const rel of [
+        'src/components/marketplace/AdminMarketplaceDispatch.tsx',
+        'src/components/marketplace/DispatchQueueCard.tsx',
+    ]) {
+        const lines = read(rel).split('\n').length;
+        assert.ok(lines <= 301, `${rel} must stay <= 300 lines (got ${lines - 1})`);
+    }
+});

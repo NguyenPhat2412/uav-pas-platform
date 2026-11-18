@@ -36,6 +36,13 @@ export type AdminRealtimeFrame =
           status: string;
       }
     | {
+          type: 'ORDER_UPDATED';
+          timestamp: string;
+          missionId: number;
+          status: string;
+          statusGroup?: string | null;
+      }
+    | {
           type: 'NOTIFICATION_CREATED';
           timestamp: string;
           notification: {

@@ -122,6 +122,115 @@ export interface SignedMediaDownloadUrl {
     expiresInSeconds?: number;
 }
 
+export type ProviderOrderStatus =
+    | 'NOT_APPLICABLE'
+    | 'PENDING_DISPATCH'
+    | 'OPEN_RFQ'
+    | 'PENDING_PROVIDER'
+    | 'ACCEPTED'
+    | 'DECLINED';
+
+export interface AdminMarketplaceOrder {
+    id: number;
+    version?: number;
+    code: string;
+    customerId?: number | null;
+    customerName?: string | null;
+    serviceId?: number | null;
+    missionType: string;
+    title: string;
+    description?: string | null;
+    requestedDate?: string | null;
+    startTime?: string | null;
+    expectedEndTime?: string | null;
+    locationName?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+    stationId?: number | null;
+    uavId?: number | null;
+    operatorId?: number | null;
+    priority?: string;
+    status: string;
+    notes?: string | null;
+    completionNote?: string | null;
+    failureReason?: string | null;
+    failureNotes?: string | null;
+    billingStatus?: string | null;
+    providerId?: number | null;
+    providerDisplayName?: string | null;
+    listingId?: number | null;
+    listingTitle?: string | null;
+    pricingModelSnapshot?: 'PER_HOUR' | 'PER_HECTARE' | 'PER_DAY' | 'PER_PACKAGE' | null;
+    unitPriceSnapshotVnd?: number | null;
+    bookingUnits?: number | null;
+    quotedSubtotalVnd?: number | null;
+    securityDepositVnd?: number | null;
+    providerResponseStatus?: ProviderOrderStatus | null;
+    providerResponseNote?: string | null;
+    projectId?: number | null;
+    projectName?: string | null;
+    subscriptionId?: number | null;
+    statusGroup?: string | null;
+    reviewed?: boolean;
+    createdAt?: string | null;
+    updatedAt?: string | null;
+}
+
+export interface DispatchCandidateProvider {
+    providerId: number;
+    displayName: string;
+    province: string;
+    distanceKm: number;
+    availableUavCount: number;
+    ratingAvg: number;
+    completedMissionsCount: number;
+    score: number;
+}
+
+export interface AdminDispatchQueueItem {
+    mission: AdminMarketplaceOrder;
+    candidates: DispatchCandidateProvider[];
+}
+
+export interface ManualDispatchInput {
+    providerId: number;
+    note?: string;
+}
+
+export interface AutoDispatchInput {
+    missionId?: number;
+    note?: string;
+}
+
+export interface AdminMarketplaceStats {
+    totalOrders: number;
+    pendingDispatchCount: number;
+    pendingProviderCount: number;
+    scheduledCount: number;
+    inFlightCount: number;
+    deliveredCount: number;
+    reviewedCount: number;
+    cancelledCount: number;
+    activeProvidersCount: number;
+    pendingProvidersCount: number;
+    publishedListingsCount: number;
+    pendingListingsCount: number;
+    illustrativeGrossRevenueVnd: number;
+    illustrativePlatformFeeVnd: number;
+    illustrativeNote?: string | null;
+}
+
+export interface AdminOrderFilter {
+    status?: string;
+    projectId?: string;
+    providerId?: string;
+    search?: string;
+    page?: number;
+    size?: number;
+}
+
 export type AdminProviderPage = PageResponse<AdminProviderProfile>;
 export type AdminListingPage = PageResponse<AdminMarketplaceListing>;
 export type AdminPayoutPage = PageResponse<AdminProviderPayout>;
+export type AdminDispatchQueuePage = PageResponse<AdminDispatchQueueItem>;
+export type AdminMarketplaceOrderPage = PageResponse<AdminMarketplaceOrder>;
