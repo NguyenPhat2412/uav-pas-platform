@@ -354,12 +354,17 @@ export function ProviderFleetView() {
                                                     <StateIcon size={20} aria-hidden="true"/>
                                                 </span>
                                                 <div className="min-w-0">
-                                                    <h3 className="m-0 line-clamp-2 text-base font-semibold text-slate-900">
+                                                    <h3 className="m-0 line-clamp-2 break-words text-base font-semibold text-slate-900">
                                                         {sanitizeMarketplaceText(uav.model)}
                                                     </h3>
-                                                    <p className="m-0 mt-0.5 break-words font-mono text-xs text-slate-500">
-                                                        {sanitizeMarketplaceText(uav.serialNumber)} · {sanitizeMarketplaceText(uav.manufacturer)}
+                                                    <p className="m-0 mt-0.5 font-mono text-xs font-medium whitespace-nowrap text-slate-600">
+                                                        {sanitizeMarketplaceText(uav.serialNumber)}
                                                     </p>
+                                                    {uav.manufacturer && (
+                                                        <p className="m-0 mt-0.5 line-clamp-2 break-words text-xs text-slate-500">
+                                                            {sanitizeMarketplaceText(uav.manufacturer)}
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
                                             <span
