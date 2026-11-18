@@ -171,6 +171,17 @@ test('GeoJSON polygon conversion round-trips flight plans and validates project/
     );
 
     assert.equal(mf.estimateBookingSubtotal(1_500_000, 1, 3), 4_500_000);
+
+    assert.equal(pf.formatTrackingLink(null), '100%');
+    assert.equal(pf.formatTrackingLink('Ổn định'), 'Ổn định');
+    assert.equal(pf.formatTrackingLink({sent: 10, delivered: 10, lost: 0, lossPct: 0, averageLatencyMs: 0}), '100%');
+    assert.equal(pf.formatTrackingLink({sent: 10, delivered: 9, lost: 1, lossPct: 10, averageLatencyMs: 24}), '90% · 24ms');
+    assert.doesNotMatch(pf.formatTrackingLink({lossPct: 0}), /object/i);
+
+    assert.equal(
+        pf.sanitizeMarketplaceText('Khảo sát RTK (minh hoạ) chuẩn cao'),
+        'Khảo sát GNSS — minh hoạ chuẩn cao',
+    );
 });
 
 test('customerPro marketplaceShop and customer nav catalogs maintain 100% vi/en/ja parity', () => {

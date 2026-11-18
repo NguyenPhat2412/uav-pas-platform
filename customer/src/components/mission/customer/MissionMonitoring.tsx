@@ -7,9 +7,11 @@ import {Battery, Gauge, Mountain, Navigation, Radio, Timer} from 'lucide-react';
 import {MapLayerToolbar} from '@/components/shared/MapLayerToolbar';
 import {useI18n} from '@/providers/I18nContext';
 import {useMissionTelemetry} from '@/hooks/uav/useTelemetry';
+import {useOrderTracking} from '@/hooks/project/useCustomerProjects';
 import {calculateHaversineDistance} from '@/utils/sar/sar-algorithms';
 import type {UavTelemetry} from '@/types/uav/telemetry.types';
 import type {Mission} from '@/types/mission/mission.types';
+import type {OrderTrackingSnapshot} from '@/types/project/project.types';
 import {formatTelemetryNumber} from '@/lib/format';
 import {MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
@@ -18,32 +20,47 @@ import {renderAirspaceZonesLayer} from '@/utils/airspace/map-overlays';
 import {Mission3DReplayAndTerrainCard} from '@/components/mission/Mission3DReplayAndTerrainCard';
 
 const LIVE_STATUSES = ['READY', 'IN_FLIGHT', 'IN_PROGRESS'];
+const ENDED_STATUSES = ['DELIVERED', 'COMPLETED', 'REVIEWED', 'FAILED'];
 // Leaflet styles vectors through options, so the theme colours are spelled out here.
-const C = {red: '#c43a4a', blue: '#475569', muted: '#94a3b8'};
+const C = {red: '#ab2523', blue: '#475569', muted: '#94a3b8'};
 
 /** The customer's view of the flight: planned area, the assigned UAV's live position and its reported values. */
 export function MissionMonitoring({mission}: { mission: Mission }) {
     const {t, formatNumber, formatDate} = useI18n();
     const live = LIVE_STATUSES.includes(mission.status);
+    const ended = ENDED_STATUSES.includes(mission.status);
     const telemetry = useMissionTelemetry(mission.id, {
         enabled:
             mission.uavId != null &&
             !['DRAFT', 'PENDING_DISPATCH', 'PENDING_PROVIDER', 'PENDING_CONFIRMATION'].includes(mission.status),
         live,
     });
+    const orderTracking = useOrderTracking(
+        mission.id,
+        live,
+        !['DRAFT', 'CANCELLED', 'REJECTED'].includes(mission.status),
+    );
+    const simSnap = orderTracking.isSuccess ? orderTracking.data : null;
     const fix = telemetry.data ?? null;
     // A sample from another mission of the same UAV says nothing about this one.
     const ownFix = fix && (fix.missionId == null || fix.missionId === mission.id) ? fix : null;
     const plan = mission.flightPlan ?? null;
-    const center: [number, number] | null = plan ? [plan.centerLatitude, plan.centerLongitude]
-        : mission.latitude != null && mission.longitude != null ? [mission.latitude, mission.longitude] : null;
+    const center: [number, number] | null = plan
+        ? [plan.centerLatitude, plan.centerLongitude]
+        : mission.latitude != null && mission.longitude != null
+          ? [mission.latitude, mission.longitude]
+          : simSnap?.position?.latitude != null && simSnap?.position?.longitude != null
+            ? [simSnap.position.latitude, simSnap.position.longitude]
+            : null;
     const toArea = ownFix && center
         ? calculateHaversineDistance({lat: ownFix.latitude, lng: ownFix.longitude}, {lat: center[0], lng: center[1]})
         : null;
     const num = (v: number | null | undefined, digits = 1) => formatTelemetryNumber(v, formatNumber, digits);
 
-    const notice = mission.uavId == null ? t('missionMonitor.noUav')
-        : !live && !['COMPLETED', 'FAILED'].includes(mission.status) ? t('missionMonitor.beforeFlight')
+    const hasSimFix = Boolean(simSnap?.activeSimulation && simSnap.position);
+    const notice = hasSimFix ? null
+        : mission.uavId == null ? t('missionMonitor.noUav')
+        : !live && !ended ? t('missionMonitor.beforeFlight')
             : telemetry.isPending ? t('missionMonitor.loading')
                 : telemetry.isError ? t('missionMonitor.loadError')
                     : !ownFix ? (live ? t('missionMonitor.waiting') : t('missionMonitor.noTrack'))
@@ -52,16 +69,16 @@ export function MissionMonitoring({mission}: { mission: Mission }) {
 
     return <div className="grid gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className={cn('inline-flex items-center gap-2 rounded-panel border px-3 py-1 text-xs font-bold',
-                live && ownFix && !ownFix.stale ? 'border-blue-200 bg-uav-blue-light text-uav-blue' : 'border-border bg-background text-muted')}>
-                <span className={cn('h-2 w-2 rounded-full', live && ownFix && !ownFix.stale ? 'animate-pulse bg-uav-blue' : 'bg-slate-300')} aria-hidden="true"/>
-                {live && ownFix && !ownFix.stale ? t('missionMonitor.live') : t(`missionMonitor.phase.${live ? 'live' : mission.status === 'COMPLETED' || mission.status === 'FAILED' ? 'ended' : 'planned'}`)}
+            <span className={cn('inline-flex items-center gap-2 rounded-panel border px-3 py-1 text-xs font-bold whitespace-nowrap',
+                (live && ownFix && !ownFix.stale) || hasSimFix ? 'border-blue-200 bg-uav-blue-light text-uav-blue' : 'border-border bg-background text-muted')}>
+                <span className={cn('h-2 w-2 rounded-full', (live && ownFix && !ownFix.stale) || hasSimFix ? 'animate-pulse bg-uav-blue' : 'bg-slate-300')} aria-hidden="true"/>
+                {(live && ownFix && !ownFix.stale) || hasSimFix ? t('missionMonitor.live') : t(`missionMonitor.phase.${live ? 'live' : ended ? 'ended' : 'planned'}`)}
             </span>
             {ownFix && <span className="text-xs text-muted">{t('missionMonitor.updated', {at: formatDate(ownFix.recordedAt, {timeStyle: 'medium'})})}</span>}
         </div>
         {notice && <p role="status" className="m-0 rounded-panel border-l-4 border-l-uav-amber bg-uav-amber-light px-3.5 py-2.5 text-sm text-amber-900">{notice}</p>}
 
-        <FlightMap mission={mission} fix={ownFix} center={center}/>
+        <FlightMap mission={mission} fix={ownFix} sim={simSnap} center={center}/>
 
         {ownFix && <dl className="m-0 grid grid-cols-2 gap-3 md:grid-cols-3">
             <Stat icon={<Mountain size={15}/>} label={t('missionMonitor.altitude')} value={ownFix.altitudeAglMeters == null ? '—' : `${num(ownFix.altitudeAglMeters, 0)} m`}
@@ -94,7 +111,7 @@ export function MissionMonitoring({mission}: { mission: Mission }) {
     </div>;
 }
 
-function FlightMap({mission, fix, center}: { mission: Mission; fix: UavTelemetry | null; center: [number, number] | null }) {
+function FlightMap({mission, fix, sim, center}: { mission: Mission; fix: UavTelemetry | null; sim: OrderTrackingSnapshot | null; center: [number, number] | null }) {
     const {t, formatNumber} = useI18n();
     const {config, basemap, setBasemap} = useMapConfig();
     const airspaceZonesQuery = useAirspaceZones(true);
@@ -198,11 +215,21 @@ function FlightMap({mission, fix, center}: { mission: Mission; fix: UavTelemetry
         const group = uavLayer.current;
         if (!ready || !L || !group) return;
         group.clearLayers();
-        if (!fix) return;
-        L.marker([fix.latitude, fix.longitude], {keyboard: false, zIndexOffset: 1000, icon: L.divIcon({className: '', iconSize: [28, 28], iconAnchor: [14, 14],
-            html: `<span style="display:flex;width:28px;height:28px;align-items:center;justify-content:center;background:${fix.stale ? C.muted : C.blue};color:#fff;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgb(0 0 0/.4);transform:rotate(${fix.headingDeg ?? 0}deg);font:700 14px system-ui">&#9650;</span>`})})
+        if (sim?.waypoints && sim.waypoints.length >= 2) {
+            L.polyline(sim.waypoints, {color: C.blue, weight: 2, dashArray: '5 5', opacity: 0.65}).addTo(group);
+        }
+        if (sim?.track && sim.track.length >= 2) {
+            L.polyline(sim.track, {color: C.red, weight: 3, opacity: 0.9}).addTo(group);
+        }
+        const lat = fix?.latitude ?? sim?.position?.latitude;
+        const lng = fix?.longitude ?? sim?.position?.longitude;
+        const hdg = fix?.headingDeg ?? sim?.position?.headingDeg ?? 0;
+        if (lat == null || lng == null) return;
+        const bg = fix ? (fix.stale ? C.muted : C.blue) : C.red;
+        L.marker([lat, lng], {keyboard: false, zIndexOffset: 1000, icon: L.divIcon({className: '', iconSize: [28, 28], iconAnchor: [14, 14],
+            html: `<span style="display:flex;width:28px;height:28px;align-items:center;justify-content:center;background:${bg};color:#fff;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgb(0 0 0/.4);transform:rotate(${hdg}deg);font:700 14px system-ui">&#9650;</span>`})})
             .bindTooltip(t('missionMonitor.uav')).addTo(group);
-    }, [ready, fix, t]);
+    }, [ready, fix, sim, t]);
 
     if (!center) return <p className="m-0 rounded-panel border border-dashed border-border px-4 py-8 text-center text-sm text-muted">{t('missionMonitor.noLocation')}</p>;
     return (

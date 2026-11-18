@@ -33,7 +33,22 @@ export function CustomerShopHeroBanner() {
 
     return (
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-12">
-            <div className="relative overflow-hidden rounded-panel border border-slate-200 bg-slate-900 lg:col-span-8">
+            <div
+                tabIndex={0}
+                role="region"
+                aria-roledescription="carousel"
+                aria-label={t('publicSite.catalog.title')}
+                onKeyDown={e => {
+                    if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        prev();
+                    } else if (e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        next();
+                    }
+                }}
+                className="relative overflow-hidden rounded-panel border border-slate-200 bg-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:col-span-8"
+            >
                 <div className="relative aspect-[16/7] min-h-[168px] w-full sm:min-h-[196px]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -57,17 +72,17 @@ export function CustomerShopHeroBanner() {
                                 type="button"
                                 onClick={prev}
                                 aria-label={t('publicSite.catalog.prevPage')}
-                                className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-xs transition-colors hover:bg-white/25"
+                                className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-xs transition-colors hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                             >
-                                <ChevronLeft size={16} aria-hidden="true"/>
+                                <ChevronLeft size={18} aria-hidden="true"/>
                             </button>
                             <button
                                 type="button"
                                 onClick={next}
                                 aria-label={t('publicSite.catalog.nextPage')}
-                                className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-xs transition-colors hover:bg-white/25"
+                                className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-xs transition-colors hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                             >
-                                <ChevronRight size={16} aria-hidden="true"/>
+                                <ChevronRight size={18} aria-hidden="true"/>
                             </button>
                         </div>
                     </div>

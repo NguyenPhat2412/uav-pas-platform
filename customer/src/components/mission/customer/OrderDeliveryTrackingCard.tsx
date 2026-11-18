@@ -11,16 +11,19 @@ import {
     ShieldCheck,
     Star,
 } from 'lucide-react';
+import {formatTrackingLink} from '@/forms/project/project-form';
 import {useOrderRealtimeSync, useOrderTracking} from '@/hooks/project/useCustomerProjects';
 import {useI18n} from '@/providers/I18nContext';
 import type {Mission} from '@/types/mission/mission.types';
+import type {OrderTrackingSnapshot} from '@/types/project/project.types';
 
-function resolveMilestoneIndex(mission: Mission): number {
-    if (mission.status === 'REVIEWED' || mission.reviewed) return 5;
-    if (mission.status === 'DELIVERED' || mission.status === 'COMPLETED') return 4;
-    if (mission.status === 'IN_FLIGHT' || mission.status === 'IN_PROGRESS') return 3;
-    if (['ACCEPTED', 'SCHEDULED', 'CONFIRMED', 'RESOURCE_RESERVED', 'READY'].includes(mission.status)) return 2;
-    if (mission.status === 'PENDING_PROVIDER') return 1;
+function resolveMilestoneIndex(mission: Mission, snapshot?: OrderTrackingSnapshot | null): number {
+    const effectiveStatus = snapshot?.status || mission.status;
+    if (effectiveStatus === 'REVIEWED' || mission.reviewed) return 5;
+    if (effectiveStatus === 'DELIVERED' || effectiveStatus === 'COMPLETED') return 4;
+    if (effectiveStatus === 'IN_FLIGHT' || effectiveStatus === 'IN_PROGRESS' || snapshot?.activeSimulation) return 3;
+    if (['ACCEPTED', 'SCHEDULED', 'CONFIRMED', 'RESOURCE_RESERVED', 'READY'].includes(effectiveStatus)) return 2;
+    if (effectiveStatus === 'PENDING_PROVIDER') return 1;
     return 0;
 }
 
@@ -32,7 +35,7 @@ export function OrderDeliveryTrackingCard({mission}: { mission: Mission }) {
     const {wsConnected} = useOrderRealtimeSync(mission.id);
 
     const snapshot = trackingQuery.isSuccess ? trackingQuery.data : null;
-    const activeIdx = resolveMilestoneIndex(mission);
+    const activeIdx = resolveMilestoneIndex(mission, snapshot);
     const progressPct = snapshot
         ? Math.max(0, Math.min(100, Math.round(Number(snapshot.progressPct || 0))))
         : mission.status === 'DELIVERED' || mission.status === 'COMPLETED' || mission.status === 'REVIEWED'
@@ -111,7 +114,7 @@ export function OrderDeliveryTrackingCard({mission}: { mission: Mission }) {
                                 <span>{t('marketplaceShop.trackingLink')}</span>
                             </dt>
                             <dd className="m-0 mt-1 truncate text-sm font-bold text-slate-900">
-                                {snapshot.link != null ? String(snapshot.link) : 'OK'}
+                                {formatTrackingLink(snapshot.link)}
                             </dd>
                         </div>
                     </dl>

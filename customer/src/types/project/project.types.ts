@@ -88,15 +88,27 @@ export interface OrderTrackingPosition {
     speedMs?: number | null;
 }
 
+export interface OrderTrackingLinkMetrics {
+    sent?: number | null;
+    delivered?: number | null;
+    lost?: number | null;
+    lossPct?: number | null;
+    averageLatencyMs?: number | null;
+}
+
 export interface OrderTrackingSnapshot {
     missionId?: number;
+    missionCode?: string | null;
     status?: MissionStatus | string | null;
     statusGroup?: OrderStatusGroup | string | null;
+    activeSimulation?: boolean;
     progressPct: number;
     position?: OrderTrackingPosition | null;
     battery?: number | null;
-    link?: string | number | null;
+    link?: OrderTrackingLinkMetrics | string | number | null;
     etaMinutes?: number | null;
+    waypoints?: [number, number][] | null;
+    track?: [number, number][] | null;
     updatedAt?: string | null;
 }
 

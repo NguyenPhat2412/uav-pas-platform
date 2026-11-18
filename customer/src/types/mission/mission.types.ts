@@ -292,6 +292,7 @@ export interface MissionReview {
 }
 
 export interface MissionReviewUpsertInput {
+    rating?: number;
     overallRating: number;
     dataQualityRating: number;
     timelinessRating: number;

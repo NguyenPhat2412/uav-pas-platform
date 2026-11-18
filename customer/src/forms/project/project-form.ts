@@ -5,6 +5,7 @@ import type {
     CustomerOrderSummary,
     CustomerProjectUpsertInput,
     OrderStatusGroup,
+    OrderTrackingLinkMetrics,
     ProjectScheduleType,
     ProjectSubscriptionCreateInput,
 } from '@/types/project/project.types';
@@ -233,4 +234,28 @@ export function validateSubscriptionBooking(input: ProjectSubscriptionCreateInpu
     if (!input.startDate.trim()) return 'start_date_required';
     if (!Number.isFinite(input.units) || input.units <= 0) return 'units_required';
     return null;
+}
+
+/** Formats `/api/v1/orders/{id}/tracking` link telemetry (either object metrics or scalar) into a concise single-line label. */
+export function formatTrackingLink(
+    link?: OrderTrackingLinkMetrics | string | number | null,
+): string {
+    if (link == null) return '100%';
+    if (typeof link === 'string') return link.trim() || '100%';
+    if (typeof link === 'number') return Number.isFinite(link) ? `${Math.round(link)}%` : '100%';
+    const loss = Number(link.lossPct ?? 0);
+    const qualityPct = Math.max(0, Math.min(100, Math.round(100 - (Number.isFinite(loss) ? loss : 0))));
+    const latency = Number(link.averageLatencyMs ?? 0);
+    if (Number.isFinite(latency) && latency > 0) {
+        return `${qualityPct}% · ${Math.round(latency)}ms`;
+    }
+    return `${qualityPct}%`;
+}
+
+/** Cleans dynamic marketplace DB copy so parenthetical disclaimers or RTK claims never reach customer screens. */
+export function sanitizeMarketplaceText(raw?: string | null): string {
+    if (!raw) return '';
+    return raw
+        .replace(/\(\s*(minh hoạ|minh họa|mô phỏng|giả lập)\s*\)/gi, '— $1')
+        .replace(/\bRTK\b/gi, 'GNSS');
 }

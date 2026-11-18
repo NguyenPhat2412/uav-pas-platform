@@ -156,7 +156,7 @@ export function ProjectSubscriptionWizardDialog({
                             type="button"
                             onClick={onClose}
                             aria-label={t('common.close')}
-                            className="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-control text-slate-500 hover:bg-slate-200/70 hover:text-slate-900"
+                            className="inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-control text-slate-500 hover:bg-slate-200/70 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                         >
                             <X size={18} aria-hidden="true"/>
                         </button>

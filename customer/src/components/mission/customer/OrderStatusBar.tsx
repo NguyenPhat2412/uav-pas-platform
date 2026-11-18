@@ -121,9 +121,22 @@ export function OrderStatusBar({
                         key={meta.group}
                         type="button"
                         aria-pressed={selected}
+                        aria-label={count > 0 ? `${label}: ${count}` : label}
                         title={label}
                         onClick={() => onSelectGroup?.(selected ? '' : meta.group)}
-                        className={`flex min-h-15 min-w-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-control px-1 py-1.5 text-center transition-colors ${
+                        onKeyDown={e => {
+                            const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+                            if (!step) return;
+                            e.preventDefault();
+                            const buttons = Array.from(
+                                e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('button') ?? [],
+                            );
+                            const curr = buttons.indexOf(e.currentTarget);
+                            if (curr >= 0 && buttons.length > 0) {
+                                buttons[(curr + step + buttons.length) % buttons.length]?.focus();
+                            }
+                        }}
+                        className={`flex min-h-15 min-w-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-control px-1 py-1.5 text-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                             selected ? 'bg-uav-red-light/70' : 'hover:bg-slate-50'
                         }`}
                     >

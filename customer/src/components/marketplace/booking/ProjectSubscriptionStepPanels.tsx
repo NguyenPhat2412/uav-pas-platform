@@ -45,8 +45,9 @@ export function ProjectStepPanel({
                 <div className="grid grid-cols-2 gap-2">
                     <button
                         type="button"
+                        aria-pressed={effectiveMode === 'existing'}
                         onClick={() => onModeChange('existing')}
-                        className={`min-h-10 cursor-pointer rounded-control border px-3 text-xs font-bold whitespace-nowrap transition-colors ${
+                        className={`min-h-11 cursor-pointer rounded-control border px-3 text-xs font-bold whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                             effectiveMode === 'existing'
                                 ? 'border-primary bg-uav-red-light text-primary'
                                 : 'border-slate-200 bg-white text-slate-700'
@@ -56,8 +57,9 @@ export function ProjectStepPanel({
                     </button>
                     <button
                         type="button"
+                        aria-pressed={effectiveMode === 'new'}
                         onClick={() => onModeChange('new')}
-                        className={`inline-flex min-h-10 cursor-pointer items-center justify-center gap-1 rounded-control border px-3 text-xs font-bold whitespace-nowrap transition-colors ${
+                        className={`inline-flex min-h-11 cursor-pointer items-center justify-center gap-1 rounded-control border px-3 text-xs font-bold whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                             effectiveMode === 'new'
                                 ? 'border-primary bg-uav-red-light text-primary'
                                 : 'border-slate-200 bg-white text-slate-700'
@@ -77,8 +79,9 @@ export function ProjectStepPanel({
                             <button
                                 key={proj.id}
                                 type="button"
+                                aria-pressed={active}
                                 onClick={() => onSelectProject(proj.id)}
-                                className={`flex w-full cursor-pointer items-center justify-between gap-3 rounded-panel border p-3.5 text-left transition-colors ${
+                                className={`flex w-full cursor-pointer items-center justify-between gap-3 rounded-panel border p-3.5 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                                     active
                                         ? 'border-primary bg-uav-red-light/50'
                                         : 'border-slate-200 bg-white hover:bg-slate-50'

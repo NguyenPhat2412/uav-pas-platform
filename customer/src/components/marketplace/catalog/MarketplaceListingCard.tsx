@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {Camera, CheckCircle2, Clock3, Database, MapPin, MapPinned, Plane, ShieldCheck, Star, type LucideIcon} from 'lucide-react';
 import {scenes} from '@/components/marketing/UavPhoto';
 import {formatVndCompact} from '@/forms/marketplace/marketplace-forms';
-import {resolveListingBadge} from '@/forms/project/project-form';
+import {resolveListingBadge, sanitizeMarketplaceText} from '@/forms/project/project-form';
 import {useI18n} from '@/providers/I18nContext';
 import type {ListingType, MarketplaceListing, PricingModel} from '@/types/marketplace/marketplace.types';
 
@@ -60,7 +60,7 @@ export function MarketplaceListingCard({
         return t('publicSite.catalog.unitHour');
     };
 
-    const cleanTitle = item.title;
+    const cleanTitle = sanitizeMarketplaceText(item.title);
 
     return (
         <article className="group flex flex-col justify-between overflow-hidden rounded-panel border border-slate-200 bg-white shadow-2xs transition-shadow duration-200 hover:shadow-md">

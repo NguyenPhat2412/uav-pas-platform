@@ -3,23 +3,13 @@
 import {useState} from 'react';
 import Link from 'next/link';
 import {useSearchParams} from 'next/navigation';
-import {
-    CheckCircle2,
-    ChevronLeft,
-    ChevronRight,
-    Clock3,
-    Layers,
-    MapPin,
-    Navigation,
-    ShieldCheck,
-    Star,
-} from 'lucide-react';
+import {CheckCircle2, ChevronLeft, ChevronRight, Clock3, Layers, MapPin, Navigation, ShieldCheck, Star} from 'lucide-react';
 import {PageGuard} from '@/components/customer/CustomerLayout';
 import {resolveListingPhoto} from '@/components/marketplace/catalog/MarketplaceListingCard';
 import {ProjectSubscriptionWizardDialog} from '@/components/marketplace/booking/ProjectSubscriptionWizardDialog';
 import {Alert, Button} from '@/components/ui';
 import {formatVndCompact, listingTypeLabel, pricingUnitLabel} from '@/forms/marketplace/marketplace-forms';
-import {resolveListingBadge} from '@/forms/project/project-form';
+import {resolveListingBadge, sanitizeMarketplaceText} from '@/forms/project/project-form';
 import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplace';
 import {useI18n} from '@/providers/I18nContext';
 
@@ -100,7 +90,7 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
 
     const deliverableBullets = (
         listing.deliverablesSummary
-            ? listing.deliverablesSummary.split(/[,;•\n]+/).map(s => s.trim()).filter(Boolean)
+            ? sanitizeMarketplaceText(listing.deliverablesSummary).split(/[,;•\n]+/).map(s => s.trim()).filter(Boolean)
             : []
     );
     const checklist = deliverableBullets.length > 0
@@ -128,10 +118,19 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
                 </div>
 
                 {/* Slideable Hero Photo Gallery */}
-                <section className="overflow-hidden rounded-panel border border-slate-200 bg-card">
+                <section
+                    tabIndex={0}
+                    aria-roledescription="carousel"
+                    aria-label={sanitizeMarketplaceText(listing.title)}
+                    onKeyDown={e => {
+                        if (e.key === 'ArrowLeft') setSlideIdx(i => (i - 1 + slides.length) % slides.length);
+                        else if (e.key === 'ArrowRight') setSlideIdx(i => (i + 1) % slides.length);
+                    }}
+                    className="overflow-hidden rounded-panel border border-slate-200 bg-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >
                     <div className="relative aspect-[16/9] max-h-[360px] w-full overflow-hidden bg-uav-red-light">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={activeSlide.src} alt={activeSlide.alt} className="h-full w-full object-cover"/>
+                        <img src={activeSlide.src} alt={sanitizeMarketplaceText(activeSlide.alt)} className="h-full w-full object-cover"/>
                         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent"/>
                         <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2">
                             <span className="inline-flex items-center gap-1 rounded-control bg-primary px-2.5 py-1 text-xs font-bold whitespace-nowrap text-white">
@@ -143,17 +142,17 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
                                     type="button"
                                     onClick={() => setSlideIdx(i => (i - 1 + slides.length) % slides.length)}
                                     aria-label={t('publicSite.catalog.prevPage')}
-                                    className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-xs hover:bg-white/30"
+                                    className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-xs hover:bg-white/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                                 >
-                                    <ChevronLeft size={16} aria-hidden="true"/>
+                                    <ChevronLeft size={18} aria-hidden="true"/>
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setSlideIdx(i => (i + 1) % slides.length)}
                                     aria-label={t('publicSite.catalog.nextPage')}
-                                    className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-xs hover:bg-white/30"
+                                    className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-xs hover:bg-white/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                                 >
-                                    <ChevronRight size={16} aria-hidden="true"/>
+                                    <ChevronRight size={18} aria-hidden="true"/>
                                 </button>
                             </div>
                         </div>
@@ -162,10 +161,10 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
                     {/* Title, Illustrative Price & Verified Rating */}
                     <div className="space-y-3 p-4 sm:p-5">
                         <h1 className="m-0 line-clamp-2 text-xl font-bold text-slate-900">
-                            {listing.title}
+                            {sanitizeMarketplaceText(listing.title)}
                         </h1>
                         {listing.summary && (
-                            <p className="m-0 text-sm leading-relaxed text-slate-600">{listing.summary}</p>
+                            <p className="m-0 text-sm leading-relaxed text-slate-600">{sanitizeMarketplaceText(listing.summary)}</p>
                         )}
                         <div className="flex flex-wrap items-baseline justify-between gap-3 border-t border-slate-100 pt-3 tabular-nums">
                             <div>

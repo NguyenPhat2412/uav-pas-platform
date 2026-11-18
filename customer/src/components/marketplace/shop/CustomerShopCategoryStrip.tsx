@@ -33,7 +33,7 @@ export function CustomerShopCategoryStrip({
             aria-label={t('publicSite.catalog.allMissionTypes')}
             className="grid grid-cols-5 gap-2 rounded-panel border border-slate-200 bg-card p-3"
         >
-            {CATEGORIES.map(cat => {
+            {CATEGORIES.map((cat, idx) => {
                 const Icon = cat.icon;
                 const selected = active === cat.value;
                 const label = t(cat.labelKey);
@@ -45,7 +45,17 @@ export function CustomerShopCategoryStrip({
                         aria-label={label}
                         title={label}
                         onClick={() => onSelect(cat.value)}
-                        className="group flex min-h-16 min-w-0 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-control px-1 py-1.5 text-center transition-transform duration-150 active:scale-[0.97] motion-reduce:transition-none"
+                        onKeyDown={e => {
+                            const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+                            if (!step) return;
+                            e.preventDefault();
+                            const nextIdx = (idx + step + CATEGORIES.length) % CATEGORIES.length;
+                            const nextCat = CATEGORIES[nextIdx];
+                            if (nextCat) onSelect(nextCat.value);
+                            const buttons = e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('button');
+                            buttons?.[nextIdx]?.focus();
+                        }}
+                        className="group flex min-h-16 min-w-0 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-control px-1 py-1.5 text-center transition-transform duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-[0.97] motion-reduce:transition-none"
                     >
                         <span
                             className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors ${

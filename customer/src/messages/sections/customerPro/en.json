@@ -370,6 +370,9 @@
     "trainingEmptyDesc": "New guide courses will appear here.",
     "trainingNoMatchDesc": "Try clearing filters or changing your keyword.",
     "trainingCompletedSummary": "Completed {completed}/{total} courses",
-    "trainingAudienceHint": "Course catalog as seen by {audience}."
+    "trainingAudienceHint": "Course catalog as seen by {audience}.",
+    "reviewEscrowLocked": "Acceptance state is locked after illustrative escrow settlement. You can still update your star rating and comment.",
+    "reviewEscrowRelease": "Confirming acceptance settles the illustrative escrow balance for the assigned partner.",
+    "reviewEscrowHold": "Uncheck if deliverables need revision — the illustrative escrow stays on hold until updated."
   }
 }

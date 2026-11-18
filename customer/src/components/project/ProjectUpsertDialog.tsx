@@ -95,7 +95,7 @@ export function ProjectUpsertDialog({
                         type="button"
                         onClick={onClose}
                         aria-label={t('common.close')}
-                        className="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-control text-slate-500 hover:bg-slate-200/70 hover:text-slate-900"
+                        className="inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-control text-slate-500 hover:bg-slate-200/70 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                     >
                         <X size={18} aria-hidden="true"/>
                     </button>
@@ -146,8 +146,9 @@ export function ProjectUpsertDialog({
                     <div className="space-y-2 border-t border-slate-100 pt-2">
                         <button
                             type="button"
+                            aria-expanded={showMap}
                             onClick={() => setShowMap(v => !v)}
-                            className="inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-control border border-slate-200 bg-slate-50 px-3 text-xs font-semibold whitespace-nowrap text-slate-700 hover:bg-slate-100"
+                            className="inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-control border border-slate-200 bg-slate-50 px-3 text-xs font-semibold whitespace-nowrap text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                         >
                             <MapPin size={14} className="text-primary" aria-hidden="true"/>
                             <span>{t('marketplaceShop.stepArea')}</span>

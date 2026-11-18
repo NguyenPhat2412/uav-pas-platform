@@ -370,6 +370,9 @@
     "trainingEmptyDesc": "新しいガイド講座がここに表示されます。",
     "trainingNoMatchDesc": "絞り込みを解除するかキーワードを変更してください。",
     "trainingCompletedSummary": "{completed}/{total} 講座完了",
-    "trainingAudienceHint": "{audience}向けの講座一覧を表示しています。"
+    "trainingAudienceHint": "{audience}向けの講座一覧を表示しています。",
+    "reviewEscrowLocked": "エスクロー参考精算の完了後に検収状態が確定しました。評価スコアとコメントは引き続き更新できます。",
+    "reviewEscrowRelease": "検収を確定すると、担当パートナーへのエスクロー参考精算が記録されます。",
+    "reviewEscrowHold": "成果物の修正が必要な場合はオフにしてください。追加納品までエスクロー参考残高を保留します。"
   }
 }

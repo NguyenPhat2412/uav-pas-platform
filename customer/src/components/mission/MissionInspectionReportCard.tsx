@@ -3,6 +3,7 @@
 import {useState} from 'react';
 import {Award, CheckCircle2, Clock, Download, FileCheck2, Layers, MapPin, Printer, ShieldCheck, SlidersHorizontal} from 'lucide-react';
 import {Button} from '@/components/ui';
+import {sanitizeMarketplaceText} from '@/forms/project/project-form';
 import {useMissionInspectionReport} from '@/hooks/mission/useCustomerMissions';
 import {useI18n} from '@/providers/I18nContext';
 
@@ -87,7 +88,7 @@ export function MissionInspectionReportCard({
                             </span>
                         </div>
                         <p className="m-0 mt-0.5 text-xs text-muted">
-                            {report.locationName ?? report.title} · {report.uavModel || 'Enterprise GNSS'} ({report.uavSerialNumber || 'GNSS'}) ·{' '}
+                            {report.locationName ?? report.title} · {sanitizeMarketplaceText(report.uavModel) || 'Enterprise GNSS'} ·{' '}
                             {isEn ? 'Permit' : 'Giấy phép'}: {report.permitReference ?? report.permitStatus}
                         </p>
                     </div>
@@ -169,8 +170,8 @@ export function MissionInspectionReportCard({
                     </div>
                     <p className="m-0">
                         {isEn
-                            ? `Mission ${report.missionCode} (${report.missionType}) executed by ${report.operatorName ?? 'Assigned Crew'} from ${report.stationName ?? 'Primary Base'} using ${report.uavModel} (${report.airframeClass}). Preflight verification: ${report.preflightPassed ? 'PASSED' : 'RECORDED'}.`
-                            : `Nhiệm vụ ${report.missionCode} (${report.missionType}) được thực hiện bởi ${report.operatorName ?? 'Tổ bay phân công'} từ trạm ${report.stationName ?? 'Căn cứ chính'} trên thiết bị ${report.uavModel} (${report.airframeClass}). Kiểm tra an toàn trước bay: ${report.preflightPassed ? 'ĐẠT CHUẨN' : 'ĐÃ GHI NHẬN'}.`}
+                            ? `Mission ${report.missionCode} (${report.missionType}) executed by Verified UAV PAS Partner using ${sanitizeMarketplaceText(report.uavModel) || 'Enterprise GNSS'}. Preflight verification: ${report.preflightPassed ? 'PASSED' : 'RECORDED'}.`
+                            : `Nhiệm vụ ${report.missionCode} (${report.missionType}) thực hiện bởi Đối tác đã xác minh UAV PAS trên thiết bị ${sanitizeMarketplaceText(report.uavModel) || 'Enterprise GNSS'}. Kiểm tra an toàn trước bay: ${report.preflightPassed ? 'ĐẠT CHUẨN' : 'ĐÃ GHI NHẬN'}.`}
                     </p>
                 </div>
 
@@ -292,7 +293,7 @@ export function MissionInspectionReportCard({
                                                 <div className="min-w-0 flex-1">
                                                     <div className="flex items-center gap-1.5 font-bold text-slate-900">
                                                         <FileCheck2 size={13} className="shrink-0 text-uav-blue" />
-                                                        <span className="truncate">{pin.fileName}</span>
+                                                        <span className="truncate">{sanitizeMarketplaceText(pin.fileName)}</span>
                                                     </div>
                                                     <div className="mt-0.5 flex flex-wrap items-center gap-2 font-mono text-[11px] text-slate-500">
                                                         <span className="inline-flex items-center gap-0.5">
@@ -327,7 +328,7 @@ export function MissionInspectionReportCard({
                         {activePin && (
                             <div className="mt-3 rounded-panel border border-slate-200 bg-white p-2.5 font-mono text-[11px] text-slate-700">
                                 <div className="flex flex-wrap items-center justify-between gap-2">
-                                    <strong className="text-slate-900">{activePin.fileName}</strong>
+                                    <strong className="text-slate-900">{sanitizeMarketplaceText(activePin.fileName)}</strong>
                                     <span>{formatDate(activePin.uploadedAt, {dateStyle: 'short', timeStyle: 'short'})}</span>
                                 </div>
                                 <div className="mt-1 text-slate-500">
